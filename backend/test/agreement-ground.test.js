@@ -38,8 +38,8 @@ function fakeFabric(pieces) {
     };
 }
 
-// A layout split k9 into two plots and left k10 untouched; a road body runs across both; k11 is
-// someone else's parcel nearby.
+// A layout split k9 into two plots; a road takes a strip off the north of k9 and of k10, whose rest
+// stays the parcel (its owner's, cut by the road); k11 is someone else's parcel nearby.
 function pieces() {
     const plot = (id, geometry) => piece(id, geometry, {
         cadastreParcelIds: ['k9'], producedByProposalId: 'layout-1', formedByProposalIds: ['layout-1'],
@@ -48,18 +48,19 @@ function pieces() {
     return [
         plot('k9-p1', rect(0, 0, 1, 2)),
         plot('k9-p2', rect(1, 0, 3, 2)),
-        piece('k10', rect(3, 0, 5, 2), { cadastreParcelIds: ['k10'] }),
-        piece('road-1#1', rect(0, 2, 5, 2.2), { cadastreParcelIds: ['k10', 'k9'], producedByProposalId: 'road-1', formedByProposalIds: ['road-1'], isCorridor: true }),
+        piece('k10', rect(3, 0, 5, 2), { cadastreParcelIds: ['k10'], cutByProposalIds: ['road-1'] }),
+        piece('road-1#1', rect(0, 2, 3, 2.2), { cadastreParcelIds: ['k9'], producedByProposalId: 'road-1', formedByProposalIds: ['road-1'], isCorridor: true }),
+        piece('road-1#2', rect(3, 2, 5, 2.2), { cadastreParcelIds: ['k10'], producedByProposalId: 'road-1', formedByProposalIds: ['road-1'], isCorridor: true }),
         piece('k11', rect(6, 0, 7, 2), { cadastreParcelIds: ['k11'] })
     ];
 }
 const originals = new Map([
-    ['k9', piece('k9', rect(0, 0, 3, 2))],
-    ['k10', piece('k10', rect(3, 0, 5, 2))],
+    ['k9', piece('k9', rect(0, 0, 3, 2.2))],
+    ['k10', piece('k10', rect(3, 0, 5, 2.2))],
     ['k11', piece('k11', rect(6, 0, 7, 2))]
 ]);
-// The layout declares k9 (padded and repeated); the road declares nothing and reaches k10 only
-// through the body it produced.
+// The layout declares k9 (padded and repeated); the road declares nothing and reaches k9 and k10
+// only through the pieces it takes.
 const designs = () => [
     { proposalId: 'layout-1', goal: 'parcel-layout', cadastreParcelIds: [' k9 ', 'k9'], parcelLayout: { algorithm: 'equal' } },
     { proposalId: 'road-1', goal: 'road', cadastreParcelIds: [] }
@@ -116,8 +117,9 @@ describe('derive', () => {
     it('takes each design\'s declared parcels and the anchors of what it produced, in numeric order', () => {
         const { inputs } = ground.derive({ designs: designs(), fabric: fakeFabric(pieces()), originals, area });
         expect(inputs.parcels.map(parcel => parcel.parcelId)).toEqual(['k9', 'k10']);
+        // Each puts in the land the designs take from it: all of k9, only the road's strip of k10.
         expect(inputs.parcels[0].areaM2).toBeCloseTo(turf.area(originals.get('k9')), 6);
-        expect(inputs.parcels[1].areaM2).toBeCloseTo(turf.area(originals.get('k10')), 6);
+        expect(inputs.parcels[1].areaM2).toBeCloseTo(turf.area(turf.feature(rect(3, 2, 5, 2.2))), 6);
         // Nobody is named: each input parcel is its owners' abstract party.
         expect(inputs.parcels.every(parcel => !Object.hasOwn(parcel, 'holders'))).toBe(true);
         expect(inputs.openGroundM2).toBe(0);
@@ -208,12 +210,13 @@ describe('derive', () => {
         expect(outputs.filter(output => output.pieceId.startsWith('open-ground:'))).toHaveLength(1);
     });
 
-    it('reads every piece on the input land, corridors included, once each, sorted by parcels then area', () => {
-        const { outputs } = ground.derive({ designs: designs(), fabric: fakeFabric(pieces()), originals, area });
-        expect(outputs.map(output => output.pieceId)).toEqual(['k9-p2', 'k9-p1', 'road-1#1', 'k10']);
-        expect(outputs.map(output => output.role)).toEqual(['plot', 'plot', 'corridor', 'parcel']);
-        expect(outputs.map(output => output.producedBy)).toEqual(['layout-1', 'layout-1', 'road-1', null]);
-        expect(outputs.map(output => output.fromParcelIds)).toEqual([['k9'], ['k9'], ['k9', 'k10'], ['k10']]);
+    it('reads the pieces the designs make, corridors included, once each, sorted by parcels then area; not the rest of a parcel', () => {
+        const { inputs, outputs } = ground.derive({ designs: designs(), fabric: fakeFabric(pieces()), originals, area });
+        expect(outputs.map(output => output.pieceId)).toEqual(['k9-p2', 'k9-p1', 'road-1#1', 'road-1#2']);
+        expect(outputs.map(output => output.role)).toEqual(['plot', 'plot', 'corridor', 'corridor']);
+        expect(outputs.map(output => output.producedBy)).toEqual(['layout-1', 'layout-1', 'road-1', 'road-1']);
+        expect(outputs.map(output => output.fromParcelIds)).toEqual([['k9'], ['k9'], ['k9'], ['k10']]);
+        expect(record.landBalance({ inputs, outputs }).balanced).toBe(true);
         expect(outputs.some(output => Object.hasOwn(output, 'holders'))).toBe(false);
         const byId = new Map(pieces().map(p => [p.properties.parcelId, p]));
         outputs.forEach(output => {
@@ -225,19 +228,21 @@ describe('derive', () => {
     });
 
     it('names roles by the layout first, then corridor, split part and whole parcel', () => {
+        const made = { cadastreParcelIds: ['k9'], producedByProposalId: 'layout-1' };
         const fabric = fakeFabric([
-            piece('rest', rect(0, 0, 1, 1), { cadastreParcelIds: ['k9'], readjustmentPiece: { role: 'remainder' }, isCorridor: true }),
-            piece('track', rect(1, 0, 2, 1), { cadastreParcelIds: ['k9'], isTrack: true }),
-            piece('part', rect(2, 0, 3, 1), { cadastreParcelIds: ['k9'], cadastralPart: true }),
-            piece('other', rect(3, 0, 4, 1), { cadastreParcelIds: ['k9'], readjustmentPiece: { role: 'courtyard' }, cadastralPart: true })
+            piece('rest', rect(0, 0, 1, 1), { ...made, readjustmentPiece: { role: 'remainder' }, isCorridor: true }),
+            piece('track', rect(1, 0, 2, 1), { ...made, isTrack: true }),
+            piece('part', rect(2, 0, 3, 1), { ...made, cadastralPart: true }),
+            piece('other', rect(3, 0, 4, 1), { ...made, readjustmentPiece: { role: 'courtyard' }, cadastralPart: true })
         ]);
         const { outputs } = ground.derive({ designs: [{ proposalId: 'layout-1', cadastreParcelIds: ['k9'] }], fabric, originals, area });
         expect(Object.fromEntries(outputs.map(output => [output.pieceId, output.role])))
             .toEqual({ rest: 'remainder', track: 'corridor', part: 'part', other: 'part' });
     });
 
-    it('leaves the area of an input without its original cadastral feature unknown', () => {
-        const { inputs } = ground.derive({ designs: [{ proposalId: 'road-2', cadastreParcelIds: ['k12', 'k9'] }], fabric: fakeFabric([]), originals, area });
+    it('leaves the area of an input unknown while the fabric holds none of its ground', () => {
+        const fabric = fakeFabric([piece('k9', originals.get('k9').geometry, { cadastreParcelIds: ['k9'] })]);
+        const { inputs } = ground.derive({ designs: [{ proposalId: 'road-2', cadastreParcelIds: ['k12', 'k9'] }], fabric, originals, area });
         expect(inputs.parcels).toEqual([
             { parcelId: 'k9', areaM2: expect.any(Number) },
             { parcelId: 'k12', areaM2: null }
@@ -264,6 +269,79 @@ describe('derive', () => {
         expect(result.valid).toBe(true);
         expect(result.warnings.map(warning => warning.code)).toEqual([]);
         expect(record.normalize(agreement).outputs.map(output => output.hash)).toEqual(derived.outputs.map(output => output.hash));
+    });
+
+    // One large parcel P: a park carved from its west end, a square from its east end, and the rest
+    // still P itself (no producer, cut by both).
+    describe('several designs carved from one large parcel', () => {
+        const big = piece('P', rect(0, 0, 10, 4));
+        const park = piece('P#park', rect(0, 0, 2, 4), { cadastreParcelIds: ['P'], producedByProposalId: 'park-1' });
+        const square = piece('P#square', rect(8, 0, 10, 4), { cadastreParcelIds: ['P'], producedByProposalId: 'square-1' });
+        const rest = piece('P', rect(2, 0, 8, 4), { cadastreParcelIds: ['P'], cutByProposalIds: ['park-1', 'square-1'] });
+        const parkDesign = { proposalId: 'park-1', cadastreParcelIds: ['P'] };
+        const parks = new Map([['P', big]]);
+
+        it('puts in only the land the agreement\'s own design takes, and leaves the rest out', () => {
+            const { inputs, outputs } = ground.derive({ designs: [parkDesign], fabric: fakeFabric([park, square, rest]), originals: parks, area });
+            expect(outputs.map(output => output.pieceId)).toEqual(['P#park']);
+            expect(inputs.parcels).toEqual([{ parcelId: 'P', areaM2: expect.any(Number) }]);
+            expect(inputs.parcels[0].areaM2).toBeCloseTo(turf.area(park), 6);
+            expect(record.landBalance({ inputs, outputs }).balanced).toBe(true);
+        });
+
+        it('stays current when another design is carved from the same parcel', () => {
+            const before = ground.derive({ designs: [parkDesign], fabric: fakeFabric([park, piece('P', rect(2, 0, 10, 4), { cadastreParcelIds: ['P'], cutByProposalIds: ['park-1'] })]), originals: parks, area });
+            const stored = { ...before, designs: [{ proposalId: 'park-1', cid: 'park-cid' }] };
+            const context = { designOf: () => parkDesign, isApplied: () => true, fingerprintOf: () => 'park-cid', originals: parks, area };
+            expect(ground.check(stored, { ...context, fabric: fakeFabric([park, square, rest]) })).toEqual({ current: true, reasons: [] });
+        });
+
+        it('settles by area on the land taken, not on the whole parcel', () => {
+            const derived = ground.derive({ designs: [parkDesign], fabric: fakeFabric([park, square, rest]), originals: parks, area });
+            const agreement = {
+                schema: record.SCHEMA, id: 'ag-park', designs: [{ proposalId: 'park-1', cid: Cid.cidOfObject({ design: 'park-1' }) }],
+                ...derived,
+                allocations: [{ output: derived.outputs[0].hash, to: { kind: 'public' } }],
+                money: { currency: 'EUR', lines: [] },
+                rule: { electorate: 'owners', binding: true, lens: ['lens-member-1'],
+                    settlement: { method: 'area', rateCentsPerM2: 100, contributionBasisPoints: 0 },
+                    approvalConfig: { schema: 'proposal-approval/v1', rights: record.rightsFromInputs(derived.inputs, () => [{ ownerKey: 'agent-city', share: 1 }]), policy: { type: 'unanimous' } } }
+            };
+            const lines = record.settle(agreement).money.lines;
+            expect(lines).toHaveLength(1);
+            expect(lines[0].amountCents).toBe(Math.round(derived.outputs[0].areaM2 * 100));
+        });
+    });
+
+    it('splits a piece across parcels by its overlap with each original parcel', () => {
+        const across = piece('park#1', rect(1, 0, 4, 2), { cadastreParcelIds: ['a', 'b'], producedByProposalId: 'park-2' });
+        const parcels = new Map([['a', piece('a', rect(0, 0, 2, 2))], ['b', piece('b', rect(2, 0, 6, 2))]]);
+        const fabric = fakeFabric([across, piece('a', rect(0, 0, 1, 2), { cadastreParcelIds: ['a'] }), piece('b', rect(4, 0, 6, 2), { cadastreParcelIds: ['b'] })]);
+        const { inputs, outputs } = ground.derive({ designs: [{ proposalId: 'park-2', cadastreParcelIds: ['a', 'b'] }], fabric, originals: parcels, area, turf });
+        expect(outputs.map(output => output.pieceId)).toEqual(['park#1']);
+        const [a, b] = inputs.parcels;
+        expect(a.areaM2 / b.areaM2).toBeCloseTo(1 / 2, 3);
+        expect(record.landBalance({ inputs, outputs }).balanced).toBe(true);
+        // Without the original of one parcel the split is unknown, for both.
+        const blind = ground.derive({ designs: [{ proposalId: 'park-2', cadastreParcelIds: ['a', 'b'] }], fabric,
+            originals: new Map([['a', parcels.get('a')]]), area, turf });
+        expect(blind.inputs.parcels.map(parcel => parcel.areaM2)).toEqual([null, null]);
+    });
+
+    it('gives a design that takes no land the pieces its site stands on, not the rest of its parcel', () => {
+        // A road cut P into a north and a south rest; a building rule's site lies on the south one.
+        const south = piece('P#south', rect(0, 0, 10, 2), { cadastreParcelIds: ['P'], cutByProposalIds: ['road-9'] });
+        const north = piece('P#north', rect(0, 2.2, 10, 4), { cadastreParcelIds: ['P'], cutByProposalIds: ['road-9'] });
+        const road = piece('road-9#1', rect(0, 2, 10, 2.2), { cadastreParcelIds: ['P'], producedByProposalId: 'road-9', formedByProposalIds: ['road-9'], isCorridor: true });
+        const block = { proposalId: 'block-1', goal: 'buildings', cadastreParcelIds: ['P'], site: rect(1, 0.5, 4, 1.5) };
+        const { inputs, outputs } = ground.derive({ designs: [block], fabric: fakeFabric([south, north, road]),
+            originals: new Map([['P', piece('P', rect(0, 0, 10, 4))]]), area, siteBinding, openGround, turf });
+        expect(outputs.map(output => output.pieceId)).toEqual(['P#south']);
+        expect(inputs.parcels[0].areaM2).toBeCloseTo(turf.area(south), 6);
+        // With no site it stands on every piece of its parcels but the corridors.
+        const unsited = ground.derive({ designs: [{ ...block, site: null }], fabric: fakeFabric([south, north, road]),
+            originals: new Map([['P', piece('P', rect(0, 0, 10, 4))]]), area });
+        expect(unsited.outputs.map(output => output.pieceId).sort()).toEqual(['P#north', 'P#south']);
     });
 });
 

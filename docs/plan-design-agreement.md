@@ -160,7 +160,8 @@ above supersedes historical statements where indicated.
 
 - The Approval tab's "Agreement rules" (voluntary all-owners, the research templates, custom) is
   the agreement's **decision rule**; the approval engine behind it moves to the agreement unchanged.
-- An agreement always settles the whole input land of its designs (option A). Gradual
+- An agreement always settles all the land its designs take (option A): from each input parcel
+  the part its designs take, never the rest of a large parcel they are carved from. Gradual
   participation is done with separate designs, each confined to the land its own agreement
   settles; a shared courtyard is one agreement, all or nothing. The per-input "separate
   agreements" mode of `reparcellization-agreements.js` (child proposals with their own site and
@@ -383,7 +384,7 @@ the `proposal:<id>` rows. It never takes part in `ParcelMutation`: an agreement 
   provider `local-owners`, shares in basis points, the last holder taking the remainder; a parcel
   nobody is recorded for keeps its abstract party and is incomplete); importing a rights file
   replaces it.
-- **Ledger** (reuse): per party (one per input parcel), contributed m² (the parcel), assigned m²
+- **Ledger** (reuse): per party (one per input parcel), contributed m² (what the parcel puts in), assigned m²
   (whole outputs by allocation), the change, and cash; the money schedule and its balance come from
   `ReparcellizationDeal.schedule`. Per-person positions come from `AgreementPersons.personPositions`.
 - **Current or stale**: the panel re-derives inputs and outputs from the fabric and compares them

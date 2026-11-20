@@ -1,6 +1,7 @@
 // An agreement's land on the current ground (plan-design-agreement.md, M1 (b)): the input parcels
-// its designs take, the pieces standing on them once the designs are applied, whether a stored
-// agreement still matches that ground, and the holders the local owner records name.
+// its designs take land from and how much each puts in, the pieces its designs make of that land
+// once applied, whether a stored agreement still matches that ground, and the holders the local
+// owner records name.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -105,31 +106,61 @@
         }
         if (typeof area !== 'function') throw new TypeError('derive needs an area function.');
 
-        // Each design's declared parcels and the cadastral anchors of every piece it produced.
+        // Each design's declared parcels and the cadastral anchors of every piece it produced: the
+        // parcels the land comes from, as the designs' bindings name them.
         const parcelIds = sortedUnique(designs.flatMap(design => [
             ...idsOf(design.cadastreParcelIds),
             ...(fabric.producedBy(design.proposalId) || []).flatMap(piece => idsOf(piece && piece.properties && piece.properties.cadastreParcelIds))
         ]));
-        const parcels = parcelIds.map(parcelId => {
-            const original = originals && typeof originals.get === 'function' ? originals.get(parcelId) : null;
-            const measured = original ? area(original) : null;
-            return { parcelId, areaM2: finite(measured) && measured >= 0 ? committedArea(measured) : null };
-        });
+        const openGround = openGroundOption || openGroundApi();
+        const siteBinding = siteBindingOption || siteBindingApi();
+        const turf = turfOption || turfApi();
         const featureById = new Map();
-        (fabric.entriesForCadastre(parcelIds, { includeCorridors: true }) || []).forEach(feature => {
+        const keep = feature => {
             const id = feature?.properties?.parcelId;
             if (id === undefined || id === null || String(id) === '') {
                 featureById.set(`!missing:${featureById.size}`, feature);
                 return;
             }
             if (!featureById.has(String(id))) featureById.set(String(id), feature);
+        };
+
+        // The agreement's land is the land its designs take, not the whole of every parcel they reach
+        // into: the pieces they produced and the corridor pieces they take. A design that takes no
+        // land of its own (a building rule standing on existing parcels) has the pieces its site
+        // reaches into, by the binding's own rule (site-binding.js), and every piece of its parcels
+        // when it has no site. The rest of a large parcel stays its owner's, outside the agreement,
+        // so a design carved elsewhere from the same parcel neither joins it nor makes it stale.
+        const onParcels = fabric.entriesForCadastre(parcelIds, { includeCorridors: true }) || [];
+        const takenBy = (props, id) => String(props.producedByProposalId ?? '') === id
+            || (Array.isArray(props.formedByProposalIds) && props.formedByProposalIds.some(taker => String(taker) === id));
+        designs.forEach(design => {
+            const id = String(design.proposalId);
+            const own = [...(fabric.producedBy(design.proposalId) || []),
+                ...onParcels.filter(feature => takenBy(feature?.properties || {}, id))];
+            if (own.length) {
+                own.forEach(keep);
+                return;
+            }
+            const declared = new Set(idsOf(design.cadastreParcelIds));
+            const under = onParcels.filter(feature => roleOf(feature?.properties || {}) !== 'corridor'
+                && idsOf(feature?.properties?.cadastreParcelIds).some(parcelId => declared.has(parcelId)));
+            const site = under.length && siteBinding && typeof siteBinding.siteOf === 'function' ? siteBinding.siteOf(design, { turf }) : null;
+            if (!site) {
+                under.forEach(keep);
+                return;
+            }
+            if (!turf || typeof siteBinding.bindingFromParcels !== 'function') {
+                throw new Error('Agreement ground cannot find the pieces a site stands on without its geometry services.');
+            }
+            const reached = new Set(siteBinding.bindingFromParcels(site,
+                under.map(feature => ({ id: String(feature.properties.parcelId), geometry: feature.geometry })),
+                { toleranceM: design.toleranceM, turf }).parcels.map(hit => String(hit.parcelId)));
+            under.filter(feature => reached.has(String(feature.properties.parcelId))).forEach(keep);
         });
 
         // Reconstruct the actual unsurveyed part from design geometry and immutable parcel geometry.
         // binding.unsurveyedM2 is only an area summary and cannot stand in for the missing polygon.
-        const openGround = openGroundOption || openGroundApi();
-        const siteBinding = siteBindingOption || siteBindingApi();
-        const turf = turfOption || turfApi();
         const openGroundEligible = design => {
             if (openGround && typeof openGround.hasOpenGround === 'function' && siteBinding) {
                 return openGround.hasOpenGround(design, { siteBinding, turf });
@@ -201,6 +232,47 @@
             }
         }
         const outputFeatures = Array.from(featureById.values());
+
+        // Each input parcel puts in the part of the agreement's land that lies on it: a piece on one
+        // parcel all of itself, a piece across several split by its overlap with each original
+        // parcel. A piece that also stands on open ground puts in only its overlaps, the rest being
+        // open ground. Unknown (null) where an original parcel is missing for a split, or where the
+        // fabric holds no piece of the parcel at all.
+        const taken = new Map(parcelIds.map(parcelId => [parcelId, 0]));
+        const add = (parcelId, m2) => taken.set(parcelId, taken.get(parcelId) === null || m2 === null ? null : taken.get(parcelId) + m2);
+        outputFeatures.forEach(feature => {
+            const props = (feature && feature.properties) || {};
+            const from = sortedUnique(idsOf(props.cadastreParcelIds)).filter(parcelId => taken.has(parcelId));
+            if (!from.length) return;
+            const whole = area(feature);
+            if (!finite(whole) || whole < 0) throw new Error(`Piece ${props.parcelId} could not be measured.`);
+            const onOpenGround = Array.isArray(props.groundIds) && props.groundIds.length > 0;
+            if (from.length === 1 && !onOpenGround) {
+                add(from[0], whole);
+                return;
+            }
+            if (!turf) throw new Error('Agreement ground cannot split a piece across parcels without its geometry services.');
+            const overlaps = from.map(parcelId => {
+                const original = originals?.get?.(parcelId);
+                const geometry = original?.geometry || (original?.type === 'Feature' ? null : original);
+                if (!geometry) return null;
+                const overlap = clip('intersect', featureOf(feature.geometry), featureOf(geometry));
+                const measured = overlap ? area(overlap) : 0;
+                if (!finite(measured) || measured < 0) throw new Error(`Piece ${props.parcelId} could not be measured on ${parcelId}.`);
+                return measured;
+            });
+            const sum = overlaps.reduce((total, overlap) => (overlap === null || total === null ? null : total + overlap), 0);
+            if (sum === null || (!onOpenGround && !(sum > 0))) {
+                from.forEach(parcelId => add(parcelId, null));
+                return;
+            }
+            from.forEach((parcelId, index) => add(parcelId, onOpenGround ? overlaps[index] : whole * overlaps[index] / sum));
+        });
+        const loaded = new Set(onParcels.flatMap(feature => idsOf(feature?.properties?.cadastreParcelIds)));
+        const parcels = parcelIds.map(parcelId => {
+            const m2 = loaded.has(parcelId) ? taken.get(parcelId) : null;
+            return { parcelId, areaM2: m2 === null ? null : committedArea(m2) };
+        });
 
         const seen = new Set();
         const outputs = [];

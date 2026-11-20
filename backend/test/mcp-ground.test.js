@@ -28,7 +28,10 @@ describe('headless app formation host', () => {
         const design = make('building', { floors: 4 }); design.content.goal = 'single'; design.cid = cidOfObject(design.content);
         const ground = await deriveAgreementGround({ designs: [design], parcels });
         expect(ground.outputs.some(o => o.producedBy === design.cid)).toBe(true);
-        expect(ground.outputs.reduce((sum, o) => sum + o.areaM2, 0)).toBeCloseTo(turf.area(parcels[0]), 2);
+        // The agreement takes the building's own parcel; the rest of A stays A, outside it.
+        const taken = ground.outputs.reduce((sum, o) => sum + o.areaM2, 0);
+        expect(taken).toBeLessThan(turf.area(parcels[0]) - 1);
+        expect(taken).toBeCloseTo(ground.inputs.parcels[0].areaM2, 2);
     });
     for (const key of ['borovje-official', 'borovje-blocks', 'folnegoviceva-rapska']) it(`derives the actual ${key} designs over their archived immutable source`, async () => {
         const fixture = await restatementFixture(key);

@@ -100,11 +100,11 @@ The latest Support, Oppose or Abstain choice for one eligible code and one exact
 
 ### Agreement input
 
-Land represented by the included designs, with source-qualified cadastral references and a holder snapshot. Inputs can include modeled open ground: the union of each qualifying design site's geometry outside its bound cadastral parcels, not an area inferred from a binding summary.
+Land represented by the included designs, with source-qualified cadastral references and a holder snapshot. The input parcels are the parcels the designs' bindings name; each puts in only the part of the agreement's land that lies on it, not its whole area: the pieces on that parcel alone, and for a piece across several parcels its overlap with this one, in proportion. The rest of a large parcel stays its owner's, outside the agreement. Input areas set area settlement, value and area-weighted approval. Inputs can include modeled open ground: the union of each qualifying design site's geometry outside its bound cadastral parcels, not an area inferred from a binding summary.
 
 ### Agreement output
 
-A land piece standing on the input land after the included designs are applied. Outputs include materialized fabric pieces and any remaining modeled open-ground host that has no materialized piece. Such a host is carried as geometry with no claimed holder or cadastral identity. Its committed identity is a `piece1-sha256:` hash of the defined output projection, not a permanent cadastral identifier.
+A land piece the included designs make once applied: the pieces they produce and the corridor pieces they take. A design that takes no land of its own (a building rule standing on existing parcels) has the pieces its site reaches into by the binding's rule, or every non-corridor piece of its parcels when it has no site. What other designs carve from the same parcels, and the parcel rest they leave, are not outputs, so they neither join the agreement nor make it stale. Outputs include materialized fabric pieces and any remaining modeled open-ground host that has no materialized piece. Such a host is carried as geometry with no claimed holder or cadastral identity. Its committed identity is a `piece1-sha256:` hash of the defined output projection, not a permanent cadastral identifier.
 
 An unchanged whole cadastral parcel commits to its source geometry, including its Polygon or MultiPolygon type. Splits and designed pieces commit to their resulting geometry. Even an unchanged whole parcel needs an explicit single recipient in an owners’ agreement; by default that is its own parcel party.
 
