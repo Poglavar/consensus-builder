@@ -146,6 +146,14 @@ test('Explore banner requests its place, opens World view, and dismisses for thi
   await waitForMapReady(page);
   const banner = page.locator('#explore-banner');
   await expect(banner).toBeVisible();
+  // Zoom 16 is parcel zoom for explore (parcelZoomRange.min 16 since 4c27b140a), and a place with
+  // no register offers the ground choices without a register request (world-parcels.md); set
+  // that offer aside so the banner's own controls are reachable.
+  const recovery = page.locator('.ground-fallback-dialog');
+  await expect(recovery).toBeVisible();
+  await expect(recovery).toContainText('There is no parcel register on record');
+  await recovery.getByRole('button', { name: 'Not now', exact: true }).click();
+  await expect(recovery).toHaveCount(0);
   await banner.locator('#explore-banner-ask').click();
   await expect(banner.locator('#explore-banner-ask')).toBeDisabled();
   await expect.poll(() => requests.length).toBe(1);
@@ -188,6 +196,9 @@ test('retry stays in one recovery dialog, spins, and shows the latest HTTP error
  await expect(retry).toBeDisabled();
  await expect(dialog).toHaveCount(1);
  await expect(dialog.locator('.ground-fallback-status')).toContainText('Retrying');
+ // Retry first clears the sources' failure cooldowns in the parcel worker (8cab5c226), a round
+ // trip that can start the worker, and only then reads again: wait for that read.
+ await expect.poll(()=>page.evaluate(()=>typeof (window as any).finishParcelRetry),{timeout:15_000}).toBe('function');
  await page.evaluate(()=>(window as any).finishParcelRetry());
  await expect(retry).not.toHaveAttribute('aria-busy','true');
  await expect(retry).toBeEnabled();
@@ -204,7 +215,12 @@ test('Belgrade explains Serbia-only access and offers continuation without parce
  await expect(dialog.locator('.ground-fallback-status')).toContainText('only accepts connections from Serbia');
  await expect(dialog.locator('.ground-fallback-status')).toContainText('HTTP 403');
  await expect(page.locator('#parcel-source-status')).toHaveCount(0);
- await dialog.locator('[data-option="without-parcels"]').click();
+ // The choice reloads the page with the same route (ground-fallback.js continueWithoutParcels).
+ await Promise.all([
+  page.waitForEvent('domcontentloaded'),
+  dialog.locator('[data-option="without-parcels"]').click(),
+ ]);
+ await waitForMapReady(page);
  await expect.poll(()=>page.evaluate(()=>(window as any).ParcelGroundFallback?.isWithoutParcels('belgrade'))).toBe(true);
  await expect(dialog).toHaveCount(0);
 });
