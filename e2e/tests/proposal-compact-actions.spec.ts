@@ -37,7 +37,9 @@ async function establishLocalProfile(page: import('@playwright/test').Page, name
 async function expectSharedAsDesign(page: import('@playwright/test').Page, proposalId: string): Promise<void> {
   await expect.poll(() => pageIndex(page).designs.size, { timeout: 30_000 }).toBe(1);
   const [cid] = [...pageIndex(page).designs.keys()];
-  expect(await page.evaluate(id => (window as any).DesignSync.publishedCid((window as any).proposalStorage.getProposal(id)), proposalId)).toBe(cid);
+  // The mock index holds the design as soon as POST /designs is handled; the record is marked
+  // published only once the app has read the response, so wait for that mark.
+  await expect.poll(() => page.evaluate(id => (window as any).DesignSync.publishedCid((window as any).proposalStorage.getProposal(id)), proposalId)).toBe(cid);
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toContain(`/designs/${cid}?`);
   await closeShareBox(page);
 }

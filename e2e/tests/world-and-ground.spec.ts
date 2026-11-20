@@ -63,6 +63,12 @@ test.describe('World navigation and open ground @features', () => {
     });
     // Dhaka: no configured city covers it, so the address alone opens explore there
     await page.goto('/?at=23.7104,90.4074,16&lang=en&reduceMotion=1'); await waitForMapReady(page);
+    // Zoom 16 is explore's parcel zoom (4c27b140a) and Dhaka has no parcel register, so the ground
+    // choices are offered first (world-parcels.md); set them aside to reach Lists.
+    const recovery = page.locator('.ground-fallback-dialog');
+    await expect(recovery).toBeVisible();
+    await recovery.getByRole('button', { name: 'Not now', exact: true }).click();
+    await expect(recovery).toHaveCount(0);
     // Opening Lists starts its visible-area request synchronously, so clear navigation-time calls first.
     listQueries.length = 0;
     await page.locator('#proposals-button').click();

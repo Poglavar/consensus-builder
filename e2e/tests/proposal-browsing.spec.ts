@@ -59,10 +59,13 @@ test.describe('Proposal browsing @features', () => {
     // finds the named record, while the peer-aware badges keep both visible rows distinct.
     await expect(north).toBeVisible();
 
+    // Designs list newest first by default (83dc0a094: a newly saved design is found at the top);
+    // Order switches them to title order.
     await list.getByRole('searchbox').fill('');
-    await expect(titles).toHaveText(['North park plan', 'Road safety plan', 'South park plan']);
-    await selectNativeOption(order, 'newest');
+    await expect(order).toHaveValue('newest');
     await expect(titles).toHaveText(['South park plan', 'North park plan', 'Road safety plan']);
+    await selectNativeOption(order, 'title');
+    await expect(titles).toHaveText(['North park plan', 'Road safety plan', 'South park plan']);
 
     // One list: this browser's drafts with the server's published designs; there is no source switch.
     await expect(list.locator('[data-list-source]')).toHaveCount(0);
