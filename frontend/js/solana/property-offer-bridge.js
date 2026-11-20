@@ -49,6 +49,20 @@
         if (!member?.serviceUrl) throw new Error('This lens has no registered decision service.');
         return member.serviceUrl.replace(/\/$/, '');
     }
+    async function ownershipBasis(record, candidate) {
+        if (candidate.ownershipHash != null) {
+            if (!/^[a-f0-9]{64}$/.test(candidate.ownershipHash)) throw new Error('The shared acceptance has an invalid ownership basis hash.');
+            return candidate.ownershipHash;
+        }
+        if (Array.isArray(candidate.consents) && candidate.consents.length) throw new Error('The shared acceptance has no ownership basis hash. Prepare a new acceptance.');
+        const url = await lensService(record);
+        const response = await win.fetch(`${url}/lens/property-offers/check`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            signal: AbortSignal.timeout(30000), body: JSON.stringify({ content: record.content }) });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || result.error || 'The lens cannot verify this offer.');
+        if (result.key !== record.content.lens || !/^[a-f0-9]{64}$/.test(result.ownershipHash)) throw new Error('The lens did not return a current ownership basis.');
+        return result.ownershipHash;
+    }
     async function preflight(record) {
         const proposed = { ...record, published: { cid: win.PropertyOfferRecord.cid(record.content) } };
         const ctx = await context(proposed, true);
@@ -115,7 +129,8 @@
         const normalized = win.PropertyOfferRecord.published({ ...c, direction: 'sell', buyer: null, seller: c.proposer,
             payouts: c.direction === 'sell' ? c.payouts : candidate.payouts });
         const prepared = { cid: record.published.cid, offer: ctx.address, termsHash: hex(hash(c)),
-            payoutsHash: hex(api().payoutScheduleHash(normalized.payouts)), buyer, seller, payouts: normalized.payouts, consents: [] };
+            payoutsHash: hex(api().payoutScheduleHash(normalized.payouts)), ownershipHash: await ownershipBasis(record, candidate),
+            buyer, seller, payouts: normalized.payouts, consents: [] };
         const unchanged = ['cid', 'offer', 'termsHash', 'payoutsHash', 'buyer', 'seller'].every(name => candidate[name] === prepared[name]);
         if (unchanged && Array.isArray(candidate.consents)) prepared.consents = candidate.consents.map(row => ({ owner: row.owner, signature: row.signature }));
         return prepared;

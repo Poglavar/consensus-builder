@@ -10,6 +10,7 @@ const Offer = require('../../frontend/js/property-offer-record.js');
 const Consent = require('../../frontend/js/property-offer-consent.js');
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const reject = message => { throw Object.assign(new Error(message), { status: 422 }); };
+const ownershipHash = value => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value) ? value : reject('Acceptance ownershipHash must be a lowercase SHA-256 hex hash.');
 export function prepareAcceptance(row, raw = {}) {
     const c = Offer.published(row.content), cid = Offer.cid(c);
     if (cid !== row.cid) reject('Offer CID mismatch.');
@@ -21,8 +22,9 @@ export function prepareAcceptance(row, raw = {}) {
         payouts: c.direction === 'sell' ? c.payouts : raw.payouts }).payouts;
     if (!payouts.some(p => p.recipient === seller)) reject('The seller representative must be a payout recipient.');
     const candidate = { cid, offer: client.getOfferPda(cid, c.proposer)[0].toBase58(),
-        termsHash: hash(canonicalBytes(c)), payoutsHash: Buffer.from(client.payoutScheduleHash(payouts)).toString('hex'), buyer, seller, payouts };
-    for (const key of ['cid', 'offer', 'termsHash', 'payoutsHash', 'buyer', 'seller']) {
+        termsHash: hash(canonicalBytes(c)), payoutsHash: Buffer.from(client.payoutScheduleHash(payouts)).toString('hex'),
+        ownershipHash: ownershipHash(raw.ownershipHash), buyer, seller, payouts };
+    for (const key of ['cid', 'offer', 'termsHash', 'payoutsHash', 'ownershipHash', 'buyer', 'seller']) {
         if (raw[key] != null && raw[key] !== candidate[key]) reject(`Acceptance ${key} differs from the offer.`);
     }
     if (raw.payouts && hash(canonicalBytes(raw.payouts)) !== hash(canonicalBytes(payouts))) reject('Payouts must match the canonical acceptance schedule.');

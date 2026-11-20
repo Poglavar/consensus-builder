@@ -15,6 +15,7 @@ import { LensError, lensLog } from './errors.js';
 import { systemClock } from './member.js';
 import { planPropertyOfferDecision } from './property-offer-decision.js';
 import { readOwnership } from '../property-offers/ownership.js';
+import { ownershipTransferBasis } from '../property-offers/ownership-transfers.js';
 import rateLimit from 'express-rate-limit';
 import { createRequire } from 'node:module';
 import { verifyWalletSignature } from './identity/devnet-registry.js';
@@ -156,7 +157,8 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
                 invalid('payout_ownership_mismatch', 'Sale payout recipients must exactly match the current owner set.', { owners: [...observedOwners], recipients: [...recipients] });
             }
         }
-        res.json({ key: member.authority, credential: member.credential, schema: member.schemas?.propertyOffer, parcels });
+        const { ownershipHash } = ownershipTransferBasis(content.parcels, sets, propertyOffers.transfers?.network);
+        res.json({ key: member.authority, credential: member.credential, schema: member.schemas?.propertyOffer, parcels, ownershipHash });
     }));
 
     app.post('/lens/challenge', wrap(async (req, res) => {
@@ -235,14 +237,27 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
         const account = await propertyOffers.account(offer);
         const refs = offer.content?.parcels || [];
         const sets = await readOwnership(refs, identity);
-        const fields = await planPropertyOfferDecision({ offer, account, candidate: req.body || {}, nowSeconds: clock.nowSeconds(), ownerSets: async () => sets });
+        const basis = ownershipTransferBasis(refs, sets, propertyOffers.transfers?.network);
+        const fields = await planPropertyOfferDecision({ offer, account, candidate: req.body || {}, nowSeconds: clock.nowSeconds(),
+            ownerSets: async () => sets, ownershipHash: basis.ownershipHash });
         const requester = offer.content.direction === 'buy' ? fields.seller : fields.buyer;
         const message = PropertyOfferConsent.requestMessage({ ...fields, consents: req.body.consents });
         if (req.body.requester !== requester || !verifyWalletSignature({ owner: requester, message, signature: req.body.signature })) {
             throw new LensError(401, 'invalid_request_signature', 'The accepting counterparty must sign this exact decision request.');
         }
-        const record = await member.attestPropertyOfferDecision(fields);
+        const beforeIssue = propertyOffers.transfers && (decision => propertyOffers.transfers.reserve({
+            offer, fields, basis, identity, consents: req.body.consents, decision
+        }));
+        const record = await member.attestPropertyOfferDecision(fields, { beforeIssue });
         res.status(record.reused ? 200 : 201).json({ ...publicRecord(record), reused: record.reused });
+    }));
+
+    app.get('/lens/property-offers/:cid/transfer', rateLimit({ windowMs: 60000, limit: 30, standardHeaders: 'draft-7', legacyHeaders: false }), wrap(async (req, res) => {
+        if (!isCid(req.params.cid)) throw new LensError(400, 'bad_request', 'cid must be a property offer CID');
+        if (!propertyOffers?.transfers) throw new LensError(503, 'transfers_not_configured', 'This lens does not publish ownership transfers.');
+        const evidence = await propertyOffers.transfers.evidence(req.params.cid);
+        if (!evidence) throw new LensError(404, 'transfer_not_final', 'No finalized ownership transfer is available for this offer.');
+        res.json(evidence);
     }));
 
     // Operator-only, like agreement decisions: the operator runs a source adapter

@@ -56,7 +56,11 @@ An arrangement referencing exactly one immutable plan revision, with input land 
 
 ### Property offer
 
-An immutable, atomic offer to buy or sell one or more source-qualified cadastral parcels for one exact total in SOL lamports. A published `property-offer/v1` record names its maker, the initially open counterparty role, a lens, expiry and every parcel. A sale commits its payout schedule; a purchase receives an owner-approved payout schedule only on acceptance. Acceptance and lens attestation bind the exact offer CID, terms and schedule; they do not assert or effect a registered title transfer. Parcel anchors remain ownerless and non-transferable; settlement moves SOL without changing ownership attestations.
+An immutable, atomic offer to buy or sell one or more source-qualified cadastral parcels for one exact total in SOL lamports. A published `property-offer/v1` record names its maker, the initially open counterparty role, a lens, expiry and every parcel. A sale commits its payout schedule; a purchase receives an owner-approved payout schedule only on acceptance. Acceptance and lens attestation bind the exact offer CID, terms and schedule; they do not assert or effect a registered title transfer. Parcel anchors remain ownerless and non-transferable. On finalized settlement, seller signatures become evidence of transfer through the lens.
+
+### Parcel ownership transfer
+
+Seller-signed evidence linking source-qualified parcels and their previous ownership evidence to the buyer named in a finalized property offer. A lens recognizes successor ownership by following validated transfers from roots it trusts. The anchor remains fixed, and registered title comes from the land registry.
 
 ### Shared property-offer acceptance
 

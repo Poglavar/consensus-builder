@@ -21,11 +21,12 @@ apartments and leases are outside this record.
    the same **Mint offer** action to complete publication and minting.
 4. Open **Accept offer** to prepare the parties and payments. A buy offer obtains its payout schedule
    here; a sale retains its published schedule. Each payout recipient signs **Sign my seller consent**
-   with their own wallet. **Share acceptance link** creates one immutable shared candidate using a
+   with their own wallet. The signature names the buyer, exact offer, payout and current ownership
+   evidence. It authorizes transfer upon finalized settlement. **Share acceptance link** creates one immutable shared candidate using a
    participant-signed request; other sellers open that link, review and sign. **Refresh signatures**
    collects their independently stored consents and shows which wallets are still needed. Acceptance
    refreshes signatures before submitting to the lens. JSON download/import remains available.
-   Changing parties or the payment schedule starts a different candidate and clears prior consents.
+   Changing parties, the payment schedule or the ownership evidence starts a different candidate and clears prior consents.
 5. The accepting counterparty submits **Accept offer**: the buyer for a sale, or the seller
    representative for a buy. The lens independently reads the offer, its open chain account and the
    complete source-qualified owner sets. It verifies every owner signature and the counterparty’s
@@ -39,9 +40,19 @@ The review panel lists exact parcel references with map navigation, full buyer/s
 payout recipients and amounts, and the Solana account. Refresh can recover a confirmed account whose
 index update failed; changing the connected wallet updates the available actions.
 
-The contract settles SOL under the selected lens’s ownership evidence. It does not transfer parcel
-NFTs: parcel anchors remain ownerless and non-transferable. It does not update ownership attestations
-or a land registry, or itself convey cadastral title.
+Parcel anchors remain ownerless and non-transferable; registered title comes from the land registry.
+After finalized payment the offer lens publishes the seller-signed `parcel-ownership-transfer/v1`
+evidence at `GET /lens/property-offers/:cid/transfer`. The record includes the offer and Solana network,
+prior ownership evidence for each source-qualified parcel, the buyer, every outgoing owner’s signature,
+the decision attestation, and the finalized account’s observation time. A predecessor from an earlier
+sale identifies that sale’s lens and offer CID so another lens can retrieve and verify the link.
+
+The reference lens follows these transfers from its configured ownership roots. It verifies the
+current predecessor set before authorizing an offer and reserves those predecessors within its own
+lens and network while settlement is pending. A finalized cancellation or expiry releases the
+reservation. Final settlement recognizes the buyer as the successor for each parcel in the bundle.
+Both property offers and agreements using this reference lens resolve through the same evidence chain.
+Other lenses can verify the published evidence against the roots and issuers they trust.
 
 ## Identity and persistence
 
@@ -98,6 +109,7 @@ connections verify the devnet genesis hash. Localnet indexing is available only 
 `ugt_publish_property_offer` share the canonical record model.
 Edits require the inspected `expectedCid`; publication requires the reviewed CID and `confirm=true`.
 Draft content and prepared acceptance packages are portable JSON for browser import. Preparation
-returns exact seller, accepting-wallet and sharing messages. The consent tool reads shared sessions
+takes the ownership hash from the chosen lens’s offer preflight and returns exact seller,
+accepting-wallet and sharing messages. The consent tool reads shared sessions
 or relays supplied signatures with `confirm=true`. These tools never generate wallet signatures
 or send funds. The person completes those steps with their wallet in the browser.

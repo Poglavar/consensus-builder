@@ -237,7 +237,7 @@ describe('reference lens member', () => {
         const identity = createDevnetRegistryIdentity({ pool, clock, authority: AUTHORITY });
         await identity.ownerSet('HR-335550-1/1');
         expect(queries[2].sql).toContain('FROM consensus.lens_devnet_owner');
-        expect(queries[2].params).toEqual(['HR-335550-1/1']);
+        expect(queries[2].params).toEqual([['HR-335550-1/1']]);
         // The approval registry's batch read (approval.js devnetOwnerRegistry): one statement for every parcel.
         const sets = await identity.ownerSets(['HR-335550-2/1', 'HR-335550-1/1', 'HR-335550-2/1']);
         expect(queries[3].sql).toMatch(/WHERE parcel_uid = ANY\(\$1::text\[\]\)/);

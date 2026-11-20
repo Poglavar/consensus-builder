@@ -54,10 +54,10 @@ export function verifyWalletSignature({ owner, message, signature }) {
 }
 
 /**
- * @param {{ pool?: import('pg').Pool, rows?: object[], clock: { nowSeconds(): number }, authority: string }} options
+ * @param {{ pool?: import('pg').Pool, rows?: object[], resolveOwnerSets?: (sets: Map) => Promise<Map>, clock: { nowSeconds(): number }, authority: string }} options
  * Exactly one of `pool` (reads consensus.lens_devnet_owner) or `rows` (in-memory) is required.
  */
-export function createDevnetRegistryIdentity({ pool = null, rows = null, clock, authority, ttlSeconds = CHALLENGE_TTL_SECONDS }) {
+export function createDevnetRegistryIdentity({ pool = null, rows = null, resolveOwnerSets = null, clock, authority, ttlSeconds = CHALLENGE_TTL_SECONDS }) {
     if (!pool === !rows) throw new Error('devnet-registry: pass exactly one of pool or rows');
     if (!authority) throw new Error('devnet-registry: authority is required (it is named in the signed challenge)');
     const memory = rows ? rows.map(rowOf) : null;
@@ -68,24 +68,17 @@ export function createDevnetRegistryIdentity({ pool = null, rows = null, clock, 
     }
 
     async function ownerSet(parcelUid) {
-        if (memory) return memory.filter(row => row.parcelUid === parcelUid);
-        const result = await pool.query(`
-            SELECT parcel_uid, owner_wallet, owner_count, established_at
-            FROM consensus.lens_devnet_owner
-            WHERE parcel_uid = $1
-            ORDER BY owner_wallet
-        `, [parcelUid]);
-        return result.rows.map(rowOf);
+        return (await ownerSets([parcelUid])).get(parcelUid);
     }
 
     // The owner sets of several parcels in one read: Map(parcelUid → rows), [] for a parcel without
     // rows. Agreement approval reads the registry this way on every request (approval.js
     // devnetOwnerRegistry).
-    async function ownerSets(parcelUids) {
+    async function rootOwnerSets(parcelUids, db = pool) {
         const ids = [...new Set((parcelUids || []).map(String))];
         const sets = new Map(ids.map(id => [id, []]));
         if (!ids.length) return sets;
-        const rows = memory || (await pool.query(`
+        const rows = memory || (await db.query(`
             SELECT parcel_uid, owner_wallet, owner_count, established_at
             FROM consensus.lens_devnet_owner
             WHERE parcel_uid = ANY($1::text[])
@@ -95,10 +88,16 @@ export function createDevnetRegistryIdentity({ pool = null, rows = null, clock, 
         return sets;
     }
 
+    async function ownerSets(parcelUids) {
+        const roots = await rootOwnerSets(parcelUids);
+        return resolveOwnerSets ? resolveOwnerSets(roots) : roots;
+    }
+
     return {
         kind: 'devnet-registry',
         ownerSet,
         ownerSets,
+        rootOwnerSets,
 
         async issueChallenge({ parcelUid, owner }) {
             const rowsForParcel = await ownerSet(parcelUid);

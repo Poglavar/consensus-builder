@@ -36,7 +36,8 @@ describe('property offer preflight', () => {
         const f = appFor(), offer = content();
         const response = await request(f.app).post('/lens/property-offers/check').send({ content: offer });
         expect(response.status).toBe(200);
-        expect(response.body).toEqual({ key: lens, credential: f.member.credential, schema, parcels: [
+        expect(response.body.ownershipHash).toMatch(/^[a-f0-9]{64}$/);
+        expect(response.body).toMatchObject({ key: lens, credential: f.member.credential, schema, parcels: [
             { ref: refs[0], owners: ownerRows.get(refs[0].id) }, { ref: refs[1], owners: ownerRows.get(refs[1].id) }
         ] });
         expect(f.ownerSets).toHaveBeenCalledWith(refs.map(ref => ref.id));

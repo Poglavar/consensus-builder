@@ -4,6 +4,7 @@ import { createRequire } from 'node:module';
 import { Keypair } from '@solana/web3.js';
 import request from 'supertest';
 import express from 'express';
+import { ownershipTransferBasis } from '../property-offers/ownership-transfers.js';
 import { createLensMemberApp } from '../lens/server.js';
 import { setupPropertyOffersRoute } from '../routes/property-offers.js';
 import { client, validateOfferAccount } from '../property-offers/onchain.js';
@@ -23,16 +24,21 @@ function fixture(direction='sell') {
     const payouts=content.payouts || [{recipient:seller,lamports:'40'},{recipient:coowner,lamports:'60'}].sort((a,b)=>a.recipient.localeCompare(b.recipient));
     const account={address,cid,maker:content.proposer,lens,side:direction==='sell'?'Sell':'Buy',status:'Open',priceLamports:100n,escrowLamports:0n,deadline:1893456000n,
         termsHash:hash(Cid.canonicalBytes(content)),payoutsHash:direction==='sell'?Buffer.from(client.payoutScheduleHash(payouts)).toString('hex'):'0'.repeat(64),payouts:direction==='sell'?payouts:[],acceptedAt:0n};
-    const candidate={cid,offer:address,termsHash:account.termsHash,payoutsHash:Buffer.from(client.payoutScheduleHash(payouts)).toString('hex'),buyer,seller,payouts,consents:[]};
+    const sets = new Map(content.parcels.map((ref, index) => [Offer.parcelUid(ref), [{ owner: [seller, coowner][index], ownerCount: 1, establishedAt: 100 }]]));
+    const { ownershipHash } = ownershipTransferBasis(content.parcels, sets);
+    const candidate={cid,offer:address,ownershipHash,termsHash:account.termsHash,payoutsHash:Buffer.from(client.payoutScheduleHash(payouts)).toString('hex'),buyer,seller,payouts,consents:[]};
     candidate.consents=[keys[1],keys[2]].map(key=>({owner:key.publicKey.toBase58(),signature:signature(key,Consent.sellerConsentMessage({...candidate,seller:key.publicKey.toBase58()}))}));
     const requester=direction==='sell'?buyer:seller, signer=direction==='sell'?keys[0]:keys[1];
     const body={...candidate,requester,signature:signature(signer,Consent.requestMessage(candidate))};
-    return {row:{cid,content},account,candidate,body};
+    return {row:{cid,content},account,candidate,body,sets};
 }
-function lensApp(f) {
-    const issue=vi.fn(async fields=>({address:'issued',credential:'credential',payload:fields}));
-    const member={authority:lens,identity:{ownerSets:async()=>new Map([[Offer.parcelUid({sourceId:'test-source',id:'parcel-1'}),[{owner:seller,ownerCount:1,establishedAt:100}]],[Offer.parcelUid({sourceId:'test-source',id:'parcel-2'}),[{owner:coowner,ownerCount:1,establishedAt:100}]]])},attestPropertyOfferDecision:issue};
-    return {app:createLensMemberApp({member,pricing:{},propertyOffers:{load:async()=>f.row,account:async()=>f.account},clock:{nowSeconds:()=>1800000000}}),issue};
+function lensApp(f, transfers = null) {
+    const issue = vi.fn(async (fields, { beforeIssue } = {}) => {
+        await beforeIssue?.('issued');
+        return { address: 'issued', credential: 'credential', payload: fields };
+    });
+    const member={authority:lens,identity:{ownerSets:async()=>f.sets},attestPropertyOfferDecision:issue};
+    return {app:createLensMemberApp({member,pricing:{},propertyOffers:{load:async()=>f.row,account:async()=>f.account,transfers},clock:{nowSeconds:()=>1800000000}}),issue};
 }
 describe('property offer settlement trust boundaries',()=>{
     for(const direction of ['buy','sell']) it(`issues ${direction} approval only for every owner and signed accepting counterparty`,async()=>{
@@ -42,11 +48,27 @@ describe('property offer settlement trust boundaries',()=>{
         expect(issue.mock.calls[0][0]).toMatchObject({buyer,seller,ownershipVerified:1,termsHash:f.account.termsHash});
     });
     it('rejects a tampered request, an omitted co-owner and an unrelated lens without issuing',async()=>{
-        for(const change of [b=>({...b,buyer:coowner}),b=>({...b,consents:b.consents.slice(0,1)}),b=>({...b,signature:'bad'})]){
+        for(const change of [b=>({...b,buyer:coowner}),b=>({...b,consents:b.consents.slice(0,1)}),b=>({...b,signature:'bad'}),b=>({...b,ownershipHash:'0'.repeat(64)})]){
             const f=fixture(),{app,issue}=lensApp(f);
             expect((await request(app).post(`/lens/property-offers/${f.row.cid}/decision`).send(change(f.body))).status).toBeGreaterThanOrEqual(400);
             expect(issue).not.toHaveBeenCalled();
         }
+    });
+    it('reserves the verified ownership proof before issuing and serves only finalized evidence', async () => {
+        const f = fixture();
+        const reserve = vi.fn(async () => {});
+        const evidence = vi.fn(async () => null);
+        const { app } = lensApp(f, { reserve, evidence });
+        const path = `/lens/property-offers/${f.row.cid}`;
+        expect((await request(app).post(`${path}/decision`).send({ ...f.body, ownershipHash: '0'.repeat(64) })).status).toBe(422);
+        expect(reserve).not.toHaveBeenCalled();
+        expect((await request(app).post(`${path}/decision`).send(f.body)).status).toBe(201);
+        expect(reserve).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
+            offer: f.row, decision: 'issued', consents: f.candidate.consents, basis: expect.objectContaining({ ownershipHash: f.candidate.ownershipHash })
+        }));
+        expect((await request(app).get(`${path}/transfer`)).status).toBe(404);
+        evidence.mockResolvedValueOnce({ id: 'evidence', observedAt: 200 });
+        expect((await request(app).get(`${path}/transfer`)).body).toEqual({ id: 'evidence', observedAt: 200 });
     });
     it('refuses account identity, amount and schedule mismatches at the index boundary',()=>{
         const f=fixture();expect(validateOfferAccount(f.row,f.account)).toBe(f.account);
@@ -84,7 +106,7 @@ describe('property offer settlement trust boundaries',()=>{
         for (const direction of ['buy', 'sell']) {
             const sample = fixture(direction);
             const prepared = tools.prepare({ offer: sample.row.content, expectedCid: sample.row.cid,
-                buyer, seller, payouts: sample.candidate.payouts, consents: sample.candidate.consents });
+                buyer, seller, ownershipHash: sample.candidate.ownershipHash, payouts: sample.candidate.payouts, consents: sample.candidate.consents });
             expect(prepared.candidate).toEqual(sample.candidate);
             expect(prepared.requestMessage).toBe(Consent.requestMessage(sample.candidate));
             expect(prepared.sellerMessages).toEqual(sample.candidate.payouts.map(row => ({ owner: row.recipient,

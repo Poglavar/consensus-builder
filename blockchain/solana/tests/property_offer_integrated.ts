@@ -116,7 +116,9 @@ describe('property_offer integrated lens/SAS lifecycle', () => {
             const content = OfferRecord.published(rawContent);
             parcels.forEach((parcel, i) => ownerSetsByUid.set(JSON.stringify([parcel.sourceId, parcel.id, null]), parcelOwners[i].map(owner => ({ owner: owner.publicKey.toBase58(), ownerCount: ownersPerParcel, establishedAt: sourceObservedAt }))));
             const checked = await fetch(`${base}/lens/property-offers/check`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ content }) });
-            expect(checked.status, await checked.text()).eq(200);
+            const checkedBody = await checked.json();
+            expect(checked.status, JSON.stringify(checkedBody)).eq(200);
+            const { ownershipHash } = checkedBody as { ownershipHash: string };
             const cid = await cidOf(content); const termsHash = hash((await importFile('../../../backend/cid.js')).canonicalBytes(content));
             const maker = direction === 'buy' ? provider.wallet.publicKey : owners[0].publicKey;
             const offer = PublicKey.findProgramAddressSync([Buffer.from('property-offer'), maker.toBuffer(), hash(Buffer.from(cid))], program.programId)[0];
@@ -134,12 +136,12 @@ describe('property_offer integrated lens/SAS lifecycle', () => {
             const seller = owners[0];
             const consentModule = await importFile('../../../frontend/js/property-offer-consent.js');
             const consentApi = consentModule.default || consentModule;
-            const candidate: any = { buyer: buyer.toBase58(), seller: seller.publicKey.toBase58(), payouts: candidatePayouts,
+            const candidate: any = { ownershipHash, buyer: buyer.toBase58(), seller: seller.publicKey.toBase58(), payouts: candidatePayouts,
                 consents: owners.map(owner => ({ owner: owner.publicKey.toBase58(), signature: signMessage(owner, consentApi.sellerConsentMessage({
-                    cid, offer: offer.toBase58(), termsHash: termsHash.toString('hex'), payoutsHash: scheduleHash.toString('hex'), buyer: buyer.toBase58(), seller: owner.publicKey.toBase58()
+                    cid, offer: offer.toBase58(), termsHash: termsHash.toString('hex'), payoutsHash: scheduleHash.toString('hex'), ownershipHash, buyer: buyer.toBase58(), seller: owner.publicKey.toBase58()
                 })) })) };
             const termsHex = termsHash.toString('hex'); const requestMessage = consentApi.requestMessage({ cid, offer: offer.toBase58(), termsHash: termsHex,
-                payoutsHash: scheduleHash.toString('hex'), buyer: buyer.toBase58(), seller: seller.publicKey.toBase58(), consents: candidate.consents });
+                payoutsHash: scheduleHash.toString('hex'), ownershipHash, buyer: buyer.toBase58(), seller: seller.publicKey.toBase58(), consents: candidate.consents });
             candidate.requester = direction === 'buy' ? seller.publicKey.toBase58() : buyer.toBase58();
             candidate.signature = signMessage(direction === 'buy' ? seller : buyerKey!, requestMessage);
             const scheduleOnchain = payoutsForAttestation.map((p: any) => ({ recipient: p.recipient, lamports: p.lamports }));

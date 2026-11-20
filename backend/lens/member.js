@@ -66,7 +66,7 @@ export function ownershipFromOwnerSet(rows, { parcelUid, owner }) {
         throw new LensError(409, 'registry_inconsistent', `parcel ${parcelUid}: owner_count ${ownerCount} is below the ${rows.length} recorded owners`);
     }
     const sourceObservedAt = Math.max(...rows.map(row => row.establishedAt));
-    const evidenceRef = `sha256:${sha256Hex(['lens-owner-set', parcelUid, ownerCount, sourceObservedAt,
+    const evidenceRef = rows.length === 1 && rows[0].evidenceRef || `sha256:${sha256Hex(['lens-owner-set', parcelUid, ownerCount, sourceObservedAt,
         ...rows.map(row => row.owner).sort()].join('|'))}`;
     return { parcelUid, owner, ownerCount, sourceObservedAt, evidenceRef };
 }
@@ -167,6 +167,10 @@ export function createLensMember({
             throw new LensError(409, 'source_time_mismatch',
                 `sourceObservedAt ${sourceObservedAt} differs from the identity record (${derived.sourceObservedAt})`);
         }
+        const transferEvidence = rows.length === 1 ? rows[0].evidenceRef : null;
+        if (transferEvidence && evidenceRef !== undefined && evidenceRef !== transferEvidence) {
+            throw new LensError(409, 'ownership_evidence_mismatch', 'The current owner is recognized through a different transfer.');
+        }
         const fields = { ...derived, evidenceRef: evidenceRef ?? derived.evidenceRef };
         try {
             validateOwnership(fields, { nowSeconds: clock.nowSeconds() });
@@ -260,10 +264,11 @@ export function createLensMember({
             return issue('decision', fields, nonce, {});
         },
 
-        async attestPropertyOfferDecision(fields) {
-            const required = ['cid', 'offer', 'termsHash', 'payoutsHash', 'buyer', 'seller', 'sourceObservedAt'];
+        async attestPropertyOfferDecision(fields, { beforeIssue } = {}) {
+            const required = ['cid', 'offer', 'termsHash', 'payoutsHash', 'ownershipHash', 'buyer', 'seller', 'sourceObservedAt'];
             if (required.some(name => fields?.[name] == null) || fields.ownershipVerified !== 1) throw new LensError(422, 'invalid_property_offer_decision', 'Property offer decision is incomplete.');
-            const nonce = factNonce([LENS_SCHEMAS.propertyOffer.id, fields.cid, fields.offer, fields.termsHash, fields.payoutsHash, fields.buyer, fields.seller, fields.sourceObservedAt]);
+            const nonce = factNonce([LENS_SCHEMAS.propertyOffer.id, fields.cid, fields.offer, fields.termsHash, fields.payoutsHash, fields.ownershipHash, fields.buyer, fields.seller, fields.sourceObservedAt]);
+            if (beforeIssue) await beforeIssue(deriveAttestationPda({ credential, schema: schemas.propertyOffer, nonce }));
             return issue('propertyOffer', fields, nonce, {});
         },
 

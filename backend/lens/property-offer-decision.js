@@ -9,6 +9,7 @@ import { verifyWalletSignature } from './identity/devnet-registry.js';
 
 const require = createRequire(import.meta.url);
 const Offer = require('../../frontend/js/property-offer-record.js');
+export const { sellerConsentMessage } = require('../../frontend/js/property-offer-consent.js');
 const key = value => { try { return new PublicKey(value).toBase58() === value; } catch { return false; } };
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 export const parcelUid = Offer.parcelUid;
@@ -17,16 +18,11 @@ const payoutHash = payouts => hash(Buffer.concat(payouts.map(row => {
     return Buffer.concat([new PublicKey(row.recipient).toBuffer(), amount]);
 })));
 
-export function sellerConsentMessage({ cid, offer, termsHash, payoutsHash, buyer, seller }) {
-    return ['Urban Game Theory property-offer seller consent', `Offer CID: ${cid}`, `Offer account: ${offer}`,
-        `Terms SHA-256: ${termsHash}`, `Payouts SHA-256: ${payoutsHash}`, `Buyer: ${buyer}`, `Seller: ${seller}`].join('\n');
-}
-
 /**
  * @param {{ offer: object, account: object, candidate: object, ownerSets: (refs: object[]) => Promise<Map<string, object[]>>, nowSeconds: number }} input
  * `offer` and `account` must be read by the lens from trusted index/chain adapters, never req.body.
  */
-export async function planPropertyOfferDecision({ offer, account, candidate, ownerSets, nowSeconds }) {
+export async function planPropertyOfferDecision({ offer, account, candidate, ownerSets, nowSeconds, ownershipHash }) {
     const content = offer?.content;
     const invalid = (code, message) => { throw new LensError(422, code, message); };
     if (!offer?.cid || cidOf(canonicalBytes(content)) !== offer.cid || Offer.validate(content)) invalid('invalid_offer', 'Indexed property-offer content is not canonical.');
@@ -37,6 +33,9 @@ export async function planPropertyOfferDecision({ offer, account, candidate, own
     if (!Number.isFinite(deadline) || deadline <= nowSeconds || Math.floor(Date.parse(content.expiresAt) / 1000) !== deadline) invalid('deadline_mismatch', 'The chain account deadline differs from the immutable offer.');
     const termsHash = hash(canonicalBytes(content));
     if (account.termsHash !== termsHash) invalid('terms_mismatch', 'The chain account does not commit to the indexed offer terms.');
+    if (typeof ownershipHash !== 'string' || !/^[a-f0-9]{64}$/.test(ownershipHash) || candidate?.ownershipHash !== ownershipHash) {
+        invalid('ownership_changed', 'The signatures must name the current ownership evidence.');
+    }
     const buyer = candidate?.buyer, seller = candidate?.seller;
     if (!key(buyer) || !key(seller)) invalid('invalid_counterparty', 'Buyer and seller must be Solana public keys.');
     const payouts = content.direction === 'sell' ? content.payouts : candidate?.payouts;
@@ -65,8 +64,8 @@ export async function planPropertyOfferDecision({ offer, account, candidate, own
     const consentByOwner = new Map((candidate?.consents || []).map(row => [row?.owner, row]));
     if (consentByOwner.size !== candidate.consents.length) invalid('duplicate_consents', 'A seller consent is listed more than once.');
     if (consentByOwner.size !== observedOwners.size || [...observedOwners].some(owner => !consentByOwner.has(owner))) invalid('missing_seller_consent', 'Every observed owner must provide one consent.');
-    const message = owner => sellerConsentMessage({ cid: offer.cid, offer: account.address, termsHash, payoutsHash: scheduleHash, buyer, seller: owner });
+    const message = owner => sellerConsentMessage({ cid: offer.cid, offer: account.address, termsHash, payoutsHash: scheduleHash, ownershipHash, buyer, seller: owner });
     for (const owner of observedOwners) if (!verifyWalletSignature({ owner, message: message(owner), signature: consentByOwner.get(owner).signature })) invalid('bad_seller_consent', `Seller consent is invalid for ${owner}.`);
     if (content.direction === 'sell' && account.payoutsHash !== scheduleHash) invalid('payouts_mismatch', 'The committed sale schedule differs from the chain account.');
-    return { cid: offer.cid, offer: account.address, termsHash, payoutsHash: scheduleHash, buyer, seller, ownershipVerified: 1, sourceObservedAt: observedAt };
+    return { cid: offer.cid, offer: account.address, termsHash, payoutsHash: scheduleHash, ownershipHash, buyer, seller, ownershipVerified: 1, sourceObservedAt: observedAt };
 }

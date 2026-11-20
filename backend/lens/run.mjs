@@ -17,6 +17,8 @@ import { Connection, Keypair } from '@solana/web3.js';
 import { createRequire } from 'node:module';
 import { loadAgreement } from '../routes/agreements.js';
 import { loadPropertyOffer } from '../routes/property-offers.js';
+import { createOwnershipTransfers } from '../property-offers/ownership-transfers.js';
+import { createTransferStore } from '../property-offers/transfer-store.js';
 import { createAgreementDecisionStore } from '../agreements/decisions.js';
 import { createLensMember, DEFAULT_CREDENTIAL_NAME, LENS_MEMBER_KINDS, systemClock } from './member.js';
 import { createDevnetRegistryIdentity } from './identity/devnet-registry.js';
@@ -154,14 +156,33 @@ async function main() {
         : await retryWithBackoff('loading the SAS issuer failed',
             () => loadSasIssuer({ keypair, rpcUrl: values.rpc || process.env.SOLANA_RPC_URL || CLUSTERS[values.cluster] }), STARTUP_RETRY);
 
+    const rpcUrl = values.rpc || process.env.SOLANA_RPC_URL || CLUSTERS[values.cluster];
+    const offerConnection = new Connection(rpcUrl, 'confirmed');
+    const loadOffer = cid => loadPropertyOffer(pool, cid);
+    const transfers = !dryRun && pool && values.identity === 'devnet-registry'
+        ? createOwnershipTransfers({ store: createTransferStore(pool), authority,
+            network: await retryWithBackoff('reading the property offer network failed', () => offerConnection.getGenesisHash(), STARTUP_RETRY),
+            loadOffer,
+            async readFinalized(offer) {
+                const address = PropertyOfferClient.getOfferPda(offer.cid, offer.content.proposer)[0];
+                const { context, value } = await offerConnection.getAccountInfoAndContext(address, 'finalized');
+                if (!value) return null;
+                if (value.owner.toBase58() !== PropertyOfferClient.constants.PROPERTY_OFFER_PROGRAM_ID) throw new Error('The offer account belongs to another program.');
+                const account = PropertyOfferClient.readPropertyOffer(value.data, address.toBase58());
+                if (!account) throw new Error('The offer account does not decode.');
+                const observedAt = ['Settled', 'Cancelled', 'Expired'].includes(account.status) ? await offerConnection.getBlockTime(context.slot) : null;
+                return { account, observedAt };
+            }
+        }) : null;
+
     let identity;
     if (values.identity === 'certilia') {
         identity = createCertiliaIdentity();
         identity.assertReady();
     } else if (values.identity === 'devnet-registry') {
-        identity = values.owners
-            ? createDevnetRegistryIdentity({ rows: readOwners(values.owners), clock, authority })
-            : createDevnetRegistryIdentity({ pool, clock, authority });
+        const source = values.owners ? { rows: readOwners(values.owners) } : { pool };
+        identity = createDevnetRegistryIdentity({ ...source, clock, authority,
+            resolveOwnerSets: transfers && (roots => transfers.resolve(roots)) });
     } else {
         throw new Error(`unknown --identity ${values.identity}`);
     }
@@ -197,9 +218,8 @@ async function main() {
     // relay admitted, in the same database the API writes (routes/agreements.js, agreements/decisions.js).
     const decisionStore = pool ? createAgreementDecisionStore(pool) : null;
     const agreements = pool ? { load: cid => loadAgreement(pool, cid), decisions: cid => decisionStore.list(cid) } : null;
-    const offerConnection = new Connection(values.rpc || process.env.SOLANA_RPC_URL || CLUSTERS[values.cluster], 'confirmed');
-    const propertyOffers = pool ? {
-        load: cid => loadPropertyOffer(pool, cid),
+    const propertyOffers = pool && (dryRun || transfers) ? {
+        load: loadOffer, transfers,
         account: async offer => PropertyOfferClient.fetchPropertyOffer(offerConnection, { cid: offer.cid, maker: offer.content.proposer })
     } : null;
     const app = createLensMemberApp({ member, pricing, operatorToken, approvalAttester, agreements, propertyOffers, clock });

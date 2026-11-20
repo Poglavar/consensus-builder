@@ -34,3 +34,21 @@ CREATE TABLE IF NOT EXISTS consensus.property_offer_acceptance (
     updated_at timestamptz NOT NULL DEFAULT now(),
     PRIMARY KEY (offer_cid,id)
 );
+
+-- Lens-scoped, immutable transfer evidence.  It is deliberately not an owner registry:
+-- resolving evidence into an owner set is a lens policy outside this table.
+CREATE TABLE IF NOT EXISTS consensus.property_offer_transfer (
+    lens text NOT NULL,
+    network text NOT NULL,
+    offer_cid text NOT NULL REFERENCES consensus.property_offer(cid),
+    parcel_keys text[] NOT NULL CHECK (cardinality(parcel_keys) > 0),
+    proof jsonb NOT NULL,
+    decision text NOT NULL,
+    terminal text CHECK (terminal IN ('settled', 'void')),
+    observed_at bigint CHECK (observed_at IS NULL OR observed_at >= 0),
+    created_at timestamptz NOT NULL DEFAULT now(),
+    PRIMARY KEY (lens, network, offer_cid),
+    CHECK ((terminal IS NULL AND observed_at IS NULL) OR (terminal IS NOT NULL AND observed_at IS NOT NULL))
+);
+CREATE INDEX IF NOT EXISTS idx_property_offer_transfer_parcel_keys
+    ON consensus.property_offer_transfer USING GIN (parcel_keys);
