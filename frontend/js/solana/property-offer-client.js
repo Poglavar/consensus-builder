@@ -20,7 +20,7 @@
     });
     const SIDE_NAMES = ['Buy', 'Sell']; const STATUS_NAMES = ['Open', 'Accepted', 'Settled', 'Cancelled', 'Expired'];
     let injectedWeb3 = null; let injectedSha256Hex = null; let injectedSha256Bytes = null;
-    function web3() { if (injectedWeb3) return injectedWeb3; if (globalThis.solanaWeb3) return globalThis.solanaWeb3; if (typeof require === 'function') try { return require('@solana/web3.js'); } catch (_) {} throw new Error('configure with @solana/web3.js'); }
+    function web3() { if (injectedWeb3) return injectedWeb3; if (globalThis.solanaWeb3) return globalThis.solanaWeb3; if (typeof require === 'function') try { return require('@solana/web3.js'); } catch (_) { /* not installed: injection is the browser path, reported below */ } throw new Error('configure with @solana/web3.js'); }
     function sha256Hex(text) { if (injectedSha256Hex) return injectedSha256Hex(text); if (globalThis.__consentSha256) return globalThis.__consentSha256.sha256Hex(text); if (typeof require === 'function') return require('crypto').createHash('sha256').update(text).digest('hex'); throw new Error('configure with sha256Hex'); }
     function sha256Bytes(bytes) { if (injectedSha256Bytes) return injectedSha256Bytes(bytes); if (typeof require === 'function') return require('crypto').createHash('sha256').update(bytes).digest(); throw new Error('configure with sha256Bytes to hash binary payout schedules'); }
     function configure(o = {}) { if ('web3' in o) injectedWeb3 = o.web3; if ('sha256Hex' in o) injectedSha256Hex = o.sha256Hex; if ('sha256Bytes' in o) injectedSha256Bytes = o.sha256Bytes; return api; }

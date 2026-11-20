@@ -255,16 +255,16 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 /* Explain the flagged apartment under the pointer without intercepting building clicks. */
 .three-apartment-hover-note {
     position: fixed;
-    z-index: 10000;
+    z-index: var(--cb-z-editor-popup);
     pointer-events: none;
     max-width: min(260px, calc(100vw - 16px));
     padding: 7px 10px;
-    border: 1px solid #dc7770;
+    border: 1px solid var(--cb-danger);
     border-radius: 6px;
-    background: #fff5f3;
-    color: #8e211b;
+    background: var(--cb-danger-soft);
+    color: var(--cb-danger-soft-ink);
     font: 600 13px/1.35 system-ui, sans-serif;
-    box-shadow: 0 2px 8px #0002;
+    box-shadow: var(--cb-shadow-sm);
 }
 .three-apartment-hover-note[hidden] { display: none; }
 

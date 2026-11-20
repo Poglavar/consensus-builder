@@ -33,7 +33,7 @@
             const parcels = (content.parcels || []).map(parcel => {
                 const canLocate = !parcel.snapshotId && content.city === currentCity && parcel.sourceId === currentSource;
                 const disabled = canLocate ? '' : ' disabled';
-                return `<li><button type="button" class="property-offer-panel__locate" data-parcel-id="${escape(parcel.id)}"${disabled} aria-label="${escape(t('locateParcel', 'Locate parcel {{id}}', { id: parcel.id }))}">${escape(parcel.id)}</button><span>${escape(t('fields.parcelSource', 'Source'))}: <code>${escape(parcel.sourceId)}</code>${parcel.snapshotId ? ` · ${escape(t('fields.parcelSnapshot', 'Snapshot'))}: <code>${escape(parcel.snapshotId)}</code>` : ''}</span></li>`;
+                return `<li><button type="button" class="cb-link property-offer-panel__locate" data-parcel-id="${escape(parcel.id)}"${disabled} aria-label="${escape(t('locateParcel', 'Locate parcel {{id}}', { id: parcel.id }))}">${escape(parcel.id)}</button><span>${escape(t('fields.parcelSource', 'Source'))}: <code>${escape(parcel.sourceId)}</code>${parcel.snapshotId ? ` · ${escape(t('fields.parcelSnapshot', 'Snapshot'))}: <code>${escape(parcel.snapshotId)}</code>` : ''}</span></li>`;
             }).join('');
             const unusedKey = root.PropertyOfferClient?.constants?.DEFAULT_PUBKEY || '11111111111111111111111111111111';
             const buyer = chain?.buyer || content.buyer || (content.direction === 'buy' ? content.proposer : '');

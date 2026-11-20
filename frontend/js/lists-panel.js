@@ -64,6 +64,7 @@
         const currentSort = () => state.sort || (state.tab === 'designs' ? 'newest' : 'title');
         let ready = false;
         const t = (key, params) => win.i18n.t(key, params || {});
+        const offerDirection = direction => (direction === 'buy' ? t('propertyOffer.directions.buy') : t('propertyOffer.directions.sell'));
         const node = (tag, cls, text) => {
             const el = doc.createElement(tag); if (cls) el.className = cls;
             if (text !== undefined) el.textContent = text; return el;
@@ -114,7 +115,7 @@
                 .filter(record => !record.content.view.city || win.normalizeCityCodeForApi(record.content.view.city) === city())
                 .map(record => ({ key: record.cid, title: record.content.title, publishedAt: record.publishedAt, createdAt: record.publishedAt, published: record.published === true || !Array.isArray(record.designs), cid: record.cid, record, local: record }));
             const offers = (win.PropertyOfferStore?.list() || []).map(record => ({ key: record.id, propertyOffer: true,
-                title: record.content.title || t(`propertyOffer.directions.${record.content.direction}`), author: record.content.proposer, createdAt: record.content.createdAt,
+                title: record.content.title || offerDirection(record.content.direction), author: record.content.proposer, createdAt: record.content.createdAt,
                 published: !!record.published, cid: record.published?.cid || null, onChain: !!record.onchain, record, local: record }));
             return [...offers, ...win.AgreementStore.list().map(record => ({ key: record.id, title: record.title || t('agreement.panel.untitled'),
                 author: record.author, createdAt: record.createdAt, published: !!record.published, cid: record.published?.cid || null,
@@ -477,7 +478,7 @@
                 }
                 item.append(badges);
                 if (kind === 'plans') item.append(node('p', 'sheet-note', t('agreement.list.designs', { count: row.record.content?.designCids.length ?? row.record.designCount })));
-                if (row.propertyOffer) item.append(node('p', 'sheet-note', t(`propertyOffer.directions.${(row.local?.content || row.record.content).direction}`)));
+                if (row.propertyOffer) item.append(node('p', 'sheet-note', offerDirection((row.local?.content || row.record.content).direction)));
                 else if (kind === 'agreements' && row.local) item.append(node('p', 'sheet-note', win.AgreementPanel.ruleShort(row.local.rule)));
                 const actions = node('div', 'cb-actions lists-item__actions');
                 const open = button(t('lists.open'), () => inspect(row, kind), 'btn-primary lists-item__open', 'arrow-pointer');

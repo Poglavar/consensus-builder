@@ -22,7 +22,7 @@
 .property-offer-panel__parcels, .property-offer-panel__payouts { display: grid; gap: var(--cb-space-2); list-style: none; margin: 0; padding: 0; }
 .property-offer-panel__parcels li, .property-offer-panel__payouts li { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--cb-space-2); min-width: 0; }
 .property-offer-panel__parcels li > span, .property-offer-panel__payouts li > span { color: var(--cb-text-muted); }
-.property-offer-panel__locate { padding: 0; border: 0; background: none; color: var(--cb-link, var(--cb-accent)); font: inherit; text-align: start; text-decoration: underline; cursor: pointer; overflow-wrap: anywhere; }
+.property-offer-panel__locate { overflow-wrap: anywhere; }
 .property-offer-panel__hint { margin: 0; color: var(--cb-text-muted); }
 .property-offer-panel__actions { justify-content: flex-end; flex-wrap: wrap; gap: var(--cb-space-2); }
 @media (max-width: 34rem) {
