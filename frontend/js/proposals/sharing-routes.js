@@ -742,6 +742,9 @@ async function handleSharedDesignRoute(cids, options = {}) {
     const updateLoad = (...args) => { if (!remote) updateProposalLoadOverlay(...args); };
     const reportProgress = remote ? () => {} : reportSharedPlanProgress;
     const sharedView = window.WorldEntry?.arrivalMapView();
+    // The caller's own `frame: false` and `openDetails: false` (a named plan's arrival) ask for the
+    // whole plan as saved. A design link's ?at= only keeps its view: its design stays selected.
+    const wholePlanArrival = options.frame === false && options.openDetails === false;
     if (sharedView) options = { ...options, frame: false, openDetails: false };
     const t = getProposalI18nHelper();
     const tShare = getShareI18nHelper();
@@ -1010,10 +1013,11 @@ async function handleSharedDesignRoute(cids, options = {}) {
         // A link that asks for 3D restores its captured camera when supplied.
         if (options.enter3D !== false && !url3DModeHandled && is3DModeRequestedFromUrl() && standing.length) {
             url3DModeHandled = true;
-            // `frame: false` and `openDetails: false` mean this is an exact whole-plan arrival:
-            // keep the saved camera rather than treating the first member as the selected design.
+            // An exact whole-plan arrival keeps the saved camera rather than treating the first
+            // member as the selected design. A design link with a saved view keeps that view too
+            // (three-mode.js preserveView) and still opens its design's section.
             // The saved view above has already positioned Leaflet for the 3D scene's ground.
-            const focused = sharedView && !replacedPlan && options.frame === false && options.openDetails === false ? [] : standing;
+            const focused = sharedView && !replacedPlan && wholePlanArrival ? [] : standing;
             enterUrlDrivenViewWhenReady(focused, replacedPlan ? { restoreView: null } : {});
         }
         return result;
