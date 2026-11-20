@@ -36,6 +36,21 @@ for (const control of ['inactive', 'ai'] as const) {
     await expect(page.locator('#username-text')).toHaveText(`Test ${control} actor`);
     await expect(page.locator('#username-display img')).toHaveAttribute('src', avatarSrc!);
     const actorId = await page.evaluate(() => (window as any).getCurrentUserAgent().id);
+    // PersistentStorage writes to IndexedDB in the background; a reload before that transaction
+    // commits drops it (the page comes back as the earlier guest). Reload once the profile is stored.
+    await expect.poll(() => page.evaluate(id => new Promise(resolve => {
+      const open = indexedDB.open((window as any).PersistentStorage.databaseName());
+      open.onerror = () => resolve(null);
+      open.onsuccess = () => {
+        const db = open.result;
+        const read = db.transaction('kv').objectStore('kv').get('consensus_agents');
+        read.onerror = () => { db.close(); resolve(null); };
+        read.onsuccess = () => {
+          db.close();
+          resolve(JSON.parse(read.result?.value || '[]').find((agent: any) => agent.id === id)?.name ?? null);
+        };
+      };
+    }), actorId)).toBe(`Test ${control} actor`);
     await page.reload();
     await expect(page.locator('#username-text')).toHaveText(`Test ${control} actor`);
     await page.locator('#username-display').click();
