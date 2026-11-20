@@ -220,17 +220,25 @@
                 "title": "Terrenos públicos",
                 "freePlots": "Lotes públicos livres",
                 "applications": "Pedidos de terreno",
-                "grantedLegend": "Lote livre atribuído (registado após a publicação)",
+                "grantedLegend": "Atribuído ou registado",
+                "stoppedLegend": "Recusado ou cancelado",
                 "loading": "A carregar terrenos públicos do cadastro…",
-                "checking": "A comparar lotes livres com lotes registados: {{done}} / {{total}}",
                 "failed": "O cadastro não respondeu. Tente novamente mais tarde.",
                 "freeTitle": "Lote público livre {{id}}",
                 "applicationTitle": "Pedido de terreno {{id}}",
-                "grantedAs": "Atribuído: registado como lote {{number}} em {{date}}",
+                "stage": {
+                    "pending": "Em procedimento",
+                    "granted": "Atribuído",
+                    "registered": "Registado",
+                    "stopped": "Recusado ou cancelado",
+                    "unknown": "Estado desconhecido"
+                },
+                "cadastreStatus": "Estado no cadastro: {{label}} ({{date}})",
+                "unknownStatus": "Código de estado do cadastro {{code}}, ausente da legenda ({{date}})",
                 "use": "Uso: {{use}}",
                 "listedOn": "Registado em {{date}}",
-                "freeCount": "Lotes públicos livres: {{free}} publicados, {{granted}} atribuídos",
-                "applicationCount": "Pedidos de terreno: {{count}}"
+                "freeCount": "Lotes públicos livres: {{count}} ({{granted}} atribuídos, {{stopped}} recusados ou cancelados)",
+                "applicationCount": "Pedidos de terreno: {{count}} ({{granted}} atribuídos, {{stopped}} recusados ou cancelados)"
             },
             "ownershipType": {
                 "government": "Estado",

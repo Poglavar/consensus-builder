@@ -1480,17 +1480,25 @@
                 "title": "Državno zemljište",
                 "freePlots": "Slobodne državne čestice",
                 "applications": "Zahtjevi za zemljište",
-                "grantedLegend": "Dodijeljena slobodna čestica (upisana nakon objave)",
+                "grantedLegend": "Dodijeljeno ili upisano",
+                "stoppedLegend": "Odbijeno ili poništeno",
                 "loading": "Učitavanje državnog zemljišta iz katastra…",
-                "checking": "Provjera slobodnih čestica prema upisanim česticama: {{done}} / {{total}}",
                 "failed": "Katastar nije odgovorio. Pokušajte ponovno kasnije.",
                 "freeTitle": "Slobodna državna čestica {{id}}",
                 "applicationTitle": "Zahtjev za zemljište {{id}}",
-                "grantedAs": "Dodijeljena: upisana kao čestica {{number}} dana {{date}}",
+                "stage": {
+                    "pending": "U postupku",
+                    "granted": "Dodijeljeno",
+                    "registered": "Upisano",
+                    "stopped": "Odbijeno ili poništeno",
+                    "unknown": "Status nepoznat"
+                },
+                "cadastreStatus": "Status u katastru: {{label}} ({{date}})",
+                "unknownStatus": "Šifra statusa u katastru {{code}}, nema je u legendi ({{date}})",
                 "use": "Namjena: {{use}}",
                 "listedOn": "Uneseno {{date}}",
-                "freeCount": "Slobodne državne čestice: {{free}} objavljeno, {{granted}} dodijeljeno",
-                "applicationCount": "Zahtjevi za zemljište: {{count}}"
+                "freeCount": "Slobodne državne čestice: {{count}} ({{granted}} dodijeljeno, {{stopped}} odbijeno ili poništeno)",
+                "applicationCount": "Zahtjevi za zemljište: {{count}} ({{granted}} dodijeljeno, {{stopped}} odbijeno ili poništeno)"
             },
             "ownershipType": {
                 "government": "Državno",

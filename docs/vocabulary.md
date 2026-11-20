@@ -196,14 +196,20 @@ A land unit represented by a particular cadastral, tax or other parcel provider.
 
 Land a cadastre lists as formed by the state for allocation and not yet registered, such as the EGKN
 `freelands_view`. Free state plots are a map layer, not parcels: they can overlap each other and
-registered parcels. A free plot is **granted** when one parcel registered on or after its entry date
-covers at least 90% of it; the grant is inferred from that overlap, because the registry records no
-link between the two.
+registered parcels. Its state is the cadastre's procedure status (see State land status).
 
 ### Land application
 
 A plot drawn in an application for state land, such as the EGKN `reqland_view`. It records a request,
-not a right or an allocation.
+not a right or an allocation; its state is the cadastre's procedure status (see State land status).
+
+### State land status
+
+The cadastre's procedure code of a free state plot or land application, read from the record and named
+by the cadastre's own legend. Its **stage** is in procedure, granted (the akimat's resolution, a held
+auction, a signed contract or payment), registered (cadastral and rights registration done), stopped
+(refused, cancelled, failed) or unknown (a code missing from the legend). Granted is the state's
+decision to allocate; title exists only once registered.
 
 ### Parcel source
 
@@ -875,7 +881,7 @@ The agreement program's recorded transition applying its settlement conditions a
 
 ### Land event
 
-A source-attributed observation concerning land or an agreement, with a subject, event time and evidence reference. An agreement-executed event links an input parcel to the observed execution.
+A source-attributed observation concerning land or an agreement, with a subject, event time and evidence reference. An agreement-executed event links an input parcel to the observed execution. A state-land-status event records that a free state plot or land application was seen in a status (or no longer listed), dated by the record's own update time, with the stored snapshot it was seen in as evidence; it is an observation of the published cadastre, not on chain.
 
 ### Parcel history
 

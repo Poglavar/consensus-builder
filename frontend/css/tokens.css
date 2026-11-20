@@ -63,6 +63,7 @@
     --cb-map-state-free: #16a34a;
     --cb-map-state-granted: #7c3aed;
     --cb-map-state-application: #d97706;
+    --cb-map-state-stopped: #78716c;
     --cb-map-highlight-ink: #292000;
     --cb-map-pick-highlight: var(--cb-map-highlight);
     /* Designs drawn without being applied (css/game.css .design-display--*): simulation ghosts and the

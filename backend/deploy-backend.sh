@@ -79,6 +79,7 @@ npm ci
 DDL_FILES=(
     routes/area-monitor-ddl.sql
     routes/land-events-ddl.sql
+    routes/state-land-ddl.sql
     routes/lenses-ddl.sql
     routes/lens-member-ddl.sql
     routes/city-requests-ddl.sql

@@ -146,7 +146,7 @@
                 'css/utilities.css?v=20261030-use-highlight',
                 'css/photoreal-mode.css',
                 'css/ai-scene.css',
-                'css/map-shell.css?v=20261120-state-land',
+                'css/map-shell.css?v=20261120-state-land-status',
                 'css/chat-panel.css',
                 'css/activity-feed.css?v=20261027-style',
                 'css/area-monitor-list.css',
@@ -834,7 +834,11 @@
                             </div>
                             <div class="state-land-legend">
                                 <span class="state-land-swatch state-land-swatch--granted" aria-hidden="true"></span>
-                                <span data-i18n-key="sidebar.parcels.stateLand.grantedLegend">Granted free plot (registered since listing)</span>
+                                <span data-i18n-key="sidebar.parcels.stateLand.grantedLegend">Granted or registered</span>
+                            </div>
+                            <div class="state-land-legend">
+                                <span class="state-land-swatch state-land-swatch--stopped" aria-hidden="true"></span>
+                                <span data-i18n-key="sidebar.parcels.stateLand.stoppedLegend">Refused or cancelled</span>
                             </div>
                             <div id="state-land-status" class="sheet-note" role="status" aria-live="polite" hidden></div>
                         </div>

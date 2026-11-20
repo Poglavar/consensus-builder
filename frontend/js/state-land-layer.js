@@ -1,12 +1,12 @@
-// Layers sheet → Parcels → State land: draws the city's free state plots (granted ones in their own
-// colour) and land applications on the 2D map. Shown only for a city whose configuration has a
-// `stateLand` block. Data, projection and grant matching come from js/state-land.js.
+// Layers sheet → Parcels → State land: draws the city's free state plots and land applications on the
+// 2D map, each coloured by its procedure stage (granted, refused or cancelled, in procedure). Shown
+// only for a city whose configuration has a `stateLand` block. Data, projection and the status
+// tables come from js/state-land.js.
 (function (global) {
     'use strict';
 
     const model = global.StateLand;
     const PANE = 'stateLand';
-    const GRANT_CHECK_CONCURRENCY = 3;
     const ids = { group: 'state-land-layers', free: 'showStateFreePlots', applications: 'showLandApplications', note: 'state-land-status' };
     let cache = new Map(); // city id -> { free: Promise<features>, applications: Promise<features> }
     const layers = { free: null, applications: null };
@@ -28,13 +28,13 @@
         note.hidden = !text;
     }
 
-    async function readView(cfg, view, signalBox, bbox) {
+    async function readView(cfg, view, signalBox) {
         const relayBase = global.getBackendBase?.();
         if (!relayBase) throw new Error('No backend is configured for the cadastre relay.');
         const features = [];
         let startIndex = 0;
         for (let page = 0; page < model.MAX_PAGES && startIndex !== null; page += 1) {
-            const response = await fetch(model.relayUrl(relayBase, cfg, model.viewUrl(cfg, view, { startIndex, bbox })), { credentials: 'omit' });
+            const response = await fetch(model.relayUrl(relayBase, cfg, model.viewUrl(cfg, view, { startIndex })), { credentials: 'omit' });
             if (!response.ok) throw new Error(`The cadastre relay answered HTTP ${response.status}.`);
             if (signalBox.generation !== generation) throw Object.assign(new Error('superseded'), { superseded: true });
             const result = model.readPage(await response.json(), startIndex);
@@ -43,34 +43,6 @@
         }
         if (startIndex !== null) throw new Error('The state land view exceeded its page limit.');
         return features;
-    }
-
-    function intersectArea(a, b) {
-        try {
-            const overlap = global.turf.intersect(global.turf.feature(a), global.turf.feature(b));
-            return overlap ? model.planarArea(overlap.geometry) : 0;
-        } catch (error) {
-            console.warn(`[state-land] ${new Date().toISOString()} overlap test failed`, error);
-            return null;
-        }
-    }
-
-    // Each free plot is checked against the parcels registered under it since it was listed.
-    async function classifyFreePlots(cfg, plots, signalBox) {
-        const grants = new Array(plots.length);
-        let next = 0, done = 0;
-        async function worker() {
-            while (next < plots.length) {
-                const index = next++;
-                const bbox = model.nativeBbox(plots[index].geometry);
-                const registered = bbox ? await readView(cfg, 'registered', signalBox, bbox) : [];
-                grants[index] = model.grantOf(plots[index], registered, intersectArea);
-                done += 1;
-                announce(t('sidebar.parcels.stateLand.checking', { done, total: plots.length }, 'Checking free plots against registered parcels: {{done}} / {{total}}'));
-            }
-        }
-        await Promise.all(Array.from({ length: Math.min(GRANT_CHECK_CONCURRENCY, plots.length) }, worker));
-        return grants;
     }
 
     function load(kind) {
@@ -82,18 +54,15 @@
         if (entry[kind]) return entry[kind];
         const signalBox = { generation };
         const project = global.proj4(model.projectionDefinition(cfg.zone), 'EPSG:4326').forward;
-        entry[kind] = (async () => {
-            if (kind === 'applications') {
-                const rows = await readView(cfg, 'applications', signalBox);
-                return rows.map(row => model.toDisplayFeature(row, 'application', project)).filter(Boolean);
-            }
-            const plots = await readView(cfg, 'free', signalBox);
-            const grants = await classifyFreePlots(cfg, plots, signalBox);
-            return plots.map((plot, index) => model.toDisplayFeature(plot, 'free', project, grants[index])).filter(Boolean);
-        })();
+        entry[kind] = readView(cfg, kind, signalBox)
+            .then(rows => rows.map(row => model.toDisplayFeature(row, kind, project)).filter(Boolean));
         entry[kind].catch(() => { if (cache.get(key) === entry) delete entry[kind]; });
         return entry[kind];
     }
+
+    const STAGE_FALLBACK = {
+        pending: 'In procedure', granted: 'Granted', registered: 'Registered', stopped: 'Refused or cancelled', unknown: 'Status unknown'
+    };
 
     function tooltipText(properties) {
         const lines = [];
@@ -101,10 +70,15 @@
             lines.push(t('sidebar.parcels.stateLand.applicationTitle', { id: properties.id }, 'Land application {{id}}'));
         } else {
             lines.push(t('sidebar.parcels.stateLand.freeTitle', { id: properties.id }, 'Free state plot {{id}}'));
-            if (properties.status === 'granted') {
-                lines.push(t('sidebar.parcels.stateLand.grantedAs', { number: properties.parcelNumber, date: properties.registeredOn },
-                    'Granted: registered as parcel {{number}} on {{date}}'));
-            }
+        }
+        lines.push(t(`sidebar.parcels.stateLand.stage.${properties.stage}`, {}, STAGE_FALLBACK[properties.stage]));
+        // The cadastre's own wording of the status, untranslated: it is source data, not our copy.
+        if (properties.statusLabel) {
+            lines.push(t('sidebar.parcels.stateLand.cadastreStatus', { label: properties.statusLabel, date: properties.statusOn || '?' },
+                'Cadastre status: {{label}} ({{date}})'));
+        } else if (properties.statusCode !== null) {
+            lines.push(t('sidebar.parcels.stateLand.unknownStatus', { code: properties.statusCode, date: properties.statusOn || '?' },
+                'Cadastre status code {{code}}, not in its legend ({{date}})'));
         }
         if (properties.use) lines.push(t('sidebar.parcels.stateLand.use', { use: properties.use }, 'Use: {{use}}'));
         if (properties.listedOn) lines.push(t('sidebar.parcels.stateLand.listedOn', { date: properties.listedOn }, 'Entered on {{date}}'));
@@ -125,8 +99,7 @@
         remove(kind);
         layers[kind] = global.L.geoJSON({ type: 'FeatureCollection', features }, {
             pane: PANE,
-            style: feature => ({ className: `state-land-shape state-land-shape--${feature.properties.kind === 'application' ? 'application'
-                : feature.properties.status === 'granted' ? 'granted' : 'free'}` }),
+            style: feature => ({ className: `state-land-shape state-land-shape--${feature.properties.kind} state-land-shape--${feature.properties.stage}` }),
             onEachFeature: (feature, layer) => {
                 const tooltip = global.document.createElement('div');
                 for (const line of tooltipText(feature.properties)) {
@@ -148,9 +121,14 @@
         if (!shown.length && !Object.values(layers).some(Boolean)) return '';
         const counts = model.summarize(shown);
         const parts = [];
-        if (layers.free) parts.push(t('sidebar.parcels.stateLand.freeCount', { free: counts.free, granted: counts.granted },
-            'Free state plots: {{free}} listed, {{granted}} granted'));
-        if (layers.applications) parts.push(t('sidebar.parcels.stateLand.applicationCount', { count: counts.applications }, 'Land applications: {{count}}'));
+        const params = kind => {
+            const c = counts[kind] || { total: 0, granted: 0, registered: 0, stopped: 0 };
+            return { count: c.total, granted: c.granted + c.registered, stopped: c.stopped };
+        };
+        if (layers.free) parts.push(t('sidebar.parcels.stateLand.freeCount', params('free'),
+            'Free state plots: {{count}} ({{granted}} granted, {{stopped}} refused or cancelled)'));
+        if (layers.applications) parts.push(t('sidebar.parcels.stateLand.applicationCount', params('application'),
+            'Land applications: {{count}} ({{granted}} granted, {{stopped}} refused or cancelled)'));
         return parts.join(' · ');
     }
 

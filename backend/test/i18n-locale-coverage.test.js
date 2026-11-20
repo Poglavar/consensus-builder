@@ -16,6 +16,7 @@ const PLURAL_FORMS = ['zero', 'one', 'two', 'few', 'many', 'other'];
 // Keys assembled at runtime (`prefix.${value}`) cannot be checked statically. Each such prefix must be
 // listed here on purpose; a new dynamic call site with an unlisted prefix fails the test.
 const DYNAMIC_KEY_PREFIXES = [
+    'sidebar.parcels.stateLand.stage.', // state-land.js STAGES; each stage has a key in every locale
     'planDialog.',
     'sharedPlan.',
     'structureEditor.tools.', // toolLabel's declared tool names are checked in every locale below

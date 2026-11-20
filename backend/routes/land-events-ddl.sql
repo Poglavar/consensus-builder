@@ -41,6 +41,10 @@ CREATE INDEX IF NOT EXISTS land_event_subject_idx
     ON consensus.land_event (subject_id, source_observed_at DESC);
 CREATE INDEX IF NOT EXISTS land_event_type_recency_idx
     ON consensus.land_event (event_type, source_observed_at DESC);
+-- The state land observer (oracle/state-land-observer.js) reads each record's latest status event.
+CREATE INDEX IF NOT EXISTS land_event_state_land_subject_idx
+    ON consensus.land_event (subject_type, subject_id, created_at DESC)
+    WHERE event_type = 'state_land_status';
 
 DO $$
 BEGIN

@@ -1,6 +1,7 @@
 // State land layers: a cadastre's free state plots (land the state has formed for allocation) and
 // land applications (plots drawn in applications for state land). Pure request building, coordinate
-// projection and grant matching; js/state-land-layer.js fetches and draws. Kazakhstan's EGKN PKK
+// projection and the reading of each record's procedure status; js/state-land-layer.js fetches and
+// draws, and backend/oracle/state-land-observer.js records status changes. Kazakhstan's EGKN PKK
 // publishes both as WFS views in its native 6-degree Gauss–Krüger grid (zone-prefixed easting).
 (function (root, factory) {
     const api = factory();
@@ -13,15 +14,68 @@
     const PKK_VIEWER = 'https://map.gov4c.kz/egkn/';
     const PAGE_SIZE = 1000;
     const MAX_PAGES = 10;
-    // The fields each view is read with; nothing else (names of officials, applicants) is requested.
+    // The fields each view is read with; nothing else (names of officials, sellers, applicants) is
+    // requested. `status` names the view's procedure status code field.
     const VIEWS = Object.freeze({
-        free: Object.freeze({ typename: 'egkn:freelands_view', fields: ['gid', 'id', 'usedesc_ru', 'create_time'] }),
-        applications: Object.freeze({ typename: 'egkn:reqland_view', fields: ['gid', 'id', 'usedesc_ru', 'create_time', 'status_land_id'] }),
-        registered: Object.freeze({ typename: 'egkn:u_view', fields: ['gid', 'kad_nomer', 'cdate'] })
+        free: Object.freeze({ typename: 'egkn:freelands_view', status: 'auction_land_status_id',
+            fields: ['gid', 'id', 'usedesc_ru', 'create_time', 'update_time', 'auction_land_status_id'] }),
+        applications: Object.freeze({ typename: 'egkn:reqland_view', status: 'status_land_id',
+            fields: ['gid', 'id', 'usedesc_ru', 'create_time', 'update_time', 'status_land_id'] })
     });
-    // A free plot counts as granted when one parcel registered on or after the plot was listed covers
-    // at least this share of it. Registration under a new number is the only trace a grant leaves.
-    const GRANT_COVER = 0.9;
+
+    // Procedure stages: `pending` (in procedure), `granted` (the akimat's resolution, a held auction,
+    // a signed contract or payment), `registered` (cadastral and rights registration done) and
+    // `stopped` (refused, cancelled, failed). A code missing from the table is `unknown`.
+    const STAGES = Object.freeze(['pending', 'granted', 'registered', 'stopped', 'unknown']);
+    const status = (stage, label) => Object.freeze({ stage, label });
+    // The cadastre's own wording, from the GeoServer legend of each view (GetLegendGraphic, rules
+    // `[<status field> = '<code>']`, read 2026-11-20). Both views number one shared procedure, so the
+    // applications table takes 105 and 107 from the free plots' legend; their wording is the one the
+    // cadastre map's Layers panel shows for applications. Codes 2, 23, 57 and 113 occur in Alatau's
+    // applications but in neither legend, and stay unknown.
+    const STATUSES = Object.freeze({
+        free: Object.freeze({
+            20: status('pending', 'Предложение подано'),
+            25: status('stopped', 'Отказано при рассмотрении заявления'),
+            30: status('pending', 'Схема отвода согласована в ЕГКН'),
+            35: status('stopped', 'Схема отвода не согласована в ЕГКН'),
+            40: status('stopped', 'Схема отвода не согласована в МИО'),
+            45: status('pending', 'Схема отвода согласована в МИО'),
+            60: status('stopped', 'Отменен по истечению срока согласования схемы отвода Заявителем'),
+            62: status('stopped', 'Отменен в связи с истекшим сроком выставления ЗУ на торги'),
+            89: status('pending', 'Предстоящий'),
+            91: status('stopped', 'Предстоящий торг отменен'),
+            93: status('pending', 'Прием заявлений'),
+            94: status('granted', 'Торг/аукцион состоялся'),
+            95: status('stopped', 'Торг/аукцион не состоялся'),
+            96: status('stopped', 'Торг/аукцион отменен'),
+            105: status('granted', 'Договор купли-продажи/аренды подписан'),
+            107: status('granted', 'Оплата по договору осуществлена'),
+            108: status('granted', 'Договор аренды подписан'),
+            116: status('stopped', 'Отказано в постановке на кадастровый учет'),
+            120: status('registered', 'Постановка на кадастровый учет и гос.регистрацию прав осуществлена'),
+            121: status('stopped', 'Гос.регистрация не осуществлена')
+        }),
+        applications: Object.freeze({
+            20: status('pending', 'Заявление подано'),
+            25: status('stopped', 'Отказано при рассмотрении заявления'),
+            30: status('pending', 'Акт выбора согласован в ЕГКН'),
+            35: status('stopped', 'Акт выбора не согласован в ЕГКН'),
+            40: status('stopped', 'Акт выбора не согласован в МИО'),
+            45: status('pending', 'Акт выбора согласован в МИО'),
+            50: status('pending', 'Акт выбора согласован Заявителем'),
+            55: status('stopped', 'Акт выбора не согласован Заявителем'),
+            60: status('stopped', 'Отменен по истечению срока согласования схемы отвода Заявителем'),
+            80: status('pending', 'Землеустроительный проект разработан'),
+            100: status('granted', 'Постановление МИО выдано'),
+            103: status('stopped', 'Отмена решения в связи с отказом подписания Договора'),
+            105: status('granted', 'Договор купли-продажи/права аренды подписан'),
+            107: status('granted', 'Оплата по договору осуществлена'),
+            116: status('stopped', 'Отказано в постановке на кадастровый учет'),
+            120: status('registered', 'Постановка на кадастровый учет и гос.регистрацию прав осуществлена'),
+            121: status('stopped', 'Гос.регистрация не осуществлена')
+        })
+    });
 
     // The city configuration's `stateLand` block: { provider: 'kazakhstan-pkk', relaySourceId,
     // districtId, zone }. The relay source is the city's PKK parcel source, the same provider.
@@ -37,16 +91,15 @@
         return `+proj=tmerc +lat_0=0 +lon_0=${zone * 6 - 3} +k=1 +x_0=${zone * 1000000 + 500000} +y_0=0 +ellps=GRS80 +towgs84=0,0,0 +units=m +no_defs`;
     }
 
-    // One WFS page of a view in the district, optionally limited to a native-grid bbox.
-    function viewUrl(config, viewName, { startIndex = 0, bbox } = {}) {
+    // One WFS page of a view in the district.
+    function viewUrl(config, viewName, { startIndex = 0 } = {}) {
         const view = VIEWS[viewName];
         if (!view) throw new Error(`Unknown state land view: ${viewName}`);
         const params = new URLSearchParams({
             service: 'WFS', version: '2.0.0', request: 'GetFeature', typename: view.typename,
             outputFormat: 'application/json', propertyname: [...view.fields, 'geom'].join(','),
             count: String(PAGE_SIZE), startIndex: String(startIndex), sortBy: 'gid',
-            viewparams: `district_id:${config.districtId}`,
-            ...(bbox ? { bbox: bbox.join(',') } : {})
+            viewparams: `district_id:${config.districtId}`
         });
         return `${PKK_ENDPOINT}?${params}`;
     }
@@ -76,28 +129,6 @@
         return null;
     }
 
-    // Planar area in the native metric grid; holes subtract.
-    function planarArea(geometry) {
-        let total = 0;
-        for (const polygon of polygonsOf(geometry) || []) {
-            polygon.forEach((ring, index) => {
-                let twice = 0;
-                for (let k = 0; k < ring.length - 1; k += 1) twice += ring[k][0] * ring[k + 1][1] - ring[k + 1][0] * ring[k][1];
-                total += (index ? -1 : 1) * Math.abs(twice) / 2;
-            });
-        }
-        return total;
-    }
-
-    function nativeBbox(geometry) {
-        const box = [Infinity, Infinity, -Infinity, -Infinity];
-        for (const polygon of polygonsOf(geometry) || []) for (const ring of polygon) for (const [x, y] of ring) {
-            box[0] = Math.min(box[0], x); box[1] = Math.min(box[1], y);
-            box[2] = Math.max(box[2], x); box[3] = Math.max(box[3], y);
-        }
-        return box.every(Number.isFinite) ? box : null;
-    }
-
     // The calendar day a cadastre timestamp names, or null. Both views publish ISO timestamps.
     function dayOf(value) {
         if (typeof value !== 'string') return null;
@@ -105,54 +136,52 @@
         return match ? match[1] : null;
     }
 
-    // Whether a free plot has since been registered: `intersectArea(a, b)` gives the planar overlap
-    // of two native geometries. Returns { status: 'granted', parcelNumber, registeredOn } or { status: 'listed' }.
-    function grantOf(plot, registered, intersectArea) {
-        const area = planarArea(plot.geometry);
-        const listedOn = dayOf(plot.properties?.create_time);
-        if (!(area > 0) || !listedOn) return { status: 'listed' };
-        let best = null;
-        for (const parcel of registered) {
-            const registeredOn = dayOf(parcel.properties?.cdate);
-            if (!registeredOn || registeredOn < listedOn) continue;
-            const overlap = intersectArea(plot.geometry, parcel.geometry);
-            if (typeof overlap === 'number' && overlap >= GRANT_COVER * area && (!best || overlap > best.overlap)) {
-                best = { overlap, parcelNumber: String(parcel.properties.kad_nomer ?? ''), registeredOn };
-            }
-        }
-        return best ? { status: 'granted', parcelNumber: best.parcelNumber, registeredOn: best.registeredOn } : { status: 'listed' };
+    // A record's procedure status: { code, stage, label }. A record with no code is `pending` for a
+    // free plot (listed, no procedure started) and `unknown` for an application; label null when
+    // the code is not in the table.
+    function statusOf(viewName, properties) {
+        const view = VIEWS[viewName];
+        if (!view) throw new Error(`Unknown state land view: ${viewName}`);
+        const raw = properties?.[view.status];
+        const code = raw === null || raw === undefined || raw === '' ? null : Number(raw);
+        if (code === null) return { code: null, stage: viewName === 'free' ? 'pending' : 'unknown', label: null };
+        const entry = Number.isSafeInteger(code) ? STATUSES[viewName][code] : null;
+        return { code: Number.isSafeInteger(code) ? code : null, stage: entry ? entry.stage : 'unknown', label: entry ? entry.label : null };
     }
 
     // A feature in WGS84 with only the fields the map shows. `project([x, y])` converts native metres.
-    function toDisplayFeature(feature, kind, project, extra = {}) {
+    function toDisplayFeature(feature, viewName, project) {
         const polygons = polygonsOf(feature?.geometry);
         if (!polygons) return null;
         const coordinates = polygons.map(polygon => polygon.map(ring => ring.map(point => project([point[0], point[1]]))));
         const p = feature.properties || {};
+        const { code, stage, label } = statusOf(viewName, p);
         return {
             type: 'Feature',
             geometry: { type: 'MultiPolygon', coordinates },
             properties: {
-                kind, gid: p.gid, id: p.id === undefined || p.id === null ? null : String(p.id),
+                kind: viewName === 'free' ? 'free' : 'application', gid: p.gid,
+                id: p.id === undefined || p.id === null ? null : String(p.id),
                 use: typeof p.usedesc_ru === 'string' && p.usedesc_ru.trim() ? p.usedesc_ru.trim() : null,
-                listedOn: dayOf(p.create_time), ...extra
+                listedOn: dayOf(p.create_time), statusCode: code, stage, statusLabel: label, statusOn: dayOf(p.update_time)
             }
         };
     }
 
+    // Counts per kind and stage: { free: { total, pending, granted, … }, application: { … } }.
     function summarize(features) {
-        const counts = { free: 0, granted: 0, applications: 0 };
+        const counts = {};
         for (const feature of features) {
-            const { kind, status } = feature.properties;
-            if (kind === 'application') counts.applications += 1;
-            else if (status === 'granted') counts.granted += 1;
-            else counts.free += 1;
+            const { kind, stage } = feature.properties;
+            counts[kind] ||= Object.fromEntries([['total', 0], ...STAGES.map(name => [name, 0])]);
+            counts[kind].total += 1;
+            counts[kind][stage] += 1;
         }
         return counts;
     }
 
     return Object.freeze({
-        VIEWS, GRANT_COVER, PAGE_SIZE, MAX_PAGES, normalizeConfig, projectionDefinition, viewUrl, relayUrl,
-        readPage, planarArea, nativeBbox, dayOf, grantOf, toDisplayFeature, summarize
+        VIEWS, STAGES, STATUSES, PAGE_SIZE, MAX_PAGES, PKK_ENDPOINT, normalizeConfig, projectionDefinition, viewUrl,
+        relayUrl, readPage, dayOf, statusOf, toDisplayFeature, summarize
     });
 });

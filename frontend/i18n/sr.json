@@ -1480,17 +1480,25 @@
                 "title": "Državno zemljište",
                 "freePlots": "Slobodne državne parcele",
                 "applications": "Zahtevi za zemljište",
-                "grantedLegend": "Dodeljena slobodna parcela (upisana nakon objave)",
+                "grantedLegend": "Dodeljeno ili upisano",
+                "stoppedLegend": "Odbijeno ili poništeno",
                 "loading": "Učitavanje državnog zemljišta iz katastra…",
-                "checking": "Provera slobodnih parcela prema upisanim parcelama: {{done}} / {{total}}",
                 "failed": "Katastar nije odgovorio. Pokušajte ponovo kasnije.",
                 "freeTitle": "Slobodna državna parcela {{id}}",
                 "applicationTitle": "Zahtev za zemljište {{id}}",
-                "grantedAs": "Dodeljena: upisana kao parcela {{number}} dana {{date}}",
+                "stage": {
+                    "pending": "U postupku",
+                    "granted": "Dodeljeno",
+                    "registered": "Upisano",
+                    "stopped": "Odbijeno ili poništeno",
+                    "unknown": "Status nepoznat"
+                },
+                "cadastreStatus": "Status u katastru: {{label}} ({{date}})",
+                "unknownStatus": "Šifra statusa u katastru {{code}}, nema je u legendi ({{date}})",
                 "use": "Namena: {{use}}",
                 "listedOn": "Uneto {{date}}",
-                "freeCount": "Slobodne državne parcele: {{free}} objavljeno, {{granted}} dodeljeno",
-                "applicationCount": "Zahtevi za zemljište: {{count}}"
+                "freeCount": "Slobodne državne parcele: {{count}} ({{granted}} dodeljeno, {{stopped}} odbijeno ili poništeno)",
+                "applicationCount": "Zahtevi za zemljište: {{count}} ({{granted}} dodeljeno, {{stopped}} odbijeno ili poništeno)"
             },
             "ownershipType": {
                 "government": "Državno",

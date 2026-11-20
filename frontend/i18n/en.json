@@ -1472,17 +1472,25 @@
                 "title": "State land",
                 "freePlots": "Free state plots",
                 "applications": "Land applications",
-                "grantedLegend": "Granted free plot (registered since listing)",
+                "grantedLegend": "Granted or registered",
+                "stoppedLegend": "Refused or cancelled",
                 "loading": "Loading state land from the cadastre…",
-                "checking": "Checking free plots against registered parcels: {{done}} / {{total}}",
                 "failed": "The cadastre did not answer. Try again later.",
                 "freeTitle": "Free state plot {{id}}",
                 "applicationTitle": "Land application {{id}}",
-                "grantedAs": "Granted: registered as parcel {{number}} on {{date}}",
+                "stage": {
+                    "pending": "In procedure",
+                    "granted": "Granted",
+                    "registered": "Registered",
+                    "stopped": "Refused or cancelled",
+                    "unknown": "Status unknown"
+                },
+                "cadastreStatus": "Cadastre status: {{label}} ({{date}})",
+                "unknownStatus": "Cadastre status code {{code}}, not in its legend ({{date}})",
                 "use": "Use: {{use}}",
                 "listedOn": "Entered on {{date}}",
-                "freeCount": "Free state plots: {{free}} listed, {{granted}} granted",
-                "applicationCount": "Land applications: {{count}}"
+                "freeCount": "Free state plots: {{count}} ({{granted}} granted, {{stopped}} refused or cancelled)",
+                "applicationCount": "Land applications: {{count}} ({{granted}} granted, {{stopped}} refused or cancelled)"
             },
             "ownershipType": {
                 "government": "Government",

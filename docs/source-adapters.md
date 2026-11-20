@@ -127,17 +127,29 @@ the district through the parcel source's relay ([`state-land.js`](../frontend/js
 
 - **Free state plots**, `egkn:freelands_view`: land the state has formed for allocation, with its
   stated use and entry date. They are not parcels: they overlap each other (alternative cuts of the
-  same land) and sometimes registered parcels, so they never join the parcel fabric. A free plot is
-  drawn as **granted** when one registered parcel (`egkn:u_view`) created on or after the plot's
-  entry date covers at least 90% of it; the registry keeps no link between the two, and the plot
-  can stay listed after the grant. Its auction, price and seller fields were empty in both districts
-  (2026-11-20) and are not read.
+  same land) and sometimes registered parcels, so they never join the parcel fabric. Their procedure
+  status is `auction_land_status_id` (offer, scheme approvals, auction, contract, registration).
 - **Land applications**, `egkn:reqland_view`: plots drawn in applications for state land, with
-  their stated use and entry date. Their status codes are not published in a readable form.
+  their stated use, entry date and procedure status `status_land_id` (application, selection act
+  approvals, the akimat's resolution, contract, payment, registration).
 
-Only plot ids, uses, dates and geometry are requested; names of officials and applicants are not.
-The layers are read-only map overlays above the parcel canvas: while one is on, a parcel under one
-of its shapes is selected by switching the layer off.
+Each shape is coloured by its stage: in procedure (the layer's own colour), granted or registered,
+or refused or cancelled; its tooltip gives the cadastre's own wording of the status and the
+record's last update. The code tables are the cadastre's GeoServer legends of the two views
+(`GetLegendGraphic`), in `STATUSES`. The views number one shared procedure. Codes in neither legend
+(2, 23, 57 and 113 in Alatau's applications) are shown as unknown.
+
+Only plot ids, uses, statuses, dates and geometry are requested; names of officials, sellers and
+applicants are not. The layers are read-only map overlays above the parcel canvas: while one is on,
+a parcel under one of its shapes is selected by switching the layer off.
+
+**State land observer** ([`oracle/state-land-observer-job.mjs`](../backend/oracle/state-land-observer-job.mjs)):
+a pass reads both views of every configured city straight from the cadastre, stores each complete
+read without geometry in `consensus.state_land_snapshot` ([DDL](../backend/routes/state-land-ddl.sql)),
+and records every status a record reaches as a `state_land_status` land event. The cadastre publishes
+only the current state, so these events are the history. Dry run unless `--apply`; a repeated pass
+writes nothing new. A read missing more than half of the records listed before fails instead of
+recording them as removed.
 
 ## Adapter configuration examples
 

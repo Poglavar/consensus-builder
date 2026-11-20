@@ -220,17 +220,25 @@
                 "title": "Terrains publics",
                 "freePlots": "Parcelles publiques libres",
                 "applications": "Demandes de terrain",
-                "grantedLegend": "Parcelle libre attribuée (enregistrée après publication)",
+                "grantedLegend": "Attribuée ou enregistrée",
+                "stoppedLegend": "Refusée ou annulée",
                 "loading": "Chargement des terrains publics depuis le cadastre…",
-                "checking": "Comparaison des parcelles libres avec les parcelles enregistrées : {{done}} / {{total}}",
                 "failed": "Le cadastre n’a pas répondu. Réessayez plus tard.",
                 "freeTitle": "Parcelle publique libre {{id}}",
                 "applicationTitle": "Demande de terrain {{id}}",
-                "grantedAs": "Attribuée : enregistrée comme parcelle {{number}} le {{date}}",
+                "stage": {
+                    "pending": "En cours de procédure",
+                    "granted": "Attribuée",
+                    "registered": "Enregistrée",
+                    "stopped": "Refusée ou annulée",
+                    "unknown": "Statut inconnu"
+                },
+                "cadastreStatus": "Statut au cadastre : {{label}} ({{date}})",
+                "unknownStatus": "Code de statut du cadastre {{code}}, absent de sa légende ({{date}})",
                 "use": "Usage : {{use}}",
                 "listedOn": "Saisie le {{date}}",
-                "freeCount": "Parcelles publiques libres : {{free}} publiées, {{granted}} attribuées",
-                "applicationCount": "Demandes de terrain : {{count}}"
+                "freeCount": "Parcelles publiques libres : {{count}} ({{granted}} attribuées, {{stopped}} refusées ou annulées)",
+                "applicationCount": "Demandes de terrain : {{count}} ({{granted}} attribuées, {{stopped}} refusées ou annulées)"
             },
             "ownershipType": {
                 "government": "Administration publique",

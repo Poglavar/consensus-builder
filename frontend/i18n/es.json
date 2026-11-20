@@ -1392,17 +1392,25 @@
                 "title": "Suelo público",
                 "freePlots": "Parcelas estatales libres",
                 "applications": "Solicitudes de terreno",
-                "grantedLegend": "Parcela libre adjudicada (registrada después de su publicación)",
+                "grantedLegend": "Adjudicada o registrada",
+                "stoppedLegend": "Denegada o cancelada",
                 "loading": "Cargando suelo público del catastro…",
-                "checking": "Comprobando parcelas libres frente a parcelas registradas: {{done}} / {{total}}",
                 "failed": "El catastro no respondió. Inténtelo más tarde.",
                 "freeTitle": "Parcela estatal libre {{id}}",
                 "applicationTitle": "Solicitud de terreno {{id}}",
-                "grantedAs": "Adjudicada: registrada como parcela {{number}} el {{date}}",
+                "stage": {
+                    "pending": "En trámite",
+                    "granted": "Adjudicada",
+                    "registered": "Registrada",
+                    "stopped": "Denegada o cancelada",
+                    "unknown": "Estado desconocido"
+                },
+                "cadastreStatus": "Estado en el catastro: {{label}} ({{date}})",
+                "unknownStatus": "Código de estado del catastro {{code}}, ausente de su leyenda ({{date}})",
                 "use": "Uso: {{use}}",
                 "listedOn": "Registrada el {{date}}",
-                "freeCount": "Parcelas estatales libres: {{free}} publicadas, {{granted}} adjudicadas",
-                "applicationCount": "Solicitudes de terreno: {{count}}"
+                "freeCount": "Parcelas estatales libres: {{count}} ({{granted}} adjudicadas, {{stopped}} denegadas o canceladas)",
+                "applicationCount": "Solicitudes de terreno: {{count}} ({{granted}} adjudicadas, {{stopped}} denegadas o canceladas)"
             },
             "ownershipType": {
                 "government": "Gobierno",

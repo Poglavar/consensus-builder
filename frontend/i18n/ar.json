@@ -220,17 +220,25 @@
                 "title": "أراضي الدولة",
                 "freePlots": "قطع أراضي الدولة الشاغرة",
                 "applications": "طلبات الأراضي",
-                "grantedLegend": "قطعة شاغرة مُنحت (سُجّلت بعد إدراجها)",
+                "grantedLegend": "ممنوحة أو مسجلة",
+                "stoppedLegend": "مرفوضة أو ملغاة",
                 "loading": "جارٍ تحميل أراضي الدولة من السجل العقاري…",
-                "checking": "مطابقة القطع الشاغرة مع القطع المسجلة: {{done}} / {{total}}",
                 "failed": "لم يستجب السجل العقاري. حاول لاحقًا.",
                 "freeTitle": "قطعة دولة شاغرة {{id}}",
                 "applicationTitle": "طلب أرض {{id}}",
-                "grantedAs": "مُنحت: سُجّلت كقطعة {{number}} في {{date}}",
+                "stage": {
+                    "pending": "قيد الإجراء",
+                    "granted": "ممنوحة",
+                    "registered": "مسجلة",
+                    "stopped": "مرفوضة أو ملغاة",
+                    "unknown": "الحالة غير معروفة"
+                },
+                "cadastreStatus": "حالة السجل العقاري: {{label}} ({{date}})",
+                "unknownStatus": "رمز حالة السجل العقاري {{code}}، غير موجود في مفتاحه ({{date}})",
                 "use": "الاستخدام: {{use}}",
                 "listedOn": "أُدخلت في {{date}}",
-                "freeCount": "قطع الدولة الشاغرة: {{free}} مدرجة، {{granted}} ممنوحة",
-                "applicationCount": "طلبات الأراضي: {{count}}"
+                "freeCount": "قطع الدولة الشاغرة: {{count}} ({{granted}} ممنوحة، {{stopped}} مرفوضة أو ملغاة)",
+                "applicationCount": "طلبات الأراضي: {{count}} ({{granted}} ممنوحة، {{stopped}} مرفوضة أو ملغاة)"
             },
             "ownershipType": {
                 "government": "حكومة",
