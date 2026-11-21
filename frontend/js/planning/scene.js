@@ -237,7 +237,34 @@
     function loadingArcs(loading = {}, shown = {}) {
         return roles.filter(role => loading[role] && shown[role] !== false).map((role, slot) => ({ role, slot }));
     }
+    // What a cell-loaded layer keeps drawn, by the rule for everything on screen: a cell's answer stays
+    // until its replacement has landed, and goes only when the cell leaves the range around the view
+    // or its scope (source, scenario, kind) is no longer shown. A camera tilt shrinks the view's box,
+    // so the box alone is not the range: the range is the view's box grown by its own size on every side,
+    // and in 3D at least twice the camera's distance from its target around that target (reachM).
+    // drawn: Map(key → { scope, bbox, value }), updated in place; jobs: this view's cells as
+    // [{ key, scope, cell: { bbox } }]; answers: Map(key → value) landed for them.
+    // Returns the drawn answers, this view's cells first in job order, then the others kept in range.
+    function rangeAround([west, south, east, north], { centre = null, reachM = 0 } = {}) {
+        const dx = east - west, dy = north - south;
+        const grown = [west - dx, south - dy, east + dx, north + dy];
+        if (!(reachM > 0) || !Array.isArray(centre)) return grown;
+        const [lat, lng] = centre, reach = 2 * reachM;
+        const dLat = reach / 110570, dLng = reach / (111320 * Math.cos(lat * Math.PI / 180));
+        return [Math.min(grown[0], lng - dLng), Math.min(grown[1], lat - dLat), Math.max(grown[2], lng + dLng), Math.max(grown[3], lat + dLat)];
+    }
+    function retainDrawn(drawn, { jobs, answers, range }) {
+        const scopes = new Set(jobs.map(job => job.scope));
+        for (const [key, cell] of drawn) if (!scopes.has(cell.scope) || !bboxIntersects(cell.bbox, range)) drawn.delete(key);
+        for (const job of jobs) {
+            const value = answers.get(job.key);
+            if (value) drawn.set(job.key, { scope: job.scope, bbox: job.cell.bbox, value });
+        }
+        const current = new Set(jobs.map(job => job.key));
+        return [...jobs.filter(job => drawn.has(job.key)).map(job => drawn.get(job.key).value),
+            ...[...drawn].filter(([key]) => !current.has(key)).map(([, cell]) => cell.value)];
+    }
     return { roles, displayStates, choices, defaults, settings, displayPolicy, permittedRepresentationControl, sourceCatalogSignature, itemAppearance, createStore, builtGeometry, queryKey, parcelItemOf, loadingArcs,
         VIEWPORT_CELL_DEGREES, viewportCellSize, snapBbox, bboxContains, bboxIntersects, bboxAreaKm2, createViewportCache,
-        PLANNING_CELL_DEGREES, viewCells, mergeAnswers };
+        PLANNING_CELL_DEGREES, viewCells, mergeAnswers, rangeAround, retainDrawn };
 });

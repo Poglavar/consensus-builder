@@ -203,12 +203,12 @@ describe('planning view refresh', () => {
         const box = { current: view, zoom };
         const context = vm.createContext({
             URL, console: { ...console, error: vi.fn() }, Promise, Math, Array, ready: true, catalogReady: true, core: scene, request: 0, items: [], payload: null, status: 'loading', progress: null,
-            viewCache: scene.createViewportCache({ limit: 2048 }), CELL_CONCURRENCY: 2, assembled: '', failedCells: 0,
+            viewCache: scene.createViewportCache({ limit: 2048 }), CELL_CONCURRENCY: 2, assembled: '', failedCells: 0, drawn: new Map(),
             policy: () => ({ permitted: 'ghost' }), store: { get: () => state, select: vi.fn() }, selected: () => null,
             ensureSources: async () => true, sourceOptions: [descriptor], sourceId: descriptor.id, scenarioId: '', scenarioParam: () => '',
             drawMap: vi.fn(), render() {}, notifyGeometry() {}, restoreSelection() {},
             root: {
-                LoadView: { current: () => ({ mode: '2d', bbox: box.current, zoom: box.zoom,
+                LoadView: { current: () => ({ mode: box.mode || '2d', bbox: box.current, zoom: box.zoom,
                     centre: [(box.current[1] + box.current[3]) / 2, (box.current[0] + box.current[2]) / 2] }) },
                 CityConfigManager: { getCurrentCityId: () => 'zagreb' }, getBackendBase: () => 'http://api', PlanningFeed: { loadViewport }
             }
@@ -218,6 +218,33 @@ describe('planning view refresh', () => {
         return { context, loadViewport, box, asked };
     }
     const cellsOf = view => scene.viewCells(view, [(view[1] + view[3]) / 2, (view[0] + view[2]) / 2]);
+
+    it('keeps drawn what is in range of the view and drops it only when the view leaves that range', async () => {
+        const view = [15.97611, 45.80381, 15.98147, 45.80519];
+        const { context, box } = planningHarness({ view });
+        await context.refresh();
+        const ids = () => context.items.map(item => item.id).sort();
+        const whole = ids();
+        // A tilt in 3D: the view's box shrinks around its centre; nothing drawn goes.
+        const [w, s, e, n] = view, dx = (e - w) * 0.2, dy = (n - s) * 0.2;
+        box.current = [w + dx, s + dy, e - dx, n - dy];
+        box.mode = '3d';
+        await context.refresh();
+        expect(ids()).toEqual(whole);
+        // Tilted toward straight down the camera reads below zoom 16: no new loads, nothing removed.
+        box.zoom = 15.6;
+        await context.refresh();
+        expect(ids()).toEqual(whole);
+        // Far away, the old cells are out of range and go.
+        box.zoom = 19;
+        box.current = view.map((value, index) => value + (index % 2 ? 0.05 : 0.05));
+        await context.refresh();
+        expect(context.items.some(item => whole.includes(item.id))).toBe(false);
+        // The 2D map below the gate draws nothing.
+        box.mode = '2d'; box.zoom = 15;
+        await context.refresh();
+        expect(context.items).toEqual([]);
+    });
 
     it('asks for each cell of the view once, nearest its centre first; a pan asks only for new cells, a pan back for nothing', async () => {
         const view = [15.97611, 45.80381, 15.98147, 45.80519];
@@ -240,7 +267,8 @@ describe('planning view refresh', () => {
         box.current = view;
         await context.refresh();
         expect(asked().length - before).toBe(fresh.length * 2);
-        expect(context.items).toHaveLength(cells.length * 2);
+        // The panned-to cells are still in range of this view (scene.js rangeAround), so they stay drawn.
+        expect(context.items).toHaveLength((cells.length + fresh.length) * 2);
 
         // A pan inside the same cells: same answers, nothing asked and nothing redrawn.
         box.current = view.map((value, index) => value + (index % 2 ? 0.00001 : 0.0001));

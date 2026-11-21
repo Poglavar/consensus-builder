@@ -678,12 +678,22 @@
     // What is drawn: the scopes and cells of the answers assembled, and how many cells failed.
     let assembled = '', failedCells = 0;
     function invalidate() { assembled = ''; failedCells = 0; }
+    // The cells drawn now (scene.js retainDrawn): a cell stays until its replacement lands or it
+    // leaves the range around the view, so a camera tilt or pan never takes down what is in range.
+    const drawn = new Map();
     async function refresh({ force = false } = {}) {
         if (!ready || !catalogReady || policy().permitted === 'off' && store.get().zoningAreas === 'off') return;
         // The 2D map's view in 2D; in 3D, the 2D view the camera stands for, around its target (load-view.js).
         const view = root.LoadView.current();
+        // In 3D a camera tilted toward straight down reads as a lower zoom: what is drawn stays (it is
+        // all still in range), only new cells stop loading. The 2D map below the gate draws none.
+        if (view && view.mode === '3d' && view.zoom < 16 && drawn.size) {
+            viewCache.abortExcept([]); request++;
+            if (status === 'loading') status = 'ready';
+            render(); return;
+        }
         if (!view || view.zoom < 16) {
-            viewCache.abortExcept([]); request++; invalidate(); items = []; status = 'zoom'; payload = null;
+            viewCache.abortExcept([]); request++; invalidate(); drawn.clear(); items = []; status = 'zoom'; payload = null;
             if (!selected()) store.select(null);
             drawMap(); render(); notifyGeometry(); return;
         }
@@ -711,8 +721,9 @@
         });
         const composition = jobs.map(job => job.key).sort().join(';');
         let failed = 0;
+        const range = core.rangeAround(bbox, view.mode === '3d' ? { centre: view.centre, reachM: view.reachM } : {});
         const assemble = () => {
-            const ordered = jobs.map(job => answers.get(job.key)).filter(Boolean);
+            const ordered = core.retainDrawn(drawn, { jobs, answers, range });
             // Envelopes lead: their answer says how the status line counts.
             const merged = core.mergeAnswers([...ordered.filter(answer => answer.envelopes), ...ordered.filter(answer => !answer.envelopes)], { joinAreas });
             payload = merged || { sources: descriptor ? [descriptor] : [], summaries: [], unavailable: [], omitted: 0, items: [] };
@@ -769,10 +780,10 @@
         }
         if (firstError) console.error(`[planning] ${failed} of ${jobs.length} cells could not be loaded`, firstError);
         // Nothing loaded: a source refusing every cell (400) is asked for less by zooming in.
+        // What was drawn in range stays; with nothing drawn the layer is empty.
         if (failed && failed === jobs.length) {
-            invalidate(); items = []; payload = null; status = firstError?.status === 400 ? 'zoom' : 'error';
-            if (!selected()) store.select(null);
-            drawMap(); render(); notifyGeometry(); return;
+            invalidate(); status = firstError?.status === 400 ? 'zoom' : 'error';
+            assemble(); return;
         }
         status = 'ready'; assemble();
         restoreSelection();

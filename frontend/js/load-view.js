@@ -38,8 +38,10 @@
         const halfW = Math.max(viewport.widthPx * metresPerPixel / 2, MIN_HALF_SIDE_M);
         const halfH = Math.max(viewport.heightPx * metresPerPixel / 2, MIN_HALF_SIDE_M);
         const dLat = halfH / METRES_PER_DEG_LAT, dLng = halfW / (METRES_PER_DEG_LNG * cos);
+        // reachM: the camera's distance from its target. A tilted camera sees ground well beyond the
+        // box, so a layer keeping what it drew measures its range by this, not by the box alone.
         return { mode: '3d', bbox: [lng - dLng, lat - dLat, lng + dLng, lat + dLat], centre: [lat, lng],
-            zoom: Math.round(Math.log2(METRES_PER_PIXEL_Z0 * cos / metresPerPixel) * 1000) / 1000 };
+            zoom: Math.round(Math.log2(METRES_PER_PIXEL_Z0 * cos / metresPerPixel) * 1000) / 1000, reachM: view.range };
     }
     // The 2D zoom on leaving 3D: the camera's, but never outside the 2D parcel zoom range when
     // parcels were showing as 3D was entered. Below that range 2D switches parcels and buildings
