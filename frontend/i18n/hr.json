@@ -230,6 +230,7 @@
         "software": "Softver otvorenog koda",
         "photo": "Fotografski prikaz",
         "buildings": "3D zgrade",
+        "ground": "3D tlo",
         "buildingSource": "Zgrade",
         "none": "Za ovaj grad nije konfiguriran izvor čestica.",
         "description": "Zasluge za kartu i podatke trenutačnog grada te softver koji ova aplikacija koristi.",

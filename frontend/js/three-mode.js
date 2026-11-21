@@ -7621,6 +7621,8 @@
         if (!groundCover && window.__threeGroundCover) groundCover = window.__threeGroundCover.create({ THREE });
         return !!groundCover;
     }
+    // The credit of the cover on screen, for Settings → Sources & software (ui/map-credits.js).
+    window.__threeModeGroundCredit = () => (isActive && groundCover?.current()?.attribution) || null;
 
     function showGroundCover() {
         if (!nearbyGround || !origin3857 || !ensureGroundCover()) return;

@@ -186,6 +186,8 @@
             if (cityBuildings.length) row(tr('buildingSource', 'Buildings'), cityBuildings);
             const buildings = doc.querySelector('.three-mode-source-note:not([hidden])');
             if (buildings?.textContent) row(tr('buildings', '3D buildings'), [buildings.textContent]);
+            const ground = root.__threeModeGroundCredit?.();
+            if (ground) row(tr('ground', '3D ground'), [ground]);
             const photo = doc.querySelector('.photoreal-attribution.visible');
             if (photo) row(tr('photo', 'Photo view'), [photo.textContent || 'Google']);
             row(tr('software', 'Open-source software'), []);

@@ -54,3 +54,22 @@ for (const width of [1280, 390, 320]) {
     await expect(panel).toBeVisible();
   });
 }
+
+// The model view's ground cover is credited under Settings → Sources & software, never on the map
+// (ui/map-credits.js reads three-mode.js's __threeModeGroundCredit while the model view shows a cover).
+test('Sources & software credits the 3D ground while the model view shows it', async ({ mockApi: page }) => {
+  await openCity(page);
+  await page.evaluate(() => {
+    (window as any).__threeModeGroundCredit = () => '© <a href="https://esa-worldcover.org/">ESA WorldCover project 2021</a> / '
+      + 'Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium';
+  });
+  await page.locator('#settings-button').click();
+  await page.locator('[data-settings-reference="credits"]').click();
+  const details = page.locator('.settings-reference-dialog #map-credits-details');
+  const title = details.locator('dt', { hasText: '3D ground' });
+  await expect(title).toHaveCount(1);
+  const credit = title.locator('xpath=following-sibling::dd[1]');
+  await expect(credit).toContainText('processed by ESA WorldCover consortium');
+  await expect(credit.getByRole('link', { name: 'ESA WorldCover project 2021' })).toHaveAttribute('href', 'https://esa-worldcover.org/');
+  await expect(page.locator('.map-credits-control')).not.toContainText('WorldCover');
+});

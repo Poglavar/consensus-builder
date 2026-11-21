@@ -89,7 +89,10 @@ colour, so Alatau's steppe is dry brown and Jarun is green.
   rock, ice or wetland (the OpenFreeMap landcover tiles the green layer reads), and per look the
   median colour and vegetation index (NDVI) of the ESA WorldCover 2021 Sentinel-2 annual composite
   over its cells. Both are CC BY 4.0 Cloud-Optimized GeoTIFFs on ESA's public buckets, read with
-  range requests on the server (the buckets send no CORS). A missing tile is open sea: no look.
+  range requests on the server (the buckets send no CORS), their deflate tiles inflated in two
+  worker threads so a read never holds up the API's other requests. A missing tile is open sea: no
+  look. Its `attribution` (ESA's own wording, CC BY 4.0, and OpenStreetMap) shows under Settings →
+  Sources & software as "3D ground" while the model view shows a cover, never on the map.
 - `frontend/js/three-ground-cover.js`: a shader patch on the pavement plane and on the parcel slabs
   (`plot`: a shade lighter, plain instead of paved where built-up). Two small RGBA textures carry
   per cell the weights of five patterns (grass, shrub, bare soil, rock, paving) and the colour;
@@ -97,7 +100,8 @@ colour, so Alatau's steppe is dry brown and Jarun is green.
   open ground meet along a crisp, wandering edge. A broad 35–90 m mottle keeps open ground from
   reading as one tone. Vegetation goes from its sampled colour (dry) to its own green as NDVI rises,
   since an annual median is dull. Before the cover arrives, and where it is silent, the ground is
-  grass and shrubs; beyond the read area it is the cover's mean.
+  grass and shrubs; beyond the read area it is the cover's mean. The patterns' value noise reads a
+  generated 512 × 512 lattice texture (one fetch per value) instead of hashing four corners per call.
 - Foot ways: OSM footways, paths, tracks, steps, cycleways and pedestrian ways become flat strips
   (`paths` in `ground-geometry.js`, one draw call per surface): paved, gravel or trodden earth from
   their `surface` tag, a track's grade, or the class. Earth and gravel are light, as worn tracks
@@ -108,13 +112,15 @@ colour, so Alatau's steppe is dry brown and Jarun is green.
 |---|---|
 | Draw calls added | up to 3 (one per foot-way surface) |
 | Request | one GET per scene area, cached in the server process; ~2–4 s uncached from a laptop |
-| Payload | Alatau 3.4 × 2.2 km: 170 × 110 cells, ~25 KB of looks |
-| Foot ways (Alatau, 2.5 km view) | 39 km, 1,290 triangles |
+| Payload | at most 256 × 256 cells; Alatau 241 × 201 cells, ~83 KB JSON |
+| Foot ways (Alatau, 2.5 km view) | 34–39 km, ~1,100–1,300 triangles; +3 ms to the ground build |
+| Cover upload (main thread) | 2–3 ms per new payload (65k cells); the same payload again only moves its box |
+| Ground shader (GPU, 3 Mpx, M1 Pro) | ~0.9 ms a frame (park lawn shader 0.8, plain pavement 0.16) |
+| Shader compile | ~200 ms the first time on a device, then from the browser's shader cache |
+| Server event loop | ≤ ~25 ms blocked per read (vector tiles, palette); the first read after start also loads geotiff |
 
 ## Open
 
-- The model view credits no data source on screen (OpenStreetMap neither); ESA's CC BY 4.0 asks
-  for credit. The payload carries the line (`attribution`).
 - User review of the kerb (0.15 m, colour), the line style (white only, dashed separators, solid
   centre line) and the slab size (1.5 m).
 

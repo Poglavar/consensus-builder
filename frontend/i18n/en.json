@@ -230,6 +230,7 @@
         "software": "Open-source software",
         "photo": "Photo view",
         "buildings": "3D buildings",
+        "ground": "3D ground",
         "buildingSource": "Buildings",
         "none": "No parcel source configured for this city.",
         "description": "Map and data credits for the current city, plus the software used by this app.",

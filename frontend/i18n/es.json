@@ -230,6 +230,7 @@
         "software": "Software de código abierto",
         "photo": "Vista fotográfica",
         "buildings": "Edificios 3D",
+        "ground": "Suelo 3D",
         "buildingSource": "Edificios",
         "none": "No hay una fuente de parcelas configurada para esta ciudad.",
         "description": "Créditos del mapa y los datos de la ciudad actual, además del software utilizado por esta aplicación.",

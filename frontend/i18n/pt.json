@@ -3700,6 +3700,7 @@
         "software": "Software de código aberto",
         "photo": "Vista fotográfica",
         "buildings": "Edifícios 3D",
+        "ground": "Solo 3D",
         "buildingSource": "Edifícios",
         "none": "Não existe nenhuma fonte de parcelas configurada para esta cidade.",
         "description": "Créditos do mapa e dos dados da cidade atual, bem como do software utilizado por esta aplicação.",

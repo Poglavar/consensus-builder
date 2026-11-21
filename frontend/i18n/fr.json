@@ -3700,6 +3700,7 @@
         "software": "Logiciels libres",
         "photo": "Vue photo",
         "buildings": "Bâtiments 3D",
+        "ground": "Sol 3D",
         "buildingSource": "Bâtiments",
         "none": "Aucune source de parcelles n’est configurée pour cette ville.",
         "description": "Crédits de la carte et des données pour la ville actuelle, ainsi que des logiciels utilisés par cette application.",

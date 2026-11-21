@@ -12,7 +12,7 @@ test('the ground shows its cover: default grass, then sand and paving per cell, 
   await page.setContent('<!doctype html><body></body>');
   await page.addScriptTag({ type: 'module', content: "import * as THREE from 'http://ground.test/three/three.module.js'; window.THREE = THREE;" });
   await page.waitForFunction(() => !!(window as any).THREE);
-  for (const file of ['life/ground-geometry', 'three-ground', 'three-grass', 'three-ground-cover']) {
+  for (const file of ['life/ground-geometry', 'three-ground', 'three-ground-cover']) {
     await page.addScriptTag({ path: path.resolve(__dirname, `../../frontend/js/${file}.js`) });
   }
   const result = await page.evaluate(() => {
@@ -56,14 +56,19 @@ test('the ground shows its cover: default grass, then sand and paving per cell, 
     const LOOKS = ['none', 'grass', 'shrub', 'crop', 'bare', 'sand', 'rock', 'built', 'forest', 'wetland', 'snow'];
     const ids: number[] = [];
     for (let row = 0; row < 4; row++) for (let col = 0; col < 4; col++) ids.push(col < 2 ? 5 : 7);
-    const shown = cover.setCover({
+    const payload = {
       bbox: [-400, -400, 400, 400], cols: 4, rows: 4, lookNames: LOOKS,
       looks: btoa(String.fromCharCode(...ids)),
-      palette: { sand: { rgb: [205, 160, 105], ndvi: 0.1, samples: 100 } }
-    }, (lng: number, lat: number) => [lng, lat]);
+      palette: { sand: { rgb: [205, 160, 105], ndvi: 0.1, samples: 100 } },
+      attribution: '© ESA WorldCover project 2021'
+    };
+    const shown = cover.setCover(payload, (lng: number, lat: number) => [lng, lat]);
     const after = pixels();
+    // The ground rebuilt in the same place: the same payload keeps its textures.
+    const textures = cover.uniforms.uCoverMix.value;
+    cover.setCover(payload, (lng: number, lat: number) => [lng, lat]);
     return {
-      errors, shown: !!shown,
+      errors, shown: !!shown, credit: shown?.attribution, reused: cover.uniforms.uCoverMix.value === textures,
       defaultGround: at(before, -100, -100),
       west: at(after, -150, -100), east: at(after, 150, -100),
       track: at(after, -150, 50), besideTrack: at(after, -150, 30)
@@ -71,6 +76,8 @@ test('the ground shows its cover: default grass, then sand and paving per cell, 
   });
   expect(result.errors).toEqual([]);
   expect(result.shown).toBe(true);
+  expect(result.credit).toBe('© ESA WorldCover project 2021');
+  expect(result.reused).toBe(true);
   // Grass and shrubs: green before the cover is known.
   expect(result.defaultGround[1]).toBeGreaterThan(result.defaultGround[0] + 10);
   expect(result.defaultGround[1]).toBeGreaterThan(result.defaultGround[2] + 20);

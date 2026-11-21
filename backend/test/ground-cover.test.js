@@ -4,11 +4,12 @@
 // sample, and the texture bytes a payload becomes).
 import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
-import { mapTiles, colourTiles, gridFor, createGroundCoverProvider, LOOKS, MAX_CELLS } from '../decor/ground-cover.js';
+import { mapTiles, colourTiles, gridFor, createGroundCoverProvider, LOOKS, MAX_CELLS, ATTRIBUTION } from '../decor/ground-cover.js';
 import { setupDecorRoute } from '../routes/decor.js';
 
 const require = createRequire(import.meta.url);
 const Cover = require('../../frontend/js/three-ground-cover.js');
+const { creditParts } = require('../../frontend/js/ui/map-credits.js');
 
 const box = (w, s, e, n) => ({ type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] });
 const LOOK = Object.fromEntries(LOOKS.map((name, id) => [name, id]));
@@ -105,6 +106,18 @@ describe('the ground cover provider', () => {
     });
 });
 
+describe('the credit', () => {
+    it('is ESA\'s own wording with its licence and OpenStreetMap, as links Settings keeps', () => {
+        const parts = creditParts(ATTRIBUTION);
+        expect(parts.filter(part => part.url).map(part => [part.text, part.url])).toEqual([
+            ['ESA WorldCover project 2021', 'https://esa-worldcover.org/'],
+            ['CC BY 4.0', 'https://creativecommons.org/licenses/by/4.0/'],
+            ['OpenStreetMap', 'https://www.openstreetmap.org/copyright']
+        ]);
+        expect(parts.map(part => part.text).join(' ')).toContain('Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium');
+    });
+});
+
 describe('GET /decor/ground', () => {
     function app() {
         const routes = {};
@@ -165,5 +178,15 @@ describe('the renderer: colours and texture bytes', () => {
         expect(data.fallback.mix[4]).toBeCloseTo(0.5, 6);
         expect(data.fallback.color).toEqual([200, 180, 140].map((value, i) => Math.round((value + Cover.COLORS.built[i]) / 2)));
         expect(Cover.coverData({ ...payload, looks: 'AA==' })).toBeNull();
+    });
+
+    it('reads its pattern noise from a fixed lattice, the same on every device', () => {
+        const a = Cover.noiseBytes(), b = Cover.noiseBytes();
+        expect(a).toHaveLength(Cover.NOISE_SIZE * Cover.NOISE_SIZE);
+        expect(Buffer.from(a).equals(Buffer.from(b))).toBe(true);
+        const mean = a.reduce((sum, value) => sum + value, 0) / a.length;
+        expect(mean).toBeGreaterThan(120);
+        expect(mean).toBeLessThan(135);
+        expect(new Set(a).size).toBeGreaterThan(250);
     });
 });
