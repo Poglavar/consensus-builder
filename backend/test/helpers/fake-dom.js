@@ -245,6 +245,13 @@ class FakeElement {
     }
     replaceChildren(...nodes) { [...this.childNodes].forEach(node => this.removeChild(node)); this.append(...nodes); }
     insertAdjacentElement(_where, element) { return this.parentNode ? this.parentNode.appendChild(element) : null; }
+    // Inserts the nodes right after this one in its parent, as Element.after does.
+    after(...nodes) {
+        const parent = this.parentNode;
+        if (!parent) return;
+        const next = parent.childNodes[parent.childNodes.indexOf(this) + 1] || null;
+        nodes.forEach(node => (next ? parent.insertBefore(node, next) : parent.appendChild(node)));
+    }
     remove() { if (this.parentNode) this.parentNode.removeChild(this); }
     contains(node) {
         for (let current = node; current; current = current.parentNode) if (current === this) return true;

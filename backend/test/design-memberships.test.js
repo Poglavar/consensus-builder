@@ -296,6 +296,28 @@ describe('read-only parent inspection', () => {
         expect(host.querySelector('.click-stack__share-plan')).toBeTruthy();
     });
 
+    it('offers Apply for a plan the membership lookup found, once its content has loaded', async () => {
+        const doc = makeDocument(), host = doc.createElement('section'); doc.body.appendChild(host);
+        const f = fixture();
+        f.win.ClickStackRelations = { renderGroup: vi.fn(() => doc.createElement('div')) };
+        f.win.BusyControl = { isBusy: () => false, track: (_button, run) => run() };
+        f.win.NamedPlans.list = () => [];
+        f.win.PlanWorkspace = { appliedMembers: vi.fn(() => null), standingMembers: vi.fn(() => []), apply: vi.fn(async () => ({})) };
+        let release;
+        const session = { groups: { plans: { loading: false, error: false, nextOffset: null } },
+            details: vi.fn(() => new Promise(resolve => { release = resolve; })) };
+        // The lookup's row: cid and title, no content.
+        mountSection(host, 'plans', { id: 'plan-cid', cid: 'plan-cid', label: 'Tower plan', title: 'Tower plan', draft: false }, session, f.win);
+        expect(host.querySelector('.click-stack__apply-plan')).toBeNull();
+        release({ content: { title: 'Tower plan', designCids: ['d-1'] }, members: [], features: [] });
+        await vi.waitFor(() => expect(host.querySelector('.click-stack__apply-plan')).toBeTruthy());
+        expect(f.win.PlanWorkspace.appliedMembers).toHaveBeenCalledWith(expect.objectContaining({ cid: 'plan-cid', published: true,
+            content: expect.objectContaining({ designCids: ['d-1'] }) }));
+        expect(host.querySelector('.click-stack__unapply-plan')).toBeNull();
+        host.querySelector('.click-stack__apply-plan').click();
+        await vi.waitFor(() => expect(f.win.PlanWorkspace.apply).toHaveBeenCalledWith(expect.objectContaining({ cid: 'plan-cid' })));
+    });
+
     it('scopes agreements to the selected exact plan and refreshes local saves', async () => {
         const agreements = [{ id: 'a1', title: 'First terms', plan: { cid: 'plan-one' } }, { id: 'a2', title: 'Other terms', plan: { cid: 'plan-two' } }];
         const f = fixture({ agreements });

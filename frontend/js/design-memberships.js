@@ -305,13 +305,16 @@
             }));
             // Set for a plan below; run once the card's other actions are in place.
             let syncMapActions = null;
-            if (kind === 'plans' && instance.content) {
+            if (kind === 'plans') {
                 // Apply while a member is off the map, Unapply while one is on it: each is there
                 // only when it has something to do, also after the other one (or a notice's Undo) ran.
                 // Apply sits beside Share, where a previewed plan needs it; Unapply closes the row
                 // of actions, so Share and Create agreement stay a pair.
                 let applyPlan = null, unapplyPlan = null, shown = null;
                 syncMapActions = () => {
+                    // A plan the membership lookup found arrives as a row (cid, title): its designs are
+                    // known once its content comes with the card's details (load below), which syncs again.
+                    if (!instance.content) return;
                     // A button doing its work stays as it is; it syncs when the work has landed.
                     if (win.BusyControl.isBusy(applyPlan) || win.BusyControl.isBusy(unapplyPlan)) return;
                     const needsApply = !win.PlanWorkspace.appliedMembers(planRow());
@@ -398,13 +401,18 @@
             host.appendChild(actions);
             host.appendChild(analysisPage);
             const strip = node('div', 'click-stack__schedule');
-            strip.appendChild(scheduleButton);
-            if (instance.content?.schedule && win.PlanDialog?.scheduleStrip) {
-                const titles = new Map((instance.localDesigns || []).flatMap(record => {
-                    try { return [[win.DesignRecord.cidOf(record), record.title]]; } catch (_) { return []; }
-                }));
-                strip.appendChild(win.PlanDialog.scheduleStrip(instance.content, { titles, onPick: editSchedule }));
-            }
+            // The plan's schedule shows once its content is known: at once for a saved plan, after the
+            // details load for one the membership lookup found.
+            const renderSchedule = () => {
+                strip.replaceChildren(scheduleButton);
+                if (instance.content?.schedule && win.PlanDialog?.scheduleStrip) {
+                    const titles = new Map((instance.localDesigns || []).flatMap(record => {
+                        try { return [[win.DesignRecord.cidOf(record), record.title]]; } catch (_) { return []; }
+                    }));
+                    strip.appendChild(win.PlanDialog.scheduleStrip(instance.content, { titles, onPick: editSchedule }));
+                }
+            };
+            renderSchedule();
             host.appendChild(strip);
             const details = node('div', 'click-stack__membership-details');
             host.appendChild(details);
@@ -414,6 +422,7 @@
                     const data = session ? await session.details(kind, instance) : await inspect(kind, instance, win);
                     if (!host.isConnected) return;
                     Object.assign(instance, data);
+                    if (kind === 'plans') { syncMapActions?.(); renderSchedule(); }
                     onFocus(instance);
                     details.replaceChildren();
                     details.appendChild(win.ClickStackRelations.renderGroup({ kind: 'designs', relation: 'includedDesigns', instances: data.members, count: data.members.length }, doc, win));
