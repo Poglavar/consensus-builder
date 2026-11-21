@@ -1,6 +1,9 @@
 // The generic authoring protocol: RFC 6902 patches plus metric geometry operations at JSON Pointers.
 import * as z from 'zod/v4';
-const path = z.string().max(1000).describe('RFC 6901 JSON Pointer into canonical authored content; /geometry/buildings/0/properties/height for example.');
+// Described once on the list rather than on each of its 16 pointers: every tool catalogue that
+// carries these operations (ugt_edit_design, and ugt_edit_plan's edit operation) is sent to the chat
+// model on each turn.
+const path = z.string().max(1000);
 const point = z.tuple([z.number().min(-180).max(180), z.number().min(-85).max(85)]);
 export const editOperations = z.array(z.discriminatedUnion('op', [
     z.object({ op: z.literal('add'), path, value: z.unknown() }),
@@ -15,4 +18,5 @@ export const editOperations = z.array(z.discriminatedUnion('op', [
     z.object({ op: z.literal('difference'), path, from: path }),
     z.object({ op: z.literal('intersection'), path, from: path }),
     z.object({ op: z.literal('buffer'), path, metres: z.number().min(-1000).max(1000) })
-])).min(1).max(200);
+])).min(1).max(200)
+    .describe('path and from are RFC 6901 JSON Pointers into canonical authored content; /geometry/buildings/0/properties/height for example.');
