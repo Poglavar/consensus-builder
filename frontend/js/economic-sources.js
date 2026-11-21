@@ -6,11 +6,15 @@
     if (root) root.EconomicSources = api;
 })(typeof window !== 'undefined' ? window : null, function () {
     'use strict';
-    const METRICS = Object.freeze({ land: 'm2-land', roadLand: 'm2-land', sale: 'm2-floor', construction: 'm2-floor' });
+    // Rent is per m² of floor area per month, the way rents are quoted and published.
+    const METRICS = Object.freeze({ land: 'm2-land', roadLand: 'm2-land', sale: 'm2-floor', construction: 'm2-floor', rent: 'm2-floor-month' });
     const BASES = Object.freeze(['assumption', 'policy-appraisal', 'market', 'construction-cost']);
+    // The editable starting assumptions in a city's own currency. Rent 15 a month is a 4.5 % gross
+    // yield on the 4,000 sale price.
     const FLOOR_PRICES = Object.freeze({
         sale: Object.freeze({ perSqm: 4000, min: 500, max: 15000, step: 100 }),
-        construction: Object.freeze({ perSqm: 2000, min: 500, max: 8000, step: 100 })
+        construction: Object.freeze({ perSqm: 2000, min: 500, max: 8000, step: 100 }),
+        rent: Object.freeze({ perSqm: 15, min: 1, max: 100, step: 1 })
     });
     const fiat = code => typeof code === 'string' && /^[A-Z]{3}$/.test(code) && !['ETH', 'SOL'].includes(code);
     function sourceUrl(value) {
@@ -33,7 +37,7 @@
         if (!source || source.adapter !== 'rate-table' || source.version !== 1
             || typeof source.id !== 'string' || !/^[a-zA-Z0-9._-]{1,100}$/.test(source.id)
             || typeof source.name !== 'string' || !source.name.trim() || source.name.length > 160
-            || !Array.isArray(source.rates) || !source.rates.length || source.rates.length > 4) {
+            || !Array.isArray(source.rates) || !source.rates.length || source.rates.length > Object.keys(METRICS).length) {
             throw new Error('Invalid economic source descriptor.');
         }
         const seen = new Set();
@@ -43,7 +47,7 @@
                 || typeof row.amount !== 'number' || !Number.isFinite(row.amount) || row.amount < 0
                 || !BASES.includes(row.basis)
                 || row.metric === 'construction' && !['assumption', 'construction-cost'].includes(row.basis)
-                || row.metric === 'sale' && !['assumption', 'market'].includes(row.basis)
+                || ['sale', 'rent'].includes(row.metric) && !['assumption', 'market'].includes(row.basis)
                 || row.metric !== 'construction' && row.basis === 'construction-cost') {
                 throw new Error('Invalid economic rate, unit or basis.');
             }
@@ -75,7 +79,7 @@
         'scenario-assumptions': (source, context) => {
             const currency = context.city?.currency?.code;
             if (!fiat(currency)) return [];
-            const rates = ['sale', 'construction'].map(metric => ({ metric, unit: METRICS[metric],
+            const rates = ['sale', 'construction', 'rent'].map(metric => ({ metric, unit: METRICS[metric],
                 amount: FLOOR_PRICES[metric].perSqm, currency, basis: 'assumption' }));
             if (currency === 'EUR') rates.push(...[['land', 133], ['roadLand', 100]].map(([metric, amount]) =>
                 ({ metric, unit: METRICS[metric], amount, currency, basis: 'assumption' })));

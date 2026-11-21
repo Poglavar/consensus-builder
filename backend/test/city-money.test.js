@@ -115,18 +115,26 @@ describe('new floor area at two prices', () => {
 
     it('values it, costs it, and takes the value of the floor area it replaces off the profit', () => {
         expect(newBuildMoney({ floorAreaM2: 1000, replacedFloorAreaM2: 200, salePerM2: 4000, constructionPerM2: 2000 }))
-            .toEqual({ value: 4000000, constructionCost: 2000000, replacedValue: 800000, profit: 1200000 });
+            .toMatchObject({ value: 4000000, constructionCost: 2000000, replacedValue: 800000, profit: 1200000 });
         expect(newBuildMoney({ floorAreaM2: 1000, replacedFloorAreaM2: 0, salePerM2: 4000, constructionPerM2: 2000 }).profit).toBe(2000000);
     });
 
     it('keeps what depends on a missing price or area unknown instead of counting it as zero', () => {
-        expect(newBuildMoney({ floorAreaM2: 1000, salePerM2: 4000, constructionPerM2: 2000 }))
-            .toEqual({ value: 4000000, constructionCost: 2000000, replacedValue: null, profit: null });
+        expect(newBuildMoney({ floorAreaM2: 1000, salePerM2: 4000, constructionPerM2: 2000, rentPerM2Month: 15 }))
+            .toEqual({ value: 4000000, constructionCost: 2000000, replacedValue: null, profit: null, annualRent: 180000, rentYieldOnCost: null });
         expect(newBuildMoney({ floorAreaM2: 1000, replacedFloorAreaM2: 0, salePerM2: 4000, constructionPerM2: null }))
-            .toEqual({ value: 4000000, constructionCost: null, replacedValue: 0, profit: null });
-        expect(newBuildMoney({ floorAreaM2: null, replacedFloorAreaM2: 0, salePerM2: 4000, constructionPerM2: 2000 }))
-            .toEqual({ value: null, constructionCost: null, replacedValue: 0, profit: null });
+            .toEqual({ value: 4000000, constructionCost: null, replacedValue: 0, profit: null, annualRent: null, rentYieldOnCost: null });
+        expect(newBuildMoney({ floorAreaM2: null, replacedFloorAreaM2: 0, salePerM2: 4000, constructionPerM2: 2000, rentPerM2Month: 15 }))
+            .toEqual({ value: null, constructionCost: null, replacedValue: 0, profit: null, annualRent: null, rentYieldOnCost: null });
         expect(newBuildMoney({ floorAreaM2: 1000, replacedFloorAreaM2: 0, salePerM2: -1, constructionPerM2: 2000 }).value).toBeNull();
+    });
+
+    it('rents it by the month and yields the rent on the construction cost and the value it replaces', () => {
+        const money = newBuildMoney({ floorAreaM2: 1000, replacedFloorAreaM2: 200, salePerM2: 4000, constructionPerM2: 2000, rentPerM2Month: 15 });
+        expect(money.annualRent).toBe(1000 * 15 * 12);
+        expect(money.rentYieldOnCost).toBeCloseTo(180000 / (2000000 + 800000));
+        // Nothing spent: no yield, rather than an infinite one.
+        expect(newBuildMoney({ floorAreaM2: 1000, replacedFloorAreaM2: 0, salePerM2: 4000, constructionPerM2: 0, rentPerM2Month: 15 }).rentYieldOnCost).toBeNull();
     });
 
     it('is on every city view, which is what the dialogs and the MCP hold', () => {

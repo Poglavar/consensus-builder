@@ -72,3 +72,14 @@ describe('economic source settings storage', () => {
         expect(EconomicSourceSettings.choiceForCity(city.id, global)).toBeNull();
     });
 });
+
+describe('a local rent', () => {
+    it('is saved and read back per city like any other rate', () => {
+        const global = store();
+        const city = { id: 'astana', currency: { code: 'KZT' } };
+        EconomicSourceSettings.saveChoice(city, { version: 1, id: 'local-rates', name: 'My rents', adapter: 'rate-table',
+            rates: [{ metric: 'rent', unit: 'm2-floor-month', amount: 5200, currency: 'KZT', basis: 'assumption' }] }, global);
+        expect(EconomicSourceSettings.choiceForCity('astana', global).rates).toEqual([
+            { metric: 'rent', unit: 'm2-floor-month', amount: 5200, currency: 'KZT', basis: 'assumption', asOf: null, scope: null }]);
+    });
+});

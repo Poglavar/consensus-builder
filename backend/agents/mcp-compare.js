@@ -22,16 +22,13 @@ export function authoredAreas(designs) {
     let floorAreaM2 = 0;
     const green = [], roads = [];
     for (const design of designs) {
-        const buildings = design.geometry?.buildings || [];
+        const buildings = planYield.buildingFeaturesOf(design);
         if (design.buildingProposal && !buildings.length) floorAreaM2 = null;
-        for (const building of buildings) {
-            const explicitFloors = building.properties?.floors ?? design.buildingProposal?.parameters?.floors;
-            const floorHeight = building.properties?.urbanRule?.floorHeightM;
-            const height = building.properties?.height;
-            const floors = explicitFloors ?? (finite(height) && finite(floorHeight) && floorHeight > 0 ? Math.floor(height / floorHeight) : null);
-            if (!finite(floors)) floorAreaM2 = null;
-            else if (floorAreaM2 !== null) floorAreaM2 += turf.area(building) * floors;
-        }
+        // Plan stats' rule (plan-yield measureProposal): stated storeys first, else the height over
+        // the storey height; a building with neither leaves the floor area unknown.
+        const measured = planYield.measureProposal(design, {});
+        if (measured.unmeasuredBuildings > 0) floorAreaM2 = null;
+        else if (floorAreaM2 !== null) floorAreaM2 += measured.grossFloorAreaM2;
         if (design.structureProposal?.kind === 'park') green.push(turf.feature(design.structureProposal.geometry));
         if (design.roadProposal) roads.push(turf.feature(design.roadProposal.definition.polygon));
     }
@@ -51,17 +48,19 @@ export function existingFloorArea(geometry, building) {
 }
 
 // What an alternative's new floor area is worth in its city's currency (CityMoney.newBuildMoney, the
-// rule of Plan stats and the 3D panel): at the city's sale and construction rates per m² of floor,
-// or at the prices the caller gives, which are scenario assumptions. Each price keeps its source.
+// rule of Plan stats and the 3D panel): at the city's sale, construction and monthly rent rates per
+// m² of floor, or at the prices the caller gives, which are scenario assumptions. Each price keeps its
+// source.
 export function moneyOf({ city, floorAreaM2, replacedFloorAreaM2, prices = {} }) {
     const { currency, rates, unavailable, reason } = cityEconomics(city);
     if (unavailable) throw fail('city-money-unavailable', reason);
     const price = (metric, given) => (finite(given) && given >= 0
         ? { amount: given, currency, basis: 'assumption', sourceId: 'caller' } : rates[metric] || null);
     const sale = price('sale', prices.salePerM2), construction = price('construction', prices.constructionPerM2);
-    return { currency, unit: 'm2-floor', sale, construction, floorAreaM2, replacedFloorAreaM2,
-        ...cityMoney(city).newBuildMoney({ floorAreaM2, replacedFloorAreaM2,
-            salePerM2: sale ? sale.amount : null, constructionPerM2: construction ? construction.amount : null }) };
+    const rent = price('rent', prices.rentPerM2Month);
+    return { currency, unit: 'm2-floor', sale, construction, rent, floorAreaM2, replacedFloorAreaM2,
+        ...cityMoney(city).newBuildMoney({ floorAreaM2, replacedFloorAreaM2, salePerM2: sale ? sale.amount : null,
+            constructionPerM2: construction ? construction.amount : null, rentPerM2Month: rent ? rent.amount : null }) };
 }
 
 export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDraftReference, plans }) {
@@ -240,7 +239,7 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
                 measurementErrors, ...(isPlan ? { designSources } : {}), ...preview });
         }
         warnings.push('Areas describe authored geometry; they are not a prediction of construction. The party ledger is the app’s modeled allocation, not proof of ownership or compensation.');
-        warnings.push('Money is a model at two prices per m² of floor area, each with its source: value and construction cost of the new floor area, and profit after the value of the floor area it removes. It is not an appraisal; land, fees and finance are not in it.');
+        warnings.push('Money is a model at prices per m² of floor area, each with its source: value and construction cost of the new floor area, profit after the value of the floor area it removes, annual rent and its yield on that cost. It is not an appraisal; land, fees and finance are not in it.');
         return { alternatives, warnings };
     };
 }

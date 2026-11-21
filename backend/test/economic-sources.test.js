@@ -126,5 +126,35 @@ describe('Kazakh city sources', () => {
             expect(rates.sale.amount).toBeGreaterThan(rates.construction.amount);
         }
         expect(cityMoney('alatau').currentEconomicRates().sale.scope).toContain('Almaty city');
+        for (const id of ['astana', 'alatau']) {
+            const { rent, sale } = cityMoney(id).currentEconomicRates();
+            expect(rent).toMatchObject({ unit: 'm2-floor-month', currency: 'KZT', basis: 'market', asOf: '2026-10-31', sourceId: sale.sourceId });
+            // About a 10 % gross yield on the sale price, as the bureau's own prices give.
+            expect(rent.amount * 12 / sale.amount).toBeGreaterThan(0.09);
+            expect(rent.amount * 12 / sale.amount).toBeLessThan(0.11);
+        }
+    });
+});
+
+describe('rent', () => {
+    const rent = overrides => rate('rent', 18, { unit: 'm2-floor-month', ...overrides });
+
+    it('is a monthly rate per m² of floor that a table may give with the other four', () => {
+        const table = EconomicSources.rateTable(rateSource('all-five', [rate('land', 700), rate('roadLand', 500), rate('sale', 4200),
+            rate('construction', 2300), rent({ basis: 'market', asOf: '2026-06-30' })]));
+        expect(table.rates.map(row => row.metric)).toEqual(['land', 'roadLand', 'sale', 'construction', 'rent']);
+        expect(table.rates[4]).toMatchObject({ unit: 'm2-floor-month', amount: 18, basis: 'market' });
+    });
+
+    it('refuses a rent in another unit, on a construction basis, or as evidence without a date', () => {
+        expect(() => EconomicSources.rateTable(rateSource('per-floor', [rent({ unit: 'm2-floor' })]))).toThrow(/rate, unit or basis/);
+        expect(() => EconomicSources.rateTable(rateSource('cost-basis', [rent({ basis: 'construction-cost', asOf: '2026-06-30' })]))).toThrow(/rate, unit or basis/);
+        expect(() => EconomicSources.rateTable(rateSource('undated', [rent({ basis: 'market' })]))).toThrow(/valuation date/);
+    });
+
+    it('starts every city with money at an editable 15 a month', () => {
+        const rates = EconomicSources.resolve(EconomicSources.defaults(birmingham, UkLandRates), cityContext(birmingham));
+        expect(rates.rent).toMatchObject({ amount: 15, unit: 'm2-floor-month', currency: 'GBP', basis: 'assumption', sourceId: 'scenario-assumptions' });
+        expect(CityMoney.assumptionsFor(birmingham).rentPerSqmMonth).toBe(15);
     });
 });

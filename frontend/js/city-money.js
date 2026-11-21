@@ -51,24 +51,30 @@
         const rates = ratesFor(cityConfig, override);
         return { currency: currencyOf(cityConfig) || DEFAULT_ASSUMPTION_CURRENCY,
             landPerSqm: rates.land?.amount ?? null, roadLandPerSqm: rates.roadLand?.amount ?? null,
-            salesPerSqm: rates.sale?.amount ?? null, constructionPerSqm: rates.construction?.amount ?? null, sources: rates };
+            salesPerSqm: rates.sale?.amount ?? null, constructionPerSqm: rates.construction?.amount ?? null,
+            rentPerSqmMonth: rates.rent?.amount ?? null, sources: rates };
     }
 
-    // What new floor area is worth at two prices per m² of floor, in one currency: its value (floor
-    // area × sale price), its construction cost (floor area × construction cost) and its profit
-    // (value − construction cost − the value of the floor area it replaces, at the same sale price).
-    // A missing price or area keeps every amount that depends on it unknown (null), never 0. The 3D
-    // panel (gain.js), Plan stats and the MCP comparison all count with this.
-    function newBuildMoney({ floorAreaM2, replacedFloorAreaM2 = null, salePerM2, constructionPerM2 } = {}) {
+    // What new floor area is worth at its prices per m² of floor, in one currency: its value (floor
+    // area × sale price), its construction cost (floor area × construction cost), its profit (value −
+    // construction cost − the value of the floor area it replaces, at the same sale price), its annual
+    // rent (floor area × monthly rent × 12) and the rent's yield on cost (annual rent ÷ construction
+    // cost and replaced value, profit's cost). A missing price or area keeps every amount that depends
+    // on it unknown (null), never 0. The 3D panel (gain.js), Plan stats and the MCP comparison count
+    // with this.
+    function newBuildMoney({ floorAreaM2, replacedFloorAreaM2 = null, salePerM2, constructionPerM2, rentPerM2Month = null } = {}) {
         const amount = value => (typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null);
         const area = amount(floorAreaM2), replaced = amount(replacedFloorAreaM2);
-        const sale = amount(salePerM2), cost = amount(constructionPerM2);
+        const sale = amount(salePerM2), cost = amount(constructionPerM2), rent = amount(rentPerM2Month);
         const value = area === null || sale === null ? null : area * sale;
         const constructionCost = area === null || cost === null ? null : area * cost;
         const replacedValue = replaced === null || sale === null ? null : replaced * sale;
         const profit = value === null || constructionCost === null || replacedValue === null
             ? null : value - constructionCost - replacedValue;
-        return { value, constructionCost, replacedValue, profit };
+        const annualRent = area === null || rent === null ? null : area * rent * 12;
+        const outlay = constructionCost === null || replacedValue === null ? null : constructionCost + replacedValue;
+        const rentYieldOnCost = annualRent === null || outlay === null || outlay <= 0 ? null : annualRent / outlay;
+        return { value, constructionCost, replacedValue, profit, annualRent, rentYieldOnCost };
     }
 
     // Parcel and road estimates retain the selected observation, including its unit and provenance.

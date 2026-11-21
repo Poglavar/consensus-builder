@@ -85,6 +85,20 @@ describe('MCP comparison measurements', () => {
         expect(authoredAreas([{ buildingProposal: { parameters: { floors: 6 } } }]).floorAreaM2).toBeNull();
         expect(authoredAreas([park, park]).greenAreaM2).toBeCloseTo(turf.area(parcel));
     });
+
+    it('counts floor area by Plan stats\' rule, so an agent and a person read the same number', () => {
+        const planYield = require('../../frontend/js/proposals/plan-yield.js');
+        const shaped = properties => ({ ...building, geometry: { ...building.geometry,
+            buildings: [{ ...building.geometry.buildings[0], properties } ] } });
+        // 11 m with no storey rule: Plan stats counts round(11 / 3) = 4 storeys; a stated count wins.
+        for (const design of [shaped({ type: 'proposedBuilding', height: 11 }), shaped({ type: 'proposedBuilding', height: 64, floors: 20 })]) {
+            const person = planYield.planYield([{ ...design, applied: true }], { appliedOnly: true }).total.grossFloorAreaM2;
+            expect(authoredAreas([design]).floorAreaM2).toBeCloseTo(person);
+        }
+        expect(authoredAreas([shaped({ type: 'proposedBuilding', height: 11 })]).floorAreaM2)
+            .toBeCloseTo(turf.area(building.geometry.buildings[0]) * 4, 0);
+        expect(authoredAreas([shaped({ type: 'proposedBuilding' })]).floorAreaM2).toBeNull();
+    });
 });
 
 describe('MCP comparison money', () => {
@@ -102,6 +116,9 @@ describe('MCP comparison money', () => {
             sale: { amount: 4000, basis: 'assumption', sourceId: 'scenario-assumptions' }, construction: { amount: 2000 } });
         expect(built.money.constructionCost).toBeCloseTo(built.floorAreaM2 * 2000);
         expect(built.money.profit).toBeCloseTo(built.floorAreaM2 * (4000 - 2000) - removed * 4000);
+        expect(built.money.rent).toMatchObject({ amount: 15, unit: 'm2-floor-month', sourceId: 'scenario-assumptions' });
+        expect(built.money.annualRent).toBeCloseTo(built.floorAreaM2 * 15 * 12);
+        expect(built.money.rentYieldOnCost).toBeCloseTo(built.money.annualRent / (built.floorAreaM2 * 2000 + removed * 4000));
         // The park builds nothing: its profit is what it clears, negative.
         expect(result.alternatives[0].money.profit).toBeCloseTo(-removed * 4000);
         expect(result.warnings.some(text => text.startsWith('Money is a model'))).toBe(true);
@@ -110,10 +127,12 @@ describe('MCP comparison money', () => {
     it('uses the prices the caller gives instead, as assumptions', async () => {
         const { tools } = toolsFor({ stockBuilding: standing });
         const result = await tools.compare({ buildingSources: ['osm'], targets: [park, { design: building }], parcelSourceId: 'test',
-            prices: { salePerM2: 5000, constructionPerM2: 3000 } });
+            prices: { salePerM2: 5000, constructionPerM2: 3000, rentPerM2Month: 25 } });
         const { money, floorAreaM2, removedFloorAreaM2 } = result.alternatives[1];
         expect(money.sale).toEqual({ amount: 5000, currency: 'GBP', basis: 'assumption', sourceId: 'caller' });
         expect(money.profit).toBeCloseTo(floorAreaM2 * 2000 - removedFloorAreaM2 * 5000);
+        expect(money.rent).toEqual({ amount: 25, currency: 'GBP', basis: 'assumption', sourceId: 'caller' });
+        expect(money.annualRent).toBeCloseTo(floorAreaM2 * 25 * 12);
     });
 
     it('leaves the profit unknown when a removed building states no height, and keeps the rest', async () => {

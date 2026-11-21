@@ -383,7 +383,7 @@ describe('comparing plans', () => {
         const added = rows.find(row => row[0].startsWith('of which new'));
         expect([remaining[1], remaining[2]].map(digits)).toEqual([3, 1]);
         expect([added[1], added[2], added[3]].map(digits)).toEqual([0, 2, 1]);
-        expect(rows).toHaveLength(1 + 15);
+        expect(rows).toHaveLength(1 + 17);
         expect(rows.find(row => row[0].startsWith('Public land')).slice(1, 3)).toEqual(['300', '1,200']);
         expect(rows.find(row => row[0].startsWith('Private land')).slice(1, 3)).toEqual(['600', '3,400']);
 
@@ -392,7 +392,7 @@ describe('comparing plans', () => {
         expect(swap.getAttribute('aria-pressed')).toBe('true');
         rows = rowsOf(tableOf(window));
         expect(rows).toHaveLength(1 + 4);
-        expect(rows[0]).toHaveLength(1 + 15);
+        expect(rows[0]).toHaveLength(1 + 17);
         expect(rows[0][0]).toBe('Plan');
         expect(rows[1][0]).toBe('Present state');
         expect(rows[2][0]).toBe('Two blocks');
@@ -620,6 +620,26 @@ describe('construction cost and profit in Plan stats', () => {
         expect(slot(window, 'construction-cost')).toBe('—');
         expect(slot(window, 'profit')).toBe('—');
         expect(slot(window, 'sales-value')).toBe(eur(gfa * 4000));
+    });
+
+    it('rents the new floor area by the month and yields it on the construction cost and cleared value', async () => {
+        const open = openDialog([block('d-1')], { city: { currency: { code: 'EUR' } } });
+        await open.showPlanStatsModal({ content: { title: 'On open land' }, cleared: [] });
+        const gfa = gfaOf([block('d-1')]);
+        expect(open.document.getElementById('plan-stats-rent').value).toBe('15');
+        expect(slot(open, 'annual-rent')).toBe(eur(gfa * 15 * 12));
+        expect(slot(open, 'rent-yield')).toBe(CbFormat.formatPercent(180 / 2000, { maxFractionDigits: 1 }));
+
+        const rebuild = openDialog([block('d-1')], { city: { currency: { code: 'EUR' } } });
+        await rebuild.showPlanStatsModal({ content: { title: 'Rebuild' }, cleared: [{ before: existing(), after: null }] });
+        const input = rebuild.document.getElementById('plan-stats-rent');
+        input.value = '20';
+        input.listeners.input.forEach(fn => fn());
+        expect(slot(rebuild, 'annual-rent')).toBe(eur(gfa * 20 * 12));
+        expect(slot(rebuild, 'rent-yield')).toBe(CbFormat.formatPercent(gfa * 240 / (gfa * 2000 + gfaOf([existing()]) * 4000), { maxFractionDigits: 1 }));
+        input.value = '';
+        input.listeners.input.forEach(fn => fn());
+        expect([slot(rebuild, 'annual-rent'), slot(rebuild, 'rent-yield')]).toEqual(['—', '—']);
     });
 
     it('says the profit is not known when a building it clears states no height', async () => {

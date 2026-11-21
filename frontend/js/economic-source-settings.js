@@ -70,7 +70,7 @@
             append('dt', t(metric), list);
             const row = rates[metric];
             const content = row ? global.CbFormat.formatMoney(row.amount, row.currency, { maxFractionDigits: 2 })
-                + ' / m² · ' + describe(row, global) : t('unavailable');
+                + (row.unit === 'm2-floor-month' ? t('perMonth') : ' / m²') + ' · ' + describe(row, global) : t('unavailable');
             append('dd', content, list);
         }
         append('h3', t('manual'), body);
@@ -81,7 +81,8 @@
         name.value = active?.name || t('manual'); name.required = true;
         const fields = {};
         for (const [metric, unit] of Object.entries(contract(global).METRICS)) {
-            const label = append('label', t(metric) + ' · ' + t(unit === 'm2-land' ? 'landUnit' : 'floorUnit', { currency }), form);
+            const unitText = { 'm2-land': 'landUnit', 'm2-floor': 'floorUnit', 'm2-floor-month': 'rentUnit' }[unit];
+            const label = append('label', t(metric) + ' · ' + t(unitText, { currency }), form);
             const field = append('input', '', form); field.id = 'economic-rate-' + metric; label.htmlFor = field.id;
             field.type = 'number'; field.min = '0'; field.step = 'any';
             field.placeholder = rates[metric]?.amount == null ? '—' : String(rates[metric].amount);

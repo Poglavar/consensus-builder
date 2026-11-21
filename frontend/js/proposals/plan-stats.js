@@ -196,12 +196,15 @@
         { key: 'jobs', i18nKey: 'sidebar.proposals.planStats.jobs', label: 'Jobs' },
         { key: 'sales-value', i18nKey: 'sidebar.proposals.planStats.salesValue', label: 'Sales value of the floor area' },
         { key: 'construction-cost', i18nKey: 'sidebar.proposals.planStats.constructionCost', label: 'Construction cost of the new floor area' },
-        { key: 'profit', i18nKey: 'sidebar.proposals.planStats.profit', label: 'Profit on the new floor area' }
+        { key: 'profit', i18nKey: 'sidebar.proposals.planStats.profit', label: 'Profit on the new floor area' },
+        { key: 'annual-rent', i18nKey: 'sidebar.proposals.planStats.annualRent', label: 'Annual rent of the new floor area' },
+        { key: 'rent-yield', i18nKey: 'sidebar.proposals.planStats.rentYield', label: 'Rent yield on cost (annual rent ÷ construction and cleared value)' }
     ];
 
     const ASSUMPTION_INPUTS = [
         { id: 'plan-stats-price', i18nKey: 'sidebar.proposals.planStats.salesSuffix', label: '{{currency}} per m² sale price', min: 0, step: 100, value: () => salesPrice().salesPerSqm, params: () => ({ currency: salesPrice().currency }) },
         { id: 'plan-stats-construction', i18nKey: 'sidebar.proposals.planStats.constructionSuffix', label: '{{currency}} per m² construction cost', min: 0, step: 100, value: () => salesPrice().constructionPerSqm, params: () => ({ currency: salesPrice().currency }) },
+        { id: 'plan-stats-rent', i18nKey: 'sidebar.proposals.planStats.rentSuffix', label: '{{currency}} per m² rent a month', min: 0, step: 1, value: () => salesPrice().rentPerSqmMonth, params: () => ({ currency: salesPrice().currency }) },
         { id: 'plan-stats-housing-share', i18nKey: 'sidebar.proposals.planStats.housingShareSuffix', label: '% housing share', min: 0, max: 100, step: 5, value: d => Math.round((d.housingShare ?? 0.75) * 100) },
         { id: 'plan-stats-efficiency', i18nKey: 'sidebar.proposals.planStats.efficiencySuffix', label: '% net of gross', min: 1, max: 100, step: 5, value: d => Math.round((d.efficiency ?? 0.8) * 100) },
         { id: 'plan-stats-apartment-size', i18nKey: 'sidebar.proposals.planStats.apartmentSizeSuffix', label: 'm² per apartment', min: 1, step: 5, value: d => d.avgApartmentM2 ?? 65 },
@@ -251,18 +254,19 @@
             if (typedAssumptions[input.dataset.assumption] !== undefined) input.value = typedAssumptions[input.dataset.assumption];
         });
     }
-    // The sale and construction prices per m² typed into a dialog, { sale, construction }, never below
-    // zero; an empty input is no price (null), so what depends on it reads "—" rather than 0.
+    // The sale, construction and monthly rent prices per m² typed into a dialog, { sale, construction,
+    // rent }, never below zero; an empty input is no price (null), so what depends on it reads "—"
+    // rather than 0.
     function priceIn(container, prefix) {
         const read = key => {
             const input = container.querySelector(`#${prefix}-${key}`);
             const text = input && typeof input.value === 'string' ? input.value.trim() : '';
             return text === '' ? null : Math.max(0, Number(text) || 0);
         };
-        return { sale: read('price'), construction: read('construction') };
+        return { sale: read('price'), construction: read('construction'), rent: read('rent') };
     }
     // The price inputs, by input key; leaving one keeps it at zero or above, and an empty one empty.
-    const PRICE_KEYS = new Set(['price', 'construction']);
+    const PRICE_KEYS = new Set(['price', 'construction', 'rent']);
     function normalizePrice(input) {
         if (input.value.trim() !== '') input.value = String(Math.max(0, Number(input.value) || 0));
     }
@@ -450,14 +454,14 @@
     }
 
     // The summary figures of one plan's stats as text, by SUMMARY_ROWS key: the dialog and the plan
-    // comparison show the same words. price: { sale, construction } per m² in the city's currency
+    // comparison show the same words. price: { sale, construction, rent } per m² in the city's currency
     // (priceIn), each null when not given.
     function summaryTexts(stats, price) {
         // The new floor area at the two prices, by the 3D panel's rule (CityMoney.newBuildMoney): its
         // construction cost, and its profit after the value of the existing floor area the plan clears.
         const money = window.CityMoney.newBuildMoney({ floorAreaM2: stats.yield.total.grossFloorAreaM2,
             replacedFloorAreaM2: stats.cleared ? stats.cleared.floorAreaM2 : null,
-            salePerM2: price.sale, constructionPerM2: price.construction });
+            salePerM2: price.sale, constructionPerM2: price.construction, rentPerM2Month: price.rent });
         // A figure that was not measured reads "—", never a 0 (formatNumber(null) would print 0).
         const measured = value => (finiteNumber(value) ? formatNumber(value) : '—');
         const total = standingTotal(stats);
@@ -484,7 +488,9 @@
             jobs: formatNumber(total.jobs),
             'sales-value': formatSalesValue(finiteNumber(price.sale) ? total.grossFloorAreaM2 * price.sale : null),
             'construction-cost': formatSalesValue(money.constructionCost),
-            profit: formatSalesValue(money.profit)
+            profit: formatSalesValue(money.profit),
+            'annual-rent': formatSalesValue(money.annualRent),
+            'rent-yield': CbFormat.formatPercent(money.rentYieldOnCost, { maxFractionDigits: 1, missing: '—' })
         };
     }
 
@@ -530,6 +536,8 @@
         set('sales-value', figures['sales-value']);
         set('construction-cost', figures['construction-cost']);
         set('profit', figures.profit);
+        set('annual-rent', figures['annual-rent']);
+        set('rent-yield', figures['rent-yield']);
 
         const notes = [];
         if (stats.cleared && stats.cleared.unmeasured > 0) {

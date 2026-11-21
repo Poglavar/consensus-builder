@@ -10,8 +10,10 @@ from an app city. Currency formatting and exchange conversion are independent co
 
 ## Rate contract
 
-Each observation names a metric, amount, currency, unit, basis, valuation date and source. The four
-metrics are independent: `land` and `roadLand` use `m2-land`; `sale` and `construction` use `m2-floor`.
+Each observation names a metric, amount, currency, unit, basis, valuation date and source. The five
+metrics are independent: `land` and `roadLand` use `m2-land`; `sale` and `construction` use `m2-floor`;
+`rent` uses `m2-floor-month`, per m² of floor area per month, the way rents are quoted. A rent's basis
+is `assumption` or `market`, as a sale price's is.
 A residential land appraisal is not a floor-area sale price or a construction cost. A road-land rate
 is a modeling input for affected land, not a statement about compensation or the cost of a road.
 
@@ -33,18 +35,19 @@ explicit rate and differs from missing evidence.
   residential policy-appraisal rate, dated 1 October 2023, with the source workbook and authority.
   City-wide application is an illustrative authority-rate assumption, not a site-specific valuation.
   `roadLand` uses the same residential proxy and retains that provenance.
-- `scenario-assumptions` exposes the existing editable floor-area starting points: 4,000 sale and
-  2,000 construction in local currency. Existing EUR land/road assumptions remain 133/100. These
-  values are model assumptions, not a worldwide price dataset.
+- `scenario-assumptions` exposes the existing editable floor-area starting points: 4,000 sale,
+  2,000 construction and 15 rent a month in local currency (a 4.5 % gross yield on the sale price).
+  Existing EUR land/road assumptions remain 133/100. These values are model assumptions, not a
+  worldwide price dataset.
 - `rate-table` accepts a validated local snapshot of independent rates. It is usable worldwide,
   without adding country-specific logic to consumers. Future service adapters should normalize to
   this same observation contract.
 - Astana and Alatau configure two `rate-table` snapshots from Kazakhstan's Bureau of National
-  Statistics: the October 2026 new-build sale price and the January–October 2026 actual construction
-  cost of housing built by companies, per m² of the buildings' total area (it excludes land and
-  developer profit). The sale price is published per m² of dwelling area, so it is scaled by the
-  city's useful ÷ total area of the housing commissioned in the same period (Astana 0.722, Almaty
-  0.758). The bureau publishes no Alatau series; Alatau uses Almaty city's figures, and each row's
+  Statistics: the October 2026 new-build sale price and monthly rent, and the January–October 2026
+  actual construction cost of housing built by companies, per m² of the buildings' total area (it
+  excludes land and developer profit). Sale price and rent are published per m² of dwelling area, so
+  they are scaled by the city's useful ÷ total area of the housing commissioned in the same period
+  (Astana 0.722, Almaty 0.758). The bureau publishes no Alatau series; Alatau uses Almaty city's figures, and each row's
   `scope` says so.
 
 City configuration can supply `economics.sources`, an ordered array of registered IDs and/or
@@ -85,11 +88,12 @@ slider's standard range is sized for euro-like amounts; an observation widens it
 its amount where those fall outside, so a tenge price can be slid both ways.
 
 The 3D panel, Plan stats (with Compare plans) and the MCP comparison count new floor area with one
-function, `CityMoney.newBuildMoney`: value, construction cost, and profit after the value of the
-floor area it replaces (the vocabulary's "Profit on the new floor area"). Plan stats has a
-construction price input beside the sale price; an empty input is no price, and what depends on it
-reads "—". `ugt_compare` gives each alternative's `money` with the two prices and their sources, or
-the caller's `prices` as assumptions; `ugt_parcel_context` gives the city's rates.
+function, `CityMoney.newBuildMoney`: value, construction cost, profit after the value of the floor
+area it replaces (the vocabulary's "Profit on the new floor area"), annual rent and the rent's yield on
+that cost. Plan stats has construction and monthly rent inputs beside the sale price; an empty input is
+no price, and what depends on it reads "—". `ugt_compare` gives each alternative's `money` with the
+three prices and their sources, or the caller's `prices` as assumptions; `ugt_parcel_context` gives the
+city's rates. The 3D panel shows value, construction cost and profit, not rent.
 
 The shared sale starting assumption is now 4,000 in both 3D and plan statistics (previously the EUR
 plan-statistics dialog used a separate 5,000). Unsupported currencies no longer borrow EUR land
@@ -127,7 +131,7 @@ source-qualified assessed-property observations, exchange-rate evidence, and the
 model. The existing GeoJSON/WFS/ArcGIS/XYZ machinery makes local zoning/land-use, flood/protection
 overlays, address points, tree inventories and utility/network context comparatively approachable;
 each still needs its own meaning and coverage contract, not only a URL field. Transaction comparables,
-rents, construction indices and development fees are useful economic additions, but an index is not
+construction indices and development fees are useful economic additions, but an index is not
 an absolute unit cost and a whole-property sale is not a land-only sale.
 
 ## Place defaults and visitor preferences
