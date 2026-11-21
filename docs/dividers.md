@@ -42,8 +42,10 @@ recorded, nothing deployed without a say-so.
 ## Parked
 
 - **Unapplied members in the model view (M9)** are drawn from the record alone: a building is
-  sliced by the live parcels, not the plan's own pieces; a road is a flat plate, not a laid
-  corridor; a building two members of one plan cut keeps the first member's remainder. The scene's
+  sliced by the live parcels, not the plan's own pieces; a road, lake or station is a flat plate,
+  not a laid corridor or dug basin (a park or square is drawn as an applied one, its trees, paths
+  and furniture included: `ProposalApplyStructures.structurePresentationFeature`); a building two
+  members of one plan cut keeps the first member's remainder. The scene's
   context (existing buildings, parcels) is loaded around applied work and the camera, so a plan far
   from both has nothing to clear until the view moves there.
 - **Photo mode (Google tiles).** The model view's comparison (M7) draws two scissor passes of one

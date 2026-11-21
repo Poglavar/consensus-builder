@@ -190,6 +190,44 @@
         };
     }
 
+    // The park, square, lake or station a structure record draws: the Feature the map and the 3D view
+    // build from (window.parks/squares/lakes on apply, a Compare side's own drawing of a plan member
+    // that is not applied). `geometry` is its authored body; decorations are added by
+    // decorateStructureFeature, on that body.
+    function structurePresentationFeature({ proposalId, structureProposal: sp, title = null, blockName = null, geometry }) {
+        return {
+            type: 'Feature',
+            properties: {
+                structureType: sp.kind,
+                blockName: blockName,
+                proposalId,
+                lakeGraphics: sp.lakeGraphics || null,
+                ...(sp.decorationDesign ? { decorationDesign: JSON.parse(JSON.stringify(sp.decorationDesign)) } : {}),
+                decorations: sp.decorationDesign || sp.decorations ? JSON.parse(JSON.stringify(sp.decorationDesign || sp.decorations)) : undefined,
+                stationType: sp.stationType || undefined,
+                center: Array.isArray(sp.center) ? sp.center.slice() : undefined,
+                bearing: Number.isFinite(Number(sp.bearing)) ? Number(sp.bearing) : undefined,
+                platformHeightM: Number.isFinite(Number(sp.platformHeightM)) ? Number(sp.platformHeightM) : undefined,
+                attachment: sp.attachment ? JSON.parse(JSON.stringify(sp.attachment)) : undefined,
+                modelVersion: sp.modelVersion || undefined,
+                // An uploaded model, fitted to the authored footprint (not a corridor-carved body).
+                structureModel: structureModelFeature({ ...sp, geometry }) || undefined,
+                name: title || undefined
+            },
+            geometry: JSON.parse(JSON.stringify(geometry))
+        };
+    }
+
+    // A park's trees, paths and furniture, a square's paving furniture and a lake's shore, as the map
+    // lays them out (structures.js): the stored design on the feature's ground, else generated.
+    function decorateStructureFeature(feature) {
+        const kind = feature?.properties?.structureType;
+        if (kind === 'park') globalThis.ensureParkDecorations?.(feature);
+        else if (kind === 'lake') globalThis.ensureLakeGraphics?.(feature);
+        else if (kind !== 'station') globalThis.ensureSquareDecorations?.(feature);
+        return feature;
+    }
+
     return {
     decorationsOnGround,
     structureFeatureOnGround,
@@ -197,6 +235,8 @@
     structureModelGeometry,
     structureFromModelUpload,
     structureModelFeature,
+    structurePresentationFeature,
+    decorateStructureFeature,
     _reconcileStructurePresentation(records, options = {}) {
         const mutation = options._parcelMutation;
         const ids = new Set(Array.from(records || [], record => String(record?.proposalId || '')).filter(Boolean));
@@ -360,29 +400,10 @@
 
             const step4Time = performance.now();
             // Add to the derived presentation collections. Authored geometry is read-only here.
-            const feature = {
-                type: 'Feature',
-                properties: {
-                    structureType: kind,
-                    blockName: blockName,
-                    proposalId,
-                    lakeGraphics: sp.lakeGraphics || null,
-                    ...(sp.decorationDesign ? { decorationDesign: JSON.parse(JSON.stringify(sp.decorationDesign)) } : {}),
-                    decorations: sp.decorationDesign || sp.decorations ? JSON.parse(JSON.stringify(sp.decorationDesign || sp.decorations)) : undefined,
-                    stationType: sp.stationType || undefined,
-                    center: Array.isArray(sp.center) ? sp.center.slice() : undefined,
-                    bearing: Number.isFinite(Number(sp.bearing)) ? Number(sp.bearing) : undefined,
-                    platformHeightM: Number.isFinite(Number(sp.platformHeightM)) ? Number(sp.platformHeightM) : undefined,
-                    attachment: sp.attachment ? JSON.parse(JSON.stringify(sp.attachment)) : undefined,
-                    modelVersion: sp.modelVersion || undefined,
-                    // An uploaded model, fitted to the authored footprint (not a corridor-carved body).
-                    structureModel: structureModelFeature({ ...sp, geometry: authoredGeometry }) || undefined,
-                    name: proposalData.title || proposalData.name || undefined
-                },
-                // Decorations are generated on (and copied back for) the authored body; the
-                // carved body replaces it just before the feature is published below.
-                geometry: JSON.parse(JSON.stringify(authoredGeometry))
-            };
+            // Decorations are generated on (and copied back for) the authored body; the
+            // carved body replaces it just before the feature is published below.
+            const feature = structurePresentationFeature({ proposalId, structureProposal: { ...sp, kind },
+                title: proposalData.title || proposalData.name || null, blockName, geometry: authoredGeometry });
             const replaceOwnFeature = () => {
                 if (carvedByCorridors) {
                     feature.geometry = JSON.parse(JSON.stringify(geometry));
@@ -397,11 +418,7 @@
                 collection.splice(0, collection.length, ...retained, feature);
             };
             if (kind === 'park') {
-                try {
-                    if (typeof ensureParkDecorations === 'function') {
-                        ensureParkDecorations(feature);
-                    }
-                } catch (_) { }
+                try { decorateStructureFeature(feature); } catch (_) { }
                 // Auto-layout is generated on the rendered feature. Keep the same canonical copy
                 // on the proposal so every generated item is present when Design is reopened.
                 if (feature.properties?.decorations) {
@@ -409,16 +426,12 @@
                 }
                 replaceOwnFeature();
             } else if (kind === 'lake') {
-                try { if (typeof ensureLakeGraphics === 'function') ensureLakeGraphics(feature); } catch (_) { }
+                try { decorateStructureFeature(feature); } catch (_) { }
                 replaceOwnFeature();
             } else if (kind === 'station') {
                 replaceOwnFeature();
             } else {
-                try {
-                    if (typeof ensureSquareDecorations === 'function') {
-                        ensureSquareDecorations(feature);
-                    }
-                } catch (_) { }
+                try { decorateStructureFeature(feature); } catch (_) { }
                 if (feature.properties?.decorations) {
                     sp.decorations = JSON.parse(JSON.stringify(feature.properties.decorations));
                 }

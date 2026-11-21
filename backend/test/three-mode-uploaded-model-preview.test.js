@@ -44,6 +44,8 @@ function loaderHarness(center = [0, 0]) {
         console,
         isActive: true,
         buildingsRenderGeneration: 4,
+        // The design a structure model is drawn for, for Compare (three-mode.js ownedByDesigns).
+        drawingForDesigns: null,
         pendingModelLoads: 0,
         proposedBuildingsGroup: {},
         THREE: {

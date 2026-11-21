@@ -5,7 +5,7 @@
 // or not: what is not applied is read without applying it.
 import { test, expect } from '../helpers/fixtures';
 import { selectNativeOption } from '../helpers/controls';
-import { openCity, createBuilding, drawCorridor } from '../helpers/runtime';
+import { openCity, createBuilding, createSpace, drawCorridor } from '../helpers/runtime';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 import { Page } from '@playwright/test';
 
@@ -283,6 +283,42 @@ test('an applied road in a plan draws on the plan\'s side, its surfaces and all,
   await page.locator('#planning-compare-enable').click();
   await expect(page.locator('#three-container .map-compare__label--after')).toHaveText('Plan: Streets plan', { timeout: 45_000 });
   const split = await recordPasses(page, roadId);
+  expect(split.passes.map((pass: any) => pass.designDrawn)).toEqual([false, true]);
+});
+
+test('a park in a plan that is not applied draws on the plan\'s side as an applied park does, its trees and all', async ({ mockApi: page }) => {
+  test.setTimeout(120_000);
+  await mockBuildingScene(page);
+  await openCity(page);
+  const parkId = await createSpace(page, 'park');
+  const { cid, memberCid, trees } = await page.evaluate(id => {
+    const w = window as any;
+    const record = w.proposalStorage.getProposal(id);
+    const plan = w.PlanComposition.create('Park plan', [record], { city: w.resolveCurrentCityCode(), at: '45.8,15.98,17', mode: '2d', language: 'en' });
+    w.PlanWorkspace.save(plan);
+    return { cid: plan.cid as string, memberCid: w.DesignRecord.cidOf(record) as string,
+      trees: (record.structureProposal.decorationDesign || record.structureProposal.decorations)?.trees?.length || 0 };
+  }, parkId);
+  expect(trees).toBeGreaterThan(0);
+  await page.evaluate(id => (window as any).ProposalManager.unapplyProposal(id), parkId);
+  await page.keyboard.press('Escape');
+  await page.locator('#mode-3d-toggle').click();
+  await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 20_000 });
+  await openCompareTab(page);
+  await selectNativeOption(page.locator('#planning-compare-left'), 'built');
+  await selectNativeOption(page.locator('#planning-compare-right'), `plan:${cid}`);
+  await page.locator('#planning-compare-enable').click();
+  await expect(page.locator('#three-container .map-compare__label--after')).toHaveText('Plan: Park plan', { timeout: 45_000 });
+  // The plan's side draws the park's own trees, marked as the member's, not a flat plate alone.
+  await expect.poll(() => page.evaluate(id => {
+    let trees = 0;
+    (window as any).getThreeModeInternals?.()?.scene.getObjectByName('CompareUnapplied')?.traverse((object: any) => {
+      if (object.userData?.decorationKind !== 'tree') return;
+      for (let node = object; node; node = node.parent) if (node.userData?.designIds?.includes(id)) { trees += 1; return; }
+    });
+    return trees;
+  }, memberCid), { timeout: 20_000 }).toBeGreaterThan(0);
+  const split = await recordPasses(page, memberCid);
   expect(split.passes.map((pass: any) => pass.designDrawn)).toEqual([false, true]);
 });
 

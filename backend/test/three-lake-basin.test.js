@@ -88,7 +88,8 @@ describe('recessed lake solids', () => {
             reportThreeClip(_operation, error) { throw error; }
         };
         vm.createContext(context);
-        vm.runInContext(extract('    function arrayOfLngLatRingsToShape(', '    function polygonFeatureToBorderLines(')
+        vm.runInContext(extract('    let drawingForDesigns = null;', '    function proposalApplied3D(')
+            + extract('    function arrayOfLngLatRingsToShape(', '    function polygonFeatureToBorderLines(')
             + extract('    const structureModelGenerations', '    function stringToColor(')
             + extract('    function buildLakes3D(', '    // Shared procedural station models'), context);
         const ground = new THREE.Group();

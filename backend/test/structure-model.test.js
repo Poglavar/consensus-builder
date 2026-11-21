@@ -124,6 +124,8 @@ describe('3D structure model branch', () => {
             console: { warn: vi.fn() },
             isActive: true,
             buildingsRenderGeneration: 1,
+            // The design a structure model is drawn for, for Compare (three-mode.js ownedByDesigns).
+            drawingForDesigns: null,
             pendingModelLoads: 0,
             proposedBuildingsGroup: {},
             turf: { centroid: () => ({ geometry: { coordinates: [16, 45] } }) },

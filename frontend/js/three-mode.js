@@ -10289,16 +10289,34 @@
             each(group, child => ({ role: 'proposed', designIds: compareDesignIdsOf(child) }));
         }
         // What the plan sides draw of their unapplied members: hidden outside the passes, so read anyway.
-        each(compareUnappliedGroup, child => ({ role: 'proposed', designIds: compareDesignIdsOf(child), unapplied: true }), { evenHidden: true });
+        // Their parks and squares are each a group of every space's objects (refreshCompareUnapplied3D).
+        const unappliedOf = child => ({ role: 'proposed', designIds: compareDesignIdsOf(child), unapplied: true });
+        each(compareUnappliedGroup, child => (child.userData?.compareSpaces ? null : unappliedOf(child)), { evenHidden: true });
+        for (const spacesGroup of compareUnappliedGroup?.children.filter(child => child.userData?.compareSpaces) || []) {
+            each(spacesGroup, unappliedOf, { evenHidden: true });
+        }
         return descriptors;
     }
 
     // ── what a plan side draws of members not on the map ─────────────────────────────────────
     // Built once per choice of sides and read state: each unapplied member's buildings as the
-    // proposed buildings are built (sliced by parcel, in the Proposed material), its road corridor
-    // and its park, square, lake or station ground as flat plates, and what is left of each
-    // standing building it cuts, as a prism at that building's height. Every mesh carries the
-    // member's design CID as its proposalId, so the passes switch it like an applied design's.
+    // proposed buildings are built (sliced by parcel, in the Proposed material), its parks and
+    // squares as applied ones are drawn (their trees, paths and furniture: compareSpaceFeature),
+    // its road corridor and its lake or station ground as flat plates, and what is left of each
+    // standing building it cuts, as a prism at that building's height. Every object carries the
+    // member's design CID, so the passes switch it like an applied design's.
+    function compareSpaceFeature(row, id) {
+        const sp = row?.structureProposal;
+        if (!sp?.geometry || !['park', 'square'].includes(sp.kind)) return null;
+        const structures = window.ProposalApplyStructures;
+        try {
+            return structures.decorateStructureFeature(structures.structurePresentationFeature({ proposalId: id, structureProposal: sp,
+                title: row.title || row.name || null, geometry: sp.geometry }));
+        } catch (error) {
+            console.warn(`[${new Date().toISOString()}] [3D compare] ${sp.kind} of unapplied member ${id} is drawn as a plate`, error);
+            return null;
+        }
+    }
     let compareUnappliedKey = null;
     const compareUnappliedMaterials = {};
     function compareUnappliedMaterial(kind) {
@@ -10318,6 +10336,7 @@
         clearGroupChildren(compareUnappliedGroup);
         const material = plannedDisplay === 'solid' ? buildingMaterials.solid : buildingMaterials.ghost;
         const drawn = new Set(), cutBuildings = new Set();
+        const spaces = { park: [], square: [] };
         let buildings = 0, plates = 0, remainders = 0;
         for (const part of parts) {
             for (const row of part.rows) {
@@ -10344,7 +10363,9 @@
                         .forEach(mesh => { mesh.userData.proposalId = id; compareUnappliedGroup.add(mesh); plates += 1; });
                 };
                 plate('road', row.roadProposal?.definition?.polygon);
-                plate(row.structureProposal?.kind || 'square', row.structureProposal?.geometry);
+                const space = compareSpaceFeature(row, id);
+                if (space) spaces[space.properties.structureType].push(space);
+                else plate(row.structureProposal?.kind || 'square', row.structureProposal?.geometry);
             }
             for (const child of existingBuildingsGroup?.children || []) {
                 const observed = observedFootprintOf(child);
@@ -10359,7 +10380,17 @@
                 }
             }
         }
-        if (parts.length) console.log(`[${new Date().toISOString()}] [3D compare] unapplied members: ${drawn.size} designs, ${buildings} buildings, ${plates} plates, ${remainders} cut remainders`);
+        // All the parks in one call and all the squares in another, each into a group of its own: a
+        // builder call starts a new generation of its target's models (startStructureModels), which
+        // would leave a model still loading for an earlier call out.
+        for (const [kind, build] of [['park', buildParks3D], ['square', buildSquares3D]]) {
+            if (!spaces[kind].length) continue;
+            const target = new THREE.Group();
+            target.userData.compareSpaces = kind;
+            compareUnappliedGroup.add(target);
+            build(target, target, spaces[kind]);
+        }
+        if (parts.length) console.log(`[${new Date().toISOString()}] [3D compare] unapplied members: ${drawn.size} designs, ${buildings} buildings, ${spaces.park.length} parks, ${spaces.square.length} squares, ${plates} plates, ${remainders} cut remainders`);
         invalidateThreeView();
     }
 
