@@ -9329,6 +9329,32 @@
         "refreshResults": "Actualizar resultados"
     },
     "lists": {
+        "critics": {
+            "choose": "Elegir un crítico",
+            "rooster": {
+                "axis": "Granularidad parcelaria"
+            },
+            "cat": {
+                "name": "Gato",
+                "axis": "Cerramiento de la plaza"
+            },
+            "beaver": {
+                "name": "Castor",
+                "axis": "Fases independientes"
+            },
+            "dog": {
+                "name": "Perro",
+                "axis": "Accesibilidad peatonal"
+            },
+            "owl": {
+                "name": "Búho",
+                "axis": "Vía de aprobación"
+            },
+            "crow": {
+                "name": "Cuervo",
+                "axis": "Fachadas a la calle"
+            }
+        },
         "title": "Listas",
         "plans": "Planes",
         "search": "Buscar…",

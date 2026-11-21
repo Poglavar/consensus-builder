@@ -350,6 +350,10 @@ corridor pieces) beside its new ones, as **of which existing that remain** and *
 The first column, **Present state**, measures what stands today on the land chosen in **Present
 state over the land of** (all compared plans, one of them, or another saved plan). Plan stats
 shows the same land and building figures once they are read, after its other figures.
+**Choose a critic** on a plan row opens the critic picker. Urban rooster runs the parcel grain
+assessment. Cat, Beaver, Dog, Owl and Crow have disabled buttons until their assessments are
+available. The picker changes how the existing assessment is launched. MCP editing operations
+and authored records stay the same.
 The rooster scores the plan as it stands on the map (user ruling 2026-10-28): every member must be
 applied, and `GrainScoreRules.appliedPlanGround` reads the members' pieces and ground from the
 live fabric and the cadastral repository, with no binding and no headless replay. An unapplied

@@ -9353,6 +9353,32 @@
         "refreshResults": "Osvježi rezultate"
     },
     "lists": {
+        "critics": {
+            "choose": "Odaberi kritičara",
+            "rooster": {
+                "axis": "Zrnatost parcela"
+            },
+            "cat": {
+                "name": "Mačka",
+                "axis": "Oblikovanje trga"
+            },
+            "beaver": {
+                "name": "Dabar",
+                "axis": "Neovisne faze"
+            },
+            "dog": {
+                "name": "Pas",
+                "axis": "Pješačka dostupnost"
+            },
+            "owl": {
+                "name": "Sova",
+                "axis": "Postupak odobravanja"
+            },
+            "crow": {
+                "name": "Vrana",
+                "axis": "Ulična pročelja"
+            }
+        },
         "title": "Popisi",
         "plans": "Planovi",
         "search": "Pretraži…",

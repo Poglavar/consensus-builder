@@ -60,7 +60,7 @@
             filtersOpen: false, selecting: null, purpose: null, planBase: null, selected: new Map(), active: null, previewing: null, remote: new Map(),
             // hovering: the card whose object is outlined under the pointer; records: each clicked card's designs,
             // read once; known: those already read, the only ones a hover shows
-            hovering: null, records: new Map(), known: new Map() };
+            hovering: null, records: new Map(), known: new Map(), openCritics: new Set() };
         const currentSort = () => state.sort || (state.tab === 'designs' ? 'newest' : 'title');
         let ready = false;
         const t = (key, params) => win.i18n.t(key, params || {});
@@ -75,11 +75,43 @@
         function button(label, action, cls = '', iconName = null) {
             const el = node('button', `btn btn-sm ${cls}`, label); el.type = 'button';
             if (iconName) el.prepend(icon(iconName));
+            if (!action) { el.disabled = true; return el; }
             el.addEventListener('click', () => {
                 if (win.BusyControl.isBusy(el)) return;
                 win.BusyControl.track(el, action).catch(error => win.showStyledAlert(error.message));
             });
             return el;
+        }
+        function criticPicker(row) {
+            const picker = node('details', 'lists-critics');
+            picker.open = state.openCritics.has(row.key);
+            const summary = node('summary', '', t('lists.critics.choose'));
+            summary.dataset.criticControl = 'choose';
+            const choices = node('div', 'lists-critics__choices');
+            for (const [id, image, run] of [
+                ['rooster', 'grain-rooster-critic.png', async () => win.summonUrbanistRooster(await planOf(row))],
+                ['cat', 'critic-cat.webp'],
+                ['beaver', 'critic-beaver.webp'],
+                ['dog', 'critic-dog.webp'],
+                ['owl', 'critic-owl.webp'],
+                ['crow', 'critic-crow.webp']
+            ]) {
+                const name = id === 'rooster' ? t('sidebar.proposals.grainScore.buttonLabel') : t(`lists.critics.${id}.name`);
+                const choice = button('', run, 'lists-critics__choice');
+                choice.dataset.criticControl = id;
+                const portrait = node('img', 'lists-critics__portrait');
+                portrait.src = `/images/${image}`;
+                portrait.alt = '';
+                portrait.width = 40;
+                portrait.height = 40;
+                portrait.loading = 'lazy';
+                const label = node('span', 'lists-critics__label');
+                label.append(node('strong', '', name), node('small', '', t(`lists.critics.${id}.axis`)));
+                choice.append(portrait, label);
+                choices.append(choice);
+            }
+            picker.append(summary, choices);
+            return picker;
         }
         const city = () => win.normalizeCityCodeForApi(win.resolveCurrentCityCode());
         const area = () => state.tab === 'designs' ? win.getProposalCountAreaContext() : null;
@@ -397,7 +429,15 @@
             const kind = state.tab, page = state.remote.get(cacheKey());
             const rows = mergeRows(localRows(kind), remoteRows(page?.rows || [], kind))
                 .map(row => ({ ...row, applied: kind === 'designs' && appliedHere(row.local) }));
-            const visible = filterRows(rows, { ...state, sort: currentSort(), onMap: kind === 'designs' && state.onMap }), list = host(); list.replaceChildren();
+            const visible = filterRows(rows, { ...state, sort: currentSort(), onMap: kind === 'designs' && state.onMap }), list = host();
+            for (const picker of list.querySelectorAll('.lists-critics')) {
+                const key = picker.closest('[data-list-id]').dataset.listId;
+                if (picker.open) state.openCritics.add(key);
+                else state.openCritics.delete(key);
+            }
+            const focusedCritic = list.contains(doc.activeElement) ? doc.activeElement.dataset.criticControl : null;
+            const focusedRow = focusedCritic && doc.activeElement.closest('[data-list-id]')?.dataset.listId;
+            list.replaceChildren();
             const onMap = doc.querySelector('[data-lists-on-map]');
             if (onMap) labelOnMap(onMap, rows.filter(row => row.applied).length);
             const unapplyAll = doc.querySelector('[data-lists-unapply-all]');
@@ -446,7 +486,7 @@
                 item.tabIndex = 0; item.title = t('modal.roadWidth.polygonError.showOnMap');
                 const show = () => focus(row, kind).catch(error => win.showStyledAlert(error.message));
                 item.addEventListener('click', event => {
-                    if (!event.target.closest('button, a, input, label, select, summary')) show();
+                    if (!event.target.closest('button, a, input, label, select, summary, .lists-critics')) show();
                 });
                 item.addEventListener('keydown', event => {
                     if (event.target === item && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); show(); }
@@ -499,13 +539,6 @@
                     actions.append(button(t('sidebar.proposals.planStats.modalTitle'), async () => {
                         await win.showPlanStatsModal(await planOf(row));
                     }, '', 'chart-pie'));
-                    const rooster = button(t('sidebar.proposals.grainScore.buttonLabel'), async () => {
-                        await win.summonUrbanistRooster(await planOf(row));
-                    }, 'lists-rooster');
-                    const portrait = node('img', 'lists-rooster__portrait');
-                    portrait.src = '/images/grain-rooster-critic.png'; portrait.alt = '';
-                    portrait.width = 32; portrait.height = 32;
-                    rooster.prepend(portrait); actions.append(rooster);
                     actions.append(button(t('planDialog.createAgreement'), async () => {
                         const plan = await win.PlanWorkspace.resolve(await planOf(row));
                         win.MapShell.closeSheets(); return win.AgreementDialog.open({ plan });
@@ -522,7 +555,10 @@
                     const trash = button('', () => remove(row, kind), 'btn-danger btn-icon lists-item__remove', 'trash-can');
                     trash.setAttribute('aria-label', label); trash.title = label; actions.append(trash);
                 }
-                item.append(actions); list.append(item);
+                item.append(actions);
+                if (kind === 'plans') item.append(criticPicker(row));
+                list.append(item);
+                if (focusedRow === row.key) item.querySelector(`[data-critic-control="${focusedCritic}"]`)?.focus({ preventScroll: true });
             }
             if (!visible.length && !page?.loading && !page?.error) list.append(node('p', 'sheet-note', t(rows.length ? 'lists.noMatch' : 'lists.empty')));
             if (page?.next != null && !page.loading) list.append(button(t('lists.loadMore'), () => load(true)));

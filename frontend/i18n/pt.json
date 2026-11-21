@@ -9308,6 +9308,32 @@
         "refreshResults": "Atualizar resultados"
     },
     "lists": {
+        "critics": {
+            "choose": "Escolher um crítico",
+            "rooster": {
+                "axis": "Granularidade dos lotes"
+            },
+            "cat": {
+                "name": "Gato",
+                "axis": "Envolvente da praça"
+            },
+            "beaver": {
+                "name": "Castor",
+                "axis": "Fases independentes"
+            },
+            "dog": {
+                "name": "Cão",
+                "axis": "Acessibilidade pedonal"
+            },
+            "owl": {
+                "name": "Coruja",
+                "axis": "Processo de aprovação"
+            },
+            "crow": {
+                "name": "Corvo",
+                "axis": "Fachadas para a rua"
+            }
+        },
         "title": "Listas",
         "plans": "Planos",
         "search": "Pesquisar…",

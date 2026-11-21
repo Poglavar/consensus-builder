@@ -1,4 +1,4 @@
-import { openPlanActions } from '../helpers/plan-actions';
+import { openPlanCritics } from '../helpers/plan-actions';
 // Exercise proposal action buttons and assert the resulting UI and stored state:
 // the grain-score Repeat control and Share publishing a design (POST /designs).
 import { test, expect } from '../helpers/fixtures';
@@ -26,7 +26,7 @@ test.describe('proposal detail button controls @features', () => {
     await openCity(page);
     await createSpace(page, 'park');
     await page.locator('#proposals-button').click();
-    await (await openPlanActions(page)).getByRole('button', { name: 'Urban rooster', exact: true }).click();
+    await (await openPlanCritics(page)).getByRole('button', { name: 'Urban rooster Parcel grain', exact: true }).click();
 
     const panel = page.locator('#grain-score-panel');
     await expect(panel.locator('[data-grain-role="result"]')).toBeVisible({ timeout: 20000 });

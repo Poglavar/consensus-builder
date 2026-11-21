@@ -1,9 +1,40 @@
-import { openPlanActions } from '../helpers/plan-actions';
+import { openPlanCritics, openPlanActions } from '../helpers/plan-actions';
 import { test, expect } from '../helpers/fixtures';
 import { applyLayout } from '../helpers/agreements';
 import { openCity, createSpace, showProposal, stubBasemapTiles } from '../helpers/runtime';
 
 test.beforeEach(async ({ mockApi: page }) => { await stubBasemapTiles(page); });
+
+test('the plan critic picker works by keyboard and shows five disabled portraits at phone width', async ({ mockApi: page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openCity(page);
+  await createSpace(page, 'park');
+  await page.keyboard.press('Escape');
+  const row = await openPlanActions(page);
+  const picker = row.locator('.lists-critics');
+  const summary = picker.locator('summary');
+  const rooster = picker.getByRole('button', { name: 'Urban rooster Parcel grain', exact: true });
+
+  await expect(rooster).toBeHidden();
+  await summary.focus();
+  await summary.press('Enter');
+  await expect(summary).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(rooster).toBeFocused();
+  await page.evaluate(() => (window as any).ListsPanel.refresh());
+  await expect(rooster).toBeFocused();
+  const choices = picker.getByRole('button');
+  await expect(choices).toHaveCount(6);
+  for (const label of ['Cat Square enclosure', 'Beaver Independent phases', 'Dog Walkability', 'Owl Approval path', 'Crow Street frontage']) {
+    const choice = picker.getByRole('button', { name: label, exact: true });
+    await expect(choice).toBeDisabled();
+    await expect(choice.locator('img')).toHaveCSS('filter', 'grayscale(1)');
+  }
+  await expect.poll(() => choices.locator('img').evaluateAll(images => images.every(img => (img as HTMLImageElement).naturalWidth > 0))).toBe(true);
+  expect(await picker.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+  await summary.press('Space');
+  await expect(rooster).toBeHidden();
+});
 
 test('the rooster touches each inspected parcel with its beak and highlights only that parcel', async ({ mockApi: page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
@@ -12,14 +43,14 @@ test('the rooster touches each inspected parcel with its beak and highlights onl
     const w:any=window, original=Element.prototype.animate; w.__pecks=0;
     Element.prototype.animate=function(frames:any,options:any){const animation=original.call(this,frames,options);if(this.matches('.grain-rooster__body')&&frames[1]?.transform?.includes('rotate(-35deg)')){animation.pause();animation.currentTime=options.duration*frames[1].offset;w.__pecks++;let release:any;const finished=new Promise(resolve=>release=resolve);w.__releasePeck=()=>{animation.cancel();release();};return{finished,cancel:()=>animation.cancel()}as any;}return animation;};
   });
-  await page.locator('#proposals-button').click(); await (await openPlanActions(page)).getByRole('button', { name: 'Urban rooster', exact: true }).click();
+  await page.locator('#proposals-button').click(); await (await openPlanCritics(page)).getByRole('button', { name: 'Urban rooster Parcel grain', exact: true }).click();
   for(let index=1;index<=2;index++){await expect.poll(()=>page.evaluate(()=>(window as any).__pecks)).toBe(index);const sample=await page.evaluate(()=>{const w:any=window,active=document.querySelector('.grain-score-parcel.is-active')as SVGPathElement,beak=document.querySelector('[data-grain-role="beak"]')as SVGPathElement;const contact=new DOMPoint(28,79).matrixTransform(beak.getScreenCTM()!);return{active:document.querySelectorAll('.grain-score-parcel.is-active').length,inside:active.isPointInFill(contact.matrixTransform(active.getScreenCTM()!.inverse())),selectedProposal:w.currentlyHighlightedProposalId};});expect(sample).toEqual({active:1,inside:true,selectedProposal:null});await page.evaluate(()=>(window as any).__releasePeck());}
   await expect(page.locator('#grain-score-panel [data-grain-role="result"]')).toBeVisible({timeout:15000});
   // The rooster scores the plan as applied on the map: with a member unapplied it asks to apply the
   // plan first, and Cancel leaves the map and the rooster as they were.
   await page.locator('#grain-score-panel').getByRole('button', { name: 'Close grain score', exact: true }).click();
   await page.evaluate(id => (window as any).ProposalManager.unapplyProposal(id), layoutId);
-  await page.locator('#proposals-button').click(); await (await openPlanActions(page)).getByRole('button', { name: 'Urban rooster', exact: true }).click();
+  await page.locator('#proposals-button').click(); await (await openPlanCritics(page)).getByRole('button', { name: 'Urban rooster Parcel grain', exact: true }).click();
   const ask = page.locator('.cb-dialog--confirm');
   await expect(ask).toContainText('The designs of this plan are not on your map.');
   await ask.getByRole('button', { name: 'Cancel', exact: true }).click();

@@ -16,12 +16,12 @@ function lookup(object, path) {
 }
 
 describe('grain score wiring', () => {
-    it('puts one plan-level action beside Plan Stats and loads its code and styles', () => {
+    it('keeps the rooster in the plan critic picker and loads its code and styles', () => {
         expect(index).not.toContain('id="planStatsButton"');
         expect(index).not.toContain('id="roosterScoreButton"');
         expect(lists).toContain('win.showPlanStatsModal(await planOf(row))');
         expect(lists).toContain('win.summonUrbanistRooster(await planOf(row))');
-        expect(lists).toContain('/images/grain-rooster-critic.png');
+        expect(lists).toContain('grain-rooster-critic.png');
         expect(index).toMatch(/'css\/grain-score\.css(?:\?[^']*)?'/);
         expect(index).toContain("'js/proposals/grain-score-rules.js'");
         expect(index).toContain("'js/proposals/grain-score.js'");

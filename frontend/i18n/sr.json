@@ -9353,6 +9353,32 @@
         "refreshResults": "Osveži rezultate"
     },
     "lists": {
+        "critics": {
+            "choose": "Изабери критичара",
+            "rooster": {
+                "axis": "Зрнастост парцела"
+            },
+            "cat": {
+                "name": "Мачка",
+                "axis": "Оивиченост трга"
+            },
+            "beaver": {
+                "name": "Дабар",
+                "axis": "Независне фазе"
+            },
+            "dog": {
+                "name": "Пас",
+                "axis": "Пешачка доступност"
+            },
+            "owl": {
+                "name": "Сова",
+                "axis": "Поступак одобравања"
+            },
+            "crow": {
+                "name": "Врана",
+                "axis": "Уличне фасаде"
+            }
+        },
         "title": "Liste",
         "plans": "Planovi",
         "search": "Pretraži…",

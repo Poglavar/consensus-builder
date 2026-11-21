@@ -78,7 +78,8 @@ for (const width of [1280, 390]) {
     await expect(sheet.locator('#lists-actions [data-lists-import="plans"] .fa-file-import')).toBeVisible();
     await expect(planRow.locator('.lists-item__icon .cb-icon-plan')).toBeVisible();
     await expect(planRow.getByRole('button', { name: 'Plan stats', exact: true })).toBeVisible();
-    const rooster = planRow.getByRole('button', { name: 'Urban rooster', exact: true });
+    await planRow.getByText('Choose a critic', { exact: true }).click();
+    const rooster = planRow.getByRole('button', { name: 'Urban rooster Parcel grain', exact: true });
     await expect(rooster.locator('img')).toBeVisible();
     expect(await rooster.locator('img').evaluate(img => getComputedStyle(img).filter)).toBe('none');
     await planRow.getByRole('button', { name: 'Plan stats', exact: true }).click();

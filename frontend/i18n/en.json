@@ -9301,6 +9301,32 @@
         "refreshResults": "Refresh results"
     },
     "lists": {
+        "critics": {
+            "choose": "Choose a critic",
+            "rooster": {
+                "axis": "Parcel grain"
+            },
+            "cat": {
+                "name": "Cat",
+                "axis": "Square enclosure"
+            },
+            "beaver": {
+                "name": "Beaver",
+                "axis": "Independent phases"
+            },
+            "dog": {
+                "name": "Dog",
+                "axis": "Walkability"
+            },
+            "owl": {
+                "name": "Owl",
+                "axis": "Approval path"
+            },
+            "crow": {
+                "name": "Crow",
+                "axis": "Street frontage"
+            }
+        },
         "title": "Lists",
         "plans": "Plans",
         "search": "Search…",

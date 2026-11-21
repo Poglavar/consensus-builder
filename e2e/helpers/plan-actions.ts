@@ -15,3 +15,10 @@ export async function openPlanActions(page: Page, title = 'Inspection plan', ids
   await expect(row).toBeVisible();
   return row;
 }
+
+export async function openPlanCritics(page: Page) {
+  const row = await openPlanActions(page);
+  const picker = row.locator('.lists-critics');
+  if (await picker.getAttribute('open') === null) await picker.locator('summary').click();
+  return picker;
+}
