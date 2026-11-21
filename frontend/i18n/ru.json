@@ -8620,7 +8620,14 @@
                 "proposed": "Предлагаемые (все прикладные конструкции)",
                 "design": "Конструкция: {{title}}",
                 "plan": "План: {{title}}",
-                "agreement": "Соглашение: {{title}}"
+                "agreement": "Соглашение: {{title}}",
+                "dated": "{{title}} · {{date}}"
+            },
+            "groups": {
+                "today": "Сегодня",
+                "plan": "Планы",
+                "agreement": "Соглашения",
+                "design": "Проекты"
             }
         },
         "reroll": {

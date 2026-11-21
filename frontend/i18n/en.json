@@ -8516,7 +8516,14 @@
                 "proposed": "Proposed (all applied designs)",
                 "design": "Design: {{title}}",
                 "plan": "Plan: {{title}}",
-                "agreement": "Agreement: {{title}}"
+                "agreement": "Agreement: {{title}}",
+                "dated": "{{title}} · {{date}}"
+            },
+            "groups": {
+                "today": "Today",
+                "plan": "Plans",
+                "agreement": "Agreements",
+                "design": "Designs"
             }
         },
         "reroll": {

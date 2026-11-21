@@ -55,6 +55,9 @@ async function recordPasses(page: Page, designId: string) {
   });
 }
 
+// A design's title as a pattern: the picker shows it with the time the design was made.
+const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 test('Compare draws permitted massing and a design side by side on the map and in the model view, swaps and ends', async ({ mockApi: page }) => {
   await mockBuildingScene(page);
   await openCity(page);
@@ -126,7 +129,9 @@ test('Compare draws permitted massing and a design side by side on the map and i
   await openCompareTab(page);
   await expect(page.locator('.planning-compare-note')).toBeHidden();
   await expect(enable).toBeEnabled();
-  await expect(left.locator('option')).toHaveText(['Built today', 'Permitted massing', 'Proposed (all applied designs)', `Design: ${title}`]);
+  // Grouped: today's states, then the design by its title and the time it was made.
+  await expect(left.locator('option')).toHaveText(['Built today', 'Permitted massing', 'Proposed (all applied designs)', new RegExp(`^${escapeRegExp(title)} · .+`)]);
+  expect(await left.locator('optgroup').evaluateAll(groups => groups.map(group => (group as HTMLOptGroupElement).label))).toEqual(['Today', 'Designs']);
   await expect(left).toHaveValue('permitted');
   await selectNativeOption(right, 'built');
   await expect(right).toHaveValue('built');
@@ -208,7 +213,8 @@ test('a saved plan that is not applied is a side: it is read without applying an
   await openCompareTab(page);
   const enable = page.locator('#planning-compare-enable');
   const right = page.locator('#planning-compare-right');
-  await expect(right.locator(`option[value="plan:${cid}"]`)).toHaveText('Plan: Unapplied plan');
+  // In the picker the plan sits under Plans, by its title; a plan never published shows no date.
+  await expect(right.locator(`optgroup[label="Plans"] option[value="plan:${cid}"]`)).toHaveText('Unapplied plan');
   await selectNativeOption(right, `plan:${cid}`);
   await enable.click();
   const retry = page.getByRole('button', { name: 'Retry', exact: true });
@@ -252,7 +258,7 @@ test('a saved design that is not applied is a side of its own, read without appl
   const enable = page.locator('#planning-compare-enable');
   const right = page.locator('#planning-compare-right');
   // No plan holds it: the design itself is offered, and read as Plan stats reads a one-design plan.
-  await expect(right.locator(`option[value="design:${designId}"]`)).toHaveText(`Design: ${title}`);
+  await expect(right.locator(`optgroup[label="Designs"] option[value="design:${designId}"]`)).toHaveText(new RegExp(`^${escapeRegExp(title)} · .+`));
   await selectNativeOption(right, `design:${designId}`);
   await enable.click();
   await expect(page.locator('#map .map-compare__label--after')).toHaveText(`Design: ${title}`, { timeout: 45_000 });

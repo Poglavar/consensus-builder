@@ -8687,7 +8687,14 @@
                 "proposed": "Proposto (todos os projetos aplicados)",
                 "design": "Projeto: {{title}}",
                 "plan": "Plano: {{title}}",
-                "agreement": "Acordo: {{title}}"
+                "agreement": "Acordo: {{title}}",
+                "dated": "{{title}} · {{date}}"
+            },
+            "groups": {
+                "today": "Hoje",
+                "plan": "Planos",
+                "agreement": "Acordos",
+                "design": "Projetos"
             }
         },
         "bound": "Envolvente máxima",

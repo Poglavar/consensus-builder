@@ -8544,7 +8544,14 @@
                 "proposed": "Propuesto (todos los diseños aplicados)",
                 "design": "Diseño: {{title}}",
                 "plan": "Plan: {{title}}",
-                "agreement": "Acuerdo: {{title}}"
+                "agreement": "Acuerdo: {{title}}",
+                "dated": "{{title}} · {{date}}"
+            },
+            "groups": {
+                "today": "Hoy",
+                "plan": "Planes",
+                "agreement": "Acuerdos",
+                "design": "Diseños"
             }
         },
         "reroll": {

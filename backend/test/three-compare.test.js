@@ -146,3 +146,25 @@ describe('whether two sides can be compared yet', () => {
         expect(compare.readiness(pair, id => statuses[id] || null).ready).toBe(true);
     });
 });
+
+describe('the side picker', () => {
+    it('groups today, plans, agreements and designs, each newest first, and keeps when each was made', () => {
+        const options = compare.sideOptions({
+            designs: [{ id: 'old', title: 'Library', at: '2026-11-17T07:07:20Z' }, { id: 'new', title: 'Library', at: '2026-11-17T08:47:29Z' }, { id: 'undated', title: 'Sketch' }],
+            plans: [{ id: 'p1', title: 'Courtyard', at: '2026-11-17T07:06:44Z' }, { id: 'p2', title: 'Courtyard', at: '2026-11-17T08:47:30Z' }, { id: 'local', title: 'Local only' }],
+            agreements: [{ id: 'a1', title: 'Deal', readId: 'p1', at: '2026-11-19T12:00:00Z' }]
+        });
+        const groups = compare.optionGroups(options);
+        expect(groups.map(g => g.group)).toEqual(['today', 'plan', 'agreement', 'design']);
+        expect(groups[0].options.map(o => o.value)).toEqual(['built', 'permitted', 'proposed']);
+        // The same title twice is told apart by its time; one without a time comes after the dated ones.
+        expect(groups[1].options.map(o => [o.id, o.at])).toEqual([['p2', '2026-11-17T08:47:30Z'], ['p1', '2026-11-17T07:06:44Z'], ['local', undefined]]);
+        expect(groups[3].options.map(o => o.id)).toEqual(['new', 'old', 'undated']);
+        // Every option offered is in exactly one group.
+        expect(groups.flatMap(g => g.options).map(o => o.value).sort()).toEqual(options.map(o => o.value).sort());
+    });
+
+    it('leaves out a group with nothing in it', () => {
+        expect(compare.optionGroups(compare.sideOptions({ plans: [{ id: 'p', title: 'P' }] })).map(g => g.group)).toEqual(['today', 'plan']);
+    });
+});

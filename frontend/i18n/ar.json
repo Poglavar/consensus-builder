@@ -8938,7 +8938,14 @@
                 "proposed": "المقترح (كل التصاميم المطبقة)",
                 "design": "تصميم: {{title}}",
                 "plan": "مخطط: {{title}}",
-                "agreement": "اتفاقية: {{title}}"
+                "agreement": "اتفاقية: {{title}}",
+                "dated": "{{title}} · {{date}}"
+            },
+            "groups": {
+                "today": "اليوم",
+                "plan": "الخطط",
+                "agreement": "الاتفاقيات",
+                "design": "التصاميم"
             }
         },
         "bound": "الغلاف الأقصى",

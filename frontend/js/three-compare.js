@@ -24,24 +24,43 @@
     // by its id, the rest by CID) and unapplied the members the plan draws itself. A side that draws
     // members itself carries readId, the plan read for them (a plan's own CID when not given).
     // agreements: [{ id, title, members, unapplied, readId }] where readId is the agreement's plan.
+    // Each design, plan and agreement may carry `at`, the time it was made or published (ISO), which the
+    // picker shows beside its title and orders by; one without a time has none shown.
     function sideOptions({ designs = [], plans = [], agreements = [] } = {}) {
         const options = BASE.map(kind => ({ value: kind, kind }));
+        const atOf = row => (row.at ? { at: String(row.at) } : {});
         for (const design of designs) {
             if (design?.id == null) continue;
             const read = design.cid != null ? { members: [String(design.cid)], unapplied: [String(design.cid)], readId: String(design.readId) } : {};
-            options.push({ value: `design:${design.id}`, kind: 'design', id: String(design.id), title: design.title || String(design.id), ...read });
+            options.push({ value: `design:${design.id}`, kind: 'design', id: String(design.id), title: design.title || String(design.id), ...atOf(design), ...read });
         }
         for (const plan of plans) {
             if (plan?.id == null) continue;
-            options.push({ value: `plan:${plan.id}`, kind: 'plan', id: String(plan.id), title: plan.title || String(plan.id),
+            options.push({ value: `plan:${plan.id}`, kind: 'plan', id: String(plan.id), title: plan.title || String(plan.id), ...atOf(plan),
                 members: (plan.members || []).map(String), unapplied: (plan.unapplied || []).map(String), readId: String(plan.id) });
         }
         for (const agreement of agreements) {
             if (agreement?.id == null || agreement.readId == null) continue;
-            options.push({ value: `agreement:${agreement.id}`, kind: 'agreement', id: String(agreement.id), title: agreement.title || String(agreement.id),
+            options.push({ value: `agreement:${agreement.id}`, kind: 'agreement', id: String(agreement.id), title: agreement.title || String(agreement.id), ...atOf(agreement),
                 members: (agreement.members || []).map(String), unapplied: (agreement.unapplied || []).map(String), readId: String(agreement.readId) });
         }
         return options;
+    }
+
+    // The picker's groups, in order: today's states, then plans, agreements and designs, each newest
+    // first (a side with no time after the dated ones, in the order given). Empty groups are left out.
+    const GROUPS = Object.freeze(['today', 'plan', 'agreement', 'design']);
+    function optionGroups(options) {
+        const groupOf = option => (BASE.includes(option.kind) ? 'today' : option.kind);
+        const timeOf = option => { const time = Date.parse(option.at); return Number.isFinite(time) ? time : null; };
+        const newestFirst = (a, b) => {
+            const ta = timeOf(a.option), tb = timeOf(b.option);
+            if (ta !== tb) return ta === null ? 1 : tb === null ? -1 : tb - ta;
+            return a.index - b.index;
+        };
+        return GROUPS.map(group => ({ group, options: (options || []).map((option, index) => ({ option, index }))
+            .filter(row => groupOf(row.option) === group).sort(newestFirst).map(row => row.option) }))
+            .filter(row => row.options.length);
     }
 
     // A select value back to its side, or null when the value names nothing offered any more.
@@ -123,7 +142,7 @@
         return { ready: !reading.length && !failed.length, reading, failed };
     }
 
-    const pure = { BASE, sideOptions, parseSide, appliesDesign, showsOn, splitDescriptors, scissorRects, readiness };
+    const pure = { BASE, sideOptions, optionGroups, parseSide, appliesDesign, showsOn, splitDescriptors, scissorRects, readiness };
     if (!global || !global.document) return Object.freeze(pure);
 
     // ── the Compare tab and the divider ──────────────────────────────────────────────────────
@@ -150,6 +169,15 @@
             case 'agreement': return t('planningViews.compare.options.agreement', 'Agreement: {{title}}', { title: option.title });
             default: return option.value;
         }
+    }
+
+    // An option in the picker: inside its group the kind goes without saying, and the time tells two
+    // plans or designs of the same title apart.
+    const GROUP_LABELS = { today: 'Today', plan: 'Plans', agreement: 'Agreements', design: 'Designs' };
+    function menuLabel(option) {
+        if (BASE.includes(option.kind)) return optionLabel(option);
+        const date = option.at ? global.CbFormat?.formatDateTime?.(option.at) : '';
+        return date ? t('planningViews.compare.options.dated', '{{title}} · {{date}}', { title: option.title, date }) : option.title;
     }
 
     const el = id => doc.getElementById(id);
@@ -194,22 +222,23 @@
         const designs = [];
         for (const proposal of saved) {
             const title = proposal.title || proposal.name || String(proposal.proposalId);
-            if (isApplied(proposal)) { designs.push({ id: String(proposal.proposalId), title }); continue; }
+            const at = proposal.authoredAt || proposal.createdAt || null;
+            if (isApplied(proposal)) { designs.push({ id: String(proposal.proposalId), title, at }); continue; }
             if (!inCity(proposal.city)) continue;
             const cid = cidOf(proposal);
             const row = cid ? designRead(proposal, cid) : null;
             if (!row) continue;
             planRows.set(String(row.cid), row);
-            designs.push({ id: String(proposal.proposalId), title, cid, readId: String(row.cid) });
+            designs.push({ id: String(proposal.proposalId), title, at, cid, readId: String(row.cid) });
         }
         const plans = (global.PlanWorkspace?.list?.() || []).filter(row => inCity(row.content?.view?.city)).map(row => {
             planRows.set(String(row.cid), row);
-            return { id: String(row.cid), title: row.content?.title || String(row.cid), ...global.CompareUnapplied.membersOf(row, copies) };
+            return { id: String(row.cid), title: row.content?.title || String(row.cid), at: row.publishedAt || null, ...global.CompareUnapplied.membersOf(row, copies) };
         });
         // An agreement draws its plan; one without a plan yet is no side.
         const agreements = (global.AgreementStore?.list?.() || []).filter(row => row?.plan?.cid && inCity(row.city)).map(row => {
             if (!planRows.has(String(row.plan.cid))) planRows.set(String(row.plan.cid), row.plan);
-            return { id: String(row.id), title: row.title || String(row.id), readId: String(row.plan.cid), ...global.CompareUnapplied.membersOf(row.plan, copies) };
+            return { id: String(row.id), title: row.title || String(row.id), at: row.createdAt || null, readId: String(row.plan.cid), ...global.CompareUnapplied.membersOf(row.plan, copies) };
         });
         return pure.sideOptions({ designs, plans, agreements });
     }
@@ -258,7 +287,12 @@
     function fillSelect(select, value) {
         if (!select) return;
         select.replaceChildren();
-        for (const option of state.options) select.add(new Option(optionLabel(option), option.value));
+        for (const { group, options } of pure.optionGroups(state.options)) {
+            const node = doc.createElement('optgroup');
+            node.label = t(`planningViews.compare.groups.${group}`, GROUP_LABELS[group]);
+            for (const option of options) node.appendChild(new Option(menuLabel(option), option.value));
+            select.appendChild(node);
+        }
         select.value = pure.parseSide(value, state.options) ? value : state.options[0].value;
     }
 

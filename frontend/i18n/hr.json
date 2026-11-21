@@ -8562,7 +8562,14 @@
                 "proposed": "Predloženo (svi primijenjeni dizajni)",
                 "design": "Dizajn: {{title}}",
                 "plan": "Plan: {{title}}",
-                "agreement": "Sporazum: {{title}}"
+                "agreement": "Sporazum: {{title}}",
+                "dated": "{{title}} · {{date}}"
+            },
+            "groups": {
+                "today": "Danas",
+                "plan": "Planovi",
+                "agreement": "Sporazumi",
+                "design": "Projekti"
             }
         },
         "reroll": {
