@@ -372,9 +372,10 @@ Approval links select Mint, Fund, accept, Execute, Cancel, Expire or a bet; load
 The current app has no pledge/donation wallet form, so those approval requests explicitly refuse;
 local `ugt_pledge` and `ugt_donate` remain available. `ugt_compare` reports authored floor area, unioned green/road area, bound parcel inputs, full
 building removals and partial cuts using the app’s demolition thresholds, the removed floor area, the
-money of each alternative (value and construction cost of its new floor area, the profit after the
-value of the floor area it removes, its annual rent and the rent’s yield on that cost, at the city’s
-rates or at the `prices` given, each with its source, as in Plan stats), and the shared per-party land/cash ledger for agreements. `ugt_parcel_context`
+money of each alternative (value of its new floor area, its all-in cost of construction, land, the
+sale tax inside the value and the value of the floor area it removes, the profit, the annual rent and
+its yield on the cost without the tax, at the city’s rates or at the `prices` given, each with its
+source, as in Plan stats), and the shared per-party land/cash ledger for agreements. `ugt_parcel_context`
 returns the city’s economic rates with their basis, date and source. Unsupported, truncated or missing building stock remains unknown
 with a recovery. Design-only alternatives have no agreement ledger. CID resolution preserves the
 indexed parcel source in comparisons, forks and agreement drafts.

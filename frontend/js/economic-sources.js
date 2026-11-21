@@ -6,9 +6,12 @@
     if (root) root.EconomicSources = api;
 })(typeof window !== 'undefined' ? window : null, function () {
     'use strict';
-    // Rent is per m² of floor area per month, the way rents are quoted and published.
-    const METRICS = Object.freeze({ land: 'm2-land', roadLand: 'm2-land', sale: 'm2-floor', construction: 'm2-floor', rent: 'm2-floor-month' });
-    const BASES = Object.freeze(['assumption', 'policy-appraisal', 'market', 'construction-cost']);
+    // Rent is per m² of floor area per month, the way rents are quoted and published. saleTax is the
+    // share of a sale price that is tax (VAT on new housing, 0.16 for 16 %), applied to the price as
+    // quoted: sale prices include the tax where the place charges it.
+    const METRICS = Object.freeze({ land: 'm2-land', roadLand: 'm2-land', sale: 'm2-floor', construction: 'm2-floor', rent: 'm2-floor-month',
+        saleTax: 'share-of-sale' });
+    const BASES = Object.freeze(['assumption', 'policy-appraisal', 'market', 'construction-cost', 'statutory']);
     // The editable starting assumptions in a city's own currency. Rent 15 a month is a 4.5 % gross
     // yield on the 4,000 sale price.
     const FLOOR_PRICES = Object.freeze({
@@ -48,7 +51,9 @@
                 || !BASES.includes(row.basis)
                 || row.metric === 'construction' && !['assumption', 'construction-cost'].includes(row.basis)
                 || ['sale', 'rent'].includes(row.metric) && !['assumption', 'market'].includes(row.basis)
-                || row.metric !== 'construction' && row.basis === 'construction-cost') {
+                || row.metric !== 'construction' && row.basis === 'construction-cost'
+                || row.metric === 'saleTax' && (!['assumption', 'statutory'].includes(row.basis) || row.amount >= 1)
+                || row.metric !== 'saleTax' && row.basis === 'statutory') {
                 throw new Error('Invalid economic rate, unit or basis.');
             }
             seen.add(row.metric);
@@ -81,6 +86,8 @@
             if (!fiat(currency)) return [];
             const rates = ['sale', 'construction', 'rent'].map(metric => ({ metric, unit: METRICS[metric],
                 amount: FLOOR_PRICES[metric].perSqm, currency, basis: 'assumption' }));
+            // No sale tax until a source states one; the slider and Settings can set it.
+            rates.push({ metric: 'saleTax', unit: METRICS.saleTax, amount: 0, currency, basis: 'assumption' });
             if (currency === 'EUR') rates.push(...[['land', 133], ['roadLand', 100]].map(([metric, amount]) =>
                 ({ metric, unit: METRICS[metric], amount, currency, basis: 'assumption' })));
             return adapters['rate-table']({ version: 1, id: source.id, name: 'Editable scenario assumptions', adapter: 'rate-table', rates });
@@ -114,11 +121,20 @@
         }
         return result;
     }
+    // Land per m² of land and the sale tax as a share have ranges but no starting amount: a place
+    // without a source has no land price, and its sale tax starts as the 0 assumption.
+    const SLIDER_RANGES = Object.freeze({ ...FLOOR_PRICES,
+        land: Object.freeze({ perSqm: null, min: 0, max: 2000, step: 10 }),
+        saleTax: Object.freeze({ perSqm: null, min: 0, max: 0.3, step: 0.01 }) });
     // The standard range is in EUR-sized units; an observation widens it to half and twice its own
     // amount where those fall outside, so a price in a currency of other magnitude (KZT) can still
-    // be slid above it as well as below.
-    function slider(metric, observation) {
-        const standard = FLOOR_PRICES[metric];
+    // be slid above it as well as below. Without an observation, `scale` (the city's sale price over
+    // the 4,000 standard, never below 1) sizes a money range to the currency instead.
+    function slider(metric, observation, scale = 1) {
+        const base = SLIDER_RANGES[metric];
+        const factor = metric === 'saleTax' || !(scale > 1) ? 1 : scale;
+        // A scaled range moves freely: its step would be an odd number of the currency's units.
+        const standard = { ...base, min: base.min * factor, max: base.max * factor, step: factor > 1 ? 'any' : base.step };
         const amount = observation?.amount ?? null;
         return { ...standard, perSqm: amount,
             step: observation && observation.sourceId !== 'scenario-assumptions' ? 'any' : standard.step,

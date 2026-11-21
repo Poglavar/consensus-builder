@@ -162,7 +162,9 @@
 
         const builtFloorArea = builtVolume / floorHeightM;
         const proposedFloorArea = proposedVolume / floorHeightM;
-        return { builtVolume, proposedVolume, builtFloorArea, proposedFloorArea };
+        // The land measured: what a new building here pays for (computeValueComparison landAreaM2).
+        const landM2 = turf.area(parcelFeature);
+        return { builtVolume, proposedVolume, builtFloorArea, proposedFloorArea, landM2 };
     }
 
     // The modeled figures for the panel apply a user-selected rate per m² of gross floor area, in
@@ -193,7 +195,7 @@
         return { gain, currentValue, hasProposed, avg, model };
     }
 
-    const METRIC_KEYS = ['builtVolume', 'proposedVolume', 'builtFloorArea', 'proposedFloorArea'];
+    const METRIC_KEYS = ['builtVolume', 'proposedVolume', 'builtFloorArea', 'proposedFloorArea', 'landM2'];
 
     function sumMetrics(list) {
         const out = {};
@@ -232,7 +234,7 @@
             source: useSite ? 'site' : 'parcels',
             parcelCount: unbound ? null : parcels.length,
             parcelFloorAreas: (useSite && parcels.length)
-                ? { built: parcelTotals.builtFloorArea, proposed: parcelTotals.proposedFloorArea }
+                ? { built: parcelTotals.builtFloorArea, proposed: parcelTotals.proposedFloorArea, land: parcelTotals.landM2 }
                 : null,
             siteM2: ground ? finiteOrNull(ground.siteM2) : null,
             openGroundM2: (ground && (unbound || ground.partial)) ? finiteOrNull(ground.openGroundM2) : null
@@ -241,19 +243,24 @@
 
     // The 3D panel's value comparison, one column per layer: Built (what stands), Planned (the
     // permitted massing) and Proposed. A column whose floor area is not a number is not available
-    // and stays empty (the panel greys it). Every figure is a model at the two prices the user
-    // slides, in `currency`, not an appraisal:
-    // - value = floor area × sale price per m²;
-    // - Planned and Proposed are new construction: construction cost = their whole floor area ×
-    //   construction cost per m², and profit = value − construction cost − the built value they
-    //   replace (unknown while the built value is). Proposed with no massing is not available.
-    // `avgProfitPerParcel` divides the proposed profit over the bound parcels (`parcelFloorAreas`
-    // when the totals also cover open ground), null without parcels or proposed massing.
+    // and stays empty (the panel greys it). Every figure is a model at the prices the user slides,
+    // in `currency`, not an appraisal:
+    // - value = floor area × sale price;
+    // - Planned and Proposed are new construction, counted by CityMoney.newBuildMoney (the rule of
+    //   Plan stats and the MCP comparison): the all-in cost is construction (floor area × construction
+    //   cost), the land (`landAreaM2` × land price), the sale tax inside the value and the built value
+    //   they replace; profit = value − all-in cost. Unknown while any of those is. Proposed with no
+    //   massing is not available.
+    // `avgProfitPerParcel` divides the proposed profit over the bound parcels (`parcelFloorAreas`, with
+    // their land, when the totals also cover open ground), null without parcels or proposed massing.
     const finite = value => typeof value === 'number' && Number.isFinite(value);
     const cityMoney = () => (typeof window !== 'undefined' && window.CityMoney)
         || (typeof require === 'function' ? require('../city-money.js') : null);
+    const UNAVAILABLE = Object.freeze({ available: false, floorArea: null, value: null, constructionCost: null, landCost: null,
+        saleTax: null, replacedValue: null, totalCost: null, profit: null });
 
-    function computeValueComparison({ floorAreas = {}, salePerM2, constructionPerM2, currency, parcelCount = null, parcelFloorAreas = null } = {}) {
+    function computeValueComparison({ floorAreas = {}, landAreaM2 = null, salePerM2, constructionPerM2, landPerM2 = null, saleTaxShare = null,
+        currency, parcelCount = null, parcelFloorAreas = null } = {}) {
         if (typeof currency !== 'string' || !currency) throw new Error('computeValueComparison needs the currency its prices are in.');
         // A source may have no usable rate for one metric. Missing prices keep their dependent
         // amounts unknown; they do not prevent the geometry or the other metric from being shown.
@@ -262,29 +269,27 @@
         const area = value => (finite(value) && value >= 0 ? value : null);
         const builtArea = area(floorAreas.built);
         const builtValue = builtArea === null || sale === null ? null : builtArea * sale;
-        // The arithmetic is CityMoney.newBuildMoney, the one Plan stats and the MCP comparison use.
+        const money = (floorArea, replaced, land) => cityMoney().newBuildMoney({ floorAreaM2: floorArea, replacedFloorAreaM2: replaced,
+            landAreaM2: land, salePerM2: sale, constructionPerM2: cost, landPerM2, saleTaxShare });
         const newBuild = (floorArea, available) => {
-            if (!available) return { available: false, floorArea: null, value: null, constructionCost: null, profit: null };
-            const { value, constructionCost, profit } = cityMoney().newBuildMoney({
-                floorAreaM2: floorArea, replacedFloorAreaM2: builtArea, salePerM2: sale, constructionPerM2: cost });
-            return { available: true, floorArea, value, constructionCost, profit };
+            if (!available) return UNAVAILABLE;
+            const { value, constructionCost, landCost, saleTax, replacedValue, totalCost, profit } = money(floorArea, builtArea, area(landAreaM2));
+            return { available: true, floorArea, value, constructionCost, landCost, saleTax, replacedValue, totalCost, profit };
         };
         const plannedArea = area(floorAreas.planned);
         const proposedArea = area(floorAreas.proposed);
         const columns = {
-            built: builtArea === null
-                ? { available: false, floorArea: null, value: null, constructionCost: null, profit: null }
-                : { available: true, floorArea: builtArea, value: builtValue, constructionCost: null, profit: null },
+            built: builtArea === null ? UNAVAILABLE
+                : { ...UNAVAILABLE, available: true, floorArea: builtArea, value: builtValue },
             planned: newBuild(plannedArea, plannedArea !== null),
             proposed: newBuild(proposedArea, proposedArea !== null && proposedArea > 0)
         };
         let avgProfitPerParcel = null;
         if (columns.proposed.available && columns.proposed.profit !== null && typeof parcelCount === 'number' && parcelCount > 0) {
-            const proposedOnParcels = parcelFloorAreas ? area(parcelFloorAreas.proposed) : proposedArea;
-            const builtOnParcels = parcelFloorAreas ? area(parcelFloorAreas.built) : builtArea;
-            if (proposedOnParcels !== null && builtOnParcels !== null) {
-                avgProfitPerParcel = (proposedOnParcels * (salePerM2 - constructionPerM2) - builtOnParcels * salePerM2) / parcelCount;
-            }
+            const profit = parcelFloorAreas
+                ? money(area(parcelFloorAreas.proposed), area(parcelFloorAreas.built), area(parcelFloorAreas.land)).profit
+                : columns.proposed.profit;
+            if (profit !== null) avgProfitPerParcel = profit / parcelCount;
         }
         return { currency, salePerM2: sale, constructionPerM2: cost, columns, avgProfitPerParcel };
     }

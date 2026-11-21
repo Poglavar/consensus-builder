@@ -429,6 +429,17 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     border-top: 1px solid var(--cb-line);
 }
 
+/* The all-in cost's parts, under a disclosure below the comparison table. */
+.three-mode-parcel-panel .parcel-panel-cost-details {
+    margin: 0 0 var(--cb-space-2);
+    font-size: var(--cb-text-sm);
+}
+
+.three-mode-parcel-panel .parcel-panel-cost-details summary {
+    cursor: pointer;
+    color: var(--cb-text-muted);
+}
+
 /* The Profit row label explains its formula on hover. */
 .three-mode-parcel-panel .parcel-panel-table th[title] {
     cursor: help;

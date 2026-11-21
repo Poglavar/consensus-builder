@@ -69,8 +69,10 @@
         for (const metric of Object.keys(contract(global).METRICS)) {
             append('dt', t(metric), list);
             const row = rates[metric];
-            const content = row ? global.CbFormat.formatMoney(row.amount, row.currency, { maxFractionDigits: 2 })
-                + (row.unit === 'm2-floor-month' ? t('perMonth') : ' / m²') + ' · ' + describe(row, global) : t('unavailable');
+            const amount = !row ? '' : row.unit === 'share-of-sale'
+                ? global.CbFormat.formatPercent(row.amount, { maxFractionDigits: 1 })
+                : global.CbFormat.formatMoney(row.amount, row.currency, { maxFractionDigits: 2 }) + (row.unit === 'm2-floor-month' ? t('perMonth') : ' / m²');
+            const content = row ? amount + ' · ' + describe(row, global) : t('unavailable');
             append('dd', content, list);
         }
         append('h3', t('manual'), body);
@@ -81,11 +83,12 @@
         name.value = active?.name || t('manual'); name.required = true;
         const fields = {};
         for (const [metric, unit] of Object.entries(contract(global).METRICS)) {
-            const unitText = { 'm2-land': 'landUnit', 'm2-floor': 'floorUnit', 'm2-floor-month': 'rentUnit' }[unit];
+            const unitText = { 'm2-land': 'landUnit', 'm2-floor': 'floorUnit', 'm2-floor-month': 'rentUnit', 'share-of-sale': 'taxUnit' }[unit];
             const label = append('label', t(metric) + ' · ' + t(unitText, { currency }), form);
             const field = append('input', '', form); field.id = 'economic-rate-' + metric; label.htmlFor = field.id;
             field.type = 'number'; field.min = '0'; field.step = 'any';
-            field.placeholder = rates[metric]?.amount == null ? '—' : String(rates[metric].amount);
+            // The sale tax is typed as a percentage and stored as a share (16 → 0.16).
+            field.placeholder = rates[metric]?.amount == null ? '—' : String(unit === 'share-of-sale' ? rates[metric].amount * 100 : rates[metric].amount);
             fields[metric] = field;
         }
         const footer = append('div', '', dialog, 'cb-dialog__footer');
@@ -102,7 +105,7 @@
                 const retained = active?.rates.filter(row => !changed.some(([metric]) => metric === row.metric)) || [];
                 saveChoice(city, { version: 1, id: 'local-rates', name: name.value, adapter: 'rate-table', url: active?.url,
                     rates: [...retained, ...changed.map(([metric, field]) => ({ metric, unit: contract(global).METRICS[metric],
-                        amount: Number(field.value), currency, basis: 'assumption' }))] }, global);
+                        amount: metric === 'saleTax' ? Number(field.value) / 100 : Number(field.value), currency, basis: 'assumption' }))] }, global);
                 reload();
             } catch (_) { status.textContent = t('invalid'); }
         });

@@ -124,40 +124,53 @@ describe('computeGain', () => {
 
 // The 3D panel's Built / Planned / Proposed comparison at a sale price and a construction cost.
 describe('computeValueComparison', () => {
-    const prices = { salePerM2: 4000, constructionPerM2: 2000, currency: 'GBP' };
+    // 200 m² of land at 500 a m², no sale tax unless a test sets one.
+    const prices = { salePerM2: 4000, constructionPerM2: 2000, landPerM2: 500, saleTaxShare: 0, landAreaM2: 200, currency: 'GBP' };
 
-    it('values every column and charges construction only on new building', () => {
+    it('values every column and charges new building its all-in cost: construction, land, tax and the built value', () => {
         const c = computeValueComparison({ floorAreas: { built: 100, planned: 400, proposed: 300 }, ...prices });
-        expect(c.columns.built).toEqual({ available: true, floorArea: 100, value: 400000, constructionCost: null, profit: null });
-        // 400 m² × 4,000 − 400 m² × 2,000 − the 400,000 the built floor area is worth
-        expect(c.columns.planned).toMatchObject({ available: true, value: 1600000, constructionCost: 800000, profit: 400000 });
-        expect(c.columns.proposed).toMatchObject({ available: true, value: 1200000, constructionCost: 600000, profit: 200000 });
+        expect(c.columns.built).toMatchObject({ available: true, floorArea: 100, value: 400000, totalCost: null, profit: null });
+        // 400 m² × 4,000 − (400 m² × 2,000 + 200 m² × 500 + the 400,000 the built floor area is worth)
+        expect(c.columns.planned).toMatchObject({ available: true, value: 1600000, constructionCost: 800000, landCost: 100000,
+            saleTax: 0, replacedValue: 400000, totalCost: 1300000, profit: 300000 });
+        expect(c.columns.proposed).toMatchObject({ available: true, value: 1200000, constructionCost: 600000, totalCost: 1100000, profit: 100000 });
         expect(c.currency).toBe('GBP');
+    });
+
+    it('takes the sale tax out of the value it is inside', () => {
+        const c = computeValueComparison({ floorAreas: { built: 0, proposed: 300 }, ...prices, saleTaxShare: 0.25 });
+        // 1,200,000 includes 25 % tax: 240,000 of it is tax.
+        expect(c.columns.proposed.saleTax).toBeCloseTo(240000);
+        expect(c.columns.proposed.profit).toBeCloseTo(1200000 - 600000 - 100000 - 240000);
     });
 
     it('greys out what is not there: no permitted massing, no proposed massing', () => {
         const c = computeValueComparison({ floorAreas: { built: 100, planned: null, proposed: 0 }, ...prices });
-        expect(c.columns.planned).toEqual({ available: false, floorArea: null, value: null, constructionCost: null, profit: null });
+        expect(c.columns.planned).toMatchObject({ available: false, floorArea: null, value: null, totalCost: null, profit: null });
         expect(c.columns.proposed.available).toBe(false);
         expect(c.columns.built.available).toBe(true);
     });
 
-    it('keeps a profit unknown while the built value is', () => {
-        const c = computeValueComparison({ floorAreas: { built: null, planned: 400, proposed: 300 }, ...prices });
-        expect(c.columns.built.available).toBe(false);
-        expect(c.columns.proposed).toMatchObject({ available: true, value: 1200000, profit: null });
+    it('keeps a profit unknown while the built value, the land or its price is', () => {
+        const noBuilt = computeValueComparison({ floorAreas: { built: null, planned: 400, proposed: 300 }, ...prices });
+        expect(noBuilt.columns.built.available).toBe(false);
+        expect(noBuilt.columns.proposed).toMatchObject({ available: true, value: 1200000, profit: null });
+        const noLandPrice = computeValueComparison({ floorAreas: { built: 0, proposed: 300 }, ...prices, landPerM2: null });
+        expect(noLandPrice.columns.proposed).toMatchObject({ constructionCost: 600000, landCost: null, totalCost: null, profit: null });
+        const noLand = computeValueComparison({ floorAreas: { built: 0, proposed: 300 }, ...prices, landAreaM2: null });
+        expect(noLand.columns.proposed.profit).toBeNull();
     });
 
     it('can lose money when building costs more than the floor area adds', () => {
         const c = computeValueComparison({ floorAreas: { built: 300, proposed: 320 }, ...prices });
-        expect(c.columns.proposed.profit).toBe(320 * 2000 - 300 * 4000);
+        expect(c.columns.proposed.profit).toBe(320 * 2000 - 200 * 500 - 300 * 4000);
     });
 
-    it('averages the proposed profit over the bound parcels only', () => {
+    it('averages the proposed profit over the bound parcels and their land only', () => {
         const c = computeValueComparison({ floorAreas: { built: 0, proposed: 400 }, ...prices, parcelCount: 2,
-            parcelFloorAreas: { built: 0, proposed: 200 } });
-        expect(c.columns.proposed.profit).toBe(400 * 2000);
-        expect(c.avgProfitPerParcel).toBe((200 * 2000) / 2);
+            parcelFloorAreas: { built: 0, proposed: 200, land: 100 } });
+        expect(c.columns.proposed.profit).toBe(400 * 2000 - 200 * 500);
+        expect(c.avgProfitPerParcel).toBe((200 * 2000 - 100 * 500) / 2);
         expect(computeValueComparison({ floorAreas: { built: 0, proposed: 400 }, ...prices, parcelCount: null }).avgProfitPerParcel).toBeNull();
     });
 
@@ -168,7 +181,7 @@ describe('computeValueComparison', () => {
     it('keeps amounts dependent on missing source prices unknown without hiding floor area', () => {
         const withoutSale = computeValueComparison({ floorAreas: { built: 100, proposed: 300 }, ...prices, salePerM2: null, parcelCount: 2 });
         expect(withoutSale.columns.built.value).toBeNull();
-        expect(withoutSale.columns.proposed).toMatchObject({ available: true, floorArea: 300, value: null, constructionCost: 600000, profit: null });
+        expect(withoutSale.columns.proposed).toMatchObject({ available: true, floorArea: 300, value: null, constructionCost: 600000, landCost: 100000, profit: null });
         expect(withoutSale.avgProfitPerParcel).toBeNull();
         const withoutCost = computeValueComparison({ floorAreas: { built: 100, proposed: 300 }, ...prices, constructionPerM2: null });
         expect(withoutCost.columns.proposed).toMatchObject({ value: 1200000, constructionCost: null, profit: null });

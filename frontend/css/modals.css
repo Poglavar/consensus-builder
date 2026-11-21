@@ -362,6 +362,43 @@ body.site-intro-open { overflow: hidden; }
     width: 100%;
 }
 
+/* The prices: label, slider, exact number, one row each, above the other assumptions. */
+.plan-stats-prices {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 2fr) 110px;
+    align-items: center;
+    gap: var(--cb-space-2) var(--cb-space-3);
+    margin-bottom: var(--cb-space-3);
+}
+
+.plan-stats-slider {
+    width: 100%;
+    cursor: pointer;
+}
+
+/* The all-in cost's parts, under the figures. */
+.plan-stats-cost-details {
+    margin: var(--cb-space-2) 0;
+}
+
+.plan-stats-cost-details summary {
+    cursor: pointer;
+    color: var(--cb-text-muted);
+}
+
+.plan-stats-cost-list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--cb-space-1) var(--cb-space-3);
+    margin: var(--cb-space-2) 0 0;
+}
+
+.plan-stats-cost-list dd {
+    margin: 0;
+    text-align: right;
+    font-weight: var(--cb-weight-semibold);
+}
+
 .plan-stats-suffix {
     font-size: var(--cb-text-md);
     color: var(--cb-text-muted);
@@ -537,6 +574,15 @@ body.site-intro-open { overflow: hidden; }
 @media (max-width: 767.98px) {
     .plan-stats-assumptions {
         grid-template-columns: 90px minmax(0, 1fr);
+    }
+
+    /* A price's label on its own line, its slider and number under it. */
+    .plan-stats-prices {
+        grid-template-columns: minmax(0, 1fr) 96px;
+    }
+
+    .plan-stats-prices .plan-stats-suffix {
+        grid-column: 1 / -1;
     }
 }
 

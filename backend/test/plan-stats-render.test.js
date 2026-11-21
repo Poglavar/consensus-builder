@@ -91,7 +91,8 @@ function makeWindow(proposals, { city = null } = {}) {
         PlanAnalysis: { prepare: async plan => {
             if (!plan) throw new Error('Choose a plan.');
             if (plan.failure) throw new Error(plan.failure);
-            return { plan, records: (plan.records || proposals).map(p => ({ ...p, applied: true })), materializedFeatures: [], cadastralFeatures: plan.parcels || [] };
+            return { plan, records: (plan.records || proposals).map(p => ({ ...p, applied: true })), materializedFeatures: [], cadastralFeatures: plan.parcels || [],
+                landFeature: plan.landFeature || null };
         } },
         CbDialog: { open: options => { window.openedDialog = options; return options; } },
         // Land split and present state: real arithmetic is in present-state.test.js; here the figures
@@ -173,7 +174,8 @@ beforeEach(() => {
 
 describe('opening the dialog', () => {
     it('builds it and fills every figure, without throwing', async () => {
-        const window = openDialog(plan);
+        // A place with money: without a currency there is no price, and the sales value reads "—".
+        const window = openDialog(plan, { city: { currency: { code: 'EUR' } } });
         await window.showPlanStatsModal({ content: { title: 'Garden plan' } });
 
         ['resulting-parcels', 'buildings', 'floor-area', 'apartments', 'people', 'jobs', 'sales-value']
@@ -584,71 +586,98 @@ describe('public and private land in Plan stats', () => {
     });
 });
 
-describe('construction cost and profit in Plan stats', () => {
-    // The city's starting prices (scenario assumptions): 4,000 sale and 2,000 construction per m².
+describe('the all-in cost and profit in Plan stats', () => {
+    // A euro city's starting prices (scenario assumptions): 4,000 sale, 2,000 construction, 133 land
+    // per m² of land, no sale tax, 15 rent a month. The plan's land is one building's footprint.
     const eur = amount => CbFormat.formatMoney(amount, 'EUR', { missing: '—', maxFractionDigits: 0 });
     const gfaOf = records => planYield.planYield(records, { appliedOnly: true }).total.grossFloorAreaM2;
     const existing = () => ({ ...block(null), proposalId: 'built:old' });
+    const land = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: SIBENIK } };
+    const landM2 = planYield.geometryAreaM2(land);
+    const gfa = () => gfaOf([block('d-1')]);
+    async function openOn(extra = {}, currency = 'EUR') {
+        const window = openDialog([block('d-1')], { city: { currency: { code: currency } } });
+        await window.showPlanStatsModal({ content: { title: 'Plan' }, cleared: [], landFeature: land, ...extra });
+        return window;
+    }
+    const slide = (window, id, value) => {
+        const slider = window.document.getElementById(`${id}-slider`);
+        slider.value = String(value);
+        slider.listeners.input.forEach(fn => fn());
+    };
 
-    it('prices the new floor area at both prices, and takes off the value of what the plan clears', async () => {
-        const open = openDialog([block('d-1')], { city: { currency: { code: 'EUR' } } });
-        await open.showPlanStatsModal({ content: { title: 'On open land' }, cleared: [] });
-        const gfa = gfaOf([block('d-1')]);
-        expect(gfa).toBeGreaterThan(0);
-        expect(open.document.getElementById('plan-stats-construction').value).toBe('2000');
-        expect(slot(open, 'construction-cost')).toBe(eur(gfa * 2000));
-        expect(slot(open, 'profit')).toBe(eur(gfa * (4000 - 2000)));
-
-        // Clearing an existing building of the same floor area costs its value at the sale price.
-        const rebuild = openDialog([block('d-1')], { city: { currency: { code: 'EUR' } } });
-        await rebuild.showPlanStatsModal({ content: { title: 'Rebuild' }, cleared: [{ before: existing(), after: null }] });
-        expect(slot(rebuild, 'construction-cost')).toBe(eur(gfa * 2000));
-        expect(slot(rebuild, 'profit')).toBe(eur(gfa * (4000 - 2000) - gfaOf([existing()]) * 4000));
+    it('adds construction, the plan\'s land and the sale tax into one cost, broken down under Cost details', async () => {
+        const window = await openOn();
+        expect(window.document.getElementById('plan-stats-land').value).toBe('133');
+        expect(window.document.getElementById('plan-stats-sale-tax').value).toBe('0');
+        const total = gfa() * 2000 + landM2 * 133;
+        expect(slot(window, 'total-cost')).toBe(eur(total));
+        expect(slot(window, 'cost-construction')).toBe(eur(gfa() * 2000));
+        expect(slot(window, 'cost-land')).toBe(eur(landM2 * 133));
+        expect(slot(window, 'cost-tax')).toBe(eur(0));
+        expect(slot(window, 'cost-replaced')).toBe(eur(0));
+        expect(slot(window, 'profit')).toBe(eur(gfa() * 4000 - total));
     });
 
-    it('reads the construction price typed in, and an empty one leaves both figures unknown', async () => {
-        const window = openDialog([block('d-1')], { city: { currency: { code: 'EUR' } } });
-        await window.showPlanStatsModal({ content: { title: 'On open land' }, cleared: [] });
-        const gfa = gfaOf([block('d-1')]);
+    it('moves the figures with each price slider, the tax as a share of the sale price', async () => {
+        const window = await openOn();
+        slide(window, 'plan-stats-sale-tax', 25);
+        expect(window.document.getElementById('plan-stats-sale-tax').value).toBe('25');
+        const tax = gfa() * 4000 * 0.25 / 1.25;
+        expect(slot(window, 'cost-tax')).toBe(eur(tax));
+        slide(window, 'plan-stats-construction', 3000);
+        expect(window.document.getElementById('plan-stats-construction').value).toBe('3000');
+        expect(slot(window, 'total-cost')).toBe(eur(gfa() * 3000 + landM2 * 133 + tax));
+        expect(slot(window, 'profit')).toBe(eur(gfa() * 4000 - (gfa() * 3000 + landM2 * 133 + tax)));
+    });
+
+    it('charges the value of the existing buildings the plan clears', async () => {
+        const window = await openOn({ cleared: [{ before: existing(), after: null }] });
+        const replaced = gfaOf([existing()]) * 4000;
+        expect(slot(window, 'cost-replaced')).toBe(eur(replaced));
+        expect(slot(window, 'profit')).toBe(eur(gfa() * 4000 - (gfa() * 2000 + landM2 * 133 + replaced)));
+    });
+
+    it('rents the new floor area by the month and yields it on the cost without the sale tax', async () => {
+        const window = await openOn();
+        expect(window.document.getElementById('plan-stats-rent').value).toBe('15');
+        expect(slot(window, 'annual-rent')).toBe(eur(gfa() * 15 * 12));
+        slide(window, 'plan-stats-sale-tax', 25);
+        expect(slot(window, 'rent-yield')).toBe(CbFormat.formatPercent(gfa() * 180 / (gfa() * 2000 + landM2 * 133), { maxFractionDigits: 1 }));
+        const rent = window.document.getElementById('plan-stats-rent');
+        rent.value = '';
+        rent.listeners.input.forEach(fn => fn());
+        expect([slot(window, 'annual-rent'), slot(window, 'rent-yield')]).toEqual(['—', '—']);
+    });
+
+    it('leaves the all-in cost and profit unknown without a land price, says so, and takes one from its slider', async () => {
+        // A pound city with no authority rate has no land price.
+        const window = await openOn({}, 'GBP');
+        expect(window.document.getElementById('plan-stats-land').value).toBe('');
+        expect([slot(window, 'total-cost'), slot(window, 'profit'), slot(window, 'cost-land')]).toEqual(['—', '—', '—']);
+        expect(slot(window, 'cost-construction')).not.toBe('—');
+        expect(slot(window, 'notes')).toContain('No land price for this place');
+        slide(window, 'plan-stats-land', 300);
+        expect(slot(window, 'cost-land')).toBe(CbFormat.formatMoney(landM2 * 300, 'GBP', { maxFractionDigits: 0 }));
+        expect(slot(window, 'profit')).not.toBe('—');
+        expect(slot(window, 'notes')).not.toContain('No land price');
+    });
+
+    it('reads an empty price as no price', async () => {
+        const window = await openOn();
         const input = window.document.getElementById('plan-stats-construction');
-        input.value = '3000';
-        input.listeners.input.forEach(fn => fn());
-        expect(slot(window, 'construction-cost')).toBe(eur(gfa * 3000));
-        expect(slot(window, 'profit')).toBe(eur(gfa * (4000 - 3000)));
         input.value = '';
         input.listeners.input.forEach(fn => fn());
-        expect(slot(window, 'construction-cost')).toBe('—');
-        expect(slot(window, 'profit')).toBe('—');
-        expect(slot(window, 'sales-value')).toBe(eur(gfa * 4000));
-    });
-
-    it('rents the new floor area by the month and yields it on the construction cost and cleared value', async () => {
-        const open = openDialog([block('d-1')], { city: { currency: { code: 'EUR' } } });
-        await open.showPlanStatsModal({ content: { title: 'On open land' }, cleared: [] });
-        const gfa = gfaOf([block('d-1')]);
-        expect(open.document.getElementById('plan-stats-rent').value).toBe('15');
-        expect(slot(open, 'annual-rent')).toBe(eur(gfa * 15 * 12));
-        expect(slot(open, 'rent-yield')).toBe(CbFormat.formatPercent(180 / 2000, { maxFractionDigits: 1 }));
-
-        const rebuild = openDialog([block('d-1')], { city: { currency: { code: 'EUR' } } });
-        await rebuild.showPlanStatsModal({ content: { title: 'Rebuild' }, cleared: [{ before: existing(), after: null }] });
-        const input = rebuild.document.getElementById('plan-stats-rent');
-        input.value = '20';
-        input.listeners.input.forEach(fn => fn());
-        expect(slot(rebuild, 'annual-rent')).toBe(eur(gfa * 20 * 12));
-        expect(slot(rebuild, 'rent-yield')).toBe(CbFormat.formatPercent(gfa * 240 / (gfa * 2000 + gfaOf([existing()]) * 4000), { maxFractionDigits: 1 }));
-        input.value = '';
-        input.listeners.input.forEach(fn => fn());
-        expect([slot(rebuild, 'annual-rent'), slot(rebuild, 'rent-yield')]).toEqual(['—', '—']);
+        expect([slot(window, 'total-cost'), slot(window, 'profit')]).toEqual(['—', '—']);
+        expect(slot(window, 'sales-value')).toBe(eur(gfa() * 4000));
     });
 
     it('says the profit is not known when a building it clears states no height', async () => {
         const unmeasured = existing();
         unmeasured.buildingProposal = { buildings: [{ ...unmeasured.buildingProposal.buildings[0], properties: { type: 'proposedBuilding' } }] };
-        const window = openDialog([block('d-1')], { city: { currency: { code: 'EUR' } } });
-        await window.showPlanStatsModal({ content: { title: 'Rebuild' }, cleared: [{ before: unmeasured, after: null }] });
+        const window = await openOn({ cleared: [{ before: unmeasured, after: null }] });
         expect(slot(window, 'profit')).toBe('—');
-        expect(slot(window, 'construction-cost')).not.toBe('—');
+        expect(slot(window, 'cost-construction')).not.toBe('—');
         expect(slot(window, 'notes')).toContain('The profit is not known: 1 of the existing buildings the plan clears state no height.');
     });
 });

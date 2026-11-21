@@ -577,6 +577,9 @@
     // Floor areas over the bound parcels only, when the panel's totals also cover open ground
     // (a partly bound site), so the per-parcel average does not credit open ground to owners.
     let lastParcelFloorAreas = null;
+    // The land under the panel's figures (the parcel, or the design's parcels or site), m²: a new
+    // building's all-in cost pays for it at the land price.
+    let lastLandM2 = null;
 
     // Assumptions for the value panel. GFA (floor area) is derived from the built, planned and
     // proposed volumes by dividing out a typical storey height; value and profit use two prices per
@@ -976,24 +979,28 @@
         return parcelInfoPanelEl;
     }
 
-    // The two money rows' cells and the price labels from the current slider prices and the stored
-    // floor areas (gain.js computeValueComparison). Cheap — runs on every slider tick.
+    // The money rows' cells, the cost details and the price labels from the current slider prices
+    // and the stored floor and land areas (gain.js computeValueComparison). Cheap — runs on every
+    // slider tick.
     function renderValueComparison(panel) {
         const prices = currentPanelPrices();
         const comparison = window.ProposalGain.computeValueComparison({
             floorAreas: lastFloorAreas || {},
+            landAreaM2: lastLandM2,
             salePerM2: prices.sale.perSqm,
             constructionPerM2: prices.construction.perSqm,
+            landPerM2: prices.land.perSqm,
+            saleTaxShare: prices.saleTax.perSqm,
             currency: prices.currency,
             parcelCount: lastParcelCount,
             parcelFloorAreas: lastParcelFloorAreas
         });
         const money = value => typeof value === 'number' && Number.isFinite(value)
-            ? CbFormat.formatMoney(Math.round(value), prices.currency) : '—';
+            ? CbFormat.formatMoney(Math.round(value), prices.currency, { maxFractionDigits: 0 }) : '—';
         const signedClass = value => (value > 0 ? 'gain-positive' : (value < 0 ? 'gain-negative' : ''));
         ['built', 'planned', 'proposed'].forEach(column => {
             const figures = comparison.columns[column];
-            ['value', 'constructionCost', 'profit'].forEach(row => {
+            ['value', 'totalCost', 'profit', 'constructionCost', 'landCost', 'saleTax', 'replacedValue'].forEach(row => {
                 const cell = panel.querySelector(`[data-cell="${row}:${column}"]`);
                 if (!cell) return;
                 const amount = figures[row];
@@ -1008,6 +1015,16 @@
         if (saleLabel) saleLabel.textContent = threeI18n('threeMode.parcelPanel.salePrice', 'Sale price {{price}}/m²', { price: money(prices.sale.perSqm) });
         const costLabel = panel.querySelector('[data-role="construction-label"]');
         if (costLabel) costLabel.textContent = threeI18n('threeMode.parcelPanel.constructionPrice', 'Construction cost {{price}}/m²', { price: money(prices.construction.perSqm) });
+        // A land price the sources do not give stays unset (the profit unknown) until the slider moves.
+        const landLabel = panel.querySelector('[data-role="land-label"]');
+        if (landLabel) landLabel.textContent = prices.land.perSqm === null
+            ? threeI18n('threeMode.parcelPanel.landPriceUnset', 'Land price not set: move to set it')
+            : threeI18n('threeMode.parcelPanel.landPrice', 'Land {{price}}/m² of land', { price: money(prices.land.perSqm) });
+        const taxLabel = panel.querySelector('[data-role="tax-label"]');
+        if (taxLabel) taxLabel.textContent = prices.saleTax.perSqm === null
+            ? threeI18n('threeMode.parcelPanel.saleTaxUnset', 'Sale tax not set: move to set it')
+            : threeI18n('threeMode.parcelPanel.saleTax', 'Sale tax {{share}} of the price',
+                { share: CbFormat.formatPercent(prices.saleTax.perSqm, { maxFractionDigits: 1 }) });
 
         // Proposal panel only: the proposed profit per bound parcel.
         const avgEl = panel.querySelector('[data-role="avg-gain"]');
@@ -1020,10 +1037,10 @@
         }
     }
 
-    // Shared by the parcel and proposal panels: wire the two price sliders and render the comparison
+    // Shared by the parcel and proposal panels: wire the price sliders and render the comparison
     // from the current prices and lastFloorAreas.
     function wireSliderAndGain(panel) {
-        [['sale-slider', 'sale'], ['construction-slider', 'construction']].forEach(([role, key]) => {
+        [['sale-slider', 'sale'], ['construction-slider', 'construction'], ['land-slider', 'land'], ['tax-slider', 'saleTax']].forEach(([role, key]) => {
             const slider = panel.querySelector(`[data-role="${role}"]`);
             if (!slider) return;
             slider.title = window.EconomicSourceSettings?.describe(currentPanelPrices().sources[key], window) || '';
@@ -1038,7 +1055,8 @@
     }
 
     // The Built / Planned / Proposed comparison shared by both panels: volume and floor area, then
-    // value, construction cost and profit (filled by renderValueComparison), and the two sliders.
+    // value, all-in cost and profit (filled by renderValueComparison), the cost's details, and the
+    // sale, construction, land and sale-tax sliders.
     // `m` holds { built, planned, proposed } each { volume, floorArea } or null; a null column is
     // not available and is greyed out.
     function metricsTableHtml(L, m) {
@@ -1048,12 +1066,13 @@
         const cells = (render, column) => (m[column] ? render(m[column]) : '—');
         const row = (label, render) => `<tr><th scope="row">${label}</th>${columns.map(c => `<td${off(c)}>${cells(render, c)}</td>`).join('')}</tr>`;
         const moneyRow = (label, key, hint = '') => `<tr><th scope="row"${hint ? ` title="${escapeHtml(hint)}"` : ''}>${label}</th>${columns.map(c => `<td data-cell="${key}:${c}"${off(c)}>—</td>`).join('')}</tr>`;
-        const slider = (role, labelRole, price) => {
+        // settable: a price with no source (land, sale tax) can still be set by moving its slider.
+        const slider = (role, labelRole, price, settable = false) => {
             const id = `parcel-panel-${role}`;
             return `
             <label for="${id}" class="parcel-panel-slider-label" data-role="${labelRole}"></label>
             <input id="${id}" type="range" class="parcel-panel-price-slider" data-role="${role}"
-                min="${price.min}" max="${price.max}" step="${price.step}" value="${price.perSqm ?? price.min}"${price.perSqm === null ? ' disabled' : ''}>`;
+                min="${price.min}" max="${price.max}" step="${price.step}" value="${price.perSqm ?? price.min}"${price.perSqm === null && !settable ? ' disabled' : ''}>`;
         };
         return `
             <table class="parcel-panel-table">
@@ -1062,16 +1081,29 @@
                     ${row(L.volume, v => `${formatInt(v.volume)} m³`)}
                     ${row(L.floorArea, v => CbFormat.formatArea(Number(v.floorArea) || 0))}
                     ${moneyRow(L.value, 'value')}
-                    ${moneyRow(L.constructionCost, 'constructionCost')}
+                    ${moneyRow(L.allInCost, 'totalCost')}
                     ${moneyRow(L.profit, 'profit', L.profitNote)}
                 </tbody>
             </table>
+            <details class="parcel-panel-cost-details">
+                <summary>${L.costDetails}</summary>
+                <table class="parcel-panel-table">
+                    <tbody>
+                        ${moneyRow(L.constructionCost, 'constructionCost')}
+                        ${moneyRow(L.landCost, 'landCost')}
+                        ${moneyRow(L.saleTax, 'saleTax')}
+                        ${moneyRow(L.replacedValue, 'replacedValue')}
+                    </tbody>
+                </table>
+            </details>
             ${m.planned?.conditional ? `<p class="parcel-panel-note">${escapeHtml(threeI18n('threeMode.parcelPanel.plannedConditional',
                 'Planned is what the rules grant; {{floorArea}} more needs: {{condition}}',
                 { floorArea: CbFormat.formatArea(m.planned.conditional.floorArea), condition: m.planned.conditional.condition }))}</p>` : ''}
             <p class="parcel-panel-note">${L.floorNote} · ${escapeHtml(threeI18n('threeMode.parcelPanel.amountsIn', 'amounts in {{currency}}', { currency: prices.currency }))}</p>
             ${slider('sale-slider', 'sale-label', prices.sale)}
-            ${slider('construction-slider', 'construction-label', prices.construction)}`;
+            ${slider('construction-slider', 'construction-label', prices.construction)}
+            ${slider('land-slider', 'land-label', prices.land, true)}
+            ${slider('tax-slider', 'tax-label', prices.saleTax, true)}`;
     }
 
     function panelPage(key, label, content) {
@@ -1114,8 +1146,13 @@
             volume: threeI18n('threeMode.parcelPanel.volume', 'Volume'),
             value: threeI18n('threeMode.parcelPanel.value', 'Value'),
             constructionCost: threeI18n('threeMode.parcelPanel.constructionCost', 'Construction cost'),
+            allInCost: threeI18n('threeMode.parcelPanel.allInCost', 'All-in cost'),
+            costDetails: threeI18n('threeMode.parcelPanel.costDetails', 'Cost details'),
+            landCost: threeI18n('threeMode.parcelPanel.landCost', 'Land'),
+            saleTax: threeI18n('threeMode.parcelPanel.saleTaxCost', 'Sale tax'),
+            replacedValue: threeI18n('threeMode.parcelPanel.replacedValue', 'Built value replaced'),
             profit: threeI18n('threeMode.parcelPanel.profit', 'Profit'),
-            profitNote: threeI18n('threeMode.parcelPanel.profitNote', 'Profit = value − construction cost − built value'),
+            profitNote: threeI18n('threeMode.parcelPanel.profitNote', 'Profit = value − all-in cost: construction, land, sale tax and the built value replaced'),
             floorArea: threeI18n('threeMode.parcelPanel.floorArea', 'Floor area'),
             floorNote: threeI18n('threeMode.parcelPanel.floorNote', '@ {{h}} m/storey', { h: FLOOR_HEIGHT_M }),
             parcelsLabel: threeI18n('threeMode.proposalPanel.parcelsLabel', 'Parcels')
@@ -1132,6 +1169,7 @@
         lastFloorAreas = { built: m.builtFloorArea, planned: planned ? planned.floorArea : null, proposed: hasProposed ? m.proposedFloorArea : null };
         lastParcelCount = null; // single parcel — no per-parcel average
         lastParcelFloorAreas = null;
+        lastLandM2 = m.landM2;
 
         const L = panelLabels();
         const suggestedText = suggestedParcelPanelText(parcelId);
@@ -1197,6 +1235,7 @@
         lastFloorAreas = { built: summary.builtFloorArea, planned: planned ? planned.floorArea : null, proposed: hasProposed ? summary.proposedFloorArea : null };
         lastParcelCount = summary.parcelCount;
         lastParcelFloorAreas = summary.parcelFloorAreas;
+        lastLandM2 = summary.landM2;
 
         const L = panelLabels();
         const lines = [];

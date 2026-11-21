@@ -52,29 +52,36 @@
         return { currency: currencyOf(cityConfig) || DEFAULT_ASSUMPTION_CURRENCY,
             landPerSqm: rates.land?.amount ?? null, roadLandPerSqm: rates.roadLand?.amount ?? null,
             salesPerSqm: rates.sale?.amount ?? null, constructionPerSqm: rates.construction?.amount ?? null,
-            rentPerSqmMonth: rates.rent?.amount ?? null, sources: rates };
+            rentPerSqmMonth: rates.rent?.amount ?? null, saleTaxShare: rates.saleTax?.amount ?? null, sources: rates };
     }
 
-    // What new floor area is worth at its prices per m² of floor, in one currency: its value (floor
-    // area × sale price), its construction cost (floor area × construction cost), its profit (value −
-    // construction cost − the value of the floor area it replaces, at the same sale price), its annual
-    // rent (floor area × monthly rent × 12) and the rent's yield on cost (annual rent ÷ construction
-    // cost and replaced value, profit's cost). A missing price or area keeps every amount that depends
-    // on it unknown (null), never 0. The 3D panel (gain.js), Plan stats and the MCP comparison count
-    // with this.
-    function newBuildMoney({ floorAreaM2, replacedFloorAreaM2 = null, salePerM2, constructionPerM2, rentPerM2Month = null } = {}) {
+    // What new floor area is worth, and costs, in one currency. Value is floor area × sale price (the
+    // price as quoted, tax included). The all-in cost is the construction (floor area × construction
+    // cost), the land (land area × land price per m² of land), the sale tax inside the value (value ×
+    // saleTax ÷ (1 + saleTax)) and the value of the existing floor area it replaces at the sale price.
+    // Profit is value − all-in cost. Annual rent is floor area × monthly rent × 12, and its yield is
+    // on the all-in cost without the sale tax, which a let flat does not pay. A missing price or area
+    // keeps every amount that depends on it unknown (null), never 0. The 3D panel (gain.js), Plan stats
+    // and the MCP comparison count with this.
+    function newBuildMoney({ floorAreaM2, replacedFloorAreaM2 = null, landAreaM2 = null, salePerM2, constructionPerM2,
+        landPerM2 = null, saleTaxShare = null, rentPerM2Month = null } = {}) {
         const amount = value => (typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null);
-        const area = amount(floorAreaM2), replaced = amount(replacedFloorAreaM2);
-        const sale = amount(salePerM2), cost = amount(constructionPerM2), rent = amount(rentPerM2Month);
-        const value = area === null || sale === null ? null : area * sale;
-        const constructionCost = area === null || cost === null ? null : area * cost;
-        const replacedValue = replaced === null || sale === null ? null : replaced * sale;
-        const profit = value === null || constructionCost === null || replacedValue === null
-            ? null : value - constructionCost - replacedValue;
+        const times = (a, b) => (a === null || b === null ? null : a * b);
+        const sum = parts => (parts.some(part => part === null) ? null : parts.reduce((total, part) => total + part, 0));
+        const area = amount(floorAreaM2), replaced = amount(replacedFloorAreaM2), landArea = amount(landAreaM2);
+        const sale = amount(salePerM2), cost = amount(constructionPerM2), land = amount(landPerM2), rent = amount(rentPerM2Month);
+        const tax = amount(saleTaxShare) !== null && saleTaxShare < 1 ? saleTaxShare : null;
+        const value = times(area, sale);
+        const constructionCost = times(area, cost);
+        const landCost = times(landArea, land);
+        const saleTax = value === null || tax === null ? null : value * tax / (1 + tax);
+        const replacedValue = times(replaced, sale);
+        const buildCost = sum([constructionCost, landCost, replacedValue]);
+        const totalCost = sum([buildCost, saleTax]);
+        const profit = value === null || totalCost === null ? null : value - totalCost;
         const annualRent = area === null || rent === null ? null : area * rent * 12;
-        const outlay = constructionCost === null || replacedValue === null ? null : constructionCost + replacedValue;
-        const rentYieldOnCost = annualRent === null || outlay === null || outlay <= 0 ? null : annualRent / outlay;
-        return { value, constructionCost, replacedValue, profit, annualRent, rentYieldOnCost };
+        const rentYieldOnCost = annualRent === null || buildCost === null || buildCost <= 0 ? null : annualRent / buildCost;
+        return { value, constructionCost, landCost, saleTax, replacedValue, totalCost, profit, annualRent, rentYieldOnCost };
     }
 
     // Parcel and road estimates retain the selected observation, including its unit and provenance.
@@ -113,7 +120,11 @@
                     currency: currencyOf(city()) || DEFAULT_ASSUMPTION_CURRENCY,
                     sourceKey: JSON.stringify(rates), sources: rates,
                     sale: economicSources().slider('sale', rates.sale),
-                    construction: economicSources().slider('construction', rates.construction)
+                    construction: economicSources().slider('construction', rates.construction),
+                    // No land price: its range follows the size of the city's money (its sale price).
+                    land: economicSources().slider('land', rates.land, (rates.sale?.amount ?? 0) / FLOOR_AREA_PRICES.sale.perSqm),
+                    saleTax: economicSources().slider('saleTax', rates.saleTax),
+                    rent: economicSources().slider('rent', rates.rent)
                 };
             }
         });

@@ -104,34 +104,40 @@ describe('MCP comparison measurements', () => {
 describe('MCP comparison money', () => {
     // A three-storey building the source states 9 m tall, as /buildings/under answers it.
     const standing = { id: 'b-1', geometry: stock.geometry, height_m: 9 };
+    const siteM2 = turf.area(site);
 
-    it('prices the new floor area at the city rates and takes off the value of what it removes', async () => {
+    it('charges the new floor area its all-in cost at the city rates: construction, land, sale tax, what it removes', async () => {
         const { tools } = toolsFor({ stockBuilding: standing });
         const result = await tools.compare({ buildingSources: ['osm'], targets: [park, { design: building }], parcelSourceId: 'test' });
         const built = result.alternatives[1];
         const removed = existingFloorArea(stock.geometry, standing);
         expect(removed).toBeCloseTo(turf.area(stock) * 3);
         expect(built.removedFloorAreaM2).toBeCloseTo(removed);
-        expect(built.money).toMatchObject({ currency: 'GBP', unit: 'm2-floor',
-            sale: { amount: 4000, basis: 'assumption', sourceId: 'scenario-assumptions' }, construction: { amount: 2000 } });
-        expect(built.money.constructionCost).toBeCloseTo(built.floorAreaM2 * 2000);
-        expect(built.money.profit).toBeCloseTo(built.floorAreaM2 * (4000 - 2000) - removed * 4000);
-        expect(built.money.rent).toMatchObject({ amount: 15, unit: 'm2-floor-month', sourceId: 'scenario-assumptions' });
+        // London: the authority's land rate; the editable starting assumptions for the rest.
+        expect(built.money).toMatchObject({ currency: 'GBP', unit: 'm2-floor', prices: {
+            sale: { amount: 4000, basis: 'assumption', sourceId: 'scenario-assumptions' }, construction: { amount: 2000 },
+            land: { amount: 8799, basis: 'policy-appraisal', sourceId: 'uk-mhclg-land-2023' }, saleTax: { amount: 0 },
+            rent: { amount: 15, unit: 'm2-floor-month' } } });
+        expect(built.money.landAreaM2).toBeCloseTo(siteM2);
+        expect(built.money.landCost).toBeCloseTo(siteM2 * 8799);
+        expect(built.money.totalCost).toBeCloseTo(built.floorAreaM2 * 2000 + siteM2 * 8799 + removed * 4000);
+        expect(built.money.profit).toBeCloseTo(built.floorAreaM2 * 4000 - built.money.totalCost);
         expect(built.money.annualRent).toBeCloseTo(built.floorAreaM2 * 15 * 12);
-        expect(built.money.rentYieldOnCost).toBeCloseTo(built.money.annualRent / (built.floorAreaM2 * 2000 + removed * 4000));
-        // The park builds nothing: its profit is what it clears, negative.
-        expect(result.alternatives[0].money.profit).toBeCloseTo(-removed * 4000);
+        expect(built.money.rentYieldOnCost).toBeCloseTo(built.money.annualRent / built.money.totalCost);
+        // The park builds nothing: it still pays for its land and what it clears.
+        expect(result.alternatives[0].money.profit).toBeCloseTo(-(siteM2 * 8799 + removed * 4000));
         expect(result.warnings.some(text => text.startsWith('Money is a model'))).toBe(true);
     });
 
-    it('uses the prices the caller gives instead, as assumptions', async () => {
+    it('uses the prices the caller gives instead, as assumptions, the sale tax as a share', async () => {
         const { tools } = toolsFor({ stockBuilding: standing });
         const result = await tools.compare({ buildingSources: ['osm'], targets: [park, { design: building }], parcelSourceId: 'test',
-            prices: { salePerM2: 5000, constructionPerM2: 3000, rentPerM2Month: 25 } });
+            prices: { salePerM2: 5000, constructionPerM2: 3000, landPerM2: 100, saleTaxShare: 0.2, rentPerM2Month: 25 } });
         const { money, floorAreaM2, removedFloorAreaM2 } = result.alternatives[1];
-        expect(money.sale).toEqual({ amount: 5000, currency: 'GBP', basis: 'assumption', sourceId: 'caller' });
-        expect(money.profit).toBeCloseTo(floorAreaM2 * 2000 - removedFloorAreaM2 * 5000);
-        expect(money.rent).toEqual({ amount: 25, currency: 'GBP', basis: 'assumption', sourceId: 'caller' });
+        expect(money.prices.sale).toEqual({ amount: 5000, currency: 'GBP', basis: 'assumption', sourceId: 'caller' });
+        expect(money.prices.land.amount).toBe(100);
+        expect(money.saleTax).toBeCloseTo(floorAreaM2 * 5000 * 0.2 / 1.2);
+        expect(money.profit).toBeCloseTo(floorAreaM2 * 5000 - (floorAreaM2 * 3000 + siteM2 * 100 + money.saleTax + removedFloorAreaM2 * 5000));
         expect(money.annualRent).toBeCloseTo(floorAreaM2 * 25 * 12);
     });
 
@@ -140,7 +146,7 @@ describe('MCP comparison money', () => {
         const result = await tools.compare({ buildingSources: ['osm'], targets: [park, { design: building }], parcelSourceId: 'test' });
         const built = result.alternatives[1];
         expect(built.removedFloorAreaM2).toBeNull();
-        expect(built.money.profit).toBeNull();
+        expect(built.money).toMatchObject({ profit: null, totalCost: null });
         expect(built.money.constructionCost).toBeCloseTo(built.floorAreaM2 * 2000);
     });
 });

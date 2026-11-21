@@ -47,20 +47,29 @@ export function existingFloorArea(geometry, building) {
     return planYield.measureBuilding({ type: 'Feature', properties, geometry }, null, {}).gfaM2;
 }
 
-// What an alternative's new floor area is worth in its city's currency (CityMoney.newBuildMoney, the
-// rule of Plan stats and the 3D panel): at the city's sale, construction and monthly rent rates per
-// m² of floor, or at the prices the caller gives, which are scenario assumptions. Each price keeps its
-// source.
-export function moneyOf({ city, floorAreaM2, replacedFloorAreaM2, prices = {} }) {
+// What an alternative's new floor area is worth and costs in its city's currency
+// (CityMoney.newBuildMoney, the rule of Plan stats and the 3D panel): value, the all-in cost
+// (construction, land, the sale tax inside the value, the floor area it removes), profit and rent, at
+// the city's rates or at the prices the caller gives, which are scenario assumptions. Each price keeps
+// its source under `prices`.
+export function moneyOf({ city, floorAreaM2, replacedFloorAreaM2, landAreaM2, prices = {} }) {
     const { currency, rates, unavailable, reason } = cityEconomics(city);
     if (unavailable) throw fail('city-money-unavailable', reason);
     const price = (metric, given) => (finite(given) && given >= 0
         ? { amount: given, currency, basis: 'assumption', sourceId: 'caller' } : rates[metric] || null);
-    const sale = price('sale', prices.salePerM2), construction = price('construction', prices.constructionPerM2);
-    const rent = price('rent', prices.rentPerM2Month);
-    return { currency, unit: 'm2-floor', sale, construction, rent, floorAreaM2, replacedFloorAreaM2,
-        ...cityMoney(city).newBuildMoney({ floorAreaM2, replacedFloorAreaM2, salePerM2: sale ? sale.amount : null,
-            constructionPerM2: construction ? construction.amount : null, rentPerM2Month: rent ? rent.amount : null }) };
+    const used = { sale: price('sale', prices.salePerM2), construction: price('construction', prices.constructionPerM2),
+        land: price('land', prices.landPerM2), saleTax: price('saleTax', prices.saleTaxShare), rent: price('rent', prices.rentPerM2Month) };
+    const amountOf = metric => (used[metric] ? used[metric].amount : null);
+    return { currency, unit: 'm2-floor', prices: used, floorAreaM2, replacedFloorAreaM2, landAreaM2,
+        ...cityMoney(city).newBuildMoney({ floorAreaM2, replacedFloorAreaM2, landAreaM2, salePerM2: amountOf('sale'),
+            constructionPerM2: amountOf('construction'), landPerM2: amountOf('land'), saleTaxShare: amountOf('saleTax'),
+            rentPerM2Month: amountOf('rent') }) };
+}
+
+// The land an alternative takes, as Plan stats prices it: the ground its designs' sites cover.
+export function landAreaOf(designs, siteOf) {
+    const sites = designs.map(design => siteOf(design)).filter(Boolean).map(site => turf.feature(site));
+    return sites.length ? turf.area(union(sites)) : 0;
 }
 
 export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDraftReference, plans }) {
@@ -229,17 +238,18 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
             try {
                 const city = designs.find(design => typeof design?.city === 'string' && design.city)?.city;
                 if (!city) throw fail('city-unknown', 'No design names its city, so its money is unknown.');
-                money = moneyOf({ city, floorAreaM2: areas.floorAreaM2, replacedFloorAreaM2: removedFloorAreaM2, prices: prices || {} });
+                money = moneyOf({ city, floorAreaM2: areas.floorAreaM2, replacedFloorAreaM2: removedFloorAreaM2,
+                    landAreaM2: landAreaOf(designs, design => read.siteOfDesign(design)), prices: prices || {} });
             } catch (error) {
                 measurementErrors.push({ code: error.code || 'money-unavailable', message: error.message,
-                    next: trustedMetadata(error.next || { action: 'Give salePerM2 and constructionPerM2 in prices, in the city currency.' }) });
+                    next: trustedMetadata(error.next || { action: 'Give salePerM2, constructionPerM2 and landPerM2 in prices, in the city currency.' }) });
             }
             alternatives.push({ cid, title: content.title, ...areas, areaBasis: 'authored-geometry',
                 parcelsTaken: takes, buildingsRemoved, buildingsCut, removedFootprintM2, removedFloorAreaM2, money, ledger,
                 measurementErrors, ...(isPlan ? { designSources } : {}), ...preview });
         }
         warnings.push('Areas describe authored geometry; they are not a prediction of construction. The party ledger is the app’s modeled allocation, not proof of ownership or compensation.');
-        warnings.push('Money is a model at prices per m² of floor area, each with its source: value and construction cost of the new floor area, profit after the value of the floor area it removes, annual rent and its yield on that cost. It is not an appraisal; land, fees and finance are not in it.');
+        warnings.push('Money is a model at prices each with its source: value of the new floor area, its all-in cost (construction, land at the land price, the sale tax inside the value, the value of the floor area it removes), profit, annual rent and its yield on the cost without the sale tax. It is not an appraisal; fees and finance are not in it.');
         return { alternatives, warnings };
     };
 }

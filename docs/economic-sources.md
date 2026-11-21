@@ -10,14 +10,16 @@ from an app city. Currency formatting and exchange conversion are independent co
 
 ## Rate contract
 
-Each observation names a metric, amount, currency, unit, basis, valuation date and source. The five
+Each observation names a metric, amount, currency, unit, basis, valuation date and source. The six
 metrics are independent: `land` and `roadLand` use `m2-land`; `sale` and `construction` use `m2-floor`;
 `rent` uses `m2-floor-month`, per m² of floor area per month, the way rents are quoted. A rent's basis
-is `assumption` or `market`, as a sale price's is.
+is `assumption` or `market`, as a sale price's is. `saleTax` uses `share-of-sale`: the share of a sale
+price that is tax (VAT on new housing, 0.16 for 16 %), below 1, on a `statutory` or `assumption`
+basis. Sale prices are as quoted, the tax included where the place charges it.
 A residential land appraisal is not a floor-area sale price or a construction cost. A road-land rate
 is a modeling input for affected land, not a statement about compensation or the cost of a road.
 
-Bases are `assumption`, `policy-appraisal`, `market`, and `construction-cost`. Evidence requires its
+Bases are `assumption`, `policy-appraisal`, `market`, `construction-cost` and `statutory` (sale tax only). Evidence requires its
 own `asOf` date; a fetch date must not stand in for it. Assumptions may have no date. Assessed property
 totals are deliberately outside this rate contract: they need source-qualified property identities,
 assessment dates, and a distinction between land-only and whole-property value. They must not be
@@ -36,7 +38,8 @@ explicit rate and differs from missing evidence.
   City-wide application is an illustrative authority-rate assumption, not a site-specific valuation.
   `roadLand` uses the same residential proxy and retains that provenance.
 - `scenario-assumptions` exposes the existing editable floor-area starting points: 4,000 sale,
-  2,000 construction and 15 rent a month in local currency (a 4.5 % gross yield on the sale price).
+  2,000 construction and 15 rent a month in local currency (a 4.5 % gross yield on the sale price),
+  and no sale tax (0) until a source states one.
   Existing EUR land/road assumptions remain 133/100. These values are model assumptions, not a
   worldwide price dataset.
 - `rate-table` accepts a validated local snapshot of independent rates. It is usable worldwide,
@@ -85,15 +88,21 @@ Modeled parcel estimates retain their economic observation. The road model retai
 plan statistics use selected sale/construction rates; slider changes remain temporary scenario
 assumptions. Switching sources resets the slider inputs even when the currency stays the same. A
 slider's standard range is sized for euro-like amounts; an observation widens it to half and twice
-its amount where those fall outside, so a tenge price can be slid both ways.
+its amount where those fall outside, so a tenge price can be slid both ways. A land price with no
+source has a range sized by the city's sale price over the 4,000 standard and starts unset; the land
+and sale-tax sliders can set a price no source gives.
 
 The 3D panel, Plan stats (with Compare plans) and the MCP comparison count new floor area with one
-function, `CityMoney.newBuildMoney`: value, construction cost, profit after the value of the floor
-area it replaces (the vocabulary's "Profit on the new floor area"), annual rent and the rent's yield on
-that cost. Plan stats has construction and monthly rent inputs beside the sale price; an empty input is
-no price, and what depends on it reads "—". `ugt_compare` gives each alternative's `money` with the
-three prices and their sources, or the caller's `prices` as assumptions; `ugt_parcel_context` gives the
-city's rates. The 3D panel shows value, construction cost and profit, not rent.
+function, `CityMoney.newBuildMoney` (the vocabulary's "Profit on the new floor area"): value, the
+all-in cost (construction, land, the sale tax inside the value, the value of the floor area it
+replaces), profit, annual rent and the rent's yield on the cost without the sale tax. The land is the
+plan's land in Plan stats, the parcel or the design's parcels or site in the 3D panel, and the union of
+the designs' sites in `ugt_compare`. Plan stats and the 3D panel show the all-in cost with a Cost
+details disclosure of its parts, and a slider for each price; Plan stats also takes the exact number.
+An empty input is no price, and what depends on it reads "—"; without a land price the all-in cost
+and profit are unknown, and Plan stats says how to set one. `ugt_compare` gives each alternative's
+`money` with the prices and their sources under `prices`, or the caller's `prices` as assumptions;
+`ugt_parcel_context` gives the city's rates. The 3D panel does not show rent.
 
 The shared sale starting assumption is now 4,000 in both 3D and plan statistics (previously the EUR
 plan-statistics dialog used a separate 5,000). Unsupported currencies no longer borrow EUR land

@@ -158,3 +158,31 @@ describe('rent', () => {
         expect(CityMoney.assumptionsFor(birmingham).rentPerSqmMonth).toBe(15);
     });
 });
+
+describe('sale tax', () => {
+    const tax = overrides => rate('saleTax', 0.2, { unit: 'share-of-sale', ...overrides });
+
+    it('is a share of the sale price, statutory where a law sets it', () => {
+        const table = EconomicSources.rateTable(rateSource('vat', [tax({ basis: 'statutory', asOf: '2026-01-01' })]));
+        expect(table.rates[0]).toMatchObject({ metric: 'saleTax', unit: 'share-of-sale', amount: 0.2, basis: 'statutory' });
+    });
+
+    it('refuses a share of one or more, another unit or basis, and a statutory basis on anything else', () => {
+        expect(() => EconomicSources.rateTable(rateSource('whole', [tax({ amount: 1 })]))).toThrow(/rate, unit or basis/);
+        expect(() => EconomicSources.rateTable(rateSource('per-floor', [tax({ unit: 'm2-floor' })]))).toThrow(/rate, unit or basis/);
+        expect(() => EconomicSources.rateTable(rateSource('market', [tax({ basis: 'market', asOf: '2026-01-01' })]))).toThrow(/rate, unit or basis/);
+        expect(() => EconomicSources.rateTable(rateSource('statutory-sale', [rate('sale', 4000, { basis: 'statutory', asOf: '2026-01-01' })]))).toThrow(/rate, unit or basis/);
+    });
+
+    it('starts as an editable 0 where no source states one, and slides as a share up to 30 % or twice the rate', () => {
+        const rates = EconomicSources.resolve(EconomicSources.defaults(birmingham, UkLandRates), cityContext(birmingham));
+        expect(rates.saleTax).toMatchObject({ amount: 0, unit: 'share-of-sale', basis: 'assumption', sourceId: 'scenario-assumptions' });
+        expect(EconomicSources.slider('saleTax', rates.saleTax)).toMatchObject({ perSqm: 0, min: 0, max: 0.3 });
+        expect(EconomicSources.slider('saleTax', { amount: 0.25, sourceId: 'hr' })).toMatchObject({ min: 0, max: 0.5, step: 'any' });
+        // Land has a range but no starting price where no source gives one.
+        expect(EconomicSources.slider('land', null)).toMatchObject({ perSqm: null, min: 0, max: 2000 });
+        // ... sized to the city's money by its sale price over the 4,000 standard.
+        expect(EconomicSources.slider('land', null, 566000 / 4000)).toMatchObject({ perSqm: null, min: 0, max: 283000 });
+        expect(EconomicSources.slider('land', null, 0.5).max).toBe(2000);
+    });
+});
