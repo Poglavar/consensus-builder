@@ -208,12 +208,13 @@ fi
 echo "DEPLOYED commit=$COMMIT build=$BUILD_ID"
 REMOTE
 
-# ---- Cloudflare cache purge (local; urbangametheory.xyz zone hosts only this site) ----
-echo -e "${YELLOW}☁️  Purging Cloudflare cache...${NC}"
+# ---- Cloudflare cache purge (local): the site's own host prefix (this docroot is the whole
+# urbangametheory.xyz host), never the whole zone ----
+echo -e "${YELLOW}☁️  Purging Cloudflare cache for ${SITE_URL#https://}/ ...${NC}"
 if [[ -n "${CF_ZONE_ID:-}" && -n "${CF_API_KEY:-}" ]]; then
     cf_result=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/purge_cache" \
         -H "Authorization: Bearer ${CF_API_KEY}" -H "Content-Type: application/json" \
-        --data '{"purge_everything":true}' || true)   # a curl failure lands in the failure branch below, not a silent set -e exit
+        --data "{\"prefixes\":[\"${SITE_URL#https://}/\"]}" || true)   # a curl failure lands in the failure branch below, not a silent set -e exit
     if echo "$cf_result" | python3 -c "import sys,json; sys.exit(0 if json.load(sys.stdin).get('success') else 1)" 2>/dev/null; then
         echo -e "${GREEN}✅ Cloudflare cache purged${NC}"
     else
