@@ -210,7 +210,8 @@
         ui.legend.toggleAttribute('data-partial', !complete);
         status(complete ? ui.total.textContent : t('partial'), complete);
         ui.sides.replaceChildren(...result.sides.map((side, index) => {
-            const row = node('button', 'btn square-critic-side');
+            // A selectable row (docs/design-language.md): the shared cb-option look, pressed included.
+            const row = node('button', 'cb-option');
             row.type = 'button';
             row.setAttribute('aria-pressed', 'false');
             const wall = share(side.wallM / side.lengthM);
@@ -219,7 +220,9 @@
             if (complete && side.longestGapM > 0) details.push(t('gapLength', { length: format(side.longestGapM, 1) }));
             if (side.heightToWidth !== null) details.push(t('ratio', { ratio: format(side.heightToWidth, 2), measured: share(side.heightCoverage) }));
             else if (side.wallM > 0) details.push(t('heightUnknown'));
-            row.append(node('strong', '', t('side', { number: format(index + 1) })), node('span', '', details.join(' · ')));
+            const text = node('span', 'cb-option__text');
+            text.append(node('span', 'cb-option__title', t('side', { number: format(index + 1) })), node('span', 'cb-option__desc', details.join(' · ')));
+            row.append(text);
             row.addEventListener('click', () => {
                 win.cancelAnimationFrame(current.walk);
                 for (const other of ui.sides.children) other.setAttribute('aria-pressed', String(other === row));

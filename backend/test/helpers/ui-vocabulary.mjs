@@ -189,7 +189,8 @@ export function typedExternalMarks() {
 }
 
 const CONTROL_TOKEN = /(\.btn\b|-btn\b|-button\b|-tab\b|__option\b|-chip\b|\.tab\b|-tile\b|-option\b)/;
-const STATE_CLASS = /\.(active|selected|is-active|is-selected|is-on|active-black-border)\b|--(active|selected|on)\b/;
+// A whole class name: .active-travel-detail is the Hare's panel, not an active state.
+const STATE_CLASS = /\.(active|selected|is-active|is-selected|is-on|active-black-border)(?![\w-])|--(active|selected|on)(?![\w-])/;
 
 /** CSS selectors that key a control's selected look on a class instead of an ARIA state. */
 export function classSelectedOffenders() {
