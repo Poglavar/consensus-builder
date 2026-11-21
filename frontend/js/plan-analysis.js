@@ -6,6 +6,10 @@
     if (root) root.PlanAnalysis = api.browser(root);
 })(typeof window === 'undefined' ? null : window, function () {
     'use strict';
+    // Members' bindings are asked for a few at a time (draft-link.js mapLimit): one after another, a
+    // 113-design plan spent 40 s of a 41 s read waiting on 113 binding round trips.
+    const draftLink = () => (typeof window !== 'undefined' && window.DraftLink) || require('./draft-link.js');
+    const BIND_CONCURRENCY = 6;
     // declared(cid): the parcel ids of this device's copy of a member, or null. That copy's own
     // declaration is what applying it on the map uses; a design not yet published has never been
     // checked against its binding, which can name fewer parcels than its pieces stand on.
@@ -61,8 +65,10 @@
         const snapshot = await resolve(plan);
         const designs = [];
         const sources = new Map();
-        for (const member of snapshot.designs) {
-            const binding = await bind(member.content, snapshot.designSources?.[member.cid]);
+        const bindings = await draftLink().mapLimit(snapshot.designs, BIND_CONCURRENCY,
+            member => bind(member.content, snapshot.designSources?.[member.cid]));
+        for (const [index, member] of snapshot.designs.entries()) {
+            const binding = bindings[index];
             if (!binding || binding.coverage === 'unknown' || binding.unknownM2 > 0) throw new Error('Parcel coverage is unavailable.');
             const own = declared(member.cid);
             const ids = Array.isArray(own) ? [...new Set(own.map(String))].sort() : binding.parcels.map(p => String(p.parcelId));
@@ -118,14 +124,24 @@
             }
             return features;
         }
+        // One answer per binding request for the page: Plan stats, Compare and Compare plans read the
+        // same members again, and two plans often share their streets and parks. A failed one is asked again.
+        const bindings = new Map();
         return { prepare: plan => prepare(plan, {
             resolve: row => win.PlanWorkspace.resolve(row),
-            bind: async (content, source) => {
+            bind: (content, source) => {
                 const site = win.__siteBinding.siteOf(content);
                 const sourceId = source?.sourceId || win.DesignSync.parcelSourceIdOf(content.city, site);
-                const answer = await request('/designs/binding', { city: content.city, site, toleranceM: content.toleranceM,
-                    parcelSourceId: sourceId === 'hr-cadastre' ? 'oss-wfs' : sourceId });
-                return answer.binding;
+                const body = { city: content.city, site, toleranceM: content.toleranceM,
+                    parcelSourceId: sourceId === 'hr-cadastre' ? 'oss-wfs' : sourceId };
+                const key = JSON.stringify(body);
+                if (!bindings.has(key)) {
+                    bindings.set(key, request('/designs/binding', body).then(answer => answer.binding, error => {
+                        bindings.delete(key);
+                        throw error;
+                    }));
+                }
+                return bindings.get(key);
             },
             parcels,
             siteOf: content => win.__siteBinding.siteOf(content),

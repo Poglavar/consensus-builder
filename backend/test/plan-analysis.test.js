@@ -125,3 +125,51 @@ describe('exact plan analysis', () => {
         await expect(prepare(snapshot, deps)).rejects.toThrow('Layout could not form');
     });
 });
+
+// A plan's members are bound a few at a time, and one page asks for a binding once.
+describe('reading a large plan', () => {
+    const members = Array.from({ length: 20 }, (_, index) => ({ cid: `member-${index}`, content: { title: `Member ${index}`, site: { index } } }));
+    const plan = { cid: 'large-plan', content: { title: 'Large plan' }, designs: members, designSources: {} };
+
+    it('asks for several members\' bindings at once, at most six, and keeps them in member order', async () => {
+        const deps = ports();
+        deps.resolve.mockImplementation(async () => structuredClone(plan));
+        let inFlight = 0, most = 0;
+        deps.bind.mockImplementation(async content => {
+            inFlight += 1; most = Math.max(most, inFlight);
+            await new Promise(resolve => setImmediate(resolve));
+            inFlight -= 1;
+            return { coverage: 'complete', parcels: [{ parcelId: `P${content.site.index}` }], parcelSource: { sourceId: 'source-a' } };
+        });
+        deps.parcels.mockImplementation(async (_source, ids) => ids.map(id => ({ type: 'Feature', id, properties: { parcelId: id } })));
+        await prepare(plan, deps);
+        expect(most).toBe(6);
+        expect(deps.materialize.mock.calls[0][0].designs.map(design => design.parcelIds[0])).toEqual(members.map((_, index) => `P${index}`));
+    });
+
+    it('asks the server once for a design two plans share, and again after a failed answer', async () => {
+        const answers = [];
+        const fetch = vi.fn(async (_url, options) => {
+            const body = JSON.parse(options.body);
+            const fail = answers.length === 0 && body.site.index === 1;
+            answers.push(body.site.index);
+            return { ok: !fail, status: fail ? 503 : 200, json: async () => (fail ? { error: 'Binding unavailable' }
+                : { binding: { coverage: 'complete', parcels: [], parcelSource: { sourceId: 'source-a' } } }) };
+        });
+        const win = { fetch,
+            DesignSync: { apiBase: () => 'https://api.example', parcelSourceIdOf: () => 'source-a' },
+            __siteBinding: { siteOf: content => content.site },
+            PlanWorkspace: { resolve: async row => row },
+            AgreementHeadless: { materialize: async ({ designs }) => ({ records: designs, fabric: { entriesForCadastre: () => [] } }) },
+            proposalStorage: { getAllProposals: () => [] },
+            __parcelArrangement: { clipWith: (_turf, _op, sum) => sum }, turf };
+        const analysis = require('../../frontend/js/plan-analysis.js').browser(win);
+        const planOf = (cid, sites) => ({ cid, content: {}, designs: sites.map(index => ({ cid: `d${index}`, content: { city: 'x', site: { index } } })) });
+        await expect(analysis.prepare(planOf('first', [1, 2]))).rejects.toThrow('Binding unavailable');
+        await analysis.prepare(planOf('second', [1, 2, 3]));
+        await analysis.prepare(planOf('third', [2, 3]));
+        expect(answers.filter(index => index === 1)).toHaveLength(2);
+        expect(answers.filter(index => index === 2)).toHaveLength(1);
+        expect(answers.filter(index => index === 3)).toHaveLength(1);
+    });
+});
