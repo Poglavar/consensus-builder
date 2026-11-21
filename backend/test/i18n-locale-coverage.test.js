@@ -117,7 +117,9 @@ function flatten(node, prefix = '', out = {}) {
 
 function walk(dir, out = []) {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-        if (['node_modules', 'vendor', 'lib', 'i18n', 'contracts'].includes(entry.name)) continue;
+        // assets/parcel-adapters is minified build output (backend/scripts/build-browser-parcels.mjs) of
+        // sources scanned here; its renamed calls (add → o) would read as translation lookups.
+        if (['node_modules', 'vendor', 'lib', 'i18n', 'contracts', 'parcel-adapters'].includes(entry.name)) continue;
         const p = path.join(dir, entry.name);
         if (entry.isDirectory()) walk(p, out);
         else if (/\.(js|mjs|html)$/.test(entry.name) && !/\.min\./.test(entry.name)) out.push(p);
