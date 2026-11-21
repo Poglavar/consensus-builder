@@ -8,7 +8,6 @@
 // GeoTIFFs from ESA's public buckets with range requests (no CORS there, so the server reads them).
 
 import * as turf from '@turf/turf';
-import { fromUrl } from 'geotiff';
 import { expandBbox } from '../buildings/osm-3d.js';
 import { createTileReader } from './openfreemap-tiles.js';
 
@@ -166,7 +165,12 @@ function withTimeout(promise, ms, what) {
     })]).finally(() => clearTimeout(timer));
 }
 
-export function createGroundCoverProvider({ reader = createTileReader(), open = fromUrl, fetchImpl = fetch, now = Date.now } = {}) {
+// geotiff is imported on the first tile read, not with this module: its web-worker dependency reads
+// worker data the moment it loads inside any worker thread, and the routes that import this module run
+// in worker threads under vitest (--pool=threads).
+const openCog = url => import('geotiff').then(({ fromUrl }) => fromUrl(url));
+
+export function createGroundCoverProvider({ reader = createTileReader(), open = openCog, fetchImpl = fetch, now = Date.now } = {}) {
     const images = new Map(); // tile URL → Promise<GeoTIFF|null> (null: no such tile, the sea)
     const results = new Map(); // area key → result, most recent last
 
