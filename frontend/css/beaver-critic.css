@@ -1,0 +1,57 @@
+.beaver-critic-panel {
+    position: fixed;
+    z-index: var(--cb-z-panel);
+    top: calc(var(--map-shell-top-clearance) + var(--cb-space-2));
+    right: var(--right-dock-gap);
+    width: min(26rem, calc(100vw - 2 * var(--right-dock-gap)));
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.beaver-critic-panel [hidden] { display: none; }
+.beaver-critic-header {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    align-items: center;
+    padding: var(--cb-space-3);
+    border-bottom: 1px solid var(--cb-line);
+}
+.beaver-critic-header img { border-radius: 50%; }
+.beaver-critic-panel p, .beaver-critic-results, .beaver-critic-results dd { margin: 0; }
+.beaver-critic-body { padding: var(--cb-space-3); overflow: auto; }
+.beaver-critic-controls, .beaver-critic-editor[open], .beaver-critic-fields {
+    display: grid;
+    gap: var(--cb-space-2);
+}
+.beaver-critic-editor summary { cursor: pointer; font-weight: 600; }
+.beaver-critic-field { display: grid; gap: var(--cb-space-1); min-width: 0; }
+.beaver-critic-field > :is(input, select) { width: 100%; min-width: 0; }
+.beaver-critic-toggle { display: flex; align-items: start; gap: var(--cb-space-2); min-width: 0; }
+.beaver-critic-toggle input { flex: none; }
+.beaver-critic-score { font-size: var(--cb-text-lg); font-weight: 700; }
+.beaver-critic-results { display: grid; gap: var(--cb-space-1); }
+.beaver-critic-total, .beaver-critic-member {
+    background: var(--cb-surface-2);
+    border-inline-start: 3px solid var(--beaver-color, #667181);
+    border-radius: var(--cb-radius-sm);
+    padding: var(--cb-space-2);
+}
+.beaver-critic-panel [data-status="ready"] { --beaver-color: #16785e; }
+.beaver-critic-panel [data-status="blocked"] { --beaver-color: #ac422d; }
+.beaver-critic-panel [data-status="later"] { --beaver-color: #5866a1; }
+.beaver-critic-results dt { font-weight: 600; }
+.beaver-critic-members { max-height: 14rem; overflow: auto; display: grid; gap: var(--cb-space-1); }
+.beaver-critic-member { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--cb-space-1) var(--cb-space-2); }
+.beaver-critic-member button { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+.beaver-critic-member small { grid-column: 1; color: var(--cb-text-muted); }
+.beaver-critic-fields { margin: 0; min-width: 0; border: 1px solid var(--cb-line); border-radius: var(--cb-radius-md); }
+.beaver-critic-panel .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+@media (max-width: 767.98px) {
+    .beaver-critic-panel {
+        top: auto;
+        right: var(--cb-space-2);
+        bottom: calc(var(--right-dock-bottom) + var(--cb-space-2));
+        left: var(--cb-space-2);
+        max-height: 54dvh;
+    }
+}

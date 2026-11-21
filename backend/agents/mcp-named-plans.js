@@ -15,6 +15,7 @@ const { statedUse, statedAccess } = require('../../frontend/js/building-use.js')
 const PlanRecord = require('../../frontend/js/plan-record.js');
 const PlanFile = require('../../frontend/js/plan-file.js');
 const CityJsonExport = require('../../frontend/js/city-json-export.js');
+const BeaverBuildout = require('../../frontend/js/proposals/beaver-buildout.js');
 const fail = (code, message, next = { action: 'Inspect the intended named plan revision and use its explicit references.' }) => {
     throw Object.assign(new Error(message), { code, next });
 };
@@ -217,7 +218,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
         }
         return items;
     }
-    async function inspectPlan({ plan: value, filter = {}, includeGeometry = false, offset = 0, limit = 100 }) {
+    async function inspectPlan({ plan: value, filter = {}, includeGeometry = false, offset = 0, limit = 100, openingScenario }) {
         if (!Number.isInteger(offset) || offset < 0 || !Number.isInteger(limit) || limit < 1 || limit > 200) fail('invalid-pagination', 'Use a nonnegative offset and a limit between 1 and 200.');
         const plan = await resolvePlan(value), all = inventory(plan);
         const anchor = filter.relativeTo && all.find(item => item.ref === filter.relativeTo.ref);
@@ -235,6 +236,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
             return true;
         });
         return { cid: plan.cid, title: plan.plan.title, view: plan.plan.view, schedule: plan.plan.schedule || null,
+            ...(openingScenario && { openingAssessment: BeaverBuildout.evaluate(BeaverBuildout.inventory(plan.plan, plan.designs), openingScenario) }),
             items: matched.slice(offset, offset + limit).map(({ geometry, ...item }) => includeGeometry ? { ...item, geometry } : item),
             total: matched.length, offset, truncated: offset + limit < matched.length,
             selectionBasis: 'References belong to this immutable named plan revision. Compass selection requires the whole object bbox beyond the anchor bbox.',

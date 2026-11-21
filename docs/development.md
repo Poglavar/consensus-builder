@@ -359,8 +359,10 @@ assessment. Cat measures the exterior sides of an authored square in the selecte
 The Cat walks the square in the 2D map, marks walls and gaps, and lists each side for keyboard
 inspection. It reads existing footprints near the square through the map's building sources and
 uses the shared demolition rules for the plan. If that read fails, it shows a minimum based on
-the plan's buildings and marks the remaining edge unknown. Beaver, Dog, Owl and Crow are
-disabled until their assessments are available. Critic assessment introduces no authored edit;
+the plan's buildings and marks the remaining edge unknown. Beaver reads the construction schedule
+and tests opening assumptions against an external road connection delay. The same evaluator accepts
+the browser's month, test dates, access and servicing through `ugt_inspect_plan.openingScenario`.
+Dog, Owl and Crow are disabled until their assessments are available. Critic assessment introduces no authored edit;
 square and building authoring still use the existing `ugt_draft_space`, `ugt_draft_building`, and
 `ugt_edit_design` primitives.
 The rooster scores the plan as it stands on the map (user ruling 2026-10-28): every member must be

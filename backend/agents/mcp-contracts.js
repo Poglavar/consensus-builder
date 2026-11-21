@@ -55,7 +55,14 @@ assign(['ugt_draft_building', 'ugt_draft_station', 'ugt_draft_space', 'ugt_draft
 assign(['ugt_draft_agreement', 'ugt_edit_agreement'], agreementDraft);
 assign(['ugt_draft_plan', 'ugt_get_plan', 'ugt_edit_plan'], planResult);
 assign(['ugt_inspect_shared_plan', 'ugt_edit_shared_plan'], sharedPlanSession);
-assign(['ugt_inspect_plan', 'ugt_inspect_agreement'], inventory);
+const openingBucket = z.object({ floorM2: z.number().nonnegative(), spaceM2: z.number().nonnegative(), designs: count, unmeasuredBuildings: count });
+const openingAssessment = z.object({ month: z.string(), delayConnection: z.boolean(),
+    totals: z.object({ ready: openingBucket, blocked: openingBucket, unknown: openingBucket, later: openingBucket, all: openingBucket }),
+    lostToDelay: openingBucket, readyShare: z.number().min(0).max(1).nullable(),
+    members: z.array(z.object({ cid, completionMonth: z.string().nullable(),
+        status: z.enum(['ready', 'blocked', 'unknown', 'later']), reason: z.string() }).passthrough()) });
+assign(['ugt_inspect_plan'], inventory.extend({ openingAssessment: openingAssessment.optional() }));
+assign(['ugt_inspect_agreement'], inventory);
 assign(['ugt_inspect_design'], mcpResultSchema.extend({ cid, values: z.array(z.object({ path: z.string(), untrustedValue: z.unknown() })).min(1) }));
 assign(['ugt_publish_plan'], mcpResultSchema.extend({ cid, untrusted: authored('plan/v1'), publication: z.literal('published'), url: z.string().url(), publishedDesignCids: z.array(cid) }));
 assign(['ugt_validate_plan'], mcpResultSchema.extend({ cid, valid: z.boolean(), issues: z.array(z.object({ code: z.string(), ref: z.string() }).passthrough()), metrics: object, assessmentBasis: z.literal('authored-geometry'), sourceAssessment: object }));

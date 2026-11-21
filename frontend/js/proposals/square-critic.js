@@ -81,7 +81,7 @@
         if (current.frame) win.map.setView(current.view.center, current.view.zoom, { animate: false });
         const restoredMode = current.mode !== '2d' && win.requestMapMode(current.mode);
         if (current.returnTo) {
-            void Promise.resolve(restoredMode).then(() => current.returnTo(current.plan))
+            void Promise.resolve(restoredMode).then(() => current.returnTo(current.plan, 'cat'))
                 .catch(error => win.showStyledAlert(error.message));
             return;
         }

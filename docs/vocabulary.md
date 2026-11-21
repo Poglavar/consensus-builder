@@ -463,6 +463,10 @@ A plan member's start and end month (`YYYY-MM`, both inclusive), stored in the p
 
 The map's control that moves one month back and forth over the construction windows of the plan in view. At that month each scheduled member is planned (before its start), under construction (progress grows linearly over its window's months) or built (after its end). It only displays: nothing is applied, unapplied or replayed. Closing it returns to now, where everything on the map stands as applied. `when=YYYY-MM` in an address opens it at that month.
 
+### Opening assessment
+
+The Beaver checks an exact plan revision at the end of a chosen month. A building, park or square can open when its construction has finished and the scenario declares road access and servicing ready. The plan's construction end applies unless a test month is specified. A missing date, access assumption or servicing assumption leaves readiness unknown. The delayed-connection scenario blocks completed designs that explicitly depend on the external road connection. Its impact counts floor area and public space that would otherwise be ready. The assessment applies no designs and stores no scenario assumptions in the plan.
+
 ### Simulated build-out
 
 A seeded, repeatable scenario giving the plan's undated members construction windows: a start month drawn from a yearly start rate and a duration from floor area; an urban rule builds parcel by parcel, one window per building. Members the plan dates keep their windows. It is shown on the time control and in an address as `buildout=<seed>`, and is never stored in a plan or agreement.

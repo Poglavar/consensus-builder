@@ -6,7 +6,7 @@ Two alternatives around **43.7984° N, 77.0911° E**, in northern Alatau between
 | | Courtyard neighbourhood | Garden streets |
 | --- | --- | --- |
 | Public plan | [Open courtyard neighbourhood](https://urbangametheory.xyz/plans/bafkreifinphs2yuhuqyumeypjsxncgfvrtpv7pyfx4weloe7yer5rntqku) | [Open garden streets](https://urbangametheory.xyz/plans/bafkreieiyv3lfhhatz4nvg7cfyoed3fbshdqoihi27otzsemabsg5bzkc4) |
-| Editable file | [courtyards.json](courtyards.json) | [gardens.json](gardens.json) |
+| Editable file with construction schedule | [courtyards.json](courtyards.json) | [gardens.json](gardens.json) |
 | Courtyard blocks | 8 | 6 |
 | Individual building plots | 99 | 75 |
 | Median building plot | 317 m² | 296 m² |
@@ -35,4 +35,17 @@ Each perimeter block comprises twelve independent Freeform building records, wit
 
 Residential buildings use 3.2 m per storey, with shops in selected ground floors. The neighbourhood hall has three storeys; the library and workshop/cafe buildings have four. The street network uses one bounded road design, retaining connected junctions and the tree-lined avenues. The wider streets are 18–24 m; internal lanes are 12 m.
 
-The JSON files are `ugt-plan-file/v1` packages containing the exact public plan and all its canonical design members and source references. Import them through the app's plan-file workflow to continue editing. Their contents are also editable through the existing MCP plan/design inspection and editing tools; no additional MCP capability is required.
+The editable files carry the published designs and illustrative construction windows in four groups.
+
+| Group | Construction window |
+| --- | --- |
+| Internal streets | April–October 2027 |
+| First southern blocks, market square, hall, and workshops | January–October 2028 |
+| Remaining southern blocks, western blocks, orchard, and neighbourhood park | June 2028–May 2029 |
+| Northern blocks, library, and remaining gardens | January–November 2029 |
+
+Import either file through Lists → Plans → Import plan file. On the imported plan's row, open
+**Choose a critic** → **Beaver** and use October 2028 to test the first openings. To exercise the external connection, try
+assuming South 1 can open independently and South 3 depends on it, with servicing ready for both.
+These assumptions are input to the scenario. The public links above open the original revisions.
+The existing MCP plan tools accept the editable files and can run the same opening assessment.

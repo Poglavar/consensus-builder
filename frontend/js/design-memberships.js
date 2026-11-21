@@ -297,10 +297,10 @@
                 ...(!instance.draft ? { published: true } : {}) });
             analysisPage.append(analysis.stats(win, doc, getPlan), analysis.critics(win, doc, getPlan, {
                 open: true,
-                returnTo: async plan => {
+                returnTo: async (plan, critic) => {
                     await win.ClickStack.showPlan(plan, { designs: instance.localDesigns, draft: !!instance.draft, frame: false });
                     const page = doc.querySelector(':is(#click-stack.visible, #three-click-stack.visible) [data-stack-page-key="stats-analysis"]');
-                    page?.querySelector('[data-critic-control="cat"]')?.focus();
+                    page?.querySelector(`[data-critic-control="${critic}"]`)?.focus();
                 }
             }));
             // Set for a plan below; run once the card's other actions are in place.

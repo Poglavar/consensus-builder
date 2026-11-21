@@ -5,6 +5,9 @@ import { createMcpNamedPlanTools } from '../agents/mcp-named-plans.js';
 import { createMcpDraftTools } from '../agents/mcp-drafts.js';
 import { appTurf as turf, intentDesign } from '../agents/mcp-geometry.js';
 import { designObject, cidOfObject } from '../agents/agreement-objects.js';
+import { Client } from '@modelcontextprotocol/client';
+import { InMemoryTransport } from '@modelcontextprotocol/server';
+import { createUrbanGameTheoryMcpServer } from '../agents/mcp-server.mjs';
 import proj4 from 'proj4';
 const File = createRequire(import.meta.url)('../../frontend/js/plan-file.js');
 const CityJson = createRequire(import.meta.url)('../../frontend/js/city-json-export.js');
@@ -35,6 +38,26 @@ function fixture() {
     return {tools,read,store,plans,refs,calls,publishDesign,tower,park,other,layout};
 }
 describe('first-class named plans',()=>{
+    it('assesses an external connection delay without revising or publishing the plan', async () => {
+        const { tools, tower, calls } = fixture();
+        const draft = await tools.draftPlan({ title: 'Opening scenario', designs: [tower], view,
+            schedule: { [tower.cid]: { start: '2028-01', end: '2028-10' } } });
+        const scenario = { month: '2028-10', delayConnection: true,
+            assumptions: { [tower.cid]: { access: 'requires-connection', servicing: 'ready' } } };
+        const server = createUrbanGameTheoryMcpServer({ mode: 'hosted', env: {}, tools: { inspectPlan: tools.inspectPlan } });
+        const client = new Client({ name: 'opening-scenario-test', version: '1' });
+        const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+        try {
+            await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
+            const reply = await client.callTool({ name: 'ugt_inspect_plan', arguments: { plan: draft.draftArtifact, openingScenario: scenario } });
+            expect(reply.isError).not.toBe(true);
+            const result = reply.structuredContent;
+            expect(result.cid).toBe(draft.cid);
+            expect(result.openingAssessment.members).toMatchObject([{ cid: tower.cid, status: 'blocked', reason: 'connection' }]);
+            expect(result.openingAssessment.lostToDelay.floorM2).toBeGreaterThan(0);
+        } finally { await client.close(); await server.close(); }
+        expect(calls).toEqual([]);
+    });
     it('opens, inspects and edits a portable plan with the browser validator and no publication', async () => {
         const { tools, tower, park, calls } = fixture();
         const draft = await tools.draftPlan({ title: 'Portable', designs: [tower, park], view });
