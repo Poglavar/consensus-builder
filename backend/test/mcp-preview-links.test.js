@@ -84,6 +84,26 @@ describe('temporary hosted MCP object references', () => {
         expect(restored).toEqual({ plan, designs, parcelSourceId: 'ground' });
         expect(await store.resolve(preview.draftRef)).toEqual(restored);
     });
+    it('fetches plan members a few at a time, keeps their order and reports progress', async () => {
+        const store = storeOf(), designs = Array.from({ length: 15 }, (_, i) => design(`Tower ${i}`));
+        const plan = { schema: 'plan/v1', title: 'Towers', designCids: designs.map(cidOfObject), view: {} };
+        const preview = store.create({ plan, designs, parcelSourceId: 'ground' });
+        let inFlight = 0, peak = 0;
+        const progress = [];
+        const fetchImpl = async url => {
+            inFlight++; peak = Math.max(peak, inFlight);
+            // Later members answer first, so order can only survive by index, not by arrival.
+            await new Promise(resolve => setTimeout(resolve, 15 - (Number(store.get(tokenOf(url)).record.title?.split(' ')[1]) || 0)));
+            inFlight--;
+            return fetchFrom(store)(url);
+        };
+        const restored = await links.load(preview.previewUrl, { fetchImpl, cidOf: cidOfObject, onProgress: p => progress.push(p) });
+        expect(restored.designs.map(d => d.title)).toEqual(designs.map(d => d.title));
+        expect(peak).toBeGreaterThan(1);
+        expect(peak).toBeLessThanOrEqual(links.CONCURRENCY);
+        expect(progress[0]).toEqual({ done: 0, total: 15 });
+        expect(progress.at(-1)).toEqual({ done: 15, total: 15 });
+    });
     it('loads a named plan with each member source and keeps agreements on one source', async () => {
         const store = storeOf(), designs = [design('First source'), design('Second source')];
         const designSources = { [cidOfObject(designs[0])]: 'ground-a', [cidOfObject(designs[1])]: 'ground-b' };

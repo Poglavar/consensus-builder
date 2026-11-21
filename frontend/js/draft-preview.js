@@ -3,9 +3,28 @@
 (function (root) {
     'use strict';
     if (!root) return;
+    // The shared-designs load overlay (proposals/core.js), when the page has it.
+    const overlay = name => (typeof root[name] === 'function' ? root[name] : () => {});
+    // Called by the /designs?draft= route (proposals/core.js) only.
     async function open() {
-        const artifact = await root.DraftLink.load(root.location.href);
-        if (!artifact) return;
+        const t = typeof root.getProposalI18nHelper === 'function' ? root.getProposalI18nHelper() : (_key, fallback) => fallback;
+        overlay('showProposalLoadOverlay')(t('proposals.share.route.fetching', 'Fetching the shared designs…'),
+            { title: t('proposals.share.route.title', 'Shared designs') });
+        const progress = ({ done, total }) => overlay('updateProposalLoadOverlay')({ progress: { done, total } });
+        let draft;
+        try {
+            draft = await fetchAndBind(progress);
+        } catch (error) {
+            overlay('hideProposalLoadOverlay')();
+            throw error;
+        }
+        if (!draft) { overlay('hideProposalLoadOverlay')(); return; }
+        return applyDraft(draft);
+    }
+    // Fetches the draft's objects, checks them and binds each design to its ground. Nothing is stored.
+    async function fetchAndBind(progress) {
+        const artifact = await root.DraftLink.load(root.location.href, { onProgress: progress });
+        if (!artifact) return null;
         if (artifact.plan) {
             const error = root.PlanRecord.validate(artifact.plan);
             if (error) throw new Error(error);
@@ -24,11 +43,13 @@
             const byCid = new Map(designs.map(content => [root.Cid.cidOfObject(content), content]));
             designs.splice(0, designs.length, ...linked.map(cid => byCid.get(cid)));
         }
-        const rows = new Map();
-        const apiBase = root.DesignSync.apiBase();
         for (const content of designs) {
             const checked = root.DesignRecord.validate(content);
             if (!checked.valid) throw new Error(checked.errors[0].message);
+        }
+        const apiBase = root.DesignSync.apiBase();
+        progress({ done: 0, total: designs.length });
+        const bound = await root.DraftLink.mapLimit(designs, root.DraftLink.CONCURRENCY, async content => {
             const cid = root.Cid.cidOfObject(content);
             const parcelSourceId = artifact.designSources?.[cid] || artifact.parcelSourceId || root.DesignSync.parcelSourceIdOf(content.city);
             const response = await root.fetch(`${apiBase}/designs/binding`, { method: 'POST',
@@ -36,8 +57,13 @@
                     toleranceM: content.toleranceM, parcelSourceId }) });
             const binding = await response.json();
             if (!response.ok) throw new Error(binding.error || binding.code || 'Draft ground is unavailable');
-            rows.set(cid, { cid, content, city: content.city, parcelSourceId, binding: binding.binding });
-        }
+            return { cid, content, city: content.city, parcelSourceId, binding: binding.binding };
+        }, (done, total) => progress({ done, total }));
+        return { artifact, collection, rows: new Map(bound.map(row => [row.cid, row])) };
+    }
+    // Applies the bound designs as shared designs are applied, then opens the plan or agreement.
+    async function applyDraft({ artifact, collection, rows }) {
+        const apiBase = root.DesignSync.apiBase();
         const applied = await root.handleSharedDesignRoute([...rows.keys()], { draftRows: rows, enter3D: true, openDetails: !collection });
         if (applied.blocked || applied.omitted?.length) return applied;
         if (applied.failed.length) throw new Error('Some draft designs could not be applied; review the map.');

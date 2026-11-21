@@ -6,6 +6,25 @@
 })(typeof window !== 'undefined' ? window : globalThis, function (root) {
     'use strict';
     const MAX_OBJECT_BYTES = 10 * 1024 * 1024;
+    // Requests a draft keeps in flight at once: a plan's members and their ground bindings were
+    // fetched one after another, ~66 round trips for a 33-design plan with nothing on screen.
+    const CONCURRENCY = 6;
+    // Maps items through an async function, at most `limit` at a time, results in input order.
+    // `onSettled(done, total)` is called after each item.
+    async function mapLimit(items, limit, fn, onSettled) {
+        const results = new Array(items.length);
+        let next = 0, done = 0;
+        async function worker() {
+            while (next < items.length) {
+                const index = next++;
+                results[index] = await fn(items[index], index);
+                done += 1;
+                if (onSettled) onSettled(done, items.length);
+            }
+        }
+        await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+        return results;
+    }
     function reference(value) {
         const url = new URL(value);
         const loopback = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
@@ -31,7 +50,8 @@
         for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.length; }
         return JSON.parse(new TextDecoder().decode(bytes));
     }
-    async function load(href, { fetchImpl = root.fetch.bind(root), cidOf = value => root.Cid.cidOfObject(value) } = {}) {
+    // `onProgress({ done, total })` reports fetched collection members.
+    async function load(href, { fetchImpl = root.fetch.bind(root), cidOf = value => root.Cid.cidOfObject(value), onProgress } = {}) {
         const value = new URL(href).searchParams.get('draft');
         if (!value) return null;
         const base = reference(value);
@@ -50,17 +70,20 @@
         const namedPlan = row.record.schema === 'plan/v1';
         if (!namedPlan && (row.plan?.content?.schema !== 'plan/v1' || row.plan.cid !== row.record.planCid
             || cidOf(row.plan.content) !== row.plan.cid)) throw new Error('The private agreement does not match its saved plan');
-        for (const member of row.designs) {
-            const child = await get(member.draftRef, member.cid);
+        if (onProgress) onProgress({ done: 0, total: row.designs.length });
+        const children = await mapLimit(row.designs, CONCURRENCY, member => get(member.draftRef, member.cid),
+            onProgress && ((done, total) => onProgress({ done, total })));
+        row.designs.forEach((member, index) => {
+            const child = children[index];
             if (child.record.schema !== 'design/v1' || (!namedPlan && child.parcelSourceId !== row.parcelSourceId)
                 || (row.designSources && Object.hasOwn(row.designSources, member.cid)
                     && child.parcelSourceId !== row.designSources[member.cid])) throw new Error('Invalid private collection member');
             designs.push(child.record);
             designSources[member.cid] = child.parcelSourceId;
-        }
+        });
         return { [row.record.schema === 'plan/v1' ? 'plan' : 'agreement']: row.record, designs, parcelSourceId: row.parcelSourceId,
             ...(!namedPlan ? { plan: row.plan.content } : {}),
             ...(namedPlan && row.designSources ? { designSources } : {}) };
     }
-    return { reference, load, MAX_OBJECT_BYTES };
+    return { reference, load, mapLimit, CONCURRENCY, MAX_OBJECT_BYTES };
 });
