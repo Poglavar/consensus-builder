@@ -16,6 +16,7 @@ const PlanRecord = require('../../frontend/js/plan-record.js');
 const PlanFile = require('../../frontend/js/plan-file.js');
 const CityJsonExport = require('../../frontend/js/city-json-export.js');
 const BeaverBuildout = require('../../frontend/js/proposals/beaver-buildout.js');
+const DogWalkability = require('../../frontend/js/proposals/dog-walkability.js');
 const fail = (code, message, next = { action: 'Inspect the intended named plan revision and use its explicit references.' }) => {
     throw Object.assign(new Error(message), { code, next });
 };
@@ -218,7 +219,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
         }
         return items;
     }
-    async function inspectPlan({ plan: value, filter = {}, includeGeometry = false, offset = 0, limit = 100, openingScenario }) {
+    async function inspectPlan({ plan: value, filter = {}, includeGeometry = false, offset = 0, limit = 100, openingScenario, walkability }) {
         if (!Number.isInteger(offset) || offset < 0 || !Number.isInteger(limit) || limit < 1 || limit > 200) fail('invalid-pagination', 'Use a nonnegative offset and a limit between 1 and 200.');
         const plan = await resolvePlan(value), all = inventory(plan);
         const anchor = filter.relativeTo && all.find(item => item.ref === filter.relativeTo.ref);
@@ -235,8 +236,20 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
             }
             return true;
         });
+        let walkingAssessment;
+        if (walkability) {
+            const { paths, route, ...summary } = DogWalkability.evaluate(plan.plan, plan.designs);
+            walkingAssessment = summary;
+            if (walkability.route) {
+                const { home, category } = walkability.route;
+                const origin = summary.homes.find(row => row.id === home);
+                if (!origin) fail('selection-not-found', 'The walking route needs a residential building ref from this plan.');
+                walkingAssessment.selectedRoute = { home, category, trip: origin.routes[category], coordinates: route(home, category) };
+            }
+        }
         return { cid: plan.cid, title: plan.plan.title, view: plan.plan.view, schedule: plan.plan.schedule || null,
             ...(openingScenario && { openingAssessment: BeaverBuildout.evaluate(BeaverBuildout.inventory(plan.plan, plan.designs), openingScenario) }),
+            ...(walkingAssessment && { walkingAssessment }),
             items: matched.slice(offset, offset + limit).map(({ geometry, ...item }) => includeGeometry ? { ...item, geometry } : item),
             total: matched.length, offset, truncated: offset + limit < matched.length,
             selectionBasis: 'References belong to this immutable named plan revision. Compass selection requires the whole object bbox beyond the anchor bbox.',

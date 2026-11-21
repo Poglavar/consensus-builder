@@ -389,7 +389,7 @@
      * @param {number[]} node planar [x, y]
      * @param {object[]} armsIn see orientArm; arms pointing the same way are expected to be merged by the caller
      * @param {object} [options] { crossings: boolean }
-     * @returns {object|null} { node, degree, arms: [{ dir, cut, cutLeft, cutRight, markingTrim, source }],
+     * @returns {object|null} { node, degree, arms: [{ dir, cut, cutLeft, cutRight, markingTrim, crossingStation, source }],
      *   surface: [ring], corners: [{ ring, strip }], land: [ring], stopLines: [ring], crossings: [ring],
      *   fillets: [{ K, C, radius }] }
      */
@@ -450,6 +450,7 @@
             const furniture = approachFurniture(node, arm, degree);
             arm.markingTrim = furniture.markingTrim;
             if (withCrossings) {
+                if (furniture.crossing.length) arm.crossingStation = arm.cut + CROSSING_SETBACK + CROSSING_DEPTH / 2;
                 if (furniture.stopLine) stopLines.push(furniture.stopLine);
                 crossings.push(...furniture.crossing);
             }
@@ -464,6 +465,7 @@
                 cutLeft: arm.cutLeft,
                 cutRight: arm.cutRight,
                 markingTrim: arm.markingTrim,
+                crossingStation: arm.crossingStation ?? null,
                 length: arm.length,
                 source: arm.source
             })),

@@ -21,6 +21,7 @@ const DYNAMIC_KEY_PREFIXES = [
     'lists.critics.',              // the picker shares the animal id across display and localized labels
     'squareCritic.',               // the Cat selects labels for results with and without building data
     'beaverCritic.',               // the Beaver labels opening outcomes and scenario controls
+    'dogCritic.',                  // the Dog labels walking destinations, routes and gaps
     'sharedPlan.',
     'structureEditor.tools.', // toolLabel's declared tool names are checked in every locale below
     'diagnostics.errors.',

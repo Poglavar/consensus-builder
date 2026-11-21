@@ -1,6 +1,7 @@
 // Check immutable named-plan composition, explicit selection and verified dependency publication.
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
 import { createMcpNamedPlanTools } from '../agents/mcp-named-plans.js';
 import { createMcpDraftTools } from '../agents/mcp-drafts.js';
 import { appTurf as turf, intentDesign } from '../agents/mcp-geometry.js';
@@ -38,6 +39,27 @@ function fixture() {
     return {tools,read,store,plans,refs,calls,publishDesign,tower,park,other,layout};
 }
 describe('first-class named plans',()=>{
+    it('returns the walkability coverage and an individual route through MCP', async () => {
+        const { tools, calls } = fixture();
+        const plan = JSON.parse(readFileSync(new URL('../../docs/demo/alatau-neighbourhoods/gardens.json', import.meta.url), 'utf8'));
+        const home = plan.designs.find(row => row.content.title === 'South 1 · plot 01');
+        const ref = `building:${home.cid}:0`;
+        const server = createUrbanGameTheoryMcpServer({ mode: 'hosted', env: {}, tools: { inspectPlan: tools.inspectPlan } });
+        const client = new Client({ name: 'walkability-test', version: '1' });
+        const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+        try {
+            await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
+            const reply = await client.callTool({ name: 'ugt_inspect_plan', arguments: { plan, limit: 1, walkability: { route: { home: ref, category: 'green' } } } });
+            expect(reply.isError, JSON.stringify(reply.content)).not.toBe(true);
+            const result = reply.structuredContent;
+            expect(result.walkingAssessment.categories.transit).toMatchObject({ destinations: 0, noRoute: null });
+            const { selectedRoute, homes } = result.walkingAssessment;
+            expect(selectedRoute.trip).toEqual(homes.find(row => row.id === ref).routes.green);
+            expect(selectedRoute.coordinates.length).toBeGreaterThan(1);
+        } finally { await client.close(); await server.close(); }
+        expect(calls).toEqual([]);
+    });
+
     it('assesses an external connection delay without revising or publishing the plan', async () => {
         const { tools, tower, calls } = fixture();
         const draft = await tools.draftPlan({ title: 'Opening scenario', designs: [tower], view,

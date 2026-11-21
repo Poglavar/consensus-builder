@@ -413,6 +413,10 @@ down and receives no enclosure verdict.
 
 The share of an authored square's exterior perimeter defined by nearby buildings, measured for the exact saved plan revision. The Cat samples each side at about 2 m intervals and looks out perpendicular to the edge for the first building within 25 m. Adjacent collinear edges form one side. For the height-to-width figure, width is the distance from that building to the opposite square edge, including the facade setback; a side displays the median of samples with a measured or estimated building height. Building stock consists of the plan's buildings and the existing ones its designs leave standing. Unavailable existing stock yields a minimum based on plan buildings and leaves the rest of the edge unknown. Public designation follows the square design; pedestrian access is a separate question.
 
+### Walkability assessment
+
+The Dog measures the fastest route from each residential building in an exact plan revision to the nearest park or square, shop, and transit stop. Sidewalks and footways form the network. Same-level corners, authored crossings and zebra crossings drawn by the junction model link its parts. The assessment estimates access from a site edge up to 25 m where the connection avoids other buildings and ground-level carriageways. It uses 1.2 m/s and adds 15 seconds at crossings. Each residential building counts once. The score is the mean of the shares reaching a destination within ten minutes, over destination types present in the plan. An absent destination type has unknown coverage. A recorded destination with no route counts as unreachable on the plan network.
+
 ### Private land
 
 A plan's parcel land (on its plan area) that is not public land, in m²; open ground is in neither.

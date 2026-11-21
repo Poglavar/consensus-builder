@@ -61,7 +61,19 @@ const openingAssessment = z.object({ month: z.string(), delayConnection: z.boole
     lostToDelay: openingBucket, readyShare: z.number().min(0).max(1).nullable(),
     members: z.array(z.object({ cid, completionMonth: z.string().nullable(),
         status: z.enum(['ready', 'blocked', 'unknown', 'later']), reason: z.string() }).passthrough()) });
-assign(['ugt_inspect_plan'], inventory.extend({ openingAssessment: openingAssessment.optional() }));
+const walkingCategory = z.enum(['green', 'shops', 'transit']);
+const walkingPoint = z.tuple([z.number(), z.number()]);
+const walkingTitle = z.object({ title: z.string() });
+const walkingTrip = z.object({ seconds: count, id: z.string(), untrusted: walkingTitle });
+const walkingCounts = z.object({ destinations: count, connectedDestinations: count, within5: count, within10: count, noRoute: count.nullable() });
+const walkingAssessment = z.object({ score: z.number().int().min(0).max(100).nullable(), connectedHomes: count, unstatedUse: count, pathCount: count,
+    categories: z.record(walkingCategory, walkingCounts), homes: z.array(z.object({ id: z.string(), untrusted: walkingTitle, coordinate: walkingPoint.nullable(),
+        connected: z.boolean(), routes: z.record(walkingCategory, walkingTrip.nullable()) })),
+    destinations: z.array(z.object({ id: z.string(), untrusted: walkingTitle, category: walkingCategory,
+        connected: z.boolean(), coordinate: walkingPoint.nullable() })),
+    gaps: z.array(z.object({ kind: z.enum(['no-sidewalk', 'crossing-gap']), points: z.array(walkingPoint) })),
+    selectedRoute: z.object({ home: z.string(), category: walkingCategory, trip: walkingTrip.nullable(), coordinates: z.array(walkingPoint).nullable() }).optional() });
+assign(['ugt_inspect_plan'], inventory.extend({ openingAssessment: openingAssessment.optional(), walkingAssessment: walkingAssessment.optional() }));
 assign(['ugt_inspect_agreement'], inventory);
 assign(['ugt_inspect_design'], mcpResultSchema.extend({ cid, values: z.array(z.object({ path: z.string(), untrustedValue: z.unknown() })).min(1) }));
 assign(['ugt_publish_plan'], mcpResultSchema.extend({ cid, untrusted: authored('plan/v1'), publication: z.literal('published'), url: z.string().url(), publishedDesignCids: z.array(cid) }));

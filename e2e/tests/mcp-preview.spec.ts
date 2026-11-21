@@ -57,6 +57,14 @@ test('a dated MCP plan opens the plan panel and stores the exact schedule withou
   expect(saved).toEqual({ published: false, schedule });
   await analysis.press('Enter');
   await expect(panel.getByRole('button', { name: 'Beaver Independent phases', exact: true })).toBeEnabled();
+  const dog = panel.getByRole('button', { name: 'Dog Walkability', exact: true });
+  await dog.press('Enter');
+  const walkability = page.getByRole('dialog', { name: 'Dog · Walkability' });
+  await expect(walkability.locator('[data-dog="score"]')).toHaveText('Walkability score unavailable');
+  await expect(walkability.getByText('0 of 0 residential buildings link to the walking network.')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(dog).toBeFocused();
+  await expect.poll(() => page.evaluate(() => (window as any).BuildoutClock.month())).toBe('2028-10');
   expect(pageIndex(page).requests.some(r => r.method === 'POST' && ['/pins', '/designs', '/plans', '/agreements'].includes(r.path))).toBe(false);
 });
 
