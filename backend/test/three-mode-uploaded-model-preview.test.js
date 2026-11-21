@@ -71,7 +71,12 @@ function loaderHarness(center = [0, 0]) {
         configureBuildingMaterial: material => material,
         attachBuildingDepthPrepass: vi.fn(),
         estimateBuildingHeightMeters: () => 10,
-        createBuildingSlices: vi.fn()
+        // The box fallback for a model that failed: none of these placements may reach it.
+        createBuildingSlices: vi.fn(),
+        // X-ray's horizontal section of uploaded models (5b17100d4).
+        applyModelSection: vi.fn(),
+        sectionedModels: new Set(),
+        updateXrayControls: vi.fn()
     };
     const bindings = Object.keys(context).map(name => `const ${name}=this.${name};`).join('\n');
     vm.runInNewContext(`${bindings}\n${declarations.get('uploadedModelFit')}\n${declarations.get('placeUploadedModel')}\nthis.place=placeUploadedModel;`, context);
@@ -144,6 +149,8 @@ describe('uploaded model placement in shared 3D previews', () => {
         const wrapper = harness.target.children[0];
         expect(wrapper.position.values).toEqual([1, 1.5, 0]);
         expect(wrapper.rotation.z).toBeCloseTo(Math.PI / 2);
+        expect(harness.context.applyModelSection).toHaveBeenCalledWith(wrapper);
+        expect(harness.context.createBuildingSlices).not.toHaveBeenCalled();
     });
 
     it('does not re-add a model when its preview generation becomes stale during loading', async () => {
@@ -181,5 +188,7 @@ describe('uploaded model placement in shared 3D previews', () => {
         expect(wrapper.scale.values[2]).toBe(2);
         expect(wrapper.rotation.z).toBeCloseTo(Math.PI / 2);
         expect(wrapper.children[0].children[0].geometry).toEqual({ cloned: true });
+        expect(harness.context.applyModelSection).toHaveBeenCalledWith(wrapper);
+        expect(harness.context.createBuildingSlices).not.toHaveBeenCalled();
     });
 });

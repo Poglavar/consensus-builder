@@ -389,6 +389,7 @@ function warmEnterFixture() {
         ensureNearbyFurniture() {},
         ensureNearbyWater() {},
         ensureNearbyGreen() {},
+        ensureNearbyGround() {},
         initScene: async () => { calls.init += 1; return true; },
         buildingViewDirty: false,
         buildingWorkIncomplete: false,
