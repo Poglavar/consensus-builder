@@ -7,7 +7,9 @@
 // with their coplanar triangles. Depth sorts the rest: the kerb walls show on the far side of a
 // street, the near pavement edge hides the floor behind it. Lane lines are flat strips just above
 // the asphalt; the pavement (and, in three-mode, the cadastral road parcels) carries a procedural
-// paving pattern in its shader instead of a texture image. Five draw calls, no per-frame work.
+// paving pattern in its shader instead of a texture image, until three-mode hands the plane to the
+// ground cover (three-ground-cover.js), which paves only built-up ground. Foot ways off the streets
+// are flat strips per surface (paved, gravel, earth). Five to eight draw calls, no per-frame work.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -19,7 +21,10 @@
     // asphalt is darker than the 0xb0b0b0 road parcels so a street reads as a street; the kerb is
     // darker than both, because a sunlit vertical face renders brighter than a flat one and a
     // light kerb read as a white line instead of a step.
-    const COLORS = Object.freeze({ pavement: 0xcdccc8, asphalt: 0x5b5d61, kerb: 0x8e8c87, markings: 0xe9e7df });
+    // Foot ways off the streets (ground-geometry.js paths) are paved like the pavement, or gravel, or
+    // trodden earth: light and bare, as worn tracks show across a meadow or a steppe from above.
+    const COLORS = Object.freeze({ pavement: 0xcdccc8, asphalt: 0x5b5d61, kerb: 0x8e8c87, markings: 0xe9e7df,
+        gravel: 0xc4beb1, dirt: 0xc2aa84 });
     // Every ground surface is pushed back further than building faces (three-mode.js
     // makeBuildingMaterial pushes them by factor 1, units 1 so their edge lines stay in front). At
     // the same push or none, the faces' push put the foot of a wall seen at an angle behind the
@@ -63,6 +68,16 @@
         '    diffuseColor.rgb *= (1.0 + 0.05 * (tint - 0.5) * detail) * (1.0 - 0.12 * j);',
         '}'
     ].join('\n');
+    // Gravel and earth: a grain of `uPathCell`-metre stones or clods, fading out once a pixel covers
+    // more ground than a few of them.
+    const PATH_FRAGMENT = [
+        '{',
+        '    vec2 cell = floor(vPathXY / uPathCell);',
+        '    float h = fract(sin(dot(cell + 0.5, vec2(12.9898, 78.233))) * 43758.5453);',
+        '    float fine = 1.0 - smoothstep(0.5, 2.0, length(fwidth(vPathXY / uPathCell)));',
+        '    diffuseColor.rgb *= 1.0 + uPathGrain * (h - 0.5) * fine;',
+        '}'
+    ].join('\n');
     // The stencil bit the lid marks. The ghost-building pass owns ref 1 under a full mask, but it
     // runs in the transparent list after every opaque surface here has been drawn, so the two
     // never meet; a NotEqual-1 test also passes on this bit exactly as it does on a clear pixel.
@@ -78,8 +93,9 @@
     // (parcelSurface) draws only on pixels nothing claimed before it and claims them: real-world
     // water (`water`) first, then the ground cover (`cover`, the real-world lawns, meadows and woods,
     // most specific first), then the parcel slabs at the default order (0), and the background fills
-    // what is left afterwards.
-    const ORDER = Object.freeze({ lid: -20, roadbed: -10, kerb: -10, markings: -10, water: -8, cover: -5, pavement: 1 });
+    // what is left afterwards. Foot ways (`path`) claim before the water, so a footbridge shows over
+    // its river, and before the green, so a path crosses its park.
+    const ORDER = Object.freeze({ lid: -20, roadbed: -10, kerb: -10, markings: -10, path: -9, water: -8, cover: -5, pavement: 1 });
 
     function create(options) {
         const THREE = options.THREE;
@@ -144,6 +160,22 @@
             return material;
         }
 
+        function pathGrain(material, cell, grain) {
+            const uniforms = { uPathCell: { value: cell }, uPathGrain: { value: grain } };
+            material.onBeforeCompile = function (shader) {
+                Object.assign(shader.uniforms, uniforms);
+                shader.vertexShader = shader.vertexShader
+                    .replace('#include <common>', '#include <common>\nvarying vec2 vPathXY;')
+                    .replace('#include <begin_vertex>', '#include <begin_vertex>\nvPathXY = transformed.xy;');
+                shader.fragmentShader = shader.fragmentShader
+                    .replace('#include <common>', '#include <common>\nvarying vec2 vPathXY;\nuniform float uPathCell;\nuniform float uPathGrain;')
+                    .replace('#include <color_fragment>', '#include <color_fragment>\n' + PATH_FRAGMENT);
+            };
+            material.customProgramCacheKey = function () { return 'cb-path-grain'; };
+            material.needsUpdate = true;
+            return material;
+        }
+
         const materials = {
             // Stencil only: no colour, no depth, marks the lid's footprint wherever it projects.
             lid: new THREE.MeshBasicMaterial({
@@ -154,7 +186,12 @@
             asphalt: behindBuildings(new THREE.MeshLambertMaterial({ color: COLORS.asphalt })),
             kerb: behindBuildings(new THREE.MeshLambertMaterial({ color: COLORS.kerb, side: THREE.DoubleSide })),
             markings: behindBuildings(new THREE.MeshLambertMaterial({ color: COLORS.markings }), OFFSET.markings),
-            pavement: paveTexture(backgroundSurface(new THREE.MeshLambertMaterial({ color: COLORS.pavement })), 1)
+            pavement: paveTexture(backgroundSurface(new THREE.MeshLambertMaterial({ color: COLORS.pavement })), 1),
+            paths: {
+                paved: paveTexture(parcelSurface(new THREE.MeshLambertMaterial({ color: COLORS.pavement })), 1),
+                gravel: pathGrain(parcelSurface(new THREE.MeshLambertMaterial({ color: COLORS.gravel })), 0.25, 0.3),
+                dirt: pathGrain(parcelSurface(new THREE.MeshLambertMaterial({ color: COLORS.dirt })), 0.6, 0.18)
+            }
         };
         let meshes = [];
         let lastStats = null;
@@ -198,16 +235,21 @@
             add(result.kerb, materials.kerb, 'ground-kerb', ORDER.kerb);
             add(result.markings, materials.markings, 'ground-markings', ORDER.markings);
             add(result.plane, materials.pavement, 'ground-pavement', ORDER.pavement);
+            Object.entries(result.paths || {}).forEach(([look, part]) => {
+                if (materials.paths[look]) add(part, materials.paths[look], 'ground-path-' + look, ORDER.path);
+            });
             lastStats = result.stats || null;
         }
 
         function dispose() {
             clear();
-            Object.values(materials).forEach(material => { try { material.dispose(); } catch (_) { } });
+            [...Object.values(materials), ...Object.values(materials.paths)].forEach(material => { try { material.dispose?.(); } catch (_) { } });
         }
 
         return {
             group, setGeometry, clear, dispose, cutHoles, parcelSurface, paveTexture,
+            // The background plane's material, for a ground cover to paint (three-ground-cover.js).
+            planeMaterial: materials.pavement,
             stats: () => ({ drawCalls: meshes.length, ...(lastStats || {}) })
         };
     }

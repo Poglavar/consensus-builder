@@ -35,10 +35,30 @@
     const SIDEWALK_CLASSES = new Set(['primary', 'secondary', 'tertiary', 'unclassified', 'residential']);
     // Ways that ARE walking space.
     const FOOT_CLASSES = new Set(['footway', 'path', 'pedestrian', 'steps', 'living_street', 'track', 'cycleway']);
+    // How a foot way's surface is drawn on the ground (ground-geometry.js paths): its `surface` tag,
+    // else a track's grade, else what such a way usually is (a path is trodden earth, a footway paved).
+    const PAVED_SURFACES = new Set(['paved', 'asphalt', 'concrete', 'concrete:plates', 'concrete:lanes', 'paving_stones', 'sett',
+        'cobblestone', 'unhewn_cobblestone', 'bricks', 'metal', 'wood', 'chipseal', 'grass_paver']);
+    const GRAVEL_SURFACES = new Set(['gravel', 'fine_gravel', 'compacted', 'pebblestone', 'rock', 'shells']);
+    const DIRT_SURFACES = new Set(['unpaved', 'dirt', 'ground', 'earth', 'mud', 'sand', 'grass', 'woodchips', 'soil']);
+    // Drawn half-width by class when the way has no mapped width (the walking band stays wider).
+    const PATH_HALF_WIDTH_M = { footway: 0.9, path: 0.6, pedestrian: 2, steps: 0.9, track: 1.4, cycleway: 1 };
     const CORRIDOR_SPEED = { driving: 11, bus: 10 };
     const CORRIDOR_CARRIAGEWAY_TYPES = new Set(['driving', 'bus', 'parking', 'parking_perpendicular', 'parking_angled', 'rail']);
 
     function dist(a, b) { return Math.hypot(b[0] - a[0], b[1] - a[1]); }
+
+    function pathLook(highway, tags) {
+        const surface = String((tags && tags.surface) || '').toLowerCase();
+        if (PAVED_SURFACES.has(surface)) return 'paved';
+        if (GRAVEL_SURFACES.has(surface)) return 'gravel';
+        if (DIRT_SURFACES.has(surface)) return 'dirt';
+        if (highway === 'track') {
+            const grade = String((tags && tags.tracktype) || '');
+            return grade === 'grade1' ? 'paved' : grade === 'grade2' ? 'gravel' : 'dirt';
+        }
+        return highway === 'path' ? 'dirt' : 'paved';
+    }
 
     function nodeKey(x, y) {
         return Math.round(x / NODE_SNAP_M) + ':' + Math.round(y / NODE_SNAP_M);
@@ -266,10 +286,13 @@
                             fills.push({ rings: [points], zcode: ZCODE.GROUND, kind: 'pedestrian-area' });
                             return;
                         }
-                        const bands = [{ offset: 0, halfWidth: Math.max(1.5, (width || 0) / 2), zcode: ZCODE.GROUND }];
+                        const drawn = width ? Math.min(6, Math.max(0.4, width / 2)) : PATH_HALF_WIDTH_M[highway];
+                        const bands = [{ offset: 0, halfWidth: Math.max(1.5, (width || 0) / 2), zcode: ZCODE.GROUND,
+                            look: pathLook(highway, tags), drawnHalfWidth: drawn }];
                         const lanes = [];
                         if (highway === 'living_street') {
                             bands[0].halfWidth = Math.max(3, (width || 6) / 2);
+                            bands[0].drawnHalfWidth = bands[0].halfWidth;
                             lanes.push({ offset: -1.5, dir: 1, speed: 5, kind: 'driving' });
                             lanes.push({ offset: 1.5, dir: -1, speed: 5, kind: 'driving' });
                         }
@@ -410,7 +433,8 @@
                 way.bands.forEach(band => {
                     const pts = offsetPolyline(way.points, band.offset);
                     if (pts) bands.push({ pts, halfWidth: band.halfWidth, zcode: band.zcode || 0,
-                        authored: way.source === 'corridor' || way.source === 'park' });
+                        authored: way.source === 'corridor' || way.source === 'park',
+                        ...(band.look ? { look: band.look, drawnHalfWidth: band.drawnHalfWidth } : {}) });
                 });
                 if (!way.lanes.length) return;
                 // Cut the centreline into edges between junction vertices.
@@ -590,6 +614,6 @@
     return {
         NODE_SNAP_M, LANE_WIDTH_M, SIDEWALK_DEPTH_M, KERB_M, DRIVE_CLASSES, ZCODE,
         createGraphBuilder, offsetPolyline, nodeKey, sampleTrack, junctionCurve, curveHeading, pointInArea,
-        parseOneway, sidewalkSides, ringArea, pointInRing
+        parseOneway, sidewalkSides, ringArea, pointInRing, pathLook
     };
 });

@@ -5,7 +5,7 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { buildGroundGeometry, pavementBounds, ribbonEdges, splitAtSharpBends, MITRE_LIMIT, DISC_SEGMENTS, MARK_HALF_M, MARK_DASH_M, MARK_GAP_M, MARK_LIFT_M } = require('../../frontend/js/life/ground-geometry.js');
+const { buildGroundGeometry, pathsOutside, pavementBounds, ribbonEdges, splitAtSharpBends, MITRE_LIMIT, DISC_SEGMENTS, MARK_HALF_M, MARK_DASH_M, MARK_GAP_M, MARK_LIFT_M } = require('../../frontend/js/life/ground-geometry.js');
 
 const P = (part, i) => [part.positions[i * 3], part.positions[i * 3 + 1], part.positions[i * 3 + 2]];
 function triangleArea2(part, t) {
@@ -306,5 +306,36 @@ describe('pavement plane and input hygiene', () => {
         expect(kerb.normals).toBeInstanceOf(Float32Array);
         expect(kerb.indices).toBeInstanceOf(Uint32Array);
         expect(markings.positions).toBeInstanceOf(Float32Array);
+    });
+});
+
+describe('foot ways', () => {
+    it('lays one flat strip part per surface, as wide as drawn, and skips unknown surfaces', () => {
+        const result = buildGroundGeometry({ carriageways: [], paths: [
+            { pts: [[0, 0], [20, 0]], drawnHalfWidth: 1.4, look: 'dirt' },
+            { pts: [[0, 10], [10, 10]], drawnHalfWidth: 0.5, look: 'gravel' },
+            { pts: [[0, 20], [10, 20]], drawnHalfWidth: 1, look: 'lava' },
+            { pts: [[0, 30], [10, 30]], look: 'paved' }
+        ] });
+        expect(Object.keys(result.paths).sort()).toEqual(['dirt', 'gravel']);
+        expect(totalArea(result.paths.dirt)).toBeCloseTo(20 * 2.8, 4);
+        expect(totalArea(result.paths.gravel)).toBeCloseTo(10 * 1, 4);
+        expect(zs(result.paths.dirt).every(z => z === 0)).toBe(true);
+        expect(result.stats.pathM).toBe(30);
+    });
+
+    it('cuts foot ways where they cross an opening (a lake), and passes the others untouched', () => {
+        const lake = [[5, -5], [15, -5], [15, 5], [5, 5]];
+        const across = { pts: [[0, 0], [20, 0]], drawnHalfWidth: 1, look: 'dirt' };
+        const away = { pts: [[0, 50], [20, 50]], drawnHalfWidth: 1, look: 'dirt' };
+        const out = pathsOutside([across, away], [lake]);
+        expect(out).toHaveLength(3);
+        expect(out[2]).toBe(away);
+        const [west, east] = out;
+        expect(west.pts[0].slice(0, 2)).toEqual([0, 0]);
+        expect(Math.max(...west.pts.map(p => p[0]))).toBeLessThan(5);
+        expect(Math.min(...east.pts.map(p => p[0]))).toBeGreaterThan(15);
+        expect(east.pts.at(-1).slice(0, 2)).toEqual([20, 0]);
+        expect(pathsOutside([across], [])).toEqual([across]);
     });
 });

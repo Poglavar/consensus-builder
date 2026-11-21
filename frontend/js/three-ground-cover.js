@@ -1,0 +1,266 @@
+// The ground of the 3D model view outside streets, parks and designs: what covers it (grass, shrubs,
+// crops, bare soil, sand, rock, built-up ground, forest floor, wetland, snow), from GET /decor/ground
+// (ESA WorldCover cells, OpenStreetMap sand and rock, the local Sentinel-2 colour of each look), painted
+// by a procedural pattern in the ground material's shader instead of grey pavement everywhere. Each
+// look is a blend of five patterns (grass, shrub, bare soil, rock, paving) in its local colour; two
+// small textures over the scene carry the blend weights and the colour per cell, filtered linearly
+// and sampled through a warped position, so looks fade into each other instead of showing 20 m
+// squares. Before the cover arrives, and where it says nothing, the ground is grass and shrubs.
+// No image textures of the ground, no extra draw calls.
+(function (root, factory) {
+    const api = factory(root && root.__threeGrass);
+    if (typeof module === 'object' && module.exports) module.exports = api;
+    if (root) root.__threeGroundCover = api;
+})(typeof window !== 'undefined' ? window : null, function (grassApi) {
+    'use strict';
+
+    const Grass = grassApi || (typeof require === 'function' ? require('./three-grass.js') : null);
+
+    // Pattern weights per look: [grass, shrub, bare soil, rock, paving].
+    const PATTERNS = Object.freeze({
+        grass: [1, 0, 0, 0, 0],
+        shrub: [0.55, 0.45, 0, 0, 0],
+        crop: [0.6, 0, 0.4, 0, 0],
+        bare: [0.15, 0.05, 0.8, 0, 0],
+        sand: [0.04, 0.03, 0.93, 0, 0],
+        rock: [0, 0, 0.25, 0.75, 0],
+        built: [0, 0, 0, 0, 1],
+        // Tree cover seen from above is canopy, which the scene draws as trees: under them, garden ground.
+        forest: [0.45, 0.55, 0, 0, 0],
+        wetland: [0.8, 0.2, 0, 0, 0],
+        snow: [0, 0, 0.6, 0.4, 0]
+    });
+    // The colour of a look where nothing local says otherwise (sRGB bytes). Built-up ground is the
+    // pavement of three-ground.js.
+    const COLORS = Object.freeze({
+        grass: [85, 127, 47], shrub: [79, 106, 44], crop: [138, 150, 82], bare: [160, 138, 106],
+        sand: [216, 196, 154], rock: [154, 149, 140], built: [205, 204, 200], forest: [66, 92, 38],
+        wetland: [93, 110, 69], snow: [238, 242, 245]
+    });
+    const VEGETATION = new Set(['grass', 'shrub', 'crop', 'forest', 'wetland']);
+    // What the ground is before any cover is known, and where the cover is silent: grass and shrubs.
+    const DEFAULT_LOOK = Object.freeze({ mix: [0.6, 0.4, 0, 0, 0], color: [83, 119, 46] });
+
+    const smoothstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+
+    // The colour of `look` from its local Sentinel-2 sample ({ rgb, ndvi, samples } or undefined).
+    // The sample is an annual median, so a green place reads dull: vegetation goes from the sampled
+    // colour (dry, as in a steppe) to its own green as the vegetation index rises. Bare ground, sand,
+    // rock and snow take the sample unless it is vegetated (a beach in a park is coarser than the
+    // colour cells) or too thin to trust.
+    function lookColor(look, sample) {
+        const own = COLORS[look] || DEFAULT_LOOK.color;
+        if (look === 'built' || !sample || !Array.isArray(sample.rgb) || !Number.isFinite(sample.ndvi)) return own.slice();
+        if (VEGETATION.has(look)) {
+            const green = smoothstep(0.3, 0.6, sample.ndvi);
+            return sample.rgb.map((value, i) => Math.round(value + (own[i] - value) * green));
+        }
+        return sample.ndvi < 0.3 && sample.samples >= 20 ? sample.rgb.slice() : own.slice();
+    }
+
+    function decodeBase64(text) {
+        if (typeof atob === 'function') {
+            const binary = atob(text);
+            const out = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) out[i] = binary.charCodeAt(i);
+            return out;
+        }
+        return new Uint8Array(Buffer.from(text, 'base64'));
+    }
+
+    // A /decor/ground payload → the two RGBA textures' bytes, rows from the south (texture v = 0):
+    // `mix` = grass, shrub, bare, rock weights; `tint` = the look's colour and its paving weight.
+    // `fallback` is the mean of the cells, for the ground beyond the cover, so its edge fades into
+    // what lies inside.
+    function coverData(payload) {
+        const cols = payload && payload.cols, rows = payload && payload.rows;
+        const names = (payload && payload.lookNames) || [];
+        if (!(cols > 0 && rows > 0) || typeof payload.looks !== 'string') return null;
+        const ids = decodeBase64(payload.looks);
+        if (ids.length !== cols * rows) return null;
+        const palette = payload.palette || {};
+        const looks = names.map(name => (PATTERNS[name]
+            ? { mix: PATTERNS[name], color: lookColor(name, palette[name]) } : null));
+        const mix = new Uint8Array(cols * rows * 4);
+        const tint = new Uint8Array(cols * rows * 4);
+        const sum = [0, 0, 0, 0, 0, 0, 0, 0];
+        let known = 0;
+        for (let row = 0; row < rows; row++) {
+            const from = (rows - 1 - row) * cols;
+            for (let col = 0; col < cols; col++) {
+                const id = ids[from + col];
+                const look = looks[id] || DEFAULT_LOOK;
+                if (looks[id]) {
+                    known++;
+                    look.mix.forEach((value, k) => { sum[k] += value; });
+                    look.color.forEach((value, k) => { sum[5 + k] += value; });
+                }
+                const o = (row * cols + col) * 4;
+                for (let k = 0; k < 4; k++) mix[o + k] = Math.round(look.mix[k] * 255);
+                tint[o] = look.color[0]; tint[o + 1] = look.color[1]; tint[o + 2] = look.color[2];
+                tint[o + 3] = Math.round(look.mix[4] * 255);
+            }
+        }
+        const fallback = known ? { mix: sum.slice(0, 5).map(value => value / known), color: sum.slice(5).map(value => Math.round(value / known)) }
+            : DEFAULT_LOOK;
+        return { cols, rows, mix, tint, fallback };
+    }
+
+    // Runs after Lambert's colour setup; `vCoverXY` is the position in metres in the frame of
+    // `uCoverBox` (x0, y0, 1 / width, 1 / height of the cover). `uCoverPlot` 1 = a parcel: built-up
+    // ground is its plain plot fill instead of paving, and every look a shade lighter, so a plot
+    // still reads as a plot (its outline is drawn separately).
+    const FRAGMENT = `
+{
+    vec2 gxy = vCoverXY;
+    // Derivatives are taken here, outside the branches below, where they are defined everywhere.
+    vec2 gpx = fwidth(gxy);
+    float footprint = length(gpx);
+    vec2 warp = vec2(cbGrassNoise(gxy / 17.0), cbGrassNoise(gxy / 17.0 + 47.0)) - 0.5;
+    vec2 uv = (gxy + warp * 24.0 - uCoverBox.xy) * uCoverBox.zw;
+    vec2 edgeIn = smoothstep(vec2(0.0), vec2(0.08), uv) * smoothstep(vec2(1.0), vec2(0.92), uv);
+    float inside = uCoverOn * edgeIn.x * edgeIn.y;
+    vec4 w = mix(uCoverFallbackMix, texture2D(uCoverMix, uv), inside);
+    vec4 t = mix(uCoverFallbackTint, texture2D(uCoverTint, uv), inside);
+    // Paved and open ground meet along a crisp, wandering edge instead of a 20 m blur: the filtered
+    // paving share (t.a) is cut at a threshold that varies over a few metres, and the open ground's
+    // own colour is recovered from the filtered one (paved cells carry the pavement colour, so
+    // t.rgb = a · pavement + (1 − a) · open ground).
+    float a = t.a;
+    vec3 openColor = clamp((t.rgb - a * uCoverPave) / max(1.0 - a, 0.15), 0.0, 1.0);
+    float cut = 0.5 + 0.36 * (cbGrassNoise(mat2(0.8, -0.6, 0.6, 0.8) * gxy / 12.0 + 91.0) * 0.6 + cbGrassNoise(gxy / 3.5 + 17.0) * 0.4 - 0.5);
+    float paved = smoothstep(cut - 0.04, cut + 0.04, a);
+    float fine = 1.0 - smoothstep(0.06, 0.25, footprint);
+    float finer = 1.0 - smoothstep(0.02, 0.09, footprint);
+    float mid = 1.0 - smoothstep(0.15, 0.6, footprint);
+    float patches = cbGrassNoise(gxy / 9.0) * 0.6 + cbGrassNoise(gxy / 3.1 + 11.0) * 0.4;
+    vec3 grassLook = mix(vec3(0.93, 0.97, 0.9), vec3(1.07, 1.03, 0.96), smoothstep(0.3, 0.75, patches))
+        * (1.0 + 0.36 * ((cbGrassNoise(gxy * 8.0) - 0.5) * fine + (cbGrassNoise(gxy * 23.0 + 9.0) - 0.5) * finer));
+    // Each pattern only where its look is present (a branch the whole area takes alike).
+    vec3 shrubLook = grassLook;
+    if (w.g > 0.004) {
+        float clump = smoothstep(0.58, 0.7, cbGrassNoise(gxy / 1.7 + 5.0) * 0.75 + cbGrassNoise(gxy / 5.0 + 3.0) * 0.25);
+        shrubLook = mix(grassLook, vec3(0.66, 0.7, 0.58) * (0.9 + 0.2 * cbGrassNoise(gxy * 3.0)), clump);
+    }
+    vec3 bareLook = vec3(1.0);
+    if (w.b > 0.004) {
+        float mottle = cbGrassNoise(gxy / 4.0 + 21.0) * 0.6 + cbGrassNoise(gxy / 1.3 + 7.0) * 0.4;
+        bareLook = vec3(0.9 + 0.2 * mottle) * (1.0 + 0.3 * (cbGrassNoise(gxy * 11.0 + 2.0) - 0.5) * fine
+            + 0.25 * (cbGrassNoise(gxy * 31.0) - 0.5) * finer);
+        float tuft = smoothstep(0.78, 0.86, cbGrassNoise(gxy * 0.9 + 13.0)) * mid;
+        bareLook = mix(bareLook, vec3(0.72, 0.74, 0.6), tuft * 0.6);
+    }
+    vec3 rockLook = vec3(1.0);
+    if (w.a > 0.004) {
+        float facet = floor(cbGrassNoise(gxy / 2.4 + 37.0) * 5.0) / 5.0;
+        float crack = (1.0 - smoothstep(0.0, 0.03, abs(cbGrassNoise(gxy / 1.6 + 71.0) - 0.5))) * fine;
+        rockLook = vec3(0.82 + 0.3 * facet) * (1.0 - 0.35 * crack);
+    }
+    vec3 paveLook = vec3(1.0);
+    if (paved > 0.001 && uCoverPlot < 0.5) {
+        vec2 slab = gxy / 1.5;
+        vec2 slabEdge = abs(fract(slab) - 0.5);
+        vec2 slabPx = gpx / 1.5;
+        vec2 joint = smoothstep(vec2(0.47) - slabPx, vec2(0.47), slabEdge);
+        float j = max(joint.x, joint.y) * clamp(0.06 / max(max(slabPx.x, slabPx.y), 1e-4), 0.0, 1.0);
+        float slabDetail = 1.0 - smoothstep(0.25, 1.0, max(slabPx.x, slabPx.y));
+        paveLook = vec3((1.0 + 0.05 * (cbGrassHash(floor(slab) + 0.5) - 0.5) * slabDetail) * (1.0 - 0.12 * j));
+    }
+    vec3 openLook = (grassLook * w.r + shrubLook * w.g + bareLook * w.b + rockLook * w.a) / max(w.r + w.g + w.b + w.a, 1e-3);
+    // Open ground is never one even tone from afar: broad darker, greener patches of vegetation and
+    // lighter, barer ones, tens of metres across (two rotated layers, so no lattice shows).
+    float broad = cbGrassNoise(mat2(0.8, -0.6, 0.6, 0.8) * gxy / 90.0 + 3.0) * 0.55
+        + cbGrassNoise(mat2(0.6, 0.8, -0.8, 0.6) * gxy / 37.0 + 8.0) * 0.45;
+    openLook *= mix(vec3(0.82, 0.85, 0.78), vec3(1.1, 1.07, 1.03), smoothstep(0.2, 0.8, broad));
+    diffuseColor.rgb = mix(pow(openColor, vec3(2.2)) * openLook, pow(uCoverPave, vec3(2.2)) * paveLook, paved)
+        * (1.0 + 0.07 * uCoverPlot);
+}`;
+
+    const toUnit = values => values.map(value => value / 255);
+
+    function create(options) {
+        const THREE = options.THREE;
+        function texture(bytes, cols, rows) {
+            const tex = new THREE.DataTexture(bytes, cols, rows, THREE.RGBAFormat, THREE.UnsignedByteType);
+            tex.magFilter = THREE.LinearFilter;
+            tex.minFilter = THREE.LinearFilter;
+            tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+            tex.generateMipmaps = false;
+            tex.needsUpdate = true;
+            return tex;
+        }
+        const empty = () => texture(new Uint8Array(4), 1, 1);
+        // Shared by every material the cover is on, so a new cover reaches them all at once.
+        const uniforms = {
+            uCoverMix: { value: empty() },
+            uCoverTint: { value: empty() },
+            uCoverBox: { value: new THREE.Vector4(0, 0, 1, 1) },
+            uCoverOn: { value: 0 },
+            uCoverFallbackMix: { value: new THREE.Vector4(...DEFAULT_LOOK.mix.slice(0, 4)) },
+            uCoverFallbackTint: { value: new THREE.Vector4(...toUnit(DEFAULT_LOOK.color), DEFAULT_LOOK.mix[4]) },
+            uCoverPave: { value: new THREE.Vector3(...toUnit(COLORS.built)) }
+        };
+        let current = null;
+
+        // Give a ground material the cover. `metresPerUnit` converts the mesh's local XY to the
+        // cover's metres (1 for the ground group, 1 / k for a mesh in Mercator-inflated scene units).
+        function apply(material, metresPerUnit, { plot = false } = {}) {
+            const scale = { value: Number.isFinite(metresPerUnit) && metresPerUnit > 0 ? metresPerUnit : 1 };
+            const plotValue = { value: plot ? 1 : 0 };
+            material.onBeforeCompile = function (shader) {
+                Object.assign(shader.uniforms, uniforms, { uCoverScale: scale, uCoverPlot: plotValue });
+                shader.vertexShader = shader.vertexShader
+                    .replace('#include <common>', '#include <common>\nvarying vec2 vCoverXY;\nuniform float uCoverScale;')
+                    .replace('#include <begin_vertex>', '#include <begin_vertex>\nvCoverXY = transformed.xy * uCoverScale;');
+                shader.fragmentShader = shader.fragmentShader
+                    .replace('#include <common>', '#include <common>\nvarying vec2 vCoverXY;\nuniform sampler2D uCoverMix;\n'
+                        + 'uniform sampler2D uCoverTint;\nuniform vec4 uCoverBox;\nuniform float uCoverOn;\nuniform float uCoverPlot;\n'
+                        + 'uniform vec4 uCoverFallbackMix;\nuniform vec4 uCoverFallbackTint;\nuniform vec3 uCoverPave;' + Grass.NOISE)
+                    .replace('#include <color_fragment>', '#include <color_fragment>\n' + FRAGMENT);
+            };
+            material.customProgramCacheKey = function () { return 'cb-ground-cover'; };
+            material.userData = material.userData || {};
+            material.userData.cbGroundCover = { scale, plot: plotValue };
+            material.needsUpdate = true;
+            return material;
+        }
+
+        // Show a /decor/ground payload; `project(lng, lat)` → [x, y] metres in the materials' frame.
+        // Returns what it shows ({ cols, rows, fallback }) or null when the payload has no cover.
+        function setCover(payload, project) {
+            const data = coverData(payload);
+            if (!data || !Array.isArray(payload.bbox)) return null;
+            const [w, s, e, n] = payload.bbox;
+            const [x0, y0] = project(w, s);
+            const [x1, y1] = project(e, n);
+            if (!(x1 > x0 && y1 > y0)) return null;
+            uniforms.uCoverMix.value.dispose();
+            uniforms.uCoverTint.value.dispose();
+            uniforms.uCoverMix.value = texture(data.mix, data.cols, data.rows);
+            uniforms.uCoverTint.value = texture(data.tint, data.cols, data.rows);
+            uniforms.uCoverBox.value.set(x0, y0, 1 / (x1 - x0), 1 / (y1 - y0));
+            uniforms.uCoverFallbackMix.value.set(...data.fallback.mix.slice(0, 4));
+            uniforms.uCoverFallbackTint.value.set(...toUnit(data.fallback.color), data.fallback.mix[4]);
+            uniforms.uCoverOn.value = 1;
+            current = { cols: data.cols, rows: data.rows, fallback: data.fallback };
+            return current;
+        }
+
+        // Back to the default ground (a new place, whose cover is not read yet).
+        function reset() {
+            uniforms.uCoverOn.value = 0;
+            uniforms.uCoverFallbackMix.value.set(...DEFAULT_LOOK.mix.slice(0, 4));
+            uniforms.uCoverFallbackTint.value.set(...toUnit(DEFAULT_LOOK.color), DEFAULT_LOOK.mix[4]);
+            current = null;
+        }
+
+        function dispose() {
+            uniforms.uCoverMix.value.dispose();
+            uniforms.uCoverTint.value.dispose();
+        }
+
+        return { uniforms, apply, setCover, reset, dispose, current: () => current };
+    }
+
+    return Object.freeze({ PATTERNS, COLORS, DEFAULT_LOOK, lookColor, coverData, create });
+});

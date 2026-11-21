@@ -14,6 +14,8 @@
     const NODE_SNAP_M = 0.5;      // same vertex snap as life-graph: shared vertices are one junction
     const MITRE_LIMIT = 2;        // a joint sharper than this is a round join: square ends plus a disc
     const DISC_SEGMENTS = 16;
+    // The surfaces a foot way is drawn in (life-graph.js pathLook).
+    const PATH_LOOKS = Object.freeze(['paved', 'gravel', 'dirt']);
     const MIN_SEGMENT_M = 0.01;
     const KERB_STEP_M = 1;        // kerb edges are sampled this often against the asphalt around them
     const KERB_TOL_M = 0.05;      // a sample this far inside any asphalt is in a junction opening
@@ -336,7 +338,49 @@
     // directions, dashed between lanes of one direction). `bounds`: [minX, minY, maxX, maxY] of the
     // pavement plane, or null for no plane. Returns typed-array parts: `roadbed` (sunk asphalt), `lid`
     // (the roadbed at pavement level, for the stencil), `kerb` (walls, with normals), `markings` (lane
-    // lines) and `plane` (pavement), plus stats.
+    // lines) and `plane` (pavement), plus stats. `paths`: [{ pts, drawnHalfWidth, look }] (the life
+    // graph's foot-way bands: footways, paths, tracks) become `paths` { paved, gravel, dirt }: flat
+    // strips at pavement level, one part per surface, closed at sharp bends by a disc.
+    // The parts of `paths` (as buildGroundGeometry takes them) outside every ring of `openings`
+    // ([[x, y], …] outer rings in the same metres: a lake, a station's opening). A path whose box
+    // meets an opening is walked in steps of at most `stepM` and cut into the runs outside; any
+    // other path passes as it is.
+    function pathsOutside(paths, openings, stepM = 2) {
+        const boxOf = points => {
+            const xs = points.map(p => p[0]), ys = points.map(p => p[1]);
+            return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
+        };
+        const rings = (openings || []).filter(ring => Array.isArray(ring) && ring.length >= 3).map(ring => ({ ring, box: boxOf(ring) }));
+        const inRing = ([x, y], { ring, box }) => {
+            if (x < box[0] || x > box[2] || y < box[1] || y > box[3]) return false;
+            let hit = false;
+            for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+                const [xi, yi] = ring[i], [xj, yj] = ring[j];
+                if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) hit = !hit;
+            }
+            return hit;
+        };
+        const out = [];
+        (paths || []).forEach(path => {
+            const pts = dedupe(path.pts || []);
+            if (pts.length < 2) return;
+            const box = boxOf(pts);
+            const near = rings.filter(r => r.box[0] <= box[2] && r.box[2] >= box[0] && r.box[1] <= box[3] && r.box[3] >= box[1]);
+            if (!near.length) { out.push(path); return; }
+            const dense = [pts[0]];
+            for (let i = 1; i < pts.length; i++) {
+                const [ax, ay] = pts[i - 1], [bx, by] = pts[i];
+                const steps = Math.max(1, Math.ceil(Math.hypot(bx - ax, by - ay) / stepM));
+                for (let k = 1; k <= steps; k++) dense.push([ax + (bx - ax) * k / steps, ay + (by - ay) * k / steps]);
+            }
+            let run = [];
+            const close = () => { if (run.length >= 2) out.push({ ...path, pts: run }); run = []; };
+            dense.forEach(p => { if (near.some(r => inRing(p, r))) close(); else run.push(p); });
+            close();
+        });
+        return out;
+    }
+
     function buildGroundGeometry(input) {
         const ways = [];
         (input && Array.isArray(input.carriageways) ? input.carriageways : []).forEach(c => {
@@ -424,6 +468,26 @@
         });
         const markings = marks.finish().roadbed;
 
+        const pathLists = {};
+        let pathM = 0;
+        (input && Array.isArray(input.paths) ? input.paths : []).forEach(path => {
+            const half = Number(path && path.drawnHalfWidth);
+            if (!(half > 0) || !PATH_LOOKS.includes(path.look)) return;
+            const pts = dedupe(path.pts).map(p => [p[0], p[1], 0]);
+            if (pts.length < 2) return;
+            const list = pathLists[path.look] || (pathLists[path.look] = createTriangleList());
+            const { pieces, bends } = splitAtSharpBends(pts, half);
+            pieces.forEach(piece => list.ribbon(piece, half, 0));
+            bends.forEach(p => list.disc(p[0], p[1], 0, half, 0));
+            pathM += polylineLength(pts);
+        });
+        const paths = {};
+        let pathTriangles = 0;
+        Object.keys(pathLists).forEach(look => {
+            paths[look] = pathLists[look].finish().roadbed;
+            pathTriangles += paths[look].triangles;
+        });
+
         let plane = null;
         const b = input && input.bounds;
         if (Array.isArray(b) && b.length === 4 && b.every(Number.isFinite) && b[2] > b[0] && b[3] > b[1]) {
@@ -435,8 +499,9 @@
         }
 
         return {
-            roadbed, lid, kerb, markings, plane,
+            roadbed, lid, kerb, markings, plane, paths,
             stats: {
+                pathM: Math.round(pathM), pathTriangles,
                 ways: ways.length, triangles: roadbed.triangles + (plane ? 2 : 0), junctions: junctions.size,
                 roundedBends, roadAreaM2: Math.round(roadAreaM2), dropped: roadbed.dropped,
                 kerbM: Math.round(kerb.lengthM), kerbTriangles: kerb.triangles,
@@ -447,6 +512,6 @@
 
     return {
         buildGroundGeometry, buildPavementGeometry, pavementBounds, ribbonEdges, splitAtSharpBends, nodeKey,
-        NODE_SNAP_M, MITRE_LIMIT, DISC_SEGMENTS, KERB_TOL_M, MARK_HALF_M, MARK_DASH_M, MARK_GAP_M, MARK_LIFT_M
+        pathsOutside, NODE_SNAP_M, MITRE_LIMIT, DISC_SEGMENTS, PATH_LOOKS, KERB_TOL_M, MARK_HALF_M, MARK_DASH_M, MARK_GAP_M, MARK_LIFT_M
     };
 });

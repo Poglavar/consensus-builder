@@ -77,8 +77,44 @@ everything else is pavement up to the buildings.
 | Lane lines (Lower Manhattan z20, 305 carriageways) | 7.4 km, 3,536 triangles |
 | Lane lines (Zagreb station z19) | 3.5 km, 1,618 triangles |
 
+## Ground cover and foot ways
+
+Off the streets the ground shows what covers it there, instead of pavement everywhere: grass,
+shrubs, crops, bare soil, sand, rock, built-up ground, forest floor, wetland or snow, in the local
+colour, so Alatau's steppe is dry brown and Jarun is green.
+
+- `GET /decor/ground?bbox&buffer_meters` ([`backend/decor/ground-cover.js`](../backend/decor/ground-cover.js))
+  answers a grid of about 20 m cells (at most 256 × 256) over the scenery area plus 1 km: one look
+  per cell from ESA WorldCover 2021 (10 m, worldwide), overridden where OpenStreetMap maps sand,
+  rock, ice or wetland (the OpenFreeMap landcover tiles the green layer reads), and per look the
+  median colour and vegetation index (NDVI) of the ESA WorldCover 2021 Sentinel-2 annual composite
+  over its cells. Both are CC BY 4.0 Cloud-Optimized GeoTIFFs on ESA's public buckets, read with
+  range requests on the server (the buckets send no CORS). A missing tile is open sea: no look.
+- `frontend/js/three-ground-cover.js`: a shader patch on the pavement plane and on the parcel slabs
+  (`plot`: a shade lighter, plain instead of paved where built-up). Two small RGBA textures carry
+  per cell the weights of five patterns (grass, shrub, bare soil, rock, paving) and the colour;
+  sampled linearly through a warped position, so open looks fade into each other, while paved and
+  open ground meet along a crisp, wandering edge. A broad 35–90 m mottle keeps open ground from
+  reading as one tone. Vegetation goes from its sampled colour (dry) to its own green as NDVI rises,
+  since an annual median is dull. Before the cover arrives, and where it is silent, the ground is
+  grass and shrubs; beyond the read area it is the cover's mean.
+- Foot ways: OSM footways, paths, tracks, steps, cycleways and pedestrian ways become flat strips
+  (`paths` in `ground-geometry.js`, one draw call per surface): paved, gravel or trodden earth from
+  their `surface` tag, a track's grade, or the class. Earth and gravel are light, as worn tracks
+  show from above. They claim their pixels before the water and the green (`ORDER.path`), skip the
+  sunk roadbed, and are cut where they cross a lake or a station's opening (`pathsOutside`).
+
+| Budget | Value |
+|---|---|
+| Draw calls added | up to 3 (one per foot-way surface) |
+| Request | one GET per scene area, cached in the server process; ~2–4 s uncached from a laptop |
+| Payload | Alatau 3.4 × 2.2 km: 170 × 110 cells, ~25 KB of looks |
+| Foot ways (Alatau, 2.5 km view) | 39 km, 1,290 triangles |
+
 ## Open
 
+- The model view credits no data source on screen (OpenStreetMap neither); ESA's CC BY 4.0 asks
+  for credit. The payload carries the line (`attribution`).
 - User review of the kerb (0.15 m, colour), the line style (white only, dashed separators, solid
   centre line) and the slab size (1.5 m).
 
@@ -97,8 +133,9 @@ everything else is pavement up to the buildings.
   breaks across the junction disc at every side-street T, as the disc is as wide as the street.
 - Zagreb's cadastral parcels load late and unevenly in this dev setup (0, 202 or 356 lot slabs on
   three loads of the same view); not touched here.
-- `service` roads, parking aisles and footway paving: the carriageway list is only the driveable
-  classes the vehicles use, so driveways and parking lots are pavement for now.
+- `service` roads and parking aisles: the carriageway list is only the driveable classes the
+  vehicles use, so driveways and parking lots are built-up ground (paved) or whatever the cover
+  says lies there. Mapped pedestrian areas (closed `highway=pedestrian` rings) are not drawn.
 - Grade separation of OSM bridges and ramps: everything is at z 0 (the Brooklyn Bridge approaches
   draw flat). The corridor carriageways carry their grade-separation z already.
 - Photo mode: the ground is hidden there; the tiles are the ground.

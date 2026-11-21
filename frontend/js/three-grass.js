@@ -83,5 +83,5 @@ diffuseColor.rgb *= 1.0 + 0.36 * grain;`
         return material;
     }
 
-    return Object.freeze({ COLORS, grassTexture });
+    return Object.freeze({ COLORS, NOISE, grassTexture });
 });

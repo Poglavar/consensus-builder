@@ -22,6 +22,7 @@ export function setupDecorRoute(app, pool, options = {}) {
     const treesProvider = sources.trees.open(NETWORK_ENVIRONMENT_SOURCES.trees);
     const waterProvider = sources.water.open(NETWORK_ENVIRONMENT_SOURCES.water);
     const greenProvider = sources.green.open(NETWORK_ENVIRONMENT_SOURCES.green);
+    const groundProvider = sources.ground.open(NETWORK_ENVIRONMENT_SOURCES.ground);
     // Fountains and street lamps from OSM; `options.furnitureProvider` replaces it (tests).
     const furnitureProvider = options.furnitureProvider || createStreetFurnitureProvider();
 
@@ -127,6 +128,22 @@ export function setupDecorRoute(app, pool, options = {}) {
             // Scenery: the scene draws without green areas, and the log says why.
             console.error('Error in GET /decor/green:', err.message);
             res.status(502).json({ error: 'Green areas could not be loaded.' });
+        }
+    });
+    // GET /decor/ground?bbox=…&buffer_meters=… - what covers the ground around the box (grass, shrubs,
+    // crops, bare soil, sand, rock, built-up ground, forest floor, wetland, snow) on a grid of about
+    // 20 m cells, and the local colour of each look, anywhere on Earth (decor/ground-cover.js).
+    // Response: { bbox, cols, rows, cellM, looks: base64 look id per cell (row 0 north), lookNames,
+    //             palette: { look: { rgb: [r, g, b], ndvi, samples } }, counts, source, attribution }
+    app.get('/decor/ground', async (req, res) => {
+        try {
+            const area = sceneryArea(req, res);
+            if (!area) return;
+            res.json(await groundProvider.near(area.geometry, area.bufferMeters));
+        } catch (err) {
+            // Scenery: the scene draws its default ground (grass and shrubs), and the log says why.
+            console.error('Error in GET /decor/ground:', err.message);
+            res.status(502).json({ error: 'The ground cover could not be loaded.' });
         }
     });
     return sources;

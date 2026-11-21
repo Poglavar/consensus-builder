@@ -192,8 +192,28 @@ describe('three-ground', () => {
         expect(disposed.filter(d => d === 'geometry')).toHaveLength(5);
         layer.dispose();
         expect(disposed.filter(d => d === 'geometry')).toHaveLength(10);
-        expect(disposed.filter(d => d === 'material')).toHaveLength(5);
+        // Five ground materials and the three foot-way surfaces (paved, gravel, earth).
+        expect(disposed.filter(d => d === 'material')).toHaveLength(8);
         expect(layer.group.children).toEqual([]);
+    });
+
+    it('draws foot ways as claiming strips of their surface, before water and green, skipping the roadbed', () => {
+        const { THREE } = stubThree();
+        const layer = create({ THREE });
+        layer.setGeometry(buildGroundGeometry({ bounds: [-10, -10, 10, 10], carriageways: [], paths: [
+            { pts: [[-10, 5], [10, 5]], drawnHalfWidth: 1.4, look: 'dirt' },
+            { pts: [[-10, -5], [10, -5]], drawnHalfWidth: 0.9, look: 'paved' }
+        ] }));
+        const dirt = byName(layer, 'ground-path-dirt');
+        const paved = byName(layer, 'ground-path-paved');
+        expect(byName(layer, 'ground-path-gravel')).toBeUndefined();
+        expect(dirt.renderOrder).toBe(ORDER.path);
+        expect(ORDER.path).toBeLessThan(ORDER.water);
+        expect(dirt.material.color).toBe(COLORS.dirt);
+        expect(dirt.material.stencilFunc).toBe('greater'); // a claim, like the parcels
+        expect(dirt.material.stencilFuncMask & STENCIL_BIT).toBe(STENCIL_BIT); // never over the roadbed's lid
+        expect(paved.material.color).toBe(COLORS.pavement);
+        expect(layer.planeMaterial).toBe(byName(layer, 'ground-pavement').material);
     });
 
     it('lays a design\'s ground over the city\'s ground and behind every building face, in rank order', () => {

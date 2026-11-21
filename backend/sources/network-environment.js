@@ -8,6 +8,7 @@ import { fetchBlockRoads } from '../streets/block-roads.js';
 import { createOvertureTreesProvider } from '../decor/overture-trees.js';
 import { createWaterProvider } from '../decor/openfreemap-water.js';
 import { createGreenProvider } from '../decor/openfreemap-green.js';
+import { createGroundCoverProvider } from '../decor/ground-cover.js';
 import { createTileReader } from '../decor/openfreemap-tiles.js';
 const require = createRequire(import.meta.url);
 const SourceRuntime = require('../../frontend/js/source-runtime.js');
@@ -15,7 +16,7 @@ const SourceRuntime = require('../../frontend/js/source-runtime.js');
 export const NETWORK_ENVIRONMENT_SOURCES = Object.freeze({
     roads: 'osm-road', frontage: 'osm-frontage', blocks: 'osm-block-roads',
     streets: 'street-register', planned: 'government-road-plan', classifications: 'classified-road-parcels',
-    trees: 'overture-trees', water: 'openfreemap-water', green: 'openfreemap-green'
+    trees: 'overture-trees', water: 'openfreemap-water', green: 'openfreemap-green', ground: 'esa-worldcover-ground'
 });
 
 function registry(abstraction, adapter, id, config, create, required, { custom = false } = {}) {
@@ -274,9 +275,10 @@ export function createRoadClassificationRegistry() {
     } }), ['readIds']);
 }
 
-// Water and green areas read the same OpenFreeMap tiles: one reader, so a tile is fetched once.
+// Water, green areas and the ground cover's OpenStreetMap part read the same OpenFreeMap tiles: one
+// reader, so a tile is fetched once.
 export function createDecorSources(pool, { tileReader = createTileReader(), waterProvider = createWaterProvider({ reader: tileReader }),
-    greenProvider = createGreenProvider({ reader: tileReader }) } = {}) {
+    greenProvider = createGreenProvider({ reader: tileReader }), groundProvider = createGroundCoverProvider({ reader: tileReader }) } = {}) {
     const treesProvider = createOvertureTreesProvider(pool);
     const trees = registry('trees', 'osm-decor-trees', NETWORK_ENVIRONMENT_SOURCES.trees,
         { resource: 'osm_decor', kinds: ['trees', 'greenery'] }, () => ({
@@ -286,5 +288,7 @@ export function createDecorSources(pool, { tileReader = createTileReader(), wate
         { tilejson: 'https://tiles.openfreemap.org/planet' }, () => waterProvider, ['near'], { custom: true });
     const green = registry('green', 'openfreemap-green', NETWORK_ENVIRONMENT_SOURCES.green,
         { tilejson: 'https://tiles.openfreemap.org/planet', layer: 'landcover' }, () => greenProvider, ['near'], { custom: true });
-    return { trees, water, green };
+    const ground = registry('ground', 'esa-worldcover-ground', NETWORK_ENVIRONMENT_SOURCES.ground,
+        { dataset: 'esa-worldcover-2021', layer: 'landcover' }, () => groundProvider, ['near'], { custom: true });
+    return { trees, water, green, ground };
 }

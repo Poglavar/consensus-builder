@@ -5,7 +5,7 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const {
-    createGraphBuilder, offsetPolyline, nodeKey, sampleTrack, junctionCurve, curveHeading, pointInArea, parseOneway, LANE_WIDTH_M, KERB_M, DRIVE_CLASSES, ZCODE
+    createGraphBuilder, offsetPolyline, nodeKey, sampleTrack, junctionCurve, curveHeading, pointInArea, parseOneway, pathLook, LANE_WIDTH_M, KERB_M, DRIVE_CLASSES, ZCODE
 } = require('../../frontend/js/life/life-graph.js');
 
 // Test coordinates are already local metres, so the projection is the identity.
@@ -525,5 +525,29 @@ describe('junctionCurve', () => {
             previous = h;
         }
         expect(worst).toBeLessThan(0.1); // 12 chords would step π / 12 ≈ 0.26
+    });
+});
+
+describe('foot ways: drawn surface', () => {
+    it('reads the surface tag, then a track\'s grade, then what the class usually is', () => {
+        expect(pathLook('footway', {})).toBe('paved');
+        expect(pathLook('path', {})).toBe('dirt');
+        expect(pathLook('path', { surface: 'asphalt' })).toBe('paved');
+        expect(pathLook('footway', { surface: 'fine_gravel' })).toBe('gravel');
+        expect(pathLook('track', { tracktype: 'grade1' })).toBe('paved');
+        expect(pathLook('track', { tracktype: 'grade2' })).toBe('gravel');
+        expect(pathLook('track', {})).toBe('dirt');
+        expect(pathLook('cycleway', { surface: 'ground' })).toBe('dirt');
+    });
+
+    it('gives a foot way\'s band its surface and drawn width, and a street\'s sidewalk neither', () => {
+        const graph = osmGraph([
+            road({ highway: 'track', tracktype: 'grade3' }, [[0, 0], [100, 0]]),
+            road({ highway: 'footway', width: '3' }, [[0, 20], [100, 20]]),
+            road({ highway: 'residential', sidewalk: 'both' }, [[0, 60], [100, 60]])
+        ]);
+        const drawn = graph.surface.bands.filter(band => band.look);
+        expect(drawn.map(band => [band.look, band.drawnHalfWidth])).toEqual([['dirt', 1.4], ['paved', 1.5]]);
+        expect(graph.surface.bands.length).toBeGreaterThan(drawn.length); // the sidewalks stay walking space only
     });
 });

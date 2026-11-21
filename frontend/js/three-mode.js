@@ -7496,6 +7496,12 @@
         if (groundLayer || !scene || !window.__threeGround) return;
         groundLayer = window.__threeGround.create({ THREE, k: lifeMercatorK() });
         groundLayer.group.visible = false;
+        // The open ground and the parcel slabs show what covers the ground there (grass, steppe,
+        // sand, paving…); a parcel stays a shade lighter, its outline drawn on it.
+        if (ensureGroundCover()) {
+            groundCover.apply(groundLayer.planeMaterial, 1);
+            groundCover.apply(materials.parcels, 1 / lifeMercatorK(), { plot: true });
+        }
         // The parcel slabs are pavement level too: they get the same holes over the sunk roadbed.
         groundLayer.parcelSurface(materials.parcels);
         groundLayer.parcelSurface(materials.roads);
@@ -7529,8 +7535,14 @@
             const k = lifeMercatorK();
             const bounds = window.__groundGeometry.pavementBounds(lifeSurfaceBounds(lifeProjector()),
                 200000 / k, (camera?.far || 0) / k, (controls?.maxDistance || 0) * 12 / k);
-            const result = source ? window.__groundGeometry.buildGroundGeometry({ carriageways: source.surface.carriageways, bounds }) : null;
             const cuts = groundCutFootprintFeatures();
+            const result = source ? window.__groundGeometry.buildGroundGeometry({
+                carriageways: source.surface.carriageways, bounds,
+                // Foot ways off the streets, as strips of their surface, except over a lake or a
+                // station's opening.
+                paths: window.__groundGeometry.pathsOutside(source.surface.bands.filter(band => band.look),
+                    cuts.map(feature => projectedOuterRings(feature, lifeProjector())).flat())
+            }) : null;
             if (result?.plane && cuts.length) {
                 const project = lifeProjector();
                 const openings = cuts.map(feature => {
@@ -7556,9 +7568,11 @@
                 result.stats.triangles += (result.plane?.triangles || 0) - previousTriangles;
             }
             groundLayer.setGeometry(result);
+            // The cover's box is in this scene's metres: place it again when the scene is rebuilt.
+            showGroundCover();
             if (result) {
                 const s = result.stats;
-                console.log(`[3D ground] ${s.ways} carriageways, ${s.junctions} junctions, ${s.triangles} triangles, ${s.roadAreaM2} m² asphalt, ${s.kerbM} m kerb (${s.kerbTriangles} triangles), ${s.markingM} m lane lines (${s.markingTriangles} triangles)`
+                console.log(`[3D ground] ${s.ways} carriageways, ${s.junctions} junctions, ${s.triangles} triangles, ${s.roadAreaM2} m² asphalt, ${s.kerbM} m kerb (${s.kerbTriangles} triangles), ${s.markingM} m lane lines (${s.markingTriangles} triangles), ${s.pathM} m foot ways (${s.pathTriangles} triangles)`
                     + (Array.isArray(lifeOsmFeatures) ? '' : ' (OSM streets pending)') + ` · built in ${(performance.now() - t0).toFixed(0)} ms`);
             }
         } catch (error) {
@@ -7580,6 +7594,68 @@
     function disposeGround() {
         if (groundLayer) { try { groundLayer.dispose(); } catch (_) { } }
         groundLayer = null;
+    }
+
+    // The outer rings of a Polygon/MultiPolygon feature in `project`'s metres.
+    function projectedOuterRings(feature, project) {
+        const geometry = feature?.geometry;
+        const polygons = geometry?.type === 'Polygon' ? [geometry.coordinates]
+            : geometry?.type === 'MultiPolygon' ? geometry.coordinates : [];
+        return polygons.filter(rings => rings?.[0]?.length >= 3).map(rings => rings[0].map(([lng, lat]) => project(lng, lat)));
+    }
+
+    // --- What covers the ground (grass, shrubs, crops, bare soil, sand, rock, paving…) ---
+    // GET /decor/ground for the same area as the water and green (ESA WorldCover cells with their
+    // local colours, three-ground-cover.js), painted on the open ground and the parcel slabs. One
+    // instance for the page: the parcel material keeps it across scenes. Until it lands, and where
+    // it cannot be read, the ground is grass and shrubs.
+    let groundCover = null;
+    let nearbyGround = null;        // the /decor/ground payload
+    let nearbyGroundKey = null;
+    let nearbyGroundFetching = false;
+    // The cover reaches this far past the scenery area (the route's most), so the camera's horizon
+    // stays on read ground rather than on the cover's average.
+    const GROUND_BUFFER_M = 1000;
+
+    function ensureGroundCover() {
+        if (!groundCover && window.__threeGroundCover) groundCover = window.__threeGroundCover.create({ THREE });
+        return !!groundCover;
+    }
+
+    function showGroundCover() {
+        if (!nearbyGround || !origin3857 || !ensureGroundCover()) return;
+        const shown = groundCover.setCover(nearbyGround, lifeProjector());
+        if (shown) invalidateThreeView();
+    }
+
+    function ensureNearbyGround() {
+        // Its own query area, like the water and green: it loads alongside the buildings.
+        if (nearbyGroundFetching) return;
+        const { queryGeometry } = sceneryQuery();
+        if (!queryGeometry) return;
+        const key = nearbyDataScope + '|' + JSON.stringify(queryGeometry.coordinates) + '|r' + GROUND_BUFFER_M;
+        if (key === nearbyGroundKey) return;
+        nearbyGroundFetching = true; noteSceneWork();
+        const signal = sceneAbort?.signal;
+        const current = () => isActive && !signal?.aborted && sceneAbort?.signal === signal;
+        fetch(sceneryUrl('/decor/ground', queryGeometry, GROUND_BUFFER_M), { signal })
+            .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
+            .then(payload => {
+                if (!current()) return;
+                nearbyGround = payload;
+                nearbyGroundKey = key;
+                nearbyGroundFetching = false; noteSceneWork();
+                console.log(`[3D] Loaded the ground cover: ${payload?.cols}×${payload?.rows} cells, ${JSON.stringify(payload?.counts || {})}`);
+                showGroundCover();
+                // As for the water: a query area the buildings widened meanwhile is read now.
+                ensureNearbyGround();
+            })
+            .catch(err => {
+                if (!current() || err.name === 'AbortError') return;
+                // Scenery: the scene stands on its default ground (grass and shrubs), so a log line.
+                console.warn('Failed to fetch the ground cover:', err);
+                nearbyGroundFetching = false; noteSceneWork();
+            });
     }
 
     // Scene XY is EPSG:3857 metres, inflated by 1/cos(lat) against true metres while Z stays true.
@@ -10881,6 +10957,7 @@
             ensureNearbyFurniture();
             ensureNearbyWater();
             ensureNearbyGreen();
+            ensureNearbyGround();
             if (isolatedParcelId !== null) applyParcelIsolation();
             else if (isolatedProposalId !== null) isolateProposal(isolatedProposalId);
             refreshClickStackFigures();
@@ -11100,6 +11177,8 @@
             nearbyFurniture = null; nearbyFurnitureKey = null;
             nearbyWater = []; nearbyWaterKey = null;
             nearbyGreen = []; nearbyGreenKey = null;
+            nearbyGround = null; nearbyGroundKey = null;
+            groundCover?.reset();
             nearbyDataScope = dataScope;
         }
         captureSceneLoadGeometry();
@@ -11773,6 +11852,7 @@
         sceneParcelSnapshot = [];
         nearbyWaterKey = null;
         nearbyGreenKey = null;
+        nearbyGroundKey = null;
         flatGroup = null;
         corridorGroup = null;
         terrainCorridorGroup = null;
@@ -12004,6 +12084,7 @@
             ensureNearbyFurniture();
             ensureNearbyWater();
             ensureNearbyGreen();
+            ensureNearbyGround();
         } else if (!await initScene()) return false;
         // initScene/reuse already applied the building policy. A late context refresh may still
         // be pending here; re-syncing it would enqueue another full proposal rebuild.
@@ -12140,7 +12221,7 @@
 
     window.addEventListener('planninggeometrychange', rebuildPlanningSources3D);
     // The camera settled at another zoom: water and green areas widen to what it shows.
-    window.addEventListener('loadviewchange', () => { if (isActive) { ensureNearbyWater(); ensureNearbyGreen(); } });
+    window.addEventListener('loadviewchange', () => { if (isActive) { ensureNearbyWater(); ensureNearbyGreen(); ensureNearbyGround(); } });
     window.addEventListener('planningselectionchange', () => {
         // An outside inspector selection ends the click's view; the stack's own section switches
         // select there too and are not an outside choice.
