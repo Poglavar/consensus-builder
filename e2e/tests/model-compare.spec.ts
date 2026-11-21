@@ -5,7 +5,7 @@
 // or not: what is not applied is read without applying it.
 import { test, expect } from '../helpers/fixtures';
 import { selectNativeOption } from '../helpers/controls';
-import { openCity, createBuilding } from '../helpers/runtime';
+import { openCity, createBuilding, drawCorridor } from '../helpers/runtime';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 import { Page } from '@playwright/test';
 
@@ -22,7 +22,8 @@ async function openCompareTab(page: Page) {
 }
 
 // Records the next scissored draws: where each half was cut, and whether the design's own meshes were
-// drawn in it (visible through every ancestor).
+// drawn in it (visible through every ancestor). A mesh is the design's when it is picked by it
+// (userData.proposalId) or drawn for it (userData.designIds: a road's surfaces, a park's trees).
 async function recordPasses(page: Page, designId: string) {
   await page.evaluate(id => {
     const w = window as any;
@@ -35,7 +36,13 @@ async function recordPasses(page: Page, designId: string) {
       renderer.render = (target: any, camera: any) => {
         if (renderer.getScissorTest() && w.__comparePasses) {
           let mesh: any = null;
-          scene.traverse((object: any) => { if (!mesh && object.isMesh && object.userData?.proposalId === w.__compareDesign) mesh = object; });
+          const owns = (object: any) => {
+            for (let node = object; node; node = node.parent) {
+              if (node.userData?.proposalId === w.__compareDesign || node.userData?.designIds?.includes(w.__compareDesign)) return true;
+            }
+            return false;
+          };
+          scene.traverse((object: any) => { if (!mesh && object.isMesh && owns(object)) mesh = object; });
           let visible = !!mesh;
           for (let object = mesh; object; object = object.parent) visible &&= object.visible !== false;
           const rect = renderer.getScissor(new w.THREE.Vector4());
@@ -244,6 +251,39 @@ test('a saved plan that is not applied is a side: it is read without applying an
   await page.locator('#three-container').getByRole('button', { name: 'Stop comparing', exact: true }).click();
   await expect(page.locator('#three-container .map-compare__handle')).toHaveCount(0);
   await expect(enable).toHaveAttribute('aria-pressed', 'false');
+});
+
+test('an applied road in a plan draws on the plan\'s side, its surfaces and all, and not on Built today', async ({ mockApi: page }) => {
+  test.setTimeout(120_000);
+  await mockBuildingScene(page);
+  await openCity(page);
+  const roadId = await drawCorridor(page, 'road');
+  const cid = await page.evaluate(id => {
+    const w = window as any;
+    const plan = w.PlanComposition.create('Streets plan', [w.proposalStorage.getProposal(id)], { city: w.resolveCurrentCityCode(), at: '45.8,15.98,17', mode: '2d', language: 'en' });
+    w.PlanWorkspace.save(plan);
+    return plan.cid as string;
+  }, roadId);
+  await page.keyboard.press('Escape');
+  await page.locator('#mode-3d-toggle').click();
+  await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 20_000 });
+  // Every surface the road draws (lanes, markings, pavements, junctions) is marked as the road's.
+  await expect.poll(() => page.evaluate(id => {
+    let strips = 0, unmarked = 0;
+    (window as any).getThreeModeInternals?.()?.scene.traverse((object: any) => {
+      if (!object.isMesh || !object.userData?.isCorridorStrip) return;
+      strips += 1;
+      if (!object.userData.designIds?.includes(id)) unmarked += 1;
+    });
+    return strips > 0 && unmarked === 0;
+  }, roadId), { timeout: 20_000 }).toBe(true);
+  await openCompareTab(page);
+  await selectNativeOption(page.locator('#planning-compare-left'), 'built');
+  await selectNativeOption(page.locator('#planning-compare-right'), `plan:${cid}`);
+  await page.locator('#planning-compare-enable').click();
+  await expect(page.locator('#three-container .map-compare__label--after')).toHaveText('Plan: Streets plan', { timeout: 45_000 });
+  const split = await recordPasses(page, roadId);
+  expect(split.passes.map((pass: any) => pass.designDrawn)).toEqual([false, true]);
 });
 
 test('a saved design that is not applied is a side of its own, read without applying it', async ({ mockApi: page }) => {

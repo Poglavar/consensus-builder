@@ -24,7 +24,7 @@ describe('the members a plan side shows', () => {
         const options = compare.sideOptions({ designs: [{ id: '7', title: 'Block' }],
             plans: [{ id: 'p', title: 'P', ...unapplied.membersOf(plan, [{ id: '7', cid: 'cidA' }]) }] });
         const side = value => compare.parseSide(value, options);
-        const own = { role: 'proposed', designId: 'cidC', unapplied: true };
+        const own = { role: 'proposed', designIds: ['cidC'], unapplied: true };
         expect(compare.showsOn(side('plan:p'), own)).toBe(true);
         expect(compare.showsOn(side('proposed'), own)).toBe(false);
         expect(compare.showsOn(side('design:7'), own)).toBe(false);

@@ -2996,6 +2996,27 @@
         return value === null || value === undefined ? null : String(value);
     }
 
+    // Which designs a drawing belongs to, for Compare (three-compare.js showsOn): `build` draws one
+    // design's road, park, square or lake, or a junction where several designs' roads meet, and every
+    // object it adds to `groups` is marked `userData.designIds`. A model that loads later is marked
+    // when it arrives (placeFurnitureInstances, placeUploadedModel read `drawingForDesigns`). Only
+    // Compare reads the mark; picking and selection outlines keep `userData.proposalId`.
+    let drawingForDesigns = null;
+    function ownedByDesigns(groups, ids, build) {
+        const designIds = (ids || []).filter(id => id != null && id !== '').map(String);
+        const marks = groups.map(group => group?.children.length ?? 0);
+        const outer = drawingForDesigns;
+        if (designIds.length) drawingForDesigns = designIds;
+        try { return build(); }
+        finally {
+            drawingForDesigns = outer;
+            if (designIds.length) groups.forEach((group, index) => markDesignChildren(group, marks[index], designIds));
+        }
+    }
+    function markDesignChildren(group, from, designIds) {
+        group?.children.slice(from).forEach(child => { child.userData.designIds ??= designIds; });
+    }
+
     function proposalApplied3D(proposal) {
         if (!proposal) return false;
         if (isApplied(proposal)) return true;
@@ -3227,7 +3248,7 @@
         const pathLineMat = new THREE.LineBasicMaterial({ color: 0xdfe8d6, depthTest: true, depthWrite: false });
 
         const isCurrentModel = startStructureModels(decoTarget);
-        parks.forEach(p => {
+        parks.forEach(p => ownedByDesigns([flatTarget, decoTarget], [p?.properties?.proposalId], () => {
             try {
                 if (!p || !p.geometry) return;
                 // Under construction: the lawn spreads with progress; trees and furniture come when built.
@@ -3345,7 +3366,7 @@
                     addParkTrees3D(decoTarget, sampled);
                 }
             } catch (_) { }
-        });
+        }));
     }
 
     // ---- Shared park/square furniture (module-scope materials, created once) ----
@@ -3831,7 +3852,7 @@
         const stoneMat = surfaceMaterial || squareMats.paving;
 
         const isCurrentModel = startStructureModels(decoTarget);
-        squares.forEach(sq => {
+        squares.forEach(sq => ownedByDesigns([flatTarget, decoTarget], [sq?.properties?.proposalId], () => {
             try {
                 if (!sq || !sq.geometry) return;
                 // Under construction: the paving spreads with progress; furniture comes when built.
@@ -3872,7 +3893,7 @@
                 placeFurniture3D('fountain', fountains, models, decoTarget, isCurrentModel,
                     spots => addFountains3D(decoTarget, spots.map(spot => ({ lng: spot.lng, lat: spot.lat })), FURNITURE_GROUND_Z));
             } catch (_) { }
-        });
+        }));
     }
 
     // ---- Furniture models and lamps (furniture-models.js) ----
@@ -3956,6 +3977,7 @@
     // null when the structure was rebuilt meanwhile; rejects when the model cannot be drawn.
     function placeFurnitureInstances(kind, spots, modelUrl, decoTarget, isCurrent, proposalId) {
         const url = (typeof resolveBackendAssetUrl === 'function' && resolveBackendAssetUrl(modelUrl)) || modelUrl;
+        const designIds = drawingForDesigns; // the structure it furnishes, for Compare (ownedByDesigns)
         return loadGltfScene(url).then(source => {
             if (!isActive || !isCurrent()) return null;
             const layout = source ? furnitureModelLayout(source) : null;
@@ -3975,6 +3997,7 @@
                 markOwnedMaterial(mesh, material);
                 group.add(mesh);
             });
+            if (designIds) group.userData.designIds = designIds;
             decoTarget.add(group);
             sunLayer?.syncObjects(group);
             invalidateThreeView();
@@ -3989,9 +4012,11 @@
         const spots = furnitureSpots(kind, items);
         if (!spots.length) return;
         const url = typeof models?.[kind]?.url === 'string' ? models[kind].url : '';
+        // Also when the default is drawn later, after a model failed to load (ownedByDesigns).
+        const designIds = drawingForDesigns;
         const drawProcedural = () => {
             const count = decoTarget.children.length;
-            procedural(spots);
+            ownedByDesigns([decoTarget], designIds, () => procedural(spots));
             if (kind === 'bench') decoTarget.children.slice(count).forEach(node => {
                 if (node.isInstancedMesh) node.userData.sharedPlanBench = { proposalId: String(proposalId), indices: spots.map(spot => spot.index), coordinates: spots.map(spot => [spot.lng, spot.lat]) };
             });
@@ -4325,7 +4350,7 @@
         const fishMat = new THREE.MeshLambertMaterial({ color: 0xffa500 });
 
         const isCurrentModel = startStructureModels(decoTarget);
-        lakes.forEach(lake => {
+        lakes.forEach(lake => ownedByDesigns([flatTarget, decoTarget], [lake?.properties?.proposalId], () => {
             try {
                 if (!lake || !lake.geometry) return;
                 // Under construction: the water spreads with progress over the dug basin.
@@ -4401,7 +4426,7 @@
             } catch (error) {
                 console.error('[three-mode] failed to build a lake basin', error);
             }
-        });
+        }));
     }
 
     // Shared procedural station models are authored in the isochrone app's conventional
@@ -5515,7 +5540,7 @@
     function addCorridorJunctions3D(targetGroup, junctions, terrainHeightAt) {
         const asphalt = corridorLaneMaterial('driving');
         const white = new THREE.MeshBasicMaterial({ color: 0xffffff });
-        junctions.forEach(junction => {
+        junctions.forEach(junction => ownedByDesigns([targetGroup], junction.corridorIds, () => {
             const center = latLngToXY(junction.lat, junction.lng);
             const terrainZ = terrainHeightOrZero(terrainHeightAt, center[0], center[1]);
             (junction.surfacePolygons || []).forEach(polygon => {
@@ -5556,7 +5581,7 @@
                         targetGroup.add(mesh);
                     });
             });
-        });
+        }));
     }
 
     // ---------------------------------------------------------------------------
@@ -5979,7 +6004,7 @@
         const kerb = Number(lane.height) || 0;
 
         // A road under construction gets its pavements with the rest of its surface, when built.
-        displayedProposals().filter(builtCorridorProposal).forEach(proposal => {
+        displayedProposals().filter(builtCorridorProposal).forEach(proposal => ownedByDesigns([targetGroup], [proposal?.proposalId], () => {
             const definition = corridorProposalDefinition(proposal);
             const centreXY = [];
             try {
@@ -6030,7 +6055,7 @@
                     console.warn('[three-mode] edge fill mesh failed', error);
                 }
             });
-        });
+        }));
     }
 
     // A road under construction: its pieces cut to the laid share of their total length (in order),
@@ -6139,7 +6164,7 @@
             }));
         }
 
-        displayedProposals().filter(isAppliedCorridorProposal).forEach(proposal => {
+        displayedProposals().filter(isAppliedCorridorProposal).forEach(proposal => ownedByDesigns([targetGroup], [proposal?.proposalId], () => {
             try {
             const definition = corridorProposalDefinition(proposal);
             const fallbackProfile = corridorProfileOf(definition);
@@ -6339,7 +6364,7 @@
                 // already isolates per-proposal failures the same way).
                 console.error('[three-mode] corridor strips failed for proposal', proposal?.proposalId, error);
             }
-        });
+        }));
 
         // Junctions once each, over the roads that meet there — the corner geometry covers the
         // seams where different widths meet and where the strips of two roads overlap.
@@ -8746,6 +8771,8 @@
             : feat.properties.modelUrl;
         const gen = buildingsRenderGeneration;
         const isCurrent = typeof options.isCurrent === 'function' ? options.isCurrent : () => true;
+        // A park's or square's own model belongs to its design in Compare (ownedByDesigns).
+        const designIds = drawingForDesigns;
         const buildingOpacity = buildingOpacityOf(buildingMaterial);
         const isProposedBuilding = targetGroup === proposedBuildingsGroup || targetGroup.userData?.buildingFamily === 'planned';
         const stale = () => !isActive || !isCurrent() || (isProposedBuilding && gen !== buildingsRenderGeneration);
@@ -8850,6 +8877,7 @@
                     console.error(`[${new Date().toISOString()}] [3D] Storeys of model ${url} could not be read; X-ray will not open it`, error);
                 }
             }
+            if (designIds) wrapper.userData.designIds ??= designIds;
             targetGroup.add(wrapper);
             applyModelSection(wrapper);
             if (sectionedModels.has(wrapper)) updateXrayControls();
@@ -10197,10 +10225,16 @@
     // same camera. Only objects the two sides disagree on are switched between the passes.
     let compareSplit = null;
 
-    function compareDesignIdOf(object) {
+    // The designs a scene object belongs to: those its drawing was marked with (ownedByDesigns: a
+    // road, its junctions, a park and its trees), else the design it is picked by; none when unknown.
+    function compareDesignIdsOf(object) {
         let found = null;
-        object.traverse(node => { if (!found && node.userData?.proposalId != null) found = String(node.userData.proposalId); });
-        return found;
+        object.traverse(node => {
+            if (found) return;
+            if (node.userData?.designIds?.length) found = node.userData.designIds.map(String);
+            else if (node.userData?.proposalId != null) found = [String(node.userData.proposalId)];
+        });
+        return found || [];
     }
 
     // The two sides' plan members that no applied design stands for, once read (compare-unapplied.js).
@@ -10252,10 +10286,10 @@
         for (const group of [proposedBuildingsGroup, ineligibleBuildingsGroup, floorPlanGroup, plannedFlatGroup, parkGroundGroup,
             squareGroundGroup, lakeGroundGroup, proposalGroundGroup, parcelLayoutGroup, parkGroup, squareGroup, lakeGroup,
             stationGroup, corridorGroup, terrainCorridorGroup]) {
-            each(group, child => ({ role: 'proposed', designId: compareDesignIdOf(child) }));
+            each(group, child => ({ role: 'proposed', designIds: compareDesignIdsOf(child) }));
         }
         // What the plan sides draw of their unapplied members: hidden outside the passes, so read anyway.
-        each(compareUnappliedGroup, child => ({ role: 'proposed', designId: compareDesignIdOf(child), unapplied: true }), { evenHidden: true });
+        each(compareUnappliedGroup, child => ({ role: 'proposed', designIds: compareDesignIdsOf(child), unapplied: true }), { evenHidden: true });
         return descriptors;
     }
 

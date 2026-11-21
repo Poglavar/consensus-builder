@@ -48,7 +48,7 @@
 
     // The applied designs whose buildings one side draws.
     function designsOn(side, designIds) {
-        return (designIds || []).map(String).filter(id => compare().showsOn(side, { role: 'proposed', designId: id }));
+        return (designIds || []).map(String).filter(id => compare().showsOn(side, { role: 'proposed', designIds: [id] }));
     }
 
     // The clip-path of each half for a pane, in the pane's own pixels. view: the map's visible box in

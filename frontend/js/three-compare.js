@@ -84,19 +84,20 @@
         }
     }
 
-    // Whether a side shows one scene object. descriptor: { role, designId, unapplied, demolishedBy }
+    // Whether a side shows one scene object. descriptor: { role, designIds, unapplied, demolishedBy }
     // where role is 'existing' (a building standing today; demolishedBy lists the designs that remove
-    // or cut it, as { id, unapplied }), 'proposed' (what a design draws; designId names it, null when
-    // the drawing is shared by several applied designs; unapplied when a plan draws it itself) or
-    // 'permitted' (source massing).
+    // or cut it, as { id, unapplied }), 'proposed' (what designs draw; designIds names the designs it
+    // belongs to, several where their roads meet at a junction, and is empty when no design is known
+    // for it; unapplied when a plan draws it itself) or 'permitted' (source massing). Proposed work
+    // shows on a side applying any of its designs; work of no known design on Proposed alone.
     function showsOn(side, descriptor) {
         if (!side || !descriptor) return true;
         switch (descriptor.role) {
             case 'existing':
                 return !(descriptor.demolishedBy || []).some(by => appliesDesign(side, by));
             case 'proposed':
-                if (descriptor.designId == null) return side.kind === 'proposed';
-                return appliesDesign(side, { id: descriptor.designId, unapplied: !!descriptor.unapplied });
+                if (!descriptor.designIds?.length) return side.kind === 'proposed';
+                return descriptor.designIds.some(id => appliesDesign(side, { id, unapplied: !!descriptor.unapplied }));
             case 'permitted':
                 return side.kind === 'permitted';
             default:

@@ -34,21 +34,13 @@ recorded, nothing deployed without a say-so.
 | M4 | Road tool | Build-through and clearance compare the standing fabric against the corridor, the cut pieces and the demolished buildings | done 2026-10-12 |
 | M5 | Replacement versions | For a plan with a newer version, before is the version currently applied and after the new one | done 2026-10-12 for proposal versions (`sourceProposalId`); plan versions (`ens_plan.supersedes`) are a follow-up, see Decisions |
 | M6 | Owner acceptance review | An owner reading a readjustment in the details panel compares their parcel before with their plot after, without opening the editor | done 2026-10-12 |
-| M7 | Model view | The Buildings and massing sheet's Compare tab splits the 3D canvas at a draggable divider; each side is any of Built today, Permitted massing, Proposed, one applied design or one plan (`three-compare.js`, two scissor passes in `three-mode.js`); the pure rules are unit tested; the divider and the passes are checked in a headed Chrome | done 2026-10-28 |
+| M7 | Model view | The Buildings and massing sheet's Compare tab splits the 3D canvas at a draggable divider; each side is any of Built today, Permitted massing, Proposed, one applied design or one plan (`three-compare.js`, two scissor passes in `three-mode.js`). Every mesh an applied road, park, square or lake draws (lanes, markings, pavements, street and park trees, furniture, its own model) is marked with its design (`userData.designIds`, set by `ownedByDesigns`; a junction carries every road meeting there), so a side shows the roads and spaces it applies, also in photo mode; the pure rules are unit tested; the divider and the passes are checked in a headed Chrome | done 2026-10-28 |
 | M8 | 2D map | The same Compare tab splits the 2D map: buildings no side removes stay in their pane; the buildings applied designs demolish and the designs' buildings draw again per side into two panes clipped at the divider, and the permitted massing pane is clipped to the Permitted side (`compare-on-map.js`); parcels, roads and parks show on both halves; the pure rules are unit tested; the halves are checked in a headed Chrome | done 2026-10-29 |
 | M9 | Any saved plan | A plan is a side whether or not it is applied: members an applied design stands for are that design; the rest are read as Plan stats reads a plan (`PlanAnalysis`, no apply) by `compare-unapplied.js` and drawn on that side alone, as buildings, road corridors and space grounds, with the standing buildings they clear taken off that side by the demolition scan's rule; the comparison and its divider appear only once both sides are read: while a plan is read the Compare tab says so under the sides, and a plan that cannot be read is told there with its reason and Retry, never in the divider's label; Compare plans (Lists → Plans) opens the chosen pair, or one plan against Built today, on the map; the pure rules are unit tested; both views are checked in a headed Chrome | done 2026-10-29 |
 | M10 | Any saved design | A design is a side whether or not it is applied: one that is not (two designs on the same parcels cannot both be) is read as a one-member plan, under its CID computed on the device from its content, published or not, by the same path as an unapplied plan member (`compare-unapplied.js`), and draws on its side alone. The comparison starts and stops with the Compare / Stop comparing action under the two sides, and the X at the top of the divider ends it with the sheet closed (`map-before-after.js` `onClose`); the pure rules are unit tested; the map is checked in a headed Chrome | done 2026-10-29 |
 
 ## Parked
 
-- **Applied roads, parks, squares and lakes in the model view (M7).** Their meshes carry no design
-  id (corridors are built in one batched loop; the park, square and lake builders add untagged
-  meshes), so `compareDescriptors` reads them as shared drawings: Proposed shows them, a design or
-  plan side hides them, even its own. The 2D map is not affected (both halves show them). The fix
-  is tagging per-feature meshes with their `proposalId` in `three-mode.js`: the park and square
-  builders take a features list, so one call per feature can tag what it added; the lake builder
-  needs that parameter first; the corridor loop needs per-road grouping before batching. An
-  unapplied member's road and ground plates (M9) are tagged and switch correctly.
 - **Unapplied members in the model view (M9)** are drawn from the record alone: a building is
   sliced by the live parcels, not the plan's own pieces; a road is a flat plate, not a laid
   corridor; a building two members of one plan cut keeps the first member's remainder. The scene's
@@ -56,8 +48,9 @@ recorded, nothing deployed without a say-so.
   from both has nothing to clear until the view moves there.
 - **Photo mode (Google tiles).** The model view's comparison (M7) draws two scissor passes of one
   scene and switches only the objects the two sides disagree on. In photo mode the tiles are the
-  built state and the carve under a design is a GPU effect, so a side-aware carve is needed before
-  the same two passes read right there. Figures labelled by side in the stack cards are a follow-up.
+  built state and the carve under a design is a GPU effect shared by both passes, with its base
+  under roads and its park and square caps: a side without an applied road or space still shows
+  its cut and base there. A side-aware carve is needed before the two passes read right there. Figures labelled by side in the stack cards are a follow-up.
 
 ## Declined
 

@@ -27,9 +27,10 @@ describe('compare sides', () => {
 describe('what a side shows', () => {
     const intact = { role: 'existing', demolishedBy: [] };
     const razed = { role: 'existing', demolishedBy: [{ id: 'd1', unapplied: false }] };
-    const block = { role: 'proposed', designId: 'd1' };
-    const park = { role: 'proposed', designId: 'd2' };
-    const shared = { role: 'proposed', designId: null };
+    const block = { role: 'proposed', designIds: ['d1'] };
+    const park = { role: 'proposed', designIds: ['d2'] };
+    const shared = { role: 'proposed', designIds: [] };
+    const junction = { role: 'proposed', designIds: ['d2', 'd1'] };
     const massing = { role: 'permitted' };
     const shows = (value, descriptor) => compare.showsOn(side(value), descriptor);
 
@@ -93,9 +94,13 @@ describe('what a side shows', () => {
         expect(shows('design:d2', block)).toBe(false);
         expect(shows('plan:plan-a', block)).toBe(true);
         expect(shows('plan:plan-a', park)).toBe(false);
-        // A drawing shared by several designs belongs to Proposed alone.
+        // A drawing no design is known for belongs to Proposed alone.
         expect(shows('proposed', shared)).toBe(true);
         expect(shows('design:d1', shared)).toBe(false);
+        expect(shows('plan:plan-a', shared)).toBe(false);
+        // A junction where two designs' roads meet stands wherever either road does.
+        expect(['built', 'proposed', 'design:d1', 'design:d2', 'plan:plan-a', 'plan:plan-b'].map(value => shows(value, junction)))
+            .toEqual([false, true, true, true, true, false]);
     });
 
     it('draws permitted massing on the Permitted side alone', () => {
