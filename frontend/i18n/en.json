@@ -8915,6 +8915,7 @@
         "revision": "Revision"
     },
     "clickStackNavigation": {
+        "statsAnalysis": "Stats & analysis",
         "objects": "Objects at this location",
         "content": "Section content",
         "actions": "Actions",
@@ -9334,6 +9335,11 @@
         "refreshResults": "Refresh results"
     },
     "squareCritic": {
+        "score": "{score}/100",
+        "minimum": "Minimum score with available data",
+        "enclosed": "Well enclosed",
+        "partialEnclosure": "Partly enclosed",
+        "open": "Mostly open",
         "title": "Cat · Square enclosure",
         "close": "Close square enclosure",
         "choose": "Public square",

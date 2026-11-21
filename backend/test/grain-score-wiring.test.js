@@ -8,6 +8,8 @@ const here = relative => fileURLToPath(new URL(relative, import.meta.url));
 const read = relative => readFileSync(here(relative), 'utf8');
 const index = read('../../frontend/index.html');
 const lists = read('../../frontend/js/lists-panel.js');
+const controls = read('../../frontend/js/ui/plan-analysis-controls.js');
+const memberships = read('../../frontend/js/design-memberships.js');
 const scoreSource = read('../../frontend/js/proposals/grain-score.js');
 const locales = ['en', 'hr', 'es', 'sr'];
 
@@ -19,9 +21,11 @@ describe('grain score wiring', () => {
     it('keeps the rooster in the plan critic picker and loads its code and styles', () => {
         expect(index).not.toContain('id="planStatsButton"');
         expect(index).not.toContain('id="roosterScoreButton"');
-        expect(lists).toContain('win.showPlanStatsModal(await planOf(row))');
-        expect(lists).toContain('win.summonUrbanistRooster(await planOf(row))');
-        expect(lists).toContain('grain-rooster-critic.png');
+        expect(lists).toContain('analysis.critics(');
+        expect(memberships).toContain('analysis.critics(');
+        expect(controls).toContain('win.showPlanStatsModal(await getPlan(),');
+        expect(controls).toContain('win.summonUrbanistRooster(await getPlan())');
+        expect(controls).toContain('grain-rooster-critic.png');
         expect(index).toMatch(/'css\/grain-score\.css(?:\?[^']*)?'/);
         expect(index).toContain("'js/proposals/grain-score-rules.js'");
         expect(index).toContain("'js/proposals/grain-score.js'");

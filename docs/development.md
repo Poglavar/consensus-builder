@@ -353,7 +353,8 @@ corridor pieces) beside its new ones, as **of which existing that remain** and *
 The first column, **Present state**, measures what stands today on the land chosen in **Present
 state over the land of** (all compared plans, one of them, or another saved plan). Plan stats
 shows the same land and building figures once they are read, after its other figures.
-**Choose a critic** on a plan row opens the critic picker. Urban rooster runs the parcel grain
+**Choose a critic** on a plan row opens the critic picker. The inspected plan's **Stats & analysis**
+tab shares the same Plan stats and critic controls for that revision. Urban rooster runs the parcel grain
 assessment. Cat measures the exterior sides of an authored square in the selected plan revision.
 The Cat walks the square in the 2D map, marks walls and gaps, and lists each side for keyboard
 inspection. It reads existing footprints near the square through the map's building sources and

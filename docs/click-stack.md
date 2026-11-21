@@ -72,7 +72,8 @@ this bar, retaining their editors, controls, loading behavior and state:
   and tabs for related Plans and parcels where present. The model view keeps its figures
   and sliders together in Stats, with metadata and the record in Info; Actions opens the
   same design's Actions tab in 2D.
-- Plans: Actions, Info, Designs and Agreements. Actions offers **Apply to map** while a member is
+- Plans: Actions, Info, Stats & analysis, Designs and Agreements. **Stats & analysis** opens
+  Plan stats and the same critic choices as Lists for the selected revision. Actions offers **Apply to map** while a member is
   off the map and **Unapply** while one is on it; Unapply takes the plan's designs off in one
   change, after one question, and its notice offers Undo. Info shows publication state and revision;
   schedule editing sits beside the timeline. Agreements always has a tab, including
@@ -170,7 +171,9 @@ replace one with its own (the model view reads buildings from its scene).
   the camera, workspace and address. Multiple agreements share the same native instance selector.
 - When a section has multiple instances, its expanded card contains a compact native selector for
   switching among those peers. A singleton has no selector. Design, Plan and Agreement choices
-  pair their freely reusable titles with short IDs; relation lists use the same labels. Published
+  pair their titles with short IDs and the available creation timestamp. A published record can
+  show its publication timestamp when its creation time was never recorded. Relation lists use the
+  same short IDs. Published
   records use their CID and local records use their local key. The full ID is available on hover.
 - The Design selector says **Location you clicked has multiple designs. Select which to inspect:**
   above the control. Its closed face shows the selected design's title and short ID. Long titles

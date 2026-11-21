@@ -23,6 +23,22 @@ describe('click stack relationship rendering', () => {
         expect(wrapper.querySelector('.record-id').textContent).toBe('…22222222');
         expect(wrapper.querySelector('.click-stack__selector-name').textContent).toBe('Same name');
     });
+    it.each(['designs', 'plans', 'agreements'])('shows each %s timestamp in the native menu and closed face', kind => {
+        const doc = makeDocument(), win = { i18n: testI18n() };
+        const authored = '2026-11-16T09:10:11.000Z', published = '2026-11-17T09:10:11.000Z';
+        const fields = kind === 'designs' ? { proposal: { authoredAt: authored, createdAt: published } }
+            : kind === 'agreements' ? { content: { createdAt: authored }, createdAt: published } : { createdAt: authored };
+        const instances = [{ id: 'one', label: 'Same name', ...fields }, { id: 'two', label: 'Same name', publishedAt: published }];
+        const wrapper = relations.renderSelector({ kind, multi: true, selectedIndex: 0, instances }, doc, win);
+        const select = wrapper.querySelector('select');
+        const time = () => wrapper.querySelector('time.click-stack__selector-time');
+        expect(time().dateTime).toBe(authored);
+        expect(select.children[0].textContent).toContain(time().textContent);
+        select.value = 'two';
+        select.dispatchEvent({ type: 'change', target: select });
+        expect(time().dateTime).toBe(published);
+        expect(select.children[1].textContent).toContain(time().textContent);
+    });
     it('renders translated relation labels and safe related items: a highlighting name and an open button with their routing data', () => {
         const doc = makeDocument();
         const win = { i18n: testI18n('hr') };

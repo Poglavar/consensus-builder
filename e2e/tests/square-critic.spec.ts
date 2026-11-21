@@ -27,6 +27,8 @@ test('the Cat explains square edges on the map without applying the saved plan',
   await expect(panel.getByRole('button', { name: 'Close square enclosure' })).toBeFocused();
   await expect(panel.getByRole('combobox', { name: 'Public square', exact: true })).toBeVisible();
   await expect(panel.locator('[data-cat="total"]')).toHaveText('0% of the perimeter defined by buildings');
+  await expect(panel.locator('[data-cat="scoreCard"]')).toContainText('0/100');
+  await expect(panel.locator('[data-cat="scoreCard"]')).toContainText('Mostly open');
   const gap = page.locator('.square-critic-edge-gap').first();
   await expect(gap).toHaveCSS('stroke', 'rgb(184, 104, 33)');
   expect(await gap.evaluate(path => (path as unknown as SVGPathElement).getTotalLength())).toBeGreaterThan(0);
@@ -48,9 +50,18 @@ test('the Cat explains square edges on the map without applying the saved plan',
   await page.evaluate(() => {
     (window as any).DemolitionIndex.stockUnder = async () => { throw new Error('test building source unavailable'); };
   });
-  await cat.press('Enter');
+  await row.getByRole('button', { name: /^Open / }).click();
+  const stack = page.locator('#click-stack');
+  await stack.getByRole('tab', { name: 'Stats & analysis' }).click();
+  const panelCat = stack.getByRole('button', { name: 'Cat Square enclosure' });
+  await expect(stack.getByRole('button', { name: 'Plan stats', exact: true })).toBeVisible();
+  await panelCat.press('Enter');
   await expect(panel.getByRole('status')).toContainText('Surrounding building data is unavailable');
   await expect(panel.locator('[data-cat="total"]')).toHaveText('At least 0% of the perimeter defined by buildings');
+  await expect(panel.locator('[data-cat="scoreCard"]')).toContainText('Minimum score with available data');
   await expect(page.locator('.square-critic-edge-unknown').first()).toHaveCSS('stroke', 'rgb(111, 119, 129)');
   await expect(page.locator('.square-critic-edge-gap')).toHaveCount(0);
+  await page.keyboard.press('Escape');
+  await expect(stack.getByRole('tab', { name: 'Stats & analysis' })).toHaveAttribute('aria-selected', 'true');
+  await expect(panelCat).toBeFocused();
 });

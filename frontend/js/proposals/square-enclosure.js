@@ -149,5 +149,14 @@
             perimeterM: sides.reduce((sum, side) => sum + side.lengthM, 0) };
     }
 
-    return { measure, searchArea };
+    function score({ wallM, perimeterM }, complete) {
+        if (!(perimeterM > 0)) return null;
+        const share = 100 * wallM / perimeterM;
+        const value = complete ? Math.round(share) : Math.floor(share);
+        return {
+            value, verdict: !complete ? 'minimum' : value >= 75 ? 'enclosed' : value >= 50 ? 'partialEnclosure' : 'open'
+        };
+    }
+
+    return { measure, searchArea, score };
 });

@@ -165,6 +165,7 @@
             }
             if (!pages.length) return;
             const priority = key => key === 'actions' ? 0 : /(^info$|overview$|info-tab$)/.test(key) ? 1
+                : key === 'stats-analysis' ? 1.5
                 : /^(relation-|parcel-(proposals|selected-parcels)-tab)|^design-(inputs|outputs)$|^agreement-(inputs|outputs|persons)$/.test(key) ? 2
                 : key === 'parcel-tools-tab' ? 4 : 3;
             pages.sort((a, b) => priority(a.key) - priority(b.key));

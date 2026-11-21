@@ -8967,6 +8967,7 @@
         "revision": "Verzija"
     },
     "clickStackNavigation": {
+        "statsAnalysis": "Статистика и анализа",
         "objects": "Objekti na ovoj lokaciji",
         "content": "Sadržaj odeljka",
         "actions": "Radnje",
@@ -9386,6 +9387,11 @@
         "refreshResults": "Osveži rezultate"
     },
     "squareCritic": {
+        "score": "{score}/100",
+        "minimum": "Најмања оцена према доступним подацима",
+        "enclosed": "Добро оивичен",
+        "partialEnclosure": "Делимично оивичен",
+        "open": "Претежно отворен",
         "title": "Мачка · Оивиченост трга",
         "close": "Затвори анализу трга",
         "choose": "Јавни трг",

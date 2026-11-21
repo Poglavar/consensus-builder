@@ -30,6 +30,17 @@
 .square-critic-field { display: grid; gap: var(--cb-space-1); font-weight: 600; }
 .square-critic-field select { width: 100%; min-width: 0; }
 .square-critic-total { font-size: var(--cb-text-lg); font-weight: 700; }
+.square-critic-score {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: var(--cb-space-2);
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border-inline-start: 3px solid var(--square-wall);
+    border-radius: var(--cb-radius-sm);
+    background: var(--cb-surface-2);
+}
+.square-critic-score strong { font-size: 1.5rem; font-variant-numeric: tabular-nums; }
 .square-critic-access, .square-critic-results details p, .square-critic-side span { color: var(--cb-text-muted); }
 .square-critic-legend { display: flex; flex-wrap: wrap; gap: var(--cb-space-2) var(--cb-space-3); }
 .square-critic-legend span::before {

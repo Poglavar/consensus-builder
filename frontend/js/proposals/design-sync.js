@@ -164,6 +164,7 @@
             name: row.title || null,
             author: row.author || '',
             goal: row.goal || null,
+            authoredAt: row.authoredAt || null,
             createdAt: row.createdAt || null,
             updatedAt: row.createdAt || null,
             screenshotUrl: row.screenshotUrl || null,

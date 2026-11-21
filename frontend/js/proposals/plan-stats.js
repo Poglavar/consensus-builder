@@ -4,6 +4,7 @@
     const salesPrice = () => window.CityMoney.currentAssumptions();
 
     let latestStats = null;
+    let planStatsTrigger = null;
     let periodView = 'added';
     function yieldApi() {
         return (typeof window !== 'undefined' && window.__planYield) ? window.__planYield : null;
@@ -663,7 +664,12 @@
 
     function hidePlanStatsModal() {
         const modal = document.getElementById('plan-stats-modal');
-        if (modal) modal.hidden = true;
+        if (!modal || modal.hidden) return;
+        modal.hidden = true;
+        const trigger = planStatsTrigger;
+        planStatsTrigger = null;
+        // The modal's visibility observer releases background inertness after this event.
+        if (trigger) window.requestAnimationFrame(() => trigger.focus({ preventScroll: true }));
     }
 
     // Changing an assumption re-derives EVERY figure, not just the one beside the input: apartments
@@ -722,11 +728,12 @@
     }
 
     let openedPlan = 0;
-    async function openPlanStats(plan) {
+    async function openPlanStats(plan, { returnFocus = null } = {}) {
         const snapshot = await window.PlanAnalysis.prepare(plan);
         const modal = ensureModal();
         restoreAssumptions(modal);
         bindAssumptionInputs(modal);
+        planStatsTrigger = returnFocus;
         const token = ++openedPlan;
         renderPlanStatsModal(computePlanStatsSync({ ...snapshot, unitsCounting: true }, readAssumptionsFromModal(modal)));
         // Public and private land needs OpenStreetMap's parks and squares, which can take a while:

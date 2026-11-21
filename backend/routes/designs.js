@@ -47,7 +47,7 @@ const COLUMNS = `cid, city, goal, title, author, origin_cid, binding, content,
 // parcel panel through DesignSync.designSummary, the world arrival, the MCP list/find/context reads)
 // uses `content`; a design is read whole by CID (GET /designs/:cid, POST /designs/batch).
 const SUMMARY_COLUMNS = `cid, city, goal, title, author, origin_cid, binding,
-    screenshot_url, screenshot_before_url, screenshot_pair_url, created_at`;
+    screenshot_url, screenshot_before_url, screenshot_pair_url, created_at, content->>'authoredAt' AS authored_at`;
 
 const log = message => console.log(`[${new Date().toISOString()}] [designs] ${message}`);
 const refusal = (status, code, error, extra = {}) => ({ refusal: { status, body: { error, code, ...extra } } });
@@ -74,7 +74,7 @@ export function serializeDesignRow(row) {
 /** A row of the GET /designs listing: the design row without its `content`. */
 export function serializeDesignSummaryRow(row) {
     const { content, ...summary } = serializeDesignRow(row);
-    return summary;
+    return row.authored_at == null ? summary : { ...summary, authoredAt: row.authored_at };
 }
 
 export async function loadDesign(db, cid) {

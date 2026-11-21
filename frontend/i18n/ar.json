@@ -6158,6 +6158,7 @@
         "designActions": "إجراءات التصميم"
     },
     "clickStackNavigation": {
+        "statsAnalysis": "الإحصاءات والتحليل",
         "objects": "العناصر في هذا الموقع",
         "content": "محتوى القسم",
         "actions": "الإجراءات",
@@ -9616,6 +9617,11 @@
         "refreshResults": "حدّث النتائج"
     },
     "squareCritic": {
+        "score": "{score}/100",
+        "minimum": "الحد الأدنى وفق البيانات المتاحة",
+        "enclosed": "محاطة جيدًا",
+        "partialEnclosure": "محاطة جزئيًا",
+        "open": "مفتوحة في معظمها",
         "title": "القط · إحاطة الساحة بالمباني",
         "close": "إغلاق تحليل الساحة",
         "choose": "ساحة عامة",

@@ -5965,6 +5965,7 @@
         "designActions": "Actions sur le projet"
     },
     "clickStackNavigation": {
+        "statsAnalysis": "Statistiques et analyse",
         "objects": "Objets à cet endroit",
         "content": "Contenu de la section",
         "actions": "Actions",
@@ -9341,6 +9342,11 @@
         "refreshResults": "Actualiser les résultats"
     },
     "squareCritic": {
+        "score": "{score}/100",
+        "minimum": "Score minimum selon les données disponibles",
+        "enclosed": "Bien délimitée",
+        "partialEnclosure": "Partiellement délimitée",
+        "open": "Majoritairement ouverte",
         "title": "Chat · Délimitation de la place",
         "close": "Fermer l’analyse de la place",
         "choose": "Place publique",

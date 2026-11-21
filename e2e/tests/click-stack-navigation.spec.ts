@@ -45,6 +45,11 @@ for (const width of [390, 1280]) {
     await tabs.locator('[data-page="info"]').click();
     await expect(stack.locator('.click-stack__schedule-plan')).toBeVisible();
     await expect(stack.locator('.click-stack__revision')).toBeVisible();
+    await tabs.getByRole('tab', { name: 'Stats & analysis' }).press('Enter');
+    await stack.getByRole('button', { name: 'Plan stats', exact: true }).press('Enter');
+    await expect(page.locator('#plan-stats-modal [data-plan-stat="scope"]')).toContainText('Navigation plan');
+    await page.keyboard.press('Escape');
+    await expect(stack.getByRole('button', { name: 'Plan stats', exact: true })).toBeFocused();
     await tabs.locator('[data-page="relation-designs"]').click();
     await expect(stack.locator('.click-stack__membership-details .click-stack__link')).toHaveCount(1);
     await expect(tabs.locator('[data-page="relation-designs"]')).toHaveText('Designs (1)');

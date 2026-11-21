@@ -23,8 +23,11 @@ function harness(overrides={}) {
 }
 describe('plan workspace',()=>{
  it('saves a local draft without network, map, apply, or agreement work',()=>{
-  const h=harness(),row=snapshot();h.api.save(row);
+  const h=harness(),row=snapshot();const saved=h.api.save(row);
   expect(h.store.get(`plan:${row.cid}`)).toContain(row.cid);expect(h.calls).toHaveLength(0);expect(h.win.fetch).not.toHaveBeenCalled();expect(h.events).toEqual(['planschange']);
+  expect(saved.createdAt).toEqual(expect.any(String));
+  expect(h.api.save(row).createdAt).toBe(saved.createdAt);
+  expect(saved.content).not.toHaveProperty('createdAt');
  });
  it('retains confirmed publication when opening a remote version of a local snapshot',async()=>{
   const h=harness(),row=snapshot();h.api.save(row);

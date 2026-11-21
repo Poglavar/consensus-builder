@@ -8943,6 +8943,7 @@
         "revision": "Versión"
     },
     "clickStackNavigation": {
+        "statsAnalysis": "Estadísticas y análisis",
         "objects": "Objetos en esta ubicación",
         "content": "Contenido de la sección",
         "actions": "Acciones",
@@ -9362,6 +9363,11 @@
         "refreshResults": "Actualizar resultados"
     },
     "squareCritic": {
+        "score": "{score}/100",
+        "minimum": "Puntuación mínima con los datos disponibles",
+        "enclosed": "Bien delimitada",
+        "partialEnclosure": "Parcialmente delimitada",
+        "open": "Mayormente abierta",
         "title": "Gato · Cerramiento de la plaza",
         "close": "Cerrar análisis de la plaza",
         "choose": "Plaza pública",

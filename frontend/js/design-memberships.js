@@ -79,7 +79,7 @@
         const groups = {
             plans: { items: mergeRows(local, saved, cid && knownPlan?.content.designCids.includes(cid)
                 ? [{ cid: knownPlan.cid, title: knownPlan.content.title, content: knownPlan.content,
-                    designCids: knownPlan.content.designCids, draft: false }] : []) }
+                    designCids: knownPlan.content.designCids, publishedAt: knownPlan.publishedAt, draft: false }] : []) }
         };
         for (const group of Object.values(groups)) Object.assign(group, { nextOffset: cid ? 0 : null, loading: !!cid, error: false });
         const detailCache = new Map();
@@ -128,8 +128,10 @@
     // converted in memory; full-plan loading remains an explicit navigation action.
     async function inspect(kind, instance, win) {
         if (kind !== 'plans') throw new Error('Only plans have spatial stack sections.');
-        const content = instance.content || (await win.NamedPlans.fetchPlan(instance.cid)).content;
-        const snapshot = win.PlanWorkspace ? await win.PlanWorkspace.resolve({ ...instance, content }) : null;
+        const row = instance.content ? instance : await win.NamedPlans.fetchPlan(instance.cid);
+        const { content } = row;
+        const snapshot = win.PlanWorkspace ? await win.PlanWorkspace.resolve({ ...instance, content,
+            ...(!instance.draft ? { published: true, publishedAt: row.publishedAt } : {}) }) : null;
         const refs = content.designCids.map(cid => ({ cid }));
         const localOf = cid => {
             const published = win.DesignSync.localCopyOf(cid);
@@ -156,7 +158,9 @@
             const footprint = win.__planOrder?.footprintOf(member.proposal);
             return footprint ? [footprint] : [];
         });
-        return { content, members, features, designCids: refs.map(ref => ref.cid).filter(Boolean),
+        const timestamp = snapshot?.createdAt ? { createdAt: snapshot.createdAt } : {};
+        const publishedAt = row.publishedAt || snapshot?.publishedAt;
+        return { content, members, features, ...timestamp, ...(publishedAt ? { publishedAt } : {}), designCids: refs.map(ref => ref.cid).filter(Boolean),
             designIds: members.filter(member => !member.serverId).map(member => member.id) };
     }
 
@@ -285,6 +289,20 @@
             // A plan opened from a copied address is only previewed; applying it is one click here.
             const planRow = () => win.NamedPlans.list().find(row => row.cid === instance.cid)
                 || { cid: instance.cid, content: instance.content, published: !instance.draft };
+            const analysis = win.PlanAnalysisControls || require('./ui/plan-analysis-controls.js');
+            const analysisPage = node('div', 'click-stack__plan-analysis');
+            analysisPage.dataset.stackPageKey = 'stats-analysis';
+            analysisPage.dataset.stackPageLabel = win.i18n.t('clickStackNavigation.statsAnalysis');
+            const getPlan = async () => ({ ...(instance.content ? planRow() : await win.NamedPlans.fetchPlan(instance.cid)),
+                ...(!instance.draft ? { published: true } : {}) });
+            analysisPage.append(analysis.stats(win, doc, getPlan), analysis.critics(win, doc, getPlan, {
+                open: true,
+                returnTo: async plan => {
+                    await win.ClickStack.showPlan(plan, { designs: instance.localDesigns, draft: !!instance.draft, frame: false });
+                    const page = doc.querySelector(':is(#click-stack.visible, #three-click-stack.visible) [data-stack-page-key="stats-analysis"]');
+                    page?.querySelector('[data-critic-control="cat"]')?.focus();
+                }
+            }));
             // Set for a plan below; run once the card's other actions are in place.
             let syncMapActions = null;
             if (kind === 'plans' && instance.content) {
@@ -378,6 +396,7 @@
                 });
             }
             host.appendChild(actions);
+            host.appendChild(analysisPage);
             const strip = node('div', 'click-stack__schedule');
             strip.appendChild(scheduleButton);
             if (instance.content?.schedule && win.PlanDialog?.scheduleStrip) {

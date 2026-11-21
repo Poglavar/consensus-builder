@@ -32,6 +32,9 @@
                 </div>
                 <p role="status" data-cat="status"></p>
                 <div class="square-critic-results" data-cat="results" hidden>
+                    <div class="square-critic-score" data-cat="scoreCard" hidden>
+                        <strong data-cat="score"></strong><span data-cat="verdict"></span>
+                    </div>
                     <p class="square-critic-total" data-cat="total"></p>
                     <p class="square-critic-access" data-cat="access"></p>
                     <div class="square-critic-legend" data-cat="legend">
@@ -76,7 +79,12 @@
         ui.panel.hidden = true;
         if (!restore) return;
         if (current.frame) win.map.setView(current.view.center, current.view.zoom, { animate: false });
-        if (current.mode && current.mode !== '2d') void win.requestMapMode(current.mode);
+        const restoredMode = current.mode !== '2d' && win.requestMapMode(current.mode);
+        if (current.returnTo) {
+            void Promise.resolve(restoredMode).then(() => current.returnTo(current.plan))
+                .catch(error => win.showStyledAlert(error.message));
+            return;
+        }
         if (!current.row) return;
         if (!win.MapShell.isOpen('proposals-sheet')) win.MapShell.openSheet('proposals-sheet');
         doc.querySelector(`#plan-list-host [data-list-id="${win.CSS.escape(current.row)}"] [data-critic-control="cat"]`)?.focus();
@@ -153,7 +161,7 @@
     }
 
     function walk(current, result) {
-        if (win.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        if (win.matchMedia('(prefers-reduced-motion: reduce)').matches) return revealScore();
         let start, previousSide;
         function step(time) {
             start ??= time;
@@ -169,9 +177,14 @@
                 distance -= side.lengthM;
             }
             if (fraction < 1) current.walk = win.requestAnimationFrame(step);
-            else highlight(current, -1);
+            else { highlight(current, -1); revealScore(); }
         }
         current.walk = win.requestAnimationFrame(step);
+    }
+
+    function revealScore() {
+        ui.scoreCard.hidden = false;
+        if (!ui.legend.hasAttribute('data-partial')) status(`${ui.score.textContent} · ${ui.verdict.textContent}`, true);
     }
 
     function showResult(current, result, complete) {
@@ -179,6 +192,10 @@
         const share = value => format(complete ? value * 100 : Math.floor(value * 1000) / 10, 1);
         const wall = share(result.wallM / result.perimeterM);
         ui.total.textContent = t(complete ? 'total' : 'lowerBound', { wall });
+        const score = win.SquareEnclosure.score(result, complete);
+        ui.scoreCard.hidden = true;
+        ui.score.textContent = t('score', { score: format(score.value) });
+        ui.verdict.textContent = t(score.verdict);
         ui.gap.textContent = t(complete ? 'gap' : 'unknown');
         ui.legend.toggleAttribute('data-partial', !complete);
         status(complete ? ui.total.textContent : t('partial'), complete);
@@ -198,6 +215,7 @@
                 for (const other of ui.sides.children) other.setAttribute('aria-pressed', String(other === row));
                 highlight(current, index);
                 placeMarker(current, side, 0.5);
+                revealScore();
             });
             return row;
         }));
@@ -241,11 +259,11 @@
         }
     }
 
-    async function open(plan, row) {
+    async function open(plan, row, returnTo = null) {
         close(false);
         ensurePanel();
         translate();
-        const current = { row, request: 0, mode: win.__mapModeState?.desired || '2d',
+        const current = { plan, row, returnTo, request: 0, mode: win.__mapModeState?.desired || '2d',
             view: { center: win.map.getCenter(), zoom: win.map.getZoom() } };
         session = current;
         ui.plan.textContent = plan.content.title;

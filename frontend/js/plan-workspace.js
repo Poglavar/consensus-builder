@@ -6,9 +6,12 @@
     const copy = value => structuredClone(value);
     function save(row) {
         win.PlanComposition.validate(row);
-        win.PersistentStorage.setItem(key(row.cid), JSON.stringify(row));
+        const previous = win.PersistentStorage.getItem(key(row.cid));
+        const createdAt = previous ? JSON.parse(previous).createdAt : (row.published ? row.createdAt : new Date().toISOString());
+        const saved = { ...row, createdAt };
+        win.PersistentStorage.setItem(key(row.cid), JSON.stringify(saved));
         win.dispatchEvent(new CustomEvent('planschange'));
-        return row;
+        return saved;
     }
     function list() { return win.NamedPlans.list(); }
     async function publication(plan) {
@@ -27,7 +30,8 @@
         const row = cached ? JSON.parse(cached) : plan;
         if (Array.isArray(row.designs)) {
             win.PlanComposition.validate(row);
-            return plan.published && !row.published ? save({ ...row, published: true }) : row;
+            return plan.published && (!row.published || (!row.publishedAt && plan.publishedAt))
+                ? save({ ...row, published: true, publishedAt: row.publishedAt || plan.publishedAt }) : row;
         }
         const available = new Map();
         for (const record of [...win.proposalStorage.getAllProposals(), ...members]) {

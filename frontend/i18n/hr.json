@@ -8967,6 +8967,7 @@
         "revision": "Verzija"
     },
     "clickStackNavigation": {
+        "statsAnalysis": "Statistika i analiza",
         "objects": "Objekti na ovoj lokaciji",
         "content": "Sadržaj odjeljka",
         "actions": "Radnje",
@@ -9386,6 +9387,11 @@
         "refreshResults": "Osvježi rezultate"
     },
     "squareCritic": {
+        "score": "{score}/100",
+        "minimum": "Najmanja ocjena prema dostupnim podacima",
+        "enclosed": "Dobro omeđen",
+        "partialEnclosure": "Djelomično omeđen",
+        "open": "Pretežno otvoren",
         "title": "Mačka · Oblikovanje trga",
         "close": "Zatvori analizu trga",
         "choose": "Javni trg",

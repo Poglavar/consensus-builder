@@ -58,6 +58,7 @@
     }
     function browser(win) {
         const doc = win.document;
+        const analysis = win.PlanAnalysisControls || require('./ui/plan-analysis-controls.js');
         const state = { tab: 'designs', search: '', publication: 'all', sort: 'newest', onMap: false,
             // selecting: the tab whose rows show checkboxes; purpose: what they are for ('compare', or
             // 'plan': the designs of a plan, ticked here with all of them shown on the map); planBase:
@@ -79,43 +80,11 @@
         function button(label, action, cls = '', iconName = null) {
             const el = node('button', `btn btn-sm ${cls}`, label); el.type = 'button';
             if (iconName) el.prepend(icon(iconName));
-            if (!action) { el.disabled = true; return el; }
             el.addEventListener('click', () => {
                 if (win.BusyControl.isBusy(el)) return;
                 win.BusyControl.track(el, action).catch(error => win.showStyledAlert(error.message));
             });
             return el;
-        }
-        function criticPicker(row) {
-            const picker = node('details', 'lists-critics');
-            picker.open = state.openCritics.has(row.key);
-            const summary = node('summary', '', t('lists.critics.choose'));
-            summary.dataset.criticControl = 'choose';
-            const choices = node('div', 'lists-critics__choices');
-            for (const [id, image, run] of [
-                ['rooster', 'grain-rooster-critic.png', async () => win.summonUrbanistRooster(await planOf(row))],
-                ['cat', 'critic-cat.webp', async () => win.SquareCritic.open(await planOf(row), row.key)],
-                ['beaver', 'critic-beaver.webp'],
-                ['dog', 'critic-dog.webp'],
-                ['owl', 'critic-owl.webp'],
-                ['crow', 'critic-crow.webp']
-            ]) {
-                const name = id === 'rooster' ? t('sidebar.proposals.grainScore.buttonLabel') : t(`lists.critics.${id}.name`);
-                const choice = button('', run, 'lists-critics__choice');
-                choice.dataset.criticControl = id;
-                const portrait = node('img', 'lists-critics__portrait');
-                portrait.src = `/images/${image}`;
-                portrait.alt = '';
-                portrait.width = 40;
-                portrait.height = 40;
-                portrait.loading = 'lazy';
-                const label = node('span', 'lists-critics__label');
-                label.append(node('strong', '', name), node('small', '', t(`lists.critics.${id}.axis`)));
-                choice.append(portrait, label);
-                choices.append(choice);
-            }
-            picker.append(summary, choices);
-            return picker;
         }
         const city = () => win.normalizeCityCodeForApi(win.resolveCurrentCityCode());
         const area = () => state.tab === 'designs' ? win.getProposalCountAreaContext() : null;
@@ -545,9 +514,7 @@
                     return win.PlanFileUI.downloadAgreement(resolved.agreement, resolved.designs);
                 }, '', 'download'));
                 if (kind === 'plans') {
-                    actions.append(button(t('sidebar.proposals.planStats.modalTitle'), async () => {
-                        await win.showPlanStatsModal(await planOf(row));
-                    }, '', 'chart-pie'));
+                    actions.append(analysis.stats(win, doc, () => planOf(row)));
                     actions.append(button(t('planDialog.createAgreement'), async () => {
                         const plan = await win.PlanWorkspace.resolve(await planOf(row));
                         win.MapShell.closeSheets(); return win.AgreementDialog.open({ plan });
@@ -565,7 +532,8 @@
                     trash.setAttribute('aria-label', label); trash.title = label; actions.append(trash);
                 }
                 item.append(actions);
-                if (kind === 'plans') item.append(criticPicker(row));
+                if (kind === 'plans') item.append(analysis.critics(win, doc, () => planOf(row),
+                    { row: row.key, open: state.openCritics.has(row.key) }));
                 list.append(item);
                 if (focusedRow === row.key) item.querySelector(`[data-critic-control="${focusedCritic}"]`)?.focus({ preventScroll: true });
             }

@@ -406,6 +406,11 @@ Land in public use: road parcels (the road classification, or parcels marked as 
 
 ### Square enclosure
 
+The Cat's overall score is the share of the selected square's perimeter defined by buildings,
+rounded to a whole point out of 100. At 75 points it is well enclosed; from 50 to 74 it is partly
+enclosed; below 50 it is mostly open. A minimum score from incomplete building stock is rounded
+down and receives no enclosure verdict.
+
 The share of an authored square's exterior perimeter defined by nearby buildings, measured for the exact saved plan revision. The Cat samples each side at about 2 m intervals and looks out perpendicular to the edge for the first building within 25 m. Adjacent collinear edges form one side. For the height-to-width figure, width is the distance from that building to the opposite square edge, including the facade setback; a side displays the median of samples with a measured or estimated building height. Building stock consists of the plan's buildings and the existing ones its designs leave standing. Unavailable existing stock yields a minimum based on plan buildings and leaves the rest of the edge unknown. Public designation follows the square design; pedestrian access is a separate question.
 
 ### Private land

@@ -927,7 +927,8 @@
 
     async function showPlan(plan, { designs = [], draft = false, frame = true } = {}) {
         if (!global.DesignMemberships) await global.ensureOptionalTool('designMemberships');
-        const instance = { id: plan.cid, cid: plan.cid, content: plan.content, label: plan.content.title, draft, localDesigns: designs };
+        const instance = { id: plan.cid, cid: plan.cid, content: plan.content, label: plan.content.title, draft, localDesigns: designs,
+            createdAt: plan.createdAt, publishedAt: plan.publishedAt };
         Object.assign(instance, await global.DesignMemberships.inspect('plans', instance, global));
         // A plan with a construction schedule brings the build-out time control (js/buildout-clock.js).
         global.BuildoutClock?.show({ cid: plan.cid, content: plan.content });

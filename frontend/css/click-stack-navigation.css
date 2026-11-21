@@ -2,6 +2,8 @@
 .click-stack__object-tabs, .click-stack__size, .click-stack__dismiss { display: none; }
 .click-stack__content-tabs { flex: 0 0 auto; overflow-x: auto; flex-wrap: nowrap; position: sticky; top: 0; z-index: var(--cb-z-local-2); background: var(--cb-surface); }
 .click-stack__content-tabs > .cb-tab { flex: 0 0 auto; white-space: nowrap; }
+.click-stack__plan-analysis { display: grid; gap: var(--cb-space-2); justify-items: start; }
+.click-stack__plan-analysis > .lists-critics { width: 100%; }
 .click-stack__revision { display: inline-block; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; vertical-align: bottom; }
 .parcel-panel-record code { display: block; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .has-content-tabs [data-stack-persistent] { flex: 0 0 auto; }

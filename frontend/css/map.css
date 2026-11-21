@@ -1300,6 +1300,7 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 }
 
 .click-stack__selector-field > select { display: block; appearance: none; }
+.click-stack__selector-field:has(.click-stack__selector-time) > select { min-height: calc(var(--cb-control-height) + 1em); }
 
 .click-stack__selector-value {
     display: flex;
@@ -1323,10 +1324,16 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 .click-stack__selector-name {
     flex: 1 1 auto;
     min-width: 0;
+}
+
+.click-stack__selector-title, .click-stack__selector-time {
+    display: block;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+.click-stack__selector-time { color: var(--cb-text-muted); font-size: var(--cb-text-sm); font-weight: 400; }
 
 .click-stack__selector-arrow {
     position: absolute;

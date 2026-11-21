@@ -19,6 +19,19 @@
     function instanceLabel(instance, kind, win, peers = []) {
         return recordLabels(win).label(instance?.label || instance?.id || '', recordId(instance, kind, win), peers);
     }
+    function recordTime(instance, kind, win) {
+        if (!instance || instance.membershipPlaceholder || !namedKinds.has(kind)) return null;
+        const proposal = instance.proposal;
+        const candidates = [proposal?.authoredAt, proposal?.createdAt, instance.agreement?.createdAt,
+            instance.content?.createdAt, instance.createdAt, instance.publishedAt];
+        for (const candidate of candidates) {
+            const at = Date.parse(candidate);
+            if (!Number.isFinite(at)) continue;
+            const date = new Date(at);
+            return { dateTime: date.toISOString(), label: date.toLocaleString(win?.i18n?.getLocale?.(), { dateStyle: 'short', timeStyle: 'medium' }) };
+        }
+        return null;
+    }
     // A design is on the map when its own record's root flag says so (proposals/status.js isApplied).
     // A design this browser holds no record of is not applied; nothing else is consulted.
     function designApplied(instance, win) {
@@ -46,7 +59,18 @@
         const doc = value.ownerDocument;
         const name = doc.createElement('span');
         name.className = 'click-stack__selector-name';
-        name.textContent = instance?.label || instance?.id || '';
+        const title = doc.createElement('span');
+        title.className = 'click-stack__selector-title';
+        title.textContent = instance?.label || instance?.id || '';
+        name.appendChild(title);
+        const stamp = recordTime(instance, kind, win);
+        if (stamp) {
+            const time = doc.createElement('time');
+            time.className = 'click-stack__selector-time';
+            time.dateTime = stamp.dateTime;
+            time.textContent = stamp.label;
+            name.appendChild(time);
+        }
         const id = recordId(instance, kind, win);
         value.replaceChildren(name, ...(id ? [recordLabels(win).badge(doc, id, peers)] : []),
             ...(kind === 'designs' && designApplied(instance, win) ? [appliedBadge(doc, win)] : []));
@@ -219,6 +243,7 @@
         const planIds = memberships.map(plan => plan.cid || plan.id);
         const names = [...new Set(memberships.map(plan => recordLabels(win).label(plan.label || plan.title, plan.cid || plan.id, planIds)).filter(Boolean))];
         return [type && type.label !== name ? type.label : '', instanceLabel(instance, 'designs', win, peers),
+            recordTime(instance, 'designs', win)?.label,
             designApplied(instance, win) ? appliedLabel(win) : '',
             names.length ? `${translate('memberPlans', win)} ${names.join(', ')}` : ''].filter(Boolean).join(' · ');
     }
@@ -239,7 +264,8 @@
         }
         [...select.children].forEach((option, index) => {
             const instance = section.instances[index];
-            option.textContent = section.kind === 'designs' ? designOptionLabel(instance, win, plans, peers) : instanceLabel(instance, section.kind, win, peers);
+            option.textContent = section.kind === 'designs' ? designOptionLabel(instance, win, plans, peers)
+                : [instanceLabel(instance, section.kind, win, peers), recordTime(instance, section.kind, win)?.label].filter(Boolean).join(' · ');
             option.title = recordId(instance, section.kind, win);
         });
         select.selectedIndex = Number.isInteger(section.selectedIndex) ? section.selectedIndex : 0;

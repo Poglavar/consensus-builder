@@ -300,10 +300,10 @@ describe('GET /designs/:cid', () => {
 });
 
 describe('GET /designs', () => {
-    const listed = async (query) => {
+    const listed = async (query, columns = {}) => {
         const pool = createMockPool();
         pool.answer(/GROUP BY goal/, { rows: [{ goal: 'park', designs: '3' }, { goal: 'road-track', designs: '1' }] });
-        pool.answer(/FROM consensus\.design/, { rows: [{ ...designRow(designContent()), total_count: '7' }] });
+        pool.answer(/FROM consensus\.design/, { rows: [{ ...designRow(designContent()), total_count: '7', ...columns }] });
         const res = await request(appFor(pool).app).get(`/designs${query}`);
         return { res, call: pool.getCalls()[0] };
     };
@@ -319,12 +319,13 @@ describe('GET /designs', () => {
     });
 
     // A listing reads up to 1000 rows; its readers render summaries and read a design whole by CID.
-    it('lists rows without content: the column is not selected and the key is absent', async () => {
-        const { res, call } = await listed('?limit=5');
-        expect(call.sql).not.toMatch(/\bcontent\b/);
+    it('projects authorship time without loading the rest of the design content', async () => {
+        const authoredAt = '2026-08-01T01:02:03.000Z';
+        const { res, call } = await listed('?limit=5', { authored_at: authoredAt });
+        expect(call.sql).toContain("content->>'authoredAt' AS authored_at");
+        expect(call.sql).not.toMatch(/\bcontent\s*,/);
         expect(res.body.designs[0]).not.toHaveProperty('content');
-        expect(Object.keys(res.body.designs[0]).sort()).toEqual(['author', 'binding', 'cid', 'city', 'createdAt', 'goal', 'originCid',
-            'screenshotBeforeUrl', 'screenshotPairUrl', 'screenshotUrl', 'title']);
+        expect(res.body.designs[0].authoredAt).toBe(authoredAt);
     });
 
     it('filters by city, text and box, in that parameter order', async () => {

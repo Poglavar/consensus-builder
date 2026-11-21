@@ -5965,6 +5965,7 @@
         "designActions": "Ações do projeto"
     },
     "clickStackNavigation": {
+        "statsAnalysis": "Estatísticas e análise",
         "objects": "Objetos neste local",
         "content": "Conteúdo da seção",
         "actions": "Ações",
@@ -9341,6 +9342,11 @@
         "refreshResults": "Atualizar resultados"
     },
     "squareCritic": {
+        "score": "{score}/100",
+        "minimum": "Pontuação mínima com os dados disponíveis",
+        "enclosed": "Bem delimitada",
+        "partialEnclosure": "Parcialmente delimitada",
+        "open": "Maioritariamente aberta",
         "title": "Gato · Envolvente da praça",
         "close": "Fechar análise da praça",
         "choose": "Praça pública",

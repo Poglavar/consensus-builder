@@ -9,6 +9,12 @@ const box = (west, south, east, north) => polygon([[west, south], [east, south],
 const building = (geometry, heightM = null) => ({ geometry, heightM });
 
 describe('square enclosure', () => {
+    it('turns the perimeter share into a score and withholds the verdict for incomplete stock', () => {
+        expect(rules.score({ wallM: 41.3, perimeterM: 100 }, true)).toEqual({ value: 41, verdict: 'open' });
+        expect(rules.score({ wallM: 60, perimeterM: 100 }, true)).toEqual({ value: 60, verdict: 'partialEnclosure' });
+        expect(rules.score({ wallM: 75, perimeterM: 100 }, true)).toEqual({ value: 75, verdict: 'enclosed' });
+        expect(rules.score({ wallM: 41.9, perimeterM: 100 }, false)).toEqual({ value: 41, verdict: 'minimum' });
+    });
     it('maps walls and gaps by side and includes facade setback in the height ratio', () => {
         const square = polygon([[0, 0], [20, 0], [40, 0], [40, 30], [0, 30]]);
         const result = rules.measure(square, [building(box(0, -12, 20, -8), 15)]);
