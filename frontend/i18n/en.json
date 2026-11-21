@@ -1390,7 +1390,7 @@
                 "buttonLabel": "Urban rooster",
                 "buttonHint": "Let him inspect every resulting parcel",
                 "buttonEmpty": "Apply a design first",
-                "institute": "Institut za zrnatost",
+                "institute": "Institute for Urban Grain",
                 "title": "Urban grain score",
                 "appliedComposition": "Applied composition",
                 "localScope": "Plan score · stays in this browser",
@@ -9363,6 +9363,17 @@
         "remaining": "Not yet voted: {{count}}",
         "castShare": "Share of votes cast",
         "refreshResults": "Refresh results"
+    },
+    "criticTour": {
+        "skip": "Skip animation",
+        "progress": "{current} of {total} · {label}",
+        "dog": "Walking from {from} to {to}",
+        "hare": "Cycling from {from} to {to}",
+        "beaver": "Checking {name} · {detail}",
+        "noRoute": "No route from {name}",
+        "segment": "Checking a street segment · {grade}",
+        "path": "Checking a path",
+        "cat": "Checking side {number}"
     },
     "hareCritic": {
         "title": "Hare · Cycling",

@@ -11,7 +11,7 @@ const lists = read('../../frontend/js/lists-panel.js');
 const controls = read('../../frontend/js/ui/plan-analysis-controls.js');
 const memberships = read('../../frontend/js/design-memberships.js');
 const scoreSource = read('../../frontend/js/proposals/grain-score.js');
-const locales = ['en', 'hr', 'es', 'sr'];
+const locales = ['en', 'hr', 'es', 'sr', 'pt', 'fr', 'ru', 'ar'];
 
 function lookup(object, path) {
     return path.split('.').reduce((value, key) => value && value[key], object);
@@ -24,15 +24,15 @@ describe('grain score wiring', () => {
         expect(lists).toContain('analysis.critics(');
         expect(memberships).toContain('analysis.critics(');
         expect(controls).toContain('win.showPlanStatsModal(await getPlan(),');
-        expect(controls).toContain('win.summonUrbanistRooster(await getPlan())');
+        expect(controls).toContain('win.summonUrbanistRooster(await getPlan(), row, returnTo)');
         expect(controls).toContain('grain-rooster-critic.png');
         expect(index).toMatch(/'css\/grain-score\.css(?:\?[^']*)?'/);
         expect(index).toContain("'js/proposals/grain-score-rules.js'");
-        expect(index).toContain("'js/proposals/grain-score.js'");
+        expect(index).toMatch(/'js\/proposals\/grain-score\.js(?:\?[^']*)?'/);
     });
 
     it('scores the applied plan from the live map, never a headless replay of its bindings', () => {
-        expect(scoreSource).not.toContain('PlanAnalysis');
+        expect(scoreSource).not.toContain('PlanAnalysis.evaluate');
         expect(scoreSource).toContain('global.PlanWorkspace.resolve(plan)');
         expect(scoreSource).toContain('rules.appliedPlanGround(');
         expect(scoreSource).toContain("t('agreement.workflow.planNotApplied'");
@@ -61,5 +61,6 @@ describe('grain score wiring', () => {
         const block = lookup(dictionary, 'sidebar.proposals.grainScore');
         expect(block).toBeTruthy();
         ['buttonLabel', 'buttonHint', 'buttonEmpty', ...cardKeys].forEach(key => expect(block[key], `${locale}.${key}`).toBeTruthy());
+        if (locale !== 'hr') expect(block.institute).not.toBe('Institut za zrnatost');
     });
 });

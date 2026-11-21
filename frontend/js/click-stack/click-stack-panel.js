@@ -232,6 +232,7 @@
     function render({ keepBody = null } = {}) {
         if (!keepBody) global.AgreementPanel?.release?.(state.el);
         const el = ensureElement();
+        const restoreCriticFocus = global.ClickStackNavigation?.rememberCriticFocus?.(el);
         const { stack } = state;
         global.SelectionAddress?.write(global.SelectionAddress.selectionOf(stack, model.selectedInstance));
         // The hosted panel goes home (still open) before the old bodies are dropped; the section
@@ -315,7 +316,7 @@
         global.ClickStackNavigation?.frame(el, stack, ICONS, rowTitle, expand, close);
         if (keepBody) global.ClickStackNavigation?.content(keepBody, stack.expanded, model.selectedInstance(stack, stack.expanded)?.id);
         syncAgreements();
-
+        if (restoreCriticFocus) queueMicrotask(restoreCriticFocus);
     }
 
     function syncAgreements() {

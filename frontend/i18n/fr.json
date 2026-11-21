@@ -361,7 +361,7 @@
                 "buttonLabel": "Coq urbain",
                 "buttonHint": "Laissez-le inspecter chaque parcelle résultante",
                 "buttonEmpty": "Appliquez d’abord un projet",
-                "institute": "Institut za zrnatost",
+                "institute": "Institut du grain urbain",
                 "title": "Score de grain urbain",
                 "appliedComposition": "Composition appliquée",
                 "localScope": "Score du plan · conservé dans ce navigateur",
@@ -9370,6 +9370,17 @@
         "remaining": "N’ont pas encore voté : {{count}}",
         "castShare": "Répartition des votes exprimés",
         "refreshResults": "Actualiser les résultats"
+    },
+    "criticTour": {
+        "skip": "Passer l’animation",
+        "progress": "{current} sur {total} · {label}",
+        "dog": "À pied de {from} à {to}",
+        "hare": "À vélo de {from} à {to}",
+        "beaver": "Examen de {name} · {detail}",
+        "noRoute": "Aucun itinéraire depuis {name}",
+        "segment": "Examen d’un tronçon de rue · {grade}",
+        "path": "Examen d’un chemin",
+        "cat": "Examen du côté {number}"
     },
     "hareCritic": {
         "title": "Lièvre · Cyclabilité",

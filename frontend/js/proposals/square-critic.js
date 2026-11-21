@@ -31,6 +31,7 @@
                     <select id="square-critic-square" data-cat="square"></select>
                 </div>
                 <p role="status" data-cat="status"></p>
+                <button type="button" class="btn btn-sm critic-tour-skip" data-cat="skip" hidden></button>
                 <div class="square-critic-results" data-cat="results" hidden>
                     <div class="square-critic-score" data-cat="scoreCard" hidden>
                         <strong data-cat="score"></strong><span data-cat="verdict"></span>
@@ -49,6 +50,13 @@
         const refs = Object.fromEntries([...panel.querySelectorAll('[data-cat]')].map(el => [el.dataset.cat, el]));
         ui = { panel, ...refs };
         ui.close.addEventListener('click', () => close());
+        ui.skip.addEventListener('click', () => {
+            if (!session) return;
+            win.cancelAnimationFrame(session.walk);
+            highlight(session, -1);
+            ui.close.focus();
+            revealScore();
+        });
         ui.square.addEventListener('change', () => inspect(session, Number(ui.square.value)));
         return ui;
     }
@@ -56,6 +64,7 @@
     function translate() {
         for (const key of ['title', 'choose', 'access', 'wall', 'method', 'methodBody']) ui[key].textContent = t(key);
         ui.close.setAttribute('aria-label', t('close'));
+        ui.skip.textContent = win.CriticTour.t('skip');
         ui.sides.setAttribute('aria-label', t('sides'));
     }
 
@@ -66,6 +75,7 @@
 
     function clearMap(current) {
         win.cancelAnimationFrame(current.walk);
+        ui.skip.hidden = true;
         current.layer?.remove();
         current.layer = null;
     }
@@ -79,15 +89,8 @@
         ui.panel.hidden = true;
         if (!restore) return;
         if (current.frame) win.map.setView(current.view.center, current.view.zoom, { animate: false });
-        const restoredMode = current.mode !== '2d' && win.requestMapMode(current.mode);
-        if (current.returnTo) {
-            void Promise.resolve(restoredMode).then(() => current.returnTo(current.plan, 'cat'))
-                .catch(error => win.showStyledAlert(error.message));
-            return;
-        }
-        if (!current.row) return;
-        if (!win.MapShell.isOpen('proposals-sheet')) win.MapShell.openSheet('proposals-sheet');
-        doc.querySelector(`#plan-list-host [data-list-id="${win.CSS.escape(current.row)}"] [data-critic-control="cat"]`)?.focus();
+        void win.PlanAnalysisControls.restoreCriticOrigin(win, doc, current, 'cat')
+            .catch(error => win.showStyledAlert(error.message));
     }
 
     function plannedBuildings(records) {
@@ -123,6 +126,7 @@
     function draw(current, square, result, complete) {
         const L = win.L;
         const map = win.map;
+        const pane = win.CriticTour.pane();
         current.layer = L.layerGroup().addTo(map);
         for (const building of result.nearby) {
             L.geoJSON(building.geometry, { interactive: false, style: {
@@ -132,14 +136,14 @@
         const footprint = L.geoJSON(square.geometry, { interactive: false,
             style: { className: 'square-critic-ground', stroke: false } }).addTo(current.layer);
         current.lines = result.sides.map(side => side.segments.map(segment => L.polyline(segment.coordinates.map(latLng), {
-            weight: 4, interactive: false, className: segment.wall ? 'square-critic-edge-wall'
+            weight: 4, interactive: false, pane, className: segment.wall ? 'square-critic-edge-wall'
                 : complete ? 'square-critic-edge-gap' : 'square-critic-edge-unknown'
         }).addTo(current.layer)));
         const first = result.sides[0].segments[0].coordinates[0];
         const face = node('img');
         face.src = portrait;
         face.alt = '';
-        current.marker = L.marker(latLng(first), { interactive: false, keyboard: false, alt: '',
+        current.marker = L.marker(latLng(first), { interactive: false, keyboard: false, pane, alt: '',
             icon: L.divIcon({ html: face, className: 'square-critic-marker', iconSize: [32, 32] }) }).addTo(current.layer);
         const small = win.matchMedia('(max-width: 767px)').matches;
         const mapBox = map.getContainer().getBoundingClientRect();
@@ -162,6 +166,7 @@
 
     function walk(current, result) {
         if (win.matchMedia('(prefers-reduced-motion: reduce)').matches) return revealScore();
+        ui.skip.hidden = false;
         let start, previousSide;
         function step(time) {
             start ??= time;
@@ -169,7 +174,10 @@
             let distance = fraction * result.perimeterM;
             for (const [i, side] of result.sides.entries()) {
                 if (distance <= side.lengthM || i === result.sides.length - 1) {
-                    if (previousSide !== i) highlight(current, i);
+                    if (previousSide !== i) {
+                        highlight(current, i);
+                        status(win.CriticTour.t('cat', { number: i + 1 }));
+                    }
                     previousSide = i;
                     placeMarker(current, side, Math.min(1, distance / side.lengthM));
                     break;
@@ -183,8 +191,10 @@
     }
 
     function revealScore() {
+        ui.skip.hidden = true;
         ui.scoreCard.hidden = false;
-        if (!ui.legend.hasAttribute('data-partial')) status(`${ui.score.textContent} · ${ui.verdict.textContent}`, true);
+        const partial = ui.legend.hasAttribute('data-partial');
+        status(partial ? t('partial') : `${ui.score.textContent} · ${ui.verdict.textContent}`, !partial);
     }
 
     function showResult(current, result, complete) {

@@ -367,7 +367,12 @@ minutes. It shows one selected route on the map and can return the same route an
 `ugt_inspect_plan.walkability`. Hare shares that routing and checks the directions and crossings
 available to bicycles. Its lane score uses measured length by direction, separately from the share
 of reached places and buildings with routes. `ugt_inspect_plan.cycling` returns the same assessment
-and accepts an optional destination ID for a route. Owl and Crow are disabled until their assessments are available.
+and accepts an optional destination ID for a route. Closing a critic returns to its original plan
+row or **Stats & analysis** tab and focuses the launch button. The Cat walks the measured square
+perimeter. The Beaver visits sampled members in completion order and shows their opening status.
+The Dog and Hare trace sampled routes from named residential buildings, highlighting their authored
+plot or building footprint. These tours can be skipped and respect reduced motion. Owl and Crow are disabled
+until their assessments are available.
 Critic assessment introduces no authored edit;
 square and building authoring still use the existing `ugt_draft_space`, `ugt_draft_building`, and
 `ugt_edit_design` primitives.

@@ -1,0 +1,34 @@
+.critic-tour-skip { width: fit-content; margin-block-start: .45rem; }
+.leaflet-pane.critic-tour-pane { z-index: var(--cb-z-map-pane-critic); pointer-events: none; }
+.critic-tour-marker {
+    pointer-events: none;
+    border: 0;
+    background: transparent;
+}
+.critic-tour-marker img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 2px solid white;
+    border-radius: 50%;
+    filter: drop-shadow(0 2px 2px #18243380);
+}
+.critic-tour-marker--dog img { animation: critic-dog-trot 300ms ease-in-out infinite alternate; }
+.critic-tour-marker--hare img { animation: critic-hare-hop 330ms ease-in-out infinite; }
+.critic-tour-marker--beaver img { animation: critic-beaver-check 650ms ease-in-out both; }
+.critic-tour-marker.is-checking img { animation: critic-beaver-check 370ms ease-out both; }
+@keyframes critic-dog-trot {
+    from { transform: translateY(0) rotate(-5deg); }
+    to { transform: translateY(-4px) rotate(5deg); }
+}
+@keyframes critic-hare-hop {
+    0%, 100% { transform: translateY(0) scale(1.08, .94); }
+    48% { transform: translateY(-10px) scale(.97, 1.04); }
+}
+@keyframes critic-beaver-check {
+    0%, 100% { transform: scale(1); }
+    45% { transform: scale(1.12) rotate(-8deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .critic-tour-marker img { animation: none; }
+}

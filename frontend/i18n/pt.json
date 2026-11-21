@@ -361,7 +361,7 @@
                 "buttonLabel": "Galo urbano",
                 "buttonHint": "Deixe-o inspecionar cada parcela resultante",
                 "buttonEmpty": "Aplique primeiro um projeto",
-                "institute": "Institut za zrnatost",
+                "institute": "Instituto do grão urbano",
                 "title": "Pontuação da granularidade urbana",
                 "appliedComposition": "Composição aplicada",
                 "localScope": "Pontuação do plano · fica neste navegador",
@@ -9370,6 +9370,17 @@
         "remaining": "Ainda não votaram: {{count}}",
         "castShare": "Proporção dos votos registrados",
         "refreshResults": "Atualizar resultados"
+    },
+    "criticTour": {
+        "skip": "Saltar animação",
+        "progress": "{current} de {total} · {label}",
+        "dog": "A pé de {from} até {to}",
+        "hare": "De bicicleta de {from} até {to}",
+        "beaver": "A verificar {name} · {detail}",
+        "noRoute": "Sem percurso a partir de {name}",
+        "segment": "A verificar um troço de rua · {grade}",
+        "path": "A verificar um caminho",
+        "cat": "A verificar o lado {number}"
     },
     "hareCritic": {
         "title": "Lebre · Ciclismo",

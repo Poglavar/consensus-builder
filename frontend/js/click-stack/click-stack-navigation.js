@@ -220,5 +220,18 @@
         if (group) group.replaceWith(next); else body.appendChild(next);
     }
     const selectPage = (body, key) => sessions.get(body)?.select(key);
-    win.ClickStackNavigation = { frame, content, release, showMap, agreements, selectPage };
+    function rememberCriticFocus(host) {
+        const control = document.activeElement?.closest('[data-critic-control]');
+        const page = control?.closest('[data-stack-page-key="stats-analysis"]');
+        if (!page || !host.contains(page)) return null;
+        const cid = win.CSS.escape(page.dataset.planCid);
+        const critic = win.CSS.escape(control.dataset.criticControl);
+        return () => {
+            // Membership and agreement lookups can remount the same plan after it receives focus.
+            if (document.activeElement !== document.body) return;
+            host.querySelector(`[data-plan-cid="${cid}"]:not([data-stack-hidden]) [data-critic-control="${critic}"]`)
+                ?.focus({ preventScroll: true });
+        };
+    }
+    win.ClickStackNavigation = { frame, content, release, showMap, agreements, selectPage, rememberCriticFocus };
 })(window);

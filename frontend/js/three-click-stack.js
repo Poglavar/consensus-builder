@@ -164,6 +164,7 @@
     function render({ keepBody = null } = {}) {
         if (!keepBody) global.AgreementPanel?.release?.(state.el);
         const el = state.el;
+        const restoreCriticFocus = global.ClickStackNavigation?.rememberCriticFocus?.(el);
         const { stack } = state;
         global.SelectionAddress?.write(global.SelectionAddress.selectionOf(stack, selectedInstance));
         // Whatever the old body hosted goes home first; the expanded section hosts it again.
@@ -248,6 +249,7 @@
         }, close);
         if (keepBody) global.ClickStackNavigation?.content(keepBody, stack.expanded, selectedInstance(stack, stack.expanded)?.id);
         syncAgreements();
+        if (restoreCriticFocus) queueMicrotask(restoreCriticFocus);
     }
 
     function syncAgreements() {

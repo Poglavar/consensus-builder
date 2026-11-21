@@ -28,6 +28,18 @@
         return control;
     }
 
+    async function restoreCriticOrigin(win, doc, { plan, row, returnTo, mode }, critic) {
+        if (mode && mode !== '2d') await win.requestMapMode(mode);
+        if (returnTo) return returnTo(plan, critic);
+        if (!row) return;
+        if (!win.MapShell.isOpen('proposals-sheet')) win.MapShell.openSheet('proposals-sheet');
+        const picker = doc.querySelector(`#plan-list-host [data-list-id="${win.CSS.escape(row)}"] .lists-critics`);
+        if (picker) {
+            picker.open = true;
+            picker.querySelector(`[data-critic-control="${critic}"]`)?.focus();
+        }
+    }
+
     function critics(win, doc, getPlan, { open = false, row = null, returnTo = null } = {}) {
         const picker = doc.createElement('details');
         picker.className = 'lists-critics';
@@ -38,7 +50,7 @@
         const choices = doc.createElement('div');
         choices.className = 'lists-critics__choices';
         for (const [id, image, run] of [
-            ['rooster', 'grain-rooster-critic.png', async () => win.summonUrbanistRooster(await getPlan())],
+            ['rooster', 'grain-rooster-critic.png', async () => win.summonUrbanistRooster(await getPlan(), row, returnTo)],
             ['cat', 'critic-cat.webp', async () => win.SquareCritic.open(await getPlan(), row, returnTo)],
             ['beaver', 'critic-beaver.webp', async () => win.BeaverCritic.open(await getPlan(), row, returnTo)],
             ['dog', 'critic-dog.webp', async () => win.DogCritic.open(await getPlan(), row, returnTo)],
@@ -70,5 +82,5 @@
         return picker;
     }
 
-    return { stats, critics };
+    return { stats, critics, restoreCriticOrigin };
 });

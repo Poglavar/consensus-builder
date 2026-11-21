@@ -293,6 +293,7 @@
             const analysisPage = node('div', 'click-stack__plan-analysis');
             analysisPage.dataset.stackPageKey = 'stats-analysis';
             analysisPage.dataset.stackPageLabel = win.i18n.t('clickStackNavigation.statsAnalysis');
+            analysisPage.dataset.planCid = instance.cid;
             const getPlan = async () => ({ ...(instance.content ? planRow() : await win.NamedPlans.fetchPlan(instance.cid)),
                 ...(!instance.draft ? { published: true } : {}) });
             analysisPage.append(analysis.stats(win, doc, getPlan), analysis.critics(win, doc, getPlan, {
@@ -300,6 +301,7 @@
                 returnTo: async (plan, critic) => {
                     await win.ClickStack.showPlan(plan, { designs: instance.localDesigns, draft: !!instance.draft, frame: false });
                     const page = doc.querySelector(':is(#click-stack.visible, #three-click-stack.visible) [data-stack-page-key="stats-analysis"]');
+                    win.ClickStackNavigation?.selectPage(page?.closest('.click-stack__body'), 'stats-analysis');
                     page?.querySelector(`[data-critic-control="${critic}"]`)?.focus();
                 }
             }));

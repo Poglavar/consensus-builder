@@ -47,20 +47,47 @@ test('the rooster touches each inspected parcel with its beak and highlights onl
     const w:any=window, original=Element.prototype.animate; w.__pecks=0;
     Element.prototype.animate=function(frames:any,options:any){const animation=original.call(this,frames,options);if(this.matches('.grain-rooster__body')&&frames[1]?.transform?.includes('rotate(-35deg)')){animation.pause();animation.currentTime=options.duration*frames[1].offset;w.__pecks++;let release:any;const finished=new Promise(resolve=>release=resolve);w.__releasePeck=()=>{animation.cancel();release();};return{finished,cancel:()=>animation.cancel()}as any;}return animation;};
   });
-  await page.locator('#proposals-button').click(); await (await openPlanCritics(page)).getByRole('button', { name: 'Urban rooster Parcel grain', exact: true }).click();
+  await page.locator('#proposals-button').click();
+  const picker = await openPlanCritics(page);
+  const rooster = picker.getByRole('button', { name: 'Urban rooster Parcel grain', exact: true });
+  await rooster.click();
   for(let index=1;index<=2;index++){await expect.poll(()=>page.evaluate(()=>(window as any).__pecks)).toBe(index);const sample=await page.evaluate(()=>{const w:any=window,active=document.querySelector('.grain-score-parcel.is-active')as SVGPathElement,beak=document.querySelector('[data-grain-role="beak"]')as SVGPathElement;const contact=new DOMPoint(28,79).matrixTransform(beak.getScreenCTM()!);return{active:document.querySelectorAll('.grain-score-parcel.is-active').length,inside:active.isPointInFill(contact.matrixTransform(active.getScreenCTM()!.inverse())),selectedProposal:w.currentlyHighlightedProposalId};});expect(sample).toEqual({active:1,inside:true,selectedProposal:null});await page.evaluate(()=>(window as any).__releasePeck());}
   await expect(page.locator('#grain-score-panel [data-grain-role="result"]')).toBeVisible({timeout:15000});
+  await expect(page.locator('#grain-score-panel [data-grain-role="eyebrow"]')).toHaveText('Institute for Urban Grain');
   // The rooster scores the plan as applied on the map: with a member unapplied it asks to apply the
   // plan first, and Cancel leaves the map and the rooster as they were.
   await page.locator('#grain-score-panel').getByRole('button', { name: 'Close grain score', exact: true }).click();
+  await expect(picker).toBeVisible();
+  await expect(rooster).toBeFocused();
   await page.evaluate(id => (window as any).ProposalManager.unapplyProposal(id), layoutId);
-  await page.locator('#proposals-button').click(); await (await openPlanCritics(page)).getByRole('button', { name: 'Urban rooster Parcel grain', exact: true }).click();
+  await rooster.click();
   const ask = page.locator('.cb-dialog--confirm');
   await expect(ask).toContainText('The designs of this plan are not on your map.');
   await ask.getByRole('button', { name: 'Cancel', exact: true }).click();
   await expect(ask).toHaveCount(0);
   await expect(page.locator('#grain-score-panel')).toBeHidden();
   expect(await page.evaluate(id => (window as any).isApplied((window as any).proposalStorage.getProposal(id)), layoutId)).toBe(false);
+});
+
+test('the Rooster returns to the selected plan’s analysis tab on every close', async ({ mockApi: page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const { layoutId } = await applyLayout(page);
+  const row = await openPlanActions(page, 'Grain return plan', [layoutId]);
+  await row.getByRole('button', { name: /^Open / }).click();
+  const stack = page.locator('#click-stack');
+  const tab = stack.getByRole('tab', { name: 'Stats & analysis' });
+  await tab.press('Enter');
+  const rooster = stack.getByRole('button', { name: 'Urban rooster Parcel grain', exact: true });
+  for (const dismiss of ['button', 'escape']) {
+    await rooster.press('Enter');
+    const panel = page.locator('#grain-score-panel');
+    await expect(panel.locator('[data-grain-role="result"]')).toBeVisible();
+    if (dismiss === 'escape') await page.keyboard.press('Escape');
+    else await panel.getByRole('button', { name: 'Close grain score' }).click();
+    await expect(tab).toHaveAttribute('aria-selected', 'true');
+    await expect(rooster).toBeFocused();
+    await expect(panel).toBeHidden();
+  }
 });
 
 test('composing a plan selects membership independently of map focus', async ({ mockApi: page }) => {

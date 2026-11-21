@@ -27,6 +27,7 @@
         prepared: null,
         preparing: false,
         plan: null,
+        origin: null,
         running: false,
         runToken: 0,
         priorMapView: null,
@@ -170,7 +171,7 @@
 
         host.append(overlay, panel);
         state.ui = { host, overlay, panel };
-        panel.querySelector('[data-grain-action="close"]').addEventListener('click', closeExperience);
+        panel.querySelector('[data-grain-action="close"]').addEventListener('click', () => closeExperience());
         panel.querySelector('[data-grain-action="repeat"]').addEventListener('click', () => {
             void runInspection({ soundPreparation: sound.prepare() });
         });
@@ -179,7 +180,6 @@
             renderSoundControl();
             if (sound.enabled) void sound.prepare();
         });
-        panel.__unregisterEscape = global.ModalEscape?.register(panel, closeExperience);
         return state.ui;
     }
 
@@ -270,7 +270,7 @@
 
     function renderPanelChrome() {
         const { panel } = ensureUi();
-        setNodeText(panel, 'eyebrow', t('sidebar.proposals.grainScore.institute', 'Institut za zrnatost'));
+        setNodeText(panel, 'eyebrow', t('sidebar.proposals.grainScore.institute', 'Institute for Urban Grain'));
         setNodeText(panel, 'title', t('sidebar.proposals.grainScore.title', 'Urban grain score'));
         setNodeText(panel, 'planName', state.plan?.content.title || '');
         setNodeText(panel, 'route', t('sidebar.proposals.grainScore.localScope', 'Plan score · stays in this browser'));
@@ -284,10 +284,13 @@
         const { panel } = ensureUi();
         showOnly('loading');
         setNodeText(panel, 'loadingText', t('sidebar.proposals.grainScore.loading', 'Preparing proposals for inspection…'));
+        panel.querySelector('[data-grain-action="close"]')?.focus();
     }
 
     function renderError(message) {
         const { panel } = ensureUi();
+        restoreMapInteractions();
+        state.running = false;
         showOnly('error');
         setNodeText(panel, 'error', message || t('sidebar.proposals.grainScore.unavailable', 'The grain score is unavailable for these proposals.'));
     }
@@ -452,11 +455,8 @@
         global.clearParcelHover?.();
         global.ClickStack?.close();
         global.ProposalSelection?.clear?.();
-        try {
-            if (typeof global.isThreeModeActive === 'function' && global.isThreeModeActive()
-                && typeof global.exitThreeMode === 'function') global.exitThreeMode();
-        } catch (_) { }
         document.body.classList.add('grain-score-mode');
+        if (global.__mapModeState?.desired && global.__mapModeState.desired !== '2d') return global.requestMapMode('2d');
     }
 
     function disableMapInteractions() {
@@ -660,7 +660,8 @@
         if (state.running || !state.prepared) return;
         const token = ++state.runToken;
         state.running = true;
-        saveAndSimplifyChrome();
+        await saveAndSimplifyChrome();
+        if (token !== state.runToken) return;
         const { overlay, panel } = ensureUi();
         panel.hidden = true;
         overlay.hidden = false;
@@ -675,6 +676,7 @@
         }
         disableMapInteractions();
         if (soundPreparation) await soundPreparation;
+        if (token !== state.runToken) return;
 
         const rooster = overlay.querySelector('[data-grain-role="rooster"]');
         const speech = overlay.querySelector('[data-grain-role="speech"]');
@@ -702,7 +704,9 @@
             speech.textContent = `${width} × ${depth}?`;
             item.path.classList.add('is-active');
             await walkTo(item, pace);
+            if (token !== state.runToken) return;
             await peck(pace);
+            if (token !== state.runToken) return;
             const fine = rules.isFineGrainParcel(item);
             const playCue = index % soundEvery === 0 || index === items.length - 1;
             if (fine) {
@@ -729,46 +733,70 @@
         await new Promise(resolve => setTimeout(resolve, reduceMotion ? 10 : 700));
         if (token !== state.runToken) return;
         renderResult();
+        panel.querySelector('[data-grain-action="close"]')?.focus();
     }
 
-    async function summonUrbanistRooster(plan) {
+    async function summonUrbanistRooster(plan, row, returnTo) {
         if (state.running || state.preparing) return;
-        // The rooster walks the plan's applied ground: a previewed plan is applied first, on a yes.
-        if (!await global.PlanWorkspace.ensureApplied(plan)) return;
-        state.plan = plan;
         state.preparing = true;
         const token = state.runToken;
-        const soundPreparation = sound.prepare();
-        saveAndSimplifyChrome();
-        renderLoading();
+        const mode = global.__mapModeState?.desired;
         try {
+            // The rooster walks the plan's applied ground: a previewed plan is applied first, on a yes.
+            if (!await global.PlanWorkspace.ensureApplied(plan) || token !== state.runToken) return;
+            unregisterEscape();
+            state.plan = plan;
+            state.origin = { plan, row, returnTo, mode };
+            const { panel, overlay } = ensureUi();
+            state.unregister = [panel, overlay].map(element => global.ModalEscape?.register(element, () => closeExperience()));
+            const soundPreparation = sound.prepare();
+            const mapReady = saveAndSimplifyChrome();
+            renderLoading();
+            await mapReady;
+            if (token !== state.runToken) return;
             const prepared = await prepareExperience(plan);
             if (!prepared || token !== state.runToken) return;
             await runInspection({ soundPreparation });
         } catch (error) {
-            if (token === state.runToken) renderError(error.message);
+            if (state.origin) renderError(error.message);
+            else if (token === state.runToken) throw error;
         } finally { state.preparing = false; }
     }
 
-    function closeExperience() {
+    function unregisterEscape() {
+        state.unregister?.forEach(unregister => unregister?.());
+        state.unregister = null;
+    }
+
+    function closeExperience(restore = true) {
+        const origin = state.origin;
+        state.origin = null;
         state.runToken += 1;
         state.running = false;
         sound.stopAll();
         restoreMapInteractions();
         if (state.ui) {
-            state.ui.panel.__unregisterEscape?.();
+            unregisterEscape();
             resetOverlay();
             state.ui.overlay.hidden = true;
             state.ui.panel.hidden = true;
         }
         document.body.classList.remove('grain-score-mode');
         const leafletMap = mapInstance();
-        if (leafletMap && state.priorMapView) {
+        if (restore && leafletMap && state.priorMapView) {
             try { leafletMap.setView(state.priorMapView.center, state.priorMapView.zoom, { animate: false }); } catch (_) { }
         }
         state.prepared = null;
         state.priorMapView = null;
+        if (restore && origin) void global.PlanAnalysisControls.restoreCriticOrigin(global, document, origin, 'rooster')
+            .catch(error => global.showStyledAlert(error.message));
     }
+
+    global.addEventListener('cityChanged', () => { if (state.origin) closeExperience(false); });
+    document.addEventListener('mapshell:sheetopened', () => { if (state.origin) closeExperience(false); });
+    global.addEventListener('mapmodechange', event => {
+        if (state.origin && event.detail?.desired !== '2d') closeExperience(false);
+    });
 
     if (global.i18n && typeof global.i18n.onChange === 'function') {
         global.i18n.onChange(() => {

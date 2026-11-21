@@ -93,19 +93,14 @@
         const current = session;
         if (!current) return;
         session = null;
+        current.tour.abort();
         current.layer?.remove();
         current.unregister();
         current.ui.panel.remove();
         if (!restore) return;
         if (current.framed) win.map.setView(current.view.center, current.view.zoom, { animate: false });
-        const mode = current.mode !== '2d' && win.requestMapMode(current.mode);
-        if (current.returnTo) {
-            void Promise.resolve(mode).then(() => current.returnTo(current.plan, 'beaver'))
-                .catch(error => win.showStyledAlert(error.message));
-        } else if (current.row) {
-            win.MapShell.openSheet('proposals-sheet');
-            doc.querySelector(`#plan-list-host [data-list-id="${win.CSS.escape(current.row)}"] [data-critic-control="beaver"]`)?.focus();
-        }
+        void win.PlanAnalysisControls.restoreCriticOrigin(win, doc, current, 'beaver')
+            .catch(error => win.showStyledAlert(error.message));
     }
 
     function frame(current, bounds) {
@@ -162,6 +157,7 @@
         }
         ui.status.textContent = announce ? t('updated', { floor: area(totals.ready.floorM2), space: area(totals.ready.spaceM2) }) : '';
         ui.status.classList.toggle('sr-only', announce);
+        return assessed;
     }
 
     function setupMembers(current) {
@@ -225,7 +221,7 @@
     async function open(plan, row, returnTo = null) {
         close(false);
         const ui = panelFor(plan);
-        const current = { plan, row, returnTo, ui, rows: new Map(), selected: new Set(), assumptions: Object.create(null),
+        const current = { plan, row, returnTo, ui, tour: new AbortController(), rows: new Map(), selected: new Set(), assumptions: Object.create(null),
             mode: win.__mapModeState?.desired || '2d', view: { center: win.map.getCenter(), zoom: win.map.getZoom() } };
         session = current;
         current.unregister = win.ModalEscape.register(ui.panel, () => close());
@@ -245,8 +241,18 @@
             ui.month.value = current.members.map(member => member.planCompletionMonth).filter(Boolean).sort()[0]
                 || new Date().toISOString().slice(0, 7);
             setupMembers(current);
+            const { members } = render(current);
+            const tour = win.CriticTour;
+            const byCid = new Map(current.members.map(member => [member.cid, member]));
+            const chronological = [...members].sort((a, b) => (a.completionMonth || '9999').localeCompare(b.completionMonth || '9999')
+                || a.title.localeCompare(b.title));
+            const steps = tour.sample(chronological).map(result => ({ geometry: byCid.get(result.cid).geometry, color: colors[result.status],
+                label: tour.t('beaver', { name: result.title, detail: [result.completionMonth, t(result.reason)].filter(Boolean).join(' · ') }) }));
+            await tour.play({ id: 'beaver', portrait: '/images/critic-beaver.webp', steps, panel: ui.panel, status: ui.status,
+                close: ui.close, signal: current.tour.signal, frame: bounds => frame(current, bounds) });
+            if (session !== current) return;
+            ui.status.textContent = '';
             ui.controls.hidden = false;
-            render(current);
             frame(current, current.layer.getBounds());
         } catch (error) {
             if (session === current) {

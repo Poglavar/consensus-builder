@@ -9416,6 +9416,17 @@
         "castShare": "Udio predanih glasova",
         "refreshResults": "Osvježi rezultate"
     },
+    "criticTour": {
+        "skip": "Preskoči animaciju",
+        "progress": "{current} od {total} · {label}",
+        "dog": "Pješačenje od {from} do {to}",
+        "hare": "Vožnja biciklom od {from} do {to}",
+        "beaver": "Provjera obuhvata {name} · {detail}",
+        "noRoute": "Nema rute od zgrade {name}",
+        "segment": "Provjera ulične dionice · {grade}",
+        "path": "Provjera staze",
+        "cat": "Provjera strane {number}"
+    },
     "hareCritic": {
         "title": "Zec · Bicikliranje",
         "close": "Zatvori procjenu biciklističke mreže",

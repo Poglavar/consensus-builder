@@ -1377,7 +1377,7 @@
                 "buttonLabel": "Urbani petao",
                 "buttonHint": "Neka isproba svaku nastalu parcelu",
                 "buttonEmpty": "Prvo primeni barem jedan dizajn",
-                "institute": "Institut za zrnatost",
+                "institute": "Институт за урбану зрнатост",
                 "title": "Ocena zrnatosti",
                 "appliedComposition": "Primenjena kompozicija",
                 "localScope": "Ocena plana · ostaje u ovom pregledaču",
@@ -9415,6 +9415,17 @@
         "remaining": "Još nisu glasali: {{count}}",
         "castShare": "Udeo predatih glasova",
         "refreshResults": "Osveži rezultate"
+    },
+    "criticTour": {
+        "skip": "Прескочи анимацију",
+        "progress": "{current} од {total} · {label}",
+        "dog": "Пешачење од {from} до {to}",
+        "hare": "Вожња бициклом од {from} до {to}",
+        "beaver": "Провера обухвата {name} · {detail}",
+        "noRoute": "Нема руте од зграде {name}",
+        "segment": "Провера уличне деонице · {grade}",
+        "path": "Провера стазе",
+        "cat": "Провера стране {number}"
     },
     "hareCritic": {
         "title": "Зец · Вожња бициклом",

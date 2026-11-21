@@ -22,6 +22,10 @@ test('the Beaver uses the saved phase dates and shows the cost of an external co
   const beaver = stack.getByRole('button', { name: 'Beaver Independent phases', exact: true });
   await beaver.press('Enter');
   const panel = page.getByRole('dialog', { name: 'Beaver · Independent phases' });
+  await expect(panel.getByRole('status')).toContainText(/Checking .*Square.*2028-10/i);
+  await expect(page.locator('.critic-tour-marker--beaver')).toBeVisible();
+  await panel.getByRole('button', { name: 'Skip animation' }).press('Enter');
+  await expect(page.locator('.critic-tour-marker--beaver')).toHaveCount(0);
   await expect(panel.getByLabel('Assess by the end of')).toHaveValue('2028-10');
   await panel.getByText('Opening assumptions', { exact: true }).press('Enter');
   await panel.getByRole('searchbox', { name: 'Find buildings and public spaces' }).fill('Square');

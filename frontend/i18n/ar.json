@@ -361,7 +361,7 @@
                 "buttonLabel": "الديك الحضري",
                 "buttonHint": "دعه يفحص كل قطعة أرض ناتجة",
                 "buttonEmpty": "طبق تصميما أولا",
-                "institute": "معهد الحبيبات العمرانية",
+                "institute": "معهد النسيج العمراني",
                 "title": "تقييم الحبيبات العمرانية",
                 "appliedComposition": "التكوين المطبق",
                 "localScope": "تقييم الخطة · يبقى في هذا المتصفح",
@@ -9645,6 +9645,17 @@
         "remaining": "لم يصوّتوا بعد: {{count}}",
         "castShare": "نسبة الأصوات المسجلة",
         "refreshResults": "حدّث النتائج"
+    },
+    "criticTour": {
+        "skip": "تخطي الحركة",
+        "progress": "{current} من {total} · {label}",
+        "dog": "المشي من {from} إلى {to}",
+        "hare": "ركوب الدراجة من {from} إلى {to}",
+        "beaver": "فحص {name} · {detail}",
+        "noRoute": "لا يوجد مسار من {name}",
+        "segment": "فحص مقطع من الشارع · {grade}",
+        "path": "فحص المسار",
+        "cat": "فحص الجانب {number}"
     },
     "hareCritic": {
         "title": "الأرنب البري · ركوب الدراجات",

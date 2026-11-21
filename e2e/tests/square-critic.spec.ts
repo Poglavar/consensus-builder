@@ -26,6 +26,8 @@ test('the Cat explains square edges on the map without applying the saved plan',
   const panel = page.getByRole('dialog', { name: 'Cat · Square enclosure', exact: true });
   await expect(panel.getByRole('button', { name: 'Close square enclosure' })).toBeFocused();
   await expect(panel.getByRole('combobox', { name: 'Public square', exact: true })).toBeVisible();
+  await expect(panel.getByRole('status')).toContainText('Checking side');
+  await panel.getByRole('button', { name: 'Skip animation' }).press('Enter');
   await expect(panel.locator('[data-cat="total"]')).toHaveText('0% of the perimeter defined by buildings');
   await expect(panel.locator('[data-cat="scoreCard"]')).toContainText('0/100');
   await expect(panel.locator('[data-cat="scoreCard"]')).toContainText('Mostly open');

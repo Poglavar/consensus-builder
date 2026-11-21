@@ -1590,7 +1590,7 @@
                 "buttonLabel": "Gallo urbano",
                 "buttonHint": "Que pruebe cada parcela resultante",
                 "buttonEmpty": "Aplica primero al menos un diseño",
-                "institute": "Institut za zrnatost",
+                "institute": "Instituto del grano urbano",
                 "title": "Puntuación de grano urbano",
                 "appliedComposition": "Composición aplicada",
                 "localScope": "Puntuación del plan · se guarda en este navegador",
@@ -9391,6 +9391,17 @@
         "remaining": "Aún no han votado: {{count}}",
         "castShare": "Proporción de los votos emitidos",
         "refreshResults": "Actualizar resultados"
+    },
+    "criticTour": {
+        "skip": "Saltar animación",
+        "progress": "{current} de {total} · {label}",
+        "dog": "A pie de {from} a {to}",
+        "hare": "En bicicleta de {from} a {to}",
+        "beaver": "Comprobando {name} · {detail}",
+        "noRoute": "No hay ruta desde {name}",
+        "segment": "Comprobando un tramo de calle · {grade}",
+        "path": "Comprobando un sendero",
+        "cat": "Comprobando el lado {number}"
     },
     "hareCritic": {
         "title": "Liebre · Ciclismo",
