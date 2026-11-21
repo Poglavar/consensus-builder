@@ -566,6 +566,26 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     line-height: 1.3;
 }
 
+/* The view's coordinates under a sheet's header (Layers), a click copies them (js/ui/view-coordinates.js). */
+.map-sheet-position {
+    padding: 8px 14px 0;
+    flex-shrink: 0;
+}
+
+.view-coordinates {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 100%;
+    font-variant-numeric: tabular-nums;
+}
+
+.view-coordinates span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .map-sheet-body {
     overflow-y: auto;
     overflow-x: hidden;

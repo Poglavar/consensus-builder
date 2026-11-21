@@ -17,18 +17,24 @@
             return Object.fromEntries(fields.map((key, index) => [key, parts[index]]));
         } catch (_) { return null; }
     }
-    function capture(win) {
+    // Where the view is: the 2D map's centre, or in 3D the point the camera looks at, with the zoom.
+    // The address (capture) and the Layers sheet's coordinates (ui/view-coordinates.js) read this.
+    function position(win) {
         const center = win.map.getCenter();
         const mode = win.__mapModeState?.desired || '2d';
         const camera = mode === '2d' ? null : win.getThree3DGeoView?.();
+        // In 3D the zoom is the one the camera stands for (load-view.js), which the 2D map takes on leaving 3D.
+        const zoom = (camera ? win.LoadView?.current?.()?.zoom : null) ?? win.map.getZoom();
+        return { mode, camera, lat: camera?.targetLat ?? center.lat, lng: camera?.targetLng ?? center.lng, zoom };
+    }
+    function capture(win) {
+        const { mode, camera, lat, lng, zoom } = position(win);
         const settings = win.PlanningScene?.settings(win.PlanningViews?.getState());
         const source = new URLSearchParams(win.location?.search || '');
         if (settings) for (const key of ['planningSource', 'planningScenario']) {
             if (source.has(key)) settings[key] = source.get(key);
         }
-        // In 3D the zoom is the one the camera stands for (load-view.js), which the 2D map takes on leaving 3D.
-        const zoom = (camera ? win.LoadView?.current?.()?.zoom : null) ?? win.map.getZoom();
-        return { mode, at: [camera?.targetLat ?? center.lat, camera?.targetLng ?? center.lng, Math.round(zoom * 100) / 100].join(','),
+        return { mode, at: [lat, lng, Math.round(zoom * 100) / 100].join(','),
             camera,
             rotate: mode !== '2d' && source.get('rotate') === '1',
             language: win.i18n?.getLanguage?.(),
@@ -103,5 +109,5 @@
         const params = new URLSearchParams(search);
         return { restoreView: readCamera(params.get('camera')), rotate: params.get('rotate') === '1' };
     }
-    return Object.freeze({ readCamera, capture, link, address, createAddressSync, compositionStatus, arrivalOptions });
+    return Object.freeze({ readCamera, position, capture, link, address, createAddressSync, compositionStatus, arrivalOptions });
 });

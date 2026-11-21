@@ -757,6 +757,14 @@
                 <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
                     aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
             </div>
+            <!-- The view's coordinates in every mode, copied on a click (js/ui/view-coordinates.js). -->
+            <div class="map-sheet-position">
+                <button type="button" id="view-coordinates-copy" class="btn btn-sm view-coordinates" hidden>
+                    <i class="fas fa-location-crosshairs" aria-hidden="true"></i>
+                    <span id="view-coordinates-text"></span>
+                    <i class="fas fa-copy" aria-hidden="true"></i>
+                </button>
+            </div>
             <div class="map-sheet-body" data-map-modes="2d">
                 <details data-map-modes="2d" class="accordion-section" data-section="base-map">
                     <summary class="sheet-section-title">
@@ -2215,6 +2223,7 @@
             'js/world/arrival.js?v=20261009-view-buttons',
             'js/world/globe.js?v=20261118-globe-label',
             'js/ui/map-search.js?v=20261026-globe-failure',
+            'js/ui/view-coordinates.js',
             'js/ui/command-palette.js',
             'js/parcels/parcel-id.js',
             'js/parcels/state.js',

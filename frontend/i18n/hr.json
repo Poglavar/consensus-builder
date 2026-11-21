@@ -7142,6 +7142,7 @@
         "modeLocked": "Nedostupno dok uređujete — prvo završite ili odustanite",
         "zoomLevel": "Zum {zoom}",
         "zoomLevelTitle": "Razina zumiranja karte. U 3D prikazu, 2D zum koji prikazuje isto tlo.",
+        "viewCoordinates": "Kopiraj koordinate središta prikaza: {{coordinates}}",
         "layers": "Slojevi",
         "settings": "Postavke",
         "proposals": "Dizajni",
@@ -7245,6 +7246,7 @@
         "groups": {
             "plans": "Planovi",
             "recent": "Nedavne pretrage",
+            "coordinates": "Koordinate",
             "cities": "Gradovi",
             "parcels": "Čestice",
             "proposals": "Prijedlozi",
@@ -7267,6 +7269,7 @@
         "proposalsError": "Pretraga dizajna nije uspjela",
         "proposalDownloading": "Preuzimam…",
         "placesLoading": "Tražim mjesta…",
+        "coordinatesHint": "Idi ovamo uz trenutačni zum",
         "placesError": "Pretraga adresa nije dostupna",
         "openIn": "Otvori u gradu {{city}}",
         "outsideCities": "Izvan gradova u aplikaciji",

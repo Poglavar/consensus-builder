@@ -5259,6 +5259,7 @@
             "proposals": "Projets",
             "plans": "Plans",
             "recent": "Recherches récentes",
+            "coordinates": "Coordonnées",
             "cities": "Villes",
             "places": "Lieux",
             "commands": "Commandes"
@@ -5290,6 +5291,7 @@
         "proposalsError": "Impossible de rechercher des projets",
         "proposalDownloading": "Téléchargement…",
         "placesLoading": "Recherche de lieux…",
+        "coordinatesHint": "Aller ici au zoom actuel",
         "placesError": "Impossible de joindre le service de recherche d’adresses",
         "openIn": "Ouvrir à {{city}}",
         "outsideCities": "En dehors des villes de l’application",
@@ -5949,6 +5951,7 @@
         "modeLocked": "Indisponible pendant la modification — terminez ou annulez d’abord",
         "zoomLevel": "Zoom {zoom}",
         "zoomLevelTitle": "Niveau de zoom de la carte. En 3D, le zoom 2D qui montre le même terrain.",
+        "viewCoordinates": "Copier les coordonnées du centre de la vue : {{coordinates}}",
         "layers": "Couches",
         "settings": "Paramètres",
         "maintenance": {

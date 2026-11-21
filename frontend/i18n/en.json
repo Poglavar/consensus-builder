@@ -7107,6 +7107,7 @@
         "modeLocked": "Not available while you are editing — finish or cancel first",
         "zoomLevel": "Zoom {zoom}",
         "zoomLevelTitle": "Map zoom level. In 3D, the 2D zoom that shows the same ground.",
+        "viewCoordinates": "Copy the coordinates of the view's centre: {{coordinates}}",
         "layers": "Layers",
         "settings": "Settings",
         "proposals": "Designs",
@@ -7209,6 +7210,7 @@
         "groups": {
             "plans": "Plans",
             "recent": "Recent searches",
+            "coordinates": "Coordinates",
             "cities": "Cities",
             "parcels": "Parcels",
             "proposals": "Designs",
@@ -7231,6 +7233,7 @@
         "proposalsError": "Could not search designs",
         "proposalDownloading": "Downloading…",
         "placesLoading": "Searching places…",
+        "coordinatesHint": "Go here at the current zoom",
         "placesError": "Could not reach the address search",
         "openIn": "Open in {{city}}",
         "outsideCities": "Outside the app's cities",

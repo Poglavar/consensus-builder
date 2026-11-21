@@ -398,6 +398,7 @@
             groups = Model.orderGroups([commandsGroup(cls.text)]);
         } else {
             const all = [];
+            if (cls.coordinates) all.push(coordinatesGroup(cls.coordinates));
             if (cls.kinds.includes('city')) all.push(citiesGroup(cls.text, false));
             if (cls.kinds.includes('parcel')) all.push(parcelsGroup(cls.text));
             if (cls.kinds.includes('plan')) all.push(plansGroup(cls.text));
@@ -612,8 +613,8 @@
         close({ blur: true });
     }
 
-    function runPlace(place, where) {
-        const zoom = Model.placeZoom(place.type);
+    // `zoom` defaults to the place's own (a street closer than a town); coordinates keep the current one.
+    function runPlace(place, where, zoom = Model.placeZoom(place.type)) {
         if (where.kind === 'other-city') {
             close({ blur: true });
             // ?at= carries the place into the other city (js/map-core.js opens there).
@@ -626,6 +627,23 @@
         if (where.kind === 'world' && !exploring && openWorldView({ focus: { lat: place.lat, lon: place.lon, name: place.name, zoom } })) return;
         close({ blur: true, keepMarker: true });
         panTo(place.lat, place.lon, zoom);
+    }
+
+    // Coordinates go to that point at the zoom the map is at, into another city or the globe as a
+    // geocoded place would.
+    function runCoordinates(point) {
+        const coverageTier = state.coverage ? state.coverage.tierAt(point.lat, point.lon) : null;
+        const where = Model.classifyPlaceLocation(point, configuredCities(), currentCityId(), { liveCityId: coverageTier && coverageTier.cityId });
+        return runPlace({ ...point, name: Model.formatCoordinates(point) }, where, win.MapShare.position(win).zoom);
+    }
+
+    function coordinatesGroup(point) {
+        const label = Model.formatCoordinates(point);
+        return { id: 'coordinates', label: t('mapSearch.groups.coordinates', 'Coordinates'), items: [item({
+            key: `coordinates:${label}`, kind: 'coordinates', rank: 0, icon: 'fas fa-location-crosshairs', label,
+            sublabel: t('mapSearch.coordinatesHint', 'Go here at the current zoom'),
+            run: () => runCoordinates(point)
+        })] };
     }
 
     function runCommand(id) {
@@ -796,6 +814,9 @@
     }
 
     function onInput() {
+        // Pasted coordinates go there at once; typed ones wait for Enter or a click on the result.
+        const pasted = state.pastePending;
+        state.pastePending = false;
         const next = state.input.value;
         if (next !== state.query) {
             state.query = next;
@@ -805,6 +826,8 @@
         }
         state.activeIndex = -1;
         state.clear.hidden = !state.query;
+        const point = pasted && state.mode === 'search' ? Model.parseCoordinates(state.query) : null;
+        if (point) return runItem(coordinatesGroup(point).items[0]);
         scheduleFetches();
         openList();
     }
@@ -956,6 +979,7 @@
         Object.assign(state, { root, input, list, chip, chipIcon, chipLabel, chipShortLabel, clear, back, searchButton });
 
         input.addEventListener('focus', () => { expand(); openList(); });
+        input.addEventListener('paste', () => { state.pastePending = true; });
         input.addEventListener('input', onInput);
         input.addEventListener('keydown', onKeyDown);
         searchButton.addEventListener('click', () => focus());

@@ -24,6 +24,32 @@ test.describe('Search and command palette @features', () => {
     await expect(input).toBeHidden();
   });
 
+  test('the Layers sheet copies the view coordinates, and pasting them into the search box goes back there at the current zoom', async ({ mockApi: page, context }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    await openCity(page);
+    const view = () => page.evaluate(() => { const m = (window as any).map; const c = m.getCenter(); return { lat: c.lat, lng: c.lng, zoom: m.getZoom() }; });
+    const start = await view();
+    const spot = { lat: start.lat + 0.002, lng: start.lng + 0.003 };
+    await page.evaluate(({ lat, lng }) => (window as any).map.setView([lat, lng], 17.25, { animate: false }), spot);
+
+    await page.locator('#layers-button').click();
+    const copy = page.locator('#view-coordinates-copy');
+    const text = `${spot.lat.toFixed(5)}, ${spot.lng.toFixed(5)}`;
+    await expect(copy).toHaveText(text);
+    await expect(copy).toHaveAccessibleName(new RegExp(text.replace(/\./g, '\\.')));
+    await copy.click();
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(text);
+    await page.locator('#layers-sheet [data-sheet-close]').click();
+
+    // Elsewhere, at another zoom: the pasted coordinates bring the view back, keeping this zoom.
+    await page.evaluate(({ lat, lng }) => (window as any).map.setView([lat, lng], 15.5, { animate: false }), start);
+    await page.locator('.map-search__icon-button').click();
+    await page.locator('#map-search-input').press('ControlOrMeta+V');
+    await expect.poll(async () => { const now = await view(); return Math.abs(now.lat - spot.lat) + Math.abs(now.lng - spot.lng); }).toBeLessThan(0.00002);
+    expect((await view()).zoom).toBe(15.5);
+    await expect(page.locator('#map-search-input')).toHaveAttribute('aria-expanded', 'false');
+  });
+
   test('parcel search locates the actual cadastral geometry', async ({ mockApi: page }) => {
     await openCity(page);
     const search = page.getByRole('combobox', { name: 'Search the map' });

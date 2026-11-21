@@ -66,6 +66,25 @@ describe('query classification', () => {
     it('takes a leading > as "commands only"', () => {
         expect(Model.classifyQuery('> measure')).toMatchObject({ commandsOnly: true, text: 'measure', kinds: ['command'] });
     });
+
+    it('reads a decimal latitude and longitude, latitude first, as coordinates only', () => {
+        for (const q of ['43.79754, 77.08960', '43.79754 77.08960', '43.79754,77.08960', ' 43.79754 ;77.08960 ']) {
+            expect(Model.classifyQuery(q), q).toMatchObject({ coordinates: { lat: 43.79754, lon: 77.0896 }, kinds: ['coordinates'] });
+        }
+        expect(Model.parseCoordinates('-33.92584, 18.42322')).toEqual({ lat: -33.92584, lon: 18.42322 });
+        // Out of range, without decimals, or with a third number: not coordinates.
+        for (const q of ['91.0, 10.0', '45.1, 181.0', '45 16', '1813/6', '43.79754, 77.08960, 17', 'Ilica 1']) {
+            expect(Model.parseCoordinates(q), q).toBeNull();
+            expect(Model.classifyQuery(q).kinds, q).not.toContain('coordinates');
+        }
+    });
+
+    it('writes coordinates back to five decimals, in the form it reads', () => {
+        const text = Model.formatCoordinates({ lat: 43.797540674, lon: 77.089596995 });
+        expect(text).toBe('43.79754, 77.08960');
+        expect(Model.parseCoordinates(text)).toEqual({ lat: 43.79754, lon: 77.0896 });
+        expect(Model.formatCoordinates({ lat: null, lon: 1 })).toBeNull();
+    });
 });
 
 describe('parcel id candidates', () => {

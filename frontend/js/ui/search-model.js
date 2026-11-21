@@ -1,5 +1,5 @@
 // ui/search-model.js — the pure half of the map search box (js/ui/map-search.js): what a query looks
-// like (city, parcel id, plan, design, address, command), which parcel ids to try for it, how result
+// like (coordinates, city, parcel id, plan, design, address, command), which parcel ids to try for it, how result
 // groups are ranked, where a geocoded place sits relative to the configured cities, the recent
 // searches list and the keyboard selection state. No DOM, no network; UMD so
 // backend/test/frontend-map-search.test.js runs it headlessly. window.SearchModel in the browser.
@@ -10,8 +10,8 @@
 })(typeof window !== 'undefined' ? window : null, function () {
     'use strict';
 
-    const GROUPS = Object.freeze(['recent', 'plans', 'proposals', 'cities', 'parcels', 'places', 'commands']);
-    const GROUP_LIMITS = Object.freeze({ recent: 8, cities: 12, parcels: 5, plans: 20, proposals: 20, places: 5, commands: 5 });
+    const GROUPS = Object.freeze(['coordinates', 'recent', 'plans', 'proposals', 'cities', 'parcels', 'places', 'commands']);
+    const GROUP_LIMITS = Object.freeze({ coordinates: 1, recent: 8, cities: 12, parcels: 5, plans: 20, proposals: 20, places: 5, commands: 5 });
     const RECENT_MAX = 8;
     const PLACE_MIN_CHARS = 3;
     const PROPOSAL_MIN_CHARS = 2;
@@ -65,11 +65,29 @@
         return /^\d[\dA-Za-z]*([/.-][\dA-Za-z]+)*$/.test(q);
     }
 
+    // A latitude and a longitude in decimal degrees, latitude first as map apps copy them (and as the
+    // Layers sheet's coordinates read): "43.79754, 77.08960", "43.79754 77.08960", "-33.9;18.4".
+    // Both need a decimal point, so two bare numbers stay a parcel or design search. { lat, lon } or null.
+    function parseCoordinates(query) {
+        const match = String(query || '').trim().match(/^([+-]?\d{1,3}\.\d+)\s*[,;\s]\s*([+-]?\d{1,3}\.\d+)$/);
+        if (!match) return null;
+        const lat = Number(match[1]), lon = Number(match[2]);
+        return Math.abs(lat) <= 90 && Math.abs(lon) <= 180 ? { lat, lon } : null;
+    }
+    // The same pair written back, to five decimals (about a metre): what the Layers sheet shows and copies.
+    function formatCoordinates({ lat, lon }) {
+        if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+        return `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+    }
+
     // What the query could be. A leading '>' asks for commands only (as in an editor's palette).
     function classifyQuery(query, options = {}) {
         const raw = String(query || '');
         const trimmed = raw.trim();
         if (!trimmed) return { text: '', empty: true, kinds: [] };
+        // Coordinates are only a place to go to.
+        const coordinates = parseCoordinates(trimmed);
+        if (coordinates) return { text: trimmed, empty: false, coordinates, kinds: ['coordinates'] };
         if (trimmed.startsWith('>')) {
             return { text: trimmed.slice(1).trim(), empty: false, commandsOnly: true, kinds: ['command'] };
         }
@@ -390,6 +408,8 @@
         normalize,
         matchRank,
         looksLikeParcelId,
+        parseCoordinates,
+        formatCoordinates,
         classifyQuery,
         parcelIdCandidates,
         rankCities,
