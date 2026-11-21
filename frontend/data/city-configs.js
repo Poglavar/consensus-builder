@@ -18694,6 +18694,19 @@
             },
             // Free state plots and land applications from the same cadastre (js/state-land.js).
             stateLand: { provider: 'kazakhstan-pkk', relaySourceId: 'kz-astana-pkk-esil', districtId: 254, zone: 12 },
+            // Sale and construction per m² of total floor area from the Bureau of National Statistics
+            // (docs/economic-sources.md). The sale price is published per m² of dwelling area, so it is
+            // scaled by the city's useful ÷ total area of the housing commissioned in the same period.
+            economics: { sources: [
+                { version: 1, id: 'kz-bns-housing-prices-2026-10', name: 'Bureau of National Statistics: housing prices, October 2026',
+                    adapter: 'rate-table', url: 'https://stat.gov.kz/api/iblock/element/355089/file/ru/',
+                    rates: [{ metric: 'sale', unit: 'm2-floor', amount: 539000, currency: 'KZT', basis: 'market', asOf: '2026-10-31',
+                        scope: 'Astana new builds, 746,490 KZT per m² of dwelling area × 0.722 useful ÷ total area (Jan–Oct 2026)' }] },
+                { version: 1, id: 'kz-bns-construction-cost-2026-10', name: 'Bureau of National Statistics: construction cost per m², Jan–Oct 2026',
+                    adapter: 'rate-table', url: 'https://stat.gov.kz/api/iblock/element/354948/file/ru/',
+                    rates: [{ metric: 'construction', unit: 'm2-floor', amount: 297900, currency: 'KZT', basis: 'construction-cost', asOf: '2026-10-31',
+                        scope: 'Astana housing built by companies, per m² of total area; excludes land and developer profit' }] }
+            ] },
             buildings: { sources: [{ id: 'kz-nsdi-buildings', name: 'Kazakhstan NSDI buildings', attribution: 'Kazakhstan National Spatial Data Infrastructure' }, { id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
@@ -18722,6 +18735,17 @@
             planning: { sourceIds: ['alatau-genplan-727'] },
             // Free state plots and land applications from the same cadastre (js/state-land.js).
             stateLand: { provider: 'kazakhstan-pkk', relaySourceId: 'kz-alatau-pkk', districtId: 364, zone: 13 },
+            // The statistics bureau publishes no Alatau series: these are Almaty city's, on Astana's basis.
+            economics: { sources: [
+                { version: 1, id: 'kz-bns-housing-prices-2026-10', name: 'Bureau of National Statistics: housing prices, October 2026',
+                    adapter: 'rate-table', url: 'https://stat.gov.kz/api/iblock/element/355089/file/ru/',
+                    rates: [{ metric: 'sale', unit: 'm2-floor', amount: 566000, currency: 'KZT', basis: 'market', asOf: '2026-10-31',
+                        scope: 'Almaty city (no Alatau series): 746,673 KZT per m² of dwelling area × 0.758 useful ÷ total area' }] },
+                { version: 1, id: 'kz-bns-construction-cost-2026-10', name: 'Bureau of National Statistics: construction cost per m², Jan–Oct 2026',
+                    adapter: 'rate-table', url: 'https://stat.gov.kz/api/iblock/element/354948/file/ru/',
+                    rates: [{ metric: 'construction', unit: 'm2-floor', amount: 291400, currency: 'KZT', basis: 'construction-cost', asOf: '2026-10-31',
+                        scope: 'Almaty city (no Alatau series): housing built by companies, per m² of total area; excludes land and profit' }] }
+            ] },
             buildings: { sources: [{ id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }

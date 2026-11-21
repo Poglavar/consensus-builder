@@ -67,8 +67,10 @@ describe('every input the dialog draws is read back', () => {
     });
 
     it('reads each of them', () => {
+        // The price inputs are read by key in both dialogs (priceIn: read('price'), read('construction')).
+        const readByKey = id => source.includes(`read('${id.replace(/^plan-stats-/, '')}')`);
         [...inputIds, 'plan-stats-price'].forEach(id => {
-            expect(source, `#${id} is drawn but never read`).toContain(`'#${id}'`);
+            expect(source.includes(`'#${id}'`) || readByKey(id), `#${id} is drawn but never read`).toBe(true);
         });
     });
 });

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import * as turf from '@turf/turf';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
 import { agreementObject, communityRule, cidOfObject, outputHash, designObject, mapViewFromGeometry, planForDesigns } from '../agents/agreement-objects.js';
-import { authoredAreas } from '../agents/mcp-compare.js';
+import { authoredAreas, existingFloorArea } from '../agents/mcp-compare.js';
 const require = createRequire(import.meta.url);
 const builder = require('../../frontend/js/intent-design.js');
 const site = turf.bboxPolygon([-0.1, 51.5, -0.099, 51.501]).geometry;
@@ -11,14 +11,14 @@ const parcel = { type: 'Feature', id: 'A', properties: { parcelId: 'A' }, geomet
 const park = builder.build({ kind: 'space', spaceKind: 'park', site, city: 'london', authoredAt: '2026-10-23T00:00:00.000Z' }, { turf });
 const building = builder.build({ kind: 'building', site, floors: 4, city: 'london', authoredAt: park.authoredAt }, { turf });
 const stock = turf.transformScale(parcel, 0.1); stock.properties = { object_id: 'survey-building' };
-function toolsFor({ supported = true, truncated = false, omitRegion = false, noStock = false } = {}) {
+function toolsFor({ supported = true, truncated = false, omitRegion = false, noStock = false, stockBuilding = stock } = {}) {
     const calls = [];
     const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {}, fetchImpl: async (url, init) => {
         const path = new URL(url).pathname; calls.push(path);
         if (path === '/designs/binding') return Response.json({ binding: { coverage: 'complete', parcels: [{ parcelId: 'A' }], unknownM2: 0, unsurveyedM2: 0 } });
         if (path === '/parcel-sources/test') return Response.json({ complete: true, features: [parcel] });
         if (path === `/designs/${cidOfObject(park)}`) return Response.json({ cid: cidOfObject(park), content: park });
-        if (path === '/buildings/under') return Response.json({ supported, truncated, regions: omitRegion ? {} : Object.fromEntries(JSON.parse(init.body).regions.map(r => [r.key, noStock ? [] : [stock]])) });
+        if (path === '/buildings/under') return Response.json({ supported, truncated, regions: omitRegion ? {} : Object.fromEntries(JSON.parse(init.body).regions.map(r => [r.key, noStock ? [] : [stockBuilding]])) });
         throw new Error(`Unexpected route ${path}`);
     } });
     return { tools, calls };
@@ -84,5 +84,44 @@ describe('MCP comparison measurements', () => {
         expect(authoredAreas([design]).floorAreaM2).toBeGreaterThan(0);
         expect(authoredAreas([{ buildingProposal: { parameters: { floors: 6 } } }]).floorAreaM2).toBeNull();
         expect(authoredAreas([park, park]).greenAreaM2).toBeCloseTo(turf.area(parcel));
+    });
+});
+
+describe('MCP comparison money', () => {
+    // A three-storey building the source states 9 m tall, as /buildings/under answers it.
+    const standing = { id: 'b-1', geometry: stock.geometry, height_m: 9 };
+
+    it('prices the new floor area at the city rates and takes off the value of what it removes', async () => {
+        const { tools } = toolsFor({ stockBuilding: standing });
+        const result = await tools.compare({ buildingSources: ['osm'], targets: [park, { design: building }], parcelSourceId: 'test' });
+        const built = result.alternatives[1];
+        const removed = existingFloorArea(stock.geometry, standing);
+        expect(removed).toBeCloseTo(turf.area(stock) * 3);
+        expect(built.removedFloorAreaM2).toBeCloseTo(removed);
+        expect(built.money).toMatchObject({ currency: 'GBP', unit: 'm2-floor',
+            sale: { amount: 4000, basis: 'assumption', sourceId: 'scenario-assumptions' }, construction: { amount: 2000 } });
+        expect(built.money.constructionCost).toBeCloseTo(built.floorAreaM2 * 2000);
+        expect(built.money.profit).toBeCloseTo(built.floorAreaM2 * (4000 - 2000) - removed * 4000);
+        // The park builds nothing: its profit is what it clears, negative.
+        expect(result.alternatives[0].money.profit).toBeCloseTo(-removed * 4000);
+        expect(result.warnings.some(text => text.startsWith('Money is a model'))).toBe(true);
+    });
+
+    it('uses the prices the caller gives instead, as assumptions', async () => {
+        const { tools } = toolsFor({ stockBuilding: standing });
+        const result = await tools.compare({ buildingSources: ['osm'], targets: [park, { design: building }], parcelSourceId: 'test',
+            prices: { salePerM2: 5000, constructionPerM2: 3000 } });
+        const { money, floorAreaM2, removedFloorAreaM2 } = result.alternatives[1];
+        expect(money.sale).toEqual({ amount: 5000, currency: 'GBP', basis: 'assumption', sourceId: 'caller' });
+        expect(money.profit).toBeCloseTo(floorAreaM2 * 2000 - removedFloorAreaM2 * 5000);
+    });
+
+    it('leaves the profit unknown when a removed building states no height, and keeps the rest', async () => {
+        const { tools } = toolsFor({ stockBuilding: { id: 'b-2', geometry: stock.geometry } });
+        const result = await tools.compare({ buildingSources: ['osm'], targets: [park, { design: building }], parcelSourceId: 'test' });
+        const built = result.alternatives[1];
+        expect(built.removedFloorAreaM2).toBeNull();
+        expect(built.money.profit).toBeNull();
+        expect(built.money.constructionCost).toBeCloseTo(built.floorAreaM2 * 2000);
     });
 });

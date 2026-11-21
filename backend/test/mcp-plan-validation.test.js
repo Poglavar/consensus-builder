@@ -75,7 +75,7 @@ describe('named plan comparison',()=>{
         const compare=createMcpComparison({read,resolveDesign:async d=>d,plans,appOrigin:'https://app.example'});
         const result=await compare({targets:[resolved]});const alternative=result.alternatives[0];
         expect(alternative.floorAreaM2).toBeCloseTo(2*turf.area(first.geometry.buildings[0])*4);
-        expect(alternative).toMatchObject({parcelsTaken:null,buildingsRemoved:null,buildingsCut:null,ledger:null,measurementErrors:[{code:'mixed-source-ground-unavailable'}]});
+        expect(alternative).toMatchObject({parcelsTaken:null,buildingsRemoved:null,buildingsCut:null,ledger:null,measurementErrors:[{code:'mixed-source-ground-unavailable'},{code:'city-unknown'}],money:null});
         expect(alternative.draftArtifact.designSources).toEqual({[cidOfObject(first)]:'source-a',[cidOfObject(second)]:'source-b'});
         expect(read.request).not.toHaveBeenCalled();
     });
@@ -84,7 +84,7 @@ describe('named plan comparison',()=>{
         const {resolved,plans}=fixture([first,second],['source-a']);
         const read={request:vi.fn()};
         const result=await createMcpComparison({read,plans,resolveDesign:async d=>d,appOrigin:'https://app.example'})({targets:[resolved]});
-        expect(result.alternatives[0]).toMatchObject({parcelsTaken:null,buildingsRemoved:null,measurementErrors:[{code:'parcel-source-required'}]});
+        expect(result.alternatives[0]).toMatchObject({parcelsTaken:null,buildingsRemoved:null,measurementErrors:[{code:'parcel-source-required'},{code:'city-unknown'}],money:null});
         expect(read.request).not.toHaveBeenCalled();
     });
     it('routes a published plans link through the shared resolver and reports the plan preview',async()=>{

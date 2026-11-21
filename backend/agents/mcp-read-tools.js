@@ -4,6 +4,7 @@ import { createRequire } from 'node:module';
 import { appTurf as turf } from './mcp-geometry.js';
 import { trustedMetadata } from './mcp-results.js';
 import { cidOfObject, isCid } from '../cid.js';
+import { cityMoney } from '../scripts/lib/frontend-city-money.mjs';
 
 const require = createRequire(import.meta.url);
 const approvalLink = require('../../frontend/js/approval-link.js');
@@ -16,6 +17,18 @@ const databaseSources = catalog.databaseSources;
 // ID_BATCH_SIZE ids a request, fewer where the source's catalog entry declares a smaller
 // idBatchSize. Most sources refuse more than 80 ids at once, and a long id list outgrows a URL.
 export const ID_BATCH_SIZE = 40;
+
+// The city's selected rates per m², as Settings → Valuation & costs shows them: sale and construction
+// per m² of floor, land and road land per m² of land, each with its basis, date and source
+// (frontend/js/economic-sources.js). A city the app does not configure has none, and says why.
+export function cityEconomics(city) {
+    try {
+        const money = cityMoney(city);
+        return { currency: money.currentCurrency(), rates: money.currentEconomicRates() };
+    } catch (error) {
+        return { currency: null, rates: {}, unavailable: true, reason: error.message };
+    }
+}
 const idBatchSizes = new Map(catalog.sources.filter(source => Number.isSafeInteger(source.idBatchSize) && source.idBatchSize > 0)
     .map(source => [source.id, Math.min(source.idBatchSize, ID_BATCH_SIZE)]));
 const batchesOf = (ids, size) => Array.from({ length: Math.ceil(ids.length / size) }, (_, index) => ids.slice(index * size, (index + 1) * size));
@@ -206,7 +219,7 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
             const studies = await Promise.all((planning.sources || []).filter(s => s.parcelStudy && args.planningSourceIds?.includes(s.id)).map(async source => ({ source: source.id,
                 study: await request('/planning/study', { city: args.city, source: source.id, parcel: id }) })));
             return { parcel, parcelSourceId: result.parcelSourceId, areaM2: turf.area(parcel), designs, agreements, markets, buildings, history, planning, studies, urbanRules,
-                previewUrl: mapUrl(args.city, bbox) };
+                economics: cityEconomics(args.city), previewUrl: mapUrl(args.city, bbox) };
         },
         markets: ({ city }) => request('/markets', { city }),
         explain({ term }) {

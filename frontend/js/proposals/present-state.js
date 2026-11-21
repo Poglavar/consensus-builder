@@ -219,12 +219,26 @@
      * ops: { areaOf, intersect, difference }.
      */
     function remainingBuildings({ built, regions, ops }) {
-        return built.map(record => {
+        return clearanceSplit({ built, regions, ops }).remaining;
+    }
+
+    /**
+     * The existing buildings split by a plan's demolition ground, by remainingBuildings' rule:
+     * { remaining, cleared }. cleared lists every building the ground clears in whole or in part as
+     * { before, after }: the record as it stands and what is left of it (null when it is gone), so
+     * Plan stats counts the floor area a plan clears by the same plan-yield rules as what it adds.
+     */
+    function clearanceSplit({ built, regions, ops }) {
+        const remaining = [], cleared = [];
+        built.forEach(record => {
             const original = record.buildingProposal.buildings[0];
             const { outcome, feature } = clearance(original, regions, ops);
-            if (outcome === 'gone') return null;
-            return outcome === 'kept' ? record : { ...record, buildingProposal: { buildings: [feature] } };
-        }).filter(Boolean);
+            if (outcome === 'kept') { remaining.push(record); return; }
+            const after = outcome === 'gone' ? null : { ...record, buildingProposal: { buildings: [feature] } };
+            if (after) remaining.push(after);
+            cleared.push({ before: record, after });
+        });
+        return { remaining, cleared };
     }
 
     /**
@@ -386,18 +400,18 @@
         }
 
         // The ground of a prepared plan (PlanAnalysis.prepare) over its land: its public and private
-        // land, and the existing buildings it leaves standing.
+        // land, the existing buildings it leaves standing and the ones it clears (clearanceSplit).
         async function groundOf(snapshot, { floorHeightM = 3 } = {}) {
             const landFeature = snapshot.landFeature;
-            if (!landFeature) return { land: { publicLandM2: null, privateLandM2: null }, remaining: [] };
+            if (!landFeature) return { land: { publicLandM2: null, privateLandM2: null }, remaining: [], cleared: [] };
             const box = bboxOf([landFeature]);
             const parcels = clipToLand(snapshot.cadastralFeatures, landFeature, ops);
             const [spaces, isRoad, existing] = await Promise.all([publicSpaces(box), roadTest(box), existingOn(parcels, floorHeightM)]);
             const land = splitLand({ pieces: clipToLand(snapshot.materializedFeatures, landFeature, ops),
                 corridors: clipToLand(snapshot.corridorFeatures, landFeature, ops), cadastral: parcels, isRoad, spaces, ops });
-            const remaining = remainingBuildings({ built: existing, regions: demolitionGround(snapshot), ops });
-            log(`${snapshot.plan?.content?.title || 'plan'}: ${remaining.length} of ${existing.length} existing buildings remain`);
-            return { land, remaining };
+            const { remaining, cleared } = clearanceSplit({ built: existing, regions: demolitionGround(snapshot), ops });
+            log(`${snapshot.plan?.content?.title || 'plan'}: ${remaining.length} of ${existing.length} existing buildings remain, ${cleared.length} cleared in whole or part`);
+            return { land, remaining, cleared };
         }
 
         /**
@@ -435,5 +449,5 @@
         return Object.freeze({ groundOf, measure, publicSpaces, demolitionGround, clearanceOf, ops });
     }
 
-    return { OVERPASS_URLS, PUBLIC_STRUCTURES, publicSpaceQuery, publicSpacesFromOverpass, splitLand, builtRecords, remainingBuildings, clearance, coveredM2, clipToLand, bboxOf, browser };
+    return { OVERPASS_URLS, PUBLIC_STRUCTURES, publicSpaceQuery, publicSpacesFromOverpass, splitLand, builtRecords, remainingBuildings, clearanceSplit, clearance, coveredM2, clipToLand, bboxOf, browser };
 });

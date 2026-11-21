@@ -39,6 +39,13 @@ explicit rate and differs from missing evidence.
 - `rate-table` accepts a validated local snapshot of independent rates. It is usable worldwide,
   without adding country-specific logic to consumers. Future service adapters should normalize to
   this same observation contract.
+- Astana and Alatau configure two `rate-table` snapshots from Kazakhstan's Bureau of National
+  Statistics: the October 2026 new-build sale price and the January–October 2026 actual construction
+  cost of housing built by companies, per m² of the buildings' total area (it excludes land and
+  developer profit). The sale price is published per m² of dwelling area, so it is scaled by the
+  city's useful ÷ total area of the housing commissioned in the same period (Astana 0.722, Almaty
+  0.758). The bureau publishes no Alatau series; Alatau uses Almaty city's figures, and each row's
+  `scope` says so.
 
 City configuration can supply `economics.sources`, an ordered array of registered IDs and/or
 `rate-table` descriptors. The standard frontend policy selects the UK adapter only where the table
@@ -73,7 +80,16 @@ Parcel panels, selection estimates and browser road-acquisition models use `City
 Modeled parcel estimates retain their economic observation. The road model retains it in
 `priceBasis`. Parcel and road amount tooltips expose the source and basis. The 3D comparison and
 plan statistics use selected sale/construction rates; slider changes remain temporary scenario
-assumptions. Switching sources resets the slider inputs even when the currency stays the same.
+assumptions. Switching sources resets the slider inputs even when the currency stays the same. A
+slider's standard range is sized for euro-like amounts; an observation widens it to half and twice
+its amount where those fall outside, so a tenge price can be slid both ways.
+
+The 3D panel, Plan stats (with Compare plans) and the MCP comparison count new floor area with one
+function, `CityMoney.newBuildMoney`: value, construction cost, and profit after the value of the
+floor area it replaces (the vocabulary's "Profit on the new floor area"). Plan stats has a
+construction price input beside the sale price; an empty input is no price, and what depends on it
+reads "—". `ugt_compare` gives each alternative's `money` with the two prices and their sources, or
+the caller's `prices` as assumptions; `ugt_parcel_context` gives the city's rates.
 
 The shared sale starting assumption is now 4,000 in both 3D and plan statistics (previously the EUR
 plan-statistics dialog used a separate 5,000). Unsupported currencies no longer borrow EUR land

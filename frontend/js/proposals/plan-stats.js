@@ -67,10 +67,26 @@
         return `${formatNumber(num)} m²`;
     }
 
-    // The sales price input is per m² in the city's currency (salesSuffix), so the value is in it
-    // too: amount then code.
+    // The price inputs are per m² in the city's currency (salesSuffix, constructionSuffix), so the
+    // amounts are in it too: amount then code. An amount not known reads "—", never 0.
     function formatSalesValue(value) {
-        return CbFormat.formatMoney(Number(value), salesPrice().currency, { missing: '—' });
+        return finiteNumber(value) ? CbFormat.formatMoney(value, salesPrice().currency, { missing: '—', maxFractionDigits: 0 }) : '—';
+    }
+
+    // The floor area of the existing buildings a plan clears, by the same plan-yield rules as the
+    // floor area it adds: each cleared building's floor area as it stands, less what is left of it
+    // (PresentState.groundOf cleared). { floorAreaM2, unmeasured }: floorAreaM2 is null until the
+    // ground is read, and when a cleared building states no height (unmeasured counts those).
+    function clearedFloorArea(cleared, assumptions) {
+        if (!Array.isArray(cleared)) return { floorAreaM2: null, unmeasured: 0 };
+        const api = yieldApi();
+        let floorAreaM2 = 0, unmeasured = 0;
+        cleared.forEach(({ before, after }) => {
+            const was = api.planYield([before], assumptions).total;
+            if (was.unmeasuredBuildings > 0) { unmeasured += 1; return; }
+            floorAreaM2 += was.grossFloorAreaM2 - (after ? api.planYield([after], assumptions).total.grossFloorAreaM2 : 0);
+        });
+        return { floorAreaM2: unmeasured ? null : floorAreaM2, unmeasured };
     }
 
     // The assumption inputs of Plan stats (ids plan-stats-*) or Compare plans (prefix plan-compare).
@@ -152,7 +168,9 @@
             privateLandM2: snapshot.land ? snapshot.land.privateLandM2 : null,
             remainingYield: Array.isArray(snapshot.remaining) ? api.planYield(snapshot.remaining, { ...assumptions, unitsOf: units?.standing?.unitsOf }) : null,
             unitsCounting: snapshot.unitsCounting === true, unitsError: units?.error || null,
-            groundError: snapshot.groundError || null };
+            groundError: snapshot.groundError || null,
+            // The existing floor area the plan clears, for the profit on what it builds.
+            cleared: clearedFloorArea(snapshot.cleared, assumptions) };
     }
 
     // Looks live in css/modals.css (.plan-stats-*) and css/primitives.css, never inline.
@@ -176,11 +194,14 @@
         { key: 'apartments', i18nKey: 'sidebar.proposals.planStats.apartments', label: 'Apartments' },
         { key: 'people', i18nKey: 'sidebar.proposals.planStats.people', label: 'People' },
         { key: 'jobs', i18nKey: 'sidebar.proposals.planStats.jobs', label: 'Jobs' },
-        { key: 'sales-value', i18nKey: 'sidebar.proposals.planStats.salesValue', label: 'Sales value of the floor area' }
+        { key: 'sales-value', i18nKey: 'sidebar.proposals.planStats.salesValue', label: 'Sales value of the floor area' },
+        { key: 'construction-cost', i18nKey: 'sidebar.proposals.planStats.constructionCost', label: 'Construction cost of the new floor area' },
+        { key: 'profit', i18nKey: 'sidebar.proposals.planStats.profit', label: 'Profit on the new floor area' }
     ];
 
     const ASSUMPTION_INPUTS = [
-        { id: 'plan-stats-price', i18nKey: 'sidebar.proposals.planStats.salesSuffix', label: '{{currency}} per m²', min: 0, step: 100, value: () => salesPrice().salesPerSqm, params: () => ({ currency: salesPrice().currency }) },
+        { id: 'plan-stats-price', i18nKey: 'sidebar.proposals.planStats.salesSuffix', label: '{{currency}} per m² sale price', min: 0, step: 100, value: () => salesPrice().salesPerSqm, params: () => ({ currency: salesPrice().currency }) },
+        { id: 'plan-stats-construction', i18nKey: 'sidebar.proposals.planStats.constructionSuffix', label: '{{currency}} per m² construction cost', min: 0, step: 100, value: () => salesPrice().constructionPerSqm, params: () => ({ currency: salesPrice().currency }) },
         { id: 'plan-stats-housing-share', i18nKey: 'sidebar.proposals.planStats.housingShareSuffix', label: '% housing share', min: 0, max: 100, step: 5, value: d => Math.round((d.housingShare ?? 0.75) * 100) },
         { id: 'plan-stats-efficiency', i18nKey: 'sidebar.proposals.planStats.efficiencySuffix', label: '% net of gross', min: 1, max: 100, step: 5, value: d => Math.round((d.efficiency ?? 0.8) * 100) },
         { id: 'plan-stats-apartment-size', i18nKey: 'sidebar.proposals.planStats.apartmentSizeSuffix', label: 'm² per apartment', min: 1, step: 5, value: d => d.avgApartmentM2 ?? 65 },
@@ -230,10 +251,20 @@
             if (typedAssumptions[input.dataset.assumption] !== undefined) input.value = typedAssumptions[input.dataset.assumption];
         });
     }
-    // The sales price typed into a dialog, never below zero.
+    // The sale and construction prices per m² typed into a dialog, { sale, construction }, never below
+    // zero; an empty input is no price (null), so what depends on it reads "—" rather than 0.
     function priceIn(container, prefix) {
-        const input = container.querySelector(`#${prefix}-price`);
-        return Math.max(0, Number(input && input.value) || 0);
+        const read = key => {
+            const input = container.querySelector(`#${prefix}-${key}`);
+            const text = input && typeof input.value === 'string' ? input.value.trim() : '';
+            return text === '' ? null : Math.max(0, Number(text) || 0);
+        };
+        return { sale: read('price'), construction: read('construction') };
+    }
+    // The price inputs, by input key; leaving one keeps it at zero or above, and an empty one empty.
+    const PRICE_KEYS = new Set(['price', 'construction']);
+    function normalizePrice(input) {
+        if (input.value.trim() !== '') input.value = String(Math.max(0, Number(input.value) || 0));
     }
     // Apartments re-derived from the measured floor area at other assumptions; nothing is measured again.
     function rederiveStats(stats, assumptions) {
@@ -419,8 +450,14 @@
     }
 
     // The summary figures of one plan's stats as text, by SUMMARY_ROWS key: the dialog and the plan
-    // comparison show the same words. price: sales price per m² in the city's currency.
+    // comparison show the same words. price: { sale, construction } per m² in the city's currency
+    // (priceIn), each null when not given.
     function summaryTexts(stats, price) {
+        // The new floor area at the two prices, by the 3D panel's rule (CityMoney.newBuildMoney): its
+        // construction cost, and its profit after the value of the existing floor area the plan clears.
+        const money = window.CityMoney.newBuildMoney({ floorAreaM2: stats.yield.total.grossFloorAreaM2,
+            replacedFloorAreaM2: stats.cleared ? stats.cleared.floorAreaM2 : null,
+            salePerM2: price.sale, constructionPerM2: price.construction });
         // A figure that was not measured reads "—", never a 0 (formatNumber(null) would print 0).
         const measured = value => (finiteNumber(value) ? formatNumber(value) : '—');
         const total = standingTotal(stats);
@@ -445,7 +482,9 @@
                 : formatNumber(total.apartments),
             people: stats.unitsCounting ? tPlanStats('sidebar.proposals.planStats.countingUnits', 'Counting…') : formatNumber(total.people),
             jobs: formatNumber(total.jobs),
-            'sales-value': formatSalesValue(total.grossFloorAreaM2 * price)
+            'sales-value': formatSalesValue(finiteNumber(price.sale) ? total.grossFloorAreaM2 * price.sale : null),
+            'construction-cost': formatSalesValue(money.constructionCost),
+            profit: formatSalesValue(money.profit)
         };
     }
 
@@ -467,9 +506,7 @@
 
         const total = standingTotal(stats);
         const noParcels = !finiteNumber(stats.parcelCount);
-        const priceInput = modal.querySelector('#plan-stats-price');
-        const price = Math.max(0, Number(priceInput && priceInput.value) || 0);
-        const figures = summaryTexts(stats, price);
+        const figures = summaryTexts(stats, priceIn(modal, 'plan-stats'));
 
         set('scope', tPlanStats(
             'sidebar.proposals.planStats.scope',
@@ -491,8 +528,15 @@
         ['apartments', 'people'].forEach(key => modal.querySelector(`[data-plan-stat="${key}"]`)?.classList?.toggle('plan-stats-counting', stats.unitsCounting === true));
         set('jobs', figures.jobs);
         set('sales-value', figures['sales-value']);
+        set('construction-cost', figures['construction-cost']);
+        set('profit', figures.profit);
 
         const notes = [];
+        if (stats.cleared && stats.cleared.unmeasured > 0) {
+            notes.push(tPlanStats('sidebar.proposals.planStats.noteProfitUnmeasured',
+                'The profit is not known: {{n}} of the existing buildings the plan clears state no height.',
+                { n: formatNumber(stats.cleared.unmeasured) }));
+        }
         if (total.unmeasuredBuildings > 0) {
             notes.push(tPlanStats(
                 'sidebar.proposals.planStats.noteUnmeasured',
@@ -559,7 +603,7 @@
             input.dataset.planStatsBound = '1';
             input.addEventListener('input', handleAssumptionChange);
             input.addEventListener('change', () => {
-                if (input.id === 'plan-stats-price') input.value = String(Math.max(0, Number(input.value) || 0));
+                if (PRICE_KEYS.has(input.dataset.assumption)) normalizePrice(input);
                 else readAssumptionsFromModal(modal, { normalizeInput: input });
                 handleAssumptionChange();
             });
@@ -891,7 +935,7 @@
         grid.querySelectorAll('[data-assumption]').forEach(input => {
             input.addEventListener('input', () => refigure());
             input.addEventListener('change', () => {
-                if (input.dataset.assumption === 'price') input.value = String(Math.max(0, Number(input.value) || 0));
+                if (PRICE_KEYS.has(input.dataset.assumption)) normalizePrice(input);
                 refigure({ normalizeInput: input });
             });
         });

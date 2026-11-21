@@ -1,7 +1,7 @@
 // MCP source reads use current catalogue identities, including database-backed cities, and fail
 // incomplete coverage explicitly rather than turning unknown ground into an empty parcel set.
 import { describe, expect, it, vi } from 'vitest';
-import { createMcpReadTools, parcelSourceIdOf } from '../agents/mcp-read-tools.js';
+import { createMcpReadTools, parcelSourceIdOf, cityEconomics } from '../agents/mcp-read-tools.js';
 import { markUntrusted } from '../agents/mcp-results.js';
 const geometry = { type: 'Polygon', coordinates: [[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]] };
 const sourceFeature = id => ({ type: 'Feature', id, properties: { parcelId: id }, geometry });
@@ -80,6 +80,15 @@ describe('MCP public source reads', () => {
         expect(result.designs.designs.map(d => d.cid)).toEqual(['on-parcel']);
         expect(result.designs).toMatchObject({ total: 140, hasMore: true, nextOffset: 100 });
         expect(result.urbanRules).toEqual({ source: '/urban-rules' });
+        // The city's rates as Settings shows them: Zagreb's editable starting assumptions in euros.
+        expect(result.economics.currency).toBe('EUR');
+        expect(result.economics.rates.sale).toMatchObject({ amount: 4000, unit: 'm2-floor', basis: 'assumption', sourceId: 'scenario-assumptions' });
+        expect(result.economics.rates.construction).toMatchObject({ amount: 2000, unit: 'm2-floor' });
+    });
+
+    it('gives a city no economics it does not configure, and says why', () => {
+        expect(cityEconomics('alatau').rates.sale).toMatchObject({ currency: 'KZT', basis: 'market' });
+        expect(cityEconomics('atlantis')).toMatchObject({ currency: null, rates: {}, unavailable: true });
     });
 
     it('lists designs by parcels and types a page at a time, as the index filters them', async () => {

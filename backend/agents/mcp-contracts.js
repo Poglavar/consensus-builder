@@ -82,7 +82,13 @@ assign(['ugt_import_model'], mcpResultSchema.extend({ cid: cid.optional(), asset
             context.addIssue({ code: 'custom', path: issue.path, message: issue.message });
     }));
 assign(['ugt_render_preview'], mcpResultSchema.extend({ ready: z.literal(true), publication: z.literal('private'), provenance: z.object({ renderer: z.enum(['app-map-preview-2d', 'app-scene-3d']), designCids: z.array(cid).min(1), persisted: z.literal(false) }), metrics: z.object({ width: z.number().int().positive(), height: z.number().int().positive(), designCount: count }).passthrough() }));
-assign(['ugt_compare'], mcpResultSchema.extend({ alternatives: z.array(z.object({ cid, areaBasis: z.literal('authored-geometry'), measurementErrors: z.array(object) }).passthrough()).min(2), warnings: z.array(z.union([z.string(), object])) }));
+// money: null when unknown (a measurement error says why); its amounts are null where a price or area is.
+const amount = z.number().finite().nullable();
+const comparedMoney = z.object({ currency: z.string().regex(/^[A-Z]{3}$/), unit: z.literal('m2-floor'),
+    sale: object.nullable(), construction: object.nullable(), floorAreaM2: amount, replacedFloorAreaM2: amount,
+    value: amount, constructionCost: amount, replacedValue: amount, profit: amount });
+assign(['ugt_compare'], mcpResultSchema.extend({ alternatives: z.array(z.object({ cid, areaBasis: z.literal('authored-geometry'), measurementErrors: z.array(object),
+    money: comparedMoney.nullable() }).passthrough()).min(2), warnings: z.array(z.union([z.string(), object])) }));
 
 export function resultSchemaFor(name) { return shapes.get(name) || mcpResultSchema; }
 

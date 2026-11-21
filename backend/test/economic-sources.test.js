@@ -99,3 +99,32 @@ describe('economic source adapters', () => {
         expect(first.sourceKey).not.toBe(second.sourceKey);
     });
 });
+
+describe('slider ranges', () => {
+    it('keeps the standard range without an observation or for one of its size', () => {
+        expect(EconomicSources.slider('sale', null)).toMatchObject({ perSqm: null, min: 500, max: 15000 });
+        expect(EconomicSources.slider('sale', { amount: 4200, sourceId: 'local' })).toMatchObject({ perSqm: 4200, min: 500, max: 15000, step: 'any' });
+    });
+
+    it('reaches twice a price in a currency of other magnitude, so it slides above it as well as below', () => {
+        expect(EconomicSources.slider('construction', { amount: 297900, sourceId: 'kz' })).toMatchObject({ min: 500, max: 595800 });
+    });
+});
+
+describe('Kazakh city sources', () => {
+    it('price Astana and Alatau in tenge from dated statistics, sale and construction per m² of floor', async () => {
+        const { cityMoney } = await import('../scripts/lib/frontend-city-money.mjs');
+        for (const id of ['astana', 'alatau']) {
+            const rates = cityMoney(id).currentEconomicRates();
+            for (const metric of ['sale', 'construction']) {
+                expect(rates[metric], `${id} ${metric}`).toMatchObject({ unit: 'm2-floor', currency: 'KZT', asOf: '2026-10-31' });
+                expect(rates[metric].sourceUrl).toMatch(/^https:\/\/stat\.gov\.kz\//);
+                expect(rates[metric].scope.length).toBeGreaterThan(20);
+            }
+            expect(rates.sale.basis).toBe('market');
+            expect(rates.construction.basis).toBe('construction-cost');
+            expect(rates.sale.amount).toBeGreaterThan(rates.construction.amount);
+        }
+        expect(cityMoney('alatau').currentEconomicRates().sale.scope).toContain('Almaty city');
+    });
+});

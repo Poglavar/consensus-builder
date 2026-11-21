@@ -152,7 +152,10 @@ function compactObject(name, raw) {
     // Its designs are the index's page ({ designs, total, hasMore }): the rows and how many there are in all.
     if (name === 'ugt_parcel_context') return { ok: r.ok !== false, parcelSourceId: r.parcelSourceId, areaM2: r.areaM2,
         designs: array(Array.isArray(r.designs) ? r.designs : r.designs?.designs, x => ({ cid: x.cid, title: prose(x, 'title', 120), goal: prose(x, 'goal', 120) }), 30),
-        designTotal: Number.isFinite(r.designs?.total) ? r.designs.total : undefined, buildings: r.buildings && { count: r.buildings.count }, planning: array(r.planning?.sources, refFree, 20), urbanRules: clip(JSON.stringify(r.urbanRules || ''), 1000) };
+        designTotal: Number.isFinite(r.designs?.total) ? r.designs.total : undefined, buildings: r.buildings && { count: r.buildings.count }, planning: array(r.planning?.sources, refFree, 20), urbanRules: clip(JSON.stringify(r.urbanRules || ''), 1000),
+        // The city's rates per m², each with what it is and where it is from (mcp-read-tools.js cityEconomics).
+        economics: r.economics && { currency: r.economics.currency, unavailable: r.economics.unavailable, rates: Object.fromEntries(Object.entries(r.economics.rates || {})
+            .map(([metric, rate]) => [metric, { amount: rate.amount, unit: rate.unit, basis: rate.basis, asOf: rate.asOf, source: clip(rate.sourceName || rate.sourceId || '', 120), scope: clip(rate.scope || '', 160) }])) } };
     // A selection of thousands of parcels: its first page, its count and where read_selection reads on.
     if (name === 'ugt_select_parcels' && Array.isArray(r.selection?.parcelIds)) {
         const { parcelIds, ...selection } = r.selection;

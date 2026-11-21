@@ -51,7 +51,24 @@
         const rates = ratesFor(cityConfig, override);
         return { currency: currencyOf(cityConfig) || DEFAULT_ASSUMPTION_CURRENCY,
             landPerSqm: rates.land?.amount ?? null, roadLandPerSqm: rates.roadLand?.amount ?? null,
-            salesPerSqm: rates.sale?.amount ?? null, sources: rates };
+            salesPerSqm: rates.sale?.amount ?? null, constructionPerSqm: rates.construction?.amount ?? null, sources: rates };
+    }
+
+    // What new floor area is worth at two prices per m² of floor, in one currency: its value (floor
+    // area × sale price), its construction cost (floor area × construction cost) and its profit
+    // (value − construction cost − the value of the floor area it replaces, at the same sale price).
+    // A missing price or area keeps every amount that depends on it unknown (null), never 0. The 3D
+    // panel (gain.js), Plan stats and the MCP comparison all count with this.
+    function newBuildMoney({ floorAreaM2, replacedFloorAreaM2 = null, salePerM2, constructionPerM2 } = {}) {
+        const amount = value => (typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null);
+        const area = amount(floorAreaM2), replaced = amount(replacedFloorAreaM2);
+        const sale = amount(salePerM2), cost = amount(constructionPerM2);
+        const value = area === null || sale === null ? null : area * sale;
+        const constructionCost = area === null || cost === null ? null : area * cost;
+        const replacedValue = replaced === null || sale === null ? null : replaced * sale;
+        const profit = value === null || constructionCost === null || replacedValue === null
+            ? null : value - constructionCost - replacedValue;
+        return { value, constructionCost, replacedValue, profit };
     }
 
     // Parcel and road estimates retain the selected observation, including its unit and provenance.
@@ -81,6 +98,8 @@
             currentEconomicRates: () => ratesFor(city(), getOverride(city())),
             currentLandPriceOptions: kind => landPriceOptions(city(), kind, getOverride(city())),
             currentOfferCurrencies: current => offerCurrencies(city(), current),
+            // Not city-specific; every city's view carries it so its consumers need only that view.
+            newBuildMoney,
             // The 3D panel's slider prices, in the city's currency.
             currentFloorAreaPrices: () => {
                 const rates = ratesFor(city(), getOverride(city()));

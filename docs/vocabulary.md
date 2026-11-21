@@ -416,6 +416,10 @@ What stands today on the land of a chosen saved plan (or of all compared plans, 
 
 An existing building a plan's designs do not clear. A plan's standing buildings are its new buildings plus its remaining ones. A standing building the suggested default layout can lay out (or one with its own floor plans) counts that layout's apartments, and its shops as work; every other building's apartments, people and jobs derive from its floor area by the Plan stats assumptions. A design clears its demolition ground (a building design's site or land take and its footprints, a structure, a road corridor; never the rest of the parcels it stands on) with the demolition scan's thresholds: under 2 m² of overlap the building is untouched, and when under 10 m² or 15 % of its footprint is left it is gone.
 
+### Profit on the new floor area
+
+A model at two prices per m² of floor area in the city's currency, the sale price and the construction cost (economic rates, or the prices a person types or an agent passes): the value of the new floor area (floor area × sale price), its construction cost (floor area × construction cost), and the profit, value − construction cost − the value of the existing floor area the new building replaces at the same sale price. The replaced floor area is what the 3D panel finds standing on the parcel, and for Plan stats and `ugt_compare` the cleared floor area: what the designs clear of existing buildings, measured by plan-yield's rules, a cut building counting the part it loses. A missing price or area, or a cleared building without a height, leaves what depends on it unknown, never zero. Land, fees, finance and taxes are not in it; it is not an appraisal.
+
 ### Private draft reference
 
 A bearer URL resolving to an immutable unpublished design, agreement or named plan and its exact member revisions. It persists independently of an MCP client session. Hosted references have a stated expiry; local demos can retain references without expiry in persistent local storage. Exported canonical content can restore an expired reference's content. A private preview is not publication, application, consent or a public share link.

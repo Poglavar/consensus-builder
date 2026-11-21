@@ -250,6 +250,8 @@
     // `avgProfitPerParcel` divides the proposed profit over the bound parcels (`parcelFloorAreas`
     // when the totals also cover open ground), null without parcels or proposed massing.
     const finite = value => typeof value === 'number' && Number.isFinite(value);
+    const cityMoney = () => (typeof window !== 'undefined' && window.CityMoney)
+        || (typeof require === 'function' ? require('../city-money.js') : null);
 
     function computeValueComparison({ floorAreas = {}, salePerM2, constructionPerM2, currency, parcelCount = null, parcelFloorAreas = null } = {}) {
         if (typeof currency !== 'string' || !currency) throw new Error('computeValueComparison needs the currency its prices are in.');
@@ -260,12 +262,12 @@
         const area = value => (finite(value) && value >= 0 ? value : null);
         const builtArea = area(floorAreas.built);
         const builtValue = builtArea === null || sale === null ? null : builtArea * sale;
+        // The arithmetic is CityMoney.newBuildMoney, the one Plan stats and the MCP comparison use.
         const newBuild = (floorArea, available) => {
             if (!available) return { available: false, floorArea: null, value: null, constructionCost: null, profit: null };
-            const value = sale === null ? null : floorArea * sale;
-            const constructionCost = cost === null ? null : floorArea * cost;
-            return { available: true, floorArea, value, constructionCost,
-                profit: builtValue === null || value === null || constructionCost === null ? null : value - constructionCost - builtValue };
+            const { value, constructionCost, profit } = cityMoney().newBuildMoney({
+                floorAreaM2: floorArea, replacedFloorAreaM2: builtArea, salePerM2: sale, constructionPerM2: cost });
+            return { available: true, floorArea, value, constructionCost, profit };
         };
         const plannedArea = area(floorAreas.planned);
         const proposedArea = area(floorAreas.proposed);

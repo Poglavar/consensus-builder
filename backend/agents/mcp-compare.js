@@ -6,9 +6,11 @@ import { appTurf as turf } from './mcp-geometry.js';
 import { cidOfObject, isCid } from './agreement-objects.js';
 import { deriveWithApp } from './mcp-ground-runtime.js';
 import { previewArtifact } from './mcp-preview.js';
-import { parcelSourceIdOf } from './mcp-read-tools.js';
+import { parcelSourceIdOf, cityEconomics } from './mcp-read-tools.js';
+import { cityMoney } from '../scripts/lib/frontend-city-money.mjs';
 const require = createRequire(import.meta.url);
 const records = require('../../frontend/js/agreement-record.js');
+const planYield = require('../../frontend/js/proposals/plan-yield.js');
 const demolition = require('../../frontend/js/proposals/demolition-prefetch.js');
 const route = require('../../frontend/js/proposals/apply/route.js');
 const DemolitionDerive = require('../../frontend/js/demolition-derive.js');
@@ -37,8 +39,33 @@ export function authoredAreas(designs) {
         roadAreaM2: roads.length ? turf.area(union(roads)) : 0 };
 }
 
+// The floor area of the part of an existing building a design takes, by plan-yield's rule, as Plan
+// stats counts the buildings a plan clears (present-state.js builtRecords: the source's height and
+// storeys, 3 m storeys otherwise). null when the source states neither.
+const positive = value => finite(value) && value > 0;
+export function existingFloorArea(geometry, building) {
+    const properties = { type: 'proposedBuilding', floorHeightM: 3 };
+    if (positive(building?.height_m)) properties.height = building.height_m;
+    if (positive(building?.floors)) properties.floors = building.floors;
+    return planYield.measureBuilding({ type: 'Feature', properties, geometry }, null, {}).gfaM2;
+}
+
+// What an alternative's new floor area is worth in its city's currency (CityMoney.newBuildMoney, the
+// rule of Plan stats and the 3D panel): at the city's sale and construction rates per m² of floor,
+// or at the prices the caller gives, which are scenario assumptions. Each price keeps its source.
+export function moneyOf({ city, floorAreaM2, replacedFloorAreaM2, prices = {} }) {
+    const { currency, rates, unavailable, reason } = cityEconomics(city);
+    if (unavailable) throw fail('city-money-unavailable', reason);
+    const price = (metric, given) => (finite(given) && given >= 0
+        ? { amount: given, currency, basis: 'assumption', sourceId: 'caller' } : rates[metric] || null);
+    const sale = price('sale', prices.salePerM2), construction = price('construction', prices.constructionPerM2);
+    return { currency, unit: 'm2-floor', sale, construction, floorAreaM2, replacedFloorAreaM2,
+        ...cityMoney(city).newBuildMoney({ floorAreaM2, replacedFloorAreaM2,
+            salePerM2: sale ? sale.amount : null, constructionPerM2: construction ? construction.amount : null }) };
+}
+
 export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDraftReference, plans }) {
-    return async function compare({ targets, parcelSourceId, buildingSources, plan }) {
+    return async function compare({ targets, parcelSourceId, buildingSources, plan, prices }) {
         const alternatives = [], warnings = [];
         const scope = plan == null ? null : await plans.resolvePlan(plan);
         for (const target of targets) {
@@ -143,7 +170,7 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
                 measurementErrors.push({ code: error.code || 'ground-unavailable', message: error.message,
                     next: trustedMetadata(error.next || { action: 'Retry when complete parcel ground is available.' }) });
             }
-            let buildingsRemoved = null, buildingsCut = null, removedFootprintM2 = null;
+            let buildingsRemoved = null, buildingsCut = null, removedFootprintM2 = null, removedFloorAreaM2 = null;
             if (ground) {
                 try {
                     // The land each design takes, its road tunnels taking nothing (demolition-derive.js, the
@@ -155,7 +182,7 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
                         const tunnels = design.roadProposal?.definition ? DemolitionDerive.tunnelRegionsOf(design.roadProposal.definition) : [];
                         return region ? { proposalId: row.cid, region, tunnels } : null;
                     }).filter(Boolean);
-                    if (!takers.length) { buildingsRemoved = 0; buildingsCut = 0; removedFootprintM2 = 0; }
+                    if (!takers.length) { buildingsRemoved = 0; buildingsCut = 0; removedFootprintM2 = 0; removedFloorAreaM2 = 0; }
                     else {
                         // The sources in order: the first that answers the whole land completely is the stock.
                         const sources = Array.isArray(buildingSources) ? buildingSources.filter(Boolean) : [];
@@ -171,13 +198,23 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
                         }
                         if (!stock) throw fail('building-coverage-incomplete', 'No building source answered this land completely; demolitions are unknown.');
                         const byKey = new Map();
-                        regions.forEach(r => stock.regions[r.key].forEach(building => byKey.set(`${used}:${building.id}`, { key: `${used}:${building.id}`, geometry: building.geometry })));
+                        const stated = new Map();
+                        regions.forEach(r => stock.regions[r.key].forEach(building => {
+                            byKey.set(`${used}:${building.id}`, { key: `${used}:${building.id}`, geometry: building.geometry });
+                            stated.set(`${used}:${building.id}`, building);
+                        }));
                         const { records } = DemolitionDerive.derive({ takers, buildings: [...byKey.values()] }, turf);
                         buildingsRemoved = 0; buildingsCut = 0; removedFootprintM2 = 0;
-                        for (const record of records.values()) {
-                            if (!record.remainder) { buildingsRemoved++; removedFootprintM2 += turf.area(turf.feature(record.geometry)); }
-                            else { buildingsCut++; removedFootprintM2 += turf.area(turf.feature(record.demolishedPart)); }
+                        let floorArea = 0, unmeasured = 0;
+                        for (const [key, record] of records) {
+                            const part = record.remainder ? record.demolishedPart : record.geometry;
+                            if (!record.remainder) buildingsRemoved++; else buildingsCut++;
+                            removedFootprintM2 += turf.area(turf.feature(part));
+                            const area = existingFloorArea(part, stated.get(key));
+                            if (area === null) unmeasured++; else floorArea += area;
                         }
+                        // A removed building the source gives no height leaves the removed floor area unknown.
+                        removedFloorAreaM2 = unmeasured ? null : floorArea;
                     }
                 } catch (error) {
                     measurementErrors.push({ code: error.code || 'buildings-unavailable', message: error.message,
@@ -188,11 +225,22 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
             const preview = published ? { previewUrl: `${appOrigin}/${isPlan ? 'plans' : isAgreement ? 'agreements' : 'designs'}/${cid}`, previewStatus: 'published' }
                 : await previewArtifact({ origin: appOrigin, ...(isPlan ? { plan: content, designs } : isAgreement ? { agreement: content, plan: agreementPlan, designs } : { design: content }), parcelSourceId: sourceId });
             if (isPlan && preview.draftArtifact) preview.draftArtifact.designSources = designSources;
-            alternatives.push({ cid, title: content.title, ...authoredAreas(designs), areaBasis: 'authored-geometry',
-                parcelsTaken: takes, buildingsRemoved, buildingsCut, removedFootprintM2, ledger,
+            const areas = authoredAreas(designs);
+            let money = null;
+            try {
+                const city = designs.find(design => typeof design?.city === 'string' && design.city)?.city;
+                if (!city) throw fail('city-unknown', 'No design names its city, so its money is unknown.');
+                money = moneyOf({ city, floorAreaM2: areas.floorAreaM2, replacedFloorAreaM2: removedFloorAreaM2, prices: prices || {} });
+            } catch (error) {
+                measurementErrors.push({ code: error.code || 'money-unavailable', message: error.message,
+                    next: trustedMetadata(error.next || { action: 'Give salePerM2 and constructionPerM2 in prices, in the city currency.' }) });
+            }
+            alternatives.push({ cid, title: content.title, ...areas, areaBasis: 'authored-geometry',
+                parcelsTaken: takes, buildingsRemoved, buildingsCut, removedFootprintM2, removedFloorAreaM2, money, ledger,
                 measurementErrors, ...(isPlan ? { designSources } : {}), ...preview });
         }
         warnings.push('Areas describe authored geometry; they are not a prediction of construction. The party ledger is the app’s modeled allocation, not proof of ownership or compensation.');
+        warnings.push('Money is a model at two prices per m² of floor area, each with its source: value and construction cost of the new floor area, and profit after the value of the floor area it removes. It is not an appraisal; land, fees and finance are not in it.');
         return { alternatives, warnings };
     };
 }

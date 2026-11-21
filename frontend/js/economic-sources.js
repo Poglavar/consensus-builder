@@ -110,12 +110,16 @@
         }
         return result;
     }
+    // The standard range is in EUR-sized units; an observation widens it to half and twice its own
+    // amount where those fall outside, so a price in a currency of other magnitude (KZT) can still
+    // be slid above it as well as below.
     function slider(metric, observation) {
         const standard = FLOOR_PRICES[metric];
-        return { ...standard, perSqm: observation?.amount ?? null,
+        const amount = observation?.amount ?? null;
+        return { ...standard, perSqm: amount,
             step: observation && observation.sourceId !== 'scenario-assumptions' ? 'any' : standard.step,
-            min: Math.min(standard.min, observation?.amount ?? standard.min),
-            max: Math.max(standard.max, observation?.amount ?? standard.max) };
+            min: amount === null ? standard.min : Math.min(standard.min, amount / 2),
+            max: amount === null ? standard.max : Math.max(standard.max, amount * 2) };
     }
     return Object.freeze({ METRICS, BASES, FLOOR_PRICES, BUILT_INS, adapters, registry, rateTable, defaults, resolve, slider });
 });

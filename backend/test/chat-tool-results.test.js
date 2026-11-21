@@ -98,4 +98,12 @@ describe('chat tool results', () => {
         expect(page.designs).toEqual([{ cid: 'd2', title: 'Ring road' }]);
         expect(page.designTotal).toBe(312);
     });
+
+    it('keeps the city rates of a parcel context, with what each is and where it is from', () => {
+        const sale = { metric: 'sale', unit: 'm2-floor', amount: 539000, currency: 'KZT', basis: 'market', asOf: '2026-10-31',
+            sourceId: 'kz-bns-housing-prices-2026-10', sourceName: 'Bureau of National Statistics: housing prices, October 2026', sourceUrl: 'https://stat.gov.kz/x', scope: 'Astana new builds' };
+        const compact = JSON.parse(compactForModel('ugt_parcel_context', { structuredContent: { designs: [], economics: { currency: 'KZT', rates: { sale } } } }));
+        expect(compact.economics).toEqual({ currency: 'KZT', rates: { sale: { amount: 539000, unit: 'm2-floor', basis: 'market', asOf: '2026-10-31',
+            source: 'Bureau of National Statistics: housing prices, October 2026', scope: 'Astana new builds' } } });
+    });
 });

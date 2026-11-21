@@ -109,3 +109,27 @@ describe('offer currencies', () => {
         expect(CityMoney.offerCurrencies(croatian, 'gbp')).toEqual(['EUR', 'USD', 'ETH', 'ARS', 'USDC', 'USDT', 'GBP']);
     });
 });
+
+describe('new floor area at two prices', () => {
+    const { newBuildMoney } = CityMoney;
+
+    it('values it, costs it, and takes the value of the floor area it replaces off the profit', () => {
+        expect(newBuildMoney({ floorAreaM2: 1000, replacedFloorAreaM2: 200, salePerM2: 4000, constructionPerM2: 2000 }))
+            .toEqual({ value: 4000000, constructionCost: 2000000, replacedValue: 800000, profit: 1200000 });
+        expect(newBuildMoney({ floorAreaM2: 1000, replacedFloorAreaM2: 0, salePerM2: 4000, constructionPerM2: 2000 }).profit).toBe(2000000);
+    });
+
+    it('keeps what depends on a missing price or area unknown instead of counting it as zero', () => {
+        expect(newBuildMoney({ floorAreaM2: 1000, salePerM2: 4000, constructionPerM2: 2000 }))
+            .toEqual({ value: 4000000, constructionCost: 2000000, replacedValue: null, profit: null });
+        expect(newBuildMoney({ floorAreaM2: 1000, replacedFloorAreaM2: 0, salePerM2: 4000, constructionPerM2: null }))
+            .toEqual({ value: 4000000, constructionCost: null, replacedValue: 0, profit: null });
+        expect(newBuildMoney({ floorAreaM2: null, replacedFloorAreaM2: 0, salePerM2: 4000, constructionPerM2: 2000 }))
+            .toEqual({ value: null, constructionCost: null, replacedValue: 0, profit: null });
+        expect(newBuildMoney({ floorAreaM2: 1000, replacedFloorAreaM2: 0, salePerM2: -1, constructionPerM2: 2000 }).value).toBeNull();
+    });
+
+    it('is on every city view, which is what the dialogs and the MCP hold', () => {
+        expect(CityMoney.forCity(() => birmingham).newBuildMoney).toBe(newBuildMoney);
+    });
+});

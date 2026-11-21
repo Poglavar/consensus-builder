@@ -146,6 +146,19 @@ describe('existing buildings a plan leaves standing', () => {
         expect(left[1]).toBe(grazed);
     });
 
+    it('lists what it clears beside what remains: a gone building whole, a cut one with its rest', () => {
+        const regions = [box(15.8999, 45.7999, 0.0004), box(15.9011, 45.7999, 0.0004), box(15.90219999, 45.7999, 0.0004)];
+        const { remaining, cleared } = State.clearanceSplit({ built: [whole, halved, grazed], regions, ops });
+        expect(remaining).toEqual(State.remainingBuildings({ built: [whole, halved, grazed], regions, ops }));
+        expect(cleared.map(entry => entry.before)).toEqual([whole, halved]);
+        expect(cleared[0].after).toBeNull();
+        expect(cleared[1].after).toEqual(remaining[0]);
+        // The floor area cleared: all of a, half of b, none of c (plan-yield measures each the same way).
+        const gfa = records => planYield.planYield(records, { floorHeightM: 3 }).total.grossFloorAreaM2;
+        const clearedM2 = cleared.reduce((sum, { before, after }) => sum + gfa([before]) - (after ? gfa([after]) : 0), 0);
+        expect(clearedM2 / gfa([whole])).toBeCloseTo(1.5, 1);
+    });
+
     it('tells one footprint kept, cut or gone by the same thresholds', () => {
         const regions = [box(15.8999, 45.7999, 0.0004), box(15.9011, 45.7999, 0.0004), box(15.90219999, 45.7999, 0.0004)];
         const footprint = record => record.buildingProposal.buildings[0];
