@@ -50,8 +50,12 @@ describe('shared lists', () => {
         expect(filterRows(staged, { publication: 'onchain' }).map(row => row.title)).toEqual(['C']);
         expect(filterRows(staged, { publication: 'all' })).toHaveLength(3);
     });
-    it('orders loaded records by their authored date', () => {
-        expect(filterRows(rows, { sort: 'newest' }).map(row => row.title)).toEqual(['Alpha', 'Zebra']);
+    it('sorts by the displayed instant, with undated records last and title order available', () => {
+        const dated = [{ title: 'Zebra', createdAt: '2026-11-17T09:00:00Z' },
+            { title: 'Alpha', publishedAt: '2026-11-17T10:00:00+02:00', createdAt: '2026-11-17T11:00:00Z' },
+            { title: 'Beta', createdAt: 'invalid' }];
+        expect(filterRows(dated).map(row => row.title)).toEqual(['Zebra', 'Alpha', 'Beta']);
+        expect(filterRows(dated, { sort: 'title' }).map(row => row.title)).toEqual(['Alpha', 'Beta', 'Zebra']);
     });
     it('removes only the stored plan, retaining its agreement and member records', () => {
         const content = PlanRecord.create('Plan', [Cid.cidOfObject({ test: 'design' })], { city: 'london', at: '51.5,-0.1,17', mode: '2d', language: 'en' });
@@ -81,7 +85,7 @@ const ladderBadges = new Function('window', 'getProposalI18nHelper', 'getProposa
     { __proposalDisplayState: displayState }, () => (_key, fallback) => fallback, key => lifecycleLabels[key] || key,
     require('../../frontend/js/shared-utils.js').escapeHtml);
 
-function listsSheet({ designs = [], serverDesigns = [], plans = [], serverPlans = [], agreements = [], offers = [], serverOffers = [] } = {}) {
+function listsSheet({ designs = [], serverDesigns = [], plans = [], serverPlans = [], agreements = [], serverAgreements = [], offers = [], serverOffers = [] } = {}) {
     const doc = makeDocument();
     for (const id of ['lists-controls', 'lists-actions', 'lists-status', 'proposal-list-host', 'plan-list-host', 'agreement-list-host']) {
         const el = doc.createElement('div'); el.id = id; doc.body.append(el);
@@ -107,13 +111,14 @@ function listsSheet({ designs = [], serverDesigns = [], plans = [], serverPlans 
         normalizeCityCodeForApi: code => code,
         resolveCurrentCityCode: () => 'london',
         getProposalCountAreaContext: () => null,
-        fetch: async url => ({ ok: true, json: async () => (String(url).includes('/designs?') ? { designs: serverDesigns } : String(url).includes('/property-offers?') ? { propertyOffers: serverOffers } : { plans: serverPlans, agreements: [] }) }),
+        fetch: async url => ({ ok: true, json: async () => (String(url).includes('/designs?') ? { designs: serverDesigns } : String(url).includes('/property-offers?') ? { propertyOffers: serverOffers } : { plans: serverPlans, agreements: serverAgreements }) }),
         DesignSync: { apiBase: () => 'https://api.test', publishedCid: record => record.cid || null,
             localCopyOf: cid => designs.find(design => design.cid === cid) || null },
         proposalStorage: { getAllProposals: () => designs },
         NamedPlans: { list: () => plans, remove: cid => calls.plansRemoved.push(cid) },
         AgreementStore: { list: () => agreements, subscribe() {} },
         AgreementSync: { localCopyOf: () => null },
+        AgreementPanel: { ruleShort: () => '' },
         PropertyOfferStore: { list: () => offers, subscribe() {} },
         PropertyOfferSync: { localCopyOf: cid => offers.find(offer => offer.published?.cid === cid) || null, openDetails: async cid => calls.offersOpened.push(cid) },
         PropertyOfferPanel: { open: id => calls.offersOpened.push(id) },
@@ -146,12 +151,14 @@ describe('the Lists sheet', () => {
         serverDesigns: [{ cid: 'cid-shared', title: 'Shared square' }, { cid: 'cid-server', title: 'Server street' }]
     });
 
-    it('starts Designs newest, keeps an explicit sort across tabs, and resets to each tab default', async () => {
+    it('starts newest first across tabs, keeps an explicit title sort, and resets to newest', async () => {
         const { doc, shown, panel } = listsSheet({
             designs: [{ proposalId: 'park', title: 'Zebra park', createdAt: '2026-11-18T12:00:00Z' }],
             serverDesigns: [{ cid: 'older', title: 'Alpha square', publishedAt: '2026-11-01T12:00:00Z' }],
-            plans: [{ cid: 'plan-z', content: { title: 'Zebra', view: {}, designCids: [] }, designs: [], createdAt: '2026-11-18T12:00:00Z' },
-                { cid: 'plan-a', content: { title: 'Alpha', view: {}, designCids: [] }, designs: [], createdAt: '2026-11-01T12:00:00Z' }]
+            plans: [{ cid: 'plan-z', content: { title: 'Zebra', view: {}, designCids: [] }, publishedAt: '2026-11-18T12:00:00Z' },
+                { cid: 'plan-a', content: { title: 'Alpha', view: {}, designCids: [] }, publishedAt: '2026-11-01T12:00:00Z' }],
+            agreements: [{ id: 'draft-a', title: 'Alpha', createdAt: '2026-11-01T12:00:00Z' }],
+            serverAgreements: [{ cid: 'agreement-z', title: 'Zebra', createdAt: '2026-11-18T12:00:00Z' }]
         });
         await panel.open();
         await vi.waitFor(() => expect(shown('proposal-list-host')).toEqual(['park', 'older']));
@@ -170,8 +177,11 @@ describe('the Lists sheet', () => {
         await vi.waitFor(() => expect(sort().value).toBe('newest'));
         expect(shown('proposal-list-host')).toEqual(['park', 'older']);
         await panel.select('plans');
-        expect(sort().value).toBe('title');
-        expect(shown('plan-list-host')).toEqual(['plan-a', 'plan-z']);
+        expect(sort().value).toBe('newest');
+        expect(shown('plan-list-host')).toEqual(['plan-z', 'plan-a']);
+        await panel.select('agreements');
+        await vi.waitFor(() => expect(shown('agreement-list-host')).toEqual(['agreement-z', 'draft-a']));
+        expect(sort().value).toBe('newest');
     });
 
     it('deletes a draft, removes the copy of a published design from this device, and offers nothing for a server-only row', async () => {
@@ -269,10 +279,30 @@ describe('the Lists sheet', () => {
         await vi.waitFor(() => expect(f.shown('agreement-list-host').sort()).toEqual(['draft-offer', 'remote-offer']));
         expect(f.item('draft-offer').textContent).toContain('Offer to buy');
         expect(f.item('remote-offer').textContent).toContain('Offer to buy');
+        expect(f.item('draft-offer').querySelector('time')?.dateTime).toBe(publishedAt);
+        expect(f.item('remote-offer').querySelector('time')?.dateTime).toBe(publishedAt);
         f.item('draft-offer').querySelector('.lists-item__open').click();
         f.item('remote-offer').querySelector('.lists-item__open').click();
         await vi.waitFor(() => expect(f.calls.offersOpened).toEqual(['draft-offer', 'remote-offer']));
         expect(f.panel.drafts().find(group => group.kind === 'agreements').rows.map(row => row.key)).toEqual(['draft-offer']);
+    });
+
+    it('shows first publication times and draft creation times on design and agreement rows', async () => {
+        const createdAt = '2026-11-16T09:10:11.000Z', publishedAt = '2026-11-17T09:10:11.000Z';
+        const f = listsSheet({
+            designs: [{ proposalId: 'draft-design', createdAt }, { proposalId: 'design-copy', cid: 'copy-cid', createdAt, published: { publishedAt } }],
+            serverDesigns: [{ cid: 'copy-cid', title: 'Cached design' }, { cid: 'remote-design', title: 'Design', createdAt: publishedAt }],
+            agreements: [{ id: 'draft-agreement', title: 'Draft agreement', createdAt }],
+            serverAgreements: [{ cid: 'remote-agreement', title: 'Agreement', createdAt: publishedAt }]
+        });
+        const stamp = id => f.item(id)?.querySelector('time.lists-item__timestamp')?.dateTime;
+        await f.panel.open();
+        await vi.waitFor(() => expect(stamp('remote-design')).toBe(publishedAt));
+        expect(stamp('draft-design')).toBe(createdAt);
+        expect(stamp('design-copy')).toBe(publishedAt);
+        await f.panel.select('agreements');
+        await vi.waitFor(() => expect(stamp('remote-agreement')).toBe(publishedAt));
+        expect(stamp('draft-agreement')).toBe(createdAt);
     });
 
     it('shows a published plan timestamp only when the server supplied one', async () => {

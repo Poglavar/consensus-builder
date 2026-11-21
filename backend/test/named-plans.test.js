@@ -24,7 +24,10 @@ function server({ records = new Map(), designs = [a, b], failInsert = false, pub
             return { rows: matching.slice(params[2], params[2] + params[1]).map(row => ({ cid: row.cid, title: row.content.title, design_count: row.content.designCids.length, publishedAt: row.publishedAt })) };
         }
         if (sql.includes("content->'view'->>'city'")) {
-            const matching = [...records.values()].filter(row => !params[0] || row.content.view.city === params[0]).sort((a,b) => a.cid.localeCompare(b.cid));
+            const matching = [...records.values()].filter(row => !params[0] || row.content.view.city === params[0]);
+            if (sql.includes('ORDER BY created_at DESC, cid')) matching.sort((a, b) =>
+                (Date.parse(b.publishedAt) - Date.parse(a.publishedAt)) || a.cid.localeCompare(b.cid));
+            else matching.sort((a, b) => a.cid.localeCompare(b.cid));
             return { rows: matching.slice(params[2], params[2] + params[1]) };
         }
         if (sql.startsWith('SELECT cid, content')) return { rows: records.has(params[0]) ? [records.get(params[0])] : [] };
@@ -116,17 +119,21 @@ describe('named plan records and API', () => {
         expect((await request(app).get(`/plans?design=${b}&limit=20`)).body.count).toBe(2);
         expect((await request(app).get(`/plans?design=${cidOf(Buffer.from('no match'))}`)).body).toEqual({ plans: [], count: 0, hasMore: false, nextOffset: null });
     });
-    it('browses published plans by city without a design, with bounded pages', async () => {
+    it('browses published plans newest first across bounded pages and still filters by city', async () => {
         const other = PlanRecord.create('Another city', [b], { ...view, city: 'london' });
         const records = new Map([content, other].map(content => [Cid.cidOfObject(content), { cid: Cid.cidOfObject(content), content }]));
+        const [older, newer] = [...records.keys()].sort().map(key => records.get(key));
+        older.publishedAt = '2026-11-16T09:10:11.000Z';
+        newer.publishedAt = '2026-11-17T09:10:11.000Z';
         const { app } = server({ records });
         const first = await request(app).get('/plans?limit=1');
         expect(first.status).toBe(200); expect(first.body).toMatchObject({ count: 1, hasMore: true, nextOffset: 1 });
+        expect(first.body.plans[0].cid).toBe(newer.cid);
         const second = await request(app).get('/plans?limit=1&offset=1');
         expect(second.body).toMatchObject({ count: 1, hasMore: false });
-        expect(second.body.plans[0].cid).not.toBe(first.body.plans[0].cid);
+        expect(second.body.plans[0].cid).toBe(older.cid);
         const filtered = await request(app).get('/plans?city=birmingham');
-        expect(filtered.body.plans).toEqual([{ cid, content, title: content.title, designCount: 2 }]);
+        expect(filtered.body.plans).toEqual([{ ...records.get(cid), title: content.title, designCount: 2 }]);
     });
     it('rejects malformed design and pagination before querying', async () => {
         const { app, pool } = server();

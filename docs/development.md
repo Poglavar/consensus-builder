@@ -312,7 +312,10 @@ The **Lists panel** contains **Designs**, **Plans**, and **Agreements** tabs. Ea
 server's published objects and this browser's drafts, one row per object (a browser's copy of a
 published object is its cache and joins that object's row). One **filters** section keeps the search,
 the stage filter (Draft, Published and, for agreements, On chain) and the ordering across tabs.
-The shared body supplies the inset for every tab. Plan-file import and imported-plan controls live
+Each tab starts newest first, using the same timestamp shown on its rows. Published records use
+publication time when available, and drafts use their recorded creation time. Undated rows follow
+dated rows. The published plan browse endpoint applies timestamp order before pagination. The
+shared body supplies the inset for every tab. Plan-file import and imported-plan controls live
 in Plans. The file format remains a plan, even with a single member; this presentation change
 adds no authored fields or MCP editing operations. Record icons and subtle tints follow their type,
 while action buttons retain accessible names and shared busy controls.

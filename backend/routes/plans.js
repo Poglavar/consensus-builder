@@ -55,7 +55,7 @@ export function setupPlansRoute(app, { pool, uploadRateLimiter } = {}) {
                 const city = normalizeCityCode(rawCity);
                 const { rows } = await pool.query(`SELECT cid, content, created_at AS "publishedAt" FROM consensus.plan
                     WHERE ($1::text IS NULL OR content->'view'->>'city' = $1)
-                    ORDER BY cid LIMIT $2 OFFSET $3`, [city || null, limit + 1, offset]);
+                    ORDER BY created_at DESC, cid LIMIT $2 OFFSET $3`, [city || null, limit + 1, offset]);
                 const hasMore = rows.length > limit;
                 const plans = rows.slice(0, limit).map(row => ({ ...row, title: row.content.title,
                     designCount: row.content.designCids.length }));

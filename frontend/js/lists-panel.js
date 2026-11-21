@@ -20,18 +20,23 @@
             const mine = byCid.get(row.key);
             if (!mine) return row;
             joined.add(mine);
-            return { ...row, key: mine.key, local: row.local || mine.local, onChain: row.onChain || mine.onChain };
+            return { ...row, key: mine.key, local: row.local || mine.local, onChain: row.onChain || mine.onChain,
+                publishedAt: row.publishedAt ?? mine.publishedAt, createdAt: row.createdAt ?? mine.createdAt };
         });
         return [...rows, ...local.filter(row => !joined.has(row))];
     }
+    function timestampOf(row) {
+        const published = Date.parse(row.publishedAt);
+        return Number.isFinite(published) ? published : Date.parse(row.createdAt);
+    }
     // onMap keeps only the rows applied to this browser's map (row.applied, Designs only).
-    function filterRows(rows, { search = '', publication = 'all', sort = 'title', onMap = false } = {}) {
+    function filterRows(rows, { search = '', publication = 'all', sort = 'newest', onMap = false } = {}) {
         const query = search.trim().toLocaleLowerCase();
+        const newest = row => { const at = timestampOf(row); return Number.isFinite(at) ? at : -Infinity; };
         return rows.filter(row => (!query || `${row.title} ${row.author || ''} ${row.cid || ''} ${row.key || ''}`.toLocaleLowerCase().includes(query))
             && (publication === 'all' || stageOf(row) === publication)
             && (!onMap || row.applied === true))
-            .sort((a, b) => sort === 'title' ? a.title.localeCompare(b.title)
-                : String(b.createdAt || '').localeCompare(String(a.createdAt || '')) || a.title.localeCompare(b.title));
+            .sort((a, b) => (sort === 'newest' ? newest(b) - newest(a) : 0) || a.title.localeCompare(b.title));
     }
     // One page of the public index. Explore has no city: its designs are those whose site meets the
     // visible area (area = getProposalCountAreaContext()), as the index matches a bbox.
@@ -53,7 +58,7 @@
     }
     function browser(win) {
         const doc = win.document;
-        const state = { tab: 'designs', search: '', publication: 'all', sort: null, onMap: false,
+        const state = { tab: 'designs', search: '', publication: 'all', sort: 'newest', onMap: false,
             // selecting: the tab whose rows show checkboxes; purpose: what they are for ('compare', or
             // 'plan': the designs of a plan, ticked here with all of them shown on the map); planBase:
             // the plan whose revision they make, if any.
@@ -61,7 +66,6 @@
             // hovering: the card whose object is outlined under the pointer; records: each clicked card's designs,
             // read once; known: those already read, the only ones a hover shows
             hovering: null, records: new Map(), known: new Map(), openCritics: new Set() };
-        const currentSort = () => state.sort || (state.tab === 'designs' ? 'newest' : 'title');
         let ready = false;
         const t = (key, params) => win.i18n.t(key, params || {});
         const offerDirection = direction => (direction === 'buy' ? t('propertyOffer.directions.buy') : t('propertyOffer.directions.sell'));
@@ -139,24 +143,30 @@
             renderRows();
         }
         function localRows(kind) {
-            if (kind === 'designs') return win.proposalStorage.getAllProposals().map(record => ({
-                key: record.proposalId, title: record.title || t('planDialog.untitledDesign'), author: record.author,
-                createdAt: record.createdAt, published: !!win.DesignSync.publishedCid(record), cid: win.DesignSync.publishedCid(record) || null, record, local: record
-            }));
+            if (kind === 'designs') return win.proposalStorage.getAllProposals().map(record => {
+                const cid = win.DesignSync.publishedCid(record);
+                return { key: record.proposalId, title: record.title || t('planDialog.untitledDesign'), author: record.author,
+                    createdAt: record.createdAt, publishedAt: cid ? record.published?.publishedAt : null,
+                    published: !!cid, cid, record, local: record };
+            });
             if (kind === 'plans') return win.NamedPlans.list({ storedOnly: true })
                 .filter(record => !record.content.view.city || win.normalizeCityCodeForApi(record.content.view.city) === city())
-                .map(record => ({ key: record.cid, title: record.content.title, publishedAt: record.publishedAt, createdAt: record.publishedAt, published: record.published === true || !Array.isArray(record.designs), cid: record.cid, record, local: record }));
+                .map(record => ({ key: record.cid, title: record.content.title, publishedAt: record.publishedAt, createdAt: record.createdAt, published: record.published === true || !Array.isArray(record.designs), cid: record.cid, record, local: record }));
             const offers = (win.PropertyOfferStore?.list() || []).map(record => ({ key: record.id, propertyOffer: true,
                 title: record.content.title || offerDirection(record.content.direction), author: record.content.proposer, createdAt: record.content.createdAt,
-                published: !!record.published, cid: record.published?.cid || null, onChain: !!record.onchain, record, local: record }));
+                publishedAt: record.published?.publishedAt, published: !!record.published, cid: record.published?.cid || null,
+                onChain: !!record.onchain, record, local: record }));
             return [...offers, ...win.AgreementStore.list().map(record => ({ key: record.id, title: record.title || t('agreement.panel.untitled'),
-                author: record.author, createdAt: record.createdAt, published: !!record.published, cid: record.published?.cid || null,
+                author: record.author, createdAt: record.createdAt, publishedAt: record.published?.publishedAt,
+                published: !!record.published, cid: record.published?.cid || null,
                 onChain: !!record.onchain, record, local: record }))];
         }
         function remoteRows(rows, kind) {
             const plans = kind === 'plans' ? new Map(localRows('plans').map(row => [row.key, row.local])) : null;
             return rows.map(record => ({ key: record.cid, propertyOffer: record.content?.schema === 'property-offer/v1', cid: record.cid || null, title: record.title || record.content?.title || t(kind === 'designs' ? 'planDialog.untitledDesign' : 'agreement.panel.untitled'),
-                author: record.author, createdAt: record.publishedAt || record.createdAt, publishedAt: record.publishedAt, published: true, onChain: !!record.onchain, record,
+                // The design, agreement and offer indexes call their first publication time createdAt.
+                author: record.author, publishedAt: record.publishedAt ?? record.createdAt,
+                createdAt: record.content?.createdAt ?? record.content?.authoredAt, published: true, onChain: !!record.onchain, record,
                 local: kind === 'designs' ? win.DesignSync.localCopyOf(record.cid)
                     : kind === 'plans' ? plans.get(record.cid) : record.content?.schema === 'property-offer/v1'
                         ? win.PropertyOfferSync.localCopyOf(record.cid) : win.AgreementSync.localCopyOf(record.cid) }));
@@ -429,7 +439,7 @@
             const kind = state.tab, page = state.remote.get(cacheKey());
             const rows = mergeRows(localRows(kind), remoteRows(page?.rows || [], kind))
                 .map(row => ({ ...row, applied: kind === 'designs' && appliedHere(row.local) }));
-            const visible = filterRows(rows, { ...state, sort: currentSort(), onMap: kind === 'designs' && state.onMap }), list = host();
+            const visible = filterRows(rows, { ...state, onMap: kind === 'designs' && state.onMap }), list = host();
             for (const picker of list.querySelectorAll('.lists-critics')) {
                 const key = picker.closest('[data-list-id]').dataset.listId;
                 if (picker.open) state.openCritics.add(key);
@@ -506,15 +516,14 @@
                     const status = row.record.onchain?.status || row.record.status;
                     badges.append(node('span', 'cb-badge', win.AgreementPanel.chainStatusText(status)));
                 }
-                if (kind === 'plans' && row.published && typeof row.publishedAt === 'string') {
-                    const date = new Date(row.publishedAt);
-                    if (Number.isFinite(date.getTime())) {
-                        const locale = win.i18n.getLanguage?.();
-                        const stamp = node('time', 'lists-item__timestamp', date.toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'medium' }));
-                        stamp.dateTime = date.toISOString();
-                        stamp.title = date.toLocaleString(locale, { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', second: '2-digit', timeZoneName: 'short' });
-                        badges.append(stamp);
-                    }
+                const timestamp = timestampOf(row);
+                if (Number.isFinite(timestamp)) {
+                    const date = new Date(timestamp);
+                    const locale = win.i18n.getLocale?.();
+                    const stamp = node('time', 'lists-item__timestamp', date.toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'medium' }));
+                    stamp.dateTime = date.toISOString();
+                    stamp.title = date.toLocaleString(locale, { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', second: '2-digit', timeZoneName: 'short' });
+                    badges.append(stamp);
                 }
                 item.append(badges);
                 if (kind === 'plans') item.append(node('p', 'sheet-note', t('agreement.list.designs', { count: row.record.content?.designCids.length ?? row.record.designCount })));
@@ -600,18 +609,18 @@
             }
             for (const [key, label, options] of [
                 ['publication', 'modal.roadWidth.proposalList.filters.publication', stages],
-                ['sort', 'modal.roadWidth.proposalList.filters.sort', [['title', 'lists.byTitle'], ['newest', 'lists.newest']]]
+                ['sort', 'modal.roadWidth.proposalList.filters.sort', [['newest', 'lists.newest'], ['title', 'lists.byTitle']]]
             ]) {
                 const wrap = node('label', '', t(label)), select = node('select');
                 for (const [value, text] of options) { const option = node('option', '', t(text)); option.value = value; select.append(option); }
                 select.dataset.listFilter = key;
-                select.value = key === 'sort' ? currentSort() : state[key]; select.addEventListener('change', () => { state[key] = select.value; renderRows(); });
+                select.value = state[key]; select.addEventListener('change', () => { state[key] = select.value; renderRows(); });
                 wrap.append(select); fields.append(wrap);
             }
             filters.append(fields);
             const actions = node('div', 'cb-actions');
             actions.append(button(t('modal.roadWidth.proposalList.filters.reset'), () => {
-                state.search = ''; state.publication = 'all'; state.sort = null; state.onMap = false; controls(); renderRows();
+                state.search = ''; state.publication = 'all'; state.sort = 'newest'; state.onMap = false; controls(); renderRows();
             }, 'btn-quiet'));
             filters.append(actions); box.append(filters);
             box.append(button(t('agreement.minted.refresh'), () => load(), 'lists-refresh', 'arrows-rotate'));

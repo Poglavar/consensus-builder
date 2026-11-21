@@ -25,6 +25,7 @@ for (const width of [1280, 390]) {
     await expect(sheet.getByRole('button', { name: 'Import plan file', exact: true })).toBeHidden();
     await expect(sheet.locator('#proposal-list-host .fa-tree')).toBeVisible();
     await expect(sheet.locator('#proposal-list-host .fa-share-nodes')).toBeVisible();
+    await expect(sheet.locator('#proposal-list-host time.lists-item__timestamp')).toHaveAttribute('datetime', /T.*Z$/);
     // A published design has no delete; this browser's copy of it is removed from this device.
     await expect(sheet.locator('#proposal-list-host').getByRole('button', { name: 'Delete draft', exact: true })).toHaveCount(0);
     await expect(sheet.locator('#proposal-list-host').getByRole('button', { name: 'Remove from this device', exact: true })).toHaveCount(1);
@@ -194,6 +195,7 @@ for (const width of [1280, 390]) {
     await expect(shareDialog).toBeHidden();
     // A published agreement has no delete: this browser's copy is its cache, removed from this device.
     await expect(agreementRow).toContainText('Published');
+    await expect(agreementRow.locator('time.lists-item__timestamp')).toHaveAttribute('datetime', /T.*Z$/);
     await expect(agreementRow.getByRole('button', { name: 'Delete draft', exact: true })).toHaveCount(0);
     await expect(agreementRow.getByRole('button', { name: 'Remove from this device', exact: true })).toBeVisible();
     // Import agreement file adds a local draft under a new id beside the published one.
@@ -212,11 +214,11 @@ for (const width of [1280, 390]) {
     await expect(sheet.locator(`#designs-agreements .lists-item[data-list-id="${agreement.id}"]`)).toBeVisible();
     await expect(importedRow).toHaveCount(0);
     await sheet.getByRole('searchbox').fill('no agreement with this title');
-    await selectNativeOption(sheet.locator('[data-list-filter="sort"]'), 'newest');
+    await selectNativeOption(sheet.locator('[data-list-filter="sort"]'), 'title');
     await sheet.locator('#lists-filter-panel').getByRole('button', { name: 'Reset', exact: true }).click();
     await expect(sheet.getByRole('searchbox')).toHaveValue('');
     await expect(sheet.locator('[data-list-filter="publication"]')).toHaveValue('all');
-    await expect(sheet.locator('[data-list-filter="sort"]')).toHaveValue('title');
+    await expect(sheet.locator('[data-list-filter="sort"]')).toHaveValue('newest');
     await expect(importedRow).toHaveCount(1);
     await sheet.locator('#lists-actions').getByRole('button', { name: 'Imported agreements', exact: true }).click();
     const importedList = page.locator('.cb-dialog').filter({ hasText: 'Imported agreements' });
