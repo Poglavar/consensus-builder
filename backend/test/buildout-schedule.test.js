@@ -38,6 +38,14 @@ describe('build-out state', () => {
         expect(S.range(plan)).toEqual({ start: '2027-01', end: '2028-06' });
         expect(S.range(PlanRecord.create('Now', [a], view))).toBeNull();
     });
+    it('runs the time control one month past the last end, where every member stands built', () => {
+        const plan = PlanRecord.create('Phased', [a, b], view, { [a]: { start: '2027-01', end: '2027-12' }, [b]: { start: '2028-01', end: '2028-06' } });
+        expect(S.clockRange(plan)).toEqual({ start: '2027-01', end: '2028-07' });
+        // The last end month is still worked: the control's last month is the first with nothing to build.
+        expect(S.stateMapAt(plan, '2028-06').get(b)).toEqual({ phase: 'construction', progress: 1 });
+        expect([...S.stateMapAt(plan, S.clockRange(plan).end).values()].every(state => state.phase === 'built')).toBe(true);
+        expect(S.clockRange(PlanRecord.create('Now', [a], view))).toBeNull();
+    });
     it('raises floors with progress and shows the ground works first', () => {
         expect(S.builtFloors(8, { phase: 'planned', progress: 0 })).toBe(0);
         expect(S.builtFloors(8, { phase: 'construction', progress: 0.1 })).toBe(0);

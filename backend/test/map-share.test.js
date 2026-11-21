@@ -115,6 +115,18 @@ describe('current-map sharing', () => {
         sync.write();
         expect(win.history.replaceState).toHaveBeenCalledTimes(1);
     });
+    it('leaves a design, plan or preview link\'s own view in the address until its route has arrived', () => {
+        // The map waits on the city's default while the link loads; writing it would replace the
+        // link's ?at= and a reload would land on the default instead of what the link opens.
+        const win = addressWindow();
+        const sync = createAddressSync(win);
+        win.skipParcelFetchUntilProposalLoaded = true;
+        sync.write();
+        expect(win.history.replaceState).not.toHaveBeenCalled();
+        win.skipParcelFetchUntilProposalLoaded = false;
+        sync.write();
+        expect(win.history.replaceState).toHaveBeenCalledTimes(1);
+    });
     it('does not rewrite history when the address already represents the current view', () => {
         const win = addressWindow();
         win.location.href = address(win.location.href, { mode: '2d', at: '45,16,18' });

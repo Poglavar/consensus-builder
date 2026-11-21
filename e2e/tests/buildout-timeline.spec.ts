@@ -74,12 +74,13 @@ test.describe('Build-out timeline @features', () => {
     await page.waitForTimeout(500);
     await expect.poll(() => page.evaluate(() => (window as any).BuildoutClock.month())).toBe(pausedMonth);
 
-    // The slider's end is the last month: everything built.
+    // The slider's end is the month after the last end month (August is still worked): everything built.
     await page.locator('#buildout-clock-slider').focus();
     await page.keyboard.press('End');
-    await expect.poll(() => page.evaluate(() => (window as any).BuildoutClock.month())).toBe('2027-08');
+    await expect.poll(() => page.evaluate(() => (window as any).BuildoutClock.month())).toBe('2027-09');
+    await expect(page.locator('#buildout-clock-summary')).toHaveText('0 under construction, 0 not started');
     await page.locator('#buildout-clock-forward').click();
-    await expect.poll(() => page.evaluate(() => (window as any).BuildoutClock.month())).toBe('2027-08');
+    await expect.poll(() => page.evaluate(() => (window as any).BuildoutClock.month())).toBe('2027-09');
     await page.locator('#buildout-clock-slider').focus();
     await page.keyboard.press('Home');
     await page.locator('#buildout-clock-back').click();

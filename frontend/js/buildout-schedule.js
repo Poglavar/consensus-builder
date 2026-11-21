@@ -50,6 +50,13 @@
         return { start: windows.map(w => w.start).sort()[0], end: windows.map(w => w.end).sort().at(-1) };
     }
 
+    // The months the time control runs over: from the first start to the month after the last end.
+    // An end month is still worked (stateAt), so only that next month shows every member built.
+    function clockRange(planOrSchedule) {
+        const span = range(planOrSchedule);
+        return span ? { start: span.start, end: addMonths(span.end, 1) } : null;
+    }
+
     // Built floors of a building of `floors` storeys at a progress; construction shows at least the
     // ground works (0 floors) and reaches the full count only when built.
     function builtFloors(floors, state) {
@@ -69,5 +76,5 @@
             width: (monthIndex(schedule[cid].end) - monthIndex(schedule[cid].start) + 1) / months }));
     }
 
-    return Object.freeze({ monthIndex, monthOf, addMonths, monthsBetween, currentMonth, stateAt, stateMapAt, range, builtFloors, bars, BUILT });
+    return Object.freeze({ monthIndex, monthOf, addMonths, monthsBetween, currentMonth, stateAt, stateMapAt, range, clockRange, builtFloors, bars, BUILT });
 });

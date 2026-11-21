@@ -57,7 +57,7 @@
     function isOpen() { return state.month !== null; }
 
     function clamp(value) {
-        const span = S().range(state.plan?.content);
+        const span = S().clockRange(state.plan?.content);
         if (!span) return null;
         const at = S().monthIndex(value);
         if (at === null) return span.start;
@@ -138,11 +138,11 @@
     }
     function play() {
         if (!state.plan) return;
-        const span = S().range(state.plan.content);
+        const span = S().clockRange(state.plan.content);
         if (state.month === null || state.month >= span.end) open(span.start);
         pause();
         state.timer = win.setInterval(() => {
-            if (state.month >= S().range(state.plan?.content)?.end) return pause();
+            if (state.month >= S().clockRange(state.plan?.content)?.end) return pause();
             step(1);
         }, PLAY_STEP_MS);
         syncPanel();
@@ -237,7 +237,7 @@
     function syncPanel() {
         const panel = el('buildout-clock');
         if (!panel) return;
-        const span = S().range(state.plan?.content);
+        const span = S().clockRange(state.plan?.content);
         const slider = el('buildout-clock-slider');
         if (span) {
             slider.min = '0';
@@ -273,7 +273,7 @@
         });
         el('buildout-clock-slider').addEventListener('input', event => {
             // Read the new position first: pausing redraws the panel, slider included.
-            const offset = Number(event.target.value), span = S().range(state.plan?.content);
+            const offset = Number(event.target.value), span = S().clockRange(state.plan?.content);
             pause();
             if (span) setMonth(S().addMonths(span.start, offset));
         });

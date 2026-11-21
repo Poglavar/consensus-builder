@@ -132,6 +132,10 @@ map.on('moveend', () => {
     // Under the first-visit globe the map is parked on the default city, which nobody chose:
     // written here, a reload would read it as a location link and skip the globe.
     if (window.WorldEntry?.ownsBoot?.()) return;
+    // A design, plan or preview link parks the map on the city's default until its route arrives
+    // (IS_PROPOSAL_DEEP_LINK, released in proposals/core.js): written, that spot would replace the
+    // link's own ?at=, and a reload would land there instead of on what the link opens.
+    if (window.skipParcelFetchUntilProposalLoaded) return;
     try {
         const center = map.getCenter();
         const next = window.WorldEntryModel.addressWithView(window.location.href, { lat: center.lat, lon: center.lng, zoom: map.getZoom() }, { dropCity: dropCityParam });

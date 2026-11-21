@@ -54,7 +54,9 @@ date. Designs carry no dates of their own.
   is linear over the window's months: `(month − start + 1) / (end − start + 1)` during construction,
   0 before, 1 after.
 - `stateMapAt(plan, month)` → per-design state; unscheduled members are `built` at every date.
-- `range(plan)` → first start and last end, for the slider bounds and the plan's Gantt strip.
+- `range(plan)` → first start and last end, for the plan's Gantt strip.
+- `clockRange(plan)` → the slider bounds: the first start to the month after the last end, since an
+  end month is still worked and only the month after it shows every member built.
 - `builtFloors(floors, state)` → floors standing at a state; `bars(schedule)` → Gantt bar offsets
   and widths as shares of the range.
 - Demolition and clearance parts of a design take effect at its start month; new fabric follows
@@ -76,7 +78,8 @@ Its Simulate build-out button starts a simulation (below).
 button in the top-right map cluster appears while a plan with a schedule is in view: a plan shown in
 the click stack, opened by a `/plans/<cid>` link or opened as a private draft preview. It opens a
 card at the bottom centre with the plan's title, step back, play/pause, step forward, the month, a
-month slider over the plan's range and a count of designs under construction, not started and
+month slider over the plan's range (ending on the month after the last end month, when everything
+stands built) and a count of designs under construction, not started and
 without dates (shown as built). A plan with no dates at all has no hourglass. The
 month is in the address as `when=YYYY-MM`; outside a `/plans/<cid>` address `timeline=<cid>` names
 the plan (read from this browser's plans, else from the server). Closing returns to now. Every
