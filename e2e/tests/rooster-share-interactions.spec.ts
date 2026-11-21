@@ -5,7 +5,7 @@ import { openCity, createSpace, showProposal, stubBasemapTiles } from '../helper
 
 test.beforeEach(async ({ mockApi: page }) => { await stubBasemapTiles(page); });
 
-test('the plan critic picker works by keyboard and shows five disabled portraits at phone width', async ({ mockApi: page }) => {
+test('the plan critic picker works by keyboard and shows four disabled portraits at phone width', async ({ mockApi: page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openCity(page);
   await createSpace(page, 'park');
@@ -25,7 +25,8 @@ test('the plan critic picker works by keyboard and shows five disabled portraits
   await expect(rooster).toBeFocused();
   const choices = picker.getByRole('button');
   await expect(choices).toHaveCount(6);
-  for (const label of ['Cat Square enclosure', 'Beaver Independent phases', 'Dog Walkability', 'Owl Approval path', 'Crow Street frontage']) {
+  await expect(picker.getByRole('button', { name: 'Cat Square enclosure', exact: true })).toBeEnabled();
+  for (const label of ['Beaver Independent phases', 'Dog Walkability', 'Owl Approval path', 'Crow Street frontage']) {
     const choice = picker.getByRole('button', { name: label, exact: true });
     await expect(choice).toBeDisabled();
     await expect(choice.locator('img')).toHaveCSS('filter', 'grayscale(1)');

@@ -351,9 +351,14 @@ The first column, **Present state**, measures what stands today on the land chos
 state over the land of** (all compared plans, one of them, or another saved plan). Plan stats
 shows the same land and building figures once they are read, after its other figures.
 **Choose a critic** on a plan row opens the critic picker. Urban rooster runs the parcel grain
-assessment. Cat, Beaver, Dog, Owl and Crow have disabled buttons until their assessments are
-available. The picker changes how the existing assessment is launched. MCP editing operations
-and authored records stay the same.
+assessment. Cat measures the exterior sides of an authored square in the selected plan revision.
+The Cat walks the square in the 2D map, marks walls and gaps, and lists each side for keyboard
+inspection. It reads existing footprints near the square through the map's building sources and
+uses the shared demolition rules for the plan. If that read fails, it shows a minimum based on
+the plan's buildings and marks the remaining edge unknown. Beaver, Dog, Owl and Crow are
+disabled until their assessments are available. Critic assessment introduces no authored edit;
+square and building authoring still use the existing `ugt_draft_space`, `ugt_draft_building`, and
+`ugt_edit_design` primitives.
 The rooster scores the plan as it stands on the map (user ruling 2026-10-28): every member must be
 applied, and `GrainScoreRules.appliedPlanGround` reads the members' pieces and ground from the
 live fabric and the cadastral repository, with no binding and no headless replay. An unapplied

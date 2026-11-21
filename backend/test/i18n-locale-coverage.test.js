@@ -18,6 +18,8 @@ const PLURAL_FORMS = ['zero', 'one', 'two', 'few', 'many', 'other'];
 const DYNAMIC_KEY_PREFIXES = [
     'sidebar.parcels.stateLand.stage.', // state-land.js STAGES; each stage has a key in every locale
     'planDialog.',
+    'lists.critics.',              // the picker shares the animal id across display and localized labels
+    'squareCritic.',               // the Cat selects labels for results with and without building data
     'sharedPlan.',
     'structureEditor.tools.', // toolLabel's declared tool names are checked in every locale below
     'diagnostics.errors.',

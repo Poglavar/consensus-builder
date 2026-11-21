@@ -90,7 +90,7 @@
             const choices = node('div', 'lists-critics__choices');
             for (const [id, image, run] of [
                 ['rooster', 'grain-rooster-critic.png', async () => win.summonUrbanistRooster(await planOf(row))],
-                ['cat', 'critic-cat.webp'],
+                ['cat', 'critic-cat.webp', async () => win.SquareCritic.open(await planOf(row), row.key)],
                 ['beaver', 'critic-beaver.webp'],
                 ['dog', 'critic-dog.webp'],
                 ['owl', 'critic-owl.webp'],

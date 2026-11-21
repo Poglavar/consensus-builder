@@ -130,6 +130,7 @@
                 'css/parcel-sources.css',
                 'css/proposals.css?v=20261031-design-info',
                 'css/grain-score.css?v=20261027-panel-buttons',
+                'css/square-critic.css',
                 'css/proposal-editor.css?v=20261027-experimental',
                 'css/structure-geometry-editor.css?v=20261029-enclosure-hidden',
                 'css/on-map-building.css',
@@ -2021,7 +2022,7 @@
             'js/shared-plan-session.js',
             'js/ui/share-dialog.js',
             'js/plan-dialog.js?v=20261113-share',
-            'js/lists-panel.js?v=20261121-critics',
+            'js/lists-panel.js?v=20261121-square-critic',
             'js/wipe-local-data.js',
             'js/world/world-entry-model.js?v=20261020-point-destinations',
             'data/boot-coverage.js',
@@ -2670,6 +2671,8 @@
         window.writeVersionedLocalScripts([
             // bundle:start local-frame-context
             'js/local-frame.js',
+            'js/proposals/square-enclosure.js',
+            'js/proposals/square-critic.js',
             'js/urban-rule-variation.js',
             'js/three-context-buildings.js',
             // bundle:end local-frame-context

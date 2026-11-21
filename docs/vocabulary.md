@@ -404,6 +404,10 @@ The land a plan covers: the union of its members' sites (each design's authored 
 
 Land in public use: road parcels (the road classification, or parcels marked as roads), land covered by OpenStreetMap parks and squares (`leisure=park`, `place=square`, pedestrian areas), and the pieces a plan's designs make into a road corridor, park, square or lake. Ownership does not decide it. Semi-private land is not yet defined.
 
+### Square enclosure
+
+The share of an authored square's exterior perimeter defined by nearby buildings, measured for the exact saved plan revision. The Cat samples each side at about 2 m intervals and looks out perpendicular to the edge for the first building within 25 m. Adjacent collinear edges form one side. For the height-to-width figure, width is the distance from that building to the opposite square edge, including the facade setback; a side displays the median of samples with a measured or estimated building height. Building stock consists of the plan's buildings and the existing ones its designs leave standing. Unavailable existing stock yields a minimum based on plan buildings and leaves the rest of the edge unknown. Public designation follows the square design; pedestrian access is a separate question.
+
 ### Private land
 
 A plan's parcel land (on its plan area) that is not public land, in m²; open ground is in neither.
