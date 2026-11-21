@@ -153,6 +153,37 @@ describe('3D click stack contextual selection', () => {
         expect(activated).toEqual(Array(3).fill({ id: 'garden', preserveView: true }));
     });
 
+    it('keeps the classes an open plan\'s content gave its body when the plan\'s agreements arrive', () => {
+        // The plan's two-per-row actions are laid out through .click-stack__plan on the body (map.css);
+        // the redraw that adds the Agreements section keeps the body and must keep that class.
+        const document = makeDocument();
+        let scope = null;
+        const context = { document, console, i18n: testI18n(), __clickStackModel: model, ClickStackRelations: relations,
+            DesignMemberships: {
+                mountSection: vi.fn(body => {
+                    Object.defineProperty(body, 'isConnected', { value: true, configurable: true });
+                    body.classList.add('click-stack__plan');
+                    const actions = document.createElement('div');
+                    actions.className = 'cb-actions click-stack__actions';
+                    body.appendChild(actions);
+                }),
+                createAgreementScope: vi.fn((_win, options) => { scope = options; return { sync: vi.fn(), dispose: vi.fn() }; })
+            } };
+        context.window = context; vm.createContext(context);
+        vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);
+        const api = context.ThreeClickStack;
+        api.show({ plans: [{ id: 'pl1', cid: 'pl1', label: 'Plan' }], designs: [{ id: 'd1' }] }, { focus: 'plans' }, { activate: vi.fn() });
+        const body = document.querySelector('.click-stack__section[data-kind="plans"] .click-stack__body');
+        expect(body.classList.contains('click-stack__plan')).toBe(true);
+
+        scope.onChange([], null);
+        expect(document.querySelector('.click-stack__section[data-kind="plans"] .click-stack__body')).toBe(body);
+        expect(context.DesignMemberships.mountSection).toHaveBeenCalledTimes(1);
+        expect(body.classList.contains('click-stack__body')).toBe(true);
+        expect(body.classList.contains('click-stack__plan')).toBe(true);
+        expect(body.querySelector('.click-stack__actions')).not.toBeNull();
+    });
+
     it('a scene refresh rebuilds the open section instead of adding a second copy of its contents', () => {
         const document = makeDocument();
         const tagged = cls => () => { const el = document.createElement('div'); el.className = cls; return el; };

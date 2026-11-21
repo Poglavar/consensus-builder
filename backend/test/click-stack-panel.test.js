@@ -290,6 +290,44 @@ describe('click stack selected objects and contextual navigation', () => {
         expect(h.context.selectAndHighlightProposal).toHaveBeenLastCalledWith('d2', null, false, true, false, DESIGN_PANEL);
     });
 
+    it('keeps the classes an open plan\'s content gave its body when the plan\'s agreements arrive', async () => {
+        // The plan's two-per-row actions are laid out through .click-stack__plan on the body (map.css);
+        // the redraw that adds the Agreements section keeps the body and must keep that class.
+        const h = loadPanel();
+        const pending = [];
+        let scope = null;
+        h.context.DesignMemberships = {
+            mountSection: vi.fn(body => {
+                Object.defineProperty(body, 'isConnected', { value: true, configurable: true });
+                body.classList.add('click-stack__plan');
+                const actions = h.doc.createElement('div');
+                actions.className = 'cb-actions click-stack__actions';
+                body.appendChild(actions);
+            }),
+            createAgreementScope: vi.fn((_win, options) => { scope = options; return { sync: vi.fn(), dispose: vi.fn() }; })
+        };
+        h.context.ClickStackHits.hitsAt.mockReturnValue({ ...HITS_A, designs: HITS_A.designs.map(item => ({
+            ...item, proposal: { ...item.proposal, cid: 'cid-d1' }
+        })) });
+        h.context.loadDesignMemberships = vi.fn((proposal, callback) => new Promise(resolve => pending.push({ callback, resolve })));
+        h.click(SPOT_A);
+        const session = { cid: 'cid-d1', revision: 'cid-d1', proposalId: 'd1', dispose: vi.fn(),
+            instances: kind => kind === 'plans' ? [{ id: 'plan-1', label: 'Shared plan', designCids: ['cid-d1'] }] : [] };
+        pending[0].callback(session);
+        pending[0].resolve(session);
+        await Promise.resolve();
+        h.section('plans').querySelector('.click-stack__row').click();
+        const body = h.section('plans').querySelector('.click-stack__body');
+        expect(body.classList.contains('click-stack__plan')).toBe(true);
+
+        scope.onChange([], null);
+        expect(h.section('plans').querySelector('.click-stack__body')).toBe(body);
+        expect(h.context.DesignMemberships.mountSection).toHaveBeenCalledTimes(1);
+        expect(body.classList.contains('click-stack__body')).toBe(true);
+        expect(body.classList.contains('click-stack__plan')).toBe(true);
+        expect(body.querySelector('.click-stack__actions')).not.toBeNull();
+    });
+
     it('retains a collapsed design while memberships arrive and ignores stale callbacks after a new selection or close', async () => {
         const h = loadPanel();
         const pending = [];

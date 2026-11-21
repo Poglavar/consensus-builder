@@ -292,8 +292,10 @@
             if (expanded && FRAMEABLE.has(section.kind)) heading.appendChild(focusButton(section.kind));
             card.appendChild(heading);
             if (expanded) {
+                // A kept body keeps its classes too: its content added them (click-stack__plan,
+                // click-stack__agreement) and the layout of that content depends on them.
                 const body = keepBody || doc.createElement('div');
-                body.className = 'click-stack__body';
+                body.classList.add('click-stack__body');
                 body.id = `click-stack-${section.kind}-content`;
                 body.setAttribute('role', 'region');
                 body.setAttribute('aria-labelledby', name.id);

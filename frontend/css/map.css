@@ -1394,13 +1394,15 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 }
 
 /* Parallel actions fill their row equally throughout either inspection stack. Existing grid
-   action palettes keep their column count; flex rows divide the available width by button count. */
+   action palettes keep their column count; flex rows divide the available width by button count.
+   A button is never narrower than its longest word: a row that cannot fit them wraps instead of
+   letting a label spill out of its button. */
 .click-stack :is(.cb-actions:not(.cb-actions--stack), .btn-group) {
     align-items: stretch;
 }
 .click-stack :is(.cb-actions:not(.cb-actions--stack), .btn-group, .approval-card__actions, .parcel-context-actions, .agreement-panel-actions) > :is(button, .btn) {
     flex: 1 1 0;
-    min-width: 0;
+    min-width: min-content;
     white-space: normal;
 }
 /* A related item: its name highlights the object (pressed while kept shown); the arrow opens it. */
