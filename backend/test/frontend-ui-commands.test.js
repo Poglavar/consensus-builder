@@ -58,6 +58,8 @@ const NOT_COMMANDS = {
     'sun-date': 'model-view lighting setting, handled by three-sun.js',
     'sun-now': 'model-view lighting setting, handled by three-sun.js',
     'sun-play': 'model-view lighting setting, handled by three-sun.js',
+    // The Layers sheet's readout of where the view is; a click copies it (8337ca5a3).
+    'view-coordinates-copy': 'copies the view coordinates, handled by ui/view-coordinates.js',
     // Shown only while a plan with a construction schedule is in view; it displays, never applies.
     'buildout-clock-button': 'build-out time view control, handled by buildout-clock.js',
     'buildout-clock-reroll': 'build-out time view control, handled by buildout-clock.js',
