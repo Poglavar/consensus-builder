@@ -16,6 +16,9 @@
     'use strict';
 
     const keyOf = feature => String(feature?.properties?.parcelId ?? feature?.id ?? '');
+    // The number a person reads for a parcel (proposals/parcel-id.js: a browser global, required in node).
+    const displayNumber = (feature, fallback) => (typeof getParcelDisplayNumberFromFeature === 'function'
+        ? getParcelDisplayNumberFromFeature : require('./parcel-id.js').getParcelDisplayNumberFromFeature)(feature, fallback);
 
     // The parcels the compared plans stand on, each once: { id, number, areaM2, plans, feature },
     // the ones every plan stands on first, then the larger first.
@@ -25,8 +28,7 @@
             const id = keyOf(feature);
             if (!id) return;
             if (!byId.has(id)) {
-                const props = feature.properties || {};
-                byId.set(id, { id, number: String(props.parcelNumber ?? props.sourceParcelId ?? id),
+                byId.set(id, { id, number: displayNumber(feature, id),
                     areaM2: ops.areaOf(feature), plans: new Set(), feature });
             }
             byId.get(id).plans.add(index);
