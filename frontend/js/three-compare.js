@@ -142,7 +142,17 @@
         return { ready: !reading.length && !failed.length, reading, failed };
     }
 
-    const pure = { BASE, sideOptions, optionGroups, parseSide, appliesDesign, showsOn, splitDescriptors, scissorRects, readiness };
+    // The plans a side can be: this browser's own (saved or opened) and the city's published ones, each
+    // once by CID. A plan this browser holds keeps its own row, with its publication time from the
+    // published list when it has none of its own.
+    function planRowsOf(local, published) {
+        const publishedAt = new Map((published || []).map(row => [String(row.cid), row.publishedAt]));
+        const held = (local || []).map(row => (row.publishedAt || !publishedAt.get(String(row.cid)) ? row : { ...row, publishedAt: publishedAt.get(String(row.cid)) }));
+        const known = new Set(held.map(row => String(row.cid)));
+        return [...held, ...(published || []).filter(row => !known.has(String(row.cid)))];
+    }
+
+    const pure = { BASE, sideOptions, optionGroups, planRowsOf, parseSide, appliesDesign, showsOn, splitDescriptors, scissorRects, readiness };
     if (!global || !global.document) return Object.freeze(pure);
 
     // ── the Compare tab and the divider ──────────────────────────────────────────────────────
@@ -204,7 +214,45 @@
         return row;
     }
 
-    // This city's saved designs, plans and agreements, as sides. An applied design is its applied copy; one that
+    // The city's published plans (GET /plans?city=), read once a city a page so any published plan can
+    // be a side, not only one this browser has opened. Read in pages up to PUBLISHED_PLAN_LIMIT; the
+    // picker refills when they land. A failed read leaves this browser's plans and is tried again the
+    // next time the sheet opens.
+    const PUBLISHED_PLAN_PAGE = 50, PUBLISHED_PLAN_LIMIT = 500;
+    const publishedPlans = new Map();
+    async function readPublishedPlans(city) {
+        const rows = [];
+        for (let offset = 0; offset < PUBLISHED_PLAN_LIMIT; offset += PUBLISHED_PLAN_PAGE) {
+            const params = new URLSearchParams({ city, limit: String(PUBLISHED_PLAN_PAGE), offset: String(offset) });
+            const response = await global.fetch(`${global.getBackendBase()}/plans?${params}`, { cache: 'no-store' });
+            const page = await response.json();
+            if (!response.ok) throw new Error(page.error || `HTTP ${response.status}`);
+            for (const row of page.plans || []) {
+                // A row whose content does not hash to its CID is not that plan.
+                if (global.PlanRecord.validate(row.content) || global.Cid.cidOfObject(row.content) !== row.cid) {
+                    global.console.warn(`[${new Date().toISOString()}] [ThreeCompare] published plan ${row.cid} does not match its content; left out`);
+                    continue;
+                }
+                rows.push({ cid: row.cid, content: row.content, publishedAt: row.publishedAt || null });
+            }
+            if (!page.hasMore) break;
+        }
+        return rows;
+    }
+    function publishedPlansOf(city) {
+        if (!city) return [];
+        if (!publishedPlans.has(city)) {
+            const entry = { rows: [] };
+            publishedPlans.set(city, entry);
+            readPublishedPlans(city).then(rows => { entry.rows = rows; refresh(); }).catch(error => {
+                publishedPlans.delete(city);
+                global.console.error(`[${new Date().toISOString()}] [ThreeCompare] the published plans of ${city} could not be read`, error);
+            });
+        }
+        return publishedPlans.get(city).rows;
+    }
+
+    // This city's saved designs, plans (this browser's and the published ones) and agreements, as sides. An applied design is its applied copy; one that
     // is not applied is read as a one-member plan. A plan member with an applied copy is that copy;
     // the rest the plan draws itself once read (compare-unapplied.js).
     function collectOptions() {
@@ -231,7 +279,8 @@
             planRows.set(String(row.cid), row);
             designs.push({ id: String(proposal.proposalId), title, at, cid, readId: String(row.cid) });
         }
-        const plans = (global.PlanWorkspace?.list?.() || []).filter(row => inCity(row.content?.view?.city)).map(row => {
+        const localPlans = (global.PlanWorkspace?.list?.() || []).filter(row => inCity(row.content?.view?.city));
+        const plans = pure.planRowsOf(localPlans, publishedPlansOf(city)).map(row => {
             planRows.set(String(row.cid), row);
             return { id: String(row.cid), title: row.content?.title || String(row.cid), at: row.publishedAt || null, ...global.CompareUnapplied.membersOf(row, copies) };
         });

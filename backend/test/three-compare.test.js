@@ -168,3 +168,16 @@ describe('the side picker', () => {
         expect(compare.optionGroups(compare.sideOptions({ plans: [{ id: 'p', title: 'P' }] })).map(g => g.group)).toEqual(['today', 'plan']);
     });
 });
+
+describe('the plans a side can be', () => {
+    it("adds the city's published plans to this browser's own, each once, with its publication time", () => {
+        const local = [{ cid: 'a', content: { title: 'Opened here' } }, { cid: 'b', content: { title: 'Saved here' }, publishedAt: '2026-11-17T07:00:00Z' }];
+        const published = [{ cid: 'a', content: { title: 'Opened here' }, publishedAt: '2026-11-21T07:42:48Z' }, { cid: 'c', content: { title: 'Never opened' }, publishedAt: '2026-11-21T07:11:50Z' }];
+        const rows = compare.planRowsOf(local, published);
+        expect(rows.map(row => [row.cid, row.publishedAt || null])).toEqual([['a', '2026-11-21T07:42:48Z'], ['b', '2026-11-17T07:00:00Z'], ['c', '2026-11-21T07:11:50Z']]);
+        // This browser's row is kept (it may hold its designs), only dated from the published list.
+        expect(rows[0]).not.toBe(local[0]);
+        expect(rows[1]).toBe(local[1]);
+        expect(compare.planRowsOf(local, [])).toEqual(local);
+    });
+});
