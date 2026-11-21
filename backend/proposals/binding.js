@@ -20,6 +20,7 @@ import { createRequire } from 'node:module';
 import { INVALID_FOOTPRINT, footprintParts, hasFootprint } from './footprint.js';
 import { wgs84BboxAreaKm2 } from '../utils/helpers.js';
 import { parcelSourceById } from '../parcels/sources.js';
+import { knownLimitFor } from '../parcels/source-contract.js';
 import { computeSourceBinding, computeSourceParcelActBinding, MAX_SOURCE_BINDING_PARCELS } from '../parcels/source-binding.js';
 
 import { NYC_DATABASE_SOURCE_ID } from '../parcels/nyc-database-source.js';
@@ -200,10 +201,24 @@ export async function computeBinding(db, { site, toleranceM = DEFAULT_INTRUSION_
             siteM2, computedAt: now().toISOString(), reason: 'The consumer explicitly selected no cadastral source.' }) };
     }
     // The descriptor's query limits (maxBboxKm2 and the like): a larger site is read in tiles.
-    const result = await computeSourceBinding(provider.adapter, {
-        site, toleranceM, sourceId: provider.descriptor.id,
-        snapshotId: provider.descriptor.snapshotId || null, now, limits: provider.descriptor
-    });
+    let result;
+    try {
+        result = await computeSourceBinding(provider.adapter, {
+            site, toleranceM, sourceId: provider.descriptor.id,
+            snapshotId: provider.descriptor.snapshotId || null, now, limits: provider.descriptor
+        });
+    } catch (error) {
+        // A registry that answers only from its own country never answers this server, so its land
+        // is unknown here, as outside every cadastral municipality, and a design on it is still
+        // published: a design needs no verified land, only an agreement that settles land does
+        // (routes/agreements.js inputsAgainstBindings). Any other failure is retried by the caller.
+        const country = provider.descriptor.knownLimit?.countryCode;
+        if (knownLimitFor(provider.descriptor, error) !== 'network-restricted' || !country) throw error;
+        const footprint = ground.snapGeometry(normalizeSiteGeometry(site));
+        return { site: footprint, binding: unboundBinding({ coverage: COVERAGE.unknown, toleranceM,
+            siteM2: turf.area(turf.feature(footprint)), computedAt: now().toISOString(),
+            reason: `The parcel registry answers only from ${country}; this server cannot read it.` }) };
+    }
     if (result.binding.coverage !== COVERAGE.unknown) return result;
     return {
         site: result.site,

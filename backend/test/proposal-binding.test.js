@@ -5,7 +5,7 @@ import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 // Covers the shared footprint builder and checkProposalBinding against a scripted HR cadastre that
 // serves real candidate geometry, so site-binding.js decides as it does live. The candidate SQL
 // itself runs against a real database in proposal-binding-db.test.js (RUN_DB_TESTS=1).
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import {
     MAX_FOOTPRINT_VERTICES,
@@ -25,6 +25,7 @@ import { validProposalBody } from './helpers/fixtures.js';
 import { PARK, REGION, SITE, SPILL, SPILL_WITH_GAP, box, scriptedCadastre } from './helpers/content-fixtures.js';
 
 const require = createRequire(import.meta.url);
+afterEach(() => vi.unstubAllGlobals());
 const turf = require('@turf/turf');
 const { bindingFromParcels } = require('../../frontend/js/proposals/site-binding.js');
 const SITE_MULTI = { type: 'MultiPolygon', coordinates: [SITE.coordinates] };
@@ -190,6 +191,18 @@ describe('computeBinding', () => {
         const none = (await computeBinding(cadastre({ regions: [] }), { parcelSourceId: consumerParcelSourceId('explore'), site: SITE, city: 'explore' })).binding;
         expect(none).toMatchObject({ coverage: 'none', parcels: [], unsurveyedM2: none.siteM2,
             source: 'server:unbound', parcelSource: null });
+    });
+
+    it('publishes on unknown land when a registry that answers only from its own country cannot be read, and fails otherwise', async () => {
+        vi.stubGlobal('fetch', async () => { throw new TypeError('fetch failed'); });
+        const belgrade = box(20.45, 44.81, 20.451, 44.811);
+        const { binding } = await computeBinding(null, { parcelSourceId: 'rs-rgz-dkp-parcels', site: belgrade, city: 'belgrade' });
+        expect(binding).toMatchObject({ coverage: 'unknown', parcels: [], source: 'server:unbound', unknownM2: binding.siteM2 });
+        expect(binding.siteM2).toBeGreaterThan(8000);
+        expect(binding.reason).toMatch(/only from RS/);
+        // GUGiK is restricted for some networks but names no country: its outage is still a failure to retry.
+        await expect(computeBinding(null, { parcelSourceId: 'pl-gugik-uldk', site: box(21.0, 52.2, 21.001, 52.201), city: 'warsaw' }))
+            .rejects.toMatchObject({ code: expect.stringMatching(/^parcel-source-/) });
     });
 
     it('refuses a site over the parcel cap', async () => {

@@ -169,7 +169,10 @@ Related: [unsurveyed ground](unsurveyed-ground.md), [lens model](lens-model.md).
   no-cadastre city, currently only `explore`); `unknown` = server only: the site is outside every
   `cadastral_municipality` polygon and the city is not a no-cadastre city — the server holds only the
   Croatian cadastre (`parcel`, HR ids), so Belgrade/NYC/etc. are not "no cadastre" but "not bindable
-  here", with a `reason`. A site straddling the edge of the held cadastre is `partial` with the outside
+  here", with a `reason`. A source the catalog marks `network-restricted` with a `countryCode` (it
+  answers only from that country, e.g. Belgrade's RGZ) that fails to answer the server is `unknown`
+  too: a design needs no verified land to be published, so the server stores it rather than refusing.
+  A site straddling the edge of the held cadastre is `partial` with the outside
   part in `unknownM2`. For execution: `partial`, `none` and `unknown` all mean ground nobody can consent
   for → needs a `verdict_may_execute` verdict.
 - *Unknown coverage on create*: the declaration is accepted unverified and stored as the binding
