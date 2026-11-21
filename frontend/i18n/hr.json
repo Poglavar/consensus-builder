@@ -9576,7 +9576,7 @@
         "critics": {
             "choose": "Odaberi kritičara",
             "rooster": {
-                "axis": "Zrnatost parcela"
+                "axis": "Zrnatost čestica"
             },
             "cat": {
                 "name": "Mačka",
