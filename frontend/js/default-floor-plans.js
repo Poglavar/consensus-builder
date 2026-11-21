@@ -185,23 +185,49 @@
         const n = leftNormal(unit(vec(a, b)));
         return t.polygon([[add(a, n, width / 2), add(b, n, width / 2), add(b, n, -width / 2), add(a, n, -width / 2), add(a, n, width / 2)]]);
     }
+    // A clip the clipper cannot close (a plate turned to its street, as Alatau's towers at -58.7°,
+    // carries float noise it fails on, which left whole storeys without walls) is run again with both
+    // shapes on a grid, as every clip in the app is (geometry-tolerances.js, parcel-arrangement.js
+    // clipWith): a millionth of the shapes' extent, then ten and a hundred times coarser. Relative,
+    // because this module clips plates in metres and footprints in degrees. A clip that works raw is
+    // left exactly as it was; one that fails on every grid is reported as before.
+    const CLIP_GRID_STEPS = [1e-6, 1e-5, 1e-4];
+    const grid = () => (global && global.GeometryTolerances) || require('./geometry-tolerances.js');
+    const onGrid = (feature, decimals) => ({ type: 'Feature', properties: feature.properties || {},
+        geometry: grid().snapGeometry(feature.geometry, decimals) });
+    let gridRescues = 0;
+    function clipOnGrid(t, operation, a, b) {
+        try { return t[operation](a, b); } catch (error) {
+            const [west, south, east, north] = t.bbox(t.featureCollection([a, b]));
+            const span = Math.max(east - west, north - south);
+            for (const step of CLIP_GRID_STEPS) {
+                const decimals = Math.max(0, -Math.floor(Math.log10(span * step)));
+                try {
+                    const result = t[operation](onGrid(a, decimals), onGrid(b, decimals));
+                    if (++gridRescues <= 5) console.warn(`[${new Date().toISOString()}] [default-floor-plans] ${operation} closed on a ${decimals}-decimal grid: ${error && error.message}`);
+                    return result;
+                } catch (_) { /* a coarser grid */ }
+            }
+            throw error;
+        }
+    }
     function unionAll(t, features) {
         let acc = null;
         for (const feature of features) {
             if (!feature || !feature.geometry) continue;
             if (!acc) { acc = feature; continue; }
-            try { const merged = t.union(acc, feature); if (merged && merged.geometry) acc = merged; } catch (error) { reportClip('union', error, 'default-floor-plans.unionAll', [acc, feature]); }
+            try { const merged = clipOnGrid(t, 'union', acc, feature); if (merged && merged.geometry) acc = merged; } catch (error) { reportClip('union', error, 'default-floor-plans.unionAll', [acc, feature]); }
         }
         return acc;
     }
     function differenceOrNull(t, a, b) {
         if (!a || !a.geometry) return null;
         if (!b || !b.geometry) return a;
-        try { return t.difference(a, b); } catch (error) { reportClip('difference', error, 'default-floor-plans.difference', [a, b]); return null; }
+        try { return clipOnGrid(t, 'difference', a, b); } catch (error) { reportClip('difference', error, 'default-floor-plans.difference', [a, b]); return null; }
     }
     function intersectOrNull(t, a, b) {
         if (!a || !a.geometry || !b || !b.geometry) return null;
-        try { return t.intersect(a, b); } catch (error) { reportClip('intersect', error, 'default-floor-plans.intersect', [a, b]); return null; }
+        try { return clipOnGrid(t, 'intersect', a, b); } catch (error) { reportClip('intersect', error, 'default-floor-plans.intersect', [a, b]); return null; }
     }
     function uExtent(feature) {
         let lo = Infinity, hi = -Infinity;

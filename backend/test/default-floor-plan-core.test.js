@@ -118,3 +118,19 @@ describe('central-core layouts', () => {
         expect(plan({ footprint: rectangle(0, 0, 20, 12), floors: 4, storeyHeightM: 3, storeyUses: uses(4) }).summary.scheme).toBeUndefined();
     });
 });
+
+describe('a plate turned to its street', () => {
+    // Alatau's South 1 tall tower (24 m square, turned -58.7°): its walls less their door and window
+    // cuts made the clipper give up ("Unable to complete output ring"), so storeys had no walls and the
+    // whole layout was refused. The clip is now run again on a grid relative to the shapes' size.
+    const southOneTower = turf.polygon([[[77.0898835578342, 43.79539662813371], [77.09003860794489, 43.79521111447761],
+        [77.09029389619936, 43.79532378677025], [77.09013884608866, 43.795509300426346], [77.0898835578342, 43.79539662813371]]]);
+    it('gets walls on every storey and its flats', () => {
+        const use = require('../../frontend/js/building-use.js');
+        const result = plan({ footprint: southOneTower, floors: 20, storeyHeightM: 3.2, storeyUses: use.storeyUses('residential-shops', 20), buildingId: 'south-1-tall' }, use.layoutRules('residential-shops'));
+        expect(result.floorPlans).not.toBeNull();
+        expect(result.summary).toMatchObject({ scheme: 'core', apartmentsPerFloor: 4 });
+        for (const layout of result.floorPlans.layouts) expect(layout.architecture.walls.length).toBeGreaterThan(0);
+        expect(result.floorPlans.storeys.slice(1).every(storey => storey.units.filter(unit => unit.kind === 'apartment').length === 4)).toBe(true);
+    });
+});
