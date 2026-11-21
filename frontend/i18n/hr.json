@@ -8521,6 +8521,30 @@
         "zoneStoreys": "katnost do {{storeys}}",
         "zoneStoreysConditional": "katnost do {{storeys}} ({{conditional}} uz uvjet)",
         "zoneLegend": "Legenda zona",
+        "zoneStage": {
+            "planned": "planirano",
+            "existing": "postojeće"
+        },
+        "sourceWording": "Izvorni tekst:",
+        "zoneReason": {
+            "detailed-plan": "Što se ovdje smije graditi određuju detaljni plan (PDP) i planerski zadatak (APZ).",
+            "above-12-floors": "Više od 12 katova: generalni plan ne određuje gornju granicu; određuju je detaljni plan (PDP) i planerski zadatak (APZ).",
+            "not-for-building": "Generalni plan ovo zemljište ne namjenjuje gradnji.",
+            "restricted-regime": "Zemljište pod posebnim režimom.",
+            "reserve": "Rezerva za razvoj: gradnja tek nakon izmjene generalnog plana ili donošenja detaljnog plana.",
+            "agriculture": "Poljoprivredna namjena.",
+            "uninterpreted": "Aplikacija ovu vrstu zone još ne čita."
+        },
+        "condition": {
+            "legend-asterisk": "legenda plana označava 6. kat zvjezdicom; uvjet iz njezine napomene nije pročitan"
+        },
+        "legend": {
+            "envelope": "Dopuštena ovojnica: najveća zgrada koju pravila dopuštaju na čestici",
+            "zoneUnder": "Zona u kojoj stoji: {{group}}",
+            "dashed": "Isprekidan rub: ovdje nema gradnje ili odlučuje drugi plan"
+        },
+        "colourKey": "Što znače boje",
+        "mapColours": "Sve boje na karti",
         "use": {
             "residential-estate": "Obiteljske kuće s okućnicom",
             "residential-low": "Niska stambena gradnja (2–3 etaže)",

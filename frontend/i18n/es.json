@@ -8503,6 +8503,30 @@
         "zoneStoreys": "hasta {{storeys}} plantas",
         "zoneStoreysConditional": "hasta {{storeys}} plantas ({{conditional}} con condición)",
         "zoneLegend": "Leyenda de zonas",
+        "zoneStage": {
+            "planned": "planificada",
+            "existing": "existente"
+        },
+        "sourceWording": "Texto de la fuente:",
+        "zoneReason": {
+            "detailed-plan": "El plan detallado (PDP) y el pliego de planeamiento (APZ) fijan lo que se puede construir aquí.",
+            "above-12-floors": "Más de 12 plantas: el plan general no fija un límite superior; lo fijan el plan detallado (PDP) y el pliego de planeamiento (APZ).",
+            "not-for-building": "El plan general no destina este suelo a la edificación.",
+            "restricted-regime": "Suelo con régimen restringido.",
+            "reserve": "Reserva para crecimiento: se edifica solo tras modificar el plan general o aprobar un plan detallado.",
+            "agriculture": "Uso agrícola.",
+            "uninterpreted": "La aplicación aún no interpreta este tipo de zona."
+        },
+        "condition": {
+            "legend-asterisk": "la leyenda del plan marca la 6.ª planta con un asterisco; la condición de su nota no se ha leído"
+        },
+        "legend": {
+            "envelope": "Envolvente permitida: el mayor edificio que las normas permiten en una parcela",
+            "zoneUnder": "Zona en la que está: {{group}}",
+            "dashed": "Borde discontinuo: aquí no se edifica, o decide otro plan"
+        },
+        "colourKey": "Qué significan los colores",
+        "mapColours": "Todos los colores del mapa",
         "use": {
             "residential-estate": "Viviendas unifamiliares con parcela",
             "residential-low": "Vivienda baja (2–3 plantas)",

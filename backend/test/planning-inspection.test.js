@@ -11,6 +11,7 @@ import { planningParcel, sourcesFor } from '../planning/sources.js';
 import { setupPlanningRoutes } from '../routes/planning.js';
 const require = createRequire(import.meta.url);
 const representations = require('../../frontend/js/planning/representations.js');
+const labels = require('../../frontend/js/planning/item-labels.js');
 const Cid = require('../../frontend/js/cid.js');
 const geometry = { type: 'Polygon', coordinates: [[[10,40],[10.001,40],[10.001,40.001],[10,40]]] };
 
@@ -176,13 +177,57 @@ describe('shared building and proposal representations', () => {
         const context = vm.createContext({ selected: () => item, inspector, root, element, t, parcelOf: () => null,
             inspectorBadgeKey: () => 'sourceEvidenceBadge', area: value => `${value} m²`, number: value => String(value), resultLabel: value => String(value),
             permittedFeatures: () => ({ configuration: null }), renderConfigurations: () => element('section', 'planning-configurations'), scenarioLabel: value => value,
-            sourceRecord: async () => [], selectRecord() {}, select() {}, referenceStatus: null, document, itemTitle: value => value.title });
+            sourceRecord: async () => [], selectRecord() {}, select() {}, referenceStatus: null, document, itemTitle: value => value.title,
+            labels, fullT: key => key, sourceText: text => element('q', 'planning-source-text', text), legendRows: () => [], sceneItems: () => [item], appearance: () => 'ghost' });
         vm.runInContext(source.slice(declaration.start, declaration.end), context);
         context.renderInspector();
         expect(inspector.querySelector('[data-stack-page-key="info"] .planning-evidence')).not.toBeNull();
         expect(inspector.querySelector('[data-stack-page-key="options"] .planning-configurations')).not.toBeNull();
         expect(inspector.querySelector('[data-stack-page-key="rules"] .planning-limits')).not.toBeNull();
         expect(inspector.querySelector('[data-stack-page-key="info"] .planning-limits')).toBeNull();
+    });
+    it('names an Alatau envelope in the reader\'s language, quotes the plan\'s words in its language and keys its colours', () => {
+        const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');
+        const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
+        const declaration = name => body.find(node => node.type === 'FunctionDeclaration' && node.id.name === name);
+        const document = makeDocument();
+        const inspector = document.createElement('aside'); inspector.className = 'planning-inspector'; document.body.append(inspector);
+        const use = { key: 'residential-mid', group: 'housing-mid', label: 'Среднеэтажная застройка', stage: 'planned' };
+        const item = { id: 'envelope:alatau-genplan-727:KZ-1', role: 'permitted', parcelEnvelope: true, use, areas: [], volumes: [{ topM: 15 }],
+            title: 'Среднеэтажная застройка · до 5 эт. (6*) · проектируемая · 03055234792',
+            assessment: { meaning: 'outer-bound', status: 'unresolved', reason: null, refresh: null, current: true },
+            metrics: { heightM: 15, footprintM2: 300, conditional: { heightM: 18, condition: '6* этажей по легенде генплана', conditionCode: 'legend-asterisk' } },
+            constraints: [], configurations: [],
+            source: { label: 'Генплан Алатау', language: 'ru', parcel: 'KZ-1', computedAt: null, fetchedAt: null, solverVersion: null, url: null }, sourceEvidence: null };
+        const zone = { role: 'permitted', use: { ...use, group: 'green' }, assessment: { meaning: 'zoning-area', status: 'prohibited' } };
+        const element = (tag, className, text) => {
+            const node = document.createElement(tag); if (className) node.className = className; if (text !== undefined) node.textContent = text; return node;
+        };
+        const dictionary = { 'planningViews.use.residential-mid': 'Mid-rise housing (4–6 floors)', 'planningViews.zoneStage.planned': 'planned',
+            'planningViews.condition.legend-asterisk': 'asterisked 6th floor', 'planningViews.useGroup.housing-mid': 'Mid-rise housing',
+            'planningViews.useGroup.green': 'Green land', 'planningViews.legend.envelope': 'Envelope', 'planningViews.legend.zoneUnder': 'Zone: {{group}}',
+            'planningViews.legend.dashed': 'Dashed edge' };
+        const fullT = (key, params = {}) => (dictionary[key] || key).replace(/{{(\w+)}}/g, (_, name) => params[name]);
+        const t = key => ({ sourceWording: 'Source wording:', envelopeTitle: 'Permitted envelope', conditionalHeight: 'Height under a condition' }[key] || key);
+        const root = { i18n: { t: fullT }, CbFormat: { formatLength: value => `${value} m`, formatNumber: value => String(value), formatArea: value => `${value} m²`, formatDate: String } };
+        const context = vm.createContext({ selected: () => item, inspector, root, element, t, fullT, labels, parcelOf: () => 'KZ-1',
+            inspectorBadgeKey: () => 'bound', area: value => `${value} m²`, number: value => String(value), resultLabel: value => String(value),
+            permittedFeatures: () => ({ configuration: null }), renderConfigurations: () => element('section'), scenarioLabel: value => value,
+            sourceRecord: async () => [], selectRecord() {}, select() {}, referenceStatus: null, document, sceneItems: () => [item, zone], appearance: () => 'ghost' });
+        for (const name of ['renderInspector', 'sourceText', 'legendRows']) vm.runInContext(source.slice(declaration(name).start, declaration(name).end), context);
+        vm.runInContext(source.match(/const itemTitle = .*;/)[0], context);
+        context.renderInspector();
+        expect(inspector.querySelector('h2').textContent).toBe('Mid-rise housing (4–6 floors) · planned');
+        const quote = inspector.querySelector('.planning-source-wording q.planning-source-text');
+        expect(quote.textContent).toBe(item.title);
+        expect(quote.lang).toBe('ru');
+        const conditional = [...inspector.querySelectorAll('.planning-metrics div')].find(row => row.textContent.includes('Height under a condition'));
+        expect(conditional.textContent).toContain('18 m · asterisked 6th floor');
+        expect(conditional.textContent).not.toContain('этажей');
+        expect([...inspector.querySelectorAll('.planning-colour-key li')].map(row => [row.firstChild.className, row.textContent]))
+            .toEqual([['planning-swatch planning-swatch--permitted', 'Envelope'], ['planning-swatch planning-swatch--zone-housing-mid', 'Zone: Mid-rise housing']]);
+        const legend = inspector.querySelector('details .planning-zone-legend');
+        expect([...legend.querySelectorAll('li')].map(row => row.textContent)).toEqual(['Envelope', 'Green land', 'Dashed edge']);
     });
     it('does not clear an authored selection when source massing becomes unavailable at a wider zoom', async () => {
         const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');

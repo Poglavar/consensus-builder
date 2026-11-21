@@ -8651,6 +8651,30 @@
         "zoneStoreys": "jusqu’à {{storeys}} étages",
         "zoneStoreysConditional": "jusqu’à {{storeys}} étages ({{conditional}} sous condition)",
         "zoneLegend": "Légende des zones",
+        "zoneStage": {
+            "planned": "projetée",
+            "existing": "existante"
+        },
+        "sourceWording": "Texte de la source :",
+        "zoneReason": {
+            "detailed-plan": "Le plan détaillé (PDP) et le cahier d'urbanisme (APZ) fixent ce qui peut être construit ici.",
+            "above-12-floors": "Plus de 12 étages : le plan général ne fixe pas de limite supérieure ; le plan détaillé (PDP) et le cahier d'urbanisme (APZ) la fixent.",
+            "not-for-building": "Le plan général ne destine pas ce terrain à la construction.",
+            "restricted-regime": "Terrain sous régime restreint.",
+            "reserve": "Réserve de développement : construction seulement après une modification du plan général ou un plan détaillé.",
+            "agriculture": "Usage agricole.",
+            "uninterpreted": "L'application ne lit pas encore ce type de zone."
+        },
+        "condition": {
+            "legend-asterisk": "la légende du plan marque le 6e étage d'un astérisque ; la condition de sa note n'a pas été lue"
+        },
+        "legend": {
+            "envelope": "Enveloppe autorisée : le plus grand bâtiment que les règles permettent sur une parcelle",
+            "zoneUnder": "Zone où elle se trouve : {{group}}",
+            "dashed": "Bord en tirets : pas de construction ici, ou un autre plan décide"
+        },
+        "colourKey": "Ce que signifient les couleurs",
+        "mapColours": "Toutes les couleurs de la carte",
         "use": {
             "residential-estate": "Maisons individuelles avec terrain",
             "residential-low": "Habitat bas (2–3 étages)",

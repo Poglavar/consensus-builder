@@ -8475,6 +8475,30 @@
         "zoneStoreys": "up to {{storeys}} floors",
         "zoneStoreysConditional": "up to {{storeys}} floors ({{conditional}} on a condition)",
         "zoneLegend": "Zone legend",
+        "zoneStage": {
+            "planned": "planned zone",
+            "existing": "existing zone"
+        },
+        "sourceWording": "Source wording:",
+        "zoneReason": {
+            "detailed-plan": "The detailed plan (PDP) and the planning brief (APZ) set what may be built here.",
+            "above-12-floors": "Over 12 floors: the general plan sets no upper limit; the detailed plan (PDP) and the planning brief (APZ) set it.",
+            "not-for-building": "The general plan does not zone this land for building.",
+            "restricted-regime": "Land under a restricted regime.",
+            "reserve": "Reserve for growth: building only after a change to the general plan or a detailed plan.",
+            "agriculture": "Agricultural use.",
+            "uninterpreted": "The app does not read this zone type yet."
+        },
+        "condition": {
+            "legend-asterisk": "the plan's legend marks the 6th floor with an asterisk; the condition in its note has not been read"
+        },
+        "legend": {
+            "envelope": "Permitted envelope: the largest building the rules allow on a parcel",
+            "zoneUnder": "Zone it stands in: {{group}}",
+            "dashed": "Dashed edge: no building here, or another plan decides"
+        },
+        "colourKey": "What the colours mean",
+        "mapColours": "All colours on the map",
         "use": {
             "residential-estate": "Detached houses with plots",
             "residential-low": "Low-rise housing (2–3 floors)",

@@ -2,7 +2,7 @@
 // Source results are read-only overlays: viewing them never applies a parcel/fabric mutation.
 (function (root) {
     'use strict';
-    const core = root.PlanningScene, envelopes = root.PlanningEnvelopes;
+    const core = root.PlanningScene, envelopes = root.PlanningEnvelopes, labels = root.PlanningItemLabels;
     const sharedLabels = { focusParcel: 'threeMode.isolation.singleParcel', existing: 'threeMode.controls.built', proposed: 'threeMode.parcelPanel.proposed',
         solid: 'threeMode.controls.stateSolid', ghost: 'threeMode.controls.stateGhost', off: 'threeMode.controls.stateOff',
         surviving: 'threeMode.controls.stateSurviving', removed: 'threeMode.controls.stateRemoved',
@@ -20,8 +20,6 @@
     let restoreId = new URLSearchParams(location.search).get('planningSelection'), restoring = false, catalogReady = false, parcelPanel = null;
     // Per-item configuration pins chosen in the inspector; cleared with the source, housing type or city.
     let pins = {}, sourcesKey = '';
-    // Use groups in legend order (css/planning-views.css has a swatch for each).
-    const ZONE_GROUPS = ['housing-low', 'housing-mid', 'housing-high', 'public', 'industry', 'transport', 'green', 'water', 'agriculture', 'reserve', 'restricted'];
     // A source that is a zoning map shows its zones when chosen, unless the address or the person
     // already chose whether zones show.
     let zoningChosen = new URLSearchParams(location.search).has('zoningAreas');
@@ -76,23 +74,27 @@
         const group = item.assessment?.meaning === 'zoning-area' && item.use?.group;
         return (group && color(`zone-${group}`)) || color(item.role);
     }
-    // A zone's name in the reader's language: its use, then its height class or what the plan says
-    // of building there. The source's own wording stays under Source details.
-    function useName(item) {
-        const key = item.use?.key ? `planningViews.use.${item.use.key}` : '';
-        const label = key ? root.i18n.t(key) : '';
-        return label && label !== key ? label : item.use?.label || '';
+    // A zone's or envelope's name in the reader's language (planning/item-labels.js); the source's own
+    // wording is shown apart, quoted (sourceText).
+    const fullT = (key, params) => root.i18n.t(key, params);
+    const itemTitle = item => labels.title(item, fullT, item?.assessment ? resultLabel(item.assessment.status) : '');
+    const unbuildableZone = labels.unbuildableZone;
+    // Text in the source's own words: quoted and in italics (css .planning-source-text), in the source's
+    // language, so it never reads as the app's own text.
+    function sourceText(text, item) {
+        const quote = element('q', 'planning-source-text', text);
+        if (item?.source?.language) quote.lang = item.source.language;
+        return quote;
     }
-    function itemTitle(item) {
-        if (item?.assessment?.meaning !== 'zoning-area' || !item.use) return item?.title || '';
-        const storeys = item.constraints?.find(constraint => constraint.quantity === 'storeys')?.value;
-        const extra = item.metrics?.conditional?.storeys;
-        const limit = typeof storeys === 'number' ? t(extra ? 'zoneStoreysConditional' : 'zoneStoreys', { storeys, conditional: extra })
-            : resultLabel(item.assessment.status);
-        return [useName(item), limit].filter(Boolean).join(' · ');
+    // Swatch rows (planning/item-labels.js legend/colourKey) as list items.
+    function legendRows(rows) {
+        return rows.map(row => {
+            const entry = element('li');
+            const swatch = element('span', `planning-swatch planning-swatch--${row.swatch}`); swatch.setAttribute('aria-hidden', 'true');
+            entry.append(swatch, element('span', '', row.text));
+            return entry;
+        });
     }
-    // A zone the plan keeps free of buildings, or leaves to another instrument, has a dashed edge.
-    const unbuildableZone = item => item.assessment?.meaning === 'zoning-area' && item.assessment.status !== 'allowed';
     function policy() { return core.displayPolicy(store?.get()); }
     function sceneItems() { return items; }
     function appearance(item) { return core.itemAppearance(item, store?.get()); }
@@ -318,6 +320,13 @@
             : t(item.areas?.length ? 'zoningArea' : sourceResult ? (item.volumes.length ? 'sourceProposal' : 'savedResult') : 'builtRecord')));
         // The hosted stack already supplies the object's title and parcel reference.
         if (!hosted && item.title) heading.append(element('h2', 'click-stack__title', itemTitle(item)));
+        const wording = labels.sourceWording(item, fullT, resultLabel(item.assessment?.status));
+        // A hosted envelope's header names its parcel (click-stack-hits.js), so its translated name goes here.
+        if (hosted && wording && item.source?.parcel) heading.append(element('p', 'planning-inspector__name', itemTitle(item)));
+        if (wording) {
+            const line = element('p', 'planning-source-wording', `${t('sourceWording')} `);
+            line.append(sourceText(wording, item)); heading.append(line);
+        }
         // A parcel's massing names its parcel; the title alone is the source edition and ratio.
         const parcelLabel = parcelOf(item);
         if (!hosted && parcelLabel) heading.append(element('p', 'planning-inspector__parcel', `${t('focusParcel')} ${parcelLabel}`));
@@ -350,7 +359,22 @@
                         : sourceResult ? (item.volumes.length ? 'oneOption' : 'savedNoShape')
                         : 'observedNote')));
         if (item.assessment.status && !item.parcelEnvelope) info.append(element('p', 'planning-inspector__description', resultLabel(item.assessment.status)));
-        if (item.assessment.reason) info.append(element('p', 'planning-cache-reason', item.assessment.reason));
+        const reason = labels.reason(item, fullT);
+        if (reason) {
+            const line = element('p', 'planning-cache-reason');
+            line.append(reason.source ? sourceText(reason.text, item) : reason.text); info.append(line);
+        }
+        // What the colours this item is drawn in mean, and the whole map's key below it.
+        const key = labels.colourKey(item, fullT);
+        if (key.length) {
+            const colours = element('ul', 'planning-zone-legend planning-colour-key');
+            colours.setAttribute('aria-label', t('colourKey')); colours.append(...legendRows(key));
+            const all = element('details', 'planning-evidence');
+            all.append(element('summary', '', t('mapColours')));
+            const list = element('ul', 'planning-zone-legend'); list.append(...legendRows(labels.legend(sceneItems().filter(entry => appearance(entry) !== 'off'), fullT)));
+            all.append(list);
+            info.append(colours, all);
+        }
         if (item.assessment.current === false) info.append(element('p', 'planning-inspector__description', t('savedWithdrawn')));
         if (referenceStatus && referenceStatus !== 'same') info.append(element('p', 'planning-assessment', t('referenceChanged')));
         if (item.assessment.refresh) {
@@ -364,12 +388,17 @@
         if (item.metrics.floorAreaM2 != null) displayedMetrics.push([t('floorArea'), area(item.metrics.floorAreaM2)]);
         if (item.metrics.heightM != null) displayedMetrics.push([t('height'), root.CbFormat.formatLength(item.metrics.heightM, { maxFractionDigits: 1 })]);
         // An incentive's extra height is listed with its condition, apart from what the rules grant.
-        if (item.metrics.conditional?.heightM != null) displayedMetrics.push([t('conditionalHeight'),
-            `${root.CbFormat.formatLength(item.metrics.conditional.heightM, { maxFractionDigits: 1 })} · ${item.metrics.conditional.condition}`]);
+        if (item.metrics.conditional?.heightM != null) {
+            const condition = labels.condition(item.metrics.conditional, fullT);
+            const value = element('span', '', root.CbFormat.formatLength(item.metrics.conditional.heightM, { maxFractionDigits: 1 }));
+            if (condition) value.append(' · ', condition.source ? sourceText(condition.text, item) : condition.text);
+            displayedMetrics.push([t('conditionalHeight'), value]);
+        }
         if (unitLimit != null) displayedMetrics.push([t('dwellingLimit'), number(unitLimit)]);
         if (item.metrics.footprintM2 != null) displayedMetrics.push([t('footprintArea'), area(item.metrics.footprintM2)]);
         for (const [label, value] of displayedMetrics) {
-            const entry = element('div'); entry.append(element('dt', '', label), element('dd', '', value)); metrics.append(entry);
+            const entry = element('div'), cell = element('dd'); cell.append(value);
+            entry.append(element('dt', '', label), cell); metrics.append(entry);
         }
         if (displayedMetrics.length) info.append(metrics);
         const heights = [...new Set(item.volumes.map(volume => volume.topM))].sort((a, b) => a - b);
@@ -402,8 +431,6 @@
         const evidence = element('details', 'planning-evidence');
         evidence.append(element('summary', '', t('sourceDetails')));
         if (item.source.label) evidence.append(element('p', '', item.source.label));
-        // The plan's own name for a zone shown under a translated one.
-        if (item.title && itemTitle(item) !== item.title) evidence.append(element('p', '', item.title));
         if (item.source.computedAt) evidence.append(element('p', '', t('computed', { date: root.CbFormat.formatDate(item.source.computedAt) })));
         if (item.source.fetchedAt) evidence.append(element('p', '', t('recorded', { date: root.CbFormat.formatDate(item.source.fetchedAt) })));
         if (item.source.solverVersion) evidence.append(element('p', '', t('solverVersion', { version: item.source.solverVersion })));
@@ -534,16 +561,9 @@
             : descriptor?.capabilities.volumes === false ? t('evidenceOnly') : '';
         panel.querySelector('.planning-zoning-label').textContent = t('zoningAreas');
         panel.querySelector('.planning-zoning-field').hidden = !descriptor?.capabilities.areas;
-        // The legend lists the use groups of the zones drawn, in the order the colours run.
+        // The legend lists the colours of what is drawn: envelopes, zone use groups in the order the colours run, dashed edges.
         const legend = panel.querySelector('.planning-zone-legend');
-        const groups = new Set(items.filter(item => item.assessment?.meaning === 'zoning-area' && appearance(item) !== 'off')
-            .map(item => item.use?.group).filter(Boolean));
-        legend.replaceChildren(...ZONE_GROUPS.filter(group => groups.has(group)).map(group => {
-            const row = element('li');
-            const swatch = element('span', `planning-swatch planning-swatch--zone-${group}`); swatch.setAttribute('aria-hidden', 'true');
-            row.append(swatch, element('span', '', t(`useGroup.${group}`)));
-            return row;
-        }));
+        legend.replaceChildren(...legendRows(labels.legend(items.filter(item => appearance(item) !== 'off'), fullT)));
         legend.hidden = !legend.children.length;
         legend.setAttribute('aria-label', t('zoneLegend'));
         const scenario = panel.querySelector('.planning-scenario-select');

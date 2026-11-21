@@ -46,6 +46,36 @@ describe('Alatau general plan zones', () => {
         expect(interpretZone({ functional: 'Территория железных дорог и сооружений железнодорожного транспорта' })).toMatchObject({ status: 'prohibited', use: 'Железные дороги' });
         expect(interpretZone({ functional: 'Новая зона' })).toMatchObject({ status: 'unrecorded', constraints: [] });
     });
+
+    it('codes each reason, the stage and the asterisked condition for the app to translate, keeping the plan\'s words', () => {
+        const codeOf = functional => interpretZone({ functional }).reasonCode;
+        expect(codeOf('Территория учреждений образования')).toBe('detailed-plan');
+        expect(codeOf('Территория застройки повышенной этажности (выше 12 этажей)')).toBe('above-12-floors');
+        expect(codeOf('Территория парков, скверов и т.д. (зона кратковременного отдыха)')).toBe('not-for-building');
+        expect(codeOf('Территория оборонных объектов')).toBe('restricted-regime');
+        expect(codeOf('Резервные территории')).toBe('reserve');
+        expect(codeOf('Территории растениеводства')).toBe('agriculture');
+        expect(codeOf('Новая зона')).toBe('uninterpreted');
+        expect(interpretZone({ functional: HOUSES }).reasonCode).toBeUndefined();
+        expect(interpretZone({ functional: HOUSES, implementation: 'Проектируемые' })).toMatchObject({ stage: 'planned', implementationLabel: 'проектируемая' });
+        expect(interpretZone({ functional: HOUSES, implementation: 'Существующие' }).stage).toBe('existing');
+        expect(interpretZone({ functional: HOUSES }).stage).toBeNull();
+        expect(interpretZone({ functional: 'Территория среднеэтажной застройки (4-5 и 6* этажей)' }).uplift)
+            .toMatchObject({ conditionCode: 'legend-asterisk', condition: expect.stringContaining('6*') });
+    });
+
+    it('puts the codes on the record beside the plan\'s words, and names the source\'s language', async () => {
+        const { provider } = service([zone(481223, HOUSES), zone(481224, 'Территория учреждений образования'),
+            zone(481225, 'Территория среднеэтажной застройки (4-5 и 6* этажей)', { implementation: 'Проектируемые' })]);
+        const read = async id => (await provider.record(null, { recordId: id }))[0];
+        expect(alatauGenplanSource.language).toBe('ru');
+        expect((await read('481223')).use).toEqual({ key: 'residential-estate', group: 'housing-low', label: 'Усадебная застройка', stage: 'existing' });
+        expect((await read('481224')).assessment).toMatchObject({ reasonCode: 'detailed-plan', reason: expect.stringContaining('ПДП') });
+        const mid = await read('481225');
+        expect(mid.metrics.conditional).toMatchObject({ storeys: 6, conditionCode: 'legend-asterisk', condition: expect.stringContaining('6*') });
+        expect(mid.title).toBe('Среднеэтажная застройка · до 5 эт. (6*) · проектируемая');
+        expect(mid.source.language).toBe('ru');
+    });
 });
 
 describe('Alatau general plan provider', () => {

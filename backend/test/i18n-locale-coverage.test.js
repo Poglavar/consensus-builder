@@ -52,6 +52,10 @@ const DYNAMIC_KEY_PREFIXES = [
     'planningViews.scenario.',     // scenario ids come from the planning source catalog
     'planningViews.use.',          // zone use keys from planning sources; planning-permitted-check.test.js checks each
     'planningViews.useGroup.',     // zone use groups, checked there too
+    'planningViews.zoneStage.',    // zone stages (existing, planned); planning-item-labels.test.js checks each
+    'planningViews.zoneReason.',   // coded zone reasons, checked there too
+    'planningViews.condition.',    // coded conditions, checked there too
+    'planningViews.compare.groups.', // three-compare.js optionGroups: today, plan, agreement, design
     'modal.corridor.compass.',
     'modal.corridor.laneTypes.',
     'modal.corridor.presetWidths.',

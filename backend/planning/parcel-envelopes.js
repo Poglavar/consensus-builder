@@ -147,6 +147,13 @@ export function outerBound(configurations, geometryOps = turf) {
 
 // Statuses that say nothing usable about the use; any other recorded status is a source
 // decision (a handed-off instrument, a conservation regime) that yields no buildable height here.
+// The height only a condition reaches, with that condition. It keeps the zone's condition code (which
+// the app translates) only when the zone's condition is the one the bound reaches.
+export function conditionalOf(bound, zone) {
+    const condition = [...new Set(bound.tiers.map(tier => tier.condition).filter(Boolean))].join('; ');
+    const code = zone?.metrics?.conditional?.condition === condition ? zone.metrics.conditional.conditionCode : null;
+    return { heightM: bound.heightM, condition, ...(code ? { conditionCode: code } : {}) };
+}
 const silentStatuses = new Set(['unrecorded', 'nomention', 'overlay', 'unknown']);
 function omissionReason(configurations, excluded) {
     if (!configurations.length) {
@@ -259,6 +266,8 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
                     const id = `envelope:${provider.descriptor.id}:${parcel.id}${found.major.length > 1 ? `~${recordId}` : ''}`;
                     items.push({ id, role: 'permitted', proposalId: null, parcelEnvelope: true,
                         title: `${context.source.title} · ${parcel.properties.parcelNumber}`,
+                        // The zone's use (docs/vocabulary.md, Permitted use), so the app names the envelope in the reader's language.
+                        ...(context.source.use ? { use: context.source.use } : {}),
                         source: { ...context.source.source, scenario: null, parcel: parcel.id }, site: bound.geometry, areas: [],
                         volumes: bound.tiers.map((tier, index) => ({ id: `${id}:bound${index ? `-${index}` : ''}`, geometry: tier.geometry, baseM: tier.baseM, topM: tier.topM,
                             ...(tier.condition ? { condition: tier.condition } : {}) })),
@@ -271,7 +280,7 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
                         assessment: { meaning: 'outer-bound', status: 'unresolved', geometry: 'derived-parcel', constraints: 'partial', current: true },
                         // The height is what the rules grant; an incentive's extra height stands beside it with its condition.
                         metrics: { footprintM2: bound.areaM2, heightM: bound.grantedHeightM, ...(bound.heightM > (bound.grantedHeightM ?? 0)
-                            ? { conditional: { heightM: bound.heightM, condition: [...new Set(bound.tiers.map(tier => tier.condition).filter(Boolean))].join('; ') } } : {}) },
+                            ? { conditional: conditionalOf(bound, context.source) } : {}) },
                         constraints: [],
                         sourceEvidence: { zoningRecordId: recordId, parcelReference: context.parcelReference,
                             sourceCoverage: context.sourceCoverage, parts: found.major.length, frontEdge: frontage.frontEdge, frontage: frontage.evidence, streetWidth: street,

@@ -15,6 +15,8 @@ export const ALATAU_ADMTERR_ID = '191810000';
 const VIEWER = 'https://map.gov4c.kz/egkn/';
 export const alatauGenplanSource = Object.freeze({
     id: 'alatau-genplan-727', city: 'alatau', label: 'Генплан Алатау · Постановление № 727 (2025)', edition: '2025-09-09', default: true,
+    // The language of the source's own wording (titles, labels), so the app can mark it as quoted text.
+    language: 'ru',
     kind: 'regulation', coverage: 'zoning-areas', scope: 'city',
     url: 'https://primeminister.kz/assets/media/prilozenie-1-rus-727.pdf',
     storage: 'ogc-wfs', service: ALATAU_GENPLAN_SERVICE, layer: ALATAU_GENPLAN_LAYER, admterrId: ALATAU_ADMTERR_ID,
@@ -43,9 +45,9 @@ const ZONES = new Map(Object.entries({
         storeysBasis: 'assumed: detached houses with plots; the legend gives no storey count' },
     'Территория малоэтажной застройки (2-3 этажа) без участка': { key: 'residential-low', group: 'housing-low', use: 'Малоэтажная застройка', status: 'allowed', storeys: 3, storeysBasis: 'legend: 2–3 этажа' },
     'Территория среднеэтажной застройки (4-5 и 6* этажей)': { key: 'residential-mid', group: 'housing-mid', use: 'Среднеэтажная застройка', status: 'allowed', storeys: 5,
-        uplift: { storeys: 6, condition: '6* этажей по легенде генплана; условие примечания не прочитано' }, storeysBasis: 'legend: 4–5 и 6* этажей' },
+        uplift: { storeys: 6, condition: '6* этажей по легенде генплана; условие примечания не прочитано', conditionCode: 'legend-asterisk' }, storeysBasis: 'legend: 4–5 и 6* этажей' },
     'Территория многоэтажной застройки (6-12 этажей)': { key: 'residential-high', group: 'housing-high', use: 'Многоэтажная застройка', status: 'allowed', storeys: 12, storeysBasis: 'legend: 6–12 этажей' },
-    'Территория застройки повышенной этажности (выше 12 этажей)': { key: 'residential-tall', group: 'housing-high', use: 'Застройка повышенной этажности', status: 'instrument_handoff',
+    'Территория застройки повышенной этажности (выше 12 этажей)': { key: 'residential-tall', group: 'housing-high', use: 'Застройка повышенной этажности', status: 'instrument_handoff', reasonCode: 'above-12-floors',
         reason: `Выше 12 этажей: верхний предел генплан не задаёт. ${PDP}` },
     'Территория учреждений и предприятий обслуживания в том числе общегородского значения': { key: 'services', group: 'public', use: 'Обслуживание', status: 'instrument_handoff', reason: PDP },
     'Территория учреждений образования': { key: 'education', group: 'public', use: 'Образование', status: 'instrument_handoff', reason: PDP },
@@ -73,6 +75,12 @@ const ZONES = new Map(Object.entries({
 }));
 const normalise = text => String(text ?? '').replace(/\s+/g, ' ').trim();
 const implementationLabels = { 'Существующие': 'существующая', 'Проектируемые': 'проектируемая' };
+// Whether the plan keeps a zone's use or plans it, as a stage the app translates (planningViews.zoneStage).
+const implementationStages = { 'Существующие': 'existing', 'Проектируемые': 'planned' };
+// The reasons above as codes the app translates (planningViews.zoneReason.<code>); the text stays on the
+// record for API and MCP readers.
+const REASON_CODES = new Map([[PDP, 'detailed-plan'], [NOT_FOR_BUILDING, 'not-for-building'], ['Режимная территория.', 'restricted-regime'],
+    ['Резерв развития; застройка после изменения генплана или ПДП.', 'reserve'], ['Сельскохозяйственное использование.', 'agriculture']]);
 
 function constraint(quantity, value, unit, bound, evidence, sourceField, extra = {}) {
     return { quantity, value, unit, bound, evidence, evaluation: 'not-evaluated', sourceField, ...extra };
@@ -85,10 +93,11 @@ export function interpretZone(properties, rules = ALATAU_RULES) {
     const implementation = normalise(properties?.implementation) || null;
     const zone = ZONES.get(functional);
     const base = { functional, zoneGroup: normalise(properties?.gpzone) || null, implementation,
-        implementationLabel: implementationLabels[implementation] || null, storeyHeightM: rules.storeyHeightM, uplift: null, constraints: [] };
-    if (!zone) return { ...base, useKey: null, useGroup: null, use: functional || 'Зона', status: 'unrecorded', reason: `Функциональная зона не интерпретирована: ${functional || 'пусто'}`,
+        implementationLabel: implementationLabels[implementation] || null, stage: implementationStages[implementation] || null, storeyHeightM: rules.storeyHeightM, uplift: null, constraints: [] };
+    if (!zone) return { ...base, useKey: null, useGroup: null, use: functional || 'Зона', status: 'unrecorded', reason: `Функциональная зона не интерпретирована: ${functional || 'пусто'}`, reasonCode: 'uninterpreted',
         storeys: null, heightM: null, heightLabel: 'не интерпретировано' };
-    if (zone.status !== 'allowed') return { ...base, useKey: zone.key, useGroup: zone.group, use: zone.use, status: zone.status, reason: zone.reason, storeys: null, heightM: null,
+    if (zone.status !== 'allowed') return { ...base, useKey: zone.key, useGroup: zone.group, use: zone.use, status: zone.status, reason: zone.reason,
+        reasonCode: zone.reasonCode || REASON_CODES.get(zone.reason) || null, storeys: null, heightM: null,
         heightLabel: zone.status === 'prohibited' ? 'без застройки' : 'по ПДП' };
     const heightM = Math.round(zone.storeys * rules.storeyHeightM * 100) / 100;
     return { ...base, useKey: zone.key, useGroup: zone.group, use: zone.use, status: 'allowed', reason: null, storeys: zone.storeys, heightM, uplift: zone.uplift || null,
@@ -176,14 +185,14 @@ export function createAlatauGenplanProvider(descriptor = alatauGenplanSource, { 
             source: { ...descriptor, city: city || descriptor.city, scenario, recordId,
                 version: sourceRevision({ id: recordId, geometry: feature.geometry, properties: p }), publishedAt: descriptor.edition },
             authority: { effect: 'obligatory', basis: 'source-summary', applicability: 'unresolved' },
-            assessment: { meaning: 'zoning-area', status: reading.status, reason: reading.reason, geometry: 'source-area', constraints: 'not-evaluated', current: true },
+            assessment: { meaning: 'zoning-area', status: reading.status, reason: reading.reason, ...(reading.reasonCode ? { reasonCode: reading.reasonCode } : {}), geometry: 'source-area', constraints: 'not-evaluated', current: true },
             // The zone's use in the shared vocabulary (docs/vocabulary.md, Permitted use): a key the app
             // translates, a group the map colours by, and the plan's own words.
-            use: { key: reading.useKey, group: reading.useGroup, label: reading.use },
+            use: { key: reading.useKey, group: reading.useGroup, label: reading.use, stage: reading.stage },
             metrics: { floorAreaM2: null, heightM: reading.heightM,
                 // The asterisked class (6* этажей): taller only on the condition the legend's note sets.
                 ...(reading.uplift ? { conditional: { heightM: Math.round(reading.uplift.storeys * reading.storeyHeightM * 100) / 100,
-                    storeys: reading.uplift.storeys, condition: reading.uplift.condition } } : {}) },
+                    storeys: reading.uplift.storeys, condition: reading.uplift.condition, conditionCode: reading.uplift.conditionCode } } : {}) },
             constraints: reading.status === 'allowed' ? reading.constraints.map(item => ({ ...item, scenario })) : [],
             sourceEvidence: { layer, service, properties: p, interpretation: reading, ...(reading.uplift ? { uplift: reading.uplift } : {}), rules: rulesEvidence }
         });

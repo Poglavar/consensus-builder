@@ -49,10 +49,14 @@ an assumption recorded with every height constraint (`sourceEvidence.rules`). No
 or density limits are derived: the general plan does not set them per lot.
 
 Every zone also carries its `use` (vocabulary: Permitted use): the key and colour group of its
-class, and the plan's label. The map colours zones by group with a legend, shows them by default
-when this source is chosen, and names them in the reader's language; the plan's wording stays
-under Source details. A Freeform building is checked against the zones under it (vocabulary:
-Permitted check).
+class, the plan's label, and its stage (`existing` or `planned`, from `implementation`). A parcel's
+envelope carries the use of the zone it stands in. The map colours zones by group with a legend,
+shows them by default when this source is chosen, and names zones and envelopes in the reader's
+language; the inspector quotes the plan's wording under the name, in italics, marked as the
+source's (the descriptor's `language: 'ru'`). The provider's reasons and the 6* condition carry
+codes the app translates (`assessment.reasonCode`, `metrics.conditional.conditionCode`); their
+Russian text stays on the record. A Freeform building is checked against the zones under it
+(vocabulary: Permitted check).
 
 ## Limits
 

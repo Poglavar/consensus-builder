@@ -46,7 +46,7 @@ body:is([data-planning-proposed="solid"], [data-planning-proposed="ghost"]) .pla
 .planning-swatch--existing { background: var(--cb-planning-existing); }
 .planning-swatch--permitted { background: var(--cb-planning-permitted); }
 .planning-swatch--proposed { background: var(--cb-planning-proposed); }
-/* The zone legend under "Zoning areas": one swatch per use group shown. */
+/* The colour legend under "Zoning areas" and in the inspector: envelopes, one swatch per use group shown, dashed edges. */
 .planning-zone-legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--cb-space-1) var(--cb-space-3);
     margin: var(--cb-space-2) 0 0; padding: 0; list-style: none; font-size: var(--cb-text-xs); color: var(--cb-text-muted); }
 .planning-zone-legend[hidden] { display: none; }
@@ -62,6 +62,9 @@ body:is([data-planning-proposed="solid"], [data-planning-proposed="ghost"]) .pla
 .planning-swatch--zone-agriculture { background: var(--cb-planning-zone-agriculture); }
 .planning-swatch--zone-reserve { background: var(--cb-planning-zone-reserve); }
 .planning-swatch--zone-restricted { background: var(--cb-planning-zone-restricted); }
+.planning-swatch--dashed { background: transparent; border: 1px dashed var(--cb-text-muted); }
+/* The inspector's key to the colours of the item shown, above the full legend. */
+.planning-colour-key { grid-template-columns: 1fr; }
 .planning-view-status { margin: var(--cb-space-2) 0 0; font-size: var(--cb-text-sm); line-height: var(--cb-leading); color: var(--cb-text-muted); }
 .planning-inspect-hint, .planning-coverage { font-size: var(--cb-text-xs); line-height: var(--cb-leading); color: var(--cb-text-muted); margin: var(--cb-space-2) 0 0; }
 .planning-coverage summary { cursor: pointer; color: var(--cb-text); }
@@ -79,6 +82,10 @@ body:is([data-planning-proposed="solid"], [data-planning-proposed="ghost"]) .pla
 .planning-inspector__parcel { margin: var(--cb-space-1) 0 0; font-size: var(--cb-text-sm); color: var(--cb-text-muted); overflow-wrap: anywhere; }
 .planning-parcel-evidence h3 { font-size: var(--cb-text-base); margin: 0; }
 .planning-cache-reason { white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--cb-text-sm); color: var(--cb-text-muted); }
+/* Words quoted from a source (a plan's zone name, its reasons), never the app's own text: quoted and italic. */
+.planning-source-text { font-style: italic; }
+.planning-inspector__name { margin: var(--cb-space-1) 0 0; font-weight: var(--cb-weight-semibold); overflow-wrap: anywhere; }
+.planning-source-wording { margin: var(--cb-space-1) 0 0; font-size: var(--cb-text-sm); color: var(--cb-text-muted); overflow-wrap: anywhere; }
 .planning-sources-pane { z-index: var(--cb-z-map-pane-site); }
 body[data-planning-proposed="ghost"] .leaflet-proposedBuildings-pane { opacity: 0.4; }
 body[data-planning-proposed="off"] .leaflet-proposedBuildings-pane { visibility: hidden; }

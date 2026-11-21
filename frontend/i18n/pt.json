@@ -8651,6 +8651,30 @@
         "zoneStoreys": "até {{storeys}} pisos",
         "zoneStoreysConditional": "até {{storeys}} pisos ({{conditional}} sob condição)",
         "zoneLegend": "Legenda das zonas",
+        "zoneStage": {
+            "planned": "planeada",
+            "existing": "existente"
+        },
+        "sourceWording": "Texto da fonte:",
+        "zoneReason": {
+            "detailed-plan": "O plano de pormenor (PDP) e o caderno de planeamento (APZ) definem o que se pode construir aqui.",
+            "above-12-floors": "Mais de 12 pisos: o plano geral não fixa limite superior; fixam-no o plano de pormenor (PDP) e o caderno de planeamento (APZ).",
+            "not-for-building": "O plano geral não destina este terreno à construção.",
+            "restricted-regime": "Terreno sob regime restrito.",
+            "reserve": "Reserva de crescimento: construção só após alteração do plano geral ou um plano de pormenor.",
+            "agriculture": "Uso agrícola.",
+            "uninterpreted": "A aplicação ainda não lê este tipo de zona."
+        },
+        "condition": {
+            "legend-asterisk": "a legenda do plano marca o 6.º piso com um asterisco; a condição da sua nota não foi lida"
+        },
+        "legend": {
+            "envelope": "Envolvente edificável permitida: o maior edifício que as regras permitem numa parcela",
+            "zoneUnder": "Zona em que se encontra: {{group}}",
+            "dashed": "Contorno tracejado: sem construção aqui, ou decide outro plano"
+        },
+        "colourKey": "O que significam as cores",
+        "mapColours": "Todas as cores do mapa",
         "use": {
             "residential-estate": "Moradias com lote",
             "residential-low": "Habitação baixa (2–3 pisos)",

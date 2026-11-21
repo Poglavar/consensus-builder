@@ -659,7 +659,11 @@ The comparison controls label this **Max envelope**, as they do an authored rule
 
 ### Permitted use
 
-What a zoning area's plan allows its land for, on the representation as `use`: a `key` from the app's use vocabulary (translated as `planningViews.use.<key>`), a `group` the map colours by (`housing-low`, `housing-mid`, `housing-high`, `public`, `industry`, `transport`, `green`, `water`, `agriculture`, `reserve`, `restricted`) and the plan's own `label`. Whether a building may stand there is the assessment status (`allowed`, `prohibited`, or `instrument_handoff` when another instrument sets it), not the group.
+What a zoning area's plan allows its land for, on the representation as `use`: a `key` from the app's use vocabulary (translated as `planningViews.use.<key>`), a `group` the map colours by (`housing-low`, `housing-mid`, `housing-high`, `public`, `industry`, `transport`, `green`, `water`, `agriculture`, `reserve`, `restricted`), the plan's own `label`, and the `stage` the plan marks it with (`existing` or `planned`, else null). A parcel's Permitted envelope carries the use of the zoning area it stands in. Whether a building may stand there is the assessment status (`allowed`, `prohibited`, or `instrument_handoff` when another instrument sets it), not the group.
+
+### Source wording
+
+Text a source record carries in the source's own words (a zone's title, a reason, a condition): the app shows it quoted and in italics, tagged with the source's `language`, and never as its own text. Where the app has words for it, the record also carries a code the app translates (`use.key`, `use.stage`, `assessment.reasonCode`, `metrics.conditional.conditionCode`), and the translation leads while the source wording is quoted beside it.
 
 ### Permitted check
 

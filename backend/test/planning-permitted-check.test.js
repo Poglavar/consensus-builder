@@ -135,7 +135,7 @@ describe('Zone use vocabulary', () => {
 
     it('records the use on each zone record', async () => {
         const [item] = await records([zone(8, HIGH)]);
-        expect(item.use).toEqual({ key: 'residential-high', group: 'housing-high', label: 'Многоэтажная застройка' });
+        expect(item.use).toEqual({ key: 'residential-high', group: 'housing-high', label: 'Многоэтажная застройка', stage: 'planned' });
     });
 });
 

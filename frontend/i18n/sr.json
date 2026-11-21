@@ -8521,6 +8521,30 @@
         "zoneStoreys": "spratnost do {{storeys}}",
         "zoneStoreysConditional": "spratnost do {{storeys}} ({{conditional}} uz uslov)",
         "zoneLegend": "Legenda zona",
+        "zoneStage": {
+            "planned": "planirano",
+            "existing": "postojeće"
+        },
+        "sourceWording": "Izvorni tekst:",
+        "zoneReason": {
+            "detailed-plan": "Šta se ovde sme graditi određuju detaljni plan (PDP) i planski zadatak (APZ).",
+            "above-12-floors": "Više od 12 spratova: generalni plan ne određuje gornju granicu; određuju je detaljni plan (PDP) i planski zadatak (APZ).",
+            "not-for-building": "Generalni plan ovo zemljište ne namenjuje gradnji.",
+            "restricted-regime": "Zemljište pod posebnim režimom.",
+            "reserve": "Rezerva za razvoj: gradnja tek posle izmene generalnog plana ili donošenja detaljnog plana.",
+            "agriculture": "Poljoprivredna namena.",
+            "uninterpreted": "Aplikacija ovu vrstu zone još ne čita."
+        },
+        "condition": {
+            "legend-asterisk": "legenda plana označava 6. sprat zvezdicom; uslov iz njene napomene nije pročitan"
+        },
+        "legend": {
+            "envelope": "Dozvoljeni omotač: najveća zgrada koju pravila dozvoljavaju na parceli",
+            "zoneUnder": "Zona u kojoj stoji: {{group}}",
+            "dashed": "Isprekidana ivica: ovde nema gradnje ili odlučuje drugi plan"
+        },
+        "colourKey": "Šta znače boje",
+        "mapColours": "Sve boje na karti",
         "use": {
             "residential-estate": "Porodične kuće sa okućnicom",
             "residential-low": "Niska stambena izgradnja (2–3 sprata)",

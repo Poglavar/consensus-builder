@@ -3,7 +3,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
-import { loadParcelEnvelopes, parcelOverlapProblems, parcelConfigurations, outerBound, lotAreaTest, tieredBound, floorAreaM2 } from '../planning/parcel-envelopes.js';
+import { loadParcelEnvelopes, parcelOverlapProblems, parcelConfigurations, outerBound, lotAreaTest, tieredBound, floorAreaM2, conditionalOf } from '../planning/parcel-envelopes.js';
 import { streetWidthAcross } from '../planning/street-width.js';
 import { createAtlasProvider } from '../planning/providers/atlas.js';
 import { assembleParcelStudy, readStudyZoning } from '../planning/parcel-study.js';
@@ -176,6 +176,16 @@ describe('viewport parcel envelopes', () => {
         expect(west[2]).toBeCloseTo(-105.00075, 6); expect(east[0]).toBeCloseTo(-105.00075, 6);
         expect(result.items[0].sourceEvidence).toMatchObject({ parts: 2, zoningRecordId: 'one',
             sourceCoverage: { zoneShare: expect.closeTo(0.5, 2), otherZones: [{ recordId: 'two', minor: false }] } });
+    });
+    it('names an envelope by the use of the zone it stands in', async () => {
+        const base = provider();
+        const use = { key: 'residential-mid', group: 'housing-mid', label: 'Среднеэтажная застройка', stage: 'planned' };
+        // A study re-reads each zone by its record (parcel-study.js readStudyZoning).
+        const withUse = { ...base, record: async (...args) => (await base.record(...args)).map(item => ({ ...item, use })) };
+        const result = await loadParcelEnvelopes(query, options([parcel()], withUse));
+        expect(result.items).toHaveLength(1);
+        expect(result.items[0].use).toEqual(use);
+        expect((await loadParcelEnvelopes(query, options())).items[0]).not.toHaveProperty('use');
     });
     it('keeps a sliver of a neighbouring zone as evidence instead of splitting or refusing the lot', async () => {
         const source = createAtlasProvider({type:'FeatureCollection',features:[
@@ -471,6 +481,14 @@ describe('tiered bounds and street width', () => {
         expect(volume.conditionalM3 / areaOf(square(1))).toBeCloseTo(10, 6);
         expect(volume.conditions).toEqual(['opt in']);
         expect(outerBound([{ volumes: [{ geometry: square(1), baseM: 0, topM: 10 }] }], turf)).toMatchObject({ grantedHeightM: 10, tiers: [{ baseM: 0, topM: 10 }] });
+    });
+
+    it('keeps the zone\'s condition code on the envelope only when the zone\'s condition is the one its bound reaches', () => {
+        const bound = { heightM: 18, tiers: [{ condition: null }, { condition: '6* этажей' }] };
+        const zone = condition => ({ metrics: { conditional: { condition, conditionCode: 'legend-asterisk' } } });
+        expect(conditionalOf(bound, zone('6* этажей'))).toEqual({ heightM: 18, condition: '6* этажей', conditionCode: 'legend-asterisk' });
+        expect(conditionalOf(bound, zone('another condition'))).toEqual({ heightM: 18, condition: '6* этажей' });
+        expect(conditionalOf(bound, null)).toEqual({ heightM: 18, condition: '6* этажей' });
     });
     it('measures the street width from the front edge to the first lot across, ignoring the lot itself and lots behind', () => {
         const toLat = metres => metres / 111320, toLng = metres => toLat(metres) / Math.cos(40 * Math.PI / 180);
