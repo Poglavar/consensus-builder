@@ -101,9 +101,9 @@
     const keepsView = () => global.CityConfigManager?.getBootEntry?.()?.source === 'at';
 
     // A reload reopens a plan or an agreement (a parcel: parcels/route.js; a design:
-    // world/proposal-entry.js). It reads the address the page was opened with: restore runs at
-    // window `load`, after the basemap tiles, and by then write() may have put the reader's own
-    // pick into the live address, which must not be reopened over what they are doing.
+    // world/proposal-entry.js). It reads the address the page was opened with: restore runs once the
+    // app has booted, and by then write() may have put the reader's own pick into the live address,
+    // which must not be reopened over what they are doing.
     const openedWith = global.location.search;
     async function restore() {
         const selection = read(openedWith);
@@ -128,8 +128,10 @@
             global.ClickStack.keepNextView(false);
         }
     }
-    if (global.document.readyState === 'complete') restore();
-    else global.addEventListener('load', restore, { once: true });
+    // From DOMContentLoaded (map-core.js's whenAppBooted is defined by then), not window `load`,
+    // which also waits for every basemap tile.
+    if (global.document.readyState !== 'loading') restore();
+    else global.document.addEventListener('DOMContentLoaded', restore, { once: true });
 
     return Object.freeze({ ...pure, write, rename, restore, keepsView,
         selectionOf: (stack, selectedInstance) => selectionOf(stack, selectedInstance, record => global.DesignSync?.publishedCid?.(record) || null) });

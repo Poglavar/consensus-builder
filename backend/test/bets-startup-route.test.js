@@ -19,15 +19,16 @@ function boot(href) {
   const messages = [];
   const root = {
     // No sheet content on the page: a markets read finds nowhere to render and fetches nothing.
-    document: { readyState: 'loading', addEventListener() {}, getElementById: () => null },
+    // The route starts at DOMContentLoaded, then waits for the app's boot (not window `load`).
+    document: { readyState: 'loading', addEventListener(name, callback) { listeners.set(name, callback); }, getElementById: () => null },
     location: new URL(href), BetsLink, BetsModel,
-    addEventListener(name, callback) { listeners.set(name, callback); },
+    addEventListener() {},
     whenAppBooted: async () => {},
     openBetDialog(options) { opened.push(options); },
     showEphemeralMessage(text) { messages.push(text); },
   };
   vm.runInNewContext(source, { window: root, console });
-  return { root, opened, messages, load: () => listeners.get('load')() };
+  return { root, opened, messages, load: () => listeners.get('DOMContentLoaded')() };
 }
 
 describe('Bets startup route', () => {

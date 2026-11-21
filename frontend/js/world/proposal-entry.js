@@ -148,6 +148,8 @@
             global.WorldHandoff.proposalReady(id);
         }
     }
-    if (global.document.readyState === 'complete') fromUrl();
-    else global.addEventListener('load', fromUrl, { once: true });
+    // From DOMContentLoaded (it then waits for the app's boot), not window `load`, which also waits
+    // for every basemap tile.
+    if (global.document.readyState !== 'loading') fromUrl();
+    else global.document.addEventListener('DOMContentLoaded', fromUrl, { once: true });
 })(window);

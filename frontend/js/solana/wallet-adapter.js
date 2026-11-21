@@ -233,9 +233,13 @@
 
     globalScope.solanaWalletManager = solanaWalletManager;
 
-    if (document.readyState === 'complete') {
-        tryAutoConnect();
+    // Reconnect once the app has booted (map-core.js; a page without it, as soon as its scripts have
+    // run), not at window `load`, which also waits for every basemap tile.
+    const autoConnectAfterBoot = () => (typeof globalScope.whenAppBooted === 'function'
+        ? globalScope.whenAppBooted() : Promise.resolve()).then(() => tryAutoConnect());
+    if (document.readyState !== 'loading') {
+        autoConnectAfterBoot();
     } else {
-        globalScope.addEventListener('load', () => tryAutoConnect());
+        document.addEventListener('DOMContentLoaded', autoConnectAfterBoot, { once: true });
     }
 })();

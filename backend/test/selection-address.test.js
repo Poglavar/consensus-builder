@@ -60,16 +60,17 @@ describe('the address with a selection', () => {
     });
 });
 
-// restore() runs at window `load`, after the basemap tiles. By then the reader may have opened a
-// plan, and write() has put it into the live address; only the opening address names a reload.
+// restore() runs from DOMContentLoaded once the app has booted (not window `load`, which waits for
+// every basemap tile). By then the reader may have opened a plan, and write() has put it into the
+// live address; only the opening address names a reload.
 describe('reopening a selection on load', () => {
     const source = createRequire(import.meta.url)('node:fs').readFileSync(new URL('../../frontend/js/selection-address.js', import.meta.url), 'utf8');
     function page(openedSearch) {
         let onLoad;
         const shown = [];
         const window = {
-            document: { readyState: 'loading' }, location: { search: openedSearch }, console,
-            addEventListener: (name, handler) => { if (name === 'load') onLoad = handler; },
+            document: { readyState: 'loading', addEventListener: (name, handler) => { if (name === 'DOMContentLoaded') onLoad = handler; } },
+            location: { search: openedSearch }, console, addEventListener() {},
             whenAppBooted: async () => {},
             ClickStack: { keepNextView() {}, showPlan: async plan => { shown.push(plan.cid); } },
             NamedPlans: { list: () => [{ cid: 'bafyopened', published: true }, { cid: 'bafypicked', published: true }] },

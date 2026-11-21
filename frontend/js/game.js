@@ -790,8 +790,10 @@ function openActivityFromUrl() {
     if (typeof window.i18n?.t === 'function' && window.i18n.t(probe) !== probe) open();
     else window.addEventListener('i18n:translationsLoaded', open, { once: true });
 }
-if (document.readyState === 'complete') openActivityFromUrl();
-else window.addEventListener('load', openActivityFromUrl, { once: true });
+// After the app has booted (map-core.js), not at window `load`: that also waits for every basemap tile.
+const openActivityAfterBoot = () => window.whenAppBooted().then(openActivityFromUrl);
+if (document.readyState !== 'loading') openActivityAfterBoot();
+else document.addEventListener('DOMContentLoaded', openActivityAfterBoot, { once: true });
 
 /**
  * Setup click listeners for clickable links in game log and proposal dialogs

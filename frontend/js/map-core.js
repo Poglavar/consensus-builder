@@ -1043,23 +1043,36 @@ function setupMapEventHandlers() {
 }
 
 // Initialize map core functionality
-// App boot readiness. Resolves once every classic script has run (window `load`) AND
-// initializeMapCore() has finished (index.html defers it behind PersistentStorage.ready). URL route
-// handlers wait on this instead of fixed 100–1500 ms sleeps after `load`. A boot that never
+// App boot readiness. Resolves once every classic script has run and the page's stylesheets have
+// applied AND initializeMapCore() has finished (index.html defers it behind PersistentStorage.ready).
+// index.html writes its scripts with document.write, so all of them have run by DOMContentLoaded;
+// its stylesheets are appended by a script, so they are awaited here. Not window `load`: that also
+// waits for every image, basemap tiles included, and one tile a tile server never answered held
+// every URL route, the model view's among them (reproduced 2026-11-21 with one stalled
+// OpenStreetMap tile). URL route handlers wait on this instead of fixed sleeps. A boot that never
 // completes is reported loudly after APP_BOOT_WATCHDOG_MS rather than waited on silently.
 (function installAppBootReadiness() {
     const APP_BOOT_WATCHDOG_MS = 30000;
     let markReady = null;
     const mapCoreReady = new Promise(resolve => { markReady = resolve; });
-    const windowLoaded = document.readyState === 'complete'
+    const domReady = document.readyState !== 'loading'
         ? Promise.resolve()
-        : new Promise(resolve => window.addEventListener('load', resolve, { once: true }));
-    const booted = Promise.all([windowLoaded, mapCoreReady]).then(() => undefined);
+        : new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve, { once: true }));
+    // A stylesheet that already failed has no sheet and fires nothing more: its resource entry says
+    // it is finished.
+    const pendingStyles = () => [...document.querySelectorAll('link[rel="stylesheet"]')]
+        .filter(link => !link.sheet && !performance.getEntriesByName(link.href).length);
+    const stylesApplied = domReady.then(() => Promise.all(pendingStyles().map(link => new Promise(resolve => {
+        link.addEventListener('load', resolve, { once: true });
+        link.addEventListener('error', resolve, { once: true });
+    }))));
+    const booted = Promise.all([stylesApplied, mapCoreReady]).then(() => undefined);
     let reported = false;
     const watchdog = setTimeout(() => {
         if (window.BrowserWorkspace && window.BrowserWorkspace.status !== 'ready') return;
         reported = true;
-        console.error(`[${new Date().toISOString()}] [map-core] App boot did not complete within ${APP_BOOT_WATCHDOG_MS} ms (load: ${document.readyState}, map core ready: ${!!window.__mapCoreReady}); URL routes are still waiting.`);
+        const styles = pendingStyles().map(link => link.getAttribute('href'));
+        console.error(`[${new Date().toISOString()}] [map-core] App boot did not complete within ${APP_BOOT_WATCHDOG_MS} ms (document: ${document.readyState}, stylesheets pending: ${styles.length ? styles.join(', ') : 'none'}, map core ready: ${!!window.__mapCoreReady}); URL routes are still waiting.`);
     }, APP_BOOT_WATCHDOG_MS);
     booted.then(() => {
         clearTimeout(watchdog);

@@ -925,8 +925,10 @@
             console.warn(`[${new Date().toISOString()}] [bets] the bet link could not open`, error);
         }
     }
-    if (doc.readyState === 'complete') openFromUrl();
-    else root.addEventListener('load', openFromUrl, { once: true });
+    // From DOMContentLoaded (it then waits for the app's boot), not window `load`, which also waits
+    // for every basemap tile.
+    if (doc.readyState !== 'loading') openFromUrl();
+    else doc.addEventListener('DOMContentLoaded', openFromUrl, { once: true });
 
     root.BetsSheet = {
         load, ensureLoaded, render, rowFor, rowForCid, positionsFor, whenPositions, landText, entriesText, labelText,
