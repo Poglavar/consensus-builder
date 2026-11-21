@@ -165,16 +165,22 @@
         const opts = { ...DEFAULTS, ...(assumptions || {}) };
         const footprintM2 = geometryAreaM2(feature);
         const rule = ruleOf(feature, bp);
-        const heightM = heightMetresOf(feature, rule);
-        const floorHeightM = positive(rule && rule.floorHeightM)
-            ?? positive(feature && feature.properties && feature.properties.floorHeightM)
+        const props = (feature && feature.properties) || {};
+        // A building that states its storeys has that many, and its own storey height is its height
+        // over them: dividing a stated 64 m by an assumed 3.0 m read a 20-storey tower as 21.
+        const statedFloors = positive(props.floors) ?? positive(props.storeys) ?? positive(props.katova);
+        let heightM = heightMetresOf(feature, rule);
+        const floorHeightM = (statedFloors !== null && heightM !== null) ? heightM / statedFloors
+            : positive(rule && rule.floorHeightM)
+            ?? positive(props.floorHeightM)
             ?? positive(opts.floorHeightM)
             ?? DEFAULTS.floorHeightM;
+        if (heightM === null && statedFloors !== null) heightM = statedFloors * floorHeightM;
 
         if (heightM === null) {
             return { footprintM2, heightM: null, floorHeightM, floors: null, gfaM2: null, rule };
         }
-        const floors = Math.max(1, Math.round(heightM / floorHeightM));
+        const floors = statedFloors !== null ? Math.max(1, Math.round(statedFloors)) : Math.max(1, Math.round(heightM / floorHeightM));
         return { footprintM2, heightM, floorHeightM, floors, gfaM2: footprintM2 * floors, rule };
     }
 

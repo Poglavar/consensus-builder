@@ -135,6 +135,21 @@ describe('height and storeys', () => {
         expect(heightMetresOf(polygon(SIBENIK, { floors: 4, floorHeightM: 3.2 }), null)).toBeCloseTo(12.8, 6);
     });
 
+    it('counts the storeys a building states, whatever its height divided by an assumed storey gives', () => {
+        // A 20-storey tower of 3.2 m storeys: 64 m ÷ 3.0 m would read 21.
+        const tower = measureBuilding(polygon(SIBENIK, { height: 64, floors: 20 }), null, DEFAULTS);
+        expect(tower.floors).toBe(20);
+        expect(tower.floorHeightM).toBeCloseTo(3.2, 6);
+        expect(tower.gfaM2).toBeCloseTo(tower.footprintM2 * 20, 6);
+        // A stated height that does not fit the storeys does not invent more of them.
+        expect(measureBuilding(polygon(SIBENIK, { height: 149, floors: 4 }), null, DEFAULTS).floors).toBe(4);
+        // Storeys alone still measure the floor area.
+        const storeysOnly = measureBuilding(polygon(SIBENIK, { floors: 7 }), null, DEFAULTS);
+        expect(storeysOnly.floors).toBe(7);
+        expect(storeysOnly.heightM).toBeCloseTo(7 * DEFAULTS.floorHeightM, 6);
+        expect(storeysOnly.gfaM2).toBeCloseTo(storeysOnly.footprintM2 * 7, 6);
+    });
+
     it('falls back to the assumed storey height only when neither building nor rule says', () => {
         const freeform = measureBuilding(polygon(SIBENIK, { height: 19 }), null, { floorHeightM: 3 });
         expect(freeform.floorHeightM).toBe(3);
