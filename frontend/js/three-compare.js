@@ -216,14 +216,16 @@
     }
 
     // The city's published plans (GET /plans?city=), read once a city a page so any published plan can
-    // be a side, not only one this browser has opened. Read in pages up to PUBLISHED_PLAN_LIMIT; the
-    // picker refills when they land. A failed read leaves this browser's plans and is tried again the
-    // next time the sheet opens.
+    // be a side, not only one this browser has opened. Read in pages up to PUBLISHED_PLAN_LIMIT, each
+    // from the offset the server names; the picker refills when they land. Nothing is read until the
+    // sheet, its Compare tab or a comparison opens (publishedWanted), not on every page load. A failed
+    // read leaves this browser's plans and is tried again the next time the sheet opens.
     const PUBLISHED_PLAN_PAGE = 50, PUBLISHED_PLAN_LIMIT = 500;
     const publishedPlans = new Map();
+    let publishedWanted = false;
     async function readPublishedPlans(city) {
         const rows = [];
-        for (let offset = 0; offset < PUBLISHED_PLAN_LIMIT; offset += PUBLISHED_PLAN_PAGE) {
+        for (let offset = 0; offset < PUBLISHED_PLAN_LIMIT;) {
             const params = new URLSearchParams({ city, limit: String(PUBLISHED_PLAN_PAGE), offset: String(offset) });
             const response = await global.fetch(`${global.getBackendBase()}/plans?${params}`, { cache: 'no-store' });
             const page = await response.json();
@@ -237,12 +239,15 @@
                 rows.push({ cid: row.cid, content: row.content, publishedAt: row.publishedAt || null });
             }
             if (!page.hasMore) break;
+            if (!Number.isSafeInteger(page.nextOffset) || page.nextOffset <= offset) throw new Error('GET /plans named no next page');
+            offset = page.nextOffset;
         }
         return rows;
     }
     function publishedPlansOf(city) {
         if (!city) return [];
         if (!publishedPlans.has(city)) {
+            if (!publishedWanted) return [];
             const entry = { rows: [] };
             publishedPlans.set(city, entry);
             readPublishedPlans(city).then(rows => { entry.rows = rows; refresh(); }).catch(error => {
@@ -466,6 +471,7 @@
     // Opens the comparison between two sides (select values, e.g. `plan:<cid>` or `built`): the
     // sheet's Compare tab with the sides chosen and the divider on. Compare plans uses it.
     function show({ left, right } = {}) {
+        publishedWanted = true;
         state.options = collectOptions();
         if (pure.parseSide(left, state.options)) state.left = left;
         if (pure.parseSide(right, state.options)) state.right = right;
@@ -485,7 +491,7 @@
             for (const button of sheet.querySelectorAll('[data-planning-tab]')) button.setAttribute('aria-selected', String(button === tab));
             window.CbTabs?.sync(sheet.querySelector('.planning-tabs'));
             for (const panel of sheet.querySelectorAll('[data-planning-tab-panel]')) panel.hidden = panel.dataset.planningTabPanel !== tab.dataset.planningTab;
-            if (tab.dataset.planningTab === 'compare') refresh();
+            if (tab.dataset.planningTab === 'compare') { publishedWanted = true; refresh(); }
         });
         el('planning-compare-enable')?.addEventListener('click', () => setEnabled(!state.enabled));
         el('planning-compare-left')?.addEventListener('change', event => { state.left = event.target.value; syncDivider(); });
@@ -497,7 +503,9 @@
             syncDivider();
         });
         el('planning-compare-open-model')?.addEventListener('click', () => global.requestMapMode?.('model'));
-        doc.addEventListener('mapshell:sheetopened', event => { if (event.detail?.id === 'planning-views') refresh(); });
+        doc.addEventListener('mapshell:sheetopened', event => {
+            if (event.detail?.id === 'planning-views') { publishedWanted = true; refresh(); }
+        });
         // A plan read for a side has arrived or failed: relabel the divider and redraw.
         global.addEventListener('compareunappliedchange', syncDivider);
         refresh();
