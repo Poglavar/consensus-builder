@@ -5,7 +5,7 @@
 // or not: what is not applied is read without applying it.
 import { test, expect } from '../helpers/fixtures';
 import { selectNativeOption } from '../helpers/controls';
-import { openCity, createBuilding, createSpace, drawCorridor } from '../helpers/runtime';
+import { openCity, createBuilding, createSpace, drawCorridor, PARCEL_ID } from '../helpers/runtime';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 import { Page } from '@playwright/test';
 
@@ -24,8 +24,8 @@ async function openCompareTab(page: Page) {
 // Records the next scissored draws: where each half was cut, and whether the design's own meshes were
 // drawn in it (visible through every ancestor). A mesh is the design's when it is picked by it
 // (userData.proposalId) or drawn for it (userData.designIds: a road's surfaces, a park's trees).
-async function recordPasses(page: Page, designId: string) {
-  await page.evaluate(id => {
+async function recordPasses(page: Page, designId: string, { lawn = false } = {}) {
+  await page.evaluate(([id, lawnOnly]) => {
     const w = window as any;
     const { renderer, scene } = w.getThreeModeInternals();
     const passes: any[] = [];
@@ -42,7 +42,7 @@ async function recordPasses(page: Page, designId: string) {
             }
             return false;
           };
-          scene.traverse((object: any) => { if (!mesh && object.isMesh && owns(object)) mesh = object; });
+          scene.traverse((object: any) => { if (!mesh && object.isMesh && owns(object) && (!w.__compareLawn || object.userData?.isParkGround)) mesh = object; });
           let visible = !!mesh;
           for (let object = mesh; object; object = object.parent) visible &&= object.visible !== false;
           const rect = renderer.getScissor(new w.THREE.Vector4());
@@ -52,8 +52,9 @@ async function recordPasses(page: Page, designId: string) {
       };
     }
     w.__compareDesign = id;
+    w.__compareLawn = lawnOnly;
     w.invalidateThreeView();
-  }, designId);
+  }, [designId, lawn] as const);
   await expect.poll(() => page.evaluate(() => (window as any).__comparePasses.length), { timeout: 15_000 }).toBeGreaterThanOrEqual(2);
   return page.evaluate(() => {
     const w = window as any;
@@ -319,6 +320,32 @@ test('a park in a plan that is not applied draws on the plan\'s side as an appli
     return trees;
   }, memberCid), { timeout: 20_000 }).toBeGreaterThan(0);
   const split = await recordPasses(page, memberCid);
+  expect(split.passes.map((pass: any) => pass.designDrawn)).toEqual([false, true]);
+});
+
+test('an applied park in a plan keeps its lawn on the plan\'s side whatever park was drawn first', async ({ mockApi: page }) => {
+  test.setTimeout(120_000);
+  await mockBuildingScene(page);
+  await openCity(page);
+  // The park outside the plan is drawn first: its lawn leads the park ground.
+  await createSpace(page, 'park', 'HR-335754-1235');
+  await createSpace(page, 'park', PARCEL_ID);
+  const { cid, inPlan } = await page.evaluate(parcelId => {
+    const w = window as any;
+    const record = w.proposalStorage.getAllProposals().find((p: any) => p.structureProposal?.kind === 'park' && p.cadastreParcelIds?.includes(parcelId));
+    const plan = w.PlanComposition.create('One park', [record], { city: w.resolveCurrentCityCode(), at: '45.8,15.98,17', mode: '2d', language: 'en' });
+    w.PlanWorkspace.save(plan);
+    return { cid: plan.cid as string, inPlan: String(record.proposalId) };
+  }, PARCEL_ID);
+  await page.keyboard.press('Escape');
+  await page.locator('#mode-3d-toggle').click();
+  await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 20_000 });
+  await openCompareTab(page);
+  await selectNativeOption(page.locator('#planning-compare-left'), 'built');
+  await selectNativeOption(page.locator('#planning-compare-right'), `plan:${cid}`);
+  await page.locator('#planning-compare-enable').click();
+  await expect(page.locator('#three-container .map-compare__label--after')).toHaveText('Plan: One park', { timeout: 45_000 });
+  const split = await recordPasses(page, inPlan, { lawn: true });
   expect(split.passes.map((pass: any) => pass.designDrawn)).toEqual([false, true]);
 });
 

@@ -10283,7 +10283,10 @@
             return { role: 'existing', demolishedBy };
         });
         each(planningSourcesGroup, () => ({ role: 'permitted' }));
-        for (const group of [proposedBuildingsGroup, ineligibleBuildingsGroup, floorPlanGroup, plannedFlatGroup, parkGroundGroup,
+        // plannedFlatGroup is not one of them: it holds only the five ground groups listed here, and
+        // read as one object it took the design of whichever park came first, hiding every lawn on a
+        // side that did not apply that park.
+        for (const group of [proposedBuildingsGroup, ineligibleBuildingsGroup, floorPlanGroup, parkGroundGroup,
             squareGroundGroup, lakeGroundGroup, proposalGroundGroup, parcelLayoutGroup, parkGroup, squareGroup, lakeGroup,
             stationGroup, corridorGroup, terrainCorridorGroup]) {
             each(group, child => ({ role: 'proposed', designIds: compareDesignIdsOf(child) }));
