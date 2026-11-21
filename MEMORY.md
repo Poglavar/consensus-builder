@@ -393,3 +393,6 @@ in commits.
 - 2026-11-20: Scheme rules (caps, land contribution) judge an agreement only, never what can be designed. Their shares
   are measured against each owner's whole parcel: agreement inputs record `parcelAreaM2` beside the land taken, the
   rest counting as kept; an input without it counts as the whole parcel. User-approved.
+- 2026-11-21: Who consented is the chosen lens's call, never the server's: it has no reliable knowledge of owners or their
+  acts. The server keeps its technical cadastre check (agreement inputs = the parcels the designs take) where it holds the
+  cadastre; on land it cannot see (coverage unknown) inputs pass unverified, and the lens is not asked to make up for it. User decision.
