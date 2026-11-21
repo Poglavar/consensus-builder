@@ -224,7 +224,9 @@ export function flattenJson(obj, prefix = '', out = {}) {
 const PROTECTED_WORDS = new Set(['OSM', 'DGU', 'GUP', 'GDI', 'NFT', 'AI', '2D', '3D', 'USDC', 'USDT', 'ETH', 'SOL', 'EUR', 'IPFS',
     'URL', 'JSON', 'GeoJSON', 'CityGML', 'CityJSON', 'glTF', 'API', 'ID', 'GPS', 'HR', 'EN', 'ES', 'SR', 'X', 'YES', 'NO', 'OK', 'I', 'A', 'Schelling', 'Solana', 'Hyperstition', 'Mechaurbanista',
     // The Burning Man plan's proper names: the festival, its Man and its Esplanade.
-    'Burning', 'Man', 'Esplanade']);
+    'Burning', 'Man', 'Esplanade',
+    // The plan critics' names ("How the Dog measures").
+    'Beaver', 'Dog', 'Hare', 'Cat']);
 
 function isCapitalised(word) {
     return /^[A-Z][a-z]/.test(word);
@@ -236,7 +238,8 @@ function isCapitalised(word) {
  * reported too; the baseline absorbs the ones that are legitimate.
  */
 // Language-switch labels contain proper language names, just like the language-name catalog.
-const PROPER_NOUN_KEY_PREFIXES = ['city.labels.', 'languages.', 'language.switcher.to_'];
+// The Grain critic speaks for a named institute ("Institute for Urban Grain").
+const PROPER_NOUN_KEY_PREFIXES = ['city.labels.', 'languages.', 'language.switcher.to_', 'sidebar.proposals.grainScore.institute'];
 
 export function titleCaseLabels(flat) {
     const out = [];
