@@ -133,6 +133,15 @@ describe('Kazakh city sources', () => {
             expect(rent.amount * 12 / sale.amount).toBeGreaterThan(0.09);
             expect(rent.amount * 12 / sale.amount).toBeLessThan(0.11);
         }
+        // Land per m² of land and the statutory 16 % VAT on new housing.
+        const astana = cityMoney('astana').currentEconomicRates(), alatau = cityMoney('alatau').currentEconomicRates();
+        expect(astana.land).toMatchObject({ unit: 'm2-land', currency: 'KZT', basis: 'market', asOf: '2026-11-21' });
+        expect(alatau.land).toMatchObject({ unit: 'm2-land', currency: 'KZT', basis: 'assumption' });
+        expect(alatau.land.scope).toContain('Proxy');
+        for (const rates of [astana, alatau]) {
+            expect(rates.saleTax).toMatchObject({ unit: 'share-of-sale', amount: 0.16, basis: 'statutory', asOf: '2026-01-01' });
+            expect(rates.saleTax.sourceUrl).toMatch(/^https:\/\/adilet\.zan\.kz\//);
+        }
     });
 });
 

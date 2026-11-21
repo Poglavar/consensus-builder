@@ -18707,7 +18707,15 @@
                 { version: 1, id: 'kz-bns-construction-cost-2026-10', name: 'Bureau of National Statistics: construction cost per m², Jan–Oct 2026',
                     adapter: 'rate-table', url: 'https://stat.gov.kz/api/iblock/element/354948/file/ru/',
                     rates: [{ metric: 'construction', unit: 'm2-floor', amount: 297900, currency: 'KZT', basis: 'construction-cost', asOf: '2026-10-31',
-                        scope: 'Astana housing built by companies, per m² of total area; excludes land and developer profit' }] }
+                        scope: 'Astana housing built by companies, per m² of total area; excludes land and developer profit' }] },
+                { version: 1, id: 'kz-krisha-mzhs-land-2026-11', name: 'krisha.kz asking prices of plots for apartment blocks, November 2026',
+                    adapter: 'rate-table', url: 'https://krisha.kz/prodazha/uchastkov/astana/?das%5Bland.earmarked%5D=6',
+                    rates: [{ metric: 'land', unit: 'm2-land', amount: 54700, currency: 'KZT', basis: 'market', asOf: '2026-11-21',
+                        scope: 'Median of 56 Astana listings for multi-storey housing plots; asking prices, above transaction prices' }] },
+                { version: 1, id: 'kz-tax-code-vat-2026', name: 'Tax Code of Kazakhstan: VAT on new housing',
+                    adapter: 'rate-table', url: 'https://adilet.zan.kz/rus/docs/K2500000214',
+                    rates: [{ metric: 'saleTax', unit: 'share-of-sale', amount: 0.16, currency: 'KZT', basis: 'statutory', asOf: '2026-01-01',
+                        scope: 'Art. 503(1), 16 %; a developer\'s sale of housing whose construction starts from 1 Jan 2026 (Art. 476(1)(1))' }] }
             ] },
             buildings: { sources: [{ id: 'kz-nsdi-buildings', name: 'Kazakhstan NSDI buildings', attribution: 'Kazakhstan National Spatial Data Infrastructure' }, { id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
@@ -18748,7 +18756,17 @@
                 { version: 1, id: 'kz-bns-construction-cost-2026-10', name: 'Bureau of National Statistics: construction cost per m², Jan–Oct 2026',
                     adapter: 'rate-table', url: 'https://stat.gov.kz/api/iblock/element/354948/file/ru/',
                     rates: [{ metric: 'construction', unit: 'm2-floor', amount: 291400, currency: 'KZT', basis: 'construction-cost', asOf: '2026-10-31',
-                        scope: 'Almaty city (no Alatau series): housing built by companies, per m² of total area; excludes land and profit' }] }
+                        scope: 'Almaty city (no Alatau series): housing built by companies, per m² of total area; excludes land and profit' }] },
+                // Alatau publishes no apartment-land price (its land is allocated for a fee the city sets); this is
+                // the press range for house plots in the neighbouring districts, labelled as the proxy it is.
+                { version: 1, id: 'kz-alatau-land-proxy-2026-09', name: 'Forbes.kz review of the Almaty agglomeration land market, September 2026',
+                    adapter: 'rate-table', url: 'https://forbes.kz/articles/zemelnyy-rynok-v-almatinskoy-aglomeratsii-tseny-na-uchastki-i-glavnye-riski-a3ac43',
+                    rates: [{ metric: 'land', unit: 'm2-land', amount: 15000, currency: 'KZT', basis: 'assumption', asOf: '2026-09-17',
+                        scope: 'Proxy: 1–2 M KZT a sotka for house plots in neighbouring Iliysky and Talgar districts; no Alatau apartment-land price' }] },
+                { version: 1, id: 'kz-tax-code-vat-2026', name: 'Tax Code of Kazakhstan: VAT on new housing',
+                    adapter: 'rate-table', url: 'https://adilet.zan.kz/rus/docs/K2500000214',
+                    rates: [{ metric: 'saleTax', unit: 'share-of-sale', amount: 0.16, currency: 'KZT', basis: 'statutory', asOf: '2026-01-01',
+                        scope: 'Art. 503(1), 16 %; a developer\'s sale of housing whose construction starts from 1 Jan 2026 (Art. 476(1)(1))' }] }
             ] },
             buildings: { sources: [{ id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },

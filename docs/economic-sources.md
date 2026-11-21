@@ -51,7 +51,10 @@ explicit rate and differs from missing evidence.
   excludes land and developer profit). Sale price and rent are published per m² of dwelling area, so
   they are scaled by the city's useful ÷ total area of the housing commissioned in the same period
   (Astana 0.722, Almaty 0.758). The bureau publishes no Alatau series; Alatau uses Almaty city's figures, and each row's
-  `scope` says so.
+  `scope` says so. Land: Astana takes the median krisha.kz asking price of plots for apartment blocks
+  (November 2026); Alatau, whose land is allocated for a fee the city sets and whose apartment-land price is
+  unpublished, takes a labelled assumption from the press range for house plots in the neighbouring
+  districts. Both take the Tax Code's 16 % VAT on new housing whose construction starts from 2026.
 
 City configuration can supply `economics.sources`, an ordered array of registered IDs and/or
 `rate-table` descriptors. The standard frontend policy selects the UK adapter only where the table
