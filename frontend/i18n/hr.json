@@ -9416,6 +9416,39 @@
         "castShare": "Udio predanih glasova",
         "refreshResults": "Osvježi rezultate"
     },
+    "hareCritic": {
+        "title": "Zec · Bicikliranje",
+        "close": "Zatvori procjenu biciklističke mreže",
+        "loading": "Učitavanje biciklističke mreže…",
+        "score": "{score}/100 za kvalitetu dionica",
+        "noScore": "Kvaliteta dionica nije ocijenjena",
+        "coverage": "Po smjerovima je ocijenjeno {score}% od {length}.",
+        "noNetwork": "Nema zabilježenih voznih ulica ni staza.",
+        "reachable": "Dostupna mjesta",
+        "homes": "Zgrade s rutom",
+        "connected": "Na voznu dionicu spojeno je {count} od {total} stambenih zgrada.",
+        "noHome": "Plan ne sadrži stambene zgrade.",
+        "inspect": "Provjeri vožnju biciklom",
+        "categoryLabel": "Vrsta odredišta",
+        "quality": "Kvaliteta po smjeru",
+        "method": "Kako Zec mjeri",
+        "methodText": "Ocjena je ponderirana duljinom po smjeru. Odvojena staza nosi 100 bodova, označena traka 70, zajednička ulica do 30 km/h 40, brža zajednička ulica 15, a zabranjen pristup 0. Nepoznate brzine se izostavljaju. Zgrade i odredišta mogu se povezati do 25 m. Rute slijede smjerove i prijelaze u planu uz procijenjenu brzinu od 15 km/h.",
+        "nearest": "Najbliže dostupno",
+        "noMatch": "Nema odgovarajuće stambene zgrade.",
+        "noAccess": "Ova zgrada nema vezu s biciklističkom mrežom.",
+        "noRoute": "Plan ne sadrži voznu rutu za ovo putovanje.",
+        "gapText": "Ružičaste crtice označavaju prijelaze bez biciklističke veze ({crossings}) i nepovezane krajeve staza ({ends}).",
+        "unlinked": "Za {count} mjesta nema rute od stambene zgrade.",
+        "unattached": "Za {count} mjesta nema veze s voznom dionicom.",
+        "protected": "Fizički odvojena staza",
+        "painted": "Označena traka",
+        "slow": "Spora zajednička ulica",
+        "fast": "Brža zajednička ulica",
+        "prohibited": "Bicikliranje zabranjeno",
+        "unknown": "Zajednička ulica, brzina nepoznata",
+        "metres": "{value} m",
+        "failed": "Biciklistička dostupnost nije izračunata. {reason}"
+    },
     "dogCritic": {
         "title": "Pas · Pješačka dostupnost",
         "close": "Zatvori pješačku dostupnost",
@@ -9545,6 +9578,10 @@
             "dog": {
                 "name": "Pas",
                 "axis": "Pješačka dostupnost"
+            },
+            "hare": {
+                "name": "Zec",
+                "axis": "Bicikliranje"
             },
             "owl": {
                 "name": "Sova",

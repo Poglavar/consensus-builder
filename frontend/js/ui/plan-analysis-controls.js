@@ -42,6 +42,7 @@
             ['cat', 'critic-cat.webp', async () => win.SquareCritic.open(await getPlan(), row, returnTo)],
             ['beaver', 'critic-beaver.webp', async () => win.BeaverCritic.open(await getPlan(), row, returnTo)],
             ['dog', 'critic-dog.webp', async () => win.DogCritic.open(await getPlan(), row, returnTo)],
+            ['hare', 'critic-hare.webp', async () => win.HareCritic.open(await getPlan(), row, returnTo)],
             ['owl', 'critic-owl.webp'],
             ['crow', 'critic-crow.webp']
         ]) {

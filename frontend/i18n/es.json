@@ -9392,6 +9392,39 @@
         "castShare": "Proporción de los votos emitidos",
         "refreshResults": "Actualizar resultados"
     },
+    "hareCritic": {
+        "title": "Liebre · Ciclismo",
+        "close": "Cerrar evaluación ciclista",
+        "loading": "Leyendo la red ciclista…",
+        "score": "{score}/100 de calidad ciclista",
+        "noScore": "Calidad ciclista sin puntuar",
+        "coverage": "Se ha evaluado el {score}% de {length} por sentido.",
+        "noNetwork": "No hay calles ni vías ciclistas registradas.",
+        "reachable": "Destinos accesibles",
+        "homes": "Viviendas con ruta",
+        "connected": "{count} de {total} edificios residenciales enlazan con un tramo ciclable.",
+        "noHome": "El plan no incluye edificios residenciales.",
+        "inspect": "Examinar un viaje en bicicleta",
+        "categoryLabel": "Tipo de destino",
+        "quality": "Calidad por sentido",
+        "method": "Cómo mide la Liebre",
+        "methodText": "La puntuación pondera la longitud por sentido. Las vías protegidas reciben 100 puntos, los carriles pintados 70, las calles compartidas a 30 km/h o menos 40, las más rápidas 15 y el acceso prohibido 0. Se omiten las velocidades desconocidas. Los edificios y destinos pueden enlazar a menos de 25 m. Las rutas siguen los sentidos y cruces del plan, a una velocidad estimada de 15 km/h.",
+        "nearest": "Más cercano accesible",
+        "noMatch": "No se encontró un edificio residencial.",
+        "noAccess": "Este edificio no enlaza con la red ciclista.",
+        "noRoute": "El plan no ofrece una ruta ciclable para este viaje.",
+        "gapText": "Las líneas rosas marcan {crossings} cruces sin conexión ciclista y {ends} finales cercanos a una vía desconectada.",
+        "unlinked": "{count} lugares carecen de ruta desde un edificio residencial.",
+        "unattached": "{count} lugares no enlazan con un tramo ciclable.",
+        "protected": "Protección física",
+        "painted": "Carril pintado",
+        "slow": "Calle compartida lenta",
+        "fast": "Calle compartida rápida",
+        "prohibited": "Bicicletas prohibidas",
+        "unknown": "Calle compartida, velocidad desconocida",
+        "metres": "{value} m",
+        "failed": "No se pudo evaluar el ciclismo. {reason}"
+    },
     "dogCritic": {
         "title": "Perro · Accesibilidad peatonal",
         "close": "Cerrar accesibilidad peatonal",
@@ -9521,6 +9554,10 @@
             "dog": {
                 "name": "Perro",
                 "axis": "Accesibilidad peatonal"
+            },
+            "hare": {
+                "name": "Liebre",
+                "axis": "Ciclismo"
             },
             "owl": {
                 "name": "Búho",

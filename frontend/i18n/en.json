@@ -9364,6 +9364,39 @@
         "castShare": "Share of votes cast",
         "refreshResults": "Refresh results"
     },
+    "hareCritic": {
+        "title": "Hare · Cycling",
+        "close": "Close cycling assessment",
+        "loading": "Reading the cycling network…",
+        "score": "{score}/100 lane quality",
+        "noScore": "Lane quality unscored",
+        "coverage": "{score}% of {length} rated by direction.",
+        "noNetwork": "No cycling streets or paths recorded.",
+        "reachable": "Places reached",
+        "homes": "Homes with a route",
+        "connected": "{count} of {total} residential buildings link to a rideable segment.",
+        "noHome": "No residential buildings in the plan.",
+        "inspect": "Inspect a ride",
+        "categoryLabel": "Destination type",
+        "quality": "Lane quality by direction",
+        "method": "How the Hare measures",
+        "methodText": "The score weights measured length by direction. Protected tracks get 100 points, painted lanes 70, shared streets at 30 km/h or less 40, faster shared streets 15, and access prohibited 0. Unknown speeds on shared streets are omitted from the score. Homes and destinations can link to the network within 25 m. Routes follow the plan’s one-way rules and crossings, with an estimated riding speed of 15 km/h.",
+        "nearest": "Nearest reachable",
+        "noMatch": "No matching residential building.",
+        "noAccess": "This building has no link to the cycling network.",
+        "noRoute": "The plan network has no rideable route for this trip.",
+        "gapText": "Pink dashes mark {crossings} crossings without a bicycle link and {ends} path ends near an unconnected route.",
+        "unlinked": "{count} places have no rideable route from a residential building.",
+        "unattached": "{count} places have no link to a rideable segment.",
+        "protected": "Physically protected",
+        "painted": "Painted lane",
+        "slow": "Slow shared street",
+        "fast": "Faster shared street",
+        "prohibited": "Cycling prohibited",
+        "unknown": "Shared street, speed unknown",
+        "metres": "{value} m",
+        "failed": "Could not assess cycling. {reason}"
+    },
     "dogCritic": {
         "title": "Dog · Walkability",
         "close": "Close walkability",
@@ -9493,6 +9526,10 @@
             "dog": {
                 "name": "Dog",
                 "axis": "Walkability"
+            },
+            "hare": {
+                "name": "Hare",
+                "axis": "Cycling"
             },
             "owl": {
                 "name": "Owl",

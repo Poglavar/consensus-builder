@@ -24,10 +24,11 @@ test('the plan critic picker works by keyboard and shows two disabled portraits 
   await page.evaluate(() => (window as any).ListsPanel.refresh());
   await expect(rooster).toBeFocused();
   const choices = picker.getByRole('button');
-  await expect(choices).toHaveCount(6);
+  await expect(choices).toHaveCount(7);
   await expect(picker.getByRole('button', { name: 'Cat Square enclosure', exact: true })).toBeEnabled();
   await expect(picker.getByRole('button', { name: 'Beaver Independent phases', exact: true })).toBeEnabled();
   await expect(picker.getByRole('button', { name: 'Dog Walkability', exact: true })).toBeEnabled();
+  await expect(picker.getByRole('button', { name: 'Hare Cycling', exact: true })).toBeEnabled();
   for (const label of ['Owl Approval path', 'Crow Street frontage']) {
     const choice = picker.getByRole('button', { name: label, exact: true });
     await expect(choice).toBeDisabled();

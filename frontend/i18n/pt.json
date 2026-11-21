@@ -9371,6 +9371,39 @@
         "castShare": "Proporção dos votos registrados",
         "refreshResults": "Atualizar resultados"
     },
+    "hareCritic": {
+        "title": "Lebre · Ciclismo",
+        "close": "Fechar avaliação ciclável",
+        "loading": "A ler a rede ciclável…",
+        "score": "{score}/100 de qualidade ciclável",
+        "noScore": "Qualidade ciclável sem pontuação",
+        "coverage": "Foram avaliados {score}% de {length} por sentido.",
+        "noNetwork": "Não há ruas ou vias cicláveis registadas.",
+        "reachable": "Locais acessíveis",
+        "homes": "Habitações com percurso",
+        "connected": "{count} de {total} edifícios residenciais ligam-se a um troço ciclável.",
+        "noHome": "O plano não inclui edifícios residenciais.",
+        "inspect": "Ver um percurso de bicicleta",
+        "categoryLabel": "Tipo de destino",
+        "quality": "Qualidade por sentido",
+        "method": "Como a Lebre mede",
+        "methodText": "A pontuação pondera a extensão por sentido. As vias protegidas valem 100 pontos, as faixas pintadas 70, as ruas partilhadas até 30 km/h 40, as ruas mais rápidas 15 e o acesso proibido 0. As velocidades desconhecidas são excluídas. Os edifícios e destinos podem ligar-se até 25 m. Os percursos seguem os sentidos e travessias do plano a uma velocidade estimada de 15 km/h.",
+        "nearest": "Mais próximo acessível",
+        "noMatch": "Nenhum edifício residencial encontrado.",
+        "noAccess": "Este edifício não tem ligação à rede ciclável.",
+        "noRoute": "O plano não inclui uma rota ciclável para esta viagem.",
+        "gapText": "Os traços rosa indicam {crossings} travessias sem ligação ciclável e {ends} fins de via perto de um percurso desligado.",
+        "unlinked": "{count} locais não têm percurso desde um edifício residencial.",
+        "unattached": "{count} locais não têm ligação a um troço ciclável.",
+        "protected": "Proteção física",
+        "painted": "Faixa pintada",
+        "slow": "Rua partilhada lenta",
+        "fast": "Rua partilhada mais rápida",
+        "prohibited": "Bicicletas proibidas",
+        "unknown": "Rua partilhada, velocidade desconhecida",
+        "metres": "{value} m",
+        "failed": "Não foi possível avaliar a rede ciclável. {reason}"
+    },
     "dogCritic": {
         "title": "Cão · Acessibilidade pedonal",
         "close": "Fechar acessibilidade pedonal",
@@ -9500,6 +9533,10 @@
             "dog": {
                 "name": "Cão",
                 "axis": "Acessibilidade pedonal"
+            },
+            "hare": {
+                "name": "Lebre",
+                "axis": "Ciclismo"
             },
             "owl": {
                 "name": "Coruja",

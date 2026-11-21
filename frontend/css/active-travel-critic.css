@@ -1,0 +1,48 @@
+.active-travel-panel {
+    position: fixed;
+    z-index: var(--cb-z-panel);
+    top: calc(var(--map-shell-top-clearance) + var(--cb-space-2));
+    right: var(--right-dock-gap);
+    width: min(27rem, calc(100vw - 2 * var(--right-dock-gap)));
+    max-height: min(75dvh, 50rem);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.active-travel-panel [hidden] { display: none; }
+.active-travel-header {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    align-items: center;
+    padding: var(--cb-space-3);
+    border-bottom: 1px solid var(--cb-line);
+}
+.active-travel-header img { border-radius: 50%; }
+.active-travel-panel p { margin: 0; }
+.active-travel-body { padding: var(--cb-space-3); overflow: auto; }
+.active-travel-grid, .active-travel-detail[open] { display: grid; gap: var(--cb-space-2); }
+.active-travel-score { font-size: var(--cb-text-lg); font-weight: 700; }
+.active-travel-table { width: 100%; border-collapse: collapse; background: var(--cb-surface-2); }
+.active-travel-table :is(th, td) { padding: var(--cb-space-2); text-align: start; }
+.active-travel-table tbody tr { border-top: 1px solid var(--cb-line); }
+.active-travel-detail summary { cursor: pointer; font-weight: 600; }
+.active-travel-detail > label, .active-travel-field { display: grid; gap: var(--cb-space-1); }
+.active-travel-detail :is(input, select) { width: 100%; min-width: 0; }
+.active-travel-detail ul { margin: 0; padding-inline-start: 1.4rem; }
+.active-travel-detail li .btn { text-align: start; white-space: normal; }
+@media (max-width: 767px) {
+    .active-travel-panel {
+        top: auto;
+        bottom: calc(var(--map-shell-bottom-clearance) + var(--cb-space-2));
+        max-height: 54dvh;
+    }
+}
+.active-travel-table th:not(:first-child), .active-travel-table td { text-align: end; }
+.hare-quality {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--cb-space-1) var(--cb-space-2);
+    margin: 0;
+}
+.hare-quality dd { margin: 0; text-align: end; }
+.hare-tier { display: inline-block; width: .8em; height: .8em; border-radius: 50%; margin-inline-end: .45em; }

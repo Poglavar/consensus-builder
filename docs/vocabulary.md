@@ -417,6 +417,12 @@ The share of an authored square's exterior perimeter defined by nearby buildings
 
 The Dog measures the fastest route from each residential building in an exact plan revision to the nearest park or square, shop, and transit stop. Sidewalks and footways form the network. Same-level corners, authored crossings and zebra crossings drawn by the junction model link its parts. The assessment estimates access from a site edge up to 25 m where the connection avoids other buildings and ground-level carriageways. It uses 1.2 m/s and adds 15 seconds at crossings. Each residential building counts once. The score is the mean of the shares reaching a destination within ten minutes, over destination types present in the plan. An absent destination type has unknown coverage. A recorded destination with no route counts as unreachable on the plan network.
 
+### Cycling assessment
+
+The Hare estimates routes from residential buildings to parks, squares, shops and transit stops in an exact plan revision. It follows bike access and direction rules on authored roads and paths. Different levels stay separate. An off-street track needs a bike connection at a crossing of a through street. Missing links do not count as routes. A building or place can link to a rideable segment from its edge within 25 m. Bike reachability is a count of origins and destinations, independent of the lane quality score.
+
+The Hare's lane quality score weights measured metres by direction. A protected track has a dedicated route away from motor traffic, a physical divider in the cross-section, or an explicit separation tag, and scores 100. A painted lane scores 70, shared traffic at 30 km/h or less scores 40, faster shared traffic scores 15, and a direction that prohibits cycling scores 0. Shared streets of unknown speed may still be routed where access allows. Their length is shown without a grade, and the score uses the rated length only. The map shows the lowest grade or a missing grade where directions differ.
+
 ### Private land
 
 A plan's parcel land (on its plan area) that is not public land, in m²; open ground is in neither.

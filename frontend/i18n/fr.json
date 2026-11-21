@@ -9371,6 +9371,39 @@
         "castShare": "Répartition des votes exprimés",
         "refreshResults": "Actualiser les résultats"
     },
+    "hareCritic": {
+        "title": "Lièvre · Cyclabilité",
+        "close": "Fermer l’évaluation cyclable",
+        "loading": "Lecture du réseau cyclable…",
+        "score": "{score}/100 pour les voies cyclables",
+        "noScore": "Qualité cyclable sans score",
+        "coverage": "{score} % sur {length} évalués par sens.",
+        "noNetwork": "Aucune rue ou voie cyclable recensée.",
+        "reachable": "Lieux accessibles",
+        "homes": "Logements avec itinéraire",
+        "connected": "{count} bâtiments résidentiels sur {total} rejoignent un tronçon cyclable.",
+        "noHome": "Le plan ne comporte aucun bâtiment résidentiel.",
+        "inspect": "Examiner un trajet à vélo",
+        "categoryLabel": "Type de destination",
+        "quality": "Qualité par sens",
+        "method": "Comment le Lièvre mesure",
+        "methodText": "Le score est pondéré par longueur et par sens. Une piste protégée vaut 100 points, une bande peinte 70, une rue partagée à 30 km/h ou moins 40, une rue partagée plus rapide 15 et l’accès interdit 0. Les vitesses inconnues sont exclues. Les bâtiments et destinations peuvent être reliés à 25 m au plus. Les trajets suivent les sens et traversées du plan à une vitesse estimée de 15 km/h.",
+        "nearest": "Le plus proche accessible",
+        "noMatch": "Aucun bâtiment résidentiel correspondant.",
+        "noAccess": "Ce bâtiment ne rejoint pas le réseau cyclable.",
+        "noRoute": "Le plan ne comporte aucun itinéraire cyclable pour ce trajet.",
+        "gapText": "Les tirets roses indiquent {crossings} traversées sans liaison cyclable et {ends} fins de voies près d’un itinéraire déconnecté.",
+        "unlinked": "{count} lieux n’ont aucun itinéraire depuis un bâtiment résidentiel.",
+        "unattached": "{count} lieux sont sans liaison avec un tronçon cyclable.",
+        "protected": "Protection physique",
+        "painted": "Bande peinte",
+        "slow": "Rue partagée lente",
+        "fast": "Rue partagée plus rapide",
+        "prohibited": "Vélos interdits",
+        "unknown": "Rue partagée, vitesse inconnue",
+        "metres": "{value} m",
+        "failed": "Impossible d’évaluer la cyclabilité. {reason}"
+    },
     "dogCritic": {
         "title": "Chien · Accessibilité à pied",
         "close": "Fermer l’accessibilité à pied",
@@ -9500,6 +9533,10 @@
             "dog": {
                 "name": "Chien",
                 "axis": "Accessibilité piétonne"
+            },
+            "hare": {
+                "name": "Lièvre",
+                "axis": "Cyclabilité"
             },
             "owl": {
                 "name": "Hibou",

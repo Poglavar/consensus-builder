@@ -364,7 +364,10 @@ and tests opening assumptions against an external road connection delay. The sam
 the browser's month, test dates, access and servicing through `ugt_inspect_plan.openingScenario`.
 Dog uses the plan's sidewalks, footways and crossings to measure walking access within five and ten
 minutes. It shows one selected route on the map and can return the same route and coverage through
-`ugt_inspect_plan.walkability`. Owl and Crow are disabled until their assessments are available.
+`ugt_inspect_plan.walkability`. Hare shares that routing and checks the directions and crossings
+available to bicycles. Its lane score uses measured length by direction, separately from the share
+of reached places and buildings with routes. `ugt_inspect_plan.cycling` returns the same assessment
+and accepts an optional destination ID for a route. Owl and Crow are disabled until their assessments are available.
 Critic assessment introduces no authored edit;
 square and building authoring still use the existing `ugt_draft_space`, `ugt_draft_building`, and
 `ugt_edit_design` primitives.

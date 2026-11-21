@@ -39,7 +39,7 @@ function fixture() {
     return {tools,read,store,plans,refs,calls,publishDesign,tower,park,other,layout};
 }
 describe('first-class named plans',()=>{
-    it('returns the walkability coverage and an individual route through MCP', async () => {
+    it('returns walking and cycling coverage and individual routes through MCP', async () => {
         const { tools, calls } = fixture();
         const plan = JSON.parse(readFileSync(new URL('../../docs/demo/alatau-neighbourhoods/gardens.json', import.meta.url), 'utf8'));
         const home = plan.designs.find(row => row.content.title === 'South 1 · plot 01');
@@ -56,6 +56,15 @@ describe('first-class named plans',()=>{
             const { selectedRoute, homes } = result.walkingAssessment;
             expect(selectedRoute.trip).toEqual(homes.find(row => row.id === ref).routes.green);
             expect(selectedRoute.coordinates.length).toBeGreaterThan(1);
+            const destination = plan.designs.find(row => row.content.title === 'South · market square');
+            const cycling = await client.callTool({ name: 'ugt_inspect_plan', arguments: { plan, limit: 1,
+                cycling: { includeSegments: true, route: { home: ref, category: 'green', destination: destination.cid } } } });
+            expect(cycling.isError, JSON.stringify(cycling.content).slice(0, 800)).not.toBe(true);
+            const rides = cycling.structuredContent.cyclingAssessment;
+            expect(rides).toMatchObject({ score: null, scoredM: 0, categories: { green: { destinations: 13, reachableDestinations: 3 } } });
+            expect(rides.selectedRoute.trip.id).toBe(destination.cid);
+            expect(rides.selectedRoute.coordinates.length).toBeGreaterThan(2);
+            expect(rides.segments[0].tiers).toEqual(['unknown', 'unknown']);
         } finally { await client.close(); await server.close(); }
         expect(calls).toEqual([]);
     });

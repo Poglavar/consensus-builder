@@ -17,6 +17,7 @@ const PlanFile = require('../../frontend/js/plan-file.js');
 const CityJsonExport = require('../../frontend/js/city-json-export.js');
 const BeaverBuildout = require('../../frontend/js/proposals/beaver-buildout.js');
 const DogWalkability = require('../../frontend/js/proposals/dog-walkability.js');
+const HareCycling = require('../../frontend/js/proposals/hare-cycling.js');
 const fail = (code, message, next = { action: 'Inspect the intended named plan revision and use its explicit references.' }) => {
     throw Object.assign(new Error(message), { code, next });
 };
@@ -219,7 +220,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
         }
         return items;
     }
-    async function inspectPlan({ plan: value, filter = {}, includeGeometry = false, offset = 0, limit = 100, openingScenario, walkability }) {
+    async function inspectPlan({ plan: value, filter = {}, includeGeometry = false, offset = 0, limit = 100, openingScenario, walkability, cycling }) {
         if (!Number.isInteger(offset) || offset < 0 || !Number.isInteger(limit) || limit < 1 || limit > 200) fail('invalid-pagination', 'Use a nonnegative offset and a limit between 1 and 200.');
         const plan = await resolvePlan(value), all = inventory(plan);
         const anchor = filter.relativeTo && all.find(item => item.ref === filter.relativeTo.ref);
@@ -247,9 +248,24 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
                 walkingAssessment.selectedRoute = { home, category, trip: origin.routes[category], coordinates: route(home, category) };
             }
         }
+        let cyclingAssessment;
+        if (cycling) {
+            const { selectTrip, segments, ...summary } = HareCycling.evaluate(plan.plan, plan.designs);
+            cyclingAssessment = summary;
+            if (cycling.includeSegments) cyclingAssessment.segments = segments;
+            if (cycling.route) {
+                const { home, category, destination } = cycling.route;
+                if (!summary.homes.some(row => row.id === home)) fail('selection-not-found', 'The cycling route needs a residential building ref from this plan.');
+                if (destination && !summary.destinations.some(row => row.id === destination && row.category === category)) {
+                    fail('selection-not-found', 'The cycling route needs a destination ID from this category in the plan assessment.');
+                }
+                cyclingAssessment.selectedRoute = { home, category, ...selectTrip(home, category, destination) };
+            }
+        }
         return { cid: plan.cid, title: plan.plan.title, view: plan.plan.view, schedule: plan.plan.schedule || null,
             ...(openingScenario && { openingAssessment: BeaverBuildout.evaluate(BeaverBuildout.inventory(plan.plan, plan.designs), openingScenario) }),
             ...(walkingAssessment && { walkingAssessment }),
+            ...(cyclingAssessment && { cyclingAssessment }),
             items: matched.slice(offset, offset + limit).map(({ geometry, ...item }) => includeGeometry ? { ...item, geometry } : item),
             total: matched.length, offset, truncated: offset + limit < matched.length,
             selectionBasis: 'References belong to this immutable named plan revision. Compass selection requires the whole object bbox beyond the anchor bbox.',
