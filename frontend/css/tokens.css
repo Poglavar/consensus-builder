@@ -90,6 +90,20 @@
     --cb-buildout-hatch-ground: rgba(255, 251, 235, 0.45);
     --cb-buildout-crane: #92400e;
 
+    /* Critics on the 2D map. A critic's animated marker (css/critic-tour.css) casts this shadow on
+       the tiles. The Square critic (css/square-critic.css, js/proposals/square-critic.js) draws the
+       square's edges as walled, open or unknown, its ground, and the proposed and existing
+       buildings around it. The map tiles stay light in every theme, so these do too. */
+    --cb-map-marker-shadow: rgba(24, 36, 51, 0.5);
+    --cb-critic-square-wall: #18846b;
+    --cb-critic-square-gap: #b86821;
+    --cb-critic-square-unknown: #6f7781;
+    --cb-critic-square-ground: #f1c87a;
+    --cb-critic-square-proposed: #416f89;
+    --cb-critic-square-proposed-edge: #224c63;
+    --cb-critic-square-existing: #85858d;
+    --cb-critic-square-existing-edge: #545457;
+
     /* Sun and shadows (css/three-sun.css): the icon runs from dawn to noon colour with the sun's
        height; the slider's band shows day against night. */
     --cb-sun-noon: #f59e0b;

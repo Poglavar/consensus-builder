@@ -32,13 +32,13 @@
 .beaver-critic-results { display: grid; gap: var(--cb-space-1); }
 .beaver-critic-total, .beaver-critic-member {
     background: var(--cb-surface-2);
-    border-inline-start: 3px solid var(--beaver-color, #667181);
+    border-inline-start: 3px solid var(--beaver-color, var(--cb-text-muted));
     border-radius: var(--cb-radius-sm);
     padding: var(--cb-space-2);
 }
-.beaver-critic-panel [data-status="ready"] { --beaver-color: #16785e; }
-.beaver-critic-panel [data-status="blocked"] { --beaver-color: #ac422d; }
-.beaver-critic-panel [data-status="later"] { --beaver-color: #5866a1; }
+.beaver-critic-panel [data-status="ready"] { --beaver-color: var(--cb-success); }
+.beaver-critic-panel [data-status="blocked"] { --beaver-color: var(--cb-danger); }
+.beaver-critic-panel [data-status="later"] { --beaver-color: var(--cb-info); }
 .beaver-critic-results dt { font-weight: 600; }
 .beaver-critic-members { max-height: 14rem; overflow: auto; display: grid; gap: var(--cb-space-1); }
 .beaver-critic-member { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--cb-space-1) var(--cb-space-2); }

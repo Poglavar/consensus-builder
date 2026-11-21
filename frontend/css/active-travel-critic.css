@@ -30,7 +30,7 @@
 .active-travel-detail :is(input, select) { width: 100%; min-width: 0; }
 .active-travel-detail ul { margin: 0; padding-inline-start: 1.4rem; }
 .active-travel-detail li .btn { text-align: start; white-space: normal; }
-@media (max-width: 767px) {
+@media (max-width: 767.98px) {
     .active-travel-panel {
         top: auto;
         bottom: calc(var(--map-shell-bottom-clearance) + var(--cb-space-2));

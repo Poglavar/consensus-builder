@@ -11,7 +11,7 @@
     height: 100%;
     border: 2px solid white;
     border-radius: 50%;
-    filter: drop-shadow(0 2px 2px #18243380);
+    filter: drop-shadow(0 2px 2px var(--cb-map-marker-shadow));
 }
 .critic-tour-marker--dog img { animation: critic-dog-trot 300ms ease-in-out infinite alternate; }
 .critic-tour-marker--hare img { animation: critic-hare-hop 330ms ease-in-out infinite; }
