@@ -259,7 +259,8 @@ test.describe('Plan arithmetic @features', () => {
     await dialog.locator('[data-plan-compare-side-by-side]').click();
     await expect(page.locator('#planning-compare-left')).toHaveValue(`agreement:${agreements[0]}`);
     await expect(page.locator('#planning-compare-right')).toHaveValue(`agreement:${agreements[1]}`);
-    await expect(page.locator('#planning-compare-left option', { hasText: 'Agreement: Houses deal' })).toHaveCount(1);
+    // The picker groups its sides (e97b5b618): an agreement is an option of the Agreements group.
+    await expect(page.locator('#planning-compare-left optgroup[label="Agreements"] option', { hasText: /^Houses deal( · |$)/ })).toHaveCount(1);
     await expect(page.locator('#planning-compare-left option', { hasText: 'Unplanned terms' })).toHaveCount(0);
     expect(await applied()).toEqual(before);
   });
