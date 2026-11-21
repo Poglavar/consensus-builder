@@ -323,8 +323,20 @@ export function createBrowserParcelRuntime(options = {}) {
         trimAdapters();
         return instancePromise;
     }
-    return Object.freeze({
+    const runtime = Object.freeze({
         describe(sourceId, customDescriptor) { return publicSourceInfo(descriptor(sourceId, customDescriptor)); },
+        // The bindings of several sites (a plan's members) from one reading of the source, read from
+        // this browser as every viewport query is, so a source that answers only visitors in its own
+        // country binds too; decided by the server's own code (source-binding.js computeSourceBindings).
+        // sites: [{ site, toleranceM }] → [{ site, binding }], each binding's source `browser:<id>`.
+        async bindSites(sourceId, sites, customDescriptor, { signal } = {}) {
+            const known = descriptor(sourceId, customDescriptor);
+            const reader = { queryGeometry: geometry => runtime.query(sourceId, 'queryGeometry', [geometry], customDescriptor, { signal }) };
+            // Loaded on first use: the binding code is a chunk of its own, not part of every map's worker.
+            const { computeSourceBindings } = await import('./source-binding.js');
+            return computeSourceBindings(reader, sites, { sourceId, snapshotId: known.snapshotId || null, limits: known, origin: 'browser',
+                log: message => console.log(`[${new Date().toISOString()}] [parcel-worker] ${sourceId}: ${message}`) });
+        },
         async query(sourceId, method, args, customDescriptor, { onProgress, signal } = {}) {
             if (!['queryBounds', 'queryIds', 'queryGeometry', 'queryPoint'].includes(method)) throw upstreamError('Unknown browser parcel operation.', 400);
             // Cached adapters can serve several viewport cells. Subscribe for each query's
@@ -365,4 +377,5 @@ export function createBrowserParcelRuntime(options = {}) {
         sources: catalog.sources.filter(source => browserParcelFactories[source.adapter]),
         clear() { adapters.clear(); }
     });
+    return runtime;
 }

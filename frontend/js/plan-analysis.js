@@ -6,10 +6,41 @@
     if (root) root.PlanAnalysis = api.browser(root);
 })(typeof window === 'undefined' ? null : window, function () {
     'use strict';
-    // Members' bindings are asked for a few at a time (draft-link.js mapLimit): one after another, a
-    // 113-design plan spent 40 s of a 41 s read waiting on 113 binding round trips.
     const draftLink = () => (typeof window !== 'undefined' && window.DraftLink) || require('./draft-link.js');
-    const BIND_CONCURRENCY = 6;
+    // The parcel sources this API holds itself, by the route that serves their parcels: the Croatian
+    // cadastre and the imported cities. Every other source is a provider's own service.
+    const SERVER_SOURCES = Object.freeze({ 'hr-cadastre': '/parcels', 'oss-wfs': '/parcels',
+        'parcel-ba': '/parcel-ba', 'parcel-bg': '/parcel-bg', 'parcel-lj': '/parcel-lj', 'parcel-nyc': '/parcel-nyc' });
+    const onServer = sourceId => !sourceId || sourceId === 'none' || Object.hasOwn(SERVER_SOURCES, sourceId);
+    // Bindings asked of the API at once, each a request of its own (draft-link.js mapLimit).
+    const SERVER_BIND_CONCURRENCY = 6;
+
+    // The members' bindings, in member order. A provider's source is read ONCE for all the members
+    // it binds, in the visitor's browser (bindInBrowser(sourceId, members) → bindings), as the map
+    // reads parcels: one reading instead of one per design (a 113-design plan made 113, 40 s of a
+    // 41 s read), and a source that answers only its own country's visitors binds too. A source this
+    // API holds, or none, is bound here per member (bindOnServer(member, sourceId)), a few at a time.
+    // members: [{ content, source }] where source is the plan's recorded source for that member.
+    async function bindMembers(members, { sourceOf, bindOnServer, bindInBrowser }) {
+        const bindings = new Array(members.length);
+        const server = [], browser = new Map();
+        members.forEach((member, index) => {
+            const sourceId = sourceOf(member);
+            if (onServer(sourceId)) server.push({ index, sourceId });
+            else browser.set(sourceId, [...(browser.get(sourceId) || []), index]);
+        });
+        await Promise.all([
+            draftLink().mapLimit(server, SERVER_BIND_CONCURRENCY, async ({ index, sourceId }) => {
+                bindings[index] = await bindOnServer(members[index], sourceId);
+            }),
+            ...[...browser].map(async ([sourceId, indexes]) => {
+                const answers = await bindInBrowser(sourceId, indexes.map(index => members[index]));
+                if (!Array.isArray(answers) || answers.length !== indexes.length) throw new Error('Parcel coverage is unavailable.');
+                indexes.forEach((index, position) => { bindings[index] = answers[position]; });
+            })
+        ]);
+        return bindings;
+    }
     // declared(cid): the parcel ids of this device's copy of a member, or null. That copy's own
     // declaration is what applying it on the map uses; a design not yet published has never been
     // checked against its binding, which can name fewer parcels than its pieces stand on.
@@ -61,12 +92,11 @@
         return shapes.length ? unite(shapes) : null;
     }
 
-    async function prepare(plan, { resolve, bind, parcels, materialize, declared = () => null, inside = null, siteOf, unite }) {
+    async function prepare(plan, { resolve, bindAll, parcels, materialize, declared = () => null, inside = null, siteOf, unite }) {
         const snapshot = await resolve(plan);
         const designs = [];
         const sources = new Map();
-        const bindings = await draftLink().mapLimit(snapshot.designs, BIND_CONCURRENCY,
-            member => bind(member.content, snapshot.designSources?.[member.cid]));
+        const bindings = await bindAll(snapshot.designs.map(member => ({ content: member.content, source: snapshot.designSources?.[member.cid] })));
         for (const [index, member] of snapshot.designs.entries()) {
             const binding = bindings[index];
             if (!binding || binding.coverage === 'unknown' || binding.unknownM2 > 0) throw new Error('Parcel coverage is unavailable.');
@@ -109,8 +139,7 @@
             return answer;
         }
         async function parcels(source, ids) {
-            const paths = { 'hr-cadastre': '/parcels', 'oss-wfs': '/parcels',
-                'parcel-ba': '/parcel-ba', 'parcel-bg': '/parcel-bg', 'parcel-lj': '/parcel-lj', 'parcel-nyc': '/parcel-nyc' };
+            const paths = SERVER_SOURCES;
             const features = [];
             // Bound the request size; imported database sources accept one identity per query.
             const size = paths[source] === '/parcels' ? 50 : 1;
@@ -124,25 +153,17 @@
             }
             return features;
         }
-        // One answer per binding request for the page: Plan stats, Compare and Compare plans read the
-        // same members again, and two plans often share their streets and parks. A failed one is asked again.
-        const bindings = new Map();
         return { prepare: plan => prepare(plan, {
             resolve: row => win.PlanWorkspace.resolve(row),
-            bind: (content, source) => {
-                const site = win.__siteBinding.siteOf(content);
-                const sourceId = source?.sourceId || win.DesignSync.parcelSourceIdOf(content.city, site);
-                const body = { city: content.city, site, toleranceM: content.toleranceM,
-                    parcelSourceId: sourceId === 'hr-cadastre' ? 'oss-wfs' : sourceId };
-                const key = JSON.stringify(body);
-                if (!bindings.has(key)) {
-                    bindings.set(key, request('/designs/binding', body).then(answer => answer.binding, error => {
-                        bindings.delete(key);
-                        throw error;
-                    }));
-                }
-                return bindings.get(key);
-            },
+            bindAll: members => bindMembers(members, {
+                sourceOf: ({ content, source }) => source?.sourceId || win.DesignSync.parcelSourceIdOf(content.city, win.__siteBinding.siteOf(content)),
+                bindOnServer: async ({ content }, sourceId) => (await request('/designs/binding', { city: content.city,
+                    site: win.__siteBinding.siteOf(content), toleranceM: content.toleranceM,
+                    parcelSourceId: sourceId === 'hr-cadastre' ? 'oss-wfs' : sourceId })).binding,
+                bindInBrowser: async (sourceId, members) => (await win.BrowserParcelSources.bindSites(sourceId,
+                    members.map(({ content }) => ({ site: win.__siteBinding.siteOf(content), toleranceM: content.toleranceM ?? 0 })),
+                    { city: members[0].content.city })).map(answer => answer.binding)
+            }),
             parcels,
             siteOf: content => win.__siteBinding.siteOf(content),
             // The shared clip (parcel-arrangement.js clipWith), on the grid every stage uses.
@@ -158,5 +179,5 @@
             }
         }) };
     }
-    return { prepare, planLand, explainRefusal, browser };
+    return { prepare, planLand, explainRefusal, bindMembers, browser };
 });

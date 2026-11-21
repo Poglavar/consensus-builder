@@ -26,7 +26,12 @@ Related: [unsurveyed ground](unsurveyed-ground.md), [lens model](lens-model.md).
    candidate parcel (an indexed search over the full cadastre) and decides with the browser's function:
    `POST /designs/binding { site, toleranceM }`, a read (like `/parcels/under`). The browser may
    preview with the same function over loaded parcels, labelled as a preview; publishing always uses the
-   server's answer.
+   server's answer. Reading a plan (Plan stats, Compare) binds its members over a provider's source in
+   the visitor's parcel worker instead (`BrowserParcelSources.bindSites`): one complete reading of the
+   source for all the members, by the server's own code (`source-binding.js computeSourceBindings`),
+   not the parcels the map happened to load, so a source that answers only its own country's visitors
+   binds too. Such a binding's `source` is `browser:<sourceId>`; a source this API holds (the Croatian
+   cadastre, the imported cities) is still bound by `POST /designs/binding`.
 2. **One function in both places** (`site-binding.js bindingFromParcels`, geometry-tolerances.md).
    Bound ⇔ `site ∩ parcel` is ground: non-empty after an inward buffer of
    `max(toleranceM, INTRUSION_NOISE_M) / 2` (equivalent to "largest inscribed circle wider than the

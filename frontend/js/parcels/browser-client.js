@@ -66,6 +66,9 @@
         queryIds: (sourceId, ids, options) => query(sourceId, 'queryIds', [ids], options),
         queryGeometry: (sourceId, geometry, options) => query(sourceId, 'queryGeometry', [geometry], options),
         queryPoint: (sourceId, point, options) => query(sourceId, 'queryPoint', [point], options),
+        // Several sites' bindings from one reading of the source, in this browser (a plan's members):
+        // sites [{ site, toleranceM }] → [{ site, binding }] (backend/parcels/source-binding.js).
+        bindSites: (sourceId, sites, options) => query(sourceId, 'bindSites', [sites], options),
         // The source's catalog wording and links, read from the bundled catalog (no server request).
         describe: (sourceId, options) => query(sourceId, 'describe', [], options),
         // Forget every source's failure cooldown, so an explicit Retry reads the provider again.

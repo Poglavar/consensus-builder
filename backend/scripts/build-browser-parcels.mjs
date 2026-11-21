@@ -11,6 +11,9 @@ export async function buildBrowserParcels({ outdir = resolve(root, 'frontend/ass
         // Keep dependency identities relative to this checkout when node_modules is shared by
         // symlink between worktrees; otherwise identical chunks acquire different file names.
         format: 'esm', splitting: true, minify: true, target: ['es2022'], legalComments: 'external', preserveSymlinks: true,
+        // The shared frontend modules the binding uses (site-binding.js and its helpers) require turf
+        // as the backend does; frontend/ has no node_modules of its own.
+        nodePaths: [resolve(root, 'backend/node_modules')],
         define: { 'process.env.NODE_ENV': '"production"' },
         banner: { js: '// Generated shared parcel worker asset; rebuild with npm run build:parcels:browser.' },
         metafile: true, plugins: [{ name: 'browser-snapshot-storage', setup(builder) {

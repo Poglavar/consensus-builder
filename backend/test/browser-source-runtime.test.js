@@ -162,6 +162,24 @@ describe('createBrowserParcelRuntime', () => {
         expect(seen).toHaveLength(1);
     });
 
+    it('binds a plan\'s sites from one reading of the source in this browser, as the server would decide them', async () => {
+        const square = (w, s, e, n) => ({ type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] });
+        const parcel = (id, geometry) => ({ type: 'Feature', id, geometry, properties: { id, parcelId: id, sourceId: 'custom.bind', sourceParcelId: id } });
+        const reads = [];
+        const customDescriptor = { id: 'custom.bind', adapter: 'test', endpoint: 'https://provider.test/data' };
+        const runtime = createBrowserParcelRuntime({ factories: { test: async () => ({
+            queryGeometry: async geometry => { reads.push(geometry); return { complete: true, features: [
+                parcel('A', square(20, 40, 20.001, 40.001)), parcel('B', square(20.001, 40, 20.002, 40.001))] }; }
+        }) } });
+        const bound = await runtime.bindSites('custom.bind', [
+            { site: square(20.0002, 40.0002, 20.0008, 40.0008) },
+            { site: square(20.0012, 40.0002, 20.0018, 40.0008) }
+        ], customDescriptor);
+        expect(reads).toHaveLength(1);
+        expect(bound.map(result => [result.binding.source, result.binding.parcels.map(item => item.parcelId)]))
+            .toEqual([['browser:custom.bind', ['A']], ['browser:custom.bind', ['B']]]);
+    });
+
     it('isolates source progress and swallows observer errors while still unsubscribing on query errors', async () => {
         const broadcasters = new Map();
         let rejectQuery;

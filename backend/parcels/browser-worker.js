@@ -17,6 +17,11 @@ self.addEventListener('message', async ({ data }) => {
         }
         if (method === 'describe') { self.postMessage({ id, result: runtime.describe(sourceId, customDescriptor) }); return; }
         if (method === 'resetCooldowns') { self.postMessage({ id, result: await runtime.resetCooldowns() }); return; }
+        // A plan's sites bound from one reading of their source (args[0]: [{ site, toleranceM }]).
+        if (method === 'bindSites') {
+            self.postMessage({ id, result: await runtime.bindSites(sourceId, args[0], customDescriptor, { signal: controller.signal }) });
+            return;
+        }
         // One building cell of a URL building source, read from its service directly (no relay).
         if (method === 'buildingCell') {
             buildingCells ||= createBrowserBuildingCells();

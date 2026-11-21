@@ -3,7 +3,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import * as turfModule from '@turf/turf';
 import {
-    computeSourceBinding, computeSourceParcelActBinding, queryTiles, MAX_SOURCE_BINDING_QUERIES,
+    computeSourceBinding, computeSourceBindings, computeSourceParcelActBinding, queryTiles, MAX_SOURCE_BINDING_QUERIES,
     SOURCE_BINDING_TIME_BUDGET_MS, TILE_CONCURRENCY
 } from '../parcels/source-binding.js';
 import { areaLimitError, validateBounds } from '../parcels/source-contract.js';
@@ -287,6 +287,45 @@ describe('computeSourceBinding over a site larger than one source query', () => 
             .rejects.toMatchObject({ code: 'parcel-source-area-limit', status: 422, message: expect.stringMatching(/took over 40 s/) });
         expect(adapter.queryGeometry.mock.calls.length).toBe(TILE_CONCURRENCY);
         expect(log).toHaveBeenCalledWith(expect.stringMatching(/^refused after 4 queries/));
+    });
+});
+
+// A plan's members bound together: one reading of the source for all of them, each site decided as alone.
+describe('computeSourceBindings', () => {
+    const features = [
+        parcel('201', square(-79.384, 43.652, -79.379, 43.657)),
+        parcel('202', square(-79.379, 43.652, -79.374, 43.657)),
+        parcel('203', square(-79.384, 43.657, -79.374, 43.662))
+    ];
+    const west = square(-79.3838, 43.6522, -79.3802, 43.6548);
+    const east = square(-79.3788, 43.6522, -79.3752, 43.6548);
+    const across = square(-79.381, 43.6555, -79.377, 43.6585);
+    const now = () => new Date('2026-11-21T12:00:00.000Z');
+
+    it('reads the source once for every site, and binds each exactly as it is bound alone', async () => {
+        const adapter = adapterWith(features);
+        const together = await computeSourceBindings(adapter, [{ site: west }, { site: east, toleranceM: 0.5 }, { site: across }],
+            { sourceId: SOURCE, now });
+        expect(adapter.queryGeometry).toHaveBeenCalledTimes(1);
+        for (const [index, [geometry, toleranceM]] of [[west, 0], [east, 0.5], [across, 0]].entries()) {
+            const alone = await computeSourceBinding(adapterWith(features), { site: geometry, toleranceM, sourceId: SOURCE, now });
+            expect(together[index]).toEqual(alone);
+        }
+        expect(together.map(result => result.binding.parcels.map(item => item.parcelId))).toEqual([
+            ['CA-ON-TORONTO-201'], ['CA-ON-TORONTO-202'], ['CA-ON-TORONTO-201', 'CA-ON-TORONTO-202', 'CA-ON-TORONTO-203']
+        ]);
+    });
+
+    it('names a binding read in the browser by its origin, and refuses an unknown origin or no sites', async () => {
+        const [result] = await computeSourceBindings(adapterWith(features), [{ site: west }], { sourceId: SOURCE, now, origin: 'browser' });
+        expect(result.binding.source).toBe('browser:ca-on-toronto');
+        await expect(computeSourceBindings(adapterWith(features), [{ site: west }], { sourceId: SOURCE, origin: 'elsewhere' })).rejects.toThrow(/origin/);
+        await expect(computeSourceBindings(adapterWith(features), [], { sourceId: SOURCE })).rejects.toThrow(/sites/);
+    });
+
+    it('refuses every site when the one reading fails', async () => {
+        const adapter = adapterWith(features, { queryGeometry: vi.fn(async () => ({ type: 'FeatureCollection', complete: false, features })) });
+        await expect(computeSourceBindings(adapter, [{ site: west }, { site: east }], { sourceId: SOURCE })).rejects.toThrow(/complete/i);
     });
 });
 

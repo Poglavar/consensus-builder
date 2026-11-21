@@ -1,0 +1,28 @@
+Bundled license information:
+
+xmlchars/xml/1.0/ed5.js:
+  /**
+   * Character classes and associated utilities for the 5th edition of XML 1.0.
+   *
+   * @author Louis-Dominique Dubeau
+   * @license MIT
+   * @copyright Louis-Dominique Dubeau
+   */
+
+xmlchars/xml/1.1/ed2.js:
+  /**
+   * Character classes and associated utilities for the 2nd edition of XML 1.1.
+   *
+   * @author Louis-Dominique Dubeau
+   * @license MIT
+   * @copyright Louis-Dominique Dubeau
+   */
+
+xmlchars/xmlns/1.0/ed3.js:
+  /**
+   * Character class utilities for XML NS 1.0 edition 3.
+   *
+   * @author Louis-Dominique Dubeau
+   * @license MIT
+   * @copyright Louis-Dominique Dubeau
+   */

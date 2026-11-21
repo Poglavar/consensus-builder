@@ -3,16 +3,18 @@
 // own function (site-binding.js bindingFromParcels) decides. The source adapter owns completeness;
 // this module refuses to turn a partial provider response into binding evidence. A site larger than
 // the source answers in one query is read in tiles (readCandidates), for every source alike.
-import { createRequire } from 'node:module';
+// Plain imports, no node:module: the browser's parcel worker bundles this module too (bindSites).
 import * as turfModule from '@turf/turf';
 import { wgs84BboxAreaKm2 } from '../utils/helpers.js';
 import { AREA_LIMIT_CODE, areaLimitError } from './source-contract.js';
 import { quarters, boxPolygon } from '../buildings/split-read.js';
+import siteBinding from '../../frontend/js/proposals/site-binding.js';
+import geometryTolerances from '../../frontend/js/geometry-tolerances.js';
+import parcelArrangement from '../../frontend/js/proposals/parcel-arrangement.js';
 
-const require = createRequire(import.meta.url);
-const { bindingFromParcels, normalizeTolerance } = require('../../frontend/js/proposals/site-binding.js');
-const { snapGeometry } = require('../../frontend/js/geometry-tolerances.js');
-const { clipWith } = require('../../frontend/js/proposals/parcel-arrangement.js');
+const { bindingFromParcels, normalizeTolerance } = siteBinding;
+const { snapGeometry } = geometryTolerances;
+const { clipWith } = parcelArrangement;
 const turf = turfModule.default || turfModule;
 // More candidate parcels than this is not a proposal (the same cap as /parcels/under).
 export const MAX_SOURCE_BINDING_PARCELS = 5000;
@@ -257,30 +259,52 @@ const logLine = sourceId => message => console.log(`[${new Date().toISOString()}
  *   maxBboxHeightM, where it declares them (readCandidates). `log(message)` takes tile progress.
  *   `timeBudgetMs` and `clock` (ms) bound how long the source is read (SOURCE_BINDING_TIME_BUDGET_MS).
  */
-export async function computeSourceBinding(adapter, {
-    site, toleranceM = 0, sourceId, snapshotId = null, now = () => new Date(), limits = null, log = null,
-    timeBudgetMs = SOURCE_BINDING_TIME_BUDGET_MS, clock = Date.now
+export async function computeSourceBinding(adapter, { site, toleranceM = 0, ...options } = {}) {
+    const [result] = await computeSourceBindings(adapter, [{ site, toleranceM }], options);
+    return result;
+}
+
+/**
+ * The bindings of several sites over one parcel source, from ONE reading of it: the candidates of
+ * all the sites together (their union, tiled as one site is), then each site decided over the
+ * candidates near it, exactly as alone. A plan's members are bound this way: one reading of the
+ * source instead of one per design. `origin` names where the source was read: 'server' (this API)
+ * or 'browser' (the visitor's parcel worker, js/parcels/browser-client.js, which reaches a source
+ * that answers only its own country's visitors); it prefixes each binding's `source`.
+ * @param sites [{ site, toleranceM }] (GeoJSON Polygon/MultiPolygon, EPSG:4326)
+ * @returns [{ site, binding }] in the order of `sites`
+ */
+export async function computeSourceBindings(adapter, sites, {
+    sourceId, snapshotId = null, now = () => new Date(), limits = null, log = null,
+    timeBudgetMs = SOURCE_BINDING_TIME_BUDGET_MS, clock = Date.now, origin = 'server'
 } = {}) {
     if (!adapter || typeof adapter.queryGeometry !== 'function') throw new TypeError('A parcel source adapter is required.');
     if (typeof sourceId !== 'string' || !sourceId) throw new TypeError('sourceId is required.');
+    if (!Array.isArray(sites) || !sites.length) throw new TypeError('sites must name at least one site.');
+    if (!['server', 'browser'].includes(origin)) throw new TypeError('origin must be server or browser.');
     // On the shared grid, as the browser holds every site and parcel.
-    const normalizedSite = snapGeometry(normalizeSite(site));
-    const tolerance = normalizeTolerance(toleranceM);
-    const { parcels, regions } = await readCandidates(adapter, normalizedSite, { limits, sourceId, log: log || logLine(sourceId), timeBudgetMs, clock });
+    const normalized = sites.map(entry => ({ site: snapGeometry(normalizeSite(entry?.site)), toleranceM: normalizeTolerance(entry?.toleranceM ?? 0) }));
+    // The sites together, by the shared clip: one valid area for the source's query and its tiles.
+    const area = normalized.length === 1 ? normalized[0].site : snapGeometry(normalizeSite(normalized.slice(1).reduce((sum, entry) =>
+        clipWith(turf, 'union', sum, turf.feature(entry.site), { site: 'source-binding.sites' }), turf.feature(normalized[0].site)).geometry));
+    const { parcels, regions } = await readCandidates(adapter, area, { limits, sourceId, log: log || logLine(sourceId), timeBudgetMs, clock });
+    const boxes = parcels.map(parcel => turf.bbox(turf.feature(parcel.geometry)));
+    const meets = ([w, s, e, n], [pw, ps, pe, pn]) => !(pe < w || pw > e || pn < s || ps > n);
 
     // A clip the shared clipper cannot do (after its own deterministic retries, as in the browser)
     // throws a typed ClipFailure; nothing is bound on a guess.
     const parcelSource = { sourceId, snapshotId: snapshotId || null };
-    const binding = bindingFromParcels(normalizedSite, parcels, {
-        turf,
-        toleranceM: tolerance,
-        regions,
-        source: `server:${sourceId}`
+    const computedAt = nowIso(now);
+    return normalized.map(({ site, toleranceM }) => {
+        const box = turf.bbox(turf.feature(site));
+        const binding = bindingFromParcels(site, normalized.length === 1 ? parcels : parcels.filter((_, index) => meets(box, boxes[index])), {
+            turf,
+            toleranceM,
+            regions,
+            source: `${origin}:${sourceId}`
+        });
+        return { site, binding: { ...binding, parcelSource, computedAt } };
     });
-    return {
-        site: normalizedSite,
-        binding: { ...binding, parcelSource, computedAt: nowIso(now) }
-    };
 }
 
 export async function computeSourceParcelActBinding(adapter, declaredIds, {

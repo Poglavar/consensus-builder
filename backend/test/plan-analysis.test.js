@@ -2,14 +2,14 @@ import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const turf = require('@turf/turf');
-const { prepare, planLand, explainRefusal } = require('../../frontend/js/plan-analysis.js');
+const { prepare, planLand, explainRefusal, bindMembers } = require('../../frontend/js/plan-analysis.js');
 
 const snapshot = { cid: 'saved-plan', content: { title: 'Garden plan' },
     designs: [{ cid: 'saved-design', content: { title: 'Original garden' } }],
     designSources: { 'saved-design': { sourceId: 'source-a', snapshotId: 'survey-a' } } };
 function ports() {
     const feature = { type: 'Feature', id: 'A', properties: { parcelId: 'A' } };
-    return {
+    const deps = {
         resolve: vi.fn(async () => structuredClone(snapshot)),
         bind: vi.fn(async () => ({ coverage: 'complete', parcels: [{ parcelId: 'A' }], parcelSource: { sourceId: 'source-a' } })),
         parcels: vi.fn(async () => [feature]),
@@ -18,6 +18,9 @@ function ports() {
         siteOf: vi.fn(content => content.site || null),
         unite: vi.fn(features => features[0])
     };
+    // Every member through `bind`, so a test can state one member's binding.
+    deps.bindAll = vi.fn(async members => Promise.all(members.map(member => deps.bind(member.content, member.source))));
+    return deps;
 }
 const square = (x, y, size, properties = {}) => ({ type: 'Feature', properties,
     geometry: { type: 'Polygon', coordinates: [[[x, y], [x + size, y], [x + size, y + size], [x, y + size], [x, y]]] } });
@@ -126,50 +129,42 @@ describe('exact plan analysis', () => {
     });
 });
 
-// A plan's members are bound a few at a time, and one page asks for a binding once.
-describe('reading a large plan', () => {
-    const members = Array.from({ length: 20 }, (_, index) => ({ cid: `member-${index}`, content: { title: `Member ${index}`, site: { index } } }));
-    const plan = { cid: 'large-plan', content: { title: 'Large plan' }, designs: members, designSources: {} };
+// A plan's members are bound per parcel source: a provider's source is read once, in the browser,
+// for all the members it binds; a source this API holds is asked per member, a few at a time.
+describe('binding a plan\'s members', () => {
+    const member = (index, sourceId) => ({ content: { title: `Member ${index}`, index }, source: sourceId ? { sourceId } : null });
+    const binding = (index, where) => ({ coverage: 'complete', parcels: [{ parcelId: `P${index}` }], where });
 
-    it('asks for several members\' bindings at once, at most six, and keeps them in member order', async () => {
-        const deps = ports();
-        deps.resolve.mockImplementation(async () => structuredClone(plan));
+    it('reads each provider source once for all its members, in the browser, and keeps member order', async () => {
+        const members = [member(0, 'kz-alatau-pkk'), member(1, 'oss-wfs'), member(2, 'kz-alatau-pkk'), member(3, 'rs-rgz-dkp-parcels'), member(4, 'kz-alatau-pkk')];
+        const bindInBrowser = vi.fn(async (_sourceId, group) => group.map(entry => binding(entry.content.index, 'browser')));
+        const bindOnServer = vi.fn(async entry => binding(entry.content.index, 'server'));
+        const bindings = await bindMembers(members, { sourceOf: entry => entry.source?.sourceId ?? null, bindOnServer, bindInBrowser });
+        expect(bindings.map(entry => [entry.parcels[0].parcelId, entry.where]))
+            .toEqual([['P0', 'browser'], ['P1', 'server'], ['P2', 'browser'], ['P3', 'browser'], ['P4', 'browser']]);
+        expect(bindInBrowser.mock.calls.map(([sourceId, group]) => [sourceId, group.map(entry => entry.content.index)]))
+            .toEqual([['kz-alatau-pkk', [0, 2, 4]], ['rs-rgz-dkp-parcels', [3]]]);
+        expect(bindOnServer.mock.calls.map(([entry, sourceId]) => [entry.content.index, sourceId])).toEqual([[1, 'oss-wfs']]);
+    });
+
+    it('asks this API for its own sources and for none, at most six at a time', async () => {
+        const members = Array.from({ length: 20 }, (_, index) => member(index, index % 2 ? 'hr-cadastre' : null));
         let inFlight = 0, most = 0;
-        deps.bind.mockImplementation(async content => {
+        const bindOnServer = vi.fn(async entry => {
             inFlight += 1; most = Math.max(most, inFlight);
             await new Promise(resolve => setImmediate(resolve));
             inFlight -= 1;
-            return { coverage: 'complete', parcels: [{ parcelId: `P${content.site.index}` }], parcelSource: { sourceId: 'source-a' } };
+            return binding(entry.content.index, 'server');
         });
-        deps.parcels.mockImplementation(async (_source, ids) => ids.map(id => ({ type: 'Feature', id, properties: { parcelId: id } })));
-        await prepare(plan, deps);
+        const bindings = await bindMembers(members, { sourceOf: entry => entry.source?.sourceId ?? null, bindOnServer, bindInBrowser: vi.fn() });
         expect(most).toBe(6);
-        expect(deps.materialize.mock.calls[0][0].designs.map(design => design.parcelIds[0])).toEqual(members.map((_, index) => `P${index}`));
+        expect(bindings.map(entry => entry.parcels[0].parcelId)).toEqual(members.map((_, index) => `P${index}`));
     });
 
-    it('asks the server once for a design two plans share, and again after a failed answer', async () => {
-        const answers = [];
-        const fetch = vi.fn(async (_url, options) => {
-            const body = JSON.parse(options.body);
-            const fail = answers.length === 0 && body.site.index === 1;
-            answers.push(body.site.index);
-            return { ok: !fail, status: fail ? 503 : 200, json: async () => (fail ? { error: 'Binding unavailable' }
-                : { binding: { coverage: 'complete', parcels: [], parcelSource: { sourceId: 'source-a' } } }) };
-        });
-        const win = { fetch,
-            DesignSync: { apiBase: () => 'https://api.example', parcelSourceIdOf: () => 'source-a' },
-            __siteBinding: { siteOf: content => content.site },
-            PlanWorkspace: { resolve: async row => row },
-            AgreementHeadless: { materialize: async ({ designs }) => ({ records: designs, fabric: { entriesForCadastre: () => [] } }) },
-            proposalStorage: { getAllProposals: () => [] },
-            __parcelArrangement: { clipWith: (_turf, _op, sum) => sum }, turf };
-        const analysis = require('../../frontend/js/plan-analysis.js').browser(win);
-        const planOf = (cid, sites) => ({ cid, content: {}, designs: sites.map(index => ({ cid: `d${index}`, content: { city: 'x', site: { index } } })) });
-        await expect(analysis.prepare(planOf('first', [1, 2]))).rejects.toThrow('Binding unavailable');
-        await analysis.prepare(planOf('second', [1, 2, 3]));
-        await analysis.prepare(planOf('third', [2, 3]));
-        expect(answers.filter(index => index === 1)).toHaveLength(2);
-        expect(answers.filter(index => index === 2)).toHaveLength(1);
-        expect(answers.filter(index => index === 3)).toHaveLength(1);
+    it('refuses a browser reading that does not answer every member', async () => {
+        await expect(bindMembers([member(0, 'kz-alatau-pkk'), member(1, 'kz-alatau-pkk')], {
+            sourceOf: entry => entry.source.sourceId, bindOnServer: vi.fn(),
+            bindInBrowser: async () => [binding(0, 'browser')]
+        })).rejects.toThrow('Parcel coverage is unavailable.');
     });
 });
