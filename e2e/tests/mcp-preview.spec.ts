@@ -33,6 +33,33 @@ test('MCP draft reference opens an applied local park with no publication @core'
   expect(pageIndex(page).requests.filter(r => r.method === 'POST' && ['/pins', '/designs', '/plans', '/agreements'].includes(r.path))).toEqual([]);
 });
 
+test('a dated MCP plan opens the plan panel and stores the exact schedule without importing a file', async ({ mockApi: page, baseURL }) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await stubBasemapTiles(page);
+  const design = builder.build({ kind: 'space', spaceKind: 'park', site: PARCEL_GEOMETRY, city: 'zagreb', title: 'Dated park' }, { turf });
+  const designCid = cid.cidOfObject(design);
+  const schedule = { [designCid]: { start: '2028-04', end: '2028-11' } };
+  const plan = planRecord.create('Dated preview', [designCid], { at: '45.80025,15.9817,18', mode: '2d', city: 'zagreb', language: 'en' }, schedule);
+  const url = new URL(await privatePreview(page, baseURL!, { plan, designs: [design] }));
+  url.searchParams.set('when', '2028-10');
+  await page.goto(url.href, { waitUntil: 'domcontentloaded' });
+  await waitForMapReady(page);
+  const panel = page.locator('#click-stack');
+  const analysis = panel.getByRole('tab', { name: 'Stats & analysis' });
+  await expect(analysis).toBeVisible({ timeout: 60_000 });
+  await expect.poll(() => page.evaluate(() => (window as any).BuildoutClock.month())).toBe('2028-10');
+  const saved = await page.evaluate(planCid => {
+    const w = window as any;
+    const row = w.PlanWorkspace.list().find((plan: any) => plan.cid === planCid);
+    return row && { published: !!row.published, schedule: row.content.schedule };
+  }, cid.cidOfObject(plan));
+  expect(saved).toEqual({ published: false, schedule });
+  await analysis.press('Enter');
+  await expect(panel.getByRole('button', { name: 'Beaver Independent phases', exact: true })).toBeEnabled();
+  expect(pageIndex(page).requests.some(r => r.method === 'POST' && ['/pins', '/designs', '/plans', '/agreements'].includes(r.path))).toBe(false);
+});
+
 test('MCP granular height and rotation edits reach the live building renderer @core', async ({ mockApi: page, baseURL }, testInfo) => {
   test.setTimeout(120_000);
   await stubBasemapTiles(page);
