@@ -52,19 +52,23 @@
         return { currency: currencyOf(cityConfig) || DEFAULT_ASSUMPTION_CURRENCY,
             landPerSqm: rates.land?.amount ?? null, roadLandPerSqm: rates.roadLand?.amount ?? null,
             salesPerSqm: rates.sale?.amount ?? null, constructionPerSqm: rates.construction?.amount ?? null,
-            rentPerSqmMonth: rates.rent?.amount ?? null, saleTaxShare: rates.saleTax?.amount ?? null, sources: rates };
+            rentPerSqmMonth: rates.rent?.amount ?? null, saleTaxShare: rates.saleTax?.amount ?? null,
+            constructionTaxIncluded: rates.construction?.taxIncluded === true, sources: rates };
     }
 
     // What new floor area is worth, and costs, in one currency. Value is floor area × sale price (the
     // price as quoted, tax included). The all-in cost is the construction (floor area × construction
     // cost), the land (land area × land price per m² of land), the sale tax inside the value (value ×
     // saleTax ÷ (1 + saleTax)) and the value of the existing floor area it replaces at the sale price.
+    // When the construction cost includes that tax on its inputs (`constructionTaxIncluded`, from the
+    // rate's `taxIncluded`), the developer reclaims it from the tax on the sale: the all-in cost is less
+    // `taxReclaimed` (construction × saleTax ÷ (1 + saleTax)); otherwise nothing is reclaimed (0).
     // Profit is value − all-in cost. Annual rent is floor area × monthly rent × 12, and its yield is
-    // on the all-in cost without the sale tax, which a let flat does not pay. A missing price or area
-    // keeps every amount that depends on it unknown (null), never 0. The 3D panel (gain.js), Plan stats
-    // and the MCP comparison count with this.
+    // on the construction, land and replaced value: a landlord who charges no tax on the rent and
+    // reclaims none. A missing price or area keeps every amount that depends on it unknown (null),
+    // never 0. The 3D panel (gain.js), Plan stats and the MCP comparison count with this.
     function newBuildMoney({ floorAreaM2, replacedFloorAreaM2 = null, landAreaM2 = null, salePerM2, constructionPerM2,
-        landPerM2 = null, saleTaxShare = null, rentPerM2Month = null } = {}) {
+        landPerM2 = null, saleTaxShare = null, constructionTaxIncluded = false, rentPerM2Month = null } = {}) {
         const amount = value => (typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null);
         const times = (a, b) => (a === null || b === null ? null : a * b);
         const sum = parts => (parts.some(part => part === null) ? null : parts.reduce((total, part) => total + part, 0));
@@ -76,12 +80,15 @@
         const landCost = times(landArea, land);
         const saleTax = value === null || tax === null ? null : value * tax / (1 + tax);
         const replacedValue = times(replaced, sale);
+        const taxReclaimed = constructionTaxIncluded !== true ? 0
+            : constructionCost === null || tax === null ? null : constructionCost * tax / (1 + tax);
         const buildCost = sum([constructionCost, landCost, replacedValue]);
-        const totalCost = sum([buildCost, saleTax]);
+        const taxed = sum([buildCost, saleTax, taxReclaimed]);
+        const totalCost = taxed === null ? null : buildCost + saleTax - taxReclaimed;
         const profit = value === null || totalCost === null ? null : value - totalCost;
         const annualRent = area === null || rent === null ? null : area * rent * 12;
         const rentYieldOnCost = annualRent === null || buildCost === null || buildCost <= 0 ? null : annualRent / buildCost;
-        return { value, constructionCost, landCost, saleTax, replacedValue, totalCost, profit, annualRent, rentYieldOnCost };
+        return { value, constructionCost, landCost, saleTax, taxReclaimed, replacedValue, totalCost, profit, annualRent, rentYieldOnCost };
     }
 
     // Parcel and road estimates retain the selected observation, including its unit and provenance.
@@ -120,7 +127,9 @@
                     currency: currencyOf(city()) || DEFAULT_ASSUMPTION_CURRENCY,
                     sourceKey: JSON.stringify(rates), sources: rates,
                     sale: economicSources().slider('sale', rates.sale),
-                    construction: economicSources().slider('construction', rates.construction),
+                    // A slid construction cost keeps the tax basis of the rate it starts from.
+                    construction: { ...economicSources().slider('construction', rates.construction),
+                        taxIncluded: rates.construction?.taxIncluded === true },
                     // No land price: its range follows the size of the city's money (its sale price).
                     land: economicSources().slider('land', rates.land, (rates.sale?.amount ?? 0) / FLOOR_AREA_PRICES.sale.perSqm),
                     saleTax: economicSources().slider('saleTax', rates.saleTax),

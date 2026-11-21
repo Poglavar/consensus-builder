@@ -82,4 +82,12 @@ describe('a local rent', () => {
         expect(EconomicSourceSettings.choiceForCity('astana', global).rates).toEqual([
             { metric: 'rent', unit: 'm2-floor-month', amount: 5200, currency: 'KZT', basis: 'assumption', asOf: null, scope: null }]);
     });
+
+    it('keeps a construction cost\'s tax basis through storage', () => {
+        const global = store();
+        const city = { id: 'astana', currency: { code: 'KZT' } };
+        EconomicSourceSettings.saveChoice(city, { version: 1, id: 'local-rates', name: 'My costs', adapter: 'rate-table',
+            rates: [{ metric: 'construction', unit: 'm2-floor', amount: 320000, currency: 'KZT', basis: 'assumption', taxIncluded: true }] }, global);
+        expect(EconomicSourceSettings.choiceForCity('astana', global).rates[0]).toMatchObject({ amount: 320000, taxIncluded: true });
+    });
 });

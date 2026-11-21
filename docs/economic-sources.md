@@ -15,7 +15,11 @@ metrics are independent: `land` and `roadLand` use `m2-land`; `sale` and `constr
 `rent` uses `m2-floor-month`, per m² of floor area per month, the way rents are quoted. A rent's basis
 is `assumption` or `market`, as a sale price's is. `saleTax` uses `share-of-sale`: the share of a sale
 price that is tax (VAT on new housing, 0.16 for 16 %), below 1, on a `statutory` or `assumption`
-basis. Sale prices are as quoted, the tax included where the place charges it.
+basis. Sale prices are as quoted, the tax included where the place charges it. A `construction` row
+may say `taxIncluded: true`: its amount includes that tax on the building's inputs, as a statistics
+office's cost per m² does when it reports what developers paid. A developer selling the floor area
+reclaims that tax from the tax on the sale. A construction cost slid, typed in Settings or passed to
+`ugt_compare` keeps the tax basis of the rate it replaces.
 A residential land appraisal is not a floor-area sale price or a construction cost. A road-land rate
 is a modeling input for affected land, not a statement about compensation or the cost of a road.
 
@@ -97,8 +101,10 @@ and sale-tax sliders can set a price no source gives.
 
 The 3D panel, Plan stats (with Compare plans) and the MCP comparison count new floor area with one
 function, `CityMoney.newBuildMoney` (the vocabulary's "Profit on the new floor area"): value, the
-all-in cost (construction, land, the sale tax inside the value, the value of the floor area it
-replaces), profit, annual rent and the rent's yield on the cost without the sale tax. The land is the
+all-in cost (construction, land, the sale tax inside the value less the tax reclaimed on a
+tax-inclusive construction cost, the value of the floor area it replaces), profit, annual rent and the
+rent's yield on the construction, land and replaced value: a landlord who charges no tax on the rent
+and reclaims none. The land is the
 plan's land in Plan stats, the parcel or the design's parcels or site in the 3D panel, and the union of
 the designs' sites in `ugt_compare`. Plan stats and the 3D panel show the all-in cost with a Cost
 details disclosure of its parts, and a slider for each price; Plan stats also takes the exact number.

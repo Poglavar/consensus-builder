@@ -49,21 +49,24 @@ export function existingFloorArea(geometry, building) {
 
 // What an alternative's new floor area is worth and costs in its city's currency
 // (CityMoney.newBuildMoney, the rule of Plan stats and the 3D panel): value, the all-in cost
-// (construction, land, the sale tax inside the value, the floor area it removes), profit and rent, at
-// the city's rates or at the prices the caller gives, which are scenario assumptions. Each price keeps
-// its source under `prices`.
+// (construction, land, the sale tax inside the value less the tax reclaimed on a tax-inclusive
+// construction cost, the floor area it removes), profit and rent, at the city's rates or at the prices
+// the caller gives, which are scenario assumptions. Each price keeps its source under `prices`; a given
+// construction price keeps the tax basis (taxIncluded) of the city's rate, as the slider does.
 export function moneyOf({ city, floorAreaM2, replacedFloorAreaM2, landAreaM2, prices = {} }) {
     const { currency, rates, unavailable, reason } = cityEconomics(city);
     if (unavailable) throw fail('city-money-unavailable', reason);
     const price = (metric, given) => (finite(given) && given >= 0
-        ? { amount: given, currency, basis: 'assumption', sourceId: 'caller' } : rates[metric] || null);
+        ? { amount: given, currency, basis: 'assumption', sourceId: 'caller',
+            ...(metric === 'construction' && rates.construction?.taxIncluded ? { taxIncluded: true } : {}) }
+        : rates[metric] || null);
     const used = { sale: price('sale', prices.salePerM2), construction: price('construction', prices.constructionPerM2),
         land: price('land', prices.landPerM2), saleTax: price('saleTax', prices.saleTaxShare), rent: price('rent', prices.rentPerM2Month) };
     const amountOf = metric => (used[metric] ? used[metric].amount : null);
     return { currency, unit: 'm2-floor', prices: used, floorAreaM2, replacedFloorAreaM2, landAreaM2,
         ...cityMoney(city).newBuildMoney({ floorAreaM2, replacedFloorAreaM2, landAreaM2, salePerM2: amountOf('sale'),
             constructionPerM2: amountOf('construction'), landPerM2: amountOf('land'), saleTaxShare: amountOf('saleTax'),
-            rentPerM2Month: amountOf('rent') }) };
+            constructionTaxIncluded: used.construction?.taxIncluded === true, rentPerM2Month: amountOf('rent') }) };
 }
 
 // The land an alternative takes, as Plan stats prices it: the ground its designs' sites cover.

@@ -144,6 +144,14 @@ describe('computeValueComparison', () => {
         expect(c.columns.proposed.profit).toBeCloseTo(1200000 - 600000 - 100000 - 240000);
     });
 
+    it('takes off the tax reclaimed on a construction cost that includes it', () => {
+        const c = computeValueComparison({ floorAreas: { built: 0, proposed: 300 }, ...prices, saleTaxShare: 0.25, constructionTaxIncluded: true });
+        // The 600,000 of construction includes 25 % tax: 120,000 of it comes back off the 240,000 owed.
+        expect(c.columns.proposed.taxReclaimed).toBeCloseTo(120000);
+        expect(c.columns.proposed.profit).toBeCloseTo(1200000 - 600000 - 100000 - 240000 + 120000);
+        expect(computeValueComparison({ floorAreas: { built: 0, proposed: 300 }, ...prices }).columns.proposed.taxReclaimed).toBe(0);
+    });
+
     it('greys out what is not there: no permitted massing, no proposed massing', () => {
         const c = computeValueComparison({ floorAreas: { built: 100, planned: null, proposed: 0 }, ...prices });
         expect(c.columns.planned).toMatchObject({ available: false, floorArea: null, value: null, totalCost: null, profit: null });

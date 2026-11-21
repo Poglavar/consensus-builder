@@ -141,7 +141,11 @@ describe('Kazakh city sources', () => {
         for (const rates of [astana, alatau]) {
             expect(rates.saleTax).toMatchObject({ unit: 'share-of-sale', amount: 0.16, basis: 'statutory', asOf: '2026-01-01' });
             expect(rates.saleTax.sourceUrl).toMatch(/^https:\/\/adilet\.zan\.kz\//);
+            // The bureau's construction cost is what developers paid, the VAT on inputs included.
+            expect(rates.construction).toMatchObject({ basis: 'construction-cost', taxIncluded: true });
         }
+        expect(cityMoney('astana').currentAssumptions().constructionTaxIncluded).toBe(true);
+        expect(cityMoney('astana').currentFloorAreaPrices().construction).toMatchObject({ perSqm: 297900, taxIncluded: true });
     });
 });
 
@@ -181,6 +185,15 @@ describe('sale tax', () => {
         expect(() => EconomicSources.rateTable(rateSource('per-floor', [tax({ unit: 'm2-floor' })]))).toThrow(/rate, unit or basis/);
         expect(() => EconomicSources.rateTable(rateSource('market', [tax({ basis: 'market', asOf: '2026-01-01' })]))).toThrow(/rate, unit or basis/);
         expect(() => EconomicSources.rateTable(rateSource('statutory-sale', [rate('sale', 4000, { basis: 'statutory', asOf: '2026-01-01' })]))).toThrow(/rate, unit or basis/);
+    });
+
+    it('may be included in a construction cost, which says so, and nowhere else', () => {
+        const cost = rate('construction', 2300, { basis: 'construction-cost', asOf: '2026-06-30', taxIncluded: true });
+        expect(EconomicSources.rateTable(rateSource('gross-cost', [cost])).rates[0]).toMatchObject({ taxIncluded: true });
+        expect(EconomicSources.rateTable(rateSource('net-cost', [{ ...cost, taxIncluded: false }])).rates[0]).not.toHaveProperty('taxIncluded');
+        expect(() => EconomicSources.rateTable(rateSource('sale-incl', [rate('sale', 4000, { taxIncluded: true })]))).toThrow(/rate, unit or basis/);
+        expect(() => EconomicSources.rateTable(rateSource('text-flag', [{ ...cost, taxIncluded: 'yes' }]))).toThrow(/rate, unit or basis/);
+        expect(CityMoney.assumptionsFor(birmingham).constructionTaxIncluded).toBe(false);
     });
 
     it('starts as an editable 0 where no source states one, and slides as a share up to 30 % or twice the rate', () => {

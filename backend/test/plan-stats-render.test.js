@@ -650,6 +650,25 @@ describe('the all-in cost and profit in Plan stats', () => {
         expect([slot(window, 'annual-rent'), slot(window, 'rent-yield')]).toEqual(['—', '—']);
     });
 
+    it('takes the tax reclaimed on a tax-inclusive construction cost off the all-in cost, and lists it only then', async () => {
+        const kzt = amount => CbFormat.formatMoney(amount, 'KZT', { missing: '—', maxFractionDigits: 0 });
+        const rate = (metric, unit, amount, extra = {}) => ({ metric, unit, amount, currency: 'KZT', basis: 'assumption', ...extra });
+        const city = { id: 'kz-test', currency: { code: 'KZT' }, economics: { sources: [{ version: 1, id: 'kz-test', name: 'Test rates',
+            adapter: 'rate-table', rates: [rate('sale', 'm2-floor', 600000), rate('land', 'm2-land', 10000),
+                rate('construction', 'm2-floor', 300000, { basis: 'construction-cost', asOf: '2026-10-31', taxIncluded: true }),
+                rate('saleTax', 'share-of-sale', 0.16, { basis: 'statutory', asOf: '2026-01-01' })] }] } };
+        const window = openDialog([block('d-1')], { city });
+        await window.showPlanStatsModal({ content: { title: 'Plan' }, cleared: [], landFeature: land });
+        const saleTax = gfa() * 600000 * 0.16 / 1.16, reclaimed = gfa() * 300000 * 0.16 / 1.16;
+        expect(slot(window, 'cost-tax')).toBe(kzt(saleTax));
+        expect(slot(window, 'cost-reclaimed')).toBe('−' + kzt(reclaimed));
+        expect(slot(window, 'total-cost')).toBe(kzt(gfa() * 300000 + landM2 * 10000 + saleTax - reclaimed));
+        const shown = w => w.document.querySelectorAll('[data-cost-part="cost-reclaimed"]').map(node => node.hidden);
+        expect(shown(window)).toEqual([false, false]);
+        // A euro city's starting construction cost includes no tax: nothing to list.
+        expect(shown(await openOn())).toEqual([true, true]);
+    });
+
     it('leaves the all-in cost and profit unknown without a land price, says so, and takes one from its slider', async () => {
         // A pound city with no authority rate has no land price.
         const window = await openOn({}, 'GBP');

@@ -18696,7 +18696,10 @@
             stateLand: { provider: 'kazakhstan-pkk', relaySourceId: 'kz-astana-pkk-esil', districtId: 254, zone: 12 },
             // Sale, rent and construction per m² of total floor area from the Bureau of National Statistics
             // (docs/economic-sources.md). Sale price and rent are published per m² of dwelling area, so they are
-            // scaled by the city's useful ÷ total area of the housing commissioned in the same period.
+            // scaled by the city's useful ÷ total area of the housing commissioned in the same period. The
+            // construction cost is every cost in the building's estimate as the developers paid it (methodology
+            // of order 245/2016, §45), so it includes the VAT on inputs, which the bureau strips only from its
+            // works and investment series: `taxIncluded` lets a developer selling the flats reclaim it.
             economics: { sources: [
                 { version: 1, id: 'kz-bns-housing-prices-2026-10', name: 'Bureau of National Statistics: housing prices, October 2026',
                     adapter: 'rate-table', url: 'https://stat.gov.kz/api/iblock/element/355089/file/ru/',
@@ -18707,7 +18710,8 @@
                 { version: 1, id: 'kz-bns-construction-cost-2026-10', name: 'Bureau of National Statistics: construction cost per m², Jan–Oct 2026',
                     adapter: 'rate-table', url: 'https://stat.gov.kz/api/iblock/element/354948/file/ru/',
                     rates: [{ metric: 'construction', unit: 'm2-floor', amount: 297900, currency: 'KZT', basis: 'construction-cost', asOf: '2026-10-31',
-                        scope: 'Astana housing built by companies, per m² of total area; excludes land and developer profit' }] },
+                        taxIncluded: true,
+                        scope: 'Astana housing built by companies, per m² of total area, VAT on inputs included; excludes land and developer profit' }] },
                 { version: 1, id: 'kz-krisha-mzhs-land-2026-11', name: 'krisha.kz asking prices of plots for apartment blocks, November 2026',
                     adapter: 'rate-table', url: 'https://krisha.kz/prodazha/uchastkov/astana/?das%5Bland.earmarked%5D=6',
                     rates: [{ metric: 'land', unit: 'm2-land', amount: 54700, currency: 'KZT', basis: 'market', asOf: '2026-11-21',
@@ -18756,7 +18760,8 @@
                 { version: 1, id: 'kz-bns-construction-cost-2026-10', name: 'Bureau of National Statistics: construction cost per m², Jan–Oct 2026',
                     adapter: 'rate-table', url: 'https://stat.gov.kz/api/iblock/element/354948/file/ru/',
                     rates: [{ metric: 'construction', unit: 'm2-floor', amount: 291400, currency: 'KZT', basis: 'construction-cost', asOf: '2026-10-31',
-                        scope: 'Almaty city (no Alatau series): housing built by companies, per m² of total area; excludes land and profit' }] },
+                        taxIncluded: true,
+                        scope: 'Almaty city (no Alatau series): housing built by companies, per m² of total area, VAT on inputs included; excludes land and profit' }] },
                 // Alatau publishes no apartment-land price (its land is allocated for a fee the city sets); this is
                 // the press range for house plots in the neighbouring districts, labelled as the proxy it is.
                 { version: 1, id: 'kz-alatau-land-proxy-2026-09', name: 'Forbes.kz review of the Almaty agglomeration land market, September 2026',

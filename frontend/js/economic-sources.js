@@ -8,7 +8,9 @@
     'use strict';
     // Rent is per m² of floor area per month, the way rents are quoted and published. saleTax is the
     // share of a sale price that is tax (VAT on new housing, 0.16 for 16 %), applied to the price as
-    // quoted: sale prices include the tax where the place charges it.
+    // quoted: sale prices include the tax where the place charges it. A construction rate with
+    // `taxIncluded: true` includes that tax on the building's inputs (a statistics office's cost as
+    // the developers paid it), which a developer selling the floor area reclaims from the tax it owes.
     const METRICS = Object.freeze({ land: 'm2-land', roadLand: 'm2-land', sale: 'm2-floor', construction: 'm2-floor', rent: 'm2-floor-month',
         saleTax: 'share-of-sale' });
     const BASES = Object.freeze(['assumption', 'policy-appraisal', 'market', 'construction-cost', 'statutory']);
@@ -53,7 +55,8 @@
                 || ['sale', 'rent'].includes(row.metric) && !['assumption', 'market'].includes(row.basis)
                 || row.metric !== 'construction' && row.basis === 'construction-cost'
                 || row.metric === 'saleTax' && (!['assumption', 'statutory'].includes(row.basis) || row.amount >= 1)
-                || row.metric !== 'saleTax' && row.basis === 'statutory') {
+                || row.metric !== 'saleTax' && row.basis === 'statutory'
+                || row.taxIncluded !== undefined && (row.metric !== 'construction' || typeof row.taxIncluded !== 'boolean')) {
                 throw new Error('Invalid economic rate, unit or basis.');
             }
             seen.add(row.metric);
@@ -61,7 +64,8 @@
             if (row.basis !== 'assumption' && !asOf) throw new Error('Economic evidence requires a valuation date.');
             return { metric: row.metric, unit: row.unit, amount: row.amount, currency: row.currency,
                 basis: row.basis, asOf, sourceId: source.id, sourceName: source.name.trim(),
-                sourceUrl: sourceUrl(source.url), scope: row.scope == null ? null : String(row.scope).slice(0, 160) };
+                sourceUrl: sourceUrl(source.url), scope: row.scope == null ? null : String(row.scope).slice(0, 160),
+                ...(row.taxIncluded ? { taxIncluded: true } : {}) };
         });
         return { version: 1, id: source.id, name: source.name.trim(), adapter: 'rate-table', url: sourceUrl(source.url),
             rates: rates.map(({ sourceId, sourceName, sourceUrl, ...row }) => row) };

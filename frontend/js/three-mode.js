@@ -991,6 +991,7 @@
             constructionPerM2: prices.construction.perSqm,
             landPerM2: prices.land.perSqm,
             saleTaxShare: prices.saleTax.perSqm,
+            constructionTaxIncluded: prices.construction.taxIncluded === true,
             currency: prices.currency,
             parcelCount: lastParcelCount,
             parcelFloorAreas: lastParcelFloorAreas
@@ -1000,13 +1001,15 @@
         const signedClass = value => (value > 0 ? 'gain-positive' : (value < 0 ? 'gain-negative' : ''));
         ['built', 'planned', 'proposed'].forEach(column => {
             const figures = comparison.columns[column];
-            ['value', 'totalCost', 'profit', 'constructionCost', 'landCost', 'saleTax', 'replacedValue'].forEach(row => {
+            ['value', 'totalCost', 'profit', 'constructionCost', 'landCost', 'saleTax', 'taxReclaimed', 'replacedValue'].forEach(row => {
                 const cell = panel.querySelector(`[data-cell="${row}:${column}"]`);
                 if (!cell) return;
                 const amount = figures[row];
                 const shown = typeof amount === 'number';
-                cell.textContent = shown ? `${row === 'profit' && amount > 0 ? '+' : ''}${CbFormat.formatCompact(Math.round(amount))}` : '—';
-                cell.title = shown ? money(amount) : '';
+                // The tax reclaimed is taken off the all-in cost, so it shows as a deduction.
+                const sign = row === 'profit' && amount > 0 ? '+' : (row === 'taxReclaimed' && amount > 0 ? '−' : '');
+                cell.textContent = shown ? `${sign}${CbFormat.formatCompact(Math.round(amount))}` : '—';
+                cell.title = shown ? sign.replace('+', '') + money(amount) : '';
                 cell.className = row === 'profit' && shown ? signedClass(amount) : '';
                 if (!figures.available) cell.classList.add('is-unavailable');
             });
@@ -1092,6 +1095,7 @@
                         ${moneyRow(L.constructionCost, 'constructionCost')}
                         ${moneyRow(L.landCost, 'landCost')}
                         ${moneyRow(L.saleTax, 'saleTax')}
+                        ${prices.construction.taxIncluded ? moneyRow(L.taxReclaimed, 'taxReclaimed') : ''}
                         ${moneyRow(L.replacedValue, 'replacedValue')}
                     </tbody>
                 </table>
@@ -1150,9 +1154,10 @@
             costDetails: threeI18n('threeMode.parcelPanel.costDetails', 'Cost details'),
             landCost: threeI18n('threeMode.parcelPanel.landCost', 'Land'),
             saleTax: threeI18n('threeMode.parcelPanel.saleTaxCost', 'Sale tax'),
+            taxReclaimed: threeI18n('threeMode.parcelPanel.taxReclaimed', 'Tax reclaimed on construction'),
             replacedValue: threeI18n('threeMode.parcelPanel.replacedValue', 'Built value replaced'),
             profit: threeI18n('threeMode.parcelPanel.profit', 'Profit'),
-            profitNote: threeI18n('threeMode.parcelPanel.profitNote', 'Profit = value − all-in cost: construction, land, sale tax and the built value replaced'),
+            profitNote: threeI18n('threeMode.parcelPanel.profitNote', 'Profit = value − all-in cost: construction, land, sale tax less any reclaimed on construction, and the built value replaced'),
             floorArea: threeI18n('threeMode.parcelPanel.floorArea', 'Floor area'),
             floorNote: threeI18n('threeMode.parcelPanel.floorNote', '@ {{h}} m/storey', { h: FLOOR_HEIGHT_M }),
             parcelsLabel: threeI18n('threeMode.proposalPanel.parcelsLabel', 'Parcels')

@@ -72,7 +72,7 @@
             const amount = !row ? '' : row.unit === 'share-of-sale'
                 ? global.CbFormat.formatPercent(row.amount, { maxFractionDigits: 1 })
                 : global.CbFormat.formatMoney(row.amount, row.currency, { maxFractionDigits: 2 }) + (row.unit === 'm2-floor-month' ? t('perMonth') : ' / m²');
-            const content = row ? amount + ' · ' + describe(row, global) : t('unavailable');
+            const content = row ? amount + ' · ' + describe(row, global) + (row.taxIncluded ? ' · ' + t('taxIncluded') : '') : t('unavailable');
             append('dd', content, list);
         }
         append('h3', t('manual'), body);
@@ -103,9 +103,11 @@
             try {
                 const changed = Object.entries(fields).filter(([, field]) => field.value.trim() !== '');
                 const retained = active?.rates.filter(row => !changed.some(([metric]) => metric === row.metric)) || [];
+                // A typed construction cost keeps the tax basis of the cost it replaces, as the slider does.
                 saveChoice(city, { version: 1, id: 'local-rates', name: name.value, adapter: 'rate-table', url: active?.url,
                     rates: [...retained, ...changed.map(([metric, field]) => ({ metric, unit: contract(global).METRICS[metric],
-                        amount: metric === 'saleTax' ? Number(field.value) / 100 : Number(field.value), currency, basis: 'assumption' }))] }, global);
+                        amount: metric === 'saleTax' ? Number(field.value) / 100 : Number(field.value), currency, basis: 'assumption',
+                        ...(metric === 'construction' && rates.construction?.taxIncluded ? { taxIncluded: true } : {}) }))] }, global);
                 reload();
             } catch (_) { status.textContent = t('invalid'); }
         });

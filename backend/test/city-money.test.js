@@ -149,4 +149,18 @@ describe('new floor area: value, all-in cost, profit and rent', () => {
     it('is on every city view, which is what the dialogs and the MCP hold', () => {
         expect(CityMoney.forCity(() => birmingham).newBuildMoney).toBe(newBuildMoney);
     });
+
+    it('takes the tax on a tax-inclusive construction cost off the all-in cost of a sale, not off the rent yield', () => {
+        const exclusive = newBuildMoney(base);
+        const inclusive = newBuildMoney({ ...base, constructionTaxIncluded: true });
+        expect(exclusive.taxReclaimed).toBe(0);
+        expect(inclusive.taxReclaimed).toBeCloseTo(2000000 * 0.25 / 1.25);
+        expect(inclusive.totalCost).toBeCloseTo(exclusive.totalCost - 400000);
+        expect(inclusive.profit).toBeCloseTo(exclusive.profit + 400000);
+        // A landlord who charges no tax on the rent reclaims none.
+        expect(inclusive.rentYieldOnCost).toBe(exclusive.rentYieldOnCost);
+        // Unknown while the tax or the construction cost is, never 0.
+        expect(newBuildMoney({ ...base, constructionTaxIncluded: true, saleTaxShare: null })).toMatchObject({ taxReclaimed: null, totalCost: null });
+        expect(newBuildMoney({ ...base, constructionTaxIncluded: true, constructionPerM2: null })).toMatchObject({ taxReclaimed: null, profit: null });
+    });
 });

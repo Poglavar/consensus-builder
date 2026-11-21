@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import * as turf from '@turf/turf';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
 import { agreementObject, communityRule, cidOfObject, outputHash, designObject, mapViewFromGeometry, planForDesigns } from '../agents/agreement-objects.js';
-import { authoredAreas, existingFloorArea } from '../agents/mcp-compare.js';
+import { authoredAreas, existingFloorArea, moneyOf } from '../agents/mcp-compare.js';
 const require = createRequire(import.meta.url);
 const builder = require('../../frontend/js/intent-design.js');
 const site = turf.bboxPolygon([-0.1, 51.5, -0.099, 51.501]).geometry;
@@ -139,6 +139,19 @@ describe('MCP comparison money', () => {
         expect(money.saleTax).toBeCloseTo(floorAreaM2 * 5000 * 0.2 / 1.2);
         expect(money.profit).toBeCloseTo(floorAreaM2 * 5000 - (floorAreaM2 * 3000 + siteM2 * 100 + money.saleTax + removedFloorAreaM2 * 5000));
         expect(money.annualRent).toBeCloseTo(floorAreaM2 * 25 * 12);
+    });
+
+    it('reclaims the VAT inside a city construction cost that includes it, also at a construction price the caller gives', () => {
+        const area = { floorAreaM2: 1000, replacedFloorAreaM2: 0, landAreaM2: 500 };
+        const money = moneyOf({ city: 'astana', ...area });
+        expect(money.prices.construction).toMatchObject({ amount: 297900, taxIncluded: true });
+        expect(money.taxReclaimed).toBeCloseTo(1000 * 297900 * 0.16 / 1.16);
+        expect(money.totalCost).toBeCloseTo(1000 * 297900 + 500 * 54700 + 1000 * 539000 * 0.16 / 1.16 - money.taxReclaimed);
+        const given = moneyOf({ city: 'astana', ...area, prices: { constructionPerM2: 320000 } });
+        expect(given.prices.construction).toMatchObject({ amount: 320000, sourceId: 'caller', taxIncluded: true });
+        expect(given.taxReclaimed).toBeCloseTo(1000 * 320000 * 0.16 / 1.16);
+        // London's starting construction cost includes no tax to reclaim.
+        expect(moneyOf({ city: 'london', ...area }).taxReclaimed).toBe(0);
     });
 
     it('leaves the profit unknown when a removed building states no height, and keeps the rest', async () => {

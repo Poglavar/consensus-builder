@@ -82,6 +82,33 @@ test.describe('Valuation and costs sources @features', () => {
     await expect(page.locator('#economic-source-settings')).toHaveCount(0);
   });
 
+  test('keeps a construction cost that includes the tax on inputs tax-inclusive when it is typed over', async ({ mockApi: page }) => {
+    await quietExternalMapSources(page);
+    await page.goto('/');
+    await waitForApp(page);
+    const currency = await page.evaluate(() => (window as any).CityMoney.currentCurrency());
+    // A statistics office's cost as developers paid it, the tax on inputs included.
+    const grossCost = {
+      version: 1, id: 'gross-construction', name: 'Construction as paid', adapter: 'rate-table',
+      rates: [{ metric: 'construction', unit: 'm2-floor', amount: 2900, currency, basis: 'construction-cost', asOf: '2026-10-31', taxIncluded: true }],
+    };
+    await openEconomicSources(page);
+    await reloadAfter(page, () => page.locator('#economic-source-file').setInputFiles({
+      name: 'gross-construction.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(grossCost)),
+    }));
+    expect((await economicState(page)).constructionSource).toMatchObject({ sourceId: 'gross-construction', taxIncluded: true });
+
+    await openEconomicSources(page);
+    const dialog = page.locator('#economic-source-settings');
+    await expect(dialog.locator('.economic-source-list')).toContainText('includes the sale tax on inputs');
+    await dialog.locator('#economic-rate-construction').fill('3200');
+    await reloadAfter(page, () => dialog.locator('button[form="economic-source-form"]').click());
+
+    const state = await economicState(page);
+    expect(state.construction).toBe(3200);
+    expect(state.constructionSource).toMatchObject({ sourceId: 'local-rates', basis: 'assumption', taxIncluded: true });
+  });
+
   test('keeps saved rates isolated to their city', async ({ mockApi: page }) => {
     await quietExternalMapSources(page);
     await page.goto('/');

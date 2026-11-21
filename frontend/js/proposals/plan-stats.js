@@ -199,7 +199,7 @@
         { key: 'total-cost', i18nKey: 'sidebar.proposals.planStats.allInCost', label: 'All-in cost of the new floor area' },
         { key: 'profit', i18nKey: 'sidebar.proposals.planStats.profit', label: 'Profit on the new floor area' },
         { key: 'annual-rent', i18nKey: 'sidebar.proposals.planStats.annualRent', label: 'Annual rent of the new floor area' },
-        { key: 'rent-yield', i18nKey: 'sidebar.proposals.planStats.rentYield', label: 'Rent yield on cost (annual rent ÷ all-in cost without the sale tax)' }
+        { key: 'rent-yield', i18nKey: 'sidebar.proposals.planStats.rentYield', label: 'Rent yield on cost (annual rent ÷ construction, land and cleared value)' }
     ];
 
     // The parts of the all-in cost (CityMoney.newBuildMoney), listed under Cost details.
@@ -207,6 +207,8 @@
         { key: 'cost-construction', i18nKey: 'sidebar.proposals.planStats.costConstruction', label: 'Construction' },
         { key: 'cost-land', i18nKey: 'sidebar.proposals.planStats.costLand', label: 'Land (the plan\'s land × the land price)' },
         { key: 'cost-tax', i18nKey: 'sidebar.proposals.planStats.costTax', label: 'Sale tax inside the sales value of the new floor area' },
+        // Listed only where the construction cost includes the tax on its inputs (the rate's taxIncluded).
+        { key: 'cost-reclaimed', i18nKey: 'sidebar.proposals.planStats.costReclaimed', label: 'Less the tax reclaimed on construction', taxIncludedOnly: true },
         { key: 'cost-replaced', i18nKey: 'sidebar.proposals.planStats.costReplaced', label: 'Existing buildings cleared, at the sale price' }
     ];
 
@@ -381,6 +383,7 @@
             term.setAttribute('data-i18n-key', part.i18nKey);
             const amount = el('dd', null, '—');
             amount.dataset.planStat = part.key;
+            if (part.taxIncludedOnly) [term, amount].forEach(node => { node.dataset.costPart = part.key; });
             costList.appendChild(term);
             costList.appendChild(amount);
         });
@@ -521,10 +524,12 @@
         // The new floor area at these prices, by the 3D panel's rule (CityMoney.newBuildMoney): its
         // all-in cost (construction, land, sale tax, the existing floor area it clears), profit and rent.
         // The land is the plan's land (planAreaM2): the ground its designs take, streets and parks too.
+        // Whether the construction cost includes the tax on its inputs is the city's rate's, not typed.
         const money = window.CityMoney.newBuildMoney({ floorAreaM2: stats.yield.total.grossFloorAreaM2,
             replacedFloorAreaM2: stats.cleared ? stats.cleared.floorAreaM2 : null, landAreaM2: stats.planAreaM2,
             salePerM2: price.sale, constructionPerM2: price.construction, landPerM2: price.land,
-            saleTaxShare: price.saleTax, rentPerM2Month: price.rent });
+            saleTaxShare: price.saleTax, constructionTaxIncluded: salesPrice().constructionTaxIncluded === true,
+            rentPerM2Month: price.rent });
         // A figure that was not measured reads "—", never a 0 (formatNumber(null) would print 0).
         const measured = value => (finiteNumber(value) ? formatNumber(value) : '—');
         const total = standingTotal(stats);
@@ -555,6 +560,8 @@
             'cost-construction': formatSalesValue(money.constructionCost),
             'cost-land': formatSalesValue(money.landCost),
             'cost-tax': formatSalesValue(money.saleTax),
+            // Taken off the all-in cost, so written as a deduction.
+            'cost-reclaimed': (money.taxReclaimed > 0 ? '−' : '') + formatSalesValue(money.taxReclaimed),
             'cost-replaced': formatSalesValue(money.replacedValue),
             profit: formatSalesValue(money.profit),
             'annual-rent': formatSalesValue(money.annualRent),
@@ -607,6 +614,9 @@
         set('cost-construction', figures['cost-construction']);
         set('cost-land', figures['cost-land']);
         set('cost-tax', figures['cost-tax']);
+        set('cost-reclaimed', figures['cost-reclaimed']);
+        const taxIncluded = salesPrice().constructionTaxIncluded === true;
+        modal.querySelectorAll('[data-cost-part="cost-reclaimed"]').forEach(node => { node.hidden = !taxIncluded; });
         set('cost-replaced', figures['cost-replaced']);
         set('profit', figures.profit);
         set('annual-rent', figures['annual-rent']);
