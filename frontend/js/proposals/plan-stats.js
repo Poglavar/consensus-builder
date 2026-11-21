@@ -726,12 +726,14 @@
         for (const [index, plan] of plans.entries()) {
             const title = titles?.[index] || plan?.content?.title || '';
             try {
-                const snapshot = await withGround(await window.PlanAnalysis.prepare(plan), assumptions);
+                // base: the plan as read, before its ground; every scope is measured from it.
+                const base = await window.PlanAnalysis.prepare(plan);
+                const snapshot = await withGround(base, assumptions);
                 const stats = computePlanStatsSync({ ...snapshot, unitsCounting: true }, assumptions);
                 const entry = { title: titles?.[index] || stats.planTitle || title, stats, figures: summaryTexts(stats, price), groundError: stats.groundError };
                 entries.push(entry);
                 const side = sides ? sides[index] || null : plan?.cid ? `plan:${plan.cid}` : null;
-                prepared.push({ title: entry.title, cid: plan?.cid || null, side, snapshot, entry });
+                prepared.push({ title: entry.title, cid: plan?.cid || null, side, base, snapshot, entry });
             } catch (error) {
                 console.error(`[${new Date().toISOString()}] [PlanCompare] ${title || plan?.cid} could not be measured`, error);
                 entries.push({ title, error: error && error.message ? error.message : String(error) });
@@ -745,7 +747,27 @@
             .filter(row => !compared.has(row.cid) && (!row.content.view.city || window.normalizeCityCodeForApi(row.content.view.city) === city))
             .map(row => [`saved:${row.cid}`, row]));
 
+        // Measure on: all the plans' land, or one parcel they stand on (plan-scope.js), for every
+        // column, the present state's too. null is all their land.
+        const scopeApi = window.__planScope;
+        const scopeOps = window.PresentState.ops;
+        let scope = null;
+        const scopeOf = snapshot => (scope ? scopeApi.toParcel(snapshot, scope.feature, scopeOps) : snapshot);
+        const scopeParcels = scopeApi.parcelsOf(prepared.map(row => row.base), scopeOps);
+
         const body = el('div', 'plan-compare');
+        const scopeField = el('label', 'proposal-editor-field plan-compare__scope');
+        scopeField.appendChild(el('span', null, tPlanStats('planCompare.scope', 'Measure on')));
+        const scopeSelect = el('select');
+        scopeSelect.dataset.planCompareScope = '';
+        const scopeOption = (value, text) => { const node = el('option', null, text); node.value = value; scopeSelect.appendChild(node); };
+        scopeOption('all', tPlanStats('planCompare.scopeAll', 'All their land'));
+        scopeParcels.forEach((parcel, index) => scopeOption(`parcel:${index}`, parcel.plans === prepared.length
+            ? tPlanStats('planCompare.scopeParcel', 'Parcel {{number}} ({{area}} m²)', { number: parcel.number, area: formatNumber(parcel.areaM2) })
+            : tPlanStats('planCompare.scopeParcelSome', 'Parcel {{number}} ({{area}} m², in {{count}} of {{total}})',
+                { number: parcel.number, area: formatNumber(parcel.areaM2), count: formatNumber(parcel.plans), total: formatNumber(prepared.length) })));
+        scopeField.appendChild(scopeSelect);
+        scopeField.hidden = !scopeParcels.length;
         const basisField = el('label', 'proposal-editor-field plan-compare__basis');
         basisField.appendChild(el('span', null, tPlanStats('planCompare.basis', 'Present state over the land of')));
         const basis = el('select');
@@ -782,9 +804,9 @@
             Object.assign(present, { measuring: true, error: null, figures: null, stats: null });
             draw();
             try {
-                const basisPlans = value === 'compared' ? prepared.map(row => row.snapshot)
-                    : value.startsWith('plan:') ? [prepared[Number(value.slice(5))].snapshot]
-                    : [await window.PlanAnalysis.prepare(saved.get(value))];
+                const basisPlans = (value === 'compared' ? prepared.map(row => row.base)
+                    : value.startsWith('plan:') ? [prepared[Number(value.slice(5))].base]
+                    : [await window.PlanAnalysis.prepare(saved.get(value))]).map(scopeOf);
                 const stats = await window.PresentState.measure({ title: present.title, basis: basisPlans, assumptions });
                 if (token !== measuring) return;
                 present.stats = { ...stats, unitsCounting: true };
@@ -806,6 +828,46 @@
             draw();
         }
         basis.addEventListener('change', () => { void measurePresent(basis.value); });
+
+        // Each plan's apartments, counted from its buildings' layouts one plan after another; its
+        // Apartments and People cells spin until then. A newer scope stops an older count.
+        let scoping = 0;
+        async function countPlans(token) {
+            for (const row of prepared) {
+                const counted = await withUnits(row.snapshot);
+                if (token !== scoping) return;
+                row.entry.stats = computePlanStatsSync(counted, readAssumptionsFromModal(grid, { prefix: 'plan-compare' }));
+                row.entry.figures = summaryTexts(row.entry.stats, price);
+                draw();
+            }
+        }
+        // Every column measured again over the chosen scope: its ground first, then its apartments.
+        async function rescope(value) {
+            const token = ++scoping;
+            scope = value === 'all' ? null : scopeParcels[Number(value.slice('parcel:'.length))];
+            scopeNote.hidden = !scope;
+            prepared.forEach(row => Object.assign(row.entry, { measuring: true, error: null, groundError: null, figures: null, stats: null }));
+            void measurePresent(basis.value);
+            for (const row of prepared) {
+                const current = readAssumptionsFromModal(grid, { prefix: 'plan-compare' });
+                try {
+                    const snapshot = await withGround(scopeOf(row.base), current);
+                    if (token !== scoping) return;
+                    row.snapshot = snapshot;
+                    row.entry.stats = computePlanStatsSync({ ...snapshot, unitsCounting: true }, current);
+                    row.entry.figures = summaryTexts(row.entry.stats, price);
+                    row.entry.groundError = row.entry.stats.groundError;
+                } catch (error) {
+                    if (token !== scoping) return;
+                    console.error(`[${new Date().toISOString()}] [PlanCompare] ${row.title} could not be measured on ${scope ? `parcel ${scope.id}` : 'all its land'}`, error);
+                    row.entry.error = error && error.message ? error.message : String(error);
+                }
+                row.entry.measuring = false;
+                draw();
+            }
+            await countPlans(token);
+        }
+        scopeSelect.addEventListener('change', () => { void rescope(scopeSelect.value); });
         swap.addEventListener('click', () => { comparePlansAsColumns = !comparePlansAsColumns; draw(); });
         // How the apartments are counted, with the numbers in the inputs above.
         const rule = el('p', 'sheet-note plan-compare__rule');
@@ -839,16 +901,21 @@
         assumptionsSection.appendChild(rule);
         const definition = el('p', 'sheet-note', tPlanStats('planCompare.landDefinition',
             'Public land is roads and OpenStreetMap parks and squares; private land is the rest of the parcels. The present state counts every existing building on that land.'));
+        const scopeNote = el('p', 'sheet-note plan-compare__scope-note', tPlanStats('planCompare.scopeNote',
+            'On one parcel, every column counts only what stands on that parcel: a building across its edge counts its part there.'));
+        scopeNote.hidden = true;
         if (terms) {
             body.appendChild(termsSection(terms, terms.map((agreement, index) => titles?.[index] || agreement?.title || '')));
             body.appendChild(el('div', 'plan-stats-heading', tPlanStats('planCompare.figures', 'What the plans build')));
         }
+        body.appendChild(scopeField);
         body.appendChild(basisField);
         body.appendChild(swap);
         body.appendChild(sideBySide);
         body.appendChild(scroll);
         body.appendChild(assumptionsSection);
         body.appendChild(definition);
+        body.appendChild(scopeNote);
         draw();
         const dialog = window.CbDialog.open({ title: titleText,
             size: 'lg', className: 'plan-compare-dialog', body });
@@ -857,16 +924,7 @@
             void measurePresent(basis.value);
         } else present.error = tPlanStats('planCompare.noBasis', 'No saved plan to take the land from.');
         draw();
-        // Each plan's apartments, counted from its buildings' layouts one plan after another; its
-        // Apartments and People cells spin until then.
-        void (async () => {
-            for (const { snapshot, entry } of prepared) {
-                const counted = await withUnits(snapshot);
-                entry.stats = computePlanStatsSync(counted, readAssumptionsFromModal(grid, { prefix: 'plan-compare' }));
-                entry.figures = summaryTexts(entry.stats, price);
-                draw();
-            }
-        })();
+        void countPlans(scoping);
         return dialog;
     }
 

@@ -9438,7 +9438,12 @@
     "measuring": "Mjerenje…",
     "landDefinition": "Javna površina su ceste te parkovi i trgovi iz OpenStreetMapa; privatna je ostatak čestica. Postojeće stanje broji svaku postojeću zgradu na tom zemljištu; plan uz svoje nove zgrade broji postojeće koje njegovi dizajni ne uklanjaju.",
     "noBasis": "Nema spremljenog plana s čijeg bi se zemljišta uzelo stanje.",
-    "sideBySide": "Usporedno na karti"
+    "sideBySide": "Usporedno na karti",
+    "scope": "Područje mjerenja",
+    "scopeAll": "Sve njihovo zemljište",
+    "scopeParcel": "Čestica {{number}} ({{area}} m²)",
+    "scopeParcelSome": "Čestica {{number}} ({{area}} m², u {{count}} od {{total}})",
+    "scopeNote": "Na jednoj čestici svaki stupac broji samo ono što stoji na toj čestici: zgrada preko njezine granice broji svoj dio na njoj."
   },
   "buildingUseHighlight": {
     "title": "Namjena zgrada",

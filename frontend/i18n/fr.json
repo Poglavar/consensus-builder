@@ -9393,7 +9393,12 @@
     "measuring": "Mesure en cours…",
     "landDefinition": "Le terrain public comprend les routes ainsi que les parcs et places d’OpenStreetMap ; le terrain privé est le reste des parcelles. L’état actuel compte chaque bâtiment existant sur ce terrain ; un plan compte, à côté de ses nouveaux bâtiments, les bâtiments existants que ses projets ne suppriment pas.",
     "noBasis": "Aucun plan enregistré dont prendre le terrain.",
-    "sideBySide": "Côte à côte sur la carte"
+    "sideBySide": "Côte à côte sur la carte",
+    "scope": "Mesurer sur",
+    "scopeAll": "Tout leur terrain",
+    "scopeParcel": "Parcelle {{number}} ({{area}} m²)",
+    "scopeParcelSome": "Parcelle {{number}} ({{area}} m², dans {{count}} sur {{total}})",
+    "scopeNote": "Sur une parcelle, chaque colonne ne compte que ce qui se trouve sur cette parcelle : un bâtiment qui en franchit la limite compte sa partie située dessus."
   },
   "buildingUseHighlight": {
     "title": "Usage des bâtiments",

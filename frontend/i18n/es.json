@@ -9414,7 +9414,12 @@
     "measuring": "Midiendo…",
     "landDefinition": "El suelo público son las calles y los parques y plazas de OpenStreetMap; el privado es el resto de las parcelas. El estado actual cuenta cada edificio existente en ese suelo; un plan cuenta, junto a los nuevos, los existentes que sus diseños no eliminan.",
     "noBasis": "No hay ningún plan guardado del que tomar el suelo.",
-    "sideBySide": "Lado a lado en el mapa"
+    "sideBySide": "Lado a lado en el mapa",
+    "scope": "Medir sobre",
+    "scopeAll": "Todo su suelo",
+    "scopeParcel": "Parcela {{number}} ({{area}} m²)",
+    "scopeParcelSome": "Parcela {{number}} ({{area}} m², en {{count}} de {{total}})",
+    "scopeNote": "En una parcela, cada columna cuenta solo lo que hay en esa parcela: un edificio que cruza su límite cuenta la parte que queda dentro."
   },
   "buildingUseHighlight": {
     "title": "Uso de los edificios",

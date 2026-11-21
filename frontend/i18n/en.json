@@ -9386,7 +9386,12 @@
     "measuring": "Measuring…",
     "landDefinition": "Public land is roads and OpenStreetMap parks and squares; private land is the rest of the parcels. The present state counts every existing building on that land; a plan counts the existing buildings its designs do not clear beside its new ones.",
     "noBasis": "No saved plan to take the land from.",
-    "sideBySide": "Side by side on the map"
+    "sideBySide": "Side by side on the map",
+    "scope": "Measure on",
+    "scopeAll": "All their land",
+    "scopeParcel": "Parcel {{number}} ({{area}} m²)",
+    "scopeParcelSome": "Parcel {{number}} ({{area}} m², in {{count}} of {{total}})",
+    "scopeNote": "On one parcel, every column counts only what stands on that parcel: a building across its edge counts its part there."
   },
   "buildingUseHighlight": {
     "title": "Building use",

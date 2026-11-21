@@ -8029,6 +8029,13 @@
           "interaction": "change"
         },
         {
+          "name": "Choose the land the comparison measures on",
+          "attrs": {
+            "data-plan-compare-scope": ""
+          },
+          "interaction": "change"
+        },
+        {
           "name": "Choose the comparison basis",
           "attrs": {
             "data-plan-compare-basis": ""

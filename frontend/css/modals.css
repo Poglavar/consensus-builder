@@ -440,7 +440,8 @@ body.site-intro-open { overflow: hidden; }
     text-align: end;
 }
 
-.plan-compare__basis {
+.plan-compare__basis,
+.plan-compare__scope {
     max-width: 28rem;
 }
 

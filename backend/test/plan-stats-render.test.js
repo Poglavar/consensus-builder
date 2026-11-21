@@ -20,6 +20,8 @@ const planYield = require('../../frontend/js/proposals/plan-yield.js');
 const siteStats = require('../../frontend/js/proposals/site-stats.js');
 const CbFormat = require('../../frontend/js/format.js');
 const CityMoney = require('../../frontend/js/city-money.js');
+const planScope = require('../../frontend/js/proposals/plan-scope.js');
+const turf = require('@turf/turf');
 const source = readFileSync(fileURLToPath(new URL('../../frontend/js/proposals/plan-stats.js', import.meta.url)), 'utf8');
 
 function makeNode(tag) {
@@ -83,17 +85,19 @@ function makeWindow(proposals, { city = null } = {}) {
         console,
         __planYield: planYield,
         __siteStats: siteStats,
+        __planScope: planScope,
         CbFormat,
         CityMoney: CityMoney.forCity(() => city),
         PlanAnalysis: { prepare: async plan => {
             if (!plan) throw new Error('Choose a plan.');
             if (plan.failure) throw new Error(plan.failure);
-            return { plan, records: (plan.records || proposals).map(p => ({ ...p, applied: true })), materializedFeatures: [], cadastralFeatures: [] };
+            return { plan, records: (plan.records || proposals).map(p => ({ ...p, applied: true })), materializedFeatures: [], cadastralFeatures: plan.parcels || [] };
         } },
         CbDialog: { open: options => { window.openedDialog = options; return options; } },
         // Land split and present state: real arithmetic is in present-state.test.js; here the figures
         // only have to reach the right boxes.
         PresentState: {
+            ops: { intersect: (a, b) => turf.intersect(a, b), areaOf: feature => planYield.geometryAreaM2(feature) },
             // A plan marked withExisting keeps one existing building beside its designs.
             groundOf: async snapshot => {
                 if (snapshot.plan?.landFailure) throw new Error(snapshot.plan.landFailure);
@@ -392,6 +396,48 @@ describe('comparing plans', () => {
         expect(rows[2][0]).toBe('Two blocks');
         expect(rows[0].findIndex(label => label.startsWith('Buildings'))).toBeGreaterThan(0);
         swap.listeners.click.forEach(fn => fn());
+    });
+
+    it('measures every plan on one parcel they stand on, and on all their land again', async () => {
+        // Two parcels splitting the block down the middle; each design stands on both.
+        const parcel = (id, ring) => ({ type: 'Feature', id, properties: { parcelId: id, parcelNumber: id }, geometry: { type: 'Polygon', coordinates: ring } });
+        const west = parcel('W-1', rect(15.8850, 43.7350, 15.8860, 43.7365));
+        const east = parcel('E-1', rect(15.8860, 43.7350, 15.8870, 43.7365));
+        const onBoth = cid => ({ ...block(cid), cadastreParcelIds: ['W-1', 'E-1'] });
+        const window = openDialog(plan);
+        await window.comparePlanStats([
+            { content: { title: 'Two blocks' }, records: [onBoth('d-1'), onBoth('d-2')], parcels: [west, east] },
+            { content: { title: 'One block' }, records: [onBoth('d-1')], parcels: [west, east] }
+        ]);
+        const settle = async () => { for (let i = 0; i < 20; i++) await new Promise(resolve => setImmediate(resolve)); };
+        await settle();
+        const find = key => (function walk(node) { if (node.dataset && key in node.dataset) return node; for (const child of node.children) { const hit = walk(child); if (hit) return hit; } return null; })(window.openedDialog.body);
+        const scope = find('planCompareScope');
+        expect(scope.children.map(option => option.value)).toEqual(['all', 'parcel:0', 'parcel:1']);
+        expect(scope.children[0].textContent).toBe('All their land');
+        expect(scope.children[1].textContent).toMatch(/^Parcel E-1 \([\d,]+ m²\)$/);
+        const floorArea = () => rowsOf(tableOf(window)).find(row => row[0].startsWith('Gross floor area')).slice(2).map(digits);
+        const whole = floorArea();
+        expect(whole[0]).toBeGreaterThan(0);
+        // The cells are rounded to whole square metres.
+        expect(Math.abs(whole[0] - whole[1] * 2)).toBeLessThanOrEqual(1);
+
+        scope.value = 'parcel:1';
+        scope.listeners.change.forEach(fn => fn());
+        await settle();
+        const onWest = floorArea();
+        // Half of each building stands on the west parcel.
+        expect(onWest[0] / whole[0]).toBeCloseTo(0.5, 1);
+        expect(onWest[1] / whole[1]).toBeCloseTo(0.5, 1);
+        expect(find('planCompareBasis')).not.toBeNull();
+        const note = (function walk(node) { if (String(node.className || '').includes('plan-compare__scope-note')) return node; for (const child of node.children) { const hit = walk(child); if (hit) return hit; } return null; })(window.openedDialog.body);
+        expect(note.hidden).toBe(false);
+
+        scope.value = 'all';
+        scope.listeners.change.forEach(fn => fn());
+        await settle();
+        expect(floorArea()).toEqual(whole);
+        expect(note.hidden).toBe(true);
     });
 
     it('compares designs as one-member plans, names them designs, and puts the first two with a map side under the divider', async () => {
