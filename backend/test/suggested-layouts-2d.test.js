@@ -7,8 +7,7 @@ import * as turf from '@turf/turf';
 
 const require = createRequire(import.meta.url);
 const floorPlans = require('../../frontend/js/building-floor-plans.js'); // also the generator's validator
-const generator = require('../../frontend/js/default-floor-plans.js');
-const context = require('../../frontend/js/default-floor-plan-context.js');
+const { generator, context } = require('../../frontend/vendor/interior-viewer/interior-planner.js');
 const layer = require('../../frontend/js/suggested-layouts-2d.js');
 
 const M_PER_DEG = Math.PI * 6378137 / 180, LAT = 45.8, LNG = 16.0, MX = M_PER_DEG * Math.cos(LAT * Math.PI / 180);

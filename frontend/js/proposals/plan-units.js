@@ -1,5 +1,5 @@
 // Apartments counted building by building for Plan stats and Compare plans: the suggested default
-// layout (default-floor-plans.js through default-floor-plan-context.js, the X-ray "Suggested
+// layout (the shared planner, vendor/interior-viewer/interior-planner.js, through its context; the X-ray "Suggested
 // layouts") lays each building out and its apartments are counted; a building's own floor plans
 // count as they are. Only a building stated as housing is laid out (building-use.js; a Block, Row or
 // Detached rule building is housing): a building the generator cannot lay out, one of another or

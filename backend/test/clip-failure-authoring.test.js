@@ -8,7 +8,7 @@
 // Every test stubs turf so exactly the clip under test throws, and asserts what happens to it.
 // Browser-bound code (classic scripts, IIFE internals) runs its own functions, cut out of the
 // source with @babel/parser, in a vm context with stubbed collaborators.
-import { describe, it, expect, beforeAll, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeAll, afterEach, vi, afterAll } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
@@ -260,9 +260,11 @@ describe('site-drawing reshape', () => {
 });
 
 describe('default floor plans (a suggestion; degrades, reported)', () => {
-    const plans = require('../../frontend/js/default-floor-plans.js');
-    const rooms = require('../../frontend/js/default-floor-plan-rooms.js');
-    const context = require('../../frontend/js/default-floor-plan-context.js');
+    // The shared planner (vendor/interior-viewer) reports to the app's parcel-arrangement.js through the global the page
+    // sets (window.__parcelArrangement); in node it is set here, as on the page.
+    const { generator: plans, rooms, context } = require('../../frontend/vendor/interior-viewer/interior-planner.js');
+    beforeAll(() => { globalThis.__parcelArrangement = A; });
+    afterAll(() => { delete globalThis.__parcelArrangement; });
     const a = box(0, 0, 10, 10);
     const b = box(5, 0, 15, 10);
 

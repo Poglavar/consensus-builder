@@ -75,7 +75,7 @@
     /**
      * The suggested layout of every proposed building that needs one, one entry per parcel slice.
      * @param deps { proposedBuildings, parcelsFor(feature), neighbourPool(feature), context
-     *   (default-floor-plan-context.js), generator (default-floor-plans.js), turf, heightOf(feature),
+     *   and generator (the shared planner, vendor/interior-viewer/interior-planner.js), turf, heightOf(feature),
      *   storeyFallbackM, cache?, rules?, region? }. No roads: the entrance faces the longest facade.
      * @returns [{ building, parcelId, footprint, floorPlans | null, warnings, error? }]
      */
@@ -262,7 +262,7 @@
         if (!state.modulesLoading) {
             const ensure = global.__ensureFloorPlanModules;
             if (typeof ensure !== 'function') {
-                return Promise.reject(new Error('suggested-layouts-2d: building-floor-plans.js, default-floor-plans.js and default-floor-plan-context.js are not loaded and window.__ensureFloorPlanModules is missing'));
+                return Promise.reject(new Error('suggested-layouts-2d: building-floor-plans.js and the planner (vendor/interior-viewer/interior-planner.js) are not loaded and window.__ensureFloorPlanModules is missing'));
             }
             state.modulesLoading = Promise.resolve(ensure()).then(() => {
                 if (!floorPlanModules()) throw new Error('suggested-layouts-2d: the floor-plan modules loaded without defining their globals');

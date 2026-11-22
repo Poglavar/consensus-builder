@@ -532,7 +532,7 @@ describe('three-mode Xray wiring', () => {
         expect(paint(true, result)).toBe(0); // an already drawn model is not repainted
     });
     it('suggestedStreetsFor fetches a missing cell once, reports the wait and reuses the result', async () => {
-        const { createStreetLoader } = require('../../frontend/js/default-floor-plan-context.js');
+        const { createStreetLoader } = require('../../frontend/vendor/interior-viewer/interior-planner.js').context;
         const fetch = vi.fn(async () => ({ ok: true, json: async () => ({ features: ['loaded-street'] }) }));
         const [streetsFor, c] = extracted('suggestedStreetsFor', `
             let suggestedStreetLoader=null;

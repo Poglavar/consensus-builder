@@ -1,0 +1,421 @@
+/* InteriorGeometry 1.11.4 — generated from the interior-viewer repository; do not edit. */
+"use strict";
+var InteriorGeometry = (() => {
+  var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __commonJS = (cb, mod) => function __require() {
+    try {
+      return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+    } catch (e) {
+      throw mod = 0, e;
+    }
+  };
+
+  // src/geometry.cjs
+  var require_geometry = __commonJS({
+    "src/geometry.cjs"(exports, module) {
+      var SCHEMA = "consensus-builder.building-floor-plans.v3";
+      var UNIT_KINDS = ["apartment", "shop", "office", "garage"];
+      var finite = (value) => typeof value === "number" && Number.isFinite(value);
+      var error = (path, message) => `${path}: ${message}`;
+      function httpUrl(value) {
+        if (typeof value !== "string") return false;
+        try {
+          const url = new URL(value);
+          return url.protocol === "http:" || url.protocol === "https:";
+        } catch (_) {
+          return false;
+        }
+      }
+      var orient = (a, b, c) => (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
+      function buildingSourceId(feature) {
+        const properties = feature?.properties;
+        for (const [field, prefix] of [["sourceFeatureId", ""], ["dguBuildingId", "dgu-building:"], ["sourceLayerId", "source-layer:"]]) {
+          const value = properties?.[field];
+          if (typeof value === "string" && value.trim() || finite(value) && Number.isInteger(value)) {
+            return prefix + String(value);
+          }
+        }
+        return null;
+      }
+      function uncoveredFloorBands(feature, totalHeight) {
+        if (!feature?.properties?.floorPlans || !finite(totalHeight) || totalHeight <= 0) return [];
+        const joinToleranceM = 2e-3;
+        const plans = feature.properties.floorPlans;
+        const layouts = new Map((Array.isArray(plans.layouts) ? plans.layouts : []).map((layout) => [layout.id, layout]));
+        const covered = [];
+        for (const storey of Array.isArray(plans.storeys) ? plans.storeys : []) {
+          const base = storey?.elevationM;
+          const architecture = layouts.get(storey?.layoutId)?.architecture;
+          const wallHeight = architecture?.wallHeightM;
+          const slabThickness = architecture?.slabThicknessM;
+          if (!finite(base) || !finite(wallHeight) || !finite(slabThickness)) continue;
+          const height = wallHeight + slabThickness;
+          if (height <= 0) continue;
+          const top = base + height;
+          if (top <= 0 || base >= totalHeight) continue;
+          const start = Math.max(0, base), end = Math.min(totalHeight, top);
+          if (end > start) covered.push([start, end]);
+        }
+        if (!covered.length) return [{ baseM: 0, heightM: totalHeight }];
+        covered.sort((a, b) => a[0] - b[0]);
+        const merged = [];
+        for (const interval of covered) {
+          const previous = merged.at(-1);
+          if (previous && interval[0] <= previous[1] + joinToleranceM) previous[1] = Math.max(previous[1], interval[1]);
+          else merged.push(interval);
+        }
+        const gaps = [];
+        let cursor = 0;
+        for (const [start, end] of merged) {
+          if (start - cursor > joinToleranceM) gaps.push({ baseM: cursor, heightM: start - cursor });
+          cursor = Math.max(cursor, end);
+        }
+        if (totalHeight - cursor > joinToleranceM) gaps.push({ baseM: cursor, heightM: totalHeight - cursor });
+        return gaps;
+      }
+      function validateFloorPlans(data) {
+        const errors = [];
+        if (!data || typeof data !== "object" || Array.isArray(data)) return ["floorPlans: must be an object"];
+        if (data.schema !== SCHEMA) errors.push(error("floorPlans.schema", `must equal ${SCHEMA}`));
+        const registration = data.registration, corners = registration && registration.corners;
+        const validCorners = Array.isArray(corners) && corners.length === 4 && corners.every((c) => Array.isArray(c) && c.length === 2 && finite(c[0]) && finite(c[1]) && c[0] >= -180 && c[0] <= 180 && c[1] >= -90 && c[1] <= 90);
+        if (!validCorners) errors.push(error("floorPlans.registration.corners", "must contain four finite [lng,lat] corners within WGS84 ranges"));
+        else {
+          const span = corners.reduce((max, c) => Math.max(max, ...corners.map((d) => Math.hypot((c[0] - d[0]) * 111320 * Math.cos(c[1] * Math.PI / 180), (c[1] - d[1]) * 111320))), 0);
+          const turns = corners.map((c, i) => orient(c, corners[(i + 1) % 4], corners[(i + 2) % 4]));
+          if (!(span > 0) || !(turns.every((turn) => turn > 0) || turns.every((turn) => turn < 0))) {
+            errors.push(error("floorPlans.registration.corners", "must form a nondegenerate convex quadrilateral"));
+          }
+          if (span > 1e3) errors.push(error("floorPlans.registration.corners", "must span no more than 1 km"));
+        }
+        if (typeof registration?.basis !== "string" || !registration.basis.trim()) errors.push(error("floorPlans.registration.basis", "must be a non-empty string"));
+        const layouts = data.layouts, layoutIds = /* @__PURE__ */ new Set();
+        if (!Array.isArray(layouts) || layouts.length > 100) errors.push(error("floorPlans.layouts", "must be an array of at most 100 layouts"));
+        else layouts.forEach((layout, li) => {
+          const path = `floorPlans.layouts[${li}]`;
+          if (!layout || typeof layout !== "object" || typeof layout.id !== "string" || !layout.id) errors.push(error(`${path}.id`, "must be a non-empty string"));
+          else if (layoutIds.has(layout.id)) errors.push(error(`${path}.id`, "must be unique"));
+          else layoutIds.add(layout.id);
+          errors.push(...validateArchitecture(layout?.architecture, `${path}.architecture`));
+          const source = layout?.source;
+          if (!source || typeof source !== "object") errors.push(error(`${path}.source`, "is required"));
+          else if (source.kind === "generated") {
+            if (typeof source.generator !== "string" || !source.generator.trim()) errors.push(error(`${path}.source.generator`, "must name the generator"));
+            if (!source.parameters || typeof source.parameters !== "object" || Array.isArray(source.parameters)) errors.push(error(`${path}.source.parameters`, "must be an object"));
+            if (data.suggested !== true) errors.push(error(`${path}.source.kind`, "generated layouts require floorPlans.suggested = true"));
+          } else {
+            if (!httpUrl(source.url)) errors.push(error(`${path}.source.url`, "must be a valid http(s) URL"));
+            if (source.page !== void 0 && (!Number.isInteger(source.page) || source.page < 1)) errors.push(error(`${path}.source.page`, "must be a positive integer"));
+            if (source.crop !== void 0 && (!Array.isArray(source.crop) || source.crop.length !== 4 || source.crop.some((value) => !finite(value)))) errors.push(error(`${path}.source.crop`, "must contain four finite values"));
+            if (typeof source.sha256 !== "string" || !source.sha256) errors.push(error(`${path}.source.sha256`, "must be a non-empty string"));
+          }
+        });
+        const storeys = data.storeys, storeyIds = /* @__PURE__ */ new Set(), levels = /* @__PURE__ */ new Set();
+        if (!Array.isArray(storeys)) errors.push(error("floorPlans.storeys", "must be an array"));
+        else if (storeys.length > 100) errors.push(error("floorPlans.storeys", "must contain at most 100 storeys"));
+        else storeys.forEach((storey, si) => {
+          const path = `floorPlans.storeys[${si}]`;
+          if (!storey || typeof storey !== "object" || typeof storey.id !== "string" || !storey.id || storeyIds.has(storey.id)) errors.push(error(`${path}.id`, "must be a unique non-empty string"));
+          else storeyIds.add(storey.id);
+          if (!finite(storey?.level) || !Number.isInteger(storey.level) || levels.has(storey.level)) errors.push(error(`${path}.level`, "must be a unique integer"));
+          else levels.add(storey.level);
+          if (!finite(storey?.elevationM)) errors.push(error(`${path}.elevationM`, "must be finite"));
+          if (!["documented", "estimated"].includes(storey?.elevationBasis)) errors.push(error(`${path}.elevationBasis`, "must be documented or estimated"));
+          if (typeof storey?.layoutId !== "string" || !layoutIds.has(storey.layoutId)) errors.push(error(`${path}.layoutId`, "must reference a layout"));
+          if (storey?.units !== void 0 && !Array.isArray(storey.units)) errors.push(error(`${path}.units`, "must be an array"));
+          if (Array.isArray(storey?.units)) storey.units.forEach((unit, ui) => {
+            const unitPath = `${path}.units[${ui}]`;
+            if (!unit || typeof unit.id !== "string" || !unit.id) {
+              errors.push(error(`${unitPath}.id`, "must be a non-empty string"));
+            }
+            if (!UNIT_KINDS.includes(unit?.kind)) errors.push(error(`${unitPath}.kind`, `must be one of ${UNIT_KINDS.join(", ")}`));
+            if (unit?.areaM2 !== void 0 && (!finite(unit.areaM2) || unit.areaM2 <= 0)) {
+              errors.push(error(`${unitPath}.areaM2`, "must be a positive finite number"));
+            }
+            if (unit?.url !== void 0 && !httpUrl(unit.url)) {
+              errors.push(error(`${unitPath}.url`, "must be a valid http(s) URL"));
+            }
+          });
+        });
+        if (!errors.length) {
+          const layoutSizes = new Map(layouts.map((layout) => [layout.id, estimateArchitectureParts(layout.architecture)]));
+          const count = storeys.reduce((sum, storey) => sum + layoutSizes.get(storey.layoutId), 0);
+          if (count > 5e4) errors.push(error("floorPlans.storeys", "expanded model must not exceed 50000 solid parts"));
+        }
+        return errors;
+      }
+      var ARCHITECTURE_SCHEMA = "consensus-builder.floor-architecture.v1";
+      var uvPoint = (p) => Array.isArray(p) && p.length === 2 && p.every((v) => finite(v) && v >= 0 && v <= 1);
+      var bounded = (v, min, max) => finite(v) && v >= min && v <= max;
+      var length = (a, b) => Math.hypot(b[0] - a[0], b[1] - a[1]);
+      var lerp = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+      function validateArchitecture(model, path = "architecture") {
+        const errors = [];
+        const fail = (field, message) => errors.push(error(`${path}.${field}`, message));
+        if (!model || model.schema !== ARCHITECTURE_SCHEMA) return [error(path, `must use ${ARCHITECTURE_SCHEMA}`)];
+        if (!Array.isArray(model.dimensionsM) || model.dimensionsM.length !== 2 || !model.dimensionsM.every((n) => bounded(n, 1, 1e3))) fail("dimensionsM", "must contain two positive metric dimensions");
+        if (!bounded(model.wallHeightM, 1, 12)) fail("wallHeightM", "must be 1..12 metres");
+        if (!bounded(model.slabThicknessM, 0.02, 1)) fail("slabThicknessM", "must be .02..1 metres");
+        let vertices = 0;
+        for (const kind of ["walls", "slabs", "landings", "platforms"]) {
+          const polygons = kind === "platforms" ? (model.platforms || []).map((platform) => platform?.rings) : model[kind];
+          if (!Array.isArray(polygons)) {
+            fail(kind, "must be an array of polygons");
+            continue;
+          }
+          if (["walls", "slabs"].includes(kind) && !polygons.length) fail(kind, "must contain geometry");
+          for (const [i, polygon] of polygons.entries()) {
+            if (kind === "platforms" && !bounded(model.platforms[i]?.elevationM, -12, 12)) fail(`${kind}[${i}]`, "requires a finite elevation");
+            if (!Array.isArray(polygon) || !polygon.length) {
+              fail(`${kind}[${i}]`, "must contain an outer ring");
+              continue;
+            }
+            for (const ring of polygon) {
+              if (!Array.isArray(ring) || ring.length < 3 || !ring.every(uvPoint)) {
+                fail(`${kind}[${i}]`, "rings need at least three normalized points");
+                continue;
+              }
+              vertices += ring.length;
+              const area = ring.reduce((sum, p, j) => sum + p[0] * ring[(j + 1) % ring.length][1] - p[1] * ring[(j + 1) % ring.length][0], 0);
+              if (Math.abs(area) < 1e-12) fail(`${kind}[${i}]`, "rings must have nonzero area");
+            }
+          }
+        }
+        const regionIds = /* @__PURE__ */ new Set();
+        if (model.apartmentRegions !== void 0) {
+          if (!Array.isArray(model.apartmentRegions) || model.apartmentRegions.length > 200) {
+            fail("apartmentRegions", "must contain at most 200 sourced apartment regions");
+          } else model.apartmentRegions.forEach((region, index) => {
+            const key = `apartmentRegions[${index}]`;
+            if (typeof region?.id !== "string" || !region.id || regionIds.has(region.id)) fail(key, "requires a unique id");
+            regionIds.add(region?.id);
+            if (region?.source !== void 0 && !httpUrl(region.source?.url) || typeof region?.basis !== "string" || !region.basis.trim()) fail(key, "requires a boundary basis and a valid source URL when supplied");
+            if (!Array.isArray(region?.polygons) || !region.polygons.length) {
+              fail(key, "requires boundary polygons");
+              return;
+            }
+            region.polygons.forEach((polygon) => {
+              if (!Array.isArray(polygon) || !polygon.length) {
+                fail(key, "requires an outer ring");
+                return;
+              }
+              polygon.forEach((ring) => {
+                if (!Array.isArray(ring) || ring.length < 3 || !ring.every(uvPoint)) {
+                  fail(key, "requires normalized polygon rings");
+                  return;
+                }
+                vertices += ring.length;
+                const area = ring.reduce((sum, p, j) => sum + p[0] * ring[(j + 1) % ring.length][1] - p[1] * ring[(j + 1) % ring.length][0], 0);
+                if (Math.abs(area) < 1e-12) fail(key, "boundary rings must have nonzero area");
+              });
+            });
+          });
+        }
+        if (vertices > 1e5) fail("walls", "layout must not exceed 100000 polygon vertices");
+        for (const kind of ["openings", "stairs", "railings"]) {
+          if (!Array.isArray(model[kind]) || model[kind].length > 2e3) {
+            fail(kind, "must contain at most 2000 elements");
+            continue;
+          }
+          for (const [i, item] of model[kind].entries()) {
+            const key = `${kind}[${i}]`;
+            if (!uvPoint(item?.a) || !uvPoint(item?.b) || length(item.a, item.b) < 1e-7) fail(key, "requires distinct normalized endpoints");
+            if (kind === "openings") {
+              if (!["door", "window", "glazedDoor", "slidingDoor"].includes(item?.kind)) fail(key, "unknown opening kind");
+              if (!bounded(item?.depthM, 0.02, 1) || !bounded(item?.sillM, 0, model.wallHeightM) || !bounded(item?.heightM, 0.1, model.wallHeightM) || item.sillM + item.heightM > model.wallHeightM + 1e-3) fail(key, "invalid opening dimensions");
+              if (item?.kind === "door" && (!uvPoint(item.hinge) || !uvPoint(item.openTip) || length(item.hinge, item.openTip) < 1e-7)) fail(key, "door requires its hinge and swung leaf endpoint");
+            } else if (kind === "stairs") {
+              if (!bounded(item?.widthM, 0.3, 5) || !Number.isInteger(item?.steps) || !bounded(item.steps, 1, 64) || !bounded(item?.fromM, -12, 12) || !bounded(item?.toM, -12, 12) || item.toM <= item.fromM) fail(key, "invalid stair dimensions");
+            } else if (!bounded(item?.heightM, 0.5, 2)) fail(key, "invalid railing height");
+          }
+        }
+        return errors;
+      }
+      function estimateArchitectureParts(model) {
+        const span = (item) => Math.hypot((item.b[0] - item.a[0]) * model.dimensionsM[0], (item.b[1] - item.a[1]) * model.dimensionsM[1]);
+        return model.walls.length + model.slabs.length + model.landings.length + (model.platforms || []).length + model.openings.reduce((n, item) => n + 8 + Math.ceil(span(item) / 1.4), 0) + model.stairs.reduce((n, item) => n + item.steps, 0) + model.railings.reduce((n, item) => n + 3 + Math.ceil(span(item) / 1.15), 0);
+      }
+      function buildArchitectureParts(model, projectUv) {
+        const [width, height] = model.dimensionsM;
+        const metric = (p) => [p[0] * width, p[1] * height];
+        const projectMetric = (p) => projectUv(p[0] / width, p[1] / height);
+        const parts = [];
+        function polygon(kind, rings, baseM, heightM) {
+          if (heightM <= 1e-3) return;
+          parts.push({ kind, rings, baseM, heightM });
+        }
+        function strip(kind, a, b, depthM, baseM, heightM) {
+          const size = length(a, b);
+          if (size < 1e-3 || heightM <= 1e-3) return;
+          const nx = -(b[1] - a[1]) / size * depthM / 2, ny = (b[0] - a[0]) / size * depthM / 2;
+          polygon(kind, [[[a[0] + nx, a[1] + ny], [b[0] + nx, b[1] + ny], [b[0] - nx, b[1] - ny], [a[0] - nx, a[1] - ny]].map(projectMetric)], baseM, heightM);
+        }
+        function sourcePolygons(kind, polygons, base, heightM) {
+          polygons.forEach((rings) => polygon(kind, rings.map((ring) => ring.map((p) => projectUv(p[0], p[1]))), base, heightM));
+        }
+        sourcePolygons("wall", model.walls, 0, model.wallHeightM);
+        sourcePolygons("slab", model.slabs, -model.slabThicknessM, model.slabThicknessM);
+        const halfStorey = (model.wallHeightM + model.slabThicknessM) / 2;
+        sourcePolygons("stair", model.landings, halfStorey - model.slabThicknessM, model.slabThicknessM);
+        for (const platform of model.platforms || []) {
+          if (platform.kind === "landing" && Math.abs(platform.elevationM) < 1e-8) continue;
+          sourcePolygons("stair", [platform.rings], platform.elevationM - model.slabThicknessM, model.slabThicknessM);
+        }
+        for (const opening of model.openings) {
+          const a = metric(opening.a), b = metric(opening.b), size = length(a, b);
+          const { depthM, sillM, heightM } = opening;
+          const frame = Math.min(0.055, size / 4);
+          strip("wall", a, b, depthM, 0, sillM);
+          strip("wall", a, b, depthM, sillM + heightM, model.wallHeightM - sillM - heightM);
+          strip("frame", a, lerp(a, b, frame / size), depthM + 0.015, sillM, heightM);
+          strip("frame", lerp(a, b, 1 - frame / size), b, depthM + 0.015, sillM, heightM);
+          strip("frame", a, b, depthM + 0.015, sillM + heightM - frame, frame);
+          if (opening.kind === "door") {
+            strip("door", metric(opening.hinge), metric(opening.openTip), 0.04, 0.015, heightM - 0.07);
+          } else if (opening.kind === "slidingDoor") {
+            strip("door", lerp(a, b, frame / size), lerp(a, b, 0.497), 0.045, sillM, heightM - frame);
+            strip("door", lerp(a, b, 0.503), lerp(a, b, 1 - frame / size), 0.045, sillM, heightM - frame);
+          } else {
+            strip("frame", a, b, depthM + 0.015, sillM, frame);
+            strip("glass", lerp(a, b, frame / size), lerp(a, b, 1 - frame / size), 0.018, sillM + frame, heightM - frame * 2);
+            const panes = Math.ceil(size / 1.4);
+            for (let pane = 1; pane < panes; pane++) {
+              const centre = pane / panes;
+              strip("frame", lerp(a, b, centre - frame / (2 * size)), lerp(a, b, centre + frame / (2 * size)), depthM * 0.6, sillM, heightM);
+            }
+          }
+        }
+        for (const stair of model.stairs) {
+          const a = metric(stair.a), b = metric(stair.b);
+          const rise = (stair.toM - stair.fromM) / stair.steps;
+          for (let step = 0; step < stair.steps; step++) {
+            strip(
+              "stair",
+              lerp(a, b, step / stair.steps),
+              lerp(a, b, (step + 1) / stair.steps),
+              stair.widthM,
+              stair.fromM + step * rise - 0.15,
+              rise + 0.15
+            );
+          }
+        }
+        for (const rail of model.railings) {
+          const a = metric(rail.a), b = metric(rail.b), size = length(a, b);
+          strip("railing", a, b, 0.055, rail.heightM - 0.055, 0.055);
+          strip("railing", a, b, 0.035, rail.heightM * 0.5, 0.035);
+          const posts = Math.ceil(size / 1.15);
+          for (let post = 0; post <= posts; post++) {
+            const centre = lerp(a, b, post / posts), direction = [(b[0] - a[0]) / size, (b[1] - a[1]) / size];
+            strip("railing", [centre[0] - 0.025 * direction[0], centre[1] - 0.025 * direction[1]], [centre[0] + 0.025 * direction[0], centre[1] + 0.025 * direction[1]], 0.05, 0, rail.heightM);
+          }
+        }
+        return parts;
+      }
+      function buildFloorPlanGeometry(feature, project) {
+        const plans = feature?.properties?.floorPlans;
+        if (plans == null) return [];
+        const errors = validateFloorPlans(plans);
+        if (errors.length) throw new Error(`Invalid floorPlans: ${errors.join("; ")}`);
+        if (typeof project !== "function") throw new Error("buildFloorPlanGeometry requires a project(lng, lat) function");
+        const c = plans.registration.corners;
+        const interpolate = (u, v) => {
+          const lng = (1 - u) * (1 - v) * c[0][0] + u * (1 - v) * c[1][0] + u * v * c[2][0] + (1 - u) * v * c[3][0];
+          const lat = (1 - u) * (1 - v) * c[0][1] + u * (1 - v) * c[1][1] + u * v * c[2][1] + (1 - u) * v * c[3][1];
+          const point = project(lng, lat);
+          if (!Array.isArray(point) || point.length !== 2 || !point.every(finite)) throw new Error("Projection must return finite [x,y] coordinates");
+          return point;
+        };
+        const layouts = new Map(plans.layouts.map((layout) => [layout.id, {
+          source: layout.source,
+          parts: buildArchitectureParts(layout.architecture, interpolate),
+          apartmentRegions: (layout.architecture.apartmentRegions || []).map((region) => ({
+            id: region.id,
+            flag: region.flag || null,
+            polygons: region.polygons.map((polygon) => polygon.map((ring) => ring.map((p) => interpolate(...p))))
+          }))
+        }]));
+        return plans.storeys.map((storey) => ({
+          id: storey.id,
+          level: storey.level,
+          layoutId: storey.layoutId,
+          elevationM: storey.elevationM,
+          elevationBasis: storey.elevationBasis,
+          parts: layouts.get(storey.layoutId).parts,
+          apartmentRegions: layouts.get(storey.layoutId).apartmentRegions,
+          apartmentCount: (storey.units || []).filter((unit) => unit.kind === "apartment").length,
+          sourceUrl: storey.source?.url || layouts.get(storey.layoutId).source.url
+        }));
+      }
+      function refreshRegisteredFloorPlans(buildings, sources) {
+        const byId = /* @__PURE__ */ new Map();
+        for (const source of sources || []) {
+          const id = buildingSourceId(source);
+          if (!id || !source.properties.floorPlans) continue;
+          if (byId.has(id)) byId.set(id, null);
+          else byId.set(id, source);
+        }
+        const checked = /* @__PURE__ */ new Set();
+        let changed = 0;
+        const result = buildings.map((building) => {
+          const source = byId.get(buildingSourceId(building));
+          if (!source || building.geometry?.type !== source.geometry?.type || JSON.stringify(building.geometry?.coordinates) !== JSON.stringify(source.geometry?.coordinates)) return building;
+          const plans = source.properties.floorPlans;
+          if (!checked.has(plans)) {
+            const errors = validateFloorPlans(plans);
+            if (errors.length) throw new Error(`Invalid floor model: ${errors.join("; ")}`);
+            checked.add(plans);
+          }
+          if (JSON.stringify(building.properties.floorPlans) === JSON.stringify(plans)) return building;
+          changed++;
+          return { ...building, properties: { ...building.properties, floorPlans: structuredClone(plans) } };
+        });
+        return { buildings: result, changed };
+      }
+      function buildLocalUnitParts(architecture) {
+        const errors = validateArchitecture(architecture);
+        if (errors.length) throw new Error(errors.join("; "));
+        const [width, depth] = architecture.dimensionsM;
+        return buildArchitectureParts(architecture, (u, v) => [u * width, (1 - v) * depth]);
+      }
+      function registrationToLngLat(plans) {
+        const c = plans.registration.corners;
+        return (u, v) => [
+          (1 - u) * (1 - v) * c[0][0] + u * (1 - v) * c[1][0] + u * v * c[2][0] + (1 - u) * v * c[3][0],
+          (1 - u) * (1 - v) * c[0][1] + u * (1 - v) * c[1][1] + u * v * c[2][1] + (1 - u) * v * c[3][1]
+        ];
+      }
+      function floorPlanToGeoJSON(plans, level) {
+        const errors = validateFloorPlans(plans);
+        if (errors.length) throw new Error(`Invalid floorPlans: ${errors.join("; ")}`);
+        const storey = plans.storeys.find((entry) => entry.level === level);
+        if (!storey) return { type: "FeatureCollection", features: [] };
+        const layout = plans.layouts.find((entry) => entry.id === storey.layoutId);
+        const toLngLat = registrationToLngLat(plans);
+        const ring = (points) => points.map((p) => toLngLat(p[0], p[1])).concat([toLngLat(points[0][0], points[0][1])]);
+        const features = [];
+        const polygonFeatures = (kind, polygons) => polygons.forEach((rings) => features.push({
+          type: "Feature",
+          properties: { kind, level, suggested: plans.suggested === true },
+          geometry: { type: "Polygon", coordinates: rings.map(ring) }
+        }));
+        const lineFeatures = (kind, items, extra = () => ({})) => items.forEach((item) => features.push({
+          type: "Feature",
+          properties: { kind, level, suggested: plans.suggested === true, ...extra(item) },
+          geometry: { type: "LineString", coordinates: [toLngLat(item.a[0], item.a[1]), toLngLat(item.b[0], item.b[1])] }
+        }));
+        const architecture = layout.architecture;
+        polygonFeatures("slab", architecture.slabs);
+        polygonFeatures("wall", architecture.walls);
+        polygonFeatures("landing", architecture.landings);
+        lineFeatures("opening", architecture.openings, (item) => ({ opening: item.kind }));
+        lineFeatures("stair", architecture.stairs, (item) => ({ steps: item.steps }));
+        lineFeatures("railing", architecture.railings);
+        return { type: "FeatureCollection", features };
+      }
+      var api = { buildLocalUnitParts, SCHEMA, UNIT_KINDS, ARCHITECTURE_SCHEMA, buildingSourceId, uncoveredFloorBands, validateArchitecture, validateFloorPlans, buildFloorPlanGeometry, refreshRegisteredFloorPlans, registrationToLngLat, floorPlanToGeoJSON };
+      module.exports = api;
+    }
+  });
+  return require_geometry();
+})();
+if (typeof module === "object" && module.exports) module.exports = InteriorGeometry;

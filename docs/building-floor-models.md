@@ -58,13 +58,13 @@ A proposed building drawn from an uploaded glTF model (`properties.modelUrl`) ne
 A proposed building without a registered model can show a generated default interior in X-ray when
 **Suggested layouts** is on (`?suggested=1`): a point-access stair-and-lift core entered from the
 street-facing facade, two apartments per core, blind party walls, one core per ~240 m² of floor.
-`frontend/js/default-floor-plans.js` produces the same v3 contract with `suggested: true` and layout
+The shared interior-viewer planner (`frontend/vendor/interior-viewer/interior-planner.js`) produces the same v3 contract with `suggested: true` and layout
 sources of `kind: 'generated'`; the validator accepts such sources only inside a suggested model, the
 renderer draws them in a cooler palette, and they are never stored (the shared publication refuses
 suggested or generated geometry as evidence). A slice whose
 footprint cannot hold the minimum core is painted red instead. Office buildings, towers and buildings
 of stepped parts get a central core instead (stairs, lifts and toilets through every storey; open-plan
-offices with a reception at the lifts, flats off a corridor along the lifts; `frontend/js/default-floor-plan-core.js`).
+offices with a reception at the lifts, flats off a corridor along the lifts; the planner's central-core scheme).
 Design, parameters and their regulatory basis: [`floor-plans.md`](floor-plans.md).
 
 ## X-ray display and work limits

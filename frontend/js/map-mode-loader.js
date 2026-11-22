@@ -1,16 +1,16 @@
 // Loads model, photo and AI capabilities separately, and gives every entry point one mode owner.
 (function (root) {
     'use strict';
-    // The floor-plan contract, generator and context: the model view's X-ray and the 2D "Suggested
-    // layouts" layer (suggested-layouts-2d.js) read them; they are not in the boot list.
-    const floorPlans = ['js/building-floor-plans.js', 'js/default-floor-plan-rooms.js',
-        'js/default-floor-plans.js', 'js/default-floor-plan-core.js', 'js/default-floor-plan-context.js'];
+    // The floor-plan contract and the shared planner (vendor/interior-viewer, the same release the Iskaznica
+    // uses: generator, rooms, central core, context and worker client): the model view's X-ray and the 2D
+    // "Suggested layouts" layer (suggested-layouts-2d.js) read them; they are not in the boot list.
+    const floorPlans = ['js/building-floor-plans.js', 'vendor/interior-viewer/interior-planner.js'];
     const groups = {
         floorPlans,
         // Photo always enters through the model view (map-mode-transition.js), so the terrain-following
         // road formation that photoreal-mode.js also reads loads here only.
         model: [
-            ...floorPlans, 'js/default-floor-plan-worker-client.js', 'js/corridor-terrain-formation.js',
+            ...floorPlans, 'js/corridor-terrain-formation.js',
             'js/building-height.js', 'js/proposals/gain.js', 'js/three-mesh-sanitize.js',
             'js/three-screen-door.js', 'js/three-smooth-transparency.js', 'js/three-building-display.js?v=20261113-passages', 'js/three-use-bands.js',
             'js/three-floor-plans.js?v=20261106-cooperative', 'js/three-apartment-hover.js', 'js/floor-plan-proximity.js', 'js/model-section.js', 'js/three-building-facades.js', 'js/rule-building-details.js', 'js/three-rule-roofs.js', 'js/three-resources.js',

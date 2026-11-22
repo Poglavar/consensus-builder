@@ -50,7 +50,7 @@ flowchart LR
     subgraph sources [Source adapters]
         PDF["Developer PDF catalogues<br/>(vector CAD insets)"] --> PY["pionir_floor_architecture.py<br/>reconstruct-*-floors.py"]
         AG["Agency listing drawings<br/>(crawl → archive → OCR draft)"] --> UM["Reviewed unit models<br/>unit-models.json"]
-        PR["Proposed footprint + parcel<br/>+ storeys + street side"] --> GEN["default-floor-plans.js<br/>(generator, pure)"]
+        PR["Proposed footprint + parcel<br/>+ storeys + street side"] --> GEN["interior-planner.js generator<br/>(shared, pure)"]
     end
     PY --> V["validateFloorPlans<br/>building-floor-plans.v3"]
     UM --> V
@@ -250,8 +250,8 @@ buildings" work, not evidence.
 ```mermaid
 sequenceDiagram
     participant TM as three-mode.js (buildProposedBuildings3D)
-    participant CX as default-floor-plan-context.js
-    participant GEN as default-floor-plans.js
+    participant CX as planner context (interior-planner.js)
+    participant GEN as planner generator (interior-planner.js)
     participant R as three-floor-plans.js
     TM->>TM: X-ray on, Suggested layouts on, no evidence model, no glTF
     TM->>CX: planBuilding(build-out feature, parcels, neighbours, streets, height)
@@ -263,18 +263,14 @@ sequenceDiagram
     TM->>TM: red volume for flagged slices; note lines; streets fetched per cell, rebuild once
 ```
 
-- `frontend/js/default-floor-plans.js` — the generator. Pure (footprint, floors, storey height,
-  neighbours, blind edges, front, typology in; `floorPlans` or warnings out), turf for planar
-  polygon work, same UMD shape as the other classic modules (`window.__defaultFloorPlans`,
-  `module.exports`). Rule presets by region live here.
-- `frontend/js/default-floor-plan-rooms.js` — the interiors: rooms, partitions and doors for an
-  apartment, windows and balconies on its facades, the shop variant, the garage level.
-- `frontend/js/default-floor-plan-context.js` — parcel slicing, wing decomposition, storey
-  derivation, the entrance-side decision (long axis from the smallest bounding rectangle, then road
-  distance as the tie-break), blind facades from the parcel, neighbour collection, era presets for
-  existing buildings, region from the city locale, the access a layout uses (the view's override,
-  else the owner building's Access, into `rules.access`), street cell keys and the per-wing cache.
-  Everything injected, so node tests drive it.
+- `frontend/vendor/interior-viewer/interior-planner.js` — the planner, a release of the shared interior-viewer
+  package (`receipt.json` names it; the Iskaznica uses the same one): the generator (`window.__defaultFloorPlans`;
+  rule presets by region), the rooms, windows and balconies, the central-core scheme, the context (parcel slicing,
+  wings cut square along the building's wall directions, storeys, the entrance side, blind facades, neighbours, era
+  presets, region, the access a layout uses, street cell keys and the per-wing cache; `window.__defaultFloorPlanContext`)
+  and the worker client (`window.__defaultFloorPlanWorker`). Its sources, rules and tests are in the interior-viewer
+  repository (`src/planner`, `test/planner`, README "Planner" and its release notes); copies here are never edited.
+  `frontend/js/default-floor-plan-worker.js` is the app's worker that loads it.
 - `frontend/js/three-mode.js` — the **Suggested layouts** button beside X-ray (visible only in
   X-ray; `?suggested=1` on the URL turns it on), the **Existing buildings too** checkbox
   (`?suggestedExisting=1`), the **Access** select (`?access=`, passed to the context as
@@ -307,13 +303,10 @@ sequenceDiagram
   inside a model flagged `suggested: true`.
 - The shared publication refuses suggested or generated geometry as evidence: suggestions are
   derived at display time and never stored.
-- `frontend/js/default-floor-plan-core.js` — the central-core scheme; `planDefaultFloorPlans`
-  hands it the buildings it takes (`wantsCentralCore`), with the plates and the storey uses
-  `default-floor-plan-context.js` derives from a building's parts (`steppedBuilding`).
-- Tests: `backend/test/default-floor-plan-core.test.js` (office core, the vLAB tower's stepped shape,
-  split core, flagging), `backend/test/default-floor-plans.test.js` (corridor geometry on a slab the size of
-  Podbrežje A4 from `fixtures/podbrezje-a4-published-floor-plans.json`), `default-floor-plan-context.test.js`,
-  `building-use.test.js` (Access and `set_access`), new cases in `three-xray-wiring.test.js`, `three-floor-plans.test.js`.
+- Tests here: `backend/test/interior-viewer-receipt.test.js` (the copy is the release its receipt names),
+  `default-floor-plan-worker.test.js` (the app's worker returns the planner's plan), `building-use.test.js` (Access
+  and `set_access`), `plan-units.test.js`, `suggested-layouts-2d.test.js`, `clip-failure-authoring.test.js`, new cases
+  in `three-xray-wiring.test.js`, `three-floor-plans.test.js`. The planner's own tests are in interior-viewer.
 
 Nothing is persisted: the generated `floorPlans` exist in the scene and an in-memory cache keyed by
 proposal, building index, slice geometry, storeys, storey height, front and neighbours.
