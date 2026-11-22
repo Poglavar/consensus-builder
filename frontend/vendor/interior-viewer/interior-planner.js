@@ -1,4 +1,4 @@
-/* InteriorPlanner 1.11.4 — generated from the interior-viewer repository; do not edit. */
+/* InteriorPlanner 1.11.5 — generated from the interior-viewer repository; do not edit. */
 var InteriorGeometryDependency = typeof module === "object" && module.exports ? require("./interior-geometry.js") : globalThis.InteriorGeometry;
 "use strict";
 var InteriorPlanner = (() => {
@@ -457,7 +457,13 @@ var InteriorPlanner = (() => {
               const polygon = cell(sideU, v0, v1);
               if (!room(kind, polygon)) return;
               if (index > 0) partition(sideU, v0 - PARTITION_M, v0);
-              const doorA = [coreU + dir * (hallW + PARTITION_M / 2), v0 + 0.1], doorB = [doorA[0], Math.min(v1 - 0.1, v0 + 0.1 + 1.4)];
+              const doorU = coreU + dir * (hallW + PARTITION_M / 2), run = runInside(apartment, [doorU, v0], [doorU, v1]);
+              let doorA = [doorU, v0 + 0.1], doorB = [doorU, Math.min(v1 - 0.1, v0 + 0.1 + 1.4)];
+              if (!holds(run, doorA[1] - v0, doorB[1] - v0)) {
+                if (!run) return;
+                doorA = [doorU, v0 + run[0] + 0.1];
+                doorB = [doorU, Math.min(v0 + run[1] - 0.1, v0 + run[0] + 0.1 + 1.4)];
+              }
               if (doorB[1] - doorA[1] >= INTERIOR_DOOR_M + 0.1) {
                 const door = doorOn(doorA, doorB, PARTITION_M, [dir, 0]);
                 out.openings.push({ ...door, room: kind });
@@ -499,7 +505,13 @@ var InteriorPlanner = (() => {
               const polygon = cell([u0, u1], roomsV0, env.vb);
               if (!room(kind, polygon)) return;
               if (index > 0) partition(dir > 0 ? [u0 - PARTITION_M, u0] : [u1, u1 + PARTITION_M], roomsV0, env.vb);
-              const doorU0 = Math.max(u0 + 0.15, Math.min(u1 - 0.15 - INTERIOR_DOOR_M - 0.2, (u0 + u1) / 2 - 0.6));
+              const doorV = roomsV0 - PARTITION_M / 2, run = runInside(apartment, [u0, doorV], [u1, doorV]);
+              let doorU0 = Math.max(u0 + 0.15, Math.min(u1 - 0.15 - INTERIOR_DOOR_M - 0.2, (u0 + u1) / 2 - 0.6));
+              if (!holds(run, doorU0 - u0, doorU0 - u0 + INTERIOR_DOOR_M + 0.2)) {
+                if (!run || run[1] - run[0] < INTERIOR_DOOR_M + 0.3) return;
+                const r0 = u0 + run[0], r1 = u0 + run[1];
+                doorU0 = Math.max(r0 + 0.15, Math.min(r1 - 0.15 - INTERIOR_DOOR_M - 0.2, (r0 + r1) / 2 - 0.6));
+              }
               const door = doorOn([doorU0, roomsV0 - PARTITION_M / 2], [doorU0 + INTERIOR_DOOR_M + 0.2, roomsV0 - PARTITION_M / 2], PARTITION_M, [0, 1]);
               out.openings.push({ ...door, room: kind });
               cutFor(door);
@@ -588,13 +600,25 @@ var InteriorPlanner = (() => {
           const cutFor = (opening) => out.cuts.push(strip(t, opening.a, opening.b, opening.depthM + 0.06));
           const doorAlongX = (x0, x1, y, swing, kind) => {
             if (x1 - x0 < INTERIOR_DOOR_M + 0.3) return;
-            const mid = (x0 + x1) / 2, door = doorOn(at(mid - 0.5, y), at(mid + 0.5, y), P, dirOf(0, swing));
+            const run = runInside(flat, at(x0, y), at(x1, y));
+            let mid = (x0 + x1) / 2;
+            if (!holds(run, mid - x0 - 0.5, mid - x0 + 0.5)) {
+              if (!run || run[1] - run[0] < INTERIOR_DOOR_M + 0.3) return;
+              mid = x0 + (run[0] + run[1]) / 2;
+            }
+            const door = doorOn(at(mid - 0.5, y), at(mid + 0.5, y), P, dirOf(0, swing));
             out.openings.push({ ...door, room: kind });
             cutFor(door);
           };
           const doorAlongY = (x, y0, y1, swing, kind) => {
             if (y1 - y0 < INTERIOR_DOOR_M + 0.3) return;
-            const door = doorOn(at(x, y0 + 0.1), at(x, y0 + 0.1 + INTERIOR_DOOR_M + 0.2), P, dirOf(swing, 0));
+            const run = runInside(flat, at(x, y0), at(x, y1));
+            let from = y0;
+            if (!holds(run, 0.1, 0.1 + INTERIOR_DOOR_M + 0.2)) {
+              if (!run || run[1] - run[0] < INTERIOR_DOOR_M + 0.3) return;
+              from = y0 + run[0];
+            }
+            const door = doorOn(at(x, from + 0.1), at(x, from + 0.1 + INTERIOR_DOOR_M + 0.2), P, dirOf(swing, 0));
             out.openings.push({ ...door, room: kind });
             cutFor(door);
           };
@@ -690,6 +714,29 @@ var InteriorPlanner = (() => {
           }
           return hit;
         }
+        function runInside(feature, a, b) {
+          const d = vec(a, b), L = len(d);
+          if (!feature || L < 1e-9) return null;
+          const cuts = [0, L];
+          for (const rings of polygonsOf(feature)) for (const ring of rings) for (let i = 0; i + 1 < ring.length; i++) {
+            const p = ring[i], e = vec(p, ring[i + 1]), den = d[0] * e[1] - d[1] * e[0];
+            if (Math.abs(den) < 1e-12) continue;
+            const w = vec(a, p), s = (w[0] * e[1] - w[1] * e[0]) / den, r = (w[0] * d[1] - w[1] * d[0]) / den;
+            if (s > 0 && s < 1 && r >= 0 && r <= 1) cuts.push(s * L);
+          }
+          cuts.sort((x, y) => x - y);
+          let best = null, run = null;
+          for (let i = 0; i + 1 < cuts.length; i++) {
+            const s0 = cuts[i], s1 = cuts[i + 1];
+            if (s1 - s0 < 1e-9) continue;
+            if (inside(feature, add(a, d, (s0 + s1) / 2 / L))) {
+              run = run ? [run[0], s1] : [s0, s1];
+              if (!best || run[1] - run[0] > best[1] - best[0]) best = run.slice();
+            } else run = null;
+          }
+          return best;
+        }
+        const holds = (run, s0, s1) => !!run && run[0] <= s0 + 0.01 && run[1] >= s1 - 0.01;
         const partsOf = (t, feature) => polygonsOf(feature).map((rings) => t.polygon(rings)).filter((part) => area(part) > 0.5);
         function tidy(t, feature) {
           const polygons = polygonsOf(feature).map((rings) => rings.map((ring) => {
@@ -1106,6 +1153,7 @@ var InteriorPlanner = (() => {
           garageLayout,
           facadeRun,
           freeRuns,
+          runInside,
           WINDOW_SPECS,
           PARTITION_M,
           // The clip helpers, exported so their failure reporting is tested directly.
@@ -2653,6 +2701,15 @@ var InteriorPlanner = (() => {
           const n = leftNormal(unit(vec(a, b)));
           return t.polygon([[add(a, n, width / 2), add(b, n, width / 2), add(b, n, -width / 2), add(a, n, -width / 2), add(a, n, width / 2)]]);
         }
+        function swingInto(t, polygon, hinge, into, widthM) {
+          let holds = false;
+          try {
+            holds = !!polygon && t.booleanPointInPolygon(t.point(add(hinge, into, 0.95 * widthM)), polygon);
+          } catch (_) {
+            holds = false;
+          }
+          return holds ? into : [-into[0], -into[1]];
+        }
         function unionAll(t, features) {
           let acc = null;
           for (const feature of features) {
@@ -3026,7 +3083,7 @@ var InteriorPlanner = (() => {
           return results;
         }
         function planCorridorParts(c) {
-          const { t, rules, inner, edgesUV, front, frameUV, sunSign, ext, storeyHeightM, floors, highRise, facadeRun } = c;
+          const { t, rules, inner, edgesUV, front, frameUV, sunSign, ext, storeyHeightM, floors, highRise, facadeRun, runInside } = c;
           const failWith = (code, message) => ({ error: { code, message } });
           const alongU = ext.u1 - ext.u0 >= ext.v1 - ext.v0;
           const P = (s, r) => alongU ? [s, r] : [r, s];
@@ -3150,6 +3207,31 @@ var InteriorPlanner = (() => {
           if (bays[0].q0 - Sa > 1e-6 && bays[0].q0 - Sa < gapLimit) bays[0].q0 = Sa;
           if (Sb - bays[bays.length - 1].q1 > 1e-6 && Sb - bays[bays.length - 1].q1 < gapLimit) bays[bays.length - 1].q1 = Sb;
           for (let i = 1; i < bays.length; i++) if (bays[i].q0 - bays[i - 1].q1 < gapLimit) bays[i - 1].q1 = bays[i].q0;
+          const entranceAt = (doorS, side2) => {
+            const half = rules.entranceDoorM / 2, rFace = side2.facadeR, rOut = side2.facadeR + side2.sign * wall;
+            const reaches = (s) => {
+              const run2 = runInside(inner, P(s, rMid), P(s, rFace));
+              return run2 && run2[0] <= 0.01 && run2[1] >= Math.abs(rFace - rMid) - 0.01;
+            };
+            if (!runInside || reaches(doorS - half) && reaches(doorS + half)) {
+              const r = side2.facadeR + side2.sign * wall / 2;
+              return [P(doorS - half, r), P(doorS + half, r)];
+            }
+            const run = runInside(inner, P(doorS, rMid), P(doorS, rOut));
+            if (!run || run[0] > 1e-6) return null;
+            const exit = P(doorS, rMid + side2.sign * run[1]);
+            let best = null;
+            for (const edge2 of edgesUV) {
+              if (edge2.party || edge2.lengthM < 2 * half + 0.2) continue;
+              const face = add(edge2.a, edge2.inward, wall), w = vec(face, exit);
+              const along = w[0] * edge2.d[0] + w[1] * edge2.d[1], off = Math.abs(w[0] * edge2.inward[0] + w[1] * edge2.inward[1]);
+              if (along < -0.05 || along > edge2.lengthM + 0.05 || off > 0.05) continue;
+              if (!best || off < best.off) best = { edge: edge2, along, off };
+            }
+            if (!best) return null;
+            const { edge } = best, at = Math.min(edge.lengthM - half - 0.1, Math.max(half + 0.1, best.along)), line = add(edge.a, edge.inward, wall / 2);
+            return [add(line, edge.d, at - half), add(line, edge.d, at + half)];
+          };
           const parts = {
             coreWalls: [],
             coreOpenings: [],
@@ -3183,11 +3265,12 @@ var InteriorPlanner = (() => {
             if (bay.q0 > Sa + 1e-6) parts.dividerWalls.push(differenceOrNull(t, clip(box(bay.q0, bay.q0 + wc, fullRow[0], fullRow[1])), built.rect));
             if (bay.q1 < Sb - 1e-6) parts.dividerWalls.push(differenceOrNull(t, clip(box(bay.q1 - wc, bay.q1, fullRow[0], fullRow[1])), built.rect));
             const lobby = bay.lobbyHigh ? [bay.cs1, bay.q1 - wc] : [bay.q0 + wc, bay.cs0];
-            const doorS = (lobby[0] + lobby[1]) / 2, doorR = side.facadeR + side.sign * wall / 2;
+            const ends2 = entranceAt((lobby[0] + lobby[1]) / 2, side);
+            if (!ends2) continue;
             const entrance = {
               kind: "glazedDoor",
-              a: P(doorS - rules.entranceDoorM / 2, doorR),
-              b: P(doorS + rules.entranceDoorM / 2, doorR),
+              a: ends2[0],
+              b: ends2[1],
               depthM: wall,
               sillM: 0,
               heightM: Math.min(rules.entranceHeightM, storeyHeightM - rules.slabThicknessM - 0.3),
@@ -3301,14 +3384,35 @@ var InteriorPlanner = (() => {
               flag: facadeFlag(polygon),
               ...entry.target ? { target: entry.target } : {}
             });
-            const opening = { kind: "door", ...door, depthM: wc, sillM: 0, heightM: rules.doorHeightM, hinge: door.b, openTip: add(door.b, into, doorM), room: "apartment" };
+            if (!door) return;
+            const opening = {
+              kind: "door",
+              ...door,
+              depthM: wc,
+              sillM: 0,
+              heightM: rules.doorHeightM,
+              hinge: door.b,
+              openTip: add(door.b, swingInto(t, polygon, door.b, into, doorM), doorM),
+              room: "apartment"
+            };
             parts.apartmentDoors.push(opening);
             parts.apartmentDoorCuts.push(strip(t, opening.a, opening.b, wc + 0.06));
+          };
+          const corridorReach = (rowSide, polygon, s0, s1) => {
+            if (!runInside) return [0, s1 - s0];
+            const rEdge = rowSide.edgeR + rowSide.sign * (wc + 0.05), rDoor = rowSide.edgeR + rowSide.sign * wc / 2;
+            const a = runInside(polygon, P(s0, rEdge), P(s1, rEdge)), b = runInside(inner, P(s0, rDoor), P(s1, rDoor));
+            if (!a || !b) return null;
+            const from = Math.max(a[0], b[0]), to = Math.min(a[1], b[1]);
+            return to > from ? [from, to] : null;
           };
           rows.forEach((row, index) => {
             const rowSide = row.rowSide, rDoor = rowSide.edgeR + rowSide.sign * wc / 2;
             filled[index].walls.forEach(([s0, s1]) => parts.dividerWalls.push(clip(rowBox(rowSide, s0, s1))));
             for (const flat of filled[index].flats) {
+              const polygon = clip(rowBox(rowSide, flat.s0, flat.s1));
+              const reach = polygon ? corridorReach(rowSide, polygon, flat.s0, flat.s1) : null;
+              const doorX = reach && reach[0] <= 0.36 && reach[1] >= 0.35 + doorM - 0.01 ? 0.35 : !reach || reach[1] - reach[0] < doorM + 0.1 ? null : reach[1] - reach[0] >= 0.35 + doorM + 0.1 ? reach[0] + 0.35 : (reach[0] + reach[1] - doorM) / 2;
               const env = {
                 layout: "row",
                 origin: P(flat.s0, rowSide.facadeR),
@@ -3316,17 +3420,11 @@ var InteriorPlanner = (() => {
                 ey: rowSide.ey,
                 widthM: flat.s1 - flat.s0,
                 depthM: depthOfSide(rowSide),
-                doorX: [0.35, 0.35 + doorM],
+                doorX: doorX === null ? null : [doorX, doorX + doorM],
                 bedrooms: flat.entry.bedrooms,
                 balconyOnFront: true
               };
-              addFlat(
-                flat.entry,
-                clip(rowBox(rowSide, flat.s0, flat.s1)),
-                env,
-                { a: P(flat.s0 + 0.35, rDoor), b: P(flat.s0 + 0.35 + doorM, rDoor) },
-                [-rowSide.ey[0], -rowSide.ey[1]]
-              );
+              addFlat(flat.entry, polygon, env, doorX === null ? null : { a: P(flat.s0 + doorX, rDoor), b: P(flat.s0 + doorX + doorM, rDoor) }, [-rowSide.ey[0], -rowSide.ey[1]]);
             }
           });
           const livingAtEnd = sides[1].pole < sides[0].pole;
@@ -3559,7 +3657,8 @@ var InteriorPlanner = (() => {
               targets,
               // targets
               ext: { u0: footprintUmin, u1: footprintUmax, v0: footprintVmin, v1: footprintVmax },
-              facadeRun: rooms ? rooms.facadeRun : null
+              facadeRun: rooms ? rooms.facadeRun : null,
+              runInside: rooms ? rooms.runInside : null
             };
             let corridorParts = planCorridorParts(corridorInput);
             const b = corridorParts.balance;
@@ -3827,8 +3926,17 @@ var InteriorPlanner = (() => {
             for (const apartment of apartments.filter((apartment2) => apartment2.block === block)) {
               const onLeft = apartment.side !== "right";
               const wallX = onLeft ? block.x0 - rules.coreWallM / 2 : block.x1 + rules.coreWallM / 2;
-              const y0 = block.doorY0 + 0.35, y1 = y0 + rules.apartmentDoorM;
+              let y0 = block.doorY0 + 0.35, y1 = y0 + rules.apartmentDoorM;
               if (y1 > block.doorY1 - 0.05) continue;
+              const besideX = wallX + (onLeft ? -1 : 1) * (rules.coreWallM / 2 + 0.05);
+              const run = rooms ? rooms.runInside(apartment.polygon, [besideX, block.doorY0], [besideX, block.doorY1]) : [0, block.doorY1 - block.doorY0];
+              if (!run) continue;
+              if (run[0] > y0 - block.doorY0 + 0.01 || run[1] < y1 - block.doorY0 - 0.01) {
+                y0 = block.doorY0 + run[0] + 0.1;
+                y1 = y0 + rules.apartmentDoorM;
+                if (y1 > block.doorY0 + run[1] + 0.01) continue;
+              }
+              const into = swingInto(t, apartment.polygon, [wallX, y1], [onLeft ? -1 : 1, 0], rules.apartmentDoorM);
               const door = {
                 kind: "door",
                 a: [wallX, y0],
@@ -3837,7 +3945,7 @@ var InteriorPlanner = (() => {
                 sillM: 0,
                 heightM: rules.doorHeightM,
                 hinge: [wallX, y1],
-                openTip: [wallX + (onLeft ? -rules.apartmentDoorM : rules.apartmentDoorM), y1],
+                openTip: add([wallX, y1], into, rules.apartmentDoorM),
                 room: "apartment"
               };
               apartmentDoors.push(door);
@@ -4996,7 +5104,7 @@ var InteriorPlanner = (() => {
   // interior-version:package-version
   var require_package_version = __commonJS({
     "interior-version:package-version"(exports, module) {
-      module.exports = { version: "1.11.4" };
+      module.exports = { version: "1.11.5" };
     }
   });
 
