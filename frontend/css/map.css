@@ -1818,7 +1818,19 @@ body.three-scene-drawn #three-container.active {
    `transform`, which the button's :active press uses. */
 .map-compare__close {
     position: absolute;
-    top: var(--cb-space-3);
+    top: var(--map-compare-close-top, var(--cb-space-3));
+    left: 0;
+    z-index: calc(var(--cb-z-map-compare) + 3);
+    translate: -50% 0;
+}
+
+/* Its counterpart at the bottom (MapBeforeAfter onStats): the figures of the two sides. Both
+   buttons are measured clear of the map shell's chrome where it crosses the divider (the
+   --map-compare-*-top properties); without a measurement they sit at the edges. */
+.map-compare__stats {
+    position: absolute;
+    top: var(--map-compare-stats-top, auto);
+    bottom: var(--cb-space-3);
     left: 0;
     z-index: calc(var(--cb-z-map-compare) + 3);
     translate: -50% 0;

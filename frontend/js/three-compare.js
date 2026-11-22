@@ -68,6 +68,23 @@
         return (options || []).find(option => option.value === value) || null;
     }
 
+    // What the divider's stats button compares: the sides that are a design, plan or agreement, each
+    // once, measured as Compare plans measures them (plan-stats.js), which names the dialog after
+    // them (designs, agreements, or plans for a mix). Built today is the dialog's own Present state
+    // column; Permitted massing and Proposed have no plan to measure and are left out. Null when
+    // neither side has figures.
+    const MEASURED = Object.freeze(['design', 'plan', 'agreement']);
+    function statsOf(sides) {
+        const chosen = [];
+        for (const side of sides || []) {
+            if (MEASURED.includes(side?.kind) && !chosen.some(other => other.value === side.value)) chosen.push(side);
+        }
+        if (!chosen.length) return null;
+        const kinds = new Set(chosen.map(side => side.kind));
+        const subject = kinds.size === 1 && !kinds.has('plan') ? `${[...kinds][0]}s` : 'plans';
+        return { subject, sides: chosen };
+    }
+
     // Whether a side applies one design: by: { id, unapplied } where unapplied marks a plan member no
     // applied design stands for. Proposed applies every applied design; an applied design's side
     // itself alone; a side that reads its members (a plan, an agreement's plan, a design that is not
@@ -173,7 +190,7 @@
         return left && right ? { left, right } : null;
     }
 
-    const pure = { BASE, sideOptions, optionGroups, planRowsOf, parseSide, appliesDesign, showsOn, splitDescriptors, scissorRects, readiness,
+    const pure = { BASE, sideOptions, optionGroups, planRowsOf, parseSide, statsOf, appliesDesign, showsOn, splitDescriptors, scissorRects, readiness,
         compareParam, parseCompareParam };
     if (!global || !global.document) return Object.freeze(pure);
 
@@ -218,6 +235,10 @@
     let planRows = new Map();
     // One-member plans by design CID: the same design is read once a page.
     const designReads = new Map();
+
+    const cidOf = proposal => {
+        try { return global.DesignSync?.publishedCid?.(proposal) || global.DesignRecord?.cidOf?.(proposal) || null; } catch (_) { return null; }
+    };
 
     // A design that is not applied, as the one-member plan Plan stats would read it: the design's
     // CID is computed here from its content, published or not (DesignRecord.cidOf), so a local design
@@ -286,9 +307,6 @@
         const store = global.proposalStorage;
         const city = global.normalizeCityCodeForApi?.(global.resolveCurrentCityCode?.()) || null;
         const inCity = value => !city || !value || global.normalizeCityCodeForApi(value) === city;
-        const cidOf = proposal => {
-            try { return global.DesignSync?.publishedCid?.(proposal) || global.DesignRecord?.cidOf?.(proposal) || null; } catch (_) { return null; }
-        };
         const isApplied = proposal => global.isProposalApplied?.(proposal) ?? proposal.applied === true;
         const saved = (store?.getAllProposals?.() || []).filter(proposal => proposal?.proposalId != null);
         const applied = saved.filter(isApplied);
@@ -473,6 +491,7 @@
         if (state.divider) {
             state.divider.labelEls[0].textContent = labels.before;
             state.divider.labelEls[1].textContent = labels.after;
+            syncStatsButton(current);
             scene().invalidate();
             return;
         }
@@ -485,11 +504,43 @@
             labels, percent: state.percent, labelPlacement: 'divider',
             sliderLabel: t('planningViews.compare.sliderLabel', 'Comparison divider'),
             closeLabel: t('planningViews.compare.stop', 'Stop comparing'),
+            statsLabel: t('planningViews.compare.stats', 'Compare stats'),
+            onStats: button => global.BusyControl.track(button, () => openStats()).catch(error => {
+                global.console.error(`[${new Date().toISOString()}] [ThreeCompare] the stats of the comparison could not open`, error);
+                global.updateStatus?.(t('planningViews.compare.statsFailed', 'The stats could not open: {{reason}}', { reason: error?.message || String(error) }));
+            }),
             onClose: () => setEnabled(false),
             onChange: percent => { state.percent = percent; scene()?.invalidate(); }
         });
         state.dividerScene = scene();
+        syncStatsButton(current);
         scene().invalidate();
+    }
+
+    // The stats button shows while a side has figures (pure.statsOf).
+    function syncStatsButton(current = sides()) {
+        if (state.divider?.statsEl) state.divider.statsEl.hidden = !pure.statsOf([current.left, current.right]);
+    }
+
+    // The two sides' figures in Compare plans (plan-stats.js comparePlanStats), each side read as the
+    // plan it draws: a plan or an agreement's plan by its row, a design as its one-member plan. The
+    // dialog's Side by side on the map comes back to these sides.
+    function openStats() {
+        const current = sides();
+        const chosen = pure.statsOf([current.left, current.right]);
+        if (!chosen) return null;
+        const planOf = side => {
+            if (side.readId && planRows.has(side.readId)) return planRows.get(side.readId);
+            const proposal = side.kind === 'design' ? global.proposalStorage?.getProposal?.(side.id) : null;
+            const cid = proposal ? cidOf(proposal) : null;
+            const row = cid ? designRead(proposal, cid) : null;
+            if (!row) throw new Error(`${optionLabel(side)} has no plan to measure`);
+            return row;
+        };
+        const plans = chosen.sides.map(planOf);
+        const terms = chosen.subject === 'agreements' ? chosen.sides.map(side => global.AgreementStore.get(side.id)) : null;
+        return global.comparePlanStats(plans, { subject: chosen.subject, sides: chosen.sides.map(side => side.value),
+            titles: chosen.sides.map(side => side.title), terms });
     }
 
     // three-mode.js attaches on entering the model view: { container, invalidate }.

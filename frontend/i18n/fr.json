@@ -8730,6 +8730,8 @@
             "right": "Droite",
             "swap": "Inverser les côtés",
             "sliderLabel": "Séparateur de comparaison",
+            "stats": "Comparer les statistiques",
+            "statsFailed": "Les statistiques n’ont pas pu s’ouvrir : {{reason}}",
             "reading": "{{label}} (lecture…)",
             "unreadable": "{{label}} (illisible : {{reason}})",
             "mapNote": "Sur la carte, chaque côté dessine ses propres bâtiments et la volumétrie autorisée en emprise au sol ; un projet ou un plan non appliqué dessine aussi ses rues et ses espaces en emprise au sol. Les parcelles ainsi que les rues et les parcs appliqués apparaissent des deux côtés.",

@@ -8600,6 +8600,8 @@
             "right": "Desno",
             "swap": "Zamijeni strane",
             "sliderLabel": "Razdjelnik usporedbe",
+            "stats": "Usporedi statistiku",
+            "statsFailed": "Statistika se nije mogla otvoriti: {{reason}}",
             "reading": "{{label}} (čita se…)",
             "unreadable": "{{label}} (nije se mogao pročitati: {{reason}})",
             "mapNote": "Na karti svaka strana crta svoje zgrade i dopuštenu građevnu masu kao tlocrte; dizajn ili plan koji nije primijenjen crta kao tlocrte i svoje ceste i prostore. Čestice te primijenjene ceste i parkovi vide se na obje strane.",

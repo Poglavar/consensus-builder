@@ -2,7 +2,8 @@
 // at a divider, each half drawing one chosen state of the scene (Built today, a design, ...); on the
 // 2D map the halves draw their buildings as footprints (js/compare-on-map.js). Swap trades the sides;
 // Stop comparing, or the X on the divider, ends the split. Any saved design or plan is a side, applied
-// or not: what is not applied is read without applying it.
+// or not: what is not applied is read without applying it. The stats button at the bottom of the divider
+// opens the sides' figures in Compare plans.
 import { test, expect } from '../helpers/fixtures';
 import { selectNativeOption } from '../helpers/controls';
 import { openCity, createBuilding, createSpace, drawCorridor, PARCEL_ID } from '../helpers/runtime';
@@ -404,4 +405,44 @@ test('a comparison in the address opens with its two sides, and the address foll
   expect(await compareParam()).toBe('permitted,built');
   await page.locator('#planning-compare-enable').click();
   expect(await compareParam()).toBeNull();
+});
+
+test('the stats button on the divider opens the two sides\' figures, and Side by side comes back to them', async ({ mockApi: page }) => {
+  test.setTimeout(120_000);
+  await mockBuildingScene(page);
+  await openCity(page);
+  const designId = await createBuilding(page);
+  const { cid, title } = await page.evaluate(id => {
+    const w = window as any;
+    const record = w.proposalStorage.getProposal(id);
+    const plan = w.PlanComposition.create('Figures plan', [record], { city: w.resolveCurrentCityCode(), at: '45.8,15.98,17', mode: '2d', language: 'en' });
+    w.PlanWorkspace.save(plan);
+    return { cid: plan.cid as string, title: record.title as string };
+  }, designId);
+  await page.keyboard.press('Escape');
+  await openCompareTab(page);
+  // Built today beside Permitted massing: no plan to measure, so no stats button.
+  await selectNativeOption(page.locator('#planning-compare-left'), 'built');
+  await selectNativeOption(page.locator('#planning-compare-right'), 'permitted');
+  await page.locator('#planning-compare-enable').click();
+  await expect(page.locator('#map .map-compare__handle')).toBeVisible();
+  const stats = page.locator('#map').getByRole('button', { name: 'Compare stats', exact: true });
+  await expect(stats).toBeHidden();
+  // A plan beside a design: both are measured, in one Compare plans dialog.
+  await selectNativeOption(page.locator('#planning-compare-left'), `plan:${cid}`);
+  await selectNativeOption(page.locator('#planning-compare-right'), `design:${designId}`);
+  await expect(page.locator('#map .map-compare__label--before')).toHaveText('Plan: Figures plan', { timeout: 45_000 });
+  await page.locator('#planning-views [data-sheet-close]').click();
+  await expect(stats).toBeVisible();
+  await stats.click();
+  const dialog = page.locator('.plan-compare-dialog');
+  await expect(dialog).toBeVisible({ timeout: 30_000 });
+  await expect(dialog.getByRole('heading', { name: 'Compare plans' })).toBeVisible();
+  await expect(dialog.locator('th.plan-compare__plan')).toHaveText([/^Present state/, /^Figures plan/, new RegExp(`^${escapeRegExp(title)}`)]);
+  // Side by side on the map closes the dialog onto the same two sides.
+  await dialog.locator('[data-plan-compare-side-by-side]').click();
+  await expect(dialog).toHaveCount(0);
+  await expect(page.locator('#planning-compare-left')).toHaveValue(`plan:${cid}`);
+  await expect(page.locator('#planning-compare-right')).toHaveValue(`design:${designId}`);
+  await expect(page.locator('#map .map-compare__handle')).toBeVisible();
 });

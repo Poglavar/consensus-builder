@@ -8582,6 +8582,8 @@
             "right": "Derecha",
             "swap": "Intercambiar lados",
             "sliderLabel": "Divisor de comparación",
+            "stats": "Comparar estadísticas",
+            "statsFailed": "No se pudieron abrir las estadísticas: {{reason}}",
             "reading": "{{label}} (leyendo…)",
             "unreadable": "{{label}} (no se pudo leer: {{reason}})",
             "mapNote": "En el mapa, cada lado dibuja sus propios edificios y el volumen permitido como huellas; un diseño o plan no aplicado dibuja también sus calles y espacios como huellas. Las parcelas y las calles y parques aplicados se ven en ambos lados.",

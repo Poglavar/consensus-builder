@@ -187,6 +187,34 @@ describe('the plans a side can be', () => {
     });
 });
 
+describe("the divider's stats", () => {
+    const options = compare.sideOptions({
+        designs: [{ id: 'd1', title: 'Library' }, { id: 'd2', title: 'School' }],
+        plans: [{ id: 'p1', title: 'Courtyard' }],
+        agreements: [{ id: 'a1', title: 'Deal', readId: 'p1' }, { id: 'a2', title: 'Other deal', readId: 'p1' }]
+    });
+    const side = value => compare.parseSide(value, options);
+    const statsOf = (...values) => {
+        const stats = compare.statsOf(values.map(side));
+        return stats && { subject: stats.subject, sides: stats.sides.map(entry => entry.value) };
+    };
+
+    it('measures the sides that are designs, plans or agreements, named after what they are', () => {
+        expect(statsOf('design:d1', 'design:d2')).toEqual({ subject: 'designs', sides: ['design:d1', 'design:d2'] });
+        expect(statsOf('agreement:a1', 'agreement:a2')).toEqual({ subject: 'agreements', sides: ['agreement:a1', 'agreement:a2'] });
+        expect(statsOf('plan:p1', 'design:d1')).toEqual({ subject: 'plans', sides: ['plan:p1', 'design:d1'] });
+        expect(statsOf('agreement:a1', 'design:d1')).toEqual({ subject: 'plans', sides: ['agreement:a1', 'design:d1'] });
+    });
+
+    it('leaves today\'s states out (Built today is the dialog\'s present state), and the same side counts once', () => {
+        expect(statsOf('built', 'plan:p1')).toEqual({ subject: 'plans', sides: ['plan:p1'] });
+        expect(statsOf('design:d1', 'proposed')).toEqual({ subject: 'designs', sides: ['design:d1'] });
+        expect(statsOf('plan:p1', 'plan:p1')).toEqual({ subject: 'plans', sides: ['plan:p1'] });
+        expect(statsOf('built', 'permitted')).toBeNull();
+        expect(compare.statsOf([null, undefined])).toBeNull();
+    });
+});
+
 describe('a comparison in the address', () => {
     const cidA = `bafkrei${'a'.repeat(52)}`, cidB = `bafkrei${'b'.repeat(52)}`;
     it('names today\'s states by name and a saved plan by its CID, and reads them back', () => {

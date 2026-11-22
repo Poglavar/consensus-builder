@@ -10,7 +10,9 @@
 //   attachDivider(container, beforeEl, options) -> divider
 //     the divider alone, over any two stacked elements (two images in the bet dialog): clips
 //     `beforeEl`, which the host positions over the container's content; takes labels,
-//     labelPlacement, sliderLabel, percent; returns { handleEl, getPercent, setPercent, applyClip, dispose }
+//     labelPlacement, sliderLabel, percent, onClose/closeLabel (an X at the top), onStats/statsLabel
+//     (a stats button at the bottom, given itself on click); returns { handleEl, labelEls, closeEl,
+//     statsEl, getPercent, setPercent, applyClip, dispose }
 //   attach(map, options) -> session
 //     options.L                 Leaflet (default window.L)
 //     options.drawBefore(map)   draws the "before" content on the second map
@@ -101,6 +103,21 @@
             handleEl.appendChild(closeEl);
         }
 
+        // A button at the bottom of the divider (options.onStats) opens the figures of what the two
+        // sides show; the host hides it (statsEl.hidden) while the sides have no figures to compare.
+        let statsEl = null;
+        if (typeof options.onStats === 'function') {
+            statsEl = doc.createElement('button');
+            statsEl.type = 'button';
+            statsEl.className = 'close-circle-btn map-compare__stats';
+            statsEl.setAttribute('aria-label', options.statsLabel || 'Compare stats');
+            statsEl.title = options.statsLabel || 'Compare stats';
+            statsEl.innerHTML = '<i class="fa-solid fa-chart-column" aria-hidden="true"></i>';
+            statsEl.addEventListener('pointerdown', event => event.stopPropagation());
+            statsEl.addEventListener('click', event => { event.stopPropagation(); options.onStats(statsEl); });
+            handleEl.appendChild(statsEl);
+        }
+
         const onDivider = options.labelPlacement === 'divider';
         const labelEls = ['before', 'after'].map(side => {
             const el = doc.createElement('div');
@@ -110,25 +127,42 @@
             return el;
         });
 
-        // The phone stack owns its padding as a hit target too, including gaps between cards.
-        const occluders = container.id === 'map' ? Array.from(doc.querySelectorAll(
+        // The map shell's chrome over the view: the grip (phones, the 2D map), the X and the stats
+        // button keep clear of it. The phone stack owns its padding as a hit target too, including
+        // gaps between cards.
+        const watchesChrome = container.id === 'map' || Boolean(closeEl || statsEl);
+        const occluders = watchesChrome ? Array.from(doc.querySelectorAll(
             '.on-map-editor__tools, .on-map-editor__panel, #click-stack, .map-shell-slot, .map-shell-cluster, .map-shell-button'
         )) : [];
-        function positionGrip() {
-            if (container.id !== 'map') return;
-            handleEl.style.removeProperty('--map-compare-grip-top');
-            if (!root.matchMedia('(max-width: 767.98px)').matches) return;
-            const rect = container.getBoundingClientRect();
-            const x = rect.left + rect.width * percent / 100;
-            const intervals = occluders.filter(el => el.getClientRects().length > 0).map(el => el.getBoundingClientRect())
+        // The spans of the view's height the chrome covers within reach of the divider at x.
+        function coveredAt(rect, x) {
+            return occluders.filter(el => el.getClientRects().length > 0).map(el => el.getBoundingClientRect())
                 .filter(box => box.width > 0 && box.height > 0 && box.left < x + 24 && box.right > x - 24)
                 .map(box => [box.top - rect.top, box.bottom - rect.top]);
-            const top = exposedGripTop(rect.height, rect.height / 4, intervals);
-            // This CSS property is measured map geometry, shared by the grip and its labels.
-            if (top !== null) handleEl.style.setProperty('--map-compare-grip-top', `${top}px`);
         }
-        const gripObserver = container.id === 'map' && typeof root.ResizeObserver === 'function'
-            ? new root.ResizeObserver(positionGrip) : null;
+        // These CSS properties are measured view geometry: the grip's centre (shared with its
+        // labels), and the top edge of the X (the highest spot the chrome leaves free) and of the
+        // stats button (the lowest).
+        function positionChrome() {
+            if (!watchesChrome) return;
+            handleEl.style.removeProperty('--map-compare-grip-top');
+            const buttons = [[closeEl, '--map-compare-close-top', 'top'], [statsEl, '--map-compare-stats-top', 'bottom']].filter(([el]) => el);
+            buttons.forEach(([el, property]) => el.style.removeProperty(property));
+            const phoneMap = container.id === 'map' && root.matchMedia('(max-width: 767.98px)').matches;
+            if (!phoneMap && !buttons.length) return;
+            const rect = container.getBoundingClientRect();
+            const intervals = coveredAt(rect, rect.left + rect.width * percent / 100);
+            const top = phoneMap ? exposedGripTop(rect.height, rect.height / 4, intervals) : null;
+            if (top !== null) handleEl.style.setProperty('--map-compare-grip-top', `${top}px`);
+            for (const [el, property, end] of buttons) {
+                const half = (el.offsetHeight || 0) / 2;
+                // Where the CSS puts it (--cb-space-3, 12px, from its edge) unless the chrome is there.
+                const centre = exposedGripTop(rect.height, end === 'top' ? 12 + half : rect.height - 12 - half, intervals);
+                if (centre !== null && half) el.style.setProperty(property, `${centre - half}px`);
+            }
+        }
+        const gripObserver = watchesChrome && typeof root.ResizeObserver === 'function'
+            ? new root.ResizeObserver(positionChrome) : null;
         occluders.forEach(el => gripObserver?.observe(el));
 
         function applyClip() {
@@ -136,7 +170,7 @@
             const { x, clipPath } = clipInset(container.clientWidth, percent);
             beforeEl.style.clipPath = clipPath;
             handleEl.style.left = x + 'px';
-            positionGrip();
+            positionChrome();
         }
 
         const divider = control.create({
@@ -152,6 +186,7 @@
             handleEl,
             labelEls,
             closeEl,
+            statsEl,
             getPercent: () => percent,
             setPercent(next) { divider.setValue(next); percent = divider.getValue(); applyClip(); return percent; },
             applyClip,

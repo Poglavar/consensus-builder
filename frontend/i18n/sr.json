@@ -8600,6 +8600,8 @@
             "right": "Desno",
             "swap": "Zameni strane",
             "sliderLabel": "Razdelnik poređenja",
+            "stats": "Uporedi statistiku",
+            "statsFailed": "Statistika nije mogla da se otvori: {{reason}}",
             "reading": "{{label}} (čita se…)",
             "unreadable": "{{label}} (nije mogao da se pročita: {{reason}})",
             "mapNote": "Na karti svaka strana crta svoje zgrade i dozvoljenu građevinsku masu kao osnove; dizajn ili plan koji nije primenjen crta kao osnove i svoje puteve i prostore. Parcele i primenjeni putevi i parkovi vide se na obe strane.",

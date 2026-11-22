@@ -8730,6 +8730,8 @@
             "right": "Direita",
             "swap": "Trocar lados",
             "sliderLabel": "Divisor de comparação",
+            "stats": "Comparar estatísticas",
+            "statsFailed": "Não foi possível abrir as estatísticas: {{reason}}",
             "reading": "{{label}} (a ler…)",
             "unreadable": "{{label}} (não foi possível ler: {{reason}})",
             "mapNote": "No mapa, cada lado desenha os seus próprios edifícios e a volumetria permitida como implantações; um projeto ou plano não aplicado desenha também as suas ruas e espaços como implantações. As parcelas e as ruas e parques aplicados aparecem nos dois lados.",

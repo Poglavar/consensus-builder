@@ -10,7 +10,7 @@ const control = require('../../frontend/js/ui/map-compare-control.js');
 class FakeElement {
     constructor(doc, tag) {
         this.ownerDocument = doc; this.tagName = tag; this.children = []; this.parent = null;
-        this.className = ''; this.textContent = ''; this.style = {}; this.attributes = new Map();
+        this.className = ''; this.textContent = ''; this.style = { setProperty(name, value) { this[name] = value; }, removeProperty(name) { delete this[name]; } }; this.attributes = new Map();
         this.listeners = new Map(); this.clientWidth = 600;
     }
     appendChild(child) { this.children.push(child); child.parent = this; return child; }
@@ -30,6 +30,7 @@ function fakeDocument() {
     const doc = {
         listeners: new Map(),
         createElement(tag) { return new FakeElement(doc, tag); },
+        querySelectorAll() { return []; },
         addEventListener(type, fn) { (doc.listeners.get(type) || doc.listeners.set(type, new Set()).get(type)).add(fn); },
         removeEventListener(type, fn) { doc.listeners.get(type)?.delete(fn); },
         defaultView: { addEventListener() {}, removeEventListener() {} }
@@ -248,6 +249,53 @@ describe('MapBeforeAfter.attach', () => {
         divider.dispose();
         expect(container.children).toEqual([after, before]);
         expect(() => MapBeforeAfter.attachDivider(container, null, { control })).toThrow(/before element/);
+    });
+
+    it('puts an X at the top and a stats button at the bottom of the divider, each a click that never drags', () => {
+        const doc = fakeDocument();
+        const container = doc.createElement('div');
+        const before = doc.createElement('div');
+        container.appendChild(before);
+        const onClose = vi.fn(), onStats = vi.fn();
+        const divider = MapBeforeAfter.attachDivider(container, before, { control, onClose, onStats, closeLabel: 'Stop', statsLabel: 'Compare stats' });
+        expect(divider.closeEl.className).toBe('close-circle-btn map-compare__close');
+        expect(divider.statsEl.className).toBe('close-circle-btn map-compare__stats');
+        expect(divider.statsEl.getAttribute('aria-label')).toBe('Compare stats');
+        expect(divider.handleEl.children).toContain(divider.statsEl);
+        const stopped = vi.fn();
+        for (const fn of divider.statsEl.listeners.get('pointerdown')) fn({ stopPropagation: stopped });
+        expect(stopped).toHaveBeenCalledTimes(1);
+        for (const fn of divider.statsEl.listeners.get('click')) fn({ stopPropagation() {} });
+        expect(onStats).toHaveBeenCalledWith(divider.statsEl);
+        expect(onClose).not.toHaveBeenCalled();
+        // Without the callbacks there are no buttons.
+        divider.dispose();
+        const plain = MapBeforeAfter.attachDivider(container, before, { control });
+        expect([plain.closeEl, plain.statsEl]).toEqual([null, null]);
+        plain.dispose();
+    });
+
+    it('keeps the X and the stats button clear of the map chrome that crosses the divider', () => {
+        const doc = fakeDocument();
+        // A top bar over the whole width; a bottom bar only on the left half.
+        const box = (left, right, top, bottom) => ({ getClientRects: () => [1], getBoundingClientRect: () => ({ left, right, top, bottom, width: right - left, height: bottom - top }) });
+        const chrome = [box(0, 600, 0, 50), box(0, 250, 740, 790)];
+        doc.querySelectorAll = () => chrome;
+        const container = doc.createElement('div');
+        container.getBoundingClientRect = () => ({ left: 0, top: 0, width: 600, height: 800 });
+        const before = doc.createElement('div');
+        container.appendChild(before);
+        const createElement = doc.createElement;
+        doc.createElement = tag => Object.assign(createElement(tag), { offsetHeight: 34 });
+        const divider = MapBeforeAfter.attachDivider(container, before, { control, onClose() {}, onStats() {}, percent: 25 });
+        // Under the top bar: the X sits 24px below it (centre 74, top edge 57). Over the bottom bar:
+        // the stats button sits 24px above it (centre 716).
+        expect(divider.closeEl.style['--map-compare-close-top']).toBe('57px');
+        expect(divider.statsEl.style['--map-compare-stats-top']).toBe('699px');
+        // Dragged clear of the bottom bar, the stats button takes its own spot, 12px off the bottom.
+        divider.setPercent(75);
+        expect(divider.statsEl.style['--map-compare-stats-top']).toBe('754px');
+        divider.dispose();
     });
 
     it('can leave the host live when asked, and refuses to run without Leaflet or the control', () => {
