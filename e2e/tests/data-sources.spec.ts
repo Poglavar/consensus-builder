@@ -243,7 +243,9 @@ test.describe('Data sources @features', () => {
     await dialog.getByRole('button', { name: 'Close' }).click();
 
     // A successful building retry must not dismiss a still-failing parcel source.
-    await page.evaluate(() => (window as any).fetchParcelData());
+    // A parcel load that succeeds clears the parcel warning, so a debounced map-move read still
+    // pending runs here first instead of landing after the warning and clearing it.
+    await page.evaluate(() => { const w = window as any; clearTimeout(w.parcelsTimeout); return w.fetchParcelData(); });
     await page.evaluate(() => (window as any).ParcelSourceSettings.reportFailure(window, 'Parcel source is still unavailable.', 'parcel'));
     await expect(page.locator('#parcel-source-status')).toContainText('Parcel source is still unavailable.');
     fail = false;
