@@ -186,3 +186,21 @@ describe('the plans a side can be', () => {
         expect(compare.planRowsOf(local, [])).toEqual(local);
     });
 });
+
+describe('a comparison in the address', () => {
+    const cidA = `bafkrei${'a'.repeat(52)}`, cidB = `bafkrei${'b'.repeat(52)}`;
+    it('names today\'s states by name and a saved plan by its CID, and reads them back', () => {
+        expect(compare.compareParam(`plan:${cidA}`, `plan:${cidB}`)).toBe(`${cidA},${cidB}`);
+        expect(compare.compareParam('built', `plan:${cidB}`)).toBe(`built,${cidB}`);
+        expect(compare.parseCompareParam(`${cidA},${cidB}`)).toEqual({ left: `plan:${cidA}`, right: `plan:${cidB}` });
+        expect(compare.parseCompareParam(`permitted, ${cidA}`)).toEqual({ left: 'permitted', right: `plan:${cidA}` });
+    });
+    it('does not name a side without a shareable name, and reads nothing from a malformed value', () => {
+        expect(compare.compareParam('design:local-1', 'built')).toBeNull();
+        expect(compare.compareParam(`agreement:${cidA}`, 'built')).toBeNull();
+        expect(compare.compareParam('plan:not-a-cid', 'built')).toBeNull();
+        for (const value of [null, '', cidA, `${cidA},${cidB},built`, `${cidA},nope`, 'built,']) {
+            expect(compare.parseCompareParam(value), String(value)).toBeNull();
+        }
+    });
+});

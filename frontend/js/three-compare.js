@@ -153,7 +153,28 @@
         return [...held, ...(published || []).filter(row => !known.has(String(row.cid)))];
     }
 
-    const pure = { BASE, sideOptions, optionGroups, planRowsOf, parseSide, appliesDesign, showsOn, splitDescriptors, scissorRects, readiness };
+    // A comparison in the address: `compare=<left>,<right>`, each side Built today, Permitted massing
+    // or Proposed by name (built, permitted, proposed), or a saved plan by its CID. Other sides (a
+    // design or agreement this browser holds) have no shareable name, so such a comparison is not
+    // written. compareParam gives the value for two select values, or null; parseCompareParam the
+    // two select values back, or null when the value is not two such sides.
+    const PLAN_CID = /^baf(?:krei[a-z2-7]{52}|ybei[a-z2-7]{52})$/;
+    const tokenOf = value => (BASE.includes(value) ? value
+        : typeof value === 'string' && value.startsWith('plan:') && PLAN_CID.test(value.slice(5)) ? value.slice(5) : null);
+    const sideOf = token => (BASE.includes(token) ? token : PLAN_CID.test(token) ? `plan:${token}` : null);
+    function compareParam(left, right) {
+        const a = tokenOf(left), b = tokenOf(right);
+        return a && b ? `${a},${b}` : null;
+    }
+    function parseCompareParam(value) {
+        const parts = typeof value === 'string' ? value.split(',') : [];
+        if (parts.length !== 2) return null;
+        const [left, right] = parts.map(part => sideOf(part.trim()));
+        return left && right ? { left, right } : null;
+    }
+
+    const pure = { BASE, sideOptions, optionGroups, planRowsOf, parseSide, appliesDesign, showsOn, splitDescriptors, scissorRects, readiness,
+        compareParam, parseCompareParam };
     if (!global || !global.document) return Object.freeze(pure);
 
     // ── the Compare tab and the divider ──────────────────────────────────────────────────────
@@ -161,7 +182,7 @@
     const doc = global.document;
     // model: the model view while it is open; map: the 2D map. The model view wins while open.
     const state = { enabled: false, left: 'built', right: 'proposed', percent: 50, options: pure.sideOptions(), model: null, map: null,
-        divider: null, dividerScene: null };
+        divider: null, dividerScene: null, pending: null };
     const scene = () => state.model || state.map;
 
     function t(key, fallback, params = {}) {
@@ -363,8 +384,27 @@
             && readinessOf(current).ready;
     }
 
+    // The address names the comparison while it is on (compare=, above) and drops it when it is off,
+    // so a copied address opens the same two sides. A comparison that arrived in the address and is
+    // still waiting for its sides leaves the address as it came.
+    function writeAddress() {
+        if (state.pending || !global.history?.replaceState) return;
+        const url = new URL(global.location.href);
+        const value = state.enabled ? pure.compareParam(state.left, state.right) : null;
+        if (value) url.searchParams.set('compare', value); else url.searchParams.delete('compare');
+        if (url.href !== global.location.href) global.history.replaceState(global.history.state, '', url.href);
+    }
+
     function refresh() {
         state.options = collectOptions();
+        // A comparison from the address opens once a view is there and both sides are offered (a
+        // published plan is offered once the city's published plans are read).
+        const pending = state.pending;
+        if (pending && scene() && pure.parseSide(pending.left, state.options) && pure.parseSide(pending.right, state.options)) {
+            state.pending = null;
+            show(pending);
+            return;
+        }
         fillSelect(el('planning-compare-left'), state.left);
         fillSelect(el('planning-compare-right'), state.right);
         state.left = el('planning-compare-left')?.value || state.left;
@@ -405,6 +445,7 @@
     // The divider over the canvas or map: present while the comparison draws, labelled with the two
     // sides. It moves to the other view when the model view opens or closes.
     function syncDivider() {
+        writeAddress();
         if (state.enabled && scene()) {
             const chosen = sides();
             readUnapplied(chosen.left);
@@ -508,6 +549,9 @@
         });
         // A plan read for a side has arrived or failed: relabel the divider and redraw.
         global.addEventListener('compareunappliedchange', syncDivider);
+        // A shared comparison: its sides open as soon as they are offered (refresh).
+        state.pending = pure.parseCompareParam(new URLSearchParams(global.location.search).get('compare'));
+        if (state.pending) publishedWanted = true;
         refresh();
     }
 

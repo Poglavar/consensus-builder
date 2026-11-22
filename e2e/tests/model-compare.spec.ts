@@ -7,6 +7,7 @@ import { test, expect } from '../helpers/fixtures';
 import { selectNativeOption } from '../helpers/controls';
 import { openCity, createBuilding, createSpace, drawCorridor, PARCEL_ID } from '../helpers/runtime';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
+import { waitForMapReady } from '../helpers/app';
 import { Page } from '@playwright/test';
 
 // A Leaflet pane has no box of its own, so whether it draws is its computed display.
@@ -370,4 +371,37 @@ test('a saved design that is not applied is a side of its own, read without appl
   expect(await page.evaluate(id => (window as any).proposalStorage.getProposal(id).applied === true, designId)).toBe(false);
   await enable.click();
   await expect(page.locator('#map .map-compare__handle')).toHaveCount(0);
+});
+
+test('a comparison in the address opens with its two sides, and the address follows the comparison', async ({ mockApi: page }) => {
+  test.setTimeout(120_000);
+  await mockBuildingScene(page);
+  await openCity(page);
+  const designId = await createBuilding(page);
+  const cid = await page.evaluate(id => {
+    const w = window as any;
+    const plan = w.PlanComposition.create('Shared plan', [w.proposalStorage.getProposal(id)], { city: w.resolveCurrentCityCode(), at: '45.8,15.98,17', mode: '2d', language: 'en' });
+    w.PlanWorkspace.save(plan);
+    return plan.cid as string;
+  }, designId);
+  // A link naming Built today and a saved plan by its CID opens the Compare tab with them as the sides.
+  await page.goto(`/?city=zg&reduceMotion=1&at=45.80025,15.9822,18&compare=built,${cid}`, { waitUntil: 'domcontentloaded' });
+  await waitForMapReady(page);
+  await expect(page.locator('#planning-views-compare')).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator('#planning-compare-left')).toHaveValue('built');
+  await expect(page.locator('#planning-compare-right')).toHaveValue(`plan:${cid}`);
+  await expect(page.locator('#planning-compare-enable')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#map .map-compare__label--before')).toHaveText('Built today');
+  await expect(page.locator('#map .map-compare__label--after')).toHaveText('Plan: Shared plan', { timeout: 45_000 });
+  const compareParam = () => page.evaluate(() => new URL(location.href).searchParams.get('compare'));
+  expect(await compareParam()).toBe(`built,${cid}`);
+  // Swap and Stop comparing rewrite the address; a design held only in this browser has no shareable name.
+  await page.locator('#planning-compare-swap').click();
+  expect(await compareParam()).toBe(`${cid},built`);
+  await selectNativeOption(page.locator('#planning-compare-left'), `design:${designId}`);
+  expect(await compareParam()).toBeNull();
+  await selectNativeOption(page.locator('#planning-compare-left'), 'permitted');
+  expect(await compareParam()).toBe('permitted,built');
+  await page.locator('#planning-compare-enable').click();
+  expect(await compareParam()).toBeNull();
 });
