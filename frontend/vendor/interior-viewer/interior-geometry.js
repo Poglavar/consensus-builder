@@ -1,4 +1,4 @@
-/* InteriorGeometry 1.12.0 — generated from the interior-viewer repository; do not edit. */
+/* InteriorGeometry 1.13.0 — generated from the interior-viewer repository; do not edit. */
 "use strict";
 var InteriorGeometry = (() => {
   var __getOwnPropNames = Object.getOwnPropertyNames;

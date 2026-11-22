@@ -1,4 +1,4 @@
-/* InteriorPlanner 1.12.0 — generated from the interior-viewer repository; do not edit. */
+/* InteriorPlanner 1.13.0 — generated from the interior-viewer repository; do not edit. */
 var InteriorGeometryDependency = typeof module === "object" && module.exports ? require("./interior-geometry.js") : globalThis.InteriorGeometry;
 "use strict";
 var InteriorPlanner = (() => {
@@ -2888,11 +2888,25 @@ var InteriorPlanner = (() => {
         }
         function matchEdge(edges, hint, frame) {
           if (!hint || !Array.isArray(hint.a) || !Array.isArray(hint.b)) return null;
-          const hintMid = midpoint(frame.toMeters(hint.a), frame.toMeters(hint.b));
-          return edges.reduce((best, edge) => {
+          const a = frame.toMeters(hint.a), b = frame.toMeters(hint.b), hintMid = midpoint(a, b);
+          const exact = edges.reduce((best2, edge) => {
             const distance = len(vec(midpoint(edge.a, edge.b), hintMid));
-            return distance < 0.5 && (!best || distance < best.distance) ? { edge, distance } : best;
-          }, null)?.edge || null;
+            return distance < 0.5 && (!best2 || distance < best2.distance) ? { edge, distance } : best2;
+          }, null)?.edge;
+          if (exact) return exact;
+          const L = len(vec(a, b));
+          if (L < 1e-6) return null;
+          const d = unit(vec(a, b)), along = (p) => (p[0] - a[0]) * d[0] + (p[1] - a[1]) * d[1], off = (p) => Math.abs((p[0] - a[0]) * d[1] - (p[1] - a[1]) * d[0]);
+          let best = null;
+          for (const edge of edges) {
+            const l = len(vec(edge.a, edge.b));
+            if (l < 1e-6) continue;
+            const e = unit(vec(edge.a, edge.b));
+            if (Math.abs(e[0] * d[0] + e[1] * d[1]) < Math.cos(5 * Math.PI / 180) || off(edge.a) > 0.5 || off(edge.b) > 0.5) continue;
+            const overlap = Math.min(L, Math.max(along(edge.a), along(edge.b))) - Math.max(0, Math.min(along(edge.a), along(edge.b)));
+            if (overlap > 0.5 && (!best || overlap > best.overlap)) best = { edge, overlap };
+          }
+          return best ? best.edge : null;
         }
         function coreParts(t, rules, core, storeyHeightM, lift, uc, pt, bx) {
           const out = { walls: [], openings: [], cuts: [], voids: [], landings: [], stairs: [], railings: [] };
@@ -3085,7 +3099,8 @@ var InteriorPlanner = (() => {
         function planCorridorParts(c) {
           const { t, rules, inner, edgesUV, front, frameUV, sunSign, ext, storeyHeightM, floors, highRise, facadeRun, runInside } = c;
           const failWith = (code, message) => ({ error: { code, message } });
-          const alongU = ext.u1 - ext.u0 >= ext.v1 - ext.v0;
+          const spineD = c.fixed ? vec(c.fixed.spine[0], c.fixed.spine[1]) : null;
+          const alongU = spineD ? Math.abs(spineD[0]) >= Math.abs(spineD[1]) : ext.u1 - ext.u0 >= ext.v1 - ext.v0;
           const P = (s, r) => alongU ? [s, r] : [r, s];
           const sAxis = alongU ? [1, 0] : [0, 1], rAxis = alongU ? [0, 1] : [1, 0];
           const box = (s0, s1, r0, r1) => {
@@ -3097,8 +3112,12 @@ var InteriorPlanner = (() => {
           const [sLo, sHi] = alongU ? [ext.u0, ext.u1] : [ext.v0, ext.v1];
           const [rLo, rHi] = alongU ? [ext.v0, ext.v1] : [ext.u0, ext.u1];
           const S0 = sLo + wall, S1 = sHi - wall, R0 = rLo + wall, R1 = rHi - wall;
-          const offCentre = finite(c.loDepthM);
-          const c0 = offCentre ? R0 + wc + c.loDepthM : (R0 + R1) / 2 - cw / 2, c1 = c0 + cw, rMid = (c0 + c1) / 2;
+          const fixed = c.fixed && (() => {
+            const [a, b] = c.fixed.spine, sOf = (p) => alongU ? p[0] : p[1], rOf = (p) => alongU ? p[1] : p[0];
+            return { rMid: (rOf(a) + rOf(b)) / 2, centres: c.fixed.centres.map(sOf).sort((x, y) => x - y) };
+          })();
+          const offCentre = finite(c.loDepthM) || !!fixed;
+          const c0 = fixed ? fixed.rMid - cw / 2 : offCentre ? R0 + wc + c.loDepthM : (R0 + R1) / 2 - cw / 2, c1 = c0 + cw, rMid = (c0 + c1) / 2;
           const rowDepthM = c0 - wc - R0;
           const depthOfSide = (side2) => offCentre ? side2.rowR[1] - side2.rowR[0] : rowDepthM;
           if ((offCentre ? Math.min(rowDepthM, R1 - c1 - wc) : rowDepthM) < rules.minCorridorRowDepthM) {
@@ -3157,7 +3176,7 @@ var InteriorPlanner = (() => {
           if (!rowMix.length) return failWith("corridor-no-mix", "The corridor flat mix names no row flats.");
           const minW = Math.min(...rowMix.map((m) => m.widthM));
           const perFloorGuess = targets ? targets.length : Math.max(2, Math.round(2 * (S1 - S0) / 7));
-          const lift = wantsLift(rules, floors, 1, highRise, perFloorGuess);
+          const lift = c.fixedLift !== null && c.fixedLift !== void 0 ? c.fixedLift : wantsLift(rules, floors, 1, highRise, perFloorGuess);
           const core = coreDimensions(storeyHeightM, rules, lift, highRise);
           if (core.depthM > depthOfSide(coreSide) + wc + 1e-9) {
             return failWith("corridor-core-too-deep", `A ${core.widthM.toFixed(1)} \xD7 ${core.depthM.toFixed(1)} m stair core does not fit a ${rowDepthM.toFixed(1)} m corridor row.`);
@@ -3176,6 +3195,7 @@ var InteriorPlanner = (() => {
             const room = S1 - S0 - gableTargets.reduce((sum, target, i) => sum + (target && ends[i] ? gWs[i] + wc : 0), 0) >= bayW + 2 * minW;
             gables = [!!(gableTargets[0] && ends[0] && room), !!(gableTargets[1] && ends[1] && room)];
           }
+          if (fixed) gables = [false, false];
           const Sa = S0 + (gables[0] ? gWs[0] + wc : 0), Sb = S1 - (gables[1] ? gWs[1] + wc : 0), Lc = Sb - Sa;
           if (Lc < bayW + minW) return failWith("corridor-too-short", `A ${Lc.toFixed(1)} m corridor holds no stair core and flat.`);
           const D = rules.maxDeadEndM, Smax = rules.maxStairSpacingM;
@@ -3183,8 +3203,9 @@ var InteriorPlanner = (() => {
           if (highRise || Lc > Smax) stairs = Math.max(2, stairs);
           stairs = Math.min(stairs, rules.maxCores);
           if (c.stairCount) stairs = c.stairCount;
+          if (fixed) stairs = fixed.centres.length;
           const endGap = stairs === 1 ? Lc / 2 : Math.min(D, Lc / (2 * stairs));
-          const centres = stairs === 1 ? [Sa + Lc / 2] : Array.from({ length: stairs }, (_, i) => Sa + endGap + i * (Lc - 2 * endGap) / (stairs - 1));
+          const centres = fixed ? fixed.centres : stairs === 1 ? [Sa + Lc / 2] : Array.from({ length: stairs }, (_, i) => Sa + endGap + i * (Lc - 2 * endGap) / (stairs - 1));
           const bays = centres.map((p) => {
             const lobbyHigh = p <= Sa + Lc / 2;
             let q0 = lobbyHigh ? p - core.widthM / 2 : p - core.widthM / 2 - rules.lobbyWidthM;
@@ -3319,12 +3340,12 @@ var InteriorPlanner = (() => {
               sideTargets[key].push(target);
               load[key] += target.weight;
             });
-            const fixed = new Set(targets.filter((target, j) => (slots[j] === "lo" || slots[j] === "hi") && sideTargets[slots[j]].includes(target)).map((target) => target.id));
+            const fixed2 = new Set(targets.filter((target, j) => (slots[j] === "lo" || slots[j] === "hi") && sideTargets[slots[j]].includes(target)).map((target) => target.id));
             const imbalance = () => Math.abs(load.lo / Math.max(1e-9, capacity.lo) - load.hi / Math.max(1e-9, capacity.hi));
             for (let pass = 0, improved = true; improved && pass < 50; pass++) {
               improved = false;
               for (const [a, b] of [["lo", "hi"], ["hi", "lo"]]) {
-                for (const x of sideTargets[a].filter((target) => !fixed.has(target.id))) {
+                for (const x of sideTargets[a].filter((target) => !fixed2.has(target.id))) {
                   const before = imbalance();
                   load[a] -= x.weight;
                   load[b] += x.weight;
@@ -3335,7 +3356,7 @@ var InteriorPlanner = (() => {
                     continue;
                   }
                   let swapped = false;
-                  for (const y of sideTargets[b].filter((target) => !fixed.has(target.id) && target !== x)) {
+                  for (const y of sideTargets[b].filter((target) => !fixed2.has(target.id) && target !== x)) {
                     load[b] -= y.weight;
                     load[a] += y.weight;
                     if (imbalance() < before - 1e-9) {
@@ -3606,6 +3627,7 @@ var InteriorPlanner = (() => {
           };
           const fromUV = ([u, v]) => add(add(front.a, frameU, u), frameV, v);
           const knownStairs = input.stairs && finite(input.stairs.count) && input.stairs.count >= 1 ? Math.round(input.stairs.count) : null;
+          const fixedLift = knownStairs && input.stairs.fixed && typeof input.stairs.lift === "boolean" ? input.stairs.lift : null;
           const knownDoorsUV = knownStairs && Array.isArray(input.stairs.at) ? input.stairs.at.filter((p) => Array.isArray(p)).map((p) => toUV(frame.toMeters(p))) : [];
           if (knownStairs) summary.stairsBasis = knownDoorsUV.length ? "entrances-seen" : "house-numbers";
           const ringUV = ringM.map(toUV);
@@ -3659,11 +3681,17 @@ var InteriorPlanner = (() => {
               // targets
               ext: { u0: footprintUmin, u1: footprintUmax, v0: footprintVmin, v1: footprintVmax },
               facadeRun: rooms ? rooms.facadeRun : null,
-              runInside: rooms ? rooms.runInside : null
+              runInside: rooms ? rooms.runInside : null,
+              fixedLift,
+              // The building's corridor and stairs as laid out on another storey: kept where they are.
+              fixed: knownStairs && input.stairs.fixed && input.stairs.corridor ? {
+                spine: input.stairs.corridor.spine.map((p) => toUV(frame.toMeters(p))),
+                centres: input.stairs.corridor.centres.map((p) => toUV(frame.toMeters(p)))
+              } : null
             };
             let corridorParts = planCorridorParts(corridorInput);
             const b = corridorParts.balance;
-            if (b && b.lo > 0 && b.hi > 0 && Math.abs(b.lo / b.hi - 1) > 0.05) {
+            if (!corridorInput.fixed && b && b.lo > 0 && b.hi > 0 && Math.abs(b.lo / b.hi - 1) > 0.05) {
               const loDepthM = Math.min(b.spanM - b.minHiM, Math.max(b.minLoM, b.spanM * b.lo / (b.lo + b.hi)));
               const shifted = planCorridorParts({ ...corridorInput, loDepthM });
               if (!shifted.error) corridorParts = shifted;
@@ -3703,7 +3731,7 @@ var InteriorPlanner = (() => {
           let cores = Math.max(1, Math.min(rules.maxCores, Math.ceil(usableM2 / (2 * rules.maxApartmentM2))));
           if (targets) cores = Math.ceil(targets.length / 2);
           if (knownStairs) cores = knownStairs;
-          const lift = wantsLift(rules, floors, cores, highRise, targets ? targets.length : 2 * cores);
+          const lift = fixedLift !== null ? fixedLift : wantsLift(rules, floors, cores, highRise, targets ? targets.length : 2 * cores);
           const core = coreDimensions(storeyHeightM, rules, lift, highRise);
           summary.lift = lift;
           summary.coreM = [round2(core.widthM), round2(core.depthM)];
@@ -3771,10 +3799,10 @@ var InteriorPlanner = (() => {
               const s = Math.max(0, Math.min(1, ((p[0] - edge.a[0]) * ab[0] + (p[1] - edge.a[1]) * ab[1]) / l2));
               return Math.hypot(p[0] - edge.a[0] - s * ab[0], p[1] - edge.a[1] - s * ab[1]) < 3;
             })());
-            const along = knownDoorsUV.filter(nearLongFacade);
+            const along = input.stairs.fixed ? knownDoorsUV : knownDoorsUV.filter(nearLongFacade);
             if (along.length === cores) {
               const doorsU = along.map((p) => p[0]).sort((a, b) => a - b);
-              desiredU = doorsU.map((u, k) => desiredU ? Math.min(u + KNOWN_DOOR_WITHIN_M, Math.max(u - KNOWN_DOOR_WITHIN_M, desiredU[k])) : u);
+              desiredU = doorsU.map((u, k) => desiredU && !input.stairs.fixed ? Math.min(u + KNOWN_DOOR_WITHIN_M, Math.max(u - KNOWN_DOOR_WITHIN_M, desiredU[k])) : u);
             } else summary.stairsBasis = "house-numbers";
           }
           const coreDepthM = core.depthM + (yardMode ? rules.coreWallM : 0);
@@ -3784,6 +3812,7 @@ var InteriorPlanner = (() => {
             return clip && polygonsArea(clip) >= 0.995 * polygonsArea(feature);
           };
           const placed = [];
+          const fixedCoresUV = knownStairs && input.stairs.fixed && knownDoorsUV.length === cores ? knownDoorsUV.slice().sort((a, b) => a[0] - b[0]) : null;
           for (let k = 0; k < cores; k++) {
             const target = frontLengthM * (k + 0.5) / cores;
             let offset = 0, home = spans[spans.length - 1], local = home.length / 2;
@@ -3805,8 +3834,15 @@ var InteriorPlanner = (() => {
             }
             const minU = placed.length ? placed[placed.length - 1].uc + core.widthM + 1 : -Infinity;
             let found = null;
+            if (fixedCoresUV && fixedCoresUV[k] && fixedCoresUV[k][0] >= minU - 1e-9) {
+              const [u, v] = fixedCoresUV[k];
+              for (let step = 0; step <= 20 && !found; step++) {
+                const vFront = v + (step % 2 ? 1 : -1) * Math.ceil(step / 2) * 0.1;
+                if (fits(coreOuter(u, vFront))) found = { k, uc: u, vFront, edgeIndex: home.index };
+              }
+            }
             const stepM = desiredU ? 0.1 : 0.5;
-            for (const span of [home, ...spans.filter((span2) => span2 !== home)]) {
+            for (const span of found ? [] : [home, ...spans.filter((span2) => span2 !== home)]) {
               const lo = span.from + core.widthM / 2, hi = span.to - core.widthM / 2;
               if (hi < lo - 1e-9 || hi < minU - 1e-9) continue;
               const centre = Math.min(hi, Math.max(lo, minU, span === home ? span.from + local : lo));
@@ -3836,7 +3872,7 @@ var InteriorPlanner = (() => {
               if (i < placed.length - 1) block.s1 = cut(i + 1);
             });
           }
-          if (knownStairs) summary.coreCentres = placed.map((block) => frame.toDegrees(fromUV([block.uc, block.vFront])));
+          summary.coreCentres = placed.map((block) => frame.toDegrees(fromUV([block.uc, block.vFront])));
           const coreWalls = [], coreOpenings = [], coreCuts = [], entranceOpenings = [], entranceCuts = [];
           const voids = [], landings = [], stairs = [], coreRailings = [], blocks = [], coreRects = [];
           const entranceHeightM = Math.min(rules.entranceHeightM, storeyHeightM - rules.slabThicknessM - 0.3);
@@ -5107,7 +5143,7 @@ var InteriorPlanner = (() => {
   // interior-version:package-version
   var require_package_version = __commonJS({
     "interior-version:package-version"(exports, module) {
-      module.exports = { version: "1.12.0" };
+      module.exports = { version: "1.13.0" };
     }
   });
 

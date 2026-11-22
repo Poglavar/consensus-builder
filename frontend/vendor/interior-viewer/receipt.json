@@ -1,10 +1,10 @@
 {
   "package": "@urban-game-theory/interior-viewer",
-  "version": "1.12.0",
-  "commit": "e949091",
+  "version": "1.13.0",
+  "commit": "563d66a",
   "note": "Copied from the interior-viewer repository dist/; never edit these files here. The planner (suggested layouts, the X-ray, Plan stats) is shared with the Iskaznica; interior-geometry.js is what the planner bundle requires in node (the tests); the page validates with js/building-floor-plans.js.",
   "files": {
-    "interior-planner.js": "15f5060ad4b30fcb60d0fc99e740c87f2ff813d6d7d4157710463ae59865d6cb",
-    "interior-geometry.js": "53a8cc414a89bdca7a643dd3bbee24d5fe7d0cf3668dec98c617b63583716a44"
+    "interior-planner.js": "57f29b01900f91d96a78963605c3b2e554b1c99a5af4ad122a31c322cb2c8dcb",
+    "interior-geometry.js": "1341af5227237e3d5ba70515fe2df4daf794bd09c5bc9c2ef788aa0fdf2a41e5"
   }
 }
