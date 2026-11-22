@@ -1,4 +1,4 @@
-/* InteriorPlanner 1.11.5 — generated from the interior-viewer repository; do not edit. */
+/* InteriorPlanner 1.12.0 — generated from the interior-viewer repository; do not edit. */
 var InteriorGeometryDependency = typeof module === "object" && module.exports ? require("./interior-geometry.js") : globalThis.InteriorGeometry;
 "use strict";
 var InteriorPlanner = (() => {
@@ -3485,6 +3485,7 @@ var InteriorPlanner = (() => {
             garageVRange: [ext.v0 + wall, ext.v1 - wall]
           };
         }
+        const KNOWN_DOOR_WITHIN_M = 3;
         function planDefaultFloorPlans(input, options = {}) {
           const t = T(options);
           if (!t) throw new Error("default-floor-plans: turf is not available");
@@ -3771,8 +3772,10 @@ var InteriorPlanner = (() => {
               return Math.hypot(p[0] - edge.a[0] - s * ab[0], p[1] - edge.a[1] - s * ab[1]) < 3;
             })());
             const along = knownDoorsUV.filter(nearLongFacade);
-            if (along.length === cores) desiredU = along.map((p) => p[0]).sort((a, b) => a - b);
-            else summary.stairsBasis = "house-numbers";
+            if (along.length === cores) {
+              const doorsU = along.map((p) => p[0]).sort((a, b) => a - b);
+              desiredU = doorsU.map((u, k) => desiredU ? Math.min(u + KNOWN_DOOR_WITHIN_M, Math.max(u - KNOWN_DOOR_WITHIN_M, desiredU[k])) : u);
+            } else summary.stairsBasis = "house-numbers";
           }
           const coreDepthM = core.depthM + (yardMode ? rules.coreWallM : 0);
           const coreOuter = (uc, vFront) => rect(t, uc - core.widthM / 2, uc + core.widthM / 2, vFront, vFront + coreDepthM);
@@ -3811,7 +3814,7 @@ var InteriorPlanner = (() => {
               for (let step = stepM; step <= hi - lo + 1e-9; step += stepM) candidates.push(centre + step, centre - step);
               for (const u of candidates) {
                 if (u < lo - 1e-9 || u > hi + 1e-9 || u < minU - 1e-9) continue;
-                const vFront = span.vAt(u) + rules.exteriorWallM;
+                const vFront = Math.max(span.vAt(u - core.widthM / 2), span.vAt(u + core.widthM / 2)) + rules.exteriorWallM;
                 if (fits(coreOuter(u, vFront))) {
                   found = { k, uc: u, vFront, edgeIndex: span.index };
                   break;
@@ -5104,7 +5107,7 @@ var InteriorPlanner = (() => {
   // interior-version:package-version
   var require_package_version = __commonJS({
     "interior-version:package-version"(exports, module) {
-      module.exports = { version: "1.11.5" };
+      module.exports = { version: "1.12.0" };
     }
   });
 
