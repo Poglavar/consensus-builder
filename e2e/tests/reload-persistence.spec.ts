@@ -1,5 +1,6 @@
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
+import { stubBasemapTiles } from '../helpers/runtime';
 
 test.describe('Proposal reload persistence @core', () => {
   test('proposal data stored in PersistentStorage survives reload', async ({ mockApi: page }) => {
@@ -87,7 +88,8 @@ test.describe('Proposal reload persistence @core', () => {
   });
 
   test('city selection persists across reload', async ({ mockApi: page }) => {
-    await page.goto('/?city=bg');
+    await stubBasemapTiles(page);
+    await page.goto('/?city=bg', { waitUntil: 'domcontentloaded' });
     await waitForMapReady(page);
 
     const cityBefore = await page.evaluate(() => {
@@ -95,7 +97,12 @@ test.describe('Proposal reload persistence @core', () => {
       return w.CityConfigManager?.getCurrentCityId?.() ?? '';
     });
 
-    await page.reload();
+    await page.evaluate(() => {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('city');
+      window.history.replaceState(null, '', url);
+    });
+    await page.reload({ waitUntil: 'domcontentloaded' });
     await waitForMapReady(page);
 
     const cityAfter = await page.evaluate(() => {

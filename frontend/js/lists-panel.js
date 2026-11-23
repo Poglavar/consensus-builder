@@ -601,7 +601,9 @@
                 }
                 item.append(actions);
                 if (kind === 'plans') {
-                    const picker = analysis.critics(win, doc, () => planOf(row), { row: row.key, open: state.openCritics.has(row.key) });
+                    // A refresh can replace the card before the native details toggle event runs.
+                    const open = cached?.item.querySelector('.lists-critics')?.open ?? state.openCritics.has(row.key);
+                    const picker = analysis.critics(win, doc, () => planOf(row), { row: row.key, open });
                     picker.addEventListener('toggle', () => {
                         if (picker.isConnected) { if (picker.open) state.openCritics.add(row.key); else state.openCritics.delete(row.key); }
                     });
