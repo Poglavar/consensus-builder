@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fsp from 'fs/promises';
 import path from 'path';
 import { createJsonBodyValidator, isPlainObject, validators } from '../utils/request-validation.js';
 import { publicFileUrl } from '../utils/public-base-url.js';
@@ -12,12 +12,8 @@ const MODEL_DIR = path.join(UPLOAD_ROOT, 'models');
 const MAX_FILE_NAME_LENGTH = 255;
 const MAX_MODEL_DATA_LENGTH = 14_000_000; // base64 data URL; ~10 MB binary, under the 15mb JSON body cap
 
-function ensureDirectories() {
-    [UPLOAD_ROOT, IMAGE_DIR, METADATA_DIR, MODEL_DIR].forEach(dir => {
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-        }
-    });
+async function ensureDirectories() {
+    await Promise.all([UPLOAD_ROOT, IMAGE_DIR, METADATA_DIR, MODEL_DIR].map(dir => fsp.mkdir(dir, { recursive: true })));
 }
 
 const IMAGE_EXTENSIONS = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' };
@@ -123,13 +119,13 @@ const modelUploadBodyValidator = createJsonBodyValidator({
 // Each route has its own per-IP upload budget (on top of the global write limiter) and refuses
 // uploads once the disk is near full; `deps` lets tests substitute both.
 export function setupFileStorageRoutes(app, deps = {}) {
-    ensureDirectories();
     const limiter = () => deps.uploadRateLimiter || createUploadRateLimiter();
     const headroom = deps.diskHeadroom || requireUploadDiskHeadroom(UPLOAD_ROOT);
 
     // Stores an uploaded 3D building model (glTF 2.0 .glb/.gltf) and returns its served URL.
-    app.post('/models', limiter(), headroom, modelUploadBodyValidator, (req, res) => {
+    app.post('/models', limiter(), headroom, modelUploadBodyValidator, async (req, res) => {
         try {
+            await ensureDirectories();
             const { modelData, fileName } = req.validatedBody;
 
             const matches = modelData.match(/^data:(.*?);base64,(.+)$/);
@@ -149,7 +145,7 @@ export function setupFileStorageRoutes(app, deps = {}) {
             }
             const { contentType } = model;
             const finalFileName = `${uniqueFileBase(fileName, 'model')}.${model.ext}`;
-            fs.writeFileSync(path.join(MODEL_DIR, finalFileName), buffer, { flag: 'wx' });
+            await fsp.writeFile(path.join(MODEL_DIR, finalFileName), buffer, { flag: 'wx' });
 
             // The pinned public base when there is one, the served path alone otherwise — never
             // the request's Host, which is whatever port today's dev backend happens to use.
@@ -162,8 +158,9 @@ export function setupFileStorageRoutes(app, deps = {}) {
         }
     });
 
-    app.post('/images', limiter(), headroom, imageUploadBodyValidator, (req, res) => {
+    app.post('/images', limiter(), headroom, imageUploadBodyValidator, async (req, res) => {
         try {
+            await ensureDirectories();
             const { imageData, fileName } = req.validatedBody;
 
             const matches = imageData.match(/^data:(.+);base64,(.+)$/);
@@ -183,7 +180,7 @@ export function setupFileStorageRoutes(app, deps = {}) {
                 return res.status(400).json({ error: 'imageData must be a PNG, JPEG or WEBP image.' });
             }
             const finalFileName = `${uniqueFileBase(fileName, 'image')}.${IMAGE_EXTENSIONS[contentType]}`;
-            fs.writeFileSync(path.join(IMAGE_DIR, finalFileName), buffer, { flag: 'wx' });
+            await fsp.writeFile(path.join(IMAGE_DIR, finalFileName), buffer, { flag: 'wx' });
 
             const imageUrl = publicFileUrl(`/images/${finalFileName}`);
 
@@ -198,13 +195,14 @@ export function setupFileStorageRoutes(app, deps = {}) {
         }
     });
 
-    app.post('/metadata', limiter(), headroom, metadataUploadBodyValidator, (req, res) => {
+    app.post('/metadata', limiter(), headroom, metadataUploadBodyValidator, async (req, res) => {
         try {
+            await ensureDirectories();
             const { metadata: metadataObject, fileName } = req.validatedBody;
             // Random suffix + `wx`: metadata that minted tokens point to can never be overwritten.
             const baseName = String(fileName || '').replace(/\.json$/i, '');
             const finalFileName = `${uniqueFileBase(baseName, 'metadata')}.json`;
-            fs.writeFileSync(
+            await fsp.writeFile(
                 path.join(METADATA_DIR, finalFileName),
                 JSON.stringify(metadataObject, null, 2),
                 { encoding: 'utf8', flag: 'wx' }

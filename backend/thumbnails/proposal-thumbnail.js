@@ -309,9 +309,9 @@ async function renderAndStore(renderOptions, { kind, key, baseUrl, dryRun }) {
 
     const stamp = Date.now();
     const origin = String(baseUrl).replace(/\/$/, '');
-    const { fileName, imagePath } = saveImageBuffer(buffer, `${kind}-thumb-${key}-${stamp}`);
-    const before = saveImageBuffer(beforeBuffer, `${kind}-before-${key}-${stamp}`);
-    const pair = saveImageBuffer(pairBuffer, `${kind}-pair-${key}-${stamp}`);
+    const { fileName, imagePath } = await saveImageBuffer(buffer, `${kind}-thumb-${key}-${stamp}`);
+    const before = await saveImageBuffer(beforeBuffer, `${kind}-before-${key}-${stamp}`);
+    const pair = await saveImageBuffer(pairBuffer, `${kind}-pair-${key}-${stamp}`);
     return {
         url: `${origin}${imagePath}`, beforeUrl: `${origin}${before.imagePath}`, pairUrl: `${origin}${pair.imagePath}`,
         fileName, imagePath, buffer, beforeBuffer, pairBuffer, frame, tiles, bytes: buffer.length

@@ -2,6 +2,7 @@
 // proposal thumbnail renderer store PNGs here, so there is exactly one place that decides where
 // image bytes live (uploads/images) and what URL they are served at (/uploads/images/<file>).
 import fs from 'fs';
+import fsp from 'fs/promises';
 import path from 'path';
 import { randomBytes, randomUUID } from 'crypto';
 
@@ -14,12 +15,8 @@ const METADATA_DIR = path.join(UPLOAD_ROOT, 'metadata');
 // `text/html` or `image/svg+xml` used to become a `.html`/`.svg` file served from the API origin.
 const IMAGE_EXTENSIONS = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' };
 
-export function ensureImageDirectories() {
-    [UPLOAD_ROOT, IMAGE_DIR, METADATA_DIR].forEach(dir => {
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-        }
-    });
+export async function ensureImageDirectories() {
+    await Promise.all([UPLOAD_ROOT, IMAGE_DIR, METADATA_DIR].map(dir => fsp.mkdir(dir, { recursive: true })));
 }
 
 export function sanitizeFileName(raw, fallbackPrefix) {
@@ -56,7 +53,7 @@ export function sniffImageType(buf) {
  * @param {string} fileNameBase - unsanitized base name (no extension)
  * @returns {{ fileName: string, imagePath: string, absolutePath: string, contentType: string }}
  */
-export function saveImageBuffer(buffer, fileNameBase) {
+export async function saveImageBuffer(buffer, fileNameBase) {
     if (!Buffer.isBuffer(buffer) || !buffer.length) {
         throw new Error('saveImageBuffer requires a non-empty Buffer.');
     }
@@ -64,10 +61,10 @@ export function saveImageBuffer(buffer, fileNameBase) {
     if (!contentType) {
         throw new Error('saveImageBuffer: bytes are not a PNG, JPEG or WEBP image.');
     }
-    ensureImageDirectories();
+    await ensureImageDirectories();
     const fileName = `${uniqueFileBase(fileNameBase, 'image')}.${IMAGE_EXTENSIONS[contentType]}`;
     const absolutePath = path.join(IMAGE_DIR, fileName);
-    fs.writeFileSync(absolutePath, buffer, { flag: 'wx' });
+    await fsp.writeFile(absolutePath, buffer, { flag: 'wx' });
     return { fileName, imagePath: `/uploads/images/${fileName}`, absolutePath, contentType };
 }
 

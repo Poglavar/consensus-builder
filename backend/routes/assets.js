@@ -1,10 +1,9 @@
-import fs from 'fs';
+import fsp from 'fs/promises';
 import path from 'path';
 import { createJsonBodyValidator, isPlainObject, validators } from '../utils/request-validation.js';
 import {
     saveImageBuffer,
     decodeImageDataUrl,
-    ensureImageDirectories,
     METADATA_DIR
 } from '../utils/image-store.js';
 import { publicFileUrl } from '../utils/public-base-url.js';
@@ -44,11 +43,11 @@ const assetsUploadBodyValidator = createJsonBodyValidator({
 // A per-IP upload budget and the disk floor, like every other route that stores uploads on this
 // host; `deps` lets tests substitute both.
 export function setupAssetsRoute(app, deps = {}) {
-    ensureImageDirectories();
     const uploadRateLimiter = deps.uploadRateLimiter || createUploadRateLimiter();
     const diskHeadroom = deps.diskHeadroom || requireUploadDiskHeadroom(METADATA_DIR);
 
     app.post('/assets/upload', uploadRateLimiter, diskHeadroom, assetsUploadBodyValidator, async (req, res) => {
+        let imageAbsolutePath = null;
         try {
             const { imageData, metadata, fileName } = req.validatedBody;
 
@@ -67,7 +66,9 @@ export function setupAssetsRoute(app, deps = {}) {
 
             // saveImageBuffer picks the extension from the sniffed bytes and appends a random id; the
             // metadata file reuses that exact base, so neither can be named (and overwritten) by a client.
-            const { fileName: imageFileName, imagePath } = saveImageBuffer(decoded.buffer, fileName || 'road-proposal');
+            const savedImage = await saveImageBuffer(decoded.buffer, fileName || 'road-proposal');
+            const { fileName: imageFileName, imagePath } = savedImage;
+            imageAbsolutePath = savedImage.absolutePath;
             const metadataFilename = `${imageFileName.replace(/\.[a-z]+$/, '')}.json`;
 
             // Pinned public base (or the bare path) — never the request's Host header, which the
@@ -87,7 +88,7 @@ export function setupAssetsRoute(app, deps = {}) {
                     uploadedImageUrl
                 }
             };
-            fs.writeFileSync(
+            await fsp.writeFile(
                 path.join(METADATA_DIR, metadataFilename),
                 JSON.stringify(metadataToSave, null, 2),
                 { encoding: 'utf8', flag: 'wx' }
@@ -105,6 +106,7 @@ export function setupAssetsRoute(app, deps = {}) {
                 metadataGatewayUrl: metadataUrl
             });
         } catch (error) {
+            if (imageAbsolutePath) await fsp.unlink(imageAbsolutePath).catch(() => {});
             console.error('Assets upload failed:', error);
             res.status(500).json({ error: 'Failed to store uploaded assets.' });
         }

@@ -2,6 +2,7 @@
 // the real bytes (no .html/.svg/.js on our origin), names are unguessable and never overwritten,
 // persisted URLs ignore a spoofed Host, and uploads are served with nosniff / as downloads.
 import fs from 'fs';
+import fsp from 'fs/promises';
 import os from 'os';
 import path from 'path';
 import express from 'express';
@@ -35,7 +36,7 @@ describe('POST /images refuses anything that is not a real image', () => {
 
     for (const [label, dataUrl] of HOSTILE) {
         it(`refuses ${label}`, async () => {
-            const write = vi.spyOn(fs, 'writeFileSync').mockImplementation(() => undefined);
+            const write = vi.spyOn(fsp, 'writeFile').mockResolvedValue(undefined);
             const res = await request(app).post('/images').send({ fileName: 'x', imageData: dataUrl });
             expect(res.status).toBe(400);
             expect(write).not.toHaveBeenCalled();
@@ -43,7 +44,7 @@ describe('POST /images refuses anything that is not a real image', () => {
     }
 
     it('accepts a png and chooses the extension server-side', async () => {
-        const write = vi.spyOn(fs, 'writeFileSync').mockImplementation(() => undefined);
+        const write = vi.spyOn(fsp, 'writeFile').mockResolvedValue(undefined);
         const res = await request(app)
             .post('/images')
             .send({ fileName: 'evil.html', imageData: PNG_DATA_URL.replace('image/png', 'text/html') });
@@ -59,7 +60,7 @@ describe('POST /assets/upload refuses anything that is not a real image', () => 
 
     for (const [label, dataUrl] of HOSTILE) {
         it(`refuses ${label}`, async () => {
-            const write = vi.spyOn(fs, 'writeFileSync').mockImplementation(() => undefined);
+            const write = vi.spyOn(fsp, 'writeFile').mockResolvedValue(undefined);
             const res = await request(app)
                 .post('/assets/upload')
                 .send({ fileName: 'x', imageData: dataUrl, metadata: { name: 'x' } });
@@ -74,7 +75,7 @@ describe('POST /models refuses anything that is not glTF', () => {
 
     for (const [label, dataUrl] of HOSTILE) {
         it(`refuses ${label}`, async () => {
-            const write = vi.spyOn(fs, 'writeFileSync').mockImplementation(() => undefined);
+            const write = vi.spyOn(fsp, 'writeFile').mockResolvedValue(undefined);
             const res = await request(app)
                 .post('/models')
                 .send({ fileName: 'house.glb', modelData: dataUrl.replace(/^data:[^;]+/, 'data:model/gltf-binary') });
@@ -84,7 +85,7 @@ describe('POST /models refuses anything that is not glTF', () => {
     }
 
     it('echoes the sniffed content type, not the declared one', async () => {
-        vi.spyOn(fs, 'writeFileSync').mockImplementation(() => undefined);
+        vi.spyOn(fsp, 'writeFile').mockResolvedValue(undefined);
         const glb = Buffer.from('676c54460200000014000000', 'hex').toString('base64');
         const res = await request(app)
             .post('/models')
@@ -142,7 +143,7 @@ describe('client-supplied names never overwrite an existing file', () => {
 
 describe('persisted asset URLs ignore a spoofed Host', () => {
     it('uses the pinned public base, never the request Host', async () => {
-        const write = vi.spyOn(fs, 'writeFileSync').mockImplementation(() => undefined);
+        const write = vi.spyOn(fsp, 'writeFile').mockResolvedValue(undefined);
         const previous = process.env.PUBLIC_API_BASE_URL;
         process.env.PUBLIC_API_BASE_URL = 'https://api.example.test';
         try {

@@ -1,4 +1,5 @@
 import fs from 'fs';
+import fsp from 'fs/promises';
 import path from 'path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
@@ -12,7 +13,7 @@ let writeFileSpy;
 
 beforeEach(() => {
     app = createRouteApp(setupAssetsRoute);
-    writeFileSpy = vi.spyOn(fs, 'writeFileSync').mockImplementation(() => undefined);
+    writeFileSpy = vi.spyOn(fsp, 'writeFile').mockResolvedValue(undefined);
 });
 
 afterEach(() => {

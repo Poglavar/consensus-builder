@@ -1,5 +1,6 @@
 // Uploads stored on the API host's disk are rate limited per IP and per route, and refused once the disk is near full.
 import fs from 'fs';
+import fsp from 'fs/promises';
 import request from 'supertest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { setupFileStorageRoutes } from '../routes/file-storage.js';
@@ -24,7 +25,7 @@ const routes = [
 describe('upload budget per route', () => {
     for (const [route, setup, body] of routes) {
         it(`${route} refuses the request after the per-IP limit`, async () => {
-            vi.spyOn(fs, 'writeFileSync').mockImplementation(() => undefined);
+            vi.spyOn(fsp, 'writeFile').mockResolvedValue(undefined);
             const app = createRouteApp(app => setup(app, {
                 uploadRateLimiter: createUploadRateLimiter({ limit: 1 }),
                 diskHeadroom: requireUploadDiskHeadroom('/', { statfs: roomy })
@@ -37,7 +38,7 @@ describe('upload budget per route', () => {
         });
 
         it(`${route} refuses with 507 and writes nothing when the disk is below the floor`, async () => {
-            const write = vi.spyOn(fs, 'writeFileSync').mockImplementation(() => undefined);
+            const write = vi.spyOn(fsp, 'writeFile').mockResolvedValue(undefined);
             vi.spyOn(console, 'error').mockImplementation(() => undefined);
             const app = createRouteApp(app => setup(app, {
                 diskHeadroom: requireUploadDiskHeadroom('/', { statfs: full, minFreeBytes: 1024 ** 3 })

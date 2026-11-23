@@ -516,7 +516,7 @@ export function setupAiSceneRoute(app, pool) {
             const safePrompt = typeof prompt === 'string' ? prompt.slice(0, MAX_SAVE_PROMPT_CHARS) : null;
 
             const slug = makeSlug();
-            const { imagePath } = saveImageBuffer(decoded.buffer, `scene-${slug}`);
+            const { imagePath } = await saveImageBuffer(decoded.buffer, `scene-${slug}`);
 
             await pool.query(
                 // Store the RELATIVE path, never an absolute URL — the origin is resolved per request
