@@ -2,6 +2,7 @@
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
 import { selectNativeOption } from '../helpers/controls';
+import { stubBasemapTiles } from '../helpers/runtime';
 
 test.use({ seedCity: 'colorado' });
 const geometry = { type: 'Polygon', coordinates: [[[-104.9907,39.7391],[-104.9902,39.7391],[-104.9902,39.7395],[-104.9907,39.7395],[-104.9907,39.7391]]] };
@@ -24,6 +25,7 @@ const url = '/?at=39.73930,-104.99045,19&planningSource=atlas-study-test&plannin
 
 test('Permitted keeps its envelope controls and ignores retired parcel-study links and drafts @features', async ({ mockApi: page }) => {
   test.setTimeout(90_000);
+  await stubBasemapTiles(page);
   const input=context();
   // Two drawable configurations inside one bound: the inner footprint is the western half of the parcel.
   const inner = { type:'Polygon', coordinates:[[[-104.9907,39.7391],[-104.99045,39.7391],[-104.99045,39.7395],[-104.9907,39.7395],[-104.9907,39.7391]]] };
@@ -76,7 +78,8 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
     const body = (await response.text()).replace('{"id":"colorado",', `{"id":"colorado","planning":{"sourceIds":[${JSON.stringify(source.id)}]},`);
     await route.fulfill({ response, body });
   });
-  await page.goto(url.replace('planningScenario=family1','planningScenario=all') + '&planningStudyScenario=family1'); await waitForMapReady(page);
+  await page.goto(url.replace('planningScenario=family1','planningScenario=all') + '&planningStudyScenario=family1', { waitUntil: 'domcontentloaded' });
+  await waitForMapReady(page);
   // The map keeps the selected envelope geometry while leaving height metrics to the inspector.
   await expect.poll(() => page.evaluate(() => (window as any).PlanningViews.getItems().filter((item:any) => item.parcelEnvelope).length)).toBe(1);
   await expect(page.locator('.planning-envelope-height')).toHaveCount(0,{timeout:45_000});
@@ -204,7 +207,7 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
   await expect(panel.locator('#planning-reroll-permitted')).not.toHaveAttribute('aria-busy','true');
   await page.locator('#mode-2d-toggle').click();
   await page.screenshot({ path: '/tmp/permitted-without-parcel-study.png' });
-  await page.reload();
+  await page.reload({ waitUntil: 'domcontentloaded' });
   await waitForMapReady(page);
   await expect.poll(() => page.evaluate(() => (window as any).PlanningViews.getItems().filter((item:any) => item.parcelEnvelope).length)).toBe(1);
   await expect(page.locator('.planning-envelope-height')).toHaveCount(0);
