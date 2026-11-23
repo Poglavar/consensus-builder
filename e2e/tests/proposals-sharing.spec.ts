@@ -37,10 +37,8 @@ test('sharing a plan publishes its exact selected designs and another device res
   expect(index.requests.filter(r => r.method === 'POST' && r.path === '/designs')).toHaveLength(1);
   const receiver = await openOnAnotherDevice(browser, link, index, baseURL);
   try {
-    const openInZagreb = receiver.page.locator('.city-switch-dialog').getByRole('button', { name: 'Open in Zagreb, Croatia', exact: true });
-    await expect(openInZagreb).toBeVisible({ timeout: 30_000 });
-    await openInZagreb.press('Enter');
     await expect(receiver.page).toHaveTitle('Two gardens · Consensus Builder');
+    await expect.poll(() => receiver.page.evaluate(() => (window as any).CityConfigManager?.getCurrentCityId())).toBe('zagreb');
     await expect.poll(() => receiver.page.evaluate(cid => !!(window as any).DesignSync?.localCopyOf(cid), row.content.designCids[0]), { timeout: 30_000 }).toBe(true);
   } finally { await receiver.context.close(); }
 });

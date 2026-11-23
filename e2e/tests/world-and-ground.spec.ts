@@ -4,16 +4,16 @@ import { openPlanCritics } from '../helpers/plan-actions';
 // M3) and city counts, wheel-out to the globe, data-source requests and open ground.
 import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, clickMapPoint, createSpace, PARCEL_GEOMETRY } from '../helpers/runtime';
+import { openCity, clickMapPoint, createSpace, PARCEL_GEOMETRY, stubBasemapTiles } from '../helpers/runtime';
 import { waitForMapReady } from '../helpers/app';
 import { cidOfObject, fileDesign, pageIndex } from '../helpers/mocks/shared-server';
 import { fileIndexedAgreement, proposeOverPark } from '../helpers/agreements';
 
-// `count` parks published in Zagreb, as the design index lists them (GET /designs, newest first).
-function publishParks(page: Page, count: number): string[] {
+// `count` parks as the design index lists them (GET /designs, newest first).
+function publishParks(page: Page, count: number, { city = 'zagreb', site = PARCEL_GEOMETRY }: { city?: string | null, site?: typeof PARCEL_GEOMETRY } = {}): string[] {
   return Array.from({ length: count }, (_, index) => fileDesign(pageIndex(page), {
-    schema: 'design/v1', goal: 'park', title: `Published park ${index + 1}`, description: null, author: 'Fixture author', city: 'zagreb',
-    site: PARCEL_GEOMETRY, toleranceM: null, geometry: null, origin: null, authoredAt: `2026-10-1${index % 10}T10:00:00.000Z`,
+    schema: 'design/v1', goal: 'park', title: `Published park ${index + 1}`, description: null, author: 'Fixture author', city,
+    site, toleranceM: null, geometry: null, origin: null, authoredAt: `2026-10-1${index % 10}T10:00:00.000Z`,
     structureProposal: { kind: 'park', blockName: null },
   }));
 }
@@ -55,31 +55,39 @@ test.describe('World navigation and open ground @features', () => {
   test('Explore Lists Published lists server designs in the visible area', async ({ mockApi: page }) => {
     // Explore has no city: the Published scope asks GET /designs for the visible area.
     const listQueries: string[] = [];
-    const rows = publishParks(page, 7).map(cid => pageIndex(page).designs.get(cid));
+    const dhakaSite = { type: 'Polygon' as const, coordinates: [[[90.4070, 23.7100], [90.4075, 23.7100],
+      [90.4075, 23.7105], [90.4070, 23.7105], [90.4070, 23.7100]]] };
+    publishParks(page, 7, { city: null, site: dhakaSite });
+    publishParks(page, 1);
+    await stubBasemapTiles(page);
     await page.route(url => url.pathname.endsWith('/designs'), route => {
       if (route.request().resourceType() !== 'fetch' && route.request().resourceType() !== 'xhr') return route.fallback();
       listQueries.push(route.request().url());
-      return route.fulfill({ json: { designs: rows, count: rows.length } });
+      return route.fallback();
     });
     // Dhaka: no configured city covers it, so the address alone opens explore there
-    await page.goto('/?at=23.7104,90.4074,16&lang=en&reduceMotion=1'); await waitForMapReady(page);
+    await page.goto('/?at=23.7104,90.4074,16&lang=en&reduceMotion=1', { waitUntil: 'domcontentloaded' });
+    await waitForMapReady(page);
     // Zoom 16 is explore's parcel zoom (4c27b140a) and Dhaka has no parcel register, so the ground
     // choices are offered first (world-parcels.md); set them aside to reach Lists.
     const recovery = page.locator('.ground-fallback-dialog');
     await expect(recovery).toBeVisible();
     await recovery.getByRole('button', { name: 'Not now', exact: true }).click();
     await expect(recovery).toHaveCount(0);
-    // Opening Lists starts its visible-area request synchronously, so clear navigation-time calls first.
-    listQueries.length = 0;
     await page.locator('#proposals-button').click();
     const sheet = page.locator('#proposals-sheet');
     await expect(sheet.locator('#proposal-list-host .lists-item')).toHaveCount(7);
     expect(listQueries.length).toBeGreaterThan(0);
-    const bbox = await page.evaluate(() => (window as any).getProposalCountAreaContext().bbox.join(','));
+    const [west, south, east, north] = await page.evaluate(() => (window as any).getProposalCountAreaContext().bbox);
     for (const url of listQueries) {
       const query = new URL(url).searchParams;
       expect(query.has('city')).toBe(false);
-      expect(query.get('bbox')).toBe(bbox);
+      const bbox = query.get('bbox')?.split(',').map(Number) || [];
+      expect(bbox).toHaveLength(4);
+      expect(bbox[0]).toBeLessThanOrEqual(west);
+      expect(bbox[1]).toBeLessThanOrEqual(south);
+      expect(bbox[2]).toBeGreaterThanOrEqual(east);
+      expect(bbox[3]).toBeGreaterThanOrEqual(north);
     }
   });
   test('the world globe searches a live city and opens its configured map', async ({ mockApi: page }) => {

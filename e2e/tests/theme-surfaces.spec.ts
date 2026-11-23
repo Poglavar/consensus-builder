@@ -6,6 +6,7 @@ for (const width of [1280, 390]) {
   test(`panels share theme glass at ${width}px`, async ({ mockApi: page }) => {
     await page.setViewportSize({ width, height: 900 });
     await openCity(page);
+    await page.evaluate(() => (window as any).ensureOptionalTool('rooster'));
     for (const theme of ['light', 'dark']) {
       await page.evaluate(value => (window as any).CbTheme.set(value), theme);
       const failures = await page.evaluate(() => {

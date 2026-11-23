@@ -50,9 +50,7 @@ test('a published layout shares its exact saved plan and a fresh device applies 
   const requests=writes(page);expect(requests.find(r=>r.path==='/plans')!.body.content).toEqual(plan.content);expect(requests.filter(r=>r.path==='/agreements')).toHaveLength(0);
   const receiver=await openOnAnotherDevice(browser,snapshotUrl.pathname+snapshotUrl.search,pageIndex(page),baseURL);
   try {
-    const openInZagreb = receiver.page.locator('.city-switch-dialog').getByRole('button', { name: 'Open in Zagreb, Croatia', exact: true });
-    await expect(openInZagreb).toBeVisible({ timeout: 30_000 });
-    await openInZagreb.click();
+    await expect.poll(() => receiver.page.evaluate(() => (window as any).CityConfigManager?.getCurrentCityId())).toBe('zagreb');
     await expect.poll(() => receiver.page.evaluate(cid => {
       const w = window as any;
       const record = w.proposalStorage?.getProposal(`design-${cid}`);
