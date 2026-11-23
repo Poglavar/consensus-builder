@@ -42,6 +42,19 @@ describe('portable editable plan files', () => {
         const a = File.importInto(file, target), b = File.importInto(file, target);
         expect(a).toEqual(b); expect(a.memberIds).toEqual(['existing']); expect([...target.records]).toEqual(before);
     });
+    it('declares the parcels the index binds each design to, and leaves a design without a binding unbound', async () => {
+        const building = { goal: 'single', title: 'Tower', site: box(15.002), buildingProposal: { floors: 6 }, geometry: { buildings: [{ type: 'Feature', geometry: box(15.002), properties: { floors: 6, height: 18 } }] } };
+        const file = await make([park(), building]), target = store(); let n = 0;
+        const [parkRow, towerRow] = file.designs;
+        const binding = { parcels: [{ parcelId: 'b-2' }, { parcelId: 'a-10' }, { parcelId: 'a-9' }, { parcelId: 'a-9' }], coverage: 'complete' };
+        const imported = File.importInto(file, target, { id: () => `file-${++n}`, bindings: { [parkRow.cid]: binding } });
+        const [bound, unbound] = imported.memberIds.map(id => target.getProposal(id));
+        expect(bound.cadastreParcelIds).toEqual(['a-9', 'a-10', 'b-2']);
+        expect(bound.binding).toEqual(binding); expect(bound).not.toHaveProperty('planFileUnboundCid');
+        expect(unbound.cadastreParcelIds).toEqual([]); expect(unbound.planFileUnboundCid).toBe(towerRow.cid);
+        // The binding is evidence beside the design, never part of it: the CIDs are the file's.
+        expect(Design.cidOf(bound)).toBe(parkRow.cid);
+    });
     it('rejects an identity collision rather than replacing work', async () => {
         const target = store([park({ title: 'Other' })]);
         const file = await make();

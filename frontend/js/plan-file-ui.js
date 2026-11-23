@@ -1,5 +1,6 @@
 // File actions use the share panel's explicit membership. Import parks drafts in one atomic
-// mutation, including their local plan membership; no source request or publication is needed.
+// mutation, including their local plan membership; before it, each design's site is bound to the
+// city's parcels by the index (POST /designs/binding, derived, nothing stored). No publication.
 // Lists (lists-panel.js) offers Import and Imported on each tab through importFile and imported.
 (function (root, factory) {
     const api = factory();
@@ -82,11 +83,42 @@
                 if (!modal) resolve(false);
             });
         }
+        // The site a design binds: its authored site, else the union of its footprint's polygons.
+        function siteOf(content) {
+            if (content.site) return content.site;
+            const parts = win.__footprintParts.footprintParts(content);
+            if (parts.invalid || parts.approximate || !parts.polygons.length) return null;
+            return parts.polygons.reduce((out, shape) => out ? win.turf.union(out, win.turf.feature(shape)) : win.turf.feature(shape), null).geometry;
+        }
+        // What the index binds each design's site to, read with the design's own parcel source when
+        // the file names one. A design whose binding cannot be read is imported unbound, as before.
+        async function bindingsFor(file) {
+            const base = String(win.resolveBackendBaseUrl ? win.resolveBackendBaseUrl() : win.getBackendBase()).replace(/\/$/, '');
+            const out = {}, queue = [...file.designs];
+            const one = async row => {
+                try {
+                    const site = siteOf(row.content);
+                    if (!site) return;
+                    const context = win.CityConfigManager.getParcelContext(site, row.content.city);
+                    const sourceId = file.designSources[row.cid]?.sourceId;
+                    const response = await win.fetch(`${base}/designs/binding`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ site, toleranceM: row.content.toleranceM, ...context, ...(sourceId ? { parcelSourceId: sourceId } : {}) }) });
+                    const payload = await response.json().catch(() => null);
+                    if (!response.ok || !payload?.binding) throw new Error(payload?.error || `The server answered ${response.status}.`);
+                    out[row.cid] = payload.binding;
+                } catch (bindError) {
+                    console.warn(`[${new Date().toISOString()}] [PlanFileUI] ${row.cid} imported unbound: its site could not be bound`, bindError);
+                }
+            };
+            await Promise.all(Array.from({ length: Math.min(4, queue.length) }, async () => { while (queue.length) await one(queue.shift()); }));
+            return out;
+        }
         async function commitImport(file, { keepPlan = true } = {}) {
             win.PlanFile.validate(file);
+            const bindings = await bindingsFor(file);
             return observe('import', { entity: 'plan', planKey: win.Cid.cidOfObject(file.plan), code: 'plan-import-failed' }, () => win.ProposalManager.runParcelMutation('import-plan-file', null, options => {
                 const context = options._parcelMutation;
-                const plan = win.PlanFile.importInto(file, context.proposals);
+                const plan = win.PlanFile.importInto(file, context.proposals, { bindings });
                 if (keepPlan) {
                     context.storage.setItem(PREFIX + plan.cid, JSON.stringify(plan));
                     const planKey = `plan:${plan.cid}`;

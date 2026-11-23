@@ -254,7 +254,10 @@
 
     // Local import is deliberately independent of publication and of the live map. Call within
     // one ProposalManager mutation; collisions never overwrite an existing local design.
-    function importInto(file, store, { id = () => `file-${crypto.randomUUID()}` } = {}) {
+    // `bindings` maps a design CID to the binding the index gives its site (POST /designs/binding,
+    // fetched before the mutation): the design then declares those parcels, as a published design
+    // opened by link does. A design without one stays unbound.
+    function importInto(file, store, { id = () => `file-${crypto.randomUUID()}`, bindings = {} } = {}) {
         validate(file);
         const members = [];
         const existingByCid = new Map();
@@ -270,7 +273,8 @@
             const record = { proposalId: key, goal: c.goal, title: c.title, name: c.title,
                 description: c.description, author: c.author, city: c.city, site: c.site,
                 toleranceM: c.toleranceM, geometry: c.geometry, origin: c.origin,
-                createdAt: c.authoredAt, lifecycleStatus: 'draft', applied: false, cadastreParcelIds: [], planFileUnboundCid: row.cid,
+                createdAt: c.authoredAt, lifecycleStatus: 'draft', applied: false,
+                ...boundFields(bindings[row.cid], row.cid),
                 ...(file.designSources[row.cid] ? { planFileSource: clone(file.designSources[row.cid]) } : {}) };
             api('DesignRecord').PAYLOAD_KEYS.forEach(key => { if (c[key]) record[key] = c[key]; });
             const stored = store.importProposal(record, { overwrite: false, deferSave: true });
@@ -278,6 +282,13 @@
             members.push(stored.proposalId);
         }
         return { cid: api('Cid').cidOfObject(file.plan), content: clone(file.plan), memberIds: members, designSources: clone(file.designSources) };
+    }
+    // The parcels a binding names, as the record's cadastral declaration (sorted, unique), and the
+    // binding itself as server evidence; no binding leaves the design unbound.
+    function boundFields(binding, cid) {
+        const ids = Array.isArray(binding?.parcels) ? [...new Set(binding.parcels.map(hit => hit?.parcelId != null ? String(hit.parcelId) : '').filter(Boolean))]
+            .sort((a, b) => a.localeCompare(b, undefined, { numeric: true })) : [];
+        return ids.length ? { cadastreParcelIds: ids, binding: clone(binding) } : { cadastreParcelIds: [], planFileUnboundCid: cid };
     }
     return Object.freeze({ SCHEMA, MAX_BYTES, MAX_VERTICES, MAX_NODES, MAX_DEPTH,
         create, parse, validate, stringify, geojson, geojsonRecords, importInto, geographicParts, checkModel });
