@@ -116,6 +116,24 @@ export function setupDecorRoute(app, pool, options = {}) {
             res.status(502).json({ error: 'Water could not be loaded.' });
         }
     });
+    // A cacheable regional water tile. The view draws these simple source-generalized areas while
+    // /decor/water remains the local-navigation read used around the active scene.
+    app.get('/decor/water/tile/:z/:x/:y', async (req, res) => {
+        const { z, x, y } = Object.fromEntries(['z', 'x', 'y'].map(key => [key, Number(req.params?.[key])]));
+        if (![z, x, y].every(Number.isInteger) || z < 0 || z > 14 || x < 0 || y < 0 || x >= 2 ** z || y >= 2 ** z) {
+            return res.status(400).json({ error: 'Invalid water tile. Expected z 0..14 and its valid x/y range.' });
+        }
+        if (typeof waterProvider.tile !== 'function') return res.status(503).json({ error: 'Overview water is unavailable.' });
+        try {
+            const result = await waterProvider.tile(z, x, y);
+            if (!result) return res.status(400).json({ error: 'Invalid water tile.' });
+            res.set?.('Cache-Control', 'public, max-age=21600');
+            res.json(result);
+        } catch (err) {
+            console.error('Error in GET /decor/water/tile:', err.message);
+            res.status(502).json({ error: 'Overview water could not be loaded.' });
+        }
+    });
     // GET /decor/green?bbox=…&buffer_meters=… - lawns, parks, meadows, farmland and woods within
     // `buffer_meters` of the box, anywhere on Earth.
     // Response: { areas: [{ geometry: Polygon|MultiPolygon, kind: 'lawn'|'meadow'|'forest' }], count, source }

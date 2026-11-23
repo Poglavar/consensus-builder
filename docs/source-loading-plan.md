@@ -112,8 +112,10 @@ per-adapter tests cover that nothing else moved.
   the 2D map's view and zoom in 2D; in 3D, the camera's distance as the 2D zoom showing the same
   width, around where the scene was entered (the camera's pan does not move it, as E2 is deferred).
   They reload on `loadviewchange` (the camera settling, or a mode change). Permitted massing,
-  Explore's designs and 3D water and green areas read it; water and green cover the buildings' box
-  and the camera's view (at most 2.5 km out), and only grow within a scene.
+  Explore's designs and detailed ground cover read it. Ground cover and greenery extend up to
+  2.5 km from the scene anchor or to the loaded buildings. Model water streams OpenFreeMap
+  water and waterway tiles over the camera’s visible ground, with coarser tiles at regional
+  scales. The model orbit reaches 250 km. The pedestrian water mask follows the local load radius.
 - **Permitted massing** loads by cells too (`planning/scene.js` `viewCells`, 0.0025°, about 280 m):
   nearest the centre first, two at a time, each drawn as it lands and cached on its own; a failed
   cell is asked once more, alone, after the rest. No view is refused for its size; below zoom 16

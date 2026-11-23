@@ -3,6 +3,7 @@
 // shared tile read for water and green, and the route that serves it in every city.
 import { describe, it, expect, vi } from 'vitest';
 import * as turf from '@turf/turf';
+import { PbfWriter } from 'pbf';
 import { greenLook, greenFromTileFeatures, createGreenProvider } from '../decor/openfreemap-green.js';
 import { createWaterProvider } from '../decor/openfreemap-water.js';
 import { createTileReader } from '../decor/openfreemap-tiles.js';
@@ -11,6 +12,23 @@ import { setupDecorRoute } from '../routes/decor.js';
 const bbox = [15.976, 45.809, 15.980, 45.812];
 const square = (x, y, d) => ({ type: 'Polygon', coordinates: [[[x, y], [x + d, y], [x + d, y + d], [x, y + d], [x, y]]] });
 const feature = (geometry, properties) => ({ type: 'Feature', geometry, properties: { layer: 'landcover', ...properties } });
+
+function encodedLayers() {
+    const pbf = new PbfWriter();
+    const addLayer = (name, type) => pbf.writeMessage(3, (_, layer) => {
+        layer.writeStringField(1, name);
+        layer.writeVarintField(15, 2);
+        layer.writeVarintField(5, 4096);
+        layer.writeMessage(2, (_, row) => {
+            row.writeVarintField(3, type);
+            if (type === 1) row.writePackedVarint(4, [9, 200, 200]);
+        });
+    });
+    addLayer('water', 1);
+    // Decoding this layer would throw. Its presence proves readers only decode named layers.
+    addLayer('unused-bad-layer', 0);
+    return pbf.finish();
+}
 
 describe('green looks', () => {
     it('reads tended grass as lawn, rough grass and farmland as meadow, woods as forest, the rest not at all', () => {
@@ -39,6 +57,18 @@ describe('green looks', () => {
 });
 
 describe('one tile read for water and green', () => {
+    it('parses one source tile once and decodes only requested layers', async () => {
+        const bytes = encodedLayers();
+        const fetchImpl = vi.fn(async url => url.endsWith('/planet')
+            ? { ok: true, json: async () => ({ tiles: ['https://tiles.example/{z}/{x}/{y}.pbf'] }) }
+            : { ok: true, arrayBuffer: async () => bytes });
+        const reader = createTileReader({ fetchImpl });
+        const water = await reader.tile(14, 8299, 5636, ['water']);
+        expect(water.features).toHaveLength(1);
+        await expect(reader.tile(14, 8299, 5636, ['unused-bad-layer'])).rejects.toThrow('feature has no geometry');
+        expect(fetchImpl.mock.calls.filter(([url]) => url.endsWith('.pbf'))).toHaveLength(1);
+    });
+
     it('fetches a covering tile once and serves both layers from it', async () => {
         // A z14 tile with nothing in it decodes to no layers; the point is how often it is fetched.
         const fetchImpl = vi.fn(async url => url.endsWith('/planet')

@@ -388,6 +388,7 @@ function warmEnterFixture() {
         ensureNearbyTrees() {},
         ensureNearbyFurniture() {},
         ensureNearbyWater() {},
+        ensureRegionalWater() {},
         ensureNearbyGreen() {},
         ensureNearbyGround() {},
         initScene: async () => { calls.init += 1; return true; },
@@ -526,13 +527,15 @@ it('requests a frame when the facade toggle or style changes, because the view r
     expect(context.facadeFloorLineMaterial.visible).toBe(true);
 });
 
-it('reads the water and green areas the buildings widened while an earlier read was out', async () => {
+it('rechecks the local water mask and green area if their scope changed during a read', async () => {
     for (const [ensure, prefix] of [['ensureNearbyWater', 'nearbyWater'], ['ensureNearbyGreen', 'nearbyGreen']]) {
         const reads = [];
         const box = { coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]] };
         const context = loadInContext(threeModeDeclarations([ensure]), {
             isActive: true,
             waterEnabled: true,
+            lifeShouldRun: () => true,
+            sceneryQueryArea: () => ({ geometry: box, key: JSON.stringify(box.coordinates), buffer: 0 }),
             greenEnabled: true,
             [`${prefix}Fetching`]: false,
             [`${prefix}Key`]: null,
@@ -573,13 +576,13 @@ it('reads the water and green areas the buildings widened while an earlier read 
     }
 });
 
-it('reads water and green areas for what the camera shows, never shrinking, at most 2.5 km out', () => {
+it('keeps detailed ground and greenery within the local scenery budget', () => {
     // A small buildings box (Austin's downtown cells) beside Lady Bird Lake, viewed from a phone.
     const buildings = [-97.748, 30.262, -97.744, 30.266];
     const view = { mode: '3d', centre: [30.264, -97.746], bbox: [-97.759, 30.2525, -97.733, 30.2755] };
     const context = loadInContext(threeModeDeclarations(['sceneryQuery']), {
         Math, MAX_SCENERY_HALF_SIDE_M: 2500, sceneryReach: null, sceneTreeLoadGeometry: null, buildingLoadRadiusM: 300,
-        loadedBuildingsExtent: () => buildings, window: { LoadView: { current: () => view } }
+        loadedBuildingsExtent: () => buildings, xyToLatLng: () => ({ lat: 30.264, lng: -97.746 }), window: { LoadView: { current: () => view } }
     });
     const boxOf = query => { const ring = query.queryGeometry.coordinates[0]; return [ring[0][0], ring[0][1], ring[2][0], ring[2][1]]; };
     // Before, the lake stopped at the buildings' box; now the read covers the camera's view.
@@ -598,7 +601,7 @@ it('reads water and green areas for what the camera shows, never shrinking, at m
 });
 
 it('widens water and green areas when the camera settles at another zoom', () => {
-    expect(threeModeListenerRegistration('loadviewchange')).toMatch(/ensureNearbyWater\(\);\s*ensureNearbyGreen\(\)/);
+    expect(threeModeListenerRegistration('loadviewchange')).toMatch(/ensureRegionalWater\(\);\s*ensureNearbyGreen\(\)/);
 });
 
 it('reads the trees at a radius changed while an earlier read was out', async () => {

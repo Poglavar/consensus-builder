@@ -7364,7 +7364,7 @@
                 nearbyFurnitureFetching = false;
                 console.log(`[3D] Loaded ${nearbyFurniture.fountains.length} fountains and ${nearbyFurniture.lamps.length} street lamps from OSM`);
                 rebuildFurnitureOnly();
-                rebuildWaterOnly(); // Once fountain locations arrive, remove their duplicate water polygons.
+                refreshMappedWaterBasins();
                 ensureNearbyFurniture();
             })
             .catch(err => {
@@ -7620,7 +7620,7 @@
             // Only pavement expands: road geometry, population and source requests stay bounded.
             const k = lifeMercatorK();
             const bounds = window.__groundGeometry.pavementBounds(lifeSurfaceBounds(lifeProjector()),
-                200000 / k, (camera?.far || 0) / k, (controls?.maxDistance || 0) * 12 / k);
+                200000 / k, (camera?.far || 0) / k, snapshotNavigation.MAX_ORBIT_DISTANCE_M.model * 12);
             const cuts = groundCutFootprintFeatures();
             const result = source ? window.__groundGeometry.buildGroundGeometry({
                 carriageways: source.surface.carriageways, bounds,
@@ -8036,7 +8036,7 @@
         lifeEnabled = !!on;
         try { PersistentStorage.setItem(LIFE_STORAGE_KEY, lifeEnabled ? '1' : '0'); } catch (_) { }
         if (lifeToggleEl && lifeToggleEl.checked !== lifeEnabled) lifeToggleEl.checked = lifeEnabled;
-        if (lifeEnabled) ensureLifeOsmRoads(lifeQueryBounds);
+        if (lifeEnabled) { ensureLifeOsmRoads(lifeQueryBounds); ensureNearbyWater(); }
         rebuildLifeOnly();
     }
 
@@ -8104,10 +8104,8 @@
         if (soundscape) soundTick();
     }
 
-    // --- Real-world water (sea, lakes, rivers, streams) ---
-    // Fetched via GET /decor/water for the same area and radius as the trees, every piece
-    // already a polygon (the backend widens river and stream lines), drawn flat just above the ground
-    // in one material. A scene holds a few dozen pieces at most, so it costs next to nothing.
+    // Model water follows the camera at map scale. Local water separately blocks the population
+    // around the scene anchor so a regional zoom never rebuilds pedestrians for the whole view.
     const WATER_STORAGE_KEY = 'cb_3d_water_enabled';
     let nearbyWater = [];           // [{ geometry, kind }] from the backend
     let nearbyWaterKey = null;
@@ -8123,44 +8121,95 @@
         return true; // default ON
     }
 
-    function disposeWaterGroup() {
-        if (!waterGroup) return;
-        for (let i = waterGroup.children.length - 1; i >= 0; i--) {
-            const child = waterGroup.children[i];
-            waterGroup.remove(child);
-            if (child.geometry) child.geometry.dispose();
-        }
+    let regionalWater = null;
+    const waterTileMeshes = new Map();
+    let displayedWaterTiles = [];
+    let waterUpdateTimer = null;
+
+    function removeWaterTile(key, mesh) {
+        mesh.removeFromParent();
+        mesh.geometry.dispose();
+        waterTileMeshes.delete(key);
     }
 
-    function rebuildWaterOnly() {
-        if (!isActive || !waterGroup) return;
-        disposeWaterGroup();
-        if (!waterEnabled || !nearbyWater.length || !origin3857) return;
-        ensureGroundLayer();
-        if (!waterMaterial) {
-            // Layered over the green cover, the parcel slabs and the pavement by stencil claims
-            // (three-ground.js ORDER.water), not by its lift: a few centimetres and a polygon offset
-            // lost to the pavement plane's huge triangles at a distance, so canals flickered grey
-            // while zooming (Delft, 2026-10-30). Planned lakes (0.065) still cover it by depth.
-            waterMaterial = new THREE.MeshPhongMaterial({ color: 0x3b7fc4, specular: 0x1f3a60, shininess: 40 });
-            groundLayer.parcelSurface(waterMaterial);
-            // It reflects the scene's sky (three-water-sheen.js), whichever sky the current scene has.
-            window.__threeWaterSheen.apply(waterMaterial, { skyGlsl: window.__threeSky.SKY_COLOR_GLSL, skyUniforms: () => sky?.uniforms || null, clouds: atmosphereClouds });
-        }
-        for (const piece of nearbyWater) {
-            try {
-                const geometry = window.__threeFountains.withoutMappedBasins(piece.geometry, nearbyFurniture?.fountains, turf);
+    function drawWaterTiles(tiles) {
+        displayedWaterTiles = tiles;
+        const retained = new Set();
+        const centreLng = xyToLatLng(controls.target.x, controls.target.y).lng;
+        for (const { tile, areas } of tiles) {
+            const tileLng = (tile.x + 0.5) / 2 ** tile.z * 360 - 180;
+            const wrap = Math.round((centreLng - tileLng) / 360);
+            const key = [tile.z, tile.x, tile.y, wrap].join('/');
+            retained.add(key);
+            if (!areas.length || waterTileMeshes.has(key)) continue;
+            const shapes = [];
+            const toPath = ring => ring.map(([lng, lat]) => new THREE.Vector2(...latLngToXY(lat, lng + 360 * wrap)));
+            for (const piece of areas) {
+                const geometry = tile.z === 14
+                    ? window.__threeFountains.withoutMappedBasins(piece.geometry, nearbyFurniture?.fountains, turf)
+                    : piece.geometry;
                 if (!geometry) continue;
-                polygonFeatureToMeshes({ type: 'Feature', geometry }, waterMaterial, 0.04, 0)
-                    .forEach(mesh => { mesh.renderOrder = window.__threeGround.ORDER.water; mesh.userData.water = piece.kind; waterGroup.add(mesh); });
-            } catch (error) {
-                console.warn('[3D] water piece skipped', piece.kind, error);
+                const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
+                for (const [outer, ...holes] of polygons) {
+                    if (!outer || outer.length < 4) continue;
+                    const shape = new THREE.Shape(toPath(outer));
+                    shape.holes = holes.filter(ring => ring.length >= 4).map(ring => new THREE.Path(toPath(ring)));
+                    shapes.push(shape);
+                }
             }
+            if (!shapes.length) continue;
+            const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shapes), waterMaterial);
+            mesh.position.z = 0.04;
+            mesh.renderOrder = window.__threeGround.ORDER.water;
+            mesh.userData.water = true;
+            mesh.name = 'WaterTile/' + key;
+            mesh.raycast = () => {};
+            waterGroup.add(mesh);
+            waterTileMeshes.set(key, mesh);
         }
+        for (const [key, mesh] of waterTileMeshes) if (!retained.has(key)) removeWaterTile(key, mesh);
         invalidateThreeView();
     }
 
-    // The box the loaded buildings cover, [w, s, e, n], or null. Water is cut to it, so it reaches as
+    function stopRegionalWater() {
+        clearTimeout(waterUpdateTimer);
+        waterUpdateTimer = null;
+        regionalWater?.destroy();
+        regionalWater = null;
+        displayedWaterTiles = [];
+        for (const [key, mesh] of waterTileMeshes) removeWaterTile(key, mesh);
+        waterMaterial?.dispose();
+        waterMaterial = null;
+    }
+
+    function ensureRegionalWater() {
+        if (!isActive || !waterEnabled || realisticLayerActive || !controls || !waterGroup || !origin3857 || sceneAbort?.signal.aborted) return;
+        const bounds = snapshotNavigation.groundFootprint(camera, THREE, xyToLatLng);
+        const viewport = getViewport();
+        if (!bounds || !viewport?.widthPx || !viewport.heightPx) return;
+        if (!regionalWater) {
+            ensureGroundLayer();
+            waterMaterial = groundLayer.parcelSurface(new THREE.MeshBasicMaterial({ color: 0x6393aa }));
+            regionalWater = window.__threeRegionalWater.create({
+                fetchTile: async ({ z, x, y }, { signal }) => {
+                    const response = await fetch(window.getBackendBase() + '/decor/water/tile/' + [z, x, y].join('/'), { signal });
+                    if (!response.ok) throw new Error('Water tile HTTP ' + response.status);
+                    return response.json();
+                },
+                onChange: ({ tiles }) => { if (isActive && waterGroup && !sceneAbort?.signal.aborted) drawWaterTiles(tiles); }
+            });
+            sceneAbort.signal.addEventListener('abort', stopRegionalWater, { once: true });
+        }
+        regionalWater.update({ bounds, width: viewport.widthPx, height: viewport.heightPx });
+    }
+
+    function refreshMappedWaterBasins() {
+        if (!regionalWater || !nearbyFurniture?.fountains?.length) return;
+        for (const [key, mesh] of waterTileMeshes) if (key.startsWith('14/')) removeWaterTile(key, mesh);
+        drawWaterTiles(displayedWaterTiles);
+    }
+
+    // The box the loaded buildings cover, [w, s, e, n], or null. Local scenery reaches as
     // far as the buildings do whatever the source: the OSM provider answers whole grid cells, well past
     // the radius, and other sources have their own shapes.
     // Every vertex of the loaded band, so it is measured once per response (the array is replaced
@@ -8187,24 +8236,19 @@
         return Number.isFinite(w) && e > w && n > s ? [w, s, e, n] : null;
     }
 
-    // The farthest scenery reaches from the scene's centre. Water and green areas are a few flat
-    // polygons read from ~2.4 km tiles, so they cover what the camera shows, well past the buildings.
+    // Detailed green areas and ground cover stay around the snapshot's buildings and the
+    // nearby visible ground. A pan to another region must never join the two into one large read.
     const MAX_SCENERY_HALF_SIDE_M = 2500;
-    // What this scene's scenery covers so far, [w, s, e, n]. It only grows, so zooming in and out
-    // again neither cuts a lake back nor reads it again; a new scene starts it afresh.
     let sceneryReach = null;
-    // The area tile-based scenery (water, green areas) covers: the loaded buildings' box and what the
-    // camera shows (load-view.js: its zoom, around where the scene was entered), or with neither the
-    // radius around the scene anchor. Before, only the buildings' box: on a phone the camera shows
-    // over a kilometre, and a lake stopped in a straight line a few hundred metres out.
     function sceneryQuery() {
         const boxes = [loadedBuildingsExtent(), sceneryReach];
         const view = window.LoadView?.current();
         if (view?.mode === '3d') {
-            const [lat, lng] = view.centre;
+            const { lat, lng } = xyToLatLng(0, 0);
             const dLat = MAX_SCENERY_HALF_SIDE_M / 110570, dLng = MAX_SCENERY_HALF_SIDE_M / (111320 * Math.cos(lat * Math.PI / 180));
             const [w, s, e, n] = view.bbox;
-            boxes.push([Math.max(w, lng - dLng), Math.max(s, lat - dLat), Math.min(e, lng + dLng), Math.min(n, lat + dLat)]);
+            const local = [Math.max(w, lng - dLng), Math.max(s, lat - dLat), Math.min(e, lng + dLng), Math.min(n, lat + dLat)];
+            if (local[0] < local[2] && local[1] < local[3]) boxes.push(local);
         }
         const known = boxes.filter(Boolean);
         if (!known.length) return { queryGeometry: sceneTreeLoadGeometry, buffer: buildingLoadRadiusM };
@@ -8222,12 +8266,11 @@
     }
 
     function ensureNearbyWater() {
-        // Its own query area (sceneryQuery), so it loads alongside the buildings, not after them.
-        // A call while a read is out is not lost: the read asks again when it lands (below).
-        if (!waterEnabled || nearbyWaterFetching) return;
-        const { queryGeometry, buffer } = sceneryQuery();
-        if (!queryGeometry) return;
-        const key = nearbyDataScope + '|' + JSON.stringify(queryGeometry.coordinates) + '|r' + buffer;
+        // The navigation mask stays local even when the water drawn on screen spans a region.
+        if (!waterEnabled || !lifeShouldRun() || nearbyWaterFetching) return;
+        const area = sceneryQueryArea();
+        if (!area) return;
+        const { geometry: queryGeometry, buffer, key } = area;
         if (key === nearbyWaterKey) return;
         nearbyWaterFetching = true; noteSceneWork();
         const signal = sceneAbort?.signal;
@@ -8240,11 +8283,8 @@
                 nearbyWaterKey = key;
                 nearbyWaterFetching = false; noteSceneWork();
                 console.log(`[3D] Loaded ${nearbyWater.length} nearby water pieces (${sceneTreeLoadGeometrySource}+${buffer}m)`);
-                rebuildWaterOnly();
                 refreshLifeSurface();
-                // The buildings may have arrived meanwhile and widened the query area; the call they
-                // made was skipped while this read was out, so ask for what is wanted now (a no-op
-                // when nothing moved). Without it Delft's far canals stayed cut to the first area.
+                // The local radius can change while a request is in flight.
                 ensureNearbyWater();
             })
             .catch(err => {
@@ -8261,8 +8301,8 @@
         if (waterGroup) waterGroup.visible = waterEnabled && !realisticLayerActive;
         if (waterEnabled) {
             ensureNearbyWater();
-            rebuildWaterOnly();
-        }
+            ensureRegionalWater();
+        } else stopRegionalWater();
         invalidateThreeView();
     }
 
@@ -11340,7 +11380,6 @@
         buildingWorkIncomplete = false;
         rebuildTreesOnly();
         rebuildFurnitureOnly();
-        rebuildWaterOnly();
         rebuildGreenOnly();
         try { rebuildLifeOnly(); } catch (error) { console.warn('[3D life] build failed', error); }
         rebuildProposalInteraction3D();
@@ -11756,6 +11795,7 @@
                 camera.far = Math.max(1000, dist * 10);
                 camera.updateProjectionMatrix();
                 lastPlaneDist = dist;
+                scheduleRegionalWater();
             }
         }
         // A hook returns false when it has nothing to animate right now (people parked after idle,
@@ -12185,6 +12225,7 @@
             ensureNearbyTrees();
             ensureNearbyFurniture();
             ensureNearbyWater();
+            ensureRegionalWater();
             ensureNearbyGreen();
             ensureNearbyGround();
         } else if (!await initScene()) return false;
@@ -12324,7 +12365,12 @@
     window.addEventListener('planninggeometrychange', rebuildPlanningSources3D);
     window.addEventListener('planninghazechange', syncPlanningHaze3D);
     // The camera settled at another zoom: water and green areas widen to what it shows.
-    window.addEventListener('loadviewchange', () => { if (isActive) { ensureNearbyWater(); ensureNearbyGreen(); ensureNearbyGround(); } });
+    function scheduleRegionalWater() {
+        if (!isActive || !waterEnabled || realisticLayerActive || waterUpdateTimer !== null) return;
+        waterUpdateTimer = setTimeout(() => { waterUpdateTimer = null; ensureRegionalWater(); }, 180);
+    }
+    window.addEventListener('threecamerachange', scheduleRegionalWater);
+    window.addEventListener('loadviewchange', () => { if (isActive) { ensureRegionalWater(); ensureNearbyGreen(); ensureNearbyGround(); } });
     window.addEventListener('planningselectionchange', () => {
         // An outside inspector selection ends the click's view; the stack's own section switches
         // select there too and are not an outside choice.
@@ -12983,6 +13029,7 @@
         rebuildTreesOnly(); // which context trees stand depends on the view (buildTreesGroup)
         rebuildFurnitureOnly(); // street furniture follows the trees (rebuildFurnitureOnly)
         if (waterGroup) waterGroup.visible = waterEnabled && !realisticLayerActive;
+        if (realisticLayerActive) stopRegionalWater(); else if (!options.exiting) ensureRegionalWater();
         if (greenGroup) greenGroup.visible = greenEnabled && !realisticLayerActive;
         syncLifeVisibility();
         syncGroundVisibility();

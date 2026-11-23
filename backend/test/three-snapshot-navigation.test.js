@@ -2,6 +2,7 @@
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
+import * as THREE from 'three';
 
 const require = createRequire(import.meta.url);
 const turf = require('@turf/turf');
@@ -13,19 +14,51 @@ const {
     resolveSceneLoadGeometry,
     buildLoadRadiusPreview,
     configurePannableOrbitControls,
-    resolveExitMapCenter
+    resolveExitMapCenter,
+    groundFootprint
 } = require('../../frontend/js/three-snapshot-navigation.js');
 const threeModeSource = readFileSync(new URL('../../frontend/js/three-mode.js', import.meta.url), 'utf8');
 
 describe('3D snapshot navigation', () => {
-    it('caps zooming out per view: 5 km in model view, 25 km in photo view, in scene units', () => {
-        expect(MAX_ORBIT_DISTANCE_M).toEqual({ model: 5000, photo: 25000 });
-        expect(maxOrbitDistance('model', 0)).toBeCloseTo(5000, 6);
+    it('caps zooming out per view: 250 km in model view, 25 km in photo view, in scene units', () => {
+        expect(MAX_ORBIT_DISTANCE_M).toEqual({ model: 250000, photo: 25000 });
+        expect(maxOrbitDistance('model', 0)).toBeCloseTo(250000, 6);
         // Scene XY is Mercator-inflated: at 60 degrees one true metre is two scene units.
         expect(maxOrbitDistance('photo', 60)).toBeCloseTo(50000, 6);
-        expect(maxOrbitDistance('photo', 43.6)).toBeGreaterThan(maxOrbitDistance('model', 43.6));
+        expect(maxOrbitDistance('model', 43.6)).toBeGreaterThan(maxOrbitDistance('photo', 43.6));
         expect(() => maxOrbitDistance('globe', 45)).toThrow(/Unknown 3D view/);
         expect(() => maxOrbitDistance('model', null)).toThrow(/origin latitude/);
+    });
+
+    it('traces perspective screen edges to their actual ground footprint', () => {
+        const camera = new THREE.PerspectiveCamera(60, 1, 1, 500);
+        camera.position.set(0, 0, 100);
+        camera.lookAt(0, 0, 0);
+        const box = groundFootprint(camera, THREE, (x, y) => ({ lng: x, lat: y }));
+        expect(box).not.toBeNull();
+        expect(box[0]).toBeCloseTo(-57.735, 2);
+        expect(box[1]).toBeCloseTo(-57.735, 2);
+        expect(box[2]).toBeCloseTo(57.735, 2);
+        expect(box[3]).toBeCloseTo(57.735, 2);
+    });
+
+    it('uses the true far-plane edge when an oblique camera sees ground below the horizon', () => {
+        const camera = new THREE.PerspectiveCamera(60, 16 / 9, 1, 300);
+        camera.position.set(0, -20, 20);
+        camera.lookAt(0, 400, 0);
+        const box = groundFootprint(camera, THREE, (x, y) => ({ lng: x, lat: y }));
+        expect(box).not.toBeNull();
+        // The finite far-plane crossing preserves distant geography below a sky-facing upper edge.
+        expect(box[3]).toBeGreaterThan(150);
+        expect(box[2] - box[0]).toBeGreaterThan(100);
+        expect(groundFootprint(camera, THREE, () => null)).toBeNull();
+    });
+
+    it('returns no footprint when the finite frustum contains sky only', () => {
+        const camera = new THREE.PerspectiveCamera(40, 16 / 9, 1, 300);
+        camera.position.set(0, 0, 20);
+        camera.lookAt(0, 100, 500);
+        expect(groundFootprint(camera, THREE, (x, y) => ({ lng: x, lat: y }))).toBeNull();
     });
 
     it('three-mode applies the per-view ceiling on entry and on every model/photo switch', () => {

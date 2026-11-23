@@ -133,12 +133,44 @@
         return { lat: center.lat, lng: center.lng };
     }
 
-    // How far the 3D camera may zoom out, in true metres from its target, per view. Model view builds
-    // its scenery within 2.5 km of the centre, so past about 5 km there is nothing more to see (and
+    // The real ground extent of a perspective camera. LoadView.ofCamera deliberately uses a
+    // compact, target-centred map rectangle, which is appropriate for parcel and plan reads but
+    // clips geography near a tilted horizon. This intersects z = 0 with the finite camera frustum
+    // itself, including the far-plane edge. `xyToLatLng` converts the scene's Mercator XY to the
+    // application's WGS84 coordinates.
+    function groundFootprint(camera, three, xyToLatLng) {
+        if (!camera || !three?.Vector3 || typeof xyToLatLng !== 'function') return null;
+        try { camera.updateMatrixWorld?.(); camera.updateProjectionMatrix?.(); } catch (_) { return null; }
+        let west = Infinity, south = Infinity, east = -Infinity, north = -Infinity;
+        const corners = [-1, 1].flatMap(z => [-1, 1].flatMap(y => [-1, 1].map(x => new three.Vector3(x, y, z).unproject(camera))));
+        // z, y, x nesting makes each depth plane a four-corner ring. The four connecting edges
+        // complete the finite frustum. A plane cutting a convex frustum meets at least two edges.
+        const edges = [[0, 1], [1, 3], [3, 2], [2, 0], [4, 5], [5, 7], [7, 6], [6, 4],
+            [0, 4], [1, 5], [2, 6], [3, 7]];
+        const add = point => {
+            const latLng = xyToLatLng(point.x, point.y);
+            const lng = latLng?.lng, lat = latLng?.lat;
+            if (!Number.isFinite(lng) || !Number.isFinite(lat)) return;
+            west = Math.min(west, lng); south = Math.min(south, lat);
+            east = Math.max(east, lng); north = Math.max(north, lat);
+        };
+        for (const [from, to] of edges) {
+            const a = corners[from], b = corners[to];
+            const dz = b.z - a.z;
+            if (Math.abs(dz) < 1e-9) continue;
+            const t = -a.z / dz;
+            if (t < 0 || t > 1) continue;
+            add(a.clone().lerp(b, t));
+        }
+        return Number.isFinite(west) && east > west && north > south ? [west, south, east, north] : null;
+    }
+
+    // How far the 3D camera may zoom out, in true metres from its target, per view. Model-view
+    // regional water follows the visible ground, so the view can include an entire large lake (and
     // OrbitControls' default of Infinity zoomed into a black void with no obvious way back). Google's
     // photo tiles stream at any distance, so the photo view reaches the whole region. Fixed per view,
     // not derived from the 2D view at entry, which capped a city opened at zoom 18 at 1.5 km.
-    const MAX_ORBIT_DISTANCE_M = Object.freeze({ model: 5000, photo: 25000 });
+    const MAX_ORBIT_DISTANCE_M = Object.freeze({ model: 250000, photo: 25000 });
 
     // The same ceiling in scene units: scene XY is EPSG:3857, inflated by 1/cos(latitude).
     function maxOrbitDistance(view, originLat) {
@@ -156,6 +188,7 @@
         resolveSceneLoadGeometry,
         buildLoadRadiusPreview,
         configurePannableOrbitControls,
-        resolveExitMapCenter
+        resolveExitMapCenter,
+        groundFootprint
     };
 });

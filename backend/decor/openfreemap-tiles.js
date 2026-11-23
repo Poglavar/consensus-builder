@@ -1,6 +1,6 @@
 // OpenFreeMap's vector tiles (OpenStreetMap data in the OpenMapTiles schema, free, no key), read for
 // the 3D scene's scenery: which z14 tiles cover a scene, and one cached reader shared by every layer
-// read from them (water, green areas), so a tile is fetched and decoded once per scene.
+// read from them (water, green areas), so a tile is fetched once and named layers decode on demand.
 
 import { VectorTile } from '@mapbox/vector-tile';
 import { PbfReader } from 'pbf';
@@ -30,9 +30,23 @@ export function tilesForBbox([w, s, e, n], z = ZOOM) {
     return tiles;
 }
 
+// The WGS84 rectangle of one Web Mercator tile. Overview scenery reads the source at a coarser
+// native tile zoom, so the tile itself is also its stable, cacheable response boundary.
+export function tileBbox(z, x, y) {
+    const count = 2 ** z;
+    if (!Number.isInteger(z) || z < 0 || z > ZOOM || !Number.isInteger(x) || !Number.isInteger(y)
+        || x < 0 || y < 0 || x >= count || y >= count) return null;
+    const lon = column => column / count * 360 - 180;
+    const lat = row => Math.atan(Math.sinh(Math.PI * (1 - 2 * row / count))) * 180 / Math.PI;
+    return [lon(x), lat(y + 1), lon(x + 1), lat(y)];
+}
+
 export function createTileReader({ fetchImpl = fetch, now = Date.now } = {}) {
     let template = null;
-    const tiles = new Map(); // tile URL → { at, layers: { name: GeoJSON features } }
+    // tile URL → { at, parsed: Promise<VectorTile>, layers: Map<name, Promise<Feature[]>> }
+    // The vector tile itself is parsed once. Each named source layer is converted to GeoJSON only
+    // when a consumer requests it, so regional water does not decode labels, buildings or land use.
+    const tiles = new Map();
 
     async function fetchWithTimeout(url) {
         const controller = new AbortController();
@@ -55,38 +69,57 @@ export function createTileReader({ fetchImpl = fetch, now = Date.now } = {}) {
         return url;
     }
 
-    // One tile, every layer decoded to GeoJSON (each feature's `layer` added to its properties) and
-    // cached by tile address. In-flight reads are shared, so water and green asking at once fetch once.
-    async function decodedTile({ z, x, y }) {
+    async function cachedTile({ z, x, y }) {
         const url = (await tileTemplate()).replace('{z}', z).replace('{x}', x).replace('{y}', y);
         const cached = tiles.get(url);
-        if (cached && cached.at + TILE_TTL_MS > now()) return cached.layers;
-        const layers = (async () => {
+        if (cached && cached.at + TILE_TTL_MS > now()) return cached;
+        const parsed = (async () => {
             const buffer = new Uint8Array(await (await fetchWithTimeout(url)).arrayBuffer());
-            const tile = new VectorTile(new PbfReader(buffer));
-            const out = {};
-            for (const name of Object.keys(tile.layers)) {
-                const source = tile.layers[name];
-                out[name] = [];
-                for (let i = 0; i < source.length; i++) {
-                    const feature = source.feature(i).toGeoJSON(x, y, z);
-                    feature.properties = { ...feature.properties, layer: name };
-                    out[name].push(feature);
-                }
-            }
-            return out;
+            return new VectorTile(new PbfReader(buffer));
         })();
         if (tiles.size >= TILE_CACHE_MAX) tiles.delete(tiles.keys().next().value);
-        tiles.set(url, { at: now(), layers });
-        try { return await layers; } catch (error) { tiles.delete(url); throw error; }
+        const entry = { at: now(), parsed, layers: new Map() };
+        tiles.set(url, entry);
+        try { await parsed; return entry; } catch (error) { tiles.delete(url); throw error; }
+    }
+
+    function decodedLayer(entry, { z, x, y }, name) {
+        const cached = entry.layers.get(name);
+        if (cached) return cached;
+        const decoded = entry.parsed.then(tile => {
+            const source = tile.layers[name];
+            if (!source) return [];
+            const features = [];
+            for (let i = 0; i < source.length; i++) {
+                const feature = source.feature(i).toGeoJSON(x, y, z);
+                feature.properties = { ...feature.properties, layer: name };
+                features.push(feature);
+            }
+            return features;
+        });
+        entry.layers.set(name, decoded);
+        return decoded;
+    }
+
+    async function tileFeatures(tile, layerNames) {
+        const entry = await cachedTile(tile);
+        const layers = await Promise.all(layerNames.map(name => decodedLayer(entry, tile, name)));
+        return layers.flat();
     }
 
     // The named layers' features of every tile covering `bbox`, and how many tiles that took.
-    async function features(bbox, layerNames) {
-        const covering = tilesForBbox(bbox);
-        const decoded = await Promise.all(covering.map(decodedTile));
-        return { tiles: covering.length, features: decoded.flatMap(layers => layerNames.flatMap(name => layers[name] || [])) };
+    async function features(bbox, layerNames, { zoom = ZOOM } = {}) {
+        const covering = tilesForBbox(bbox, zoom);
+        const decoded = await Promise.all(covering.map(tile => tileFeatures(tile, layerNames)));
+        return { tiles: covering.length, features: decoded.flat() };
     }
 
-    return { features };
+    // A known tile must be read once. Deriving its covering set from its geographic bbox can pick
+    // four neighbours when a floating-point boundary falls on the wrong side of an integer tile edge.
+    async function tile(z, x, y, layerNames) {
+        if (!tileBbox(z, x, y)) return null;
+        return { tiles: 1, features: await tileFeatures({ z, x, y }, layerNames) };
+    }
+
+    return { features, tile };
 }
