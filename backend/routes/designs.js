@@ -440,9 +440,9 @@ export function setupDesignsRoute(app, deps) {
         }
     });
 
-    // ?city=&bbox=minLng,minLat,maxLng,maxLat&parcel=id,id&goal=g,g&q=&order=newest|oldest&limit=&offset=&facets=goal
+    // ?city=&bbox=minLng,minLat,maxLng,maxLat&parcel=id,id&goal=g,g&q=&order=newest|oldest|title&limit=&offset=&facets=goal
     // → { designs, count, total, hasMore, nextOffset, goals? }, newest first unless order=oldest. `q`
-    // matches the title or the author, case-insensitively (the map search's design group). `parcel`
+    // matches the title, author or CID, case-insensitively. `parcel`
     // keeps the designs whose binding takes one of those parcels (a parcel's own list, however large
     // the parcel), `goal` those of these design types. `count` is the page's length and `total` every
     // match; facets=goal adds `goals`, the matches per design type with every filter but `goal`.
@@ -461,8 +461,8 @@ export function setupDesignsRoute(app, deps) {
         if (parcels && parcels.error) return res.status(400).json({ error: `parcel ${parcels.error}`, code: 'bad-request' });
         const goals = rawGoal === undefined ? null : parseIdList(rawGoal, MAX_GOAL_FILTER, MAX_GOAL_LENGTH);
         if (goals && goals.error) return res.status(400).json({ error: `goal ${goals.error}`, code: 'bad-request' });
-        if (rawOrder !== undefined && rawOrder !== 'newest' && rawOrder !== 'oldest') {
-            return res.status(400).json({ error: 'order must be newest or oldest.', code: 'bad-request' });
+        if (rawOrder !== undefined && !['newest', 'oldest', 'title'].includes(rawOrder)) {
+            return res.status(400).json({ error: 'order must be newest, oldest or title.', code: 'bad-request' });
         }
         if (rawFacets !== undefined && rawFacets !== 'goal') return res.status(400).json({ error: 'facets must be goal.', code: 'bad-request' });
         if (rawOffset !== undefined && (typeof rawOffset !== 'string' || !/^(0|[1-9]\d*)$/.test(rawOffset) || Number(rawOffset) > MAX_LIST_OFFSET)) {
@@ -479,7 +479,7 @@ export function setupDesignsRoute(app, deps) {
         const query = typeof rawQuery === 'string' ? rawQuery.trim() : '';
         if (query) {
             params.push(`%${query.replace(/[\\%_]/g, match => `\\${match}`)}%`);
-            clauses.push(`(title ILIKE $${params.length} OR author ILIKE $${params.length})`);
+            clauses.push(`(title ILIKE $${params.length} OR author ILIKE $${params.length} OR cid ILIKE $${params.length})`);
         }
         if (parsed.bbox) {
             params.push(...parsed.bbox);
@@ -498,7 +498,7 @@ export function setupDesignsRoute(app, deps) {
             clauses.push(`goal = ANY($${params.length}::text[])`);
         }
         const where = list => (list.length ? `WHERE ${list.join(' AND ')}` : '');
-        const direction = rawOrder === 'oldest' ? 'ASC' : 'DESC';
+        const ordering = rawOrder === 'title' ? 'lower(title), cid' : `created_at ${rawOrder === 'oldest' ? 'ASC' : 'DESC'}, cid`;
         const limit = parseListLimit(rawLimit);
         params.push(limit, offset);
         try {
@@ -506,7 +506,7 @@ export function setupDesignsRoute(app, deps) {
                 pool.query(`
                 SELECT ${SUMMARY_COLUMNS}, COUNT(*) OVER () AS total_count FROM ${DESIGN_TABLE}
                 ${where(clauses)}
-                ORDER BY created_at ${direction}, cid
+                ORDER BY ${ordering}
                 LIMIT $${params.length - 1} OFFSET $${params.length}`, params),
                 rawFacets === 'goal'
                     ? pool.query(`SELECT goal, COUNT(*) AS designs FROM ${DESIGN_TABLE} ${where(facetClauses)} GROUP BY goal`, facetParams)

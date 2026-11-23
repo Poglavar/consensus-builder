@@ -432,8 +432,31 @@
         // A record applied on the map wins over a parked copy of the same design.
         function localCopyOf(cid, { store = storage() } = {}) {
             if (!cidApi().isCid(cid)) return null;
-            const copies = store.getAllProposals().filter(record => record && contentCid(record) === cid);
-            return copies.find(record => typeof win.isProposalCurrentlyApplied === 'function' && win.isProposalCurrentlyApplied(record)) || copies[0] || null;
+            const records = store.peekAllProposals ? store.peekAllProposals() : store.getAllProposals();
+            const copies = records.filter(record => record && contentCid(record) === cid);
+            const existing = copies.find(record => win.isProposalCurrentlyApplied?.(record)) || copies[0];
+            // Obtain the writable copy only for the selected record inside a transaction.
+            return existing ? (store.getProposal?.(existing.proposalId) || existing) : null;
+        }
+
+        // Views share one join of committed records. A transaction draft has its own membership
+        // and must only be inspected through that draft's reader.
+        let localIndex;
+        function localDesignIndex() {
+            const store = storage(), base = currentApiBase();
+            if (localIndex && localIndex.store === store && Number.isFinite(store.revision)
+                && localIndex.revision === store.revision && localIndex.base === base) return localIndex;
+            const records = store.peekAllProposals ? store.peekAllProposals() : store.getAllProposals();
+            const byCid = new Map(), cids = new Map(), published = new Map();
+            for (const record of records) {
+                const cid = contentCid(record);
+                if (!cid) continue;
+                cids.set(record, cid);
+                const previous = byCid.get(cid);
+                if (!previous || (!win.isProposalCurrentlyApplied?.(previous) && win.isProposalCurrentlyApplied?.(record))) byCid.set(cid, record);
+                if (record.published?.cid === cid && apiBaseOf(record.published.apiBase) === base) published.set(record, cid);
+            }
+            return localIndex = { store, revision: store.revision, base, records, byCid, cids, published };
         }
 
         /**
@@ -586,17 +609,21 @@
                 query.set('bbox', box.join(','));
                 return request('GET', `/designs?${query}`);
             };
-            const inView = rows => ({ ok: true, status: 200, body: { designs: rows.filter(row => designMeetsView(row, view)) } });
-            const hit = cache.find('designs', view);
+            const inView = rows => {
+                const designs = rows.filter(row => designMeetsView(row, view));
+                return { ok: true, status: 200, body: { designs, total: designs.length, hasMore: false, nextOffset: null } };
+            };
+            const scope = backendBase();
+            const hit = cache.find(scope, view);
             if (hit) return inView(hit.value);
             const snapped = win.PlanningScene.snapBbox(view);
             try {
-                const entry = await cache.load('designs', snapped, async () => {
+                const entry = await cache.load(scope, snapped, async () => {
                     const response = await ask(snapped);
                     if (!response.ok || !response.body || !Array.isArray(response.body.designs)) {
                         throw Object.assign(new Error('Design index request failed'), { response });
                     }
-                    if (response.body.designs.length >= listLimit()) {
+                    if (response.body.hasMore ?? (response.body.designs.length >= listLimit())) {
                         throw Object.assign(new Error('Design area answer was cut short'), { cutShort: true });
                     }
                     return response.body.designs;
@@ -609,10 +636,30 @@
             }
         }
 
-        // GET /designs for the list's area: the city, or the view in explore. Newest first, as many as
-        // the list shows (SERVER_PROPOSAL_SUMMARY_LIMIT); the count is the rows that came back (the
-        // index has no count route).
-        async function fetchServerProposalSummaries(cityCode) {
+        const indexPages = new Map();
+        function listPage({ city, area, offset = 0, search = '', sort = 'newest', force = false }) {
+            const params = new URLSearchParams({ limit: String(listLimit()) });
+            if (area?.explore && area.bbox) params.set('bbox', area.bbox.join(','));
+            else if (city) params.set('city', city);
+            if (offset) params.set('offset', String(offset));
+            if (search.trim()) params.set('q', search.trim());
+            if (sort !== 'newest') params.set('order', sort);
+            const key = backendBase() + '?' + params;
+            const hit = indexPages.get(key);
+            if (hit && (!hit.at || (!force && Date.now() - hit.at < DESIGN_AREA_MAX_AGE_MS))) return hit.promise;
+            if (force && area?.explore) designAreas = null;
+            const read = area?.explore && area.bbox && !offset && !search && sort === 'newest'
+                ? exploreDesigns(area.bbox, params) : request('GET', '/designs?' + params, undefined, { deadline: true });
+            const entry = { at: 0, promise: read.then(response => {
+                if (!response.ok || !Array.isArray(response.body?.designs)) throw new Error(response.body?.error || 'HTTP ' + response.status);
+                entry.at = Date.now();
+                return response.body;
+            }).catch(error => { if (indexPages.get(key) === entry) indexPages.delete(key); throw error; }) };
+            indexPages.set(key, entry);
+            if (indexPages.size > 64) indexPages.delete(indexPages.keys().next().value);
+            return entry.promise;
+        }
+        async function fetchServerProposalSummaries(cityCode, { force = false } = {}) {
             const state = cache();
             const { area, city, key } = listArea(cityCode);
             state.loading = true;
@@ -621,18 +668,11 @@
             state.countAreaKey = key;
             const requestId = state.summaryRequestId = (state.summaryRequestId || 0) + 1;
             if (typeof win.renderProposalListModal === 'function') win.renderProposalListModal();
-            const params = new URLSearchParams({ limit: String(listLimit()) });
-            if (city) params.set('city', city);
             try {
-                const response = area && area.explore && area.bbox
-                    ? await exploreDesigns(area.bbox, params)
-                    : await request('GET', `/designs?${params}`);
-                if (!response.ok || !response.body || !Array.isArray(response.body.designs)) {
-                    throw new Error((response.body && response.body.error) || `HTTP ${response.status}`);
-                }
+                const page = await listPage({ city, area, force });
                 if (state.summaryRequestId === requestId) {
-                    state.proposals = response.body.designs.map(designSummary).filter(Boolean);
-                    state.count = state.proposals.length;
+                    state.proposals = page.designs.map(designSummary).filter(Boolean);
+                    state.count = Number.isFinite(page.total) ? page.total : state.proposals.length;
                     state.countRefreshedAt = Date.now();
                 }
             } catch (error) {
@@ -659,7 +699,7 @@
             const changed = state.lastCity && state.lastCity !== key;
             if (changed) resetServerProposalCache(key);
             if (state.loading) return undefined;
-            if (force || changed || !(state.lastFetchedAt > 0)) return fetchServerProposalSummaries(city);
+            if (force || changed || !(state.lastFetchedAt > 0)) return fetchServerProposalSummaries(city, { force });
             return undefined;
         }
 
@@ -689,7 +729,7 @@
         return {
             api: {
                 publishDesign: record => observe('publish', 'design-publish-failed', () => publishDesign(record)),
-                addressObject, markPublished, fetchDesign, fetchDesigns, importDesign, importDraft, localCopyOf,
+                addressObject, markPublished, fetchDesign, fetchDesigns, importDesign, importDraft, localCopyOf, localDesignIndex, listPage,
                 designLink, copyLink, prepareMapPreview, parcelSourceIdOf, refusalMessage, clearPublicationProblem,
                 // A local record's exact CID at the current index, or an index summary's own.
                 publishedCid: record => (isObject(record) && record.indexed === true && cidApi().isCid(record.cid)

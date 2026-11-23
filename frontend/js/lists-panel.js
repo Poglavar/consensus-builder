@@ -41,10 +41,10 @@
     // One page of the public index. Explore has no city: its designs are those whose site meets the
     // visible area (area = getProposalCountAreaContext()), as the index matches a bbox.
     function indexQuery(kind, { city, area = null, offset = 0 }) {
-        const params = new URLSearchParams({ limit: kind === 'designs' ? '1000' : '50' });
+        const params = new URLSearchParams({ limit: '50' });
         if (kind === 'designs' && area?.explore && area.bbox) params.set('bbox', area.bbox.join(','));
         else params.set('city', city);
-        if (kind !== 'designs') params.set('offset', String(offset));
+        if (offset || kind !== 'designs') params.set('offset', String(offset));
         return params;
     }
     // A row's trash: Delete draft for an unpublished object, which lives only in this browser;
@@ -68,6 +68,10 @@
             // read once; known: those already read, the only ones a hover shows
             hovering: null, records: new Map(), known: new Map(), openCritics: new Set() };
         let ready = false;
+        const pageSize = 50;
+        let shownLimit = pageSize, previewSequence = 0, loadingPreview = null, searchTimer;
+        const localLists = new Map();
+        const cardCaches = new WeakMap();
         const t = (key, params) => win.i18n.t(key, params || {});
         const offerDirection = direction => (direction === 'buy' ? t('propertyOffer.directions.buy') : t('propertyOffer.directions.sell'));
         const node = (tag, cls, text) => {
@@ -88,7 +92,8 @@
         }
         const city = () => win.normalizeCityCodeForApi(win.resolveCurrentCityCode());
         const area = () => state.tab === 'designs' ? win.getProposalCountAreaContext() : null;
-        const cacheKey = () => { const view = area(); return `${win.DesignSync.apiBase()}:${view?.explore ? view.key : city()}:${state.tab}`; };
+        const areaKey = () => { const view = area(); return `${win.DesignSync.apiBase()}:${view?.explore ? view.key : city()}:${state.tab}`; };
+        const cacheKey = () => state.tab === 'designs' ? JSON.stringify([areaKey(), state.search.trim(), state.sort]) : areaKey();
         const host = () => doc.getElementById({ designs: 'proposal-list-host', plans: 'plan-list-host', agreements: 'agreement-list-host' }[state.tab]);
         const opened = () => win.MapShell?.isOpen('proposals-sheet');
         // Applied to this browser's map, as its "Applied" badge says (proposals/display-state.js).
@@ -111,59 +116,85 @@
             }
             renderRows();
         }
-        function localRows(kind) {
-            if (kind === 'designs') return win.proposalStorage.getAllProposals().map(record => {
-                const cid = win.DesignSync.publishedCid(record);
+        function localRows(kind, index = kind === 'designs' && win.DesignSync.localDesignIndex()) {
+            if (kind === 'designs') return index.records.map(record => {
+                const cid = index.published.get(record);
                 return { key: record.proposalId, title: record.title || t('planDialog.untitledDesign'), author: record.author,
                     createdAt: record.createdAt, publishedAt: cid ? record.published?.publishedAt : null,
                     published: !!cid, cid, record, local: record };
             });
-            if (kind === 'plans') return win.NamedPlans.list({ storedOnly: true })
+            const key = JSON.stringify([kind, city(), win.i18n.getLocale?.()]);
+            if (localLists.has(key)) return localLists.get(key);
+            if (kind === 'plans') {
+                const plans = win.NamedPlans.list({ storedOnly: true })
                 .filter(record => !record.content.view.city || win.normalizeCityCodeForApi(record.content.view.city) === city())
                 .map(record => ({ key: record.cid, title: record.content.title, publishedAt: record.publishedAt, createdAt: record.createdAt, published: record.published === true || !Array.isArray(record.designs), cid: record.cid, record, local: record }));
+                localLists.set(key, plans);
+                return plans;
+            }
             const offers = (win.PropertyOfferStore?.list() || []).map(record => ({ key: record.id, propertyOffer: true,
                 title: record.content.title || offerDirection(record.content.direction), author: record.content.proposer, createdAt: record.content.createdAt,
                 publishedAt: record.published?.publishedAt, published: !!record.published, cid: record.published?.cid || null,
                 onChain: !!record.onchain, record, local: record }));
-            return [...offers, ...win.AgreementStore.list().map(record => ({ key: record.id, title: record.title || t('agreement.panel.untitled'),
+            const agreements = [...offers, ...win.AgreementStore.list().map(record => ({ key: record.id, title: record.title || t('agreement.panel.untitled'),
                 author: record.author, createdAt: record.createdAt, publishedAt: record.published?.publishedAt,
                 published: !!record.published, cid: record.published?.cid || null,
                 onChain: !!record.onchain, record, local: record }))];
+            localLists.set(key, agreements);
+            return agreements;
         }
-        function remoteRows(rows, kind) {
-            const plans = kind === 'plans' ? new Map(localRows('plans').map(row => [row.key, row.local])) : null;
+        function remoteRows(rows, kind, local, index) {
+            const copies = kind === 'designs' ? index.byCid : new Map(local.map(row => [row.cid, row.local]));
             return rows.map(record => ({ key: record.cid, propertyOffer: record.content?.schema === 'property-offer/v1', cid: record.cid || null, title: record.title || record.content?.title || t(kind === 'designs' ? 'planDialog.untitledDesign' : 'agreement.panel.untitled'),
                 // The design, agreement and offer indexes call their first publication time createdAt.
                 author: record.author, publishedAt: record.publishedAt ?? record.createdAt,
                 createdAt: record.content?.createdAt ?? record.content?.authoredAt, published: true, onChain: !!record.onchain, record,
-                local: kind === 'designs' ? win.DesignSync.localCopyOf(record.cid)
-                    : kind === 'plans' ? plans.get(record.cid) : record.content?.schema === 'property-offer/v1'
-                        ? win.PropertyOfferSync.localCopyOf(record.cid) : win.AgreementSync.localCopyOf(record.cid) }));
+                local: copies.get(record.cid) }));
         }
-        async function load(more = false) {
-            const key = cacheKey(), kind = state.tab;
-            const previous = state.remote.get(key);
-            if (previous?.loading) return;
-            const page = { rows: more ? previous.rows : [], next: more ? previous.next : 0, loading: true, error: null };
-            state.remote.set(key, page); renderRows();
-            try {
-                const params = indexQuery(kind, { city: city(), area: area(), offset: page.next });
-                const response = await win.fetch(`${win.DesignSync.apiBase()}/${kind}?${params}`, { cache: 'no-store', signal: AbortSignal.timeout(30000) });
-                const result = await response.json();
-                if (!response.ok || !Array.isArray(result[kind])) throw new Error(result.error || `HTTP ${response.status}`);
-                page.rows.push(...result[kind]);
-                let nextOffset = result.hasMore ? result.nextOffset : null;
-                if (kind === 'agreements') {
-                    const offersResponse = await win.fetch(`${win.DesignSync.apiBase()}/property-offers?${params}`, { cache: 'no-store', signal: AbortSignal.timeout(30000) });
-                    const offers = await offersResponse.json();
-                    if (!offersResponse.ok || !Array.isArray(offers.propertyOffers)) throw new Error(offers.error || `HTTP ${offersResponse.status}`);
-                    page.rows.push(...offers.propertyOffers);
-                    if (offers.hasMore) nextOffset = Math.max(nextOffset || 0, offers.nextOffset);
-                }
-                page.next = nextOffset;
-                page.limited = kind === 'designs' && result[kind].length === 1000;
-            } catch (error) { page.error = error.message; }
-            finally { page.loading = false; if (opened()) renderRows(); }
+        function load({ more = false, force = false } = {}) {
+            const key = cacheKey(), kind = state.tab, previous = state.remote.get(key);
+            if (previous?.pending) return previous.pending;
+            if (previous && !more && !force) return Promise.resolve();
+            const location = { city: city(), area: area(), search: state.search.trim(), sort: state.sort };
+            const base = win.DesignSync.apiBase(), scope = areaKey();
+            const feeds = kind === 'agreements' ? [['agreements', 'agreements'], ['property-offers', 'propertyOffers']] : [[kind, kind]];
+            const page = more && previous ? previous : { scope, feeds: feeds.map(([path, field]) => ({ path, field, rows: [], next: 0 })) };
+            state.remote.set(key, page);
+            if (state.remote.size > 48) state.remote.delete(state.remote.keys().next().value);
+            const redraw = () => { if (opened() && cacheKey() === key && state.remote.get(key) === page) renderRows(); };
+            page.loading = true;
+            page.pending = Promise.all(page.feeds.filter(feed => feed.next !== null).map(async feed => {
+                feed.error = null;
+                try {
+                    const offset = feed.next;
+                    let result;
+                    if (kind === 'designs') result = await win.DesignSync.listPage({ ...location, offset, force });
+                    else {
+                        const response = await win.fetch(`${base}/${feed.path}?${indexQuery(kind, { ...location, offset })}`, { cache: 'no-store', signal: AbortSignal.timeout(30000) });
+                        result = await response.json();
+                        if (!response.ok || !Array.isArray(result[feed.field])) throw new Error(result.error || `HTTP ${response.status}`);
+                    }
+                    feed.rows.push(...result[feed.field]);
+                    feed.next = result.hasMore && Number.isInteger(result.nextOffset) && result.nextOffset > offset ? result.nextOffset : null;
+                } catch (error) { feed.error = error.message; }
+                redraw();
+            })).finally(() => { page.loading = false; page.pending = null; redraw(); });
+            redraw();
+            return page.pending;
+        }
+        function queryChanged() {
+            clearTimeout(searchTimer);
+            shownLimit = pageSize;
+            renderRows();
+            const key = cacheKey();
+            searchTimer = setTimeout(async () => {
+                if (!opened() || key !== cacheKey()) return;
+                await load();
+                // These smaller indexes offer paging without a text query. Finish a search or
+                // title sort across all their pages, stopping if the reader leaves the query.
+                while (opened() && key === cacheKey() && state.tab !== 'designs' && (state.search.trim() || state.sort === 'title')
+                    && state.remote.get(key)?.feeds.some(feed => feed.next !== null && !feed.error)) await load({ more: true });
+            }, 120);
         }
         async function designOf(row) {
             return row.local || win.importServerProposal(row.key);
@@ -210,9 +241,13 @@
         // A clicked card's designs, read once until the lists change.
         function cachedRecords(row, kind) {
             const key = `${kind}:${row.key}`;
-            if (!state.records.has(key)) state.records.set(key, designRecords(row, kind)
-                .then(records => { state.known.set(key, records); return records; })
-                .catch(error => { state.records.delete(key); throw error; }));
+            if (!state.records.has(key)) {
+                const pending = designRecords(row, kind).then(records => {
+                    if (state.records.get(key) === pending) state.known.set(key, records);
+                    return records;
+                }).catch(error => { if (state.records.get(key) === pending) state.records.delete(key); throw error; });
+                state.records.set(key, pending);
+            }
             return state.records.get(key);
         }
         // What a hover may show: a stored design, or a card already clicked. A hover never fetches or
@@ -234,23 +269,39 @@
             if (shown) win.previewRecordsOnMap(shown, `list:${state.active}`, { reveal: false });
             else win.clearProposalPreview();
         }
-        async function focus(row, kind) {
+        async function focus(row, kind, item) {
             if (row.propertyOffer) return inspect(row, kind);
-            state.active = `${kind}:${row.key}`; state.previewing = { row, kind }; renderRows();
-            if (!win.previewRecordsOnMap(await cachedRecords(row, kind), `list:${state.active}`)) {
-                win.showEphemeralMessage(t('lists.noPlace'), 4000, 'info');
+            const sequence = ++previewSequence, key = `${kind}:${row.key}`, scope = areaKey();
+            state.active = key; state.previewing = { row, kind };
+            loadingPreview = { sequence, title: row.title };
+            const status = doc.getElementById('lists-status');
+            status.textContent = [t('lists.loading'), row.title].join(' · ');
+            status.hidden = false;
+            for (const card of host().querySelectorAll('[data-list-id]')) card.classList.toggle('is-selected', card === item);
+            const current = () => sequence === previewSequence && opened() && scope === areaKey();
+            try {
+                const records = await win.BusyControl.track(item, () => cachedRecords(row, kind));
+                if (current() && !win.previewRecordsOnMap(records, `list:${key}`)) win.showEphemeralMessage(t('lists.noPlace'), 4000, 'info');
+            } catch (error) { if (current()) { state.previewing = null; throw error; } }
+            finally {
+                if (loadingPreview?.sequence === sequence) loadingPreview = null;
+                if (current()) renderRows();
             }
         }
         // Open selects the row's object as a click on it would, closing the list.
         async function inspect(row, kind) {
+            const sequence = ++previewSequence, scope = areaKey();
+            const current = () => sequence === previewSequence && scope === areaKey();
             state.active = `${kind}:${row.key}`; state.previewing = null;
             win.clearProposalPreview();
             if (kind === 'designs') {
                 const record = await designOf(row);
+                if (!current()) return;
                 return win.openListedProposal(record, record.proposalId, 'details');
             }
             if (kind === 'plans') {
                 const plan = await win.PlanWorkspace.resolve(await planOf(row));
+                if (!current()) return;
                 win.MapShell.closeSheets();
                 return win.ClickStack.showPlan(plan, { designs: win.PlanComposition.localRecords(plan, { apiBase: win.DesignSync.apiBase() }), draft: !row.published });
             }
@@ -406,32 +457,49 @@
         function renderRows() {
             if (!ready || !opened()) return;
             const kind = state.tab, page = state.remote.get(cacheKey());
-            const rows = mergeRows(localRows(kind), remoteRows(page?.rows || [], kind))
+            const index = kind === 'designs' && win.DesignSync.localDesignIndex();
+            const local = localRows(kind, index);
+            // Already-read cards can be filtered immediately while the full search is in flight.
+            const fallback = kind === 'designs' && state.remote.get(JSON.stringify([areaKey(), '', 'newest']));
+            const displayed = page && (!page.loading || page.feeds.some(feed => feed.rows.length)) ? page : fallback;
+            const remote = [...new Map((displayed?.feeds || []).flatMap(feed => feed.rows).map(record => [record.cid, record])).values()];
+            const rows = mergeRows(local, remoteRows(remote, kind, local, index))
                 .map(row => ({ ...row, applied: kind === 'designs' && appliedHere(row.local) }));
             const visible = filterRows(rows, { ...state, onMap: kind === 'designs' && state.onMap }), list = host();
-            for (const picker of list.querySelectorAll('.lists-critics')) {
-                const key = picker.closest('[data-list-id]').dataset.listId;
-                if (picker.open) state.openCritics.add(key);
-                else state.openCritics.delete(key);
-            }
-            const focusedCritic = list.contains(doc.activeElement) ? doc.activeElement.dataset.criticControl : null;
-            const focusedRow = focusedCritic && doc.activeElement.closest('[data-list-id]')?.dataset.listId;
-            list.replaceChildren();
+            let cards = cardCaches.get(list);
+            if (!cards) { cards = new Map(); cardCaches.set(list, cards); }
+            const focused = list.contains(doc.activeElement) ? doc.activeElement : null;
+            const focusedCard = focused?.closest('[data-list-id]');
+            const selector = 'button, input, summary, select, a';
+            const focusIndex = focusedCard ? Array.from(focusedCard.querySelectorAll(selector)).indexOf(focused) : -1;
+            const desired = [];
             const onMap = doc.querySelector('[data-lists-on-map]');
             if (onMap) labelOnMap(onMap, rows.filter(row => row.applied).length);
             const unapplyAll = doc.querySelector('[data-lists-unapply-all]');
             if (unapplyAll) labelUnapplyAll(unapplyAll, rows.filter(row => row.applied).length);
             const status = doc.getElementById('lists-status');
-            status.textContent = page?.loading ? t('lists.loading') : page?.error ? page.error
-                : visible.length ? t('lists.count', { count: visible.length }) : '';
+            const errors = (page?.feeds || []).map(feed => feed.error).filter(Boolean).join(' · ');
+            const previewTitle = loadingPreview?.sequence === previewSequence ? loadingPreview.title : '';
+            status.textContent = [page?.loading || previewTitle ? t('lists.loading') : '', previewTitle, errors,
+                visible.length ? t('lists.count', { count: Math.min(visible.length, shownLimit) }) : ''].filter(Boolean).join(' · ');
             status.hidden = !status.textContent;
             list.setAttribute('aria-busy', String(!!page?.loading));
             const recordIds = visible.map(row => String(row.cid || row.key || '')).filter(Boolean);
-            for (const row of visible) {
-                const item = node('article', `lists-item${state.active === `${kind}:${row.key}` ? ' is-selected' : ''}`);
-                item.dataset.listId = row.key;
+            for (const row of visible.slice(0, shownLimit)) {
                 const recordId = String(row.cid || row.key || '');
                 const recordLabel = win.RecordLabel.label(row.title, recordId, recordIds);
+                const signature = JSON.stringify([recordLabel, row.title, row.applied, row.published, row.onChain,
+                    timestampOf(row), state.selecting, state.purpose, win.i18n.getLocale?.(), row.local && win.proposalStorage.revision]);
+                const cached = cards.get(row.key);
+                if (cached && cached.signature === signature && cached.record === row.record && cached.local === row.local) {
+                    cached.item.classList.toggle('is-selected', state.active === `${kind}:${row.key}`);
+                    const check = cached.item.querySelector('input[type="checkbox"]');
+                    if (check && !check.disabled) check.checked = state.selected.has(row.key);
+                    desired.push(cached.item);
+                    continue;
+                }
+                const item = node('article', `lists-item${state.active === `${kind}:${row.key}` ? ' is-selected' : ''}`);
+                item.dataset.listId = row.key;
                 const goal = row.local?.goal || row.record.goal || row.record.content?.goal;
                 const appearance = kind === 'plans' ? ['cb-icon-plan', 'plan']
                     : kind === 'agreements' ? ['cb-icon-agreement', 'agreement']
@@ -463,7 +531,7 @@
                 const title = node('h3', 'lists-item__title', row.title);
                 // The whole card shows its object on the map (also by keyboard); its controls keep their actions.
                 item.tabIndex = 0; item.title = t('modal.roadWidth.polygonError.showOnMap');
-                const show = () => focus(row, kind).catch(error => win.showStyledAlert(error.message));
+                const show = () => focus(row, kind, item).catch(error => win.showStyledAlert(error.message));
                 item.addEventListener('click', event => {
                     if (!event.target.closest('button, a, input, label, select, summary, .lists-critics')) show();
                 });
@@ -514,7 +582,7 @@
                     return win.PlanFileUI.downloadAgreement(resolved.agreement, resolved.designs);
                 }, '', 'download'));
                 if (kind === 'plans') {
-                    actions.append(analysis.stats(win, doc, () => planOf(row)));
+                    actions.append(analysis.stats(win, doc, () => planOf(row), row.record));
                     actions.append(button(t('planDialog.createAgreement'), async () => {
                         const plan = await win.PlanWorkspace.resolve(await planOf(row));
                         win.MapShell.closeSheets(); return win.AgreementDialog.open({ plan });
@@ -532,14 +600,35 @@
                     trash.setAttribute('aria-label', label); trash.title = label; actions.append(trash);
                 }
                 item.append(actions);
-                if (kind === 'plans') item.append(analysis.critics(win, doc, () => planOf(row),
-                    { row: row.key, open: state.openCritics.has(row.key) }));
-                list.append(item);
-                if (focusedRow === row.key) item.querySelector(`[data-critic-control="${focusedCritic}"]`)?.focus({ preventScroll: true });
+                if (kind === 'plans') {
+                    const picker = analysis.critics(win, doc, () => planOf(row), { row: row.key, open: state.openCritics.has(row.key) });
+                    picker.addEventListener('toggle', () => {
+                        if (picker.isConnected) { if (picker.open) state.openCritics.add(row.key); else state.openCritics.delete(row.key); }
+                    });
+                    item.append(picker);
+                }
+                cards.set(row.key, { item, record: row.record, local: row.local, signature });
+                desired.push(item);
             }
-            if (!visible.length && !page?.loading && !page?.error) list.append(node('p', 'sheet-note', t(rows.length ? 'lists.noMatch' : 'lists.empty')));
-            if (page?.next != null && !page.loading) list.append(button(t('lists.loadMore'), () => load(true)));
-            if (page?.limited) list.append(node('p', 'sheet-note', t('lists.limited')));
+            if (!visible.length && !page?.loading && !errors) desired.push(node('p', 'sheet-note', t(rows.length ? 'lists.noMatch' : 'lists.empty')));
+            if (visible.length > shownLimit || page?.feeds.some(feed => feed.next !== null) && !page.loading) {
+                const more = button(t('lists.loadMore'), async () => {
+                    shownLimit += pageSize;
+                    if (page?.feeds.some(feed => feed.next !== null)) await load({ more: true });
+                    else renderRows();
+                });
+                more.dataset.listsMore = ''; desired.push(more);
+            }
+            const keep = new Set(desired);
+            for (const child of Array.from(list.children)) if (!keep.has(child)) child.remove();
+            desired.forEach((el, position) => { if (list.children[position] !== el) list.insertBefore(el, list.children[position] || null); });
+            for (const [key, card] of cards) if (!keep.has(card.item)) cards.delete(key);
+            if (focused && doc.activeElement !== focused) {
+                const card = cards.get(focusedCard?.dataset.listId)?.item;
+                const next = card ? card.querySelectorAll(selector)[focusIndex] || card
+                    : focused.dataset.listsMore !== undefined ? list.querySelector('[data-lists-more]') || desired.find(el => el.dataset.listId) : null;
+                next?.focus({ preventScroll: true });
+            }
         }
         function controls() {
             const box = doc.getElementById('lists-controls'); box.replaceChildren();
@@ -551,7 +640,7 @@
             const searchRow = node('div', 'lists-search-row');
             const search = node('input'); search.type = 'search'; search.value = state.search;
             search.placeholder = t('lists.search'); search.setAttribute('aria-label', t('lists.search'));
-            search.addEventListener('input', () => { state.search = search.value; renderRows(); });
+            search.addEventListener('input', () => { state.search = search.value; queryChanged(); });
             const filters = node('div', 'lists-filter-panel'); filters.id = 'lists-filter-panel'; filters.hidden = !state.filtersOpen;
             const toggle = node('button', 'btn btn-sm lists-filter-toggle', t('modal.roadWidth.proposalList.filters.toggle')); toggle.type = 'button';
             toggle.prepend(icon('sliders')); toggle.setAttribute('aria-controls', filters.id); toggle.setAttribute('aria-expanded', String(state.filtersOpen));
@@ -582,16 +671,16 @@
                 const wrap = node('label', '', t(label)), select = node('select');
                 for (const [value, text] of options) { const option = node('option', '', t(text)); option.value = value; select.append(option); }
                 select.dataset.listFilter = key;
-                select.value = state[key]; select.addEventListener('change', () => { state[key] = select.value; renderRows(); });
+                select.value = state[key]; select.addEventListener('change', () => { state[key] = select.value; queryChanged(); });
                 wrap.append(select); fields.append(wrap);
             }
             filters.append(fields);
             const actions = node('div', 'cb-actions');
             actions.append(button(t('modal.roadWidth.proposalList.filters.reset'), () => {
-                state.search = ''; state.publication = 'all'; state.sort = 'newest'; state.onMap = false; controls(); renderRows();
+                state.search = ''; state.publication = 'all'; state.sort = 'newest'; state.onMap = false; controls(); queryChanged();
             }, 'btn-quiet'));
             filters.append(actions); box.append(filters);
-            box.append(button(t('agreement.minted.refresh'), () => load(), 'lists-refresh', 'arrows-rotate'));
+            box.append(button(t('agreement.minted.refresh'), () => load({ force: true }), 'lists-refresh', 'arrows-rotate'));
         }
         function init() {
             if (ready) return;
@@ -611,6 +700,7 @@
             // as Open does; a sheet closed for anything else (a dialog, another selection) does not.
             doc.addEventListener('mapshell:sheetclosed', event => {
                 if (event.detail?.id !== 'proposals-sheet') return;
+                ++previewSequence;
                 const pending = state.previewing; state.previewing = null;
                 if (state.hovering && !pending) win.clearProposalPreview();
                 state.hovering = null;
@@ -627,7 +717,14 @@
         }
         async function select(tab) {
             await win.i18n.translationsReady;
-            init(); state.tab = tab === 'browse' ? 'designs' : tab;
+            init();
+            if (tab !== state.tab) {
+                localLists.clear();
+                ++previewSequence; shownLimit = pageSize;
+                if (state.previewing || state.hovering) win.clearProposalPreview();
+                state.previewing = null; state.hovering = null;
+            }
+            state.tab = tab === 'browse' ? 'designs' : tab;
             if (!['designs', 'plans', 'agreements'].includes(state.tab)) state.tab = 'designs';
             if (state.selecting && state.selecting !== state.tab) stopSelecting();
             for (const el of doc.querySelectorAll('[data-list-tab]')) {
@@ -636,9 +733,9 @@
                 doc.getElementById(el.getAttribute('aria-controls')).hidden = !active;
             }
             controls(); renderActions(); renderRows();
-            if (!state.remote.has(cacheKey())) load();
+            return load();
         }
-        function refresh() { state.records.clear(); state.known.clear(); if (ready && opened()) { renderActions(); renderRows(); } }
+        function refresh() { localLists.clear(); state.records.clear(); state.known.clear(); if (ready && opened()) { renderActions(); renderRows(); } }
         function drafts() {
             return ['designs', 'plans', 'agreements'].map(kind => ({ kind,
                 rows: localRows(kind).filter(row => !row.published).map(row => ({ key: row.key, title: row.title, cid: row.cid })) }));

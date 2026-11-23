@@ -330,8 +330,15 @@ describe('GET /designs', () => {
 
     it('filters by city, text and box, in that parameter order', async () => {
         const { call } = await listed('?city=ZAGREB&q=park&bbox=15.9,45.7,16.1,45.9&limit=5');
-        expect(call.sql).toMatch(/WHERE city = \$1 AND \(title ILIKE \$2 OR author ILIKE \$2\) AND site && ST_MakeEnvelope\(\$3, \$4, \$5, \$6, 4326\) AND ST_Intersects\(site, ST_MakeEnvelope\(\$3, \$4, \$5, \$6, 4326\)\)/);
+        expect(call.sql).toMatch(/WHERE city = \$1 AND \(title ILIKE \$2 OR author ILIKE \$2 OR cid ILIKE \$2\) AND site && ST_MakeEnvelope\(\$3, \$4, \$5, \$6, 4326\) AND ST_Intersects\(site, ST_MakeEnvelope\(\$3, \$4, \$5, \$6, 4326\)\)/);
         expect(call.params).toEqual(['zagreb', '%park%', 15.9, 45.7, 16.1, 45.9, 5, 0]);
+    });
+
+    it('supports title ordering and CID text search', async () => {
+        const { call } = await listed('?q=abc&order=title&limit=5');
+        expect(call.sql).toMatch(/\(title ILIKE \$1 OR author ILIKE \$1 OR cid ILIKE \$1\)/);
+        expect(call.sql).toMatch(/ORDER BY lower\(title\), cid/);
+        expect(call.params[0]).toBe('%abc%');
     });
 
     it('matches q literally: % and _ (and the escape itself) are escaped', async () => {

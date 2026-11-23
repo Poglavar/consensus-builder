@@ -27,9 +27,9 @@ describe('shared lists', () => {
     });
     it('asks the index for a city, or in explore for the designs in the visible area', () => {
         const explore = { explore: true, bbox: [90.39, 23.7, 90.42, 23.72] };
-        expect(Object.fromEntries(indexQuery('designs', { city: 'zg' }))).toEqual({ limit: '1000', city: 'zg' });
-        expect(Object.fromEntries(indexQuery('designs', { city: 'city', area: explore }))).toEqual({ limit: '1000', bbox: '90.39,23.7,90.42,23.72' });
-        expect(Object.fromEntries(indexQuery('designs', { city: 'zg', area: { explore: false, bbox: null } }))).toEqual({ limit: '1000', city: 'zg' });
+        expect(Object.fromEntries(indexQuery('designs', { city: 'zg' }))).toEqual({ limit: '50', city: 'zg' });
+        expect(Object.fromEntries(indexQuery('designs', { city: 'city', area: explore }))).toEqual({ limit: '50', bbox: '90.39,23.7,90.42,23.72' });
+        expect(Object.fromEntries(indexQuery('designs', { city: 'zg', area: { explore: false, bbox: null } }))).toEqual({ limit: '50', city: 'zg' });
         // Plans and agreements page by offset and stay city-scoped.
         expect(Object.fromEntries(indexQuery('plans', { city: 'zg', area: explore, offset: 50 }))).toEqual({ limit: '50', city: 'zg', offset: '50' });
     });
@@ -85,7 +85,7 @@ const ladderBadges = new Function('window', 'getProposalI18nHelper', 'getProposa
     { __proposalDisplayState: displayState }, () => (_key, fallback) => fallback, key => lifecycleLabels[key] || key,
     require('../../frontend/js/shared-utils.js').escapeHtml);
 
-function listsSheet({ designs = [], serverDesigns = [], plans = [], serverPlans = [], agreements = [], serverAgreements = [], offers = [], serverOffers = [] } = {}) {
+function listsSheet({ designs = [], serverDesigns = [], plans = [], serverPlans = [], agreements = [], serverAgreements = [], offers = [], serverOffers = [], resolvePlan = null } = {}) {
     const doc = makeDocument();
     for (const id of ['lists-controls', 'lists-actions', 'lists-status', 'proposal-list-host', 'plan-list-host', 'agreement-list-host']) {
         const el = doc.createElement('div'); el.id = id; doc.body.append(el);
@@ -111,11 +111,16 @@ function listsSheet({ designs = [], serverDesigns = [], plans = [], serverPlans 
         normalizeCityCodeForApi: code => code,
         resolveCurrentCityCode: () => 'london',
         getProposalCountAreaContext: () => null,
-        fetch: async url => ({ ok: true, json: async () => (String(url).includes('/designs?') ? { designs: serverDesigns } : String(url).includes('/property-offers?') ? { propertyOffers: serverOffers } : { plans: serverPlans, agreements: serverAgreements }) }),
+        fetch: async url => ({ ok: true, json: async () => (String(url).includes('/property-offers?') ? { propertyOffers: serverOffers } : { plans: serverPlans, agreements: serverAgreements }) }),
         DesignSync: { apiBase: () => 'https://api.test', publishedCid: record => record.cid || null,
+            listPage: vi.fn(async () => ({ designs: serverDesigns, hasMore: false, nextOffset: null })),
+            localDesignIndex: () => { const byCid = new Map(designs.filter(row => row.cid).map(row => [row.cid, row])); return { records: designs, byCid, published: new Map(designs.filter(row => row.cid).map(row => [row, row.cid])) }; },
             localCopyOf: cid => designs.find(design => design.cid === cid) || null },
         proposalStorage: { getAllProposals: () => designs },
         NamedPlans: { list: () => plans, remove: cid => calls.plansRemoved.push(cid) },
+        PlanWorkspace: { resolve: resolvePlan || (async row => row) },
+        PlanComposition: { localRecords: plan => plan.designs || [] },
+        previewRecordsOnMap: vi.fn(() => true), clearProposalPreview() {},
         AgreementStore: { list: () => agreements, subscribe() {} },
         AgreementSync: { localCopyOf: () => null },
         AgreementPanel: { ruleShort: () => '' },
@@ -128,7 +133,7 @@ function listsSheet({ designs = [], serverDesigns = [], plans = [], serverPlans 
     };
     const item = id => doc.querySelector(`[data-list-id="${id}"]`);
     const shown = host => doc.getElementById(host).querySelectorAll('.lists-item').map(el => el.dataset.listId);
-    return { doc, calls, item, shown, panel: browser(win) };
+    return { doc, win, calls, item, shown, panel: browser(win) };
 }
 
 describe('the Lists sheet', () => {
@@ -316,5 +321,25 @@ describe('the Lists sheet', () => {
         expect(timestamp.dateTime).toBe(publishedAt);
         expect(timestamp.textContent).not.toContain('1970');
         expect(item('undated').querySelector('time.lists-item__timestamp')).toBeNull();
+    });
+
+    it('does not repaint an older plan preview after a newer card resolves first', async () => {
+        let resolveA, resolveB;
+        const planA = { cid: 'plan-a', content: { title: 'Alatau', view: {}, designCids: [] }, designs: [] };
+        const planB = { cid: 'plan-b', content: { title: 'Garden streets', view: {}, designCids: [] }, designs: [] };
+        const f = listsSheet({ plans: [planA, planB], resolvePlan: plan => new Promise(resolve => {
+            if (plan.content.title === 'Alatau') resolveA = resolve; else resolveB = resolve;
+        }) });
+        await f.panel.select('plans');
+        await vi.waitFor(() => expect(f.item('plan-a')).not.toBeNull());
+        f.item('plan-a').dispatchEvent({ type: 'click', target: f.item('plan-a') });
+        f.item('plan-b').dispatchEvent({ type: 'click', target: f.item('plan-b') });
+        await vi.waitFor(() => expect(resolveB).toEqual(expect.any(Function)));
+        resolveB({ ...planB, designs: [{ proposalId: 'b' }] });
+        await vi.waitFor(() => expect(f.win.previewRecordsOnMap).toHaveBeenCalledTimes(1));
+        // The old request must be harmless when it finally resolves: only B may repaint.
+        resolveA({ ...planA, designs: [{ proposalId: 'a' }] });
+        await Promise.resolve(); await Promise.resolve();
+        expect(f.win.previewRecordsOnMap.mock.calls.map(call => call[1])).toEqual(['list:plans:plan-b']);
     });
 });

@@ -215,6 +215,7 @@ function proposalRecordForPersistence(record) {
 
 const proposalStorage = {
     proposals: new Map(),
+    revision: 0,
     nextProposalId: 0,
     // Save-batching, same shape as agentStorage. Code paths that mutate proposals
     // call save() freely; if a batch is open save() just flags a pending write
@@ -322,6 +323,7 @@ const proposalStorage = {
     },
 
     _notifyChanged() {
+        this.revision++;
         // Publication and any synchronous rollback finish before observers read the composition.
         if (typeof document !== 'undefined' && document.dispatchEvent) {
             queueMicrotask(() => document.dispatchEvent(new Event('proposalStorageChanged')));
@@ -355,6 +357,7 @@ const proposalStorage = {
             snapshot.records.forEach((record, id) => { if (!this.proposals.has(id)) this.proposals.set(id, record); });
         }
         this.nextProposalId = snapshot.nextProposalId;
+        this.revision++;
     },
 
     beginBatch() {
@@ -450,6 +453,7 @@ const proposalStorage = {
     },
 
     load() {
+        this.revision++;
         this._ensureIndexes();
         if (typeof PersistentStorage === 'undefined') return;
         const manifestRaw = PersistentStorage.getItem(PROPOSALS_MANIFEST_KEY);
@@ -498,6 +502,7 @@ const proposalStorage = {
     },
 
     save() {
+        this.revision++;
         if (this._suspendSaveCount > 0) {
             this._hasPendingSave = true;
             return;
@@ -1761,7 +1766,7 @@ const proposalListState = {
     selectedId: null
 };
 
-const SERVER_PROPOSAL_SUMMARY_LIMIT = 250;
+const SERVER_PROPOSAL_SUMMARY_LIMIT = 50;
 
 const serverProposalCache = {
     proposals: [],
