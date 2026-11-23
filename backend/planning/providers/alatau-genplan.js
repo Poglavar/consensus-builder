@@ -113,7 +113,9 @@ export function interpretZone(properties, rules = ALATAU_RULES) {
 
 const upstream = message => Object.assign(new Error(message), { status: 503, code: 'planning-source-unavailable' });
 const spatialReference = Object.freeze({ horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' });
-const TTL_MS = 15 * 60 * 1000, READ_CAP = 128, FEATURE_CAP = 8000;
+// READ_CAP holds the cell reads of several screens: a zoom-15 view asks for about 250 cells, and a
+// smaller cap re-read the plan service for most of them when the view came back.
+const TTL_MS = 15 * 60 * 1000, READ_CAP = 2048, FEATURE_CAP = 8000;
 let defaultFetch;
 // The host omits its Sectigo intermediate; the same pinned CA the parcel source uses supplements it.
 function certificateFetch() {
@@ -141,9 +143,9 @@ export function createAlatauGenplanProvider(descriptor = alatauGenplanSource, { 
         let payload;
         try {
             const response = await (fetchImpl || certificateFetch())(url.href, { headers: { Accept: 'application/json', Referer: VIEWER } });
-            if (!response.ok) throw new Error('status');
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
             payload = await response.json();
-        } catch (_) { throw upstream('Alatau general plan service could not be read.'); }
+        } catch (error) { throw upstream(`Alatau general plan service could not be read (${error?.message || error}).`); }
         if (!payload || payload.type !== 'FeatureCollection' || !Array.isArray(payload.features)) throw upstream('Alatau general plan service returned an invalid collection.');
         const kept = [];
         let omitted = 0;
