@@ -94,6 +94,9 @@ test.describe('Plan arithmetic @features', () => {
 
     await page.locator('#proposals-button').click();
     const sheet = page.locator('#proposals-sheet');
+    // The server listing changed after the app warmed its design index during startup.
+    await sheet.getByRole('button', { name: 'Refresh', exact: true }).click();
+    await expect(sheet.getByRole('heading', { name: 'Published park', exact: true })).toBeVisible();
     await sheet.locator('#lists-actions').getByRole('button', { name: 'Compare designs', exact: true }).click();
     const compare = sheet.locator('[data-lists-compare]');
     await expect(compare).toBeDisabled();

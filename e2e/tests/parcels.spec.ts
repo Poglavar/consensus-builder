@@ -1,7 +1,7 @@
 import { openLayerSection } from '../helpers/layers';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, PARCEL_ID, openParcel } from '../helpers/runtime';
-import { mockBuildingScene } from '../helpers/mocks/building-data';
+import { openCity, PARCEL_GEOMETRY, PARCEL_ID, openParcel } from '../helpers/runtime';
+import { mockFootprintCells } from '../helpers/mocks/building-data';
 
 test.describe('Parcel loading and rendering @core', () => {
   test('API parcels reach the repository, live fabric and clickable map projection', async ({ mockApi: page }) => {
@@ -38,7 +38,7 @@ test.describe('Parcel loading and rendering @core', () => {
   });
 
   test('parcels show from zoom 16 while buildings keep their zoom-17 floor', async ({ mockApi: page }) => {
-    await mockBuildingScene(page);
+    await mockFootprintCells(page, () => [{ id: 'building-in-view', geometry: PARCEL_GEOMETRY }]);
     await openCity(page);
     await openLayerSection(page, 'buildings');
     await page.locator('#showBuildings').check();
