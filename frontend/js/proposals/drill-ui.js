@@ -59,14 +59,16 @@
         return lng >= bbox[0] && lat >= bbox[1] && lng <= bbox[2] && lat <= bbox[3];
     }
 
-    function collectCandidates(latlng) {
+    function collectCandidates(latlng, includeParcels) {
         const parcels = [];
         const fabric = global.LiveParcelFabric;
         const pointBounds = [latlng.lng, latlng.lat, latlng.lng, latlng.lat];
-        (fabric?.queryBounds?.(pointBounds, { includeCorridors: true }) || []).forEach(feature => {
-            const id = fabric.featureId?.(feature);
-            if (id) parcels.push({ id: String(id), feature, live: true });
-        });
+        if (includeParcels) {
+            (fabric?.queryBounds?.(pointBounds, { includeCorridors: true }) || []).forEach(feature => {
+                const id = fabric.featureId?.(feature);
+                if (id) parcels.push({ id: String(id), feature, live: true });
+            });
+        }
 
         const proposals = [];
         const storage = global.proposalStorage;
@@ -85,10 +87,10 @@
         return { parcels, proposals };
     }
 
-    function stackAt(latlng) {
+    function stackAt(latlng, { includeParcels = global.ParcelPresenter?.isVisible?.() !== false } = {}) {
         const drill = global.__drillStack;
         if (!drill || !latlng || !global.turf || typeof global.turf.booleanPointInPolygon !== 'function') return [];
-        const { parcels, proposals } = collectCandidates(latlng);
+        const { parcels, proposals } = collectCandidates(latlng, includeParcels);
         if (!parcels.length && !proposals.length) return [];
         return drill.buildDrillStack([latlng.lng, latlng.lat], {
             parcels,
@@ -127,6 +129,11 @@
         if (lastHoverRef === null) return;
         lastHoverRef = null;
         if (typeof global.highlightFeaturesForHover === 'function') global.highlightFeaturesForHover([]);
+    }
+
+    function clearParcelHover() {
+        lastHoverPoint = null;
+        if (lastHoverRef?.startsWith('c:')) clearHoverOutline();
     }
 
     // The full list — an editor holding the map, plus every mode that already meant "do not select
@@ -230,7 +237,7 @@
 
     // notifyHover: for layers that keep bubblingMouseEvents off (corridor hit targets) and so
     // starve the map of mousemove — they forward their own moves here instead.
-    const api = { stackAt, handleParcelClick, handleSurfaceClick, notifyHover: onMapMouseMove, ownsHover };
+    const api = { stackAt, handleParcelClick, handleSurfaceClick, notifyHover: onMapMouseMove, ownsHover, clearParcelHover };
 
     // Namespaced only — a bare global here could shadow a top-level function in the classic
     // scripts that load alongside this file.

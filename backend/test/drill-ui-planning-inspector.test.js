@@ -53,7 +53,7 @@ describe('drill entry points hand map clicks to the click stack', () => {
 
     it('exposes stackAt and hover only, without the old panel functions', () => {
         const { api } = loadDrill();
-        expect(Object.keys(api).sort()).toEqual(['handleParcelClick', 'handleSurfaceClick', 'notifyHover', 'ownsHover', 'stackAt']);
+        expect(Object.keys(api).sort()).toEqual(['clearParcelHover', 'handleParcelClick', 'handleSurfaceClick', 'notifyHover', 'ownsHover', 'stackAt']);
     });
 
     it('still answers what stands at a point, topmost first', () => {
@@ -62,6 +62,27 @@ describe('drill entry points hand map clicks to the click stack', () => {
         expect(h.context.__drillStack.buildDrillStack).toHaveBeenCalledWith([1, 2], expect.objectContaining({
             parcels: [{ id: 'P-1', feature: h.parcel.feature, live: true }]
         }));
+    });
+
+    it('clears an existing parcel hover and skips hidden parcels under the pointer', () => {
+        const h = loadDrill();
+        const pending = [];
+        h.context.requestAnimationFrame = callback => pending.push(callback);
+        h.context.highlightFeaturesForHover = vi.fn();
+        h.context.__drillStack.buildDrillStack.mockReturnValue([h.parcel]);
+        const move = { latlng: { lat: 2, lng: 1 }, containerPoint: { x: 20, y: 20 } };
+        h.api.notifyHover(move);
+        pending.shift()();
+        expect(h.context.highlightFeaturesForHover).toHaveBeenCalledWith([h.parcel.feature], { showLabels: true });
+
+        h.context.ParcelPresenter = { isVisible: () => false };
+        h.api.clearParcelHover();
+        expect(h.context.highlightFeaturesForHover).toHaveBeenLastCalledWith([]);
+        h.context.LiveParcelFabric.queryBounds.mockClear();
+        h.api.notifyHover(move);
+        pending.shift()();
+        expect(h.context.LiveParcelFabric.queryBounds).not.toHaveBeenCalled();
+        expect(h.api.stackAt(move.latlng)).toEqual([]);
     });
 
     it('forwards a structure or corridor click to the click stack and selects nothing itself', () => {

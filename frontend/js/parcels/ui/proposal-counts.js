@@ -136,7 +136,7 @@
 
     function drawProposalCountLabels() {
         clearProposalCountLabels();
-        if (!global.parcelLayer) return;
+        if (!global.parcelLayer || global.ParcelPresenter?.isVisible?.() === false) return;
 
         const bounds = (global.map && typeof global.map.getBounds === 'function')
             ? global.map.getBounds()

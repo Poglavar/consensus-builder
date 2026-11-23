@@ -19,30 +19,7 @@
             global.refreshParcelStylesForAppliedProposals();
         }
 
-        const showParcelsElem = global.document.getElementById('showParcels');
-        const showParcels = showParcelsElem ? showParcelsElem.checked : true;
-
-        // Check if zoom is within parcel range before showing parcels
-        const isZoomWithinRange = (typeof global.isZoomWithinParcelRange === 'function')
-            ? global.isZoomWithinParcelRange()
-            : true; // Default to true if function not available
-
-        if (showParcels && isZoomWithinRange) {
-            if (global.parcelLayer) {
-                // Only add to map if not already there - calling addTo multiple times can cause issues
-                if (!global.map.hasLayer(global.parcelLayer)) {
-                    global.parcelLayer.addTo(global.map);
-                }
-                // Don't add layers directly - they're already rendered through parcelLayer FeatureGroup
-                // Adding them directly would cause double rendering (darker appearance)
-            }
-        } else {
-            const hideAll = uiVisibility.hideAllParcels || global.hideAllParcels;
-            if (typeof hideAll === 'function') {
-                hideAll();
-            }
-        }
-
+        global.ParcelPresenter?.addGroupToMapIfAppropriate?.();
         const updateVisibleCount = uiVisibility.updateVisibleParcelsCount || global.updateVisibleParcelsCount;
         if (typeof updateVisibleCount === 'function') {
             updateVisibleCount();
@@ -76,7 +53,7 @@
         // unhandled rejection behind this fire-and-forget call.
         const fetchParcels = fetchApi.fetchParcelDataReported || global.fetchParcelDataReported;
         if (typeof fetchParcels === 'function') {
-            fetchParcels(undefined, 'map-refresh.setupMap');
+            fetchParcels(undefined, 'map-refresh.setupMap', { viewport: true });
         }
         if (typeof global.loadBuildings === 'function') {
             global.loadBuildings();

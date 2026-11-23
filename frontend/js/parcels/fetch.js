@@ -683,7 +683,12 @@
     // are cancelled, including their archive downloads; cells both views want keep loading.
     let currentViewFetch = null;
 
-    async function fetchParcelData(customBounds) {
+    function cancelParcelViewportFetch() {
+        if (currentViewFetch?.viewport) currentViewFetch.controller.abort();
+    }
+
+    async function fetchParcelData(customBounds, { viewport = false } = {}) {
+        if (viewport && global.ParcelPresenter?.isVisible?.() === false) return null;
         if (global.ParcelGroundFallback?.isWithoutParcels?.(currentCity())) {
             global.updateStatus?.(statusText('without_parcels', 'Continuing without parcels. Designs use their own geometry.'));
             return null;
@@ -713,7 +718,8 @@
             ? Number(global.ParcelFetchConfig?.getPadding?.() ?? global.PARCEL_FETCH_LATLNG_PADDING ?? 0.12)
             : 0;
         const requestedBounds = padding > 0 ? viewBounds.pad(padding) : viewBounds;
-        const view = new AbortController();
+        const controller = new AbortController();
+        const view = { viewport, controller };
         const superseded = currentViewFetch;
         currentViewFetch = view;
         global._fetchParcelDataInProgress = true;
@@ -729,10 +735,13 @@
                     // Progress proves the load is alive: it restarts the silence deadline below, so
                     // a council import runs as long as it keeps reporting.
                     activity?.touch?.();
-                    if (currentViewFetch !== view) return;
+                    if (currentViewFetch !== view || controller.signal.aborted) return;
                     // Parcels a council import has parsed under this view go to the map at once,
                     // as a preview; the resolved ground replaces them when the load completes.
-                    if (detail?.phase === 'source-preview') { global.ParcelPreview?.show?.(detail.features, requestedBounds); return; }
+                    if (detail?.phase === 'source-preview') {
+                        if (global.ParcelPresenter?.isVisible?.() !== false) global.ParcelPreview?.show?.(detail.features, requestedBounds);
+                        return;
+                    }
                     const message = global.ParcelSourceProgress?.format(detail, {
                         language: global.i18n?.getLanguage?.() || 'en',
                         translate: (key, params) => global.i18n?.t?.(key, params)
@@ -751,11 +760,11 @@
             const timeoutMs = typeof configuredTimeout === 'number' && Number.isFinite(configuredTimeout) && configuredTimeout > 0
                 ? configuredTimeout : 30000;
             const pending = global.ParcelSourceHealth?.withDeadline
-                ? global.ParcelSourceHealth.withDeadline(load, { timeoutMs, signal: view.signal })
-                : load(view.signal);
-            superseded?.abort();
+                ? global.ParcelSourceHealth.withDeadline(load, { timeoutMs, signal: controller.signal })
+                : load(controller.signal);
+            superseded?.controller.abort();
             const result = await pending;
-            if (view.signal.aborted) return result;
+            if (controller.signal.aborted) return result;
             const count = result.features.length;
             const source = groundOverride(currentCity());
             // The last cell came from DGU directly (our server down): the completion line says so,
@@ -773,7 +782,7 @@
             global.ParcelSourceSettings?.clearFailure?.(global);
             return result;
         } catch (error) {
-            if (view.signal.aborted) return null;
+            if (controller.signal.aborted) return null;
             // The visitor sees the register attempted first; only when that fails are they offered
             // a way on (retry, their own link, satellite boundary recognition, a Schelling plan). The error still
             // propagates: callers decide what a failed viewport fetch means for them.
@@ -829,9 +838,9 @@
         if (!global.ParcelGroundFallback) global.ParcelSourceSettings?.reportFailure?.(global, userMessage);
     }
 
-    function fetchParcelDataReported(customBounds, source) {
+    function fetchParcelDataReported(customBounds, source, options) {
         return Promise.resolve()
-            .then(() => fetchParcelData(customBounds))
+            .then(() => fetchParcelData(customBounds, options))
             .catch(error => {
                 reportParcelFetchFailure(error, source);
                 return null;
@@ -856,6 +865,7 @@
 
     global.fetchParcelData = fetchParcelData;
     global.fetchParcelDataReported = fetchParcelDataReported;
+    global.cancelParcelViewportFetch = cancelParcelViewportFetch;
     global.reportParcelFetchFailure = reportParcelFetchFailure;
     global.refreshParcelDataWithBusyState = refreshParcelDataWithBusyState;
     global.buildParcelFilterXml = buildParcelFilterXml;

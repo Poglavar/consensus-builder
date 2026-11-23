@@ -1059,7 +1059,7 @@
             // object's section again when another one had been expanded.
             const topKind = stack.topRef ? stack.topRef.slice(0, stack.topRef.indexOf(':')) : null;
             if (topKind && state.stack.expanded !== topKind) expand(topKind);
-        } else if (global.GroundMenu?.factsAt(latlng)?.kind === 'not-loaded') {
+        } else if (global.ParcelPresenter?.isVisible?.() !== false && global.GroundMenu?.factsAt(latlng)?.kind === 'not-loaded') {
             global.updateStatus?.(global.i18n.t('groundMenu.notLoaded'));
         }
         return true;

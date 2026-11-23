@@ -98,6 +98,7 @@
     }
 
     function drawOwnerCountLabels() {
+        if (global.ParcelPresenter?.isVisible?.() === false) return;
         if (!global.parcelLayer || !global.map) return;
         const city = global.ParcelLabelModel?.currentCity?.() || '';
         if (city !== ownerCountLabelCity) {

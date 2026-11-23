@@ -1,9 +1,7 @@
-// The parcels section is gated twice: by its own "Show parcels" checkbox (updateSectionControlsState)
-// and by zoom (updateParcelsCheckboxByZoom). Zoom writes `checked` programmatically, so no change
-// event fires and the first gate has to be re-run by hand — in the right order. No DOM environment
-// is installed here, so this is asserted at the source, which is also where the ordering trap lives.
+// Zoom changes availability without changing the visitor's Show parcels preference.
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
 
 const source = readFileSync(new URL('../../frontend/js/map-controls.js', import.meta.url), 'utf8');
 
@@ -22,15 +20,17 @@ describe('parcels section gating follows the zoom', () => {
         expect(zoomFn()).toContain('updateSectionControlsState(parcelsSection)');
     });
 
-    it('runs the gate BEFORE the zoom loop, which must have the last word on the checkboxes', () => {
-        // The gate restores each control to the state it remembered (data-prev-disabled). Run it
-        // after the loop and it restores the disabled-by-zoom state it just recorded, switching the
-        // checkboxes back off the moment the user zooms in.
-        const body = zoomFn();
-        const gate = body.indexOf('updateSectionControlsState(parcelsSection)');
-        const zoomLoop = body.indexOf('cb.disabled = !within;');
-        expect(gate).toBeGreaterThan(0);
-        expect(zoomLoop).toBeGreaterThan(gate);
+    it.each([true, false])('keeps the chosen visibility (%s) through a zoom round trip', checked => {
+        const section = { querySelector: () => null };
+        const checkbox = { checked, disabled: false, closest: () => section };
+        const states = [];
+        const context = vm.createContext({
+            window: {},
+            document: { getElementById: id => id === 'parcelsCheckbox' ? checkbox : null },
+            updateSectionControlsState: () => states.push({ checked: checkbox.checked, disabled: checkbox.disabled })
+        });
+        vm.runInContext(`${zoomFn()}\nupdateParcelsCheckboxByZoom(false); updateParcelsCheckboxByZoom(true);`, context);
+        expect(states).toEqual([{ checked, disabled: true }, { checked, disabled: false }]);
     });
 
     it('greys the section through the same class the gate owns', () => {

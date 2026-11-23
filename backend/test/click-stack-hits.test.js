@@ -214,7 +214,7 @@ describe('click stack hits', () => {
             stack: [proposalEntry('d1'), formedEntry('f1', 'd1'), bareEntry('HR-335550-12')],
             proposals: { d1: { proposalId: 'd1', title: 'Park' } }
         });
-        expect(context.__drillUi.stackAt).toHaveBeenCalledWith(POINT);
+        expect(context.__drillUi.stackAt).toHaveBeenCalledWith(POINT, { includeParcels: true });
         expect(hits.designs.map(d => [d.id, d.label, d.goal])).toEqual([['d1', 'Design d1', '']]);
         expect(hits.formed.map(f => [f.id, f.designId, f.designLabel])).toEqual([['f1', 'd1', 'Park']]);
         // A cadastral id loses its HR-<KO>- prefix in the label.

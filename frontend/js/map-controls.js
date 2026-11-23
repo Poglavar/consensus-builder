@@ -4,8 +4,7 @@
 // zoom gating of the parcels controls, and initializeMapControls() run from the boot in index.html.
 
 // A section's layer checkbox (#parcelsCheckbox; data-layer names the layer) changed.
-function toggleAccordion(checkbox, options = {}) {
-    const skipParcelFetch = options.skipParcelFetch === true;
+function toggleAccordion(checkbox) {
     const section = checkbox.closest('.accordion-section');
     const layerName = checkbox.dataset.layer;
 
@@ -16,44 +15,10 @@ function toggleAccordion(checkbox, options = {}) {
 
     // Toggle layer visibility
     if (layerName === 'parcels') {
-        const showParcelNumbersCheckbox = document.getElementById('showParcelNumbers');
-
-        const uiVisibility = (window.Parcels && window.Parcels.uiVisibility) ? window.Parcels.uiVisibility : {};
-        const uiLabels = (window.Parcels && window.Parcels.uiLabels) ? window.Parcels.uiLabels : {};
-        const showAll = uiVisibility.showAllParcels || showAllParcels;
-        const hideAll = uiVisibility.hideAllParcels || hideAllParcels;
-        const isRoadFn = uiVisibility.isRoad || isRoad;
-        const toggleNumbers = uiLabels.toggleParcelNumbers || toggleParcelNumbers;
-
         if (checkbox.checked) {
-            // If main section is checked, ensure "All parcels" layer is shown (implicitly, by calling showAllParcels)
-            if (typeof showAll === 'function') {
-                // Only show if zoom policy allows parcels
-                const within = (typeof window.isZoomWithinParcelRange === 'function') ? window.isZoomWithinParcelRange() : true;
-                if (within) {
-                    const parcelLayer = (window.ParcelsState && typeof window.ParcelsState.getParcelLayer === 'function')
-                        ? window.ParcelsState.getParcelLayer()
-                        : window.parcelLayer;
-
-                    if (skipParcelFetch && !parcelLayer) {
-                        // Avoid double-fetch on startup; map core will trigger the first load.
-                        return;
-                    }
-                    showAll();
-                } else {
-                    // Immediately uncheck if outside zoom
-                    checkbox.checked = false;
-                }
-            }
+            window.ParcelsUIVisibility?.showAllParcels();
         } else {
-            // If main section is unchecked, hide all parcel layers and parcel numbers
-            if (typeof hideAll === 'function') {
-                hideAll();
-            }
-            if (showParcelNumbersCheckbox && showParcelNumbersCheckbox.checked && typeof toggleNumbers === 'function') {
-                showParcelNumbersCheckbox.checked = false;
-                toggleNumbers(); // Hide parcel numbers
-            }
+            window.ParcelsUIVisibility?.hideAllParcels();
         }
     } else if (layerName === 'blocks') {
         toggleBlocksVisibility();
@@ -169,7 +134,7 @@ function updateSectionControlsState(section) {
     // If dependent content exists, only target elements within it; otherwise target all in content
     const targetContainer = dependentContent || content;
     const interactive = targetContainer.querySelectorAll('input, button, select, textarea');
-    const shouldDisable = !isChecked;
+    const shouldDisable = !isChecked || (sectionName === 'parcels' && checkbox.disabled);
 
     interactive.forEach(el => {
         try {
@@ -556,17 +521,6 @@ function initializeMapControls() {
         window.i18n?.onChange?.(renderBuildingSourceSummary);
     }
 
-    // Initialize Parcels checkbox state by zoom policy (no auto-expand)
-    const firstCheckbox = document.getElementById('parcelsCheckbox');
-    if (firstCheckbox) {
-        const within = (typeof window.isZoomWithinParcelRange === 'function') ? window.isZoomWithinParcelRange() : true;
-        firstCheckbox.checked = within;
-        toggleAccordion(firstCheckbox, { skipParcelFetch: true }); // Apply visibility logic without triggering initial fetch
-        if (typeof updateParcelsCheckboxByZoom === 'function') {
-            try { updateParcelsCheckboxByZoom(within); } catch (_) { }
-        }
-    }
-
     // Gate every section by its layer checkbox now: the sheets are always "expanded".
     document.querySelectorAll('.accordion-section').forEach(section => updateSectionControlsState(section));
 
@@ -612,73 +566,15 @@ function updateParcelsCheckboxByZoom(within) {
         const parcelsHeader = parcelsSection ? parcelsSection.querySelector('[data-section-title="parcels"]') : null;
         const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
 
-        const baseKey = 'sidebar.parcels.title';
-        const hintKey = 'sidebar.parcels.titleZoomHint';
-        const uiVisibility = (window.Parcels && window.Parcels.uiVisibility) ? window.Parcels.uiVisibility : {};
-        const showAll = uiVisibility.showAllParcels || showAllParcels;
-        const hideAll = uiVisibility.hideAllParcels || hideAllParcels;
-
-        if (within) {
-            // Enable and check
-            parcelsCheckbox.disabled = false;
-            if (!parcelsCheckbox.checked) {
-                parcelsCheckbox.checked = true;
-                // Don't auto-call showAllParcels() here - the zoom handler in map-core.js
-                // already manages parcel layer visibility directly. This prevents parcels
-                // from being re-added when zooming out to fit large proposals.
-                // The checkbox state is just for UI feedback, not for triggering parcel display.
-            }
-            if (parcelsHeader) {
-                parcelsHeader.setAttribute('data-i18n-key', baseKey);
-                if (i18nApi && typeof i18nApi.applyTranslations === 'function') {
-                    i18nApi.applyTranslations(parcelsHeader);
-                } else {
-                    parcelsHeader.textContent = 'Parcels';
-                }
-            }
-        } else {
-            // Disable, uncheck, hide parcels and show hint
-            if (parcelsCheckbox.checked) {
-                parcelsCheckbox.checked = false;
-                if (typeof hideAll === 'function') {
-                    hideAll();
-                }
-            }
-            parcelsCheckbox.disabled = true;
-            if (parcelsHeader) {
-                parcelsHeader.setAttribute('data-i18n-key', hintKey);
-                if (i18nApi && typeof i18nApi.applyTranslations === 'function') {
-                    i18nApi.applyTranslations(parcelsHeader);
-                } else {
-                    parcelsHeader.textContent = 'Parcels (zoom in more)';
-                }
-            }
+        // Zoom gates availability. The checked value stays the user's choice across zoom levels.
+        parcelsCheckbox.disabled = !within;
+        if (parcelsHeader) {
+            parcelsHeader.setAttribute('data-i18n-key', within ? 'sidebar.parcels.title' : 'sidebar.parcels.titleZoomHint');
+            if (typeof i18nApi?.applyTranslations === 'function') i18nApi.applyTranslations(parcelsHeader);
+            else parcelsHeader.textContent = within ? 'Parcels' : 'Parcels (zoom in more)';
         }
-
-        // Re-evaluate the section's own gating FIRST, then let zoom have the final say below.
-        // Zoom writes `checked` programmatically, and that fires no change event, so nothing else
-        // ever re-ran this: zooming out greyed the section and disabled its BUTTONS (the loop below
-        // only reaches checkboxes), and zooming back in re-enabled the checkboxes while the grey
-        // and the dead buttons stayed — a section that looked disabled and worked anyway.
         if (parcelsSection && typeof updateSectionControlsState === 'function') {
-            try { updateSectionControlsState(parcelsSection); } catch (_) { }
-        }
-
-        // Enable/disable parcel checkboxes based purely on zoom; keep ad parcels always enabled
-        if (parcelsSection) {
-            const parcelCheckboxes = parcelsSection.querySelectorAll('input[type="checkbox"]');
-            parcelCheckboxes.forEach(cb => {
-                // Claims counts are not implemented; zoom must preserve their disabled gate.
-                if (cb.id === 'showClaimsCounts') {
-                    cb.disabled = true;
-                    return;
-                }
-                if (cb.id === 'showAdParcelsCheckbox') {
-                    cb.disabled = false;
-                    return;
-                }
-                cb.disabled = !within;
-            });
+            updateSectionControlsState(parcelsSection);
         }
 
         // Enable/disable building toggles based on zoom so they stay usable only when parcels are visible

@@ -103,7 +103,7 @@
         const layer = ensureLayer();
         const map = global.map;
         if (!map || !layer) return;
-        if (state.visible) {
+        if (state.visible && global.ParcelPresenter?.isVisible?.() !== false) {
             if (!map.hasLayer(layer)) {
                 layer.addTo(map);
             }
@@ -346,6 +346,7 @@
         markUnminted: removeMintedParcel,
         refreshMarkers,
         setVisibility,
+        syncMapVisibility: ensureLayerOnMap,
         toggleVisibility: setVisibility,
         syncCheckbox: syncCheckbox,
         fetchAndMarkMintedParcels: fetchAndMarkMintedParcels,

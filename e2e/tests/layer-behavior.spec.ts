@@ -1,6 +1,6 @@
 import { openLayerSection } from '../helpers/layers';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, createBuilding, proposalState, parcelTab, PARCEL_ID, expectStatusLogged, answerBlockScope } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint, createBuilding, proposalState, parcelTab, PARCEL_ID, expectStatusLogged, answerBlockScope } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { openAndClosePopup, selectNativeOption } from '../helpers/controls';
 
@@ -166,6 +166,66 @@ test.describe('Layers sheet behavior @features', () => {
       await child.waitForURL(actual => actual.href.startsWith(builderUrl), { waitUntil: 'commit' });
       expect(new URL(child.url()).searchParams.get('parcel_identifier')).toBe('1234-335754');
     });
+  });
+
+  test('hiding parcels survives viewport movement and blocks retained-layer interaction', async ({ mockApi: page }) => {
+    await openLayers(page, { curatedRoads: false });
+    const parcelToggle = page.locator('#parcelsCheckbox');
+    const mapHasParcels = () => page.evaluate(() => (window as any).map.hasLayer((window as any).parcelLayer));
+    await expect.poll(mapHasParcels).toBe(true);
+    const retainedCenter = await page.evaluate((id) => {
+      const w = window as any;
+      const center = w.ParcelPresenter.getLayer(id).getBounds().getCenter();
+      const point = w.map.latLngToContainerPoint(center);
+      const rect = w.map.getContainer().getBoundingClientRect();
+      return { lat: center.lat, lng: center.lng, x: point.x + rect.left, y: point.y + rect.top };
+    }, PARCEL_ID);
+
+    const closeLayers = () => page.locator('#layers-sheet [data-sheet-close]').click();
+    const openLayersSheet = async () => {
+      await page.locator('#layers-button').click();
+      await openLayerSection(page, 'parcels');
+    };
+    await closeLayers();
+    const hoverLabel = page.locator('.proposal-hover-parcel-label');
+    await page.mouse.move(retainedCenter.x, retainedCenter.y);
+    await expect(hoverLabel).toContainText('1234');
+    await openLayersSheet();
+    await parcelToggle.press('Space');
+    await expect(parcelToggle).not.toBeChecked();
+    await expect.poll(mapHasParcels).toBe(false);
+    await closeLayers();
+
+    await page.mouse.move(retainedCenter.x, retainedCenter.y);
+    await expect(hoverLabel).toHaveCount(0);
+    await clickMapPoint(page, retainedCenter.lng, retainedCenter.lat);
+    await expect(page.locator('#click-stack')).toBeHidden();
+
+    await page.evaluate(async () => {
+      const w = window as any;
+      const repository = w.CadastralParcelRepository;
+      w.__viewportParcelCalls = 0;
+      w.CadastralParcelRepository = {
+        ...repository,
+        ensureBounds(...args: unknown[]) {
+          w.__viewportParcelCalls++;
+          return repository.ensureBounds(...args);
+        }
+      };
+      const zoom = w.map.getZoom();
+      w.map.panBy([180, 0], { animate: false });
+      w.map.setZoom(w.parcelZoomRange().min - 1, { animate: false });
+      w.map.setZoom(zoom, { animate: false });
+      await new Promise(resolve => setTimeout(resolve, w.ParcelFetchConfig.getDebounce() + 150));
+    });
+    expect(await page.evaluate(() => (window as any).__viewportParcelCalls)).toBe(0);
+    await expect.poll(mapHasParcels).toBe(false);
+
+    await openLayersSheet();
+    await expect(parcelToggle).not.toBeChecked();
+    await parcelToggle.check();
+    await expect.poll(mapHasParcels).toBe(true);
+    await expect.poll(() => page.evaluate(() => (window as any).__viewportParcelCalls)).toBeGreaterThan(0);
   });
 
   test('building and road reference layers load real features on checkbox clicks', async ({ mockApi: page }) => {

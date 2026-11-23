@@ -12,12 +12,14 @@ function boot(ensureBounds, fabric = null, ParcelSourceHealth = null) {
     const window = {
         map: { getBounds: () => ({ pad: () => 'padded-bounds' }), hasLayer: () => false },
         CadastralParcelRepository: { ensureBounds },
+        ParcelPresenter: { addGroupToMapIfAppropriate: () => true },
         LiveParcelFabric: fabric,
         ParcelSourceHealth,
         updateStatus: message => statuses.push(message),
         isZoomWithinParcelRange: () => true
     };
-    const context = vm.createContext({ window, URL, URLSearchParams, console, setTimeout, Promise, AbortController });
+    const document = { getElementById: () => null };
+    const context = vm.createContext({ window, document, URL, URLSearchParams, console, setTimeout, Promise, AbortController });
     vm.runInContext(fetchSource, context);
     vm.runInContext(visibilitySource, context);
     return { window, statuses };
@@ -60,6 +62,33 @@ describe('fetchParcelDataReported', () => {
     it('passes a successful result through', async () => {
         const { window } = boot(async () => ({ cached: false, features: [1, 2] }));
         await expect(window.fetchParcelDataReported(undefined, 'x')).resolves.toMatchObject({ features: [1, 2] });
+    });
+
+    it('cancels automatic viewport reads while preserving explicit reads and retained ground', async () => {
+        const signals = [];
+        const ensureBounds = vi.fn((_bounds, { signal }) => {
+            signals.push(signal);
+            if (signals.length > 1) return Promise.resolve({ features: ['parcel'] });
+            return new Promise((_resolve, reject) => {
+                signal.addEventListener('abort', () => reject(signal.reason), { once: true });
+            });
+        });
+        const { window } = boot(ensureBounds);
+        let visible = true;
+        window.ParcelPresenter.isVisible = () => visible;
+
+        const viewport = window.fetchParcelData(undefined, { viewport: true });
+        visible = false;
+        window.cancelParcelViewportFetch();
+        await expect(viewport).resolves.toBeNull();
+        expect(signals[0].aborted).toBe(true);
+        await expect(window.fetchParcelData(undefined, { viewport: true })).resolves.toBeNull();
+        expect(ensureBounds).toHaveBeenCalledTimes(1);
+
+        const explicit = window.fetchParcelData('selected-area');
+        window.cancelParcelViewportFetch();
+        await expect(explicit).resolves.toMatchObject({ features: ['parcel'] });
+        expect(signals[1].aborted).toBe(false);
     });
 
     it.each([false, true])('reports an empty viewport honestly (cached: %s)', async cached => {

@@ -56,13 +56,18 @@
         return group;
     }
 
+    function isEnabled() {
+        return global.document?.getElementById('parcelsCheckbox')?.checked !== false;
+    }
+
+    function isVisible() {
+        return isEnabled() && global.isZoomWithinParcelRange?.() !== false;
+    }
+
     function addGroupToMapIfAppropriate() {
         const parcelGroup = ensureGroup();
         if (!parcelGroup || !global.map) return false;
-        const allowed = typeof global.isZoomWithinParcelRange === 'function'
-            ? global.isZoomWithinParcelRange()
-            : true;
-        if (!allowed) {
+        if (!isVisible()) {
             if (typeof global.map.hasLayer === 'function' && global.map.hasLayer(parcelGroup)) {
                 global.map.removeLayer(parcelGroup);
             }
@@ -437,6 +442,8 @@
         commit,
         rollback,
         ensureGroup,
+        isEnabled,
+        isVisible,
         addGroupToMapIfAppropriate,
         getLayer,
         getLayers,

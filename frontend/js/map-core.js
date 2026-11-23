@@ -71,10 +71,6 @@ let baseTileLayer = null;
 
 const BasemapManager = (typeof window !== 'undefined' && window.BasemapManager) ? window.BasemapManager : null;
 
-const parcelState = (typeof window !== 'undefined' && window.ParcelsState) ? window.ParcelsState : null;
-const resolveParcelLayer = () => (parcelState && typeof parcelState.getParcelLayer === 'function')
-    ? parcelState.getParcelLayer()
-    : (typeof window !== 'undefined' ? window.parcelLayer : null);
 const parcelFetchConfig = (typeof window !== 'undefined' && window.ParcelFetchConfig) ? window.ParcelFetchConfig : null;
 const getFeatureParcelId = (feature) => {
     if (typeof ensureParcelId === 'function') return ensureParcelId(feature);
@@ -948,11 +944,7 @@ function setupMapEventHandlers() {
         if (!isTwoDimensionalViewportActive()) return;
         if (!isMapMoving) return;
         if (typeof ParcelFetchController !== 'undefined' && ParcelFetchController && typeof ParcelFetchController.handleMoveEnd === 'function') {
-            ParcelFetchController.handleMoveEnd(map, {
-                parcelFetchConfig,
-                resolveParcelLayer,
-                isZoomWithinParcelRange
-            });
+            ParcelFetchController.handleMoveEnd(map, { parcelFetchConfig });
         }
 
         // The buildings and the outlined sources follow the map. Each load is zoom-gated and goes by
@@ -1004,19 +996,10 @@ function setupMapEventHandlers() {
             // cache without a rebuild, so nothing else would add it. (The outlines redraw on every move.)
             buildingLayer.addTo(map);
         }
-        if (!within) {
-            // Hide parcels if zoomed out beyond threshold
-            const layerRef = resolveParcelLayer();
-            if (layerRef && map.hasLayer(layerRef)) {
-                try { map.removeLayer(layerRef); } catch (_) { }
-            }
+        const parcelsVisible = window.ParcelsUIVisibility?.syncParcelLayerVisibility?.();
+        if (!within && window.ParcelPresenter?.isEnabled?.() !== false) {
             if (typeof updateStatus === 'function') updateStatus('Parcels disabled at this zoom');
-        } else {
-            // If user zoomed back in and parcels are enabled, ensure layer is added
-            const layerRef = resolveParcelLayer();
-            if (layerRef && !map.hasLayer(layerRef)) {
-                try { layerRef.addTo(map); } catch (_) { }
-            }
+        } else if (parcelsVisible) {
             // The zoomed-out notice would otherwise stay up until the first cell of a slow
             // register answers, telling a visitor who already zoomed in to zoom in.
             const floating = document.getElementById('floating-status-text');
@@ -1026,9 +1009,6 @@ function setupMapEventHandlers() {
                 const key = 'status.messages.loading_parcels', text = window.i18n?.t?.(key);
                 updateStatus(text && text !== key ? text : 'Loading parcels…', { transient: true });
             }
-        }
-        if (typeof updateVisibleParcelsCount === 'function') {
-            updateVisibleParcelsCount();
         }
     };
     map.on('zoomend', handleZoomEnd);
@@ -1046,6 +1026,7 @@ function setupMapEventHandlers() {
                 clearTimeout(window.parcelsTimeout);
                 window.parcelsTimeout = null;
             }
+            window.cancelParcelViewportFetch?.();
             return;
         }
         // The Leaflet viewport is parked while model/photo is active. Reapply its zoom visibility
@@ -1148,16 +1129,13 @@ function initializeMapCore() {
     // Initial load only if within zoom range and not in proposal deep-link mode. A place with no
     // cadastre offers the fallback choices without making a register request.
     const shouldSkipInitialFetch = typeof window !== 'undefined' && window.skipParcelFetchUntilProposalLoaded;
-    if (!shouldSkipInitialFetch && typeof fetchParcelDataReported === 'function') {
-        const within = isZoomWithinParcelRange();
-        if (typeof updateParcelsCheckboxByZoom === 'function') {
-            try { updateParcelsCheckboxByZoom(within); } catch (_) { }
-        }
-        if (within) {
-            fetchParcelDataReported(undefined, 'initial map load');
-        } else if (typeof updateStatus === 'function') {
-            updateStatus('Parcels disabled at this zoom');
-        }
+    const within = isZoomWithinParcelRange();
+    window.updateParcelsCheckboxByZoom?.(within);
+    const parcelsVisible = window.ParcelsUIVisibility?.syncParcelLayerVisibility?.();
+    if (!shouldSkipInitialFetch && parcelsVisible && isTwoDimensionalViewportActive()) {
+        window.fetchParcelDataReported?.(undefined, 'initial map load', { viewport: true });
+    } else if (!shouldSkipInitialFetch && !within && window.ParcelPresenter?.isEnabled?.() !== false) {
+        updateStatus('Parcels disabled at this zoom');
     }
 
     // Nudge map rendering on first init to avoid gray tiles before any user resize

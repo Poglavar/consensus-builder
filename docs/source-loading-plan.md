@@ -11,7 +11,10 @@ status table at the end is kept current as steps land; evidence goes in commits 
 `getRequiredGridCells` (`frontend/js/parcels/storage.js`) names the cells under a view; the
 repository (`frontend/js/parcels/ground-service.js`, `ensureBounds`) asks for one cell per request,
 six in flight, commits each cell to the live fabric as its own mutation, and caches by cell key, so
-ground already loaded is never asked for again. This is the model everything else adopts.
+ground already loaded is never asked for again. The 2D **Show parcels** switch controls rendering,
+map picking, and automatic viewport reads. Turning it off cancels the viewport's requests.
+The repository keeps loaded ground available for explicit reads by plans, designs and parcel search.
+This is the model everything else adopts.
 
 **Source adapters (server).** `backend/parcels/*-source.js` know how to query one kind of service
 (ArcGIS, WFS, OGC API, Socrata, GeoJSON, vector tiles); `createParcelSource` in

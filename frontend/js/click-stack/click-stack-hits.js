@@ -77,7 +77,9 @@
     }
 
     function hitsAt(latlng, { onPublished } = {}) {
-        const stack = global.__drillUi?.stackAt(latlng) || [];
+        // Photo view uses the same hit collection with its own parcel controls.
+        const includeParcels = global.isThreeModeActive?.() === true || global.ParcelPresenter?.isVisible?.() !== false;
+        const stack = global.__drillUi?.stackAt(latlng, { includeParcels }) || [];
         const designs = [], formed = [], parcels = [];
         for (const entry of stack) {
             if (entry.kind === 'proposal') {
@@ -98,7 +100,7 @@
         // Several cadastral parcels under one formation or design: list them all, the one under the
         // point (if any) first; consumed ones are read from the registry.
         const owner = formed[0]?.entry || designs[0]?.entry;
-        const set = owner ? parcelSetOf(owner) : [];
+        const set = includeParcels && owner ? parcelSetOf(owner) : [];
         if (set.length > 1 || (!parcels.length && set.length)) {
             const first = parcels[0]?.id;
             const ordered = Array.from(new Set([first, ...set].filter(Boolean)));
@@ -134,8 +136,11 @@
         const hits = { designs, built, permitted, formed, parcels, ground: [] };
         // Nothing at all here: bare ground offers what can be drawn on it, when the place has no
         // register to wait for (ui/ground-menu-model.js decides).
-        if (!designs.length && !built.length && !permitted.length && !formed.length && !parcels.length
-            && global.GroundMenu?.isBareGround?.(latlng)) hits.ground = [{ id: 'here', label: '' }];
+        if (!designs.length && !built.length && !permitted.length && !formed.length && !parcels.length) {
+            const bare = includeParcels ? global.GroundMenu?.isBareGround?.(latlng)
+                : global.GroundMenu?.factsAt?.(latlng)?.kind === 'no-cadastre';
+            if (bare) hits.ground = [{ id: 'here', label: '' }];
+        }
         return hits;
     }
 

@@ -20,7 +20,7 @@
     }
 
     function onParcelClick(e) {
-        if (parcelClicksOwnedElsewhere()) return;
+        if (global.ParcelPresenter?.isVisible?.() === false || parcelClicksOwnedElsewhere()) return;
         const targetLayer = e && e.target ? e.target : null;
         const parcelId = global.ParcelPresenter?.getIdForLayer?.(targetLayer) || null;
         if (!parcelId) return;

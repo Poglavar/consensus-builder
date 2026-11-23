@@ -101,6 +101,29 @@ function environment(options = {}) {
 }
 
 describe('parcel presenter atomic projection', () => {
+    it('keeps commits off the map while parcels are hidden and reuses them when enabled', async () => {
+        const { context, fabric, presenter } = environment();
+        const checkbox = { checked: true };
+        const mapLayers = new Set();
+        context.document = { getElementById: () => checkbox };
+        context.map = {
+            hasLayer: layer => mapLayers.has(layer),
+            addLayer: layer => mapLayers.add(layer),
+            removeLayer: layer => mapLayers.delete(layer)
+        };
+        expect(presenter.addGroupToMapIfAppropriate()).toBe(true);
+        checkbox.checked = false;
+        expect(presenter.addGroupToMapIfAppropriate()).toBe(false);
+        await mutate(fabric, mutation => mutation.seedCadastre([polygon('parcel')]));
+        expect(mapLayers.has(context.parcelLayer)).toBe(false);
+        const layer = presenter.getLayer('parcel');
+        expect(layer).toBeTruthy();
+        checkbox.checked = true;
+        expect(presenter.addGroupToMapIfAppropriate()).toBe(true);
+        expect(mapLayers.has(context.parcelLayer)).toBe(true);
+        expect(presenter.getLayer('parcel')).toBe(layer);
+    });
+
     it('removes stale layers when adopting an existing group at startup', () => {
         const stale = { feature: polygon('HR-STALE') };
         const { presenter, members } = environment({ initialLayers: [stale] });

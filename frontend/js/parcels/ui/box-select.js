@@ -23,6 +23,7 @@
 
     // ---- DOM layer -------------------------------------------------------------------------
     function selectionAvailable() {
+        if (root.ParcelPresenter?.isVisible?.() === false) return false;
         const selection = root.ParcelsUISelection;
         if (!root.multiParcelSelection || !selection || selection.parcelClicksOwnedElsewhere()) return false;
         if (root.MapPick?.active() || root.proposalListBrowseMode) return false;

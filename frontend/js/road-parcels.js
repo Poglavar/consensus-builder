@@ -210,11 +210,11 @@
     }
 
     function scheduleCuratedRoadRefresh() {
-        if (!isTwoDimensionalViewportActive() || !curatedRoadsAvailable()) return;
+        if (!isTwoDimensionalViewportActive() || global.ParcelPresenter?.isVisible?.() === false || !curatedRoadsAvailable()) return;
         if (curatedRoadFetchTimer) clearTimeout(curatedRoadFetchTimer);
         curatedRoadFetchTimer = setTimeout(() => {
             curatedRoadFetchTimer = null;
-            if (!isTwoDimensionalViewportActive()) return;
+            if (!isTwoDimensionalViewportActive() || global.ParcelPresenter?.isVisible?.() === false) return;
             fetchCuratedRoadParcels().catch(error => console.error('[curated-roads] background fetch failed', error));
         }, 800);
     }

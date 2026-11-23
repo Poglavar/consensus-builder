@@ -140,6 +140,7 @@
     }
 
     function drawParcelNumberLabels() {
+        if (global.ParcelPresenter?.isVisible?.() === false) return;
         if (!global.parcelLayer || !global.map) return;
         const city = currentCity();
         if (city !== parcelNumberLabelCity) {

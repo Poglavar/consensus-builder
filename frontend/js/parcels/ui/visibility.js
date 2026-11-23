@@ -5,37 +5,37 @@
         return (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false;
     }
 
+    function syncParcelLayerVisibility() {
+        const visible = global.ParcelPresenter?.addGroupToMapIfAppropriate?.();
+        global.PointParcelMap?.sync?.();
+        global.ParcelsMintedLayer?.syncMapVisibility?.();
+        if (!visible) {
+            clearTimeout(global.parcelsTimeout);
+            global.parcelsTimeout = null;
+            global.cancelParcelViewportFetch?.();
+            global.ParcelPreview?.clear?.();
+            global.__drillUi?.clearParcelHover?.();
+            global.clearParcelNumberLabels?.();
+            global.clearOwnerCountLabels?.();
+            global.clearProposalCountLabels?.();
+        }
+        updateVisibleParcelsCount();
+        return visible;
+    }
+
     function showAllParcels() {
-        // Check if zoom is within parcel range before showing parcels
-        const isZoomWithinRange = (typeof global.isZoomWithinParcelRange === 'function')
-            ? global.isZoomWithinParcelRange()
-            : true; // Default to true if function not available
-
-        if (!isZoomWithinRange) {
-            // Zoom is out of range, don't show parcels
-            if (typeof global.updateParcelsCheckboxByZoom === 'function') {
-                try { global.updateParcelsCheckboxByZoom(false); } catch (_) { }
-            }
-            return;
-        }
-
-        if (global.parcelLayer) {
-            // Only add to map if not already there - calling addTo multiple times can cause issues
-            if (!global.map.hasLayer(global.parcelLayer)) {
-                global.parcelLayer.addTo(global.map);
-            }
-            // Don't add layers directly - they're already rendered through parcelLayer FeatureGroup
-            // Adding them directly would cause double rendering (darker appearance)
-        } else {
-            fetchGroundReported('show all parcels');
-        }
+        if (!syncParcelLayerVisibility()) return;
+        global.refreshParcelNumberLabelsIfVisible?.();
+        global.refreshOwnerCountLabelsIfVisible?.();
+        global.refreshProposalCountLabelsIfVisible?.();
+        fetchGroundReported('show all parcels', { viewport: true });
     }
 
     // Parcel fetches here are fire-and-forget; the reported wrapper (parcels/fetch.js) turns a
     // failure into a status message + console.error instead of an unhandled rejection.
-    function fetchGroundReported(source) {
+    function fetchGroundReported(source, options) {
         if (typeof global.fetchParcelDataReported === 'function') {
-            return global.fetchParcelDataReported(undefined, source);
+            return global.fetchParcelDataReported(undefined, source, options);
         }
         const error = new Error('Parcel fetch is unavailable (parcels/fetch.js not loaded).');
         console.error(`[${new Date().toISOString()}] [ParcelVisibility] ${error.message}`);
@@ -80,9 +80,7 @@
     }
 
     function hideAllParcels() {
-        if (global.parcelLayer) {
-            global.map.removeLayer(global.parcelLayer);
-        }
+        syncParcelLayerVisibility();
         if (typeof global.updateStatus === 'function') {
             global.updateStatus('All parcels hidden');
         }
@@ -120,7 +118,7 @@
             return;
         }
 
-        const bounds = global.map.getBounds();
+        const bounds = global.ParcelPresenter?.isVisible?.() === false ? null : global.map.getBounds();
         if (!bounds || typeof bounds.intersects !== 'function') {
             setLabel('sidebar.parcels.inViewTemplate', { visible: 0, total: totalParcels }, `Parcels in map view / total: 0 / ${totalParcels}`);
             return;
@@ -143,6 +141,7 @@
 
     global.ParcelsUIVisibility = {
         isRoad,
+        syncParcelLayerVisibility,
         showAllParcels,
         showOnlyRoadParcels,
         hideAllParcels,
