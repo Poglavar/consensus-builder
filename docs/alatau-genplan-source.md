@@ -70,8 +70,12 @@ Russian text stays on the record. A Freeform building is checked against the zon
 
 - An existing zone is a general-plan area, not a parcel rule. Lots crossing two such zones without a
   clear majority give `study-multiple-zoning-areas`, as elsewhere.
-- The single-parcel study (`/planning/study`) still reads a parcel under a planned zone against
-  that zone, clipped to it; only the viewport envelopes use the zone as the lot.
+- The single-parcel study (`/planning/study`, which agents read through `ugt_parcel_context`)
+  follows the map: a parcel wholly under planned zones is studied as the plan's block that holds
+  most of it (`landBasis: "zone"`, the parcel asked for in `requestedParcel`); a parcel no one block
+  holds most of (the 40 ha demo parcel: a third street, the rest ten blocks) gives
+  `study-multiple-zoning-areas`. A point with no
+  cadastral parcel is refused (`study-parcel-missing`), though the map draws the block there.
 - The cadastre returns every lot as a MultiPolygon; a one-part MultiPolygon is studied as its
   Polygon (`assembleParcelStudy`).
 - The source is the plan as approved in 2025. ARUP and BCG are preparing a master plan to 2040 under

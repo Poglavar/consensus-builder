@@ -3,7 +3,7 @@
 import * as turf from '@turf/turf';
 import { createRequire } from 'node:module';
 import { sourcesFor } from './sources.js';
-import { STUDY_MAX_PARCEL_M2, asPolygonParcel, assembleParcelStudy, parcelRecords, parcelZones, readStudyZoning, studyParcelSource, withScenarioSource } from './parcel-study.js';
+import { STUDY_MAX_PARCEL_M2, asPolygonParcel, assembleParcelStudy, formsLand, parcelRecords, parcelZones, readStudyZoning, studyParcelSource, withScenarioSource, zoneLots } from './parcel-study.js';
 import { runtimeParcelSource } from '../parcels/sources.js';
 import { validateBounds } from '../parcels/source-contract.js';
 import { configurationTreatments } from './providers/atlas.js';
@@ -200,21 +200,6 @@ const OBSTACLE_MARGIN_M = 45;
 function expand([w, s, e, n], marginM) {
     const dLat = marginM / 111320, dLng = dLat / Math.cos((s + n) / 2 * Math.PI / 180);
     return [w - dLng, s - dLat, e + dLng, n + dLat];
-}
-
-// A zoning area whose plan lays the land out anew is its own lot: the parcels under it are to be
-// re-formed, so its rules are never applied to them (docs/vocabulary.md, Land basis). The provider
-// states this on the record; it is never read off the geometry.
-const formsLand = record => record?.landBasis === 'zone';
-// The lots such a zoning area stands for: one per polygon of its full outline.
-function zoneLots(record) {
-    const site = record.site;
-    const polygons = site?.type === 'MultiPolygon' ? site.coordinates : site?.type === 'Polygon' ? [site.coordinates] : [];
-    return polygons.map((coordinates, index) => {
-        const parcel = { type: 'Feature', id: `zone:${record.source.recordId}${polygons.length > 1 ? `.${index + 1}` : ''}`,
-            properties: {}, geometry: { type: 'Polygon', coordinates } };
-        return { parcel, bbox: turf.bbox(parcel), zone: record.source.recordId };
-    });
 }
 
 export async function loadParcelEnvelopes(query, { sources, parcelProvider = descriptor => runtimeParcelSource(descriptor), streetProvider } = {}) {

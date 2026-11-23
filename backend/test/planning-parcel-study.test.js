@@ -147,6 +147,38 @@ describe('Atlas parcel study', () => {
         // The fixture's front setback is a source estimate, so its check stays unknown on any shape.
         expect(check(result, 'frontSetback').status).toBe('unknown');
     });
+    it('studies the plan\'s own lot when the parcel lies under a zone that lays the land out anew', async () => {
+        const zones = (...boxes) => createAtlasProvider({ type: 'FeatureCollection', features: boxes.map(([id, box]) =>
+            ({ ...turf.bboxPolygon(box), properties: { ...properties(), slice_id: id } })) }, metadata);
+        // The provider states the land basis on the record; the study re-reads each zone by its record.
+        const forming = base => ({ ...base, record: async (...args) => (await base.record(...args))
+            .map(item => item.source.recordId === 'block' ? { ...item, landBasis: 'zone' } : item) });
+        const blockBox = [-105.0012,39.9998,-105.0003,40.0006];
+        const whole = await context(forming(zones(['block', blockBox])));
+        expect(whole).toMatchObject({ landBasis: 'zone', parcelReference: null, parcel: { id: 'zone:block' },
+            sourceCoverage: { zoneShare: expect.closeTo(1, 6), uncoveredM2: expect.closeTo(0, 3) },
+            requestedParcel: { reference: { parcelId: parcel().id }, areaM2: expect.closeTo(turf.area(parcel()), 3) } });
+        expect(whole.requestedParcel.underLotM2).toBeCloseTo(turf.area(parcel()), 3);
+        expect(whole.parcel.geometry).toEqual(turf.bboxPolygon(blockBox).geometry);
+        // A parcel partly under the block keeps the part under the zone that keeps its parcels.
+        const split = forming(zones(['block', [-105.0012,39.9998,-105.00075,40.0006]], ['kept', [-105.00075,39.9998,-105,40.0006]]));
+        const kept = await context(split);
+        expect(kept.source.source.recordId).toBe('kept');
+        expect(kept.parcel.id).toBe(parcel().id);
+        expect(kept).not.toHaveProperty('landBasis');
+        // A parcel shared evenly by two of the plan's lots has no single lot to study.
+        const halves = forming(zones(['block', [-105.0012,39.9998,-105.00075,40.0006]], ['other', [-105.00075,39.9998,-105,40.0006]]));
+        const both = { ...halves, record: async (...args) => (await halves.record(...args)).map(item => ({ ...item, landBasis: 'zone' })) };
+        await expect(context(both)).rejects.toMatchObject({ code: 'study-multiple-zoning-areas' });
+        // Nor does one spread over three lots, the largest holding under half of it.
+        const thirds = forming(zones(['block', [-105.0012,39.9998,-105.00083,40.0006]], ['b', [-105.00083,39.9998,-105.00066,40.0006]], ['c', [-105.00066,39.9998,-105,40.0006]]));
+        const spread = { ...thirds, record: async (...args) => (await thirds.record(...args)).map(item => ({ ...item, landBasis: 'zone' })) };
+        await expect(context(spread)).rejects.toMatchObject({ code: 'study-multiple-zoning-areas' });
+        // Without the statement the same zone regulates the parcel as it stands.
+        const plain = await context(zones(['block', blockBox]));
+        expect(plain.parcel.id).toBe(parcel().id);
+        expect(plain).not.toHaveProperty('requestedParcel');
+    });
     it('rejects ambiguous or incomplete parcel point reads', async () => {
         const options = { sources: [provider()], parcelProvider: () => ({ queryBounds: async () => ({ complete: true, features: [parcel(), { ...parcel(), id: 'another' }] }) }) };
         await expect(loadParcelStudy({ ...query, parcel: undefined, point: [-105.00075,40.0002] }, options)).rejects.toMatchObject({ code: 'study-parcel-ambiguous' });

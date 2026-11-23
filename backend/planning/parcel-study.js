@@ -52,6 +52,21 @@ export async function readStudyZoning(provider, query, bbox) {
 }
 
 // A study uses only its explicitly pinned parcel provider. No city default is inferred.
+// A zoning area whose plan lays the land out anew is its own lot: the parcels under it are to be
+// re-formed, so its rules are never applied to them (docs/vocabulary.md, Land basis). The provider
+// states this on the record; it is never read off the geometry.
+export const formsLand = record => record?.landBasis === 'zone';
+// The lots such a zoning area stands for: one per polygon of its full outline.
+export function zoneLots(record) {
+    const site = record.site;
+    const polygons = site?.type === 'MultiPolygon' ? site.coordinates : site?.type === 'Polygon' ? [site.coordinates] : [];
+    return polygons.map((coordinates, index) => {
+        const parcel = { type: 'Feature', id: `zone:${record.source.recordId}${polygons.length > 1 ? `.${index + 1}` : ''}`,
+            properties: {}, geometry: { type: 'Polygon', coordinates } };
+        return { parcel, bbox: turf.bbox(parcel), zone: record.source.recordId };
+    });
+}
+
 export function studyParcelSource(provider, city) {
     if (provider?.descriptor.parcelStudy !== 'direct-dimensions.v1') fail('study-unavailable');
     const descriptor = provider.descriptor.parcelSourceId ? resolveParcelSourceDescriptor(provider.descriptor.parcelSourceId)
@@ -76,9 +91,30 @@ export async function loadParcelStudy(query, { sources, parcelProvider = descrip
         : turf.booleanPointInPolygon(turf.point(query.point), feature));
     if (!parcels.length) fail('study-parcel-missing');
     if (parcels.length !== 1) fail('study-parcel-ambiguous');
-    const parcel = parcels[0];
+    const parcel = asPolygonParcel(parcels[0]);
     const records = await readStudyZoning(provider, query, turf.bbox(parcel));
-    return assembleParcelStudy(parcel, descriptor, await parcelRecords(provider, parcel, records));
+    // As on the map: a parcel wholly under zoning areas that lay the land out anew does not survive
+    // the plan, so the study reads the plan's lot that holds most of it and names the parcel asked
+    // for; a parcel partly under such areas is studied on the part under the areas that keep it.
+    const refined = await parcelRecords(provider, parcel, records);
+    const zones = parcelZones(parcel, refined);
+    const forming = zones.major.filter(part => formsLand(part.source));
+    if (!forming.length) return assembleParcelStudy(parcel, descriptor, refined, { zones });
+    if (forming.length < zones.major.length) {
+        return assembleParcelStudy(parcel, descriptor, refined, { zones: { ...zones, major: zones.major.filter(part => !formsLand(part.source)) } });
+    }
+    // A parcel the plan spreads over several lots, none holding most of it, has no one lot to study;
+    // two lots without a clear majority leave it ambiguous, as two zones do (assembleParcelStudy).
+    const held = lot => { const shared = turf.intersect(parcel, lot.parcel); return shared ? turf.area(shared) : 0; };
+    const lots = forming.flatMap(part => zoneLots(part.source)).map(candidate => ({ candidate, m2: held(candidate) }))
+        .sort((a, b) => b.m2 - a.m2);
+    if (lots.length > 1 && (lots[0].m2 / zones.parcelM2 < 0.5 || (lots[0].m2 - lots[1].m2) / zones.parcelM2 < 0.1)) fail('study-multiple-zoning-areas');
+    const lot = lots[0].candidate;
+    const lotRecords = await parcelRecords(provider, lot.parcel, await readStudyZoning(provider, query, lot.bbox));
+    const context = assembleParcelStudy(lot.parcel, descriptor, lotRecords, { zone: lot.zone });
+    return { ...context, landBasis: 'zone', parcelReference: null,
+        requestedParcel: { reference: { sourceId: descriptor.id, parcelId: parcel.id, revision: sourceRevision({ id: parcel.id, geometry: parcel.geometry }) },
+            areaM2: zones.parcelM2, underLotM2: held(lot) } };
 }
 
 // A provider whose rules attach to the parcel rather than the zoning area (a front-yard map read
