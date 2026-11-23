@@ -301,7 +301,7 @@
         if (status === 'loading' && progress?.total) return t('loadingCells', progress);
         if (status !== 'ready') return t(status);
         if (!payload?.sources?.length) return t('unavailable');
-        const failedNote = (failedCells ? ` · ${t('cellsFailed')}` : '') + (frozen ? ` · ${t('zoomInForMore')}` : '');
+        const failedNote = (failedCells ? ` · ${t('cellsFailed')}` : '') + (frozen || massingWaits ? ` · ${t('zoomInForMore')}` : '');
         if (payload.envelopes) return t('envelopesLoaded', { count: items.filter(item => item.parcelEnvelope).length,
             missing: payload.unavailable.length }) + failedNote;
         if (!items.length) return t('empty');
@@ -758,6 +758,11 @@
     // The cells drawn now (scene.js retainDrawn): a cell stays until its replacement lands or it
     // leaves the range around the view, so a camera tilt or pan never takes down what is in range.
     const drawn = new Map();
+    // The 2D zoom from which zoning areas load, and the one from which massing does too: a zone is one
+    // light request per cell, a massing a parcel read and a solve per lot.
+    const ZONING_ZOOM = 15, MASSING_ZOOM = 16;
+    // Zoning areas are drawn while massing waits for a closer zoom (stateText says so).
+    let massingWaits = false;
     async function refresh({ force = false } = {}) {
         if (!ready || !catalogReady) return;
         if (policy().permitted === 'off' && store.get().zoningAreas === 'off') { updateHaze(null); return; }
@@ -765,7 +770,7 @@
         const view = root.LoadView.current();
         // In 3D a camera tilted toward straight down reads as a lower zoom: what is drawn stays (it is
         // all still in range), only new cells stop loading. The 2D map below the gate draws none.
-        if (view && view.mode === '3d' && view.zoom < 16 && drawn.size) {
+        if (view && view.mode === '3d' && view.zoom < MASSING_ZOOM && drawn.size) {
             viewCache.abortExcept([]); request++;
             if (status === 'loading') status = 'ready';
             frozen = true;
@@ -773,7 +778,9 @@
             render(); return;
         }
         frozen = false;
-        if (!view || view.zoom < 16) {
+        const zoningOnly = view && view.zoom >= ZONING_ZOOM && view.zoom < MASSING_ZOOM && store.get().zoningAreas !== 'off';
+        if (!view || (view.zoom < MASSING_ZOOM && !zoningOnly)) {
+            massingWaits = false;
             updateHaze(null);
             viewCache.abortExcept([]); request++; invalidate(); drawn.clear(); items = []; status = 'zoom'; payload = null;
             if (!selected()) store.select(null);
@@ -785,8 +792,17 @@
         // Bounds-registered sources come and go with the viewport; re-list them when it moves.
         if (!(await ensureSources(city, bbox))) return;
         const descriptor = sourceOptions.find(source => source.id === sourceId);
-        const envelopeScope = descriptor?.parcelStudy && policy().permitted !== 'off' ? `envelopes:${city}:${sourceId}` : '';
-        const areaScope = descriptor && (!descriptor.capabilities.areas || store.get().zoningAreas !== 'off') ? `areas:${city}:${sourceId}:${scenarioId}` : '';
+        const envelopeScope = descriptor?.parcelStudy && policy().permitted !== 'off' && !zoningOnly ? `envelopes:${city}:${sourceId}` : '';
+        massingWaits = Boolean(zoningOnly && descriptor?.parcelStudy && policy().permitted !== 'off');
+        // A source without zoning areas answers representations with massing, which waits as envelopes do.
+        const areaScope = descriptor && (descriptor.capabilities.areas ? store.get().zoningAreas !== 'off' : !zoningOnly)
+            ? `areas:${city}:${sourceId}:${scenarioId}` : '';
+        if (zoningOnly && !areaScope) {
+            massingWaits = false;
+            viewCache.abortExcept([]); request++; invalidate(); drawn.clear(); items = []; status = 'zoom'; payload = null;
+            updateHaze(null); if (!selected()) store.select(null);
+            drawMap(); render(); notifyGeometry(); return;
+        }
         const cells = core.viewCells(bbox, view.centre);
         const jobs = [];
         for (const [kind, scope] of [['envelopes', envelopeScope], ['areas', areaScope]]) {

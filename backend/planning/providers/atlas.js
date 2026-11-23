@@ -1,6 +1,7 @@
 // Read a supplied Atlas slice dataset as zoning areas and source constraints. No solver or
 // parcel conversion: numeric evidence methods and the original source fields remain intact.
 import * as turf from '@turf/turf';
+import { clipToBounds } from '../display-clip.js';
 import { atlasInventory, inspectNumericConstraint } from '../atlas-audit.js';
 import { withSourceProposal, sourceRevision } from '../source-proposal.js';
 import { validateGeometry } from '../../parcels/source-contract.js';
@@ -84,7 +85,7 @@ export function createAtlasProvider(collection, metadata) {
                 || entry.bbox[3] < bbox[1] || entry.bbox[1] > bbox[3]) && turf.booleanIntersects(entry.feature, area));
             const remaining = visible.filter(entry => after === null || entry.id.localeCompare(after, 'en') > 0);
             const page = remaining.slice(0, limit);
-            const items = page.map(entry => record(entry, scenario, turf.bboxClip(entry.feature, bbox).geometry, city));
+            const items = page.map(entry => record(entry, scenario, clipToBounds(entry.feature, bbox), city));
             const statuses = {};
             for (const entry of visible) {
                 const status = treatment(entry, scenario) || 'unknown';

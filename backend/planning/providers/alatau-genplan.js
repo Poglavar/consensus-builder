@@ -3,6 +3,7 @@
 // public WFS (map.gov4c.kz/ggkgs, layer kz:gpzone), read live per viewport. Each zone's use and
 // storey class become a status and, for residential classes, storey and height constraints.
 import * as turf from '@turf/turf';
+import { clipToBounds } from '../display-clip.js';
 import { readFileSync } from 'node:fs';
 import { createHttpsJsonFetch } from '../../parcels/https-json-fetch.js';
 import { validateGeometry } from '../../parcels/source-contract.js';
@@ -208,7 +209,7 @@ export function createAlatauGenplanProvider(descriptor = alatauGenplanSource, { 
             // A full page may have more behind it; the cursor counts service rows, kept or omitted.
             const page = await readBounds(bbox, { after: start, count: limit });
             const visible = page.features;
-            const items = visible.map(feature => record(feature, turf.bboxClip(feature, bbox).geometry, city, scenario));
+            const items = visible.map(feature => record(feature, clipToBounds(feature, bbox), city, scenario));
             const statuses = {};
             for (const item of items) statuses[item.assessment.status] = (statuses[item.assessment.status] || 0) + 1;
             return { items, nextAfter: page.returned >= limit ? String(start + page.returned) : null, omitted: page.omitted,

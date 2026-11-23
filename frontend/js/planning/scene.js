@@ -162,7 +162,9 @@
                 if (known?.areas?.length && item.areas?.length) {
                     items.set(item.id, { ...known, areas: [...known.areas, ...item.areas] });
                     pieces.add(item.id);
-                } else items.set(item.id, item);
+                // A cell the zone's box reaches but its shape does not answers it with no piece;
+                // that answer never replaces the pieces other cells gave.
+                } else if (!known?.areas?.length || item.areas?.length) items.set(item.id, item);
             }
             for (const entry of answer.unavailable || []) unavailable.set(entry.parcelId ?? JSON.stringify(entry), entry);
             for (const summary of answer.summaries || []) {

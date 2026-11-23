@@ -152,6 +152,16 @@ describe('Cell answers of a clipped zone', () => {
         expect(total).toBeCloseTo(turf.area(turf.polygon([ring(ZONE_WEST, ZONE_SOUTH)])), -1);
     });
 
+    it('keeps the pieces when a cell the zone\'s box reaches answers it with none', () => {
+        // The zone service matches a cell by the zone's box, so a cell beside the zone lists it empty.
+        for (const order of [[answer([piece(77, split)]), answer([])], [answer([]), answer([piece(77, split)])]]) {
+            const merged = scene.mergeAnswers(order);
+            expect(merged.items).toHaveLength(1);
+            expect(merged.items[0].areas).toHaveLength(1);
+        }
+        expect(scene.mergeAnswers([answer([]), answer([])]).items[0].areas).toEqual([]);
+    });
+
     it('joins the pieces when asked', () => {
         const joinAreas = areas => [{ ...areas[0], geometry: areas.slice(1).reduce((shape, area) => turf.union(shape, turf.feature(area.geometry)), turf.feature(areas[0].geometry)).geometry }];
         const merged = scene.mergeAnswers([answer([piece(77, split)]), answer([piece(split, 78)])], { joinAreas });

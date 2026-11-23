@@ -187,14 +187,14 @@ describe('load view', () => {
 
 describe('planning view refresh', () => {
     // planning/views.js refresh() with its collaborators stubbed and the real viewport cache.
-    function planningHarness({ view, zoom = 19, descriptor = { id: 'src', parcelStudy: true, capabilities: { areas: false } }, fail = () => null }) {
+    function planningHarness({ view, zoom = 19, descriptor = { id: 'src', parcelStudy: true, capabilities: { areas: false } }, fail = () => null, zoningAreas = 'off' }) {
         const source = read('../../frontend/js/planning/views.js');
         const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
         const functions = ['refresh', 'invalidate', 'joinAreas', 'updateHaze'].map(name => {
             const node = body.find(entry => entry.type === 'FunctionDeclaration' && entry.id.name === name);
             return source.slice(node.start, node.end);
         });
-        const state = { selectedId: null, zoningAreas: 'off' };
+        const state = { selectedId: null, zoningAreas };
         const loadViewport = vi.fn(async url => {
             const bbox = new URL(url).searchParams.get('bbox');
             const error = fail(url);
@@ -210,6 +210,7 @@ describe('planning view refresh', () => {
             drawMap: vi.fn(), render() {}, notifyGeometry() {}, restoreSelection() {},
             // The haze as the grid it is painted from: the image and its map layer need a browser.
             extent: loadedExtent, haze: null, hazeSignature: '', hazeScopes: new Set(), frozen: false,
+            ZONING_ZOOM: 15, MASSING_ZOOM: 16, massingWaits: false,
             hazeImage: grid => grid, drawHaze() {}, CustomEvent: class { constructor(type) { this.type = type; } },
             root: {
                 dispatchEvent: vi.fn(),
@@ -301,6 +302,27 @@ describe('planning view refresh', () => {
         await context.refresh();
         expect(loadViewport).not.toHaveBeenCalled();
         expect(context.status).toBe('zoom');
+    });
+
+    it('between zoom 15 and 16 loads zoning areas only, and says massing waits for a closer zoom', async () => {
+        const view = [15.97611, 45.80381, 15.98147, 45.80519];
+        const zones = { id: 'src', parcelStudy: true, capabilities: { areas: true } };
+        const { context, asked } = planningHarness({ view, zoom: 15.5, descriptor: zones, zoningAreas: 'ghost' });
+        await context.refresh();
+        expect(asked().length).toBe(cellsOf(view).length);
+        expect(asked().every(call => call.startsWith('/planning/representations '))).toBe(true);
+        expect(context.status).toBe('ready');
+        expect(context.massingWaits).toBe(true);
+        // A source without zoning areas answers with massing, which waits for zoom 16 like envelopes.
+        const massing = planningHarness({ view, zoom: 15.5, descriptor: { id: 'src', capabilities: { areas: false } }, zoningAreas: 'ghost' });
+        await massing.context.refresh();
+        expect(massing.loadViewport).not.toHaveBeenCalled();
+        expect(massing.context.status).toBe('zoom');
+        // Below zoom 15 nothing loads.
+        const far = planningHarness({ view, zoom: 14.5, descriptor: zones, zoningAreas: 'ghost' });
+        await far.context.refresh();
+        expect(far.loadViewport).not.toHaveBeenCalled();
+        expect(far.context.status).toBe('zoom');
     });
 
     it('a cell that fails once is asked again, alone, after the rest', async () => {

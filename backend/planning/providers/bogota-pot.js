@@ -2,6 +2,7 @@
 // cartography's public ArcGIS Online copy (IDE Cundinamarca, CC BY 4.0). Records are treatment
 // areas carrying metric constraints; a parcel's front yard is read under the lot (parcelRecords).
 import * as turf from '@turf/turf';
+import { clipToBounds } from '../display-clip.js';
 import { createPublicSourceFetch } from '../../parcels/public-source-fetch.js';
 import { validateGeometry } from '../../parcels/source-contract.js';
 import { withSourceProposal, sourceRevision } from '../source-proposal.js';
@@ -166,7 +167,7 @@ export function createBogotaPotProvider(descriptor = bogotaPotSource, { fetchImp
             antejardinUnder(bbox).catch(() => {});
             if (scenario === 'sustainable') activityUnder(bbox).catch(() => {});
             const visible = page.features.slice(0, limit);
-            const items = visible.map(feature => record(feature, turf.bboxClip(feature, bbox).geometry, city, scenario));
+            const items = visible.map(feature => record(feature, clipToBounds(feature, bbox), city, scenario));
             const statuses = {};
             for (const item of items) statuses[item.assessment.status] = (statuses[item.assessment.status] || 0) + 1;
             const more = page.more || page.features.length + page.omitted > limit;
