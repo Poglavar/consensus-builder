@@ -49,6 +49,46 @@ async function openLayers(page: any, { curatedRoads = true } = {}) {
 }
 
 test.describe('Layers sheet behavior @features', () => {
+  test('Alatau state-land controls fetch and draw free plots and applications', async ({ mockApi: page }) => {
+    const relayCalls: string[] = [];
+    // State land is independent of the ordinary parcel layer. Open the map with the visitor's
+    // session choice to continue without parcels and supply only the two state land views here.
+    await page.addInitScript(() => sessionStorage.setItem('cb_without_parcels:alatau', '1'));
+    await page.route('**/parcel-provider-relay/kz-alatau-pkk?**', async route => {
+      const target = new URL(route.request().url()).searchParams.get('url') || '';
+      if (!/freelands_view|reqland_view/.test(target)) return route.fallback();
+      relayCalls.push(target);
+      const applications = target.includes('reqland_view');
+      await route.fulfill({ json: {
+        type: 'FeatureCollection', numberMatched: 1, totalFeatures: 1,
+        features: [{ type: 'Feature', properties: { gid: applications ? 2 : 1, id: applications ? 'APP-1' : 'FREE-1',
+          usedesc_ru: applications ? 'Жильё' : 'Свободный участок',
+          auction_land_status_id: applications ? null : 89, status_land_id: applications ? 100 : null,
+          create_time: '2026-01-02T00:00:00Z', update_time: '2026-02-03T00:00:00Z' },
+          geometry: { type: 'Polygon', coordinates: [[[13668280, 4853540], [13668310, 4853540], [13668310, 4853570], [13668280, 4853570], [13668280, 4853540]]] } }]
+      } });
+    });
+    await page.goto('/?city=alatau&at=43.7984,77.0911,16&reduceMotion=1', { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => !!(window as any).CityConfigManager?.getCurrentCityConfig?.()?.stateLand);
+    await page.locator('#layers-button').click();
+    await expect(page.locator('#layers-sheet')).toBeVisible();
+    await openLayerSection(page, 'parcels');
+    const free = page.locator('#showStateFreePlots');
+    const applications = page.locator('#showLandApplications');
+    await expect(free).toBeVisible();
+    await expect(applications).toBeVisible();
+    await free.check();
+    await expect.poll(() => page.locator('.state-land-shape--free').count()).toBe(1);
+    await applications.check();
+    await expect.poll(() => page.locator('.state-land-shape--application').count()).toBe(1);
+    expect(relayCalls.some(url => url.includes('freelands_view'))).toBe(true);
+    expect(relayCalls.some(url => url.includes('reqland_view'))).toBe(true);
+    await free.uncheck();
+    await expect(page.locator('.state-land-shape--free')).toHaveCount(0);
+    await applications.uncheck();
+    await expect(page.locator('.state-land-shape--application')).toHaveCount(0);
+  });
+
   test('parcel, ownership, label, ad, and minted controls produce visible map data', async ({ mockApi: page }) => {
     // This complete sheet flow also opens and closes two real external browser tabs.
     test.setTimeout(60_000);

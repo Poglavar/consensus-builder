@@ -62,6 +62,18 @@
       ]
     },
     {
+      "id": "layers.stateFreePlots",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
+      "id": "layers.landApplications",
+      "specs": [
+        "tests/layer-behavior.spec.ts"
+      ]
+    },
+    {
       "id": "parcels.locate",
       "specs": [
         "tests/search-and-commands.spec.ts"
@@ -332,19 +344,7 @@
       ]
     },
     {
-      "id": "game.enable",
-      "specs": [
-        "tests/activity-controls.spec.ts"
-      ]
-    },
-    {
-      "id": "game.playPause",
-      "specs": [
-        "tests/activity-controls.spec.ts"
-      ]
-    },
-    {
-      "id": "game.interval",
+      "id": "game.run",
       "specs": [
         "tests/activity-controls.spec.ts"
       ]
