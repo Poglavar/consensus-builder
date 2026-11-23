@@ -89,8 +89,8 @@ body:is([data-planning-proposed="solid"], [data-planning-proposed="ghost"]) .pla
 .planning-inspector__name { margin: var(--cb-space-1) 0 0; font-weight: var(--cb-weight-semibold); overflow-wrap: anywhere; }
 .planning-source-wording { margin: var(--cb-space-1) 0 0; font-size: var(--cb-text-sm); color: var(--cb-text-muted); overflow-wrap: anywhere; }
 .planning-sources-pane { z-index: var(--cb-z-map-pane-site); }
-.leaflet-pane.planning-haze-pane { z-index: var(--cb-z-map-pane-planning-haze); pointer-events: none; }
-.map-comparing .planning-haze-pane { display: none; }
+.leaflet-pane.planning-failed-pane { z-index: var(--cb-z-map-pane-planning-failed); pointer-events: none; }
+.map-comparing .planning-failed-pane { display: none; }
 body[data-planning-proposed="ghost"] .leaflet-proposedBuildings-pane { opacity: 0.4; }
 body[data-planning-proposed="off"] .leaflet-proposedBuildings-pane { visibility: hidden; }
 body[data-planning-existing="ghost"] :is(.leaflet-observedBuildings-pane, .leaflet-observedReferences-pane) { opacity: 0.5; }

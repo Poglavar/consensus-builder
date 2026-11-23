@@ -400,6 +400,6 @@ in commits.
   zones) is its own lot, stated by the provider per zone, never inferred from geometry; elsewhere rules apply to parcels as
   they stand. User asked for the general form ("works for all cities, stated in vocabulary and UX"). Open: whether
   Alatau's layout is also restated as plans of designs, as UPU Borovje is.
-- 2026-11-23: Ground in range that the Permitted layers have not loaded is hazed (one image for map and model view,
-  `planning/loaded-extent.js`); the haze is driven by loaded cells, not by zoom, static (no drifting clouds: frame cost),
-  and a failed cell is hatched. User-approved proposal.
+- 2026-11-23: No haze over ground the Permitted layers have not loaded: it covered zones already drawn while massing
+  loaded and confused more than it helped (user). Loading shows in the status line only; a cell still failing after its
+  retry is hatched (`planning/failed-cells.js`, one image for map and model view).

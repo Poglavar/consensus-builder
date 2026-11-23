@@ -11,7 +11,7 @@ import { parse } from '@babel/parser';
 
 const require = createRequire(import.meta.url);
 const scene = require('../../frontend/js/planning/scene.js');
-const loadedExtent = require('../../frontend/js/planning/loaded-extent.js');
+const failedCellGrid = require('../../frontend/js/planning/failed-cells.js');
 const counts = require('../../frontend/js/proposals/counts.js');
 const Cid = require('../../frontend/js/cid.js');
 const { createCadastralParcelRepository } = require('../../frontend/js/parcels/ground-service.js');
@@ -190,7 +190,7 @@ describe('planning view refresh', () => {
     function planningHarness({ view, zoom = 19, descriptor = { id: 'src', parcelStudy: true, capabilities: { areas: false } }, fail = () => null, zoningAreas = 'off' }) {
         const source = read('../../frontend/js/planning/views.js');
         const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
-        const functions = ['refresh', 'invalidate', 'joinAreas', 'updateHaze'].map(name => {
+        const functions = ['refresh', 'invalidate', 'joinAreas', 'markFailed'].map(name => {
             const node = body.find(entry => entry.type === 'FunctionDeclaration' && entry.id.name === name);
             return source.slice(node.start, node.end);
         });
@@ -208,10 +208,10 @@ describe('planning view refresh', () => {
             policy: () => ({ permitted: 'ghost' }), store: { get: () => state, select: vi.fn() }, selected: () => null,
             ensureSources: async () => true, sourceOptions: [descriptor], sourceId: descriptor.id, scenarioId: '', scenarioParam: () => '',
             drawMap: vi.fn(), render() {}, notifyGeometry() {}, restoreSelection() {},
-            // The haze as the grid it is painted from: the image and its map layer need a browser.
-            extent: loadedExtent, haze: null, hazeSignature: '', hazeScopes: new Set(), frozen: false,
+            // The hatch as the grid it is painted from: the image and its map layer need a browser.
+            failedGrid: failedCellGrid, hatch: null, hatchSignature: '', frozen: false,
             ZONING_ZOOM: 15, MASSING_ZOOM: 16, massingWaits: false,
-            hazeImage: grid => grid, drawHaze() {}, CustomEvent: class { constructor(type) { this.type = type; } },
+            hatchImage: grid => grid, drawHatch() {}, CustomEvent: class { constructor(type) { this.type = type; } },
             root: {
                 dispatchEvent: vi.fn(),
                 LoadView: { current: () => ({ mode: box.mode || '2d', bbox: box.current, zoom: box.zoom,
@@ -358,33 +358,34 @@ describe('planning view refresh', () => {
         expect(context.items).toHaveLength(cellsOf(view).length * 2);
     });
 
-    it('hazes the ground in range that is not loaded, hatches a failed cell, and clears with the layer', async () => {
+    it('hatches only a cell that failed after its retry, keeps it while frozen, and clears with the layer', async () => {
         const view = [15.97611, 45.80381, 15.98147, 45.80519];
         const cells = cellsOf(view), broken = cells[1];
         const { context, box } = planningHarness({ view, fail: url => String(url).includes('/planning/envelopes')
             && new URL(url).searchParams.get('bbox') === broken.bbox.join(',') ? Object.assign(new Error('HTTP 502'), { status: 502 }) : null });
         await context.refresh();
-        const stateOf = (grid, cell) => {
-            const [x, y] = loadedExtent.cellKey(cell.bbox, scene.PLANNING_CELL_DEGREES).split(',').map(Number);
-            return grid.cells[(y - grid.y0) * grid.cols + x - grid.x0];
+        const marked = cell => {
+            const [x, y] = failedCellGrid.cellKey(cell.bbox, scene.PLANNING_CELL_DEGREES).split(',').map(Number);
+            const grid = context.hatch;
+            return Boolean(grid && x >= grid.x0 && x < grid.x0 + grid.cols && y >= grid.y0 && y < grid.y0 + grid.rows
+                && grid.cells[(y - grid.y0) * grid.cols + x - grid.x0]);
         };
-        // Every cell of the view is clear but the one that failed; the range beyond the view is not loaded.
-        expect(cells.filter(cell => cell !== broken).every(cell => stateOf(context.haze, cell) === loadedExtent.LOADED)).toBe(true);
-        expect(stateOf(context.haze, broken)).toBe(loadedExtent.FAILED);
-        expect(context.haze.cells.filter(cell => cell === loadedExtent.UNLOADED).length).toBeGreaterThan(cells.length);
-        expect(context.root.dispatchEvent.mock.calls.at(-1)[0].type).toBe('planninghazechange');
-        // The model view zoomed out past the gate keeps what it drew; the haze follows the wider view.
+        // The failed cell alone is marked: loaded ground and ground beyond the view are not.
+        expect(marked(broken)).toBe(true);
+        expect(cells.filter(cell => cell !== broken).some(marked)).toBe(false);
+        expect([context.hatch.cols, context.hatch.rows]).toEqual([1, 1]);
+        expect(context.root.dispatchEvent.mock.calls.at(-1)[0].type).toBe('planningfailedcellschange');
+        // The model view zoomed out past the gate keeps what it drew, the hatch too.
         const [w, s, e, n] = view, dx = e - w, dy = n - s;
         box.mode = '3d'; box.zoom = 15.2; box.current = [w - 3 * dx, s - 3 * dy, e + 3 * dx, n + 3 * dy];
-        const near = context.haze;
+        const near = context.hatch;
         await context.refresh();
         expect(context.frozen).toBe(true);
-        expect(context.haze.cols).toBeGreaterThan(near.cols);
-        expect(stateOf(context.haze, cells[0])).toBe(loadedExtent.LOADED);
-        // Below the gate on the map nothing is drawn, so there is no edge left to mark.
+        expect(context.hatch).toBe(near);
+        // Below the gate on the map nothing is drawn, so nothing is left to mark.
         box.mode = '2d'; box.zoom = 15;
         await context.refresh();
-        expect(context.haze).toBeNull();
+        expect(context.hatch).toBeNull();
         expect(context.frozen).toBe(false);
     });
 
