@@ -143,6 +143,11 @@ describe('hosted MCP agent acceptance boundary', () => {
         const tower = await ok('ugt_draft_building', { city: 'london', parcelSourceId: 'boundary-source-0', typology: 'freeform', outline, floors: 6, title: 'West tower' });
         const original = tower.untrusted.design;
         expect(original.buildingProposal.typologyType).toBe('single');
+        // The outline is the site: the building is the editor's 20 m default, and the result says so.
+        expect(tower.warnings).toContain('The building is the default 20 x 20 m footprint inside the site; pass footprint (the building outline) or coverage to shape it.');
+        const shaped = await ok('ugt_draft_building', { city: 'london', parcelSourceId: 'boundary-source-0', typology: 'freeform', outline, footprint: outline, floors: 6, title: 'West tower' });
+        expect(shaped.untrusted.design.geometry.buildings[0].geometry).toEqual(outline);
+        expect(shaped.warnings.some(warning => warning.includes('20 x 20 m'))).toBe(false);
         expect(cidOfObject(original)).toBe(tower.cid);
         const inspected = await ok('ugt_inspect_design', { design: tower.draftRef, paths: ['/geometry/buildings/0/properties/floors', '/title'] });
         expect(inspected.values.map(row => row.untrustedValue)).toEqual([6, 'West tower']);

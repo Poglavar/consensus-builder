@@ -49,6 +49,13 @@ describe('algorithmic agent schedule', () => {
             expect(actor.env.AGENT_USDC_FUNDING_ENABLED).toBe('1');
         }
     });
+    it('gives the hosted MCP the basemap key its previews stitch tiles with, the same as the API', () => {
+        const backendApps = require('../ecosystem.config.cjs').apps;
+        const apiEnv = backendApps.find(item => item.name === 'consensus-builder-api').env;
+        const mcpEnv = backendApps.find(item => item.name === 'ugt-mcp').env;
+        expect(apiEnv.MAPTILER_API_KEY).toMatch(/^\w{20}$/);
+        expect(mcpEnv.MAPTILER_API_KEY).toBe(apiEnv.MAPTILER_API_KEY);
+    });
     it('uses the production provider account limit for the API and every actor', () => {
         const apiEnv = require('../ecosystem.config.cjs').apps.find(item => item.name === 'consensus-builder-api').env;
         expect(apiEnv.SOLANA_RPC_MAX_ACCOUNTS).toBe('100');

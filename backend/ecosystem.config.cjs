@@ -1,3 +1,7 @@
+// Basemap tiles for server-rendered thumbnails and MCP previews (thumbnails/tile-stitch.js). Public
+// key: the browser basemap (frontend/js/basemap.js) ships the same one. Both PM2 apps render them.
+const MAPTILER_API_KEY = 'kps68PDVgfwEhLNACcHe';
+
 module.exports = {
   apps: [{
     name: 'consensus-builder-api',
@@ -37,9 +41,7 @@ module.exports = {
       // Accounts per getMultipleAccounts request. Public devnet (SOLANA_RPC_URL) takes the protocol's
       // 100; a smaller batch multiplies requests into its per-IP rate limit (429s, ~40 s World bets reads).
       SOLANA_RPC_MAX_ACCOUNTS: '100',
-      // Basemap tiles for server-rendered proposal thumbnails (thumbnails/tile-stitch.js). Public
-      // key — the browser basemap (frontend/js/basemap.js) ships the same one.
-      MAPTILER_API_KEY: 'kps68PDVgfwEhLNACcHe',
+      MAPTILER_API_KEY,
       // --- AI scene render (paid, per-image) ---
       // The model is pinned server-side: /ai-scene/render ignores whatever model the client sends
       // and always uses this one, and /ai-scene/models reports it so the UI greys out the picker.
@@ -104,7 +106,9 @@ module.exports = {
       MCP_INTERNAL_PORT: '3098',
       MCP_PUBLIC_ORIGIN: 'https://urbangametheory.xyz',
       UGT_APP_ORIGIN: 'https://urbangametheory.xyz',
-      UGT_API_BASE: 'https://api.urbangametheory.xyz'
+      UGT_API_BASE: 'https://api.urbangametheory.xyz',
+      // ugt_render_preview stitches basemap tiles in this process.
+      MAPTILER_API_KEY
     },
     time: true
   }]

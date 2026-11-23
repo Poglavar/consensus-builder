@@ -129,7 +129,12 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference, re
             ? buildTypedDesign(intent, { parcels: parcelFeatures }) : builder.build(intent, { turf });
         const checked = designObject({ ...design, createdAt: design.authoredAt });
         // Roads join the roads of the plan the caller places them in (agent-working-plan.md), not here.
-        return result(checked.content, intent.parcelSourceId || args.parcelSourceId);
+        const drafted = await result(checked.content, intent.parcelSourceId || args.parcelSourceId);
+        // A freeform outline is the site, as on the map: without footprint or coverage the building
+        // starts as the editor's 20 x 20 m default inside it, which a caller cannot tell from the result.
+        if (kind === 'building' && (args.typology ?? 'freeform') === 'freeform' && !intent.footprint && args.coverage == null)
+            drafted.warnings.push('The building is the default 20 x 20 m footprint inside the site; pass footprint (the building outline) or coverage to shape it.');
+        return drafted;
     }
     // A station's named corridor designs, resolved as immutable references.
     async function roadCorridors(inputs = [], plan) {
