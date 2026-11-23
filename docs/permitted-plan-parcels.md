@@ -12,15 +12,11 @@ showing the source lots' envelopes under it. For Bogotá this hides the point of
 per lot, 6.0 with a corner and cession, 7.0 for a whole block); every city whose rules depend on lot
 size or frontage has the same gap.
 
-Bogotá and the Atlas sources are shape-based (a parcel is a polygon plus the zoning records under it
-and per-lot reads by overlap) and run the envelope pipeline. Zagreb GUP and the NYC pilot draw their
-Permitted items from per-lot records (a cached solver table, a PLUTO row) and never enter that
-pipeline, so they need their own plot path. The work: (1) plan plots through the envelope pipeline,
-(2) a fabric-driven dirty refresh, (3) Bogotá's block-assembly index, (4) Zagreb and NYC plot paths,
-(5) MCP parity.
-
-Decisions: all four sources, including the Zagreb and NYC plot paths; the Bogotá cession is derived
-from the layout's public-owner pieces.
+Bogotá and the Atlas sources already compute envelopes from lot geometry and overlapping rules.
+Zagreb GUP currently reads precomputed envelopes for cadastral parcels. The NYC pilot publishes
+evidence tied to PLUTO lots. The work is to feed all of them through the same Permitted pipeline,
+with a fabric-driven refresh for user layouts, Bogotá's block-assembly rule and the same inputs
+and outputs for the map and MCP. Bogotá's cession is derived from the layout's public-owner pieces.
 
 ## What exists (verified in code)
 
@@ -82,10 +78,31 @@ from the layout's public-owner pieces.
 
 ## Design
 
-### 1. Plots as parcels: one pipeline, two parcel origins
+### 1. One Permitted pipeline, three parcel origins
+
+A Permitted calculation combines **the parcels being evaluated** with **the selected rules and
+scenario**. Each parcel has an identity, geometry and provenance. Three origins supply parcels:
+
+| Parcel origin | Geometry | Provenance |
+| --- | --- | --- |
+| Cadastre | Registered parcel boundary | Cadastral source, parcel ID and revision |
+| Zoning plan | A lot or block the source explicitly defines as the land basis | Plan edition, source record and lot identity |
+| User-designed plan | A plot or remainder in the committed live fabric | Producing design or plan revision and contributing cadastral IDs |
+
+Resolve the applicable parcel boundaries first. Use the cadastre as the default and the zoning
+plan's own parcels where it explicitly defines them. Apply user-designed layouts within their
+declared replacement scope, keeping the unaffected parcels and surviving pieces. If a layout
+overlaps a zoning-plan lot and the surviving ground cannot be established, report that conflict
+for the affected area. Ordinary zoning boundaries supply rules or constraints over the parcel.
+
+The shared pipeline owns parcel composition, frontage and neighbouring ground, refresh and
+the envelope and evidence contract for 2D, 3D and MCP. The selected rule adapter supplies the
+calculation. It can use a cached result for the same parcel, geometry and rule context, run
+its existing solver or report an unsupported input. Parcel identity follows the land being
+evaluated. The rule source and scenario identify the calculation made on it.
 
 New shared UMD module `frontend/js/planning/plan-plots.js` (browser and server, like
-`parcel-assessment.js`), holding `PLAN_PLOT_REACH_M = 45` and the pure helpers below.
+`parcel-assessment.js`), serializes the live-fabric contribution with the pure helpers below.
 
 **Request.** `POST /planning/envelopes` with `{ city, source, scenario?, bbox, plots }`; GET stays
 and equals `plots: []`. A plot is `{ id, kind: 'plot'|'remainder'|'formed'|'part'|'road'|'track',
@@ -106,7 +123,8 @@ ground); a plot id equal to an unreplaced lot is 422; the 1,000-lot cap applies 
 `cadastreParcelIds` must be the provider's ids (true for Bogotá's `CO-BOGOTA-…`); the summary
 reports `planPlots: { received, replacedLots, unmatchedCadastreIds }`.
 
-**Identity.** Item `envelope:<source>:<plotId>`, `source.parcel = plotId`,
+**Identity.** Envelope identity ties the rule source to the subject parcel. For a user-designed
+parcel, item `envelope:<source>:<plotId>`, `source.parcel = plotId`,
 `sourceEvidence.parcelReference = { sourceId: 'plan', parcelId, revision: sourceRevision({ id,
 geometry }), kind, cadastreParcelIds, producedByProposalId }`; `derivation.parcel` is the plot.
 
@@ -166,24 +184,25 @@ start height per role. Evidence `resultante` gains `{ index, indexBasis, wholeBl
 cessionM2, openEdges, edgeWidthsM, assemblyRule }`; the `RENOVACION_RESULTANTE` text names the index.
 Existing test fixtures with one lone Renovación lot would now read as a block; they get a neighbour.
 
-### 4. Zagreb and NYC plot paths
+### 4. Zagreb and NYC rule adapters
 
-Neither source runs the envelope pipeline, so plots reach them through a provider hook
-`plotRecords(plots, query)` that `loadParcelEnvelopes`' caller (`routes/planning.js`) invokes for
-descriptors without `parcelStudy`; the answer is a `planning-representations.v1` list of items with
-volumes, the form those sources already draw, keyed `envelope:<source>:<plotId>` with the §1
-provenance. `views.js` requests this for any source once plots exist in the box.
+Bring both providers into the common envelope request. Their adapters receive the normalized
+parcel and its context and supply a calculation, a matching cached result, or an explicit
+unavailable outcome. The common pipeline supplies the item identity and parcel provenance.
 
 **Zagreb.** New shared-API route in `cadastre-data`, `POST /envelope/solve-geometry` with
 `{ gup_id, geometry }` (GeoJSON Polygon, EPSG:4326, `validateBounds` under 1 km², one geometry per
 call, timeout), running `resolveRuleContextForGeometry` and `solveMaxBuilding` and returning the
 volumes, rule id, variables and resolver evidence marked `hypothetical_plot: true`.
-`zagreb-gup.plotRecords` calls it per plot and maps the answer to an item with
+`zagreb-gup` uses stored results when they match the parcel and scenario, and calls the same
+GUP solver for changed parcel geometry. The answer includes
 `sourceEvidence.plot = { solverVersion, gupId, ruleId, note: 'what-if on a plan plot; outside the
 citywide evaluation of existing cadastral parcels' }`. Behind `ZAGREB_PLOT_SOLVER` (off by default
-until the shared API is deployed with the route). The GUP doc gains the what-if note.
+until the shared API is deployed with the route). The citywide GUP comparison still uses a fixed
+cadastral snapshot.
 
-**NYC.** `nyc-pilot.plotRecords`: fetch the PLUTO rows of `cadastreParcelIds` (`fetchPluto` per
+**NYC.** The pilot adapter uses the existing screening and envelope rules. Where it receives
+changed parcel geometry, fetch the PLUTO rows of `cadastreParcelIds` (`fetchPluto` per
 BBL); require one `zonedist1` (else unavailable `plot-spans-districts`); synthesize `{ zonedist1,
 lotArea, lotFront, lotDepth, lotType, irregularLot, version: 'plan-plot:' + revision }` from the
 plot polygon (front edge length from the frontage scorer, depth perpendicular to it, `lotType` 5
@@ -206,18 +225,21 @@ with `deriveWithApp` (headless fabric), pick the plan piece under the building, 
 
 `docs/permitted-plan-parcels.md` (this plan, living); `docs/bogota-pot-source.md` (block rule,
 standing evidence); `docs/vocabulary.md` ("Plan plot" as a parcel origin; "Standing: whole block,
-corner, cession"); `docs/source-adapters.md` (plots in `loadParcelEnvelopes`, `plotRecords`);
+corner, cession"); `docs/source-adapters.md` (parcel origins and the shared rule adapter contract);
 `docs/gup-scenario-integration.md` (what-if note); `docs/mcp-editing.md`.
 
 ## Milestones
 
 Unit tests run from `backend/` with typed file paths, `--pool=threads --maxWorkers=2`.
 
-1. **M1 Server.** Validation, replacement, corridor frontage, provenance, cache key, the 422 code.
+1. **M1 Server.** Normalize the three parcel origins and apply the common composition and
+   evaluation path. Validate replacements, corridor frontage, provenance, cache key and the 422 code.
    New `test/planning-plan-plots.test.js`: a plot replacing two lots gets one envelope and the lots
    none; the lot opposite's street width changes when a plot replaces the lots across; corridor
    pieces dropped but used for frontage; a `part` piece kept; the overlap guard; cache hit/miss;
-   empty plots give the GET key. `test/planning-parcel-envelopes.test.js` confirms GET unchanged.
+   empty plots give the GET key. With equal geometry and rule inputs, an eligible parcel gets the
+   same envelope across origins and retains its own provenance. An unresolved overlap with a
+   source-plan lot reports a conflict. `test/planning-parcel-envelopes.test.js` confirms GET unchanged.
 2. **M2 Client.** `plan-plots.js`, `evict`, POST in `feed.js`, the subscription. Tests:
    `test/viewport-refetch.test.js` (`evict` aborts the in-flight load, the next load starts fresh);
    new `test/planning-plan-plots-client.test.js` with a headless `createLiveParcelFabric()` (seed
@@ -231,11 +253,11 @@ Unit tests run from `backend/` with typed file paths, `--pool=threads --maxWorke
    with 400 m² → 5; non-corner with 1,000 m² → 5) and whole-block constraints;
    `test/planning-parcel-envelopes.test.js`: `edgeStanding` cases including a missing-lot gap that
    is not a street.
-4. **M4 NYC plot path.** `plotRecords`, synthesized record, `plot-spans-districts`. Tests in the
+4. **M4 NYC adapter.** Shared parcel input, synthesized record, `plot-spans-districts`. Tests in the
    `test/zoning-envelope.test.js` style: a two-lot R6A merge screens `outside-scope` with the
    front-width reason; a mixed-district merge is `plot-spans-districts`.
-5. **M5 Zagreb plot path.** Shared-API route in `cadastre-data` (its own tests and deploy, on
-   request), provider `plotRecords`, switch, what-if note. Provider tests mock the route.
+5. **M5 Zagreb adapter.** Shared-API route in `cadastre-data` (its own tests and deploy, on
+   request), common parcel input, switch, what-if note. Provider tests mock the route.
 6. **M6 MCP parity and docs.** `test/mcp-plan-placement.test.js` extended; docs above.
 
 ## Verification
