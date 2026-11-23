@@ -233,6 +233,25 @@ function expectPartition(pieces, road, within) {
     expect(total(pieces) + overlap(within, road)).toBeCloseTo(area(within), 0);
 }
 
+// A road's land on open ground is formed as its own ground pieces: with its pieces on parcels they
+// cover the whole ribbon once, and no other piece stands on them.
+function expectRoadGround(fabric, roadId, ribbon) {
+    const all = fabric.list();
+    const own = all.filter(piece => piece.properties.producedByProposalId === roadId);
+    const ground = own.filter(piece => openGround.isGroundPiece(piece));
+    expect(ground.length).toBeGreaterThan(0);
+    ground.forEach(piece => {
+        expect(piece.properties.isCorridor).toBe(true);
+        expect(piece.properties.formedByProposalIds).toEqual([roadId]);
+        expect(piece.properties.groundIds[0]).toMatch(/^ground:[0-9a-f]{64}$/);
+    });
+    expect(total(own)).toBeCloseTo(area(ribbon), 0);
+    expect(area(unionOf(own))).toBeCloseTo(area(ribbon), 0);
+    all.filter(piece => !own.includes(piece)).forEach(piece => {
+        ground.forEach(road => expect(overlap(piece, road)).toBeLessThan(0.25));
+    });
+}
+
 describe('a road built through subdivision plots on open ground', () => {
     it('cuts the plots it crosses, unapply gives them back exactly, and the boot replay is stable', async () => {
         const record = subdivisionRecord('sub', BARE_SITE, { binding: { parcels: [], coverage: 'none', source: 'server' } });
@@ -246,10 +265,12 @@ describe('a road built through subdivision plots on open ground', () => {
         await expect(manager.deriveForNewProposal(globalThis.proposalStorage.getProposal('road'))).resolves.toMatchObject({ ok: true });
         expect(manager.getLastApplyFailure('road')).toBeNull();
         expect(manager.getLastApplyFailure('sub')).toBeNull();
-        const cut = fabric.list();
+        const cut = fabric.list().filter(piece => piece.properties.producedByProposalId === 'sub');
         // The plot the road runs through was split where it crosses.
         expect(cut.length).toBeGreaterThan(plotCount);
         expectPartition(cut, CROSS_ROAD, BARE_SITE);
+        // The road's land is its own ground piece, beside the plots and under nothing else.
+        expectRoadGround(fabric, 'road', CROSS_ROAD);
         const hash = await siteHash.siteHashHex(record.site);
         cut.forEach(piece => {
             expect(piece.properties.producedByProposalId).toBe('sub');
@@ -332,8 +353,9 @@ describe('a road built through subdivision plots on open ground', () => {
         const beside = roadRecord('road-beside', rect(houseBox[2] + 0.3, -3, x(maxX) - 0.3, 9));
         globalThis.proposalStorage.proposals.set('road-beside', beside);
         await expect(manager.deriveForNewProposal(globalThis.proposalStorage.getProposal('road-beside'))).resolves.toMatchObject({ ok: true });
-        const pieces = fabric.list();
+        const pieces = fabric.list().filter(piece => piece.properties.producedByProposalId !== 'road-beside');
         expectPartition(pieces, beside.roadProposal.definition.polygon, BARE_SITE);
+        expectRoadGround(fabric, 'road-beside', beside.roadProposal.definition.polygon);
         expect(pieces.some(piece => piece.properties.producedByProposalId === 'house')).toBe(true);
         expect(globalThis.proposedBuildings.some(feature => String(feature.properties.proposalId) === 'house')).toBe(true);
     });
@@ -355,12 +377,15 @@ describe('a road built through a subdivision of a site partly over parcels', () 
         const pieces = fabric.list();
         const roadPieces = pieces.filter(piece => piece.properties.producedByProposalId === 'road-mixed');
         const rest = pieces.filter(piece => !roadPieces.includes(piece));
-        // On the parcel the arrangement gives the road its piece; on open ground the ribbon has none.
-        expect(roadPieces.length).toBeGreaterThan(0);
-        roadPieces.forEach(piece => expect(piece.properties.cadastreParcelIds).toEqual(['HR-330264-1']));
+        // On the parcel the arrangement gives the road its piece; on open ground its land is a
+        // ground piece of its own, so the ribbon is covered once and the plots keep the rest.
+        const onParcel = roadPieces.filter(piece => !openGround.isGroundPiece(piece));
+        expect(onParcel.length).toBeGreaterThan(0);
+        onParcel.forEach(piece => expect(piece.properties.cadastreParcelIds).toEqual(['HR-330264-1']));
+        expect(total(onParcel)).toBeCloseTo(overlap(HR1, ROAD), 0);
         const ground = rect(0, 0, 15, 6);
         expectPartition(rest, ROAD, ground);
-        expect(total(roadPieces)).toBeCloseTo(overlap(HR1, ROAD), 0);
+        expectRoadGround(fabric, 'road-mixed', ROAD);
 
         await expect(manager.unapplyProposal('road-mixed')).resolves.toBe(true);
         expect(snapshot(fabric)).toEqual(before);
@@ -491,5 +516,74 @@ describe('a parcel layout without parcels', () => {
         expect(total(plots)).toBeCloseTo(area(BARE_SITE), 0);
         const stored = globalThis.proposalStorage.getProposal('readjust-offline');
         expect({ ...stored, applied: original.applied, appliedAt: undefined }).toMatchObject({ cadastreParcelIds: original.cadastreParcelIds, binding: original.binding });
+    });
+});
+
+// A road's land on open ground (PARCEL-OPTIONAL.md "Corridors"): its land minus the parcels it binds
+// forms ground pieces of its own, so no ground drops out of the fabric where a road takes a plot on
+// open ground; a later road takes the crossing from an earlier one, and unapply gives it back.
+describe('a road\'s land on open ground', () => {
+    const binding = { parcels: [{ parcelId: 'HR-330264-1' }], coverage: 'partial', unsurveyedM2: 600, source: 'server' };
+
+    it('forms the ribbon off its parcels as ground pieces, stable on reload and gone on unapply', async () => {
+        // Across the parcel edge (x = 6): part over HR-1, part over open ground.
+        const ROAD = rect(3, 2.5, 12, 3.5);
+        const road = roadRecord('road-edge', ROAD, { cadastreParcelIds: ['HR-330264-1'], binding });
+        const { manager, fabric } = await harness({ facts: [HR1], records: [road] });
+        const before = snapshot(fabric);
+        await expect(manager.applyProposal('road-edge')).resolves.toBe(true);
+        expectRoadGround(fabric, 'road-edge', ROAD);
+        const ground = fabric.list().filter(piece => openGround.isGroundPiece(piece));
+        expect(total(ground)).toBeCloseTo(area(ROAD) - overlap(HR1, ROAD), 0);
+        // The parcel's pieces still tile the parcel.
+        const onHr1 = fabric.list().filter(piece => piece.properties.cadastreParcelIds.includes('HR-330264-1'));
+        expect(total(onHr1)).toBeCloseTo(area(HR1), 0);
+        const withRoad = snapshot(fabric);
+
+        await expect(manager.rebuildAppliedFabric({ silent: true })).resolves.toMatchObject({ ok: true, failed: [] });
+        expect(snapshot(fabric)).toEqual(withRoad);
+
+        await expect(manager.unapplyProposal('road-edge')).resolves.toBe(true);
+        expect(snapshot(fabric)).toEqual(before);
+    });
+
+    it('lets a later road take the crossing from an earlier one, and gives it back on unapply', async () => {
+        const EAST_WEST = rect(-2, 2.5, 14, 3.5);
+        const first = roadRecord('road-ew', EAST_WEST, { createdAt: '2026-10-02T00:00:00.000Z' });
+        const second = roadRecord('road-ns', CROSS_ROAD, { createdAt: '2026-10-03T00:00:00.000Z' });
+        const { manager, fabric } = await harness({ records: [first, second] });
+        await expect(manager.applyProposal('road-ew')).resolves.toBe(true);
+        expectRoadGround(fabric, 'road-ew', EAST_WEST);
+        const alone = snapshot(fabric);
+
+        await expect(manager.applyProposal('road-ns')).resolves.toBe(true);
+        expectRoadGround(fabric, 'road-ns', CROSS_ROAD);
+        const ew = fabric.list().filter(piece => piece.properties.producedByProposalId === 'road-ew');
+        // The earlier road keeps its ribbon round the crossing, in two pieces.
+        expect(ew).toHaveLength(2);
+        expect(total(ew)).toBeCloseTo(area(EAST_WEST) - overlap(EAST_WEST, CROSS_ROAD), 0);
+        const both = unionOf([turf.feature(EAST_WEST), turf.feature(CROSS_ROAD)]);
+        expect(total(fabric.list())).toBeCloseTo(area(both), 0);
+        const crossed = snapshot(fabric);
+
+        await expect(manager.rebuildAppliedFabric({ silent: true })).resolves.toMatchObject({ ok: true, failed: [] });
+        expect(snapshot(fabric)).toEqual(crossed);
+
+        await expect(manager.unapplyProposal('road-ns')).resolves.toBe(true);
+        expect(snapshot(fabric)).toEqual(alone);
+    });
+
+    it('takes a layout plot\'s ground on open ground without losing any of it', async () => {
+        // The layout first, then a bounded-style road across it and beyond: plots and road together
+        // cover the layout site and the ribbon, once.
+        const record = subdivisionRecord('sub-first', BARE_SITE, { binding: { parcels: [], coverage: 'none', source: 'server' } });
+        const road = roadRecord('road-after', CROSS_ROAD);
+        const { manager, fabric } = await harness({ records: [record, road] });
+        await expect(manager.applyProposal('sub-first')).resolves.toBe(true);
+        await expect(manager.applyProposal('road-after')).resolves.toBe(true);
+        expectRoadGround(fabric, 'road-after', CROSS_ROAD);
+        const all = fabric.list();
+        expect(total(all)).toBeCloseTo(area(unionOf([turf.feature(BARE_SITE), turf.feature(CROSS_ROAD)])), 0);
+        expect(total(all)).toBeCloseTo(area(unionOf(all)), 0);
     });
 });

@@ -16,7 +16,9 @@ or MultiPolygon) and `metadata.mode: 'bounded'`.
 - Only the parcels its land reaches into are declared (`road-drawing.js
   collectParcelsIntersectingFootprint`, `geometry-tolerances.js reachesInto`), so the neighbours it
   touches are not.
-  The arrangement then takes each declared parcel whole.
+  The arrangement then takes each declared parcel whole. The part of the site on no parcel (open
+  ground) forms the road's own ground pieces ([parcel-optional](PARCEL-OPTIONAL.md), Corridors), so
+  the whole site is the road's land in the fabric and in an agreement.
 - Every edit keeps the land (`road-drawing.js runLocalCorridorGeometryUpdate`, and for MCP
   `intent-editing.js reconcile`): the edges are re-filled for the room the edit leaves
   (`refitBounded`), and the edit is refused when a node leaves the site by more than 0.5 m or a

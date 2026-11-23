@@ -94,7 +94,7 @@ Related: [unsurveyed ground](unsurveyed-ground.md), [lens model](lens-model.md).
   never from a gap in loaded parcels). Formations accept it as a parent alongside cadastral anchors.
 - Interaction closure gets a geometric index (sites that intersect interact), not only shared
   cadastral anchors, so two bare-ground proposals on the same spot still conflict.
-- Corridors on bare ground occupy their ribbon with no arrangement there.
+- A corridor's land on bare ground (its land minus the parcels it binds) forms ground pieces of its own.
 
 ### Subdivision (phase 4)
 - Land readjustment with an empty or partial pool: the open ground of the site is a pool with no
@@ -437,9 +437,23 @@ proposal-bridge.js/create.js and backend/agents/minter.js; decoders render the z
   open ground follows the cadastral rule "the taker amends the taken": a newer proposal takes the older
   one's ground piece where they overlap, the older keeps the rest under its own identity, unapply gives
   it back. Explicit Apply still parks overlapping applied alternatives (unchanged, already geometric).
-- **Corridors**: a take with an empty declaration is a ribbon on open ground (no arrangement there,
-  `corridorOnOpenGroundOnly`); `corridor-cadastre-scope-missing` only when the binding names parcels the
-  declaration lacks. Every corridor (also one on bare ground) goes through `createCorridorProposalAtomically`.
+- **Corridors**: a take with an empty declaration has no cadastral arrangement (`corridorOnOpenGroundOnly`);
+  `corridor-cadastre-scope-missing` only when the binding names parcels the declaration lacks. Every
+  corridor (also one on bare ground) goes through `createCorridorProposalAtomically`.
+  A corridor on open ground (`hasOpenGround`: empty declaration, or binding coverage partial/none) forms
+  its land there as ground pieces (`ProposalManager._deriveCorridorOpenGround`): its land
+  (`plan-order footprintOf`, the geometry the cadastral arrangement takes; a bounded road's site) minus
+  the repository geometry of the parcels it binds, components that are not ground dropped, less what
+  corridors LATER in the formation order take of it (`_groundAfterLaterCorridors`: the later road takes
+  the crossing, unapplying it gives it back). One piece per connected component, id
+  `ground:<siteHash>#r<outline hash>` (`open-ground.corridorGroundPieces`), `groundIds`, no cadastral ids,
+  `isCorridor`, produced and formed by the corridor. They are a function of the corridor records and
+  their order only, so they are re-derived after the cadastral arrangement in the boot replay and in
+  every local edit that applies, changes or releases a corridor, as a set difference by piece id;
+  formations then stand round them as before (every applied road carves parks, squares, lakes and plots).
+  The private read (`agreement-headless.js`) forms the same pieces from the parcels it was handed, so the
+  agreement land holds them as corridor pieces instead of residual open ground. Plan stats measures
+  bound parcels only and does not count them.
 - **Removed**: `siteGroundWithoutParcels`, its message, `_refuseSiteGroundWithoutParcels`, the
   `site-ground-without-parcels` code and handling in the editor shell / execution.js, the `groundless`
   plain path for corridors, i18n `proposalDrafts.siteSaved`/`siteNotAppliedYet`. New i18n

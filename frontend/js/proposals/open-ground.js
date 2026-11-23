@@ -138,6 +138,53 @@
         return !(Array.isArray(binding.parcels) && binding.parcels.length);
     }
 
+    /**
+     * A corridor's land on open ground as fabric pieces: one connected piece per component that is
+     * ground, named by its outline (parcel-arrangement.js pieceId over the ground id, as a road piece
+     * of a cadastral parcel is named over the parcel id), produced and formed by the corridor.
+     * @param corridor { proposalId, groundId, geometry (Polygon/MultiPolygon), isTrack, roadName, toleranceM }
+     * @returns {Array<object>} Features, largest first, then by id.
+     */
+    function corridorGroundPieces(corridor, options) {
+        const t = T(options);
+        if (!t) throw new Error('open-ground: turf is not available');
+        const arrangement = clipFailureApi();
+        const id = String(corridor && corridor.proposalId || '');
+        if (!id) throw new Error('A corridor ground piece needs its corridor id.');
+        if (!isGroundId(corridor.groundId)) throw new Error(`Corridor ${id}: a ground piece needs a ground id.`);
+        const toleranceM = Number(corridor.toleranceM) > 0 ? Number(corridor.toleranceM) : 0;
+        const pieces = polygonsOf(corridor.geometry)
+            .map(rings => t.polygon(rings))
+            .filter(feature => groundApi().isGround(t, feature, toleranceM))
+            .map(feature => {
+                const pieceId = arrangement.pieceId(corridor.groundId, 'road', feature.geometry);
+                if (!pieceId) throw new Error(`Corridor ${id}: a ground piece has no canonical outline.`);
+                const areaM2 = t.area(feature);
+                return {
+                    type: 'Feature',
+                    properties: {
+                        parcelId: pieceId,
+                        PARCEL_ID: pieceId,
+                        id: pieceId,
+                        cadastreParcelIds: [],
+                        groundIds: [corridor.groundId],
+                        calculatedArea: Math.round(areaM2),
+                        liveParcelDerivation: 'corridor-arrangement',
+                        isCorridor: true,
+                        isTrack: !!corridor.isTrack,
+                        isRoad: !corridor.isTrack,
+                        isProposed: true,
+                        producedByProposalId: id,
+                        formedByProposalIds: [id],
+                        ...(corridor.roadName ? { roadName: String(corridor.roadName) } : {})
+                    },
+                    geometry: feature.geometry
+                };
+            });
+        return pieces.sort((a, b) => (b.properties.calculatedArea - a.properties.calculatedArea)
+            || a.properties.parcelId.localeCompare(b.properties.parcelId));
+    }
+
     function bboxOf(value) {
         const box = [Infinity, Infinity, -Infinity, -Infinity];
         const visit = node => {
@@ -389,6 +436,7 @@
         declaredIdsOf,
         hasOpenGround,
         corridorOnOpenGroundOnly,
+        corridorGroundPieces,
         bboxOf,
         bboxesIntersect,
         openGroundGeometry,

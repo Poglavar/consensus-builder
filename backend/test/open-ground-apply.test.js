@@ -969,7 +969,9 @@ describe('boot replay of a plan on open ground only', () => {
 });
 
 describe('corridors on bare ground', () => {
-    it('applies a road with an empty declaration and no arrangement on open ground', async () => {
+    it('forms the land of a road with an empty declaration as a ground piece, with no cadastral arrangement', async () => {
+        // Between the parcels, on no parcel at all.
+        const ribbon = rect(25, 4, 90, 6);
         const road = {
             proposalId: 'road-bare',
             title: 'Road',
@@ -977,16 +979,20 @@ describe('corridors on bare ground', () => {
             applied: false,
             createdAt: '2026-10-02T00:00:00.000Z',
             cadastreParcelIds: [],
-            roadProposal: { definition: { polygon: rect(-5, 4, 40, 6), points: [[LAT, LON], [LAT, LON + 4e-3]], width: 6 } }
+            roadProposal: { definition: { polygon: ribbon, points: [[LAT, LON], [LAT, LON + 4e-3]], width: 6 } }
         };
         const HR2 = parcel('HR-330264-2', rect(100, 0, 110, 10));
         const { manager, fabric } = await harness({ facts: [HR1, HR2], fabricFacts: [HR1], records: [road] });
         await expect(manager.applyProposal('road-bare')).resolves.toBe(true);
         expect(globalThis.proposalStorage.getProposal('road-bare').applied).toBe(true);
-        expect(liveIds(fabric)).toEqual(['HR-330264-1']);
+        const ground = fabric.list().filter(feature => openGround.isGroundPiece(feature));
+        expect(ground).toHaveLength(1);
+        expect(ground[0].properties).toMatchObject({ producedByProposalId: 'road-bare', isCorridor: true, cadastreParcelIds: [] });
+        expect(turf.area(ground[0])).toBeCloseTo(turf.area(turf.feature(ribbon)), 0);
+        expect(liveIds(fabric)).toEqual(['HR-330264-1', ground[0].properties.parcelId].sort());
         // A later cadastral derivation with that road standing does not trip over its empty scope.
         await expect(manager.integrateCadastralGround([HR2])).resolves.toMatchObject({ ok: true, parcels: 1 });
-        expect(liveIds(fabric)).toEqual(['HR-330264-1', 'HR-330264-2']);
+        expect(liveIds(fabric)).toEqual(['HR-330264-1', 'HR-330264-2', ground[0].properties.parcelId].sort());
     });
 
     it('still refuses a corridor whose binding names parcels its declaration lacks', async () => {
@@ -1350,6 +1356,33 @@ describe('the private read hosts open ground as the map apply does', () => {
         const body = (await result).fabric.list().find(feature => feature.properties.structureType === 'square');
         expect(turf.area(body)).toBeCloseTo(turf.area(turf.feature(SITE_HALF)), 0);
         expect(body.properties.groundIds).toEqual([`ground:${await siteHash.siteHashHex(square.site)}`]);
+    });
+    it('forms a road\'s land off its parcels as the road\'s ground piece, and the agreement land holds it', async () => {
+        await harness({ facts: [HR1] });
+        install('ProposalApplyStructures', require('../../frontend/js/proposals/apply/structures.js'));
+        install('createLiveParcelFabric', createLiveParcelFabric);
+        install('ProposalManager', ProposalManager);
+        const AgreementGround = require('../../frontend/js/agreement-ground.js');
+        install('AgreementGround', AgreementGround);
+        // Over HR-1 (x 0..20) and on past it over open ground.
+        const ribbon = rect(5, 4, 35, 6);
+        const binding = { parcels: [{ parcelId: 'HR-330264-1' }], coverage: 'partial', unsurveyedM2: 300, source: 'server' };
+        const road = { proposalId: 'road-read', title: 'Road', goal: 'road-track', createdAt: '2026-10-02T00:00:00.000Z',
+            cadastreParcelIds: ['HR-330264-1'], binding,
+            roadProposal: { definition: { polygon: ribbon, points: [[LAT + 5 * U, LON + 5 * U], [LAT + 5 * U, LON + 35 * U]], width: 6 } } };
+        const designs = [{ cid: 'road-read', content: road, parcelIds: ['HR-330264-1'], binding }];
+        const parcels = [{ ...structuredClone(HR1), id: 'HR-330264-1' }];
+        const { fabric } = await AgreementHeadless.materialize({ designs, parcels });
+        const own = fabric.list().filter(feature => feature.properties.producedByProposalId === 'road-read');
+        const ground = own.filter(feature => openGround.isGroundPiece(feature));
+        expect(ground).toHaveLength(1);
+        expect(turf.area(ground[0])).toBeCloseTo(turf.area(turf.feature(rect(20, 4, 35, 6))), 0);
+        expect(own.reduce((sum, feature) => sum + turf.area(feature), 0)).toBeCloseTo(turf.area(turf.feature(ribbon)), 0);
+        // The published land: the road's pieces, all of them corridor, no residual open ground.
+        const derived = await AgreementHeadless.derive({ designs, parcels });
+        const corridor = derived.outputs.filter(output => output.role === 'corridor');
+        expect(corridor.reduce((sum, output) => sum + output.areaM2, 0)).toBeCloseTo(turf.area(turf.feature(ribbon)), -1);
+        expect(derived.outputs.filter(output => output.producedBy === null && output.fromParcelIds.length === 0)).toEqual([]);
     });
     it('still refuses it when the binding says the parcel covers the whole site', async () => {
         const { result } = await read({ parcels: [{ parcelId: 'HR-330264-1' }], coverage: 'complete', source: 'server' });

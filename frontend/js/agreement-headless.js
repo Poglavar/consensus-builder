@@ -45,6 +45,11 @@
         const roadPieces = source.flatMap(parcel => root.__parcelArrangement.arrangementOf(parcel, parcel.properties.parcelId, roads).pieces
             .map(piece => root.__parcelArrangement.featureForPiece(piece, parcel)));
         mutation.replaceCadastreScope([...originals.keys()], roadPieces);
+        // A road's land on open ground forms ground pieces, as on the map (_deriveCorridorOpenGround).
+        manager._corridorOpenGroundCache = new Map();
+        const roadGround = await manager._corridorOpenGroundFeatures(rows.filter(r => r.roadProposal), { ...options, parcelRepository });
+        if (roadGround.failed.length) throw Object.assign(new Error(roadGround.failed[0].reason), roadGround.failed[0]);
+        mutation.upsertFeatures(roadGround.features);
         let slice = Date.now();
         for (const row of root.__planOrder.orderFormations(rows)) {
             if (root.document && Date.now() - slice >= 8) {

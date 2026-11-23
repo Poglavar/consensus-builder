@@ -1891,6 +1891,14 @@ const ProposalManager = {
                     reason: entry.error || 'corridor arrangement failed'
                 }));
             }
+            // A corridor's land on open ground is formed as ground pieces beside its cadastral
+            // pieces. Only corridors decide it, so only an edit that applies, changes or releases one
+            // re-derives it, before the formations replay round it.
+            if (!failed.length && Array.from(seedById.values()).some(record =>
+                applyRoute.normalizeGoalKey(record && record.goal) === 'road-track')) {
+                const ground = await this._deriveCorridorOpenGround({ _parcelMutation: opts._parcelMutation });
+                failed.push(...ground.failed);
+            }
 
             let appliedCount = 0;
             if (!failed.length) {
@@ -2945,6 +2953,12 @@ const ProposalManager = {
                 reason: entry.error || 'corridor arrangement failed'
             }));
         }
+        // The corridors' land on open ground, as ground pieces, before anything forms round it.
+        const corridorGround = await this._deriveCorridorOpenGround({
+            records: appliedList || [],
+            _parcelMutation: passOptions._parcelMutation
+        });
+        failed.push(...corridorGround.failed);
         if (componentTakes.length) _announceApply(`Applied ${_corridorCountPhrase(componentTakes)}`);
         const corridorIds = new Set(componentTakes.map(take => take.id));
         const replayMembersTotal = (appliedList || []).filter(proposal => {
@@ -3576,6 +3590,120 @@ const ProposalManager = {
             return fail(error && error.code ? String(error.code) : 'open-ground-derivation-failed',
                 `Cannot apply on open ground: ${error && error.message ? error.message : error}`);
         }
+    },
+
+    // A corridor's land on open ground (PARCEL-OPTIONAL.md "Corridors"): its land (plan-order
+    // footprintOf, the geometry the cadastral arrangement takes; a bounded road's site) minus the
+    // parcels it binds, read from the repository (or options.parcelRepository in a private read),
+    // components that are not ground dropped. { groundId, geometry } or null when nothing is left.
+    // Cached by land and declaration: only the repository geometry of the bound parcels enters it.
+    async _corridorOpenGroundOf(record, options = {}) {
+        const browserRoot = typeof window !== 'undefined' ? window : globalThis;
+        const siteApi = browserRoot.__siteBinding;
+        const hashApi = browserRoot.__siteHash;
+        const order = browserRoot.__planOrder;
+        const arrangement = browserRoot.__parcelArrangement;
+        const repository = options.parcelRepository || _cadastralParcelRepository();
+        if (!siteApi || !hashApi || !order || !repository || typeof repository.getMany !== 'function') {
+            throw Object.assign(new Error('Corridor open ground needs the site services and the cadastral repository.'),
+                { code: 'open-ground-unavailable' });
+        }
+        const footprint = order.footprintOf(record);
+        const land = footprint && (footprint.geometry || footprint);
+        const site = siteApi.siteOf(record);
+        if (!land || !site) return null;
+        const declared = proposalClaims.cadastreParcelIdsOf(record).map(String);
+        const cacheKey = JSON.stringify([land, site, declared, Number(record.toleranceM) || 0]);
+        const cache = this._corridorOpenGroundCache || (this._corridorOpenGroundCache = new Map());
+        if (cache.has(cacheKey)) return cache.get(cacheKey);
+        const parcels = declared.length ? repository.getMany(declared) : [];
+        const have = new Set(parcels.map(feature => String(_getParcelIdFromFeature(feature) || '')));
+        const missing = declared.filter(id => !have.has(id));
+        if (missing.length) {
+            throw Object.assign(new Error(`Corridor open ground needs the bound parcels' geometry; missing: ${missing.join(', ')}`),
+                { code: 'open-ground-parcels-missing', parcelIds: missing });
+        }
+        const geometry = openGroundApi.openGroundGeometry(land, parcels.map(feature => ({
+            id: String(_getParcelIdFromFeature(feature) || ''),
+            geometry: feature.geometry
+        })), {
+            toleranceM: record.toleranceM,
+            clip: arrangement && typeof arrangement.clip === 'function' ? arrangement.clip : undefined
+        });
+        const result = geometry
+            ? { groundId: openGroundApi.groundIdFromHash(await hashApi.siteHashHex(site)), geometry }
+            : null;
+        if (cache.size > 200) cache.clear();
+        cache.set(cacheKey, result);
+        return result;
+    },
+
+    // The open-ground pieces of these corridors: each one's open ground, less what corridors LATER
+    // in the formation order take of it (apply/road.js _groundAfterLaterCorridors: on open ground the
+    // taker amends the taken, so unapplying the later one gives the ground back). A function of the
+    // records and their order, never of what the fabric holds. Returns { features, failed }.
+    async _corridorOpenGroundFeatures(records, options = {}) {
+        const features = [];
+        const failed = [];
+        for (const record of (Array.isArray(records) ? records : []).filter(Boolean)) {
+            const groundRecord = _groundRecord(record);
+            if (!groundRecord || !openGroundApi.hasOpenGround(groundRecord)) continue;
+            const id = String(record.proposalId || '');
+            try {
+                const ground = await this._corridorOpenGroundOf(groundRecord, options);
+                if (!ground) continue;
+                const carved = this._groundAfterLaterCorridors(record, [ground.geometry], options);
+                const geometry = carved.geometries[0];
+                if (!geometry) continue;
+                const definition = record.roadProposal && record.roadProposal.definition;
+                features.push(...openGroundApi.corridorGroundPieces({
+                    proposalId: id,
+                    groundId: ground.groundId,
+                    geometry,
+                    isTrack: !!(definition && definition.metadata && definition.metadata.isTrack),
+                    roadName: record.title || record.name || null,
+                    toleranceM: record.toleranceM
+                }));
+            } catch (error) {
+                failed.push({
+                    proposalId: id,
+                    title: record.title || record.name || id,
+                    code: (error && error.code) || 'corridor-open-ground-failed',
+                    missingIds: (error && error.parcelIds) || [],
+                    reason: String(error && error.message || error)
+                });
+            }
+        }
+        return { features, failed };
+    },
+
+    // Bring the fabric's corridor pieces on open ground in line with the applied corridors of this
+    // ground context. A set difference by piece id, as the cadastral arrangement does: unchanged
+    // pieces stay, stale ones (an unapplied or edited road's, ground a later road now takes) go.
+    // On a failure nothing is written and the failures are returned, so the edit refuses.
+    async _deriveCorridorOpenGround(options = {}) {
+        const fabric = _fabricDraft(options);
+        if (!fabric) throw new Error('Corridor open ground requires a parcel mutation draft.');
+        const browserRoot = typeof window !== 'undefined' ? window : globalThis;
+        const cityId = browserRoot.CityConfigManager && typeof browserRoot.CityConfigManager.getCurrentCityId === 'function'
+            ? browserRoot.CityConfigManager.getCurrentCityId()
+            : null;
+        const corridors = (Array.isArray(options.records) ? options.records : _peekProposals(_proposalStore(options)))
+            .filter(record => record && appliedOf(record)
+                && applyRoute.normalizeGoalKey(record.goal) === 'road-track'
+                && _recordInGroundContext(record, cityId));
+        const { features, failed } = await this._corridorOpenGroundFeatures(corridors, options);
+        if (failed.length) return { added: 0, removed: 0, failed };
+        const next = new Map(features.map(feature => [String(feature.properties.parcelId), feature]));
+        const current = new Set((typeof fabric.peekList === 'function' ? fabric.peekList() : fabric.list())
+            .filter(feature => openGroundApi.isGroundPiece(feature) && feature.properties.isCorridor === true
+                && feature.properties.liveParcelDerivation === 'corridor-arrangement')
+            .map(_getParcelIdFromFeature).filter(Boolean).map(String));
+        const removed = Array.from(current).filter(id => !next.has(id));
+        const added = Array.from(next).filter(([id]) => !current.has(id)).map(([, feature]) => feature);
+        if (removed.length) fabric.removeIds(removed);
+        if (added.length) fabric.upsertFeatures(added);
+        return { added: added.length, removed: removed.length, failed: [] };
     },
 
     _isBuildingProposal(proposalData) {

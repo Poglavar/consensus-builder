@@ -82,6 +82,7 @@ describe('ProposalManager._rebuildPass — stable authored state', () => {
             _prefetchDemolitionBuildings: vi.fn(async () => new Map()),
             _appliedCorridorTakes: vi.fn(() => []),
             _deriveCorridorFabric: vi.fn(async () => ({ added: 0, removed: 0, unchanged: 0, parcels: 0, failed: [] })),
+            _deriveCorridorOpenGround: vi.fn(async () => ({ added: 0, removed: 0, failed: [] })),
             _rebuildPass: ProposalManager._rebuildPass
         };
 
@@ -132,6 +133,7 @@ describe('ProposalManager._rebuildPass — stable authored state', () => {
             _prefetchDemolitionBuildings: vi.fn(async () => new Map()),
             _appliedCorridorTakes: ProposalManager._appliedCorridorTakes,
             _deriveCorridorFabric: vi.fn(async () => ({ added: 0, removed: 0, unchanged: 0, parcels: 0, failed: [] })),
+            _deriveCorridorOpenGround: vi.fn(async () => ({ added: 0, removed: 0, failed: [] })),
             _rebuildPass: ProposalManager._rebuildPass
         };
 
@@ -169,6 +171,7 @@ describe('ProposalManager._rebuildPass — stable authored state', () => {
             _prefetchDemolitionBuildings: vi.fn(async () => new Map()),
             _appliedCorridorTakes: ProposalManager._appliedCorridorTakes,
             _deriveCorridorFabric: vi.fn(async () => ({ added: 0, removed: 0, unchanged: 0, parcels: 0, failed: [] })),
+            _deriveCorridorOpenGround: vi.fn(async () => ({ added: 0, removed: 0, failed: [] })),
             _rebuildPass: ProposalManager._rebuildPass
         };
 
@@ -207,6 +210,7 @@ describe('ProposalManager._rebuildPass — stable authored state', () => {
             _prefetchDemolitionBuildings: vi.fn(async () => new Map()),
             _appliedCorridorTakes: ProposalManager._appliedCorridorTakes,
             _deriveCorridorFabric: vi.fn(async () => ({ added: 0, removed: 0, unchanged: 0, parcels: 0, failed: [] })),
+            _deriveCorridorOpenGround: vi.fn(async () => ({ added: 0, removed: 0, failed: [] })),
             _rebuildPass: ProposalManager._rebuildPass
         };
 

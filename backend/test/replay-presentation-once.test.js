@@ -60,6 +60,7 @@ function replayHarness(records) {
         _resetDerivedFabricSliced: vi.fn(async () => ({ parcels: 0 })),
         _appliedCorridorTakes: vi.fn(() => []),
         _deriveCorridorFabric: vi.fn(async () => ({ parcels: 0, added: 0, removed: 0, unchanged: 0, failed: [] })),
+        _deriveCorridorOpenGround: vi.fn(async () => ({ added: 0, removed: 0, failed: [] })),
         _reconcileStructurePresentation: vi.fn(),
         applyProposal: vi.fn(async (_id, options) => {
             applyOptions.push(options);
