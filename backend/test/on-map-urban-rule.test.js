@@ -3,7 +3,8 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { parse } from '@babel/parser';
 
-const source = readFileSync(new URL('../../frontend/js/building-blocks.js', import.meta.url), 'utf8');
+const source = readFileSync(new URL('../../frontend/js/building-blocks.js', import.meta.url), 'utf8')
+    + '\n' + readFileSync(new URL('../../frontend/js/building-block-editor.js', import.meta.url), 'utf8');
 
 function extracted(name) {
     const ast = parse(source, { sourceType: 'script' });

@@ -351,7 +351,13 @@ function buildStatic(sourceRoot, outputDir) {
         const words = {};
         for (const [lang, url] of Object.entries(assets)) {
             const dictionary = JSON.parse(fs.readFileSync(path.join(outputDir, url), 'utf8'));
-            words[lang] = [dictionary.common?.busy?.loading, dictionary.bets?.retry, dictionary.proposals?.share?.named?.openFailed];
+            words[lang] = {
+                loading: dictionary.common?.busy?.loading,
+                retry: dictionary.bets?.retry,
+                failed: dictionary.proposals?.share?.named?.openFailed,
+                heading: dictionary.planDialog?.openPlan,
+                back: dictionary.pageHeader?.backToMap
+            };
         }
         const page = fs.readFileSync(planEntry, 'utf8').replace('id="plan-entry-words">{}',
             'id="plan-entry-words">' + JSON.stringify(words).replace(/</g, '\\u003c'));

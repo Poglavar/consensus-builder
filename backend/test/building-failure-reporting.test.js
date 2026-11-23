@@ -34,7 +34,7 @@ function harness(status, sources = [{ id: 'osm' }]) {
     window.BuildingCellLoader = cells.createCellLoader({ request: cell => client.requestCell(cell, { global: window }) });
     const context = {
         window, fetch, console: { warn: vi.fn(), error: vi.fn() },
-        wgs84ToDataset: (lat, lng) => [lng, lat], buildingFetchesInFlight: 0,
+        wgs84ToDataset: (lat, lng) => [lng, lat], buildingFetchesInFlight: 0, buildingReconcileGeneration: 0,
         clearBuildingsUnavailable: vi.fn(), rebuildBuildingLayerFromPool: vi.fn(), queueMicrotask, buildingLayer: null
     };
     vm.createContext(context);

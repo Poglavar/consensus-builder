@@ -325,14 +325,14 @@ function beginApplyIndicator(labelText) {
     }, 150);
     // The pointer is where the user is looking, so it carries the same news: the whole document goes
     // busy, which survives exitRoadDrawingMode() clearing the map container's inline cursor.
-    try { document.body?.classList.add('corridor-busy'); } catch (_) { }
+    document.body?.classList.add('corridor-busy');
 }
 function endApplyIndicator() {
     corridorApplyIndicatorCount = Math.max(0, corridorApplyIndicatorCount - 1);
     if (corridorApplyIndicatorCount > 0) return;
     if (corridorApplyIndicatorTimer) { clearTimeout(corridorApplyIndicatorTimer); corridorApplyIndicatorTimer = null; }
     if (corridorApplyIndicatorRelease) { corridorApplyIndicatorRelease(); corridorApplyIndicatorRelease = null; }
-    try { document.body?.classList.remove('corridor-busy'); } catch (_) { }
+    if (typeof document !== 'undefined') document.body?.classList.remove('corridor-busy');
 }
 if (typeof window !== 'undefined') {
     window.beginApplyIndicator = beginApplyIndicator;
@@ -417,11 +417,14 @@ function ensureRoadOperationBuildings(bounds) {
         const outlined = window.SourceList?.outlined(window.CityConfigManager?.getBuildingSources?.() || []) || [];
         if (box && !box.checked && !outlined.length) setBuildingReferenceLayers(true);
         if (typeof window.rebuildBuildingLayerFromPool === 'function') {
-            try { window.rebuildBuildingLayerFromPool(); } catch (_) { }
+            try { window.rebuildBuildingLayerFromPool(); }
+            catch (error) { console.warn('[road-shared] Could not redraw the loaded buildings', error); }
         }
         const area = bounds || ((typeof map !== 'undefined' && map && typeof map.getBounds === 'function') ? map.getBounds() : null);
         if (area && typeof window.ensureBuildingFootprintsForBounds === 'function') {
-            return window.ensureBuildingFootprintsForBounds(area).catch(() => { });
+            return window.ensureBuildingFootprintsForBounds(area).catch(error => {
+                console.warn('[road-shared] Could not load building footprints', error);
+            });
         }
     } catch (error) {
         console.warn('[ensureRoadOperationBuildings] could not prepare buildings', error);
@@ -439,7 +442,9 @@ function setBuildingReferenceLayers(on) {
     // The road profiler measures against whatever is on the map, so it has to hear about it.
     try {
         document.dispatchEvent(new CustomEvent('building-layers-changed'));
-    } catch (_) { }
+    } catch (error) {
+        console.warn('[road-shared] Could not announce building layer changes', error);
+    }
 }
 
 // B opens the building source list (BuildingLayersDialog): which sources are in use, in what order,

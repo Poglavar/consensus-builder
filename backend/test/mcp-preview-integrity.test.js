@@ -3,7 +3,9 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
 import { cidOfObject } from '../cid.js';
 import { createRequire } from 'node:module';
-const { mapLimit, CONCURRENCY } = createRequire(import.meta.url)('../../frontend/js/draft-link.js');
+const require = createRequire(import.meta.url);
+const { mapLimit, CONCURRENCY } = require('../../frontend/js/draft-link.js');
+const PlanAnalysis = require('../../frontend/js/plan-analysis.js');
 const script = readFileSync(new URL('../../frontend/js/draft-preview.js', import.meta.url), 'utf8');
 describe('private collection reference integrity', () => {
     const first = { schema: 'design/v1', title: 'Linked' }, extra = { schema: 'design/v1', title: 'Unlinked' };
@@ -13,8 +15,8 @@ describe('private collection reference integrity', () => {
         const designs = Array.from({ length: 9 }, (_, i) => ({ schema: 'design/v1', title: `Tower ${i}` }));
         const cids = designs.map(cidOfObject), calls = [];
         let inFlight = 0, peak = 0;
-        const windowFor = ok => ({ location: { href: 'https://app.example/designs?draft=fixture' }, Cid: { cidOfObject },
-            DraftLink: { mapLimit, CONCURRENCY, load: async (_href, { onProgress }) => { onProgress({ done: 9, total: 9 }); return { plan: { schema: 'plan/v1', designCids: cids }, designs, parcelSourceId: 'ground' }; } },
+        const windowFor = ok => { const window = { location: { href: 'https://app.example/designs?draft=fixture' }, Cid: { cidOfObject },
+            DraftLink: { mapLimit, CONCURRENCY, load: async () => ({ plan: { schema: 'plan/v1', designCids: cids }, designs, parcelSourceId: 'parcel-nyc' }) },
             PlanRecord: { validate: () => null }, DesignRecord: { validate: () => ({ valid: true }) },
             DesignSync: { apiBase: () => 'https://api.example' }, __siteBinding: { siteOf: () => ({}) },
             fetch: async () => {
@@ -31,12 +33,16 @@ describe('private collection reference integrity', () => {
                 return { failed: [], rows: [...draftRows.values()], localIds: new Map(ids.map(id => [id, id])) };
             },
             proposalStorage: { getProposal: id => ({ proposalId: id }) },
-            PlanWorkspace: { resolve: async row => row }, ClickStack: { showPlan: vi.fn() } });
+            PlanWorkspace: { resolve: async row => row }, ClickStack: { showPlan: vi.fn() } };
+            window.PlanAnalysis = PlanAnalysis.browser(window);
+            return window;
+        };
         const window = windowFor(true);
         runInContext(script, createContext({ window }));
         const result = await window.DraftPreview.open();
         expect(result.rows.map(row => row.content.title)).toEqual(designs.map(d => d.title));
         expect(calls[0]).toEqual(['show', 'Fetching the shared designs…', 'Shared designs']);
+        expect(calls).toContainEqual(['update', { done: 0, total: 9 }]);
         expect(calls).toContainEqual(['update', { done: 9, total: 9 }]);
         expect(calls.filter(call => call[0] === 'update').at(-1)).toEqual(['update', { done: 9, total: 9 }]);
         expect(calls.at(-1)).toEqual(['apply', 9]);
@@ -56,16 +62,17 @@ describe('private collection reference integrity', () => {
         const apply = vi.fn(async (ids, { draftRows }) => ({ failed: [], rows: [...draftRows.values()], localIds: new Map(ids.map(id => [id, `local-${id}`])) }));
         const resolve = vi.fn(async row => row), showPlan = vi.fn(), arrive = vi.fn();
         const window = { location: { href: 'https://app.example/designs?draft=fixture' }, Cid: { cidOfObject },
-            DraftLink: { mapLimit, CONCURRENCY, load: async () => ({ plan: content, designs: [first, extra], designSources: { [firstCid]: 'source-one', [extraCid]: 'source-two' } }) },
+            DraftLink: { mapLimit, CONCURRENCY, load: async () => ({ plan: content, designs: [first, extra], designSources: { [firstCid]: 'parcel-ba', [extraCid]: 'parcel-bg' } }) },
             PlanRecord: { validate: () => null }, DesignRecord: { validate: () => ({ valid: true }) },
             DesignSync: { apiBase: () => 'https://api.example', parcelSourceIdOf: () => 'wrong-current-source' }, __siteBinding: { siteOf: () => ({}) },
             fetch: async (_url, options) => { requests.push(JSON.parse(options.body)); return { ok: true, json: async () => ({ binding: {} }) }; },
             handleSharedDesignRoute: apply, proposalStorage: { getProposal: proposalId => ({ proposalId }) },
             PlanWorkspace: { resolve }, ClickStack: { showPlan }, BuildoutClock: { arrive } };
+        window.PlanAnalysis = PlanAnalysis.browser(window);
         runInContext(script, createContext({ window }));
         const result = await window.DraftPreview.open();
-        expect(requests.map(row => row.parcelSourceId)).toEqual(['source-one', 'source-two']);
-        expect(result.rows.map(row => row.parcelSourceId)).toEqual(['source-one', 'source-two']);
+        expect(requests.map(row => row.parcelSourceId)).toEqual(['parcel-ba', 'parcel-bg']);
+        expect(result.rows.map(row => row.parcelSourceId)).toEqual(['parcel-ba', 'parcel-bg']);
         const row = { cid: cidOfObject(content), content };
         const designs = [firstCid, extraCid].map(id => ({ proposalId: `local-${id}` }));
         expect(resolve).toHaveBeenCalledWith(row, designs);
@@ -87,10 +94,11 @@ describe('private collection reference integrity', () => {
         const window = { location: { href: 'https://app.example/designs?draft=https%3A%2F%2Fmcp.example%2Fmcp%2Fpreviews%2Faaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' }, Cid: { cidOfObject },
             PlanRecord: { validate: () => null },
             DraftLink: { mapLimit, CONCURRENCY, load: async () => ({ agreement, plan, designs:[first] }) },
-            DesignSync: { apiBase: () => 'https://api.example', parcelSourceIdOf: () => 'fixture' },
+            DesignSync: { apiBase: () => 'https://api.example', parcelSourceIdOf: () => 'parcel-nyc' },
             DesignRecord: { validate: () => ({valid:true}) }, __siteBinding: { siteOf: () => ({}) },
             fetch: async () => ({ok:true,json:async()=>({binding:{}})}),
             handleSharedDesignRoute: async () => applied, AgreementStore: { save } };
+        window.PlanAnalysis = PlanAnalysis.browser(window);
         runInContext(script, createContext({ window }));
         await expect(window.DraftPreview.open()).resolves.toBe(applied);
         expect(save).not.toHaveBeenCalled();

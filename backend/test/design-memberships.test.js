@@ -302,7 +302,7 @@ describe('read-only parent inspection', () => {
         f.win.ClickStackRelations = { renderGroup: vi.fn(() => doc.createElement('div')) };
         f.win.BusyControl = { isBusy: () => false, track: (_button, run) => run() };
         f.win.NamedPlans.list = () => [];
-        f.win.PlanWorkspace = { appliedMembers: vi.fn(() => null), standingMembers: vi.fn(() => []), apply: vi.fn(async () => ({})) };
+        f.win.PlanWorkspace = { appliedMembers: vi.fn(() => null), standingMembers: vi.fn(() => []), applyFromUi: vi.fn(async () => ({})) };
         let release;
         const session = { groups: { plans: { loading: false, error: false, nextOffset: null } },
             details: vi.fn(() => new Promise(resolve => { release = resolve; })) };
@@ -315,7 +315,8 @@ describe('read-only parent inspection', () => {
             content: expect.objectContaining({ designCids: ['d-1'] }) }));
         expect(host.querySelector('.click-stack__unapply-plan')).toBeNull();
         host.querySelector('.click-stack__apply-plan').click();
-        await vi.waitFor(() => expect(f.win.PlanWorkspace.apply).toHaveBeenCalledWith(expect.objectContaining({ cid: 'plan-cid' })));
+        await vi.waitFor(() => expect(f.win.PlanWorkspace.applyFromUi).toHaveBeenCalledWith(
+            expect.objectContaining({ cid: 'plan-cid' }), { returnFocus: host.querySelector('.click-stack__apply-plan') }));
     });
 
     it('scopes agreements to the selected exact plan and refreshes local saves', async () => {

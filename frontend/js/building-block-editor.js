@@ -244,7 +244,9 @@ function showBlockifyModalEditor() {
             if (typeof window !== 'undefined' && window.i18n && typeof window.i18n.applyTranslations === 'function') {
                 window.i18n.applyTranslations(blockifyModal.root);
             }
-        } catch (_) { }
+        } catch (error) {
+            console.warn('[building-block-editor] Could not translate the editor', error);
+        }
 
 
         document.dispatchEvent(new CustomEvent('blockifyModalOpened'));
