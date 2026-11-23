@@ -199,7 +199,7 @@ describe('hosted MCP agent acceptance boundary', () => {
         expect(canonicalBytes(recovered.untrusted.plan)).toEqual(canonicalBytes(revised.untrusted.plan));
     });
     it('returns the actual rendered PNG as MCP image content while structured output keeps readiness and provenance', async () => {
-        vi.stubEnv('MAPTILER_API_KEY', 'protocol-fixture');
+        vi.stubEnv('MAPTILER_PUBLIC_KEY', 'protocol-fixture');
         const { ok, call } = await connect();
         const draft = await ok('ugt_draft_building', { city: 'london', parcelSourceId: 'boundary-source-0', outline, floors: 3 });
         const rendered = await call('ugt_render_preview', { design: draft.draftRef, view: '2d' });

@@ -14,9 +14,10 @@ const thumbnailBbox = createRequire(import.meta.url)('../../frontend/js/thumbnai
 // MapTiler basic-v2 raster at 256px, the same style as the site's MapTiler basemap. Carto began
 // stamping keyless tiles with "API KEY REQUIRED" (seen 2026-09), which was baked into every
 // thumbnail. The key is public (the browser basemap ships it); prod sets it in ecosystem.config.cjs.
+// Its name says public so the hosted MCP, which refuses credential-named variables, can carry it.
 function defaultTileUrl() {
-    const key = process.env.MAPTILER_API_KEY;
-    if (!key) throw new Error('MAPTILER_API_KEY is not set: proposal thumbnails have no basemap tile source.');
+    const key = process.env.MAPTILER_PUBLIC_KEY;
+    if (!key) throw new Error('MAPTILER_PUBLIC_KEY is not set: proposal thumbnails have no basemap tile source.');
     return `https://api.maptiler.com/maps/basic-v2/256/{z}/{x}/{y}.png?key=${encodeURIComponent(key)}`;
 }
 const TILE_SIZE = 256;

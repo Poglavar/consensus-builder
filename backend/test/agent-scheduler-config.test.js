@@ -36,7 +36,7 @@ describe('algorithmic agent schedule', () => {
             expect(policy.maxUsdc).toBeGreaterThanOrEqual(picks.maxUsdc);
             expect(policy.maxMarketSeedUsdc).toBeGreaterThanOrEqual(picks.maxMarketSeedUsdc);
             // The proposer renders no thumbnails any more: the index does.
-            expect(proposer.env).not.toHaveProperty('MAPTILER_API_KEY');
+            expect(proposer.env).not.toHaveProperty('MAPTILER_PUBLIC_KEY');
             expect(proposer.env).not.toHaveProperty('AGENT_RETIRE_AFTER_DAYS');
             expect(proposer.env).not.toHaveProperty('AGENT_LIFECYCLE_LENS_SERVICE_URL');
         }
@@ -53,8 +53,8 @@ describe('algorithmic agent schedule', () => {
         const backendApps = require('../ecosystem.config.cjs').apps;
         const apiEnv = backendApps.find(item => item.name === 'consensus-builder-api').env;
         const mcpEnv = backendApps.find(item => item.name === 'ugt-mcp').env;
-        expect(apiEnv.MAPTILER_API_KEY).toMatch(/^\w{20}$/);
-        expect(mcpEnv.MAPTILER_API_KEY).toBe(apiEnv.MAPTILER_API_KEY);
+        expect(apiEnv.MAPTILER_PUBLIC_KEY).toMatch(/^\w{20}$/);
+        expect(mcpEnv.MAPTILER_PUBLIC_KEY).toBe(apiEnv.MAPTILER_PUBLIC_KEY);
     });
     it('uses the production provider account limit for the API and every actor', () => {
         const apiEnv = require('../ecosystem.config.cjs').apps.find(item => item.name === 'consensus-builder-api').env;

@@ -12,7 +12,7 @@ import { join } from 'node:path';
 import { once } from 'node:events';
 import { Client, StreamableHTTPClientTransport } from '@modelcontextprotocol/client';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createMcpHttpService, MCP_MAX_REQUEST_BYTES } from '../agents/mcp-http.mjs';
+import { assertHostedEnvironment, createMcpHttpService, MCP_MAX_REQUEST_BYTES } from '../agents/mcp-http.mjs';
 import { createUrbanGameTheoryMcpServer } from '../agents/mcp-server.mjs';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
 import { hostedEnvironment } from '../agents/mcp-launch.mjs';
@@ -114,8 +114,10 @@ describe('hosted MCP HTTP', () => {
     });
     it('rejects credential-bearing environments before starting', () => {
         for (const key of ['UGT_AGENT_KEYPAIR', 'DATABASE_URL', 'PINATA_JWT_TOKEN']) expect(() => createMcpHttpService({ env: { [key]: 'configured' } })).toThrow(/no credentials/);
-        expect(hostedEnvironment({ PATH: '/bin', UGT_API_BASE: 'https://api.example', CHAT_DEBUG_COSTS: 'true', UGT_AGENT_KEYPAIR: 'configured', DATABASE_URL: 'configured', ANTHROPIC_API_KEY: 'configured' }))
-            .toEqual({ PATH: '/bin', UGT_API_BASE: 'https://api.example', CHAT_DEBUG_COSTS: 'true' });
+        // The public basemap key reaches the preview renderer; credentials never do.
+        const hosted = hostedEnvironment({ PATH: '/bin', UGT_API_BASE: 'https://api.example', CHAT_DEBUG_COSTS: 'true', MAPTILER_PUBLIC_KEY: 'public', UGT_AGENT_KEYPAIR: 'configured', DATABASE_URL: 'configured', ANTHROPIC_API_KEY: 'configured' });
+        expect(hosted).toEqual({ PATH: '/bin', UGT_API_BASE: 'https://api.example', CHAT_DEBUG_COSTS: 'true', MAPTILER_PUBLIC_KEY: 'public' });
+        expect(() => assertHostedEnvironment(hosted)).not.toThrow();
     });
     it('enforces hosts, origins, body size and no-store', async () => {
         const base = await host();
