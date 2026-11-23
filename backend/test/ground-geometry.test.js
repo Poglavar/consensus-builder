@@ -263,7 +263,7 @@ describe('pavement plane and input hygiene', () => {
         const after = build(ways, expanded);
         expect(expanded).toEqual([-200100, -200050, 200100, 200050]);
         expect(bounds).toEqual([-100, -50, 100, 50]);
-        expect(after.plane.triangles).toBe(2);
+        expect(after.plane.triangles).toBe(8);
         expect(after.plane.positions.length).toBe(before.plane.positions.length);
         expect(after.stats).toEqual(before.stats);
         for (const part of ['roadbed', 'lid', 'kerb', 'markings']) expect(after[part]).toEqual(before[part]);
@@ -276,12 +276,13 @@ describe('pavement plane and input hygiene', () => {
             .toEqual([-360100, -360050, 360100, 360050]);
     });
 
-    it('spans the bounds as two triangles at z 0', () => {
+    it('spans the bounds at z 0 with vertices at the centre', () => {
         const { plane, stats } = build([], [-100, -50, 100, 50]);
-        expect(plane.triangles).toBe(2);
+        expect(plane.triangles).toBe(8);
         expect(totalArea(plane)).toBeCloseTo(200 * 100, 6);
-        expect(Array.from(plane.positions).filter((_, i) => i % 3 === 2)).toEqual([0, 0, 0, 0]);
-        expect(stats.triangles).toBe(2);
+        expect(zs(plane).every(z => z === 0)).toBe(true);
+        expect(hasVertex(plane, 0, 0, 0)).toBe(true);
+        expect(stats.triangles).toBe(plane.triangles);
     });
 
     it('makes no plane without valid bounds and no roadbed from degenerate ways', () => {

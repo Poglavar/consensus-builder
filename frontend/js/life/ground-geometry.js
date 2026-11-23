@@ -292,8 +292,8 @@
         return len;
     }
 
-    // Ground coverage is independent of the bounded street/population data. Extending the four
-    // outer corners adds no triangles; keep openings in this same surface rather than filling
+    // Ground coverage is independent of the bounded street/population data. Extending the
+    // pavement adds no triangles; keep openings in this same surface rather than filling
     // lakes with a second background plane. Reach is in true metres, like the input bounds.
     function pavementBounds(bounds, ...reaches) {
         if (!Array.isArray(bounds) || bounds.length !== 4 || !bounds.every(Number.isFinite)
@@ -306,29 +306,41 @@
 
     // The same openings as the parcel ground, cut into the pavement itself. Work in the local
     // metric frame; subtraction and triangulation are supplied by the scene's geometry libraries.
-    function buildPavementGeometry(bounds, openings, { difference, triangulate }) {
+    function buildPavementGeometry(bounds, openings = [], { difference, triangulate } = {}) {
         const [x0, y0, x1, y1] = bounds;
-        let surface = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [
-            [[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]]
-        ] } };
-        for (const opening of openings) {
-            surface = difference(surface, opening);
-            if (!surface) return null;
-        }
-        const polygons = surface.geometry.type === 'Polygon' ? [surface.geometry.coordinates] : surface.geometry.coordinates;
+        // Vertices near the scene centre keep the horizon-sized plane's clipped triangles from
+        // writing unstable depth over the local zoning tint as the camera tilts.
+        const xs = [x0, (x0 + x1) / 2, x1], ys = [y0, (y0 + y1) / 2, y1];
         const positions = [], indices = [];
-        for (const polygon of polygons) {
-            const rings = polygon.map(ring => {
-                const points = ring.map(point => [point[0], point[1]]);
-                if (points.length > 1 && points[0][0] === points.at(-1)[0] && points[0][1] === points.at(-1)[1]) points.pop();
-                return points;
-            });
+
+        function append(rings, triangles) {
             const offset = positions.length / 3;
-            const triangles = triangulate(rings[0], rings.slice(1));
             rings.flat().forEach(([x, y]) => positions.push(x, y, 0));
             triangles.forEach(triangle => indices.push(...triangle.map(index => index + offset)));
         }
-        return { positions: new Float32Array(positions), indices: new Uint32Array(indices), triangles: indices.length / 3 };
+
+        for (let x = 0; x < 2; x++) {
+            for (let y = 0; y < 2; y++) {
+                const ring = [[xs[x], ys[y]], [xs[x + 1], ys[y]], [xs[x + 1], ys[y + 1]], [xs[x], ys[y + 1]]];
+                if (!openings.length) {
+                    append([ring], [[0, 1, 2], [0, 2, 3]]);
+                    continue;
+                }
+                let surface = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[...ring, ring[0]]] } };
+                for (const opening of openings) {
+                    surface = difference(surface, opening);
+                    if (!surface) break;
+                }
+                if (!surface) continue;
+                const { type, coordinates } = surface.geometry;
+                const polygons = type === 'Polygon' ? [coordinates] : coordinates;
+                for (const polygon of polygons) {
+                    const rings = polygon.map(closed => closed.slice(0, -1));
+                    append(rings, triangulate(rings[0], rings.slice(1)));
+                }
+            }
+        }
+        return indices.length ? { positions: new Float32Array(positions), indices: new Uint32Array(indices), triangles: indices.length / 3 } : null;
     }
 
     // `carriageways`: [{ pts: [[x, y, z?], …], halfWidth, drop?, lanes? }] in true metres (the life
@@ -491,18 +503,14 @@
         let plane = null;
         const b = input && input.bounds;
         if (Array.isArray(b) && b.length === 4 && b.every(Number.isFinite) && b[2] > b[0] && b[3] > b[1]) {
-            plane = {
-                positions: new Float32Array([b[0], b[1], 0, b[2], b[1], 0, b[2], b[3], 0, b[0], b[3], 0]),
-                indices: new Uint32Array([0, 1, 2, 0, 2, 3]),
-                triangles: 2
-            };
+            plane = buildPavementGeometry(b);
         }
 
         return {
             roadbed, lid, kerb, markings, plane, paths,
             stats: {
                 pathM: Math.round(pathM), pathTriangles,
-                ways: ways.length, triangles: roadbed.triangles + (plane ? 2 : 0), junctions: junctions.size,
+                ways: ways.length, triangles: roadbed.triangles + (plane?.triangles || 0), junctions: junctions.size,
                 roundedBends, roadAreaM2: Math.round(roadAreaM2), dropped: roadbed.dropped,
                 kerbM: Math.round(kerb.lengthM), kerbTriangles: kerb.triangles,
                 markingM: Math.round(markingM), markingTriangles: markings.triangles
