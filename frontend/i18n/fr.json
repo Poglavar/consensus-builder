@@ -8767,6 +8767,7 @@
         "excludedConfigurations": "Non configurable ici : {{list}}.",
         "envelopeCoverage": "Les enveloppes partielles sont déduites des données chargées sur les parcelles et le zonage. Les parcelles sans volumétrie sont comptabilisées par motif ; l’absence de volumétrie ne permet pas de conclure à une capacité nulle.",
         "envelopeSummary": "{{count}} fiches de parcelles examinées : {{shapes}} avec une enveloppe partielle, {{missing}} sans volumétrie.",
+        "landBasisZone": "Ici, le plan redessine le sol, avec ses propres rues et îlots. Le gabarit autorisé est tracé sur l'îlot du plan, et non sur les parcelles actuelles, que le plan ne conserve pas.",
         "envelopeNote": "L’enveloppe maximale combine les types de logement enregistrés. Le côté avant est orienté vers les rues proches lorsque les données sont disponibles ; sinon, l’enveloppe inclut toutes les orientations prises en charge. Choisissez un type de logement ou lancez les dés pour changer la configuration affichée. Les plafonds de surface et les règles non résolues restent applicables.",
         "assumedSide": "Côté supposé donnant sur la rue : {{side}}.",
         "lotBelowMinimum": "Terrain inférieur au minimum de {{minimum}}",

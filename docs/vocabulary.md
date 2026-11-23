@@ -712,9 +712,13 @@ The comparison controls label this **Illustration**. A source's one calculated o
 
 The geographic area to which supplied zoning evidence refers. It is distinct from a cadastral parcel, a permitted building volume and a completed compliance assessment.
 
+### Land basis
+
+The land a zoning area's rules are applied to when Permitted massing is derived. By default it is the registered parcels as they stand: the plan regulates building on existing land, and each parcel under the area gets its own envelope. Where the plan lays the land out anew, with streets and blocks of its own drawn over parcels it does not keep (a plan that presupposes land readjustment), the zoning area itself is the lot (`landBasis: "zone"`): it gets one envelope per polygon of its outline, and a parcel wholly under such areas gets none. A parcel lying partly under an area that keeps its parcels keeps the envelope of that part. The provider states the basis per zoning area from the plan's own evidence; it is never inferred from geometry, because a zone line crossing a parcel occurs under both kinds of plan. The zoning area and the envelopes derived on it carry the statement; absent, the basis is the parcel. The land basis says which land the source's rules are read on. It forms no parcels and is not a parcel layout: the map's ground stays the cadastre.
+
 ### Functional zone (Alatau)
 
-A zoning area of Alatau's general plan (Decree No. 727, 2025) from the state urban-planning cadastre: one polygon with a use and, for housing, a storey class (detached houses, 2–3, 4–6, 6–12, above 12), marked existing or planned. A residential class's upper storey count is a maximum; other uses hand the building parameters to the detailed plan (ПДП), and open land carries no building. See [Alatau general plan source](alatau-genplan-source.md).
+A zoning area of Alatau's general plan (Decree No. 727, 2025) from the state urban-planning cadastre: one polygon with a use and, for housing, a storey class (detached houses, 2–3, 4–6, 6–12, above 12), marked existing or planned. A planned zone is a block of the plan's own layout and is its own lot (Land basis); an existing one keeps its parcels. A residential class's upper storey count is a maximum; other uses hand the building parameters to the detailed plan (ПДП), and open land carries no building. See [Alatau general plan source](alatau-genplan-source.md).
 
 ### Treatment area (Bogotá)
 

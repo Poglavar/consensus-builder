@@ -27,6 +27,14 @@ The plan's zones are small, so a block of lots lies under several hundred of the
 `zoningPageLimit: 1000`, and a study or envelope zoning read follows further pages (up to 10)
 instead of failing at the first.
 
+A zone the plan marks planned (`implementation` Проектируемые) is a block of the plan's own
+layout, drawn across the field parcels it replaces. It is its own lot (vocabulary: Land basis):
+the envelope is derived on the zone's outline, and the cadastral parcels under it get none. A zone
+marked existing, or unmarked, regulates the parcels as they stand. The plan's streets are one road
+zone surrounding the blocks (18.7 km² on 2026-11-23, over the study limit, so never a lot).
+OpenStreetMap holds no planned street, so a block's envelope has no street to face and is the
+unoriented bound. A zone with a hole (a block around another zone) is `unsupported-parcel-shape`.
+
 Envelopes are drawn only for lots of 1 km² or less, the study limit. Larger lots (fields, common
 in Alatau) are listed as `unsupported-parcel-shape` and do not widen the zoning read.
 
@@ -60,8 +68,10 @@ Russian text stays on the record. A Freeform building is checked against the zon
 
 ## Limits
 
-- A zone is a general-plan area, not a parcel rule. Lots crossing two zones without a clear majority
-  give `study-multiple-zoning-areas`, as elsewhere.
+- An existing zone is a general-plan area, not a parcel rule. Lots crossing two such zones without a
+  clear majority give `study-multiple-zoning-areas`, as elsewhere.
+- The single-parcel study (`/planning/study`) still reads a parcel under a planned zone against
+  that zone, clipped to it; only the viewport envelopes use the zone as the lot.
 - The cadastre returns every lot as a MultiPolygon; a one-part MultiPolygon is studied as its
   Polygon (`assembleParcelStudy`).
 - The source is the plan as approved in 2025. ARUP and BCG are preparing a master plan to 2040 under

@@ -76,6 +76,18 @@ describe('Alatau general plan zones', () => {
         expect(mid.title).toBe('Среднеэтажная застройка · до 5 эт. (6*) · проектируемая');
         expect(mid.source.language).toBe('ru');
     });
+
+    it('states that a planned zone is its own lot, and that an existing one keeps its parcels', async () => {
+        const { provider } = service([zone(481223, HOUSES), zone(481225, HOUSES, { implementation: 'Проектируемые' }),
+            zone(481226, HOUSES, { implementation: null })]);
+        const read = async id => (await provider.record(null, { recordId: id }))[0];
+        expect((await read('481225')).landBasis).toBe('zone');
+        expect(await read('481223')).not.toHaveProperty('landBasis');
+        expect(await read('481226')).not.toHaveProperty('landBasis');
+        // The viewport answer states it too, so the map can say so of a zone it shows.
+        const page = await provider.query(null, { bbox, limit: 10 });
+        expect(page.items.map(item => item.landBasis)).toEqual([undefined, 'zone', undefined]);
+    });
 });
 
 describe('Alatau general plan provider', () => {

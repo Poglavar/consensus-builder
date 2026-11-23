@@ -189,6 +189,9 @@ export function createAlatauGenplanProvider(descriptor = alatauGenplanSource, { 
             // The zone's use in the shared vocabulary (docs/vocabulary.md, Permitted use): a key the app
             // translates, a group the map colours by, and the plan's own words.
             use: { key: reading.useKey, group: reading.useGroup, label: reading.use, stage: reading.stage },
+            // A planned zone is a block of the plan's own layout, drawn across the field parcels it
+            // replaces: the zone, not those parcels, is the lot (docs/vocabulary.md, Land basis).
+            ...(reading.stage === 'planned' ? { landBasis: 'zone' } : {}),
             metrics: { floorAreaM2: null, heightM: reading.heightM,
                 // The asterisked class (6* этажей): taller only on the condition the legend's note sets.
                 ...(reading.uplift ? { conditional: { heightM: Math.round(reading.uplift.storeys * reading.storeyHeightM * 100) / 100,

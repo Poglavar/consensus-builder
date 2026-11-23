@@ -8590,6 +8590,7 @@
         "excludedConfigurations": "Not configurable here: {{list}}.",
         "envelopeCoverage": "Partial envelopes are derived from the loaded parcel and zoning records. Parcels without massing are counted by reason; missing massing does not establish zero capacity.",
         "envelopeSummary": "{{count}} parcel records inspected: {{shapes}} with partial envelopes, {{missing}} without massing.",
+        "landBasisZone": "This plan lays the land out anew here, with its own streets and blocks. Permitted massing is drawn on the plan's block, not on today's parcels, which the plan does not keep.",
         "envelopeNote": "The maximum envelope combines the recorded housing types. Frontage follows nearby streets when available; otherwise the bound includes all supported orientations. Choose a housing type, then roll the dice for another sample building within its limits. Area budgets and unresolved rules still apply.",
         "assumedSide": "Assumed street side: {{side}}.",
         "lotBelowMinimum": "Lot below the {{minimum}} minimum",

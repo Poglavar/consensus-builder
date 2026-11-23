@@ -177,6 +177,40 @@ describe('viewport parcel envelopes', () => {
         expect(result.items[0].sourceEvidence).toMatchObject({ parts: 2, zoningRecordId: 'one',
             sourceCoverage: { zoneShare: expect.closeTo(0.5, 2), otherZones: [{ recordId: 'two', minor: false }] } });
     });
+    it('draws a land-forming zoning area as its own lot and gives the parcels under it no envelope', async () => {
+        // A plan block laid across two parcels, beside a zone that keeps its parcels.
+        const blockBox = [-105.00095,40.00005,-105.00055,40.00035];
+        const base = createAtlasProvider({type:'FeatureCollection',features:[
+            {...turf.bboxPolygon(blockBox),properties:{...properties,slice_id:'block'}},
+            {...turf.bboxPolygon([-105.0005,39.999,-105,40.001]),properties:{...properties,slice_id:'kept'}}
+        ]},metadata);
+        // The provider states the land basis on the record; a study re-reads each zone by its record.
+        const forming = { ...base, record: async (...args) => (await base.record(...args))
+            .map(item => item.source.recordId === 'block' ? { ...item, landBasis: 'zone' } : item) };
+        const lots = [parcel('west',[-105.001,40,-105.00075,40.0004]), parcel('middle',[-105.00075,40,-105.00045,40.0004]),
+            parcel('east',[-105.00045,40,-105,40.0004])];
+        const wide = {...query,bbox:[-105.001,40,-105,40.0004]};
+        const result = await loadParcelEnvelopes(wide,options(lots,forming));
+        expect(result.unavailable).toEqual([]);
+        // West lies only under the block; middle keeps the part under the zone that keeps its parcels.
+        expect(result.items.map(item => item.id)).toEqual(['envelope:atlas-envelope-test:middle~kept',
+            'envelope:atlas-envelope-test:east','envelope:atlas-envelope-test:zone:block']);
+        const block = result.items[2];
+        expect(block).toMatchObject({ landBasis:'zone', parcelEnvelope:true, assessment:{geometry:'derived-zone'},
+            sourceEvidence:{zoningRecordId:'block',parcelReference:null,sourceCoverage:{zoneShare:expect.closeTo(1,6)}} });
+        expect(block.source).not.toHaveProperty('parcel');
+        expect(block.derivation.parcel).toEqual(turf.bboxPolygon(blockBox).geometry);
+        const [w,s,e,n] = turf.bbox(turf.feature(block.site));
+        expect(w).toBeGreaterThanOrEqual(blockBox[0]); expect(s).toBeGreaterThanOrEqual(blockBox[1]);
+        expect(e).toBeLessThanOrEqual(blockBox[2]); expect(n).toBeLessThanOrEqual(blockBox[3]);
+        expect(result.items[1]).not.toHaveProperty('landBasis');
+        // The same zones without that statement regulate the parcels as they stand.
+        expect((await loadParcelEnvelopes(wide,options(lots,base))).items.map(item => item.id)).toEqual([
+            'envelope:atlas-envelope-test:west','envelope:atlas-envelope-test:middle~block','envelope:atlas-envelope-test:middle~kept',
+            'envelope:atlas-envelope-test:east']);
+        // A view with no parcels still draws the plan's lot.
+        expect((await loadParcelEnvelopes(wide,options([],forming))).items.map(item => item.id)).toEqual(['envelope:atlas-envelope-test:zone:block']);
+    });
     it('names an envelope by the use of the zone it stands in', async () => {
         const base = provider();
         const use = { key: 'residential-mid', group: 'housing-mid', label: 'Среднеэтажная застройка', stage: 'planned' };

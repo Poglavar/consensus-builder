@@ -202,6 +202,21 @@ function expand([w, s, e, n], marginM) {
     return [w - dLng, s - dLat, e + dLng, n + dLat];
 }
 
+// A zoning area whose plan lays the land out anew is its own lot: the parcels under it are to be
+// re-formed, so its rules are never applied to them (docs/vocabulary.md, Land basis). The provider
+// states this on the record; it is never read off the geometry.
+const formsLand = record => record?.landBasis === 'zone';
+// The lots such a zoning area stands for: one per polygon of its full outline.
+function zoneLots(record) {
+    const site = record.site;
+    const polygons = site?.type === 'MultiPolygon' ? site.coordinates : site?.type === 'Polygon' ? [site.coordinates] : [];
+    return polygons.map((coordinates, index) => {
+        const parcel = { type: 'Feature', id: `zone:${record.source.recordId}${polygons.length > 1 ? `.${index + 1}` : ''}`,
+            properties: {}, geometry: { type: 'Polygon', coordinates } };
+        return { parcel, bbox: turf.bbox(parcel), zone: record.source.recordId };
+    });
+}
+
 export async function loadParcelEnvelopes(query, { sources, parcelProvider = descriptor => runtimeParcelSource(descriptor), streetProvider } = {}) {
     validateBounds(query.bbox, 0.5);
     const provider = sourcesFor(query, sources)[0];
@@ -222,27 +237,41 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
     // failed as study-zoning-incomplete for the whole view.
     const records = all.filter(record => turf.area(record.parcel) <= STUDY_MAX_PARCEL_M2);
     const tooLarge = all.filter(record => !records.includes(record)).map(record => ({ parcelId: record.parcel.id, reason: 'unsupported-parcel-shape' }));
-    // Query zoning across full parcel outlines, not just the viewport (a corner can cross a zone).
-    const fullBounds = records.length ? [Math.min(...records.map(r => r.bbox[0])), Math.min(...records.map(r => r.bbox[1])),
-        Math.max(...records.map(r => r.bbox[2])), Math.max(...records.map(r => r.bbox[3]))] : query.bbox;
+    // Query zoning across full parcel outlines, not just the viewport (a corner can cross a zone),
+    // and across the viewport itself: a zoning area that is its own lot is found there, parcels or not.
+    const fullBounds = [Math.min(query.bbox[0], ...records.map(r => r.bbox[0])), Math.min(query.bbox[1], ...records.map(r => r.bbox[1])),
+        Math.max(query.bbox[2], ...records.map(r => r.bbox[2])), Math.max(query.bbox[3], ...records.map(r => r.bbox[3]))];
     const scenarios = provider.descriptor.scenarios || [provider.descriptor.scenario];
-    const [zoneEntries, streets] = await Promise.all([
-        Promise.all(scenarios.map(async scenario => [scenario, await readStudyZoning(provider, { ...query, scenario }, fullBounds)])),
-        records.length ? readFrontageStreets(fullBounds, streetProvider) : null
-    ]);
+    const streetsRead = records.length ? readFrontageStreets(fullBounds, streetProvider) : null;
+    const zoneEntries = await Promise.all(scenarios.map(async scenario => [scenario, await readStudyZoning(provider, { ...query, scenario }, fullBounds)]));
     const zonesByScenario = Object.fromEntries(zoneEntries);
+    // The plan's own lots: its land-forming zoning areas, every one read as a neighbour across a
+    // street and those in the view drawn.
+    const planLots = zonesByScenario[scenarios[0]].filter(formsLand).flatMap(zoneLots);
+    const planObstacles = planLots.map(lot => ({ id: lot.parcel.id, geometry: lot.parcel.geometry, bbox: lot.bbox }));
+    const planInView = planLots.filter(lot => intersects(lot.bbox, query.bbox));
+    if (inView.length + planInView.length > 1000) fail('envelope-area-too-large', 400);
+    const planRecords = planInView.filter(lot => turf.area(lot.parcel) <= STUDY_MAX_PARCEL_M2);
+    const streets = await (streetsRead || (planRecords.length ? readFrontageStreets(fullBounds, streetProvider) : null));
     const streetsNearby = streetIndex(streets);
     // Overlaps are checked against every lot in view, the large ones too.
     const overlapProblems = parcelOverlapProblems(all);
-    const items = [], unavailable = [...tooLarge];
-    for (const { parcel } of records) {
+    const items = [], unavailable = [...tooLarge,
+        ...planInView.filter(lot => !planRecords.includes(lot)).map(lot => ({ parcelId: lot.parcel.id, reason: 'unsupported-parcel-shape' }))];
+    for (const { parcel, zone = null } of [...records, ...planRecords]) {
         // Each lot is CPU work on the API's one thread; yielding between lots lets other requests
         // (the parcel relay among them) answer while a large block is being drawn.
         await new Promise(resolve => setImmediate(resolve));
         try {
-            if (overlapProblems.has(parcel.id)) fail(overlapProblems.get(parcel.id));
+            // A parcel wholly under land-forming zoning areas gets no envelope: those areas stand for
+            // its land. Where the provider reads its rules under the lot, the zones are known later.
+            let found = provider.parcelRecords ? null : parcelZones(parcel, zonesByScenario[scenarios[0]]);
+            const replaced = () => !zone && found.major.length > 0 && found.major.every(part => formsLand(part.source));
+            if (found && replaced()) continue;
+            if (!zone && overlapProblems.has(parcel.id)) fail(overlapProblems.get(parcel.id));
             const frontage = parcelFrontage(parcel, streets, streetsNearby);
-            const street = frontage.frontEdge === null ? { widthM: null, hits: [], reason: 'no-front-edge' } : streetWidthAcross(parcel, frontage.frontEdge, obstacles);
+            const street = frontage.frontEdge === null ? { widthM: null, hits: [], reason: 'no-front-edge' }
+                : streetWidthAcross(parcel, frontage.frontEdge, zone ? planObstacles : obstacles);
             // What the provider may ask of the lot: the floor area a candidate set of constraints leaves on it.
             const measure = constraints => {
                 const tiers = tieredBound({ parcel, source: { constraints } }, frontage.frontEdge, turf);
@@ -251,12 +280,16 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
             };
             const zones = provider.parcelRecords ? Object.fromEntries(await Promise.all(scenarios.map(async scenario =>
                 [scenario, await parcelRecords(provider, parcel, zonesByScenario[scenario], { frontEdge: frontage.frontEdge, streetWidthM: street.widthM, measure })]))) : zonesByScenario;
-            const scenarioZones = zones[scenarios[0]], found = parcelZones(parcel, scenarioZones);
+            const scenarioZones = zones[scenarios[0]];
+            found ??= parcelZones(parcel, scenarioZones);
+            if (replaced()) continue;
             if (found.stacked) fail('study-multiple-zoning-areas');
-            if (!found.major.length) fail('study-zoning-missing');
+            // A plan lot is drawn under its own zoning area; a parcel under each part that keeps it.
+            const parts = zone ? found.major.filter(part => part.source.source.recordId === zone) : found.major.filter(part => !formsLand(part.source));
+            if (!parts.length) fail('study-zoning-missing');
             const failures = [];
             // One envelope per zoning area that partitions the lot: the whole lot's bound, clipped to that part.
-            for (const part of found.major) {
+            for (const part of parts) {
                 try {
                     const recordId = part.source.source.recordId;
                     const context = assembleParcelStudy(parcel, descriptor, scenarioZones, { zone: recordId, zones: found });
@@ -265,10 +298,12 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
                     if (!bound) fail(omissionReason(configurations, excluded));
                     const id = `envelope:${provider.descriptor.id}:${parcel.id}${found.major.length > 1 ? `~${recordId}` : ''}`;
                     items.push({ id, role: 'permitted', proposalId: null, parcelEnvelope: true,
-                        title: `${context.source.title} · ${parcel.properties.parcelNumber}`,
+                        // Absent, the envelope stands on a parcel (docs/vocabulary.md, Land basis).
+                        ...(zone ? { landBasis: 'zone' } : {}),
+                        title: zone ? context.source.title : `${context.source.title} · ${parcel.properties.parcelNumber}`,
                         // The zone's use (docs/vocabulary.md, Permitted use), so the app names the envelope in the reader's language.
                         ...(context.source.use ? { use: context.source.use } : {}),
-                        source: { ...context.source.source, scenario: null, parcel: parcel.id }, site: bound.geometry, areas: [],
+                        source: { ...context.source.source, scenario: null, ...(zone ? {} : { parcel: parcel.id }) }, site: bound.geometry, areas: [],
                         volumes: bound.tiers.map((tier, index) => ({ id: `${id}:bound${index ? `-${index}` : ''}`, geometry: tier.geometry, baseM: tier.baseM, topM: tier.topM,
                             ...(tier.condition ? { condition: tier.condition } : {}) })),
                         configurations: configurations.map(configuration => ({ ...configuration,
@@ -277,12 +312,12 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
                         derivation: { parcel: parcel.geometry, covered: context.coveredGeometry, frontEdges },
                         spatialReference: { horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' },
                         authority: { effect: 'unknown', applicability: 'unresolved' },
-                        assessment: { meaning: 'outer-bound', status: 'unresolved', geometry: 'derived-parcel', constraints: 'partial', current: true },
+                        assessment: { meaning: 'outer-bound', status: 'unresolved', geometry: zone ? 'derived-zone' : 'derived-parcel', constraints: 'partial', current: true },
                         // The height is what the rules grant; an incentive's extra height stands beside it with its condition.
                         metrics: { footprintM2: bound.areaM2, heightM: bound.grantedHeightM, ...(bound.heightM > (bound.grantedHeightM ?? 0)
                             ? { conditional: conditionalOf(bound, context.source) } : {}) },
                         constraints: [],
-                        sourceEvidence: { zoningRecordId: recordId, parcelReference: context.parcelReference,
+                        sourceEvidence: { zoningRecordId: recordId, parcelReference: zone ? null : context.parcelReference,
                             sourceCoverage: context.sourceCoverage, parts: found.major.length, frontEdge: frontage.frontEdge, frontage: frontage.evidence, streetWidth: street,
                             excludedConfigurations: excluded, envelopeMeaning: frontage.frontEdge === null
                                 ? 'outer-bound-across-configurations-and-front-edge-interpretations' : 'outer-bound-across-configurations' } });
@@ -292,7 +327,7 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
                 }
             }
             // A lot is unavailable only when none of its parts could be drawn.
-            if (failures.length === found.major.length) fail(failures[0]);
+            if (failures.length === parts.length) fail(failures[0]);
         } catch (error) {
             // A failed upstream read is the whole request's failure, never one parcel's geometry problem.
             if (error.status === 503) throw error;
@@ -303,6 +338,6 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
     }
     return { schemaVersion: 'planning-representations.v1', city: query.city, sources: [provider.descriptor], items,
         coverage: 'source-results', nextCursor: null, truncated: false, omitted: 0,
-        summaries: [{ sourceId: provider.descriptor.id, cachedResults: all.length, withGeometry: items.length,
+        summaries: [{ sourceId: provider.descriptor.id, cachedResults: all.length + planInView.length, withGeometry: items.length,
             withoutGeometry: unavailable.length, statuses: {} }], unavailable };
 }

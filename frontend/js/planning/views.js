@@ -358,6 +358,8 @@
                         : item.parcelEnvelope ? 'envelopeNote'
                         : sourceResult ? (item.volumes.length ? 'oneOption' : 'savedNoShape')
                         : 'observedNote')));
+        // The plan lays this land out anew: its area, not a parcel of today, is the lot (vocabulary: Land basis).
+        if (item.landBasis === 'zone') info.append(element('p', 'planning-inspector__description', t('landBasisZone')));
         if (item.assessment.status && !item.parcelEnvelope) info.append(element('p', 'planning-inspector__description', resultLabel(item.assessment.status)));
         const reason = labels.reason(item, fullT);
         if (reason) {

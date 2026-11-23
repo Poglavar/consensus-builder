@@ -8618,6 +8618,7 @@
         "excludedConfigurations": "No configurable aquí: {{list}}.",
         "envelopeCoverage": "Las envolventes parciales se derivan de los registros parcelarios y urbanísticos cargados. Las parcelas sin volumen se cuentan por motivo; la ausencia de volumen no demuestra una capacidad nula.",
         "envelopeSummary": "{{count}} registros parcelarios examinados: {{shapes}} con envolventes parciales, {{missing}} sin volumen.",
+        "landBasisZone": "Aquí el plan ordena el suelo de nuevo, con sus propias calles y manzanas. La edificabilidad permitida se dibuja sobre la manzana del plan, no sobre las parcelas actuales, que el plan no conserva.",
         "envelopeNote": "La envolvente máxima combina los tipos de vivienda registrados. El frente se orienta hacia las calles cercanas cuando hay datos; de lo contrario, la envolvente incluye todas las orientaciones admitidas. Elige un tipo de vivienda y tira el dado para generar otro edificio de ejemplo dentro de sus límites. Siguen aplicándose los límites de superficie y las reglas pendientes.",
         "assumedSide": "Lado de calle supuesto: {{side}}.",
         "lotBelowMinimum": "Parcela por debajo del mínimo de {{minimum}}",

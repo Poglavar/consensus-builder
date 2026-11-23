@@ -8767,6 +8767,7 @@
         "excludedConfigurations": "Não configurável aqui: {{list}}.",
         "envelopeCoverage": "As envolventes parciais são derivadas da parcela e dos registos de zonamento carregados. As parcelas sem volumetria são contabilizadas por motivo; a ausência de volumetria não demonstra capacidade nula.",
         "envelopeSummary": "{{count}} registos de parcelas analisados: {{shapes}} com envolventes parciais, {{missing}} sem volumetria.",
+        "landBasisZone": "Aqui o plano reorganiza o solo, com as suas próprias ruas e quarteirões. A volumetria permitida é desenhada sobre o quarteirão do plano, não sobre as parcelas atuais, que o plano não mantém.",
         "envelopeNote": "A envolvente máxima combina os tipos de habitação registados. A frente orienta-se pelas ruas próximas quando há dados disponíveis; caso contrário, a envolvente inclui todas as orientações suportadas. Escolha um tipo de habitação ou lance os dados para mudar a configuração apresentada. Os limites de área e as regras por resolver continuam a aplicar-se.",
         "assumedSide": "Lado da rua assumido: {{side}}.",
         "lotBelowMinimum": "Lote abaixo do mínimo de {{minimum}}",
