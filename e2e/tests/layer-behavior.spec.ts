@@ -158,6 +158,9 @@ test.describe('Layers sheet behavior @features', () => {
     await expect(adActions).toBeHidden();
     // Parcel Builder is authoring work, so it lives in the Tools page alongside the creation palette.
     const builderUrl = await page.evaluate(() => (window as any).CityConfigManager.getParcelBuilderConfig().url);
+    await page.context().route(url => url.href.startsWith(builderUrl), route => route.fulfill({
+      contentType: 'text/html', body: '<title>Parcel Builder fixture</title>',
+    }));
     await parcelTab(page, 'tools-tab').click();
     await openAndClosePopup(page, () => page.locator('#parcelBuilderButton').click(), async child => {
       await child.waitForURL(actual => actual.href.startsWith(builderUrl), { waitUntil: 'commit' });
