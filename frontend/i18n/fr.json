@@ -8817,6 +8817,7 @@
             "other": "{{count}} volumétries en cache dans la vue"
         },
         "loadingCells": "Chargement de la volumétrie autorisée… {{count}} zones sur {{total}}",
+        "zoomInForMore": "zoomez pour charger la suite",
         "cellsFailed": "certaines zones n’ont pas pu être chargées ; Réessayer les relit",
         "partial": {
             "one": "{{count}} option affichée · une partie de la géométrie source est indisponible",

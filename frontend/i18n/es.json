@@ -8668,6 +8668,7 @@
             "other": "{{count}} volúmenes guardados en la vista"
         },
         "loadingCells": "Cargando volúmenes permitidos… {{count}} de {{total}} zonas",
+        "zoomInForMore": "acerque el mapa para cargar más",
         "cellsFailed": "algunas zonas no se pudieron cargar; Reintentar las vuelve a leer",
         "partial": {
             "one": "{{count}} opción visible · parte de la geometría de origen no está disponible",

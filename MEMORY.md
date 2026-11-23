@@ -396,3 +396,10 @@ in commits.
 - 2026-11-21: Who consented is the chosen lens's call, never the server's: it has no reliable knowledge of owners or their
   acts. The server keeps its technical cadastre check (agreement inputs = the parcels the designs take) where it holds the
   cadastre; on land it cannot see (coverage unknown) inputs pass unverified, and the lens is not asked to make up for it. User decision.
+- 2026-11-23: Permitted massing has a land basis (vocabulary): a zoning area whose plan re-forms the land (Alatau's planned
+  zones) is its own lot, stated by the provider per zone, never inferred from geometry; elsewhere rules apply to parcels as
+  they stand. User asked for the general form ("works for all cities, stated in vocabulary and UX"). Open: whether
+  Alatau's layout is also restated as plans of designs, as UPU Borovje is.
+- 2026-11-23: Ground in range that the Permitted layers have not loaded is hazed (one image for map and model view,
+  `planning/loaded-extent.js`); the haze is driven by loaded cells, not by zoom, static (no drifting clouds: frame cost),
+  and a failed cell is hatched. User-approved proposal.

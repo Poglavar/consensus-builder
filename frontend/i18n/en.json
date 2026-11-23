@@ -8640,6 +8640,7 @@
             "other": "{{count}} cached massings in view"
         },
         "loadingCells": "Loading permitted massing… {{count}} of {{total}} areas",
+        "zoomInForMore": "zoom in to load more",
         "cellsFailed": "some areas could not be loaded; Retry reads them again",
         "partial": {
             "one": "{{count}} option shown · some source geometry is unavailable",

@@ -237,10 +237,12 @@ describe('shared building and proposal representations', () => {
         const context = vm.createContext({ ready: true, catalogReady: true, policy: () => ({ permitted: 'solid' }),
             root: { LoadView: { current: () => ({ mode: '2d', bbox: [15.96, 45.80, 15.98, 45.81], centre: [45.805, 15.97], zoom: 15 }) } }, viewCache: { abortExcept: vi.fn() }, request: 0, invalidate: vi.fn(), drawn: new Map(), items: [], status: '', payload: null,
             store: { select }, selected: () => ({ role: 'proposed', id: 'proposed:design' }),
-            drawMap() {}, render() {}, notifyGeometry() {} });
+            drawMap() {}, render() {}, notifyGeometry() {}, updateHaze: vi.fn() });
         vm.runInContext(source.slice(declaration.start, declaration.end), context);
         await context.refresh();
         expect(context.status).toBe('zoom'); expect(select).not.toHaveBeenCalled();
+        // Nothing is drawn below the gate, so the haze over unloaded ground goes too.
+        expect(context.updateHaze).toHaveBeenCalledWith(null);
     });
     it('preserves proposal selection when closing the parcel panel for the shared inspector', () => {
         const source = readFileSync(new URL('../../frontend/js/parcels/ui/parcel-panel.js', import.meta.url), 'utf8');

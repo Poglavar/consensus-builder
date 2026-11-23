@@ -8690,6 +8690,7 @@
             "other": "{{count}} spremljenih građevnih masa u prikazu"
         },
         "loadingCells": "Učitavanje dopuštenih volumena… {{count}} od {{total}} područja",
+        "zoomInForMore": "približite za učitavanje ostatka",
         "cellsFailed": "neka područja nisu učitana; Pokušaj ponovno ih ponovno čita",
         "partial": {
             "one": "Prikazana je {{count}} varijanta · dio izvorne geometrije nije dostupan",

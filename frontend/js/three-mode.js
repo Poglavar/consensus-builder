@@ -267,6 +267,7 @@
     let buildingGroup = null; // buildings extrusion
     let existingBuildingsGroup = null;
     let planningSourcesGroup = null;
+    let planningHazeGroup = null;
     let proposedBuildingsGroup = null;
     let ineligibleBuildingsGroup = null;
     let parkGroup = null; // park decorations (trees)
@@ -660,8 +661,43 @@
         return window.PlanningViews.getItems().some(item => window.PlanningViews.getAppearance(item) !== 'off')
             || window.PlanningViews.getSelected()?.role === 'existing' && policy.existing !== 'off';
     }
+    // The haze over ground the Permitted layers have not loaded (planning/views.js getHaze): one
+    // ground plane carrying the map's own image. Nothing is loaded beyond the image either, so the
+    // plane reaches well past it and the image's hazed edge repeats there. It takes no clicks.
+    const PLANNING_HAZE_REACH = 6;
+    function syncPlanningHaze3D() {
+        if (!isActive || !planningHazeGroup) return;
+        // The photo view's ground is the photo mesh, not this plane's flat ground.
+        planningHazeGroup.visible = !realisticLayerActive;
+        const haze = window.PlanningViews?.getHaze?.() || null;
+        if (planningHazeGroup.userData.haze === haze) { invalidateThreeView(); return; }
+        planningHazeGroup.userData.haze = haze;
+        for (const child of [...planningHazeGroup.children]) {
+            child.material.map.dispose(); child.material.dispose(); child.geometry.dispose();
+            planningHazeGroup.remove(child);
+        }
+        if (haze) {
+            const [west, south, east, north] = haze.bounds;
+            const [x0, y0] = coordsToXY([west, south]), [x1, y1] = coordsToXY([east, north]);
+            const reach = 1 + 2 * PLANNING_HAZE_REACH;
+            const geometry = new THREE.PlaneGeometry(Math.abs(x1 - x0) * reach, Math.abs(y1 - y0) * reach);
+            geometry.translate((x0 + x1) / 2, (y0 + y1) / 2, 0.008);
+            // The image spans its bounds (north at its top); outside them the texture's edge repeats.
+            const position = geometry.attributes.position, uv = geometry.attributes.uv;
+            for (let i = 0; i < uv.count; i++) uv.setXY(i, (position.getX(i) - x0) / (x1 - x0), (position.getY(i) - y0) / (y1 - y0));
+            const texture = new THREE.CanvasTexture(haze.canvas);
+            texture.colorSpace = THREE.SRGBColorSpace;
+            const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, depthWrite: false, side: THREE.DoubleSide, toneMapped: false });
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.renderOrder = 1;
+            mesh.raycast = () => {};
+            planningHazeGroup.add(mesh);
+        }
+        invalidateThreeView();
+    }
     function rebuildPlanningSources3D() {
         if (!isActive || !planningSourcesGroup || !window.PlanningViews) return;
+        syncPlanningHaze3D();
         clearGroupChildren(planningSourcesGroup);
         const view = window.PlanningViews.getPolicy();
         const inspected = window.PlanningViews.getSelected();
@@ -11109,6 +11145,7 @@
         proposedBuildingsGroup = new THREE.Group(); proposedBuildingsGroup.name = 'ProposedBuildings';
         ineligibleBuildingsGroup = new THREE.Group(); ineligibleBuildingsGroup.name = 'IneligibleBuildings';
         buildingGroup.add(existingBuildingsGroup, proposedBuildingsGroup, ineligibleBuildingsGroup, planningSourcesGroup);
+        planningHazeGroup = new THREE.Group(); planningHazeGroup.name = 'PermittedHaze';
         floorPlanGroup = new THREE.Group();
         floorPlanGroup.name = 'FloorPlans';
         parkGroup = new THREE.Group();
@@ -11144,6 +11181,7 @@
         scene.add(corridorGroup);
         scene.add(plannedFlatGroup);
         scene.add(buildingGroup);
+        scene.add(planningHazeGroup);
         scene.add(floorPlanGroup);
         scene.add(parkGroup);
         scene.add(squareGroup);
@@ -11864,6 +11902,7 @@
         buildingGroup = null;
         existingBuildingsGroup = proposedBuildingsGroup = ineligibleBuildingsGroup = null;
         planningSourcesGroup = null;
+        planningHazeGroup = null;
         buildingDisplaySnapshot = null;
         buildingBuildPending = false;
         buildingWorkIncomplete = false;
@@ -12222,6 +12261,7 @@
     });
 
     window.addEventListener('planninggeometrychange', rebuildPlanningSources3D);
+    window.addEventListener('planninghazechange', syncPlanningHaze3D);
     // The camera settled at another zoom: water and green areas widen to what it shows.
     window.addEventListener('loadviewchange', () => { if (isActive) { ensureNearbyWater(); ensureNearbyGreen(); ensureNearbyGround(); } });
     window.addEventListener('planningselectionchange', () => {

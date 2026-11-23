@@ -298,7 +298,7 @@
         if (status === 'loading' && progress?.total) return t('loadingCells', progress);
         if (status !== 'ready') return t(status);
         if (!payload?.sources?.length) return t('unavailable');
-        const failedNote = failedCells ? ` · ${t('cellsFailed')}` : '';
+        const failedNote = (failedCells ? ` · ${t('cellsFailed')}` : '') + (frozen ? ` · ${t('zoomInForMore')}` : '');
         if (payload.envelopes) return t('envelopesLoaded', { count: items.filter(item => item.parcelEnvelope).length,
             missing: payload.unavailable.length }) + failedNote;
         if (!items.length) return t('empty');
@@ -674,6 +674,8 @@
             root.dispatchEvent(new CustomEvent('planningselectionchange', { detail: { id: state.selectedId } }));
         }
         if (settingsChanged && (view.permitted !== 'off' || state.zoningAreas !== 'off')) refresh();
+        // Both layers off: nothing of theirs is shown, so nothing is left to mark as unloaded.
+        else if (settingsChanged) updateHaze(null);
     }
     // Permitted massing loads by cells (planning/scene.js viewCells), as buildings do: the cells under
     // the view, nearest its centre first, a few in flight, each drawn as it lands and kept in
@@ -700,11 +702,54 @@
     // What is drawn: the scopes and cells of the answers assembled, and how many cells failed.
     let assembled = '', failedCells = 0;
     function invalidate() { assembled = ''; failedCells = 0; }
+    // The haze over ground in range that the shown layers have not loaded (planning/loaded-extent.js):
+    // the map lays it under the parcels, the model view on its ground. `frozen` is the model view
+    // zoomed out past the loading gate, where what was drawn stays and nothing more loads.
+    const extent = root.PlanningLoadedExtent;
+    let haze = null, hazeSignature = '', hazeLayer = null, hazeScopes = new Set(), frozen = false;
+    function hazeImage(grid) {
+        const style = getComputedStyle(document.documentElement);
+        const hex = style.getPropertyValue('--cb-planning-haze').trim().replace('#', '');
+        const image = extent.paint(grid, { color: [0, 2, 4].map(at => parseInt(hex.slice(at, at + 2), 16)),
+            opacity: Number(style.getPropertyValue('--cb-planning-haze-opacity')) });
+        const canvas = document.createElement('canvas');
+        canvas.width = image.width; canvas.height = image.height;
+        canvas.getContext('2d').putImageData(new ImageData(image.data, image.width, image.height), 0, 0);
+        return { bounds: grid.bounds, canvas };
+    }
+    function drawHaze() {
+        if (!haze) { hazeLayer?.remove(); hazeLayer = null; return; }
+        const [west, south, east, north] = haze.bounds, bounds = [[south, west], [north, east]], url = haze.canvas.toDataURL();
+        if (hazeLayer) { hazeLayer.setUrl(url); hazeLayer.setBounds(bounds); }
+        else hazeLayer = root.L.imageOverlay(url, bounds, { pane: 'planningHaze', interactive: false, className: 'planning-haze' }).addTo(root.map);
+    }
+    // A cell is loaded when every scope being shown holds it. `range` null clears the haze.
+    function updateHaze(range, { scopes = hazeScopes, failed = [] } = {}) {
+        hazeScopes = scopes;
+        let grid = null;
+        if (range && scopes.size) {
+            const held = new Map();
+            for (const cell of drawn.values()) {
+                if (!scopes.has(cell.scope)) continue;
+                const key = extent.cellKey(cell.bbox, core.PLANNING_CELL_DEGREES);
+                held.set(key, (held.get(key) || 0) + 1);
+            }
+            grid = extent.mask({ range, size: core.PLANNING_CELL_DEGREES, failed,
+                loaded: [...held].filter(([, count]) => count === scopes.size).map(([key]) => key) });
+        }
+        const signature = extent.signature(grid);
+        if (signature === hazeSignature) return;
+        hazeSignature = signature;
+        haze = grid && hazeImage(grid);
+        drawHaze();
+        root.dispatchEvent(new CustomEvent('planninghazechange'));
+    }
     // The cells drawn now (scene.js retainDrawn): a cell stays until its replacement lands or it
     // leaves the range around the view, so a camera tilt or pan never takes down what is in range.
     const drawn = new Map();
     async function refresh({ force = false } = {}) {
-        if (!ready || !catalogReady || policy().permitted === 'off' && store.get().zoningAreas === 'off') return;
+        if (!ready || !catalogReady) return;
+        if (policy().permitted === 'off' && store.get().zoningAreas === 'off') { updateHaze(null); return; }
         // The 2D map's view in 2D; in 3D, the 2D view the camera stands for, around its target (load-view.js).
         const view = root.LoadView.current();
         // In 3D a camera tilted toward straight down reads as a lower zoom: what is drawn stays (it is
@@ -712,9 +757,13 @@
         if (view && view.mode === '3d' && view.zoom < 16 && drawn.size) {
             viewCache.abortExcept([]); request++;
             if (status === 'loading') status = 'ready';
+            frozen = true;
+            updateHaze(core.rangeAround(view.bbox, { centre: view.centre, reachM: view.reachM }));
             render(); return;
         }
+        frozen = false;
         if (!view || view.zoom < 16) {
+            updateHaze(null);
             viewCache.abortExcept([]); request++; invalidate(); drawn.clear(); items = []; status = 'zoom'; payload = null;
             if (!selected()) store.select(null);
             drawMap(); render(); notifyGeometry(); return;
@@ -743,9 +792,11 @@
         });
         const composition = jobs.map(job => job.key).sort().join(';');
         let failed = 0;
+        const failedKeys = new Set(), scopes = new Set(jobs.map(job => job.scope));
         const range = core.rangeAround(bbox, view.mode === '3d' ? { centre: view.centre, reachM: view.reachM } : {});
         const assemble = () => {
             const ordered = core.retainDrawn(drawn, { jobs, answers, range });
+            updateHaze(range, { scopes, failed: [...failedKeys] });
             // Envelopes lead: their answer says how the status line counts.
             const merged = core.mergeAnswers([...ordered.filter(answer => answer.envelopes), ...ordered.filter(answer => !answer.envelopes)], { joinAreas });
             payload = merged || { sources: descriptor ? [descriptor] : [], summaries: [], unavailable: [], omitted: 0, items: [] };
@@ -755,6 +806,8 @@
         };
         if (!pending.length) {
             if (assembled !== composition || status !== 'ready') { status = 'ready'; assemble(); }
+            // The same cells under a moved view: the haze follows the range.
+            else updateHaze(range, { scopes });
             return;
         }
         const url = new URL(`${root.getBackendBase()}/planning/representations`);
@@ -798,7 +851,8 @@
         for (const job of retries) {
             const loaded = await loadJob(job);
             if (loaded === null || generation !== request) return;
-            if (loaded) { done++; progress = { count: done, total: jobs.length }; assemble(); } else failed++;
+            if (loaded) { done++; progress = { count: done, total: jobs.length }; assemble(); }
+            else { failed++; failedKeys.add(extent.cellKey(job.cell.bbox, core.PLANNING_CELL_DEGREES)); }
         }
         if (firstError) console.error(`[planning] ${failed} of ${jobs.length} cells could not be loaded`, firstError);
         // Nothing loaded: a source refusing every cell (400) is asked for less by zooming in.
@@ -997,6 +1051,8 @@
         panel.querySelector('.planning-open-model').addEventListener('click', () => root.requestMapMode('model'));
         // A failed cell is never kept, so asking again reads only the cells that failed.
         panel.querySelector('.planning-view-retry').addEventListener('click', () => { assembled = ''; refresh(); });
+        root.map.createPane('planningHaze');
+        root.map.getPane('planningHaze').classList.add('planning-haze-pane');
         root.map.createPane('planningSources');
         root.map.getPane('planningSources').classList.add('planning-sources-pane');
         layer = root.L.featureGroup().addTo(root.map);
@@ -1046,6 +1102,8 @@
         getSelected: selected, isReady: () => ready, isInspecting: () => ready && !inspector.hidden,
         select, selectRecord, inspectBuilding, inspectProposal, showParcelEvidence, color, itemColor, itemTitle, refresh,
         permittedFeatures, pinConfiguration, getScenario: () => scenarioId, getSource: () => sourceId,
+        // The haze over unloaded ground, as { bounds: [west, south, east, north], canvas }, or null.
+        getHaze: () => haze,
         // Drawn records covering a point, each once, in drawing order.
         itemsAt(latlng) {
             const point = root.turf.point([latlng.lng, latlng.lat]), seen = new Set();

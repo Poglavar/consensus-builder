@@ -5,7 +5,8 @@
 
 The Permitted layer draws one outer bound per parcel from the planning source's rules
 (`backend/planning/parcel-envelopes.js`, shared evaluator `frontend/js/planning/parcel-assessment.js`).
-It reads its parcels from the city's cadastral parcel source only. A plan that readjusts a block into
+It reads its parcels from the city's cadastral parcel source, and a zoning area the source's own plan
+lays out as a lot stands for the parcels under it (vocabulary: Land basis). A plan that readjusts a block into
 one plot, or a road or track that cuts lots, changes the live parcel fabric, but the layer keeps
 showing the source lots' envelopes under it. For Bogotá this hides the point of assembly (index 5.0
 per lot, 6.0 with a corner and cession, 7.0 for a whole block); every city whose rules depend on lot

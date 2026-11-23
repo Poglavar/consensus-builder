@@ -8817,6 +8817,7 @@
             "other": "{{count}} volumetrias em cache visíveis"
         },
         "loadingCells": "A carregar a volumetria permitida… {{count}} de {{total}} zonas",
+        "zoomInForMore": "aproxime o mapa para carregar mais",
         "cellsFailed": "algumas zonas não foram carregadas; Tentar novamente volta a lê-las",
         "partial": {
             "one": "{{count}} opção apresentada · parte da geometria de origem está indisponível",
