@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { gupRepresentation, gupRecord, queryZagrebGup } from '../planning/providers/zagreb-gup.js';
 import { planningRepresentations } from '../planning/sources.js';
-import { setupPlanningRoutes } from '../routes/planning.js';
+import { planningAnswerCache, setupPlanningRoutes } from '../routes/planning.js';
 const require = createRequire(import.meta.url);
 const scene = require('../../frontend/js/planning/scene.js');
 const envelopes = require('../../frontend/js/planning/envelopes.js');
@@ -183,9 +183,24 @@ describe('bounded planning route', () => {
         await handler({ query: parameters }, res);
         return { res, query };
     }
-    it('passes a valid viewport to the provider and forbids response caching', async () => {
+    it('passes a valid viewport to the provider and lets its answer be cached, never an error', async () => {
         const { res, query } = await invoke({ city: 'sample', bbox: '10,40,10.001,40.001', limit: '10' });
-        expect(res.statusCode).toBe(200); expect(res.headers['Cache-Control']).toBe('no-store');
+        expect(res.statusCode).toBe(200); expect(res.headers['Cache-Control']).toBe('public, max-age=900, s-maxage=900');
+        // A source states how long its answers keep; the shortest of an answer's sources wins.
+        expect(planningAnswerCache([{ cacheSeconds: 86400 }])).toBe('public, max-age=3600, s-maxage=86400');
+        expect(planningAnswerCache([{ cacheSeconds: 86400 }, {}])).toBe('public, max-age=900, s-maxage=900');
+        expect(planningAnswerCache([{ cacheSeconds: -1 }])).toBe('public, max-age=900, s-maxage=900');
+        // One cached copy serves every site, so it names none.
+        expect(res.headers['Access-Control-Allow-Origin']).toBe('*');
+        const failing = vi.fn(async () => { throw new Error('upstream'); });
+        let handler;
+        setupPlanningRoutes({ get: (_path, fn) => { handler = fn; } }, {}, { query: failing });
+        const broken = { statusCode: 200, headers: {}, set(key, value) { this.headers[key] = value; return this; },
+            status(code) { this.statusCode = code; return this; }, json(body) { this.body = body; return this; } };
+        const errorLog = vi.spyOn(console, 'error').mockImplementation(() => {});
+        await handler({ query: { city: 'sample', bbox: '10,40,10.001,40.001' } }, broken);
+        errorLog.mockRestore();
+        expect(broken.statusCode).toBe(503); expect(broken.headers['Cache-Control']).toBe('no-store');
         expect(query).toHaveBeenCalledWith({}, { city: 'sample', bbox: [10, 40, 10.001, 40.001], limit: 10 });
     });
     it.each([

@@ -24,6 +24,26 @@ export function createEnvelopeCache(envelopeQuery, { now = Date.now } = {}) {
     };
 }
 
+// A successful read of a planning source may be kept by the edge (Cloudflare) for as long as its
+// sources say their answers keep (`cacheSeconds` on the descriptor: an adopted plan changes by
+// decree, a day), else 15 minutes (a saved solver result changes when it is refreshed); the browser
+// keeps it at most an hour. An error keeps no-store, so a failed upstream read is never kept.
+export const DEFAULT_ANSWER_SECONDS = 900;
+export function planningAnswerCache(sources = []) {
+    const stated = (Array.isArray(sources) ? sources : []).map(source =>
+        Number.isInteger(source?.cacheSeconds) && source.cacheSeconds > 0 ? source.cacheSeconds : DEFAULT_ANSWER_SECONDS);
+    const seconds = stated.length ? Math.min(...stated, 86400) : DEFAULT_ANSWER_SECONDS;
+    return `public, max-age=${Math.min(seconds, 3600)}, s-maxage=${seconds}`;
+}
+// The edge keeps one copy per URL whatever site asked, so a cached answer must not name the site
+// (the app's CORS middleware echoes the caller with credentials). These reads carry no login: any
+// site may read them.
+function cacheableAnswer(res, answer) {
+    res.set('Cache-Control', planningAnswerCache(answer?.sources));
+    res.set('Access-Control-Allow-Origin', '*');
+    res.removeHeader?.('Access-Control-Allow-Credentials');
+}
+
 export function setupPlanningRoutes(app, pool, { sources = getPlanningSources(),
     streetProvider = createFrontageStreetRegistry(pool).open(NETWORK_ENVIRONMENT_SOURCES.frontage),
     query = (pool, query) => planningRepresentations(pool, query, sources),
@@ -39,7 +59,9 @@ export function setupPlanningRoutes(app, pool, { sources = getPlanningSources(),
                 return res.status(400).json({ code: 'invalid-planning-query' });
             }
             validateBounds(bbox, 0.5);
-            res.json(await envelopeQuery({ city, source, scenario, bbox }));
+            const answer = await envelopeQuery({ city, source, scenario, bbox });
+            cacheableAnswer(res, answer);
+            res.json(answer);
         } catch (error) {
             const status = [400, 422].includes(error.status) ? error.status : 503;
             if (status === 503) console.error(`[${new Date().toISOString()}] [planning-envelopes] Source read failed (${city} ${source} ${bbox.join(',')})`, error);
@@ -110,9 +132,11 @@ export function setupPlanningRoutes(app, pool, { sources = getPlanningSources(),
             if (req.query.cursor !== undefined && (typeof req.query.cursor !== 'string' || req.query.cursor.length > 4096)) {
                 return res.status(400).json({ error: 'Invalid planning cursor.', code: 'invalid-planning-query' });
             }
-            res.json(await query(pool, { city, bbox, limit, ...(req.query.source === undefined ? {} : { source: req.query.source }),
+            const answer = await query(pool, { city, bbox, limit, ...(req.query.source === undefined ? {} : { source: req.query.source }),
                 ...(req.query.scenario === undefined ? {} : { scenario: req.query.scenario }),
-                ...(req.query.cursor === undefined ? {} : { cursor: req.query.cursor }) }));
+                ...(req.query.cursor === undefined ? {} : { cursor: req.query.cursor }) });
+            cacheableAnswer(res, answer);
+            res.json(answer);
         } catch (error) {
             if (error.status === 400) return res.status(400).json({ error: 'Choose a smaller map area.', code: 'invalid-planning-query' });
             console.error('[planning] Source read failed', error);

@@ -27,7 +27,9 @@ export const alatauGenplanSource = Object.freeze({
     parcelSourceId: 'kz-alatau-pkk', parcelStudy: 'direct-dimensions.v1',
     // The plan's zones are small; a block of lots lies under several hundred, read in one request.
     zoningPageLimit: 1000,
-    scenarios: ['general'], scenario: 'general'
+    scenarios: ['general'], scenario: 'general',
+    // The adopted plan changes only by a new decree: its answers keep a day (routes/planning.js).
+    cacheSeconds: 86400
 });
 
 // Storey height is not stated by the plan; 3.0 m floor-to-floor is an assumption recorded as evidence.
@@ -113,9 +115,10 @@ export function interpretZone(properties, rules = ALATAU_RULES) {
 
 const upstream = message => Object.assign(new Error(message), { status: 503, code: 'planning-source-unavailable' });
 const spatialReference = Object.freeze({ horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' });
+// An adopted plan changes by decree, so a read keeps a day (a deploy restarts it sooner).
 // READ_CAP holds the cell reads of several screens: a zoom-15 view asks for about 250 cells, and a
 // smaller cap re-read the plan service for most of them when the view came back.
-const TTL_MS = 15 * 60 * 1000, READ_CAP = 2048, FEATURE_CAP = 8000;
+const TTL_MS = 24 * 60 * 60 * 1000, READ_CAP = 2048, FEATURE_CAP = 8000;
 let defaultFetch;
 // The host omits its Sectigo intermediate; the same pinned CA the parcel source uses supplements it.
 function certificateFetch() {
