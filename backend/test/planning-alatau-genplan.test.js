@@ -1,5 +1,5 @@
-// Alatau general plan (Decree 727) Permitted source: zone interpretation, live WFS reads limited to
-// Alatau's territory, record re-reads, and a study on a one-part MultiPolygon lot from the cadastre.
+// Alatau general plan (Decree 727) Permitted source: zone interpretation, snapshot viewport and
+// record reads, and a study on a one-part MultiPolygon lot from the cadastre.
 import { describe, it, expect, vi } from 'vitest';
 import * as turf from '@turf/turf';
 import { createAlatauGenplanProvider, alatauGenplanSource, interpretZone, ALATAU_ADMTERR_ID } from '../planning/providers/alatau-genplan.js';
@@ -15,17 +15,8 @@ const zone = (id, functional, changes = {}, ring = yntymakRing) => ({ type: 'Fea
 const HOUSES = 'Территория усадебной застройки с земельным участком при доме (квартире)';
 
 function service(features) {
-    const fetchImpl = vi.fn(async href => {
-        const url = new URL(href);
-        const filter = url.searchParams.get('FILTER') || '';
-        const start = Number(url.searchParams.get('startIndex') || 0), count = Number(url.searchParams.get('count'));
-        // A record read filters by object id; a viewport read filters by territory (and bounds), as the service does.
-        const pool = filter.includes('object_id_i32') ? features.filter(f => filter.includes(`<fes:Literal>${f.properties.object_id_i32}</fes:Literal>`))
-            : features.filter(f => filter.includes(`<fes:Literal>${f.properties.admterr_id}</fes:Literal>`));
-        const page = pool.slice(start, start + count);
-        return { ok: true, json: async () => ({ type: 'FeatureCollection', features: page, numberMatched: pool.length, numberReturned: page.length }) };
-    });
-    return { fetchImpl, provider: createAlatauGenplanProvider(alatauGenplanSource, { fetchImpl }) };
+    const snapshot = vi.fn(async () => ({ type: 'FeatureCollection', features }));
+    return { snapshot, provider: createAlatauGenplanProvider(alatauGenplanSource, { snapshot }) };
 }
 const bbox = [76.965, 43.405, 76.975, 43.42];
 
@@ -91,40 +82,44 @@ describe('Alatau general plan zones', () => {
 });
 
 describe('Alatau general plan provider', () => {
-    it('asks the service for Alatau zones in a latitude-first box and pages by service row', async () => {
-        const features = [zone(481223, HOUSES), zone(481224, 'Территория учреждений образования'), zone(900001, HOUSES, { admterr_id: '751210000' })];
-        const { provider, fetchImpl } = service(features);
-        const first = await provider.query(null, { bbox, limit: 2 });
-        expect(first.items.map(item => item.id)).toEqual(['alatau-genplan-727:481223', 'alatau-genplan-727:481224']);
+    it('pages Alatau zones in stable order from one snapshot, filtering by territory and viewport', async () => {
+        const features = [zone(481224, 'Территория учреждений образования'), zone(900001, HOUSES, { admterr_id: '751210000' }),
+            zone(481223, HOUSES), zone(900002, HOUSES, {}, yntymakRing.map(([lng, lat]) => [lng + 1, lat]))];
+        const { provider, snapshot } = service(features);
+        const first = await provider.query(null, { bbox, limit: 1 });
+        expect(first.items.map(item => item.id)).toEqual(['alatau-genplan-727:481223']);
         expect(first.items[0]).toMatchObject({ role: 'permitted', title: 'Усадебная застройка · до 3 эт. · существующая',
             assessment: { meaning: 'zoning-area', status: 'allowed' }, metrics: { heightM: 9 } });
         expect(first.items[0].constraints.map(item => item.quantity)).toEqual(['storeys', 'height']);
-        expect(first.nextAfter).toBe('2');
+        expect(first.nextAfter).toBe('1');
         const second = await provider.query(null, { bbox, limit: 2, after: first.nextAfter });
-        // The neighbour's zone is never returned, so it is not an omission that would mark a read incomplete.
-        expect(second).toMatchObject({ items: [], omitted: 0, nextAfter: null });
-        const url = new URL(fetchImpl.mock.calls[0][0]);
-        expect(url.origin + url.pathname).toBe('https://map.gov4c.kz/ggkgs/ows');
-        expect(url.searchParams.get('typeNames')).toBe('kz:gpzone');
-        expect(url.searchParams.has('bbox')).toBe(false);
-        const viewportFilter = url.searchParams.get('FILTER');
-        expect(viewportFilter).toContain('<fes:ValueReference>admterr_id</fes:ValueReference><fes:Literal>191810000</fes:Literal>');
-        expect(viewportFilter).toContain('<gml:lowerCorner>43.405 76.965</gml:lowerCorner><gml:upperCorner>43.42 76.975</gml:upperCorner>');
-        expect(url.searchParams.get('sortBy')).toBe('object_id_i32');
-        expect(fetchImpl.mock.calls[0][1].headers.Referer).toBe('https://map.gov4c.kz/egkn/');
+        expect(second).toMatchObject({ items: [{ id: 'alatau-genplan-727:481224' }], omitted: 0, nextAfter: null });
+        expect(snapshot).toHaveBeenCalledTimes(1);
     });
 
-    it('re-reads one record by its object id and refuses invalid ids', async () => {
-        const { provider, fetchImpl } = service([zone(481223, HOUSES), zone(481224, 'Территория учреждений образования')]);
+    it('reads full geometry by object id and refuses invalid ids', async () => {
+        const { provider } = service([zone(481223, HOUSES), zone(481224, 'Территория учреждений образования')]);
         const [item] = await provider.record(null, { recordId: '481224' });
         expect(item).toMatchObject({ id: 'alatau-genplan-727:481224', assessment: { status: 'instrument_handoff' } });
-        expect(new URL(fetchImpl.mock.calls[0][0]).searchParams.get('FILTER')).toContain('<fes:ValueReference>object_id_i32</fes:ValueReference>');
+        expect(item.site.coordinates).toEqual([[yntymakRing]]);
         expect(await provider.record(null, { recordId: '1 OR 1=1' })).toEqual([]);
     });
 
-    it('fails as unavailable when the service answers badly', async () => {
-        const provider = createAlatauGenplanProvider(alatauGenplanSource, { fetchImpl: async () => ({ ok: false, json: async () => ({}) }) });
+    it('fails as unavailable when the snapshot is invalid', async () => {
+        const provider = createAlatauGenplanProvider(alatauGenplanSource, { snapshot: async () => ({}) });
         await expect(provider.query(null, { bbox, limit: 5 })).rejects.toMatchObject({ status: 503, code: 'planning-source-unavailable' });
+    });
+
+    it('serves the captured Alatau zones and their evidence with no remote reads', async () => {
+        const fetch = vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('offline'));
+        try {
+            const provider = createAlatauGenplanProvider();
+            const [record] = await provider.record(null, { recordId: '481223' });
+            expect(record).toMatchObject({ use: { key: 'residential-estate' }, metrics: { heightM: 9 } });
+            const page = await provider.query(null, { bbox, limit: 1000 });
+            expect(page.items.find(item => item.id === record.id)?.source.version).toBe(record.source.version);
+            expect(fetch).not.toHaveBeenCalled();
+        } finally { fetch.mockRestore(); }
     });
 
     it('is a registered planning source answering through the shared representation contract', async () => {

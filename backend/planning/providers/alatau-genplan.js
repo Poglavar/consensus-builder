@@ -1,11 +1,11 @@
 // Alatau general plan (Government Decree No. 727 of 9 September 2025, the corrected plan) as a
 // Permitted source: the functional-zone polygons the state urban-planning cadastre publishes over
-// public WFS (map.gov4c.kz/ggkgs, layer kz:gpzone), read live per viewport. Each zone's use and
-// storey class become a status and, for residential classes, storey and height constraints.
-import * as turf from '@turf/turf';
+// public WFS (map.gov4c.kz/ggkgs, layer kz:gpzone), queried from a local source snapshot.
+import { bbox as geometryBounds } from '@turf/turf';
 import { clipToBounds } from '../display-clip.js';
-import { readFileSync } from 'node:fs';
-import { createHttpsJsonFetch } from '../../parcels/https-json-fetch.js';
+import { readFile } from 'node:fs/promises';
+import { promisify } from 'node:util';
+import { gunzip } from 'node:zlib';
 import { validateGeometry } from '../../parcels/source-contract.js';
 import { withSourceProposal, sourceRevision } from '../source-proposal.js';
 
@@ -13,7 +13,6 @@ export const ALATAU_GENPLAN_SERVICE = 'https://map.gov4c.kz/ggkgs/ows';
 export const ALATAU_GENPLAN_LAYER = 'kz:gpzone';
 // KATO code of Alatau city; the layer is national, so zones of neighbouring plans share it.
 export const ALATAU_ADMTERR_ID = '191810000';
-const VIEWER = 'https://map.gov4c.kz/egkn/';
 export const alatauGenplanSource = Object.freeze({
     id: 'alatau-genplan-727', city: 'alatau', label: 'Генплан Алатау · Постановление № 727 (2025)', edition: '2025-09-09', default: true,
     // The language of the source's own wording (titles, labels), so the app can mark it as quoted text.
@@ -26,7 +25,7 @@ export const alatauGenplanSource = Object.freeze({
     capabilities: { volumes: false, areas: true, parcelEvidence: false, constraintEvaluation: false },
     parcelSourceId: 'kz-alatau-pkk', parcelStudy: 'direct-dimensions.v1',
     // The plan's zones are small; a block of lots lies under several hundred, read in one request.
-    zoningPageLimit: 1000,
+    zoningPageLimit: 1000, viewportZoning: true,
     scenarios: ['general'], scenario: 'general',
     // The adopted plan changes only by a new decree: its answers keep a day (routes/planning.js).
     cacheSeconds: 86400
@@ -115,81 +114,48 @@ export function interpretZone(properties, rules = ALATAU_RULES) {
 
 const upstream = message => Object.assign(new Error(message), { status: 503, code: 'planning-source-unavailable' });
 const spatialReference = Object.freeze({ horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' });
-// An adopted plan changes by decree, so a read keeps a day (a deploy restarts it sooner).
-// READ_CAP holds the cell reads of several screens: a zoom-15 view asks for about 250 cells, and a
-// smaller cap re-read the plan service for most of them when the view came back.
-const TTL_MS = 24 * 60 * 60 * 1000, READ_CAP = 2048, FEATURE_CAP = 8000;
-let defaultFetch;
-// The host omits its Sectigo intermediate; the same pinned CA the parcel source uses supplements it.
-function certificateFetch() {
-    if (!defaultFetch) {
-        const pem = readFileSync(new URL('../../parcels/certificates/sectigo-public-server-authentication-ca-dv-r36.pem', import.meta.url), 'utf8');
-        defaultFetch = createHttpsJsonFetch(pem, { maxBytes: 32 * 1024 * 1024 });
-    }
-    return defaultFetch;
-}
+const SNAPSHOT_URL = new URL('../data/alatau-genplan-727.geojson.gz', import.meta.url);
+const unzip = promisify(gunzip);
+const readSnapshot = async () => JSON.parse((await unzip(await readFile(SNAPSHOT_URL))).toString('utf8'));
 
-export function createAlatauGenplanProvider(descriptor = alatauGenplanSource, { fetchImpl = null, now = Date.now } = {}) {
-    const service = descriptor.service || ALATAU_GENPLAN_SERVICE, layer = descriptor.layer || ALATAU_GENPLAN_LAYER;
-    const admterrId = descriptor.admterrId || ALATAU_ADMTERR_ID;
-    const features = new Map(), reads = new Map();
-    function remember(feature) {
-        if (features.size >= FEATURE_CAP) features.delete(features.keys().next().value);
-        features.set(String(feature.properties.object_id_i32), { feature, at: now() });
+export function createAlatauGenplanProvider(descriptor = alatauGenplanSource, { snapshot = readSnapshot } = {}) {
+    const { layer = ALATAU_GENPLAN_LAYER, service = ALATAU_GENPLAN_SERVICE, admterrId = ALATAU_ADMTERR_ID } = descriptor;
+    let index;
+    function load() {
+        return index ??= Promise.resolve().then(snapshot).then(data => {
+            if (data?.type !== 'FeatureCollection' || !Array.isArray(data.features)) throw new Error('Invalid feature collection');
+            const byId = new Map();
+            for (const feature of data.features) {
+                const id = feature?.properties?.object_id_i32;
+                if (String(feature?.properties?.admterr_id) !== admterrId) continue;
+                if (feature.type !== 'Feature' || !Number.isSafeInteger(id) || id < 0 || byId.has(String(id)) || !validateGeometry(feature.geometry)) {
+                    throw new Error('Invalid or duplicate zone');
+                }
+                byId.set(String(id), { feature, bbox: geometryBounds(feature) });
+            }
+            const rows = [...byId.values()].sort((a, b) => a.feature.properties.object_id_i32 - b.feature.properties.object_id_i32);
+            return { rows, byId };
+        }).catch(error => {
+            index = null;
+            throw upstream(`Alatau general plan snapshot could not be read (${error.message}).`);
+        });
     }
-    // One guarded GetFeature. Zones of other territories and features without usable geometry are
-    // counted as omitted, never drawn.
-    async function getFeatures(params) {
-        const url = new URL(service);
-        for (const [key, value] of Object.entries({ service: 'WFS', version: '2.0.0', request: 'GetFeature', typeNames: layer,
-            outputFormat: 'application/json', sortBy: 'object_id_i32', ...params })) url.searchParams.set(key, String(value));
-        let payload;
-        try {
-            const response = await (fetchImpl || certificateFetch())(url.href, { headers: { Accept: 'application/json', Referer: VIEWER } });
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            payload = await response.json();
-        } catch (error) { throw upstream(`Alatau general plan service could not be read (${error?.message || error}).`); }
-        if (!payload || payload.type !== 'FeatureCollection' || !Array.isArray(payload.features)) throw upstream('Alatau general plan service returned an invalid collection.');
-        const kept = [];
-        let omitted = 0;
-        for (const feature of payload.features) {
-            const id = feature?.properties?.object_id_i32;
-            if (feature?.type !== 'Feature' || !Number.isSafeInteger(id) || id < 0) throw upstream('Alatau general plan zone has no identity.');
-            if (String(feature.properties.admterr_id) !== admterrId || !validateGeometry(feature.geometry)) { omitted++; continue; }
-            remember(feature);
-            kept.push(feature);
-        }
-        return { features: kept, omitted, returned: payload.features.length };
-    }
-    // A viewport page of this territory's zones only: the layer is national, and a neighbour's zones
-    // dropped here would read as an incomplete answer. WFS 2.0 reads EPSG:4326 bounds latitude
-    // first. `after` is the index of the next feature in the service's object_id order.
-    if (!/^\d{1,12}$/.test(admterrId)) throw new Error('Invalid Alatau territory id.');
-    function readBounds(bbox, { after = 0, count }) {
-        const key = JSON.stringify([bbox, after, count]);
-        const cached = reads.get(key);
-        if (cached && now() - cached.at < TTL_MS) return cached.promise;
-        if (!bbox.every(Number.isFinite)) throw Object.assign(new Error('Invalid bounds'), { status: 400 });
-        const filter = `<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0" xmlns:gml="http://www.opengis.net/gml/3.2"><fes:And>`
-            + `<fes:PropertyIsEqualTo><fes:ValueReference>admterr_id</fes:ValueReference><fes:Literal>${admterrId}</fes:Literal></fes:PropertyIsEqualTo>`
-            + `<fes:BBOX><fes:ValueReference>shape</fes:ValueReference><gml:Envelope srsName="urn:ogc:def:crs:EPSG::4326">`
-            + `<gml:lowerCorner>${bbox[1]} ${bbox[0]}</gml:lowerCorner><gml:upperCorner>${bbox[3]} ${bbox[2]}</gml:upperCorner></gml:Envelope></fes:BBOX></fes:And></fes:Filter>`;
-        const promise = getFeatures({ FILTER: filter, count, startIndex: after })
-            .catch(error => { reads.delete(key); throw error; });
-        if (reads.size >= READ_CAP) reads.delete(reads.keys().next().value);
-        reads.set(key, { at: now(), promise });
-        return promise;
-    }
+    const versions = new WeakMap();
     const rulesEvidence = Object.freeze({ decree: ALATAU_RULES.decree, storeyHeightM: ALATAU_RULES.storeyHeightM, storeyHeightNote: ALATAU_RULES.storeyHeightNote });
     function record(feature, displayGeometry, city = descriptor.city, scenario = descriptor.scenario) {
         const p = feature.properties, reading = interpretZone(p), recordId = String(p.object_id_i32);
         const id = `${descriptor.id}:${recordId}`;
         const site = validateGeometry(displayGeometry) ? displayGeometry : null;
         const title = [reading.use, reading.heightLabel, reading.implementationLabel].filter(Boolean).join(' · ');
+        let version = versions.get(feature);
+        if (!version) {
+            version = sourceRevision({ id: recordId, geometry: feature.geometry, properties: p });
+            versions.set(feature, version);
+        }
         return withSourceProposal({
             id, role: 'permitted', title, site, areas: site ? [{ id: `${id}:area`, geometry: site }] : [], volumes: [], spatialReference,
             source: { ...descriptor, city: city || descriptor.city, scenario, recordId,
-                version: sourceRevision({ id: recordId, geometry: feature.geometry, properties: p }), publishedAt: descriptor.edition },
+                version, publishedAt: descriptor.edition },
             authority: { effect: 'obligatory', basis: 'source-summary', applicability: 'unresolved' },
             assessment: { meaning: 'zoning-area', status: reading.status, reason: reading.reason, ...(reading.reasonCode ? { reasonCode: reading.reasonCode } : {}), geometry: 'source-area', constraints: 'not-evaluated', current: true },
             // The zone's use in the shared vocabulary (docs/vocabulary.md, Permitted use): a key the app
@@ -210,25 +176,24 @@ export function createAlatauGenplanProvider(descriptor = alatauGenplanSource, { 
         descriptor,
         async query(_pool, { bbox, limit, after = null, scenario = descriptor.scenario, city }) {
             if (after !== null && !/^\d{1,7}$/.test(String(after))) throw Object.assign(new Error('Invalid source cursor'), { status: 400 });
+            const { rows } = await load();
+            const [w, s, e, n] = bbox;
+            const matches = rows.filter(({ bbox: [west, south, east, north] }) => west <= e && east >= w && south <= n && north >= s);
             const start = after === null ? 0 : Number(after);
-            // A full page may have more behind it; the cursor counts service rows, kept or omitted.
-            const page = await readBounds(bbox, { after: start, count: limit });
-            const visible = page.features;
-            const items = visible.map(feature => record(feature, clipToBounds(feature, bbox), city, scenario));
+            const page = matches.slice(start, start + limit);
+            const items = page.flatMap(({ bbox: [west, south, east, north], feature }) => {
+                const geometry = w <= west && s <= south && east <= e && north <= n ? feature.geometry : clipToBounds(feature, bbox);
+                return geometry ? [record(feature, geometry, city, scenario)] : [];
+            });
             const statuses = {};
             for (const item of items) statuses[item.assessment.status] = (statuses[item.assessment.status] || 0) + 1;
-            return { items, nextAfter: page.returned >= limit ? String(start + page.returned) : null, omitted: page.omitted,
-                summary: { sourceId: descriptor.id, cachedResults: visible.length + page.omitted, withGeometry: visible.length,
-                    withoutGeometry: page.omitted, statuses } };
+            return { items, nextAfter: start + page.length < matches.length ? String(start + page.length) : null, omitted: 0,
+                summary: { sourceId: descriptor.id, cachedResults: items.length, withGeometry: items.length, withoutGeometry: 0, statuses } };
         },
         async record(_pool, { recordId, city, scenario }) {
             if (!/^\d{1,10}$/.test(String(recordId))) return [];
-            const cached = features.get(String(recordId));
-            let feature = cached && now() - cached.at < TTL_MS ? cached.feature : null;
-            if (!feature) {
-                const filter = `<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0"><fes:PropertyIsEqualTo><fes:ValueReference>object_id_i32</fes:ValueReference><fes:Literal>${Number(recordId)}</fes:Literal></fes:PropertyIsEqualTo></fes:Filter>`;
-                feature = (await getFeatures({ FILTER: filter, count: 2 })).features.find(item => String(item.properties.object_id_i32) === String(recordId)) || null;
-            }
+            const { byId } = await load();
+            const feature = byId.get(String(recordId))?.feature;
             return feature ? [record(feature, feature.geometry, city, scenario)] : [];
         }
     };

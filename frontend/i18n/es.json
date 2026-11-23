@@ -8609,6 +8609,7 @@
             "permitted": "Generar otro edificio de ejemplo dentro de los límites permitidos. No modifica los registros."
         },
         "zoningAreas": "Áreas de la fuente urbanística",
+        "fitPlan": "Ver el plan completo",
         "envelopeTitle": "Envolvente permitida",
         "permittedForm": "Representación de lo permitido",
         "bound": "Envolvente máxima",

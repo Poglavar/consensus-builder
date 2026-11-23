@@ -124,10 +124,12 @@ export function setupPlanningRoutes(app, pool, { sources = getPlanningSources(),
                 return res.status(400).json({ error: 'A city is required.', code: 'invalid-planning-query' });
             }
             const bbox = typeof req.query.bbox === 'string' ? req.query.bbox.split(',').map(value => value.trim() ? Number(value) : NaN) : [];
-            validateBounds(bbox, 4);
+            const viewportZoning = sources.find(provider => provider.descriptor.id === req.query.source)?.descriptor.viewportZoning === true;
+            validateBounds(bbox, viewportZoning ? 256 : 4);
             const limit = req.query.limit === undefined ? 200 : Number(req.query.limit);
-            if (!Number.isInteger(limit) || limit < 1 || limit > 200) {
-                return res.status(400).json({ error: 'Limit must be between 1 and 200.', code: 'invalid-planning-query' });
+            const maxLimit = viewportZoning ? 1000 : 200;
+            if (!Number.isInteger(limit) || limit < 1 || limit > maxLimit) {
+                return res.status(400).json({ error: `Limit must be between 1 and ${maxLimit}.`, code: 'invalid-planning-query' });
             }
             if (req.query.cursor !== undefined && (typeof req.query.cursor !== 'string' || req.query.cursor.length > 4096)) {
                 return res.status(400).json({ error: 'Invalid planning cursor.', code: 'invalid-planning-query' });

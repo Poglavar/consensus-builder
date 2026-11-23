@@ -8760,6 +8760,7 @@
             "permitted": "Tirez au sort un autre type de logement autorisé. Ne modifie aucune donnée enregistrée."
         },
         "zoningAreas": "Zones du zonage source",
+        "fitPlan": "Afficher tout le plan",
         "envelopeTitle": "Enveloppe autorisée",
         "permittedForm": "Représentation autorisée",
         "configurationsTitle": "Configurations enregistrées pour cette parcelle",

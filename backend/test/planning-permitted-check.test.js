@@ -1,7 +1,7 @@
 // The rule check of a design against the Permitted items under it (frontend/js/planning/permitted-check.js),
 // on real Alatau general-plan records; the zone use vocabulary those records carry; and the merge of a
 // zone that the cell feed returns clipped to each cell.
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import * as turf from '@turf/turf';
@@ -23,8 +23,7 @@ const PARK = 'Территория парков, скверов и т.д. (зо�
 const SCHOOL = 'Территория учреждений образования';
 
 async function records(features, bbox = [77.01, 43.6, 77.03, 43.62]) {
-    const fetchImpl = vi.fn(async () => ({ ok: true, json: async () => ({ type: 'FeatureCollection', features }) }));
-    const provider = createAlatauGenplanProvider(alatauGenplanSource, { fetchImpl });
+    const provider = createAlatauGenplanProvider(alatauGenplanSource, { snapshot: () => ({ type: 'FeatureCollection', features }) });
     return (await provider.query(null, { bbox, limit: 200 })).items;
 }
 // A 20 m square building whose south-west corner is `at` [lng, lat].

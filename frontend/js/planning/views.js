@@ -20,6 +20,10 @@
     let restoreId = new URLSearchParams(location.search).get('planningSelection'), restoring = false, catalogReady = false, parcelPanel = null;
     // Per-item configuration pins chosen in the inspector; cleared with the source, housing type or city.
     let pins = {}, sourcesKey = '';
+    let overviewActive = false, overview = null, overviewLayer = null, overviewDisplay = '';
+    const overviewSource = source => source?.viewportZoning && source.id === root.ZoningOverview?.sourceId;
+    const showingOverview = () => overviewActive && overview && store.get().zoningAreas !== 'off'
+        && sourceId === root.ZoningOverview.sourceId && (root.__mapModeState?.desired ?? '2d') === '2d';
     // A source that is a zoning map shows its zones when chosen, unless the address or the person
     // already chose whether zones show.
     let zoningChosen = new URLSearchParams(location.search).has('zoningAreas');
@@ -94,7 +98,7 @@
         });
     }
     function policy() { return core.displayPolicy(store?.get()); }
-    function sceneItems() { return items; }
+    function sceneItems() { return showingOverview() ? overview.items : items; }
     function appearance(item) { return core.itemAppearance(item, store?.get()); }
     function selected() { return (focusedRecord?.id === store?.get().selectedId ? focusedRecord : null)
         || sceneItems().find(item => item.id === store?.get().selectedId) || null; }
@@ -119,6 +123,16 @@
         restoreId = null;
         store.select(id);
         renderInspector();
+        const item = selected();
+        if (item?.overview) {
+            sourceRecord({ city: item.source.city, providerId: item.source.id, recordId: item.source.recordId, scenario: scenarioParam() })
+                .then(records => {
+                    const record = records.find(entry => entry.id === id);
+                    if (!record || selected() !== item) return;
+                    focusedRecord = record;
+                    drawMap(); renderInspector();
+                }).catch(error => console.error('[planning] Could not read the full zoning record', error));
+        }
     }
     function selectRecord(record) { focusedRecord = record; referenceStatus = null; select(record?.id || null); }
     // Parcel provenance belongs to the inspected source record, not the global display settings.
@@ -203,6 +217,7 @@
     }
     function drawMap() {
         if (!ready) return;
+        drawOverview();
         selectionLayer.clearLayers();
         const selection = selected();
         if (selection?.site && (selection.role !== 'permitted' || !selection.volumes.length)) {
@@ -221,7 +236,7 @@
         };
         const shown = new Set();
         hitShapes = [];
-        for (const item of sceneItems()) {
+        for (const item of items) {
             const display = appearance(item);
             if (display === 'off' || shown.has(item.id)) continue;
             shown.add(item.id);
@@ -243,6 +258,30 @@
             layer.removeLayer(entry.group);
             drawnItems.delete(id);
         }
+    }
+    function drawOverview() {
+        if (!showingOverview()) {
+            if (overviewLayer && root.map.hasLayer(overviewLayer)) root.map.removeLayer(overviewLayer);
+            return;
+        }
+        if (!overviewLayer) {
+            const renderer = root.L.canvas({ pane: 'planningSources' });
+            const colours = new Map();
+            const geometry = { type: 'FeatureCollection', features: overview.entries.map(({ feature, item }) => {
+                const role = labels.colourRole(item);
+                if (!colours.has(role)) colours.set(role, itemColor(item));
+                feature.properties.colour = colours.get(role);
+                return feature;
+            }) };
+            overviewLayer = root.L.geoJSON(geometry, { pane: 'planningSources', renderer, interactive: false,
+                style: feature => ({ stroke: false, fillColor: feature.properties.colour }) });
+        }
+        const display = store.get().zoningAreas;
+        if (display !== overviewDisplay) {
+            overviewDisplay = display;
+            overviewLayer.setStyle({ fillOpacity: display === 'solid' ? 1 : 0.40 });
+        }
+        if (!root.map.hasLayer(overviewLayer)) overviewLayer.addTo(root.map);
     }
     // One item's massing shapes, added to `group`; returns its click-stack hit shapes.
     function drawItem(item, display, group) {
@@ -300,6 +339,7 @@
         if (policy().permitted === 'off' && store.get().zoningAreas === 'off') return t('permittedOff');
         if (status === 'loading' && progress?.total) return t('loadingCells', progress);
         if (status !== 'ready') return t(status);
+        if (showingOverview()) return `${t('areasLoaded', { count: overview.items.length })} · ${t('zoomInForMore')}`;
         if (!payload?.sources?.length) return t('unavailable');
         const failedNote = (failedCells ? ` · ${t('cellsFailed')}` : '') + (frozen || massingWaits ? ` · ${t('zoomInForMore')}` : '');
         if (payload.envelopes) return t('envelopesLoaded', { count: items.filter(item => item.parcelEnvelope).length,
@@ -576,7 +616,7 @@
         panel.querySelector('.planning-zoning-field').hidden = !descriptor?.capabilities.areas;
         // The legend lists the colours of what is drawn: envelopes, zone use groups in the order the colours run, dashed edges.
         const legend = panel.querySelector('.planning-zone-legend');
-        legend.replaceChildren(...legendRows(labels.legend(items.filter(item => appearance(item) !== 'off'), fullT)));
+        legend.replaceChildren(...legendRows(labels.legend(sceneItems().filter(item => appearance(item) !== 'off'), fullT)));
         legend.hidden = !legend.children.length;
         legend.setAttribute('aria-label', t('zoneLegend'));
         const scenario = panel.querySelector('.planning-scenario-select');
@@ -618,6 +658,11 @@
         panel.querySelector('.planning-view-status').hidden = noPermittedSource;
         panel.querySelector('.planning-view-status').textContent = noPermittedSource ? '' : stateText();
         panel.querySelector('.planning-view-status').setAttribute('aria-busy', String(status === 'loading'));
+        const fit = panel.querySelector('.planning-fit-plan');
+        if (fit) {
+            fit.hidden = !overviewSource(descriptor) || root.isThreeModeActive?.() === true;
+            fit.textContent = t('fitPlan');
+        }
         const retry = panel.querySelector('.planning-view-retry');
         retry.hidden = !(status === 'error' || status === 'ready' && failedCells) || policy().permitted === 'off' && store.get().zoningAreas === 'off'; retry.textContent = t('retry');
         panel.querySelector('.planning-coverage summary').textContent = t('coverageTitle');
@@ -641,7 +686,7 @@
             counts.append(element('dt', '', t(`envelopeUnavailable.${reason}`)), element('dd', '', number(count)));
         }
         panel.querySelector('.planning-inspect-hint').textContent = t('inspectHint');
-        panel.querySelector('.planning-inspect-hint').hidden = policy().permitted === 'off' || !items.length;
+        panel.querySelector('.planning-inspect-hint').hidden = policy().permitted === 'off' && store.get().zoningAreas === 'off' || !sceneItems().length;
         const model = panel.querySelector('.planning-open-model');
         model.hidden = !isPhoto(); model.textContent = t('openModel');
         if (updateInspector) renderInspector();
@@ -695,6 +740,7 @@
     // the item), zoning areas do, so a housing-type change redraws the envelopes at once and re-reads
     // only the areas, when they are shown. A source re-read clears the cache.
     const viewCache = core.createViewportCache({ limit: 2048, maxAgeMs: 10 * 60 * 1000 });
+    const zoningViewportCache = core.createViewportCache({ limit: 12, maxAgeMs: 10 * 60 * 1000 });
     // Upstream parcel services slow down under parallel reads (Bogotá's times cells out at four), so
     // two cells at a time, and a cell that fails is asked once more, alone, after the rest.
     const CELL_CONCURRENCY = 2;
@@ -755,16 +801,42 @@
     let massingWaits = false;
     // The model view below its loading gate: what is drawn stays, nothing new loads.
     function freeze() {
-        viewCache.abortExcept([]); request++;
+        viewCache.abortExcept([]); zoningViewportCache.abortExcept([]); request++;
         if (status === 'loading') status = 'ready';
         frozen = true;
         render();
+    }
+    async function refreshOverview(descriptor) {
+        if (overviewActive && (overview || status === 'loading')) return;
+        const generation = ++request;
+        overviewActive = true;
+        viewCache.abortExcept([]); zoningViewportCache.abortExcept([]);
+        invalidate(); drawn.clear(); items = []; payload = null; progress = null;
+        markFailed();
+        status = 'loading'; drawMap(); render({ updateInspector: false }); notifyGeometry();
+        try {
+            const data = await root.ZoningOverview.load(descriptor);
+            if (generation !== request) return;
+            overview ??= { ...data, items: data.entries.map(({ item }) => item) };
+            status = 'ready'; drawMap(); render();
+            restoreSelection();
+        } catch (error) {
+            if (generation !== request) return;
+            console.error('[planning] Could not load the zoning overview', error);
+            status = 'error'; render();
+        }
     }
     async function refresh({ force = false } = {}) {
         if (!ready || !catalogReady) return;
         if (policy().permitted === 'off' && store.get().zoningAreas === 'off') { markFailed(); return; }
         // The 2D map's view in 2D; in 3D, the 2D view the camera stands for, around its target (load-view.js).
         const view = root.LoadView.current();
+        const currentSource = sourceOptions.find(source => source.id === sourceId);
+        if (view?.mode === '2d' && view.zoom < ZONING_ZOOM && store.get().zoningAreas !== 'off' && overviewSource(currentSource)) {
+            frozen = false;
+            return refreshOverview(currentSource);
+        }
+        if (overviewActive) { overviewActive = false; request++; drawMap(); }
         // In 3D a camera tilted toward straight down reads as a lower zoom: what is drawn stays (it is
         // all still in range), only new cells stop loading below the lowest gate of what is shown
         // (zoning areas load from ZONING_ZOOM). The 2D map below the gate draws none.
@@ -775,15 +847,15 @@
         if (!view || (view.zoom < MASSING_ZOOM && !zoningOnly)) {
             massingWaits = false;
             markFailed();
-            viewCache.abortExcept([]); request++; invalidate(); drawn.clear(); items = []; status = 'zoom'; payload = null;
+            viewCache.abortExcept([]); zoningViewportCache.abortExcept([]); request++; invalidate(); drawn.clear(); items = []; status = 'zoom'; payload = null;
             if (!selected()) store.select(null);
             drawMap(); render(); notifyGeometry(); return;
         }
         const city = root.CityConfigManager.getCurrentCityId();
         const bbox = view.bbox;
-        if (force) { viewCache.clear(); invalidate(); }
+        if (force) { viewCache.clear(); zoningViewportCache.clear(); invalidate(); }
         // Bounds-registered sources come and go with the viewport; re-list them when it moves.
-        if (!(await ensureSources(city, bbox))) return;
+        if (!overviewSource(currentSource) && !(await ensureSources(city, bbox))) return;
         const descriptor = sourceOptions.find(source => source.id === sourceId);
         const envelopeScope = descriptor?.parcelStudy && policy().permitted !== 'off' && !zoningOnly ? `envelopes:${city}:${sourceId}` : '';
         massingWaits = Boolean(zoningOnly && descriptor?.parcelStudy && policy().permitted !== 'off');
@@ -793,21 +865,29 @@
         if (zoningOnly && !areaScope && drawn3d) { freeze(); return; }
         if (zoningOnly && !areaScope) {
             massingWaits = false;
-            viewCache.abortExcept([]); request++; invalidate(); drawn.clear(); items = []; status = 'zoom'; payload = null;
+            viewCache.abortExcept([]); zoningViewportCache.abortExcept([]); request++; invalidate(); drawn.clear(); items = []; status = 'zoom'; payload = null;
             markFailed(); if (!selected()) store.select(null);
             drawMap(); render(); notifyGeometry(); return;
         }
-        const cells = core.viewCells(bbox, view.centre);
+        const viewportZoning = Boolean(areaScope && overviewSource(descriptor));
+        const cells = envelopeScope || areaScope && !viewportZoning ? core.viewCells(bbox, view.centre) : [];
         const jobs = [];
         for (const [kind, scope] of [['envelopes', envelopeScope], ['areas', areaScope]]) {
-            if (scope) for (const cell of cells) jobs.push({ kind, scope, cell, key: `${scope}|${cell.key}` });
+            if (!scope) continue;
+            const wholeView = kind === 'areas' && viewportZoning;
+            const bounds = wholeView ? bbox.map(value => Number(value.toFixed(6))) : null;
+            const requested = wholeView ? [{ bbox: bounds, key: bounds.join(','), distanceM: -1 }] : cells;
+            for (const cell of requested) jobs.push({ kind, scope, cell, wholeView, key: `${scope}|${cell.key}` });
         }
         const generation = ++request;
         // Only this view's cells keep loading; an older view's others stop.
-        viewCache.abortExcept(jobs.map(job => viewCache.keyOf(job.scope, job.cell.bbox)));
+        for (const [wholeView, cache] of [[false, viewCache], [true, zoningViewportCache]]) {
+            cache.abortExcept(jobs.filter(job => job.wholeView === wholeView).map(job => cache.keyOf(job.scope, job.cell.bbox)));
+        }
+        const cacheFor = job => job.wholeView ? zoningViewportCache : viewCache;
         const answers = new Map();
         const pending = jobs.filter(job => {
-            const hit = viewCache.find(job.scope, job.cell.bbox);
+            const hit = cacheFor(job).find(job.scope, job.cell.bbox);
             if (hit) answers.set(job.key, hit.value);
             return !hit;
         });
@@ -818,6 +898,12 @@
         // The model view between the gates keeps the massing it drew in range and loads no more of it.
         const paused = drawn3d && zoningOnly && descriptor?.parcelStudy && policy().permitted !== 'off' ? [`envelopes:${city}:${sourceId}`] : [];
         const assemble = () => {
+            const wholeView = jobs.find(job => job.wholeView);
+            if (wholeView && answers.has(wholeView.key)) {
+                for (const [key, previous] of drawn) {
+                    if (previous.scope === wholeView.scope && key !== wholeView.key) drawn.delete(key);
+                }
+            }
             const ordered = core.retainDrawn(drawn, { jobs, answers, range, keep: paused });
             markFailed([...failedKeys]);
             // Envelopes lead: their answer says how the status line counts.
@@ -837,10 +923,12 @@
         url.searchParams.set('city', city);
         if (sourceId) url.searchParams.set('source', sourceId);
         const scenario = scenarioParam();
-        const fetchCell = (kind, box) => signal => {
+        const fetchCell = ({ kind, cell, wholeView }) => signal => {
+            const box = cell.bbox;
             const target = new URL(url); target.searchParams.set('bbox', box.join(','));
             if (kind === 'envelopes') target.pathname = '/planning/envelopes';
             else if (scenario) target.searchParams.set('scenario', scenario);
+            if (wholeView) target.searchParams.set('limit', '1000');
             return root.PlanningFeed.loadViewport(target, { city, signal })
                 .then(answer => (kind === 'envelopes' ? { ...answer, envelopes: true } : answer));
         };
@@ -850,7 +938,7 @@
         let done = jobs.length - pending.length, nextDrawAt = done + 1, firstError = null;
         const queue = [...pending].sort((a, b) => a.cell.distanceM - b.cell.distanceM), retries = [];
         const loadJob = async job => {
-            try { answers.set(job.key, (await viewCache.load(job.scope, job.cell.bbox, fetchCell(job.kind, job.cell.bbox))).value); return true; }
+            try { answers.set(job.key, (await cacheFor(job).load(job.scope, job.cell.bbox, fetchCell(job))).value); return true; }
             catch (error) {
                 if (generation !== request || error.name === 'AbortError') return null;
                 firstError ||= error; return false;
@@ -875,7 +963,10 @@
             const loaded = await loadJob(job);
             if (loaded === null || generation !== request) return;
             if (loaded) { done++; progress = { count: done, total: jobs.length }; assemble(); }
-            else { failed++; failedKeys.add(failedGrid.cellKey(job.cell.bbox, core.PLANNING_CELL_DEGREES)); }
+            else {
+                failed++;
+                if (!job.wholeView) failedKeys.add(failedGrid.cellKey(job.cell.bbox, core.PLANNING_CELL_DEGREES));
+            }
         }
         if (firstError) console.error(`[planning] ${failed} of ${jobs.length} cells could not be loaded`, firstError);
         // Nothing loaded: a source refusing every cell (400) is asked for less by zooming in.
@@ -1055,6 +1146,30 @@
         }
         const zoningField = element('label', 'planning-source-field planning-zoning-field');
         zoningField.append(element('span', 'planning-zoning-label'), control('zoningAreas')); body.append(zoningField);
+        const fit = element('button', 'btn planning-fit-plan', t('fitPlan'));
+        fit.type = 'button'; fit.hidden = true;
+        zoningField.after(fit);
+        fit.addEventListener('click', async () => {
+            if (root.BusyControl.isBusy(fit)) return;
+            const source = sourceOptions.find(option => option.id === sourceId);
+            try {
+                await root.BusyControl.track(fit, async () => {
+                    const { bbox: [west, south, east, north] } = await root.ZoningOverview.load(source);
+                    if (source.id !== sourceId || root.isThreeModeActive?.()) return;
+                    root.MapShell?.closeSheet({ restoreFocus: true });
+                    root.map.fitBounds([[south, west], [north, east]], {
+                        paddingTopLeft: [24, 52], paddingBottomRight: [24, 74], maxZoom: 14, animate: false
+                    });
+                    if (store.get().zoningAreas === 'off') {
+                        zoningChosen = true;
+                        store.configure('zoningAreas', 'ghost');
+                    }
+                });
+            } catch (error) {
+                console.error('[planning] Could not fit the zoning overview', error);
+                root.updateStatus?.(t('error'));
+            }
+        });
         const legend = element('ul', 'planning-zone-legend'); legend.hidden = true; body.append(legend);
         zoningField.querySelector('select').addEventListener('change', () => { zoningChosen = true; });
         // Paint the shared busy ring before re-derivation, including with reduced motion, and
@@ -1098,7 +1213,8 @@
         root.addEventListener('loadviewchange', scheduleMoveRefresh);
         root.map.on('click', () => select(null));
         root.addEventListener('cityChanged', () => {
-            viewCache.clear(); sourceListings.clear(); request++; invalidate(); items = []; payload = null; status = 'loading';
+            viewCache.clear(); zoningViewportCache.clear(); sourceListings.clear(); request++; invalidate();
+            overviewActive = false; items = []; payload = null; status = 'loading';
             sourceOptions = []; sourceId = ''; scenarioId = ''; pins = {}; sourcesKey = ''; focusedRecord = null; restoreId = null; catalogReady = false; parcelPanel = null;
             store.select(null); drawMap(); render(); notifyGeometry(); loadSources();
         });
@@ -1130,6 +1246,7 @@
         // Drawn records covering a point, each once, in drawing order.
         itemsAt(latlng) {
             const point = root.turf.point([latlng.lng, latlng.lat]), seen = new Set();
+            if (showingOverview()) return root.ZoningOverview.hitsAt(overview.entries, point, root.turf);
             return hitShapes.filter(({ item, feature }) => {
                 if (seen.has(item.id)) return false;
                 try { if (!root.turf.booleanPointInPolygon(point, feature)) return false; } catch (_) { return false; }

@@ -123,6 +123,8 @@ per-adapter tests cover that nothing else moved.
   nearest the centre first, two at a time, each drawn as it lands and cached on its own; a failed
   cell is asked once more, alone, after the rest. No view is refused for its size; below zoom 16
   the layer says "zoom in".
+- **Alatau zoning areas** load the [whole simplified plan](alatau-genplan-source.md) below zoom 15 in
+  2D and exact polygons in one viewport query from zoom 15. Both use the adopted plan snapshot.
 - **Open:** loading only the cells in the camera's view, and simpler drawing for far cells. Both
   need measurements on the laptop and a phone first, and view-dependent loading needs the camera
   to trigger loads, which is step E2.

@@ -8627,6 +8627,7 @@
             "permitted": "Prikaži drugi primer zgrade unutar dozvoljenih granica. Ne menja zapise."
         },
         "zoningAreas": "Područja izvornog plana",
+        "fitPlan": "Prikaži ceo plan",
         "envelopeTitle": "Dozvoljeni omotač",
         "permittedForm": "Prikaz dozvoljenog",
         "bound": "Maksimalni gabarit",

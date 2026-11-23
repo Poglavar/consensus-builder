@@ -2,8 +2,8 @@
 # Alatau general plan source (`alatau-genplan-727`)
 
 Permitted massing for Alatau (Almaty region, Kazakhstan) comes from the city's general plan as
-corrected by Government Decree No. 727 of 9 September 2025. Its functional zones are read live from
-the state urban-planning cadastre and interpreted by
+corrected by Government Decree No. 727 of 9 September 2025. Its functional zones come from a complete
+state urban-planning cadastre snapshot interpreted by
 [`backend/planning/providers/alatau-genplan.js`](../backend/planning/providers/alatau-genplan.js).
 The `alatau` city configuration pins it (`planning.sourceIds: ['alatau-genplan-727']`) together with
 the parcel source `kz-alatau-pkk` (the national public cadastral map, district view 364).
@@ -14,18 +14,26 @@ the parcel source `kz-alatau-pkk` (the national public cadastral map, district v
 | --- | --- |
 | Service | `https://map.gov4c.kz/ggkgs/ows`, OGC WFS 2.0.0, layer `kz:gpzone` (the public cadastral map's urban-planning cadastre proxy) |
 | Plan | Генеральный план г. Алатау, корректировка; Постановление Правительства РК № 727 от 09.09.2025 ([text](https://primeminister.kz/assets/media/prilozenie-1-rus-727.pdf), [main drawing](https://primeminister.kz/assets/media/prilozenie-2-rus-727.pdf)). The companion red-line layer `kz:gpreg` carries `number_post` № 727 and `approved_date` 2025-09-09 for the same territory |
-| Territory | `admterr_id` 191810000 (KATO code of Alatau). The layer is national, so a viewport read asks for this territory's zones only (one FES filter: `admterr_id` and a BBOX on `shape`). A neighbour's zone on the Almaty border is therefore never returned, and never counted as an omission that would mark the zoning incomplete |
-| Size | 6,659 zones in Alatau on 2026-11-12; `implementation` marks 847 existing, 5,702 planned and 110 unrecorded |
+| Territory | `admterr_id` 191810000 (KATO code of Alatau). The snapshot includes only this territory and verifies the count and unique zone IDs before publication |
+| Size | 6,659 zones, with 507,062 coordinate positions in the snapshot. `implementation` marks 847 existing, 5,702 planned and 110 unrecorded |
 | Fields read | `object_id_i32` (record identity and paging order), `functional` (zone use and storey class), `gpzone` (zone group), `implementation` |
-| Spatial reference | EPSG:4326; WFS 2.0 bounds are sent latitude first (`urn:ogc:def:crs:EPSG::4326`) and features return longitude first |
-| Transport | The host omits its Sectigo intermediate; the provider supplements it with the certificate the parcel source pins (`backend/parcels/certificates/`) |
+| Spatial reference | Longitude, latitude in WGS84 |
+| Acquisition | WFS pages ordered by `object_id_i32`. The importer supplements the host's TLS chain with the certificate pinned by the parcel source (`backend/parcels/certificates/`) |
 | Detailed plans | `kz:pdpzone`/`kz:pdpreg` hold no Alatau zones (2026-11-12) |
 
-The provider reads one viewport page per request (cursor = service row index, ordered by
-`object_id_i32`, 15 min in-memory cache) and re-reads a record by an `object_id_i32` filter.
-The plan's zones are small, so a block of lots lies under several hundred of them. The source sets
-`zoningPageLimit: 1000`, and a study or envelope zoning read follows further pages (up to 10)
-instead of failing at the first.
+Run `node backend/scripts/build-alatau-genplan-snapshot.mjs --fetch` from the repository root to
+refresh both assets together. The importer also accepts a complete WFS GeoJSON file with its match
+count. It writes the full-precision compressed snapshot under `backend/planning/data/` and the
+simplified map asset under `frontend/data/planning/`.
+
+In 2D below zoom 15, **Zoning source areas** loads the complete simplified plan in one download.
+**Fit plan** frames its WGS84 bounds for the current screen. The overview keeps zone IDs and use
+colours and reads the exact source record when a zone is inspected. From zoom 15, zoning asks for
+one viewport box against the in-memory snapshot index, with further pages for views exceeding
+1,000 matches. The provider clips the exact geometry at the viewport bounds and can read full
+records by `object_id_i32`. The zoning requests have no parcel grid or live cadastre dependency.
+Permitted building envelopes start at zoom 16 and read parcel and street evidence for their separate
+calculation. A study or envelope zoning read follows up to 10 pages of 1,000 zones.
 
 A zone the plan marks planned (`implementation` Проектируемые) is a block of the plan's own
 layout, drawn across the field parcels it replaces. It is its own lot (vocabulary: Land basis):

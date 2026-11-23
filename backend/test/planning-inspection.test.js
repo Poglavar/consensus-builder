@@ -242,7 +242,8 @@ describe('shared building and proposal representations', () => {
         const select = vi.fn();
         const context = vm.createContext({ ready: true, catalogReady: true, policy: () => ({ permitted: 'solid' }),
             root: { LoadView: { current: () => ({ mode: '2d', bbox: [15.96, 45.80, 15.98, 45.81], centre: [45.805, 15.97], zoom: 14 }) } }, viewCache: { abortExcept: vi.fn() }, request: 0, invalidate: vi.fn(), drawn: new Map(), items: [], status: '', payload: null,
-            store: { select }, selected: () => ({ role: 'proposed', id: 'proposed:design' }),
+            sourceId: '', sourceOptions: [], overviewActive: false, zoningViewportCache: { abortExcept: vi.fn() },
+            store: { select, get: () => ({ zoningAreas: 'off' }) }, selected: () => ({ role: 'proposed', id: 'proposed:design' }),
             drawMap() {}, render() {}, notifyGeometry() {}, markFailed: vi.fn(), ZONING_ZOOM: 15, MASSING_ZOOM: 16, massingWaits: false });
         vm.runInContext(source.slice(declaration.start, declaration.end), context);
         await context.refresh();

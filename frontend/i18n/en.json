@@ -8581,6 +8581,7 @@
             "permitted": "Roll another sample building within the permitted limits. Changes nothing in the records."
         },
         "zoningAreas": "Zoning source areas",
+        "fitPlan": "Fit plan",
         "envelopeTitle": "Permitted envelope",
         "permittedForm": "Permitted representation",
         "bound": "Max envelope",

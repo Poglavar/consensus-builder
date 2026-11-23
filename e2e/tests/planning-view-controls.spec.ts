@@ -221,3 +221,37 @@ test('saved parcel evidence opens its pinned source without creating a proposal 
     parcel: (window as any).LiveParcelFabric.get(id), proposals: (window as any).proposalStorage.getAllProposals(),
   }), PARCEL_ID)).toEqual(before);
 });
+
+test('Alatau zoning overview uses static data below zoom 15 and one viewport read at zoom 15 @features', async ({ mockApi: page }) => {
+  const alatau = { id: 'alatau-genplan-727', city: 'alatau', label: 'Alatau genplan', coverage: 'zoning-areas',
+    capabilities: { areas: true, volumes: false }, viewportZoning: true, scenarios: ['general'], scenario: 'general' };
+  const representations: URL[] = [];
+  const staticReads: URL[] = [];
+  await page.route('**/planning/**', async route => {
+    if (!['xhr', 'fetch'].includes(route.request().resourceType())) return route.fallback();
+    const url = new URL(route.request().url());
+    if (url.pathname.endsWith('/sources')) return route.fulfill({ json: { city: 'alatau', sources: [alatau] } });
+    if (url.pathname.endsWith('/representations')) { representations.push(url); return route.fulfill({ json: {
+      schemaVersion: 'planning-representations.v1', city: 'alatau', sources: [alatau], items: [], summaries: [], unavailable: [], coverage: 'source-results', nextCursor: null, omitted: 0,
+    } }); }
+    return route.fulfill({ json: {} });
+  });
+  page.on('request', request => { if (request.url().includes('/data/planning/alatau-genplan-727-overview.json')) staticReads.push(new URL(request.url())); });
+  await page.goto('/?city=alatau&at=43.61,77.02,12&permitted=off&zoningAreas=ghost&reduceMotion=1', { waitUntil: 'domcontentloaded' });
+  await page.waitForFunction(() => !!(window as any).map && !!(window as any).PlanningViews);
+  await page.evaluate(() => (window as any).map.setView([43.61, 77.02], 12, { animate: false }));
+  await expect.poll(() => staticReads.length).toBe(1);
+  expect(representations).toHaveLength(0);
+  await page.locator('#planning-views-button').click();
+  const fit = page.getByRole('button', { name: 'Fit plan', exact: true });
+  await expect(fit).toBeVisible();
+  await fit.press('Enter');
+  await expect.poll(() => page.evaluate(() => (window as any).map.getZoom())).toBeLessThanOrEqual(14);
+  await page.evaluate(() => (window as any).map.setView([43.61, 77.02], 15, { animate: false }));
+  await expect.poll(() => representations.length).toBe(1);
+  expect(representations[0].searchParams.get('limit')).toBe('1000');
+  expect(representations[0].searchParams.get('source')).toBe(alatau.id);
+  expect(representations[0].searchParams.get('scenario')).toBe('general');
+  expect(representations[0].searchParams.has('bbox')).toBe(true);
+  expect(representations[0].searchParams.get('envelopes')).toBeNull();
+});

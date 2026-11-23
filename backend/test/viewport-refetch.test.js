@@ -190,7 +190,7 @@ describe('planning view refresh', () => {
     function planningHarness({ view, zoom = 19, descriptor = { id: 'src', parcelStudy: true, capabilities: { areas: false } }, fail = () => null, zoningAreas = 'off' }) {
         const source = read('../../frontend/js/planning/views.js');
         const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
-        const functions = ['refresh', 'freeze', 'invalidate', 'joinAreas', 'markFailed'].map(name => {
+        const functions = ['refresh', 'refreshOverview', 'freeze', 'invalidate', 'joinAreas', 'markFailed'].map(name => {
             const node = body.find(entry => entry.type === 'FunctionDeclaration' && entry.id.name === name);
             return source.slice(node.start, node.end);
         });
@@ -205,6 +205,8 @@ describe('planning view refresh', () => {
         const context = vm.createContext({
             URL, console: { ...console, error: vi.fn() }, Promise, Math, Array, ready: true, catalogReady: true, core: scene, request: 0, items: [], payload: null, status: 'loading', progress: null,
             viewCache: scene.createViewportCache({ limit: 2048 }), CELL_CONCURRENCY: 2, assembled: '', failedCells: 0, drawn: new Map(),
+            zoningViewportCache: scene.createViewportCache({ limit: 12 }), overviewActive: false, overview: null,
+            overviewSource: source => source?.viewportZoning === true,
             policy: () => ({ permitted: 'ghost' }), store: { get: () => state, select: vi.fn() }, selected: () => null,
             ensureSources: async () => true, sourceOptions: [descriptor], sourceId: descriptor.id, scenarioId: '', scenarioParam: () => '',
             drawMap: vi.fn(), render() {}, notifyGeometry() {}, restoreSelection() {},
@@ -214,6 +216,7 @@ describe('planning view refresh', () => {
             hatchImage: grid => grid, drawHatch() {}, CustomEvent: class { constructor(type) { this.type = type; } },
             root: {
                 dispatchEvent: vi.fn(),
+                ZoningOverview: { load: vi.fn(async () => ({ entries: [] })) },
                 LoadView: { current: () => ({ mode: box.mode || '2d', bbox: box.current, zoom: box.zoom,
                     centre: [(box.current[1] + box.current[3]) / 2, (box.current[0] + box.current[2]) / 2] }) },
                 CityConfigManager: { getCurrentCityId: () => 'zagreb' }, getBackendBase: () => 'http://api', PlanningFeed: { loadViewport }
@@ -224,6 +227,25 @@ describe('planning view refresh', () => {
         return { context, loadViewport, box, asked };
     }
     const cellsOf = view => scene.viewCells(view, [(view[1] + view[3]) / 2, (view[0] + view[2]) / 2]);
+
+    it('draws the regional overview once and switches to one exact zoning viewport without parcel cells', async () => {
+        const view = [77.04, 43.748, 77.089, 43.774];
+        const descriptor = { id: 'alatau-genplan-727', viewportZoning: true, parcelStudy: true, capabilities: { areas: true } };
+        const { context, box, loadViewport } = planningHarness({ view, descriptor, zoom: 12, zoningAreas: 'ghost' });
+        await context.refresh();
+        await context.refresh();
+        expect(context.root.ZoningOverview.load).toHaveBeenCalledTimes(1);
+        expect(context.status).toBe('ready');
+        expect(loadViewport).not.toHaveBeenCalled();
+        box.zoom = 15.18;
+        await context.refresh();
+        expect(context.overviewActive).toBe(false);
+        expect(loadViewport).toHaveBeenCalledTimes(1);
+        const url = new URL(loadViewport.mock.lastCall[0]);
+        expect(url.pathname).toBe('/planning/representations');
+        expect(url.searchParams.get('bbox')).toBe(view.join(','));
+        expect(url.searchParams.get('limit')).toBe('1000');
+    });
 
     it('keeps drawn what is in range of the view and drops it only when the view leaves that range', async () => {
         const view = [15.97611, 45.80381, 15.98147, 45.80519];
