@@ -76,7 +76,7 @@ before mirroring state; browser status claims are never accepted as evidence.
 
 The new program is `blockchain/solana/programs/property_offer`, with browser codec
 `frontend/js/solana/property-offer-client.js`. Its configured address is
-`2dYG7pCgQr83Nfor5LWRY5fRyf4UHDteVpUa4g2hj7mx`. This source configuration is not a statement that the
+`BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp`. This source configuration is not a statement that the
 program is deployed on devnet. The bridge checks deployment at runtime. The existing `agreement`
 program remains the program for plan agreements.
 

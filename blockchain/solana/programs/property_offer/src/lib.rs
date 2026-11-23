@@ -8,7 +8,7 @@ use anchor_lang::solana_program::hash::hash;
 use anchor_lang::system_program;
 use sas_attestation::{PayloadReader, SasError, SAS_PROGRAM_ID};
 
-declare_id!("2dYG7pCgQr83Nfor5LWRY5fRyf4UHDteVpUa4g2hj7mx");
+declare_id!("BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp");
 
 pub const OFFER_SEED: &[u8] = b"property-offer";
 pub const MAX_CID_LEN: usize = 64;
