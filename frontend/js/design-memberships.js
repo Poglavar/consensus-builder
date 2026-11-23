@@ -296,7 +296,7 @@
             analysisPage.dataset.planCid = instance.cid;
             const getPlan = async () => ({ ...(instance.content ? planRow() : await win.NamedPlans.fetchPlan(instance.cid)),
                 ...(!instance.draft ? { published: true } : {}) });
-            analysisPage.append(analysis.stats(win, doc, getPlan), analysis.critics(win, doc, getPlan, {
+            analysisPage.append(analysis.stats(win, doc, getPlan, instance), analysis.critics(win, doc, getPlan, {
                 open: true,
                 returnTo: async (plan, critic) => {
                     await win.ClickStack.showPlan(plan, { designs: instance.localDesigns, draft: !!instance.draft, frame: false });
@@ -328,11 +328,18 @@
                     applyPlan = unapplyPlan = null;
                     if (needsApply) {
                         applyPlan = action(win.i18n.t('panel.proposal.actions.apply'), async () => {
+                            if (win.BusyControl.isBusy(applyPlan)) return;
+                            const count = node('span', 'click-stack__apply-progress');
+                            count.setAttribute('role', 'status');
                             try {
-                                const result = await win.BusyControl.track(applyPlan, () => win.PlanWorkspace.apply(planRow()));
+                                applyPlan.append(count);
+                                const result = await win.BusyControl.track(applyPlan, () => win.PlanWorkspace.apply(planRow(), {
+                                    onProgress: ({ done, total }) => { count.textContent = ` ${done}/${total}`; }
+                                }));
                                 syncMapActions();
                                 if (!result.blocked) onFocus(instance);
                             } catch (error) { win.showStyledAlert(error.message); }
+                            finally { count.remove(); }
                         });
                         applyPlan.className = 'btn click-stack__apply-plan';
                         share.after(applyPlan);

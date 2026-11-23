@@ -115,14 +115,71 @@
         };
     }
 
+    // These measurements depend only on the replayed ground and the chosen scope. Keep them
+    // through the land and apartment updates and through changes to financial assumptions.
+    const geometryByRecords = new WeakMap();
+    async function measureGeometry(snapshot, signal) {
+        signal.throwIfAborted();
+        const { records, materializedFeatures, cadastralFeatures, landFeature } = snapshot;
+        const previous = geometryByRecords.get(records);
+        if (previous && previous.materializedFeatures === materializedFeatures
+            && previous.cadastralFeatures === cadastralFeatures && previous.landFeature === landFeature) {
+            return { ...snapshot, ...previous.measurements };
+        }
+        const api = yieldApi();
+        const areas = new Map();
+        for (const feature of materializedFeatures) {
+            const { producedByProposalId: id, structureType: kind } = feature.properties || {};
+            if (!id || !kind) continue;
+            if (!areas.has(id)) areas.set(id, new Map());
+            const kinds = areas.get(id);
+            kinds.set(kind, (kinds.get(kind) || 0) + api.geometryAreaM2(feature));
+        }
+        const parcels = api.resultingParcels(records, { materializedFeatures });
+        const byId = new Map([...cadastralFeatures, ...materializedFeatures].map(f => [String(f.properties?.parcelId ?? f.id), f]));
+        // The resulting parcels on the plan's land, each measured by its part there: the rest of a
+        // large parcel a design cut is the owner's land the plan does not touch, and is not one of
+        // them. A resulting parcel this browser holds no shape for counts, unmeasured.
+        let measuredArea = 0, measuredCount = 0, resultingCount = 0;
+        let slice = Date.now();
+        for (const id of parcels.resulting) {
+            signal.throwIfAborted();
+            if (window.requestAnimationFrame && Date.now() - slice >= 8) {
+                await new Promise(resolve => setTimeout(resolve, 0));
+                signal.throwIfAborted();
+                slice = Date.now();
+            }
+            const feature = byId.get(id);
+            if (!feature) { resultingCount += 1; continue; }
+            const area = landAreaOf(feature, landFeature);
+            if (area < MIN_RESULTING_PARCEL_M2) continue;
+            resultingCount += 1;
+            measuredArea += area;
+            measuredCount += 1;
+        }
+        const noParcels = parcels.bound === false;
+        const ground = siteStatsApi()?.planGround(records);
+        // The land the plan covers: the ground its designs take (PlanAnalysis.prepare landFeature),
+        // open ground included, never the untouched rest of the parcels they stand on.
+        const landM2 = landFeature ? api.geometryAreaM2(landFeature) : null;
+        const planAreaM2 = finiteNumber(landM2) ? landM2 : null;
+        const parcelFigures = {
+            parcelCount: noParcels ? null : resultingCount,
+            parcelProduced: noParcels ? null : parcels.produced.length,
+            parcelConsumed: noParcels ? null : parcels.consumed.length,
+            parcelMeasuredCount: noParcels ? null : measuredCount,
+            parcelMeasuredArea: noParcels ? null : measuredArea,
+            openGroundM2: ground && finiteNumber(ground.openGroundM2) ? ground.openGroundM2 : null, planAreaM2
+        };
+        const measurements = { parcelFigures, openSpaceAreaOf: proposal =>
+            areas.get(proposal.proposalId)?.get(proposal.structureProposal?.kind) ?? null };
+        geometryByRecords.set(records, { materializedFeatures, cadastralFeatures, landFeature, measurements });
+        return { ...snapshot, ...measurements };
+    }
+
     function computePlanStatsSync(snapshot, assumptions) {
         const api = yieldApi();
-        const { records, materializedFeatures, cadastralFeatures, plan, landFeature } = snapshot;
-        const openSpaceAreaOf = proposal => {
-            const pieces = materializedFeatures.filter(f => f.properties?.producedByProposalId === proposal.proposalId
-                && f.properties?.structureType === proposal.structureProposal?.kind);
-            return pieces.length ? pieces.reduce((sum, f) => sum + api.geometryAreaM2(f), 0) : null;
-        };
+        const { records, plan, openSpaceAreaOf } = snapshot;
         // A member's period is the year its construction window ends (built by then). The prepared
         // records carry their design CID as proposalId; members without a window are unscheduled.
         const schedule = plan.content.schedule || {};
@@ -134,35 +191,9 @@
         // out (snapshot.units); until then, and for a building it cannot lay out, the per-m² rule.
         const units = snapshot.units || null;
         const result = api.planYield(records, { ...assumptions, openSpaceAreaOf, periodOf, unitsOf: units?.designs?.unitsOf });
-        const parcels = api.resultingParcels(records, { materializedFeatures });
-        const byId = new Map([...cadastralFeatures, ...materializedFeatures].map(f => [String(f.properties?.parcelId ?? f.id), f]));
-        // The resulting parcels on the plan's land, each measured by its part there: the rest of a
-        // large parcel a design cut is the owner's land the plan does not touch, and is not one of
-        // them. A resulting parcel this browser holds no shape for counts, unmeasured.
-        let measuredArea = 0, measuredCount = 0, resultingCount = 0;
-        parcels.resulting.forEach(id => {
-            const feature = byId.get(id);
-            if (!feature) { resultingCount += 1; return; }
-            const area = landAreaOf(feature, landFeature);
-            if (area < MIN_RESULTING_PARCEL_M2) return;
-            resultingCount += 1;
-            measuredArea += area;
-            measuredCount += 1;
-        });
-        const noParcels = parcels.bound === false;
-        const ground = siteStatsApi()?.planGround(records);
-        // The land the plan covers: the ground its designs take (PlanAnalysis.prepare landFeature),
-        // open ground included, never the untouched rest of the parcels they stand on.
-        const landM2 = landFeature ? api.geometryAreaM2(landFeature) : null;
-        const planAreaM2 = finiteNumber(landM2) ? landM2 : null;
         return { unavailable: false, planTitle: plan.content.title,
             proposalsTotal: records.length, proposalsCounted: records.length, yield: result,
-            parcelCount: noParcels ? null : resultingCount,
-            parcelProduced: noParcels ? null : parcels.produced.length,
-            parcelConsumed: noParcels ? null : parcels.consumed.length,
-            parcelMeasuredCount: noParcels ? null : measuredCount,
-            parcelMeasuredArea: noParcels ? null : measuredArea,
-            openGroundM2: ground && finiteNumber(ground.openGroundM2) ? ground.openGroundM2 : null, planAreaM2,
+            ...snapshot.parcelFigures,
             // Filled by PresentState.groundOf when it has read the roads, parks, squares and existing
             // buildings (or why not): the land split, and the existing buildings the plan leaves standing.
             publicLandM2: snapshot.land ? snapshot.land.publicLandM2 : null,
@@ -359,6 +390,7 @@
 
         const scope = el('p', 'plan-stats-scope');
         scope.dataset.planStat = 'scope';
+        scope.setAttribute('role', 'status');
 
         const summaryList = el('div', 'plan-stats-grid');
         SUMMARY_ROWS.forEach(row => {
@@ -675,6 +707,7 @@
     function hidePlanStatsModal() {
         const modal = document.getElementById('plan-stats-modal');
         if (!modal || modal.hidden) return;
+        statsController?.abort();
         modal.hidden = true;
         const trigger = planStatsTrigger;
         planStatsTrigger = null;
@@ -712,9 +745,10 @@
 
     // The plan's ground read with its roads, parks, squares and existing buildings:
     // { land, remaining } or { groundError }.
-    async function withGround(snapshot, assumptions) {
-        try { return { ...snapshot, ...(await window.PresentState.groundOf(snapshot, assumptions)) }; }
+    async function withGround(snapshot, assumptions, signal) {
+        try { return { ...snapshot, ...(await window.PresentState.groundOf(snapshot, { ...assumptions, signal })) }; }
         catch (error) {
+            if (signal?.aborted) throw error;
             console.error(`[${new Date().toISOString()}] [PlanStats] the land of ${snapshot.plan?.content?.title || 'a plan'} could not be split`, error);
             return { ...snapshot, groundError: error && error.message ? error.message : String(error) };
         }
@@ -722,38 +756,65 @@
 
     // Every building laid out and its apartments counted (plan-units.js): the designs' and the
     // existing ones that remain. { units: { designs, standing } } or { units: { error } }.
-    async function countUnits(records, remaining, parcels) {
+    async function countUnits(records, remaining, parcels, signal) {
         try {
             const standingFeatures = (remaining || []).flatMap(record => yieldApi().buildingFeaturesOf(record));
-            const designs = await window.PlanUnits.forSnapshot(records || [], { parcels: parcels || [], standing: standingFeatures });
-            const standing = await window.PlanUnits.forSnapshot(remaining || [], { existing: true });
+            const designs = await window.PlanUnits.forSnapshot(records || [], { parcels: parcels || [], standing: standingFeatures, signal });
+            const standing = await window.PlanUnits.forSnapshot(remaining || [], { existing: true, signal });
             return { designs, standing };
         } catch (error) {
+            if (signal?.aborted) return {};
             console.error(`[${new Date().toISOString()}] [PlanStats] apartments could not be counted from layouts`, error);
             return { error: error && error.message ? error.message : String(error) };
         }
     }
-    async function withUnits(snapshot) {
-        return { ...snapshot, unitsCounting: false, units: await countUnits(snapshot.records, snapshot.remaining, snapshot.materializedFeatures) };
+    async function withUnits(snapshot, signal) {
+        return { ...snapshot, unitsCounting: false, units: await countUnits(snapshot.records, snapshot.remaining, snapshot.materializedFeatures, signal) };
     }
 
-    let openedPlan = 0;
-    async function openPlanStats(plan, { returnFocus = null } = {}) {
-        const snapshot = await window.PlanAnalysis.prepare(plan);
+    let statsController = null;
+    async function openPlanStats(summary, { readPlan = () => summary, returnFocus = null } = {}) {
+        statsController?.abort();
+        const { signal } = statsController = new AbortController();
         const modal = ensureModal();
         restoreAssumptions(modal);
         bindAssumptionInputs(modal);
         planStatsTrigger = returnFocus;
-        const token = ++openedPlan;
-        renderPlanStatsModal(computePlanStatsSync({ ...snapshot, unitsCounting: true }, readAssumptionsFromModal(modal)));
-        // Public and private land needs OpenStreetMap's parks and squares, which can take a while:
-        // the other figures show first, these follow while the dialog still shows this plan, and
-        // the apartments last, once every building (new and remaining) is laid out.
-        const land = await withGround(snapshot, readAssumptionsFromModal(modal));
-        if (token !== openedPlan || modal.hidden) return;
-        renderPlanStatsModal(computePlanStatsSync({ ...land, unitsCounting: true }, readAssumptionsFromModal(modal)));
-        const counted = await withUnits(land);
-        if (token === openedPlan && !modal.hidden) renderPlanStatsModal(computePlanStatsSync(counted, readAssumptionsFromModal(modal)));
+        latestStats = null;
+        const status = modal.querySelector('[data-plan-stat="scope"]');
+        const waiting = tPlanStats('planCompare.measuring', 'Measuring…');
+        const count = summary?.content?.designCids?.length ?? summary?.designCount;
+        const title = summary?.content?.title || summary?.title || '';
+        const label = Number.isInteger(count)
+            ? tPlanStats('sidebar.proposals.planStats.scope', '{{title}} · Designs: {{counted}}', { title, counted: formatNumber(count) }) : title;
+        status.textContent = [label, waiting].filter(Boolean).join(' · ');
+        modal.querySelector('[data-plan-stat="period-section"]').hidden = true;
+        modal.querySelector('[data-plan-stat="notes"]').textContent = '';
+        for (const { key } of [...SUMMARY_ROWS, ...COST_PARTS]) {
+            const slot = modal.querySelector(`[data-plan-stat="${key}"]`);
+            if (slot) slot.textContent = '—';
+        }
+        modal.hidden = false;
+        modal.querySelector('[data-plan-stats-close]')?.focus();
+        try {
+            // Give the browser a paint opportunity before hashing, clipping or laying out a plan.
+            if (window.requestAnimationFrame) await new Promise(resolve => window.requestAnimationFrame(() => setTimeout(resolve, 0)));
+            if (signal.aborted) return;
+            const plan = await readPlan();
+            if (signal.aborted) return;
+            const snapshot = await measureGeometry(await window.PlanAnalysis.prepare(plan, { signal }), signal);
+            if (signal.aborted) return;
+            const show = data => renderPlanStatsModal(computePlanStatsSync(data, readAssumptionsFromModal(modal)));
+            show({ ...snapshot, unitsCounting: true });
+            for (const key of ['public-land', 'private-land', 'buildings-remaining']) modal.querySelector(`[data-plan-stat="${key}"]`).textContent = waiting;
+            const land = await withGround(snapshot, readAssumptionsFromModal(modal), signal);
+            if (signal.aborted) return;
+            show({ ...land, unitsCounting: true });
+            const counted = await withUnits(land, signal);
+            if (!signal.aborted) show(counted);
+        } catch (error) {
+            if (!signal.aborted) status.textContent = [label, tPlanStats('planCompare.failed', 'Not measured: {{reason}}', { reason: error.message })].filter(Boolean).join(' · ');
+        }
     }
 
     // ── Plan comparison (Lists → Plans → Compare plans, Lists → Designs → Compare designs) ──────
@@ -763,6 +824,7 @@
     // Swap turns it between plans as columns and plans as rows.
     // A plan that cannot be measured keeps its place and says why.
     let comparePlansAsColumns = true;
+    let activeCompare = null;
 
     // entries: [{ title, figures (summaryTexts) } | { title, error }] → the table element.
     function compareTable(entries, plansAsColumns, rowLabel) {
@@ -866,28 +928,16 @@
         const grid = assumptionGrid('plan-compare', () => refigure());
         const assumptions = readAssumptionsFromModal(grid, { prefix: 'plan-compare' });
         let price = priceIn(grid, 'plan-compare');
-        const entries = [];
+        const entries = plans.map((plan, index) => ({ title: titles?.[index] || plan?.content?.title || '', measuring: true }));
         const prepared = [];
-        for (const [index, plan] of plans.entries()) {
-            const title = titles?.[index] || plan?.content?.title || '';
-            try {
-                // base: the plan as read, before its ground; every scope is measured from it.
-                const base = await window.PlanAnalysis.prepare(plan);
-                const snapshot = await withGround(base, assumptions);
-                const stats = computePlanStatsSync({ ...snapshot, unitsCounting: true }, assumptions);
-                const entry = { title: titles?.[index] || stats.planTitle || title, stats, figures: summaryTexts(stats, price), groundError: stats.groundError };
-                entries.push(entry);
-                const side = sides ? sides[index] || null : plan?.cid ? `plan:${plan.cid}` : null;
-                prepared.push({ title: entry.title, cid: plan?.cid || null, side, base, snapshot, entry });
-            } catch (error) {
-                console.error(`[${new Date().toISOString()}] [PlanCompare] ${title || plan?.cid} could not be measured`, error);
-                entries.push({ title, error: error && error.message ? error.message : String(error) });
-            }
-        }
+        const preparedByIndex = new Array(plans.length);
+        const controller = new AbortController();
+        const { signal } = controller;
+        activeCompare?.close();
         // The present state: what stands on a chosen plan's land today, as a column of its own.
         const present = { title: tPlanStats('planCompare.presentState', 'Present state'), present: true, measuring: false };
         const city = window.normalizeCityCodeForApi(window.resolveCurrentCityCode());
-        const compared = new Set(prepared.map(row => row.cid));
+        const compared = new Set(plans.map(row => row?.cid));
         const saved = new Map(window.NamedPlans.list({ storedOnly: true })
             .filter(row => !compared.has(row.cid) && (!row.content.view.city || window.normalizeCityCodeForApi(row.content.view.city) === city))
             .map(row => [`saved:${row.cid}`, row]));
@@ -898,7 +948,7 @@
         const scopeOps = window.PresentState.ops;
         let scope = null;
         const scopeOf = snapshot => (scope ? scopeApi.toParcel(snapshot, scope.feature, scopeOps) : snapshot);
-        const scopeParcels = scopeApi.parcelsOf(prepared.map(row => row.base), scopeOps);
+        let scopeParcels = [];
 
         const body = el('div', 'plan-compare');
         const scopeField = el('label', 'proposal-editor-field plan-compare__scope');
@@ -907,38 +957,34 @@
         scopeSelect.dataset.planCompareScope = '';
         const scopeOption = (value, text) => { const node = el('option', null, text); node.value = value; scopeSelect.appendChild(node); };
         scopeOption('all', tPlanStats('planCompare.scopeAll', 'All their land'));
-        scopeParcels.forEach((parcel, index) => scopeOption(`parcel:${index}`, parcel.plans === prepared.length
-            ? tPlanStats('planCompare.scopeParcel', 'Parcel {{number}} ({{area}} m²)', { number: parcel.number, area: formatNumber(parcel.areaM2) })
-            : tPlanStats('planCompare.scopeParcelSome', 'Parcel {{number}} ({{area}} m², in {{count}} of {{total}})',
-                { number: parcel.number, area: formatNumber(parcel.areaM2), count: formatNumber(parcel.plans), total: formatNumber(prepared.length) })));
+
         scopeField.appendChild(scopeSelect);
         scopeField.hidden = !scopeParcels.length;
         const basisField = el('label', 'proposal-editor-field plan-compare__basis');
         basisField.appendChild(el('span', null, tPlanStats('planCompare.basis', 'Present state over the land of')));
         const basis = el('select');
+        basis.disabled = true;
         basis.dataset.planCompareBasis = '';
         const option = (value, text) => { const node = el('option', null, text); node.value = value; basis.appendChild(node); };
-        if (prepared.length > 1) option('compared', basisText);
-        prepared.forEach((row, index) => option(`plan:${index}`, row.title));
-        saved.forEach((row, value) => option(value, row.content.title));
+
         basisField.appendChild(basis);
         const swap = el('button', 'btn btn-sm plan-compare__swap', tPlanStats('planCompare.swap', 'Swap rows and columns'));
         swap.type = 'button';
         swap.dataset.planCompareSwap = '';
         // The same plans under the map's divider (three-compare.js, no apply): the first two chosen
         // plans side by side, or one plan beside Built today. A design fetched only for this has no side.
-        const measured = prepared.filter(row => row.side);
         const sideBySide = el('button', 'btn btn-sm plan-compare__side-by-side', tPlanStats('planCompare.sideBySide', 'Side by side on the map'));
         sideBySide.type = 'button';
         sideBySide.dataset.planCompareSideBySide = '';
-        sideBySide.disabled = !measured.length || !window.ThreeCompare?.show;
+        sideBySide.disabled = true;
         sideBySide.addEventListener('click', () => {
-            const [first, second] = measured;
+            const [first, second] = prepared.filter(row => row.side);
             dialog?.close?.();
             window.ThreeCompare.show({ left: second ? first.side : 'built', right: (second || first).side });
         });
         const scroll = el('div', 'plan-compare__scroll');
         const draw = () => {
+            if (signal.aborted) return;
             scroll.innerHTML = '';
             scroll.appendChild(compareTable([present, ...entries], comparePlansAsColumns, headingText));
             swap.setAttribute('aria-pressed', String(!comparePlansAsColumns));
@@ -951,7 +997,8 @@
             try {
                 const basisPlans = (value === 'compared' ? prepared.map(row => row.base)
                     : value.startsWith('plan:') ? [prepared[Number(value.slice(5))].base]
-                    : [await window.PlanAnalysis.prepare(saved.get(value))]).map(scopeOf);
+                    : [await window.PlanAnalysis.prepare(saved.get(value), { signal })]).map(scopeOf);
+                if (signal.aborted || token !== measuring) return;
                 const stats = await window.PresentState.measure({ title: present.title, basis: basisPlans, assumptions });
                 if (token !== measuring) return;
                 present.stats = { ...stats, unitsCounting: true };
@@ -959,7 +1006,7 @@
                 present.figures = summaryTexts(rederiveStats(present.stats, readAssumptionsFromModal(grid, { prefix: 'plan-compare' })), price);
                 draw();
                 // Today's buildings laid out as the plans' are, so the columns count alike.
-                const units = await countUnits([], stats.remainingRecords, []);
+                const units = await countUnits([], stats.remainingRecords, [], signal);
                 if (token !== measuring) return;
                 present.stats = { ...stats, unitsCounting: false, unitsError: units.error || null,
                     remainingYield: yieldApi().planYield(stats.remainingRecords, { ...assumptions, unitsOf: units.standing?.unitsOf }) };
@@ -979,7 +1026,8 @@
         let scoping = 0;
         async function countPlans(token) {
             for (const row of prepared) {
-                const counted = await withUnits(row.snapshot);
+                if (signal.aborted || token !== scoping) return;
+                const counted = await withUnits(row.snapshot, signal);
                 if (token !== scoping) return;
                 row.entry.stats = computePlanStatsSync(counted, readAssumptionsFromModal(grid, { prefix: 'plan-compare' }));
                 row.entry.figures = summaryTexts(row.entry.stats, price);
@@ -996,10 +1044,11 @@
             for (const row of prepared) {
                 const current = readAssumptionsFromModal(grid, { prefix: 'plan-compare' });
                 try {
-                    const snapshot = await withGround(scopeOf(row.base), current);
+                    const scoped = await measureGeometry(scopeOf(row.base), signal);
+                    const snapshot = await withGround(scoped, current, signal);
                     if (token !== scoping) return;
                     row.snapshot = snapshot;
-                    row.entry.stats = computePlanStatsSync({ ...snapshot, unitsCounting: true }, current);
+                    row.entry.stats = computePlanStatsSync({ ...snapshot, unitsCounting: true }, readAssumptionsFromModal(grid, { prefix: 'plan-compare' }));
                     row.entry.figures = summaryTexts(row.entry.stats, price);
                     row.entry.groundError = row.entry.stats.groundError;
                 } catch (error) {
@@ -1062,8 +1111,51 @@
         body.appendChild(definition);
         body.appendChild(scopeNote);
         draw();
-        const dialog = window.CbDialog.open({ title: titleText,
-            size: 'lg', className: 'plan-compare-dialog', body });
+        const dialog = window.CbDialog.open({ title: titleText, size: 'lg', className: 'plan-compare-dialog', body,
+            onClose: () => { controller.abort(); measuring++; scoping++; if (activeCompare === handle) activeCompare = null; } });
+        const handle = { close() { controller.abort(); dialog.close?.(); } };
+        activeCompare = handle;
+        let next = 0;
+        async function prepareColumn() {
+            while (!signal.aborted && next < plans.length) {
+                const index = next++, plan = plans[index], entry = entries[index];
+                const show = snapshot => {
+                    entry.stats = computePlanStatsSync({ ...snapshot, unitsCounting: true }, readAssumptionsFromModal(grid, { prefix: 'plan-compare' }));
+                    entry.figures = summaryTexts(entry.stats, price);
+                    entry.groundError = entry.stats.groundError;
+                    draw();
+                };
+                try {
+                    const base = await measureGeometry(await window.PlanAnalysis.prepare(plan, { signal }), signal);
+                    if (signal.aborted) return;
+                    show(base);
+                    const snapshot = await withGround(base, readAssumptionsFromModal(grid, { prefix: 'plan-compare' }), signal);
+                    if (signal.aborted) return;
+                    entry.measuring = false;
+                    show(snapshot);
+                    preparedByIndex[index] = { title: entry.title, cid: plan?.cid, side: sides ? sides[index] : plan?.cid && `plan:${plan.cid}`, base, snapshot, entry };
+                } catch (error) {
+                    if (signal.aborted) return;
+                    Object.assign(entry, { measuring: false, error: error.message || String(error) });
+                    draw();
+                }
+            }
+        }
+        if (window.requestAnimationFrame) await new Promise(resolve => window.requestAnimationFrame(() => setTimeout(resolve, 0)));
+        await Promise.all([prepareColumn(), prepareColumn()]);
+        if (signal.aborted) return dialog;
+        prepared.push(...preparedByIndex.filter(Boolean));
+        scopeParcels = scopeApi.parcelsOf(prepared.map(row => row.base), scopeOps);
+        scopeParcels.forEach((parcel, index) => scopeOption(`parcel:${index}`, parcel.plans === prepared.length
+            ? tPlanStats('planCompare.scopeParcel', 'Parcel {{number}} ({{area}} m²)', { number: parcel.number, area: formatNumber(parcel.areaM2) })
+            : tPlanStats('planCompare.scopeParcelSome', 'Parcel {{number}} ({{area}} m², in {{count}} of {{total}})',
+                { number: parcel.number, area: formatNumber(parcel.areaM2), count: formatNumber(parcel.plans), total: formatNumber(prepared.length) })));
+        scopeField.hidden = !scopeParcels.length;
+        if (prepared.length > 1) option('compared', basisText);
+        prepared.forEach((row, index) => option(`plan:${index}`, row.title));
+        saved.forEach((row, value) => option(value, row.content.title));
+        basis.disabled = false;
+        sideBySide.disabled = !prepared.some(row => row.side) || !window.ThreeCompare?.show;
         if (basis.children.length) {
             basis.value = basis.children[0].value;
             void measurePresent(basis.value);

@@ -21,22 +21,33 @@
     // 41 s read), and a source that answers only its own country's visitors binds too. A source this
     // API holds, or none, is bound here per member (bindOnServer(member, sourceId)), a few at a time.
     // members: [{ content, source }] where source is the plan's recorded source for that member.
-    async function bindMembers(members, { sourceOf, bindOnServer, bindInBrowser }) {
+    async function bindMembers(members, { sourceOf, bindOnServer, bindInBrowser, signal, onProgress }) {
         const bindings = new Array(members.length);
-        const server = [], browser = new Map();
+        const server = [], groups = new Map();
+        let done = 0;
+        const report = () => onProgress?.({ done, total: members.length });
         members.forEach((member, index) => {
             const sourceId = sourceOf(member);
-            if (onServer(sourceId)) server.push({ index, sourceId });
-            else browser.set(sourceId, [...(browser.get(sourceId) || []), index]);
+            if (onServer(sourceId)) { server.push({ index, sourceId }); return; }
+            const key = JSON.stringify([sourceId, member.content.city, member.source?.snapshotId]);
+            if (!groups.has(key)) groups.set(key, { sourceId, indexes: [] });
+            groups.get(key).indexes.push(index);
         });
+        report();
         await Promise.all([
             draftLink().mapLimit(server, SERVER_BIND_CONCURRENCY, async ({ index, sourceId }) => {
+                signal?.throwIfAborted();
                 bindings[index] = await bindOnServer(members[index], sourceId);
+                signal?.throwIfAborted();
+                done++; report();
             }),
-            ...[...browser].map(async ([sourceId, indexes]) => {
-                const answers = await bindInBrowser(sourceId, indexes.map(index => members[index]));
-                if (!Array.isArray(answers) || answers.length !== indexes.length) throw new Error('Parcel coverage is unavailable.');
-                indexes.forEach((index, position) => { bindings[index] = answers[position]; });
+            draftLink().mapLimit([...groups.values()], 2, async ({ sourceId, indexes }) => {
+                signal?.throwIfAborted();
+                const results = await bindInBrowser(sourceId, indexes.map(index => members[index]));
+                signal?.throwIfAborted();
+                if (!Array.isArray(results) || results.length !== indexes.length) throw new Error('Parcel coverage is unavailable.');
+                indexes.forEach((index, position) => { bindings[index] = results[position]; });
+                done += indexes.length; report();
             })
         ]);
         return bindings;
@@ -92,11 +103,12 @@
         return shapes.length ? unite(shapes) : null;
     }
 
-    async function prepare(plan, { resolve, bindAll, parcels, materialize, declared = () => null, inside = null, siteOf, unite }) {
+    async function prepare(plan, { resolve, bindAll, parcels, materialize, declared = () => null, inside = null, siteOf, unite, signal, onProgress }) {
         const snapshot = await resolve(plan);
         const designs = [];
         const sources = new Map();
-        const bindings = await bindAll(snapshot.designs.map(member => ({ content: member.content, source: snapshot.designSources?.[member.cid] })));
+        signal?.throwIfAborted();
+        const bindings = await bindAll(snapshot.designs.map(member => ({ ...member, source: snapshot.designSources?.[member.cid] })), { signal, onProgress });
         for (const [index, member] of snapshot.designs.entries()) {
             const binding = bindings[index];
             if (!binding || binding.coverage === 'unknown' || binding.unknownM2 > 0) throw new Error('Parcel coverage is unavailable.');
@@ -113,7 +125,8 @@
         const cadastralFeatures = [];
         for (const [source, ids] of sources) {
             const features = await parcels(source, [...ids]);
-            if ([...ids].some(id => !features.some(f => String(f.properties?.parcelId ?? f.id) === id))) throw new Error('Some source parcels could not be loaded.');
+            const received = new Set(features.map(f => String(f.properties?.parcelId ?? f.id)));
+            if ([...ids].some(id => !received.has(id))) throw new Error('Some source parcels could not be loaded.');
             cadastralFeatures.push(...features.filter(f => ids.has(String(f.properties?.parcelId ?? f.id))));
         }
         let result;
@@ -125,59 +138,95 @@
         const pieceIds = new Set(materializedFeatures.map(f => String(f.properties?.parcelId ?? f.id)));
         const corridorFeatures = result.fabric.entriesForCadastre(ids, { includeCorridors: true })
             .filter(f => !pieceIds.has(String(f.properties?.parcelId ?? f.id)));
-        const landFeature = planLand(designs, cadastralFeatures, { siteOf, unite });
+        const landFeature = await planLand(designs, cadastralFeatures, { siteOf, unite });
         return { plan: snapshot, records: result.records, cadastralFeatures, materializedFeatures, corridorFeatures, landFeature };
     }
     function browser(win) {
-        async function request(path, body) {
+        async function request(path, body, signal) {
+            const timeout = AbortSignal.timeout(120000);
             const response = await win.fetch(win.DesignSync.apiBase() + path, {
-                signal: AbortSignal.timeout(120000), cache: 'no-store',
+                signal: signal ? AbortSignal.any([signal, timeout]) : timeout, cache: 'no-store',
                 ...(body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {})
             });
             const answer = await response.json();
             if (!response.ok) throw new Error(answer.error || `HTTP ${response.status}`);
             return answer;
         }
-        async function parcels(source, ids) {
-            const paths = SERVER_SOURCES;
-            const features = [];
-            // Bound the request size; imported database sources accept one identity per query.
-            const size = paths[source] === '/parcels' ? 50 : 1;
-            for (let i = 0; i < ids.length; i += size) {
-                const batch = ids.slice(i, i + size);
-                const answer = paths[source]
-                    ? await request(`${paths[source]}?${new URLSearchParams({ [source === 'parcel-ba' ? 'smp' : 'parcel_id']: batch.join(',') })}`)
-                    : await win.BrowserParcelSources.queryIds(source, batch);
-                if (answer.truncated || (!paths[source] && answer.complete !== true)) throw new Error('Parcel coverage is incomplete.');
-                features.push(...answer.features);
-            }
-            return features;
+        const sourceOf = ({ content, source }) => source?.sourceId || win.DesignSync.parcelSourceIdOf(content.city, win.__siteBinding.siteOf(content));
+        const siteFor = content => win.__siteBinding.siteOf(content, { turf: win.turf });
+        function bind(members, { signal, onProgress } = {}) {
+            return bindMembers(members, {
+                sourceOf, signal, onProgress,
+                bindOnServer: async ({ content }, sourceId) => (await request('/designs/binding', {
+                    city: content.city, site: siteFor(content), toleranceM: content.toleranceM,
+                    parcelSourceId: sourceId === 'hr-cadastre' ? 'oss-wfs' : sourceId
+                }, signal)).binding,
+                bindInBrowser: async (sourceId, group) => (await win.BrowserParcelSources.bindSites(sourceId,
+                    group.map(({ content }) => ({ site: siteFor(content), toleranceM: content.toleranceM ?? 0 })),
+                    { city: group[0].content.city, signal })).map(answer => answer.binding)
+            });
         }
-        return { prepare: plan => prepare(plan, {
-            resolve: row => win.PlanWorkspace.resolve(row),
-            bindAll: members => bindMembers(members, {
-                sourceOf: ({ content, source }) => source?.sourceId || win.DesignSync.parcelSourceIdOf(content.city, win.__siteBinding.siteOf(content)),
-                bindOnServer: async ({ content }, sourceId) => (await request('/designs/binding', { city: content.city,
-                    site: win.__siteBinding.siteOf(content), toleranceM: content.toleranceM,
-                    parcelSourceId: sourceId === 'hr-cadastre' ? 'oss-wfs' : sourceId })).binding,
-                bindInBrowser: async (sourceId, members) => (await win.BrowserParcelSources.bindSites(sourceId,
-                    members.map(({ content }) => ({ site: win.__siteBinding.siteOf(content), toleranceM: content.toleranceM ?? 0 })),
-                    { city: members[0].content.city })).map(answer => answer.binding)
-            }),
-            parcels,
-            siteOf: content => win.__siteBinding.siteOf(content),
-            // The shared clip (parcel-arrangement.js clipWith), on the grid every stage uses.
-            unite: features => features.slice(1).reduce((sum, feature) =>
-                win.__parcelArrangement.clipWith(win.turf, 'union', sum, feature, { site: 'plan-land' }), features[0]),
-            materialize: args => win.AgreementHeadless.materialize(args),
-            inside: (vertex, feature) => win.turf.booleanPointInPolygon(vertex, feature),
-            declared: cid => {
-                const record = win.proposalStorage.getAllProposals().find(row => {
-                    try { return win.DesignRecord.cidOf(row) === cid; } catch (_) { return false; }
-                });
-                return record && Array.isArray(record.cadastreParcelIds) ? record.cadastreParcelIds : null;
-            }
-        }) };
+        async function bindPrivateRows(members, options) {
+            const bindings = await bind(members, options);
+            return new Map(members.map((member, index) => [member.cid, { cid: member.cid, content: member.content,
+                city: member.content.city, parcelSourceId: sourceOf(member), binding: bindings[index] }]));
+        }
+        async function parcels(source, ids, city, signal) {
+            const path = SERVER_SOURCES[source];
+            const provider = win.CityConfigManager?.getCityConfig?.(city)?.parcels;
+            // Database import routes take one ID, /parcels and adapter queryIds accept a batch.
+            const size = path === '/parcels' ? 50 : path ? 1 : Math.min(50, Math.max(1, provider?.idBatchSize || 50));
+            const batches = [];
+            for (let i = 0; i < ids.length; i += size) batches.push(ids.slice(i, i + size));
+            const results = await draftLink().mapLimit(batches, path ? SERVER_BIND_CONCURRENCY : 2, async batch => {
+                signal?.throwIfAborted();
+                const answer = path
+                    ? await request(`${path}?${new URLSearchParams({ [source === 'parcel-ba' ? 'smp' : 'parcel_id']: batch.join(',') })}`, undefined, signal)
+                    : await win.BrowserParcelSources.queryIds(source, batch, { city, signal });
+                if (answer.truncated || (!path && answer.complete !== true)) throw new Error('Parcel coverage is incomplete.');
+                return answer.features;
+            });
+            return results.flat();
+        }
+        const completed = new Map();
+        async function preparePlan(plan, { signal, onProgress } = {}) {
+            signal?.throwIfAborted();
+            const snapshot = await win.PlanWorkspace.resolve(plan);
+            signal?.throwIfAborted();
+            const members = snapshot.designs.map(member => ({ ...member, source: snapshot.designSources?.[member.cid] }));
+            const index = win.DesignSync.localDesignIndex();
+            const key = JSON.stringify([win.DesignSync.apiBase(), snapshot.cid, index.revision,
+                members.map(member => [member.cid, sourceOf(member), member.source?.snapshotId])]);
+            const hit = completed.get(key);
+            if (hit && Date.now() - hit.at < 15000) return hit.value;
+            const value = await prepare(snapshot, {
+                resolve: row => row, signal, onProgress, bindAll: bind,
+                parcels: (source, ids) => parcels(source, ids, snapshot.content.view?.city, signal),
+                siteOf: siteFor,
+                unite: async features => {
+                    let union = features[0], slice = Date.now();
+                    for (let i = 1; i < features.length; i++) {
+                        signal?.throwIfAborted();
+                        if (Date.now() - slice >= 8) { await new Promise(resolve => setTimeout(resolve, 0)); slice = Date.now(); }
+                        union = win.__parcelArrangement.clipWith(win.turf, 'union', union, features[i], { site: 'plan-land' });
+                    }
+                    return union;
+                },
+                materialize: args => win.AgreementHeadless.materialize({ ...args, signal }),
+                inside: (vertex, feature) => win.turf.booleanPointInPolygon(vertex, feature),
+                declared: cid => localDeclaration(index.byCid.get(cid), cid)
+            });
+            signal?.throwIfAborted();
+            completed.set(key, { at: Date.now(), value });
+            if (completed.size > 8) completed.delete(completed.keys().next().value);
+            return value;
+        }
+        return { prepare: preparePlan, bindPrivateRows };
     }
-    return { prepare, planLand, explainRefusal, bindMembers, browser };
+    function localDeclaration(record, cid) {
+        if (!Array.isArray(record?.cadastreParcelIds)) return null;
+        if (!record.cadastreParcelIds.length && !record.binding && record.planFileUnboundCid === cid) return null;
+        return record.cadastreParcelIds;
+    }
+    return { prepare, planLand, explainRefusal, bindMembers, localDeclaration, browser };
 });

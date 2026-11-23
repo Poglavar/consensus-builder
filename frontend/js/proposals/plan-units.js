@@ -88,6 +88,7 @@
         const reasons = {};
         let laidOut = 0, started = Date.now();
         for (const { feature, bp } of features) {
+            deps.signal?.throwIfAborted();
             const measured = plan.measureBuilding(feature, bp, {});
             if (measured.gfaM2 === null) continue;
             let result;
@@ -110,15 +111,17 @@
 
     // The browser: the generator modules load on first use (map-mode-loader.js); parcels are the
     // plan's own live pieces near each building.
-    async function forSnapshot(records, { parcels = [], existing = false, standing = [] } = {}) {
+    async function forSnapshot(records, { parcels = [], existing = false, standing = [], signal } = {}) {
+        signal?.throwIfAborted();
         await root.__ensureFloorPlanModules();
+        signal?.throwIfAborted();
         const turf = root.turf;
         const context = root.__defaultFloorPlanContext;
         const cities = root.CityConfigManager;
         const region = cities && typeof cities.getCurrentCityConfig === 'function' ? context.regionOf(cities.getCurrentCityConfig()) : null;
         const boxes = parcels.map(parcel => ({ parcel, box: turf.bbox(parcel) }));
         const started = Date.now();
-        const result = await count(records, { context, generator: root.__defaultFloorPlans, turf, region, cache: sharedCache, existing, standing,
+        const result = await count(records, { context, generator: root.__defaultFloorPlans, turf, region, cache: sharedCache, existing, standing, signal,
             parcelsNear: feature => {
                 const [w, s, e, n] = turf.bbox(feature);
                 return boxes.filter(({ box }) => box[0] <= e && box[2] >= w && box[1] <= n && box[3] >= s).map(({ parcel }) => parcel);

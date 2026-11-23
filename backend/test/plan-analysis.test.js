@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const turf = require('@turf/turf');
-const { prepare, planLand, explainRefusal, bindMembers } = require('../../frontend/js/plan-analysis.js');
+const { prepare, planLand, explainRefusal, bindMembers, localDeclaration } = require('../../frontend/js/plan-analysis.js');
 
 const snapshot = { cid: 'saved-plan', content: { title: 'Garden plan' },
     designs: [{ cid: 'saved-design', content: { title: 'Original garden' } }],
@@ -57,6 +57,20 @@ describe('a plan\'s land', () => {
     });
 });
 describe('exact plan analysis', () => {
+    it('groups browser binding by source and preserves member order', async () => {
+        const calls = [];
+        const members = [{ cid: 'a', content: {} }, { cid: 'b', content: {} }, { cid: 'c', content: {} }];
+        const result = await bindMembers(members, { sourceOf: member => member.cid === 'c' ? 'source-b' : 'source-a',
+            bindOnServer: vi.fn(), bindInBrowser: async (source, group) => { calls.push([source, group.length]); return group.map((_, i) => ({ source, parcels: [{ parcelId: `${source}-${i}` }] })); } });
+        expect(calls).toEqual([['source-a', 2], ['source-b', 1]]);
+        expect(result.map(row => row.parcels[0].parcelId)).toEqual(['source-a-0', 'source-a-1', 'source-b-0']);
+    });
+    it('stops before binding when cancellation is already requested', async () => {
+        const controller = new AbortController(); controller.abort();
+        const bind = vi.fn();
+        await expect(bindMembers([{ cid: 'a', content: {} }], { sourceOf: () => 'source-a', bindOnServer: bind, bindInBrowser: bind, signal: controller.signal })).rejects.toThrow();
+        expect(bind).not.toHaveBeenCalled();
+    });
     it('binds the saved member revision and its source, never a mutable local member', async () => {
         const deps = ports();
         const result = await prepare({ cid: snapshot.cid }, deps);
@@ -98,6 +112,13 @@ describe('exact plan analysis', () => {
         const deps = ports();
         await prepare(snapshot, { ...deps, declared: () => null });
         expect(deps.materialize.mock.calls[0][0].designs[0].parcelIds).toEqual(['A']);
+    });
+    it('uses the source for an unbound import and honors an authored empty scope', () => {
+        const imported = { cadastreParcelIds: [], planFileUnboundCid: 'imported', planFileSource: { sourceId: 'survey' } };
+        expect(localDeclaration(imported, 'imported')).toBeNull();
+        expect(localDeclaration({ ...imported, binding: { coverage: 'none' } }, 'imported')).toEqual([]);
+        expect(localDeclaration(imported, 'edited')).toEqual([]);
+        expect(localDeclaration({ cadastreParcelIds: [] }, 'authored')).toEqual([]);
     });
     it('retains open-ground members without inventing source parcels', async () => {
         const deps = ports(); deps.bind.mockResolvedValue({ coverage: 'none', parcels: [], unsurveyedM2: 200 });

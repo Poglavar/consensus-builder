@@ -258,6 +258,8 @@ the outlying geometry so the map can identify the affected area.
 
 The derived relationship between authored site geometry and a stated parcel source, including intersections, coverage and the intrusion tolerance used. A binding describes the source observed at calculation time, rather than altering the authored geometry.
 
+An imported design awaiting its first binding uses its plan's parcel source. An explicit local declaration of open ground has an empty parcel scope.
+
 ### Binding coverage
 
 The extent to which a site has represented cadastral coverage: `complete`, `partial`, `none` for confirmed lack of supported coverage, or `unknown` for unverified coverage. Unknown or failed source data cannot establish that the site is open ground.

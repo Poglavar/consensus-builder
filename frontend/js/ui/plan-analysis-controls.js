@@ -18,9 +18,9 @@
         return el;
     }
 
-    function stats(win, doc, getPlan) {
+    function stats(win, doc, getPlan, summary) {
         const control = button(win, doc, win.i18n.t('sidebar.proposals.planStats.modalTitle'),
-            async () => win.showPlanStatsModal(await getPlan(), { returnFocus: control }));
+            () => win.showPlanStatsModal(summary, { readPlan: getPlan, returnFocus: control }));
         const icon = doc.createElement('i');
         icon.className = 'fas fa-chart-pie';
         icon.setAttribute('aria-hidden', 'true');

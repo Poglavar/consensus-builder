@@ -6,6 +6,7 @@ const require=createRequire(import.meta.url);
 const PlanComposition=require('../../frontend/js/plan-composition.js');
 const PlanRecord=require('../../frontend/js/plan-record.js');
 const Cid=require('../../frontend/js/cid.js');
+const PlanAnalysis=require('../../frontend/js/plan-analysis.js');
 const square={type:'Polygon',coordinates:[[[15.96,45.8],[15.961,45.8],[15.961,45.801],[15.96,45.801],[15.96,45.8]]]};
 const design={proposalId:'local-1',goal:'park',title:'Pocket park',description:'',author:'Ana',city:'zagreb',site:square,toleranceM:.5,geometry:square,createdAt:'2026-10-21T10:00:00Z',structureProposal:{kind:'park',geometry:square,trees:3}};
 const snapshot=()=>PlanComposition.create('Parks',[design],{at:'45.8,15.96,17',mode:'2d',city:'zagreb',language:'en'});
@@ -17,6 +18,10 @@ function harness(overrides={}) {
   ProposalPublishTerms:{publishRefusal:()=>null},guestPolicyBlocks:vi.fn(()=>null),
   proposalStorage:{getAllProposals:()=>[],getProposal:()=>null},DesignRecord:{cidOf:()=>''},i18n:{t:(key,params)=>params?`${key} ${JSON.stringify(params)}`:key},
   fetch:vi.fn(async(url,options={})=>{calls.push(['fetch',url,options]);return {status:404,ok:false,json:async()=>({})}}),...overrides};
+ win.DesignSync.localDesignIndex = () => {
+  const records=win.proposalStorage.getAllProposals(), cids=new Map(records.map(record=>[record,win.DesignRecord.cidOf(record)]));
+  return {records,cids,byCid:new Map(records.map(record=>[cids.get(record),record]))};
+ };
  const context={window:win,CustomEvent:class{constructor(type){this.type=type}},AbortSignal,structuredClone,Map,Set,JSON,Error,String};
  vm.runInNewContext(readFileSync(new URL('../../frontend/js/plan-workspace.js',import.meta.url),'utf8'),context);
  return {api:win.PlanWorkspace,win,store,calls,events};
@@ -88,6 +93,7 @@ describe('plan workspace',()=>{
    CbDialog:{confirm:vi.fn(async()=>confirm)},__siteBinding:{siteOf:content=>content.site},turf:{},
    handleSharedDesignRoute:vi.fn(async()=>{state.applied=!route.blocked&&!route.failed;return {blocked:!!route.blocked,failed:route.failed||[],omitted:[],localIds:new Map()};}),
    fetch:vi.fn(async()=>({ok:true,json:async()=>({binding:{parcels:[]}})}))});
+  h.win.PlanAnalysis=PlanAnalysis.browser(h.win);
   return {...h,row,cid};
  }
  it('applies a previewed private plan from its carried revisions, a published one from the index',async()=>{

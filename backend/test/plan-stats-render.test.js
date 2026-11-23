@@ -8,7 +8,7 @@
 //
 // The fake DOM is deliberately tiny: create/append/setAttribute, plus the three querySelector forms
 // this dialog uses. It is not a browser; it is enough surface for the file to run on.
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -136,7 +136,8 @@ function openDialog(proposals, options = {}) {
         globalThis: window,
         document: window.document,
         proposalStorage: window.proposalStorage,
-        console
+        console,
+        AbortController
     });
     return window;
 }
@@ -205,6 +206,14 @@ describe('opening the dialog', () => {
 
         expect(slot(window, 'scope')).toContain('Garden plan');
         expect(slot(window, 'scope')).toContain('4');
+    });
+
+    it('opens first with the exact member count for a large plan', async () => {
+        const members = Array.from({ length: 113 }, (_, index) => block(`member-${index}`));
+        const window = openDialog(members);
+        await window.showPlanStatsModal({ content: { title: 'Courtyard' } });
+        expect(slot(window, 'scope')).toContain('Courtyard');
+        expect(slot(window, 'scope')).toContain('113');
     });
 
     it('agrees with plan-yield rather than computing its own answer', async () => {
@@ -358,6 +367,22 @@ describe('comparing plans', () => {
     const rowsOf = table => table.children.map(tr => tr.children.map(textOf));
     const tableOf = window => window.openedDialog.body.querySelectorAll('[data-plan-compare]')[0]
         || (function find(node) { if (node.dataset?.planCompare) return node; for (const child of node.children) { const hit = find(child); if (hit) return hit; } return null; })(window.openedDialog.body);
+
+    it('cancels delayed comparison preparation without allowing stale completion', async () => {
+        const window = openDialog(plan);
+        let fastResolve, slowResolve;
+        window.PlanAnalysis.prepare = vi.fn(p => new Promise(resolve => {
+            if (p.content.title === 'Fast') fastResolve = resolve; else slowResolve = resolve;
+        }));
+        const pending = window.comparePlanStats([{ cid: 'fast', content: { title: 'Fast' } }, { cid: 'slow', content: { title: 'Slow' } }]);
+        await new Promise(resolve => setImmediate(resolve));
+        expect(window.PlanAnalysis.prepare).toHaveBeenCalledTimes(2);
+        window.openedDialog.onClose();
+        fastResolve({ plan: { content: { title: 'Fast' } }, records: [], materializedFeatures: [], cadastralFeatures: [], landFeature: null, corridorFeatures: [] });
+        slowResolve({ plan: { content: { title: 'Slow' } }, records: [], materializedFeatures: [], cadastralFeatures: [], landFeature: null, corridorFeatures: [] });
+        await pending;
+        expect(window.openedDialog.onClose).toBeTypeOf('function');
+    });
 
     it('shows every plan’s figures in its own column, and swaps to plans as rows', async () => {
         const window = openDialog(plan);

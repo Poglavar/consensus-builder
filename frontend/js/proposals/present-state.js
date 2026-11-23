@@ -401,12 +401,14 @@
 
         // The ground of a prepared plan (PlanAnalysis.prepare) over its land: its public and private
         // land, the existing buildings it leaves standing and the ones it clears (clearanceSplit).
-        async function groundOf(snapshot, { floorHeightM = 3 } = {}) {
+        async function groundOf(snapshot, { floorHeightM = 3, signal } = {}) {
+            signal?.throwIfAborted();
             const landFeature = snapshot.landFeature;
             if (!landFeature) return { land: { publicLandM2: null, privateLandM2: null }, remaining: [], cleared: [] };
             const box = bboxOf([landFeature]);
             const parcels = clipToLand(snapshot.cadastralFeatures, landFeature, ops);
             const [spaces, isRoad, existing] = await Promise.all([publicSpaces(box), roadTest(box), existingOn(parcels, floorHeightM)]);
+            signal?.throwIfAborted();
             const land = splitLand({ pieces: clipToLand(snapshot.materializedFeatures, landFeature, ops),
                 corridors: clipToLand(snapshot.corridorFeatures, landFeature, ops), cadastral: parcels, isRoad, spaces, ops });
             const { remaining, cleared } = clearanceSplit({ built: existing, regions: demolitionGround(snapshot), ops });

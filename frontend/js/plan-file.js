@@ -270,7 +270,7 @@
             const record = { proposalId: key, goal: c.goal, title: c.title, name: c.title,
                 description: c.description, author: c.author, city: c.city, site: c.site,
                 toleranceM: c.toleranceM, geometry: c.geometry, origin: c.origin,
-                createdAt: c.authoredAt, lifecycleStatus: 'draft', applied: false, cadastreParcelIds: [],
+                createdAt: c.authoredAt, lifecycleStatus: 'draft', applied: false, cadastreParcelIds: [], planFileUnboundCid: row.cid,
                 ...(file.designSources[row.cid] ? { planFileSource: clone(file.designSources[row.cid]) } : {}) };
             api('DesignRecord').PAYLOAD_KEYS.forEach(key => { if (c[key]) record[key] = c[key]; });
             const stored = store.importProposal(record, { overwrite: false, deferSave: true });

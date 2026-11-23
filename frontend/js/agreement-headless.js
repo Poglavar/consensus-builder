@@ -7,7 +7,7 @@
 })(typeof window !== 'undefined' ? window : globalThis, function (root) {
     'use strict';
     const openGround = root.__openGround || (typeof require === 'function' ? require('./proposals/open-ground.js') : null);
-    async function materialize({ designs, parcels }) {
+    async function materialize({ designs, parcels, signal }) {
         const turf = root.turf;
         const fabric = root.createLiveParcelFabric({ geometry: turf });
         const mutation = fabric.beginMutation({ kind: 'mcp-ground' });
@@ -45,7 +45,13 @@
         const roadPieces = source.flatMap(parcel => root.__parcelArrangement.arrangementOf(parcel, parcel.properties.parcelId, roads).pieces
             .map(piece => root.__parcelArrangement.featureForPiece(piece, parcel)));
         mutation.replaceCadastreScope([...originals.keys()], roadPieces);
+        let slice = Date.now();
         for (const row of root.__planOrder.orderFormations(rows)) {
+            if (root.document && Date.now() - slice >= 8) {
+                await new Promise(resolve => setTimeout(resolve, 0));
+                slice = Date.now();
+            }
+            signal?.throwIfAborted();
             if (!row.cadastreParcelIds.length) continue;
             const formation = await formationOptions(row);
             if (row.parcelLayout) {

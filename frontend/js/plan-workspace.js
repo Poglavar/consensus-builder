@@ -4,12 +4,20 @@
     const key = cid => `plan:${cid}`;
     const backend = () => win.DesignSync.apiBase();
     const copy = value => structuredClone(value);
+    // Cache proof of the exact stored bytes. Each caller still receives its own plan object.
+    const verified = new Map();
+    function rememberVerified(cid, serialized) {
+        verified.set(cid, serialized);
+        if (verified.size > 8) verified.delete(verified.keys().next().value);
+    }
     function save(row) {
         win.PlanComposition.validate(row);
         const previous = win.PersistentStorage.getItem(key(row.cid));
         const createdAt = previous ? JSON.parse(previous).createdAt : (row.published ? row.createdAt : new Date().toISOString());
         const saved = { ...row, createdAt };
-        win.PersistentStorage.setItem(key(row.cid), JSON.stringify(saved));
+        const serialized = JSON.stringify(saved);
+        win.PersistentStorage.setItem(key(row.cid), serialized);
+        rememberVerified(row.cid, serialized);
         win.dispatchEvent(new CustomEvent('planschange'));
         return saved;
     }
@@ -29,12 +37,15 @@
         const cached = win.PersistentStorage.getItem(key(plan.cid));
         const row = cached ? JSON.parse(cached) : plan;
         if (Array.isArray(row.designs)) {
-            win.PlanComposition.validate(row);
+            if (!cached || verified.get(plan.cid) !== cached) {
+                win.PlanComposition.validate(row);
+                if (cached) rememberVerified(plan.cid, cached);
+            }
             return plan.published && (!row.published || (!row.publishedAt && plan.publishedAt))
                 ? save({ ...row, published: true, publishedAt: row.publishedAt || plan.publishedAt }) : row;
         }
-        const available = new Map();
-        for (const record of [...win.proposalStorage.getAllProposals(), ...members]) {
+        const available = new Map(win.DesignSync.localDesignIndex().byCid);
+        for (const record of members) {
             try { available.set(win.DesignRecord.cidOf(record), record); }
             catch (_) { /* Unrelated incomplete drafts are not members of this exact snapshot. */ }
         }
@@ -89,40 +100,31 @@
     }
     // Designs of the plan the map does not hold applied, by title, for a refusal that names them.
     function missingTitles(plan) {
-        const records = win.proposalStorage.getAllProposals();
-        return plan.content.designCids.filter(cid => !records.some(record => win.isApplied(record) && cidOrNull(record) === cid))
-            .map(cid => records.find(record => cidOrNull(record) === cid)?.title
+        const { byCid } = win.DesignSync.localDesignIndex();
+        return plan.content.designCids.filter(cid => !byCid.has(cid) || !win.isApplied(byCid.get(cid)))
+            .map(cid => byCid.get(cid)?.title
                 || (plan.designs || []).find(member => member.cid === cid)?.content?.title || win.i18n.t('planDialog.untitledDesign'));
     }
-    function cidOrNull(record) { try { return win.DesignRecord.cidOf(record); } catch (_) { return null; } }
     // The plan's members as applied local designs, or null while it is only previewed here.
     function appliedMembers(plan) {
-        return win.PlanComposition.appliedMembers(plan.content.designCids, win.proposalStorage.getAllProposals(),
-            { cidOf: record => win.DesignRecord.cidOf(record), isApplied: record => win.isApplied(record) });
+        const { byCid } = win.DesignSync.localDesignIndex();
+        const members = plan.content.designCids.map(cid => byCid.get(cid));
+        return members.length && members.every(record => record && win.isApplied(record)) ? members : null;
     }
     // The plan's members standing on the map here, any number of them (PlanComposition.standingMembers).
     function standingMembers(plan) {
-        return win.PlanComposition.standingMembers(plan.content.designCids, win.proposalStorage.getAllProposals(),
-            { cidOf: record => win.DesignRecord.cidOf(record), isApplied: record => win.isApplied(record) });
+        const { records, cids } = win.DesignSync.localDesignIndex();
+        return win.PlanComposition.standingMembers(plan.content.designCids, records,
+            { cidOf: record => cids.get(record), isApplied: record => win.isApplied(record) });
     }
-    // Applies the plan's exact revisions. A published plan's come from the design index; a private
-    // one's from the revisions it carries, which the index does not hold. Returns { blocked: true }
-    // when the visitor declined a conflict with designs already applied; throws when a member fails.
-    async function apply(plan) {
-        const draftRows = new Map();
-        for (const member of plan.published ? [] : plan.designs || []) {
-            const content = member.content;
-            const parcelSourceId = win.DesignSync.parcelSourceIdOf(content.city, content.site);
-            const response = await win.fetch(backend() + '/designs/binding', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
-                    city: content.city, site: win.__siteBinding.siteOf(content, { turf: win.turf }),
-                    toleranceM: content.toleranceM, parcelSourceId })
-            });
-            const answer = await response.json();
-            if (!response.ok) throw new Error(win.i18n.t('planDialog.groundFailed', { title: content.title || win.i18n.t('planDialog.untitledDesign'),
-                reason: answer.error || `HTTP ${response.status}` }));
-            draftRows.set(member.cid, { cid: member.cid, content, city: content.city, parcelSourceId, binding: answer.binding });
-        }
+    // Bind the declared member sources together, then replay through the same ordered
+    // mutation as published designs. No map changes take place during binding.
+    async function apply(plan, { signal, onProgress } = {}) {
+        const members = plan.published ? [] : (plan.designs || []).map(member => ({
+            ...member, source: plan.designSources?.[member.cid]
+        }));
+        const draftRows = members.length ? await win.PlanAnalysis.bindPrivateRows(members, { signal, onProgress }) : new Map();
+        signal?.throwIfAborted();
         const result = await win.handleSharedDesignRoute(plan.content.designCids, {
             ...(draftRows.size ? { draftRows } : {}), openDetails: false, enter3D: false, summary: false });
         if (result.blocked) return { blocked: true };

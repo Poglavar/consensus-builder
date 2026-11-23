@@ -47,19 +47,13 @@
             const checked = root.DesignRecord.validate(content);
             if (!checked.valid) throw new Error(checked.errors[0].message);
         }
-        const apiBase = root.DesignSync.apiBase();
-        progress({ done: 0, total: designs.length });
-        const bound = await root.DraftLink.mapLimit(designs, root.DraftLink.CONCURRENCY, async content => {
+        const members = designs.map(content => {
             const cid = root.Cid.cidOfObject(content);
-            const parcelSourceId = artifact.designSources?.[cid] || artifact.parcelSourceId || root.DesignSync.parcelSourceIdOf(content.city);
-            const response = await root.fetch(`${apiBase}/designs/binding`, { method: 'POST',
-                headers: { 'content-type': 'application/json' }, body: JSON.stringify({ site: root.__siteBinding.siteOf(content, { turf: root.turf }), city: content.city,
-                    toleranceM: content.toleranceM, parcelSourceId }) });
-            const binding = await response.json();
-            if (!response.ok) throw new Error(binding.error || binding.code || 'Draft ground is unavailable');
-            return { cid, content, city: content.city, parcelSourceId, binding: binding.binding };
-        }, (done, total) => progress({ done, total }));
-        return { artifact, collection, rows: new Map(bound.map(row => [row.cid, row])) };
+            const sourceId = artifact.designSources?.[cid] || artifact.parcelSourceId;
+            return { cid, content, source: sourceId ? { sourceId } : null };
+        });
+        const rows = await root.PlanAnalysis.bindPrivateRows(members, { onProgress: progress });
+        return { artifact, collection, rows };
     }
     // Applies the bound designs as shared designs are applied, then opens the plan or agreement.
     async function applyDraft({ artifact, collection, rows }) {
