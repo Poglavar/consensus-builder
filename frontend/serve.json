@@ -14,7 +14,7 @@
         { "source": "/designs/**", "destination": "/index.html" },
         { "source": "/agreements/**", "destination": "/index.html" },
         { "source": "/property-offers/**", "destination": "/index.html" },
-        { "source": "/plans/**", "destination": "/index.html" },
+        { "source": "/plans/**", "destination": "/plan-entry.html" },
         { "source": "/proposal/**", "destination": "/index.html" },
         { "source": "/parcel/**", "destination": "/index.html" },
         { "source": "/bets/**", "destination": "/index.html" }

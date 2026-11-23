@@ -21,13 +21,16 @@
         const arrivalHref = win.location.href;
         const routeCid = parsePath(win.location.pathname);
         let current = null;
+        // A compact-link arrival can be observed by both the route bootstrap and the
+        // proposal router. Share the one verified read (and cache its result for this page).
+        const planReads = new Map();
         const t = (key, fallback, params) => win.getProposalI18nHelper()(key, fallback, params);
         const observe = (operation, options, action) => {
             const observation = { ...options, context: { surface: 'named-plan' } };
             return win.AppDiagnostics
                 ? win.AppDiagnostics.run(operation, observation, () => action(observation)) : action(observation);
         };
-        const backend = () => win.resolveBackendBaseUrl().replace(/\/$/, '');
+        const backend = () => (win.getBackendBase?.() || win.resolveBackendBaseUrl()).replace(/\/$/, '');
         const verify = (row, cid) => {
             const error = win.PlanRecord.validate(row?.content);
             if (error || row?.cid !== cid || win.Cid.cidOfObject(row.content) !== cid) throw new Error(error || 'The saved plan does not match its link.');
@@ -66,7 +69,16 @@
         }
         async function fetchPlan(cid) {
             if (!win.Cid.isCid(cid)) throw new Error('Invalid plan link.');
-            return verify(await request('GET', `/plans/${cid}`), cid);
+            const base = backend(), key = base + '/' + cid;
+            const arrival = win.compactPlanArrival;
+            if (arrival?.record.cid === cid && arrival.base === base) return arrival.record;
+            if (!planReads.has(key)) {
+                planReads.set(key, request('GET', `/plans/${cid}`).then(row => verify(row, cid)).catch(error => {
+                    planReads.delete(key);
+                    throw error;
+                }));
+            }
+            return planReads.get(key);
         }
         function link(cid) {
             const url = new URL(`/plans/${cid}`, win.resolveFrontendBaseUrl());
@@ -74,20 +86,15 @@
             if (apiOverride) url.searchParams.set('backend', apiOverride);
             return url.href;
         }
-        // Resolve a compact link before route application. A one-time reload supplies the saved
-        // city/locale/view to the existing bootstrap, which reads them synchronously. No marker,
-        // temporary link or session storage is needed; explicit query overrides remain usable.
-        const arrive = () => routeCid ? fetchPlan(routeCid).then(record => {
-            const restored = restoreUrl(arrivalHref, record.content.view, win.MapShare);
-            if (restored !== new URL(arrivalHref).href) {
-                win.location.replace(restored);
-                return { redirecting: true };
-            }
-            return { record };
-        }).catch(error => ({ error })) : null;
+        const arrive = () => routeCid ? fetchPlan(routeCid).then(record => ({ record })).catch(error => ({ error })) : null;
         return {
             link,
             fetchPlan,
+            async resolveEntry() {
+                const record = await fetchPlan(routeCid);
+                win.history.replaceState(win.history.state, '', restoreUrl(arrivalHref, record.content.view, win.MapShare));
+                return { record, base: backend() };
+            },
             remember,
             // An /agreements link arrives at its plan's saved view as a /plans link does: one reload when
             // the view adds anything the arrival address does not state (agreement-sync.js). True while
@@ -126,7 +133,7 @@
             },
             async open() {
                 const result = await arrive();
-                if (!result || result.redirecting) return;
+                if (!result) return;
                 if (result.error) {
                     const diagnostic = win.AppDiagnostics?.report(result.error, { code: 'plan-open-failed', context: { surface: 'named-plan' } });
                     win.showStyledAlert(diagnostic?.message || 'The named plan could not be opened. Check the link and retry.', { title: t('proposals.share.named.openFailed', 'The named plan could not be opened') });

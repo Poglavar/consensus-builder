@@ -216,14 +216,52 @@ function keepHashedBundlesCacheable(index) {
     if (first < 0 || index.indexOf(signature, first + signature.length) >= 0) {
         throw new Error('Expected one appendBuildToken(path) function in index.html');
     }
-    const insertion = `${signature}\n                if (/^js\\/bundles\\/[^/]+\\.[a-f0-9]{16}\\.js$/.test(path)) return path;`;
+    const insertion = `${signature}\n                if (/^js\\/bundles\\/[^/]+\\.[a-f0-9]{16}\\.js$/.test(path)) return path;\n                if (/^(?:css\\/bundles\\/[^/]+\\.[a-f0-9]{16}\\.css|i18n\\/[^/]+\\.[a-f0-9]{16}\\.json)$/.test(path)) return path;`;
     return index.replace(signature, insertion);
+}
+
+function findCssFiles(index) {
+    const match = /var cssFiles = \[([\s\S]*?)\];/.exec(index);
+    if (!match) return [];
+    return [...match[1].matchAll(/'([^']+)'/g)].map(item => item[1]);
+}
+
+function bundleCss(cssFiles, sourceRoot) {
+    const content = cssFiles.map(entry => {
+        const file = path.resolve(sourceRoot, entry.split('?')[0]);
+        if (!file.startsWith(`${path.resolve(sourceRoot)}${path.sep}`)) throw new Error(`CSS path escapes frontend source: ${entry}`);
+        let css = fs.readFileSync(file, 'utf8');
+        const directory = path.posix.dirname(entry.split('?')[0]);
+        css = css.replace(/url\(\s*(['"]?)([^)'"\s]+)\1\s*\)/g, (all, quote, value) => {
+            if (/^(?:data:|https?:|\/|#)/.test(value)) return all;
+            const resolved = path.posix.normalize(path.posix.join('../../', directory, value));
+            return `url(${quote}${resolved}${quote})`;
+        });
+        return `/* source: ${entry} */\n${css}`;
+    }).join('\n');
+    const hash = crypto.createHash('sha256').update(content).digest('hex').slice(0, 16);
+    return { path: `css/bundles/app.${hash}.css`, content };
 }
 
 function markStageIndex(index) {
     const doctype = /<!doctype\s+html\s*>/i;
     if (doctype.test(index)) return index.replace(doctype, match => `${match}\n${STAGE_MARKER}`);
     return `${STAGE_MARKER}\n${index}`;
+}
+
+function hashedAssets(sourceRoot, outputDir, directory, extension, include) {
+    const paths = {};
+    if (!fs.existsSync(path.join(sourceRoot, directory))) return paths;
+    for (const file of fs.readdirSync(path.join(sourceRoot, directory))) {
+        const relative = `${directory}/${file}`;
+        if (!file.endsWith(extension) || !include(relative)) continue;
+        const content = fs.readFileSync(path.join(sourceRoot, relative));
+        const hash = crypto.createHash('sha256').update(content).digest('hex').slice(0, 16);
+        const target = `${relative.slice(0, -extension.length)}.${hash}${extension}`;
+        fs.writeFileSync(path.join(outputDir, target), content);
+        paths[relative] = target;
+    }
+    return paths;
 }
 
 function countPaths(arrays) { return arrays.reduce((count, array) => count + array.items.length, 0); }
@@ -265,6 +303,8 @@ function buildStatic(sourceRoot, outputDir) {
     const beforeCount = countPaths(arrays);
     const replacements = [];
     const outputBundles = [];
+    const cssFiles = findCssFiles(originalIndex);
+    const cssBundle = cssFiles.length ? bundleCss(cssFiles, sourceRoot) : null;
 
     for (const group of groups) {
         const content = bundleSource(group, sourceRoot);
@@ -282,6 +322,7 @@ function buildStatic(sourceRoot, outputDir) {
     });
 
     rewrittenIndex = markStageIndex(keepHashedBundlesCacheable(rewrittenIndex));
+    if (cssBundle) rewrittenIndex = rewrittenIndex.replace(/var cssFiles = \[[\s\S]*?\];/, `var cssFiles = ['${cssBundle.path}'];`);
 
     prepareOutputDirectory(outputDir);
     // data/city-configs.js is the source every city file is generated from; the browser never loads it.
@@ -291,17 +332,38 @@ function buildStatic(sourceRoot, outputDir) {
         filter: source => path.basename(source) !== 'build-static.cjs' && path.resolve(source) !== indexPath
             && path.resolve(source) !== cityConfigsSource
     });
-    fs.writeFileSync(path.join(outputDir, 'index.html'), rewrittenIndex);
     const bundleDir = path.join(outputDir, 'js/bundles');
     fs.mkdirSync(bundleDir, { recursive: true });
     for (const bundle of outputBundles) {
         fs.writeFileSync(path.join(outputDir, bundle.path), bundle.content);
     }
+    if (cssBundle) {
+        fs.mkdirSync(path.join(outputDir, 'css/bundles'), { recursive: true });
+        fs.writeFileSync(path.join(outputDir, cssBundle.path), cssBundle.content);
+    }
+    const bootStyles = new Set(cssFiles.map(file => file.split('?')[0]));
+    const styles = hashedAssets(sourceRoot, outputDir, 'css', '.css', file => !bootStyles.has(file));
+    const languages = hashedAssets(sourceRoot, outputDir, 'i18n', '.json', () => true);
+    const assets = Object.fromEntries(Object.entries(languages).map(([file, url]) => [path.basename(file, '.json'), url]));
+    // The compact route can show progress and offer retry before loading a full dictionary.
+    const planEntry = path.join(outputDir, 'plan-entry.html');
+    if (fs.existsSync(planEntry)) {
+        const words = {};
+        for (const [lang, url] of Object.entries(assets)) {
+            const dictionary = JSON.parse(fs.readFileSync(path.join(outputDir, url), 'utf8'));
+            words[lang] = [dictionary.common?.busy?.loading, dictionary.bets?.retry, dictionary.proposals?.share?.named?.openFailed];
+        }
+        const page = fs.readFileSync(planEntry, 'utf8').replace('id="plan-entry-words">{}',
+            'id="plan-entry-words">' + JSON.stringify(words).replace(/</g, '\\u003c'));
+        fs.writeFileSync(planEntry, page);
+    }
+    rewrittenIndex = rewrittenIndex.replace('</head>', `<script>window.__I18N_ASSETS=${JSON.stringify(assets)};window.__CSS_ASSETS=${JSON.stringify(styles)};</script></head>`);
+    fs.writeFileSync(path.join(outputDir, 'index.html'), rewrittenIndex);
 
     const afterArrays = findScriptArrays(rewrittenIndex);
     const afterCount = countPaths(afterArrays);
     const reduction = beforeCount - afterCount;
-    return { beforeCount, afterCount, reduction, bundles: outputBundles.map(item => item.path) };
+    return { beforeCount, afterCount, reduction, bundles: [...outputBundles.map(item => item.path), ...(cssBundle ? [cssBundle.path] : [])] };
 }
 
 if (require.main === module) {

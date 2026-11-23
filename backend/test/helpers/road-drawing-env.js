@@ -3,7 +3,8 @@
 // store and a parcel-mutation stub, with the real pure modules (footprint, metric frame, geometry,
 // profile, tunnels, stroke reducer, draft store) as the tool's collaborators. Each loadRoadDrawing()
 // requires a fresh copy of the tool, so its session state starts clean; dispose() restores globalThis.
-import { createRequire } from 'node:module';
+import Module, { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
 
 const require = createRequire(import.meta.url);
 const FRONTEND = '../../../frontend/js/';
@@ -289,6 +290,7 @@ export function loadRoadDrawing(options = {}) {
     const before = new Map(Object.getOwnPropertyNames(globalThis)
         .map(name => [name, Object.getOwnPropertyDescriptor(globalThis, name)]));
     const g = globalThis;
+    g.requestAnimationFrame = callback => { queueMicrotask(() => callback(Date.now())); return 1; };
     const statuses = [];
     const document = makeDocument();
     const map = makeMap();
@@ -374,8 +376,13 @@ export function loadRoadDrawing(options = {}) {
     };
     Object.entries(installs).forEach(([name, value]) => { g[name] = value; });
 
-    delete require.cache[ROAD_DRAWING_PATH];
-    const api = require(ROAD_DRAWING_PATH);
+    // The eager and optional classic scripts share one lexical environment in the browser.
+    const roadModule = new Module(ROAD_DRAWING_PATH);
+    roadModule.filename = ROAD_DRAWING_PATH;
+    roadModule.require = createRequire(ROAD_DRAWING_PATH);
+    const shared = readFileSync(require.resolve(`${FRONTEND}road-shared.js`), 'utf8');
+    roadModule._compile(shared + '\n' + readFileSync(ROAD_DRAWING_PATH, 'utf8'), ROAD_DRAWING_PATH);
+    const api = roadModule.exports;
 
     const env = {
         api,

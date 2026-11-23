@@ -185,11 +185,16 @@ for config_file in carto-config.js rpc-config.js; do
     mv -f "$CONFIG_INCOMING/$config_file" "$DOCROOT/$config_file"
 done
 rsync -a --delete \
+    --filter='protect /css/*.*.css' --filter='protect /css/bundles/*.*.css' --filter='protect /i18n/*.*.json' \
     --exclude='.git' --exclude='.gitignore' --exclude='node_modules' --exclude='.DS_Store' \
     --exclude='deploy-frontend.sh' --exclude='rollback-frontend.sh' \
     --exclude='Dockerfile' --exclude='.env' --exclude='.deploy-build-counter' \
     --exclude='/carto-config.js' --exclude='/rpc-config.js' \
     "$STAGING_DIR/" "$DOCROOT/"
+# A tab opened before a release can still request a critic's style or switch language.
+# Current files get the staging build's mtime. Retire only content-hashed, unused assets.
+find "$DOCROOT/css" "$DOCROOT/i18n" -regextype posix-extended -type f \
+    -regex '.*\.[0-9a-f]{16}\.(css|json)' -mtime +30 -delete
 # Excluded destination files survive rsync --delete. Remove exact deployment artefacts that an
 # older deployment may already have copied into the public docroot.
 rm -f \

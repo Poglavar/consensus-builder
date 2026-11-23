@@ -94,6 +94,32 @@ describe('production static frontend build', () => {
         rmSync(temp, { recursive: true, force: true });
     });
 
+    it('keeps stylesheet order and relative images and names optional styles and dictionaries by content', () => {
+        const source = makeTempRoot('cb-static-assets-'), output = makeTempRoot('cb-built-assets-');
+        try {
+            fixtureFrontend(source);
+            const entry = path.join(source, 'index.html');
+            writeFileSync(entry, readFileSync(entry, 'utf8').replace('<script>', `<head><script>var cssFiles = ['css/a.css', 'css/b.css'];</script></head><script>`));
+            mkdirSync(path.join(source, 'css'));
+            mkdirSync(path.join(source, 'i18n'));
+            writeFileSync(path.join(source, 'css/a.css'), 'a{background:url(../images/icon.png)}');
+            writeFileSync(path.join(source, 'css/b.css'), 'a{color:blue}');
+            writeFileSync(path.join(source, 'css/critic.css'), 'aside{display:grid}');
+            writeFileSync(path.join(source, 'i18n/en.json'), '{"hello":"Hello"}');
+            buildStatic(source, output);
+            const index = readFileSync(path.join(output, 'index.html'), 'utf8');
+            const css = index.match(/css\/bundles\/app\.[a-f0-9]{16}\.css/)[0];
+            expect(readFileSync(path.join(output, css), 'utf8')).toMatch(/url\(\.\.\/\.\.\/images\/icon\.png\)[\s\S]+color:blue/);
+            for (const pattern of [/css\/critic\.[a-f0-9]{16}\.css/, /i18n\/en\.[a-f0-9]{16}\.json/]) {
+                const asset = index.match(pattern)[0];
+                expect(existsSync(path.join(output, asset))).toBe(true);
+            }
+        } finally {
+            rmSync(source, { recursive: true, force: true });
+            rmSync(output, { recursive: true, force: true });
+        }
+    });
+
     it('automatically bundles a new safe script added only to a marked index run', () => {
         const temp = makeTempRoot('cb-static-inventory-');
         const source = path.join(temp, 'source');

@@ -66,7 +66,7 @@ describe('road drawing finalization contract', () => {
     it('loads the finalization gate before the drawing script', () => {
         expect(indexSource.indexOf("'js/road-finalization-state.js'")).toBeGreaterThanOrEqual(0);
         expect(indexSource.indexOf("'js/road-finalization-state.js'"))
-            .toBeLessThan(indexSource.indexOf("'js/road-drawing-loader.js'"));
+            .toBeLessThan(indexSource.indexOf("'js/road-shared.js'"));
     });
 
     it('ignores key repeat and funnels every finish trigger through one gate', async () => {

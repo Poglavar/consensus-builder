@@ -1340,13 +1340,15 @@
         async open(opts) {
             if (view) return;
             const options = opts || {};
-            const ok = await global.whenThreeReady();
-            if (!ok || !global.THREE) throw new Error('WorldView: three.js failed to load');
+            // Coverage is independent of Three.js. Start both reads at the same time so a
+            // slow CDN module cannot hold the (1.6 MB) world index behind it.
             if (!coveragePromise) coveragePromise = global.WorldCoverage.load(options.coverageUrl);
-            let coverage;
-            try { coverage = await coveragePromise; } catch (error) { coveragePromise = null; throw error; }
+            const [three, coverage] = await Promise.all([
+                global.whenThreeCoreReady(),
+                coveragePromise.catch(error => { coveragePromise = null; throw error; })
+            ]);
             if (view) return;
-            view = createView(global.THREE, coverage, options);
+            view = createView(three, coverage, options);
             WorldView.coverage = coverage;
             // Take focus like a dialog does, so Escape and the arrow keys reach the globe at once
             // (focus was on whatever opened it, now covered: the city chip, a Settings button).

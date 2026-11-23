@@ -76,17 +76,14 @@
     function startParcelTransportTool(toolKey) {
         const key = String(toolKey || '').trim();
         if (key === 'road') {
-            global.requestRoadDrawTool?.();
-            return;
+            return global.requestRoadDrawTool?.();
         }
         if (key === 'roadInParcel') {
             // The parcels are read now: opening a map tool clears the selection.
-            global.RoadInParcel?.openForParcels(parcelBuildSelectionIds());
-            return;
+            return global.RoadInParcel?.openForParcels(parcelBuildSelectionIds());
         }
         if (key === 'track') {
-            global.requestTrackDrawTool?.();
-            return;
+            return global.requestTrackDrawTool?.();
         }
         const stationType = PARCEL_TRANSPORT_TOOLS.find(tool => tool.key === key)?.stationType;
         if (stationType === 'track') return global.chooseTrackStationType?.();
@@ -265,7 +262,7 @@
                 const stationAttribute = tool.stationType ? ` data-station-type="${tool.stationType}" aria-pressed="false"` : '';
                 return `
                     <button type="button" class="cb-tile parcel-build-btn parcel-transport-btn parcel-transport-btn--${tool.key}"
-                        onclick="${options.transportHandler || 'startParcelTransportTool'}('${tool.key}')"${stationAttribute}
+                        onclick="BusyControl.track(this, () => ${options.transportHandler || 'startParcelTransportTool'}('${tool.key}'))"${stationAttribute}
                         title="${title}" aria-label="${title}">
                         <i class="cb-tile__icon fas ${tool.icon}" aria-hidden="true"></i>
                         <span class="cb-tile__label">${label}</span>

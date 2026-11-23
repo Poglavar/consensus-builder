@@ -211,14 +211,19 @@ describe('named plan browser transport', () => {
         const altered = client(async () => Response.json({ cid, content: { ...content, title: 'Changed' } }));
         await expect(altered.save(content)).rejects.toThrow('does not match');
     });
-    it('waits for route startup before using helpers loaded later in the page', async () => {
+    it('restores a compact arrival in place and reuses its verified record in the app', async () => {
         const location = new URL(`https://app.example/plans/${cid}`);
-        location.replace = vi.fn();
-        const win = { location, PlanRecord, Cid, MapShare, fetch: vi.fn(async () => Response.json({ cid, content })) };
+        const history = { state: {}, replaceState: vi.fn() };
+        const win = { location, history, PlanRecord, Cid, MapShare, fetch: vi.fn(async () => Response.json({ cid, content })) };
         const api = NamedPlans.browser(win);
         expect(win.fetch).not.toHaveBeenCalled();
         win.resolveBackendBaseUrl = () => 'https://api.example';
-        await api.open();
-        expect(location.replace).toHaveBeenCalledWith(expect.stringContaining('city=birmingham'));
+        win.compactPlanArrival = await api.resolveEntry();
+        expect(history.replaceState).toHaveBeenCalledWith(history.state, '', expect.stringContaining('city=birmingham'));
+        expect(await NamedPlans.browser(win).fetchPlan(cid)).toEqual({ cid, content });
+        expect(win.fetch).toHaveBeenCalledTimes(1);
+        win.resolveBackendBaseUrl = () => 'https://second.example';
+        await NamedPlans.browser(win).fetchPlan(cid);
+        expect(win.fetch).toHaveBeenCalledTimes(2);
     });
 });

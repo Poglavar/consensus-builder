@@ -25,7 +25,7 @@
         if (!lang) return Promise.resolve(false);
         if (!pending.has(lang)) {
             const request = (async () => {
-                const url = `i18n/${lang}.json?v=${encodeURIComponent(cacheBust)}`;
+                const url = window.__I18N_ASSETS?.[lang] || `i18n/${lang}.json?v=${encodeURIComponent(cacheBust)}`;
                 const response = await fetch(url, { credentials: 'same-origin', signal: AbortSignal.timeout(15000) });
                 if (!response.ok) throw new Error(`Failed to load ${lang}: ${response.status} ${response.statusText}`);
                 const entries = flattenTranslations(await response.json());

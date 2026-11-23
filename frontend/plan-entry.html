@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="/">
+    <title>Consensus Builder</title>
+    <link rel="stylesheet" href="css/primitives.css">
+    <script src="js/browser-workspace.js"></script>
+    <script src="js/workspace-screen.js"></script>
+</head>
+<body>
+    <script>WorkspaceScreen.bodyReached();</script>
+    <main>
+        <p role="status" id="plan-arrival-status">Loading…</p>
+        <button type="button" class="btn" id="plan-arrival-retry" hidden>Try again</button>
+    </main>
+    <script src="js/environment.js"></script>
+    <script src="js/data-source.js"></script>
+    <script src="vendor/noble-hashes-1.8.0/sha256.js"></script>
+    <script src="vendor/ipfs-file-cid/ipfs-file-cid.js"></script>
+    <script src="js/cid.js"></script>
+    <script src="js/plan-record.js"></script>
+    <script src="js/map-share.js"></script>
+    <script src="js/named-plans.js"></script>
+    <script src="js/ui/busy-control.js"></script>
+    <script type="application/json" id="plan-entry-words">{}</script>
+    <script src="js/plan-entry.js"></script>
+</body>
+</html>

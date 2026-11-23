@@ -11,6 +11,7 @@ const lists = read('../../frontend/js/lists-panel.js');
 const controls = read('../../frontend/js/ui/plan-analysis-controls.js');
 const memberships = read('../../frontend/js/design-memberships.js');
 const scoreSource = read('../../frontend/js/proposals/grain-score.js');
+const optionalTools = read('../../frontend/js/optional-tools-loader.js');
 const locales = ['en', 'hr', 'es', 'sr', 'pt', 'fr', 'ru', 'ar'];
 
 function lookup(object, path) {
@@ -23,12 +24,12 @@ describe('grain score wiring', () => {
         expect(index).not.toContain('id="roosterScoreButton"');
         expect(lists).toContain('analysis.critics(');
         expect(memberships).toContain('analysis.critics(');
-        expect(controls).toContain('win.showPlanStatsModal(await getPlan(),');
+        expect(controls).toContain('win.showPlanStatsModal(summary, { readPlan: getPlan,');
         expect(controls).toContain('win.summonUrbanistRooster(await getPlan(), row, returnTo)');
         expect(controls).toContain('grain-rooster-critic.png');
-        expect(index).toMatch(/'css\/grain-score\.css(?:\?[^']*)?'/);
-        expect(index).toContain("'js/proposals/grain-score-rules.js'");
-        expect(index).toMatch(/'js\/proposals\/grain-score\.js(?:\?[^']*)?'/);
+        expect(optionalTools).toContain("rooster: ['css/grain-score.css']");
+        expect(optionalTools).toContain("rooster: ['js/proposals/grain-score-rules.js', 'js/proposals/grain-score.js']");
+        expect(index).not.toContain("'js/proposals/grain-score.js'");
     });
 
     it('scores the applied plan from the live map, never a headless replay of its bindings', () => {

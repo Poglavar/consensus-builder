@@ -129,11 +129,6 @@
                 'css/modals.css?v=20261113-share',
                 'css/parcel-sources.css',
                 'css/proposals.css?v=20261031-design-info',
-                'css/grain-score.css?v=20261027-panel-buttons',
-                'css/square-critic.css?v=20261121-side-options',
-                'css/beaver-critic.css',
-                'css/critic-tour.css',
-                'css/active-travel-critic.css',
                 'css/proposal-editor.css?v=20261027-experimental',
                 'css/structure-geometry-editor.css?v=20261029-enclosure-hidden',
                 'css/on-map-building.css',
@@ -190,6 +185,11 @@
             cssFiles.forEach(function (href) {
                 var link = document.createElement('link');
                 link.rel = 'stylesheet';
+                if (/^css\/bundles\/[^/]+\.[a-f0-9]{16}\.css$/.test(href)) {
+                    link.href = href;
+                    document.head.appendChild(link);
+                    return;
+                }
                 var separator = href.indexOf('?') === -1 ? '?' : '&';
                 link.href = href + separator + 'v=' + encodeURIComponent(cacheBuster);
                 document.head.appendChild(link);
@@ -2457,7 +2457,6 @@
             'js/proposals/replay-status.js',
             // bundle:end plans-agreements
             'js/proposals/sharing-routes.js?v=20261113-share',
-            'js/proposals/grain-score-rules.js',
             'js/proposals/core.js?v=20261022-agreement-chain',
             'js/proposals/data.js?v=20261031-inspector-organization',
             'js/proposals/bootstrap.js?v=20261112-unapply',
@@ -2471,7 +2470,6 @@
             'js/plan-analysis.js',
             'js/proposals/present-state.js?v=20261121-scope-ops',
             'js/proposals/plan-scope.js',
-            'js/proposals/grain-score.js?v=20261121-critic-tour',
             'js/proposals/plan-stats.js?v=20261121-plan-analysis',
             'js/parcel-coverage-debug.js',
             'js/ui/notice-queue.js',
@@ -2621,12 +2619,12 @@
             'js/road-stroke-state.js',
             'js/road-finalization-state.js',
             // bundle:end corridor-structures
-            'js/road-drawing-loader.js',
             'js/measurement-tool.js',
             'js/pinpoint-tool.js',
             'js/centerline-animation.js'
         ]);
     </script>
+    <script>window.writeVersionedLocalScripts(['js/road-shared.js']);</script>
     <!-- Three.js r184 as ESM, loaded ON DEMAND: the first whenThreeReady() call
          performs the dynamic import (the import map below applies to dynamic
          imports from classic scripts too) and populates the global `THREE`,
@@ -2647,13 +2645,17 @@
     }
     </script>
     <script>
+        window.whenThreeCoreReady = (() => {
+            let pending;
+            return () => pending ||= import('three').catch(error => { pending = null; throw error; });
+        })();
         window.whenThreeReady = (() => {
             let promise = null;
             return () => {
                 if (typeof window.THREE !== 'undefined') return Promise.resolve(true);
                 if (!promise) {
                     promise = Promise.all([
-                        import('three'),
+                        window.whenThreeCoreReady(),
                         import('three/addons/controls/OrbitControls.js'),
                         import('three/addons/loaders/GLTFLoader.js')
                     ]).then(([THREE_NS, orbit, gltf]) => {
@@ -2685,17 +2687,6 @@
         window.writeVersionedLocalScripts([
             // bundle:start local-frame-context
             'js/local-frame.js',
-            'js/proposals/square-enclosure.js?v=20261121-plan-analysis',
-            'js/proposals/critic-tour.js',
-            'js/proposals/square-critic.js?v=20261121-side-options',
-            'js/proposals/beaver-buildout.js',
-            'js/proposals/beaver-critic.js?v=20261121-critic-tour',
-            'js/proposals/active-travel-network.js',
-            'js/proposals/active-travel-panel.js?v=20261121-critic-tour',
-            'js/proposals/dog-walkability.js?v=20261121-hare',
-            'js/proposals/dog-critic.js?v=20261121-hare',
-            'js/proposals/hare-cycling.js',
-            'js/proposals/hare-critic.js',
             'js/urban-rule-variation.js',
             'js/three-context-buildings.js',
             // bundle:end local-frame-context

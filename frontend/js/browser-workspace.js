@@ -2,7 +2,10 @@
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
-    if (root) root.BrowserWorkspace = api.create(root);
+    if (root) {
+        if (root.BrowserWorkspace) root.BrowserWorkspace.bindPageLifetime();
+        else root.BrowserWorkspace = api.create(root);
+    }
 })(typeof window !== 'undefined' ? window : null, function () {
     'use strict';
     const WORKSPACE_KEY = 'cb.workspace.latest.v1';
@@ -90,11 +93,17 @@
                 if (status === 'ready') status = 'closed';
             }).catch(error => { status = 'error'; rejectReady(error); });
         }
-        root.addEventListener?.('pagehide', () => { releaseLease?.(); releaseLease = null; });
-        root.addEventListener?.('pageshow', event => {
+        const hide = () => { releaseLease?.(); releaseLease = null; };
+        const show = event => {
             if (event.persisted) root.location.reload(); // reacquire ownership before restoring a frozen page
-        });
+        };
+        function bindPageLifetime() {
+            root.addEventListener?.('pagehide', hide);
+            root.addEventListener?.('pageshow', show);
+        }
+        bindPageLifetime();
         return Object.freeze({
+            bindPageLifetime,
             get id() { return id; }, get status() { return status; }, ready, storage,
             databaseName(city) { return `${DB_PREFIX}::workspace:${id}::${city}`; },
             sourceDatabaseNames(city) { return [`${DB_PREFIX}::${city}`]; }
