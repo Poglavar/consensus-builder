@@ -103,14 +103,15 @@
             .catch(error => win.showStyledAlert(error.message));
     }
 
-    function frame(current, bounds) {
+    function frame(current, bounds, automatic = false) {
         if (!bounds?.isValid()) return;
-        const mapBox = win.map.getContainer().getBoundingClientRect();
-        const panel = current.ui.panel.getBoundingClientRect();
+        const box = win.map.getContainer().getBoundingClientRect(), panel = current.ui.panel.getBoundingClientRect();
         const mobile = win.matchMedia('(max-width: 767px)').matches;
-        win.map.fitBounds(bounds, { maxZoom: 19, animate: false, paddingTopLeft: [30, 75],
-            paddingBottomRight: mobile ? [30, mapBox.bottom - panel.top + 18] : [mapBox.right - panel.left + 20, 70] });
-        current.framed = true;
+        const moved = win.CriticTour.fitContext(win.map, bounds, { left: 30, top: 75,
+            right: mobile ? 30 : box.right - panel.left + 20,
+            bottom: mobile ? box.bottom - panel.top + 18 : 70 }, { force: !automatic });
+        if (moved) current.framed = true;
+        if (automatic) current.contextShown = true;
     }
 
     function updateSelection(current) {
@@ -249,11 +250,12 @@
             const steps = tour.sample(chronological).map(result => ({ geometry: byCid.get(result.cid).geometry, color: colors[result.status],
                 label: tour.t('beaver', { name: result.title, detail: [result.completionMonth, t(result.reason)].filter(Boolean).join(' · ') }) }));
             await tour.play({ id: 'beaver', portrait: '/images/critic-beaver.webp', steps, panel: ui.panel, status: ui.status,
-                close: ui.close, signal: current.tour.signal, frame: bounds => frame(current, bounds) });
+                close: ui.close, signal: current.tour.signal, frame: bounds => frame(current, bounds, true) });
             if (session !== current) return;
             ui.status.textContent = '';
             ui.controls.hidden = false;
-            frame(current, current.layer.getBounds());
+            // Keep the tour's single contextual fit when results arrive.
+            if (!current.contextShown) frame(current, current.layer.getBounds(), true);
         } catch (error) {
             if (session === current) {
                 current.layer?.remove();

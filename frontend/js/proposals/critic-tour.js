@@ -123,5 +123,16 @@
         }
     }
 
-    win.CriticTour = { play, sample, t, pane };
+    function fitContext(map, bounds, padding, { force = false } = {}) {
+        if (!bounds?.isValid()) return false;
+        const size = map.getSize();
+        const nw = map.latLngToContainerPoint(bounds.getNorthWest());
+        const se = map.latLngToContainerPoint(bounds.getSouthEast());
+        if (!force && nw.x >= padding.left && nw.y >= padding.top
+            && se.x <= size.x - padding.right && se.y <= size.y - padding.bottom) return false;
+        map.fitBounds(bounds, { maxZoom: 19, animate: false,
+            paddingTopLeft: [padding.left, padding.top], paddingBottomRight: [padding.right, padding.bottom] });
+        return true;
+    }
+    win.CriticTour = { play, sample, t, pane, fitContext };
 })(window);

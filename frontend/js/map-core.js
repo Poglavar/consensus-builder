@@ -328,6 +328,9 @@ window.ensureBuildingFootprintsForBounds = ensureBuildingFootprintsForBounds;
 // other building consumer (corridorBuildingKey: `<source>:<id>`).
 const buildingPoolByKey = new Map();
 const buildingPoolCells = new Map();
+let buildingReconcileGeneration = 0;
+const dirtyBuildingIds = new Set();
+let dirtyBuildingFrame = null;
 const BUILDING_POOL_CAP = 12000;
 window.buildingFeaturePool = [];
 
@@ -343,8 +346,9 @@ function publishBuildingPool() {
 // One cell's answer into the pool. A stand-in's building that duplicates, over a cell line, one an
 // earlier source of the list already shows is left out (building-cells.js coveredKeys).
 function mergeCellIntoPool(cell, result, sources) {
+    const changedIds = new Set();
     const previous = buildingPoolCells.get(cell.key);
-    if (previous) previous.keys.forEach(key => buildingPoolByKey.delete(key));
+    if (previous) previous.keys.forEach(key => { buildingPoolByKey.delete(key); changedIds.add(key); });
     let features = result.items.filter(item => item && item.geometry && item.id != null).map(item => poolFeatureOf(item, result.source));
     const rank = sources.indexOf(result.source);
     if (rank > 0 && window.turf) {
@@ -361,15 +365,17 @@ function mergeCellIntoPool(cell, result, sources) {
         const key = buildingPoolFeatureKey(feature);
         keys.add(key);
         buildingPoolByKey.set(key, feature);
+        changedIds.add(key);
     });
     const [w, s, e, n] = cell.bbox;
-    buildingPoolCells.set(cell.key, { source: result.source, keys, centre: [(w + e) / 2, (s + n) / 2] });
-    evictFarBuildingCells();
+    buildingPoolCells.set(cell.key, { source: result.source, items: result.items, keys, centre: [(w + e) / 2, (s + n) / 2] });
+    evictFarBuildingCells(changedIds);
     publishBuildingPool();
+    return changedIds;
 }
 
 // Over the cap, whole cells go, farthest from the view first; the cell loader is asked again for them.
-function evictFarBuildingCells() {
+function evictFarBuildingCells(changedIds = new Set()) {
     if (buildingPoolByKey.size <= BUILDING_POOL_CAP) return;
     let centre = null;
     try { const c = map.getCenter(); centre = [c.lng, c.lat]; } catch (_) { return; }
@@ -378,15 +384,25 @@ function evictFarBuildingCells() {
         .sort((a, b) => b.distance - a.distance);
     for (const { key, cell } of far) {
         if (buildingPoolByKey.size <= BUILDING_POOL_CAP) break;
-        cell.keys.forEach(id => buildingPoolByKey.delete(id));
+        cell.keys.forEach(id => { buildingPoolByKey.delete(id); changedIds.add(id); });
         buildingPoolCells.delete(key);
     }
 }
 
 function clearBuildingPool() {
+    buildingReconcileGeneration += 1;
+    dirtyBuildingIds.clear();
+    if (dirtyBuildingFrame) { cancelAnimationFrame(dirtyBuildingFrame); dirtyBuildingFrame = null; }
     buildingPoolByKey.clear();
     buildingPoolCells.clear();
     publishBuildingPool();
+}
+function scheduleBuildingRepaint() {
+    if (!dirtyBuildingIds.size || dirtyBuildingFrame !== null) return;
+    dirtyBuildingFrame = requestAnimationFrame(() => {
+        dirtyBuildingFrame = null;
+        rebuildBuildingLayerFromPool(dirtyBuildingIds);
+    });
 }
 
 // The building cells covering a box, nearest its centre first, and the sources in use there.
@@ -414,21 +430,18 @@ async function fetchBuildingCells(bounds, { announce = false } = {}) {
     if (announce && typeof updateStatus === 'function') updateStatus('Fetching existing buildings...');
     buildingFetchesInFlight += 1;
     window.PlanningLoading?.set('existing', 'map', true);
-    let landed = 0, layerPending = false;
-    const repaint = () => {
-        if (layerPending) return;
-        layerPending = true;
-        queueMicrotask(() => { layerPending = false; rebuildBuildingLayerFromPool(); });
-    };
+    let landed = 0;
+    const generation = buildingReconcileGeneration;
     try {
         const summary = await loader.load({ kind: 'footprints', sources, cells, onCell: (cell, result) => {
-            if (result.failed) return;
+            if (result.failed || generation !== buildingReconcileGeneration) return;
             landed += result.items.length;
             const known = buildingPoolCells.get(cell.key);
             // A cached answer already in the pool changes nothing.
-            if (known && known.source === result.source && result.items.every(item => known.keys.has(`${result.source}:${item.id}`))) return;
-            mergeCellIntoPool(cell, result, sources);
-            repaint();
+            if (known && known.source === result.source && known.items === result.items) return;
+            const changed = mergeCellIntoPool(cell, result, sources);
+            changed.forEach(id => dirtyBuildingIds.add(id));
+            scheduleBuildingRepaint();
         } });
         try { window.buildingLayer = buildingLayer; } catch (_) { }
         try { window.dispatchEvent(new CustomEvent('buildingsLayerUpdated')); } catch (_) { }
@@ -656,26 +669,15 @@ function currentBuildingOutcomeState() {
     };
 }
 
+function buildingOutcomeSignature(state, id) {
+    const record = state.demolishedById.get(id);
+    if (!record) return 'tunnelled';
+    const kind = record.remainder ? 'cut' : 'destroyed';
+    return JSON.stringify([kind, record.geometry || null, record.demolishedPart || null, record.remainder || null]);
+}
+
 function buildingOutcomeSignatures(state) {
-    const signatures = new Map();
-    state.affectedIds.forEach(id => {
-        const record = state.demolishedById.get(id);
-        if (!record) {
-            signatures.set(id, 'tunnelled');
-            return;
-        }
-        try {
-            signatures.set(id, JSON.stringify([
-                record.remainder ? 'cut' : 'destroyed',
-                record.geometry || null,
-                record.demolishedPart || null,
-                record.remainder || null
-            ]));
-        } catch (_) {
-            signatures.set(id, record.remainder ? 'cut' : 'destroyed');
-        }
-    });
-    return signatures;
+    return new Map(Array.from(state.affectedIds, id => [id, buildingOutcomeSignature(state, id)]));
 }
 
 function buildingFeatureWithOutcome(feature, state) {
@@ -803,16 +805,8 @@ function buildingLayerOptions() {
 // complete; only how each building is DRAWN is decided here. The persistent outcome colour scheme:
 // destroyed = dashed red outline (kept visible so the road reads through), cut = orange remainder,
 // tunnelled = yellow, untouched = blue (see buildingOutcomeStyle in corridor-tunnel.js).
-function rebuildBuildingLayerFromPool() {
-    const pool = Array.isArray(window.buildingFeaturePool) ? window.buildingFeaturePool : [];
+function rebuildBuildingLayerFromPool(dirtyIds = null) {
     const state = currentBuildingOutcomeState();
-    const changes = reconcileBuildingFeatureEntries(
-        renderedBuildingFeatureSignatures,
-        pool,
-        buildingPoolFeatureKey,
-        feature => buildingFeatureWithOutcome(feature, state),
-        feature => stableBuildingFeatureSignature(feature, buildingStyleForFeature(feature))
-    );
     // The Layers-sheet checkbox is the source of truth for visibility. Deciding from "was the old
     // layer on the map" broke the show-buildings toggle: the corridor preload fills the pool and
     // rebuilds the layer OFF-map while the box is unticked, and the next tick inherited hidden.
@@ -822,13 +816,47 @@ function rebuildBuildingLayerFromPool() {
         buildingLayer = L.geoJSON(null, buildingLayerOptions());
         buildingRenderedLayersById = new Map();
     }
+    if (shouldShow && !map.hasLayer(buildingLayer)) buildingLayer.addTo(map);
+    else if (!shouldShow && map.hasLayer(buildingLayer)) map.removeLayer(buildingLayer);
+    window.buildingLayer = buildingLayer;
+    if (dirtyIds) {
+        const started = performance.now();
+        for (const id of dirtyIds) {
+            dirtyIds.delete(id);
+            const source = buildingPoolByKey.get(id);
+            if (source) buildingFeatureById.set(id, source);
+            else buildingFeatureById.delete(id);
+            if (source && state.affectedIds.has(id)) renderedBuildingOutcomeSignatures.set(id, buildingOutcomeSignature(state, id));
+            else renderedBuildingOutcomeSignatures.delete(id);
+            const effective = source && buildingFeatureWithOutcome(source, state);
+            const signature = effective?.geometry ? stableBuildingFeatureSignature(effective, buildingStyleForFeature(effective)) : null;
+            if (signature !== (renderedBuildingFeatureSignatures.get(id) ?? null)) {
+                for (const layer of buildingRenderedLayersById.get(id) || []) buildingLayer.removeLayer(layer);
+                buildingRenderedLayersById.delete(id);
+                if (signature === null) renderedBuildingFeatureSignatures.delete(id);
+                else {
+                    buildingLayer.addData(effective);
+                    renderedBuildingFeatureSignatures.set(id, signature);
+                }
+            }
+            if (performance.now() - started >= 8) break;
+        }
+        if (dirtyIds.size) scheduleBuildingRepaint();
+        return;
+    }
+    dirtyBuildingIds.clear();
+    const pool = Array.isArray(window.buildingFeaturePool) ? window.buildingFeaturePool : [];
+    const changes = reconcileBuildingFeatureEntries(
+        renderedBuildingFeatureSignatures,
+        pool,
+        buildingPoolFeatureKey,
+        feature => buildingFeatureWithOutcome(feature, state),
+        feature => stableBuildingFeatureSignature(feature, buildingStyleForFeature(feature))
+    );
     applyBuildingFeatureLayerChanges(buildingLayer, buildingRenderedLayersById, changes);
     buildingFeatureById = changes.nextFeatures;
     renderedBuildingFeatureSignatures = changes.nextSignatures;
     renderedBuildingOutcomeSignatures = buildingOutcomeSignatures(state);
-    if (shouldShow && !map.hasLayer(buildingLayer)) buildingLayer.addTo(map);
-    else if (!shouldShow && map.hasLayer(buildingLayer)) map.removeLayer(buildingLayer);
-    try { window.buildingLayer = buildingLayer; } catch (_) { }
 }
 window.rebuildBuildingLayerFromPool = rebuildBuildingLayerFromPool;
 

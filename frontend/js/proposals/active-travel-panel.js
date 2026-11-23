@@ -46,13 +46,15 @@
                 .catch(error => win.showStyledAlert(error.message));
         }
 
-        function frame(current, bounds) {
-            if (!bounds.isValid()) return;
-            const map = win.map.getContainer().getBoundingClientRect(), panel = current.panel.getBoundingClientRect();
+        function frame(current, bounds, automatic = false) {
+            if (!bounds?.isValid()) return;
+            const box = win.map.getContainer().getBoundingClientRect(), panel = current.panel.getBoundingClientRect();
             const mobile = win.matchMedia('(max-width: 767px)').matches;
-            win.map.fitBounds(bounds, { maxZoom: 19, animate: false, paddingTopLeft: [35, 80],
-                paddingBottomRight: mobile ? [35, map.bottom - panel.top + 12] : [map.right - panel.left + 20, 70] });
-            current.framed = true;
+            const moved = win.CriticTour.fitContext(win.map, bounds, { left: 35, top: 80,
+                right: mobile ? 35 : box.right - panel.left + 20,
+                bottom: mobile ? box.bottom - panel.top + 12 : 70 }, { force: !automatic });
+            if (moved) current.framed = true;
+            if (automatic) current.contextShown = true;
         }
 
         async function open(plan, row, returnTo) {
@@ -79,9 +81,9 @@
                 }
                 await win.CriticTour.play({ id, portrait: `/images/critic-${id}.webp`, steps: tourSteps(id, snapshot, assessment, t),
                     panel: current.panel, status: current.ui.status, close: current.ui.close, signal: current.tour.signal,
-                    frame: bounds => frame(current, bounds) });
+                    frame: bounds => frame(current, bounds, true) });
                 if (session !== current) return;
-                render(current, assessment, bounds => frame(current, bounds));
+                render(current, assessment, (bounds, automatic) => frame(current, bounds, automatic));
             } catch (error) {
                 if (session !== current) return;
                 current.network?.remove();

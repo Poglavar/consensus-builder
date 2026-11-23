@@ -26,7 +26,7 @@ function loadMapCoreHelpers(names) {
 
 function loadBuildingLayerRuntime() {
     const names = [
-        'buildingPoolFeatureKey', 'currentBuildingOutcomeState', 'buildingOutcomeSignatures', 'buildingFeatureWithOutcome',
+        'buildingPoolFeatureKey', 'currentBuildingOutcomeState', 'buildingOutcomeSignature', 'buildingOutcomeSignatures', 'buildingFeatureWithOutcome',
         'reconcileBuildingFeatureEntries', 'stableBuildingFeatureSignature', 'buildingStyleForFeature',
         'applyBuildingFeatureLayerChanges', 'buildingLayerOptions', 'rebuildBuildingLayerFromPool', 'buildingsAt'
     ];
@@ -71,7 +71,7 @@ function loadBuildingLayerRuntime() {
     };
     const checkbox = { checked: false };
     const context = vm.createContext({
-        console, map, L, document: { getElementById: id => id === 'showBuildings' ? checkbox : null },
+        console, map, L, performance, dirtyBuildingIds: new Set(), document: { getElementById: id => id === 'showBuildings' ? checkbox : null },
         window: null,
         buildingFeaturePool: [],
         collectDemolishedBuildingRecords: () => Array.from(fixture.state.demolishedById.values())
@@ -264,6 +264,25 @@ describe('incremental building presentation model', () => {
         context.rebuildBuildingLayerFromPool();
         expect(context.getRenderedLayers().has('b')).toBe(false);
         expect(context.getRenderedLayerIds()).toEqual(['a']);
+    });
+
+    it('drains removed and changed dirty IDs without rebuilding untouched layers', () => {
+        const { context, layersById, checkbox } = loadBuildingLayerRuntime();
+        checkbox.checked = true;
+        const features = Array.from({ length: 103 }, (_, index) => ({ type: 'Feature', properties: { object_id: `b${index}`, value: 0 }, geometry: { coordinates: [index, 0] } }));
+        context.buildingFeaturePool = features;
+        context.buildingPoolByKey = new Map(features.map(feature => [feature.properties.object_id, feature]));
+        context.rebuildBuildingLayerFromPool();
+        const untouched = context.getRenderedLayers().get('b50')[0];
+        const changedOne = { ...features[1], properties: { ...features[1].properties, value: 1 } };
+        const changedTwo = { ...features[2], properties: { ...features[2].properties, value: 2 } };
+        context.buildingFeaturePool = [changedOne, changedTwo, ...features.slice(3)];
+        context.buildingPoolByKey = new Map(context.buildingFeaturePool.map(feature => [feature.properties.object_id, feature]));
+        context.rebuildBuildingLayerFromPool(new Set(['b0', 'b1', 'b2']));
+        expect(context.getRenderedLayers().has('b0')).toBe(false);
+        expect(context.getRenderedLayers().get('b1')[0].feature.properties.value).toBe(1);
+        expect(context.getRenderedLayers().get('b2')[0].feature.properties.value).toBe(2);
+        expect(context.getRenderedLayers().get('b50')[0]).toBe(untouched);
     });
 });
 

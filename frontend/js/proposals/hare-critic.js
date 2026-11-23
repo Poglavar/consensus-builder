@@ -193,7 +193,8 @@
         ui.results.hidden = false;
         chooseCategory();
         findHomes();
-        frame(current.network.getBounds());
+        // Preserve the tour's contextual frame; only the explicit route action reframes.
+        if (!current.contextShown) frame(current.network.getBounds(), true);
     }
 
     win.HareCritic = win.ActiveTravelPanel.create({ id: 'hare', shell, evaluate, render, t });

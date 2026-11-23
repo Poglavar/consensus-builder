@@ -163,7 +163,9 @@
         ui.status.hidden = true;
         ui.results.hidden = false;
         filterHomes();
-        frame(current.network.getBounds());
+        // The tour already framed the context once. Keep the results view stable; the explicit
+        // “show route” action below remains the deliberate close-up affordance.
+        if (!current.contextShown) frame(current.network.getBounds(), true);
     }
 
     win.DogCritic = win.ActiveTravelPanel.create({ id: 'dog', shell, evaluate: win.DogWalkability.evaluate, render, t });
