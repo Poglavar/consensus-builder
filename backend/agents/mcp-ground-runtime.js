@@ -10,14 +10,15 @@ const scripts = [
     'cid.js', 'agreement-record.js', 'agreement-ground.js', 'work-slicer.js', 'proposals/apply/route.js', 'proposals/parcel-contiguity.js',
     'proposals/footprint-parts.js', 'geometry-tolerances.js', 'proposals/parcel-arrangement.js', 'proposals/plan-order.js', 'proposals/formation-edit.js',
     'parcel-layout-validation.js', 'parcel-layout-record.js', 'parcel-layout-ownership.js',
-    'parcels/live-fabric.js', 'proposals/apply/road.js', 'proposals/apply/buildings.js', 'proposals/apply/structures.js', 'proposals/apply/parcels.js'
+    'parcels/live-fabric.js', 'proposals/site-binding.js', 'proposals/site-hash.js', 'proposals/open-ground.js', 'proposals/apply/road.js', 'proposals/apply/buildings.js', 'proposals/apply/structures.js', 'proposals/apply/parcels.js'
 ].map(path => ({ path, source: readFileSync(new URL(path, root), 'utf8'), require: createRequire(new URL(path, root)) }));
 const classic = ['proposal-parcel-identity.js', 'proposal-road-geometry.js', 'proposals/apply/finalize.js', 'proposal-manager.js', 'agreement-headless.js']
     .map(path => ({ path, source: readFileSync(new URL(path, root), 'utf8') }));
 
 export async function deriveWithApp({ designs, parcels }) {
     const logger = Object.fromEntries(['log', 'debug', 'info', 'warn', 'error'].map(level => [level, (...args) => console.error(`[${new Date().toISOString()}] [mcp-ground]`, ...args)]));
-    const ctx = createContext({ console: logger, structuredClone, performance, URL, TextEncoder, Uint8Array, Buffer });
+    // crypto: site-hash.js names an open-ground host by the sha256 of its site (WebCrypto).
+    const ctx = createContext({ console: logger, structuredClone, performance, URL, TextEncoder, Uint8Array, Buffer, crypto: globalThis.crypto });
     installAppGeometry(ctx);
     ctx.window = ctx;
     ctx.require = createRequire(new URL('proposal-manager.js', root));

@@ -1328,3 +1328,31 @@ describe('the rest of a large parcel stays the parcel', () => {
         expect(shape(reversed.fabric)).toEqual(bothApplied);
     });
 });
+
+// Compare and Plan stats read a plan privately (agreement-headless.js) over the parcels they were
+// handed. A design partly on open ground must read there as it applies on the map: a sliver of
+// unregistered ground between titles refused every UK plan that held one.
+describe('the private read hosts open ground as the map apply does', () => {
+    const AgreementHeadless = require('../../frontend/js/agreement-headless.js');
+    async function read(binding) {
+        await harness({ facts: [HR1] });
+        install('ProposalApplyStructures', require('../../frontend/js/proposals/apply/structures.js'));
+        install('createLiveParcelFabric', createLiveParcelFabric);
+        install('ProposalManager', ProposalManager);
+        const square = structureRecord('sq-read', 'square', SITE_HALF, { declared: ['HR-330264-1'], binding });
+        return { square, result: AgreementHeadless.materialize({
+            designs: [{ cid: 'sq-read', content: square, parcelIds: ['HR-330264-1'], binding }],
+            parcels: [{ ...structuredClone(HR1), id: 'HR-330264-1' }]
+        }) };
+    }
+    it('reads a square half over a parcel and half over open ground, with the map\'s host', async () => {
+        const { square, result } = await read({ parcels: [{ parcelId: 'HR-330264-1' }], coverage: 'partial', unsurveyedM2: 1000, source: 'server' });
+        const body = (await result).fabric.list().find(feature => feature.properties.structureType === 'square');
+        expect(turf.area(body)).toBeCloseTo(turf.area(turf.feature(SITE_HALF)), 0);
+        expect(body.properties.groundIds).toEqual([`ground:${await siteHash.siteHashHex(square.site)}`]);
+    });
+    it('still refuses it when the binding says the parcel covers the whole site', async () => {
+        const { result } = await read({ parcels: [{ parcelId: 'HR-330264-1' }], coverage: 'complete', source: 'server' });
+        await expect(result).rejects.toMatchObject({ code: 'formation-ground-unresolved' });
+    });
+});

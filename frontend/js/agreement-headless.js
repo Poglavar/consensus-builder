@@ -6,6 +6,7 @@
     if (root) root.AgreementHeadless = api;
 })(typeof window !== 'undefined' ? window : globalThis, function (root) {
     'use strict';
+    const openGround = root.__openGround || (typeof require === 'function' ? require('./proposals/open-ground.js') : null);
     async function materialize({ designs, parcels }) {
         const turf = root.turf;
         const fabric = root.createLiveParcelFabric({ geometry: turf });
@@ -29,14 +30,26 @@
         manager._addFeaturesToMap = async features => mutation.upsertFeatures(features);
         manager._consumeFeaturesFromLiveFabric = features => mutation.removeIds(features.map(f => f.properties.parcelId));
         manager._markParcelProducedByProposal = () => {};
+        // A design whose binding leaves part of its site on no parcel (a sliver between titles, an
+        // unregistered street edge) stands partly on open ground, as on the map: the same host
+        // (site minus its bound parcels, from the parcels handed in here) is a parent beside them.
+        manager._openGroundHostCache = new Map();
+        const parcelRepository = { getMany: ids => ids.map(id => originals.get(String(id))).filter(Boolean) };
+        const formationOptions = async row => {
+            if (!openGround.hasOpenGround(row)) return options;
+            const hosted = await manager._openGroundHostFor(row, { ...options, parcelRepository });
+            if (!hosted.ok) throw Object.assign(new Error(hosted.failure.message), hosted.failure);
+            return { ...options, openGroundHost: hosted.host, openGroundParents: hosted.occupied };
+        };
         const roads = rows.filter(r => r.roadProposal).map(r => ({ id: r.proposalId, geometry: r.roadProposal.definition.polygon }));
         const roadPieces = source.flatMap(parcel => root.__parcelArrangement.arrangementOf(parcel, parcel.properties.parcelId, roads).pieces
             .map(piece => root.__parcelArrangement.featureForPiece(piece, parcel)));
         mutation.replaceCadastreScope([...originals.keys()], roadPieces);
         for (const row of root.__planOrder.orderFormations(rows)) {
             if (!row.cadastreParcelIds.length) continue;
+            const formation = await formationOptions(row);
             if (row.parcelLayout) {
-                if (!await manager._applyParcelLayoutProposal(row.proposalId, row, options)) throw Object.assign(new Error(lastFailure?.message || 'Layout could not form'), lastFailure);
+                if (!await manager._applyParcelLayoutProposal(row.proposalId, row, formation)) throw Object.assign(new Error(lastFailure?.message || 'Layout could not form'), lastFailure);
             } else if (row.structureProposal) {
                 const kind = row.structureProposal.kind;
                 // Stations are content on their corridor; the app does not form new ground.
@@ -44,9 +57,9 @@
                 const carved = manager._groundAfterLaterCorridors(row, [row.structureProposal.geometry], options, { earlier: true });
                 if (!carved.geometries[0]) throw new Error('The corridors take the entire structure');
                 const record = { ...row, structureProposal: { ...row.structureProposal, geometry: carved.geometries[0] } };
-                const parents = manager._resolveLiveFormationParents(record, row.proposalId, kind, options);
+                const parents = manager._resolveLiveFormationParents(record, row.proposalId, kind, formation);
                 if (!parents.ok) throw Object.assign(new Error(parents.message), lastFailure);
-                const formed = await manager._formStructureParcel(row.proposalId, record, record.structureProposal, carved.geometries[0], parents.ids, row.proposalId, parents.features, options);
+                const formed = await manager._formStructureParcel(row.proposalId, record, record.structureProposal, carved.geometries[0], parents.ids, row.proposalId, parents.features, formation);
                 if (!formed.ok) throw Object.assign(new Error(lastFailure?.message || 'Structure could not form'), lastFailure);
             } else if (row.buildingProposal) {
                 const buildings = row.geometry?.buildings || [];
@@ -64,9 +77,9 @@
                     const record = { ...row, geometry: { ...row.geometry,
                         buildings: [{ ...buildings[0], geometry: carved.geometries[0] }],
                         ...(takeGeometry ? { landTake: landTake.geometry ? { ...landTake, geometry: carved.geometries[1] } : carved.geometries[1] } : {}) } };
-                    const parents = manager._resolveLiveFormationParents(record, row.proposalId, 'building', options);
+                    const parents = manager._resolveLiveFormationParents(record, row.proposalId, 'building', formation);
                     if (!parents.ok) throw new Error(parents.message);
-                    const formed = await manager._formBuildingParcel(row.proposalId, record, row.buildingProposal, carved.geometries[0], parents.ids, row.proposalId, parents.features, options);
+                    const formed = await manager._formBuildingParcel(row.proposalId, record, row.buildingProposal, carved.geometries[0], parents.ids, row.proposalId, parents.features, formation);
                     if (!formed.ok) throw Object.assign(new Error(lastFailure?.message || 'Building could not form'), lastFailure);
                 }
             }

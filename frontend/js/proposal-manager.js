@@ -3518,12 +3518,13 @@ const ProposalManager = {
     // The open-ground host of a record (open-ground.js): its site minus the bound parcels'
     // repository geometry, named `ground:<siteHash>`. The bound parcels are the record's
     // declaration (= its binding), loaded by the scope resolver before any apply. Cached by the
-    // canonical site and declaration, since a replay asks for the same host many times.
+    // canonical site and declaration, since a replay asks for the same host many times. A private
+    // replay (agreement-headless.js) passes options.parcelRepository: the parcels it was handed.
     async _openGroundHostFor(record, options = {}) {
         const browserRoot = typeof window !== 'undefined' ? window : globalThis;
         const siteApi = browserRoot.__siteBinding;
         const hashApi = browserRoot.__siteHash;
-        const repository = _cadastralParcelRepository();
+        const repository = options.parcelRepository || _cadastralParcelRepository();
         const fail = (code, message) => ({ ok: false, host: null, failure: { code, message } });
         if (!siteApi || !hashApi || !repository || typeof repository.getMany !== 'function') {
             return fail('open-ground-unavailable', 'Cannot apply on open ground: the site services are unavailable.');
