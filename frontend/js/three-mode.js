@@ -802,6 +802,7 @@
             if (!retained) rebuild3DBuildingsOnly();
             else if (geometryChanged) rebuild3DBuildingsOnly({ family: 'planned' });
             applyModeVisibility();
+            syncExistingFootprints();
             rebuildPlanningSources3D();
         } else buildingViewDirty = true;
     }
@@ -1337,6 +1338,7 @@
             isolation.hideChildren([planningSourcesGroup], child => options.permittedId != null
                 && child.userData?.planningRepresentationId === options.permittedId, isolationHidden);
         }
+        syncExistingFootprints();
         updateXrayControls();
         invalidateThreeView();
     }
@@ -1377,6 +1379,7 @@
         if (isolatedParcelId === null) return;
         isolatedParcelId = null;
         isolationHidden = window.__threeSceneIsolation.showAgain(isolationHidden);
+        syncExistingFootprints();
         updateIsolationButton();
         invalidateThreeView();
     }
@@ -1515,6 +1518,7 @@
         isolatedParcelId = null;
         updateIsolationButton();
         if (siteFeature) {
+            syncExistingFootprints();
             frameIsolatedFeatures([siteFeature]);
             notifyIsolationChanged();
             return;
@@ -1657,6 +1661,7 @@
         updateIsolationButton();
         // Show again exactly what the view hid; the layers kept their own visibility meanwhile.
         isolationHidden = window.__threeSceneIsolation.showAgain(isolationHidden);
+        syncExistingFootprints();
         invalidateThreeView();
         notifyIsolationChanged();
     }
@@ -4347,7 +4352,7 @@
         });
     }
 
-    // The existing buildings this scene draws, as ground footprints for the vacant-plot rule: the
+    // The existing buildings this scene draws, as flat context and for the vacant-plot rule: the
     // same /buildings/near band and the same demolition verdicts as the meshes, never the 2D pool,
     // which holds only what earlier 2D viewports happened to fetch. Always the normal state: the
     // build-out (displayedProposals) does not redraw vacant plots.
@@ -7533,7 +7538,7 @@
         groundLayer = window.__threeGround.create({ THREE, k: lifeMercatorK() });
         groundLayer.group.visible = false;
         // The open ground and the parcel slabs show what covers the ground there (grass, steppe,
-        // sand, paving…); a parcel stays a shade lighter, its outline drawn on it.
+        // sand, built-up ground…); a parcel stays a shade lighter, its outline drawn on it.
         if (ensureGroundCover()) {
             groundCover.apply(groundLayer.planeMaterial, 1);
             groundCover.apply(materials.parcels, 1 / lifeMercatorK(), { plot: true });
@@ -7547,9 +7552,54 @@
         scene.add(groundLayer.group);
     }
 
+    let existingFootprints = null;
+    let existingFootprintsDirty = true;
+
+    function syncExistingFootprints() {
+        const visible = builtDisplay === 'off' && groundLayer?.group.visible && !realisticLayerActive
+            && isolatedParcelId === null && isolatedProposalId === null;
+        if (existingFootprints) existingFootprints.visible = !!visible;
+        if (!visible || !existingFootprintsDirty) return;
+
+        const shapes = [];
+        for (const { geometry } of standingBuildingFootprints3D()) {
+            const polygons = geometry.type === 'MultiPolygon' ? geometry.coordinates : [geometry.coordinates];
+            for (const rings of polygons) {
+                const shape = arrayOfLngLatRingsToShape(rings);
+                if (shape) shapes.push(shape);
+            }
+        }
+        existingFootprintsDirty = false;
+        if (existingFootprints) existingFootprints.geometry.dispose();
+        if (!shapes.length) {
+            existingFootprints?.removeFromParent();
+            existingFootprints?.material.dispose();
+            existingFootprints = null;
+            return;
+        }
+        // One opaque surface batch, between mapped greenery and the parcel ground. The stencil
+        // keeps the mapped paths, roads and water in front and prevents overlapping roof faces
+        // from fighting. The projection retains the holes in the source polygons.
+        const geometry = new THREE.ShapeGeometry(shapes);
+        if (existingFootprints) {
+            existingFootprints.geometry = geometry;
+        } else {
+            const material = groundLayer.paveTexture(
+                groundLayer.parcelSurface(new THREE.MeshLambertMaterial({ color: 0xaaa59b })), 1 / lifeMercatorK());
+            existingFootprints = new THREE.Mesh(geometry, material);
+            existingFootprints.name = 'ExistingBuildingFootprints';
+            existingFootprints.renderOrder = window.__threeGround.ORDER.buildingFootprints;
+            existingFootprints.raycast = () => {};
+            existingFootprints.userData.noShadowCast = true;
+            scene.add(existingFootprints);
+            sunLayer?.syncObjects(existingFootprints);
+        }
+    }
+
     function syncGroundVisibility() {
         if (!groundLayer) return;
         groundLayer.group.visible = groundShouldRun() && !realisticLayerActive && groundLayer.stats().drawCalls > 0;
+        syncExistingFootprints();
     }
 
     // Lay the ground from a life graph; builds its own when the life layer did not (layer off).
@@ -7628,6 +7678,13 @@
     }
 
     function disposeGround() {
+        if (existingFootprints) {
+            existingFootprints.removeFromParent();
+            existingFootprints.geometry.dispose();
+            existingFootprints.material.dispose();
+            existingFootprints = null;
+        }
+        existingFootprintsDirty = true;
         if (groundLayer) { try { groundLayer.dispose(); } catch (_) { } }
         groundLayer = null;
     }
@@ -10980,6 +11037,10 @@
             proposedBuildingsGroup = nextProposed;
             existingFloorPlanShells = nextShells;
             committed = true;
+            if (rebuildExisting) {
+                existingFootprintsDirty = true;
+                syncExistingFootprints();
+            }
             applyUseHighlight3D();
             if (showExisting) await appendSuggestedExistingFloorPlans(existingMaterial);
             if (showIneligibleParcels && rebuildProposed) buildIneligibleParcels3D(ineligibleBuildingsGroup);

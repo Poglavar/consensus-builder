@@ -1,7 +1,7 @@
 import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, createSpace, createBuilding, proposalState } from '../helpers/runtime';
-import { mockBuildingScene, mockFootprintCells } from '../helpers/mocks/building-data';
+import { buildings3D, mockBuildingScene, mockFootprintCells } from '../helpers/mocks/building-data';
 import { openLayerSection } from '../helpers/layers';
 import { Page } from '@playwright/test';
 
@@ -469,6 +469,60 @@ test.describe('3D rendering and controls @features', () => {
     await selectNativeOption(scope, 'all');
     await selectNativeOption(display, 'solid');
     await expect.poll(async () => (await sceneBuildings(page)).length).toBe(2);
+  });
+
+  test('Built Off flattens a mapped building and leaves its courtyard open after reload on mobile', async ({ mockApi: page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await mockBuildingScene(page);
+    const building = structuredClone(buildings3D[0]);
+    const hole = [
+      [15.98213, 45.80013, 14], [15.98213, 45.80019, 14], [15.98219, 45.80019, 14],
+      [15.98219, 45.80013, 14], [15.98213, 45.80013, 14]
+    ];
+    building.faces[0].coordinates.push(hole);
+    const cellRequests: unknown[] = [];
+    await page.route('**/buildings/cell', async route => {
+      const body = route.request().postDataJSON();
+      if (body.kind !== 'near') return route.fallback();
+      cellRequests.push(body);
+      await route.fulfill({ json: { supported: true, kind: body.kind, bbox: body.bbox, complete: true, items: [building] } });
+    });
+    await openCity(page);
+    await enter3D(page);
+    await page.locator('#planning-views-button').press('Enter');
+    await expect(page.locator('#planning-views')).toBeVisible();
+    const display = page.locator('[data-planning-setting="existing"]');
+    await selectNativeOption(display, 'solid');
+    await expect.poll(async () => (await sceneBuildings(page)).length).toBe(1);
+    await page.waitForFunction(() => !(window as any).PlanningLoading.state().existing);
+    const requestCount = cellRequests.length;
+    const ground = () => page.evaluate(() => {
+      const { scene, latLngToXY } = (window as any).getThreeModeInternals?.() || {};
+      if (!scene) return null;
+      const batch = scene.getObjectByName('ExistingBuildingFootprints');
+      if (!batch?.visible) return null;
+      const { Vector3, Raycaster, Mesh } = (window as any).THREE;
+      const hits = (lat: number, lng: number) => {
+        const [x, y] = latLngToXY(lat, lng);
+        const ray = new Raycaster(new Vector3(x, y, 50), new Vector3(0, 0, -1));
+        const intersections: { point: { z: number } }[] = [];
+        Mesh.prototype.raycast.call(batch, ray, intersections);
+        return intersections[0]?.point.z ?? null;
+      };
+      return { roof: hits(45.80011, 15.98211), courtyard: hits(45.80016, 15.98216) };
+    });
+    await selectNativeOption(display, 'off');
+    await expect(display).toHaveValue('off');
+    await expect.poll(ground).toEqual({ roof: 0, courtyard: null });
+    expect(await sceneBuildings(page)).toHaveLength(0);
+    expect(cellRequests).toHaveLength(requestCount);
+
+    await page.reload();
+    await expect.poll(ground).toEqual({ roof: 0, courtyard: null });
+    await openPlanningViews(page);
+    await selectNativeOption(display, 'solid');
+    await expect.poll(ground).toBeNull();
+    await expect.poll(async () => (await sceneBuildings(page)).length).toBe(1);
   });
 
   test('radius preview follows hover, keyboard, and drag in Layers, then refetches on release', async ({ mockApi: page }) => {

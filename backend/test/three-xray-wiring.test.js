@@ -131,6 +131,7 @@ describe('three-mode Xray wiring', () => {
             buildIneligibleParcels3D: vi.fn(), ensureNearbyProposalBuildings: vi.fn(),
             ensureNearbyTrees: vi.fn(), rebuildTreesOnly: vi.fn(), ensureNearbyWater: vi.fn(), rebuildWaterOnly: vi.fn(),
             applyParcelIsolation: vi.fn(), isolateProposal: vi.fn(), updateXrayControls: vi.fn(), refreshClickStackFigures: vi.fn(),
+            syncExistingFootprints: vi.fn(),
             invalidateThreeView: vi.fn(), ensureNearbyGreen: vi.fn(), ensureNearbyGround: vi.fn(), ensureNearbyFurniture: vi.fn(), noteSceneWork: vi.fn(),
             // Replacements are built off-scene and swapped into the scene group (7ed6200e9).
             THREE: { Group: class { constructor() { this.children = []; this.userData = {}; } } },
@@ -364,7 +365,7 @@ describe('three-mode Xray wiring', () => {
         expect(children).toEqual([]); expect(keys.size).toBe(0); expect(dispose).toHaveBeenCalledTimes(3);
     });
     it('applyIsolationVisibility filters floor-plan wrappers by parcel identity', () => {
-        const [apply, context] = extracted('applyIsolationVisibility', `let flatGroup=null; let buildingGroup=null; let existingBuildingsGroup={children:[]}; let proposedBuildingsGroup={children:[]}; let ineligibleBuildingsGroup={children:[]}; let floorPlanGroup=this.fpGroup; let plannedFlatGroup=null; let parkGroup=null; let squareGroup=null; let lakeGroup=null; let stationGroup=null; let existingTransitAlignmentGroup=null; let treesGroup=null; let lifeGroup=null; let planningSourcesGroup=null; let isolationHidden=[];`, { fpGroup: { children: [{ userData: { parcelId: 'keep' }, visible: true }, { userData: { parcelId: 'hide' }, visible: true }] }, turf: { point: () => ({}), booleanPointInPolygon: () => false }, updateXrayControls: vi.fn(), invalidateThreeView: vi.fn(), window: { __threeSceneIsolation: require('../../frontend/js/three-scene-isolation.js') } });
+        const [apply, context] = extracted('applyIsolationVisibility', `let flatGroup=null; let buildingGroup=null; let existingBuildingsGroup={children:[]}; let proposedBuildingsGroup={children:[]}; let ineligibleBuildingsGroup={children:[]}; let floorPlanGroup=this.fpGroup; let plannedFlatGroup=null; let parkGroup=null; let squareGroup=null; let lakeGroup=null; let stationGroup=null; let existingTransitAlignmentGroup=null; let treesGroup=null; let lifeGroup=null; let planningSourcesGroup=null; let isolationHidden=[];`, { fpGroup: { children: [{ userData: { parcelId: 'keep' }, visible: true }, { userData: { parcelId: 'hide' }, visible: true }] }, turf: { point: () => ({}), booleanPointInPolygon: () => false }, updateXrayControls: vi.fn(), syncExistingFootprints: vi.fn(), invalidateThreeView: vi.fn(), window: { __threeSceneIsolation: require('../../frontend/js/three-scene-isolation.js') } });
         apply(new Set(['keep']), []);
         expect(context.fpGroup.children.map(child => child.visible)).toEqual([true, false]);
     });

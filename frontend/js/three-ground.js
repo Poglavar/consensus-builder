@@ -92,10 +92,11 @@
     // (green areas striped through the parcels on Android, 2026-10-28). Each claiming surface
     // (parcelSurface) draws only on pixels nothing claimed before it and claims them: real-world
     // water (`water`) first, then the ground cover (`cover`, the real-world lawns, meadows and woods,
-    // most specific first), then the parcel slabs at the default order (0), and the background fills
-    // what is left afterwards. Foot ways (`path`) claim before the water, so a footbridge shows over
+    // most specific first), then flat building footprints, then the parcel slabs at the default
+    // order (0), and the background fills what is left afterwards. Foot ways (`path`) claim before the water, so a footbridge shows over
     // its river, and before the green, so a path crosses its park.
-    const ORDER = Object.freeze({ lid: -20, roadbed: -10, kerb: -10, markings: -10, path: -9, water: -8, cover: -5, pavement: 1 });
+    const ORDER = Object.freeze({ lid: -20, roadbed: -10, kerb: -10, markings: -10, path: -9, water: -8, cover: -5,
+        buildingFootprints: -1, pavement: 1 });
 
     function create(options) {
         const THREE = options.THREE;

@@ -44,7 +44,7 @@ function scene() {
         getParcelFeatureById: id => parcels[id] || null,
         parcelMassingItem: id => ({ id: `permitted-${id}` }),
         updateXrayControls: vi.fn(), invalidateThreeView: vi.fn(), updateIsolationButton: vi.fn(),
-        notifyIsolationChanged: vi.fn(), rebuild3DBuildingsOnly: vi.fn(), viewParcel: vi.fn(), g
+        notifyIsolationChanged: vi.fn(), rebuild3DBuildingsOnly: vi.fn(), syncExistingFootprints: vi.fn(), viewParcel: vi.fn(), g
     };
     const names = ['applyIsolationVisibility', 'isolateParcel', 'applyParcelIsolation', 'endParcelView', 'clearIsolation'];
     const code = `${Object.keys(stubs).map(key => `const ${key}=this.${key};`).join('\n')}

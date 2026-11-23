@@ -3,8 +3,8 @@ import path from 'node:path';
 
 // The model view's ground cover in a real WebGL context (frontend/js/three-ground-cover.js): the
 // shader compiles, the open ground is grass and shrubs before any cover arrives, then takes each
-// cell's look in its colour (sand west, paving east), and a dirt track shows across it.
-test('the ground shows its cover: default grass, then sand and paving per cell, with a track across', async ({ page }) => {
+// cell's look in its colour (sand west, settlement east), and a dirt track shows across it.
+test('ground cover fades from sand into textured settlement ground and preserves a mapped track', async ({ page }) => {
   await page.route('http://ground.test/three/**', route => route.fulfill({
     path: path.resolve(__dirname, '../../backend/node_modules/three/build', path.basename(new URL(route.request().url()).pathname)),
     contentType: 'text/javascript', headers: { 'Access-Control-Allow-Origin': '*' }
@@ -71,6 +71,7 @@ test('the ground shows its cover: default grass, then sand and paving per cell, 
       errors, shown: !!shown, credit: shown?.attribution, reused: cover.uniforms.uCoverMix.value === textures,
       defaultGround: at(before, -100, -100),
       west: at(after, -150, -100), east: at(after, 150, -100),
+      transition: [-70, -35, 0, 35, 70].map(x => at(after, x, -100)),
       track: at(after, -150, 50), besideTrack: at(after, -150, 30)
     };
   });
@@ -81,10 +82,13 @@ test('the ground shows its cover: default grass, then sand and paving per cell, 
   // Grass and shrubs: green before the cover is known.
   expect(result.defaultGround[1]).toBeGreaterThan(result.defaultGround[0] + 10);
   expect(result.defaultGround[1]).toBeGreaterThan(result.defaultGround[2] + 20);
-  // Sand west: warm, red over blue; paving east: near grey.
+  // The east is a darker, less saturated mineral tone with a gradual transition at the cell edge.
   expect(result.west[0]).toBeGreaterThan(result.west[2] + 40);
-  expect(Math.abs(result.east[0] - result.east[2])).toBeLessThan(15);
-  expect(result.east[0]).toBeGreaterThan(120);
+  expect(result.east[0] - result.east[2]).toBeLessThan(result.west[0] - result.west[2]);
+  expect(result.east[0]).toBeLessThan(result.west[0]);
+  const red = result.transition.map(colour => colour[0]);
+  expect(red[0] - red[4]).toBeGreaterThan(12);
+  expect(Math.max(...red.slice(1).map((value, i) => Math.abs(value - red[i])))).toBeLessThan(20);
   // The track is its own colour, not the sand around it.
   expect(result.track.some((v, i) => Math.abs(v - result.besideTrack[i]) > 12)).toBe(true);
 });

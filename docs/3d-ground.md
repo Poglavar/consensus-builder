@@ -93,15 +93,17 @@ colour, so Alatau's steppe is dry brown and Jarun is green.
   worker threads so a read never holds up the API's other requests. A missing tile is open sea: no
   look. Its `attribution` (ESA's own wording, CC BY 4.0, and OpenStreetMap) shows under Settings →
   Sources & software as "3D ground" while the model view shows a cover, never on the map.
-- `frontend/js/three-ground-cover.js`: a shader patch on the pavement plane and on the parcel slabs
-  (`plot`: a shade lighter, plain instead of paved where built-up). Two small RGBA textures carry
-  per cell the weights of five patterns (grass, shrub, bare soil, rock, paving) and the colour;
-  sampled linearly through a warped position, so open looks fade into each other, while paved and
-  open ground meet along a crisp, wandering edge. A broad 35–90 m mottle keeps open ground from
-  reading as one tone. Vegetation goes from its sampled colour (dry) to its own green as NDVI rises,
+- `frontend/js/three-ground-cover.js`: a shader patch on the background plane and on the parcel
+  slabs (a shade lighter). Two small RGBA textures carry the colour and weights of four patterns
+  per cell (grass, shrub, bare soil, rock). Linear sampling blends the cell edges. WorldCover's
+  built-up cells give the background a warm mineral tone, tinted by the local dry ground where
+  sampled, with the same fine grain and broad mottle as open ground. Vegetation goes from its sampled colour (dry) to its own green as NDVI rises,
   since an annual median is dull. Before the cover arrives, and where it is silent, the ground is
   grass and shrubs; beyond the read area it is the cover's mean. The patterns' value noise reads a
   generated 512 × 512 lattice texture (one fetch per value) instead of hashing four corners per call.
+- With Built off, the model view draws a low-contrast paved surface over the standing buildings'
+  projected footprints from the same loaded scene data. Courtyards remain open. The footprints
+  form one ground batch after mapped roads, paths, water and greenery and before parcel slabs.
 - Foot ways: OSM footways, paths, tracks, steps, cycleways and pedestrian ways become flat strips
   (`paths` in `ground-geometry.js`, one draw call per surface): paved, gravel or trodden earth from
   their `surface` tag, a track's grade, or the class. Earth and gravel are light, as worn tracks
@@ -139,9 +141,9 @@ colour, so Alatau's steppe is dry brown and Jarun is green.
   breaks across the junction disc at every side-street T, as the disc is as wide as the street.
 - Zagreb's cadastral parcels load late and unevenly in this dev setup (0, 202 or 356 lot slabs on
   three loads of the same view); not touched here.
-- `service` roads and parking aisles: the carriageway list is only the driveable classes the
-  vehicles use, so driveways and parking lots are built-up ground (paved) or whatever the cover
-  says lies there. Mapped pedestrian areas (closed `highway=pedestrian` rings) are not drawn.
+- `service` roads and parking aisles: the carriageway list is the driveable classes the vehicles
+  use. Driveways and parking lots take on the background ground cover where there is no drawn
+  surface. Mapped pedestrian areas (closed `highway=pedestrian` rings) are not drawn.
 - Grade separation of OSM bridges and ramps: everything is at z 0 (the Brooklyn Bridge approaches
   draw flat). The corridor carriageways carry their grade-separation z already.
 - Photo mode: the ground is hidden there; the tiles are the ground.

@@ -159,7 +159,8 @@ describe('the renderer: colours and texture bytes', () => {
         // A beach in a park reads green from coarse colour cells: sand keeps its own colour then.
         expect(Cover.lookColor('sand', { rgb: [74, 91, 66], ndvi: 0.46, samples: 400 })).toEqual(Cover.COLORS.sand);
         expect(Cover.lookColor('sand', { rgb: [181, 144, 108], ndvi: 0.2, samples: 400 })).toEqual([181, 144, 108]);
-        expect(Cover.lookColor('built', { rgb: [1, 2, 3], ndvi: 0.1, samples: 400 })).toEqual(Cover.COLORS.built);
+        expect(Cover.lookColor('built', { rgb: [150, 130, 110], ndvi: 0.1, samples: 400 })).toEqual([158, 144, 128]);
+        expect(Cover.lookColor('built', { rgb: [80, 120, 60], ndvi: 0.6, samples: 400 })).toEqual(Cover.COLORS.built);
     });
 
     it('turns a payload into weights and colours with the south row first, and the mean beyond it', () => {
@@ -167,16 +168,17 @@ describe('the renderer: colours and texture bytes', () => {
         const payload = {
             bbox: [0, 0, 1, 1], cols: 2, rows: 2, lookNames: LOOKS,
             looks: Buffer.from([LOOK.built, LOOK.built, LOOK.sand, LOOK.sand]).toString('base64'),
-            palette: { sand: { rgb: [200, 180, 140], ndvi: 0.1, samples: 50 } }
+            palette: { sand: { rgb: [200, 180, 140], ndvi: 0.1, samples: 50 },
+                bare: { rgb: [150, 130, 110], ndvi: 0.1, samples: 50 } }
         };
         const data = Cover.coverData(payload);
-        // Texture row 0 is the south: sand, painted in its sample, no paving.
-        expect(Array.from(data.tint.slice(0, 4))).toEqual([200, 180, 140, 0]);
-        expect(Array.from(data.mix.slice(0, 4))).toEqual(Cover.PATTERNS.sand.slice(0, 4).map(v => Math.round(v * 255)));
-        // The north row is paved, in the pavement colour.
-        expect(Array.from(data.tint.slice(8, 12))).toEqual([...Cover.COLORS.built, 255]);
-        expect(data.fallback.mix[4]).toBeCloseTo(0.5, 6);
-        expect(data.fallback.color).toEqual([200, 180, 140].map((value, i) => Math.round((value + Cover.COLORS.built[i]) / 2)));
+        // South row: the sampled sand. North row: mineral grain tinted by the local bare ground.
+        expect(Array.from(data.tint.slice(0, 4))).toEqual([200, 180, 140, 255]);
+        expect(Array.from(data.mix.slice(0, 4))).toEqual(Cover.PATTERNS.sand.map(v => Math.round(v * 255)));
+        expect(Array.from(data.tint.slice(8, 12))).toEqual([158, 144, 128, 255]);
+        expect(Array.from(data.mix.slice(8, 12))).toEqual([0, 0, 255, 0]);
+        expect(data.fallback.mix[2]).toBeCloseTo(0.965, 6);
+        expect(data.fallback.color).toEqual([179, 162, 134]);
         expect(Cover.coverData({ ...payload, looks: 'AA==' })).toBeNull();
     });
 
