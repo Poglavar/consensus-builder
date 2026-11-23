@@ -77,9 +77,11 @@ node restatements/alatau-genplan-479341/build-and-upload.mjs --dry-run          
 ```
 
 `alatau-genplan-479341.ugt.json` is a portable plan file: import it through Lists → Plans → Import
-plan file. The restatement is **not published**: no design, plan or agreement from it is pinned or
-indexed, and there is no ground file yet. The other `build-and-upload.mjs` steps
-([restatements](../README.md)) would publish it. `backend/test/alatau-genplan-479341-designs.test.js`
+plan file. Published on 23 November 2026 to `api.urbangametheory.xyz`: the 10 designs and one
+community-vote agreement, `bafkreihmrwm7zsys3gf7pxu7o6ruli2jpoqmkjjqww5gisyogllnp6wnka` (plan
+`bafkreib3k72tqlwjkmfpopsgwfh772swnygptms7iosjqix5fnade6yzxa`), whose land is
+`ground/alatau-genplan-479341.json`: 4 input parcels, 31 outputs (plots 314,731 m², streets
+144,432 m², parks 31,236 m²). `backend/test/alatau-genplan-479341-designs.test.js`
 checks the zone list, the design counts, that every plot comes from a zone, that the plots tile the
 district, and that the plan file holds the builder's CIDs.
 
@@ -93,10 +95,4 @@ district, and that the plan file holds the builder's CIDs.
   width; the plan's streets are 29–32 m, and the avenue on the east side 60 m (half inside).
 - About 181,000 m² of the district lies outside the parcel register (open ground); the layout binds
   four registered parcels (03341030011, 03055235003, 03055225492, 03055225453) and that open ground.
-- Applying the imported plan file applies the designs without their parcel declarations: an imported
-  design is stored with none, and the plan's apply reuses that stored copy, so the plots stand over
-  the registered parcels without cutting them. Applied as bound drafts (the app's draft path), the
-  layout cuts the four parcels as expected.
-- Applied that way, the road forms land pieces only on registered parcels (93,049 m²); its
-  51,383 m² on open ground has no piece in the parcel fabric, though the road is drawn there.
-  Parks and blocks on open ground do form pieces. Not yet explained.
+- The two parks on green strips 480511 and 480589 lie wholly on open ground, so they bind no parcel.
