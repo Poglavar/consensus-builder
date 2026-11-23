@@ -37,8 +37,8 @@ describe('property_offer integrated lens/SAS lifecycle', () => {
         async signTransaction(transaction: any) { transaction.partialSign(testWallet); return transaction; },
         async signAllTransactions(transactions: any[]) { for (const transaction of transactions) transaction.partialSign(testWallet); return transactions; }
     } as any;
-    const provider = new anchor.AnchorProvider(new anchor.web3.Connection(rpcUrl, 'confirmed'), wallet, { commitment: 'confirmed', preflightCommitment: 'confirmed' }); anchor.setProvider(provider);
-    const program = anchor.workspace.PropertyOffer as Program;
+    const provider = new anchor.AnchorProvider(new anchor.web3.Connection(rpcUrl, 'confirmed'), wallet, { commitment: 'confirmed', preflightCommitment: 'confirmed' });
+    const program = new Program(require('../target/idl/property_offer.json'), provider);
 
     it('verifies signed seller consent through the lens, accepts both sides, and pays exact lamports', async () => {
         const [{ createLensMember }, { createLensMemberApp }, { createMemoryStore }, { LENS_SCHEMAS }, { createOfferChain }, sas, kit] = await Promise.all([

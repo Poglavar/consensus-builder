@@ -136,6 +136,13 @@ as SAS does. Rebuild it with `cargo build-sbf --manifest-path tests/mock_sas/Car
 `tests/mock_sas/target/deploy/mock_sas.so` to `tests/fixtures/`. Never deploy it. Tests read the
 validator's clock (`chainNow`), never `Date.now()`, because the localnet clock drifts from the host.
 
+Run `tests/property_offer_integrated.ts` against a separate local validator with the real Solana
+Attestation Service program cloned from devnet at `22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG`
+and the locally built `property_offer` program loaded. From `blockchain/solana`, set
+`ANCHOR_PROVIDER_URL` to that validator and run
+`yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/property_offer_integrated.ts`. This suite
+uses its own wallet and exercises the lens HTTP verifier and SAS issuer.
+
 `tests/agreement.ts` covers the `agreement` program. `tests/agreement-helpers.ts` creates, funds,
 attests (an AgreementDecision-v1 attestation written through the mock SAS), executes, cancels and
 expires agreements, for that suite and for the market and pledge suites, whose subject has been an

@@ -29,7 +29,8 @@ cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
-test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+# The HTTP lens lifecycle uses the real SAS program in a separate validator.
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 --exclude tests/property_offer_integrated.ts tests/**/*.ts"
 
 # Genesis account for tests/proposal_pledge.ts: proposal_pledge only accepts the devnet USDC mint
 # address, so the suite gets a local mint at that address with a test-only mint authority. Its

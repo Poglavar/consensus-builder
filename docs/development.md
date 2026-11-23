@@ -121,7 +121,7 @@ potentially expensive run; choose it deliberately rather than treating it as a q
 | Browser | Playwright in `e2e/tests/`, local frontend with fixture-backed API responses | `cd e2e && npx playwright test tests/<file>.spec.ts` | `cd e2e && npm test` (headless) or `npm run test:headed`; tagged subsets `test:smoke`, `test:core`, `test:features` |
 | Feature and control inventories | `e2e/feature-inventory.json`, `e2e/control-contract.json` | `cd e2e && npm run check:features`, `npm run check:controls` | |
 | EVM contracts | Foundry in `blockchain/forge-test/` (Hardhat tooling remains but holds no regression coverage) | | `cd blockchain && forge test` |
-| Solana programs | Anchor and TypeScript in `blockchain/solana/tests/`, against a local validator | | `cd blockchain/solana && yarn test` |
+| Solana programs | Anchor and TypeScript in `blockchain/solana/tests/`, against a local validator | | `cd blockchain/solana && yarn test`, plus the [real SAS lifecycle test](../blockchain/solana/README.md#localnet-tests) |
 | Production parcel smoke | `backend/scripts/smoke-production-bbox.mjs`, read-only | `cd backend && npm run smoke:prod:parcels` | |
 
 ### Resumable test runs
