@@ -190,7 +190,7 @@ describe('planning view refresh', () => {
     function planningHarness({ view, zoom = 19, descriptor = { id: 'src', parcelStudy: true, capabilities: { areas: false } }, fail = () => null, zoningAreas = 'off' }) {
         const source = read('../../frontend/js/planning/views.js');
         const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
-        const functions = ['refresh', 'invalidate', 'joinAreas', 'markFailed'].map(name => {
+        const functions = ['refresh', 'freeze', 'invalidate', 'joinAreas', 'markFailed'].map(name => {
             const node = body.find(entry => entry.type === 'FunctionDeclaration' && entry.id.name === name);
             return source.slice(node.start, node.end);
         });
@@ -323,6 +323,44 @@ describe('planning view refresh', () => {
         await far.context.refresh();
         expect(far.loadViewport).not.toHaveBeenCalled();
         expect(far.context.status).toBe('zoom');
+    });
+
+    it('in 3D between zoom 15 and 16 keeps loading zoning areas and keeps the massing it drew', async () => {
+        const view = [15.97611, 45.80381, 15.98147, 45.80519];
+        const zones = { id: 'src', parcelStudy: true, capabilities: { areas: true } };
+        const { context, box, asked } = planningHarness({ view, zoom: 16.5, descriptor: zones, zoningAreas: 'ghost' });
+        box.mode = '3d';
+        await context.refresh();
+        const massing = context.items.filter(item => item.id.startsWith('/planning/envelopes'));
+        expect(massing.length).toBe(cellsOf(view).length);
+        // The camera rises past zoom 16 over a wider area: new zoning cells load, massing does not.
+        const before = asked().length;
+        const [w, s, e, n] = view, dx = e - w, dy = n - s;
+        box.zoom = 15.5; box.current = [w - dx, s - dy, e + dx, n + dy];
+        await context.refresh();
+        expect(context.frozen).toBe(false);
+        const later = asked().slice(before);
+        expect(later.length).toBeGreaterThan(0);
+        expect(later.every(call => call.startsWith('/planning/representations '))).toBe(true);
+        expect(context.massingWaits).toBe(true);
+        // What it drew stays: every massing cell is still in range.
+        expect(context.items.filter(item => item.id.startsWith('/planning/envelopes'))).toHaveLength(massing.length);
+        // Below zoom 15 it stops loading and keeps all of it.
+        const count = context.items.length, asks = asked().length;
+        box.zoom = 14.5;
+        await context.refresh();
+        expect(context.frozen).toBe(true);
+        expect(asked()).toHaveLength(asks);
+        expect(context.items).toHaveLength(count);
+        // A source without zoning areas freezes from zoom 16 instead of clearing what it drew.
+        const plain = planningHarness({ view, zoom: 16.5, descriptor: { id: 'src', capabilities: { areas: false } }, zoningAreas: 'ghost' });
+        plain.box.mode = '3d';
+        await plain.context.refresh();
+        const drawnItems = plain.context.items.length;
+        plain.box.zoom = 15.5;
+        await plain.context.refresh();
+        expect(plain.context.frozen).toBe(true);
+        expect(plain.context.items).toHaveLength(drawnItems);
     });
 
     it('a cell that fails once is asked again, alone, after the rest', async () => {

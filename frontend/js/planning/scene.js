@@ -255,8 +255,9 @@
         const dLat = reach / 110570, dLng = reach / (111320 * Math.cos(lat * Math.PI / 180));
         return [Math.min(grown[0], lng - dLng), Math.min(grown[1], lat - dLat), Math.max(grown[2], lng + dLng), Math.max(grown[3], lat + dLat)];
     }
-    function retainDrawn(drawn, { jobs, answers, range }) {
-        const scopes = new Set(jobs.map(job => job.scope));
+    function retainDrawn(drawn, { jobs, answers, range, keep = [] }) {
+        // `keep`: scopes not asked for now whose drawn cells still stay while in range.
+        const scopes = new Set([...jobs.map(job => job.scope), ...keep]);
         for (const [key, cell] of drawn) if (!scopes.has(cell.scope) || !bboxIntersects(cell.bbox, range)) drawn.delete(key);
         for (const job of jobs) {
             const value = answers.get(job.key);

@@ -753,19 +753,23 @@
     const ZONING_ZOOM = 15, MASSING_ZOOM = 16;
     // Zoning areas are drawn while massing waits for a closer zoom (stateText says so).
     let massingWaits = false;
+    // The model view below its loading gate: what is drawn stays, nothing new loads.
+    function freeze() {
+        viewCache.abortExcept([]); request++;
+        if (status === 'loading') status = 'ready';
+        frozen = true;
+        render();
+    }
     async function refresh({ force = false } = {}) {
         if (!ready || !catalogReady) return;
         if (policy().permitted === 'off' && store.get().zoningAreas === 'off') { markFailed(); return; }
         // The 2D map's view in 2D; in 3D, the 2D view the camera stands for, around its target (load-view.js).
         const view = root.LoadView.current();
         // In 3D a camera tilted toward straight down reads as a lower zoom: what is drawn stays (it is
-        // all still in range), only new cells stop loading. The 2D map below the gate draws none.
-        if (view && view.mode === '3d' && view.zoom < MASSING_ZOOM && drawn.size) {
-            viewCache.abortExcept([]); request++;
-            if (status === 'loading') status = 'ready';
-            frozen = true;
-            render(); return;
-        }
+        // all still in range), only new cells stop loading below the lowest gate of what is shown
+        // (zoning areas load from ZONING_ZOOM). The 2D map below the gate draws none.
+        const drawn3d = view?.mode === '3d' && drawn.size > 0;
+        if (drawn3d && view.zoom < (store.get().zoningAreas !== 'off' ? ZONING_ZOOM : MASSING_ZOOM)) { freeze(); return; }
         frozen = false;
         const zoningOnly = view && view.zoom >= ZONING_ZOOM && view.zoom < MASSING_ZOOM && store.get().zoningAreas !== 'off';
         if (!view || (view.zoom < MASSING_ZOOM && !zoningOnly)) {
@@ -786,6 +790,7 @@
         // A source without zoning areas answers representations with massing, which waits as envelopes do.
         const areaScope = descriptor && (descriptor.capabilities.areas ? store.get().zoningAreas !== 'off' : !zoningOnly)
             ? `areas:${city}:${sourceId}:${scenarioId}` : '';
+        if (zoningOnly && !areaScope && drawn3d) { freeze(); return; }
         if (zoningOnly && !areaScope) {
             massingWaits = false;
             viewCache.abortExcept([]); request++; invalidate(); drawn.clear(); items = []; status = 'zoom'; payload = null;
@@ -810,8 +815,10 @@
         let failed = 0;
         const failedKeys = new Set();
         const range = core.rangeAround(bbox, view.mode === '3d' ? { centre: view.centre, reachM: view.reachM } : {});
+        // The model view between the gates keeps the massing it drew in range and loads no more of it.
+        const paused = drawn3d && zoningOnly && descriptor?.parcelStudy && policy().permitted !== 'off' ? [`envelopes:${city}:${sourceId}`] : [];
         const assemble = () => {
-            const ordered = core.retainDrawn(drawn, { jobs, answers, range });
+            const ordered = core.retainDrawn(drawn, { jobs, answers, range, keep: paused });
             markFailed([...failedKeys]);
             // Envelopes lead: their answer says how the status line counts.
             const merged = core.mergeAnswers([...ordered.filter(answer => answer.envelopes), ...ordered.filter(answer => !answer.envelopes)], { joinAreas });
