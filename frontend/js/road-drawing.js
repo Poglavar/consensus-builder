@@ -1847,13 +1847,6 @@ function resetRoadMetricPlaceholders() {
     updateRoadAcquiringDifficulty([]);
 }
 
-function formatRoadText(template, params = {}) {
-    if (!template) return '';
-    return String(template).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
-        return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : match;
-    });
-}
-
 // What one design that could not be put back after a road edit says to the author. A design
 // rebuilt on its ground after the edit (a square, park or building beside the road) that no longer
 // finds that ground is the usual one: the road now runs over it. The bare code
@@ -1879,15 +1872,6 @@ function boundedRoadRefusal(issue) {
     }
     return translateRoadText('panel.road.boundedOutside',
         'A road in a parcel stays inside that parcel. Move the point back onto it.');
-}
-
-function translateRoadText(key, fallback, params = {}) {
-    const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
-    const translated = api && typeof api.t === 'function' ? api.t(key, params) : null;
-    if (!translated || translated === key) {
-        return formatRoadText(fallback, params);
-    }
-    return formatRoadText(translated, params);
 }
 
 function showRoadAlert(key, fallback, params = {}) {
@@ -3619,27 +3603,6 @@ function findAffectedParcels(roadPolygon) {
 }
 
 // Update the corridor info panel with current metrics.
-// Collapse the drawing panel to a slim strip (title + Cross-section + Undo/Finish) so the map
-// stays visible while drawing — essential on phones, where the full panel covers half the screen.
-function toggleRoadInfoPanelMinimized() {
-    const panel = document.getElementById('road-info-panel');
-    if (!panel) return;
-    const minimized = panel.classList.toggle('is-minimized');
-    const btn = document.getElementById('road-panel-minimize');
-    if (btn) {
-        const label = minimized
-            ? translateRoadText('sidebar.areaMonitor.expand', 'Expand')
-            : translateRoadText('sidebar.areaMonitor.minimize', 'Minimize');
-        btn.setAttribute('aria-label', label);
-        btn.setAttribute('title', label);
-        btn.setAttribute('aria-expanded', minimized ? 'false' : 'true');
-        btn.innerHTML = minimized ? '+' : '&#8722;';
-    }
-}
-if (typeof window !== 'undefined') {
-    window.toggleRoadInfoPanelMinimized = toggleRoadInfoPanelMinimized;
-}
-
 function updateRoadInfoPanel() {
     const hasRoadSegments = getAllRoadSegments(true).some(seg => Array.isArray(seg) && seg.length > 0);
     if (!hasRoadSegments) return;
@@ -4568,50 +4531,6 @@ function showTrackSpeedPicker() {
 }
 
 // Show dialog with acquiring difficulty explanation
-function showAcquiringDifficultyDialog() {
-    if (typeof document === 'undefined') return;
-
-    const t = translateRoadText;
-    const title = t('panel.road.acquiringDifficultyTitle', 'Modeled acquisition score');
-    // The area-model sentence names the city's road-land rate; a city without one has none to name.
-    const roadRate = window.CityMoney.currentLandPriceOptions('road');
-    const explanation = t('panel.road.acquiringDifficultyTooltip', 'An illustrative score: each parcel value is multiplied by a category weight. It does not estimate legal rights, acquisition cost or consent.\nGovernment: 0\nInstitution: 0\nCompany: 1\nIndividual or mixed: 2\nMissing ownership categories, unusable prices or mixed currencies leave the score unknown.')
-        + (typeof roadRate.areaPricePerSqm === 'number'
-            ? '\n' + t('panel.road.acquiringDifficultyAreaModel', 'Area estimates use a {{rate}}/m² model.', { rate: CbFormat.formatMoney(roadRate.areaPricePerSqm, roadRate.currency) })
-            : '');
-    const closeLabel = t('modal.common.close', 'Close');
-    const okLabel = t('panel.road.acquiringDifficultyDialogOk', 'OK');
-
-    // Format explanation: split by newlines and format as paragraphs/list
-    const parts = explanation.split('\n');
-    const intro = parts[0] || '';
-    const coefficients = parts.slice(1).filter(line => line.trim());
-
-    let formattedExplanation = `<p>${intro}</p>`;
-    if (coefficients.length > 0) {
-        formattedExplanation += '<ul>';
-        coefficients.forEach(coeff => {
-            formattedExplanation += `<li>${coeff}</li>`;
-        });
-        formattedExplanation += '</ul>';
-    }
-
-    // The app's dialog (js/ui/dialogs.js): its header and close, Escape and the backdrop close it.
-    window.CbDialog.open({
-        title,
-        size: 'sm',
-        className: 'road-acquiring-difficulty-dialog',
-        body: formattedExplanation,
-        closeLabel,
-        actions: [{ id: 'ok', label: okLabel, role: 'primary' }]
-    });
-}
-
-// Expose function globally
-if (typeof window !== 'undefined') {
-    window.showAcquiringDifficultyDialog = showAcquiringDifficultyDialog;
-}
-
 // One namespace for the whole tool: `session` is a live view of the drawing session's state and every
 // function above is listed by name. The state itself stays in this script's top-level bindings, which
 // the functions read by name; each binding is a read/write property of `session`, so a caller sees and
