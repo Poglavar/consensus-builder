@@ -25,7 +25,7 @@ export const alatauGenplanSource = Object.freeze({
     capabilities: { volumes: false, areas: true, parcelEvidence: false, constraintEvaluation: false },
     parcelSourceId: 'kz-alatau-pkk', parcelStudy: 'direct-dimensions.v1',
     // The plan's zones are small; a block of lots lies under several hundred, read in one request.
-    zoningPageLimit: 1000, viewportZoning: true,
+    zoningPageLimit: 1000, viewportZoning: true, zoningOverview: { detailZoom: 15 },
     scenarios: ['general'], scenario: 'general',
     // The adopted plan changes only by a new decree: its answers keep a day (routes/planning.js).
     cacheSeconds: 86400

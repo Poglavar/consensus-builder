@@ -142,6 +142,7 @@
     --cb-planning-failed-hatch-opacity: 0.8;
     /* Permitted zones by use group (planning-representations.v1 `use.group`): housing from light
        to dark by height class, then the common land-use map colours. */
+    --cb-planning-zone-housing: #f6d97c;
     --cb-planning-zone-housing-low: #f2c94c;
     --cb-planning-zone-housing-mid: #e8913a;
     --cb-planning-zone-housing-high: #8a5a2e;

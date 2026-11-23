@@ -8634,6 +8634,7 @@
             "burial-grounds": "Скотомогильники"
         },
         "useGroup": {
+            "housing": "Жилая зона",
             "housing-low": "Малоэтажное жильё",
             "housing-mid": "Среднеэтажное жильё",
             "housing-high": "Многоэтажное жильё",

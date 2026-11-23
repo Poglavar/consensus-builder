@@ -3,14 +3,18 @@
 import { validateGeometry } from '../../parcels/source-contract.js';
 import { withSourceProposal, sourceRevision } from '../source-proposal.js';
 
-export const zagrebGupSource = Object.freeze({
-    id: 'zagreb-gup-2025', label: 'Zagreb GUP 2025', city: 'zagreb', edition: '2025', default: true,
+const zagrebGupBase = {
+    city: 'zagreb',
     url: 'https://www.zagreb.hr/izmjene-i-dopune-generalnogurbanistickog-plana-gr/187664',
     coverage: 'cached-results', kind: 'regulation', storage: 'public.parcel_build_envelope',
     capabilities: { volumes: true, parcelEvidence: true, constraintEvaluation: false },
     scenario: 'cached-calculation'
+};
+export const zagrebGupSource = Object.freeze({ ...zagrebGupBase,
+    id: 'zagreb-gup-2025', label: 'Zagreb GUP 2025', edition: '2025', default: true,
+    zoningOverview: {}
 });
-export const zagrebGup2016Source = Object.freeze({ ...zagrebGupSource,
+export const zagrebGup2016Source = Object.freeze({ ...zagrebGupBase,
     id: 'zagreb-gup-2016', label: 'Zagreb GUP 2016', edition: '2016', default: false,
     url: 'https://geoportal.zagreb.hr/' });
 const sourceFor = row => Number(row.gup_id) === 2016 ? zagrebGup2016Source : zagrebGupSource;

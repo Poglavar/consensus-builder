@@ -125,6 +125,11 @@ per-adapter tests cover that nothing else moved.
   the layer says "zoom in".
 - **Alatau zoning areas** load the [whole simplified plan](alatau-genplan-source.md) below zoom 15 in
   2D and exact polygons in one viewport query from zoom 15. Both use the adopted plan snapshot.
+- **Zagreb GUP 2025** offers the same 2D overview and Fit plan control for adopted Map 1 land use.
+  Its simplified polygons remain visible at closer zooms alongside the separately loaded envelope
+  feed and applied designs. The asset is built from the EPSG:3765 geoportal Map 1 snapshot using
+  `backend/scripts/build-zagreb-gup-overview.mjs`. It preserves the official Map 1 marks and uses
+  the first mark of a compound code for the shared map palette.
 - **Open:** loading only the cells in the camera's view, and simpler drawing for far cells. Both
   need measurements on the laptop and a phone first, and view-dependent loading needs the camera
   to trigger loads, which is step E2.

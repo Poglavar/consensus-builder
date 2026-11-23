@@ -8530,6 +8530,7 @@
             "burial-grounds": "Animal burial grounds"
         },
         "useGroup": {
+            "housing": "Residential",
             "housing-low": "Low-rise housing",
             "housing-mid": "Mid-rise housing",
             "housing-high": "High-rise housing",

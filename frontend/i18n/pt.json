@@ -8706,6 +8706,7 @@
             "burial-grounds": "Cemitérios de animais"
         },
         "useGroup": {
+            "housing": "Residencial",
             "housing-low": "Habitação baixa",
             "housing-mid": "Habitação de altura média",
             "housing-high": "Habitação em altura",

@@ -51,6 +51,7 @@ body:is([data-planning-proposed="solid"], [data-planning-proposed="ghost"]) .pla
     margin: var(--cb-space-2) 0 0; padding: 0; list-style: none; font-size: var(--cb-text-xs); color: var(--cb-text-muted); }
 .planning-zone-legend[hidden] { display: none; }
 .planning-zone-legend li { display: flex; align-items: center; gap: var(--cb-space-2); }
+.planning-swatch--zone-housing { background: var(--cb-planning-zone-housing); }
 .planning-swatch--zone-housing-low { background: var(--cb-planning-zone-housing-low); }
 .planning-swatch--zone-housing-mid { background: var(--cb-planning-zone-housing-mid); }
 .planning-swatch--zone-housing-high { background: var(--cb-planning-zone-housing-high); }

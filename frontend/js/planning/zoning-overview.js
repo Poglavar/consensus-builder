@@ -1,19 +1,18 @@
-// Compact, regional display geometry. Inspection reads the full source record by id.
+// Compact, regional display geometry shared by planning sources that provide an overview asset.
 (function (root) {
     'use strict';
 
-    const sourceId = 'alatau-genplan-727';
-    const path = `/data/planning/${sourceId}-overview.json`;
-    let pending;
+    const reads = new Map();
+    const supports = source => !!source?.zoningOverview && typeof source.id === 'string' && /^[a-z0-9][a-z0-9_-]{0,99}$/.test(source.id);
 
     function decode(answer, source, turf) {
-        if (answer?.sourceId !== sourceId || !Array.isArray(answer.zones) || !Array.isArray(answer.uses)
+        if (answer?.sourceId !== source.id || !Array.isArray(answer.zones) || !Array.isArray(answer.uses)
             || answer.bbox?.length !== 4 || !answer.bbox.every(Number.isFinite)) {
             throw new Error('Invalid zoning overview response.');
         }
         const entries = answer.zones.map(([recordId, useIndex, geometry]) => {
             const { status, landBasis, ...use } = answer.uses[useIndex];
-            const id = `${sourceId}:${recordId}`;
+            const id = `${source.id}:${recordId}`;
             const item = {
                 id, role: 'permitted', title: use.label, site: geometry, overview: true,
                 areas: [{ id: `${id}:area`, geometry }], volumes: [], constraints: [], metrics: {}, use, landBasis,
@@ -23,17 +22,23 @@
             const feature = turf.feature(geometry, { id });
             return { item, feature, bbox: turf.bbox(feature) };
         });
-        return { bbox: answer.bbox, entries };
+        return { sourceId: source.id, detailZoom: source.zoningOverview?.detailZoom,
+            bbox: answer.bbox, entries, items: entries.map(({ item }) => item) };
     }
 
     function load(source) {
-        return pending ??= fetch(path).then(response => {
+        if (!supports(source)) return Promise.reject(new Error('Planning source has no overview.'));
+        const cached = reads.get(source.id);
+        if (cached) return cached;
+        const pending = fetch(`/data/planning/${source.id}-overview.json`).then(response => {
             if (!response.ok) throw new Error(`Zoning overview HTTP ${response.status}`);
             return response.json();
         }).then(answer => decode(answer, source, root.turf)).catch(error => {
-            pending = null;
+            reads.delete(source.id);
             throw error;
         });
+        reads.set(source.id, pending);
+        return pending;
     }
 
     function hitsAt(entries, point, turf) {
@@ -43,7 +48,7 @@
         ).map(({ item }) => item);
     }
 
-    const api = { sourceId, decode, load, hitsAt };
+    const api = { supports, decode, load, hitsAt };
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (root) root.ZoningOverview = api;
 })(typeof window !== 'undefined' ? window : null);

@@ -20,10 +20,10 @@
     let restoreId = new URLSearchParams(location.search).get('planningSelection'), restoring = false, catalogReady = false, parcelPanel = null;
     // Per-item configuration pins chosen in the inspector; cleared with the source, housing type or city.
     let pins = {}, sourcesKey = '';
-    let overviewActive = false, overview = null, overviewLayer = null, overviewDisplay = '';
-    const overviewSource = source => source?.viewportZoning && source.id === root.ZoningOverview?.sourceId;
-    const showingOverview = () => overviewActive && overview && store.get().zoningAreas !== 'off'
-        && sourceId === root.ZoningOverview.sourceId && (root.__mapModeState?.desired ?? '2d') === '2d';
+    let overviewSourceId = '', overviewOnly = false, overview = null, overviewRead = null, overviewLayer = null, overviewDisplay = '';
+    const overviewSource = source => root.ZoningOverview?.supports(source);
+    const showingOverview = () => overview?.sourceId === sourceId && store.get().zoningAreas !== 'off'
+        && (root.__mapModeState?.desired ?? '2d') === '2d';
     // A source that is a zoning map shows its zones when chosen, unless the address or the person
     // already chose whether zones show.
     let zoningChosen = new URLSearchParams(location.search).has('zoningAreas');
@@ -98,7 +98,7 @@
         });
     }
     function policy() { return core.displayPolicy(store?.get()); }
-    function sceneItems() { return showingOverview() ? overview.items : items; }
+    function sceneItems() { return showingOverview() ? items.length ? [...items, ...overview.items] : overview.items : items; }
     function appearance(item) { return core.itemAppearance(item, store?.get()); }
     function selected() { return (focusedRecord?.id === store?.get().selectedId ? focusedRecord : null)
         || sceneItems().find(item => item.id === store?.get().selectedId) || null; }
@@ -124,7 +124,7 @@
         store.select(id);
         renderInspector();
         const item = selected();
-        if (item?.overview) {
+        if (item?.overview && item.source.viewportZoning) {
             sourceRecord({ city: item.source.city, providerId: item.source.id, recordId: item.source.recordId, scenario: scenarioParam() })
                 .then(records => {
                     const record = records.find(entry => entry.id === id);
@@ -339,7 +339,10 @@
         if (policy().permitted === 'off' && store.get().zoningAreas === 'off') return t('permittedOff');
         if (status === 'loading' && progress?.total) return t('loadingCells', progress);
         if (status !== 'ready') return t(status);
-        if (showingOverview()) return `${t('areasLoaded', { count: overview.items.length })} · ${t('zoomInForMore')}`;
+        if (overviewOnly && showingOverview()) {
+            const count = t('areasLoaded', { count: overview.items.length });
+            return overview.detailZoom == null ? count : `${count} · ${t('zoomInForMore')}`;
+        }
         if (!payload?.sources?.length) return t('unavailable');
         const failedNote = (failedCells ? ` · ${t('cellsFailed')}` : '') + (frozen || massingWaits ? ` · ${t('zoomInForMore')}` : '');
         if (payload.envelopes) return t('envelopesLoaded', { count: items.filter(item => item.parcelEnvelope).length,
@@ -613,7 +616,7 @@
         panel.querySelector('.planning-source-note').textContent = descriptor?.parcelStudy ? t('envelopeNote') : descriptor?.capabilities.areas ? t('zoningAreaNote')
             : descriptor?.capabilities.volumes === false ? t('evidenceOnly') : '';
         panel.querySelector('.planning-zoning-label').textContent = t('zoningAreas');
-        panel.querySelector('.planning-zoning-field').hidden = !descriptor?.capabilities.areas;
+        panel.querySelector('.planning-zoning-field').hidden = !descriptor?.capabilities.areas && !overviewSource(descriptor);
         // The legend lists the colours of what is drawn: envelopes, zone use groups in the order the colours run, dashed edges.
         const legend = panel.querySelector('.planning-zone-legend');
         legend.replaceChildren(...legendRows(labels.legend(sceneItems().filter(item => appearance(item) !== 'off'), fullT)));
@@ -806,37 +809,56 @@
         frozen = true;
         render();
     }
-    async function refreshOverview(descriptor) {
-        if (overviewActive && (overview || status === 'loading')) return;
-        const generation = ++request;
-        overviewActive = true;
-        viewCache.abortExcept([]); zoningViewportCache.abortExcept([]);
-        invalidate(); drawn.clear(); items = []; payload = null; progress = null;
-        markFailed();
-        status = 'loading'; drawMap(); render({ updateInspector: false }); notifyGeometry();
+    function resetOverview(id = '') {
+        if (id === overviewSourceId) return;
+        if (overviewLayer && root.map.hasLayer(overviewLayer)) root.map.removeLayer(overviewLayer);
+        overviewSourceId = id;
+        overview = null; overviewRead = null; overviewLayer = null; overviewDisplay = ''; overviewOnly = false;
+    }
+    async function refreshOverview(descriptor, { only }) {
+        resetOverview(descriptor.id);
+        const becameOnly = only && !overviewOnly;
+        overviewOnly = only;
+        if (becameOnly) {
+            request++;
+            viewCache.abortExcept([]); zoningViewportCache.abortExcept([]);
+            invalidate(); drawn.clear(); items = []; payload = null; progress = null;
+            markFailed();
+            status = overview ? 'ready' : 'loading'; drawMap(); render({ updateInspector: false }); notifyGeometry();
+        }
+        if (overview || overviewRead) return;
+        if (only) { status = 'loading'; render({ updateInspector: false }); }
+        const pending = root.ZoningOverview.load(descriptor);
+        overviewRead = pending;
         try {
-            const data = await root.ZoningOverview.load(descriptor);
-            if (generation !== request) return;
-            overview ??= { ...data, items: data.entries.map(({ item }) => item) };
-            status = 'ready'; drawMap(); render();
+            const data = await pending;
+            if (overviewRead !== pending || sourceId !== descriptor.id) return;
+            overview = data;
+            if (overviewOnly) status = 'ready';
+            drawMap(); render();
             restoreSelection();
         } catch (error) {
-            if (generation !== request) return;
+            if (overviewRead !== pending) return;
             console.error('[planning] Could not load the zoning overview', error);
-            status = 'error'; render();
+            if (overviewOnly) { status = 'error'; render(); }
+        } finally {
+            if (overviewRead === pending) overviewRead = null;
         }
     }
     async function refresh({ force = false } = {}) {
         if (!ready || !catalogReady) return;
-        if (policy().permitted === 'off' && store.get().zoningAreas === 'off') { markFailed(); return; }
+        if (policy().permitted === 'off' && store.get().zoningAreas === 'off') { resetOverview(); markFailed(); return; }
         // The 2D map's view in 2D; in 3D, the 2D view the camera stands for, around its target (load-view.js).
         const view = root.LoadView.current();
         const currentSource = sourceOptions.find(source => source.id === sourceId);
-        if (view?.mode === '2d' && view.zoom < ZONING_ZOOM && store.get().zoningAreas !== 'off' && overviewSource(currentSource)) {
+        const useOverview = view?.mode === '2d' && store.get().zoningAreas !== 'off' && overviewSource(currentSource)
+            && view.zoom < (currentSource.zoningOverview.detailZoom ?? Infinity);
+        if (useOverview) {
             frozen = false;
-            return refreshOverview(currentSource);
-        }
-        if (overviewActive) { overviewActive = false; request++; drawMap(); }
+            const only = view.zoom < MASSING_ZOOM || policy().permitted === 'off';
+            const load = refreshOverview(currentSource, { only });
+            if (only) return load;
+        } else resetOverview();
         // In 3D a camera tilted toward straight down reads as a lower zoom: what is drawn stays (it is
         // all still in range), only new cells stop loading below the lowest gate of what is shown
         // (zoning areas load from ZONING_ZOOM). The 2D map below the gate draws none.
@@ -855,7 +877,8 @@
         const bbox = view.bbox;
         if (force) { viewCache.clear(); zoningViewportCache.clear(); invalidate(); }
         // Bounds-registered sources come and go with the viewport; re-list them when it moves.
-        if (!overviewSource(currentSource) && !(await ensureSources(city, bbox))) return;
+        const wholePlanZoning = currentSource?.viewportZoning && overviewSource(currentSource);
+        if (!wholePlanZoning && !(await ensureSources(city, bbox))) return;
         const descriptor = sourceOptions.find(source => source.id === sourceId);
         const envelopeScope = descriptor?.parcelStudy && policy().permitted !== 'off' && !zoningOnly ? `envelopes:${city}:${sourceId}` : '';
         massingWaits = Boolean(zoningOnly && descriptor?.parcelStudy && policy().permitted !== 'off');
@@ -869,7 +892,7 @@
             markFailed(); if (!selected()) store.select(null);
             drawMap(); render(); notifyGeometry(); return;
         }
-        const viewportZoning = Boolean(areaScope && overviewSource(descriptor));
+        const viewportZoning = Boolean(areaScope && descriptor?.viewportZoning);
         const cells = envelopeScope || areaScope && !viewportZoning ? core.viewCells(bbox, view.centre) : [];
         const jobs = [];
         for (const [kind, scope] of [['envelopes', envelopeScope], ['areas', areaScope]]) {
@@ -1214,7 +1237,7 @@
         root.map.on('click', () => select(null));
         root.addEventListener('cityChanged', () => {
             viewCache.clear(); zoningViewportCache.clear(); sourceListings.clear(); request++; invalidate();
-            overviewActive = false; items = []; payload = null; status = 'loading';
+            resetOverview(); items = []; payload = null; status = 'loading';
             sourceOptions = []; sourceId = ''; scenarioId = ''; pins = {}; sourcesKey = ''; focusedRecord = null; restoreId = null; catalogReady = false; parcelPanel = null;
             store.select(null); drawMap(); render(); notifyGeometry(); loadSources();
         });
@@ -1246,12 +1269,12 @@
         // Drawn records covering a point, each once, in drawing order.
         itemsAt(latlng) {
             const point = root.turf.point([latlng.lng, latlng.lat]), seen = new Set();
-            if (showingOverview()) return root.ZoningOverview.hitsAt(overview.entries, point, root.turf);
-            return hitShapes.filter(({ item, feature }) => {
+            const detailed = hitShapes.filter(({ item, feature }) => {
                 if (seen.has(item.id)) return false;
                 try { if (!root.turf.booleanPointInPolygon(point, feature)) return false; } catch (_) { return false; }
                 seen.add(item.id); return true;
             }).map(({ item }) => item);
+            return showingOverview() ? [...detailed, ...root.ZoningOverview.hitsAt(overview.entries, point, root.turf)] : detailed;
         },
         selectAt: select,
         configure: (key, value) => store?.configure(key, value), reroll: role => store?.reroll(role) };

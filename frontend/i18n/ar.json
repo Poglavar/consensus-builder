@@ -8957,6 +8957,7 @@
             "burial-grounds": "مدافن الحيوانات"
         },
         "useGroup": {
+            "housing": "سكني",
             "housing-low": "مساكن منخفضة",
             "housing-mid": "مساكن متوسطة الارتفاع",
             "housing-high": "مساكن مرتفعة",

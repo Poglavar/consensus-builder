@@ -190,7 +190,7 @@ describe('planning view refresh', () => {
     function planningHarness({ view, zoom = 19, descriptor = { id: 'src', parcelStudy: true, capabilities: { areas: false } }, fail = () => null, zoningAreas = 'off' }) {
         const source = read('../../frontend/js/planning/views.js');
         const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
-        const functions = ['refresh', 'refreshOverview', 'freeze', 'invalidate', 'joinAreas', 'markFailed'].map(name => {
+        const functions = ['refresh', 'refreshOverview', 'resetOverview', 'freeze', 'invalidate', 'joinAreas', 'markFailed'].map(name => {
             const node = body.find(entry => entry.type === 'FunctionDeclaration' && entry.id.name === name);
             return source.slice(node.start, node.end);
         });
@@ -205,8 +205,9 @@ describe('planning view refresh', () => {
         const context = vm.createContext({
             URL, console: { ...console, error: vi.fn() }, Promise, Math, Array, ready: true, catalogReady: true, core: scene, request: 0, items: [], payload: null, status: 'loading', progress: null,
             viewCache: scene.createViewportCache({ limit: 2048 }), CELL_CONCURRENCY: 2, assembled: '', failedCells: 0, drawn: new Map(),
-            zoningViewportCache: scene.createViewportCache({ limit: 12 }), overviewActive: false, overview: null,
-            overviewSource: source => source?.viewportZoning === true,
+            zoningViewportCache: scene.createViewportCache({ limit: 12 }), overviewSourceId: '', overview: null,
+            overviewOnly: false, overviewRead: null, overviewLayer: null, overviewDisplay: '',
+            overviewSource: source => Boolean(source?.zoningOverview),
             policy: () => ({ permitted: 'ghost' }), store: { get: () => state, select: vi.fn() }, selected: () => null,
             ensureSources: async () => true, sourceOptions: [descriptor], sourceId: descriptor.id, scenarioId: '', scenarioParam: () => '',
             drawMap: vi.fn(), render() {}, notifyGeometry() {}, restoreSelection() {},
@@ -216,7 +217,7 @@ describe('planning view refresh', () => {
             hatchImage: grid => grid, drawHatch() {}, CustomEvent: class { constructor(type) { this.type = type; } },
             root: {
                 dispatchEvent: vi.fn(),
-                ZoningOverview: { load: vi.fn(async () => ({ entries: [] })) },
+                ZoningOverview: { load: vi.fn(async source => ({ sourceId: source.id, entries: [], items: [] })) },
                 LoadView: { current: () => ({ mode: box.mode || '2d', bbox: box.current, zoom: box.zoom,
                     centre: [(box.current[1] + box.current[3]) / 2, (box.current[0] + box.current[2]) / 2] }) },
                 CityConfigManager: { getCurrentCityId: () => 'zagreb' }, getBackendBase: () => 'http://api', PlanningFeed: { loadViewport }
@@ -230,7 +231,7 @@ describe('planning view refresh', () => {
 
     it('draws the regional overview once and switches to one exact zoning viewport without parcel cells', async () => {
         const view = [77.04, 43.748, 77.089, 43.774];
-        const descriptor = { id: 'alatau-genplan-727', viewportZoning: true, parcelStudy: true, capabilities: { areas: true } };
+        const descriptor = { id: 'alatau-genplan-727', viewportZoning: true, zoningOverview: { detailZoom: 15 }, parcelStudy: true, capabilities: { areas: true } };
         const { context, box, loadViewport } = planningHarness({ view, descriptor, zoom: 12, zoningAreas: 'ghost' });
         await context.refresh();
         await context.refresh();
@@ -239,12 +240,26 @@ describe('planning view refresh', () => {
         expect(loadViewport).not.toHaveBeenCalled();
         box.zoom = 15.18;
         await context.refresh();
-        expect(context.overviewActive).toBe(false);
+        expect(context.overviewSourceId).toBe('');
         expect(loadViewport).toHaveBeenCalledTimes(1);
         const url = new URL(loadViewport.mock.lastCall[0]);
         expect(url.pathname).toBe('/planning/representations');
         expect(url.searchParams.get('bbox')).toBe(view.join(','));
         expect(url.searchParams.get('limit')).toBe('1000');
+    });
+
+    it('keeps a map-only GUP overview present when the viewer zooms in to the envelope feed', async () => {
+        const view = [15.97611, 45.80381, 15.98147, 45.80519];
+        const descriptor = { id: 'zagreb-gup-2025', zoningOverview: {}, capabilities: { areas: false, volumes: true } };
+        const { context, box, loadViewport } = planningHarness({ view, descriptor, zoom: 12, zoningAreas: 'ghost' });
+        await context.refresh();
+        expect(loadViewport).not.toHaveBeenCalled();
+        expect(context.overview.sourceId).toBe(descriptor.id);
+        box.zoom = 17;
+        await context.refresh();
+        expect(context.overview.sourceId).toBe(descriptor.id);
+        expect(context.root.ZoningOverview.load).toHaveBeenCalledTimes(1);
+        expect(loadViewport).toHaveBeenCalledTimes(cellsOf(view).length);
     });
 
     it('keeps drawn what is in range of the view and drops it only when the view leaves that range', async () => {

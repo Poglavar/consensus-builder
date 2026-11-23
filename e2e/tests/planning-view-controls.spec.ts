@@ -224,12 +224,13 @@ test('saved parcel evidence opens its pinned source without creating a proposal 
 
 test('Alatau zoning overview uses static data below zoom 15 and one viewport read at zoom 15 @features', async ({ mockApi: page }) => {
   const alatau = { id: 'alatau-genplan-727', city: 'alatau', label: 'Alatau genplan', coverage: 'zoning-areas',
-    capabilities: { areas: true, volumes: false }, viewportZoning: true, scenarios: ['general'], scenario: 'general' };
+    capabilities: { areas: true, volumes: false }, viewportZoning: true, zoningOverview: { detailZoom: 15 }, scenarios: ['general'], scenario: 'general' };
   const representations: URL[] = [];
   const staticReads: URL[] = [];
   await page.route('**/planning/**', async route => {
     if (!['xhr', 'fetch'].includes(route.request().resourceType())) return route.fallback();
     const url = new URL(route.request().url());
+    if (url.pathname.startsWith('/data/')) return route.fallback();
     if (url.pathname.endsWith('/sources')) return route.fulfill({ json: { city: 'alatau', sources: [alatau] } });
     if (url.pathname.endsWith('/representations')) { representations.push(url); return route.fulfill({ json: {
       schemaVersion: 'planning-representations.v1', city: 'alatau', sources: [alatau], items: [], summaries: [], unavailable: [], coverage: 'source-results', nextCursor: null, omitted: 0,
@@ -241,6 +242,7 @@ test('Alatau zoning overview uses static data below zoom 15 and one viewport rea
   await page.waitForFunction(() => !!(window as any).map && !!(window as any).PlanningViews);
   await page.evaluate(() => (window as any).map.setView([43.61, 77.02], 12, { animate: false }));
   await expect.poll(() => staticReads.length).toBe(1);
+  await page.waitForFunction(() => (window as any).PlanningViews.getItems().length === 6659);
   expect(representations).toHaveLength(0);
   await page.locator('#planning-views-button').click();
   const fit = page.getByRole('button', { name: 'Fit plan', exact: true });

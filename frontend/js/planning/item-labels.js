@@ -10,7 +10,7 @@
     // Use groups in legend order (css/planning-views.css has a swatch for each). The palette is one
     // for every city (css/tokens.css): housing yellow to brown by height, commercial red, mixed coral,
     // public purple, industry grey-violet, as US land-use maps mostly draw them.
-    const ZONE_GROUPS = Object.freeze(['housing-low', 'housing-mid', 'housing-high', 'mixed', 'commercial', 'public', 'industry', 'transport', 'green', 'water',
+    const ZONE_GROUPS = Object.freeze(['housing', 'housing-low', 'housing-mid', 'housing-high', 'mixed', 'commercial', 'public', 'industry', 'transport', 'green', 'water',
         'agriculture', 'reserve', 'restricted']);
     // The dictionary's text for a key, or null: i18n answers a key it lacks with the key itself.
     function known(t, key) {
@@ -53,7 +53,7 @@
     const reason = (item, t) => coded(t, 'planningViews.zoneReason', item?.assessment?.reasonCode, item?.assessment?.reason);
     const condition = (conditional, t) => coded(t, 'planningViews.condition', conditional?.conditionCode, conditional?.condition);
     // A zone the plan keeps free of buildings, or leaves to another instrument, has a dashed edge.
-    const unbuildableZone = item => isZone(item) && item.assessment.status !== 'allowed';
+    const unbuildableZone = item => isZone(item) && !item.overview && item.assessment.status !== 'allowed';
     // One legend row: the swatch modifier (css/planning-views.css .planning-swatch--<swatch>) and its words.
     const envelopeRow = t => ({ swatch: 'permitted', text: t('planningViews.legend.envelope') });
     const zoneRow = (group, t) => ({ swatch: `zone-${group}`, text: t(`planningViews.useGroup.${group}`) });

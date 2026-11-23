@@ -75,7 +75,7 @@ describe('colour keys', () => {
                 expect(require(`../../frontend/i18n/${language}.json`).planningViews.useGroup[group], `${language} ${group}`).toEqual(expect.any(String));
         }
         // Mixed use and commercial follow housing in the legend; red is commercial, not high-rise housing.
-        expect(labels.ZONE_GROUPS.slice(0, 6)).toEqual(['housing-low', 'housing-mid', 'housing-high', 'mixed', 'commercial', 'public']);
+        expect(labels.ZONE_GROUPS.slice(0, 7)).toEqual(['housing', 'housing-low', 'housing-mid', 'housing-high', 'mixed', 'commercial', 'public']);
         expect(tokens).toContain('--cb-planning-zone-commercial: #d62f3a;');
         expect(tokens).not.toContain('--cb-planning-zone-housing-high: #d62f3a;');
     });

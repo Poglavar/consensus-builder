@@ -40,6 +40,15 @@ A building source that is a public URL (`building.<base64url>`) is read in the b
 
 ## Existing contracts and preparation notes
 
+A registered planning source can declare `zoningOverview: {}` and provide a same-origin asset at
+`data/planning/<source-id>-overview.json`. The asset carries a complete WGS84 extent, source-stable
+zone IDs, the source's use labels and simplified Polygon or MultiPolygon display geometry. The
+viewer resolves the source through the city configuration, then exposes **Fit plan** and the zoning
+control. A source with an exact zoning feed can set `zoningOverview.detailZoom`; at that zoom the
+viewer requests detailed zoning. `viewportZoning` separately declares a whole-viewport zoning read
+and exact record lookup. An overview alone makes no claim about parcel-level rules or permitted
+capacity. The configured source uses the same adapter for its other representations.
+
 | Abstraction | Current adapter boundary and normalized operation | Preparation constraints |
 | --- | --- | --- |
 | `parcels` | Positional reader methods `queryBounds(bbox)`, `queryIds(ids)`, `queryGeometry(geometry)` and optional `queryPoint(coordinates)`; sources in `backend/parcels/sources.js`, registry in `SourceRuntime`. | Reader results are provider objects commonly containing `features`, `complete`, `sourceId` and `returnsWGS84`; they are not guaranteed to be a GeoJSON FeatureCollection. The point operation is only available on adapters that implement it. Existing custom URL config and guards are in [`backend/parcels/custom-source-config.js`](../backend/parcels/custom-source-config.js) and [`backend/parcels/public-source-fetch.js`](../backend/parcels/public-source-fetch.js). Public custom transports are ArcGIS, WFS, OGC API, Socrata and GeoJSON snapshot. A GeoJSON snapshot needs source-stable feature IDs, valid Polygon/MultiPolygon geometry, closed rings and WGS84 coordinates. Preserve parcel identity and provider completeness; a centroid or bounding box is not replacement parcel geometry. Specialized registered providers have provider-specific configuration and must not be presented as universal custom URL schemas. |

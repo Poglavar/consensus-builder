@@ -8576,6 +8576,7 @@
             "burial-grounds": "Groblja životinja"
         },
         "useGroup": {
+            "housing": "Stambena namjena",
             "housing-low": "Niska stambena gradnja",
             "housing-mid": "Srednja stambena gradnja",
             "housing-high": "Visoka stambena gradnja",

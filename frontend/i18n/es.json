@@ -8558,6 +8558,7 @@
             "burial-grounds": "Enterramientos de animales"
         },
         "useGroup": {
+            "housing": "Residencial",
             "housing-low": "Vivienda baja",
             "housing-mid": "Vivienda de altura media",
             "housing-high": "Vivienda en altura",
