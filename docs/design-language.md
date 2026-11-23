@@ -212,6 +212,7 @@ palette is the legend beside each tick.
   `warning` / `error` colours, `aria-live` polite. `js/ui/notice-queue.js` keeps one on screen: a new
   notice replaces the current one after at least 1.2 s, and a repeat of the notice showing or
   waiting is dropped. A notice is written to the Activity log, never to the status line.
+  On a phone with Lists open, the notice sits above the dock to leave the tabs available.
   A notice may carry one action, the way back from what it announces (**Undo** after an unapply):
   a fourth argument `{ label, run }`, drawn as a small shared button after the text. Its click
   runs the action and takes the notice down.

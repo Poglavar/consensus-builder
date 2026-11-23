@@ -1289,6 +1289,12 @@ input.proposal-author-name {
         right: var(--cb-space-4);
         transform: none;
     }
+
+    /* The full-height Lists sheet puts its tabs in the normal notice position. */
+    body:has(#proposals-sheet:not([hidden])) #ephemeral-message-container {
+        top: auto;
+        bottom: var(--map-shell-bottom-clearance);
+    }
 }
 
 /* --- Proposal Manager --- */

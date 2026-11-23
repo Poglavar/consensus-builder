@@ -49,8 +49,18 @@ test('a published layout shares its exact saved plan and a fresh device applies 
   await expect(link).toHaveValue(new RegExp(`/plans/${plan.cid}`));const snapshotUrl=new URL(await link.inputValue());
   const requests=writes(page);expect(requests.find(r=>r.path==='/plans')!.body.content).toEqual(plan.content);expect(requests.filter(r=>r.path==='/agreements')).toHaveLength(0);
   const receiver=await openOnAnotherDevice(browser,snapshotUrl.pathname+snapshotUrl.search,pageIndex(page),baseURL);
-  try{await expect.poll(()=>receiver.page.evaluate(cid=>{const w=window as any,p=w.proposalStorage?.getProposal(`design-${cid}`);return p&&w.isApplied(p)&&p.parcelLayout.plots.length>0;},plan.content.designCids[0]),{timeout:60_000}).toBe(true);}
-  finally{await receiver.context.close();}
+  try {
+    const openInZagreb = receiver.page.locator('.city-switch-dialog').getByRole('button', { name: 'Open in Zagreb, Croatia', exact: true });
+    await expect(openInZagreb).toBeVisible({ timeout: 30_000 });
+    await openInZagreb.click();
+    await expect.poll(() => receiver.page.evaluate(cid => {
+      const w = window as any;
+      const record = w.proposalStorage?.getProposal(`design-${cid}`);
+      return !!record && w.isApplied(record) && record.parcelLayout.plots.length > 0;
+    }, plan.content.designCids[0]), { timeout: 60_000 }).toBe(true);
+  } finally {
+    await receiver.context.close();
+  }
 });
 
 test('2D massing puts Permitted first and disables it cleanly when there is no source',async({mockApi:page})=>{
