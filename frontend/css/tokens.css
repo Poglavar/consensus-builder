@@ -144,7 +144,9 @@
        to dark by height class, then the common land-use map colours. */
     --cb-planning-zone-housing-low: #f2c94c;
     --cb-planning-zone-housing-mid: #e8913a;
-    --cb-planning-zone-housing-high: #c2462b;
+    --cb-planning-zone-housing-high: #8a5a2e;
+    --cb-planning-zone-mixed: #e86a8a;
+    --cb-planning-zone-commercial: #d62f3a;
     --cb-planning-zone-public: #8e44ad;
     --cb-planning-zone-industry: #6d6875;
     --cb-planning-zone-transport: #9aa0a6;

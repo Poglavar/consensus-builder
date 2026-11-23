@@ -64,6 +64,23 @@ describe('reasons and conditions', () => {
 });
 
 describe('colour keys', () => {
+    it('has a colour, a swatch and a name in every language for every use group', () => {
+        const { readFileSync } = require('node:fs');
+        const tokens = readFileSync(new URL('../../frontend/css/tokens.css', import.meta.url), 'utf8');
+        const swatches = readFileSync(new URL('../../frontend/css/planning-views.css', import.meta.url), 'utf8');
+        for (const group of labels.ZONE_GROUPS) {
+            expect(tokens, group).toMatch(new RegExp(`--cb-planning-zone-${group}: #[0-9a-f]{6};`));
+            expect(swatches, group).toContain(`.planning-swatch--zone-${group} { background: var(--cb-planning-zone-${group}); }`);
+            for (const language of ['ar', 'en', 'es', 'fr', 'hr', 'pt', 'ru', 'sr'])
+                expect(require(`../../frontend/i18n/${language}.json`).planningViews.useGroup[group], `${language} ${group}`).toEqual(expect.any(String));
+        }
+        // Mixed use and commercial follow housing in the legend; red is commercial, not high-rise housing.
+        expect(labels.ZONE_GROUPS.slice(0, 6)).toEqual(['housing-low', 'housing-mid', 'housing-high', 'mixed', 'commercial', 'public']);
+        expect(tokens).toContain('--cb-planning-zone-commercial: #d62f3a;');
+        expect(tokens).not.toContain('--cb-planning-zone-housing-high: #d62f3a;');
+    });
+
+
     it('keys a zone by its use group, with the dashed edge when building is not allowed there', () => {
         expect(labels.colourKey(zone, t)).toEqual([{ swatch: 'zone-housing-mid', text: 'Mid-rise housing' }]);
         const park = { ...zone, use: { key: 'parks', group: 'green' }, assessment: { meaning: 'zoning-area', status: 'prohibited' } };

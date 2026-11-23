@@ -8579,6 +8579,8 @@
             "housing-low": "Niska stambena izgradnja",
             "housing-mid": "Srednja stambena izgradnja",
             "housing-high": "Visoka stambena izgradnja",
+            "mixed": "Mešovita namena",
+            "commercial": "Poslovna namena",
             "public": "Javne službe",
             "industry": "Industrija i komunalni objekti",
             "transport": "Saobraćaj",

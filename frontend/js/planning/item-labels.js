@@ -7,8 +7,10 @@
     if (root) root.PlanningItemLabels = api;
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
-    // Use groups in legend order (css/planning-views.css has a swatch for each).
-    const ZONE_GROUPS = Object.freeze(['housing-low', 'housing-mid', 'housing-high', 'public', 'industry', 'transport', 'green', 'water',
+    // Use groups in legend order (css/planning-views.css has a swatch for each). The palette is one
+    // for every city (css/tokens.css): housing yellow to brown by height, commercial red, mixed coral,
+    // public purple, industry grey-violet, as US land-use maps mostly draw them.
+    const ZONE_GROUPS = Object.freeze(['housing-low', 'housing-mid', 'housing-high', 'mixed', 'commercial', 'public', 'industry', 'transport', 'green', 'water',
         'agriculture', 'reserve', 'restricted']);
     // The dictionary's text for a key, or null: i18n answers a key it lacks with the key itself.
     function known(t, key) {

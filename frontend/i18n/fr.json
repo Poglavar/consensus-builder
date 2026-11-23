@@ -8709,6 +8709,8 @@
             "housing-low": "Habitat bas",
             "housing-mid": "Habitat de hauteur moyenne",
             "housing-high": "Habitat de grande hauteur",
+            "mixed": "Usage mixte",
+            "commercial": "Commerce et activités tertiaires",
             "public": "Services publics",
             "industry": "Industrie et équipements techniques",
             "transport": "Transports",

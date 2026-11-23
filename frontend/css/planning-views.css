@@ -54,6 +54,8 @@ body:is([data-planning-proposed="solid"], [data-planning-proposed="ghost"]) .pla
 .planning-swatch--zone-housing-low { background: var(--cb-planning-zone-housing-low); }
 .planning-swatch--zone-housing-mid { background: var(--cb-planning-zone-housing-mid); }
 .planning-swatch--zone-housing-high { background: var(--cb-planning-zone-housing-high); }
+.planning-swatch--zone-mixed { background: var(--cb-planning-zone-mixed); }
+.planning-swatch--zone-commercial { background: var(--cb-planning-zone-commercial); }
 .planning-swatch--zone-public { background: var(--cb-planning-zone-public); }
 .planning-swatch--zone-industry { background: var(--cb-planning-zone-industry); }
 .planning-swatch--zone-transport { background: var(--cb-planning-zone-transport); }

@@ -8533,6 +8533,8 @@
             "housing-low": "Low-rise housing",
             "housing-mid": "Mid-rise housing",
             "housing-high": "High-rise housing",
+            "mixed": "Mixed use",
+            "commercial": "Commercial",
             "public": "Public services",
             "industry": "Industry and utilities",
             "transport": "Transport",

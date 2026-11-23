@@ -8960,6 +8960,8 @@
             "housing-low": "مساكن منخفضة",
             "housing-mid": "مساكن متوسطة الارتفاع",
             "housing-high": "مساكن مرتفعة",
+            "mixed": "استخدام مختلط",
+            "commercial": "تجاري",
             "public": "خدمات عامة",
             "industry": "الصناعة والمرافق",
             "transport": "النقل",
