@@ -19,7 +19,7 @@ The videos recorded on 26 October 2026 include English narration, captions and t
 ## Develop and integrate
 
 - [Local development](development.md) and [test scope](development.md#verify-a-change).
-- [Responsiveness audit](responsiveness-audit.md) of startup, lists, plan analysis, map movement and editing.
+- [Responsiveness](responsiveness-audit.md) describes startup, lists, plan analysis, map rendering and repeatable performance workloads.
 - [API and agent quickstart](https://api.urbangametheory.xyz/docs/agents).
 - [Agent runtime](../backend/agents/README.md).
 - [Restatements of existing situations and plans](../restatements/README.md).
