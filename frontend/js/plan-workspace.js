@@ -119,20 +119,70 @@
     }
     // Bind the declared member sources together, then replay through the same ordered
     // mutation as published designs. No map changes take place during binding.
-    async function apply(plan, { signal, onProgress } = {}) {
+    async function apply(plan, { signal, onProgress, onApplying } = {}) {
         const members = plan.published ? [] : (plan.designs || []).map(member => ({
             ...member, source: plan.designSources?.[member.cid]
         }));
         const draftRows = members.length ? await win.PlanAnalysis.bindPrivateRows(members, { signal, onProgress }) : new Map();
         signal?.throwIfAborted();
+        onApplying?.();
         const result = await win.handleSharedDesignRoute(plan.content.designCids, {
-            ...(draftRows.size ? { draftRows } : {}), openDetails: false, enter3D: false, summary: false });
+            ...(draftRows.size ? { draftRows, planApplyTitle: plan.content.title } : {}),
+            openDetails: false, enter3D: false, summary: false });
         if (result.blocked) return { blocked: true };
         if (result.failed.length || result.omitted?.length || !appliedMembers(plan)) {
             throw new Error(result.failed.map(item => [item.label, item.reason].filter(Boolean).join(': ')).join('; ')
                 || win.i18n.t('planDialog.notOnMap', { titles: missingTitles(plan).map(title => `“${title}”`).join(', ') }));
         }
         return { blocked: false };
+    }
+
+    let privateApplyActive = false;
+    async function applyFromUi(plan, { returnFocus } = {}) {
+        if (privateApplyActive) return { blocked: true };
+        if (plan.published || !plan.designs?.length) return apply(plan);
+        const doc = win.document;
+        const controller = new AbortController();
+        const notice = doc.createElement('div');
+        notice.className = 'cb-toast cb-toast--status is-busy private-apply-status';
+        const spinner = doc.createElement('span');
+        spinner.className = 'cb-toast__spinner';
+        spinner.setAttribute('aria-hidden', 'true');
+        const progress = doc.createElement('span');
+        progress.setAttribute('role', 'status');
+        const cancel = doc.createElement('button');
+        cancel.type = 'button';
+        cancel.className = 'btn btn-sm cb-toast__action';
+        cancel.textContent = win.i18n.t('common.cancel');
+        cancel.addEventListener('click', () => {
+            cancel.disabled = true;
+            controller.abort();
+        });
+        const origin = returnFocus || doc.activeElement;
+        const removeNotice = () => {
+            if (doc.activeElement === cancel && origin?.isConnected) origin.focus();
+            notice.remove();
+        };
+        privateApplyActive = true;
+        notice.append(spinner, progress, cancel);
+        doc.body.appendChild(notice);
+        cancel.focus();
+        try {
+            return await apply(plan, {
+                signal: controller.signal,
+                onProgress: ({ done, total }) => {
+                    progress.textContent = win.i18n.t('planDialog.checkingParcels', { done, total });
+                },
+                onApplying: removeNotice
+            });
+        } catch (error) {
+            if (!controller.signal.aborted) throw error;
+            win.showEphemeralMessage(win.i18n.t('planDialog.applyCancelled'));
+            return { blocked: true };
+        } finally {
+            removeNotice();
+            privateApplyActive = false;
+        }
     }
     // Applies stored designs in turn exactly as an Apply click on the map does (ProposalManager.
     // applyProposal: a design stands down the rivals on its ground), in formation order (the order
@@ -166,7 +216,7 @@
         const title = plan.content.title;
         const confirmed = await win.CbDialog.confirm(win.i18n.t('planDialog.applyQuestion', { title }), {
             title: win.i18n.t('planDialog.applyTitle', { title }), okText: win.i18n.t('planDialog.applyAndContinue') });
-        return confirmed && !(await apply(plan)).blocked;
+        return confirmed && !(await applyFromUi(plan)).blocked;
     }
-    win.PlanWorkspace = Object.freeze({ save, list, resolve, publish, publication, appliedMembers, standingMembers, apply, ensureApplied, trial });
+    win.PlanWorkspace = Object.freeze({ save, list, resolve, publish, publication, appliedMembers, standingMembers, apply, applyFromUi, ensureApplied, trial });
 })(window);

@@ -329,17 +329,13 @@
                     if (needsApply) {
                         applyPlan = action(win.i18n.t('panel.proposal.actions.apply'), async () => {
                             if (win.BusyControl.isBusy(applyPlan)) return;
-                            const count = node('span', 'click-stack__apply-progress');
-                            count.setAttribute('role', 'status');
                             try {
-                                applyPlan.append(count);
-                                const result = await win.BusyControl.track(applyPlan, () => win.PlanWorkspace.apply(planRow(), {
-                                    onProgress: ({ done, total }) => { count.textContent = ` ${done}/${total}`; }
+                                const result = await win.BusyControl.track(applyPlan, () => win.PlanWorkspace.applyFromUi(planRow(), {
+                                    returnFocus: applyPlan
                                 }));
                                 syncMapActions();
                                 if (!result.blocked) onFocus(instance);
                             } catch (error) { win.showStyledAlert(error.message); }
-                            finally { count.remove(); }
                         });
                         applyPlan.className = 'btn click-stack__apply-plan';
                         share.after(applyPlan);

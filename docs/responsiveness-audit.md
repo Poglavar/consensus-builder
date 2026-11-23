@@ -17,7 +17,7 @@ A compact plan link verifies its plan and reads the same-origin application shel
 
 Plan stats opens with the plan title and exact member count when known. Compare opens with its columns in selection order and measures up to two at once. Authored figures, land classification and apartment layouts appear as their inputs become available. Closing the dialog cancels outstanding preparation and stops late results from repainting. Completed geometry can be reused for the same ground and scope. Prepared snapshots have a short freshness window and depend on the plan revision, backend, parcel sources and local store revision.
 
-Analysis, private Apply and draft links share the same member binding. Browser providers receive members grouped by city, source and snapshot. Server-backed binding uses at most six concurrent member reads. Responses retain member order. Private Apply commits the prepared membership through the ordered parcel mutation. [Plan analysis](../frontend/js/plan-analysis.js) · [Plan figures](../frontend/js/proposals/plan-stats.js) · [Apply](../frontend/js/plan-workspace.js)
+Analysis, private Apply and draft links share the same member binding. Browser providers receive members grouped by city, source and snapshot. Server-backed binding uses at most six concurrent member reads. Responses retain member order. Private Apply reports completed designs in a notice that stays visible when the plan panel closes. Cancel stops binding before any map changes. Once binding finishes, the existing progress dialog takes over while the ordered parcel mutation runs. [Plan analysis](../frontend/js/plan-analysis.js) · [Plan figures](../frontend/js/proposals/plan-stats.js) · [Apply](../frontend/js/plan-workspace.js)
 
 ## Map movement and editing
 
@@ -29,6 +29,7 @@ Road preview geometry follows the latest pointer event each frame. The price and
 
 - Use Alatau at 43.7984° N, 77.0911° E, zoom 16. In an empty workspace and then with Courtyard's 113 designs imported, search for “garden”, clear the query, and select Courtyard followed by Garden streets with the first read held back. Check the final result set, keyboard focus and the plan actually drawn.
 - Open imported and published Courtyard in Plan stats. Compare the parcel counts, land and new buildings, then close a dialog while its inputs are pending. Measure time to the dialog and time to populated figures separately.
+- Apply the private Courtyard plan from a fresh browser workspace, then unapply its members and repeat in the same tab. Time parcel binding and the subsequent map update separately. Hold a binding request to check that Cancel still works after closing the plan panel, leaves the authored map intact, and allows a retry.
 - For cold startup use a fresh browser profile and the locally staged production build. Record the viewport, network latency and throughput, resource body sizes and readiness. For a compact 3D link count main-document navigations and backend plan reads separately.
 - For dense footprint rendering start at 45.8116° N, 15.9786° E, zoom 18 in Zagreb. Pan 2,050 pixels east and back. Record full scans, incremental IDs processed and the longest rendering slice. A revisited cached viewport should incur no cell repaint.
 

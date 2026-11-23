@@ -296,6 +296,19 @@ body.site-intro-open { overflow: hidden; }
     transition: width 0.2s ease;
 }
 
+.private-apply-status {
+    position: fixed;
+    z-index: var(--cb-z-dialog-top);
+    inset-block-start: max(var(--cb-space-4), env(safe-area-inset-top));
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+}
+
+[dir="rtl"] .private-apply-status {
+    transform: translateX(50%);
+}
+
 /* Plan Stats (proposals/plan-stats.js): wears the dialog primitive with `plan-stats-card` as its
    identity class; these rules lay out the figures, the assumptions and the period table. */
 .plan-stats-body {

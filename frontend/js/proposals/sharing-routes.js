@@ -737,7 +737,9 @@ function latestAuthoredDesignId(proposalIds) {
  */
 async function handleSharedDesignRoute(cids, options = {}) {
     const remote = options.sharedPlanSessionRemote === true;
-    const showLoad = (...args) => { if (!remote) showProposalLoadOverlay(...args); };
+    const showLoad = (status, settings) => {
+        if (!remote) showProposalLoadOverlay(status, options.planApplyTitle ? { ...settings, title: options.planApplyTitle } : settings);
+    };
     const hideLoad = () => { if (!remote) hideProposalLoadOverlay(); };
     const updateLoad = (...args) => { if (!remote) updateProposalLoadOverlay(...args); };
     const reportProgress = remote ? () => {} : reportSharedPlanProgress;
@@ -763,7 +765,10 @@ async function handleSharedDesignRoute(cids, options = {}) {
         log(`opening ${valid.length} design(s)`, valid);
         await waitForSharedLinkWelcome();
 
-        showLoad(t('proposals.share.route.fetching', 'Fetching the shared designs…'), {
+        const status = options.planApplyTitle
+            ? window.i18n.t('planDialog.applyingPlan')
+            : t('proposals.share.route.fetching', 'Fetching the shared designs…');
+        showLoad(status, {
             total: valid.length,
             title: t('proposals.share.route.title', 'Shared designs')
         });

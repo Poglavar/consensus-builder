@@ -22,7 +22,7 @@ function harness(overrides={}) {
   const records=win.proposalStorage.getAllProposals(), cids=new Map(records.map(record=>[record,win.DesignRecord.cidOf(record)]));
   return {records,cids,byCid:new Map(records.map(record=>[cids.get(record),record]))};
  };
- const context={window:win,CustomEvent:class{constructor(type){this.type=type}},AbortSignal,structuredClone,Map,Set,JSON,Error,String};
+ const context={window:win,CustomEvent:class{constructor(type){this.type=type}},AbortController,AbortSignal,structuredClone,Map,Set,JSON,Error,String};
  vm.runInNewContext(readFileSync(new URL('../../frontend/js/plan-workspace.js',import.meta.url),'utf8'),context);
  return {api:win.PlanWorkspace,win,store,calls,events};
 }
@@ -94,6 +94,18 @@ describe('plan workspace',()=>{
    handleSharedDesignRoute:vi.fn(async()=>{state.applied=!route.blocked&&!route.failed;return {blocked:!!route.blocked,failed:route.failed||[],omitted:[],localIds:new Map()};}),
    fetch:vi.fn(async()=>({ok:true,json:async()=>({binding:{parcels:[]}})}))});
   h.win.PlanAnalysis=PlanAnalysis.browser(h.win);
+  const doc={activeElement:null};
+  doc.createElement=()=>({
+    append(...children){this.children=children;},
+    appendChild(child){this.children=[child];child.isConnected=true;},
+    remove(){this.isConnected=false;},
+    setAttribute(){},
+    focus(){doc.activeElement=this;},
+    addEventListener(type,handler){this[type]=handler;}
+  });
+  doc.body=doc.createElement();
+  h.win.document=doc;
+  h.win.showEphemeralMessage=vi.fn();
   return {...h,row,cid};
  }
  it('applies a previewed private plan from its carried revisions, a published one from the index',async()=>{
@@ -103,6 +115,26 @@ describe('plan workspace',()=>{
   expect(cids).toEqual([h.cid]);expect([...options.draftRows.keys()]).toEqual([h.cid]);
   const published=applyHarness();await published.api.apply({...published.row,published:true});
   expect(published.win.handleSharedDesignRoute.mock.calls[0][1].draftRows).toBeUndefined();expect(published.win.fetch).not.toHaveBeenCalled();
+ });
+ it('cancels a pending private binding, leaves the map alone and allows retry without Cancel during replay', async()=>{
+  const h=applyHarness(), {document:doc}=h.win;
+  h.win.fetch.mockImplementationOnce((_url,{signal})=>new Promise((_,reject)=>{
+   signal.addEventListener('abort',()=>reject(signal.reason),{once:true});
+  }));
+  const applying=h.api.applyFromUi(h.row);
+  const notice=doc.body.children[0];
+  expect(notice.children[1].textContent).toContain('planDialog.checkingParcels');
+  notice.children[2].click();
+  expect(await applying).toEqual({blocked:true});
+  expect(h.win.handleSharedDesignRoute).not.toHaveBeenCalled();
+  expect(h.win.showEphemeralMessage).toHaveBeenCalledWith('planDialog.applyCancelled');
+  const replay=h.win.handleSharedDesignRoute.getMockImplementation();
+  h.win.handleSharedDesignRoute.mockImplementationOnce((...args)=>{
+   expect(doc.body.children[0].isConnected).toBe(false);
+   return replay(...args);
+  });
+  expect(await h.api.applyFromUi(h.row)).toEqual({blocked:false});
+  expect(h.win.handleSharedDesignRoute).toHaveBeenCalledOnce();
  });
  it('asks before applying a previewed plan and goes on only on a yes',async()=>{
   const yes=applyHarness();expect(await yes.api.ensureApplied(yes.row)).toBe(true);

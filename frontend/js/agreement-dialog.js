@@ -1041,7 +1041,7 @@
             if (['rights', 'lens'].includes(button.dataset.agreementAction)) openAuxiliary(button.dataset.agreementAction);
             if (button.dataset.agreementAction === 'apply-plan' && !root.BusyControl.isBusy(button)) {
                 root.BusyControl.track(button, async () => {
-                    if ((await root.PlanWorkspace.apply(state.plan)).blocked) return;
+                    if ((await root.PlanWorkspace.applyFromUi(state.plan, { returnFocus: button })).blocked) return;
                     if (!state.closed) await deriveLand();
                 }).catch(report);
             }
