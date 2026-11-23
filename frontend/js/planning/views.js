@@ -69,11 +69,9 @@
     function color(role) {
         return getComputedStyle(document.documentElement).getPropertyValue(`--cb-planning-${role}`).trim();
     }
-    // A zone is coloured by its use group (css/planning-views.css), everything else by its role.
-    function itemColor(item) {
-        const group = item.assessment?.meaning === 'zoning-area' && item.use?.group;
-        return (group && color(`zone-${group}`)) || color(item.role);
-    }
+    // A Permitted item is coloured by the use its source states for the land (planning/item-labels.js
+    // colourRole, css/tokens.css), zoning area and massing alike; everything else by its role.
+    function itemColor(item) { return color(labels.colourRole(item)) || color(item.role); }
     // A zone's or envelope's name in the reader's language (planning/item-labels.js); the source's own
     // wording is shown apart, quoted (sourceText).
     const fullT = (key, params) => root.i18n.t(key, params);
@@ -215,7 +213,12 @@
         // replaces only the items whose record or appearance changed and removes the ones gone, so
         // a pan that brings a few parcels does not rebuild every massing on the map.
         const state = store.get();
-        const colors = Object.fromEntries(core.roles.map(role => [role, color(role)]));
+        const colors = new Map();
+        const drawnColor = item => {
+            const role = labels.colourRole(item);
+            if (!colors.has(role)) colors.set(role, itemColor(item));
+            return colors.get(role);
+        };
         const shown = new Set();
         hitShapes = [];
         for (const item of sceneItems()) {
@@ -223,7 +226,7 @@
             if (display === 'off' || shown.has(item.id)) continue;
             shown.add(item.id);
             const signature = JSON.stringify([display, state.permittedMap, state.permittedForm, state.permittedVariation,
-                scenarioId, pins[item.id] || null, item.id === state.selectedId, colors[item.role]]);
+                scenarioId, pins[item.id] || null, item.id === state.selectedId, drawnColor(item)]);
             const previous = drawnItems.get(item.id);
             if (previous && previous.item === item && previous.signature === signature) {
                 hitShapes.push(...previous.hits);
@@ -266,7 +269,7 @@
             if (feature.properties.frontEdge != null && item.derivation?.parcel) {
                 const ring = item.derivation.parcel.coordinates[0], edge = feature.properties.frontEdge;
                 root.L.polyline([ring[edge], ring[edge + 1]].map(p => [p[1], p[0]]), { pane: 'planningSources', interactive: false,
-                    color: color(item.role), weight: 4, opacity: 0.9 }).addTo(group);
+                    color: itemColor(item), weight: 4, opacity: 0.9 }).addTo(group);
             }
             if (hull) continue;
             const inspect = () => { if (!root.__mapEditLock?.isHeld()) select(item.id); };

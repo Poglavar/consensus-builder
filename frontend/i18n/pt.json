@@ -8671,7 +8671,6 @@
         },
         "legend": {
             "envelope": "Envolvente edificável permitida: o maior edifício que as regras permitem numa parcela",
-            "zoneUnder": "Zona em que se encontra: {{group}}",
             "dashed": "Contorno tracejado: sem construção aqui, ou decide outro plano"
         },
         "colourKey": "O que significam as cores",

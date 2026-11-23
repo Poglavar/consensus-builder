@@ -8541,7 +8541,6 @@
         },
         "legend": {
             "envelope": "Dopuštena ovojnica: najveća zgrada koju pravila dopuštaju na čestici",
-            "zoneUnder": "Zona u kojoj stoji: {{group}}",
             "dashed": "Isprekidan rub: ovdje nema gradnje ili odlučuje drugi plan"
         },
         "colourKey": "Što znače boje",

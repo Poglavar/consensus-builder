@@ -205,7 +205,7 @@ describe('shared building and proposal representations', () => {
         };
         const dictionary = { 'planningViews.use.residential-mid': 'Mid-rise housing (4–6 floors)', 'planningViews.zoneStage.planned': 'planned',
             'planningViews.condition.legend-asterisk': 'asterisked 6th floor', 'planningViews.useGroup.housing-mid': 'Mid-rise housing',
-            'planningViews.useGroup.green': 'Green land', 'planningViews.legend.envelope': 'Envelope', 'planningViews.legend.zoneUnder': 'Zone: {{group}}',
+            'planningViews.useGroup.green': 'Green land', 'planningViews.legend.envelope': 'Envelope',
             'planningViews.legend.dashed': 'Dashed edge' };
         const fullT = (key, params = {}) => (dictionary[key] || key).replace(/{{(\w+)}}/g, (_, name) => params[name]);
         const t = key => ({ sourceWording: 'Source wording:', envelopeTitle: 'Permitted envelope', conditionalHeight: 'Height under a condition' }[key] || key);
@@ -225,9 +225,9 @@ describe('shared building and proposal representations', () => {
         expect(conditional.textContent).toContain('18 m · asterisked 6th floor');
         expect(conditional.textContent).not.toContain('этажей');
         expect([...inspector.querySelectorAll('.planning-colour-key li')].map(row => [row.firstChild.className, row.textContent]))
-            .toEqual([['planning-swatch planning-swatch--permitted', 'Envelope'], ['planning-swatch planning-swatch--zone-housing-mid', 'Zone: Mid-rise housing']]);
+            .toEqual([['planning-swatch planning-swatch--zone-housing-mid', 'Mid-rise housing']]);
         const legend = inspector.querySelector('details .planning-zone-legend');
-        expect([...legend.querySelectorAll('li')].map(row => row.textContent)).toEqual(['Envelope', 'Green land', 'Dashed edge']);
+        expect([...legend.querySelectorAll('li')].map(row => row.textContent)).toEqual(['Mid-rise housing', 'Green land', 'Dashed edge']);
         inspector.querySelector('.planning-map-colours').open = true;
         context.renderInspector();
         expect(inspector.querySelector('.planning-map-colours').open).toBe(true);

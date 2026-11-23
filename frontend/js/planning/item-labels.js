@@ -16,6 +16,14 @@
         return text && text !== key ? text : null;
     }
     const isZone = item => item?.assessment?.meaning === 'zoning-area';
+    // The use group a Permitted item's source states for its land, or null: one of ZONE_GROUPS.
+    const useGroup = item => item?.role === 'permitted' && ZONE_GROUPS.includes(item.use?.group) ? item.use.group : null;
+    // The colour role an item is drawn in (--cb-planning-<role>): the use of its land where the source
+    // states it, on the zoning area and on the massing derived there alike, else the item's own role.
+    function colourRole(item) {
+        const group = useGroup(item);
+        return group ? `zone-${group}` : item?.role;
+    }
     function useName(item, t) {
         return known(t, item?.use?.key && `planningViews.use.${item.use.key}`) || item?.use?.label || '';
     }
@@ -48,21 +56,21 @@
     const envelopeRow = t => ({ swatch: 'permitted', text: t('planningViews.legend.envelope') });
     const zoneRow = (group, t) => ({ swatch: `zone-${group}`, text: t(`planningViews.useGroup.${group}`) });
     const dashedRow = t => ({ swatch: 'dashed', text: t('planningViews.legend.dashed') });
-    // The colours of the items drawn: envelopes, each zone use group in legend order, then the dashed edge.
+    // The colours of the items drawn: envelopes whose source states no use, each use group in legend
+    // order (zoning areas and the massing on them share it), then the dashed edge.
     function legend(items, t) {
-        const groups = new Set(items.filter(isZone).map(item => item.use?.group).filter(Boolean));
-        return [...(items.some(item => item.parcelEnvelope) ? [envelopeRow(t)] : []),
+        const groups = new Set(items.map(useGroup).filter(Boolean));
+        return [...(items.some(item => item.parcelEnvelope && !useGroup(item)) ? [envelopeRow(t)] : []),
             ...ZONE_GROUPS.filter(group => groups.has(group)).map(group => zoneRow(group, t)),
             ...(items.some(unbuildableZone) ? [dashedRow(t)] : [])];
     }
-    // What the colours of one item mean: a zone's group (and dashed edge); an envelope's own colour and
-    // the colour of the zone under it.
+    // What the colour of one item means: its use group (and a zone's dashed edge); an envelope whose
+    // source states no use has the Permitted colour.
     function colourKey(item, t) {
-        const group = ZONE_GROUPS.includes(item?.use?.group) ? item.use.group : null;
-        if (item?.parcelEnvelope) return [envelopeRow(t),
-            ...(group ? [{ swatch: `zone-${group}`, text: t('planningViews.legend.zoneUnder', { group: t(`planningViews.useGroup.${group}`) }) }] : [])];
+        const group = useGroup(item);
+        if (item?.parcelEnvelope) return [group ? zoneRow(group, t) : envelopeRow(t)];
         if (!isZone(item) || !group) return [];
         return [zoneRow(group, t), ...(unbuildableZone(item) ? [dashedRow(t)] : [])];
     }
-    return { ZONE_GROUPS, title, sourceWording, reason, condition, unbuildableZone, legend, colourKey };
+    return { ZONE_GROUPS, title, sourceWording, reason, condition, unbuildableZone, colourRole, legend, colourKey };
 });

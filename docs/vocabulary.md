@@ -671,7 +671,7 @@ The comparison controls label this **Max envelope**, as they do an authored rule
 
 ### Permitted use
 
-What a zoning area's plan allows its land for, on the representation as `use`: a `key` from the app's use vocabulary (translated as `planningViews.use.<key>`), a `group` the map colours by (`housing-low`, `housing-mid`, `housing-high`, `public`, `industry`, `transport`, `green`, `water`, `agriculture`, `reserve`, `restricted`), the plan's own `label`, and the `stage` the plan marks it with (`existing` or `planned`, else null). A parcel's Permitted envelope carries the use of the zoning area it stands in. Whether a building may stand there is the assessment status (`allowed`, `prohibited`, or `instrument_handoff` when another instrument sets it), not the group.
+What a zoning area's plan allows its land for, on the representation as `use`: a `key` from the app's use vocabulary (translated as `planningViews.use.<key>`), a `group` the map colours by (`housing-low`, `housing-mid`, `housing-high`, `public`, `industry`, `transport`, `green`, `water`, `agriculture`, `reserve`, `restricted`), the plan's own `label`, and the `stage` the plan marks it with (`existing` or `planned`, else null). A Permitted envelope carries the use of the zoning area it stands in. The map and the model draw a zoning area and the envelope on it in the colour of that group, so one colour is one use; an envelope whose source states no use is drawn in the Permitted role's colour. Whether a building may stand there is the assessment status (`allowed`, `prohibited`, or `instrument_handoff` when another instrument sets it), not the group.
 
 ### Source wording
 

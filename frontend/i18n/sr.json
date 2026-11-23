@@ -8541,7 +8541,6 @@
         },
         "legend": {
             "envelope": "Dozvoljeni omotač: najveća zgrada koju pravila dozvoljavaju na parceli",
-            "zoneUnder": "Zona u kojoj stoji: {{group}}",
             "dashed": "Isprekidana ivica: ovde nema gradnje ili odlučuje drugi plan"
         },
         "colourKey": "Šta znače boje",

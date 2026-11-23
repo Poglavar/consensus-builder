@@ -8495,7 +8495,6 @@
         },
         "legend": {
             "envelope": "Permitted envelope: the largest building the rules allow on a parcel",
-            "zoneUnder": "Zone it stands in: {{group}}",
             "dashed": "Dashed edge: no building here, or another plan decides"
         },
         "colourKey": "What the colours mean",

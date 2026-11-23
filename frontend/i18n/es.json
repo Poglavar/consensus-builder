@@ -8523,7 +8523,6 @@
         },
         "legend": {
             "envelope": "Envolvente permitida: el mayor edificio que las normas permiten en una parcela",
-            "zoneUnder": "Zona en la que está: {{group}}",
             "dashed": "Borde discontinuo: aquí no se edifica, o decide otro plan"
         },
         "colourKey": "Qué significan los colores",

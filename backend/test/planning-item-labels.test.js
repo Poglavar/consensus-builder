@@ -70,17 +70,34 @@ describe('colour keys', () => {
         expect(labels.colourKey(park, t).map(row => row.swatch)).toEqual(['zone-green', 'dashed']);
     });
 
-    it('keys an envelope by its own colour and the colour of the zone under it', () => {
-        expect(labels.colourKey(envelope, t)).toEqual([{ swatch: 'permitted', text: t('planningViews.legend.envelope') },
-            { swatch: 'zone-housing-mid', text: t('planningViews.legend.zoneUnder', { group: 'Mid-rise housing' }) }]);
+    it('keys an envelope by the use of its land, or by the Permitted colour when the source states none', () => {
+        expect(labels.colourKey(envelope, t)).toEqual([{ swatch: 'zone-housing-mid', text: 'Mid-rise housing' }]);
+        const { use, ...plain } = envelope;
+        expect(labels.colourKey(plain, t)).toEqual([{ swatch: 'permitted', text: t('planningViews.legend.envelope') }]);
+        expect(labels.colourKey({ ...envelope, use: { key: 'x', group: 'not-a-group' } }, t).map(row => row.swatch)).toEqual(['permitted']);
         expect(labels.colourKey({ role: 'existing' }, t)).toEqual([]);
+    });
+
+    it('draws a zoning area and the massing on it in the colour of their use, anything else in its role colour', () => {
+        expect(labels.colourRole(zone)).toBe('zone-housing-mid');
+        expect(labels.colourRole(envelope)).toBe('zone-housing-mid');
+        const { use, ...plain } = envelope;
+        expect(labels.colourRole(plain)).toBe('permitted');
+        expect(labels.colourRole({ ...envelope, use: { key: 'x', group: 'not-a-group' } })).toBe('permitted');
+        // A use on a building or a design is not a zoning use: the role colour stays.
+        expect(labels.colourRole({ role: 'existing', use: { group: 'housing-mid' } })).toBe('existing');
+        expect(labels.colourRole({ role: 'proposed', use: { group: 'housing-mid' } })).toBe('proposed');
     });
 
     it('lists the colours drawn: envelopes, zone groups in legend order, then dashed edges', () => {
         const park = { ...zone, use: { key: 'parks', group: 'green' }, assessment: { meaning: 'zoning-area', status: 'prohibited' } };
         const tall = { ...zone, use: { key: 'residential-high', group: 'housing-high' } };
         expect(labels.legend([park, tall, envelope, zone], t).map(row => row.swatch))
-            .toEqual(['permitted', 'zone-housing-mid', 'zone-housing-high', 'zone-green', 'dashed']);
+            .toEqual(['zone-housing-mid', 'zone-housing-high', 'zone-green', 'dashed']);
+        // An envelope lists its use group though no zoning area is drawn; one with no stated use lists the Permitted colour.
+        expect(labels.legend([envelope], t).map(row => row.swatch)).toEqual(['zone-housing-mid']);
+        const { use, ...plain } = envelope;
+        expect(labels.legend([plain, envelope, tall], t).map(row => row.swatch)).toEqual(['permitted', 'zone-housing-mid', 'zone-housing-high']);
         expect(labels.legend([zone], t).map(row => row.swatch)).toEqual(['zone-housing-mid']);
         expect(labels.legend([], t)).toEqual([]);
     });
