@@ -116,7 +116,7 @@ describe('shared building and proposal representations', () => {
         expect(vm.runInContext('inspectBuilding', context)(feature, 'source-id')).toBe(true);
         expect(showBuilding).toHaveBeenCalledWith(feature, 'source-id');
 
-        const inspector = { hidden: false, classList: { contains: vi.fn(() => false) }, replaceChildren: vi.fn() };
+        const inspector = { hidden: false, dataset: {}, classList: { contains: vi.fn(() => false) }, replaceChildren: vi.fn() };
         const renderContext = vm.createContext({ selected: () => representations.built(feature, { key: 'source-id', city: 'test-city' }), inspector });
         vm.runInContext(source.slice(render.start, render.end), renderContext);
         renderContext.renderInspector();
@@ -144,7 +144,7 @@ describe('shared building and proposal representations', () => {
         // Authored records keep their selection projection, but their visible reader belongs to
         // the click panel. A restored selection must clear the former standalone inspector.
         const inspectorSource = source.slice(inspector.start, inspector.end);
-        const panel = { hidden: false, replaceChildren: vi.fn(), classList: { contains: () => false } };
+        const panel = { hidden: false, dataset: {}, replaceChildren: vi.fn(), classList: { contains: () => false } };
         const renderContext = vm.createContext({ selected: () => proposal, inspector: panel, isPhoto: () => false });
         vm.runInContext(inspectorSource, renderContext);
         renderContext.renderInspector();
@@ -228,6 +228,12 @@ describe('shared building and proposal representations', () => {
             .toEqual([['planning-swatch planning-swatch--permitted', 'Envelope'], ['planning-swatch planning-swatch--zone-housing-mid', 'Zone: Mid-rise housing']]);
         const legend = inspector.querySelector('details .planning-zone-legend');
         expect([...legend.querySelectorAll('li')].map(row => row.textContent)).toEqual(['Envelope', 'Green land', 'Dashed edge']);
+        inspector.querySelector('.planning-map-colours').open = true;
+        context.renderInspector();
+        expect(inspector.querySelector('.planning-map-colours').open).toBe(true);
+        item.id = 'envelope:alatau-genplan-727:KZ-2';
+        context.renderInspector();
+        expect(inspector.querySelector('.planning-map-colours').open).toBe(false);
     });
     it('does not clear an authored selection when source massing becomes unavailable at a wider zoom', async () => {
         const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');

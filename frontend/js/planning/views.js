@@ -310,7 +310,12 @@
         const item = selected();
         const hosted = inspector.classList.contains('is-hosted');
         const hostedBuilt = item?.role === 'existing' && hosted;
+        const previousLegend = inspector.dataset.planningItem === item?.id
+            ? inspector.querySelector('.planning-map-colours') : null;
+        const legendOpen = previousLegend?.open === true;
+        const legendFocused = previousLegend && previousLegend.firstElementChild === document.activeElement;
         inspector.hidden = !item || item.role === 'proposed' || (item.role === 'existing' && !hostedBuilt);
+        inspector.dataset.planningItem = inspector.hidden ? '' : item.id;
         inspector.replaceChildren();
         if (!item || item.role === 'proposed' || (item.role === 'existing' && !hostedBuilt)) return;
         const header = element('header', 'planning-inspector__header');
@@ -371,11 +376,14 @@
         if (key.length) {
             const colours = element('ul', 'planning-zone-legend planning-colour-key');
             colours.setAttribute('aria-label', t('colourKey')); colours.append(...legendRows(key));
-            const all = element('details', 'planning-evidence');
-            all.append(element('summary', '', t('mapColours')));
+            const all = element('details', 'planning-evidence planning-map-colours');
+            all.open = legendOpen;
+            const summary = element('summary', '', t('mapColours'));
+            all.append(summary);
             const list = element('ul', 'planning-zone-legend'); list.append(...legendRows(labels.legend(sceneItems().filter(entry => appearance(entry) !== 'off'), fullT)));
             all.append(list);
             info.append(colours, all);
+            if (legendFocused) summary.focus({ preventScroll: true });
         }
         if (item.assessment.current === false) info.append(element('p', 'planning-inspector__description', t('savedWithdrawn')));
         if (referenceStatus && referenceStatus !== 'same') info.append(element('p', 'planning-assessment', t('referenceChanged')));
@@ -537,7 +545,7 @@
         ring.classList.toggle('is-loading', arcs.length > 0);
         button.setAttribute('aria-busy', String(arcs.length > 0));
     }
-    function render() {
+    function render({ updateInspector = true } = {}) {
         paintLoading();
         if (!ready) return;
         panel.querySelector('.map-sheet-title').textContent = t('title');
@@ -633,7 +641,7 @@
         panel.querySelector('.planning-inspect-hint').hidden = policy().permitted === 'off' || !items.length;
         const model = panel.querySelector('.planning-open-model');
         model.hidden = !isPhoto(); model.textContent = t('openModel');
-        renderInspector();
+        if (updateInspector) renderInspector();
     }
     function syncView() {
         const state = store.get();
@@ -822,7 +830,7 @@
                 .then(answer => (kind === 'envelopes' ? { ...answer, envelopes: true } : answer));
         };
         status = 'loading'; progress = { count: jobs.length - pending.length, total: jobs.length };
-        if (answers.size) assemble(); else render();
+        if (answers.size) assemble(); else render({ updateInspector: false });
         // Redraw when the first cell lands and then at each quarter, as the 3D buildings do.
         let done = jobs.length - pending.length, nextDrawAt = done + 1, firstError = null;
         const queue = [...pending].sort((a, b) => a.cell.distanceM - b.cell.distanceM), retries = [];
@@ -843,7 +851,7 @@
                 if (done >= nextDrawAt && done < jobs.length) {
                     nextDrawAt = Math.max(done + 1, Math.ceil(jobs.length * (Math.floor(done / jobs.length * 4) + 1) / 4));
                     assemble();
-                } else render();
+                } else render({ updateInspector: false });
             }
         };
         await Promise.all(Array.from({ length: Math.min(CELL_CONCURRENCY, queue.length) }, worker));

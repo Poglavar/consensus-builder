@@ -126,6 +126,8 @@ body[data-planning-existing-scope="removed"] .leaflet-observedReferences-pane { 
 .planning-limits dd { margin: 0; font-weight: var(--cb-weight-semibold); }
 .planning-evidence { padding-block: var(--cb-space-3); border-top: 1px solid var(--cb-line); color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
 .planning-evidence summary { cursor: pointer; color: var(--cb-text); }
+.planning-map-colours { padding-block: 0 var(--cb-space-2); }
+.planning-map-colours > summary { box-sizing: border-box; min-height: 44px; padding: 12px var(--cb-space-2); }
 .planning-evidence__terms { white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--cb-text-sm); }
 .planning-inspector__footer { margin-top: var(--cb-space-3); font-size: var(--cb-text-sm); }
 /* Configurations list in the inspector: one button per recorded housing type; the shown one is outlined. */
