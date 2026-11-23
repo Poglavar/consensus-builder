@@ -57,7 +57,9 @@
                 slice = Date.now();
             }
             signal?.throwIfAborted();
-            if (!row.cadastreParcelIds.length) continue;
+            // A design on no parcel at all still forms on open ground, as the map apply does; one
+            // with neither parcels nor open ground (a vote, an act on parcels) forms nothing here.
+            if (!row.cadastreParcelIds.length && !openGround.hasOpenGround(row)) continue;
             const formation = await formationOptions(row);
             if (row.parcelLayout) {
                 if (!await manager._applyParcelLayoutProposal(row.proposalId, row, formation)) throw Object.assign(new Error(lastFailure?.message || 'Layout could not form'), lastFailure);

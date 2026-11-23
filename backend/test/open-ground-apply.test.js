@@ -1384,6 +1384,25 @@ describe('the private read hosts open ground as the map apply does', () => {
         expect(corridor.reduce((sum, output) => sum + output.areaM2, 0)).toBeCloseTo(turf.area(turf.feature(ribbon)), -1);
         expect(derived.outputs.filter(output => output.producedBy === null && output.fromParcelIds.length === 0)).toEqual([]);
     });
+    it('forms a park that lies only on open ground, beside a design on a parcel', async () => {
+        await harness({ facts: [HR1] });
+        install('ProposalApplyStructures', require('../../frontend/js/proposals/apply/structures.js'));
+        install('createLiveParcelFabric', createLiveParcelFabric);
+        install('ProposalManager', ProposalManager);
+        // HR-1 spans x 0..20 and the square x 10..30; the park stands past both and declares no parcel.
+        const parkSite = rect(32, 0, 42, 10);
+        const binding = { parcels: [], coverage: 'none', unsurveyedM2: 1000, source: 'server' };
+        const park = structureRecord('park-open', 'park', parkSite, { binding });
+        const squareBinding = { parcels: [{ parcelId: 'HR-330264-1' }], coverage: 'partial', unsurveyedM2: 1000, source: 'server' };
+        const square = structureRecord('sq-read', 'square', SITE_HALF, { declared: ['HR-330264-1'], binding: squareBinding });
+        const { fabric } = await AgreementHeadless.materialize({
+            designs: [{ cid: 'sq-read', content: square, parcelIds: ['HR-330264-1'], binding: squareBinding },
+                { cid: 'park-open', content: park, parcelIds: [], binding }],
+            parcels: [{ ...structuredClone(HR1), id: 'HR-330264-1' }] });
+        const own = fabric.list().filter(feature => feature.properties.producedByProposalId === 'park-open');
+        expect(own.reduce((sum, feature) => sum + turf.area(feature), 0)).toBeCloseTo(turf.area(turf.feature(parkSite)), 0);
+        expect(own.every(feature => openGround.isGroundPiece(feature))).toBe(true);
+    });
     it('still refuses it when the binding says the parcel covers the whole site', async () => {
         const { result } = await read({ parcels: [{ parcelId: 'HR-330264-1' }], coverage: 'complete', source: 'server' });
         await expect(result).rejects.toMatchObject({ code: 'formation-ground-unresolved' });

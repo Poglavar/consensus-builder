@@ -525,6 +525,8 @@ Surroundings do not make land shared. Every parcel boundary that crosses its ope
 
 Transport land and its authored road or track design. Its alignment and cross-section describe its form; its footprint describes the land occupied.
 
+Where its land lies on no parcel it binds (open ground), the corridor forms that land as ground pieces of its own (`groundIds`, no cadastral parcel); a corridor later in the plan order takes their crossing, and unapplying it gives the ground back.
+
 A corridor design's canonical stored form is `roadProposal.definition.osm`. Expanded drawing fields are a view of that form and do not independently determine the design's CID.
 
 ### Bounded road
