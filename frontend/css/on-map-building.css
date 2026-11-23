@@ -47,6 +47,10 @@
     padding: 0;
 }
 
+.on-map-building__imports {
+    align-items: stretch;
+}
+
 .on-map-building__imports > .btn {
     flex: 1;
     min-width: 0;
