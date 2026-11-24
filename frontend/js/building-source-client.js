@@ -47,7 +47,7 @@
             body: JSON.stringify(body)
         });
         if (!response.ok) throw Object.assign(new Error(`HTTP ${response.status}`), { status: response.status });
-        return response.json();
+        return global.PlanningLoading ? global.PlanningLoading.readJson('existing', response) : response.json();
     }
 
     // One cell from one named source: a URL source from the adapter worker, any other from
@@ -56,7 +56,8 @@
         if (sourceListOf(global)?.isUrlSource(source)) {
             const reader = global.BrowserBuildingSources;
             if (typeof reader?.readCell !== 'function') throw new Error('URL building sources need the browser adapter worker.');
-            return reader.readCell(source, { kind, bbox }, { signal });
+            const pending = reader.readCell(source, { kind, bbox }, { signal });
+            return global.PlanningLoading ? global.PlanningLoading.track('existing', pending) : pending;
         }
         const config = configFor(global, { geometry: { type: 'Point', coordinates: [(bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2] } });
         return askServer(global, '/buildings/cell', { kind, bbox, source,

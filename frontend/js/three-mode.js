@@ -3994,7 +3994,7 @@
     function placeFurnitureInstances(kind, spots, modelUrl, decoTarget, isCurrent, proposalId) {
         const url = (typeof resolveBackendAssetUrl === 'function' && resolveBackendAssetUrl(modelUrl)) || modelUrl;
         const designIds = drawingForDesigns; // the structure it furnishes, for Compare (ownedByDesigns)
-        return loadGltfScene(url).then(source => {
+        return loadGltfScene(url, proposalId ? 'proposed' : null).then(source => {
             if (!isActive || !isCurrent()) return null;
             const layout = source ? furnitureModelLayout(source) : null;
             if (!layout) throw new Error('The furniture model has no meshes');
@@ -8760,17 +8760,24 @@
     const gltfModelCache = threeResources.createSceneCache(threeResources.disposeSharedSubtree);
     let buildingsRenderGeneration = 0;
 
-    function loadGltfScene(url) {
-        return gltfModelCache.load(url, () => new Promise((resolve, reject) => {
+    function loadGltfScene(url, role) {
+        return gltfModelCache.load(url, () => {
             const LoaderCtor = (typeof THREE !== 'undefined' && THREE.GLTFLoader) ? THREE.GLTFLoader : null;
-            if (!LoaderCtor) { reject(new Error('GLTFLoader unavailable')); return; }
-            new LoaderCtor().load(
-                url,
-                (gltf) => resolve(gltf.scene || (gltf.scenes && gltf.scenes[0]) || null),
-                undefined,
-                (err) => reject(err)
-            );
-        }));
+            if (!LoaderCtor) throw new Error('GLTFLoader unavailable');
+            // Multiple placements share this read. Scene decoration and browser-local models
+            // have no layer download to report.
+            const transfer = role && !/^(?:data|blob|file):/i.test(url) ? window.PlanningLoading.beginTransfer(role) : null;
+            let loaded = 0;
+            const progress = transfer && (event => {
+                if (event.loaded > loaded) {
+                    transfer.add(event.loaded - loaded);
+                    loaded = event.loaded;
+                }
+            });
+            return new Promise((resolve, reject) => new LoaderCtor().load(url,
+                gltf => resolve(gltf.scene || gltf.scenes?.[0] || null), progress, reject))
+                .finally(() => transfer?.end());
+        });
     }
 
     // Fit an uploaded glTF's native XY footprint to the authored polygon. Polygon coordinates
@@ -8972,7 +8979,7 @@
             pendingModelLoads++;
             updateBuildingsLoader();
         }
-        loadGltfScene(url).then((scene) => {
+        loadGltfScene(url, 'proposed').then((scene) => {
             if (stale() || !scene) return;
             const inner = scene.clone(true);
             inner.rotation.x = Math.PI / 2; // glTF Y-up → scene Z-up

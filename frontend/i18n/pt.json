@@ -8699,6 +8699,9 @@
         }
     },
     "planningViews": {
+        "receivedData": "{{size}} recebidos",
+        "permittedScope": "Cobertura da volumetria permitida",
+        "survivingCoverageHelp": "Quando Proposto está visível, os seus projetos têm prioridade nos respetivos locais.",
         "governmentPlanPlot": "Parcela do plano geral",
         "usePlanAreaAsSite": "Usar a área do plano geral como local do projeto",
         "heightOnlyPlot": "As regras registadas definem aqui apenas a altura. A envolvente máxima segue o limite da parcela. {{illustration}} mostra um edifício menor no seu interior.",

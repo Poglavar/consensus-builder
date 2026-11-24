@@ -773,7 +773,7 @@ async function handleSharedDesignRoute(cids, options = {}) {
             title: t('proposals.share.route.title', 'Shared designs')
         });
         const fetched = options.draftRows ? { rows: options.draftRows, missing: [] }
-            : valid.length ? await window.DesignSync.fetchDesigns(valid) : { rows: new Map(), missing: [] };
+            : valid.length ? await window.DesignSync.fetchDesigns(valid, { forDisplay: true }) : { rows: new Map(), missing: [] };
         fetched.missing.forEach(cid => {
             result.failed.push({ id: cid, label: cid, reason: t('proposals.share.errors.notFound', 'This design is not on the server.') });
         });

@@ -91,6 +91,13 @@
         return formatNumber(value, Object.assign({}, options, { maxFractionDigits: 0 }));
     }
 
+    function formatReceivedBytes(bytes, options = {}) {
+        if (!isFiniteNumber(bytes) || bytes < 0) return '';
+        const kilobytes = bytes >= 1000;
+        return numberFormatter(localeFor(options.lang), { style: 'unit', unit: kilobytes ? 'kilobyte' : 'byte',
+            maximumFractionDigits: kilobytes && bytes < 10000 ? 1 : 0 }).format(kilobytes ? bytes / 1000 : bytes);
+    }
+
     // "3,522 m²" (en) / "3.522 m²" (hr); square metres always, so areas stay comparable across a
     // panel. Whole metres above 100 m², one decimal below.
     function formatArea(squareMetres, options = {}) {
@@ -213,6 +220,7 @@
         formatNumber,
         parseDecimal,
         formatInteger,
+        formatReceivedBytes,
         formatCompact,
         formatArea,
         formatLength,

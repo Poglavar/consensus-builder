@@ -184,6 +184,12 @@
                       "maxLength": 200,
                       "x-ugt-utf16-maxLength": 200
                     },
+                    "permittedScope": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200,
+                      "x-ugt-utf16-maxLength": 200
+                    },
                     "zoningAreas": {
                       "type": "string",
                       "minLength": 1,

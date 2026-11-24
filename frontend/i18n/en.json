@@ -8522,6 +8522,9 @@
         }
     },
     "planningViews": {
+        "receivedData": "{{size}} received",
+        "permittedScope": "Permitted massing coverage",
+        "survivingCoverageHelp": "When Proposed is visible, its designs take precedence across their sites.",
         "governmentPlanPlot": "Government-plan plot",
         "usePlanAreaAsSite": "Use the government-plan area as a design site",
         "heightOnlyPlot": "The recorded rules set only the height here. The maximum envelope follows the plot boundary. {{illustration}} shows a smaller building inside it.",

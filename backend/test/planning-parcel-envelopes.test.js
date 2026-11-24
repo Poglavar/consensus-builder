@@ -12,6 +12,8 @@ const require = createRequire(import.meta.url);
 const core = require('../../frontend/js/planning/parcel-assessment.js');
 const scene = require('../../frontend/js/planning/scene.js');
 const envelopes = require('../../frontend/js/planning/envelopes.js');
+const openGround = require('../../frontend/js/proposals/open-ground.js');
+const parcelArrangement = require('../../frontend/js/proposals/parcel-arrangement.js');
 const metadata = { id:'atlas-envelope-test',city:'colorado',label:'Synthetic Atlas source',edition:'test',
     url:'https://example.test/source',parcelSourceId:'us-co-oit-statewide-parcels' };
 const bbox = [-105.001,40,-105.0005,40.0004];
@@ -40,6 +42,31 @@ const streetData = (latitude=39.9999) => ({ type:'FeatureCollection', source:'ov
     features:[turf.lineString([[-105.002,latitude],[-105,latitude]],{osm_id:'street-one',name:'Example Street',highway:'residential'})] });
 
 describe('viewport parcel envelopes', () => {
+    it('removes applied sites while preserving massing identity, holes, multipart parts, and untouched features', () => {
+        const sourceProps = { representationId: 'envelope-1', baseM: 4, topM: 18, height: 14, label: 'keep-me' };
+        const feature = (geometry, props = sourceProps) => ({ type: 'Feature', geometry, properties: { ...props } });
+        const site = (geometry, proposalId) => ({ type: 'Feature', geometry, properties: { proposalId } });
+        const polygon = (west, south, east, north, holes = []) => turf.polygon([[[west,south],[east,south],[east,north],[west,north],[west,south]], ...holes]);
+        const hole = [[[-105.0008,40.0001],[-105.0006,40.0001],[-105.0006,40.0003],[-105.0008,40.0003],[-105.0008,40.0001]]];
+        const source = feature({ type: 'Polygon', coordinates: [polygon(-105.001,40,-105,40.0004).geometry.coordinates[0], ...hole] });
+        const multipart = feature({ type: 'MultiPolygon', coordinates: [polygon(-105.001,40,-105.0009,40.0001).geometry.coordinates, polygon(-105.0007,40.0002,-105.0006,40.0003).geometry.coordinates] });
+        const untouched = feature(polygon(-105.002,40.002,-105.0018,40.0022).geometry);
+        const full = site(polygon(-105.00095,39.99995,-105.00085,40.00045).geometry, 'full');
+        const partial = site(polygon(-105.00075,40.00005,-105.00055,40.00025).geometry, 'partial');
+        const touching = site(polygon(-105.002,40.0022,-105.0018,40.0024).geometry, 'touch-only');
+        const index = openGround.createBboxIndex({ cellDeg: 0.0001 });
+        for (const candidate of [full, partial, touching]) index.insert(candidate, turf.bbox(candidate));
+        const result = envelopes.outsideSites([source, multipart, untouched], index, turf, parcelArrangement);
+        expect(result).toHaveLength(3);
+        expect(result[0].properties).toEqual(source.properties);
+        expect(result[0].properties.height).toBe(14);
+        expect(result[0].geometry).not.toEqual(source.geometry);
+        expect(turf.booleanPointInPolygon(turf.point([-105.0007,40.0002]), result[0])).toBe(false);
+        expect(result[1].properties).toEqual(multipart.properties);
+        expect(result[1].geometry.type).toBe('MultiPolygon');
+        expect(result[2]).toEqual(untouched);
+        expect(source.geometry.coordinates).toHaveLength(2);
+    });
     it('produces an outer bound plus every recorded configuration without creating a study or proposal', async () => {
         const second = parcel('parcel-two',[-105.0005,40,-105,40.0004]);
         const features = [parcel(),second], before = JSON.stringify(features);

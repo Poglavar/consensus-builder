@@ -42,6 +42,26 @@ describe('browser building cells', () => {
         expect(footprints.items.find(item => item.id === idOf(2))).toMatchObject({ height_m: null, floors: 4 });
     });
 
+    it('reports streamed response bytes without cloning or changing provider request options', async () => {
+        const endpoint = 'https://mirror.example/api/interpreter';
+        const mirror = encodeCustomSource({ adapter: 'overpass', endpoint, cityIds: ['lima'], kind: 'building' });
+        const first = new TextEncoder().encode('{"label":"Alataū","elements":');
+        const second = new TextEncoder().encode('[]}');
+        let controller;
+        const onBytes = vi.fn();
+        const response = new Response(new ReadableStream({ start(value) { controller = value; } }), { headers: { 'Content-Type': 'application/json' } });
+        const clone = vi.spyOn(response, 'clone');
+        const fetchImpl = vi.fn(async () => response);
+        const pending = createBrowserBuildingCells({ fetchImpl, onBytes }).read(mirror, { kind: 'near', bbox: cell });
+        controller.enqueue(first);
+        await vi.waitFor(() => expect(onBytes).toHaveBeenCalledWith(first.byteLength));
+        controller.enqueue(second); controller.close();
+        await expect(pending).resolves.toMatchObject({ count: 0, complete: true });
+        expect(onBytes.mock.calls.flat()).toEqual([first.byteLength, second.byteLength]);
+        expect(fetchImpl).toHaveBeenCalledWith(endpoint, expect.objectContaining({ method: 'POST', credentials: 'omit' }));
+        expect(clone).not.toHaveBeenCalled();
+    });
+
     it('reads a box over the area limit in quarters and merges a building seen twice', async () => {
         const fetchImpl = vi.fn(async () => arcgisAnswer([[7, -74.065, 4.605, {}]]));
         // 1.6 km across: over the 950 m side, so four quarters.

@@ -223,7 +223,7 @@
             const item = instance.item || global.PlanningViews?.getItems?.().find(item => item.id === instance.id);
             const shapes = item && global.PlanningViews?.permittedFeatures?.(item);
             features = shapes ? [...shapes.body, ...shapes.bound] : [];
-            if (!features.length && item?.site) features = [{ type: 'Feature', properties: {}, geometry: item.site }];
+            if (!features.length && !item?.volumes?.length && item?.site) features = [{ type: 'Feature', properties: {}, geometry: item.site }];
         } else if (kind === 'selection') features = [...(global.multiParcelSelection?.selectedParcels || [])].map(id => global.LiveParcelFabric?.get?.(String(id)));
         else if (kind === 'parcels' && instance.live === false) features = [global.CadastralParcelRepository?.get?.(String(instance.id)) || instance.feature];
         else features = [instance.feature || global.LiveParcelFabric?.get?.(String(instance.id)) || baseFeature(instance.id)];

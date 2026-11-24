@@ -20,6 +20,15 @@ ajv.addKeyword({keyword:'x-ugt-utf16-maxLength',type:'string',schemaType:'number
 ajv.addKeyword({keyword:'x-ugt-plan-members',type:'object',schemaType:'boolean',validate:(enabled,value,parent,context)=>!enabled||PlanRecord.semanticRules.scheduleError(value,context.rootData.designCids)===null});
 const schema=PlanRecord.jsonSchema(),validate=ajv.compile(schema);
 describe('shared named-plan JSON Schema',()=>{
+    it('keeps sparse saved views sparse while accepting optional permitted scope',()=>{
+        const sparse={schema:'plan/v1',title:'Sparse',designCids:[cids[0]],view:{at:'0,0,3',mode:'2d'}};
+        const cid=cidOfObject(sparse);
+        expect(PlanRecord.validate(sparse)).toBeNull();
+        expect(PlanRecord.create('Sparse',[cids[0]],sparse.view).view.settings).toEqual({});
+        const scoped={...sparse,view:{...sparse.view,settings:{permittedScope:'surviving'}}};
+        expect(PlanRecord.validate(scoped)).toBeNull();
+        expect(cidOfObject(sparse)).toBe(cid);
+    });
     it('shares canonical limits and declares semantic extensions explicitly',()=>{
         expect(schema.properties.title.maxLength).toBe(PlanRecord.MAX_TITLE);expect(schema.properties.designCids.maxItems).toBe(PlanRecord.MAX_DESIGNS);
         expect(schema.$comment).toContain('Clients ignoring extensions must not claim full validation');
@@ -39,7 +48,7 @@ describe('shared named-plan JSON Schema',()=>{
     it('matches valid omissions, nulls, views and numeric location forms',()=>{
         const basic={schema:'plan/v1',title:'A',designCids:[cids[0]],view:{at:'0,0,3',mode:'model'}};
         for(const value of [canonical(),basic,{...basic,view:{...basic.view,rotate:true}},{...basic,title:'A\nB',view:{at:'85.0511,180,22',mode:'photo',city:null,language:null,camera:{targetLat:85.0511,targetLng:-180,headingDeg:720,pitchRad:-Math.PI/2,range:1},settings:null}},
-            {...basic,view:{at:'1e1,0x10,3',mode:'2d',settings:{planningSource:'source-one',existing:'off'}}},
+            {...basic,view:{at:'1e1,0x10,3',mode:'2d',settings:{planningSource:'source-one',existing:'off',permittedScope:'surviving'}}},
             {...basic,schedule:{[cids[0]]:{start:'2026-01',end:'2966-12'}}},{...canonical(),schedule:{[cids[1]]:{start:'2030-05',end:'2030-05'}}}]){
             expect(PlanRecord.validate(value)).toBeNull();expect(validate(value),JSON.stringify(validate.errors)).toBe(true);
         }
@@ -74,8 +83,9 @@ describe('shared named-plan JSON Schema',()=>{
             await Promise.all([server.connect(serverTransport),client.connect(clientTransport)]);
             expect((await client.listResources()).resources.some(resource=>resource.uri==='ugt://schemas/plan')).toBe(true);
             const resource=await client.readResource({uri:'ugt://schemas/plan'});expect(JSON.parse(resource.contents[0].text)).toEqual(schema);
-            const good={title:'Named',designs:[cids[0]],view:{at:'0,0,17',mode:'2d',city:'c'.repeat(100)}};
+            const good={title:'Named',designs:[cids[0]],view:{at:'0,0,17',mode:'2d',city:'c'.repeat(100),settings:{permittedScope:'surviving'}}};
             expect((await client.callTool({name:'ugt_draft_plan',arguments:good})).isError).not.toBe(true);expect(received).toHaveLength(1);
+            expect(received[0].view.settings).toEqual({permittedScope:'surviving'});
             const languages=['ar','fr','pt','ru','kk'];
             for(const language of languages){
                 const result=await client.callTool({name:'ugt_draft_plan',arguments:{...good,view:{...good.view,language}}});

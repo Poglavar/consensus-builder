@@ -278,14 +278,15 @@
 
         // One JSON request to the index. A network failure, or a `deadline` read that outlives the
         // deadline, throws code 'network-failed'.
-        async function request(method, path, payload, { deadline = false } = {}) {
+        async function request(method, path, payload, { deadline = false, onBytes } = {}) {
             const init = payload === undefined
                 ? { method, headers: { Accept: 'application/json' }, cache: 'no-store' }
                 : { method, headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(payload) };
             const load = async signal => {
                 const response = await win.fetch(`${backendBase()}${path}`, signal ? { ...init, signal } : init);
                 let body = null;
-                try { body = await response.json(); } catch (_) { body = null; }
+                const received = onBytes ? win.PlanningLoading.countedResponse(response, onBytes) : response;
+                try { body = await received.json(); } catch (_) { body = null; }
                 return { ok: response.ok, status: response.status, body };
             };
             try {
@@ -391,18 +392,23 @@
         }
 
         // POST /designs/batch in chunks of the index's limit → { rows: Map(cid → row), missing: cid[] }.
-        async function fetchDesigns(cids) {
+        async function fetchDesigns(cids, { forDisplay = false } = {}) {
             const wanted = sortedCids(cids);
             const rows = new Map();
-            for (let start = 0; start < wanted.length; start += 1000) {
-                const chunk = wanted.slice(start, start + 1000);
-                const response = await request('POST', '/designs/batch', { cids: chunk }, { deadline: true });
-                if (!response.ok || !response.body || !Array.isArray(response.body.items)) {
-                    throw failure((response.body && response.body.code) || `http-${response.status}`, refusalMessage(response.status, response.body));
+            const transfer = forDisplay && wanted.length ? win.PlanningLoading?.beginTransfer('proposed') : null;
+            try {
+                for (let start = 0; start < wanted.length; start += 1000) {
+                    const chunk = wanted.slice(start, start + 1000);
+                    const response = await request('POST', '/designs/batch', { cids: chunk }, { deadline: true, onBytes: transfer?.add });
+                    if (!response.ok || !response.body || !Array.isArray(response.body.items)) {
+                        throw failure((response.body && response.body.code) || `http-${response.status}`, refusalMessage(response.status, response.body));
+                    }
+                    response.body.items.forEach(item => {
+                        if (item && item.design && item.design.cid === item.cid) rows.set(item.cid, item.design);
+                    });
                 }
-                response.body.items.forEach(item => {
-                    if (item && item.design && item.design.cid === item.cid) rows.set(item.cid, item.design);
-                });
+            } finally {
+                transfer?.end();
             }
             return { rows, missing: wanted.filter(cid => !rows.has(cid)) };
         }

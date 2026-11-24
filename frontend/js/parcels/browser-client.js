@@ -17,6 +17,10 @@
         if (typeof global.Worker !== 'function') throw new Error('Parcel adapters require Web Worker support.');
         worker = new global.Worker(new URL(`assets/parcel-adapters/worker.js${version}`, global.document.baseURI), { type: 'module' });
         worker.addEventListener('message', ({ data }) => {
+            if (Number.isFinite(data?.bytes) && data.bytes > 0) {
+                global.PlanningLoading?.addBytes('existing', data.bytes);
+                return;
+            }
             const request = pending.get(data?.id);
             if (!request) return;
             if (data.progress) {

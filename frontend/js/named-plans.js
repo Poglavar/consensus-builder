@@ -15,6 +15,8 @@
             if ((key === '3d' || key === 'photo') && hasMode) continue;
             if (!source.searchParams.has(key)) source.searchParams.set(key, value);
         }
+        // A sparse plan view starts with Solid even on a device that last used Transparent.
+        if (!source.searchParams.has('proposed')) source.searchParams.set('proposed', 'solid');
         return source.href;
     }
     function browser(win) {

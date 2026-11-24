@@ -18,6 +18,35 @@ function collect(node) {
 }
 collect(ast);
 
+it('counts a shared proposed model download once and releases it after success or failure', async () => {
+    const add = vi.fn(), end = vi.fn(), beginTransfer = vi.fn(() => ({ add, end }));
+    const entries = new Map(), loads = [];
+    class Loader {
+        load(url, resolve, progress, reject) { loads.push({ url, resolve, progress, reject }); }
+    }
+    const gltfModelCache = { load(key, factory) {
+        if (!entries.has(key)) entries.set(key, factory());
+        return entries.get(key);
+    } };
+    const load = vm.runInNewContext(`(${declarations.get('loadGltfScene')})`, {
+        gltfModelCache, THREE: { GLTFLoader: Loader }, window: { PlanningLoading: { beginTransfer } }
+    });
+    const model = load('/block.glb', 'proposed');
+    expect(load('/block.glb', 'proposed')).toBe(model);
+    for (const loaded of [500, 500, 1600]) loads[0].progress({ loaded });
+    loads[0].resolve({ scene: 'block' });
+    await expect(model).resolves.toBe('block');
+    expect(add.mock.calls).toEqual([[500], [1100]]);
+    const failure = load('/missing.glb', 'proposed');
+    loads[1].reject(new Error('unavailable'));
+    await expect(failure).rejects.toThrow('unavailable');
+    const local = load('blob:preview', 'proposed'), furniture = load('/tree.glb', null);
+    loads[2].resolve({}); loads[3].resolve({});
+    await Promise.all([local, furniture]);
+    expect(beginTransfer.mock.calls).toEqual([['proposed'], ['proposed']]);
+    expect(end).toHaveBeenCalledTimes(2);
+});
+
 function geometryHarness() {
     const context = { latLngToXY: (lat, lng) => [lng, lat] };
     vm.runInNewContext(`${declarations.get('uploadedModelFit')}\nthis.fit=uploadedModelFit;`, context);

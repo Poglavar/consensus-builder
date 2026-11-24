@@ -9,6 +9,7 @@
         massing: 'threeMode.controls.representationMassing', buildout: 'threeMode.controls.representationBuildOut',
         both: 'threeMode.controls.representationBoth', all: 'activityFeed.all', retry: 'bets.retry', close: 'common.close' };
     const t = (key, params = {}) => root.i18n.t(sharedLabels[key] || `planningViews.${key}`, params);
+    const readPermittedJson = response => root.PlanningLoading.readJson('permitted', response);
     let store, items = [], payload = null, status = 'loading', layer, request = 0;
     let panel, inspector, zoningPanel, lastSettings = null, lastSelectedId = null, ready = false, selectionLayer;
     let progress = null;
@@ -37,7 +38,44 @@
     // The API supplies oriented volumes; turf joins their footprints for display.
     const geometryDeps = () => ({ geometry: root.turf });
     const realization = (item, form = store?.get().permittedForm) => ({ form, selection: displaySelection(), deps: geometryDeps() });
-    function permittedFeatures(item) { return envelopes.realize(item, realization(item)); }
+    let coverRevision = -1, coverCity, siteIndex = null;
+    const realizedItems = new WeakMap();
+    function proposedSiteIndex() {
+        const state = store?.get();
+        if (state?.permittedScope !== 'surviving' || state.proposed === 'off') return null;
+        const storage = root.proposalStorage;
+        if (!storage || !root.__openGround || !root.__siteBinding) return null;
+        const city = root.CityConfigManager.getCurrentCityId();
+        if (coverCity === city && coverRevision === storage.revision) return siteIndex;
+        coverCity = city;
+        coverRevision = storage.revision;
+        siteIndex = null;
+        for (const record of storage.peekAllProposals()) {
+            if (!root.isApplied(record) || (record.city && root.CityConfigManager.resolveCityParam(record.city) !== city)) continue;
+            // A layout supplies the plots on which Permitted is recalculated. A physical design
+            // occupies a site on those plots, including its yards and open ground.
+            if (!record.buildingProposal && !record.structureProposal && !record.roadProposal && !record.geometry?.buildings?.length) continue;
+            const site = root.__siteBinding.siteOf(record, { turf: root.turf });
+            if (!site) continue;
+            const feature = root.turf.feature(site, { proposalId: record.proposalId });
+            siteIndex ||= root.__openGround.createBboxIndex();
+            siteIndex.insert(feature, root.turf.bbox(feature));
+        }
+        return siteIndex;
+    }
+    function permittedFeatures(item, options = realization(item)) {
+        const index = item.role === 'permitted' && item.volumes?.length ? proposedSiteIndex() : null;
+        const key = JSON.stringify([options.form, options.selection.scenario, options.selection.pins[item.id], options.selection.variation]);
+        const cached = realizedItems.get(item);
+        if (cached?.key === key && cached.index === index) return cached.shapes;
+        const shapes = envelopes.realize(item, options);
+        if (index) {
+            shapes.bound = envelopes.outsideSites(shapes.bound, index, root.turf, root.__parcelArrangement);
+            shapes.body = envelopes.outsideSites(shapes.body, index, root.turf, root.__parcelArrangement);
+        }
+        realizedItems.set(item, { key, index, shapes });
+        return shapes;
+    }
     const sideWord = (item, edge) => root.i18n.t(`modal.corridor.compass.${envelopes.edgeSide(item.derivation?.parcel, edge)}`);
     const lotNote = configuration => configuration?.lotArea?.status === 'fail' ? t('lotBelowMinimum', { minimum: area(configuration.lotArea.minimumM2) }) : '';
     function pinConfiguration(itemId, configurationId) {
@@ -50,7 +88,8 @@
     // view's hover outline goes, the model view gets its click stack's own outline back.
     function configurationFeatures(item, configurationId) {
         const selection = { ...displaySelection(), pins: { ...pins, [item.id]: configurationId } };
-        return envelopes.mapFeatures(item, { form: 'configuration', selection, deps: geometryDeps() });
+        const deps = geometryDeps();
+        return envelopes.mapFeatures(item, { deps, realized: permittedFeatures(item, { form: 'configuration', selection, deps }) });
     }
     function outlineConfiguration(features) {
         const three = !!root.isThreeModeActive?.();
@@ -117,7 +156,16 @@
     }
     function policy() { return core.displayPolicy(store?.get()); }
     function sceneItems() { return showingOverview() ? items.length ? [...items, ...overview.items] : overview.items : items; }
-    function appearance(item) { return core.itemAppearance(item, store?.get()); }
+    function appearance(item) {
+        const state = store?.get();
+        const value = core.itemAppearance(item, state);
+        if (value !== 'off' && state?.permittedScope === 'surviving' && state.proposed !== 'off'
+            && item.role === 'permitted' && !item.areas?.length && item.volumes?.length) {
+            const { bound, body } = permittedFeatures(item);
+            if (!bound.length && !body.length) return 'off';
+        }
+        return value;
+    }
     function selected() { return (focusedRecord?.id === store?.get().selectedId ? focusedRecord : null)
         || sceneItems().find(item => item.id === store?.get().selectedId) || null; }
     function notifyGeometry() { root.dispatchEvent(new CustomEvent('planninggeometrychange')); }
@@ -193,7 +241,7 @@
         if (context.source || sourceId) url.searchParams.set('source', context.source || sourceId);
         const response = await fetch(url, { signal, cache: 'no-store' });
         if (!response.ok) throw new Error(`Planning parcel HTTP ${response.status}`);
-        const answer = await response.json();
+        const answer = await readPermittedJson(response);
         if (answer.parcel !== parcel || !Array.isArray(answer.items)) throw new Error('Invalid planning parcel response');
         return answer.items;
     }
@@ -207,7 +255,7 @@
         if (recordReads.has(key)) return recordReads.get(key);
         const read = root.PlanningLoading.track('permitted', fetch(url, { cache: 'no-store' }).then(async response => {
             if (!response.ok) throw new Error(`Planning record HTTP ${response.status}`);
-            const answer = await response.json();
+            const answer = await readPermittedJson(response);
             if (answer.recordId !== reference.recordId || !Array.isArray(answer.items)) throw new Error('Invalid source record response');
             for (const record of answer.items) fullRecords.add(record);
             return answer.items;
@@ -294,6 +342,7 @@
         // replaces only the items whose record or appearance changed and removes the ones gone, so
         // a pan that brings a few parcels does not rebuild every massing on the map.
         const state = store.get();
+        const cover = proposedSiteIndex();
         const colors = new Map();
         const drawnColor = item => {
             const role = labels.colourRole(item);
@@ -309,14 +358,15 @@
             const signature = JSON.stringify([display, state.permittedMap, state.permittedForm, state.permittedVariation,
                 scenarioId, pins[item.id] || null, item.id === state.selectedId, drawnColor(item)]);
             const previous = drawnItems.get(item.id);
-            if (previous && previous.item === item && previous.signature === signature) {
+            const massingCover = item.role === 'permitted' && item.volumes?.length ? cover : null;
+            if (previous && previous.item === item && previous.signature === signature && previous.cover === massingCover) {
                 hitShapes.push(...previous.hits);
                 continue;
             }
             if (previous) layer.removeLayer(previous.group);
             const group = root.L.featureGroup().addTo(layer);
             const hits = drawItem(item, display, group);
-            drawnItems.set(item.id, { item, signature, group, hits });
+            drawnItems.set(item.id, { item, signature, cover: massingCover, group, hits });
             hitShapes.push(...hits);
         }
         for (const [id, entry] of drawnItems) {
@@ -353,7 +403,7 @@
     function drawItem(item, display, group) {
         const hits = [];
         let features;
-        try { features = envelopes.mapFeatures(item, { detail: store.get().permittedMap, ...realization(item) }); }
+        try { features = envelopes.mapFeatures(item, { detail: store.get().permittedMap, deps: geometryDeps(), realized: permittedFeatures(item) }); }
         catch (error) { console.error('[planning] Could not project massing', item.id, error); return hits; }
         const hasBody = features.some(feature => feature.properties.geometryRole !== 'bound');
         for (const feature of features) {
@@ -373,8 +423,12 @@
             // The assumed street side of the shown configuration, so a roll reads as a choice, not a glitch.
             if (feature.properties.frontEdge != null && item.derivation?.parcel) {
                 const ring = item.derivation.parcel.coordinates[0], edge = feature.properties.frontEdge;
-                root.L.polyline([ring[edge], ring[edge + 1]].map(p => [p[1], p[0]]), { pane: 'planningSources', interactive: false,
-                    color: itemColor(item), weight: 4, opacity: 0.9 }).addTo(group);
+                const line = root.turf.lineString([ring[edge], ring[edge + 1]]);
+                const cover = proposedSiteIndex();
+                if (!cover || [...cover.query(root.turf.bbox(line))].every(site => root.turf.booleanDisjoint(line, site))) {
+                    root.L.polyline(line.geometry.coordinates.map(p => [p[1], p[0]]), { pane: 'planningSources', interactive: false,
+                        color: itemColor(item), weight: 4, opacity: 0.9 }).addTo(group);
+                }
             }
             if (hull) continue;
             const inspect = () => { if (!root.__mapEditLock?.isHeld()) select(item.id); };
@@ -655,8 +709,7 @@
         if (!store || !button) return;
         const view = policy();
         const shown = { existing: view.existing !== 'off', permitted: view.permitted !== 'off' || store.get().zoningAreas !== 'off', proposed: view.proposed !== 'off' };
-        const loading = { ...root.PlanningLoading.state() };
-        loading.permitted ||= status === 'loading';
+        const loading = root.PlanningLoading.state();
         let ring = button.querySelector('.planning-loading-ring');
         if (!ring) {
             const ns = 'http://www.w3.org/2000/svg';
@@ -675,13 +728,30 @@
         for (const arc of ring.querySelectorAll('.planning-loading-arc')) {
             const slot = arcs.find(entry => entry.role === arc.dataset.role)?.slot;
             if (slot === undefined) arc.removeAttribute('data-slot'); else arc.dataset.slot = String(slot);
-            const bar = panel.querySelector(`[data-planning-loading="${arc.dataset.role}"]`);
-            if (bar) bar.hidden = slot === undefined;
+            const role = arc.dataset.role;
+            const bar = panel.querySelector(`[data-planning-loading="${role}"]`);
+            if (bar) {
+                const counter = bar.parentElement.querySelector('.planning-loading-count');
+                const bytes = root.PlanningLoading.bytesLoaded(role);
+                const showCount = slot !== undefined && bytes > 0;
+                bar.hidden = slot === undefined;
+                counter.hidden = !showCount;
+                if (showCount) {
+                    const size = root.CbFormat.formatReceivedBytes(bytes);
+                    const received = t('receivedData', { size });
+                    if (counter.textContent !== size) counter.textContent = size;
+                    bar.setAttribute('aria-valuetext', received);
+                    counter.title = received;
+                } else bar.removeAttribute('aria-valuetext');
+            }
         }
         ring.classList.toggle('is-loading', arcs.length > 0);
         button.setAttribute('aria-busy', String(arcs.length > 0));
     }
     function render({ updateInspector = true } = {}) {
+        // A viewport batch can contain several pages and retry individual cells. Keep one
+        // continuous total across those response bodies, including time between reads.
+        root.PlanningLoading.set('permitted', 'viewport', status === 'loading' && (policy().permitted !== 'off' || store?.get().zoningAreas !== 'off'));
         paintLoading();
         if (!ready) return;
         const zoning = zoningPanel;
@@ -765,9 +835,13 @@
             select.value = store.get()[select.dataset.planningSetting];
             for (const option of select.options) option.textContent = t(option.value);
         });
-        for (const key of ['existingScope', 'proposedForm', 'permittedForm', 'permittedMap']) {
+        for (const key of ['existingScope', 'permittedScope', 'proposedForm', 'permittedForm', 'permittedMap']) {
             panel.querySelector(`[data-planning-setting="${key}"]`).setAttribute('aria-label', t(key));
         }
+        panel.querySelector('.planning-permitted-scope-label').textContent = t('permittedScope');
+        const coverageHelp = panel.querySelector('#planning-coverage-help');
+        coverageHelp.textContent = t('survivingCoverageHelp');
+        coverageHelp.hidden = store.get().permittedScope !== 'surviving';
         zoning.querySelector('[data-planning-setting="zoningAreas"]').setAttribute('aria-label', t('zoningAreas'));
         // Keep the same representation control in every row. A source with one calculated option
         // offers only Illustration, without replacing the person's preference for richer sources.
@@ -1069,7 +1143,7 @@
                 if (root.PlanPlots.isPlanPiece(piece)) rememberPlanPiece(piece);
                 return root.PlanPlots.toPlot(root.LiveParcelFabric, piece, options);
             });
-            return root.PlanningFeed.loadViewport(target, { city, signal, body: plots.length ? { city, source: sourceId, scenario: scenario || undefined, bbox: box, plots } : undefined })
+            return root.PlanningFeed.loadViewport(target, { city, signal, readJson: readPermittedJson, body: plots.length ? { city, source: sourceId, scenario: scenario || undefined, bbox: box, plots } : undefined })
                 .then(answer => (kind === 'envelopes' ? { ...answer, envelopes: true } : answer));
         };
         status = 'loading'; progress = { count: jobs.length - pending.length, total: jobs.length };
@@ -1152,7 +1226,7 @@
         if (bbox) url.searchParams.set('bbox', bbox.join(','));
         return root.PlanningLoading.track('permitted', fetch(url, { cache: 'no-store' }).then(async response => {
             if (!response.ok) throw new Error(`Planning sources HTTP ${response.status}`);
-            const answer = await response.json();
+            const answer = await readPermittedJson(response);
             if (!Array.isArray(answer.sources)) throw new Error('Invalid planning sources response');
             const configured = root.CityConfigManager.getCityConfig(city)?.planning?.sourceIds || [];
             return configured.map(id => answer.sources.find(source => source.id === id)).filter(Boolean)
@@ -1298,9 +1372,13 @@
             const loadingBar = element('span', `planning-loading-bar planning-loading-bar--${role}`);
             loadingBar.dataset.planningLoading = role; loadingBar.hidden = true; loadingBar.setAttribute('role', 'progressbar');
             loadingBar.setAttribute('aria-labelledby', label.id);
+            const counter = element('span', 'planning-loading-count');
+            counter.hidden = true; counter.setAttribute('aria-hidden', 'true');
+            const heading = element('span', 'planning-layer-heading');
+            heading.append(name, counter);
             const content = element('div', 'planning-layer-detail');
             const roleControl = control(role);
-            summary.append(name);
+            summary.append(heading);
             if (role === 'existing') {
                 content.append(control('existingScope'));
             } else {
@@ -1308,7 +1386,14 @@
                 formRow.append(control(`${role}Form`), panel.querySelector(`[data-planning-reroll="${role}"]`));
                 content.append(formRow);
             }
-            if (role === 'permitted') content.append(sourceField, configurationLink, reference, scenarioField, control('permittedMap'));
+            if (role === 'permitted') {
+                const coverage = element('label', 'planning-source-field');
+                const scope = control('permittedScope');
+                const help = element('p', 'planning-layer-source-note');
+                help.id = 'planning-coverage-help'; scope.setAttribute('aria-describedby', help.id);
+                coverage.append(element('span', 'planning-permitted-scope-label'), scope);
+                content.append(coverage, help, sourceField, configurationLink, reference, scenarioField, control('permittedMap'));
+            }
             const sourceNote = element('p', 'planning-layer-source-note'); sourceNote.dataset.roleSource = role; content.append(sourceNote);
             disclosure.append(summary, content); row.append(disclosure, roleControl, loadingBar); controls.append(row);
         }
@@ -1422,6 +1507,10 @@
             store.select(null); drawMap(); render(); notifyGeometry(); loadSources();
         });
         root.addEventListener('proposedBuildingsUpdated', render);
+        document.addEventListener('proposalStorageChanged', () => {
+            if (store.get().permittedScope !== 'surviving' || policy().proposed === 'off') return;
+            drawMap(); notifyGeometry();
+        });
         root.addEventListener('buildingsLayerUpdated', restoreSelection);
         root.addEventListener('i18n:translationsLoaded', render);
         root.addEventListener('mapmodechange', render);

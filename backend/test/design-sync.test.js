@@ -278,6 +278,33 @@ function fakeWindow({ records = [], server = fakeServer(), blocked = null, confi
     return { win, sync: live.api, stored, imports, server, saves: () => saves };
 }
 
+describe('fetchDesigns', () => {
+    it('counts a shared design download from the request through its body and clears on failure', async () => {
+        const { sync, win } = fakeWindow();
+        const loading = require('../../frontend/js/planning/loading.js');
+        win.PlanningLoading = loading;
+        const cid = rowOf(road()).cid;
+        const body = JSON.stringify({ items: [{ cid, design: { cid, title: 'Café' } }] });
+        let respond;
+        win.fetch = () => new Promise(resolve => { respond = resolve; });
+        const applied = sync.fetchDesigns([cid], { forDisplay: true });
+        expect(loading.state().proposed).toBe(true);
+        respond(new Response(body));
+        expect((await applied).rows.get(cid).title).toBe('Café');
+        expect(loading.bytesLoaded('proposed')).toBe(new TextEncoder().encode(body).length);
+        expect(loading.state().proposed).toBe(false);
+
+        const lookup = sync.fetchDesigns([cid]);
+        expect(loading.state().proposed).toBe(false);
+        respond(new Response(body));
+        await lookup;
+        win.fetch = async () => { throw new Error('offline'); };
+        await expect(sync.fetchDesigns([cid], { forDisplay: true })).rejects.toMatchObject({ code: 'network-failed' });
+        expect(loading.state().proposed).toBe(false);
+        expect(loading.bytesLoaded('proposed')).toBe(0);
+    });
+});
+
 describe('publishDesign', () => {
     it('names the rejected design and maps the server-measured overflow and saved boundary', async () => {
         const record = road();

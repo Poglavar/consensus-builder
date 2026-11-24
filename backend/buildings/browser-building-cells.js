@@ -6,6 +6,7 @@ import { withSourceControls } from '../parcels/source-controls.js';
 import { areaLimitError, upstreamError } from '../parcels/source-contract.js';
 import { buildOverpassQuery, overpassElementsToGeoJSON } from './osm-reference.js';
 import { decodeBuildingSourceId, readBuildingCell } from './building-cell-read.js';
+import planningLoading from '../../frontend/js/planning/loading.js';
 
 // An OpenStreetMap (Overpass) mirror read as an adapter: one query per box; an answer at the feature
 // cap is over the box's limit, so the reader splits it.
@@ -28,13 +29,15 @@ function createOverpassAdapter(descriptor, { fetchImpl }) {
 
 // Direct reads only: a URL source is the person's own choice of public service, and no request for
 // it reaches our server, not even as a relay.
-const directFetch = fetchImpl => (url, options = {}) => fetchImpl(url, { ...options, credentials: 'omit' });
-
-export function createBrowserBuildingCells({ fetchImpl = (...args) => globalThis.fetch(...args) } = {}) {
+export function createBrowserBuildingCells({ fetchImpl = (...args) => globalThis.fetch(...args), onBytes = null } = {}) {
     const adapters = new Map();
+    const directFetch = async (url, options = {}) => {
+        const response = await fetchImpl(url, { ...options, credentials: 'omit' });
+        return planningLoading.countedResponse(response, onBytes);
+    };
     async function adapter(descriptor) {
         if (adapters.has(descriptor.id)) return adapters.get(descriptor.id);
-        const options = { fetchImpl: directFetch(fetchImpl) };
+        const options = { fetchImpl: directFetch };
         const created = descriptor.adapter === 'overpass' ? createOverpassAdapter(descriptor, options)
             // The city-model reader (CityJSON, CityGML) loads only for a source that needs it.
             : descriptor.adapter === 'city-model' ? (await import('./city-model-url-source.js')).createCityModelAdapter(descriptor, options)

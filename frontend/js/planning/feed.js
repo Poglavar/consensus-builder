@@ -5,7 +5,7 @@
     if (root) root.PlanningFeed = api;
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
-    async function loadViewport(url, { city, signal, fetchPage = fetch, onProgress = () => {}, body } = {}) {
+    async function loadViewport(url, { city, signal, fetchPage = fetch, readJson = response => response.json(), onProgress = () => {}, body } = {}) {
         const items = new Map(), summaries = new Map(), cursors = new Set();
         const pageUrl = new URL(url);
         let cursor = null, omitted = 0, answer;
@@ -16,7 +16,7 @@
             if (body) { init.method = 'POST'; init.headers = { 'content-type': 'application/json' }; init.body = JSON.stringify(body); }
             const response = await fetchPage(pageUrl.toString(), init);
             if (!response.ok) throw Object.assign(new Error(`Planning source HTTP ${response.status}`), { status: response.status });
-            answer = await response.json();
+            answer = await readJson(response);
             signal?.throwIfAborted();
             if (answer.schemaVersion !== 'planning-representations.v1' || answer.city !== city || !Array.isArray(answer.items)
                 || (answer.nextCursor !== null && typeof answer.nextCursor !== 'string')

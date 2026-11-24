@@ -6,6 +6,8 @@ Click a visible building to inspect **Permitted massing**. When its government-p
 
 ## Land used for the calculation
 
+In **Buildings and massing → Permitted**, **All** shows the complete massing. **Surviving** shows the portions outside the sites of visible, applied building, street and open-space designs. A site includes its yards and keeps any holes. Switching Proposed off restores the complete permitted massing. A subdivision by itself supplies new plots for the rule calculation.
+
 | Parcel origin | Identity and geometry |
 | --- | --- |
 | Cadastre | The provider's registered parcel and geometry revision. |

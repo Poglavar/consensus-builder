@@ -26,6 +26,11 @@ describe('CbFormat locales', () => {
 });
 
 describe('numbers and areas', () => {
+    it('formats received bytes as bytes below 1000 and localized decimal kilobytes above it', () => {
+        expect(CbFormat.formatReceivedBytes(999, { lang: 'en' })).toBe('999 byte');
+        expect(CbFormat.formatReceivedBytes(1500, { lang: 'en' })).toMatch(/1\.5.*kB/);
+        expect(CbFormat.formatReceivedBytes(1500, { lang: 'hr' })).toMatch(/1,5/);
+    });
     it('groups thousands per language', () => {
         expect(CbFormat.formatNumber(3522, { lang: 'en' })).toBe('3,522');
         expect(CbFormat.formatNumber(3522, { lang: 'hr' })).toBe('3.522');

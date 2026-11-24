@@ -122,11 +122,28 @@
         const bound = shownForm === 'configuration' && body.length ? [] : volumeFeatures(item, 'bound');
         return { bound, body, configuration, frontEdge: body.length ? realization.frontEdge : null };
     }
+    // A displayed volume keeps its levels and identity when a proposed site cuts its ground.
+    function outsideSites(features, index, geometry, clipper) {
+        if (!index) return features;
+        return features.flatMap(feature => {
+            let remaining = feature;
+            for (const site of index.query(geometry.bbox(feature))) {
+                const context = { site: 'planning.survivingMassing', parcelId: feature.properties.representationId, proposalId: site.properties.proposalId };
+                try {
+                    remaining = clipper.clipWith(geometry, 'difference', remaining, site, context);
+                } catch (error) {
+                    clipper.reportClipFailure('difference', error, context, [remaining, site]);
+                }
+                if (!remaining) return [];
+            }
+            return remaining === feature ? [feature] : [{ ...feature, geometry: remaining.geometry }];
+        });
+    }
     // The joined ground projection has one boundary. Height-part boundaries are an explicit detail.
-    function mapFeatures(item, { detail = 'footprint', form = 'both', selection = {}, deps = null } = {}) {
+    function mapFeatures(item, { detail = 'footprint', form = 'both', selection = {}, deps = null, realized } = {}) {
         if (item.areas?.length) return item.areas.map(area => ({ type: 'Feature', geometry: area.geometry,
             properties: { representationId: item.id, role: item.role, geometryRole: 'zoning-area' } }));
-        const { bound, body } = realize(item, { form, selection, deps });
+        const { bound, body } = realized || realize(item, { form, selection, deps });
         const join = features => {
             if (detail === 'steps' || features.length < 2) return features;
             const joined = features.reduce((result, feature) => result ? deps.geometry.union(result, feature) : feature, null);
@@ -136,5 +153,5 @@
         };
         return [...join(bound), ...join(body)];
     }
-    return { ANY_CONFIGURATION, forms, configurationFor, frontEdgeFor, edgeSide, volumeFeatures, permittedVolume, realize, mapFeatures };
+    return { ANY_CONFIGURATION, forms, configurationFor, frontEdgeFor, edgeSide, volumeFeatures, permittedVolume, realize, outsideSites, mapFeatures };
 });

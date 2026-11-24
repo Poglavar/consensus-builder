@@ -2,6 +2,18 @@
 import { createBrowserParcelRuntime } from './browser-source-runtime.js';
 import { createBrowserBuildingCells } from '../buildings/browser-building-cells.js';
 let runtime, relayBase, buildingCells;
+let pendingBuildingBytes = 0;
+let buildingBytesTimer = null;
+function flushBuildingBytes() {
+    clearTimeout(buildingBytesTimer);
+    buildingBytesTimer = null;
+    if (pendingBuildingBytes) self.postMessage({ bytes: pendingBuildingBytes });
+    pendingBuildingBytes = 0;
+}
+function reportBuildingBytes(delta) {
+    pendingBuildingBytes += delta;
+    if (buildingBytesTimer === null) buildingBytesTimer = setTimeout(flushBuildingBytes, 100);
+}
 // The page cancels a request it no longer needs (a superseded viewport) with { cancel: id }.
 const controllers = new Map();
 self.addEventListener('message', async ({ data }) => {
@@ -24,8 +36,9 @@ self.addEventListener('message', async ({ data }) => {
         }
         // One building cell of a URL building source, read from its service directly (no relay).
         if (method === 'buildingCell') {
-            buildingCells ||= createBrowserBuildingCells();
-            self.postMessage({ id, result: await buildingCells.read(sourceId, args[0], { signal: controller.signal }) });
+            buildingCells ||= createBrowserBuildingCells({ onBytes: reportBuildingBytes });
+            const result = await buildingCells.read(sourceId, args[0], { signal: controller.signal }).finally(flushBuildingBytes);
+            self.postMessage({ id, result });
             return;
         }
         const onProgress = data.trackProgress ? progress => { if (!controller.signal.aborted) self.postMessage({ id, progress }); } : undefined;

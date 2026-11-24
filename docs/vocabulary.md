@@ -677,6 +677,8 @@ An authored reference pinning a provider record, edition or scenario and source 
 
 The maximum building form derived under an identified rule and its supported assumptions. An authored permitted envelope is normative under that proposed rule; a source-derived envelope retains its source's legal and calculation qualifications.
 
+**Surviving permitted massing** is the part of the displayed permitted form outside the design sites occupied by applied proposals while Proposed is visible. This display choice preserves the source plot, zoning and calculated envelope.
+
 ### Outer bound
 
 The combined extent of the drawable building configurations and their supported interpretations. It bounds possible forms rather than defining one constructible building. A lot that several zoning areas partition has one outer bound per part, each the whole lot's bound clipped to that part; a zoning area under 2 % of the lot is evidence, not a part. A bound is a stack of prisms: between any two levels, the ground some configuration's volume covers there. A yard that starts above the ground (a side yard from the second floor, a street-wall setback above the facade height) carries `fromHeightM` on its constraint and makes a configuration a stack of tiers. A level only configurations with a `condition` reach carries that condition on its tier; the bound's height and the Planned figures state what the rules grant without a condition, and the conditional extent is reported beside them with its condition.

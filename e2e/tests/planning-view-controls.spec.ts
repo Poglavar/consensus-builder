@@ -1,6 +1,6 @@
 // Source fixtures exercise the shared planning controls and read-only evidence inspector.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, PARCEL_ID, PARCEL_GEOMETRY } from '../helpers/runtime';
+import { createBuilding, openCity, openParcel, PARCEL_ID, PARCEL_GEOMETRY } from '../helpers/runtime';
 import { selectNativeOption } from '../helpers/controls';
 import { openLayerSection } from '../helpers/layers';
 
@@ -141,10 +141,20 @@ test('Buildings and massing shares its button and section loading states when op
   }));
   // A second role loading packs into the next third; the answer arriving clears Permitted's.
   await page.evaluate(() => (window as any).PlanningViews.configure('existing', 'solid'));
-  await page.evaluate(() => (window as any).PlanningLoading.set('existing', 'test', true));
+  await page.evaluate(() => {
+    const w = window as any;
+    w.PlanningLoading.set('existing', 'test', true);
+    const response = new Response(new ReadableStream({ start(controller) {
+      controller.enqueue(new TextEncoder().encode(' '.repeat(2500)));
+      w.finishTestBuildingBody = () => { controller.enqueue(new TextEncoder().encode('[]')); controller.close(); };
+    } }));
+    w.testBuildingRead = w.PlanningLoading.readJson('existing', response);
+  });
   await expect(arcs).toHaveCount(2);
   const builtBar = sheet.getByRole('progressbar', { name: 'Built', exact: true });
   await expect(builtBar).toBeVisible();
+  await expect(builtBar).toHaveAttribute('aria-valuetext', '2.5 kB received');
+  await expect(sheet.locator('[data-role="existing"] .planning-loading-count')).toHaveText('2.5 kB');
   await sheet.locator('[data-role="existing"] summary').press('Enter');
   await expect(builtBar).toBeVisible();
   const proposedBar = sheet.locator('[data-planning-loading="proposed"]');
@@ -160,10 +170,76 @@ test('Buildings and massing shares its button and section loading states when op
   await expect(arcs).toHaveAttribute('data-role', 'existing');
   await expect(permittedBar).toBeHidden();
   await expect(builtBar).toBeVisible();
-  await page.evaluate(() => (window as any).PlanningLoading.set('existing', 'test', false));
+  await page.evaluate(async () => {
+    const w = window as any;
+    w.finishTestBuildingBody();
+    await w.testBuildingRead;
+    w.PlanningLoading.set('existing', 'test', false);
+  });
   await expect(arcs).toHaveCount(0);
   await expect(button).toHaveAttribute('aria-busy', 'false');
   await expect(sheet.getByRole('progressbar')).toHaveCount(0);
+});
+
+test('Surviving gives an applied building its full site in the map and model', async ({ mockApi: page }) => {
+  test.setTimeout(90_000);
+  const provider = { ...sources[0], capabilities: { volumes: true, areas: false } };
+  const parcel = massing(provider);
+  // One permitted volume spans the design site and the land to its east.
+  const geometry = { type: 'Polygon', coordinates: [[[15.9819,45.8],[15.983,45.8],[15.983,45.8005],[15.9819,45.8005],[15.9819,45.8]]] };
+  parcel.site = geometry as typeof PARCEL_GEOMETRY;
+  parcel.volumes[0].geometry = parcel.site;
+  await page.route('**/planning/**', route => {
+    const path = new URL(route.request().url()).pathname;
+    if (path.endsWith('/sources')) return route.fulfill({ json: { city: 'zagreb', sources: [provider] } });
+    if (path.endsWith('/representations')) return route.fulfill({ json: payload([parcel], [provider]) });
+    return route.fallback();
+  });
+  await openCity(page);
+  await page.evaluate(() => (window as any).PlanningViews.configure('permitted', 'off'));
+  const designId = await createBuilding(page);
+  await page.evaluate(() => {
+    const w = window as any;
+    w.ClickStack.close(); w.PlanningViews.configure('permitted', 'ghost');
+  });
+  const points = [[15.98193, 45.80004], [15.9828, 45.80025]];
+  const mapHits = () => page.evaluate(({ points, id }) => points.map(([lng, lat]) =>
+    (window as any).PlanningViews.itemsAt({lng, lat}).some((item: any) => item.id === id)), {points, id: parcel.id});
+  await expect.poll(mapHits).toEqual([true, true]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.locator('#planning-views-button').press('Enter');
+  const sheet = page.locator('#planning-views');
+  await sheet.locator('[data-role="permitted"] summary').press('Enter');
+  const scope = sheet.getByRole('combobox', { name: 'Permitted massing coverage' });
+  await scope.focus();
+  await selectNativeOption(scope, 'surviving');
+  await expect(scope).toBeFocused();
+  await expect(scope).toHaveValue('surviving');
+  await expect.poll(mapHits).toEqual([false, true]);
+  expect(new URL(page.url()).searchParams.get('permittedScope')).toBe('surviving');
+  expect(await page.evaluate(() => JSON.parse((window as any).PersistentStorage.getItem('cb_planning_display')).permittedScope)).toBe('surviving');
+  await sheet.getByRole('button', { name: 'Close', exact: true }).press('Enter');
+  await page.locator('#mode-3d-toggle').click();
+  const modelHits = () => page.evaluate(({points, id}) => {
+    const w = window as any, model = w.getThreeModeInternals?.();
+    const group = model?.scene.getObjectByName('PermittedMassing');
+    if (!group) return [];
+    group.updateMatrixWorld(true);
+    const meshes = group.children.filter((mesh: any) => mesh.isMesh && mesh.userData.planningRepresentationId === id);
+    return points.map(([lng, lat]) => {
+      const [x, y] = model.latLngToXY(lat, lng);
+      const ray = new w.THREE.Raycaster(new w.THREE.Vector3(x,y,10000), new w.THREE.Vector3(0,0,-1));
+      return ray.intersectObjects(meshes).length > 0;
+    });
+  }, {points, id: parcel.id});
+  await expect.poll(modelHits).toEqual([false, true]);
+  await page.evaluate(() => (window as any).PlanningViews.configure('proposed', 'off'));
+  await expect.poll(modelHits).toEqual([true, true]);
+  await page.evaluate(() => (window as any).PlanningViews.configure('proposed', 'solid'));
+  await expect.poll(modelHits).toEqual([false, true]);
+  await page.evaluate(id => (window as any).ProposalManager.unapplyProposals([id]), designId);
+  await expect.poll(modelHits).toEqual([true, true]);
+  await expect.poll(mapHits).toEqual([true, true]);
 });
 
 test('Permitted keeps its Illustration dropdown enabled for a single-option source', async ({ mockApi: page }) => {

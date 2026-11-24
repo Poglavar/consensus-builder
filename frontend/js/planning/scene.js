@@ -12,12 +12,13 @@
     const choices = Object.freeze({
         existing: displayStates, permitted: displayStates, proposed: displayStates,
         existingScope: ['all', 'surviving', 'removed'],
+        permittedScope: ['all', 'surviving'],
         proposedForm: ['massing', 'buildout', 'both'],
         permittedForm: ['bound', 'configuration', 'both'],
         permittedMap: ['footprint', 'steps'], zoningAreas: ['off', 'ghost']
     });
     const defaults = Object.freeze({ existing: 'off', permitted: 'ghost', proposed: 'solid',
-        existingScope: 'all', proposedForm: 'both', permittedForm: 'both', permittedMap: 'footprint', zoningAreas: 'off' });
+        existingScope: 'all', permittedScope: 'all', proposedForm: 'both', permittedForm: 'both', permittedMap: 'footprint', zoningAreas: 'off' });
     function settings(input = {}) {
         return Object.fromEntries(Object.entries(defaults).map(([key, value]) =>
             [key, choices[key].includes(input[key]) ? input[key] : value]));

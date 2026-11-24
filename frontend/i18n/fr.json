@@ -8699,6 +8699,9 @@
         }
     },
     "planningViews": {
+        "receivedData": "{{size}} reçus",
+        "permittedScope": "Couverture de la volumétrie autorisée",
+        "survivingCoverageHelp": "Lorsque Proposé est visible, ses projets sont prioritaires sur leurs sites.",
         "governmentPlanPlot": "Parcelle du plan général",
         "usePlanAreaAsSite": "Utiliser la zone du plan général comme site du projet",
         "heightOnlyPlot": "Les règles enregistrées fixent ici uniquement la hauteur. L’enveloppe maximale suit la limite de la parcelle. {{illustration}} montre un bâtiment plus petit à l’intérieur.",

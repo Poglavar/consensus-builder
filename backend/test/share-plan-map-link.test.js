@@ -16,4 +16,11 @@ describe('saved plan map links',()=>{
   const restored=NamedPlans.restoreUrl(`https://app.example/plans/${cid}?at=1,2,16&3d`,view,MapShare),url=new URL(restored);
   expect(url.searchParams.get('at')).toBe('1,2,16');expect(url.searchParams.has('3d')).toBe(true);expect(url.searchParams.get('city')).toBe('zagreb');
  });
+ it('defaults proposed massing to solid when neither link nor saved view specifies it',()=>{
+  const cid='bafkrei'+'c'.repeat(52),view={at:'45.8,15.96,17',mode:'2d',city:'zagreb'};
+  const url=new URL(NamedPlans.restoreUrl(`https://app.example/plans/${cid}`,view,MapShare));
+  expect(url.searchParams.get('proposed')).toBe('solid');
+  expect(new URL(NamedPlans.restoreUrl(`https://app.example/plans/${cid}?proposed=ghost`,view,MapShare)).searchParams.get('proposed')).toBe('ghost');
+  expect(new URL(NamedPlans.restoreUrl(`https://app.example/plans/${cid}`,{...view,settings:{proposed:'ghost'}},MapShare)).searchParams.get('proposed')).toBe('ghost');
+ });
 });

@@ -32,7 +32,7 @@
         if (cached) return cached;
         const pending = fetch(`/data/planning/${source.id}-overview.json`).then(response => {
             if (!response.ok) throw new Error(`Zoning overview HTTP ${response.status}`);
-            return response.json();
+            return root.PlanningLoading.readJson('permitted', response);
         }).then(answer => decode(answer, source, root.turf)).catch(error => {
             reads.delete(source.id);
             throw error;

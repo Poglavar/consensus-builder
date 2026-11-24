@@ -8568,6 +8568,9 @@
         }
     },
     "planningViews": {
+        "receivedData": "{{size}} primljeno",
+        "permittedScope": "Obuhvat dopuštene izgrađenosti",
+        "survivingCoverageHelp": "Kad je Predloženo vidljivo, njegovi dizajni imaju prednost na svojim područjima.",
         "governmentPlanPlot": "Čestica iz generalnog plana",
         "usePlanAreaAsSite": "Upotrijebi površinu iz generalnog plana kao projektno područje",
         "heightOnlyPlot": "Zabilježena pravila ovdje određuju samo visinu. Najveća ovojnica prati granicu čestice. {{illustration}} prikazuje manju zgradu unutar nje.",

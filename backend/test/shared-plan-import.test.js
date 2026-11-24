@@ -766,7 +766,7 @@ describe('opening a /designs link', () => {
 
         const result = await link.open([park.cid, block.cid, square.cid]);
 
-        expect(link.window.DesignSync.fetchDesigns).toHaveBeenCalledExactlyOnceWith([park.cid, block.cid, square.cid]);
+        expect(link.window.DesignSync.fetchDesigns).toHaveBeenCalledExactlyOnceWith([park.cid, block.cid, square.cid], { forDisplay: true });
         // The square stands on the map already: used as it is, never imported or applied again.
         expect(link.window.DesignSync.importDesign.mock.calls.map(([design, options]) => [design.title, options._parcelMutation.proposals]))
             .toEqual([['Park', link.proposalStorage], ['Block', link.proposalStorage]]);
@@ -812,7 +812,7 @@ describe('opening a /designs link', () => {
         const result = await link.open(['p-12', gone, held.cid, broken.cid, park.cid]);
 
         // Not a CID: never asked for.
-        expect(link.window.DesignSync.fetchDesigns).toHaveBeenCalledExactlyOnceWith([gone, held.cid, broken.cid, park.cid]);
+        expect(link.window.DesignSync.fetchDesigns).toHaveBeenCalledExactlyOnceWith([gone, held.cid, broken.cid, park.cid], { forDisplay: true });
         expect(result.failed).toEqual([
             { id: 'p-12', label: 'p-12', reason: 'This is not a design link.' },
             { id: gone, label: gone, reason: 'This design is not on the server.' },

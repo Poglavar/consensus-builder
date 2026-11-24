@@ -25,7 +25,7 @@ class FakeWorker {
 }
 FakeWorker.instances = [];
 
-function boot(scriptVersion = '') {
+function boot(scriptVersion = '', planningLoading = null) {
     FakeWorker.instances = [];
     const listeners = new Map();
     const choiceForCity = vi.fn(() => ({ endpoint: 'https://example.test', layer: 'parcels' }));
@@ -35,6 +35,7 @@ function boot(scriptVersion = '') {
         ParcelSourceSettings: { choiceForCity },
         CityConfigManager: { getCurrentCityId: () => 'city-a' },
         getBackendBase: () => 'https://api.example.test',
+        PlanningLoading: planningLoading || undefined,
         addEventListener: (type, callback) => {
             const callbacks = listeners.get(type) || [];
             callbacks.push(callback);
@@ -42,7 +43,7 @@ function boot(scriptVersion = '') {
         }
     };
     vm.runInContext(source, vm.createContext({ window, URL, setTimeout, clearTimeout, Map, Promise, Error, Object, String }));
-    return { client: window.BrowserParcelSources, listeners, choiceForCity };
+    return { client: window.BrowserParcelSources, building: window.BrowserBuildingSources, listeners, choiceForCity };
 }
 
 afterEach(() => vi.useRealTimers());
@@ -65,6 +66,20 @@ describe('browser parcel worker client', () => {
         worker.emit('message', { data: { id: 1, result: { complete: true, features: [] } } });
         await expect(first).resolves.toEqual({ complete: true, features: [] });
         await expect(second).resolves.toEqual({ complete: true, absentIds: [] });
+    });
+
+    it('forwards only positive worker byte deltas to the existing-building role', async () => {
+        const addBytes = vi.fn();
+        const { building } = boot('', { addBytes });
+        const pending = building.readCell('building.custom', { kind: 'near', bbox: [0, 0, 1, 1] });
+        const worker = FakeWorker.instances[0];
+        worker.emit('message', { data: { bytes: 4096 } });
+        worker.emit('message', { data: { bytes: 0 } });
+        worker.emit('message', { data: { bytes: -2 } });
+        worker.emit('message', { data: { id: 1, result: { items: [], complete: true } } });
+        await expect(pending).resolves.toMatchObject({ complete: true });
+        expect(addBytes).toHaveBeenCalledTimes(1);
+        expect(addBytes).toHaveBeenCalledWith('existing', 4096);
     });
 
     it('a cancelled request rejects at once, tells the worker to stop it, and ignores its late answer', async () => {
