@@ -10,6 +10,16 @@ import { withSourceProposal, sourceRevision } from '../source-proposal.js';
 export const genplanService = 'https://map.gov4c.kz/ggkgs/ows';
 export const genplanLayer = 'kz:gpzone';
 
+export function genplanStoreyLimits(storeys, rules, { evidence = 'direct', basis } = {}) {
+    const heightM = Math.round(storeys * rules.storeyHeightM * 100) / 100;
+    const source = { bound: 'maximum', evaluation: 'not-evaluated', sourceField: 'functional' };
+    return { heightM, constraints: [
+        { quantity: 'storeys', value: storeys, unit: 'count', ...source, evidence, basis },
+        { quantity: 'height', value: heightM, unit: 'm', ...source, evidence: 'derived',
+            derivation: `${storeys} × ${rules.storeyHeightM} m`, rule: rules.storeyHeightNote }
+    ] };
+}
+
 const upstream = message => Object.assign(new Error(message), { status: 503, code: 'planning-source-unavailable' });
 const spatialReference = Object.freeze({ horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' });
 const unzip = promisify(gunzip);

@@ -1,7 +1,7 @@
 // Alatau general plan (Government Decree No. 727 of 9 September 2025, the corrected plan) as a
 // Permitted source: the functional-zone polygons the state urban-planning cadastre publishes over
 // public WFS (map.gov4c.kz/ggkgs, layer kz:gpzone), queried from a local source snapshot.
-import { createKzGenplanProvider, genplanLayer, genplanService } from './kz-genplan.js';
+import { createKzGenplanProvider, genplanLayer, genplanService, genplanStoreyLimits } from './kz-genplan.js';
 
 export const ALATAU_GENPLAN_SERVICE = genplanService;
 export const ALATAU_GENPLAN_LAYER = genplanLayer;
@@ -79,10 +79,6 @@ const implementationStages = { 'Существующие': 'existing', 'Прое
 const REASON_CODES = new Map([[PDP, 'detailed-plan'], [NOT_FOR_BUILDING, 'not-for-building'], ['Режимная территория.', 'restricted-regime'],
     ['Резерв развития; застройка после изменения генплана или ПДП.', 'reserve'], ['Сельскохозяйственное использование.', 'agriculture']]);
 
-function constraint(quantity, value, unit, bound, evidence, sourceField, extra = {}) {
-    return { quantity, value, unit, bound, evidence, evaluation: 'not-evaluated', sourceField, ...extra };
-}
-
 // One zone's attributes as the shared record fields: the status the plan gives its use and, for a
 // residential storey class, its storey and height limits.
 export function interpretZone(properties, rules = ALATAU_RULES) {
@@ -98,14 +94,9 @@ export function interpretZone(properties, rules = ALATAU_RULES) {
     if (zone.status !== 'allowed') return { ...base, useKey: zone.key, useGroup: zone.group, use: zone.use, status: zone.status, reason: zone.reason,
         reasonCode: zone.reasonCode || REASON_CODES.get(zone.reason) || null, storeys: null, heightM: null,
         heightLabel: zone.status === 'prohibited' ? 'без застройки' : 'по ПДП' };
-    const heightM = Math.round(zone.storeys * rules.storeyHeightM * 100) / 100;
-    return { ...base, useKey: zone.key, useGroup: zone.group, use: zone.use, status: 'allowed', reason: null, storeys: zone.storeys, heightM, uplift: zone.uplift || null,
-        heightLabel: zone.uplift ? `до ${zone.storeys} эт. (${zone.uplift.storeys}*)` : `до ${zone.storeys} эт.`,
-        constraints: [
-            constraint('storeys', zone.storeys, 'count', 'maximum', zone.storeysEvidence || 'direct', 'functional', { basis: zone.storeysBasis }),
-            constraint('height', heightM, 'm', 'maximum', 'derived', 'functional',
-                { derivation: `${zone.storeys} × ${rules.storeyHeightM} m`, rule: rules.storeyHeightNote })
-        ] };
+    const limits = genplanStoreyLimits(zone.storeys, rules, { evidence: zone.storeysEvidence, basis: zone.storeysBasis });
+    return { ...base, useKey: zone.key, useGroup: zone.group, use: zone.use, status: 'allowed', reason: null, storeys: zone.storeys, ...limits, uplift: zone.uplift || null,
+        heightLabel: zone.uplift ? `до ${zone.storeys} эт. (${zone.uplift.storeys}*)` : `до ${zone.storeys} эт.` };
 }
 
 export function createAlatauGenplanProvider(descriptor = alatauGenplanSource, { snapshot } = {}) {

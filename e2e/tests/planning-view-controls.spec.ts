@@ -451,11 +451,22 @@ test('Alatau zoning overview uses static data below zoom 15 and one viewport rea
   expect(representations[0].searchParams.get('envelopes')).toBeNull();
 });
 
-test('Astana uses its configured zoning reference and fits the whole plan on a narrow screen @features', async ({ mockApi: page }) => {
+test('Astana fits the whole plan and shows dated parcel massing on a narrow screen @features', async ({ mockApi: page }) => {
   const source = {
-    id: 'astana-genplan-cadastre-2026-11-24', city: 'astana', label: 'Генплан Астаны · справочный слой кадастра (24.11.2026)',
-    kind: 'reference', capabilities: { areas: true, volumes: false }, viewportZoning: true,
+    id: 'astana-genplan-cadastre-2026-11-24', city: 'astana', label: 'Генплан Астаны · срез градостроительного кадастра (24.11.2026)',
+    edition: '2026-11-24', kind: 'reference', coverage: 'zoning-areas', parcelStudy: 'direct-dimensions.v1',
+    capabilities: { areas: true, volumes: false }, viewportZoning: true,
     zoningOverview: { detailZoom: 15 }, scenarios: ['general'], scenario: 'general',
+  };
+  const parcel = 'KZ-ASTANA-PKK-sample';
+  const site = { type: 'Polygon', coordinates: [[[71.42536, 51.12516], [71.42545, 51.12516],
+    [71.42545, 51.12525], [71.42536, 51.12525], [71.42536, 51.12516]]] };
+  const envelope = {
+    id: `envelope:${source.id}:${parcel}`, role: 'permitted', parcelEnvelope: true, title: '5–9 storey housing', site,
+    source: { ...source, parcel }, areas: [], volumes: [{ id: 'volume', geometry: site, baseM: 0, topM: 27 }],
+    spatialReference: { horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' },
+    assessment: { meaning: 'outer-bound', status: 'unresolved' }, metrics: { heightM: 27 }, constraints: [],
+    sourceEvidence: { zoningRecordId: '364149', rules: { snapshotDate: source.edition, storeyHeightM: 3, redLineDecree: '№ 33 от 25.01.2024' } },
   };
   const zoningRequests: URL[] = [];
   const envelopeRequests: URL[] = [];
@@ -466,9 +477,12 @@ test('Astana uses its configured zoning reference and fits the whole plan on a n
     if (url.pathname.startsWith('/data/')) return route.fallback();
     if (url.pathname.endsWith('/sources')) return route.fulfill({ json: { city: source.city, sources: [source] } });
     if (url.pathname.endsWith('/representations')) zoningRequests.push(url);
-    if (url.pathname.endsWith('/envelopes')) envelopeRequests.push(url);
+    const isEnvelope = url.pathname.endsWith('/envelopes');
+    if (isEnvelope) envelopeRequests.push(url);
+    const [w, s, e, n] = (url.searchParams.get('bbox') || '').split(',').map(Number);
+    const hasParcel = isEnvelope && w < 71.4254 && 71.4254 < e && s < 51.1252 && 51.1252 < n;
     return route.fulfill({ json: { schemaVersion: 'planning-representations.v1', city: source.city, sources: [source],
-      items: [], summaries: [], coverage: 'source-results', nextCursor: null, omitted: 0 } });
+      items: hasParcel ? [envelope] : [], summaries: [], coverage: 'source-results', nextCursor: null, omitted: 0 } });
   });
   const overview = page.waitForResponse(response => response.url().includes(`/data/planning/${source.id}-overview.json`) && response.ok());
   await page.goto('/?city=astana&at=51.1282,71.4304,12&permitted=solid&zoningAreas=ghost&reduceMotion=1', { waitUntil: 'domcontentloaded' });
@@ -486,7 +500,13 @@ test('Astana uses its configured zoning reference and fits the whole plan on a n
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => (window as any).PlanningViews?.getItems().length === 12914);
   expect(new URL(page.url()).searchParams.get('zoningAreas')).toBe('ghost');
-  await page.evaluate(() => (window as any).map.setView([51.1282, 71.4304], 16, { animate: false }));
-  await expect.poll(() => zoningRequests.at(-1)?.searchParams.get('source')).toBe(source.id);
   expect(envelopeRequests).toHaveLength(0);
+  await page.evaluate(() => (window as any).map.setView([51.1252, 71.4254], 17, { animate: false }));
+  await expect.poll(() => zoningRequests.at(-1)?.searchParams.get('source')).toBe(source.id);
+  await expect.poll(() => envelopeRequests.at(-1)?.searchParams.get('source')).toBe(source.id);
+  await page.getByRole('button', { name: `Inspect permitted massing on ${parcel}`, exact: true }).press('Enter');
+  const evidence = page.locator('#planning-inspector details.planning-evidence').filter({ hasText: source.label });
+  await evidence.locator('summary').press('Enter');
+  await expect(evidence).toContainText('№ 33 от 25.01.2024');
+  await expect(evidence).toContainText(source.edition);
 });

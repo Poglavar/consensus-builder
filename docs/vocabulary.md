@@ -750,7 +750,7 @@ A zoning area of Alatau's general plan (Decree No. 727, 2025) from the state urb
 
 ### Functional zone (Astana)
 
-A zoning area in the state urban-planning cadastre's Astana snapshot. It carries the source's land use, housing class where stated, and implementation stage where known. The snapshot date identifies the data edition. A zone can supply a design site by reference. Its authority for current parcel rules is unresolved, so the source supplies no building constraints or Permitted envelope. See [Astana general plan source](astana-genplan-source.md).
+A zoning area in the state urban-planning cadastre's Astana snapshot. It carries the source's land use, housing class where stated, and implementation stage where known. The snapshot date identifies the data edition. A bounded housing class supplies its upper storey count for a height-derived Permitted envelope on the covered parcel. A zone can also supply a design site by reference. Its authority for current parcel rules is unresolved. See [Astana general plan source](astana-genplan-source.md).
 
 ### Treatment area (Bogotá)
 

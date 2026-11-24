@@ -385,6 +385,7 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
                         constraints: [],
                         sourceEvidence: { zoningRecordId: recordId, parcelReference: plot ? plotReference(plot) : zone ? null : context.parcelReference,
                             ...(zone ? { planningArea: { source: query.source, recordId: zone, lotId: parcel.id } } : {}),
+                            ...(context.source.sourceEvidence?.rules ? { rules: context.source.sourceEvidence.rules } : {}),
                             ...(context.source.sourceEvidence?.resultante ? { resultante: context.source.sourceEvidence.resultante } : {}),
                             sourceCoverage: context.sourceCoverage, parts: found.major.length, frontEdge: frontage.frontEdge, frontage: frontage.evidence, streetWidth: street,
                             excludedConfigurations: excluded, envelopeMeaning: frontage.frontEdge === null

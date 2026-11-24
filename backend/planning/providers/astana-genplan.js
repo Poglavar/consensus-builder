@@ -1,10 +1,10 @@
-import { createKzGenplanProvider, genplanLayer, genplanService } from './kz-genplan.js';
+import { createKzGenplanProvider, genplanLayer, genplanService, genplanStoreyLimits } from './kz-genplan.js';
 
 const edition = '2026-11-24';
 const id = `astana-genplan-cadastre-${edition}`;
 const revisedPlan = 'https://primeminister.kz/assets/media/prilozenie-rus-697.pdf#page=40';
 export const astanaGenplanSource = Object.freeze({
-    id, city: 'astana', label: 'Генплан Астаны · справочный слой кадастра (24.11.2026)', edition, default: true,
+    id, city: 'astana', label: 'Генплан Астаны · срез градостроительного кадастра (24.11.2026)', edition, default: true,
     language: 'ru', kind: 'reference', coverage: 'zoning-areas', scope: 'city',
     url: 'https://map.gov4c.kz/egkn/',
     storage: 'bundled-snapshot', snapshotFilename: `${id}.geojson.gz`,
@@ -12,6 +12,7 @@ export const astanaGenplanSource = Object.freeze({
     issuer: 'Правительство Республики Казахстан',
     attribution: 'Государственный градостроительный кадастр · срез от 24 ноября 2026 г. · красные линии ссылаются на постановление № 33 (2024)',
     capabilities: { volumes: false, areas: true, parcelEvidence: false, constraintEvaluation: false },
+    parcelSourceId: 'kz-astana-pkk-esil', parcelStudy: 'direct-dimensions.v1',
     zoningPageLimit: 1000, viewportZoning: true, zoningOverview: { detailZoom: 15 },
     scenarios: ['general'], scenario: 'general', cacheSeconds: 86400
 });
@@ -21,7 +22,9 @@ const evidence = Object.freeze({
     revisionVerification: 'unverified',
     redLineDecree: '№ 33 от 25.01.2024',
     redLineReference: 'https://primeminister.kz/ru/25012024-33',
-    revisedPlan
+    revisedPlan,
+    storeyHeightM: 3,
+    storeyHeightNote: 'Assumed 3.0 m floor-to-floor. The cadastre snapshot records storey classes.'
 });
 const stages = { 'Существующие': 'existing', 'Проектируемые': 'planned' };
 const useByCode = {
@@ -55,8 +58,17 @@ export function interpretAstanaZone(properties) {
     const [useKey, useGroup] = code === 11040000 ? highRiseUse(use)
         : use === 'Территория деловых и коммерческих предприятий' ? [null, 'commercial']
             : useByCode[code] || [null, null];
-    return { use, useKey, useGroup, zoneGroup, implementation, stage: stages[implementation] || null,
-        status: null, reason: null, heightM: null };
+    const base = { use, useKey, useGroup, zoneGroup, implementation, stage: stages[implementation] || null,
+        status: null, reason: null, heightM: null, constraints: [] };
+    if (!functional || !useGroup?.startsWith('housing-')) return base;
+    const band = functional.match(/\(\s*\d+\s*[-–]\s*(\d+)\s+этаж/u);
+    if (band) {
+        const storeys = Number(band[1]);
+        return { ...base, status: 'allowed', ...genplanStoreyLimits(storeys, evidence, { basis: use }) };
+    }
+    if (/\b18\s+и более/.test(use)) return { ...base, status: 'instrument_handoff',
+        reason: 'Класс «18 и более этажей» не устанавливает верхнюю границу.' };
+    return base;
 }
 
 function highRiseUse(label) {
