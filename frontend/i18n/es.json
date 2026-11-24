@@ -8543,6 +8543,12 @@
         }
     },
     "planningViews": {
+        "governmentPlanPlot": "Parcela del plan general",
+        "usePlanAreaAsSite": "Usar el área del plan general como emplazamiento del proyecto",
+        "heightOnlyPlot": "Las reglas registradas aquí solo fijan la altura. La envolvente máxima sigue el límite de la parcela. {{illustration}} muestra un edificio menor dentro de ella.",
+        "changeMassingView": "Cambiar la vista de volumetría",
+        "envelopeFootprint": "Huella de la envolvente",
+        "envelopeHeight": "Altura de la envolvente",
         "zoneStoreys": "hasta {{storeys}} plantas",
         "zoneStoreysConditional": "hasta {{storeys}} plantas ({{conditional}} con condición)",
         "zoneLegend": "Leyenda de zonas",

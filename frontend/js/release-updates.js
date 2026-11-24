@@ -54,7 +54,7 @@
     // multi-parcel selection is not recorded.
     const RESUME_KEY = 'cb.updateResume';
     const RESUME_MAX_AGE_MS = 2 * 60 * 1000;
-    const RESUMABLE = new Set(['designs', 'built', 'permitted', 'formed', 'parcels']);
+    const RESUMABLE = new Set(['designs', 'built', 'permitted', 'permittedArea', 'formed', 'parcels']);
     function resumeRecord({ mode, pathname, stack, selectedInstance, point, now }) {
         const selected = {};
         const expandable = stack && RESUMABLE.has(stack.selectedKind);

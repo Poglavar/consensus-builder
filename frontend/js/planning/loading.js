@@ -1,6 +1,6 @@
 // What is still loading for each Buildings and massing role (built, permitted, proposed), by the
 // code loading it. Loaded before the map, so the first fetches report too; planning/views.js
-// draws it as the ring around the Buildings and massing button.
+// draws it in the Buildings and massing button and the corresponding panel sections.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -19,5 +19,10 @@
     function state() {
         return Object.fromEntries(Object.entries(sources).map(([role, holders]) => [role, holders.size > 0]));
     }
-    return { set, state };
+    function track(role, pending) {
+        const holder = Symbol(role);
+        set(role, holder, true);
+        return Promise.resolve(pending).finally(() => set(role, holder, false));
+    }
+    return { set, state, track };
 });

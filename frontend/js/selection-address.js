@@ -31,7 +31,7 @@
     function selectionOf(stack, selectedInstance, publishedCid) {
         if (!stack) return null;
         const kind = stack.expanded || stack.selectedKind;
-        if (kind === 'built' || kind === 'permitted') return null;
+        if (kind === 'built' || kind === 'permitted' || kind === 'permittedArea') return null;
         const linkable = Object.hasOwn(PARAMS, kind) ? kind : 'parcels';
         const id = idOf(linkable, selectedInstance(stack, linkable), publishedCid);
         return id ? { kind: linkable, id } : null;

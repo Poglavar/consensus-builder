@@ -8692,6 +8692,12 @@
         }
     },
     "planningViews": {
+        "governmentPlanPlot": "Parcelle du plan général",
+        "usePlanAreaAsSite": "Utiliser la zone du plan général comme site du projet",
+        "heightOnlyPlot": "Les règles enregistrées fixent ici uniquement la hauteur. L’enveloppe maximale suit la limite de la parcelle. {{illustration}} montre un bâtiment plus petit à l’intérieur.",
+        "changeMassingView": "Modifier la vue de la volumétrie",
+        "envelopeFootprint": "Emprise de l’enveloppe",
+        "envelopeHeight": "Hauteur de l’enveloppe",
         "zoneStoreys": "jusqu’à {{storeys}} étages",
         "zoneStoreysConditional": "jusqu’à {{storeys}} étages ({{conditional}} sous condition)",
         "zoneLegend": "Légende des zones",

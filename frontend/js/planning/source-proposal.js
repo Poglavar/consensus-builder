@@ -36,6 +36,17 @@
             recordId: proposal.source.recordId, edition: proposal.source.edition, revision: proposal.source.revision,
             city: proposal.source.city, parcelId: proposal.applicability.parcelIds[0] || null, scenario: proposal.applicability.scenario };
     }
+    // A government plot's massing points back to the area that supplied its land. A zoning
+    // rule over a cadastral or design-created lot does not make that whole zone the lot.
+    function designSiteArea(item) {
+        if (item?.role !== 'permitted' || !text(item.source?.id)) return null;
+        if (item.assessment?.meaning === 'zoning-area' && item.areas?.length && text(item.source.recordId)) {
+            return { source: item.source.id, recordId: item.source.recordId };
+        }
+        const area = item.sourceEvidence?.planningArea;
+        return item.parcelEnvelope && item.landBasis === 'zone' && area?.source === item.source.id && text(area.recordId)
+            ? { source: area.source, recordId: area.recordId } : null;
+    }
     // A design starts from the complete record returned by /planning/record.
     // Display records may be simplified for zoom or clipped to a viewport.
     function designSite(record) {
@@ -68,5 +79,5 @@
         if (value.revision !== current.revision) return 'changed';
         return proposal.lifecycle.availability === 'withdrawn' ? 'withdrawn' : 'same';
     }
-    return { schemaVersion, fromRepresentation, reference, designSite, validateReferences, compareReference };
+    return { schemaVersion, fromRepresentation, reference, designSiteArea, designSite, validateReferences, compareReference };
 });

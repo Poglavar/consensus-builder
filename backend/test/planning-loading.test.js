@@ -45,4 +45,14 @@ describe('PlanningLoading', () => {
     it('refuses a role Buildings and massing does not have', () => {
         expect(() => load().api.set('trees', 'map', true)).toThrow('Unknown Buildings and massing role: trees');
     });
+    it('keeps overlapping planning reads visible until both settle, including a failed read', async () => {
+        const { api } = load();
+        let complete;
+        const overview = api.track('permitted', new Promise(resolve => { complete = resolve; }));
+        await expect(api.track('permitted', Promise.reject(new Error('offline')))).rejects.toThrow('offline');
+        expect(api.state().permitted).toBe(true);
+        complete('loaded');
+        await expect(overview).resolves.toBe('loaded');
+        expect(api.state().permitted).toBe(false);
+    });
 });

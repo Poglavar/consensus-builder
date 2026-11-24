@@ -8561,6 +8561,12 @@
         }
     },
     "planningViews": {
+        "governmentPlanPlot": "Čestica iz generalnog plana",
+        "usePlanAreaAsSite": "Upotrijebi površinu iz generalnog plana kao projektno područje",
+        "heightOnlyPlot": "Zabilježena pravila ovdje određuju samo visinu. Najveća ovojnica prati granicu čestice. {{illustration}} prikazuje manju zgradu unutar nje.",
+        "changeMassingView": "Promijeni prikaz izgrađenosti",
+        "envelopeFootprint": "Tlocrtna površina ovojnice",
+        "envelopeHeight": "Visina ovojnice",
         "zoneStoreys": "katnost do {{storeys}}",
         "zoneStoreysConditional": "katnost do {{storeys}} ({{conditional}} uz uvjet)",
         "zoneLegend": "Legenda zona",

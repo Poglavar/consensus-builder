@@ -205,17 +205,17 @@
             recordId: reference.recordId, scenario: reference.scenario })) if (value) url.searchParams.set(key, value);
         const key = url.href;
         if (recordReads.has(key)) return recordReads.get(key);
-        const read = fetch(url, { cache: 'no-store' }).then(async response => {
+        const read = root.PlanningLoading.track('permitted', fetch(url, { cache: 'no-store' }).then(async response => {
             if (!response.ok) throw new Error(`Planning record HTTP ${response.status}`);
             const answer = await response.json();
             if (answer.recordId !== reference.recordId || !Array.isArray(answer.items)) throw new Error('Invalid source record response');
             for (const record of answer.items) fullRecords.add(record);
             return answer.items;
-        }).finally(() => recordReads.delete(key));
+        })).finally(() => recordReads.delete(key));
         recordReads.set(key, read);
         return read;
     }
-    function areaSiteAction(item) {
+    function areaSiteAction(item, areaRef) {
         const action = element('div', 'planning-area-site');
         const button = element('button', 'btn btn-primary');
         button.type = 'button';
@@ -224,15 +224,16 @@
         action.append(button, message);
         button.addEventListener('click', async () => {
             if (root.BusyControl.isBusy(button)) return;
-            const zone = selected(), city = root.CityConfigManager.getCurrentCityId(), scenario = scenarioParam();
-            if (zone?.id !== item.id) return;
+            const current = selected(), city = root.CityConfigManager.getCurrentCityId(), scenario = scenarioParam();
+            if (current?.id !== item.id) return;
             message.textContent = '';
             try {
                 await root.BusyControl.track(button, async () => {
-                    const exact = fullRecords.has(zone) ? zone : (await sourceRecord({
-                        city, providerId: zone.source.id, recordId: zone.source.recordId, scenario
-                    })).find(record => record.id === zone.id);
-                    if (!action.isConnected || selected()?.id !== zone.id || city !== root.CityConfigManager.getCurrentCityId() || scenario !== scenarioParam()) return;
+                    const exact = fullRecords.has(current) && current.assessment?.meaning === 'zoning-area' ? current
+                        : (await sourceRecord({ city, providerId: areaRef.source, recordId: areaRef.recordId, scenario: current.source.scenario || scenario }))
+                            .find(record => record.assessment?.meaning === 'zoning-area' && record.source.id === areaRef.source
+                                && record.source.recordId === areaRef.recordId && record.areas?.length);
+                    if (!action.isConnected || selected()?.id !== item.id || city !== root.CityConfigManager.getCurrentCityId() || scenario !== scenarioParam()) return;
                     const site = root.PlanningSourceProposal.designSite(exact);
                     if (!site) throw new Error('The source has no full zoning-area geometry');
                     if (root.__mapModeState?.desired && root.__mapModeState.desired !== '2d' && !await root.requestMapMode('2d')) {
@@ -246,6 +247,13 @@
             }
         });
         return action;
+    }
+    function openMassingForm() {
+        if (!root.MapShell.openSheet(panel, { focus: false })) return;
+        panel.querySelector('[data-planning-tab="display"]').click();
+        const form = panel.querySelector('[data-planning-setting="permittedForm"]');
+        form.closest('details').open = true;
+        form.focus();
     }
     // Add only evidence actually returned by the cache. An absent row adds no diagnosis.
     async function showParcelEvidence(container, parcel) {
@@ -418,6 +426,7 @@
             ? inspector.querySelector('.planning-map-colours') : null;
         const previousSiteAction = inspector.dataset.planningItem === item?.id ? inspector.querySelector('.planning-area-site') : null;
         const siteActionFocused = previousSiteAction?.contains(document.activeElement);
+        const formActionFocused = inspector.dataset.planningItem === item?.id && document.activeElement?.classList.contains('planning-change-massing');
         const legendOpen = previousLegend?.open === true;
         const legendFocused = previousLegend && previousLegend.firstElementChild === document.activeElement;
         inspector.hidden = !item || item.role === 'proposed' || (item.role === 'existing' && !hostedBuilt);
@@ -428,7 +437,7 @@
         const heading = element('div');
         const sourceResult = item.role === 'permitted';
         heading.append(element('p', 'planning-eyebrow', item.parcelEnvelope ? t('envelopeTitle')
-            : t(item.areas?.length ? 'zoningArea' : sourceResult ? (item.volumes.length ? 'sourceProposal' : 'savedResult') : 'builtRecord')));
+            : t(item.areas?.length ? (item.landBasis === 'zone' ? 'governmentPlanPlot' : 'zoningArea') : sourceResult ? (item.volumes.length ? 'sourceProposal' : 'savedResult') : 'builtRecord')));
         // The hosted stack already supplies the object's title and parcel reference.
         if (!hosted && item.title) heading.append(element('h2', 'click-stack__title', itemTitle(item)));
         const wording = labels.sourceWording(item, fullT, resultLabel(item.assessment?.status));
@@ -454,10 +463,11 @@
             return node;
         };
         const info = page('info', root.i18n.t('clickStackNavigation.info'));
-        if (item.assessment?.meaning === 'zoning-area' && item.areas?.length) {
-            const action = previousSiteAction || areaSiteAction(item);
+        const areaRef = root.PlanningSourceProposal.designSiteArea(item);
+        if (areaRef) {
+            const action = previousSiteAction || areaSiteAction(item, areaRef);
             const button = action.querySelector('button');
-            button.textContent = t('useAreaAsSite');
+            button.textContent = t(item.parcelEnvelope ? 'usePlanAreaAsSite' : 'useAreaAsSite');
             info.append(action);
             if (siteActionFocused) button.focus({ preventScroll: true });
         }
@@ -469,15 +479,24 @@
             t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockBadge' : item.parcelEnvelope ? 'bound' : 'approximate')));
         if (item.assessment.refresh) badges.append(element('span', 'cb-badge cb-badge--warning', t('refreshPending')));
         info.append(badges);
+        const heightOnly = labels.heightOnlyPlot(item);
         info.append(element('p', 'planning-inspector__description',
             t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockEstimate'
                 : item.assessment.meaning === 'public-screen' ? 'evidenceOnly'
                     : item.assessment.meaning === 'zoning-area' ? 'zoningAreaNote'
-                        : item.parcelEnvelope ? 'envelopeNote'
+                        : heightOnly ? 'heightOnlyPlot' : item.parcelEnvelope ? 'envelopeNote'
                         : sourceResult ? (item.volumes.length ? 'oneOption' : 'savedNoShape')
-                        : 'observedNote')));
+                        : 'observedNote', heightOnly ? { illustration: t('configuration') } : undefined)));
         // Explain which boundary the adapter uses for its Permitted massing calculation.
-        if (item.landBasis === 'zone') info.append(element('p', 'planning-inspector__description', t('landBasisZone')));
+        if (item.landBasis === 'zone' && !heightOnly) info.append(element('p', 'planning-inspector__description', t('landBasisZone')));
+        if (item.configurations?.some(configuration => configuration.volumes?.length)) {
+            const changeForm = element('button', 'cb-link planning-change-massing', t('changeMassingView'));
+            changeForm.type = 'button';
+            changeForm.setAttribute('aria-controls', panel.id);
+            changeForm.addEventListener('click', openMassingForm);
+            info.append(changeForm);
+            if (formActionFocused) changeForm.focus({ preventScroll: true });
+        }
         if (item.assessment.status && !item.parcelEnvelope) info.append(element('p', 'planning-inspector__description', resultLabel(item.assessment.status)));
         const reason = labels.reason(item, fullT);
         if (reason) {
@@ -509,7 +528,7 @@
         const unitLimit = item.constraints?.find(constraint => constraint.quantity === 'dwellings')?.value;
         const displayedMetrics = [];
         if (item.metrics.floorAreaM2 != null) displayedMetrics.push([t('floorArea'), area(item.metrics.floorAreaM2)]);
-        if (item.metrics.heightM != null) displayedMetrics.push([t('height'), root.CbFormat.formatLength(item.metrics.heightM, { maxFractionDigits: 1 })]);
+        if (item.metrics.heightM != null) displayedMetrics.push([t(item.parcelEnvelope ? 'envelopeHeight' : 'height'), root.CbFormat.formatLength(item.metrics.heightM, { maxFractionDigits: 1 })]);
         // An incentive's extra height is listed with its condition, apart from what the rules grant.
         if (item.metrics.conditional?.heightM != null) {
             const condition = labels.condition(item.metrics.conditional, fullT);
@@ -518,7 +537,7 @@
             displayedMetrics.push([t('conditionalHeight'), value]);
         }
         if (unitLimit != null) displayedMetrics.push([t('dwellingLimit'), number(unitLimit)]);
-        if (item.metrics.footprintM2 != null) displayedMetrics.push([t('footprintArea'), area(item.metrics.footprintM2)]);
+        if (item.metrics.footprintM2 != null) displayedMetrics.push([t(item.parcelEnvelope ? 'envelopeFootprint' : 'footprintArea'), area(item.metrics.footprintM2)]);
         for (const [label, value] of displayedMetrics) {
             const entry = element('div'), cell = element('dd'); cell.append(value);
             entry.append(element('dt', '', label), cell); metrics.append(entry);
@@ -634,6 +653,10 @@
     function paintLoading() {
         const button = document.getElementById('planning-views-button');
         if (!store || !button) return;
+        const view = policy();
+        const shown = { existing: view.existing !== 'off', permitted: view.permitted !== 'off' || store.get().zoningAreas !== 'off', proposed: view.proposed !== 'off' };
+        const loading = { ...root.PlanningLoading.state() };
+        loading.permitted ||= status === 'loading';
         let ring = button.querySelector('.planning-loading-ring');
         if (!ring) {
             const ns = 'http://www.w3.org/2000/svg';
@@ -648,14 +671,12 @@
             }
             button.append(ring);
         }
-        const view = policy();
-        const shown = { existing: view.existing !== 'off', permitted: view.permitted !== 'off' || store.get().zoningAreas !== 'off', proposed: view.proposed !== 'off' };
-        const loading = { ...root.PlanningLoading.state() };
-        loading.permitted ||= status === 'loading';
         const arcs = core.loadingArcs(loading, shown);
         for (const arc of ring.querySelectorAll('.planning-loading-arc')) {
             const slot = arcs.find(entry => entry.role === arc.dataset.role)?.slot;
             if (slot === undefined) arc.removeAttribute('data-slot'); else arc.dataset.slot = String(slot);
+            const bar = panel.querySelector(`[data-planning-loading="${arc.dataset.role}"]`);
+            if (bar) bar.hidden = slot === undefined;
         }
         ring.classList.toggle('is-loading', arcs.length > 0);
         button.setAttribute('aria-busy', String(arcs.length > 0));
@@ -917,7 +938,7 @@
         }
         if (overview || overviewRead) return;
         if (only) { status = 'loading'; render({ updateInspector: false }); }
-        const pending = root.ZoningOverview.load(descriptor);
+        const pending = root.PlanningLoading.track('permitted', root.ZoningOverview.load(descriptor));
         overviewRead = pending;
         try {
             const data = await pending;
@@ -1125,17 +1146,18 @@
         finally { restoring = false; }
     }
     function viewportBbox() { return root.LoadView?.current()?.bbox || null; }
-    async function listSources(city, bbox) {
+    function listSources(city, bbox) {
         const url = new URL(`${root.getBackendBase()}/planning/sources`);
         url.searchParams.set('city', city);
         if (bbox) url.searchParams.set('bbox', bbox.join(','));
-        const response = await fetch(url, { cache: 'no-store' });
-        if (!response.ok) throw new Error(`Planning sources HTTP ${response.status}`);
-        const answer = await response.json();
-        if (!Array.isArray(answer.sources)) throw new Error('Invalid planning sources response');
-        const configured = root.CityConfigManager.getCityConfig(city)?.planning?.sourceIds || [];
-        return configured.map(id => answer.sources.find(source => source.id === id)).filter(Boolean)
-            .map((source, index) => ({ ...source, default: index === 0 }));
+        return root.PlanningLoading.track('permitted', fetch(url, { cache: 'no-store' }).then(async response => {
+            if (!response.ok) throw new Error(`Planning sources HTTP ${response.status}`);
+            const answer = await response.json();
+            if (!Array.isArray(answer.sources)) throw new Error('Invalid planning sources response');
+            const configured = root.CityConfigManager.getCityConfig(city)?.planning?.sourceIds || [];
+            return configured.map(id => answer.sources.find(source => source.id === id)).filter(Boolean)
+                .map((source, index) => ({ ...source, default: index === 0 }));
+        }));
     }
     function applySources(sources, requested) {
         sourceOptions = sources;
@@ -1270,9 +1292,12 @@
             const row = element('div', 'planning-layer-row'); row.dataset.role = role;
             const disclosure = element('details', 'planning-role-disclosure');
             const summary = element('summary', 'planning-layer-summary');
-            const label = element('span', 'planning-layer-label'); label.dataset.roleLabel = role;
+            const label = element('span', 'planning-layer-label'); label.dataset.roleLabel = role; label.id = `planning-role-label-${role}`;
             const swatch = element('span', `planning-swatch planning-swatch--${role}`); swatch.setAttribute('aria-hidden', 'true');
             const name = element('span', 'planning-layer-name'); name.append(swatch, label);
+            const loadingBar = element('span', `planning-loading-bar planning-loading-bar--${role}`);
+            loadingBar.dataset.planningLoading = role; loadingBar.hidden = true; loadingBar.setAttribute('role', 'progressbar');
+            loadingBar.setAttribute('aria-labelledby', label.id);
             const content = element('div', 'planning-layer-detail');
             const roleControl = control(role);
             summary.append(name);
@@ -1285,7 +1310,7 @@
             }
             if (role === 'permitted') content.append(sourceField, configurationLink, reference, scenarioField, control('permittedMap'));
             const sourceNote = element('p', 'planning-layer-source-note'); sourceNote.dataset.roleSource = role; content.append(sourceNote);
-            disclosure.append(summary, content); row.append(disclosure, roleControl); controls.append(row);
+            disclosure.append(summary, content); row.append(disclosure, roleControl, loadingBar); controls.append(row);
         }
         const zoningField = element('label', 'planning-source-field planning-zoning-field');
         zoningField.append(element('span', 'planning-zoning-label'), control('zoningAreas')); zoningPanel.append(zoningField);

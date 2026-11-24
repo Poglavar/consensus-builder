@@ -18,7 +18,7 @@
     const model = typeof module === 'object' && module.exports ? require('./click-stack/click-stack-model.js') : global.__clickStackModel;
     // The 2D stack's section order (click-stack-model.js); the scene has no bare-ground section.
     const ORDER = Object.freeze(model.ORDER.filter(kind => kind !== 'ground'));
-    const ICONS = Object.freeze({ agreements: 'fas cb-icon-agreement', plans: 'fas cb-icon-plan', built: 'fas fa-building', designs: 'fas cb-icon-design', permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all' });
+    const ICONS = Object.freeze({ agreements: 'fas cb-icon-agreement', plans: 'fas cb-icon-plan', built: 'fas fa-building', designs: 'fas cb-icon-design', permittedArea: 'fas fa-draw-polygon', permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all' });
 
     // ── pure rules ────────────────────────────────────────────────────────────────────────────
 
@@ -38,7 +38,7 @@
     // What a click picked decides which section opens: the thing the ray hit, else the ground,
     // which is formed land (`formed: true`) or a cadastral parcel.
     function focusOf(picked) {
-        if (picked && picked.planningId) return 'permitted';
+        if (picked?.planningId) return picked.planningKind === 'permittedArea' ? 'permittedArea' : 'permitted';
         if (picked && picked.builtFeature) return 'built';
         if (picked && picked.proposalId) return 'designs';
         return picked && picked.formed ? 'formed' : 'parcels';
@@ -80,7 +80,7 @@
         // Selecting a design can expose its pick surface over the original parcel. A repeat at
         // that spot continues the stack, without mistaking a nearby object's click for a repeat:
         // a building or a massing hit there is another object, however close.
-        if (next.focus === 'built' || next.focus === 'permitted') return false;
+        if (next.focus === 'built' || next.focus === 'permittedArea' || next.focus === 'permitted') return false;
         return previous.parcelId === next.parcelId && previous.point && next.point
             && Math.hypot(previous.point.x - next.point.x, previous.point.y - next.point.y) <= 6;
     }
@@ -121,7 +121,8 @@
             case 'plans': return t('designMemberships.plan', 'Plan');
             case 'built': return section.multi ? t('clickStack.builtMany', 'Built ({{count}})', { count: section.count }) : t('threeMode.controls.built', 'Built');
             case 'designs': return section.multi ? t('clickStack.designs', 'Designs ({{count}})', { count: section.count }) : t('proposalDrafts.tabs.design', 'Design');
-            case 'permitted': return section.multi ? t('clickStack.permittedMany', 'Permitted ({{count}})', { count: section.count }) : t('planningViews.permitted', 'Permitted');
+            case 'permittedArea':
+            case 'permitted': return model.permittedTitle(section, t);
             case 'formed': return section.multi ? t('clickStack.formedMany', 'Formed parcels ({{count}})', { count: section.count }) : t('clickStack.formed', 'Formed parcel');
             default: return section.multi ? t('clickStack.parcels', 'Parcels ({{count}})', { count: section.count }) : t('clickStack.parcel', 'Cadastral parcel');
         }

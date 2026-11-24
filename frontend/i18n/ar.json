@@ -8943,6 +8943,12 @@
         }
     },
     "planningViews": {
+        "governmentPlanPlot": "قطعة مخطط الحكومة",
+        "usePlanAreaAsSite": "استخدم مساحة مخطط الحكومة كموقع للتصميم",
+        "heightOnlyPlot": "تحدد القواعد المسجلة الارتفاع فقط هنا. يتبع الغلاف الأقصى حدود القطعة. يعرض {{illustration}} مبنى أصغر بداخله.",
+        "changeMassingView": "تغيير عرض الكتلة البنائية",
+        "envelopeFootprint": "بصمة الغلاف البنائي",
+        "envelopeHeight": "ارتفاع الغلاف البنائي",
         "zoneStoreys": "حتى {{storeys}} طوابق",
         "zoneStoreysConditional": "حتى {{storeys}} طوابق ({{conditional}} بشرط)",
         "zoneLegend": "مفتاح المناطق",

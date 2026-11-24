@@ -2,6 +2,8 @@
 
 Permitted combines a parcel boundary with a planning source and its rules. The map, 3D view and named-plan building editor read the same envelope answer. A selected zoning area is a flat surface in the model. Its height limit belongs to the rules. The building envelope and sample building use the volumes calculated from those rules.
 
+Click a visible building to inspect **Permitted massing**. When its government-plan plot is visible at that point, the plot has its own entry below the massing. Either entry can open the full source area as a design site. **Change massing view** opens the Permitted controls in **Buildings and massing**. **Illustration** shows a sample building, **Max envelope** shows the limits and **Both** overlays them. **Layers → Zoning and land use** controls the flat source areas independently.
+
 ## Land used for the calculation
 
 | Parcel origin | Identity and geometry |

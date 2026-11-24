@@ -102,7 +102,7 @@ for (const blocksEnabled of [false, true]) test(`planning source, scenario, disp
   await expect(page.locator('#planning-views-button')).toBeFocused();
 });
 
-test('the Buildings and massing button rims a third of its circle in green while Permitted loads', async ({ mockApi: page }) => {
+test('Buildings and massing shares its button and section loading states when opened during a request', async ({ mockApi: page }) => {
   const releases: Array<() => void> = [];
   let hold = false;
   await page.route('**/planning/**', async route => {
@@ -113,13 +113,25 @@ test('the Buildings and massing button rims a third of its circle in green while
     return route.fulfill({ json: payload([massing()]) });
   });
   await openCity(page);
+  await page.setViewportSize({ width: 390, height: 844 });
   const button = page.locator('#planning-views-button');
   const arcs = button.locator('.planning-loading-arc[data-slot]');
+  const permittedBar = page.locator('[data-planning-loading="permitted"]');
   await expect(button).toHaveAttribute('aria-busy', 'false');
+  await expect(permittedBar).toBeHidden();
   // These fixture sources answer with zoning areas, which load once that layer is shown.
   hold = true;
   await page.evaluate(() => (window as any).PlanningViews.configure('zoningAreas', 'ghost'));
   await expect(arcs).toHaveCount(1);
+  await button.press('Enter');
+  const sheet = page.locator('#planning-views');
+  await expect(sheet).toBeVisible();
+  await expect(permittedBar).toBeVisible();
+  await expect(sheet.getByRole('progressbar', { name: 'Permitted', exact: true })).toBeVisible();
+  await expect(sheet.locator('[data-role="permitted"] details')).not.toHaveAttribute('open');
+  expect(await permittedBar.evaluate(el => getComputedStyle(el, '::after').animationName)).toBe('planning-loading-slide');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  expect(await permittedBar.evaluate(el => getComputedStyle(el, '::after').animationName)).toBe('none');
   await expect(arcs).toHaveAttribute('data-role', 'permitted');
   await expect(arcs).toHaveAttribute('data-slot', '0');
   await expect(button).toHaveAttribute('aria-busy', 'true');
@@ -131,14 +143,27 @@ test('the Buildings and massing button rims a third of its circle in green while
   await page.evaluate(() => (window as any).PlanningViews.configure('existing', 'solid'));
   await page.evaluate(() => (window as any).PlanningLoading.set('existing', 'test', true));
   await expect(arcs).toHaveCount(2);
+  const builtBar = sheet.getByRole('progressbar', { name: 'Built', exact: true });
+  await expect(builtBar).toBeVisible();
+  await sheet.locator('[data-role="existing"] summary').press('Enter');
+  await expect(builtBar).toBeVisible();
+  const proposedBar = sheet.locator('[data-planning-loading="proposed"]');
+  await page.evaluate(() => (window as any).PlanningLoading.set('proposed', 'test', true));
+  await expect(proposedBar).toBeVisible();
+  await page.evaluate(() => (window as any).PlanningViews.configure('proposed', 'off'));
+  await expect(proposedBar).toBeHidden();
+  await page.evaluate(() => (window as any).PlanningLoading.set('proposed', 'test', false));
   expect(await arcs.evaluateAll(list => list.map(arc => `${(arc as HTMLElement).dataset.role}:${(arc as HTMLElement).dataset.slot}`))).toEqual(['existing:0', 'permitted:1']);
   hold = false;
   releases.splice(0).forEach(release => release());
   await expect(arcs).toHaveCount(1);
   await expect(arcs).toHaveAttribute('data-role', 'existing');
+  await expect(permittedBar).toBeHidden();
+  await expect(builtBar).toBeVisible();
   await page.evaluate(() => (window as any).PlanningLoading.set('existing', 'test', false));
   await expect(arcs).toHaveCount(0);
   await expect(button).toHaveAttribute('aria-busy', 'false');
+  await expect(sheet.getByRole('progressbar')).toHaveCount(0);
 });
 
 test('Permitted keeps its Illustration dropdown enabled for a single-option source', async ({ mockApi: page }) => {

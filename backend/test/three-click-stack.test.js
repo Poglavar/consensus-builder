@@ -42,6 +42,13 @@ describe('3D click stack contextual selection', () => {
         const currentRoot = [...document.querySelectorAll('#three-click-stack')].at(-1);
         expect([...currentRoot.querySelectorAll('.click-stack__section')].map(row => row.dataset.kind)).toEqual(['built', 'parcels']);
     });
+
+    it('separates area and body records and focuses each renderer pick kind', () => {
+        expect(stack.focusOf({ planningId: 'zone', planningKind: 'permittedArea' })).toBe('permittedArea');
+        expect(stack.focusOf({ planningId: 'body', planningKind: 'permitted' })).toBe('permitted');
+        const value = stack.buildThreeStack({ permittedArea: [{ id: 'zone', item: { landBasis: 'zone' } }], permitted: [{ id: 'body' }] });
+        expect(value.sections.map(row => row.kind)).toEqual(['permitted', 'permittedArea']);
+    });
     it('hides the design count and authored type while collapsed, retaining the selected design name', () => {
         const document = makeDocument();
         const context = {

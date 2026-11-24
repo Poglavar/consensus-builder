@@ -63,6 +63,16 @@ describe('reasons and conditions', () => {
     });
 });
 
+it('explains a plot-wide bound only for a whole government plot with solely vertical rules', () => {
+    const configuration = { volumes: [{}], constraints: [{ quantity: 'storeys' }, { quantity: 'height' }] };
+    const item = { ...envelope, landBasis: 'zone', configurations: [configuration], sourceEvidence: { parts: 1 } };
+    expect(labels.heightOnlyPlot(item)).toBe(true);
+    expect(labels.heightOnlyPlot({ ...item, sourceEvidence: { parts: 2 } })).toBe(false);
+    expect(labels.heightOnlyPlot({ ...item, landBasis: 'parcel' })).toBe(false);
+    expect(labels.heightOnlyPlot({ ...item, configurations: [{ ...configuration, constraints: [] }] })).toBe(false);
+    expect(labels.heightOnlyPlot({ ...item, configurations: [configuration, { ...configuration, constraints: [{ quantity: 'frontSetback' }] }] })).toBe(false);
+});
+
 describe('colour keys', () => {
     it('has a colour, a swatch and a name in every language for every use group', () => {
         const { readFileSync } = require('node:fs');

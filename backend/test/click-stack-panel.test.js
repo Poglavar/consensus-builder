@@ -182,7 +182,7 @@ describe('click stack selected objects and contextual navigation', () => {
         expect(h.section('parcels').querySelector('.click-stack__row-detail').textContent).toBe('521/1');
     });
 
-    it.each([['built', 'Building'], ['permitted', 'Permitted'], ['formed', 'Formed parcel'], ['parcels', 'Cadastral parcel'], ['designs', 'Design']])('keeps the selected %s header and focus when collapsed', (kind, noun) => {
+    it.each([['built', 'Building'], ['permitted', 'Permitted massing'], ['permittedArea', 'Source zoning area'], ['formed', 'Formed parcel'], ['parcels', 'Cadastral parcel'], ['designs', 'Design']])('keeps the selected %s header and focus when collapsed', (kind, noun) => {
         const h = loadPanel();
         h.context.ClickStackHits.hitsAt.mockReturnValue({ [kind]: [{ id: 'first', label: 'Long object name', feature: parcelFeature }] });
         h.context.ClickStackHits.featuresFor.mockReturnValue([parcelFeature]);

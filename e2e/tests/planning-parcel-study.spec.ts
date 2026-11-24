@@ -202,6 +202,23 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
   await expect.poll(async () => (await meshHeights(zone.id)).length).toBeGreaterThan(0);
   expect(Math.max(...await meshHeights(zone.id))).toBe(0);
   await expect.poll(async () => Math.max(...await meshHeights(envelope.id))).toBeGreaterThan(0);
+  await page.evaluate(() => (window as any).PlanningViews.configure('permittedForm', 'configuration'));
+  const roof = await page.evaluate(id => {
+    const { scene, camera, renderer } = (window as any).getThreeModeInternals();
+    const mesh = scene.getObjectByName('PermittedMassing').children.find((o: any) => o.isMesh && o.userData.planningRepresentationId === id);
+    mesh.geometry.computeBoundingBox();
+    const box = mesh.geometry.boundingBox, local = box.getCenter(mesh.position.clone());
+    local.z = box.max.z;
+    const p = mesh.localToWorld(local).project(camera), rect = renderer.domElement.getBoundingClientRect();
+    return { x: rect.left + (1 + p.x) * rect.width / 2, y: rect.top + (1 - p.y) * rect.height / 2 };
+  }, envelope.id);
+  await page.mouse.click(roof.x, roof.y);
+  const stack3d = page.locator('#three-click-stack');
+  await expect(stack3d.locator('[data-kind="permitted"].is-selected')).toBeVisible();
+  await stack3d.locator('.click-stack__section[data-kind="permittedArea"] .click-stack__row').press('Enter');
+  await expect.poll(() => page.evaluate(() => (window as any).PlanningViews.getSelected()?.id)).toBe(zone.id);
+  await expect.poll(() => page.evaluate(() => (window as any).getThreeModeInternals().scene.getObjectByName('click-stack-focus')?.userData.representation)).toBe('ground');
+  await page.keyboard.press('Escape');
   await page.evaluate(() => (window as any).PlanningViews.configure('permitted', 'off'));
   await expect.poll(() => meshHeights(envelope.id)).toEqual([]);
   expect(Math.max(...await meshHeights(zone.id))).toBe(0);

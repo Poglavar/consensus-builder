@@ -734,6 +734,10 @@ The land a zoning area's rules are applied to when Permitted massing is derived.
 
 A parcel in the applied design’s land layout. Its identity and shape come from the live parcel fabric. Its permitted massing uses the selected planning source’s rules. A plot drawn on a government-plan site keeps the source-area reference, including where the site has no cadastral parcels.
 
+### Government-plan plot
+
+A zoning area that the source uses as the land for a massing calculation (`landBasis: "zone"`). Its mapped boundary supplies the design site. The permitted envelope and the smaller example building are separate representations on that ground.
+
 ### Block assembly standing
 
 In Bogotá’s Renovación calculation, whether a parcel holds a street corner or a whole block. This is measured from street-facing edges and neighbouring parcel boundaries. Cession is the area of public ground contributed by the layout, in square metres. It counts toward the corner index when it exceeds 400 m².

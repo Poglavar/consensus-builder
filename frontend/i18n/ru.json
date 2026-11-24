@@ -8619,6 +8619,12 @@
         }
     },
     "planningViews": {
+        "governmentPlanPlot": "Участок по генеральному плану",
+        "usePlanAreaAsSite": "Использовать территорию генплана как участок проектирования",
+        "heightOnlyPlot": "В зафиксированных правилах здесь указана только высота. Максимальный объём следует границе участка. {{illustration}} показывает меньшее здание внутри него.",
+        "changeMassingView": "Изменить вид застройки",
+        "envelopeFootprint": "Пятно максимального объёма",
+        "envelopeHeight": "Высота максимального объёма",
         "zoneStoreys": "этажность до {{storeys}}",
         "zoneStoreysConditional": "этажность до {{storeys}} ({{conditional}} при условии)",
         "zoneLegend": "Легенда зон",

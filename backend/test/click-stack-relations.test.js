@@ -65,18 +65,18 @@ describe('click stack relationship rendering', () => {
         expect(open.textContent).toBe('');
     });
 
-    it('distinguishes overlapping zoning areas and permitted massing in the picker', () => {
+    it('distinguishes overlapping plan plots and ordinary zoning areas in the area picker', () => {
         const doc = makeDocument();
         const win = { i18n: testI18n('en') };
         const instances = [
             { id: 'area', label: 'Housing', item: { areas: [{}], assessment: { meaning: 'zoning-area' } } },
-            { id: 'massing', label: 'Housing', item: { role: 'permitted', volumes: [{}] } }
+            { id: 'plan-plot', label: 'Housing', item: { role: 'permitted', areas: [{}], landBasis: 'zone' } }
         ];
-        const wrapper = relations.renderSelector({ kind: 'permitted', multi: true, selectedIndex: 0, instances }, doc, win);
+        const wrapper = relations.renderSelector({ kind: 'permittedArea', multi: true, selectedIndex: 0, instances }, doc, win);
         expect(wrapper.querySelector('.click-stack__selector-label').textContent).toBe(dictionary('en').clickStackRelations.chooseInstance);
         expect(wrapper.querySelector('select').children.map(option => option.textContent)).toEqual([
             `${dictionary('en').planningViews.zoningArea} · Housing`,
-            `${dictionary('en').planningViews.sourceProposal} · Housing`
+            `${dictionary('en').planningViews.governmentPlanPlot} · Housing`
         ]);
     });
 

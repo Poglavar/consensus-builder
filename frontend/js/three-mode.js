@@ -1952,7 +1952,7 @@
                 hostInspector(body);
                 withStackDriving(() => window.PlanningViews.inspectBuilding(instance.feature, instance.id, { hosted: true }));
                 stackInspector.selectedId = window.PlanningViews.getSelected()?.id || null;
-            } else if (kind === 'permitted') {
+            } else if (kind === 'permitted' || kind === 'permittedArea') {
                 withStackDriving(() => window.PlanningViews.select(instance.id));
                 hostInspector(body);
             }
@@ -2093,9 +2093,12 @@
             const proposal = store?.getProposal?.(hit.id);
             if (proposal) designs.push(proposal);
         }
-        const massingIds = [picked?.planningId, parcelId ? parcelMassingItem(parcelId)?.id : null,
-            ...(hits?.permitted || []).map(item => item.id)].filter(Boolean);
-        const items = window.PlanningViews?.getItems?.() || [];
+        const planningIds = new Set([picked?.planningId, plan.selected?.permitted, plan.selected?.permittedArea,
+            ...(hits?.permitted || []).map(hit => hit.id), ...(hits?.permittedArea || []).map(hit => hit.id)].filter(Boolean));
+        const onParcel = parcelId && parcelMassingItem(parcelId);
+        if (onParcel && window.PlanningViews.getAppearance(onParcel) !== 'off') planningIds.add(onParcel.id);
+        const planning = window.ClickStackHits.planningHits(planningIds.size
+            ? window.PlanningViews.getItems().filter(item => planningIds.has(item.id)) : []);
         const built = picked?.builtFeature || null;
         const builtId = clickedBuildingId(built);
         const builtList = [...(built ? [{ id: builtId, feature: built }] : []), ...buildingsOnParcel(parcelId), ...(hits?.built || [])];
@@ -2105,16 +2108,14 @@
                 preserveView: plan.preserveView === true,
                 // A design that only authors ground sorts after the drawn ones (three-click-stack.js).
                 ...(window.__drillStack?.isGroundAuthoring?.(p) ? { ground: true } : {}) })),
-            permitted: massingIds.map(id => {
-                const item = items.find(entry => entry.id === id);
-                return { id, item, label: item?.source?.parcel || (item && window.PlanningViews?.itemTitle?.(item)) || item?.title || id };
-            }),
+            ...planning,
             formed: [...(ground?.kind === 'formed' ? [ground.instance] : []), ...(hits?.formed || [])],
             parcels: [...(ground?.kind === 'parcels' ? [ground.instance] : []), ...(hits?.parcels || [])]
         };
         const focus = plan.focus || (plan.proposal ? 'designs'
             : stackApi.focusOf({ ...(picked && !picked.proposalId ? picked : {}), formed: ground?.kind === 'formed' }));
-        const selected = plan.selected || { ...(plan.proposal ? { designs: plan.proposal.id } : {}), ...(builtId ? { built: builtId } : {}) };
+        const selected = plan.selected || { ...(plan.proposal ? { designs: plan.proposal.id } : {}), ...(builtId ? { built: builtId } : {}),
+            ...(picked?.planningId ? { [focus]: picked.planningId } : {}) };
         stackApi.show(input, { focus, selected, click, container: document.getElementById('map-container') || document.body }, clickStackAdapter);
     }
 
@@ -2140,7 +2141,7 @@
 
     // A reload for a new release reopens the stack the person had open, with the same instances,
     // keeping the camera the address restored. False until the scene holds all of them again.
-    function resumeThreeModeStack({ selected, expanded }) {
+    function resumeThreeModeStack({ selected, expanded, selectedKind }) {
         if (!isActive || !sceneReady) return false;
         const designId = selected.designs || null;
         if (designId && !window.proposalStorage?.getProposal?.(designId)) return false;
@@ -2151,10 +2152,14 @@
             builtFeature = (window.buildingFeaturePool || []).find(feature => clickedBuildingId(feature) === selected.built) || null;
             if (!builtFeature) return false;
         }
+        for (const id of [selected.permitted, selected.permittedArea].filter(Boolean)) {
+            if (!window.PlanningViews?.getItems().some(item => item.id === id)) return false;
+        }
         const chosen = { ...selected };
         if (chosen.formed) { chosen.parcels = chosen.formed; delete chosen.formed; }
-        const focus = expanded === 'formed' ? 'parcels' : expanded;
-        withStackDriving(() => showClickStack({ builtFeature, planningId: selected.permitted || null }, {
+        const preferred = expanded || selectedKind;
+        const focus = preferred === 'formed' ? 'parcels' : preferred;
+        withStackDriving(() => showClickStack({ builtFeature }, {
             proposal: designId ? { id: designId } : null, parcel: parcelId ? { id: parcelId } : null,
             preserveView: true, focus: focus || undefined, selected: chosen
         }));
@@ -12534,7 +12539,22 @@
             hits = hits.filter(hit => window.__threeSceneIsolation.pickVolumeShown(hit.object, onParcel));
         }
         const subject = window.__threeClickPlan.subjectHit(hits);
+        if (subject?.picked.planningId) {
+            const item = window.PlanningViews.getItems().find(item => item.id === subject.picked.planningId);
+            subject.picked.planningKind = window.__clickStackModel.permittedKind(item);
+        }
         return subject ? { ...subject, direction: raycaster.ray.direction.clone() } : null;
+    }
+
+    // Project the actual pick vertically onto the visible plan meshes. A click on the side
+    // of a tall envelope can have a different plot behind it along the camera ray.
+    function modelPlanningHits(point) {
+        if (!point || !planningSourcesGroup?.visible) return null;
+        const meshes = planningSourcesGroup.children.filter(mesh => mesh.isMesh && mesh.visible && mesh.userData.planningRepresentationId);
+        if (!meshes.length) return null;
+        const ray = new THREE.Raycaster(new THREE.Vector3(point.x, point.y, 100000), new THREE.Vector3(0, 0, -1));
+        const ids = new Set(ray.intersectObjects(meshes, false).map(hit => hit.object.userData.planningRepresentationId));
+        return ids.size ? window.ClickStackHits.planningHits(window.PlanningViews.getItems().filter(item => ids.has(item.id))) : null;
     }
 
     // Google tiles identify a visible surface point; source footprints give that point a building
@@ -12625,7 +12645,7 @@
             if (window.ThreeClickStack?.isOpen?.()) deselectScene();
             return;
         }
-        showClickStack(picked, plan, click, resolved.hits);
+        showClickStack(picked, plan, click, realisticLayerActive ? resolved.hits : modelPlanningHits(subject?.point));
     }
 
     // The parcel a hit volume stands on: straight down from the hit point, taken half a metre

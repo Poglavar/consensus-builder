@@ -1,7 +1,7 @@
 // Shared mobile object navigation and content tabs around the existing 2D/3D inspection panels.
 (function (win) {
     'use strict';
-    const order = ['ground', 'selection', 'parcels', 'formed', 'built', 'permitted', 'designs', 'plans', 'agreements'];
+    const order = ['ground', 'selection', 'parcels', 'formed', 'permittedArea', 'built', 'permitted', 'designs', 'plans', 'agreements'];
     const hierarchy = ['parcels', 'formed', 'designs', 'plans', 'agreements'];
     const sessions = new WeakMap();
     const remembered = new Map();

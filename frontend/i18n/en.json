@@ -8515,6 +8515,12 @@
         }
     },
     "planningViews": {
+        "governmentPlanPlot": "Government-plan plot",
+        "usePlanAreaAsSite": "Use the government-plan area as a design site",
+        "heightOnlyPlot": "The recorded rules set only the height here. The maximum envelope follows the plot boundary. {{illustration}} shows a smaller building inside it.",
+        "changeMassingView": "Change massing view",
+        "envelopeFootprint": "Envelope footprint",
+        "envelopeHeight": "Envelope height",
         "zoneStoreys": "up to {{storeys}} floors",
         "zoneStoreysConditional": "up to {{storeys}} floors ({{conditional}} on a condition)",
         "zoneLegend": "Zone legend",

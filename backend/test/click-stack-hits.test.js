@@ -7,6 +7,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const formation = require('../../frontend/js/proposals/formation-depth.js');
 const neighbours = require('../../frontend/js/click-stack/click-stack-neighbours.js');
+const clickModel = require('../../frontend/js/click-stack/click-stack-model.js');
 const { _parcelIdLabel } = require('../../frontend/js/proposal-parcel-identity.js');
 
 const source = readFileSync(new URL('../../frontend/js/click-stack/click-stack-hits.js', import.meta.url), 'utf8');
@@ -19,6 +20,7 @@ function loadHits({ stack = [], buildings = [], planning = null, bareGround = fa
     registry = {}, proposals = {}, parcelProposals = [], parcelBuildings = [] } = {}) {
     const context = {
         __formationDepth: formation,
+        __clickStackModel: clickModel,
         __drillStack: require('../../frontend/js/proposals/drill-stack.js'),
         ClickStackNeighbours: neighbours,
         _parcelIdLabel,
@@ -107,6 +109,16 @@ describe('click stack hits', () => {
         expect(hits.permitted.map(item => [item.id, item.label])).toEqual([['m1', 'HR-1-12'], ['m2', 'By evidence']]);
     });
 
+    it('splits rendered zoning areas from permitted massing while keeping source labels', () => {
+        const area = { id: 'zone', role: 'permitted', landBasis: 'zone', areas: [{}], source: { parcel: 'Zone source' } };
+        const parcelArea = { id: 'parcel-area', role: 'permitted', landBasis: 'parcel', areas: [{}], source: { parcel: 'Parcel source' } };
+        const body = { id: 'body', role: 'permitted', volumes: [{}], source: { parcel: 'Body source' } };
+        const { hits } = loadHits({ planning: [area, parcelArea, body] });
+        expect(hits.permittedArea.map(item => item.id)).toEqual(['zone', 'parcel-area']);
+        expect(hits.permitted.map(item => item.id)).toEqual(['body']);
+        expect(hits.permittedArea.map(item => item.label)).toEqual(['Zone source', 'Parcel source']);
+    });
+
     it('lets a view replace a lookup with its own', () => {
         const parcel = parcelFeature({ parcelId: 'HR-1-12' });
         const { context } = loadHits({ parcelBuildings: [{ id: 'map-building', feature: parcelFeature() }] });
@@ -138,6 +150,14 @@ describe('click stack hits', () => {
         context.PlanningViews = { permittedFeatures: () => ({ body: [shapeA], bound: [shapeB] }) };
         expect(focus('permitted', { item: { id: 'permit', site: source } })).toEqual([shapeA, shapeB]);
         expect(focus('designs', { id: 'missing' })).toEqual([]);
+    });
+
+    it('returns area geometry including holes for area focus', () => {
+        const area = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[0, 0], [2, 0], [2, 2], [0, 0]], [[.5, .5], [1, .5], [1, 1], [.5, .5]]] } };
+        const { context } = loadHits();
+        context.PlanningViews = { permittedFeatures: () => ({ body: [], bound: [] }) };
+        expect(context.ClickStackHits.featuresFor('permittedArea', { item: { id: 'zone', areas: [{ geometry: area.geometry }] } })).toEqual([area]);
+        expect(context.ClickStackHits.featuresFor('permittedArea', { item: { id: 'zone', areas: [] } })).toEqual([]);
     });
 
     it('focuses an MCP record body instead of its larger authoring site', () => {

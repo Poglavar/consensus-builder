@@ -8561,6 +8561,12 @@
         }
     },
     "planningViews": {
+        "governmentPlanPlot": "Parcela iz generalnog plana",
+        "usePlanAreaAsSite": "Koristi površinu iz generalnog plana kao projektnu lokaciju",
+        "heightOnlyPlot": "Zabeležena pravila ovde određuju samo visinu. Maksimalni omotač prati granicu parcele. {{illustration}} prikazuje manju zgradu unutar njega.",
+        "changeMassingView": "Promeni prikaz izgrađenosti",
+        "envelopeFootprint": "Osnova omotača",
+        "envelopeHeight": "Visina omotača",
         "zoneStoreys": "spratnost do {{storeys}}",
         "zoneStoreysConditional": "spratnost do {{storeys}} ({{conditional}} uz uslov)",
         "zoneLegend": "Legenda zona",

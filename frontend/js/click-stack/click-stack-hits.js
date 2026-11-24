@@ -76,6 +76,16 @@
         return { designs, built };
     }
 
+    function planningHits(items) {
+        const hits = { permitted: [], permittedArea: [] };
+        for (const item of items) {
+            if (item?.role !== 'permitted') continue;
+            hits[global.__clickStackModel.permittedKind(item)].push({ id: item.id, item,
+                label: item.source?.parcel || global.PlanningViews?.itemTitle?.(item) || item.title || item.id });
+        }
+        return hits;
+    }
+
     function hitsAt(latlng, { onPublished } = {}) {
         // Photo view uses the same hit collection with its own parcel controls.
         const includeParcels = global.isThreeModeActive?.() === true || global.ParcelPresenter?.isVisible?.() !== false;
@@ -120,11 +130,9 @@
                 tunnelled: hit.tunnelled, label: buildingLabel(hit.feature) };
         }); }
         catch (error) { console.error('[ClickStack] buildings could not be hit-tested', error); }
-        let permitted = [];
+        let planning = { permitted: [], permittedArea: [] };
         try {
-            permitted = (global.PlanningViews?.isReady?.() ? global.PlanningViews.itemsAt(latlng) : [])
-                .filter(item => item.role === 'permitted')
-                .map(item => ({ id: item.id, label: item.source?.parcel || global.PlanningViews.itemTitle?.(item) || item.title || item.id, item }));
+            if (global.PlanningViews?.isReady?.()) planning = planningHits(global.PlanningViews.itemsAt(latlng));
         } catch (error) { console.error('[ClickStack] massing could not be hit-tested', error); }
         const ground = designs.length ? null : [...formed, ...parcels].find(parcel => parcel.live !== false && parcel.feature);
         if (ground) {
@@ -133,10 +141,10 @@
             designs.push(...extra.designs.filter(item => !has(designs, item.id)));
             built.push(...extra.built.filter(item => !has(built, item.id)));
         }
-        const hits = { designs, built, permitted, formed, parcels, ground: [] };
+        const hits = { designs, built, ...planning, formed, parcels, ground: [] };
         // Nothing at all here: bare ground offers what can be drawn on it, when the place has no
         // register to wait for (ui/ground-menu-model.js decides).
-        if (!designs.length && !built.length && !permitted.length && !formed.length && !parcels.length) {
+        if (!designs.length && !built.length && !hits.permittedArea.length && !hits.permitted.length && !formed.length && !parcels.length) {
             const bare = includeParcels ? global.GroundMenu?.isBareGround?.(latlng)
                 : global.GroundMenu?.factsAt?.(latlng)?.kind === 'no-cadastre';
             if (bare) hits.ground = [{ id: 'here', label: '' }];
@@ -175,7 +183,8 @@
                 id: entry.serverId || global.getProposalKey?.(entry.proposal) || entry.proposal.proposalId, proposal: entry.proposal, serverId: entry.serverId || null })),
             builtOnParcel: feature => global.buildingsOn?.(feature) || [],
             permittedOnParcel: id => (global.PlanningViews?.isReady?.() ? global.PlanningViews.getItems() : [])
-                .filter(item => item.role === 'permitted' && permittedParcelId(item) === String(id))
+                .filter(item => item.role === 'permitted' && permittedParcelId(item) === String(id)
+                    && global.PlanningViews.getAppearance?.(item) !== 'off')
                 .map(item => ({ id: item.id, label: item.source?.parcel || global.PlanningViews.itemTitle?.(item) || item.title || item.id, item })),
             permittedParcel: instance => permittedParcelId(instance.item || global.PlanningViews?.getItems?.().find(item => item.id === instance.id)),
             parcelLabel, designLabel, buildingLabel,
@@ -207,16 +216,19 @@
         let features = [];
         if (kind === 'plans' || kind === 'agreements') features = instance.features || instance.plan?.features || [];
         else if (kind === 'designs') features = designFeatures(instance.id);
-        else if (kind === 'permitted') {
+        else if (kind === 'permittedArea') {
+            const item = instance.item || global.PlanningViews?.getItems?.().find(item => item.id === instance.id);
+            features = (item?.areas || []).map(({ geometry }) => ({ type: 'Feature', properties: {}, geometry }));
+        } else if (kind === 'permitted') {
             const item = instance.item || global.PlanningViews?.getItems?.().find(item => item.id === instance.id);
             const shapes = item && global.PlanningViews?.permittedFeatures?.(item);
             features = shapes ? [...shapes.body, ...shapes.bound] : [];
-            if (!features.length && item?.site) features = [item.site];
+            if (!features.length && item?.site) features = [{ type: 'Feature', properties: {}, geometry: item.site }];
         } else if (kind === 'selection') features = [...(global.multiParcelSelection?.selectedParcels || [])].map(id => global.LiveParcelFabric?.get?.(String(id)));
         else if (kind === 'parcels' && instance.live === false) features = [global.CadastralParcelRepository?.get?.(String(instance.id)) || instance.feature];
         else features = [instance.feature || global.LiveParcelFabric?.get?.(String(instance.id)) || baseFeature(instance.id)];
         return features.filter(feature => feature?.geometry && ['Polygon', 'MultiPolygon', 'LineString', 'MultiLineString'].includes(feature.geometry.type));
     }
 
-    global.ClickStackHits = Object.freeze({ hitsAt, withSourceParcels, withNeighbours, neighbourLookups, parcelLabel, buildingLabel, featuresFor });
+    global.ClickStackHits = Object.freeze({ hitsAt, planningHits, withSourceParcels, withNeighbours, neighbourLookups, parcelLabel, buildingLabel, featuresFor });
 })(window);

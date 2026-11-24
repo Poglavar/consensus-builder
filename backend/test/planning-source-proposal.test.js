@@ -10,6 +10,20 @@ const row = { gup_id: 2025, parcel_id: 'HR-1-17', gbp_m2: 123, current: true,
     result_status: 'evidence_missing', reason: 'exception_unresolved', computed_at: '2026-10-09T00:00:00Z', floors: [] };
 
 describe('source-backed obligatory proposal', () => {
+    it('finds the same full design site from its visible area or its government-plot massing', () => {
+        const source = { id: 'city-plan', recordId: 'zone-7' };
+        const area = { role: 'permitted', source, areas: [{ geometry: {} }], assessment: { meaning: 'zoning-area' } };
+        const ref = { source: 'city-plan', recordId: 'zone-7' };
+        const massing = { role: 'permitted', source, landBasis: 'zone', parcelEnvelope: true,
+            sourceEvidence: { planningArea: { ...ref, lotId: 'zone:zone-7' } } };
+        expect(contract.designSiteArea(area)).toEqual(ref);
+        expect(contract.designSiteArea({ ...area, overview: true })).toEqual(ref);
+        expect(contract.designSiteArea(massing)).toEqual(ref);
+        expect(contract.designSite(massing)).toBeNull();
+        expect(contract.designSiteArea({ ...massing, landBasis: 'parcel' })).toBeNull();
+        expect(contract.designSiteArea({ ...massing, sourceEvidence: { zoningRecordId: 'zone-7' } })).toBeNull();
+        expect(contract.designSiteArea({ ...massing, source: { id: 'other-plan' } })).toBeNull();
+    });
     it('pins the full site, including holes and islands, independently of the source projection', () => {
         const ring = (x, y, size) => [[x, y], [x + size, y], [x + size, y + size], [x, y + size], [x, y]];
         const site = { type: 'MultiPolygon', coordinates: [[ring(15, 45, .01), ring(15.002, 45.002, .002)], [ring(15.1, 45.1, .006)]] };

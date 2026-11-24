@@ -27,6 +27,7 @@ describe('the selection a stack names', () => {
         const spot = { built: [{ id: 'b-1' }], formed: [{ id: 'piece-1' }], parcels: [{ id: 'HR-335258-4341/2' }] };
         expect(selectionOf(stack('formed', spot), selectedInstance)).toEqual({ kind: 'parcels', id: 'HR-335258-4341/2' });
         expect(selectionOf(stack('built', spot), selectedInstance)).toBeNull();
+        expect(selectionOf(stack('permittedArea', { ...spot, permittedArea: [{ id: 'plan-area' }] }), selectedInstance)).toBeNull();
         expect(selectionOf(stack('ground', { ground: [{ id: 'g' }] }), selectedInstance)).toBeNull();
         expect(selectionOf(null, selectedInstance)).toBeNull();
         expect(idOf('designs', null)).toBeNull();

@@ -69,6 +69,17 @@ it('shows the design that formed a parcel above the buildings and massing standi
 });
 
 describe('click stack model', () => {
+    it('keeps permitted massing above areas and names an area by all records land basis', () => {
+        const stack = model.buildClickStack({ permittedArea: [
+            { id: 'zone', item: { landBasis: 'zone' } }, { id: 'mixed', item: { landBasis: 'parcel' } }
+        ], permitted: [{ id: 'body' }] });
+        expect(kinds(stack)).toEqual(['permitted', 'permittedArea']);
+        const translate = (_key, fallback) => fallback;
+        expect(model.permittedTitle(stack.sections[0], translate)).toBe('Permitted massing');
+        expect(model.permittedTitle(stack.sections[1], translate)).toBe('Source zoning area (2)');
+        const plot = model.buildClickStack({ permittedArea: [{ id: 'zone', item: { landBasis: 'zone' } }] });
+        expect(model.permittedTitle(plot.sections[0], translate)).toBe('Government-plan plot');
+    });
     it('orders plans, designs, built, permitted, formed parcel, cadastral parcels, showing only what is there', () => {
         expect(kinds(model.buildClickStack({ built: [{ id: 'b1' }], parcels: [{ id: 'p1' }] }))).toEqual(['built', 'parcels']);
         expect(kinds(model.buildClickStack({ parcels: [{ id: 'p1' }], permitted: [{ id: 'm1' }], built: [{ id: 'b1' }], formed: [{ id: 'f1' }] })))

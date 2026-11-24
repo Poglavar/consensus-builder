@@ -35,9 +35,9 @@
     // parcel): it opens like a cadastral parcel, and is where the next design starts. Cadastral
     // parcels below it are the originals it came from. Ground is bare land with no register (the
     // former ground menu): it offers what can be drawn there, and shows only when nothing else is.
-    const ORDER = Object.freeze(['agreements', 'plans', 'designs', 'built', 'permitted', 'formed', 'parcels', 'ground']);
-    const MULTI = new Set(['agreements', 'plans', 'designs', 'built', 'permitted', 'formed', 'parcels']);
-    const EXPANDABLE = new Set(['agreements', 'plans', 'designs', 'built', 'permitted', 'formed', 'parcels', 'ground']);
+    const ORDER = Object.freeze(['agreements', 'plans', 'designs', 'built', 'permitted', 'permittedArea', 'formed', 'parcels', 'ground']);
+    const MULTI = new Set(['agreements', 'plans', 'designs', 'built', 'permittedArea', 'permitted', 'formed', 'parcels']);
+    const EXPANDABLE = new Set(['agreements', 'plans', 'designs', 'built', 'permittedArea', 'permitted', 'formed', 'parcels', 'ground']);
     const NEWEST_FIRST = new Set(['agreements', 'plans', 'designs']);
 
     const time = value => {
@@ -45,6 +45,17 @@
         return Number.isFinite(parsed) ? parsed : -Infinity;
     };
     const refOf = (kind, id) => `${kind}:${id}`;
+    function permittedKind(item) {
+        return item?.assessment?.meaning === 'zoning-area' || (Array.isArray(item?.areas) && item.areas.length)
+            ? 'permittedArea' : 'permitted';
+    }
+    function permittedTitle(section, translate) {
+        const massing = section.kind === 'permitted';
+        const plot = !massing && section.instances.every(instance => instance.item?.landBasis === 'zone');
+        const label = massing ? translate('planningViews.sourceProposal', 'Permitted massing')
+            : plot ? translate('planningViews.governmentPlanPlot', 'Government-plan plot') : translate('planningViews.zoningArea', 'Source zoning area');
+        return section.multi ? `${label} (${section.count})` : label;
+    }
 
     function instancesOf(kind, list) {
         const seen = new Set(), out = [];
@@ -153,7 +164,7 @@
         // directly above the selected level the design above them shows too (the design that
         // formed a parcel stays one step away).
         let first = Math.max(0, selected - 1);
-        while (first > 0 && ['built', 'permitted'].includes(stack.sections[first].kind)) first -= 1;
+        while (first > 0 && ['built', 'permittedArea', 'permitted'].includes(stack.sections[first].kind)) first -= 1;
         return stack.sections.slice(first, selected + 2);
     }
 
@@ -282,5 +293,5 @@
         return !inside || Math.max(box.right - box.left, box.bottom - box.top) < minPx;
     }
 
-    return Object.freeze({ ORDER, framingNeeded, summarizeSelection, buildSelectionStack, buildClickStack, clickAction, expand, selectInstance, selectedInstance, visibleSections, contextFor });
+    return Object.freeze({ ORDER, permittedKind, permittedTitle, framingNeeded, summarizeSelection, buildSelectionStack, buildClickStack, clickAction, expand, selectInstance, selectedInstance, visibleSections, contextFor });
 });

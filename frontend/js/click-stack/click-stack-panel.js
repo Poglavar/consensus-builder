@@ -12,7 +12,7 @@
     const HOSTS = Object.freeze({
         designs: ['proposal-details-panel'],
         built: ['planning-inspector'],
-        permitted: ['planning-inspector'],
+        permittedArea: ['planning-inspector'], permitted: ['planning-inspector'],
         selection: ['parcel-info-panel'],
         formed: ['parcel-info-panel'],
         parcels: ['parcel-info-panel']
@@ -23,9 +23,9 @@
     // Sections whose object has a shape on the map, so the Focus button can bring it into view.
     // A parcel layout's panel has Input parcels and Output parcels tabs of its own, so its section skips them.
     const PANEL_RELATIONS = new Set(['designParcels', 'formedParcels', 'affectsParcels']);
-    const FRAMEABLE = new Set(['agreements', 'plans', 'designs', 'built', 'permitted', 'formed', 'parcels', 'selection']);
+    const FRAMEABLE = new Set(['agreements', 'plans', 'designs', 'built', 'permittedArea', 'permitted', 'formed', 'parcels', 'selection']);
     const ICONS = Object.freeze({ agreements: 'fas cb-icon-agreement', plans: 'fas cb-icon-plan', designs: 'fas cb-icon-design', built: 'fas fa-building',
-        permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all', selection: 'fas fa-object-group', ground: 'fas fa-seedling' });
+        permittedArea: 'fas fa-draw-polygon', permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all', selection: 'fas fa-object-group', ground: 'fas fa-seedling' });
 
     const relationsFor = (kind, instance) => model.contextFor(kind, instance, state.hits)
         .filter(group => kind !== 'designs' || instance?.proposal?.goal !== 'parcel-layout' || !PANEL_RELATIONS.has(group.relation));
@@ -203,7 +203,8 @@
             case 'plans': return t('designMemberships.plan', 'Plan');
             case 'designs': return section.count > 1 ? t('designs', 'Designs ({{count}})', { count: section.count }) : t('proposalDrafts.tabs.design', 'Design');
             case 'built': return section.count > 1 ? t('buildings', 'Buildings ({{count}})', { count: section.count }) : t('building', 'Building');
-            case 'permitted': return section.multi ? t('permittedMany', 'Permitted ({{count}})', { count: section.count }) : t('planningViews.permitted', 'Permitted');
+            case 'permittedArea':
+            case 'permitted': return model.permittedTitle(section, t);
             case 'formed': return section.multi ? t('formedMany', 'Formed parcels ({{count}})', { count: section.count }) : t('formed', 'Formed parcel');
             case 'parcels': return section.count > 1 ? t('parcels', 'Parcels ({{count}})', { count: section.count })
                 : t('parcel', 'Cadastral parcel');
@@ -479,7 +480,7 @@
             } else if (kind === 'built') {
                 host(body, 'planning-inspector');
                 global.PlanningViews.inspectBuilding(instance.feature, instance.id, { hosted: true });
-            } else if (kind === 'permitted') {
+            } else if (kind === 'permittedArea' || kind === 'permitted') {
                 global.PlanningViews.selectAt(instance.id, state.latlng);
             } else if (kind === 'selection') {
                 renderCommands(body, 'parcel-selection', global.UiCommands.createBrowserContext(global)).setAttribute('data-stack-persistent', '');
@@ -641,7 +642,7 @@
         if (!state.stack) return;
         if (!state.hosted && state.stack.selectedKind !== kind) {
             if (['parcels', 'formed'].includes(state.stack.selectedKind)) global.hideParcelInfoPanel?.();
-            if (['built', 'permitted'].includes(state.stack.selectedKind)) global.PlanningViews?.select(null);
+            if (['built', 'permittedArea', 'permitted'].includes(state.stack.selectedKind)) global.PlanningViews?.select(null);
         }
         // Another section takes over: the old one's panel closes. Within one section (a strip
         // choice) the panel stays open and is hosted again for the new instance.
@@ -769,7 +770,7 @@
             global.SelectionAddress?.write(null);
             unhost();
             if (['parcels', 'formed'].includes(state.stack?.selectedKind)) global.hideParcelInfoPanel?.();
-            if (['built', 'permitted'].includes(state.stack?.selectedKind)) global.PlanningViews?.select(null);
+            if (['built', 'permittedArea', 'permitted'].includes(state.stack?.selectedKind)) global.PlanningViews?.select(null);
             global.ProposalSelection?.clear?.();
             global.hideProposalDetailsPanel?.(true);
         }

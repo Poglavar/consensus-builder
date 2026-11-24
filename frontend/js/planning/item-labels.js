@@ -18,6 +18,12 @@
         return text && text !== key ? text : null;
     }
     const isZone = item => item?.assessment?.meaning === 'zoning-area';
+    function heightOnlyPlot(item) {
+        if (!item?.parcelEnvelope || item.landBasis !== 'zone' || item.sourceEvidence?.parts !== 1) return false;
+        const drawable = item.configurations?.filter(configuration => configuration.volumes?.length);
+        return !!drawable?.length && drawable.every(configuration => configuration.constraints?.length
+            && configuration.constraints.every(rule => rule.quantity === 'height' || rule.quantity === 'storeys'));
+    }
     // The use group a Permitted item's source states for its land, or null: one of ZONE_GROUPS.
     const useGroup = item => item?.role === 'permitted' && ZONE_GROUPS.includes(item.use?.group) ? item.use.group : null;
     // The colour role an item is drawn in (--cb-planning-<role>): the use of its land where the source
@@ -74,5 +80,5 @@
         if (!isZone(item) || !group) return [];
         return [zoneRow(group, t), ...(unbuildableZone(item) ? [dashedRow(t)] : [])];
     }
-    return { ZONE_GROUPS, title, sourceWording, reason, condition, unbuildableZone, colourRole, legend, colourKey };
+    return { ZONE_GROUPS, title, sourceWording, reason, condition, heightOnlyPlot, unbuildableZone, colourRole, legend, colourKey };
 });

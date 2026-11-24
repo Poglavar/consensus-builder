@@ -26,7 +26,7 @@ right-side panels that clicks used to open one at a time.
   details. Collapsing keeps its header selected and its object highlighted on the map.
 - A click always selects the **object drawn on top** at the point, whatever was selected or
   expanded before: a design's body (a building, a park, a road), else the existing building
-  there, else the permitted massing, else the formed parcel, else the cadastral parcel. A design
+  there, then the permitted massing, the government-plan area, the formed parcel or the cadastral parcel. A design
   that only authors ground (a parcel layout) lies under the parcels it formed, so it is picked
   after them and is otherwise reached through its row. Plans and agreements are never spatial
   picks; they arrive through lists, links and panels.
@@ -42,10 +42,12 @@ right-side panels that clicks used to open one at a time.
 3. **Designs** at the point (applied proposals), or the proposals on the parcel there.
 4. **Built**: existing buildings at the point, or on the parcel there (a demolished one carries a
    "demolished by" badge).
-5. **Permitted**: massing / envelope records.
-6. **Formed parcel**: the live ground a design formed here, with its parcel actions.
-7. **Cadastral parcels** under the point (or under the selected design).
-8. Footer: the coordinates (copyable).
+5. **Permitted massing** shows the building envelope or its illustration.
+6. **Government-plan plot** shows the flat source area used as the lot. **Source zoning area**
+   covers areas that supply zoning over other parcels. Overlapping areas share an area picker.
+7. **Formed parcel**: the live ground a design formed here, with its parcel actions.
+8. **Cadastral parcels** under the point (or under the selected design).
+9. The footer shows the coordinates and lets the reader copy them.
 
 ## Mobile navigation
 

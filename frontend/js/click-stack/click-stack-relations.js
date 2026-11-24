@@ -249,7 +249,7 @@
     }
 
     function permittedOptionKind(item) {
-        if (item?.assessment?.meaning === 'zoning-area' || item?.areas?.length) return 'planningViews.zoningArea';
+        if (item?.assessment?.meaning === 'zoning-area' || item?.areas?.length) return item.landBasis === 'zone' ? 'planningViews.governmentPlanPlot' : 'planningViews.zoningArea';
         return item?.volumes?.length ? 'planningViews.sourceProposal' : null;
     }
 
@@ -269,7 +269,7 @@
         }
         [...select.children].forEach((option, index) => {
             const instance = section.instances[index];
-            const kindKey = section.kind === 'permitted' && permittedOptionKind(instance.item);
+            const kindKey = ['permittedArea', 'permitted'].includes(section.kind) && permittedOptionKind(instance.item);
             option.textContent = section.kind === 'designs' ? designOptionLabel(instance, win, plans, peers)
                 : [kindKey && win?.i18n?.t?.(kindKey), instanceLabel(instance, section.kind, win, peers),
                     recordTime(instance, section.kind, win)?.label].filter(Boolean).join(' · ');
@@ -291,9 +291,8 @@
         caption.id = `${id}-label`;
         caption.className = 'click-stack__selector-label';
         const captions = { designs: 'chooseDesign', built: 'chooseBuilding', parcels: 'chooseParcel', formed: 'chooseParcel',
-            plans: 'choosePlan', agreements: 'chooseAgreement', permitted: 'choosePermitted' };
-        const hasArea = section.kind === 'permitted' && section.instances.some(instance => permittedOptionKind(instance.item) === 'planningViews.zoningArea');
-        caption.textContent = translate(hasArea ? 'chooseInstance' : captions[section.kind] || 'chooseInstance', win);
+            plans: 'choosePlan', agreements: 'chooseAgreement', permittedArea: 'chooseInstance', permitted: 'choosePermitted' };
+        caption.textContent = translate(captions[section.kind] || 'chooseInstance', win);
         const select = doc.createElement('select');
         select.id = id;
         select.className = 'click-stack__selector';
