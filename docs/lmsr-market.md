@@ -5,10 +5,9 @@ The dated agreement market is the current betting contract. It replaces parimutu
 records and intentionally changes the experimental data shape: old pool records are not migrated or
 read through a compatibility path. Recreate test markets against the current contract.
 
-The implementation exists in the Rust program source, browser quote and points ledger. The market
-program with these instructions is deployed on Solana devnet; its release identity is recorded in
-[Agreement betting](betting-lmsr-points.md). The points book is an independent server-side
-simulation and does not require a wallet.
+The Rust program and browser share the funded market contract. The independent server-side points
+book uses the agreement's execution deadline and can be traded without a wallet.
+[Agreement betting](betting-lmsr-points.md)
 
 The maker is LMSR. The JavaScript reference is
 `frontend/js/bets/lmsr.js`; the Rust port must reproduce `backend/test/fixtures/lmsr-vectors.json`
@@ -57,21 +56,12 @@ One account type for both resolution paths; `kind` selects the path at resolutio
 | `paid_out` | u64 | claims paid so far, for the creator's reclaim |
 | `bump` | u8 | |
 
-For a kind 0 agreement market, canonical parameters are `b = 100_000_000` atomic units,
-`closes_at = agreement.deadline`, `grace_seconds = 0`, and `max_position = 0` (no per-position
-limit). Its creator is the agreement sponsor and its PDA is derived from `['lmsr', agreement,
-sponsor]`. The sponsor deposits the seed and receives any reclaimable vault remainder. This
-identifies the canonical chain market; points markets use the same agreement subject and quote
-contract in a separate server-side book.
+Any wallet can open one or more funded markets on the same agreement. The creator chooses the deadline and positive liquidity `b`. The browser defaults to 5 USDC, zero grace and no position cap. It shows the exact seed before the creator signs. Each position belongs to one market address.
 
-PDA seeds are `["lmsr", agreement, creator]` for kind 0 and
-`["lmsr_recipe", recipe_hash, creator]` for kind 1, with positions under
-`["lmsr_position", market, owner, side]`. `Position` keeps its layout (`amount` holds shares).
-Separate namespaces prevent a recipe hash from taking an agreement market's address; the creator
-signature prevents another wallet from reserving that creator's address with unusable terms.
-Vault payouts sign with the full namespace, subject and creator seeds. The browser and Node codec
-is `frontend/js/solana/lmsr-client.js`; tests compare its bytes and account ordering with the IDL and
-independent Anchor serialization. Earlier unscoped experimental LMSR addresses are intentionally
+The kind 0 PDA uses `["lmsr", agreement, creator, stake_mint, b, closes_at, grace_seconds, max_position]`.
+Kind 1 uses `["lmsr_recipe", recipe_hash, creator, stake_mint, b, closes_at, grace_seconds, max_position, identity_seed]`. The final seed is SHA-256 of the subject hash, YES hash, NO hash, attester, credential, schema and bound agreement, in that order. An unbound recipe uses the default public key for the agreement. Integers use their little-endian instruction widths. The vault signs with the complete market seeds and bump. A position uses `["lmsr_position", market, owner, side]`.
+
+This address contract breaks the earlier experimental LMSR addresses. An in-place upgrade with funded positions would change the signer derived for their vaults. Settle outstanding claims and reclaim available seed under the earlier program before replacing it, or deploy the new contract separately while those vaults remain accessible.
 not read by this codec.
 
 ## Instructions
@@ -88,8 +78,7 @@ not read by this codec.
 - `resolve_lmsr()` kind 0, final at once: Executed with valid positive `executed_at ≤ closes_at` →
   YES; execution after `closes_at` → NO; Expired → NO; Cancelled → NO; else, once
   `now > closes_at + grace`, NO. The comparison is strict because the agreement's `execute` is
-  allowed through its deadline second (`deadline_passed` is `now > deadline`), and the canonical
-  market closes at that deadline with zero grace. Kind 1 records a proposed outcome (see
+  allowed through its deadline second (`deadline_passed` is `now > deadline`). Kind 1 records a proposed outcome (see
   "Challenge window"): a qualifying attestation whose event time is on or before `closes_at` → the
   committed outcome; else, once `now > closes_at + grace`, NO. Conflicting qualifying attestations
   for both outcomes → VOID (streamline B5).

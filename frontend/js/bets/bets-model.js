@@ -50,10 +50,16 @@
     // an unobserved status supplies no such evidence.
     function rowState(entry) {
         if (!entry) return 'not-minted';
+        if (!entry.market && entry.markets?.length) {
+            if (entry.bettable) return 'open';
+            if (entry.canSettle) return 'settling';
+            const first = entry.markets[0];
+            return first.resolved ? `resolved-${first.outcome}` : 'closed';
+        }
         if (entry.market && entry.market.resolved) return `resolved-${entry.market.outcome}`;
         if (entry.bettable) return 'open';
         if (entry.canSettle) return 'settling';
-        if (entry.canOpenMarket) return 'needs-market';
+        if (!entry.market && !entry.markets?.length && entry.canOpenMarket) return 'needs-market';
         if (!entry.account) return 'not-minted';
         // An unavailable or otherwise ineligible source never invites a trade or settlement.
         if (!settlementOf(entry.chainStatus)) return 'closed';
@@ -79,7 +85,8 @@
 
     // One agreement's row. `contest` is the id of the contest it stands in.
     function row(entry, options = {}) {
-        const market = entry && entry.market ? entry.market : null;
+        const market = options.market || (entry && entry.market ? entry.market : null);
+        const source = market ? { ...entry, market, bettable: market.bettable ?? entry.bettable, canSettle: market.canSettle ?? entry.canSettle } : entry;
         if (market && market.model !== 'lmsr') throw new Error('The active betting UI requires an LMSR market');
         const odds = market ? chance(market) : { yes: null, no: null };
         return {
@@ -94,6 +101,8 @@
             sponsor: entry.sponsor || null,
             asset: market?.asset || options.asset || 'points',
             market,
+            canOpenMarket: Boolean(entry.canOpenMarket),
+            city: entry.city || null,
             createdAt: entry.createdAt || null,
             // The agreement's own deadline: after it the agreement can no longer execute.
             deadline: entry.deadline || null,
@@ -104,7 +113,7 @@
             // The same ground without the agreement's designs, when rendered (dividers.md, M3).
             screenshotBeforeUrl: entry.screenshotBeforeUrl || null,
             parcelIds: Array.isArray(entry.parcelIds) ? entry.parcelIds : [],
-            state: stateOf(entry),
+            state: stateOf(source),
             chanceYes: odds.yes,
             chanceNo: odds.no,
             liquidity: market ? formatAtomic(market.b) : null,
@@ -114,7 +123,10 @@
             outcome: market && market.resolved ? market.outcome : null,
             paysYes: market ? payoutMultiple('yes', market) : null,
             paysNo: market ? payoutMultiple('no', market) : null,
-            marketAddress: market ? market.address : null
+            marketAddress: market?.address || null,
+            creator: market?.creator || null,
+            creatorRole: market?.creatorRole || null,
+            marketKind: market?.kind === 'recipe' || market?.kind === 1 ? 1 : 0
         };
     }
 
@@ -125,14 +137,13 @@
     // and its required deadline not yet reached.
     function chainEntry(account, summary, nowMs = Date.now()) {
         const market = summary?.market || null;
-        const chainStatus = typeof summary?.chainStatus === 'string' ? summary.chainStatus.toLowerCase() : null;
-        const deadline = summary?.deadline || null;
-        const live = chainStatus === 'active' && Date.parse(deadline) > nowMs;
-        return { account, chainStatus, deadline, sponsor: summary?.sponsor || null,
-            bettable: Boolean(market && !market.resolved && live && nowMs < market.closesAt * 1000),
-            canOpenMarket: Boolean(account && !market && live),
-            canSettle: Boolean(market && !market.resolved && (settlementOf(chainStatus) || chainStatus === 'active' && Math.floor(nowMs / 1000) > market.closesAt + market.graceSeconds)),
-            market };
+        const chainStatus = summary?.chainStatus?.toLowerCase() || null, deadline = summary?.deadline || null;
+        const external = market?.kind === 1 || market?.kind === 'recipe';
+        const now = Math.floor(nowMs / 1000);
+        return { account, chainStatus, deadline, sponsor: summary?.sponsor || null, market,
+            bettable: Boolean(market && !market.resolved && !market.proposed && (external || chainStatus === 'active') && now < market.closesAt),
+            canOpenMarket: Boolean(account && chainStatus && summary?.canOpenMarket !== false),
+            canSettle: Boolean(market && !market.resolved && (external || settlementOf(chainStatus) || now > market.closesAt + market.graceSeconds)) };
     }
 
     // ---- order: one rule for GET /markets (backend/markets/contests.js) and the sheet ------------
@@ -143,7 +154,8 @@
         const ms = Date.parse(value || '');
         return Number.isFinite(ms) ? ms : null;
     };
-    const sharesOf = item => item.market ? atomic(item.market.qYes) + atomic(item.market.qNo) : atomic(item.sharesAtomic);
+    const sharesOf = item => item.market ? atomic(item.market.qYes) + atomic(item.market.qNo)
+        : item.markets ? item.markets.reduce((total, pool) => total + atomic(pool.qYes) + atomic(pool.qNo), 0n) : atomic(item.sharesAtomic);
     // In play first, settled after, then the rows nothing can be done with (no market, never minted).
     function standing(item) {
         const state = stateOf(item);
@@ -151,10 +163,17 @@
         return state.startsWith('resolved-') ? 1 : 2;
     }
 
-    // Rows in a contest: rows in play first, the soonest agreement deadline leading (one without a
-    // deadline follows the dated ones), then more shares; settled rows after them, the larger
-    // share inventory first. Ties: the newest.
+    // Tradeable funded books lead by committed LMSR depth. Use the market address to break USDC ties.
+    // The remaining states use actionability, deadline, outstanding shares and publication time.
     function compareRows(a, b) {
+        const leading = item => item.markets?.find(market => market.bettable) || (stateOf(item) === 'open' ? item.market : null);
+        const first = leading(a), second = leading(b);
+        if (first || second) {
+            if (!first || !second) return first ? -1 : 1;
+            const depth = atomic(second.b) - atomic(first.b);
+            if (depth) return depth > 0n ? 1 : -1;
+            if (first.asset === 'devnet-usdc' && second.asset === 'devnet-usdc') return String(first.address).localeCompare(String(second.address));
+        }
         const rank = standing(a) - standing(b);
         if (rank) return rank;
         if (standing(a) === 0) {
@@ -228,7 +247,7 @@
         switch (filter) {
             case 'open': return list.filter(item => LIVE_STATES.includes(item.state));
             case 'settled': return list.filter(item => item.state.startsWith('resolved-'));
-            case 'mine': return list.filter(item => Boolean(item.account && hasPosition(positionsByAccount[item.account])));
+            case 'mine': return list.filter(item => Boolean(item.account && hasPosition(positionsByAccount[item.asset === 'devnet-usdc' ? item.marketAddress : item.account])));
             default: return list;
         }
     }
@@ -262,14 +281,15 @@
     // One GET /markets contest as the sheet shows it. Rows keep GET /markets' order, re-applied here
     // (compareRows) so the sheet never disagrees with the API.
     function contest(entry, options = {}) {
-        const rows = (entry && Array.isArray(entry.agreements) ? entry.agreements : [])
-            .map(item => row(item, { ...options, contest: entry.id })).sort(compareRows);
+        const agreements = entry.agreements || [];
+        const rows = agreements.flatMap(item => (item.markets?.length ? item.markets : [item.market || null])
+            .map(market => row(item, { ...options, contest: entry.id, market }))).sort(compareRows);
         return {
             id: entry.id,
             city: entry.city || null,                 // set on GET /markets?scope=other contests
             parcelIds: entry.parcelIds || [],
             land: landLabel(entry.parcelIds),
-            agreementCount: rows.length,
+            agreementCount: agreements.length,
             openCount: rows.filter(item => item.state === 'open').length,
             sharesAtomic: atomic(entry.sharesAtomic),
             latestCreatedAt: entry.latestCreatedAt || null,

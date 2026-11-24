@@ -16,6 +16,7 @@ import { fileIndexedAgreement, MINTED_ACCOUNT, OPEN_POOL, selectDevnetUsdc } fro
 const ACCOUNT = MINTED_ACCOUNT;
 const SOLANA_WALLET = 'Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W';
 const TITLE = 'Plan-led infill';
+const SECOND_MARKET = 'G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg';
 
 // The city's contest: the minted agreement with an open pool, and an unminted rival over the same land.
 function fileContest(page: Page, pool: MarketFixture = OPEN_POOL, status = 'active'): { cid: string; rival: string; contest: string } {
@@ -37,10 +38,13 @@ async function captureClipboard(page: Page): Promise<void> {
   });
 }
 
-async function connectMarketSponsor(page: Page): Promise<void> {
-  fileIndexedAgreement(pageIndex(page), { title: TITLE, minted: { status: 'active', sponsor: SOLANA_WALLET }, pool: null });
-  await page.exposeFunction('__seedMarketFixture', (account: string) => {
-    pageIndex(page).markets.set(account, { ...OPEN_POOL, creator: SOLANA_WALLET });
+async function connectMarketCreator(page: Page, funded = false): Promise<void> {
+  const index = pageIndex(page);
+  fileIndexedAgreement(index, { title: TITLE, minted: { status: 'active' }, pool: funded ? OPEN_POOL : null });
+  await page.exposeFunction('__seedMarketFixture', (account: string, b: string, closesAt: number) => {
+    const pool: MarketFixture = { ...OPEN_POOL, address: SECOND_MARKET, creator: SOLANA_WALLET, creatorRole: null, b, closesAt };
+    index.markets.set(account, funded ? [OPEN_POOL, pool] : pool);
+    return pool;
   });
   await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
   await openCity(page);
@@ -52,15 +56,18 @@ async function connectMarketSponsor(page: Page): Promise<void> {
     const bridge = w.SolanaMarketBridge;
     // Keep the wallet and market UI real while replacing the transaction boundary.
     bridge.readPositions = async () => ({});
+    let created: MarketFixture;
+    bridge.readSummary = async (_account: string, { marketAddress }: { marketAddress?: string }) => marketAddress === created?.address && created
+      ? { market: created, marketAddress, chainStatus: 'active', yes: null, no: null } : null;
     bridge.createMarket = async (options: any) => {
-      w.__marketSeedCalls.push({ proposal: options.proposal, wallet: w.solanaWalletManager.getState().accounts[0] });
-      await w.__seedMarketFixture(options.proposal);
+      w.__marketSeedCalls.push({ proposal: options.proposal, wallet: w.solanaWalletManager.getState().accounts[0], b: String(options.b), closesAt: options.closesAt, ...(options.external ? { external: options.external } : {}) });
+      created = await w.__seedMarketFixture(options.proposal, String(options.b), options.closesAt);
       options.onStatus?.({ state: 'confirmed', signature: 'mock-market', explorerUrl: 'https://explorer.solana.com/tx/mock-market?cluster=devnet' });
-      return { transactionHash: 'mock-market', explorerUrl: 'https://explorer.solana.com/tx/mock-market?cluster=devnet' };
+      return { marketAddress: created.address, transactionHash: 'mock-market', explorerUrl: 'https://explorer.solana.com/tx/mock-market?cluster=devnet' };
     };
   });
   await page.locator('#bets-button').click();
-  await expect(page.locator(`#bets-sheet .bets-row[data-account="${ACCOUNT}"]`)).toBeVisible();
+  await expect(page.locator(`#bets-sheet .bets-row[data-account="${ACCOUNT}"]`).first()).toBeVisible();
 }
 
 // The address follows the map as ?at=lat,lon,zoom (js/map-core.js), so the app address is compared
@@ -68,11 +75,11 @@ async function connectMarketSponsor(page: Page): Promise<void> {
 const addressWithoutView = (page: Page) => page.evaluate(() => {
   const params = new URLSearchParams(location.search);
   params.delete('at');
-  for (const key of ['existing', 'permitted', 'proposed', 'existingScope', 'proposedForm', 'permittedForm', 'permittedMap', 'zoningAreas']) params.delete(key);
+  for (const key of ['existing', 'permitted', 'proposed', 'existingScope', 'proposedForm', 'permittedForm', 'permittedMap', 'permittedScope', 'zoningAreas']) params.delete(key);
   return `${location.pathname}?${params}`;
 });
 
-const expectedLink = (page: Page) => page.evaluate((account) => `${location.origin}/bets/${account}?city=${(window as any).CityConfigManager.getCurrentCityId()}&asset=devnet-usdc&betTest=local-preview`, ACCOUNT);
+const expectedLink = (page: Page) => page.evaluate(({ account, market }) => `${location.origin}/bets/${account}?city=${(window as any).CityConfigManager.getCurrentCityId()}&market=${market}&asset=devnet-usdc&betTest=local-preview`, { account: ACCOUNT, market: OPEN_POOL.address });
 
 const QUESTION = new RegExp(`Will ${TITLE} execute by`);
 
@@ -319,7 +326,7 @@ test.describe('Bets sheet @features', () => {
         return { transactionHash: 'sig', explorerUrl: 'https://explorer.solana.com/tx/sig?cluster=devnet' };
       };
       bridge.readSummary = async () => ({ market, marketAddress: 'market', wallet: 'w', chainStatus: 'active', deadline: '2026-12-31T00:00:00Z', sponsor: 'sponsor', yes: null, no: { side: 0, amount: 50000n, claimed: false } });
-      bridge.readPositions = async () => ({ [account]: { yes: null, no: { side: 0, amount: noShares, claimed: false } } });
+      bridge.readPositions = async (requests: any[]) => ({ [requests[0].marketAddress]: { yes: null, no: { side: 0, amount: noShares, claimed: false } } });
       bridge.readStakeBalance = async () => 12_500_000n;
     }, ACCOUNT);
     const row = page.locator('#bets-sheet .bets-row').first();
@@ -429,7 +436,7 @@ test.describe('Bets sheet @features', () => {
     await expect.poll(() => page.evaluate(() => location.pathname)).toBe('/');
     await page.locator('#bets-sheet .bets-row__title').first().click();
     await expect(page.locator('#proposalMarketOverlay .cb-dialog__title')).toHaveText(QUESTION);
-    await expect.poll(() => addressWithoutView(page)).toBe(`/bets/${ACCOUNT}?city=zg&reduceMotion=1`);
+    await expect.poll(() => addressWithoutView(page)).toBe(`/bets/${ACCOUNT}?city=zg&reduceMotion=1&asset=devnet-usdc&market=${OPEN_POOL.address}`);
     await page.locator('#proposalMarketOverlay .close-circle-btn').click();
     await expect.poll(() => addressWithoutView(page)).toBe('/?city=zg&reduceMotion=1');
   });
@@ -462,7 +469,7 @@ test.describe('Bets sheet @features', () => {
       const bridge = (window as any).SolanaMarketBridge;
       (window as any).__claims = [];
       const claimed = new Set<number>();
-      bridge.readPositions = async () => ({ [account]: {
+      bridge.readPositions = async (requests: any[]) => ({ [requests[0].marketAddress]: {
         yes: { side: 1, amount: 100000n, claimed: claimed.has(1) },
         no: { side: 0, amount: 200000n, claimed: claimed.has(0) },
       } });
@@ -500,36 +507,67 @@ test.describe('Bets sheet @features', () => {
     expect(await page.evaluate(() => (window as any).__claims)).toEqual([[ACCOUNT, 1], [ACCOUNT, 0]]);
   });
 
-  test('the agreement sponsor seeds its USDC market from the Bets row through the mocked bridge', async ({ mockApi: page }) => {
-    await connectMarketSponsor(page);
-    const row = page.locator(`#bets-sheet .bets-row[data-account="${ACCOUNT}"]`);
-    const action = row.getByRole('button', { name: 'Seed USDC market', exact: true });
-    await expect(action).toBeVisible();
-    await action.click();
+  test('an independent wallet can open the first USDC market from the Bets row', async ({ mockApi: page }) => {
+    await connectMarketCreator(page);
+    const row = page.locator(`#bets-sheet .bets-row[data-account="${ACCOUNT}"]`).last();
+    await row.getByRole('button', { name: 'Open a USDC market' }).click();
+    const dialog = page.locator('#proposalMarketOverlay');
+    await expect(dialog.getByLabel('Closes at (UTC)')).toBeFocused();
+    await dialog.getByRole('button', { name: 'Open market', exact: true }).click();
     await expect.poll(() => page.evaluate(() => (window as any).__marketSeedCalls)).toHaveLength(1);
-    expect(await page.evaluate(() => (window as any).__marketSeedCalls[0])).toEqual({ proposal: ACCOUNT, wallet: SOLANA_WALLET });
-    await expect(row.locator('.btn-market-yes')).toBeVisible();
-    await expect(row.locator('.btn-market-no')).toBeVisible();
-    await expect(action).toHaveCount(0);
+    await expect(dialog.getByRole('link', { name: /Pool account/ })).toHaveAttribute('href', new RegExp(SECOND_MARKET));
+    await expect(page.locator(`#bets-sheet .bets-row[data-market="${SECOND_MARKET}"] .btn-market-yes`)).toBeAttached();
   });
 
-  test('the agreement sponsor seeds its USDC market from the bet dialog through the mocked bridge', async ({ mockApi: page }) => {
-    await connectMarketSponsor(page);
-    const row = page.locator(`#bets-sheet .bets-row[data-account="${ACCOUNT}"]`);
-    await row.locator('.bets-row__title').click();
+  test('a creator chooses the public decision, record and verifier credentials before signing', async ({ mockApi: page }) => {
+    await connectMarketCreator(page, true);
+    await page.locator(`#bets-sheet .bets-row[data-market="${OPEN_POOL.address}"] .bets-row__title`).click();
     const dialog = page.locator('#proposalMarketOverlay');
-    await expect(dialog).toContainText('No pool yet');
-    const action = dialog.locator('.cb-dialog__footer').getByRole('button', { name: 'Seed USDC market', exact: true });
-    await expect(action).toBeVisible();
-    await action.click();
-    await expect.poll(() => page.evaluate(() => (window as any).__marketSeedCalls)).toHaveLength(1);
-    expect(await page.evaluate(() => (window as any).__marketSeedCalls[0])).toEqual({ proposal: ACCOUNT, wallet: SOLANA_WALLET });
-    await expect(dialog.locator('[data-market-dialog-status]')).toContainText('Opened the pool');
-    await expect(dialog.locator('.cb-dialog__footer .btn-market-yes')).toBeVisible();
-    await expect(dialog.locator('.cb-dialog__footer .btn-market-no')).toBeVisible();
-    await expect(dialog.locator('.cb-dialog__footer').getByRole('button', { name: 'Seed USDC market', exact: true })).toHaveCount(0);
-    await expect(row.locator('.btn-market-yes')).toBeVisible();
-    await expect(row.locator('.btn-market-no')).toBeVisible();
-    await expect(row.getByRole('button', { name: 'Seed USDC market', exact: true })).toHaveCount(0);
+    await dialog.getByRole('button', { name: 'Open another market' }).click();
+    await dialog.getByLabel('Question type').selectOption('zagreb-gazette-v1/adopted');
+    await dialog.getByLabel('Closes at (UTC)').fill('2027-03-31');
+    await dialog.getByLabel('Decision or plan identifier').fill('UPU Riverside');
+    await expect(dialog.getByLabel('Parcel IDs')).toHaveValue('HR-335614-2311');
+    await expect(dialog.getByLabel('Permit number (optional)')).toBeHidden();
+    await dialog.getByLabel('Credential public key').fill(OPEN_POOL.address);
+    await dialog.getByLabel('Schema public key').fill(SOLANA_WALLET);
+    await expect(dialog.locator('form')).toContainText(/UPU Riverside.*2027/);
+    await dialog.getByRole('button', { name: 'Open market', exact: true }).click();
+    await expect.poll(() => page.evaluate(() => (window as any).__marketSeedCalls[0])).toMatchObject({
+      proposal: ACCOUNT, wallet: SOLANA_WALLET, closesAt: Date.parse('2027-03-31T23:59:59Z') / 1000,
+      external: { credential: OPEN_POOL.address, schema: SOLANA_WALLET, tuple: { milestone: 'adopted', deadline: '2027-03-31T23:59:59Z',
+        subject: { jurisdiction: 'HR-ZAGREB', parcelIds: ['HR-335614-2311'] }, evidence: { source: 'zagreb-gazette-v1', planId: 'UPU Riverside' } } }
+    });
+  });
+
+  test('permissionless second market creation is keyboard reachable at narrow width', async ({ mockApi: page }) => {
+    await connectMarketCreator(page, true);
+    await page.setViewportSize({ width: 390, height: 844 });
+    const first = page.locator(`#bets-sheet .bets-row[data-market="${OPEN_POOL.address}"]`);
+    await first.locator('.bets-row__title').focus();
+    await page.keyboard.press('Enter');
+    const dialog = page.locator('#proposalMarketOverlay');
+    const create = dialog.getByRole('button', { name: 'Open another market' });
+    await create.focus();
+    await page.keyboard.press('Enter');
+    const deadline = dialog.getByLabel('Closes at (UTC)');
+    await expect(deadline).toBeFocused();
+    const closesAt = OPEN_POOL.closesAt + 86_400;
+    await deadline.fill(new Date(closesAt * 1000).toISOString().slice(0, 16));
+    await dialog.getByLabel('Liquidity b (USDC)').fill('200');
+    await expect(dialog.locator('form')).toContainText(/138[.,]62/);
+    await dialog.getByRole('button', { name: 'Open market', exact: true }).focus();
+    await page.keyboard.press('Enter');
+    await expect.poll(() => page.evaluate(() => (window as any).__marketSeedCalls)).toEqual([
+      { proposal: ACCOUNT, wallet: SOLANA_WALLET, b: '200000000', closesAt }
+    ]);
+    await expect(dialog.getByRole('link', { name: /Pool account/ })).toHaveAttribute('href', new RegExp(SECOND_MARKET));
+    const dialogUrl = new URL(page.url());
+    expect(dialogUrl.searchParams.get('market')).toBe(SECOND_MARKET);
+    await page.keyboard.press('Escape');
+    const funded = page.locator(`#bets-sheet .bets-row[data-account="${ACCOUNT}"][data-market]`);
+    await expect(funded).toHaveCount(2);
+    await expect(funded.first()).toHaveAttribute('data-market', SECOND_MARKET);
+    await expect(funded.nth(1)).toContainText('Proposer');
   });
 });

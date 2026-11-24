@@ -13,7 +13,7 @@ const mint = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 const NOW = Math.floor(Date.now() / 1000);
 
 function encodeMarket({ account, sponsor, deadline, qYes = 0n, qNo = 0n, b = DEFAULT_B, resolved = false }) {
-    const [address] = market.getMarketPda(account, sponsor);
+    const [address] = market.getMarketPda(account, sponsor, { stakeMint: mint, b, closesAt: deadline, graceSeconds: 0, maxPosition: 0 });
     const data = Buffer.alloc(market.MARKET_SIZE);
     Buffer.from(market.ACCOUNT_DISCRIMINATORS.LmsrMarket).copy(data, 0);
     data[8] = 0;
@@ -63,7 +63,7 @@ describe('agent LMSR buy path', () => {
     it('turns an exact USDC budget into quoted shares and submits a bounded buy', async () => {
         const h = setup();
         const budget = usdcToAtomic('0.25');
-        const [address] = market.getMarketPda(h.subject, h.sponsor.publicKey.toBase58());
+        const [address] = market.getMarketPda(h.subject, h.sponsor.publicKey.toBase58(), { stakeMint: mint, b: DEFAULT_B, closesAt: h.deadline, graceSeconds: 0, maxPosition: 0 });
         const quote = contract.quote({ model: 'lmsr', b: DEFAULT_B, qYes: 0n, qNo: 0n, closesAt: h.deadline, graceSeconds: 0 }, 'yes', budget);
         const result = await buyAgreementShares({ connection: h.connection, ownerKeypair: h.signer, subject: h.subject, side: market.constants.SIDE_YES, amountAtomic: budget, sendAndConfirm: h.sendAndConfirm });
         expect(result).toMatchObject({ marketPda: address.toBase58(), signature: 'signature-1', shares: quote.shares, quotedCost: quote.amount, maxCost: quote.maxCost });
@@ -76,15 +76,17 @@ describe('agent LMSR buy path', () => {
         expect(Buffer.from(ix.data).readBigUInt64LE(17)).toBe(quote.maxCost);
     });
 
-    it('trades a market opened before 2026-10-30 at its own b = 100 and rejects any other b', async () => {
+    it('quotes the explicitly selected book with its own liquidity', async () => {
         const legacyB = 100_000_000n, budget = usdcToAtomic('0.25');
         const h = setup({ b: legacyB });
+        const marketAddress = market.getMarketPda(h.subject, h.sponsor.publicKey, { stakeMint: mint, b: legacyB, closesAt: h.deadline })[0];
         const quote = contract.quote({ model: 'lmsr', b: legacyB, qYes: 0n, qNo: 0n, closesAt: h.deadline, graceSeconds: 0 }, 'yes', budget);
-        const result = await buyAgreementShares({ connection: h.connection, ownerKeypair: h.signer, subject: h.subject, side: market.constants.SIDE_YES, amountAtomic: budget, sendAndConfirm: h.sendAndConfirm });
+        const result = await buyAgreementShares({ connection: h.connection, ownerKeypair: h.signer, subject: h.subject, marketAddress, side: market.constants.SIDE_YES, amountAtomic: budget, sendAndConfirm: h.sendAndConfirm });
         expect(result).toMatchObject({ shares: quote.shares, maxCost: quote.maxCost });
         expect(quote.shares).not.toBe(contract.quote({ model: 'lmsr', b: DEFAULT_B, qYes: 0n, qNo: 0n, closesAt: h.deadline, graceSeconds: 0 }, 'yes', budget).shares);
         const odd = setup({ b: 7_000_000n });
-        await expect(readAgreementMarket(odd.connection, odd.subject)).rejects.toMatchObject({ code: 'MARKET_TERMS_MISMATCH' });
+        const otherAddress = market.getMarketPda(odd.subject, odd.sponsor.publicKey, { stakeMint: mint, b: 7_000_000n, closesAt: odd.deadline })[0];
+        expect((await readAgreementMarket(odd.connection, odd.subject, { marketAddress: otherAddress })).market.b).toBe(7_000_000n);
     });
 
     it('never creates a missing market and reports MARKET_NOT_OPEN', async () => {
@@ -96,7 +98,7 @@ describe('agent LMSR buy path', () => {
 
     it('sells only held shares with the quoted minimum return', async () => {
         const h = setup({ qYes: 500_000n });
-        const [address] = market.getMarketPda(h.subject, h.sponsor.publicKey.toBase58());
+        const [address] = market.getMarketPda(h.subject, h.sponsor.publicKey.toBase58(), { stakeMint: mint, b: DEFAULT_B, closesAt: h.deadline, graceSeconds: 0, maxPosition: 0 });
         const held = lmsrPositionAccount({ market: address, owner: h.signer.publicKey, side: market.constants.SIDE_YES, amount: 500_000n });
         h.records.set(held.address, { data: held.data, owner: market.constants.PROGRAM_ID });
         const quote = contract.quote({ model: 'lmsr', b: DEFAULT_B, qYes: 500_000n, qNo: 0n, closesAt: h.deadline, graceSeconds: 0 }, 'yes', 250_000n, 'sell');
@@ -131,7 +133,7 @@ describe('agent LMSR buy path', () => {
     });
 });
 
-describe('sponsor canonical market opening', () => {
+describe('creator-funded market opening', () => {
     it('opens the canonical market once with bounded seed and replays an existing market without funding', async () => {
         const sponsor = Keypair.generate();
         const h = setup({ sponsor, signer: sponsor, withMarket: false });
@@ -149,13 +151,17 @@ describe('sponsor canonical market opening', () => {
         h.records.set(encoded.address.toBase58(), encoded);
         expect(await openAgreementMarket({ ...options, maxSeedAtomic: 0n,
             ensureSeed: async () => { throw new Error('must not fund twice'); } })).toMatchObject({ replayed: true, signature: null });
-        expect(h.sends).toHaveLength(1);
+        const independent = { ...options, creatorKeypair: h.signer, b: 1_000_000n, ensureSeed: async () => {} };
+        const first = await openAgreementMarket({ ...independent, closesAt: h.deadline - 60 });
+        const second = await openAgreementMarket({ ...independent, closesAt: h.deadline + 60 });
+        expect(new Set([first.address, second.address, result.address]).size).toBe(3);
+        expect(h.sends).toHaveLength(3);
     });
-    it('refuses non-sponsors, missing seed and cap overruns without a transaction', async () => {
+    it('permits independent creators and refuses missing collateral and cap overruns', async () => {
         const h = setup({ withMarket: false });
         const base = { connection: h.connection, subject: h.subject, sponsorKeypair: h.sponsor,
             maxSeedAtomic: 70_000_000n, readSeedBalance: async () => 0n, sendAndConfirm: h.sendAndConfirm };
-        await expect(openAgreementMarket({ ...base, sponsorKeypair: h.signer })).rejects.toMatchObject({ code: 'NOT_SPONSOR' });
+        await expect(openAgreementMarket({ ...base, creatorKeypair: h.signer })).rejects.toMatchObject({ code: 'INSUFFICIENT_USDC' });
         await expect(openAgreementMarket({ ...base, maxSeedAtomic: 350_000n })).rejects.toMatchObject({ code: 'MARKET_SEED_CAP' });
         await expect(openAgreementMarket(base)).rejects.toMatchObject({ code: 'INSUFFICIENT_USDC' });
         expect(h.sends).toEqual([]);

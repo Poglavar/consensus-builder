@@ -61,7 +61,7 @@ describe('the status word of agreement account bytes', () => {
         }
         expect(agreementStatusOf(marketAccount({ agreement: Keypair.generate().publicKey.toBase58() }).data)).toBeNull();
         expect(agreementStatusOf(new Uint8Array(296))).toBeNull();
-        expect(SIGNED_SETTLEMENT_STEPS).toEqual(['attest', 'execute', 'expire', 'resolve', 'claim', 'reclaim']);
+        expect(SIGNED_SETTLEMENT_STEPS).toEqual(['attest', 'execute', 'release-donations', 'expire', 'resolve', 'claim', 'reclaim']);
     });
 });
 
@@ -151,7 +151,7 @@ describe('the agreement\'s market', () => {
     it('resolves an open market from the agreement account and reads the outcome back; a resolved one is a replay', async () => {
         const resolve = () => resolveAgreementMarket({ connection: chain.connection, resolverKeypair: actor, subject, sendAndConfirm });
         setAgreement('Executed');
-        await expect(resolve()).rejects.toThrow('canonical agreement market');
+        await expect(resolve()).rejects.toThrow('Selected market was not found');
         chain.put(lmsrMarketAccount({ agreement: subject, sponsor: sponsor.publicKey.toBase58(), closesAt: agreementFields('Executed').deadline, qYes: 300000n, qNo: 100000n }));
         sent = vi.fn(async () => {
             chain.put(lmsrMarketAccount({ agreement: subject, sponsor: sponsor.publicKey.toBase58(), closesAt: agreementFields('Executed').deadline,
@@ -159,7 +159,7 @@ describe('the agreement\'s market', () => {
             return 'resolve-signature';
         });
         expect(await resolve()).toEqual({ replayed: false, signature: 'resolve-signature', outcome: 'YES' });
-        const [marketPda] = require('../../frontend/js/solana/lmsr-client.js').getMarketPda(subject, sponsor.publicKey);
+        const [marketPda] = require('../../frontend/js/solana/lmsr-client.js').getMarketPda(subject, sponsor.publicKey, { stakeMint: lmsrClient.constants.DEVNET_USDC_MINT || '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU', b: 5_000_000n, closesAt: agreementFields('Executed').deadline, graceSeconds: 0, maxPosition: 0n });
         expect(keysOf(instructionOf(sent.mock.calls[0])).slice(0, 2)).toEqual([marketPda.toBase58(), subject]);
         chain.put(lmsrMarketAccount({ agreement: subject, sponsor: sponsor.publicKey.toBase58(), closesAt: agreementFields('Executed').deadline, resolved: true, outcome: 0 }));
         expect(await resolve()).toEqual({ replayed: true, signature: null, outcome: 'NO' });
@@ -174,7 +174,7 @@ describe('the agreement\'s market', () => {
         await expect(claim()).rejects.toThrow('agreement market is not resolved');
         chain.put(lmsrMarketAccount({ agreement: subject, sponsor: sponsor.publicKey.toBase58(), closesAt: deadline, qYes: 300000n, resolved: true, outcome: 1 }));
         await expect(claim()).rejects.toThrow('market position does not exist');
-        const [marketPda] = require('../../frontend/js/solana/lmsr-client.js').getMarketPda(subject, sponsor.publicKey);
+        const [marketPda] = require('../../frontend/js/solana/lmsr-client.js').getMarketPda(subject, sponsor.publicKey, { stakeMint: pledgeClient.constants.USDC_DEVNET_MINT, b: 5_000_000n, closesAt: deadline, graceSeconds: 0, maxPosition: 0n });
         chain.put(lmsrPositionAccount({ market: marketPda, owner: actor.publicKey.toBase58(), side: 1, amount: 300000n }));
         expect(await claim()).toEqual({ replayed: false, signature: 'adapter-signature', claimed: true });
         expect(keysOf(sent.mock.calls[0][1].instructions[1]).slice(0, 2)).toEqual([marketPda.toBase58(), lmsrClient.getPositionPda(marketPda, actor.publicKey, 1)[0].toBase58()]);

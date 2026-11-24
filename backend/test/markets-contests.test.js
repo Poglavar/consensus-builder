@@ -33,9 +33,8 @@ const agreement = (overrides = {}) => ({
     account: null, chainStatus: null, ...overrides
 });
 const minted = (cid, account, overrides = {}) => agreement({ cid, account, chainStatus: 'active', ...overrides });
-const market = (address, qYes, qNo, resolved = false, outcome = 0, chainStatus = 'active', deadline = LATER) => ({ address, chainStatus, deadline,
-    market: { b: 100_000_000n, qYes, qNo, seed: 69_314_720n, closesAt: Math.floor(Date.parse(deadline || LATER) / 1000),
-        graceSeconds: 0, maxPosition: 0n, paidOut: 0n, creator: SPONSOR, resolved, outcome } });
+const market = (address, qYes, qNo, resolved = false, outcome = 0, chainStatus = 'active', deadline = LATER, b = 100_000_000n) => ({ sponsor: SPONSOR, lens: STRANGER, chainStatus, deadline, markets: [{ address, market: { kind: 0, b, qYes, qNo, seed: 69_314_720n, closesAt: Math.floor(Date.parse(deadline || LATER) / 1000),
+    graceSeconds: 0, maxPosition: 0n, paidOut: 0n, creator: SPONSOR, resolved, outcome } }] });
 const cidsOf = contest => contest.agreements.map(entry => entry.cid);
 // Designs whose ground overlaps, for tests about something else than the grouping.
 const everywhere = () => true;
@@ -216,38 +215,38 @@ describe('buildContests', () => {
             status: 'active', chainStatus: 'active', deadline: LATER, createdAt: '2026-10-03T00:00:00.000Z',
             designTitles: ['Six storeys'], screenshotUrl: null, screenshotBeforeUrl: null, screenshotPairUrl: null,
             parcelIds: ['L1'], parcelRefs: [{ ...HR_CADASTRE, parcelId: 'L1' }],
-            market: { address: 'MKT-A', model: 'lmsr', asset: 'devnet-usdc', creator: SPONSOR, b: '100000000', qYes: '250000', qNo: '50000', seed: '69314720', closesAt: Math.floor(Date.parse(LATER) / 1000), graceSeconds: 0, maxPosition: '0', paidOut: '0', resolved: false, outcome: null },
-            bettable: true, canOpenMarket: false, canSettle: false, sponsor: null, contest: contest.id
+            markets: [{ address: 'MKT-A', kind: 'agreement', creatorRole: 'sponsor', bettable: true, canSettle: false, model: 'lmsr', asset: 'devnet-usdc', creator: SPONSOR, b: '100000000', qYes: '250000', qNo: '50000', seed: '69314720', closesAt: Math.floor(Date.parse(LATER) / 1000), graceSeconds: 0, maxPosition: '0', paidOut: '0', resolved: false, outcome: null }],
+            bettable: true, canOpenMarket: true, canSettle: false, sponsor: null, contest: contest.id
         });
-        expect(contest.agreements[1]).toMatchObject({ cid: 'rival', account: null, chainStatus: null, market: null, bettable: false, canOpenMarket: false, status: 'active' });
+        expect(contest.agreements[1]).toMatchObject({ cid: 'rival', account: null, chainStatus: null, markets: [], bettable: false, canOpenMarket: false, status: 'active' });
     });
 
-    it('takes bets and opens pools only while the account is Active on chain and the deadline lies ahead', () => {
+    it('uses each execution market’s own cutoff and exposes creation independently of existing pools', () => {
         const entryOf = (input, markets = new Map()) => buildContests({ city: 'zagreb', now: NOW, agreements: [input], markets }).contests[0].agreements[0];
         const pool = new Map([['ACCT', market('MKT', 1n, 1n)]]);
         // Active and dated ahead: a pool takes bets, a missing one can be opened.
-        expect(entryOf(minted('a', 'ACCT'), pool)).toMatchObject({ bettable: true, canOpenMarket: false, status: 'active' });
-        expect(entryOf(minted('a', 'ACCT'))).toMatchObject({ bettable: false, canOpenMarket: true, market: null });
+        expect(entryOf(minted('a', 'ACCT'), pool)).toMatchObject({ bettable: true, canOpenMarket: true, status: 'active' });
+        expect(entryOf(minted('a', 'ACCT'))).toMatchObject({ bettable: false, canOpenMarket: true, markets: [] });
         // No deadline: still live.
         expect(entryOf(minted('a', 'ACCT', { deadline: null }), new Map([['ACCT', market('MKT', 1n, 1n, false, 0, 'active', null)]])))
-            .toMatchObject({ bettable: false, deadline: null });
+            .toMatchObject({ bettable: true, deadline: null });
         // The deadline passed while the account is still Active: the agreement can no longer execute.
         expect(entryOf(minted('a', 'ACCT', { deadline: PAST }), new Map([['ACCT', market('MKT', 1n, 1n, false, 0, 'active', PAST)]])))
-            .toMatchObject({ bettable: false, canOpenMarket: false, status: 'expired', chainStatus: 'active' });
-        expect(entryOf(minted('a', 'ACCT', { deadline: PAST }))).toMatchObject({ canOpenMarket: false });
+            .toMatchObject({ bettable: false, canOpenMarket: true, status: 'expired', chainStatus: 'active' });
+        expect(entryOf(minted('a', 'ACCT', { deadline: PAST }))).toMatchObject({ canOpenMarket: true });
         // A status nobody observed is no evidence that a bet can still win.
         expect(entryOf(minted('a', 'ACCT', { chainStatus: null }), new Map([['ACCT', market('MKT', 1n, 1n, false, 0, null)]])))
             .toMatchObject({ bettable: false, canOpenMarket: false, status: 'active', chainStatus: null });
         // A terminal status is the word shown, whatever the deadline says.
         for (const chainStatus of ['executed', 'cancelled', 'expired']) {
             expect(entryOf(minted('a', 'ACCT', { chainStatus, deadline: LATER }), new Map([['ACCT', market('MKT', 1n, 1n, false, 0, chainStatus)]])))
-                .toMatchObject({ status: chainStatus, chainStatus, bettable: false, canOpenMarket: false });
+                .toMatchObject({ status: chainStatus, chainStatus, bettable: false, canOpenMarket: true });
         }
         // A resolved pool takes no bets.
         expect(entryOf(minted('a', 'ACCT'), new Map([['ACCT', market('MKT', 1n, 1n, true, 1)]])))
-            .toMatchObject({ bettable: false, market: { resolved: true, outcome: 'yes' } });
+            .toMatchObject({ bettable: false, markets: [{ resolved: true, outcome: 'yes' }] });
         expect(entryOf(minted('a', 'ACCT', { chainStatus: 'cancelled' }), new Map([['ACCT', market('MKT', 1n, 1n, true, 0, 'cancelled')]])))
-            .toMatchObject({ market: { resolved: true, outcome: 'no' } });
+            .toMatchObject({ markets: [{ resolved: true, outcome: 'no' }] });
     });
 
     it('never reports a chain status for an unminted agreement', () => {
@@ -261,7 +260,7 @@ describe('buildContests', () => {
     it('serializes pools as decimal strings so the JSON never loses a u64', () => {
         const big = (1n << 63n) + 7n;
         const out = buildContests({ city: 'zagreb', now: NOW, agreements: [minted('a', 'ACCT')], markets: new Map([['ACCT', market('MKT', big, 1n)]]) });
-        expect(out.contests[0].agreements[0].market.qYes).toBe(big.toString());
+        expect(out.contests[0].agreements[0].markets[0].qYes).toBe(big.toString());
         expect(out.contests[0].sharesAtomic).toBe((big + 1n).toString());
         expect(out.summary.sharesAtomic).toBe((big + 1n).toString());
         expect(() => JSON.stringify(out)).not.toThrow();
@@ -291,23 +290,22 @@ describe('row order inside a contest and of contests (the Bets sheet\'s order)',
             [accounts[1], market('M1', 9_000_000n, 0n, true, 1, 'executed')],
             [accounts[2], market('M2', 1_000_000n, 1_000_000n, true, 0, 'expired')],
             [accounts[3], market('M3', 0n, 500_000n, true, 0, 'cancelled')],
-            [accounts[4], market('M4', 10_000n, 0n, false, 0, 'active', null)],
-            [accounts[5], market('M5', 1n, 0n, false, 0, 'active', LATER)],
+            [accounts[4], market('M4', 10_000n, 0n, false, 0, 'active', null, 50_000_000n)],
+            [accounts[5], market('M5', 1n, 0n, false, 0, 'active', LATER, 200_000_000n)],
             [accounts[6], market('M6', 0n, 0n, false, 0, 'active', SOON)],
-            [accounts[7], { address: 'M7', market: null }],
+            [accounts[7], { chainStatus: 'active', deadline: null, markets: [] }],
             [accounts[8], market('M8', 25_000n, 25_000n, false, 0, 'cancelled', null)]
         ])
     });
 
-    it('puts rows in play first, the soonest deadline leading, and settled pools after them however big', () => {
+    it('ranks tradeable markets by funded liquidity even when a shallower market closes sooner', () => {
         const [contest] = buildContests(input()).contests;
         expect(cidsOf(contest)).toEqual([
-            'open-soon', 'open-late', 'settling',               // dated cutoff first; an undated terminal still needs settlement
-            'settled-bigger', 'settled-big', 'settled-mid', 'settled-small', // resolved rows
-            'open-undated', 'not-minted', 'needs-market'        // unavailable/closed rows, share count then newest first
+            'open-late', 'open-soon', 'open-undated', 'settling', 'needs-market',
+            'settled-bigger', 'settled-big', 'settled-mid', 'settled-small', 'not-minted'
         ]);
-        expect(contest.agreements[0]).toMatchObject({ bettable: true, deadline: SOON });
-        expect(contest).toMatchObject({ agreementCount: 10, mintedCount: 9, marketCount: 8, openMarketCount: 2 });
+        expect(contest.agreements[0]).toMatchObject({ bettable: true, deadline: LATER });
+        expect(contest).toMatchObject({ agreementCount: 10, mintedCount: 9, marketCount: 8, openMarketCount: 3 });
     });
 
     it('comes out in the same order from any arrival order', () => {

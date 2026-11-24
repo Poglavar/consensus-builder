@@ -70,6 +70,7 @@ import { setupBetsPointsRoutes } from './routes/bets-points.js';
 import { setupCityTokenRoutes } from './routes/city-token.js';
 import { createAgreementMarketSource } from './markets/agreement-source.js';
 import { setupLmsrRecipesRoute } from './routes/lmsr-recipes.js';
+import { setupMarketRecipesRoute } from './routes/market-recipes.js';
 import { isAgentPath } from './utils/x402-payment.js';
 import { setupRoadCorridorRoute } from './routes/road-corridor.js';
 import { setupCityStatsRoute } from './routes/city-stats.js';
@@ -501,6 +502,7 @@ export function createApp({
     setupBetsPointsRoutes(app, activePool, { readAgreement: createAgreementMarketSource(activePool, { env }) });
     setupCityTokenRoutes(app, activePool, { readAgreement: createAgreementMarketSource(activePool, { env }) });
     setupLmsrRecipesRoute(app, activePool, { env });
+    setupMarketRecipesRoute(app);
     setupBetsShareRoute(app, activePool, { env }); // /bets/<account> must follow the named /bets/metrics route
     setupRoadCorridorRoute(app, activePool);
     setupCityStatsRoute(app, activePool);

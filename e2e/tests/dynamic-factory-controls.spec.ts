@@ -37,7 +37,8 @@ async function prepareWinningsPage(page: import('@playwright/test').Page, side: 
     const proposalKey = new web3.PublicKey(account);
     const walletKey = new web3.PublicKey(wallet);
     const mintKey = new web3.PublicKey('4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU');
-    const [marketPda] = client.getMarketPda(proposalKey, walletKey);
+    const closesAt = Math.floor(Date.parse('2026-12-31T00:00:00.000Z') / 1000);
+    const [marketPda] = client.getMarketPda(proposalKey, walletKey, { stakeMint: mintKey, b: 100_000_000n, closesAt });
     const sideValue = side === 'yes' ? client.constants.SIDE_YES : client.constants.SIDE_NO;
     const [position] = client.getPositionPda(marketPda, walletKey, sideValue);
     const marketBytes = new Uint8Array(client.MARKET_SIZE);
@@ -53,7 +54,7 @@ async function prepareWinningsPage(page: import('@playwright/test').Page, side: 
     put(proposalKey.toBytes()); put(walletKey.toBytes()); put(mintKey.toBytes());
     put(client.getVaultAddress(marketPda, mintKey).toBytes());
     writeU64(100_000_000n); writeU64(250_000n); writeU64(50_000n); writeU64(w.Lmsr.maxLoss(100_000_000n));
-    writeU64(BigInt(Math.floor(Date.parse('2026-12-31T00:00:00.000Z') / 1000)));
+    writeU64(BigInt(closesAt));
     put(new Uint8Array(4)); writeU64(0n); // zero grace and no position cap
     put(new Uint8Array(224)); // recipe/evidence identity fields are unused for an agreement market
     put(Uint8Array.of(1, side === 'yes' ? 1 : 0)); // resolved, outcome
@@ -108,7 +109,9 @@ async function prepareWinningsPage(page: import('@playwright/test').Page, side: 
     w.SolanaChainDataLoader.getConnection = () => connection;
     return marketPda.toBase58();
   }, { account: BET_ACCOUNT, wallet: BET_WALLET, side });
-  pageIndex(page).markets.get(BET_ACCOUNT)!.address = marketAddress;
+  const pool = pageIndex(page).markets.get(BET_ACCOUNT);
+  if (!pool || Array.isArray(pool)) throw new Error('The claim fixture must contain exactly one settled market.');
+  pool.address = marketAddress;
   await installAgreementAccount(page, { account: BET_ACCOUNT, sponsor: BET_WALLET, status: side === 'yes' ? 1 : 3 });
 }
 

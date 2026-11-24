@@ -6,7 +6,7 @@
 // instructions are declared in lib.rs's #[program] module and delegate to the handlers here.
 
 use anchor_lang::prelude::*;
-use anchor_lang::solana_program::hash::hash;
+use anchor_lang::solana_program::hash::{hash, hashv};
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
 use sas_attestation::{PayloadReader, SasError};
@@ -17,8 +17,9 @@ use crate::{
     SIDE_NO, SIDE_YES, STATUS_ACTIVE, STATUS_CANCELLED, STATUS_EXECUTED, STATUS_EXPIRED,
 };
 
-/// LmsrMarket PDA: ["lmsr", agreement, creator] for kind 0, ["lmsr_recipe", recipe_hash,
-/// creator] for kind 1.
+/// LmsrMarket PDA: ["lmsr", agreement, creator, stake_mint, b LE, closes_at LE,
+/// grace_seconds LE, max_position LE] for kind 0. Kind 1 starts with
+/// ["lmsr_recipe", recipe_hash, creator] and appends the same terms and external identity hash.
 pub const LMSR_SEED: &[u8] = b"lmsr";
 /// Kind 1 market PDAs use a separate namespace and bind the creator.
 pub const LMSR_RECIPE_SEED: &[u8] = b"lmsr_recipe";
@@ -41,6 +42,27 @@ pub const MAX_EVIDENCE: usize = 2;
 /// the last challenge that changed it (48 hours). Long enough for a holder of the losing side to
 /// notice and submit an attestation the resolver left out; claims wait for finalization.
 pub const CHALLENGE_SECONDS: i64 = 48 * 60 * 60;
+
+fn external_identity_seed(
+    subject_hash: &[u8; 32],
+    yes_value_hash: &[u8; 32],
+    no_value_hash: &[u8; 32],
+    trusted_attester: &Pubkey,
+    credential: &Pubkey,
+    schema: &Pubkey,
+    proposal: &Pubkey,
+) -> [u8; 32] {
+    hashv(&[
+        subject_hash,
+        yes_value_hash,
+        no_value_hash,
+        trusted_attester.as_ref(),
+        credential.as_ref(),
+        schema.as_ref(),
+        proposal.as_ref(),
+    ])
+    .to_bytes()
+}
 
 #[account]
 #[derive(InitSpace)]
@@ -226,11 +248,21 @@ fn pay_from_vault<'info>(
     amount: u64,
 ) -> Result<()> {
     let bump = [market.bump];
+    let b = market.b.to_le_bytes();
+    let closes_at = market.closes_at.to_le_bytes();
+    let grace_seconds = market.grace_seconds.to_le_bytes();
+    let max_position = market.max_position.to_le_bytes();
+    let identity_seed = external_identity_seed(
+        &market.subject_hash, &market.yes_value_hash, &market.no_value_hash,
+        &market.trusted_attester, &market.credential, &market.schema, &market.proposal,
+    );
     let identity = market.seed_key();
     let seeds: &[&[u8]] = if market.kind == KIND_PROPOSAL {
-        &[LMSR_SEED, identity.as_ref(), market.creator.as_ref(), &bump]
+        &[LMSR_SEED, identity.as_ref(), market.creator.as_ref(), market.stake_mint.as_ref(),
+          &b, &closes_at, &grace_seconds, &max_position, &bump]
     } else {
-        &[LMSR_RECIPE_SEED, identity.as_ref(), market.creator.as_ref(), &bump]
+        &[LMSR_RECIPE_SEED, identity.as_ref(), market.creator.as_ref(), market.stake_mint.as_ref(),
+          &b, &closes_at, &grace_seconds, &max_position, &identity_seed, &bump]
     };
     token::transfer(
         CpiContext::new_with_signer(
@@ -328,6 +360,8 @@ pub(crate) fn handle_create_lmsr_external_market(
     yes_value_hash: [u8; 32],
     no_value_hash: [u8; 32],
     trusted_attester: Pubkey,
+    proposal: Pubkey,
+    identity_seed: [u8; 32],
     b: u64,
     closes_at: i64,
     grace_seconds: u32,
@@ -343,14 +377,23 @@ pub(crate) fn handle_create_lmsr_external_market(
     // Optional remaining account 0, as in create_external_market: an agreement whose lens must be
     // the attester. Unlike ExternalMarket the binding is stored, because buy and sell read the
     // agreement's sponsor and lens from it to bar insiders.
-    let proposal = match ctx.remaining_accounts.first() {
+    let bound_proposal = match ctx.remaining_accounts.first() {
         Some(subject) => {
+            require_keys_eq!(subject.key(), proposal, MarketError::InvalidProposalAccount);
             let view = read_subject(subject, None)?;
             require_keys_eq!(view.lens, trusted_attester, MarketError::AttesterNotInProposalLens);
             subject.key()
         }
-        None => Pubkey::default(),
+        None => {
+            require_keys_eq!(proposal, Pubkey::default(), MarketError::InvalidProposalAccount);
+            Pubkey::default()
+        }
     };
+    let expected_identity = external_identity_seed(
+        &subject_hash, &yes_value_hash, &no_value_hash, &trusted_attester,
+        &ctx.accounts.credential.key(), &ctx.accounts.schema.key(), &bound_proposal,
+    );
+    require!(identity_seed == expected_identity, MarketError::InvalidProposalAccount);
     deposit_seed(
         &ctx.accounts.creator_token_account,
         &ctx.accounts.vault,
@@ -361,7 +404,7 @@ pub(crate) fn handle_create_lmsr_external_market(
 
     let market = &mut ctx.accounts.market;
     market.kind = KIND_RECIPE;
-    market.proposal = proposal;
+    market.proposal = bound_proposal;
     market.creator = ctx.accounts.creator.key();
     market.stake_mint = ctx.accounts.stake_mint.key();
     market.vault = ctx.accounts.vault.key();
@@ -777,12 +820,13 @@ pub(crate) fn handle_reclaim_seed(ctx: Context<ReclaimSeed>) -> Result<()> {
 }
 
 #[derive(Accounts)]
+#[instruction(b: u64, closes_at: i64, grace_seconds: u32, max_position: u64)]
 pub struct CreateLmsrMarket<'info> {
     #[account(
         init,
         payer = creator,
         space = 8 + LmsrMarket::INIT_SPACE,
-        seeds = [LMSR_SEED, proposal.key().as_ref(), creator.key().as_ref()],
+        seeds = [LMSR_SEED, proposal.key().as_ref(), creator.key().as_ref(), stake_mint.key().as_ref(), &b.to_le_bytes(), &closes_at.to_le_bytes(), &grace_seconds.to_le_bytes(), &max_position.to_le_bytes()],
         bump
     )]
     pub market: Box<Account<'info, LmsrMarket>>,
@@ -809,13 +853,13 @@ pub struct CreateLmsrMarket<'info> {
 }
 
 #[derive(Accounts)]
-#[instruction(recipe_hash: [u8; 32])]
+#[instruction(recipe_hash: [u8; 32], subject_hash: [u8; 32], yes_value_hash: [u8; 32], no_value_hash: [u8; 32], trusted_attester: Pubkey, proposal: Pubkey, identity_seed: [u8; 32], b: u64, closes_at: i64, grace_seconds: u32, max_position: u64)]
 pub struct CreateLmsrExternalMarket<'info> {
     #[account(
         init,
         payer = creator,
         space = 8 + LmsrMarket::INIT_SPACE,
-        seeds = [LMSR_RECIPE_SEED, recipe_hash.as_ref(), creator.key().as_ref()],
+        seeds = [LMSR_RECIPE_SEED, recipe_hash.as_ref(), creator.key().as_ref(), stake_mint.key().as_ref(), &b.to_le_bytes(), &closes_at.to_le_bytes(), &grace_seconds.to_le_bytes(), &max_position.to_le_bytes(), identity_seed.as_ref()],
         bump
     )]
     pub market: Box<Account<'info, LmsrMarket>>,

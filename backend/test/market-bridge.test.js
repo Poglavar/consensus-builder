@@ -7,6 +7,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
 const lmsr = require('../../frontend/js/bets/lmsr.js');
+const codec = require('../../frontend/js/solana/lmsr-client.js').configure({ web3 });
 const bridgeSource = fs.readFileSync(new URL('../../frontend/js/solana/market-bridge.js', import.meta.url), 'utf8');
 const USDC = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 const programId = new web3.PublicKey('GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB');
@@ -23,7 +24,7 @@ function setup(options = {}) {
     const wallet = options.wallet || web3.Keypair.generate().publicKey;
     const lens = options.lens || web3.Keypair.generate().publicKey;
     const mint = new web3.PublicKey(USDC);
-    const marketAddress = web3.PublicKey.findProgramAddressSync([Buffer.from('lmsr'), proposal.toBuffer(), sponsor.toBuffer()], programId)[0];
+    const marketAddress = codec.getMarketPda(proposal, sponsor, { stakeMint: mint, b: 100_000_000n, closesAt: options.deadline ?? 1_900_000_000 })[0];
     const traderAta = web3.PublicKey.findProgramAddressSync([wallet.toBuffer(), tokenProgram.toBuffer(), mint.toBuffer()], associatedTokenProgram)[0];
     const sponsorAta = web3.PublicKey.findProgramAddressSync([sponsor.toBuffer(), tokenProgram.toBuffer(), mint.toBuffer()], associatedTokenProgram)[0];
     const agreement = { authority: sponsor.toBase58(), lens: lens.toBase58(), cid: 'bafkreiabc', status: options.status || 'Active',
@@ -36,13 +37,12 @@ function setup(options = {}) {
     };
     const client = {
         constants: { SIDE_NO: 0, SIDE_YES: 1, OUTCOME_VOID: 2, KIND_PROPOSAL: 0, ASSOCIATED_TOKEN_PROGRAM_ID: associatedTokenProgram.toBase58(), TOKEN_PROGRAM_ID: tokenProgram.toBase58() },
-        getMarketPda: vi.fn((subject, creator) => [web3.PublicKey.findProgramAddressSync([Buffer.from('lmsr'), new web3.PublicKey(subject).toBuffer(), new web3.PublicKey(creator).toBuffer()], programId)[0]]),
         getPositionPda: vi.fn((market, owner, side) => [web3.PublicKey.findProgramAddressSync([Buffer.from('lmsr_position'), new web3.PublicKey(market).toBuffer(), new web3.PublicKey(owner).toBuffer(), Buffer.from([side])], programId)[0]]),
         getAssociatedTokenAddress: vi.fn((owner, tokenMint) => web3.PublicKey.findProgramAddressSync([new web3.PublicKey(owner).toBuffer(), tokenProgram.toBuffer(), new web3.PublicKey(tokenMint).toBuffer()], associatedTokenProgram)[0]),
         readMarket: vi.fn(async (_connection, address) => new web3.PublicKey(address).equals(marketAddress) ? rawMarket : null),
         readPosition: vi.fn(async (_connection, _market, _owner, side) => options.positions?.[side] ?? null),
         readPositionAccount: vi.fn(info => info.data),
-        buildCreateLmsrMarketIx: vi.fn(args => ({ kind: 'create-lmsr', args })),
+        buildCreateLmsrMarketIx: vi.fn(args => ({ kind: 'create-lmsr', keys: codec.buildCreateLmsrMarketIx(args).keys, args })),
         buildBuyIx: vi.fn(args => ({ kind: 'buy', args })),
         buildSellIx: vi.fn(args => ({ kind: 'sell', args })),
         buildResolveLmsrIx: vi.fn(args => ({ kind: 'resolve', args })),
@@ -92,102 +92,59 @@ afterEach(() => vi.restoreAllMocks());
 describe('Solana LMSR market bridge', () => {
     it('summarizes the verified sponsor-bound LMSR market and exposes live agreement state without a market', async () => {
         const ctx = setup();
-        await expect(ctx.bridge.readSummary(ctx.proposal)).resolves.toMatchObject({
-            market: { address: ctx.marketAddress.toBase58(), model: 'lmsr', asset: 'devnet-usdc', b: '100000000',
-                qYes: '12000000', qNo: '9000000', seed: '69314720', maxPosition: '0', paidOut: '1000',
-                closesAt: 1_900_000_000, graceSeconds: 0, resolved: false, outcome: null, creator: ctx.sponsor.toBase58() },
-            marketAddress: ctx.marketAddress.toBase58(), sponsor: ctx.sponsor.toBase58(), chainStatus: 'active',
-            deadline: '2030-03-17T17:46:40.000Z', wallet: ctx.wallet.toBase58()
-        });
-        expect(ctx.client.getMarketPda).toHaveBeenCalledWith(ctx.proposal, ctx.sponsor.toBase58());
-        expect(ctx.client.readMarket).toHaveBeenCalledWith(ctx.connection, ctx.marketAddress, undefined);
+        const summary = await ctx.bridge.readSummary(ctx.proposal, { marketAddress: ctx.marketAddress });
+        expect(summary.market).toMatchObject({ address: ctx.marketAddress.toBase58(), b: '100000000', creatorRole: 'sponsor' });
         expect(ctx.client.readPosition).toHaveBeenCalledTimes(2);
-        expect(ctx.window.SolanaChainDataLoader.getVerifiedConnection).toHaveBeenCalledWith('devnet');
-
-        const noMarket = setup({ market: null, deadline: 0 });
-        await expect(noMarket.bridge.readSummary(noMarket.proposal)).resolves.toMatchObject({
-            market: null, marketAddress: noMarket.marketAddress.toBase58(), chainStatus: 'active', deadline: null
-        });
-        await expect(noMarket.bridge.readAgreementState(noMarket.proposal)).resolves.toMatchObject({
-            sponsor: noMarket.sponsor.toBase58(), lens: noMarket.lens.toBase58(), chainStatus: 'active', deadline: null,
-            cid: 'bafkreiabc', executedAt: 0
-        });
-
-        const wrong = setup({ market: null });
-        wrong.client.readMarket.mockResolvedValue({ ...wrong.rawMarket, creator: wrong.wallet.toBase58() });
-        await expect(wrong.bridge.readSummary(wrong.proposal)).rejects.toThrow(/canonical agreement market terms/);
-
-        // New markets carry b = 5 devnet USDC; the fixture above is a b = 100 market opened before 2026-10-30.
-        const current = setup();
-        current.client.readMarket.mockResolvedValue({ ...current.rawMarket, b: 5_000_000n, seed: 3_465_737n });
-        await expect(current.bridge.readSummary(current.proposal)).resolves.toMatchObject({ market: { b: '5000000', seed: '3465737' } });
-        const odd = setup();
-        odd.client.readMarket.mockResolvedValue({ ...odd.rawMarket, b: 7_000_000n, seed: 4_852_032n });
-        await expect(odd.bridge.readSummary(odd.proposal)).rejects.toThrow(/canonical agreement market terms/);
+        expect((await ctx.bridge.readSummary(ctx.proposal)).marketAddress).toBeNull();
+        await expect(ctx.bridge.readSummary(ctx.proposal, { marketAddress: ctx.wallet })).rejects.toThrow(/not found/);
+        ctx.client.readMarket.mockResolvedValue({ ...ctx.rawMarket, proposal: ctx.wallet.toBase58() });
+        await expect(ctx.bridge.readSummary(ctx.proposal, { marketAddress: ctx.marketAddress })).rejects.toThrow(/does not match/);
     });
 
-    it('batches strict positions from {account,sponsor,marketAddress} rows and rejects noncanonical addresses', async () => {
-        const position = { market: 'm', owner: 'w', side: 1, amount: 200n, claimed: false };
-        const ctx = setup({ multipleAccounts: [{ data: position }, null] });
-        const rows = [{ account: ctx.proposal, sponsor: ctx.sponsor, marketAddress: ctx.marketAddress }];
-        await expect(ctx.bridge.readPositions(rows)).resolves.toMatchObject({
-            [ctx.proposal.toBase58()]: { yes: position, no: null }
-        });
-        expect(ctx.connection.getMultipleAccountsInfo).toHaveBeenCalledTimes(1);
-        expect(ctx.client.readPositionAccount).toHaveBeenCalledTimes(1);
-        await expect(ctx.bridge.readPositions([{ ...rows[0], marketAddress: ctx.wallet }])).rejects.toThrow(/not canonical/);
-        await expect(ctx.bridge.readPositions([{ account: ctx.proposal, sponsor: ctx.sponsor }])).rejects.toThrow(/needs account, sponsor, and marketAddress/);
+    it('keys wallet positions by market and requires a market address', async () => {
+        const position = { amount: 200n, claimed: false };
+        const ctx = setup({ multipleAccounts: [{ data: position }, null, null, null] });
+        const other = web3.Keypair.generate().publicKey;
+        const result = await ctx.bridge.readPositions([ctx.marketAddress, other].map(marketAddress => ({ account: ctx.proposal, marketAddress })));
+        expect(result).toEqual({ [ctx.marketAddress]: { yes: position, no: null }, [other]: { yes: null, no: null } });
+        await expect(ctx.bridge.readPositions([{ account: ctx.proposal }])).rejects.toThrow(/marketAddress/);
     });
 
-    it('creates only for the sponsor with a future Active deadline and enough USDC seed plus SOL', async () => {
-        const ctx = setup({ wallet: undefined, market: null, sponsorAtaExists: true, sponsorBalance: '70000000' });
-        // The sponsor is also the connected wallet in this isolated creation scenario.
-        ctx.window.solanaWalletManager.getProvider = () => ({ ...ctx.provider, publicKey: ctx.sponsor });
-        const statuses = [];
-        const result = await ctx.bridge.createMarket({ proposal: ctx.proposal, onStatus: item => statuses.push(item.state) });
-        expect(ctx.client.buildCreateLmsrMarketIx).toHaveBeenCalledWith({
-            proposal: ctx.proposal, creator: ctx.sponsor.toBase58(), stakeMint: USDC, b: 5_000_000n,
-            closesAt: 1_900_000_000, graceSeconds: 0, maxPosition: 0n, programId: undefined
-        });
-        expect(result.transactionHash).toBe('tx-signature');
-        expect(statuses).toEqual(['preparing', 'awaiting_signature', 'submitted', 'confirmed']);
-
-        const notSponsor = setup();
-        await expect(notSponsor.bridge.createMarket({ proposal: notSponsor.proposal })).rejects.toMatchObject({ code: 'NOT_SPONSOR' });
-        expect(notSponsor.connection.getLatestBlockhash).not.toHaveBeenCalled();
-        const cutoff = setup({ wallet: undefined, now: 1_900_000_000 });
-        cutoff.window.solanaWalletManager.getProvider = () => ({ ...cutoff.provider, publicKey: cutoff.sponsor });
-        await expect(cutoff.bridge.createMarket({ proposal: cutoff.proposal })).rejects.toMatchObject({ code: 'INVALID_DEADLINE' });
-        const noAta = setup({ wallet: undefined, market: null, sponsorAtaExists: false });
-        noAta.window.solanaWalletManager.getProvider = () => ({ ...noAta.provider, publicKey: noAta.sponsor });
-        await expect(noAta.bridge.createMarket({ proposal: noAta.proposal })).rejects.toMatchObject({ code: 'INSUFFICIENT_USDC' });
-        const insufficientSeed = setup({ wallet: undefined, market: null, sponsorBalance: '100' });
-        insufficientSeed.window.solanaWalletManager.getProvider = () => ({ ...insufficientSeed.provider, publicKey: insufficientSeed.sponsor });
-        await expect(insufficientSeed.bridge.createMarket({ proposal: insufficientSeed.proposal })).rejects.toMatchObject({ code: 'INSUFFICIENT_USDC' });
-        const noSol = setup({ wallet: undefined, market: null, solBalance: 0 });
-        noSol.window.solanaWalletManager.getProvider = () => ({ ...noSol.provider, publicKey: noSol.sponsor });
-        await expect(noSol.bridge.createMarket({ proposal: noSol.proposal })).rejects.toMatchObject({ code: 'INSUFFICIENT_SOL' });
+    it('opens distinct chosen terms as an independent wallet and replays only the funded address', async () => {
+        const ctx = setup();
+        const args = { proposal: ctx.proposal, b: 7_000_000n, closesAt: 1_810_000_000 };
+        const first = await ctx.bridge.createMarket(args);
+        const second = await ctx.bridge.createMarket({ ...args, closesAt: args.closesAt + 1 });
+        expect(first.marketAddress).not.toBe(second.marketAddress);
+        expect(ctx.client.buildCreateLmsrMarketIx).toHaveBeenCalledWith(expect.objectContaining({
+            creator: ctx.wallet.toBase58(), b: args.b, closesAt: args.closesAt }));
+        ctx.client.readMarket.mockResolvedValue({ ...ctx.rawMarket, creator: ctx.wallet.toBase58(), b: args.b, closesAt: BigInt(args.closesAt), seed: lmsr.maxLoss(args.b) });
+        await expect(ctx.bridge.createMarket(args)).resolves.toMatchObject({ replayed: true, marketAddress: first.marketAddress });
+        expect(ctx.provider.signTransaction).toHaveBeenCalledTimes(2);
+        const poor = setup({ tokenBalance: '1' });
+        await expect(poor.bridge.createMarket({ proposal: poor.proposal, b: args.b })).rejects.toMatchObject({ code: 'INSUFFICIENT_USDC' });
+        expect(poor.provider.signTransaction).not.toHaveBeenCalled();
     });
 
     it('preflights buy maxCost and sell minReturn without changing the caller quote or ignoring the deadline', async () => {
         const ctx = setup({ positions: { 1: { amount: 50n, claimed: false } } });
         const statuses = [];
-        await ctx.bridge.buy({ proposal: ctx.proposal, side: 1, shares: 7n, maxCost: 900n, onStatus: item => statuses.push(item.state) });
+        await ctx.bridge.buy({ proposal: ctx.proposal, marketAddress: ctx.marketAddress, side: 1, shares: 7n, maxCost: 900n, onStatus: item => statuses.push(item.state) });
         expect(ctx.client.buildBuyIx).toHaveBeenCalledWith({ market: ctx.marketAddress, proposal: ctx.proposal, owner: ctx.wallet,
             stakeMint: USDC, side: 1, shares: 7n, maxCost: 900n, programId: undefined });
         expect(statuses).toEqual(['preparing', 'awaiting_signature', 'submitted', 'confirmed']);
 
-        await ctx.bridge.sell({ proposal: ctx.proposal, side: 1, shares: 20n, minReturn: 440n });
+        await ctx.bridge.sell({ proposal: ctx.proposal, marketAddress: ctx.marketAddress, side: 1, shares: 20n, minReturn: 440n });
         expect(ctx.client.buildSellIx).toHaveBeenCalledWith({ market: ctx.marketAddress, proposal: ctx.proposal, owner: ctx.wallet,
             stakeMint: USDC, side: 1, shares: 20n, minReturn: 440n, programId: undefined });
         const balanceFailure = setup({ tokenBalance: '10' });
-        await expect(balanceFailure.bridge.buy({ proposal: balanceFailure.proposal, side: 1, shares: 7n, maxCost: 11n })).rejects.toMatchObject({ code: 'INSUFFICIENT_USDC' });
+        await expect(balanceFailure.bridge.buy({ proposal: balanceFailure.proposal, marketAddress: balanceFailure.marketAddress, side: 1, shares: 7n, maxCost: 11n })).rejects.toMatchObject({ code: 'INSUFFICIENT_USDC' });
         const noPosition = setup({ positions: { 1: { amount: 2n } } });
-        await expect(noPosition.bridge.sell({ proposal: noPosition.proposal, side: 1, shares: 3n, minReturn: 1n })).rejects.toThrow(/enough shares/);
+        await expect(noPosition.bridge.sell({ proposal: noPosition.proposal, marketAddress: noPosition.marketAddress, side: 1, shares: 3n, minReturn: 1n })).rejects.toThrow(/enough shares/);
         const cutoff = setup({ now: 1_900_000_000 });
-        await expect(cutoff.bridge.buy({ proposal: cutoff.proposal, side: 1, shares: 1n, maxCost: 1n })).rejects.toMatchObject({ code: 'MARKET_CLOSED' });
+        await expect(cutoff.bridge.buy({ proposal: cutoff.proposal, marketAddress: cutoff.marketAddress, side: 1, shares: 1n, maxCost: 1n })).rejects.toMatchObject({ code: 'MARKET_CLOSED' });
         expect(cutoff.client.buildBuyIx).not.toHaveBeenCalled();
-        await expect(setup({ cluster: 'mainnet-beta' }).bridge.buy({ proposal: ctx.proposal, side: 1, shares: 1n, maxCost: 1n })).rejects.toMatchObject({ code: 'WRONG_NETWORK' });
+        await expect(setup({ cluster: 'mainnet-beta' }).bridge.buy({ proposal: ctx.proposal, marketAddress: ctx.marketAddress, side: 1, shares: 1n, maxCost: 1n })).rejects.toMatchObject({ code: 'WRONG_NETWORK' });
     });
 
     it('returns zero only for a missing ATA and propagates token RPC errors', async () => {
@@ -201,12 +158,12 @@ describe('Solana LMSR market bridge', () => {
 
     it('resolves and claims VOID positions, creating a missing recipient ATA idempotently', async () => {
         const resolve = setup();
-        await resolve.bridge.resolve({ proposal: resolve.proposal });
-        expect(resolve.client.buildResolveLmsrIx).toHaveBeenCalledWith({ market: resolve.marketAddress, proposal: resolve.proposal,
+        await resolve.bridge.resolve({ proposal: resolve.proposal, marketAddress: resolve.marketAddress });
+        expect(resolve.client.buildResolveLmsrIx).toHaveBeenCalledWith({ market: resolve.marketAddress, proposal: resolve.proposal, evidence: [],
             schema: web3.SystemProgram.programId, programId: undefined });
 
         const claim = setup({ resolved: true, outcome: 2, traderAtaExists: false, positions: { 0: { amount: 5n, claimed: false } } });
-        const result = await claim.bridge.claim({ proposal: claim.proposal, side: 0 });
+        const result = await claim.bridge.claim({ proposal: claim.proposal, marketAddress: claim.marketAddress, side: 0 });
         expect(claim.client.buildClaimLmsrIx).toHaveBeenCalledWith({ market: claim.marketAddress, owner: claim.wallet, stakeMint: USDC, side: 0, programId: undefined });
         const instructions = claim.calls[0][1].instructions;
         expect(instructions.map(instruction => instruction.kind)).toEqual([undefined, 'claim']);
@@ -215,17 +172,17 @@ describe('Solana LMSR market bridge', () => {
         expect(result.transactionHash).toBe('tx-signature');
 
         const noPay = setup({ resolved: true, outcome: 2, positions: { 0: { amount: 1n, claimed: false } } });
-        await expect(noPay.bridge.claim({ proposal: noPay.proposal, side: 0 })).rejects.toThrow(/no payable claim/);
+        await expect(noPay.bridge.claim({ proposal: noPay.proposal, marketAddress: noPay.marketAddress, side: 0 })).rejects.toThrow(/no payable claim/);
         const loser = setup({ resolved: true, outcome: 1, positions: { 0: { amount: 100n, claimed: false } } });
-        await expect(loser.bridge.claim({ proposal: loser.proposal, side: 0 })).rejects.toThrow(/no payable claim/);
+        await expect(loser.bridge.claim({ proposal: loser.proposal, marketAddress: loser.marketAddress, side: 0 })).rejects.toThrow(/no payable claim/);
         const already = setup({ resolved: true, outcome: 0, positions: { 0: { amount: 100n, claimed: true } } });
-        await expect(already.bridge.claim({ proposal: already.proposal, side: 0 })).rejects.toThrow(/no claimable position/);
+        await expect(already.bridge.claim({ proposal: already.proposal, marketAddress: already.marketAddress, side: 0 })).rejects.toThrow(/no claimable position/);
     });
 
     it('keeps confirmation timeout as unknown after successful submit', async () => {
         const ctx = setup({ confirmError: new Error('timed out') });
         const states = [];
-        await expect(ctx.bridge.buy({ proposal: ctx.proposal, side: 1, shares: 2n, maxCost: 5n, onStatus: item => states.push(item.state) }))
+        await expect(ctx.bridge.buy({ proposal: ctx.proposal, marketAddress: ctx.marketAddress, side: 1, shares: 2n, maxCost: 5n, onStatus: item => states.push(item.state) }))
             .rejects.toMatchObject({ code: 'CONFIRMATION_UNKNOWN', transactionHash: 'tx-signature' });
         expect(states).toEqual(['preparing', 'awaiting_signature', 'submitted']);
         expect(ctx.provider.signTransaction).toHaveBeenCalledTimes(1);
@@ -234,12 +191,12 @@ describe('Solana LMSR market bridge', () => {
     it('reports stale quotes before signing and lost send acknowledgements as uncertain', async () => {
         const stale = setup({ simulation: { value: { err: { InstructionError: [0, { Custom: 6031 }] },
             logs: ['Program log: AnchorError. Error Code: CostExceedsMax. Error Number: 6031.'] } } });
-        await expect(stale.bridge.buy({ proposal: stale.proposal, side: 1, shares: 2n, maxCost: 5n }))
+        await expect(stale.bridge.buy({ proposal: stale.proposal, marketAddress: stale.marketAddress, side: 1, shares: 2n, maxCost: 5n }))
             .rejects.toMatchObject({ code: 'STALE_QUOTE' });
         expect(stale.provider.signTransaction).not.toHaveBeenCalled();
         const lost = setup();
         lost.connection.sendRawTransaction.mockRejectedValue(new Error('connection lost'));
-        await expect(lost.bridge.buy({ proposal: lost.proposal, side: 1, shares: 2n, maxCost: 5n }))
+        await expect(lost.bridge.buy({ proposal: lost.proposal, marketAddress: lost.marketAddress, side: 1, shares: 2n, maxCost: 5n }))
             .rejects.toMatchObject({ code: 'CONFIRMATION_UNKNOWN' });
         expect(lost.provider.signTransaction).toHaveBeenCalledTimes(1);
     });

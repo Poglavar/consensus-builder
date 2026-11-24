@@ -25,10 +25,10 @@ function row(overrides = {}) {
     };
 }
 
-function appFor({ rows = [row()], env = {}, query } = {}) {
+function appFor({ rows = [row()], env = {}, query, readMarket } = {}) {
     const app = express();
     const pool = { query: vi.fn(query || (async (_sql, params) => ({ rows: params[0] === ACCOUNT ? rows : [] }))) };
-    setupBetsShareRoute(app, pool, { env });
+    setupBetsShareRoute(app, pool, { env, readMarket });
     return { app, pool };
 }
 
@@ -84,6 +84,19 @@ describe('GET /bets/:account', () => {
         expect(meta(single.text, 'og:image')).toBe('https://api.urbangametheory.xyz/uploads/images/t.png');
         const absolute = await request(appFor({ rows: [row({ screenshot_url: 'https://cdn.example/image.png' })] }).app).get(`/bets/${ACCOUNT}`);
         expect(meta(absolute.text, 'og:image')).toBe('https://cdn.example/image.png');
+    });
+
+    it('keeps the selected book, its own cutoff and its asset in the preview and redirect', async () => {
+        const book = { kind: 0, proposal: ACCOUNT, stakeMint: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU', closesAt: Date.parse('2027-04-01T00:00:00Z') / 1000 };
+        const readMarket = vi.fn(async () => book);
+        const { app } = appFor({ readMarket });
+        const res = await request(app).get(`/bets/${ACCOUNT}?city=zg&market=${OTHER}&asset=points`).expect(200);
+        expect(readMarket).toHaveBeenCalledWith(OTHER);
+        expect(meta(res.text, 'og:title')).toContain('2027-04-01');
+        expect(meta(res.text, 'og:url')).toContain(`market=${OTHER}&asset=devnet-usdc`);
+        expect(res.text).toContain(`bets=${ACCOUNT}&amp;market=${OTHER}`);
+        book.proposal = OTHER;
+        await request(app).get(`/bets/${ACCOUNT}?market=${OTHER}`).expect(404);
     });
 
     it('preserves selected asset, local backend override and simulation label in the app redirect', async () => {

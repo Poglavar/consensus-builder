@@ -134,34 +134,44 @@ export async function voidPledge({
 }
 
 export async function resolveAgreementMarket({
-    connection, resolverKeypair, subject,
+    connection, resolverKeypair, subject, marketAddress, evidence = [],
     sendAndConfirm = web3.sendAndConfirmTransaction
 } = {}) {
     if (!resolverKeypair?.publicKey) throw new Error('resolverKeypair is required');
-    const context = await readAgreementMarket(connection, subject);
+    const context = await readAgreementMarket(connection, subject, { marketAddress });
     const market = context.market;
-    if (!market) throw Object.assign(new Error('The sponsor has not opened the canonical agreement market.'), { code: 'MARKET_NOT_OPEN' });
-    const outcomeName = value => ['NO', 'YES', 'VOID'][Number(value)] || 'UNKNOWN';
+    if (!market) throw Object.assign(new Error('Selected market was not found.'), { code: 'MARKET_NOT_OPEN' });
+    const outcomeName = value => ['NO', 'YES', 'VOID'][Number(value)];
     if (market.resolved) return { replayed: true, signature: null, outcome: outcomeName(market.outcome) };
-    const signature = await sendInstruction(context.connection, lmsrClient.buildResolveLmsrIx({
-        market: context.address, proposal: subject, schema: market.schema
-    }), resolverKeypair, sendAndConfirm);
-    const resolved = (await readAgreementMarket(context.connection, subject)).market;
-    return {
-        replayed: false, signature,
-        outcome: outcomeName(resolved?.outcome)
-    };
+    if (!Array.isArray(evidence) || evidence.length > 2 || (market.kind === 0 && evidence.length)) throw new Error('Invalid evidence accounts for this market.');
+    const args = { market: context.address, proposal: subject, schema: market.schema, evidence };
+    let instruction;
+    if (!market.proposed) instruction = lmsrClient.buildResolveLmsrIx(args);
+    else {
+        const slot = await context.connection.getSlot('confirmed');
+        const time = await context.connection.getBlockTime(slot);
+        if (!Number.isSafeInteger(time)) throw new Error('Devnet block time is unavailable.');
+        if (time > Number(market.challengeEndsAt)) instruction = lmsrClient.buildFinalizeLmsrIx(args);
+        else {
+            if (evidence.length !== 1) throw new Error('Challenging an outcome requires one qualifying attestation.');
+            instruction = lmsrClient.buildChallengeLmsrIx({ ...args, evidence: evidence[0] });
+        }
+    }
+    const signature = await sendInstruction(context.connection, instruction, resolverKeypair, sendAndConfirm);
+    const updated = (await readAgreementMarket(context.connection, subject, { marketAddress: context.address })).market;
+    return { replayed: false, signature, outcome: updated?.resolved ? outcomeName(updated.outcome) : null,
+        ...(updated?.proposed ? { proposedOutcome: outcomeName(updated.outcome), challengeEndsAt: Number(updated.challengeEndsAt) } : {}) };
 }
 
 export async function claimAgreementMarket({
-    connection, claimerKeypair, subject, side,
+    connection, claimerKeypair, subject, marketAddress, side,
     sendAndConfirm = web3.sendAndConfirmTransaction
 } = {}) {
     if (!claimerKeypair?.publicKey) throw new Error('claimerKeypair is required');
     const sideText = String(side || '').toLowerCase();
     if (!['yes', 'no'].includes(sideText)) throw new Error('side must be yes or no');
     const normalizedSide = sideText === 'yes' ? lmsrClient.constants.SIDE_YES : lmsrClient.constants.SIDE_NO;
-    const context = await readAgreementMarket(connection, subject);
+    const context = await readAgreementMarket(connection, subject, { marketAddress });
     const market = context.market;
     if (!market?.resolved) throw new Error('agreement market is not resolved');
     const position = await lmsrClient.readPosition(context.connection, context.address, claimerKeypair.publicKey, normalizedSide);
@@ -200,11 +210,11 @@ async function vaultAtomic(connection, market) {
 
 /** The market's creator takes back what its resolved market's payouts leave of the LMSR seed. */
 export async function reclaimAgreementMarketSeed({
-    connection, creatorKeypair, subject,
+    connection, creatorKeypair, subject, marketAddress,
     sendAndConfirm = web3.sendAndConfirmTransaction
 } = {}) {
     if (!creatorKeypair?.publicKey) throw new Error('creatorKeypair is required');
-    const context = await readAgreementMarket(connection, subject);
+    const context = await readAgreementMarket(connection, subject, { marketAddress });
     const market = context.market;
     if (!market?.resolved) throw new Error('agreement market is not resolved');
     if (market.creator !== creatorKeypair.publicKey.toBase58()) throw new Error('signer is not the market creator');

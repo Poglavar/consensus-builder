@@ -7,7 +7,7 @@ import express from 'express';
 import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
 import * as web3 from '@solana/web3.js';
-import { AGREEMENTS_BY_ACCOUNT_SQL, AGREEMENTS_SQL, DESIGN_LAND_SQL, DEVNET_USDC_MINT, agreementByAccount, hasCanonicalMarketTerms, rowToAgreement, setupMarketsRoute } from '../routes/markets.js';
+import { AGREEMENTS_BY_ACCOUNT_SQL, AGREEMENTS_SQL, DESIGN_LAND_SQL, DEVNET_USDC_MINT, agreementByAccount, hasAgreementMarketTerms, rowToAgreement, setupMarketsRoute } from '../routes/markets.js';
 import { AGREEMENT_PROGRAM_ID, agreementAccountOf } from '../agreements/onchain.js';
 import { buildAgreementExecutionRecipe } from '../oracle/market-recipe.js';
 import { cidOfObject } from '../cid.js';
@@ -57,10 +57,10 @@ const poolFor = (agreementRows = rows(), sites = OVERLAPPING) => ({
 });
 // The agreement reads a pool saw (the design reads beside them are not what the cache saves).
 const agreementReads = pool => pool.query.mock.calls.filter(([sql]) => sql !== DESIGN_LAND_SQL);
-const openPool = () => new Map([[ACCOUNT, { address: MARKET, market: {
+const openPool = () => new Map([[ACCOUNT, { sponsor: SPONSOR, lens: STRANGER, chainStatus: 'active', deadline: '2026-12-31T00:00:00.000Z', markets: [{ address: MARKET, market: {
     b: 100_000_000n, qYes: 250000n, qNo: 0n, seed: 69_314_720n, closesAt: Math.floor(Date.parse('2026-12-31T00:00:00Z') / 1000),
     graceSeconds: 0, maxPosition: 0n, paidOut: 0n, creator: SPONSOR, resolved: false, outcome: 0
-} }]]);
+} }] }]]);
 
 function appFor({ pool, readMarkets, now } = {}) {
     const app = express();
@@ -96,11 +96,11 @@ describe('GET /markets', () => {
         expect(contest.agreements.map(entry => entry.cid)).toEqual([CID, RIVAL_CID]);
         expect(contest.agreements[0]).toMatchObject({
             cid: CID, account: ACCOUNT, title: 'Plan-led infill', designTitles: ['Six storeys'], status: 'active', chainStatus: 'active',
-            deadline: '2026-12-31T00:00:00.000Z', bettable: true, canOpenMarket: false,
-            market: { address: MARKET, model: 'lmsr', asset: 'devnet-usdc', creator: SPONSOR, b: '100000000', qYes: '250000', qNo: '0', seed: '69314720', closesAt: Math.floor(Date.parse('2026-12-31T00:00:00Z') / 1000), graceSeconds: 0, maxPosition: '0', paidOut: '0', resolved: false, outcome: null }
+            deadline: '2026-12-31T00:00:00.000Z', bettable: true, canOpenMarket: true,
+            markets: [{ address: MARKET, kind: 'agreement', model: 'lmsr', asset: 'devnet-usdc', creator: SPONSOR, creatorRole: 'sponsor', b: '100000000', qYes: '250000', qNo: '0', seed: '69314720', closesAt: Math.floor(Date.parse('2026-12-31T00:00:00Z') / 1000), graceSeconds: 0, maxPosition: '0', paidOut: '0', resolved: false, outcome: null, bettable: true, canSettle: false }]
         });
         // Proposed without a sponsor: never minted, so in the contest without a pool.
-        expect(contest.agreements[1]).toMatchObject({ cid: RIVAL_CID, account: null, chainStatus: null, market: null, bettable: false, canOpenMarket: false });
+        expect(contest.agreements[1]).toMatchObject({ cid: RIVAL_CID, account: null, chainStatus: null, markets: [], bettable: false, canOpenMarket: false });
         expect(res.headers['cache-control']).toBe('public, max-age=10');
     });
 
@@ -138,8 +138,10 @@ describe('GET /markets', () => {
     it('lets the account status the lifecycle oracle observed decide whether a bet is open', async () => {
         for (const [status, open] of [['active', true], ['executed', false], ['cancelled', false], ['expired', false]]) {
             const pool = poolFor(rows().map(row => (row.onchain ? { ...row, onchain: onchain({ status }) } : row)));
-            const res = await request(appFor({ pool })).get('/markets?city=zagreb');
-            expect(res.body.contests[0].agreements[0], status).toMatchObject({ chainStatus: status, status, bettable: open });
+            const res = await request(appFor({ pool, readMarkets: async () => new Map([[ACCOUNT, { ...openPool().get(ACCOUNT), chainStatus: status }]]) })).get('/markets?city=zagreb');
+            const entry = res.body.contests[0].agreements[0];
+            // The market read is authoritative for chain status; a terminal state cannot trade.
+            expect(entry, status).toMatchObject({ chainStatus: status, status, bettable: open });
         }
     });
 
@@ -327,21 +329,21 @@ describe('GET /oracle/recipes/agreement-execution-v1', () => {
 
 // 2026-10-30 new markets opened with b = 5 USDC while this check still required b = 100, so every city
 // holding one such market answered /markets with 502 and its Bets sheet stayed empty.
-describe('hasCanonicalMarketTerms', () => {
+describe('hasAgreementMarketTerms', () => {
     const lmsr = require('../../frontend/js/bets/lmsr.js');
     const subject = { authority: SPONSOR, deadline: 1794025830 };
     const terms = (b, overrides = {}) => ({ kind: 0, proposal: ACCOUNT, stakeMint: DEVNET_USDC_MINT, creator: SPONSOR, b,
         closesAt: 1794025830n, graceSeconds: 0, maxPosition: 0n, seed: lmsr.maxLoss(b), ...overrides });
 
     it('accepts both canonical liquidities, b = 5 and b = 100 devnet USDC, each with its own seed', () => {
-        expect(hasCanonicalMarketTerms(terms(5_000_000n), ACCOUNT, subject)).toBe(true);
-        expect(hasCanonicalMarketTerms(terms(100_000_000n), ACCOUNT, subject)).toBe(true);
+        expect(hasAgreementMarketTerms(terms(5_000_000n), ACCOUNT, subject)).toBe(true);
+        expect(hasAgreementMarketTerms(terms(100_000_000n), ACCOUNT, subject)).toBe(true);
     });
 
     it('rejects any other liquidity, a seed of another b, or a foreign creator', () => {
-        expect(hasCanonicalMarketTerms(terms(7_000_000n), ACCOUNT, subject)).toBe(false);
-        expect(hasCanonicalMarketTerms(terms(5_000_000n, { seed: lmsr.maxLoss(100_000_000n) }), ACCOUNT, subject)).toBe(false);
-        expect(hasCanonicalMarketTerms(terms(5_000_000n, { creator: STRANGER }), ACCOUNT, subject)).toBe(false);
-        expect(hasCanonicalMarketTerms(terms(5_000_000n, { closesAt: 1n }), ACCOUNT, subject)).toBe(false);
+        expect(hasAgreementMarketTerms(terms(7_000_000n), ACCOUNT, subject)).toBe(true);
+        expect(hasAgreementMarketTerms(terms(5_000_000n, { seed: lmsr.maxLoss(100_000_000n) }), ACCOUNT, subject)).toBe(false);
+        expect(hasAgreementMarketTerms(terms(5_000_000n, { creator: STRANGER }), ACCOUNT, subject)).toBe(true);
+        expect(hasAgreementMarketTerms(terms(5_000_000n, { closesAt: 1n }), ACCOUNT, subject)).toBe(true);
     });
 });

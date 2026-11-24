@@ -27,6 +27,11 @@ vi.mock('@solana/web3.js', async (importOriginal) => {
 
             async getGenesisHash() { return rpcState.genesisHash; }
 
+            async getProgramAccounts(programId, config) {
+                rpcCalls.push({ programId: programId.toBase58(), config });
+                return rpcState.programAccounts || [];
+            }
+
             async getMultipleAccountsInfo(addresses, commitment) {
                 rpcCalls.push({ addresses: [...addresses], commitment });
                 return addresses.map(address => rpcState.accounts?.get(address.toBase58()) || null);
@@ -38,7 +43,7 @@ vi.mock('@solana/web3.js', async (importOriginal) => {
 const { defaultMarketReader, DEVNET_USDC_MINT } = await import('../routes/markets.js');
 const { readAccounts: readSocietyAccounts } = await import('../agents/society-run.mjs');
 
-function marketInfo({ proposal, creator, stakeMint = DEVNET_USDC_MINT, liquidity = MARKET_LIQUIDITY, deadline = DEADLINE, grace = MARKET_GRACE_SECONDS, seed = lmsr.maxLoss(BigInt(MARKET_LIQUIDITY)) }) {
+function marketInfo({ proposal, creator, stakeMint = DEVNET_USDC_MINT, liquidity = MARKET_LIQUIDITY, deadline = DEADLINE, grace = MARKET_GRACE_SECONDS, seed = lmsr.maxLoss(BigInt(liquidity)) }) {
     const data = Buffer.alloc(496);
     Buffer.from(lmsrClient.ACCOUNT_DISCRIMINATORS.LmsrMarket).copy(data);
     new PublicKey(proposal).toBuffer().copy(data, 9);
@@ -60,10 +65,12 @@ function setAgreement(agreement, fields = {}) {
 }
 
 function setMarket(agreement, info) {
-    const address = lmsrClient.getMarketPda(agreement.account, agreement.sponsor)[0].toBase58();
     const mint = new PublicKey(info.data.subarray(73, 105));
+    const address = lmsrClient.getMarketPda(agreement.account, new PublicKey(info.data.subarray(41, 73)), { stakeMint: mint,
+        b: info.data.readBigUInt64LE(137), closesAt: info.data.readBigInt64LE(169), graceSeconds: info.data.readUInt32LE(177), maxPosition: info.data.readBigUInt64LE(181) })[0].toBase58();
     lmsrClient.getVaultAddress(new PublicKey(address), mint).toBuffer().copy(info.data, 105);
     rpcState.accounts.set(address, info);
+    rpcState.programAccounts.push({ pubkey: new PublicKey(address), account: info });
 }
 
 describe('Solana account batching', () => {
@@ -71,6 +78,7 @@ describe('Solana account batching', () => {
         rpcCalls.length = 0;
         rpcState.genesisHash = DEVNET_GENESIS_HASH;
         rpcState.accounts = new Map();
+        rpcState.programAccounts = [];
     });
 
     it('defaults to 100 and validates configured limits from 1 through 100', () => {
@@ -122,10 +130,12 @@ describe('Solana account batching', () => {
         agreements.forEach(agreement => setAgreement(agreement));
         const pools = await reader(accounts, agreements);
 
-        expect(rpcCalls.map(({ addresses }) => addresses.length)).toEqual([5, 5, 5, 5, 4]);
-        expect(rpcCalls.every(({ commitment }) => commitment === 'confirmed')).toBe(true);
+        expect(rpcCalls.filter(call => call.addresses).map(({ addresses }) => addresses.length)).toEqual([5, 5, 2]);
+        expect(rpcCalls.filter(call => call.addresses).every(({ commitment }) => commitment === 'confirmed')).toBe(true);
+        expect(rpcCalls.filter(call => call.config)).toHaveLength(1);
+        expect(rpcCalls.find(call => call.config).config.filters).toHaveLength(3);
         expect([...pools.keys()]).toEqual(accounts);
-        expect([...pools.values()].every(entry => entry.market === null)).toBe(true);
+        expect([...pools.values()].every(entry => Array.isArray(entry.markets) && entry.markets.length === 0)).toBe(true);
     });
 
     it('refuses a non-devnet RPC before reading markets', async () => {
@@ -155,7 +165,7 @@ describe('Solana account batching', () => {
     it('requires an indexed sponsor before reading accounts', async () => {
         const account = Keypair.generate().publicKey.toBase58();
         const read = defaultMarketReader({ SOLANA_RPC_URL: 'https://rpc.invalid' });
-        await expect(read([account], [{ account, cid: CID }])).rejects.toThrow('indexed agreement sponsor');
+        await expect(read([account], [{ account, cid: CID }])).rejects.toThrow('An indexed agreement sponsor is required.');
         expect(rpcCalls).toEqual([]);
     });
 
@@ -167,7 +177,7 @@ describe('Solana account batching', () => {
         const valid = { proposal: account, creator: agreement.sponsor };
         setAgreement(agreement);
         setMarket(agreement, marketInfo(valid));
-        expect((await read([account], [agreement])).get(account).market)
+        expect((await read([account], [agreement])).get(account).markets[0].market)
             .toMatchObject({ proposal: account, creator: agreement.sponsor, stakeMint: DEVNET_USDC_MINT });
 
         for (const fields of [{ cid: 'different-cid' }, { authority: other }, { status: 255 }]) {
@@ -175,17 +185,25 @@ describe('Solana account batching', () => {
             await expect(read([account], [agreement])).rejects.toThrow(/Agreement account identity or status differs/);
         }
         setAgreement(agreement);
+        rpcState.programAccounts = [];
+        const independent = { ...valid, creator: other, liquidity: 200_000_000n };
+        setMarket(agreement, marketInfo(valid));
+        setMarket(agreement, marketInfo(independent));
+        setMarket(agreement, marketInfo({ ...independent, deadline: DEADLINE + 1 }));
+        const snapshot = [...rpcState.programAccounts];
         for (const info of [
             { ...marketInfo(valid), owner: new PublicKey(AGREEMENT_PROGRAM_ID) },
             marketInfo({ ...valid, proposal: other }),
-            marketInfo({ ...valid, creator: other }),
             marketInfo({ ...valid, stakeMint: other }),
-            marketInfo({ ...valid, deadline: DEADLINE + 1 }),
-            marketInfo({ ...valid, liquidity: '100000001' }),
+            marketInfo({ ...valid, deadline: 9_000_000_000_000n }),
             marketInfo({ ...valid, seed: 1 })
         ]) {
+            rpcState.programAccounts = [...snapshot];
             setMarket(agreement, info);
-            await expect(read([account], [agreement])).rejects.toThrow(/Unexpected market account program|market address does not match|terms differ/);
+            const books = (await read([account], [agreement])).get(account).markets;
+            expect(books.map(entry => entry.market.creator)).toEqual([other, other, agreement.sponsor]);
+            expect(new Set(books.map(entry => entry.address)).size).toBe(3);
+            expect(books.slice(0, 2).map(entry => Number(entry.market.closesAt)).sort()).toEqual([DEADLINE, DEADLINE + 1]);
         }
     });
 

@@ -1056,15 +1056,15 @@ A modeled value of an agent's assigned land, expressed in a stated currency and 
 
 ### Market
 
-A dated LMSR betting instrument about whether a qualified binding agreement executes by its own recorded deadline. YES means a valid on-chain execution timestamp is at or before that deadline. NO means execution after the deadline, expiry, cancellation, or an active agreement still unresolved after the last second of the market's grace interval. VOID, paying half of each share on either side, floored per position, comes only from conflicting evidence on a recipe-bound market. Points and devnet-USDC markets are independent books with the same quote and settlement rules. The market PDA, agreement account, network and asset are distinct identities.
+A funded YES/NO forecast attached to an agreement. Any wallet can create a devnet USDC market with its own question, closing time and liquidity. An execution market pays YES for an on-chain execution by its chosen deadline. A public-record market commits to its evidence source, verifier and qualifying outcomes. Each market owns its vault, prices and share positions. The Bets tab labels creators whose wallets match the agreement proposer or verifier and ranks open markets by funded liquidity. The points simulator keeps one independent execution book per agreement.
 
 ### Contest
 
-A group of published agreements connected transitively by overlapping ground. Two agreements are joined when they share a source-qualified input parcel and their designs take overlapping ground: they share a design, or a design's site reaches into a design's site of the other (their overlap is ground, wider than the larger of the two designs' tolerances). Sharing a parcel alone does not establish membership: agreements whose designs stand apart on one large parcel are separate contests. Overlapping designs on different parcels, or equal unqualified parcel labels, do not join agreements either. Each agreement in a contest keeps its own market.
+A group of published agreements connected transitively by overlapping ground. Two agreements are joined when they share a source-qualified input parcel and their designs take overlapping ground: they share a design, or a design's site reaches into a design's site of the other (their overlap is ground, wider than the larger of the two designs' tolerances). Sharing a parcel alone does not establish membership: agreements whose designs stand apart on one large parcel are separate contests. Overlapping designs on different parcels, or equal unqualified parcel labels, do not join agreements either. Each agreement in a contest can have several independently funded markets.
 
 ### Market deadline
 
-The market's last-trading timestamp, copied from the agreement's execution deadline. An execution after it does not satisfy YES, even if observed before settlement. Grace delays a NO-by-absence settlement, which is possible only strictly after the deadline plus grace; it never extends the event deadline.
+The closing time chosen at market creation. Trading ends at that instant. An event recorded at the deadline can still qualify. Settlement by absence becomes possible strictly after the deadline plus grace. The points book uses the agreement’s execution deadline.
 
 ### Proposed outcome
 
@@ -1072,7 +1072,7 @@ A recipe-bound (kind 1) LMSR market's resolution before it is final: the outcome
 
 ### LMSR liquidity
 
-The positive parameter `b` in the logarithmic market scoring rule. It controls how much a quote moves as shares are bought or sold; it is not a pool balance or a guaranteed amount of trading volume.
+The positive parameter `b` in the logarithmic market scoring rule. A larger `b` means a trade of the same size moves the price less. A funded market’s creator deposits `max_loss(b)` into its vault at opening. The ranking uses `b` in atomic units of the same asset.
 
 ### Share
 

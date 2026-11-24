@@ -425,34 +425,15 @@ subject (the client codecs still call that parameter `proposal`); a poll has non
 
 ### Find the pools in a city
 
-`GET /markets?city={city}` lists every **contest** in a city: published agreements whose input land
-shares parcels, grouped, each minted agreement with its yes/no pool when one exists. Per agreement
-you get `cid`, `account` (its chain account, the market's subject; `null` until minted), `title`,
-`designTitles`, `status` (`active`, `executed`, `cancelled` or `expired`), `chainStatus` (the
-account's status as the lifecycle oracle observed it: what the market resolves from), `deadline`,
-`bettable` (Active on-chain, before the deadline, with an open pool), `canOpenMarket` (minted and
-Active before the deadline, no pool yet) and `market` (`address`, `yesPool`, `noPool` and
-`poolAtomic` in atomic USDC as decimal strings, `resolved`, `outcome`). Contests with no minted
-agreement are omitted; unminted agreements stay in their contest without a pool. Entries in play come
-first, the soonest `deadline` leading, then the bigger pool; settled ones follow. The answer names
-`agreementProgram`, `marketProgram`, `stakeMint` and `stakeDecimals`, is cached for 20 seconds, and
-`&fresh=1` skips the cache right after your own transaction.
+Use `ugt_markets` or `GET /markets?city={city}` to find a city's contests. Each contest groups agreements whose designs take overlapping ground. Each agreement has its own `markets[]` list. Every funded entry names its market address, creator, verified creator role when applicable, question kind, closing time, and LMSR quantities in atomic devnet USDC. Tradeable markets lead by liquidity `b` descending. The `bettable` and `canSettle` fields describe the individual market. An empty list on a minted agreement leaves it available to a new creator. Use `&fresh=1` to refresh after a transaction.
+
+The local signing tool `ugt_open_agreement_market` opens an independently funded market. Supply `agreementAccount`, `liquidityUsdc`, `closesAt` and, for a public-record market, the supported question tuple, credential and schema. The receipt contains the market address. Supply that exact address when trading or settling.
 
 ### Stake
 
-Every minted agreement can get a parimutuel prediction market on whether it executes
-(`proposal_market`, program `$(marketProgram)` on devnet, stakes in the same devnet USDC), keyed by
-the agreement's account: the market is PDA `["market", agreement-account]`, a position
-`["position", market, owner, side]` (side 1 YES, 0 NO). Anyone may create the market, stake YES/NO
-while the agreement is Active before its deadline, resolve it once the account is Executed (YES) or
-Cancelled or Expired (NO), and claim. Resolution is permissionless; it is not an oracle vote or an
-administrator choosing the outcome. A deadline does not resolve NO by itself: someone expires the
-agreement account on chain first. The rule is the precommitted recipe `agreement-execution-v1`,
-`GET $(base)/oracle/recipes/agreement-execution-v1?agreement=<agreement-account>&market=<market-account>`
-(`market` is optional; when given it must be the agreement's pool). Its trusted attester is the
-agreement program, which executes an agreement only on the attestation of the lens key its account
-names. The pure client is `frontend/js/solana/market-client.js` (`SolanaMarketClient`), the IDL
-`blockchain/solana/idl/proposal_market.json`. With the MCP: `ugt_bet_on_agreement { agreementCid, side, amountUsdc }`.
+The Solana program is `$(marketProgram)` on devnet. Use `ugt_buy_agreement_shares_on_account` to buy YES or NO with an `amountUsdc` budget. Use `ugt_sell_agreement_shares` with a share quantity to exit while the selected market is open. Both take `agreementAccount` and `marketAddress`. The market's LMSR curve quotes each whole trade, including its price impact.
+
+For execution questions, the program compares the agreement's execution timestamp with this market's cutoff. Cancellation or expiry pays NO. An agreement still active strictly after the cutoff plus grace can also settle NO. Public-record questions use the committed evidence rule and its named verifier. Use `ugt_resolve_market` with the selected address, then `ugt_claim_market` for a winning position. Read the terms at `GET $(base)/oracle/recipes/agreement-execution-by-deadline-v1?agreement=<account>&market=<market-address>`. The pure client is `frontend/js/solana/lmsr-client.js`.
 
 ### Pledge and donate
 

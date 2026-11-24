@@ -112,7 +112,7 @@
             global.WorldView.close();
             global.WorldEntry.finishNavigation();
             await global.whenAppBooted();
-            const dialog = await global.openBetDialog({ account: event.agreementAccount, title: event.subject });
+            const dialog = await global.openBetDialog({ account: event.agreementAccount, marketAddress: event.action?.marketAddress, title: event.subject });
             if (!dialog) throw new Error('Bet dialog could not open');
         } finally {
             opening = false;

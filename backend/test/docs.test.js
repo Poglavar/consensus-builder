@@ -439,8 +439,8 @@ describe('agent quickstart docs', () => {
             agreementDecisions: 'https://api.example.test/agreements/{cid}/decisions',
             agreementOnchain: 'https://api.example.test/agreements/{cid}/onchain',
             markets: 'https://api.example.test/markets?city={city}',
-            marketRecipe: 'https://api.example.test/oracle/recipes/agreement-execution-v1?agreement={agreementAccount}',
-            marketRecipeForMarket: 'https://api.example.test/oracle/recipes/agreement-execution-v1?agreement={agreementAccount}&market={marketAccount}',
+            marketRecipe: 'https://api.example.test/oracle/recipes/agreement-execution-by-deadline-v1?agreement={agreementAccount}',
+            marketRecipeForMarket: 'https://api.example.test/oracle/recipes/agreement-execution-by-deadline-v1?agreement={agreementAccount}&market={marketAccount}',
             oracleFact: 'https://api.example.test/agent/oracle/facts?subject={agreementAccount}',
             oracleFactForMarket: 'https://api.example.test/agent/oracle/facts?subject={agreementAccount}&market={marketAccount}',
             oracleFactLatest: 'https://api.example.test/agent/oracle/facts',
@@ -533,10 +533,11 @@ describe('agent quickstart docs', () => {
         expect(body.oracle.parcelHistory.url).toBe('https://api.example.test/parcels/{parcelUid}/history');
         expect(body.market).toMatchObject({
             programId: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/),
-            pda: 'seeds ["market", agreementAccount]',
+            model: 'lmsr',
+            pda: expect.stringContaining('agreement, creator, stakeMint, b, closesAt'),
             stakeDecimals: 6,
             contests: 'https://api.example.test/markets?city={city}',
-            resolution: { yes: expect.stringMatching(/Executed/), no: expect.stringMatching(/Cancelled or Expired/), permissionless: true, oracleRecipe: 'agreement-execution-v1' }
+            resolution: { yes: expect.stringMatching(/executed at or before/), no: expect.stringMatching(/cancelled, expired/), permissionless: true, oracleRecipe: 'agreement-execution-by-deadline-v1' }
         });
         expect(body.support).toMatchObject({
             status: 'https://api.example.test/agent/pledges/{agreementAccount}',

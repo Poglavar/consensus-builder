@@ -17,7 +17,8 @@ import { fileURLToPath } from 'node:url';
 import { buildAddressBook } from '../solana/address-book.js';
 import { decodeBase58, decodeParsedTransaction, loadIdls } from '../solana/tx-decoder.js';
 import { formatAtomicAmount } from '../utils/x402-payment.js';
-import { AGREEMENT_PROGRAM_ID, AgreementClient, agreementAccountOf } from '../agreements/onchain.js';
+import { AGREEMENT_PROGRAM_ID, AgreementClient, agreementAccountOf, createAgreementChain } from '../agreements/onchain.js';
+import { getMultipleAccountsBatched } from '../solana/account-batching.js';
 import { normalizeCityCode } from '../utils/city-code.js';
 import { createSingleFlightMemo } from '../utils/single-flight-memo.js';
 
@@ -44,7 +45,7 @@ const AGREEMENT_ACTIONS = Object.freeze({
 // without that role names the market, whose PDA the account index maps as well.
 const SUBJECT_ACTIONS = new Map([
     ['proposal_market', new Map([
-        ['create_lmsr_market', 'createMarket'], ['buy', 'stake'], ['sell', 'sell'], ['resolve_lmsr', 'resolve'], ['claim_lmsr', 'claim']
+        ['create_lmsr_market', 'createMarket'], ['create_lmsr_external_market', 'createMarket'], ['finalize_lmsr', 'resolve'], ['buy', 'stake'], ['sell', 'sell'], ['resolve_lmsr', 'resolve'], ['claim_lmsr', 'claim']
     ])],
     ['proposal_pledge', new Map([
         ['donate', 'donate'], ['refund_donation', 'refundMyDonations'], ['release_donations', 'releaseDonations'],
@@ -112,7 +113,6 @@ export function agreementAccountIndex(rows = []) {
         if (!account) continue;
         const entry = { cid: row.cid, account };
         index.set(account, entry);
-        if (row.sponsor) index.set(derived(`market:${account}:${row.sponsor}`, () => marketClient.getMarketPda(account, row.sponsor)[0].toBase58()), entry);
     }
     return index;
 }
@@ -147,7 +147,8 @@ function agreementStep(instruction) {
     }
     const type = SUBJECT_ACTIONS.get(instruction.program?.name)?.get(instruction.action);
     if (!type) return null;
-    const fields = {};
+    const marketAddress = instruction.program?.address === MARKET_PROGRAM_ID && accountFor(instruction, 'market');
+    const fields = marketAddress ? { marketAddress } : {};
     if (['buy', 'sell'].includes(instruction.action)) fields.side = Number(instruction.args?.side) === 1 ? 'yes' : 'no';
     if (instruction.action === 'buy') {
         if (instruction.args?.shares != null) fields.shares = String(instruction.args.shares);
@@ -160,7 +161,7 @@ function agreementStep(instruction) {
     }
     return {
         instruction: instruction.action, type,
-        subject: accountFor(instruction, 'proposal') || accountFor(instruction, 'market'), fields
+        subject: accountFor(instruction, 'proposal') || instruction.args?.proposal || accountFor(instruction, 'market'), fields
     };
 }
 
@@ -176,13 +177,23 @@ export function chainEvents(rows = [], {
     decode = decodeParsedTransaction
 } = {}) {
     const events = [];
-    for (const row of rows) {
-        const decoded = decode(row.raw, { book, idls });
+    const projected = rows.map(row => ({ row, decoded: decode(row.raw, { book, idls }) }));
+    const index = new Map(agreementsByAccount);
+    for (const { decoded } of projected) {
+        if (decoded?.status !== 'success') continue;
+        for (const ix of decoded.instructions || []) {
+            if (ix.inner || ix.program?.address !== MARKET_PROGRAM_ID) continue;
+            const address = accountFor(ix, 'market');
+            const entry = agreementsByAccount.get(accountFor(ix, 'proposal') || ix.args?.proposal);
+            if (entry && address) index.set(address, entry);
+        }
+    }
+    for (const { row, decoded } of projected) {
         if (!decoded?.signature) continue;
         (decoded.instructions || []).forEach((instruction, position) => {
             if (instruction.inner) return;
             const step = agreementStep(instruction);
-            const agreement = step?.subject ? agreementsByAccount.get(step.subject) : null;
+            const agreement = step?.subject ? index.get(step.subject) : null;
             if (!agreement) return;
             const actor = activityActor(decoded, instruction, book);
             const action = { type: step.type, agreementCid: agreement.cid, ...step.fields };
@@ -515,6 +526,32 @@ export function setupAgentActivityRoute(app, pool, {
     idls = loadIdls(path.join(__dirname, '..', '..', 'blockchain', 'solana', 'idl')),
     decode = decodeParsedTransaction
 } = {}) {
+    const network = createAgreementChain({ env });
+    async function indexedEvents(rows, agreements) {
+        const index = agreementAccountIndex(agreements);
+        const parsed = rows.map(row => ({ ...row, raw: decode(row.raw, { book, idls }) }));
+        // Claim and finalization only name a market. Look up any bindings absent from this transaction window.
+        const unknown = new Set(), bound = new Set();
+        for (const { raw } of parsed) for (const ix of raw?.instructions || []) {
+            if (ix.inner || ix.program?.address !== MARKET_PROGRAM_ID) continue;
+            const address = accountFor(ix, 'market');
+            if (!address) continue;
+            if (raw.status === 'success' && (accountFor(ix, 'proposal') || ix.args?.proposal)) bound.add(address);
+            else if (['claim_lmsr', 'finalize_lmsr'].includes(ix.action)) unknown.add(address);
+        }
+        const needed = [...unknown].filter(address => !bound.has(address));
+        if (needed.length) {
+            const infos = await getMultipleAccountsBatched(await network.connection(), needed.map(key => new web3.PublicKey(key)));
+            infos.forEach((info, i) => {
+                let market;
+                try { market = marketClient.readMarketAccount(info, needed[i]); } catch { return; }
+                const entry = index.get(market?.proposal);
+                if (entry) index.set(needed[i], entry);
+            });
+        }
+        return chainEvents(parsed, { book, agreementsByAccount: index, decode: value => value });
+    }
+
     // A compact public feed of confirmed, useful changes. This deliberately reads the agreements
     // proposed to the index alongside successful confirmed transactions on indexed agreements: their
     // outcomes (execute, cancel, expire), bets and support.
@@ -556,9 +593,7 @@ export function setupAgentActivityRoute(app, pool, {
         ]);
         const transactionRows = [...new Map([...transactions.rows, ...marketTransactions.rows]
             .map(row => [row.signature, row])).values()];
-        const confirmedChainEvents = chainEvents(transactionRows, {
-            book, idls, agreementsByAccount: agreementAccountIndex(withAccount.rows), decode
-        }).filter(event => event.ok === true && RECENT_CHAIN_ACTIONS.has(event.action.type));
+        const confirmedChainEvents = (await indexedEvents(transactionRows, withAccount.rows)).filter(event => event.ok === true && RECENT_CHAIN_ACTIONS.has(event.action.type));
         const agreements = byCid([...withAccount.rows, ...proposed.rows]);
         const events = recentWithBets(mergeEvents(agreementEvents(proposed.rows), confirmedChainEvents), limit)
             .map(event => withSubject(event, { agreements }));
@@ -620,9 +655,7 @@ export function setupAgentActivityRoute(app, pool, {
             pool.query(`${AGREEMENT_ROWS} ORDER BY a.created_at DESC, a.cid LIMIT $1`, [window]),
             pool.query(`${DESIGN_ROWS} ORDER BY created_at DESC, cid LIMIT $1`, [window])
         ]);
-        const chain = chainEvents(transactions.rows, {
-            book, idls, agreementsByAccount: agreementAccountIndex(withAccount.rows), decode
-        });
+        const chain = await indexedEvents(transactions.rows, withAccount.rows);
         const subjects = { agreements: byCid([...withAccount.rows, ...proposed.rows]), designs: byCid(designs.rows) };
         const events = mergeEvents(
             agreementEvents(proposed.rows),

@@ -22,24 +22,9 @@ The optional wallet link proves control of a wallet; it does not move or convert
 
 ## Market and quote contract
 
-The canonical kind 0 Solana market is sponsored by the agreement's sponsor. Its PDA uses
-`['lmsr', agreementAccount, sponsor]`; the agreement account is the subject. The current parameters
-are `b = 100_000_000` atomic units, `closes_at` equal to the on-chain agreement deadline, zero grace,
-and no per-position share cap (`max_position = 0`). These terms are verified by the backend reader.
-The ProposalMarket program was upgraded on Solana devnet on 26 October 2026 at slot
-`515120833`, in transaction
-[4qaab6jo…R7JCYrE](https://explorer.solana.com/tx/4qaab6joKfAmzUcntMQM5L5TgZNE22vRpBH1LmWUUAGZJVXxFT6mXVVe2bYsqWX3ZCB6Yc7XcM8Upc9UjR7JCYrE?cluster=devnet).
-The downloaded executable (SHA-256
-`77f9bdc34c8998cd77fa69c9e402c237e297bba471bca2a738204fd10d6c741a`) is the built LMSR artifact
-(`8404705555feeba6a4f78b942e94d6d9a69d1b699d5229320a403b2cee9d8a4f`) followed only by zero padding.
-This verifies deployment; it does not establish a completed public trade with the new instructions.
+Any wallet may open a funded devnet USDC LMSR market on an agreement and choose its deadline and liquidity. Positions, prices and share links identify the exact market account; multiple markets may exist for one agreement and lists rank by funded liquidity `b` descending. The points simulator uses a single execution question independently. Cancellation resolves NO; an active market closes strictly after `closesAt + graceSeconds`.
 
-The frontend release (`5c8e731e6`, deployed 25 October 2026 at 22:30:49 UTC) and backend
-(`79733ecd8`) are running with the points schema and API installed. The current deployed state is
-reported by the [live proof endpoint](https://api.urbangametheory.xyz/hackathon/proof.json). Browser
-and points user checks so far used simulated users; no outside humans have participated. A first
-public points trade and complete devnet trading journey remain unverified. The proposed San Francisco
-agreement pair is still unpublished.
+The permissionless market address contract requires coordinated client and program releases. Existing funded vaults must remain accessible under their original signer until their outstanding obligations are settled. [LMSR market contract](lmsr-market.md)
 
 The LMSR quote begins at 50/50 even with no trades. `b` controls price sensitivity; YES and NO
 inventory move the quoted prices along the scoring rule. A buy quote specifies shares and a maximum
@@ -55,8 +40,8 @@ payout multiple.
 | Executed with valid positive `executed_at` no later than the deadline | YES |
 | Executed after the deadline | NO |
 | Expired | NO |
-| Cancelled | VOID |
-| Still Active once deadline plus grace is reached | NO |
+| Cancelled | NO |
+| Still Active strictly after deadline plus grace | NO |
 | Missing, malformed or unrecognized lifecycle evidence | Cannot settle from that evidence |
 
 YES pays one atomic unit per YES share; NO pays one unit per NO share. VOID pays half a unit for
@@ -88,8 +73,4 @@ payouts. This ranking is a model of current exit value, not cash withdrawable fr
 - Chain program source: `blockchain/solana/programs/proposal_market/src/lmsr_market.rs`.
 - Public points routes include account, market catalog, positions, leaderboard and wallet-link
   proof under `/bets/points/`; the regular city catalog remains `GET /markets`.
-- `GET /oracle/recipes/agreement-execution-by-deadline-v1?agreement=<account>` provides the
-  canonical agreement-market recipe and its deterministic hash, plus a separate fresh observation
-  of current lifecycle evidence. The hash identifies the terms; the observation does not change
-  that identity. Historical parimutuel recipe endpoints describe old market records and are not the
-  current LMSR identity contract.
+- `GET /oracle/recipes/agreement-execution-by-deadline-v1?agreement=<account>` describes the points book. Add `&market=<address>` for a funded USDC book's exact execution or public-record terms and current observation. For public-record markets, the response includes the recipe CID, verifier, schema and committed outcome hashes. `/markets/recipes/<cid>` serves the matching question.

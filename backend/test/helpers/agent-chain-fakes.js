@@ -78,8 +78,8 @@ export function positionAccount({ agreement, owner, side = 1, amount = 0n, claim
 
 /** Current sponsor-bound LMSR market account for agent trade and settlement tests. */
 export function lmsrMarketAccount({ agreement, sponsor, stakeMint = pledgeClient.constants.USDC_DEVNET_MINT,
-    closesAt, b = 100_000_000n, qYes = 0n, qNo = 0n, resolved = false, outcome = 0, schema = web3.PublicKey.default.toBase58() }) {
-    const [address] = lmsrClient.getMarketPda(agreement, sponsor);
+    closesAt, b = 5_000_000n, qYes = 0n, qNo = 0n, resolved = false, outcome = 0, schema = web3.PublicKey.default.toBase58() }) {
+    const [address] = lmsrClient.getMarketPda(agreement, sponsor, { stakeMint, b, closesAt, graceSeconds: 0, maxPosition: 0 });
     const data = Buffer.alloc(lmsrClient.MARKET_SIZE);
     Buffer.from(lmsrClient.ACCOUNT_DISCRIMINATORS.LmsrMarket).copy(data, 0);
     data[8] = lmsrClient.constants.KIND_PROPOSAL;

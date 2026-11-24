@@ -23,7 +23,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { Keypair, PublicKey } from '@solana/web3.js';
 import { ensureDonationEscrowAndDonate } from './donor.js';
-import { buyAgreementShares, sellAgreementShares, usdcToAtomic } from './bettor.js';
+import { buyAgreementShares, openAgreementMarket, sellAgreementShares, usdcToAtomic } from './bettor.js';
 import { buyOracleFact, createOracleFactClient, fetchOracleFactChallenge } from './oracle-fact-client.js';
 import { ensurePledgeBookAndSet } from './pledger.js';
 import { createRpcConnection } from '../solana/rpc.js';
@@ -97,6 +97,11 @@ async function readJson(fetchImpl, url) {
     }
     if (!response.ok) throw new Error(`${url} returned HTTP ${response.status}: ${typeof body === 'string' ? body : JSON.stringify(body)}`);
     return body;
+}
+
+function selectedMarket(address) {
+    if (!address || new PublicKey(address).toBase58() !== address) throw new Error('Select a marketAddress from ugt_markets.');
+    return address;
 }
 
 function positiveAmount(amountUsdc, maximum) {
@@ -233,6 +238,7 @@ export function createUrbanGameTheoryTools({
         ensureDonationEscrowAndDonate,
         buyAgreementShares,
         sellAgreementShares,
+        openAgreementMarket,
         refundDonation,
         revokePledge,
         voidPledge,
@@ -396,14 +402,23 @@ export function createUrbanGameTheoryTools({
             }), count: accounts.length, truncated: accounts.length > limit };
         },
         getChainAgreement: ({ agreementAccount }) => impl.readAgreementAccount(chain(), { account: agreementAccount }),
-        async betOnAccount({ agreementAccount, side, amountUsdc, confirm }) {
+        async openMarket({ agreementAccount, liquidityUsdc, closesAt, external, confirm }) {
+            requireLive(confirm);
+            const { keypair, connection } = signer();
+            const publishRecipe = async (data, expectedCid) => {
+                const response = await fetchImpl(apiBase + '/markets/recipes', { method: 'POST', signal: AbortSignal.timeout(30000),
+                    headers: { 'Content-Type': 'application/json', Origin: appOrigin }, body: JSON.stringify(data) });
+                if (!response.ok || (await response.json()).cid !== expectedCid) throw new Error('Could not publish the exact market recipe.');
+            };
+            return impl.openAgreementMarket({ connection, creatorKeypair: keypair, subject: agreementAccount, b: usdcToAtomic(liquidityUsdc),
+                closesAt, external, publishRecipe, maxSeedAtomic: usdcToAtomic(maxUsdcPerAction), sendAndConfirm: impl.sendAndConfirmPolling });
+        },
+        async betOnAccount({ agreementAccount, marketAddress, side, amountUsdc, confirm }) {
             requireLive(confirm);
             if (!['yes', 'no'].includes(side)) throw new Error('side must be yes or no');
             const amountAtomic = positiveAmount(amountUsdc, maxUsdcPerAction);
             const { keypair, connection } = signer();
-            const state = await impl.readAgreementAccount(connection, { account: agreementAccount });
-            if (!state || state.status !== AGREEMENT_STATUS.active || state.deadline > 0 && state.deadline * 1000 <= Date.now()) throw new Error('Only an active agreement before its deadline accepts stakes');
-            return impl.buyAgreementShares({ connection, ownerKeypair: keypair, subject: agreementAccount, stakeMint: USDC_DEVNET, side: SIDE[side], amountAtomic, sendAndConfirm: impl.sendAndConfirmPolling });
+            return impl.buyAgreementShares({ connection, ownerKeypair: keypair, subject: agreementAccount, marketAddress: selectedMarket(marketAddress), stakeMint: USDC_DEVNET, side: SIDE[side], amountAtomic, sendAndConfirm: impl.sendAndConfirmPolling });
         },
 
         // The index row, the chain account its sponsor and CID derive, and that account as the chain
@@ -588,7 +603,7 @@ export function createUrbanGameTheoryTools({
 
         // Stake devnet USDC on whether the agreement executes: its market's subject is the agreement's
         // account (PDA of its sponsor and CID), which must be minted, Active and before its deadline.
-        async betOnAgreement({ agreementCid, side, amountUsdc, confirm } = {}) {
+        async betOnAgreement({ agreementCid, marketAddress, side, amountUsdc, confirm } = {}) {
             requireLive(confirm);
             const normalizedSide = String(side || '').toLowerCase();
             if (!(normalizedSide in SIDE)) throw new Error('side must be yes or no');
@@ -599,12 +614,8 @@ export function createUrbanGameTheoryTools({
             const { keypair, connection } = signer();
             const state = await impl.readAgreementAccount(connection, { cid: agreementCid, sponsor });
             if (!state) throw new Error(`agreement ${agreementCid} is not minted yet; its sponsor mints it first (ugt_mint_agreement)`);
-            if (state.status !== AGREEMENT_STATUS.active) throw new Error(`agreement ${state.address} is ${state.status}; its market takes no more stakes`);
-            if (state.deadline > 0 && state.deadline * 1000 <= Date.now()) {
-                throw new Error(`agreement ${state.address} is past its deadline; its market takes no more stakes`);
-            }
             const result = await impl.buyAgreementShares({
-                connection, ownerKeypair: keypair, subject: state.address,
+                connection, ownerKeypair: keypair, subject: state.address, marketAddress: selectedMarket(marketAddress),
                 stakeMint: USDC_DEVNET, side: SIDE[normalizedSide], amountAtomic,
                 sendAndConfirm: impl.sendAndConfirmPolling
             });
@@ -612,7 +623,7 @@ export function createUrbanGameTheoryTools({
         },
         buyAgreementSharesOnAgreement(args = {}) { return this.betOnAgreement(args); },
 
-        async sellAgreementSharesOnAgreement({ agreementCid, side, shares, confirm } = {}) {
+        async sellAgreementSharesOnAgreement({ agreementCid, marketAddress, side, shares, confirm } = {}) {
             requireLive(confirm);
             const normalizedSide = String(side || '').toLowerCase();
             if (!(normalizedSide in SIDE)) throw new Error('side must be yes or no');
@@ -623,10 +634,8 @@ export function createUrbanGameTheoryTools({
             if (!sponsor) throw new Error(`agreement ${agreementCid} names no sponsor wallet, so it has no chain account to trade`);
             const { keypair, connection } = signer();
             const state = await impl.readAgreementAccount(connection, { cid: agreementCid, sponsor });
-            if (!state || state.status !== AGREEMENT_STATUS.active || state.deadline > 0 && state.deadline * 1000 <= Date.now()) {
-                throw new Error('Only an active agreement before its deadline accepts sales');
-            }
-            const result = await impl.sellAgreementShares({ connection, ownerKeypair: keypair, subject: state.address,
+            if (!state) throw new Error('The agreement must be minted to sell shares.');
+            const result = await impl.sellAgreementShares({ connection, ownerKeypair: keypair, subject: state.address, marketAddress: selectedMarket(marketAddress),
                 stakeMint: USDC_DEVNET, side: SIDE[normalizedSide], sharesAtomic, sendAndConfirm: impl.sendAndConfirmPolling });
             return { agreementCid, agreementAccount: state.address, side: normalizedSide, shares, ...result };
         },
@@ -732,20 +741,20 @@ export function createUrbanGameTheoryTools({
             });
         },
 
-        async resolve({ agreementAccount, confirm } = {}) {
+        async resolve({ agreementAccount, marketAddress, evidence = [], confirm } = {}) {
             requireLive(confirm);
             const { keypair, connection } = signer();
             return impl.resolveAgreementMarket({
-                connection, resolverKeypair: keypair, subject: agreementAccount,
+                connection, resolverKeypair: keypair, subject: agreementAccount, marketAddress: selectedMarket(marketAddress), evidence,
                 sendAndConfirm: impl.sendAndConfirmPolling
             });
         },
 
-        async claim({ agreementAccount, side, confirm } = {}) {
+        async claim({ agreementAccount, marketAddress, side, confirm } = {}) {
             requireLive(confirm);
             const { keypair, connection } = signer();
             return impl.claimAgreementMarket({
-                connection, claimerKeypair: keypair, subject: agreementAccount, side,
+                connection, claimerKeypair: keypair, subject: agreementAccount, marketAddress: selectedMarket(marketAddress), side,
                 sendAndConfirm: impl.sendAndConfirmPolling
             });
         },

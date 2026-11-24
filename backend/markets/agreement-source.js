@@ -6,11 +6,8 @@ import { CURRENT_AGREEMENTS_BY_ACCOUNTS_SQL } from '../agreements/current-plan-s
 
 export const MARKET_LIQUIDITY = '100000000';
 export const MARKET_GRACE_SECONDS = 0;
-// Every LMSR liquidity b a canonical agreement market may carry: b = 100 devnet USDC before 2026-10-30,
-// b = 5 for markets opened since (backend/agents/bettor.js DEFAULT_B, frontend/js/solana/market-bridge.js).
-export const ACCEPTED_MARKET_LIQUIDITY = Object.freeze([5_000_000n, 100_000_000n]);
 
-export function validateAgreementSource(row, observed) {
+export function validateAgreementSource(row, observed, { allowUndated = false } = {}) {
     if (!row || !observed?.account || observed.problem) throw Object.assign(new Error('Agreement chain evidence is unavailable'), { status: 503 });
     const account = observed.account;
     const sponsor = row.sponsor;
@@ -20,11 +17,11 @@ export function validateAgreementSource(row, observed) {
         throw Object.assign(new Error('Agreement identity does not match its chain account'), { status: 409 });
     }
     const chainStatus = ONCHAIN_STATUSES[account.statusCode];
-    if (!chainStatus || !Number.isSafeInteger(account.deadline) || account.deadline <= 0) {
+    if (!chainStatus || !Number.isSafeInteger(account.deadline) || account.deadline < (allowUndated ? 0 : 1)) {
         throw Object.assign(new Error('A known agreement status and a dated agreement are required'), { status: 409 });
     }
     const indexDeadline = row.deadline instanceof Date ? row.deadline.getTime() : Date.parse(row.deadline || '');
-    if (Math.floor(indexDeadline / 1000) !== account.deadline) throw Object.assign(new Error('Published and chain agreement deadlines differ'), { status: 409 });
+    if ((row.deadline == null ? 0 : Math.floor(indexDeadline / 1000)) !== account.deadline) throw Object.assign(new Error('Published and chain agreement deadlines differ'), { status: 409 });
     return {
         account: observed.address, cid: row.cid, city: row.city, sponsor,
         closesAt: account.deadline, graceSeconds: MARKET_GRACE_SECONDS,
@@ -40,7 +37,7 @@ const AGREEMENTS_PER_SNAPSHOT = 99;
 // readAgreement(address) → the agreement's validated source, or throws. readAgreement.many(addresses)
 // → Map(address → source | Error): one index query and one RPC call per 99 agreements, where the
 // single reader would make one of each per agreement (the Bets world list reads ~250 of them).
-export function createAgreementMarketSource(pool, { env = process.env, chain = createAgreementChain({ env }) } = {}) {
+export function createAgreementMarketSource(pool, { env = process.env, chain = createAgreementChain({ env }), allowUndated = false } = {}) {
     async function readAgreements(addresses) {
         const unique = [...new Set(addresses)];
         if (unique.some(address => !isPublicKey(address))) {
@@ -72,7 +69,7 @@ export function createAgreementMarketSource(pool, { env = process.env, chain = c
                     }
                     if (!Number.isSafeInteger(chainTime) || chainTime <= 0) throw Object.assign(new Error('Chain clock is invalid'), { status: 503 });
                     const account = AgreementClient.readAgreement(info.data, address);
-                    result.set(address, validateAgreementSource(row, { account, address, slot: context.slot, chainTime }));
+                    result.set(address, validateAgreementSource(row, { account, address, slot: context.slot, chainTime }, { allowUndated }));
                 } catch (error) {
                     result.set(address, error);
                 }

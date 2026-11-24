@@ -27,7 +27,7 @@ const agreements = () => [0, 1, 2].map(n => ({
     deadline: null, chainStatus: 'active'
 }));
 const persona = { name: 'supporter', support: { actions: ['stake', 'pledge', 'donate'] } };
-const marketAddress = account => market.getMarketPda(account, sponsor)[0].toBase58();
+const marketAddress = account => market.getMarketPda(account, sponsor, { stakeMint: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU', b: 5_000_000n, closesAt: DEADLINE, graceSeconds: 0, maxPosition: 0 })[0].toBase58();
 // The agreement account as the program holds it (status 0 Active … 3 Expired).
 const agreementEntry = (cid, fields = {}) => ({ address: agreementAccountOf(cid, sponsor), owner: AGREEMENT_PROGRAM_ID,
     data: encodeAgreementAccount({ cid, authority: sponsor, lens, payout: sponsor, deadline: DEADLINE, status: 0, ...fields }) });
@@ -91,10 +91,11 @@ describe('supporter on-chain eligibility', () => {
     it.each([
         ['corrupt', account => ({ ...marketEntry(account), data: new Uint8Array(4) }), /./],
         ['foreign', account => ({ ...marketEntry(account), owner: PublicKey.default.toBase58() }), /another program/],
-        ['off-contract', account => lmsrMarketAccount({ agreement: account, sponsor, closesAt: DEADLINE + 1 }), /canonical LMSR contract/]
+        ['off-contract', account => lmsrMarketAccount({ agreement: account, sponsor, closesAt: DEADLINE + 1 }), null]
     ])('fails closed on %s market state', async (_label, bad, message) => {
         const [a] = agreements();
-        await expect(readSupportEligibility({ connection: rpc([agreementEntry(a.cid), bad(a.account)]), wallet, persona, agreements: [a] })).rejects.toThrow(message);
+        if (message) await expect(readSupportEligibility({ connection: rpc([agreementEntry(a.cid), bad(a.account)]), wallet, persona, agreements: [a] })).rejects.toThrow(message);
+        else expect((await readSupportEligibility({ connection: rpc([agreementEntry(a.cid), bad(a.account)]), wallet, persona, agreements: [a] })).agreements).toHaveLength(1);
     });
 
     it('refuses an RPC of another cluster and a candidate with no agreement account', async () => {

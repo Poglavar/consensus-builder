@@ -205,37 +205,35 @@ function timeOf(value) {
     return Number.isFinite(ms) ? ms : 0;
 }
 
-function marketEntry(decoded) {
-    if (!decoded || !decoded.market) return null;
-    const market = decoded.market;
-    const resolved = Boolean(market.resolved);
+function marketEntry({ market, address }, source, now) {
+    const external = market.kind === 1;
+    const active = external || source.chainStatus === 'active';
+    const closesAt = Number(market.closesAt);
+    const afterGrace = now > closesAt + market.graceSeconds;
+    const bettable = !market.resolved && !market.proposed && active && now < closesAt;
+    const canSettle = !market.resolved && (external || terminalStatus(source.chainStatus) || afterGrace);
     return {
-        address: decoded.address || null,
-        model: 'lmsr', asset: 'devnet-usdc', creator: market.creator,
+        address, kind: external ? 'recipe' : 'agreement', model: 'lmsr', asset: 'devnet-usdc', creator: market.creator,
+        creatorRole: market.creator === source.sponsor ? 'sponsor' : market.creator === source.lens ? 'verifier' : null,
         b: String(market.b), qYes: String(market.qYes), qNo: String(market.qNo), seed: String(market.seed),
-        closesAt: Number(market.closesAt), graceSeconds: market.graceSeconds,
-        maxPosition: String(market.maxPosition), paidOut: String(market.paidOut),
-        resolved,
-        outcome: resolved ? ['no', 'yes', 'void'][Number(market.outcome)] : null
+        closesAt, graceSeconds: market.graceSeconds, maxPosition: String(market.maxPosition), paidOut: String(market.paidOut),
+        resolved: Boolean(market.resolved), outcome: market.resolved ? ['no', 'yes', 'void'][Number(market.outcome)] : null,
+        bettable, canSettle,
+        ...(external ? { recipeHash: Buffer.from(market.recipeHash).toString('hex'), trustedAttester: market.trustedAttester,
+            credential: market.credential, schema: market.schema, proposed: Boolean(market.proposed),
+            challengeEndsAt: market.challengeEndsAt == null ? null : Number(market.challengeEndsAt) } : {})
     };
 }
 
-/**
- * One agreement as a contest entry. `status` is the word shown: the chain's terminal status when
- * the lifecycle oracle observed one, else expired once the deadline passed, else active.
- * `chainStatus` is what the market program resolves from (null when unminted or unobserved). A pool
- * takes bets and can be opened only while the account is Active and the deadline, after which the
- * agreement can no longer execute, lies ahead.
- */
 function agreementEntry(agreement, markets, nowMs) {
     const account = agreement.account || null;
-    const decoded = account ? markets.get(account) : null;
-    const market = marketEntry(decoded);
-    const chainStatus = account ? decoded?.chainStatus || agreement.chainStatus || null : null;
-    const deadline = decoded?.deadline !== undefined ? decoded.deadline : agreement.deadline;
-    const deadlineMs = deadline ? Date.parse(deadline) : NaN;
-    const deadlinePassed = Number.isFinite(deadlineMs) && deadlineMs <= nowMs;
-    const live = chainStatus === 'active' && Number.isFinite(deadlineMs) && !deadlinePassed;
+    const source = account ? markets.get(account) : null;
+    const chainStatus = account ? (source ? source.chainStatus : agreement.chainStatus) ?? null : null;
+    const deadline = source ? source.deadline : agreement.deadline;
+    const deadlinePassed = deadline && Date.parse(deadline) <= nowMs;
+    const marketEntries = (source?.markets || []).map(item => marketEntry(item, source, Math.floor(nowMs / 1000)))
+        .sort((a, b) => Number(b.bettable) - Number(a.bettable) ||
+            (BigInt(a.b) === BigInt(b.b) ? a.address.localeCompare(b.address) : BigInt(a.b) > BigInt(b.b) ? -1 : 1));
     return {
         kind: 'agreement',
         cid: agreement.cid,
@@ -254,16 +252,16 @@ function agreementEntry(agreement, markets, nowMs) {
         screenshotPairUrl: agreement.screenshotPairUrl || null,
         parcelIds: normalizeParcelIds(agreement.inputParcelIds),
         parcelRefs: parcelRefsOf(agreement),
-        market,
-        bettable: Boolean(market && !market.resolved && live && nowMs < market.closesAt * 1000),
-        canSettle: Boolean(market && !market.resolved && (terminalStatus(chainStatus) || chainStatus === 'active' && Math.floor(nowMs / 1000) > market.closesAt + market.graceSeconds)),
-        canOpenMarket: Boolean(account && !market && live)
+        markets: marketEntries,
+        bettable: marketEntries.some(item => item.bettable),
+        canSettle: marketEntries.some(item => item.canSettle),
+        canOpenMarket: Boolean(account && chainStatus)
     };
 }
 
 /**
  * Build the public contests payload for one city.
- * @param {{ city: string, agreements: Array<object>, markets?: Map<string, { address: string, market: object|null }>, overlaps?: Function, now?: Date }} input
+ * @param {{ city: string, agreements: Array<object>, markets?: Map<string, { sponsor: string, lens: string, chainStatus: string, deadline: string|null, markets: Array<{ address: string, market: object }> }>, overlaps?: Function, now?: Date }} input
  *   agreements: { cid, title, author, city, designCids, inputParcelIds, parcelSourceId, deadline,
  *   createdAt, designTitles, screenshotUrl, screenshotBeforeUrl, screenshotPairUrl, account,
  *   chainStatus } (routes/markets.js rowToAgreement); markets: agreement account → its decoded market
@@ -280,7 +278,7 @@ export function buildContests({ city, agreements, markets = new Map(), overlaps 
         const parcelRefs = normalizeParcelRefs(group.flatMap(parcelRefsOf));
         const id = contestId(group.flatMap(designCidsOf), group.map(agreement => agreement.cid).sort()[0] || '');
         const entries = group.map(agreement => ({ ...agreementEntry(agreement, markets, nowMs), contest: id })).sort(compareRows);
-        const withMarket = entries.filter(entry => entry.market);
+        const withMarket = entries.flatMap(entry => entry.markets);
         return {
             id,
             parcelIds: normalizeParcelIds(group.flatMap(agreement => normalizeParcelIds(agreement.inputParcelIds))),
@@ -288,8 +286,8 @@ export function buildContests({ city, agreements, markets = new Map(), overlaps 
             agreementCount: entries.length,
             mintedCount: entries.filter(entry => entry.account).length,
             marketCount: withMarket.length,
-            openMarketCount: entries.filter(entry => entry.bettable).length,
-            sharesAtomic: withMarket.reduce((sum, entry) => sum + atomic(entry.market.qYes) + atomic(entry.market.qNo), 0n).toString(),
+            openMarketCount: withMarket.filter(market => market.bettable).length,
+            sharesAtomic: withMarket.reduce((sum, entry) => sum + atomic(entry.qYes) + atomic(entry.qNo), 0n).toString(),
             latestCreatedAt: entries.reduce((latest, entry) => (timeOf(entry.createdAt) > timeOf(latest) ? entry.createdAt : latest), null),
             agreements: entries
         };

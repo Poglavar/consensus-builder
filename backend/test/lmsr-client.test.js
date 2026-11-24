@@ -30,11 +30,13 @@ const u64Buffer = value => { const out = Buffer.alloc(8); out.writeBigUInt64LE(B
 const i64Buffer = value => { const out = Buffer.alloc(8); out.writeBigInt64LE(BigInt(value)); return out; };
 const u32Buffer = value => { const out = Buffer.alloc(4); out.writeUInt32LE(value); return out; };
 const expectedData = (name, ...args) => Buffer.concat([Buffer.from(disc('global', name)), ...args]);
+const TERMS = Object.freeze({ stakeMint: mint, b: 1000n, closesAt: 1900000000n, graceSeconds: 300, maxPosition: 50n });
+const EXT_TERMS = Object.freeze({ ...TERMS, subjectHash: hash(1), yesValueHash: hash(2), noValueHash: hash(3), trustedAttester: other, credential: mint, schema: other, proposal: web3.PublicKey.default });
 
 function marketData({ kind = 0, subject = proposal, creatorKey = creator, mintKey = mint, address } = {}) {
     const market = address || (kind === 0
-        ? lmsr.getMarketPda(subject, creatorKey)[0]
-        : lmsr.getExternalMarketPda(hash(70), creatorKey)[0]);
+        ? lmsr.getMarketPda(subject, creatorKey, { ...TERMS, stakeMint: mintKey })[0]
+        : lmsr.getExternalMarketPda(hash(70), creatorKey, { ...EXT_TERMS, stakeMint: mintKey, credential: other, schema: mintKey, trustedAttester: other })[0]);
     const out = Buffer.alloc(496);
     Buffer.from(lmsr.ACCOUNT_DISCRIMINATORS.LmsrMarket).copy(out, 0);
     let p = 8;
@@ -80,16 +82,18 @@ describe('Solana LMSR client codec', () => {
     });
 
     it('uses creator-bound, disjoint market PDA namespaces and the shared position namespace', () => {
-        const [kind0] = lmsr.getMarketPda(proposal, creator);
-        const expected0 = web3.PublicKey.findProgramAddressSync([Buffer.from('lmsr'), proposal.toBuffer(), creator.toBuffer()], program)[0];
+        const [kind0] = lmsr.getMarketPda(proposal, creator, TERMS);
+        const expected0 = web3.PublicKey.findProgramAddressSync([Buffer.from('lmsr'), proposal.toBuffer(), creator.toBuffer(), mint.toBuffer(), u64Buffer(1000), i64Buffer(1900000000), u32Buffer(300), u64Buffer(50)], program)[0];
         expect(kind0.equals(expected0)).toBe(true);
         const recipeHash = hash(31);
-        const [kind1] = lmsr.getExternalMarketPda(recipeHash, creator);
-        const expected1 = web3.PublicKey.findProgramAddressSync([Buffer.from('lmsr_recipe'), Buffer.from(recipeHash), creator.toBuffer()], program)[0];
+        const [kind1] = lmsr.getExternalMarketPda(recipeHash, creator, EXT_TERMS);
+        const identity = require('../../frontend/js/bets/sha256.js').digest(Buffer.concat([Buffer.from(EXT_TERMS.subjectHash), Buffer.from(EXT_TERMS.yesValueHash), Buffer.from(EXT_TERMS.noValueHash), other.toBuffer(), mint.toBuffer(), other.toBuffer(), web3.PublicKey.default.toBuffer()]));
+        const expected1 = web3.PublicKey.findProgramAddressSync([Buffer.from('lmsr_recipe'), Buffer.from(recipeHash), creator.toBuffer(), mint.toBuffer(), u64Buffer(1000), i64Buffer(1900000000), u32Buffer(300), u64Buffer(50), Buffer.from(identity)], program)[0];
         expect(kind1.equals(expected1)).toBe(true);
-        expect(lmsr.getMarketPda(proposal, owner)[0].equals(kind0)).toBe(false);
-        expect(lmsr.getExternalMarketPda(recipeHash, owner)[0].equals(kind1)).toBe(false);
-        expect(kind0.equals(lmsr.getExternalMarketPda(proposal.toBytes(), creator)[0])).toBe(false);
+        expect(lmsr.getMarketPda(proposal, owner, TERMS)[0].equals(kind0)).toBe(false);
+        expect(lmsr.getExternalMarketPda(recipeHash, owner, EXT_TERMS)[0].equals(kind1)).toBe(false);
+        expect(kind0.equals(lmsr.getExternalMarketPda(proposal.toBytes(), creator, EXT_TERMS)[0])).toBe(false);
+        expect(lmsr.getMarketPda(proposal, creator, { ...TERMS, closesAt: 1900000001n })[0].equals(kind0)).toBe(false);
         expect(lmsr.getPositionPda(kind0, owner, 1)[0].equals(web3.PublicKey.findProgramAddressSync(
             [Buffer.from('lmsr_position'), kind0.toBuffer(), owner.toBuffer(), Buffer.from([1])], program
         )[0])).toBe(true);
@@ -98,8 +102,9 @@ describe('Solana LMSR client codec', () => {
     it('builds every LMSR instruction with exact bytes, account order, and signer flags', () => {
         const recipeHash = hash(33); const subjectHash = hash(66); const yesValueHash = hash(99); const noValueHash = hash(132);
         const trustedAttester = other; const credential = mint; const schema = other;
-        const market0 = lmsr.getMarketPda(proposal, creator)[0];
-        const market1 = lmsr.getExternalMarketPda(recipeHash, creator)[0];
+        const builtIdentity = require('../../frontend/js/bets/sha256.js').digest(Buffer.concat([Buffer.from(subjectHash), Buffer.from(yesValueHash), Buffer.from(noValueHash), trustedAttester.toBuffer(), credential.toBuffer(), schema.toBuffer(), web3.PublicKey.default.toBuffer()]));
+        const market0 = lmsr.getMarketPda(proposal, creator, { ...TERMS, graceSeconds: 20, maxPosition: 90n })[0];
+        const market1 = lmsr.getExternalMarketPda(recipeHash, creator, { ...EXT_TERMS, subjectHash, yesValueHash, noValueHash, graceSeconds: 20, maxPosition: 90n, credential, schema, trustedAttester })[0];
         const position = lmsr.getPositionPda(market0, owner, 1)[0];
         const vault0 = lmsr.getVaultAddress(market0, mint); const ownerAta = lmsr.getAssociatedTokenAddress(owner, mint);
         const creatorAta = lmsr.getAssociatedTokenAddress(creator, mint);
@@ -134,7 +139,7 @@ describe('Solana LMSR client codec', () => {
         ];
         const expectedArgs = [
             expectedData('create_lmsr_market', u64Buffer(1000), i64Buffer(1900000000), u32Buffer(20), u64Buffer(90)),
-            expectedData('create_lmsr_external_market', Buffer.from(recipeHash), Buffer.from(subjectHash), Buffer.from(yesValueHash), Buffer.from(noValueHash), trustedAttester.toBuffer(), u64Buffer(1000), i64Buffer(1900000000), u32Buffer(20), u64Buffer(90)),
+            expectedData('create_lmsr_external_market', Buffer.from(recipeHash), Buffer.from(subjectHash), Buffer.from(yesValueHash), Buffer.from(noValueHash), trustedAttester.toBuffer(), web3.PublicKey.default.toBuffer(), Buffer.from(builtIdentity), u64Buffer(1000), i64Buffer(1900000000), u32Buffer(20), u64Buffer(90)),
             expectedData('buy', Buffer.from([1]), u64Buffer(7), u64Buffer(8)),
             expectedData('sell', Buffer.from([1]), u64Buffer(7), u64Buffer(4)),
             expectedData('resolve_lmsr'), expectedData('challenge_lmsr'), expectedData('finalize_lmsr'),
@@ -154,7 +159,7 @@ describe('Solana LMSR client codec', () => {
         const create0 = dataBytes(instructions[0][1].data);
         expect(create0.length).toBe(36); expect(create0.readBigUInt64LE(8)).toBe(1000n); expect(create0.readBigInt64LE(16)).toBe(1900000000n);
         const create1 = dataBytes(instructions[1][1].data);
-        expect(create1.length).toBe(196); expect([...create1.slice(8, 40)]).toEqual([...recipeHash]); expect(create1.readBigUInt64LE(168)).toBe(1000n);
+        expect(create1.length).toBe(260); expect([...create1.slice(8, 40)]).toEqual([...recipeHash]); expect(create1.readBigUInt64LE(232)).toBe(1000n);
         expect(dataBytes(instructions[2][1].data).readBigUInt64LE(9)).toBe(7n);
         expect(dataBytes(instructions[3][1].data).readBigUInt64LE(17)).toBe(4n);
         const boundCreate = lmsr.buildCreateLmsrExternalMarketIx({ recipeHash, subjectHash, yesValueHash, noValueHash, trustedAttester, creator, stakeMint: mint, credential, schema, b: 1000n, closesAt: 1900000000n, proposal });
@@ -173,7 +178,7 @@ describe('Solana LMSR client codec', () => {
         const found = await lmsr.readMarket({ getAccountInfo: async address => address.equals(market) ? accountInfo : null }, market);
         expect(found.creator).toBe(creator.toBase58());
         await expect(lmsr.readMarket({ getAccountInfo: async () => ({ data: out, owner: other }) }, market)).rejects.toThrow(/another program/);
-        const badPda = lmsr.getMarketPda(proposal, other)[0];
+        const badPda = lmsr.getMarketPda(proposal, other, TERMS)[0];
         await expect(lmsr.readMarket({ getAccountInfo: async () => accountInfo }, badPda)).rejects.toThrow(/address does not match/);
         const external = marketData({ kind: 1 });
         expect(lmsr.decodeMarket(external.out).kind).toBe(1);
@@ -210,7 +215,7 @@ describe('Solana LMSR client codec', () => {
 
     it('decodes account bytes serialized by Anchor’s Borsh account coder', async () => {
         const coder = new anchor.BorshAccountsCoder(IDL);
-        const market = lmsr.getMarketPda(proposal, creator)[0];
+        const market = lmsr.getMarketPda(proposal, creator, TERMS)[0];
         const marketBytes = await coder.encode('LmsrMarket', {
             kind: 0, proposal, creator, stake_mint: mint, vault: lmsr.getVaultAddress(market, mint),
             b: new anchor.BN(1000), q_yes: new anchor.BN(12), q_no: new anchor.BN(9), seed: new anchor.BN(694),

@@ -232,7 +232,8 @@ describe('Urban Game Theory MCP server', () => {
         const mint = byName.ugt_mint_agreement.inputSchema;
         expect(Object.keys(mint.properties)).toEqual(['agreementCid', 'lamports', 'confirm']);
         expect([...mint.required].sort()).toEqual(['agreementCid', 'confirm', 'lamports']);
-        expect(Object.keys(byName.ugt_bet_on_agreement.inputSchema.properties)).toEqual(['agreementCid', 'side', 'amountUsdc', 'confirm']);
+        expect(Object.keys(byName.ugt_bet_on_agreement.inputSchema.properties)).toEqual(['agreementCid', 'marketAddress', 'side', 'amountUsdc', 'confirm']);
+        expect(byName.ugt_open_agreement_market.inputSchema.required).toEqual(expect.arrayContaining(['agreementAccount', 'liquidityUsdc', 'closesAt', 'confirm']));
         expect(byName.ugt_bet_on_agreement.inputSchema.properties.side.enum).toEqual(['yes', 'no']);
         expect(Object.keys(byName.ugt_propose_agreement.inputSchema.properties)).toEqual(['agreement', 'expectedCid', 'designs', 'confirm']);
         expect(Object.keys(byName.ugt_publish_design.inputSchema.properties)).toEqual(['design', 'expectedCid', 'parcelSourceId', 'confirm']);
@@ -278,7 +279,7 @@ describe('Urban Game Theory MCP server', () => {
         tools.betOnAgreement.mockRejectedValueOnce(new Error('agreement X is Executed; its market takes no more stakes'));
         tools.fundAgreement.mockResolvedValueOnce({ escrowLamports: 9000n, nested: { amount: 5n } });
         await connect(tools);
-        const refused = await client.callTool({ name: 'ugt_bet_on_agreement', arguments: { agreementCid: CID, side: 'yes', amountUsdc: '0.01', confirm: true } });
+        const refused = await client.callTool({ name: 'ugt_bet_on_agreement', arguments: { agreementCid: CID, marketAddress: ACCOUNT, side: 'yes', amountUsdc: '0.01', confirm: true } });
         expect(refused).toMatchObject({ isError: true, structuredContent: { code: 'tool-failed', message: 'Tool request failed.', untrusted: { message: 'agreement X is Executed; its market takes no more stakes' }, next: { action: expect.any(String) } } });
         const funded = await client.callTool({ name: 'ugt_fund_agreement', arguments: { agreementCid: CID, targetLamports: '9000', confirm: true } });
         expect(funded.structuredContent).toEqual({ escrowLamports: '9000', nested: { amount: '5' } });

@@ -559,6 +559,30 @@
               {
                 "kind": "account",
                 "path": "creator"
+              },
+              {
+                "kind": "account",
+                "path": "stake_mint"
+              },
+              {
+                "kind": "arg",
+                "path": "b"
+              },
+              {
+                "kind": "arg",
+                "path": "closes_at"
+              },
+              {
+                "kind": "arg",
+                "path": "grace_seconds"
+              },
+              {
+                "kind": "arg",
+                "path": "max_position"
+              },
+              {
+                "kind": "arg",
+                "path": "identity_seed"
               }
             ]
           }
@@ -726,6 +750,19 @@
           "type": "pubkey"
         },
         {
+          "name": "proposal",
+          "type": "pubkey"
+        },
+        {
+          "name": "identity_seed",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
           "name": "b",
           "type": "u64"
         },
@@ -784,6 +821,26 @@
               {
                 "kind": "account",
                 "path": "creator"
+              },
+              {
+                "kind": "account",
+                "path": "stake_mint"
+              },
+              {
+                "kind": "arg",
+                "path": "b"
+              },
+              {
+                "kind": "arg",
+                "path": "closes_at"
+              },
+              {
+                "kind": "arg",
+                "path": "grace_seconds"
+              },
+              {
+                "kind": "arg",
+                "path": "max_position"
               }
             ]
           }

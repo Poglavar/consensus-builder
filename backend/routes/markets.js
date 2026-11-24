@@ -9,22 +9,21 @@
 // GET /markets?city=<id>&scope=other: the same for every other city, each contest naming its city.
 
 import { createRequire } from 'node:module';
-import { Connection } from '@solana/web3.js';
+import { createRpcConnection } from '../solana/rpc.js';
 import { buildContests, buildOtherCityContests, designCidsToCompare, landOverlap, subjectAccountOf } from '../markets/contests.js';
 import { AGREEMENT_PROGRAM_ID, AgreementClient, DEVNET_GENESIS_HASH, ONCHAIN_STATUSES } from '../agreements/onchain.js';
-import { ACCEPTED_MARKET_LIQUIDITY, MARKET_GRACE_SECONDS } from '../markets/agreement-source.js';
 import { AGREEMENT_EXECUTION_RECIPE_ID, buildAgreementExecutionRecipe, chainStatusOf } from '../oracle/market-recipe.js';
 import { normalizeCityCode } from '../utils/city-code.js';
 import { currentPlanAgreementSelect, CURRENT_AGREEMENTS_BY_ACCOUNT_SQL } from '../agreements/current-plan-sql.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
 import { DEVNET_USDC_MINT } from '../solana/address-book.js';
+import { discoverAgreementMarkets } from '../markets/market-discovery.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
 // The same codec the browser and the agent bettor use (frontend/js/solana/market-client.js).
 const marketClient = require('../../frontend/js/solana/market-client.js');
 marketClient.configure({ web3 });
-const lmsrClient = require('../../frontend/js/solana/lmsr-client.js').configure({ web3 });
 const lmsr = require('../../frontend/js/bets/lmsr.js');
 const MARKET_PROGRAM_ID = marketClient.constants.PROGRAM_ID;
 
@@ -103,55 +102,38 @@ export async function agreementByAccount(db, account) {
     return rows.map(rowToAgreement).find(agreement => agreement.account === account) || null;
 }
 
-/** Whether a decoded LMSR market account carries the canonical terms of this agreement's bet. */
-export function hasCanonicalMarketTerms(market, agreementAccount, subject) {
-    const b = typeof market?.b === 'bigint' ? market.b : null;
-    // The program names a market's subject account `proposal`.
-    return market?.kind === 0 && market.proposal === agreementAccount && market.stakeMint === DEVNET_USDC_MINT &&
-        market.creator === subject.authority && b !== null && ACCEPTED_MARKET_LIQUIDITY.includes(b) &&
-        Number(market.closesAt) === subject.deadline && market.graceSeconds === MARKET_GRACE_SECONDS &&
-        market.maxPosition === 0n && market.seed === lmsr.maxLoss(b);
+/** The codec authenticates the address and vault. These checks bind the funded USDC book to its agreement. */
+export function hasAgreementMarketTerms(market, account, subject) {
+    return !!market && market.proposal === account && market.stakeMint === DEVNET_USDC_MINT
+        && (market.kind === 0 || (market.kind === 1 && market.trustedAttester === subject.lens))
+        && Number.isFinite(new Date(Number(market.closesAt) * 1000).getTime())
+        && typeof market.b === 'bigint' && market.b > 0n && market.seed === lmsr.maxLoss(market.b);
 }
 
-// Market accounts for a list of agreement accounts (the markets' subjects), read in batches through
-// SOLANA_RPC_URL. Returns Map(agreementAccount → { address, market|null }).
 export function defaultMarketReader(env = process.env) {
-    const batchSize = accountsPerRequest(env);
-    let connection = null;
-    return async (accounts, agreements) => {
-        connection ??= new Connection(env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
+    let connection;
+    return async (accounts, agreements = []) => {
+        connection ??= createRpcConnection(env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed',
+            { programAccountsEndpoint: env.SOLANA_PROGRAM_ACCOUNTS_RPC_URL || null });
         await assertMarketNetwork(connection);
-        const subjects = new Map((agreements || []).map(agreement => [agreement.account, agreement]));
-        // The app's market is sponsored by the agreement's own sponsor. Creator-bound addresses
-        // allow other markets without letting an unrelated wallet reserve this canonical one.
-        const pdas = accounts.map(account => {
-            const subject = subjects.get(account);
-            if (!subject?.sponsor) throw new Error('The indexed agreement sponsor is required.');
-            return { account, subject, pda: lmsrClient.getMarketPda(account, subject.sponsor)[0] };
-        });
-        const result = new Map();
-        const infos = await getMultipleAccountsBatched(connection,
-            pdas.flatMap(entry => [entry.pda, new web3.PublicKey(entry.account)]), { batchSize });
-        pdas.forEach((entry, index) => {
-            const info = infos[index * 2];
-            const subjectInfo = infos[index * 2 + 1];
-            if (subjectInfo?.owner?.toBase58() !== AGREEMENT_PROGRAM_ID) throw new Error('Agreement account is unavailable.');
-            const subject = AgreementClient.readAgreement(subjectInfo.data, entry.account);
-            if (!subject || subject.cid !== entry.subject.cid || subject.authority !== entry.subject.sponsor ||
-                !ONCHAIN_STATUSES[subject.statusCode]) throw new Error('Agreement account identity or status differs.');
-            let market = null;
-            if (info) {
-                if (info.owner?.toBase58() !== MARKET_PROGRAM_ID) throw new Error('Unexpected market account program.');
-                market = lmsrClient.readMarketAccount(info, entry.pda);
-                if (!hasCanonicalMarketTerms(market, entry.account, subject)) {
-                    throw new Error('Market account terms differ from the canonical agreement bet.');
-                }
+        const indexed = new Map(agreements.map(row => [row.account, row]));
+        if (accounts.some(account => !indexed.get(account)?.sponsor)) throw new Error('An indexed agreement sponsor is required.');
+        const [found, subjects] = await Promise.all([
+            discoverAgreementMarkets(connection, accounts),
+            getMultipleAccountsBatched(connection, accounts.map(address => new web3.PublicKey(address)), { batchSize: accountsPerRequest(env) })
+        ]);
+        return new Map(accounts.map((account, i) => {
+            const info = subjects[i];
+            if (info?.owner?.toBase58() !== AGREEMENT_PROGRAM_ID) throw new Error('Agreement account is unavailable.');
+            const subject = AgreementClient.readAgreement(info.data, account);
+            const row = indexed.get(account);
+            if (!subject || subject.cid !== row?.cid || subject.authority !== row.sponsor || !ONCHAIN_STATUSES[subject.statusCode]) {
+                throw new Error('Agreement account identity or status differs.');
             }
-            result.set(entry.account, { address: entry.pda.toBase58(), market,
-                chainStatus: ONCHAIN_STATUSES[subject.statusCode], executedAt: subject.executedAt,
-                deadline: subject.deadline > 0 ? new Date(subject.deadline * 1000).toISOString() : null });
-        });
-        return result;
+            return [account, { sponsor: subject.authority, lens: subject.lens, chainStatus: ONCHAIN_STATUSES[subject.statusCode],
+                deadline: subject.deadline > 0 ? new Date(subject.deadline * 1000).toISOString() : null,
+                markets: found.get(account).filter(item => hasAgreementMarketTerms(item.market, account, subject)) }];
+        }));
     };
 }
 

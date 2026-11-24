@@ -31,7 +31,7 @@ const DESIGN = cidOfObject({ schema: 'design/v1', title: 'Pocket park' });
 const ACCOUNT = agreementAccountOf(AGREEMENT, SPONSOR);
 // A recorded account the index holds for RECORDED (e.g. minted under another program id); it wins over the derived one.
 const RECORDED_ACCOUNT = Keypair.generate().publicKey.toBase58();
-const MARKET = marketClient.getMarketPda(ACCOUNT, SPONSOR)[0].toBase58();
+const MARKET = Keypair.generate().publicKey.toBase58();
 const BOUNDS = { west: 15.9, south: 45.8, east: 15.92, north: 45.82 };
 
 // consensus.agreement rows as AGREEMENT_ROWS selects them.
@@ -83,11 +83,11 @@ describe('agreementAccountIndex', () => {
     it('maps the recorded account, else the one sponsor and CID derive, and each one\'s market PDA, to the agreement', () => {
         const index = agreementAccountIndex([...ROWS, agreementRow(cidOfObject({ none: true }), { sponsor: null })]);
         expect(index.get(ACCOUNT)).toEqual({ cid: AGREEMENT, account: ACCOUNT });
-        expect(index.get(MARKET)).toEqual({ cid: AGREEMENT, account: ACCOUNT });
+        expect(index.has(MARKET)).toBe(false);
         expect(index.get(RECORDED_ACCOUNT)).toEqual({ cid: RECORDED, account: RECORDED_ACCOUNT });
         expect(index.has(agreementAccountOf(RECORDED, SPONSOR))).toBe(false);
         // An agreement with neither a recorded account nor a sponsor has none: two agreements, two accounts, two markets.
-        expect(index.size).toBe(4);
+        expect(index.size).toBe(2);
     });
 });
 
@@ -117,8 +117,8 @@ describe('chainEvents', () => {
         ];
         const events = chainEvents(rows, { agreementsByAccount: index, decode: raw => raw, book: { entryFor: () => null } });
         expect(events.map(event => [event.action, event.entity.id])).toEqual([
-            [{ type: 'stake', agreementCid: AGREEMENT, side: 'yes', maxCost: '1.2', shares: '1500000' }, AGREEMENT],
-            [{ type: 'claim', agreementCid: AGREEMENT }, AGREEMENT],
+            [{ type: 'stake', agreementCid: AGREEMENT, marketAddress: MARKET, side: 'yes', maxCost: '1.2', shares: '1500000' }, AGREEMENT],
+            [{ type: 'claim', agreementCid: AGREEMENT, marketAddress: MARKET }, AGREEMENT],
             [{ type: 'donate', agreementCid: RECORDED, amount: '0.05' }, RECORDED]
         ]);
         expect(events[0].actor).toMatchObject({ id: HUMAN, kind: 'human' });

@@ -1,6 +1,5 @@
-// Browser-wallet bridge for the canonical LMSR market of the proposal_market program. The historical
-// SolanaMarketClient remains available for reading old parimutuel accounts; all active actions use
-// SolanaLmsrClient and the agreement sponsor's creator-bound market PDA.
+// Browser-wallet operations always use the selected market account. Creation binds the signing
+// wallet and the chosen terms to a new market address.
 (function attachSolanaMarketBridge(root) {
     'use strict';
     if (!root) return;
@@ -8,10 +7,7 @@
     const DEVNET_USDC_MINT = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
     const MODEL = 'lmsr';
     const ASSET = 'devnet-usdc';
-    // New markets open with b = 5 devnet USDC (seed ≈ 3.47 USDC); markets opened before 2026-10-30 keep b = 100.
-    // Must match backend/agents/bettor.js.
     const DEFAULT_B = 5_000_000n;
-    const ACCEPTED_B = new Set([DEFAULT_B, 100_000_000n]);
     const GRACE_SECONDS = 0;
     const MAX_POSITION = 0n;
 
@@ -129,6 +125,10 @@
             address: publicKey(address),
             model: MODEL,
             asset: ASSET,
+            kind: raw.kind,
+            proposed: Boolean(raw.proposed),
+            challengeEndsAt: raw.challengeEndsAt == null ? null : Number(raw.challengeEndsAt),
+            proposedOutcome: raw.proposed ? ['no', 'yes', 'void'][raw.outcome] : null,
             b: raw.b.toString(),
             qYes: raw.qYes.toString(),
             qNo: raw.qNo.toString(),
@@ -143,28 +143,16 @@
         };
     }
 
-    function assertCanonicalMarket(client, raw, address, proposal, sponsor, deadline, programId) {
-        if (raw.kind !== client.constants.KIND_PROPOSAL
-            || raw.proposal !== publicKey(proposal)
-            || raw.creator !== sponsor
-            || raw.stakeMint !== DEVNET_USDC_MINT
-            || !ACCEPTED_B.has(raw.b)
-            || raw.closesAt !== BigInt(deadline)
-            || raw.graceSeconds !== GRACE_SECONDS
-            || raw.maxPosition !== MAX_POSITION
-            || raw.seed !== root.Lmsr.maxLoss(raw.b)) {
-            throw new Error('Market account does not match the canonical agreement market terms.');
-        }
-        const [expected] = client.getMarketPda(proposal, sponsor, programId);
-        if (publicKey(expected) !== publicKey(address)) throw new Error('Market address is not the agreement sponsor PDA.');
-    }
-
-    async function liveMarket(connection, client, proposal, agreement, programId) {
-        const sponsor = agreement.authority;
-        const [address] = client.getMarketPda(proposal, sponsor, programId);
+    async function liveMarket(connection, client, proposal, agreement, marketAddress, programId) {
+        if (!marketAddress) throw new Error('Select a market address for this agreement.');
+        const address = new root.solanaWeb3.PublicKey(marketAddress);
         const raw = await client.readMarket(connection, address, programId);
-        if (raw) assertCanonicalMarket(client, raw, address, proposal, sponsor, agreement.deadline, programId);
-        return { address, raw, sponsor };
+        // The codec verifies the account owner, its term-derived address and its token vault.
+        if (raw && (raw.proposal !== publicKey(proposal) || raw.stakeMint !== DEVNET_USDC_MINT
+            || raw.seed !== root.Lmsr.maxLoss(raw.b) || (raw.kind === 1 && raw.trustedAttester !== agreement.lens))) {
+            throw new Error('Selected market does not match the agreement, verifier or funded USDC terms.');
+        }
+        return { address, raw, sponsor: agreement.authority };
     }
 
     async function chainNow(connection) {
@@ -189,30 +177,40 @@
         return { address, amount: BigInt(balance.value.amount), exists: true };
     }
 
-    async function readSummary(proposal) {
+    async function readSummary(proposal, { marketAddress = null, programId } = {}) {
         const client = await dependencies();
         const connection = await verifiedConnection();
         const wallet = root.solanaWalletManager?.getProvider?.()?.publicKey || null;
         const agreement = await readAgreement(connection, proposal);
         const sponsor = agreement.authority;
-        const [marketAddress] = client.getMarketPda(proposal, sponsor);
-        const { raw } = await liveMarket(connection, client, proposal, agreement);
-        if (!raw) {
-            return {
-                market: null, marketAddress: publicKey(marketAddress), sponsor, chainStatus: chainStatus(agreement),
-                deadline: agreement.deadline === 0 ? null : new Date(agreement.deadline * 1000).toISOString(),
-                wallet: wallet ? publicKey(wallet) : null, yes: null, no: null
-            };
+        const summary = { market: null, marketAddress: marketAddress ? publicKey(marketAddress) : null,
+            sponsor, lens: agreement.lens, chainStatus: chainStatus(agreement),
+            deadline: agreement.deadline === 0 ? null : new Date(agreement.deadline * 1000).toISOString(),
+            wallet: wallet ? publicKey(wallet) : null, yes: null, no: null };
+        if (!marketAddress) return summary;
+        const { raw } = await liveMarket(connection, client, proposal, agreement, marketAddress, programId);
+        if (!raw) throw new Error('Selected market was not found.');
+        const market = normalizedMarket(client, marketAddress, raw);
+        market.creatorRole = raw.creator === sponsor ? 'sponsor' : raw.creator === agreement.lens ? 'verifier' : null;
+        if (raw.kind === 1) {
+            const cid = root.Cid.rawCidOfDigest(raw.recipeHash);
+            market.recipeCid = cid;
+            market.trustedAttester = raw.trustedAttester;
+            market.schema = raw.schema;
+            market.credential = raw.credential;
+            try {
+                const response = await root.fetch(root.getBackendBase().replace(/\/$/, '') + '/markets/recipes/' + cid);
+                if (response.ok) {
+                    market.recipeBody = root.ExternalMarketRecipe.verify(await response.json(), raw);
+                    market.question = market.recipeBody.question;
+                }
+            } catch { /* A missing question preimage does not erase positions or the on-chain settlement terms. */ }
         }
         const [yes, no] = wallet ? await Promise.all([
-            client.readPosition(connection, marketAddress, wallet, client.constants.SIDE_YES),
-            client.readPosition(connection, marketAddress, wallet, client.constants.SIDE_NO)
+            client.readPosition(connection, marketAddress, wallet, client.constants.SIDE_YES, programId),
+            client.readPosition(connection, marketAddress, wallet, client.constants.SIDE_NO, programId)
         ]) : [null, null];
-        return {
-            market: normalizedMarket(client, marketAddress, raw), marketAddress: publicKey(marketAddress), sponsor,
-            chainStatus: chainStatus(agreement), deadline: agreement.deadline === 0 ? null : new Date(agreement.deadline * 1000).toISOString(),
-            wallet: wallet ? publicKey(wallet) : null, yes, no
-        };
+        return { ...summary, market, yes, no };
     }
 
     async function readAgreementState(proposal) {
@@ -229,8 +227,7 @@
         };
     }
 
-    // Rows are { account, sponsor, marketAddress }; positions are fetched for the connected wallet.
-    // Addresses are rederived from each agreement and sponsor before a single batched read.
+    // Position identities and the returned map are keyed by market, even for sibling questions.
     async function readPositions(rows = [], options = {}) {
         const client = await dependencies();
         const wallet = root.solanaWalletManager?.getProvider?.()?.publicKey || null;
@@ -240,13 +237,11 @@
         const keys = [];
         const result = {};
         for (const row of input) {
-            if (!row?.account || !row?.sponsor || !row?.marketAddress) {
-                throw new Error('Each market position row needs account, sponsor, and marketAddress.');
-            }
-            const [market] = client.getMarketPda(row.account, row.sponsor, options.programId);
-            if (publicKey(market) !== publicKey(row.marketAddress)) throw new Error(`Market address is not canonical for ${row.account}.`);
-            const account = publicKey(row.account);
-            if (!result[account]) result[account] = { yes: null, no: null };
+            if (!row?.marketAddress) throw new Error('Each market position row needs a marketAddress.');
+            const market = new root.solanaWeb3.PublicKey(row.marketAddress);
+            const account = publicKey(market);
+            if (result[account]) continue;
+            result[account] = { yes: null, no: null };
             for (const [name, side] of [['yes', client.constants.SIDE_YES], ['no', client.constants.SIDE_NO]]) {
                 keys.push({ account, market, name, side, address: client.getPositionPda(market, wallet, side, options.programId)[0] });
             }
@@ -274,13 +269,13 @@
         return account.amount;
     }
 
-    async function requireTradingMarket(client, connection, proposal, programId, wallet) {
+    async function requireTradingMarket(client, connection, proposal, marketAddress, programId, wallet) {
         const agreement = await readAgreement(connection, proposal);
-        const { raw, address, sponsor } = await liveMarket(connection, client, proposal, agreement, programId);
+        const { raw, address, sponsor } = await liveMarket(connection, client, proposal, agreement, marketAddress, programId);
         if (!raw) throw new Error('This agreement does not have an LMSR market yet.');
-        if (agreement.status !== 'Active') throw new Error('Only Active agreements can be traded.');
+        if (raw.kind === 0 && agreement.status !== 'Active') throw new Error('Execution markets require an Active agreement.');
         const now = await chainNow(connection);
-        if (!agreement.deadline || agreement.deadline <= now || raw.closesAt <= BigInt(now)) {
+        if (raw.proposed || raw.closesAt <= BigInt(now)) {
             const error = new Error('Trading has closed for this agreement market.');
             error.code = 'MARKET_CLOSED';
             throw error;
@@ -300,31 +295,39 @@
         if (!options.proposal) throw new Error('proposal account is required');
         const connection = await verifiedConnection();
         const agreement = await readAgreement(connection, options.proposal);
-        if (publicKey(wallet) !== agreement.authority) {
-            const error = new Error('Only the agreement sponsor can create its canonical market.');
-            error.code = 'NOT_SPONSOR';
-            throw error;
+        const publication = options.external ? { proposal: publicKey(options.proposal), trustedAttester: agreement.lens, external: options.external } : null;
+        const recipe = publication ? root.ExternalMarketRecipe.build(publication) : null;
+        const b = toPositiveBigInt(options.b ?? DEFAULT_B, 'b');
+        const closesAt = options.closesAt ?? recipe?.closesAt ?? agreement.deadline;
+        if (!Number.isSafeInteger(closesAt) || (recipe && recipe.closesAt !== closesAt)) {
+            throw transactionError('The market and its question must have the same closing time.', 'INVALID_DEADLINE');
         }
-        if (agreement.status !== 'Active') throw new Error('Only Active agreements can open a market.');
+        const terms = { proposal: options.proposal, creator: publicKey(wallet), stakeMint: DEVNET_USDC_MINT,
+            b, closesAt, graceSeconds: options.graceSeconds ?? GRACE_SECONDS, maxPosition: options.maxPosition ?? MAX_POSITION,
+            ...recipe?.commitments, programId: options.programId };
+        const instruction = recipe ? client.buildCreateLmsrExternalMarketIx(terms) : client.buildCreateLmsrMarketIx(terms);
+        const address = instruction.keys[0].pubkey;
+        const existing = await liveMarket(connection, client, options.proposal, agreement, address, options.programId);
+        if (existing.raw) return { replayed: true, marketAddress: publicKey(address), market: normalizedMarket(client, address, existing.raw), transactionHash: null, explorerUrl: null };
+        if (!recipe && agreement.status !== 'Active') throw new Error('Execution markets require an Active agreement.');
         const now = await chainNow(connection);
-        if (!agreement.deadline || agreement.deadline <= now) {
-            const error = new Error('The agreement needs a future deadline to open an LMSR market.');
-            error.code = 'INVALID_DEADLINE';
-            throw error;
+        if (closesAt <= now) {
+            throw transactionError('Choose a future market deadline.', 'INVALID_DEADLINE');
         }
-        const { raw, address } = await liveMarket(connection, client, options.proposal, agreement, options.programId);
-        if (raw) return { replayed: true, market: normalizedMarket(client, address, raw), transactionHash: null, explorerUrl: null };
-
-        const seed = root.Lmsr.maxLoss(DEFAULT_B);
+        const seed = root.Lmsr.maxLoss(b);
         await preflightSol(connection, wallet);
         const creatorTokens = await tokenBalance(connection, client, wallet, DEVNET_USDC_MINT);
         if (!creatorTokens.exists || creatorTokens.amount < seed) {
             throw transactionError(`Market seed requires ${seed} atomic USDC units; ${creatorTokens.amount} available`, 'INSUFFICIENT_USDC');
         }
-        return send(connection, provider, wallet, [client.buildCreateLmsrMarketIx({
-            proposal: options.proposal, creator: agreement.authority, stakeMint: DEVNET_USDC_MINT, b: DEFAULT_B,
-            closesAt: agreement.deadline, graceSeconds: GRACE_SECONDS, maxPosition: MAX_POSITION, programId: options.programId
-        })], options);
+        if (recipe) {
+            const response = await root.fetch(root.getBackendBase().replace(/\/$/, '') + '/markets/recipes', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(publication)
+            });
+            if (!response.ok || (await response.json()).cid !== recipe.cid) throw new Error('Could not publish the exact question and settlement terms.');
+        }
+        const receipt = await send(connection, provider, wallet, [instruction], options);
+        return { ...receipt, marketAddress: publicKey(address) };
     }
 
     async function buy(options = {}) {
@@ -334,7 +337,7 @@
         const shares = toPositiveBigInt(options.shares, 'shares');
         const maxCost = toPositiveBigInt(options.maxCost, 'maxCost');
         const connection = await verifiedConnection();
-        const context = await requireTradingMarket(client, connection, options.proposal, options.programId, wallet);
+        const context = await requireTradingMarket(client, connection, options.proposal, options.marketAddress, options.programId, wallet);
         await preflightSol(connection, wallet);
         const balance = await tokenBalance(connection, client, wallet, context.raw.stakeMint);
         if (!balance.exists || balance.amount < maxCost) {
@@ -353,7 +356,7 @@
         const shares = toPositiveBigInt(options.shares, 'shares');
         const minReturn = toPositiveBigInt(options.minReturn, 'minReturn');
         const connection = await verifiedConnection();
-        const context = await requireTradingMarket(client, connection, options.proposal, options.programId, wallet);
+        const context = await requireTradingMarket(client, connection, options.proposal, options.marketAddress, options.programId, wallet);
         const position = await client.readPosition(connection, context.address, wallet, options.side, options.programId);
         if (!position || position.amount < shares) throw new Error('Position does not hold enough shares to sell.');
         await preflightSol(connection, wallet);
@@ -379,12 +382,21 @@
         if (!options.proposal) throw new Error('proposal account is required');
         const connection = await verifiedConnection();
         const agreement = await readAgreement(connection, options.proposal);
-        const { raw, address } = await liveMarket(connection, client, options.proposal, agreement, options.programId);
+        const { raw, address } = await liveMarket(connection, client, options.proposal, agreement, options.marketAddress, options.programId);
         if (!raw) throw new Error('This agreement does not have an LMSR market yet.');
         if (raw.resolved) throw new Error('This market is already resolved.');
-        return send(connection, provider, wallet, [client.buildResolveLmsrIx({
-            market: address, proposal: options.proposal, schema: root.solanaWeb3.SystemProgram.programId, programId: options.programId
-        })], options);
+        const evidence = options.evidence || [];
+        if (!Array.isArray(evidence) || evidence.length > 2 || (raw.kind === 0 && evidence.length)) throw new Error('Invalid evidence for this market.');
+        const args = { market: address, proposal: options.proposal, schema: raw.kind === 1 ? raw.schema : root.solanaWeb3.SystemProgram.programId,
+            programId: options.programId, evidence };
+        let instruction;
+        if (!raw.proposed) instruction = client.buildResolveLmsrIx(args);
+        else if (await chainNow(connection) > Number(raw.challengeEndsAt)) instruction = client.buildFinalizeLmsrIx(args);
+        else {
+            if (evidence.length !== 1) throw new Error('Challenging this proposed outcome requires one qualifying attestation.');
+            instruction = client.buildChallengeLmsrIx({ ...args, evidence: evidence[0] });
+        }
+        return send(connection, provider, wallet, [instruction], options);
     }
 
     function createAtaIdempotentlyInstruction(client, owner, mint, payer) {
@@ -410,7 +422,7 @@
         if (!options.proposal) throw new Error('proposal account is required');
         const connection = await verifiedConnection();
         const agreement = await readAgreement(connection, options.proposal);
-        const { raw, address } = await liveMarket(connection, client, options.proposal, agreement, options.programId);
+        const { raw, address } = await liveMarket(connection, client, options.proposal, agreement, options.marketAddress, options.programId);
         if (!raw?.resolved) throw new Error('This market has not been resolved yet.');
         const position = await client.readPosition(connection, address, wallet, options.side, options.programId);
         if (!position || position.claimed || position.amount <= 0n) throw new Error('There is no claimable position on this side.');

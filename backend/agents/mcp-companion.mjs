@@ -63,7 +63,7 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
         annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true }
     }, handler(args => actions.castCommunityVote(args)));
     add('ugt_approval_link', 'Build a wallet approval link. The person reviews and presses the action; links never open a wallet prompt on load. Amount is SOL for fund, USDC for bet, pledge or donate. Apartment reserve/list links require unitId and never sign automatically.',
-        { action: z.enum(['mint', 'fund', 'decide', 'execute', 'cancel', 'expire', 'bet', 'pledge', 'donate', 'reserve', 'list-apartment']), target: z.string().max(100), params: z.object({ amount: z.string().optional(), side: z.enum(['yes', 'no']).optional(), decision: z.enum(['accept', 'reject']).optional(), city: city.optional(), unitId: permanentId.optional() }).default({}) }, 'approvalLink');
+        { action: z.enum(['mint', 'fund', 'decide', 'execute', 'cancel', 'expire', 'bet', 'pledge', 'donate', 'reserve', 'list-apartment']), target: z.string().max(100), params: z.object({ amount: z.string().optional(), market: z.string().regex(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/).optional().describe('Exact devnet USDC market address from ugt_markets for a bet link.'), side: z.enum(['yes', 'no']).optional(), decision: z.enum(['accept', 'reject']).optional(), city: city.optional(), unitId: permanentId.optional() }).default({}) }, 'approvalLink');
     add('ugt_find_place', 'Find a place, address, street intersection, longitude/latitude, parcel id or design title. Place, address and intersection searches require a WGS84 bbox no larger than 0.5 degrees. Candidates include map links; choose one before drafting.',
         { query: z.string().min(1).max(200).optional(), street: z.string().min(1).max(160).optional(), houseNumber: z.string().min(1).max(20).optional(),
             streetA: z.string().min(1).max(160).optional(), streetB: z.string().min(1).max(160).optional(), city: city.optional(), parcelSourceId: z.string().max(3507).optional(), bbox: bbox.optional(),
@@ -92,7 +92,7 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
     add('ugt_get_design', 'Read a design by CID and return its map link.', { designCid: cid }, 'getDesign');
     add('ugt_apartment_offers', 'Read active minted apartment offers matching the exact X-ray building and unit. Availability is checked again from chain when the agreement opens.',
         { city, xrayBuilding: z.string().min(1).max(1024), unit: z.string().min(1).max(1024) }, 'apartmentOffers');
-    add('ugt_markets', 'Read city contests, pools and devnet USDC stakes.', { city }, 'markets');
+    add('ugt_markets', 'List each agreement’s funded devnet USDC markets and their addresses, question deadlines, creators and liquidity b. Use the selected address for shares and settlement.', { city }, 'markets');
     add('ugt_explain', 'Look up a term in the maintained domain vocabulary.', { term: z.string().min(1).max(100) }, 'explain');
 
     // The agent's working plan (docs/agent-working-plan.md): every authored design is placed in it with the map's apply rules.

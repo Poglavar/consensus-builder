@@ -114,6 +114,7 @@
 
     // The question names the agreement and its exact execution cutoff.
     function agreementQuestionText(row) {
+        if (row.marketKind === 1) return row.market?.question || t('bets.create.publicQuestion', 'Public-record question for {{title}}', { title: labelText(row) });
         return row.closesAt ? t('bets.trade.question', 'Will {{title}} execute by {{deadline}}?', { title: labelText(row), deadline: root.BetsUI.deadline(row.closesAt) })
             : t('bets.question.agreement', 'Will {{title}} execute on-chain?', { title: labelText(row) });
     }
@@ -143,7 +144,7 @@
 
     // "Your bets: yes 0.05 USDC" for a row, from the wallet's decoded positions; empty without any.
     function mineText(row, byAccount = state.positions) {
-        const positions = byAccount[row.account];
+        const positions = byAccount[positionKey(row)];
         if (!positions || !root.BetsModel) return '';
         const lines = ['yes', 'no']
             .filter(side => positions[side] && root.BetsModel.formatAtomic(positions[side].amount) !== '0')
@@ -173,8 +174,8 @@
         const existing = li.querySelector('.bets-row__collect');
         if (existing) existing.remove();
         if (!root.BetsModel || !row.account) return;
-        const full = rowFor(row.account);
-        const sides = full ? root.BetsModel.claimSides(full.row, state.positions[row.account]) : [];
+        const full = rowFor(row.account, row.marketAddress);
+        const sides = full ? root.BetsModel.claimSides(full.row, state.positions[positionKey(row)]) : [];
         if (!sides.length) return;
         const collect = el('div', 'bets-row__collect');
         sides.forEach(side => {
@@ -193,8 +194,8 @@
         const bridge = root.BetsTrading;
         const accounts = (payload && payload.contests ? payload.contests : [])
             .flatMap(contest => contest.agreements || [])
-            .filter(entry => entry.account && entry.market)
-            .map(entry => ({ account: entry.account, sponsor: entry.sponsor, marketAddress: entry.market.address }));
+            .flatMap(entry => (Array.isArray(entry.markets) ? entry.markets : [entry.market]).filter(Boolean)
+                .map(market => ({ account: entry.account, sponsor: entry.sponsor, marketAddress: market.address })));
         if ((bridge.needsWallet() && !walletConnected()) || !accounts.length) return {};
         try {
             return await bridge.readPositions(accounts);
@@ -212,7 +213,7 @@
         const container = doc.getElementById(CONTENT_ID);
         if (!container) return;
         if (state.filter === 'mine') { render(container, payload); return; }
-        container.querySelectorAll('.bets-row[data-account]').forEach(li => renderMine(li, { account: li.dataset.account }));
+        container.querySelectorAll('.bets-row[data-account]').forEach(li => renderMine(li, { account: li.dataset.account, marketAddress: li.dataset.market }));
         container.querySelectorAll('.bets-row__mine').forEach(mine => {
             const account = mine.closest('.bets-row')?.dataset.account;
             if (!account || state.positionTracked.has(account)) return;
@@ -223,19 +224,19 @@
 
     // The shareable link to one row's bet (js/bets/bets-link.js): this origin, the current city and
     // the language the page was opened in.
-    function linkFor(account) {
+    function linkFor(account, marketAddress = null) {
         const link = root.BetsLink;
         if (!link || !account) return null;
         const manager = root.CityConfigManager;
         const city = manager && typeof manager.getCurrentCityId === 'function' ? manager.getCurrentCityId() : null;
         const params = new URL(root.location.href).searchParams;
-        try { return link.build({ origin: root.location.origin, city, account, lang: params.get('lang'),
+        try { return link.build({ origin: root.location.origin, city, account, market: root.BetsTrading.asset() === 'devnet-usdc' ? marketAddress : null, lang: params.get('lang'),
             asset: root.BetsTrading.asset(), backend: params.get('backend'), betTest: root.BetsTrading.simulationRun() }); } catch (_) { return null; }
     }
 
     // Put the row's link on the clipboard; the shared helper shows "Copied".
     async function copyLink(account, options = {}) {
-        const href = linkFor(account);
+        const href = linkFor(account, options.marketAddress);
         if (!href) return false;
         const row = rowFor(account)?.row || { account };
         const entryPoint = options.entryPoint || 'sheet';
@@ -289,10 +290,10 @@
     }
 
     // The contest and row of one agreement account in the loaded city, as the model shapes them.
-    function rowFor(account) {
+    function rowFor(account, marketAddress = null) {
         if (!account) return null;
         for (const contest of contests()) {
-            const row = contest.rows.find(item => item.account === account);
+            const row = contest.rows.find(item => item.account === account && (!marketAddress || item.marketAddress === marketAddress));
             if (row) return { contest, row };
         }
         return null;
@@ -308,7 +309,8 @@
         return null;
     }
 
-    const positionsFor = account => (account && state.positions[account]) || null;
+    const positionKey = row => root.BetsTrading.asset() === 'devnet-usdc' ? row.marketAddress : row.account;
+    const positionsFor = (account, marketAddress) => state.positions[positionKey({ account, marketAddress })] || null;
     // Settles once the positions read that a load started has finished (or at once when none is running).
     const whenPositions = () => Promise.resolve(state.positionsLoading || null);
 
@@ -321,11 +323,11 @@
             trackBet('action_end', row, { ...context, result: 'failed', errorCode: 'wallet_not_connected' });
             askForWallet(); return;
         }
-        if (typeof root.openBetDialog === 'function') root.openBetDialog({ account: row.account, side, entryPoint: 'sheet' });
+        if (typeof root.openBetDialog === 'function') root.openBetDialog({ account: row.account, marketAddress: row.marketAddress, side, entryPoint: 'sheet' });
     }
 
     function openBet(row) {
-        if (typeof root.openBetDialog === 'function') root.openBetDialog({ account: row.account, entryPoint: 'sheet' });
+        if (typeof root.openBetDialog === 'function') root.openBetDialog({ account: row.account, marketAddress: row.marketAddress, entryPoint: 'sheet' });
     }
 
     // Opening, settling or collecting from a pool is a single wallet transaction through the shared
@@ -355,7 +357,7 @@
         button.disabled = true;
         try {
             const result = await bridge[action]({
-                proposal: row.account,
+                proposal: row.account, marketAddress: row.marketAddress,
                 ...(side === null ? {} : { side }),
                 onStatus: item => {
                     setNote(li, view && typeof view.statusText === 'function' ? view.statusText(item) : '');
@@ -434,9 +436,10 @@
         const paysTitle = multiple !== null && multiple !== undefined
             ? ' ' + t('bets.trade.referencePayout', 'A {{amount}} bet pays about {{payout}} if it wins.', { amount: moneyText('1'), payout: moneyText(multiple.toFixed(2)) })
             : '';
-        button.title = (yes
+        const question = row.marketKind === 1 ? agreementQuestionText(row) : yes
             ? t('bets.row.yesExecutes', 'Bet that the agreement executes on-chain by the deadline.')
-            : t('bets.row.noExecutes', 'Bet that the agreement expires or misses the execution deadline.')) + paysTitle;
+            : t('bets.row.noExecutes', 'Bet that the agreement expires or misses the execution deadline.');
+        button.title = question + paysTitle;
         button.addEventListener('click', () => placeBet(row, side));
         return button;
     }
@@ -454,11 +457,12 @@
         const li = el('li', `bets-row is-${row.state}`);
         li.dataset.cid = row.cid || '';
         if (row.account) li.dataset.account = row.account;
+        if (row.marketAddress) li.dataset.market = row.marketAddress;
 
         // The title is the way into the bet's own dialog; an unminted agreement has no bet, so its
         // title opens the agreement itself.
         const head = el('div', 'bets-row__head');
-        const title = el('button', 'btn btn-quiet bets-row__title', labelText(row));
+        const title = el('button', 'btn btn-quiet bets-row__title', row.market && row.asset === 'devnet-usdc' ? agreementQuestionText(row) : labelText(row));
         title.type = 'button';
         title.addEventListener('click', () => (row.account ? openBet(row) : openAgreement(row)));
         head.append(title, el('span', 'bets-row__chance', chanceLabel(row)));
@@ -477,7 +481,8 @@
         if (who) li.append(el('p', 'bets-row__who', who));
 
         const meta = el('div', 'bets-row__meta');
-        meta.append(el('span', null, t('bets.trade.playMoney', 'Play money')));
+        meta.append(el('span', null, row.asset === 'devnet-usdc' ? t('bets.row.liquidity', 'Liquidity b {{amount}} USDC', { amount: row.liquidity || '0' }) : t('bets.trade.playMoney', 'Play money')));
+        if (row.creator) meta.append(el('span', null, t('bets.row.creator', '{{role}} {{wallet}}', { role: row.creatorRole === 'verifier' ? t('bets.row.verifier', 'Verifier') : row.creatorRole === 'sponsor' ? t('bets.row.sponsor', 'Proposer') : t('bets.row.marketCreator', 'Market creator'), wallet: root.BetsModel.authorLabel(row.creator) })));
         // The agreement's own deadline: after it, it can no longer execute.
         if (row.closesAt) meta.append(el('span', null, t('bets.row.deadline', 'Deadline {{date}}', { date: root.BetsUI.deadline(row.closesAt) })));
         if (row.account) {
@@ -485,7 +490,7 @@
             // link in the meta line.
             const share = el('button', 'cb-link cb-link--quiet bets-row__link', t('bets.copyLink', 'Copy link'));
             share.type = 'button';
-            share.addEventListener('click', () => copyLink(row.account, { entryPoint: 'sheet' }));
+            share.addEventListener('click', () => copyLink(row.account, { marketAddress: row.marketAddress, entryPoint: 'sheet' }));
             meta.append(share);
         }
         if (meta.childElementCount) li.append(meta);
@@ -494,16 +499,16 @@
         const actions = el('div', 'bets-row__actions');
         if (row.state === 'open') {
             actions.append(betButton(row, 1), betButton(row, 0));
-        } else if (row.state === 'needs-market' && row.sponsor === root.solanaWalletManager?.getState?.()?.accounts?.[0]) {
-            const open = el('button', 'btn', t('bets.row.openMarket', 'Seed USDC market'));
+        } else if (row.state === 'needs-market' && row.asset === 'devnet-usdc') {
+            const open = el('button', 'btn', t('bets.row.openMarket', 'Open USDC market'));
             open.type = 'button';
-            open.addEventListener('click', () => marketTransaction(li, row, 'createMarket', open));
+            open.addEventListener('click', () => root.BusyControl.track(open, () => root.openBetDialog({ account: row.account, create: true, entryPoint: 'sheet' })));
             actions.append(open);
         } else if (row.state === 'settling') {
             li.append(el('p', 'bets-row__note', t('bets.row.settling', 'Trading closed; anyone can settle this bet')));
             const settle = el('button', 'btn', t('bets.row.settle', 'Settle market'));
             settle.type = 'button';
-            settle.addEventListener('click', () => marketTransaction(li, row, 'resolve', settle));
+            settle.addEventListener('click', () => root.BusyControl.track(settle, () => row.marketKind === 1 ? openBet(row) : marketTransaction(li, row, 'resolve', settle)));
             actions.append(settle);
         } else if (row.state === 'not-minted') {
             li.append(el('p', 'bets-row__note', t('bets.row.notMinted', 'Agreement not minted yet')));
@@ -523,7 +528,7 @@
         const params = new URL(root.location.href).searchParams;
         const title = el('a', 'cb-link bets-row__title', labelText(row));
         if (row.account && root.BetsLink) {
-            title.href = root.BetsLink.appHref({ city, account: row.account, lang: params.get('lang'),
+            title.href = root.BetsLink.appHref({ city, account: row.account, market: row.marketAddress, lang: params.get('lang'),
                 asset: root.BetsTrading.asset(), backend: params.get('backend'), betTest: root.BetsTrading.simulationRun() });
         }
         head.append(title, el('span', 'bets-row__chance', chanceLabel(row)));
@@ -918,7 +923,7 @@
             if (typeof root.whenAppBooted === 'function') await root.whenAppBooted();
             if (typeof root.openBetDialog === 'function') {
                 trackBet('entry', { account: link.account }, { entryPoint: 'deep-link' });
-                root.openBetDialog({ account: link.account, entryPoint: 'deep-link', ...(link.approval ? { side: link.approval.params.side, amount: link.approval.params.amount, approval: true } : {}) });
+                root.openBetDialog({ account: link.account, marketAddress: link.market, entryPoint: 'deep-link', ...(link.approval ? { side: link.approval.params.side, amount: link.approval.params.amount, approval: true } : {}) });
             }
             else root.openBetsSheet({ account: link.account });
         } catch (error) {

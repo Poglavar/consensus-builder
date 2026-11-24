@@ -116,7 +116,7 @@ describe('claims, filters and sorting', () => {
 });
 
 describe('server and sheet market ordering agree', () => {
-    it('retains deadline-first order and stable grouping in both representations', () => {
+    it('ranks funded liquidity ahead of deadline and traded shares in both representations', () => {
         const marketAt = (closesAt, qYes) => ({ ...market({ closesAt, qYes: String(qYes) }), address: 'm' });
         const agreements = [
             { cid: 'late', account: 'late', chainStatus: 'active', deadline: '2027-02-01T00:00:00Z', inputParcelIds: ['P'], market: marketAt(1801612800, 100) },
@@ -124,13 +124,27 @@ describe('server and sheet market ordering agree', () => {
         ];
         // overlaps: the two agreements' designs take overlapping ground, so they are one contest.
         const api = buildContests({ city: 'zagreb', agreements, overlaps: () => true, now: new Date('2026-10-25T00:00:00Z'),
-            markets: new Map(agreements.map(entry => [entry.account, { address: 'm', chainStatus: 'active', deadline: entry.deadline, market: {
-                b: 100000000n, qYes: BigInt(entry.market.qYes), qNo: 0n, seed: 69314720n, closesAt: entry.market.closesAt, graceSeconds: 0,
+            markets: new Map(agreements.map(entry => [entry.account, { chainStatus: 'active', deadline: entry.deadline, markets: [{ address: entry.account, market: {
+                b: entry.cid === 'soon' ? 200000000n : 100000000n, qYes: BigInt(entry.market.qYes), qNo: 0n, seed: 69314720n, closesAt: entry.market.closesAt, graceSeconds: 0,
                 maxPosition: 0n, paidOut: 0n, creator: 'creator', resolved: false, outcome: 0
-            } }])) });
+            } }] }])) });
         const sheet = BetsModel.contest(api.contests[0]);
         expect(api.contests[0].agreements.map(row => row.cid)).toEqual(['soon', 'late']);
         expect(sheet.rows.map(row => row.cid)).toEqual(['soon', 'late']);
         expect(sheet.rows[0].sharesAtomic).toBe(1n);
+    });
+});
+
+describe('multiple market entries', () => {
+    it('keeps an empty-market agreement available and sorts distinct pools by b', () => {
+        const rows = BetsModel.contest({ id: 'x', agreements: [
+            { account: 'empty', markets: [], canOpenMarket: true, chainStatus: 'active', deadline: '2030-01-01T00:00:00Z' },
+            { account: 'many', markets: [
+                { address: 'low', model: 'lmsr', b: '1000000', qYes: '0', qNo: '0', closesAt: 2000000000, bettable: true },
+                { address: 'high', model: 'lmsr', b: '5000000', qYes: '0', qNo: '0', closesAt: 2000000000, bettable: true }
+            ] }
+        ] }, { asset: 'devnet-usdc' }).rows;
+        expect(rows.map(row => row.marketAddress)).toEqual(['high', 'low', null]);
+        expect(rows.at(-1).state).toBe('needs-market');
     });
 });

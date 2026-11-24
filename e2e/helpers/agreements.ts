@@ -6,7 +6,7 @@
 // with its pool, when asked), and one proposed from this device over a park applied here.
 import { expect, Locator, Page } from '@playwright/test';
 import { answerBlockScope, createSpace, expandStackSection, openCity, openParcel, PARCEL_ID } from './runtime';
-import { fileAgreement, fileDesign, filePlan, pageIndex, MarketFixture, SharedIndex } from './mocks/shared-server';
+import { fileAgreement, fileDesign, filePlan, pageIndex, FUNDED_MARKET_ADDRESS, MarketFixture, SharedIndex } from './mocks/shared-server';
 
 export const OWNER = 'Ana Owner';
 
@@ -17,7 +17,7 @@ export const FILED_PARCEL = 'HR-335614-2311';
 export const MINTED_ACCOUNT = 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR';
 export const MINTED_SPONSOR = 'AoVsGaj8MSJ6xwKxfFxo9iZWH3enC8RRTXKH2fx2F8os';
 export const OPEN_POOL: MarketFixture = {
-  address: 'HQqbGtviQr5KRs4x8CWSCVhnkrLKDiYqXmVSBY8GZdfw', model: 'lmsr', asset: 'devnet-usdc',
+  address: FUNDED_MARKET_ADDRESS, model: 'lmsr', asset: 'devnet-usdc', creatorRole: 'sponsor',
   creator: MINTED_SPONSOR, b: '100000000', qYes: '250000', qNo: '50000', seed: '69314720',
   closesAt: Math.floor(Date.parse('2026-12-31T00:00:00.000Z') / 1000), graceSeconds: 0, maxPosition: '0',
   paidOut: '0', resolved: false, outcome: null,
@@ -83,9 +83,10 @@ export function fileIndexedAgreement(index: SharedIndex, options: FiledAgreement
       : { electorate: 'owners', binding: true, approvalConfig: null, lens: [] },
     deadline,
   }, { createdAt, ...(onchain ? { onchain } : {}), ...row });
-  if (onchain && pool) index.markets.set(onchain.account, {
-    ...pool, closesAt: deadline ? Math.floor(Date.parse(deadline) / 1000) : pool.closesAt,
-  });
+  if (onchain && pool) {
+    const normalized = { ...pool, closesAt: deadline ? Math.floor(Date.parse(deadline) / 1000) : pool.closesAt };
+    index.markets.set(onchain.account, normalized);
+  }
   return { cid, designCid: designs[0].cid, designCids: designs.map(design => design.cid) };
 }
 

@@ -260,7 +260,8 @@ in commits.
 
 ## Chain, markets and agents
 
-- 2026-10-25: Betting: dated LMSR with no-wallet points books and devnet-USDC books; YES needs on-chain execution by the deadline, cancel = VOID; never call devnet-USDC trading live until verified after deployment; labelled simulated visitors until outside participants exist (user recruits offline); San Francisco: one bet per agreement.
+- 2026-10-25: Dated LMSR points books support participation without a wallet. Label simulated visitors until outside participants exist, and verify the devnet trading path after deployment.
+- 2026-11-24: User decision: funded devnet-USDC LMSR markets are permissionless and multiple exact market accounts may bind one agreement; public catalogues rank by `b`, and each selected account carries its own terms and settlement state.
 - 2026-10-12: Streamline (docs/streamline.md, plan of record): deadline per market (reverses "no deadline"), LMSR instead of parimutuel, no-wallet points path, duplicate persona proposals deleted; keep "Bet on cities" in both senses.
 - 2026-10-12: San Francisco leads the pitch (Candlestick Point first; lead market the DBI grading permit issued by 2026-12-31); Borovje adoption second. Streamline work runs on the laptop.
 - 2026-10-12: Bets list and GET /markets share one comparator; superseded plan versions fold under the current one; market subjects hash the parcel ids; permit markets get ≥14 days grace.

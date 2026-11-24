@@ -182,5 +182,10 @@
         }
     }
 
-    return { cidOf, canonicalBytes, cidOfObject, isCid, parse };
+    function rawCidOfDigest(digest) {
+        if (!isBytes(digest) || digest.length !== DIGEST_BYTES) fail('invalid-cid-input', 'A raw CID needs a 32-byte digest.');
+        return MULTIBASE_BASE32 + base32(Uint8Array.from([...PREFIX, ...digest]));
+    }
+
+    return { cidOf, canonicalBytes, cidOfObject, isCid, parse, rawCidOfDigest };
 });

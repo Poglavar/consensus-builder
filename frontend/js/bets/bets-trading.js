@@ -126,7 +126,7 @@
             for (const result of results) { Object.assign(markets, result.markets); Object.assign(subjects, result.subjects); }
             return { markets, subjects };
         }
-        function entryFor(entry, market, subject) {
+        function entryFor({ markets: _fundedBooks, ...entry }, market, subject) {
             const chainStatus = subject?.chainStatus || entry.chainStatus;
             const now = Math.floor(Date.now() / 1000);
             return { ...entry, ...(subject ? { chainStatus, deadline: subject.deadline, sponsor: subject.sponsor } : {}), market,
@@ -153,8 +153,8 @@
             if (selected === 'devnet-usdc') return chain().readPositions(rows);
             return (await readAccount()).positions;
         }
-        async function readSummary(account) {
-            if (selected === 'devnet-usdc') return chain().readSummary(account);
+        async function readSummary(account, options = {}) {
+            if (selected === 'devnet-usdc') return chain().readSummary(account, options);
             const [catalog, owner] = await Promise.all([pointsMarkets([account]), readAccount()]);
             const subject = catalog.subjects[account];
             if (!subject) throw error('Agreement source is unavailable.', 'AGREEMENT_UNAVAILABLE');

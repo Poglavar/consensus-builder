@@ -62,7 +62,9 @@
         if (!account) return null;
         const codec = globalThis.ApprovalLink || (typeof require === 'function' ? require('../approval-link.js') : null);
         const intent = codec ? codec.parse(loc) : null;
-        return { account, city: cityOf(params.get('city')), lang: langOf(params.get('lang')), ...contextOf(Object.fromEntries(params)), ...(intent ? { approval: intent } : {}) };
+        const market = accountOf(params.get('market'));
+        if (params.has('market') && !market) return null;
+        return { account, ...(market ? { market } : {}), city: cityOf(params.get('city')), lang: langOf(params.get('lang')), ...contextOf(Object.fromEntries(params)), ...(market ? { asset: 'devnet-usdc' } : {}), ...(intent ? { approval: intent } : {}) };
     }
 
     function query(entries) {
@@ -76,13 +78,13 @@
     function build({ origin = '', city, account, lang, ...context } = {}) {
         const subject = accountOf(account);
         if (!subject) throw new Error('A bet link needs the Solana account of a minted agreement');
-        return `${String(origin).replace(/\/+$/, '')}/bets/${subject}${query([['city', cityOf(city)], ['lang', langOf(lang)], ...Object.entries(contextOf(context))])}`;
+        return `${String(origin).replace(/\/+$/, '')}/bets/${subject}${query([['city', cityOf(city)], ['market', accountOf(context.market)], ['lang', langOf(lang)], ...Object.entries(contextOf(context))])}`;
     }
 
     // The app form the server sends a browser to: /?city=<id>&bets=<account>[&lang=<xx>]. Without an
     // account it is the plain city link, for an account nobody has minted.
     function appHref({ city, account, lang, approval = null, ...context } = {}) {
-        return `/${query([['city', cityOf(city)], [PARAM, accountOf(account)], ['lang', langOf(lang)], ...Object.entries(contextOf(context)), ...(approval ? [['act', 'bet'], ['side', approval.params.side], ['amount', approval.params.amount]] : [])])}`;
+        return `/${query([['city', cityOf(city)], [PARAM, accountOf(account)], ['market', accountOf(context.market)], ['lang', langOf(lang)], ...Object.entries(contextOf(context)), ...(approval ? [['act', 'bet'], ['side', approval.params.side], ['amount', approval.params.amount]] : [])])}`;
     }
 
     return { PARAM, accountOf, cityOf, contextOf, parse, build, appHref };

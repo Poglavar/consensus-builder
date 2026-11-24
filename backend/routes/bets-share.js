@@ -8,6 +8,8 @@
 
 import { createRequire } from 'node:module';
 import { agreementByAccount } from './markets.js';
+import { createAgreementChain } from '../agreements/onchain.js';
+import { DEVNET_USDC_MINT } from '../solana/address-book.js';
 
 const require = createRequire(import.meta.url);
 // The same codecs the sheet renders with, so the preview quotes the numbers the row will show.
@@ -82,11 +84,15 @@ export function setupBetsShareRoute(app, pool, options = {}) {
     const publicBaseUrl = String(options.publicBaseUrl || env.PUBLIC_BASE_URL || DEFAULT_PUBLIC_BASE_URL).replace(/\/+$/, '');
     const apiBaseUrl = String(options.apiBaseUrl || env.PUBLIC_API_BASE_URL || '').replace(/\/+$/, '');
 
+    const chain = createAgreementChain({ env });
+    const lmsr = require('../../frontend/js/solana/lmsr-client.js').configure({ web3: require('@solana/web3.js') });
+    const readMarket = options.readMarket || (async address => lmsr.readMarket(await chain.connection(), address));
     app.get('/bets/:account', async (req, res) => {
         const account = BetsLink.accountOf(req.params.account);
         const city = BetsLink.cityOf(req.query.city);
         const lang = typeof req.query.lang === 'string' ? req.query.lang : null;
-        const context = { asset: 'points', ...BetsLink.contextOf(req.query) };
+        const market = BetsLink.accountOf(req.query.market);
+        const context = { asset: 'points', ...BetsLink.contextOf(req.query), ...(market ? { asset: 'devnet-usdc', market } : {}) };
         const generic = {
             title: `${TAGLINE} · ${SITE_NAME}`,
             description: describeRow(context),
@@ -95,19 +101,24 @@ export function setupBetsShareRoute(app, pool, options = {}) {
             next: BetsLink.appHref({ city, lang, ...context })
         };
         res.type('html');
-        if (!account) return res.status(400).send(renderPage(generic));
+        if (!account || (req.query.market !== undefined && !market)) return res.status(400).send(renderPage(generic));
         try {
             const agreement = await agreementByAccount(pool, account);
             if (!agreement) return res.status(404).send(renderPage(generic));
             // The link's own city wins (it is the id the app was opened in); the agreement's is the fallback.
             const linkCity = city || BetsLink.cityOf(agreement.city);
             const label = BetsModel.labelOf(agreement) || 'this agreement';
+            const book = market ? await readMarket(market) : null;
+            if (market && (!book || book.proposal !== account || book.stakeMint !== DEVNET_USDC_MINT)) return res.status(404).send(renderPage(generic));
+            const end = book ? new Date(Number(book.closesAt) * 1000) : agreement.deadline ? new Date(agreement.deadline) : null;
+            const question = book?.kind === 1 ? `Public-record market for ${label}` :
+                end ? `Will ${label} execute on-chain by ${end.toISOString()}?` : `Will ${label} execute on-chain?`;
             const page = {
-                title: `${agreement.deadline ? `Will ${label} execute on-chain by ${new Date(agreement.deadline).toISOString()}?` : `Will ${label} execute on-chain?`} · ${TAGLINE}`,
-                description: describeRow(context),
+                title: `${question} · ${TAGLINE}`,
+                description: book?.kind === 1 ? `Devnet USDC market closing ${end.toISOString()}. The named verifier attests the qualifying public record.` : describeRow(context),
                 // The preview shows before and after side by side when the pair has been rendered.
                 image: absoluteImage(agreement.screenshotPairUrl || agreement.screenshotUrl, publicBaseUrl, apiBaseUrl),
-                canonical: BetsLink.build({ origin: publicBaseUrl, city: linkCity, account, asset: context.asset }),
+                canonical: BetsLink.build({ origin: publicBaseUrl, city: linkCity, account, market, asset: context.asset }),
                 next: BetsLink.appHref({ city: linkCity, account, lang, ...context, approval: ApprovalLink.parse({ pathname: req.path, search: new URLSearchParams(req.query).toString() }) })
             };
             res.set('Cache-Control', `public, max-age=${CACHE_SECONDS}`);

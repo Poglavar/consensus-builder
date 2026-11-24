@@ -40,6 +40,21 @@
     const encoder = new TextEncoder();
     let injectedWeb3 = null;
     let programIdOverride = null;
+    let injectedSha256 = null;
+    function sha256() {
+        if (injectedSha256) return injectedSha256;
+        const scope = typeof globalThis !== 'undefined' ? globalThis : null;
+        if (scope?.Sha256?.digest) return scope.Sha256.digest;
+        if (typeof require === 'function') {
+            try { const loaded = require('../bets/sha256.js'); if (loaded?.digest) return loaded.digest; } catch (_) { /* browser bundle supplies Sha256 */ }
+        }
+        throw new Error('sha256 is unavailable; load frontend/js/bets/sha256.js');
+    }
+    function externalIdentitySeed(t) {
+        const proposal = key(t.proposal || SYSTEM_PROGRAM_ID, 'proposal');
+        return sha256()(cat([checkedHash(t.subjectHash, 'subjectHash'), checkedHash(t.yesValueHash, 'yesValueHash'), checkedHash(t.noValueHash, 'noValueHash'),
+            key(t.trustedAttester, 'trustedAttester').toBytes(), key(t.credential, 'credential').toBytes(), key(t.schema, 'schema').toBytes(), proposal.toBytes()]));
+    }
 
     function resolveWeb3() {
         if (injectedWeb3) return injectedWeb3;
@@ -55,6 +70,7 @@
         const opts = options || {};
         if (Object.prototype.hasOwnProperty.call(opts, 'web3')) injectedWeb3 = opts.web3 || null;
         if (Object.prototype.hasOwnProperty.call(opts, 'programId')) programIdOverride = opts.programId || null;
+        if (Object.prototype.hasOwnProperty.call(opts, 'sha256')) injectedSha256 = opts.sha256 || null;
         return api;
     }
 
@@ -129,13 +145,23 @@
         return out;
     }
     function seedText(value) { return encoder.encode(value); }
-    function getMarketPda(proposal, creator, id) {
-        const web3 = resolveWeb3();
-        return web3.PublicKey.findProgramAddressSync([seedText('lmsr'), key(proposal, 'proposal').toBytes(), key(creator, 'creator').toBytes()], programKey(id));
+    function marketTerms(terms) {
+        const t = terms || {};
+        return { stakeMint: key(t.stakeMint, 'stakeMint'), b: positiveU64(t.b, 'b'), closesAt: i64(t.closesAt, 'closesAt'),
+            graceSeconds: u32(t.graceSeconds ?? 0, 'graceSeconds'), maxPosition: u64(t.maxPosition ?? 0n, 'maxPosition'),
+            subjectHash: t.subjectHash, yesValueHash: t.yesValueHash, noValueHash: t.noValueHash,
+            trustedAttester: t.trustedAttester, credential: t.credential, schema: t.schema, proposal: t.proposal };
     }
-    function getExternalMarketPda(recipeHash, creator, id) {
+    function getMarketPda(proposal, creator, terms, id) {
         const web3 = resolveWeb3();
-        return web3.PublicKey.findProgramAddressSync([seedText('lmsr_recipe'), checkedHash(recipeHash, 'recipeHash'), key(creator, 'creator').toBytes()], programKey(id));
+        const t = marketTerms(terms);
+        return web3.PublicKey.findProgramAddressSync([seedText('lmsr'), key(proposal, 'proposal').toBytes(), key(creator, 'creator').toBytes(), t.stakeMint.toBytes(), le(t.b, 8), le(t.closesAt, 8, true), le(t.graceSeconds, 4), le(t.maxPosition, 8)], programKey(id));
+    }
+    function getExternalMarketPda(recipeHash, creator, terms, id) {
+        const web3 = resolveWeb3();
+        const t = marketTerms(terms);
+        const identitySeed = externalIdentitySeed(t);
+        return web3.PublicKey.findProgramAddressSync([seedText('lmsr_recipe'), checkedHash(recipeHash, 'recipeHash'), key(creator, 'creator').toBytes(), t.stakeMint.toBytes(), le(t.b, 8), le(t.closesAt, 8, true), le(t.graceSeconds, 4), le(t.maxPosition, 8), identitySeed], programKey(id));
     }
     function getPositionPda(market, owner, value, id) {
         const web3 = resolveWeb3();
@@ -155,9 +181,9 @@
     }
     const disc = name => Uint8Array.from(IX_DISCRIMINATORS[name]);
     function marketFor(opts, kind) {
-        if (opts.market) return key(opts.market, 'market');
-        if (kind === 0) return getMarketPda(opts.proposal, opts.creator, opts.programId)[0];
-        return getExternalMarketPda(opts.recipeHash, opts.creator, opts.programId)[0];
+        const expected = kind === 0 ? getMarketPda(opts.proposal, opts.creator, opts, opts.programId)[0] : getExternalMarketPda(opts.recipeHash, opts.creator, opts, opts.programId)[0];
+        if (opts.market && !key(opts.market, 'market').equals(expected)) throw new Error('LMSR market address does not match its identity, creator and terms');
+        return expected;
     }
     function buildCreateLmsrMarketIx(options) {
         const o = options || {};
@@ -188,7 +214,9 @@
         if (hashes.some(hash => hash.every(byte => byte === 0))) throw new Error('kind 1 commitments must be nonzero');
         if (hashes[2].every((byte, index) => byte === hashes[3][index])) throw new Error('YES and NO commitments must differ');
         if (key(o.trustedAttester, 'trustedAttester').equals(key(SYSTEM_PROGRAM_ID))) throw new Error('trustedAttester must be nonzero');
-        const data = cat([disc('create_lmsr_external_market'), ...hashes, key(o.trustedAttester, 'trustedAttester').toBytes(),
+        const identitySeed = externalIdentitySeed(o);
+        const proposal = key(o.proposal || SYSTEM_PROGRAM_ID, 'proposal');
+        const data = cat([disc('create_lmsr_external_market'), ...hashes, key(o.trustedAttester, 'trustedAttester').toBytes(), proposal.toBytes(), identitySeed,
             le(liquidity, 8), le(i64(o.closesAt, 'closesAt'), 8, true), le(u32(o.graceSeconds ?? 0, 'graceSeconds'), 4),
             le(u64(o.maxPosition ?? 0n, 'maxPosition'), 8)]);
         return ix('create_lmsr_external_market', keys, data, o.programId);
@@ -296,8 +324,10 @@
         const requested = key(address, 'market');
         assertOwner(info, id); const market = decodeMarket(info.data);
         const [expected] = market.kind === 0
-            ? getMarketPda(market.proposal, market.creator, id)
-            : getExternalMarketPda(market.recipeHash, market.creator, id);
+            ? getMarketPda(market.proposal, market.creator, { stakeMint: market.stakeMint, b: market.b, closesAt: market.closesAt, graceSeconds: market.graceSeconds, maxPosition: market.maxPosition }, id)
+            : getExternalMarketPda(market.recipeHash, market.creator, { stakeMint: market.stakeMint, b: market.b, closesAt: market.closesAt, graceSeconds: market.graceSeconds, maxPosition: market.maxPosition,
+                subjectHash: market.subjectHash, yesValueHash: market.yesValueHash, noValueHash: market.noValueHash, trustedAttester: market.trustedAttester,
+                credential: market.credential, schema: market.schema, proposal: market.proposal }, id);
         if (!expected.equals(requested)) throw new Error('LMSR market address does not match its kind, identity and creator');
         if (!getVaultAddress(requested, market.stakeMint).equals(key(market.vault, 'vault'))) throw new Error('LMSR market vault does not match its mint and market');
         return market;

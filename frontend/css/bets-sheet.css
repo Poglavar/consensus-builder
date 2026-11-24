@@ -523,6 +523,42 @@
     display: none;
 }
 
+.bets-dialog__create {
+    display: grid;
+    gap: var(--cb-space-3, .75rem);
+}
+
+.bets-dialog__create label {
+    display: grid;
+    gap: .35rem;
+    color: var(--cb-text-muted);
+}
+
+.bets-dialog__create input,
+.bets-dialog__create select,
+.bets-dialog__create textarea {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 2.5rem;
+    padding: .5rem .65rem;
+    font: inherit;
+}
+
+.bets-dialog__create [hidden] {
+    display: none;
+}
+
+.bets-dialog__create fieldset {
+    min-width: 0;
+    display: grid;
+    gap: .65rem;
+}
+
+.bets-dialog__create textarea {
+    min-height: 3rem;
+    resize: vertical;
+}
+
 @media (max-width: 767.98px) {
     .bets-dialog {
         max-height: 100dvh;

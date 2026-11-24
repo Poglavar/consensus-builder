@@ -25,8 +25,9 @@ export interface IndexRequest { method: string; path: string; body: any }
 export interface MarketFixture {
   address: string; model: 'lmsr'; asset: 'devnet-usdc'; creator: string; b: string; qYes: string; qNo: string;
   seed: string; closesAt: number; graceSeconds: 0; maxPosition: '0'; paidOut: string;
-  resolved?: boolean; outcome?: 'yes' | 'no' | 'void' | null;
+  resolved?: boolean; outcome?: 'yes' | 'no' | 'void' | null; creatorRole?: 'sponsor' | 'verifier' | null;
 }
+export const FUNDED_MARKET_ADDRESS = 'HQqbGtviQr5KRs4x8CWSCVhnkrLKDiYqXmVSBY8GZdfw';
 
 export interface SharedIndex {
   /** Pinned objects by CID: their kind and canonical bytes as received (base64). */
@@ -40,7 +41,7 @@ export interface SharedIndex {
   /** Relayed owner decisions (receipts) by agreement CID. */
   decisions: Map<string, any[]>;
   /** LMSR markets by agreement account, what GET /markets reads beside minted agreements. */
-  markets: Map<string, MarketFixture>;
+  markets: Map<string, MarketFixture | MarketFixture[]>;
   /** The lens directory GET /lenses/members lists (one member with a service by default). */
   lensMembers: Array<Record<string, any>>;
   /** What the members' services list at GET <serviceUrl>/lens/attestations (filtered by kind, agreementCid). */
@@ -206,13 +207,15 @@ const sortedIds = (ids: unknown): string[] => [...new Set((Array.isArray(ids) ? 
 // One agreement as GET /markets lists it: its chain status as the index recorded it, and its market.
 function contestEntry(index: SharedIndex, row: Record<string, any>, contest: string): Record<string, any> {
   const account: string | null = row.onchain?.account ?? null;
-  const market = account ? index.markets.get(account) || null : null;
+  const stored = account ? index.markets.get(account) || null : null;
   const chainStatus: string | null = account ? row.onchain.status ?? null : null;
   const deadlinePassed = !!row.deadline && Date.parse(row.deadline) <= Date.now();
-  const closesAt = market?.closesAt ?? (row.deadline ? Math.floor(Date.parse(row.deadline) / 1000) : null);
-  const live = chainStatus === 'active' && !deadlinePassed && closesAt !== null && Date.now() < closesAt * 1000;
-  const canSettle = Boolean(market && !market.resolved && ((chainStatus && ['executed', 'cancelled', 'expired'].includes(chainStatus))
-    || (chainStatus && closesAt !== null && Date.now() >= closesAt * 1000 + market.graceSeconds * 1000)));
+  const now = Date.now() / 1000;
+  const markets = (Array.isArray(stored) ? stored : stored ? [stored] : []).map(pool => ({
+    ...pool, kind: 'agreement', creatorRole: pool.creator === row.onchain?.sponsor ? 'sponsor' : pool.creatorRole ?? null,
+    bettable: !pool.resolved && chainStatus === 'active' && now < pool.closesAt,
+    canSettle: !pool.resolved && Boolean(chainStatus && (['executed', 'expired', 'cancelled'].includes(chainStatus) || now > pool.closesAt + pool.graceSeconds))
+  })).sort((a, b) => compareRows({ market: a, bettable: a.bettable }, { market: b, bettable: b.bettable }));
   return {
     kind: 'agreement', cid: row.cid, account, title: row.title, author: row.author, city: row.city,
     status: ['executed', 'cancelled', 'expired'].includes(chainStatus || '') ? chainStatus : deadlinePassed ? 'expired' : 'active',
@@ -220,8 +223,8 @@ function contestEntry(index: SharedIndex, row: Record<string, any>, contest: str
     designTitles: row.designCids.map((cid: string) => index.designs.get(cid)?.title ?? null).filter(Boolean),
     screenshotUrl: row.screenshotUrl, screenshotBeforeUrl: row.screenshotBeforeUrl, screenshotPairUrl: row.screenshotPairUrl,
     sponsor: row.onchain?.sponsor ?? null,
-    parcelIds: sortedIds(row.inputParcelIds), parcelRefs: [], market,
-    bettable: Boolean(market && !market.resolved && live), canSettle, canOpenMarket: Boolean(account && !market && live), contest,
+    parcelIds: sortedIds(row.inputParcelIds), parcelRefs: [], markets,
+    bettable: markets.some(m => m.bettable), canSettle: markets.some(m => m.canSettle), canOpenMarket: Boolean(account && chainStatus), contest,
   };
 }
 
@@ -242,12 +245,12 @@ export function marketsPayload(index: SharedIndex, city: string): Record<string,
     const parcelIds = sortedIds(group.flatMap(row => row.inputParcelIds));
     const id = `c-${createHash('sha256').update(`land:${JSON.stringify(parcelIds)}`).digest('hex').slice(0, 12)}`;
     const agreements = group.map(row => contestEntry(index, row, id)).sort(compareRows);
-    const withMarket = agreements.filter(entry => entry.market);
+    const withMarket = agreements.flatMap(entry => entry.markets);
     return {
       id, parcelIds, parcelRefs: [], agreementCount: agreements.length,
       mintedCount: agreements.filter(entry => entry.account).length,
-      marketCount: withMarket.length, openMarketCount: agreements.filter(entry => entry.bettable).length,
-      sharesAtomic: withMarket.reduce((sum, entry) => sum + BigInt(entry.market.qYes) + BigInt(entry.market.qNo), 0n).toString(),
+      marketCount: withMarket.length, openMarketCount: withMarket.filter(pool => pool.bettable).length,
+      sharesAtomic: withMarket.reduce((sum, pool) => sum + BigInt(pool.qYes) + BigInt(pool.qNo), 0n).toString(),
       latestCreatedAt: agreements.map(entry => entry.createdAt).sort().at(-1) ?? null,
       agreements,
     };

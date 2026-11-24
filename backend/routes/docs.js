@@ -8,6 +8,7 @@ import { readX402OracleConfig } from '../utils/x402-payment.js';
 import { describeDatabase } from '../db/connection.cjs';
 import { AGREEMENT_EXECUTED_EVENT_TYPE, AGREEMENT_LIFECYCLE_EVENT_TYPE } from '../oracle/agreement-lifecycle.js';
 import { AGREEMENT_EXECUTION_RECIPE_ID, SETTLEMENT } from '../oracle/market-recipe.js';
+import { AGREEMENT_EXECUTION_BY_DEADLINE_RECIPE_ID } from '../oracle/lmsr-recipe.js';
 import { AGREEMENT_PUBLISHED_EVENT_TYPE, OWNERSHIP_EVENT_TYPE, PARCEL_PROGRAM_ID } from '../oracle/parcel-history.js';
 import { LENS_SCHEMAS, SAS_PROGRAM_ID } from '../oracle/lens-schemas.js';
 import { COURT_RECIPE_ID, COURT_RECIPE_V2_ID, COURT_SCHEMA_V2 } from '../oracle/court-parcel-operation.js';
@@ -280,14 +281,13 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     lensMembers: `${base}/lenses/members`,
                     agentLensMembers: `${base}/agent/lenses/members`,
                     lensSchemas: `${base}/lenses/schemas`,
-                    // Every contest in a city (agreements over shared land) with each minted agreement's yes/no pool.
+                    // Funded YES/NO markets on the agreements in each city contest.
                     markets: `${base}/markets?city={city}`,
                     support: `${base}/agent/pledges/{agreementAccount}`,
                     oracleEvents: `${base}/oracle/events?subject={agreementAccount}`,
-                    // The recipe a minted agreement's market settles by (routes/markets.js). `market` is optional;
-                    // when given it must be the agreement's pool, PDA ["market", agreementAccount].
-                    marketRecipe: `${base}/oracle/recipes/${AGREEMENT_EXECUTION_RECIPE_ID}?agreement={agreementAccount}`,
-                    marketRecipeForMarket: `${base}/oracle/recipes/${AGREEMENT_EXECUTION_RECIPE_ID}?agreement={agreementAccount}&market={marketAccount}`,
+                    marketRecipe: `${base}/oracle/recipes/${AGREEMENT_EXECUTION_BY_DEADLINE_RECIPE_ID}?agreement={agreementAccount}`,
+                    marketRecipeForMarket: `${base}/oracle/recipes/${AGREEMENT_EXECUTION_BY_DEADLINE_RECIPE_ID}?agreement={agreementAccount}&market={marketAccount}`,
+                    marketRecipeContent: `${base}/markets/recipes/{cid}`,
                     // Paid through x402: `subject` is the agreement account, `market` optional (see x402.query).
                     oracleFact: `${base}/agent/oracle/facts?subject={agreementAccount}`,
                     oracleFactForMarket: `${base}/agent/oracle/facts?subject={agreementAccount}&market={marketAccount}`,
@@ -508,21 +508,23 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                 market: {
                     programId: marketProgramId,
                     cluster: 'devnet',
-                    subject: 'the agreement account (market-client.js names it `proposal`)',
-                    pda: 'seeds ["market", agreementAccount]',
-                    positionPda: 'seeds ["position", market, owner, side (u8: 0 no, 1 yes)]',
+                    subject: 'the selected agreement account',
+                    model: 'lmsr', creator: 'any signing wallet that funds max_loss(b)',
+                    pda: 'execution: ["lmsr", agreement, creator, stakeMint, b, closesAt, graceSeconds, maxPosition]',
+                    publicRecordPda: '["lmsr_recipe", recipeHash, creator, stakeMint, b, closesAt, graceSeconds, maxPosition, evidenceIdentityHash]',
+                    positionPda: '["lmsr_position", market, owner, side (u8: 0 no, 1 yes)]',
                     stakeMint: USDC_DEVNET_MINT,
                     stakeDecimals: 6,
                     resolution: {
-                        yes: 'the agreement account is Executed',
-                        no: 'the agreement account is Cancelled or Expired',
+                        yes: 'the agreement executed at or before the selected market cutoff',
+                        no: 'the agreement was cancelled, expired, executed late or remained active strictly past cutoff plus grace',
                         permissionless: true,
-                        deadline: 'stakes are taken while the agreement is Active and before its deadline; a passed deadline resolves NO only once someone expires the account',
-                        oracleRecipe: AGREEMENT_EXECUTION_RECIPE_ID
+                        publicRecords: 'the committed evidence rule, named verifier, and 48-hour challenge period',
+                        oracleRecipe: AGREEMENT_EXECUTION_BY_DEADLINE_RECIPE_ID
                     },
                     contests: `${base}/markets?city={city}`,
                     idl: 'blockchain/solana/idl/proposal_market.json',
-                    client: 'frontend/js/solana/market-client.js',
+                    client: 'frontend/js/solana/lmsr-client.js',
                     externalResolution: {
                         status: 'live_devnet',
                         account: 'ExternalMarket',

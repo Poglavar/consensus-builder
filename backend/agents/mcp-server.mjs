@@ -198,8 +198,15 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
     if (mode === 'local') {
     server.registerTool('ugt_chain_agreements', { description: 'Discover agreement program accounts directly from Solana devnet without the UGT API. Returns CIDs, status, escrow and lens. The RPC reads the bounded agreement program; output is capped.', inputSchema: z.object({ limit: z.number().int().min(1).max(100).default(20) }), annotations: READ_ONLY }, handler(args => actions.listChainAgreements(args)));
     server.registerTool('ugt_chain_agreement', { description: 'Read and validate an agreement account directly from Solana devnet, with the UGT API offline.', inputSchema: z.object({ agreementAccount }), annotations: READ_ONLY }, handler(args => actions.getChainAgreement(args)));
-    server.registerTool('ugt_buy_agreement_shares_on_account', { description: 'Buy LMSR shares on an already-open canonical sponsor-bound agreement market using a devnet USDC budget. This does not create the market. Local signing and spend cap apply.', inputSchema: z.object({ agreementAccount, side: z.enum(['yes', 'no']), amountUsdc, confirm: confirmation }), annotations: PAID_NON_IDEMPOTENT }, handler(args => actions.betOnAccount(args)));
-    server.registerTool('ugt_sell_agreement_shares', { description: 'Sell a fixed share quantity from your position on an active canonical agreement market. The quote sets the minimum return; local signing applies.', inputSchema: z.object({ agreementCid, side: z.enum(['yes', 'no']), shares, confirm: confirmation }), annotations: PAID_NON_IDEMPOTENT }, handler(args => actions.sellAgreementSharesOnAgreement(args)));
+    server.registerTool('ugt_open_agreement_market', {
+        description: 'Open a devnet USDC market as the signing wallet. Choose the closing Unix second and LMSR liquidity b in USDC. The USDC seed is rounded up from b × ln(2) and uses the operator spending cap. For public-record questions supply a supported tuple, evidence schema and credential. The agreement lens is the verifier.',
+        inputSchema: z.object({ agreementAccount, liquidityUsdc: amountUsdc, closesAt: z.number().int().positive(),
+            external: z.object({ tuple: z.object({ milestone: z.enum(['adopted','permitted','built']), deadline: z.string(),
+                subject: z.object({ jurisdiction: z.string(), authority: z.string(), label: z.string(), parcelIds: z.array(z.string()).min(1) }), evidence: z.record(z.string(), z.unknown()) }),
+                credential: pubkey, schema: pubkey }).optional(), confirm: confirmation }), annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.openMarket(args)));
+    server.registerTool('ugt_buy_agreement_shares_on_account', { description: 'Buy shares on the selected agreement market within a devnet USDC budget.', inputSchema: z.object({ agreementAccount, marketAddress: pubkey, side: z.enum(['yes', 'no']), amountUsdc, confirm: confirmation }), annotations: PAID_NON_IDEMPOTENT }, handler(args => actions.betOnAccount(args)));
+    server.registerTool('ugt_sell_agreement_shares', { description: 'Sell a fixed share quantity from your position on the selected market. The quote sets the minimum return; local signing applies.', inputSchema: z.object({ agreementCid, marketAddress: pubkey, side: z.enum(['yes', 'no']), shares, confirm: confirmation }), annotations: PAID_NON_IDEMPOTENT }, handler(args => actions.sellAgreementSharesOnAgreement(args)));
     server.registerTool('ugt_mint_agreement', {
         title: 'Mint a binding agreement as its sponsor',
         description: 'Create a binding owner or investor crowdfunding agreement account on devnet with UGT_AGENT_KEYPAIR, which must be the agreement sponsor. The account commits the CID, selected lens member and deadline; the agreement program trusts that selected lens. The index reads back those exact published terms before recording it. Crowdfunding donations remain in the existing USDC donation escrow and are not sent by minting. Repeating it signs nothing new.',
@@ -216,14 +223,14 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
 
     server.registerTool('ugt_bet_on_agreement', {
         title: 'Buy agreement market shares',
-        description: 'Use a devnet USDC budget to buy YES (execution) or NO (cancellation or expiry) shares on the sponsor\'s already-open canonical LMSR market. The sponsor opens the market separately; this tool never creates it. The agreement must be minted, Active and before its deadline.',
-        inputSchema: z.object({ agreementCid, side: z.enum(['yes', 'no']), amountUsdc, confirm: confirmation }),
+        description: 'Buy YES or NO at the price of the selected funded market.',
+        inputSchema: z.object({ agreementCid, marketAddress: pubkey, side: z.enum(['yes', 'no']), amountUsdc, confirm: confirmation }),
         annotations: PAID_NON_IDEMPOTENT
     }, handler(args => actions.betOnAgreement(args)));
     server.registerTool('ugt_buy_agreement_shares', {
         title: 'Buy agreement market shares',
-        description: 'Buy LMSR shares with a devnet USDC budget on the sponsor\'s already-open canonical market for this minted Active agreement. The tool never creates a market.',
-        inputSchema: z.object({ agreementCid, side: z.enum(['yes', 'no']), amountUsdc, confirm: confirmation }),
+        description: 'Buy shares on a selected agreement market with a devnet USDC budget.',
+        inputSchema: z.object({ agreementCid, marketAddress: pubkey, side: z.enum(['yes', 'no']), amountUsdc, confirm: confirmation }),
         annotations: PAID_NON_IDEMPOTENT
     }, handler(args => actions.buyAgreementSharesOnAgreement(args)));
 
@@ -291,14 +298,14 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
 
     server.registerTool('ugt_resolve_market', {
         title: 'Resolve an agreement market',
-        description: 'Permissionlessly resolve an agreement\'s market from its account’s terminal state: Executed YES, Cancelled or Expired NO.',
-        inputSchema: z.object({ agreementAccount, confirm: confirmation }), annotations: PAID_IDEMPOTENT
+        description: 'Settle this market. External questions accept up to two attestation accounts. A pending proposal can be challenged with one attestation or finalized after its window.',
+        inputSchema: z.object({ agreementAccount, marketAddress: pubkey, evidence: z.array(pubkey).max(2).optional(), confirm: confirmation }), annotations: PAID_IDEMPOTENT
     }, handler(args => actions.resolve(args)));
 
     server.registerTool('ugt_claim_market', {
         title: 'Claim market winnings',
-        description: 'Claim this wallet’s winning position or empty-winning-pool refund on an agreement\'s market.',
-        inputSchema: z.object({ agreementAccount, side: z.enum(['yes', 'no']), confirm: confirmation }),
+        description: 'Claim the payout on this wallet’s position in the selected market.',
+        inputSchema: z.object({ agreementAccount, marketAddress: pubkey, side: z.enum(['yes', 'no']), confirm: confirmation }),
         annotations: PAID_IDEMPOTENT
     }, handler(args => actions.claim(args)));
 
