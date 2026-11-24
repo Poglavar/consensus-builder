@@ -1,0 +1,2977 @@
+{
+  "model": "gpt-6.2-astra",
+  "reasoning_effort": "max",
+  "source": "https://map.almatygenplan.kz/t/genplan-raster.json",
+  "city_input": {
+    "width": 9920,
+    "height": 11864,
+    "zoom": 15,
+    "top_left_global_pixels": [
+      5982500,
+      3069479
+    ]
+  },
+  "city_panel_count": 30,
+  "model_detail_chips": [
+    {
+      "zoom": 17,
+      "top_left_global_pixels": [
+        23951276,
+        12281052
+      ],
+      "center": [
+        76.9734335,
+        43.3763876
+      ],
+      "center_pixel": [
+        384,
+        384
+      ]
+    },
+    {
+      "zoom": 17,
+      "top_left_global_pixels": [
+        23938684,
+        12287524
+      ],
+      "center": [
+        76.838336,
+        43.3258957
+      ],
+      "center_pixel": [
+        384,
+        384
+      ]
+    },
+    {
+      "zoom": 17,
+      "top_left_global_pixels": [
+        23953172,
+        12288564
+      ],
+      "center": [
+        76.9937754,
+        43.3177782
+      ],
+      "center_pixel": [
+        384,
+        384
+      ]
+    },
+    {
+      "zoom": 17,
+      "top_left_global_pixels": [
+        23945788,
+        12295492
+      ],
+      "center": [
+        76.9145536,
+        43.263675
+      ],
+      "center_pixel": [
+        384,
+        384
+      ]
+    },
+    {
+      "zoom": 17,
+      "top_left_global_pixels": [
+        23937268,
+        12301236
+      ],
+      "center": [
+        76.823144,
+        43.2187817
+      ],
+      "center_pixel": [
+        384,
+        384
+      ]
+    },
+    {
+      "zoom": 17,
+      "top_left_global_pixels": [
+        23952916,
+        12304356
+      ],
+      "center": [
+        76.9910288,
+        43.1943828
+      ],
+      "center_pixel": [
+        384,
+        384
+      ]
+    },
+    {
+      "zoom": 17,
+      "top_left_global_pixels": [
+        23950860,
+        12312948
+      ],
+      "center": [
+        76.9689703,
+        43.1271417
+      ],
+      "center_pixel": [
+        384,
+        384
+      ]
+    },
+    {
+      "zoom": 17,
+      "top_left_global_pixels": [
+        23967292,
+        12284756
+      ],
+      "center": [
+        77.1452665,
+        43.3474957
+      ],
+      "center_pixel": [
+        384,
+        384
+      ]
+    }
+  ],
+  "park_input_grid": {
+    "zoom": 17,
+    "top_left_global_pixels": [
+      23951287,
+      12294913
+    ],
+    "width": 1280,
+    "height": 1280,
+    "x_direction": "east",
+    "y_direction": "south"
+  },
+  "park_model": {
+    "labels": [
+      {
+        "code": "Р-1",
+        "x": 840,
+        "y": 12
+      },
+      {
+        "code": "Р-4",
+        "x": 786,
+        "y": 14
+      },
+      {
+        "code": "Р-1",
+        "x": 296,
+        "y": 40
+      },
+      {
+        "code": "Р-3",
+        "x": 1142,
+        "y": 45
+      },
+      {
+        "code": "Р-4",
+        "x": 490,
+        "y": 64
+      },
+      {
+        "code": "О-1",
+        "x": 305,
+        "y": 86
+      },
+      {
+        "code": "Р-1",
+        "x": 944,
+        "y": 95
+      },
+      {
+        "code": "Р-3",
+        "x": 1159,
+        "y": 116
+      },
+      {
+        "code": "Р-3",
+        "x": 350,
+        "y": 134
+      },
+      {
+        "code": "Р-1",
+        "x": 962,
+        "y": 140
+      },
+      {
+        "code": "Р-4",
+        "x": 426,
+        "y": 158
+      },
+      {
+        "code": "Р-3",
+        "x": 180,
+        "y": 172
+      },
+      {
+        "code": "О-1",
+        "x": 148,
+        "y": 222
+      },
+      {
+        "code": "О-1",
+        "x": 1222,
+        "y": 228
+      },
+      {
+        "code": "Р-1",
+        "x": 654,
+        "y": 238
+      },
+      {
+        "code": "Р-1",
+        "x": 1152,
+        "y": 250
+      },
+      {
+        "code": "О-1",
+        "x": 382,
+        "y": 270
+      },
+      {
+        "code": "Р-4",
+        "x": 856,
+        "y": 296
+      },
+      {
+        "code": "О-1",
+        "x": 241,
+        "y": 343
+      },
+      {
+        "code": "Р-3",
+        "x": 915,
+        "y": 344
+      },
+      {
+        "code": "Р-4",
+        "x": 464,
+        "y": 350
+      },
+      {
+        "code": "О-1",
+        "x": 603,
+        "y": 358
+      },
+      {
+        "code": "О-1",
+        "x": 776,
+        "y": 368
+      },
+      {
+        "code": "Р-1",
+        "x": 493,
+        "y": 384
+      },
+      {
+        "code": "Р-1",
+        "x": 198,
+        "y": 388
+      },
+      {
+        "code": "Р-4",
+        "x": 406,
+        "y": 390
+      },
+      {
+        "code": "Р-1",
+        "x": 767,
+        "y": 444
+      },
+      {
+        "code": "О-1",
+        "x": 272,
+        "y": 474
+      },
+      {
+        "code": "Р-1",
+        "x": 1200,
+        "y": 488
+      },
+      {
+        "code": "Р-4",
+        "x": 910,
+        "y": 491
+      },
+      {
+        "code": "Р-4",
+        "x": 1072,
+        "y": 491
+      },
+      {
+        "code": "О-1",
+        "x": 1268,
+        "y": 491
+      },
+      {
+        "code": "Р-3",
+        "x": 420,
+        "y": 544
+      },
+      {
+        "code": "Р-3",
+        "x": 554,
+        "y": 548
+      },
+      {
+        "code": "Р-3",
+        "x": 464,
+        "y": 572
+      },
+      {
+        "code": "Р-3",
+        "x": 456,
+        "y": 651
+      },
+      {
+        "code": "Р-3",
+        "x": 1269,
+        "y": 662
+      },
+      {
+        "code": "Р-4",
+        "x": 400,
+        "y": 726
+      },
+      {
+        "code": "Р-4",
+        "x": 1130,
+        "y": 806
+      },
+      {
+        "code": "Р-3",
+        "x": 220,
+        "y": 812
+      },
+      {
+        "code": "Р-4",
+        "x": 164,
+        "y": 826
+      },
+      {
+        "code": "Р-3",
+        "x": 694,
+        "y": 869
+      },
+      {
+        "code": "Р-4",
+        "x": 1004,
+        "y": 906
+      },
+      {
+        "code": "Р-1",
+        "x": 1074,
+        "y": 924
+      },
+      {
+        "code": "Р-4",
+        "x": 442,
+        "y": 929
+      },
+      {
+        "code": "Р-3",
+        "x": 1156,
+        "y": 936
+      },
+      {
+        "code": "Р-1",
+        "x": 1000,
+        "y": 966
+      },
+      {
+        "code": "Р-4",
+        "x": 964,
+        "y": 984
+      },
+      {
+        "code": "О-1",
+        "x": 1232,
+        "y": 986
+      },
+      {
+        "code": "Р-4",
+        "x": 368,
+        "y": 1006
+      },
+      {
+        "code": "Р-1",
+        "x": 989,
+        "y": 1016
+      },
+      {
+        "code": "Р-1",
+        "x": 982,
+        "y": 1058
+      },
+      {
+        "code": "Р-4",
+        "x": 917,
+        "y": 1085
+      },
+      {
+        "code": "Р-1",
+        "x": 1086,
+        "y": 1123
+      },
+      {
+        "code": "Р-3",
+        "x": 999,
+        "y": 1126
+      },
+      {
+        "code": "Р-3",
+        "x": 952,
+        "y": 1242
+      },
+      {
+        "code": "Р-4",
+        "x": 824,
+        "y": 1246
+      }
+    ],
+    "phases": [
+      {
+        "x": 235,
+        "y": 315,
+        "code": "О-1",
+        "phase": "horizon"
+      },
+      {
+        "x": 285,
+        "y": 495,
+        "code": "О-1",
+        "phase": "horizon"
+      },
+      {
+        "x": 580,
+        "y": 310,
+        "code": "О-1",
+        "phase": "first"
+      },
+      {
+        "x": 775,
+        "y": 393,
+        "code": "О-1",
+        "phase": "first"
+      },
+      {
+        "x": 300,
+        "y": 110,
+        "code": "О-1",
+        "phase": "first"
+      },
+      {
+        "x": 1221,
+        "y": 203,
+        "code": "О-1",
+        "phase": "first"
+      },
+      {
+        "x": 1238,
+        "y": 1010,
+        "code": "О-1",
+        "phase": "existing"
+      },
+      {
+        "x": 1250,
+        "y": 1077,
+        "code": null,
+        "phase": null
+      },
+      {
+        "x": 650,
+        "y": 850,
+        "code": "Р-3",
+        "phase": "existing"
+      },
+      {
+        "x": 110,
+        "y": 990,
+        "code": "Р-3",
+        "phase": "existing"
+      },
+      {
+        "x": 347,
+        "y": 132,
+        "code": "Р-3",
+        "phase": "first"
+      },
+      {
+        "x": 1137,
+        "y": 48,
+        "code": "Р-3",
+        "phase": "first"
+      },
+      {
+        "x": 786,
+        "y": 330,
+        "code": "О-1",
+        "phase": "first"
+      },
+      {
+        "x": 805,
+        "y": 26,
+        "code": "Р-4",
+        "phase": null
+      },
+      {
+        "x": 470,
+        "y": 336,
+        "code": "Р-4",
+        "phase": null
+      },
+      {
+        "x": 946,
+        "y": 90,
+        "code": "Р-1",
+        "phase": "first"
+      }
+    ],
+    "outlines": {
+      "park_strip": [
+        [
+          270,
+          135
+        ],
+        [
+          351,
+          117
+        ],
+        [
+          391,
+          108
+        ],
+        [
+          426,
+          100
+        ],
+        [
+          423,
+          130
+        ],
+        [
+          277,
+          164
+        ],
+        [
+          270,
+          135
+        ]
+      ],
+      "education_grid": [
+        [
+          515,
+          239
+        ],
+        [
+          649,
+          211
+        ],
+        [
+          674,
+          311
+        ],
+        [
+          696,
+          404
+        ],
+        [
+          699,
+          413
+        ],
+        [
+          713,
+          446
+        ],
+        [
+          535,
+          490
+        ],
+        [
+          529,
+          486
+        ],
+        [
+          520,
+          472
+        ],
+        [
+          519,
+          452
+        ],
+        [
+          515,
+          431
+        ],
+        [
+          508,
+          409
+        ],
+        [
+          501,
+          396
+        ],
+        [
+          500,
+          344
+        ],
+        [
+          507,
+          330
+        ],
+        [
+          510,
+          322
+        ],
+        [
+          510,
+          299
+        ],
+        [
+          507,
+          272
+        ],
+        [
+          503,
+          262
+        ],
+        [
+          511,
+          253
+        ],
+        [
+          515,
+          239
+        ]
+      ],
+      "education_diagonal": [
+        [
+          160,
+          288
+        ],
+        [
+          283,
+          274
+        ],
+        [
+          310,
+          395
+        ],
+        [
+          206,
+          414
+        ],
+        [
+          203,
+          392
+        ],
+        [
+          199,
+          375
+        ],
+        [
+          193,
+          355
+        ],
+        [
+          185,
+          337
+        ],
+        [
+          171,
+          309
+        ],
+        [
+          160,
+          288
+        ]
+      ]
+    },
+    "interpretation": {
+      "phases": {
+        "1250,1077": "The exact pixel is red linework at the education/roadway boundary. Immediately west is solid existing О-1.",
+        "786,330": "The point falls on the gridded О-1 parcel west of the river bank.",
+        "805,26;470,336": "A stream and nearby Р-4 print support the code, but both published Р-4 phase swatches have indistinguishable solid green fills."
+      },
+      "education_diagonal": "Two diagonally hatched О-1 areas are individually labelled and separated by a fine white line. The requested ring follows the northern area containing the seed. For a same-use footprint the union includes the southern area.",
+      "education_diagonal_south": [
+        [
+          206,
+          414
+        ],
+        [
+          310,
+          395
+        ],
+        [
+          340,
+          535
+        ],
+        [
+          312,
+          541
+        ],
+        [
+          286,
+          544
+        ],
+        [
+          271,
+          543
+        ],
+        [
+          253,
+          539
+        ],
+        [
+          238,
+          532
+        ],
+        [
+          224,
+          523
+        ],
+        [
+          218,
+          517
+        ],
+        [
+          206,
+          414
+        ]
+      ],
+      "education_diagonal_same_symbol_union": [
+        [
+          160,
+          288
+        ],
+        [
+          283,
+          274
+        ],
+        [
+          310,
+          395
+        ],
+        [
+          340,
+          535
+        ],
+        [
+          312,
+          541
+        ],
+        [
+          286,
+          544
+        ],
+        [
+          271,
+          543
+        ],
+        [
+          253,
+          539
+        ],
+        [
+          238,
+          532
+        ],
+        [
+          224,
+          523
+        ],
+        [
+          218,
+          517
+        ],
+        [
+          206,
+          414
+        ],
+        [
+          203,
+          392
+        ],
+        [
+          199,
+          375
+        ],
+        [
+          193,
+          355
+        ],
+        [
+          185,
+          337
+        ],
+        [
+          171,
+          309
+        ],
+        [
+          160,
+          288
+        ]
+      ],
+      "outline_method": "Visually traced vertices on enlarged, coordinate-labelled source windows, informed by preliminary color contours. Interior line in the diagonal education area was inspected directly."
+    }
+  },
+  "park_reference": "park-checks.json",
+  "city_checks": [
+    {
+      "chip": 1,
+      "probe": "centre",
+      "point": [
+        76.9587564,
+        43.3533001
+      ],
+      "reference_code": "О-1",
+      "reference_phase": "first",
+      "predicted": {
+        "located": true,
+        "code": "О-1",
+        "phase": "first",
+        "overlap_count": 1,
+        "features": [
+          "almaty-z15-00201"
+        ]
+      }
+    },
+    {
+      "chip": 2,
+      "probe": "centre",
+      "point": [
+        76.8867445,
+        43.3147182
+      ],
+      "reference_code": "Р-4",
+      "reference_phase": null,
+      "predicted": {
+        "located": true,
+        "code": null,
+        "phase": null,
+        "overlap_count": 1,
+        "features": [
+          "almaty-z15-01107"
+        ]
+      }
+    },
+    {
+      "chip": 3,
+      "probe": "centre",
+      "point": [
+        76.7743921,
+        43.299416
+      ],
+      "reference_code": null,
+      "reference_phase": null,
+      "predicted": {
+        "located": true,
+        "code": null,
+        "phase": null,
+        "overlap_count": 1,
+        "features": [
+          "almaty-z15-01257"
+        ]
+      }
+    },
+    {
+      "chip": 4,
+      "probe": "centre",
+      "point": [
+        76.983819,
+        43.2846723
+      ],
+      "reference_code": "Р-4",
+      "reference_phase": null,
+      "predicted": {
+        "located": true,
+        "code": null,
+        "phase": null,
+        "overlap_count": 1,
+        "features": [
+          "almaty-z15-01560"
+        ]
+      }
+    },
+    {
+      "chip": 5,
+      "probe": "centre",
+      "point": [
+        76.8598795,
+        43.2551741
+      ],
+      "reference_code": "О-1",
+      "reference_phase": "first",
+      "predicted": {
+        "located": true,
+        "code": "О-1",
+        "phase": "first",
+        "overlap_count": 1,
+        "features": [
+          "almaty-z15-02329"
+        ]
+      }
+    },
+    {
+      "chip": 6,
+      "probe": "centre",
+      "point": [
+        76.8937826,
+        43.2382312
+      ],
+      "reference_code": "Р-1",
+      "reference_phase": "existing",
+      "predicted": {
+        "located": true,
+        "code": "Р-1",
+        "phase": "existing",
+        "overlap_count": 1,
+        "features": [
+          "almaty-z15-02847"
+        ]
+      }
+    },
+    {
+      "chip": 7,
+      "probe": "centre",
+      "point": [
+        76.7934465,
+        43.206083
+      ],
+      "reference_code": "Р-3",
+      "reference_phase": "first",
+      "predicted": {
+        "located": true,
+        "code": "Р-3",
+        "phase": "first",
+        "overlap_count": 1,
+        "features": [
+          "almaty-z15-03790"
+        ]
+      }
+    },
+    {
+      "chip": 8,
+      "probe": "centre",
+      "point": [
+        76.9226217,
+        43.2070214
+      ],
+      "reference_code": "О-1",
+      "reference_phase": "existing",
+      "predicted": {
+        "located": true,
+        "code": "О-1",
+        "phase": "existing",
+        "overlap_count": 1,
+        "features": [
+          "almaty-z15-03768"
+        ]
+      }
+    },
+    {
+      "chip": 9,
+      "probe": "centre",
+      "point": [
+        76.8386793,
+        43.1771726
+      ],
+      "reference_code": "Р-1",
+      "reference_phase": "existing",
+      "predicted": {
+        "located": true,
+        "code": "Р-1",
+        "phase": "existing",
+        "overlap_count": 1,
+        "features": [
+          "almaty-z15-04277"
+        ]
+      }
+    },
+    {
+      "chip": 10,
+      "probe": "centre",
+      "point": [
+        77.0308542,
+        43.2105872
+      ],
+      "reference_code": "Р-1",
+      "reference_phase": "existing",
+      "predicted": {
+        "located": true,
+        "code": "Р-1",
+        "phase": "existing",
+        "overlap_count": 1,
+        "features": [
+          "almaty-z15-04111"
+        ]
+      }
+    },
+    {
+      "chip": 11,
+      "probe": "centre",
+      "point": [
+        76.9895697,
+        43.053367
+      ],
+      "reference_code": null,
+      "reference_phase": null,
+      "predicted": {
+        "located": true,
+        "code": null,
+        "phase": null,
+        "overlap_count": 1,
+        "features": [
+          "almaty-z15-04782"
+        ]
+      }
+    },
+    {
+      "chip": 12,
+      "probe": "centre",
+      "point": [
+        77.140975,
+        43.3583551
+      ],
+      "reference_code": "О-1",
+      "reference_phase": "existing",
+      "predicted": {
+        "located": true,
+        "code": "О-1",
+        "phase": "existing",
+        "overlap_count": 1,
+        "features": [
+          "almaty-z15-00145"
+        ]
+      }
+    },
+    {
+      "chip": 1,
+      "probe": "other land use",
+      "point": [
+        76.95626199,
+        43.35416214
+      ],
+      "reference_code": "Ж-3",
+      "reference_phase": null,
+      "predicted": {
+        "located": false,
+        "code": null,
+        "phase": null,
+        "overlap_count": 0,
+        "features": []
+      }
+    },
+    {
+      "chip": 2,
+      "probe": "other land use",
+      "point": [
+        76.88694298,
+        43.31579934
+      ],
+      "reference_code": "Ж-1",
+      "reference_phase": null,
+      "predicted": {
+        "located": false,
+        "code": null,
+        "phase": null,
+        "overlap_count": 0,
+        "features": []
+      }
+    },
+    {
+      "chip": 3,
+      "probe": "other land use",
+      "point": [
+        76.77275598,
+        43.30193408
+      ],
+      "reference_code": "Р-2",
+      "reference_phase": null,
+      "predicted": {
+        "located": false,
+        "code": null,
+        "phase": null,
+        "overlap_count": 0,
+        "features": []
+      }
+    },
+    {
+      "chip": 4,
+      "probe": "other land use",
+      "point": [
+        76.98162496,
+        43.28554308
+      ],
+      "reference_code": "О-3",
+      "reference_phase": null,
+      "predicted": {
+        "located": false,
+        "code": null,
+        "phase": null,
+        "overlap_count": 0,
+        "features": []
+      }
+    },
+    {
+      "chip": 5,
+      "probe": "other land use",
+      "point": [
+        76.85837209,
+        43.25443567
+      ],
+      "reference_code": "Ж-4",
+      "reference_phase": null,
+      "predicted": {
+        "located": false,
+        "code": null,
+        "phase": null,
+        "overlap_count": 0,
+        "features": []
+      }
+    },
+    {
+      "chip": 6,
+      "probe": "other land use",
+      "point": [
+        76.89081609,
+        43.23786773
+      ],
+      "reference_code": "Ж-4",
+      "reference_phase": null,
+      "predicted": {
+        "located": false,
+        "code": null,
+        "phase": null,
+        "overlap_count": 0,
+        "features": []
+      }
+    },
+    {
+      "chip": 7,
+      "probe": "other land use",
+      "point": [
+        76.79502904,
+        43.20723644
+      ],
+      "reference_code": "Ж-5",
+      "reference_phase": null,
+      "predicted": {
+        "located": false,
+        "code": null,
+        "phase": null,
+        "overlap_count": 0,
+        "features": []
+      }
+    },
+    {
+      "chip": 8,
+      "probe": "other land use",
+      "point": [
+        76.92583501,
+        43.2079246
+      ],
+      "reference_code": "Т-1",
+      "reference_phase": null,
+      "predicted": {
+        "located": false,
+        "code": null,
+        "phase": null,
+        "overlap_count": 0,
+        "features": []
+      }
+    },
+    {
+      "chip": 9,
+      "probe": "other land use",
+      "point": [
+        76.83621705,
+        43.17752863
+      ],
+      "reference_code": "Ж-1",
+      "reference_phase": null,
+      "predicted": {
+        "located": false,
+        "code": null,
+        "phase": null,
+        "overlap_count": 0,
+        "features": []
+      }
+    },
+    {
+      "chip": 10,
+      "probe": "other land use",
+      "point": [
+        77.03124583,
+        43.21242091
+      ],
+      "reference_code": "АС-1",
+      "reference_phase": null,
+      "predicted": {
+        "located": false,
+        "code": null,
+        "phase": null,
+        "overlap_count": 0,
+        "features": []
+      }
+    },
+    {
+      "chip": 11,
+      "probe": "other land use",
+      "point": [
+        76.99327648,
+        43.05089353
+      ],
+      "reference_code": "ОТ-1",
+      "reference_phase": null,
+      "predicted": {
+        "located": false,
+        "code": null,
+        "phase": null,
+        "overlap_count": 0,
+        "features": []
+      }
+    },
+    {
+      "chip": 12,
+      "probe": "other land use",
+      "point": [
+        77.14395225,
+        43.35969293
+      ],
+      "reference_code": "Ж-1",
+      "reference_phase": null,
+      "predicted": {
+        "located": false,
+        "code": null,
+        "phase": null,
+        "overlap_count": 0,
+        "features": []
+      }
+    }
+  ],
+  "city_check_design": "Twelve geographically distributed windows withheld at zoom 17. Centres were selected near palette-matching pixels. Each window has one additional outside-class control. Null centre references mean the image did not establish a code. This is a targeted sample.",
+  "coverage_summary": {
+    "source_zooms": {
+      "overview": [
+        13,
+        14
+      ],
+      "extraction": 15,
+      "detailed_label_portions": 17
+    },
+    "all_source_pixels": 117690880,
+    "source_pixels_alpha_at_least_128": 57998769,
+    "pre_filter_symbol_pixels": 11280512,
+    "retained_polygon_source_pixels": 11200082,
+    "fraction_of_opaque_raster": 0.19310896064018188,
+    "fraction_of_entire_published_rectangle": 0.09516524984773672,
+    "features": 4783,
+    "counts_by_observation": {
+      "shared solid green": {
+        "features": 1206,
+        "source_pixels": 2454764
+      },
+      "education solid existing": {
+        "features": 689,
+        "source_pixels": 559252
+      },
+      "education solid or gridded": {
+        "features": 383,
+        "source_pixels": 74692
+      },
+      "public green solid existing": {
+        "features": 795,
+        "source_pixels": 4841581
+      },
+      "education grid": {
+        "features": 246,
+        "source_pixels": 366050
+      },
+      "park solid first stage": {
+        "features": 860,
+        "source_pixels": 811426
+      },
+      "blue water-like fill": {
+        "features": 209,
+        "source_pixels": 337815
+      },
+      "park solid existing": {
+        "features": 316,
+        "source_pixels": 1674236
+      },
+      "education diagonal pale green": {
+        "features": 65,
+        "source_pixels": 63044
+      },
+      "park dark-green diagonal": {
+        "features": 14,
+        "source_pixels": 17222
+      }
+    },
+    "counts_by_code_phase": {
+      "unclassified unknown": 1409,
+      "О-1 existing": 689,
+      "О-1 first": 246,
+      "О-1 horizon": 65,
+      "О-1 unknown": 383,
+      "Р-1 existing": 795,
+      "Р-1 first": 2,
+      "Р-3 existing": 316,
+      "Р-3 first": 860,
+      "Р-3 horizon": 14,
+      "Р-4 unknown": 4
+    },
+    "counts_by_evidence": {
+      "ambiguous_color": 1409,
+      "legend_color": 3029,
+      "legend_pattern": 317,
+      "printed_label": 28
+    },
+    "label_readings_by_result_before_attachment": {
+      "candidate_includes_code": 11,
+      "exact_code": 25,
+      "correctly_excluded": 9,
+      "uncovered": 6
+    },
+    "distributed_only_pre_attachment_results": {
+      "candidate_includes_code": 9,
+      "exact_code": 19,
+      "correctly_excluded": 9,
+      "uncovered": 2
+    },
+    "park_pre_attachment_results": {
+      "exact_code": 6,
+      "uncovered": 4,
+      "candidate_includes_code": 2
+    },
+    "simplification_z15_px": 1.0,
+    "pre_filter_area_floor_z15_px": {
+      "solid_symbols_blue": 40,
+      "education_horizon": 48,
+      "green_horizon": 96
+    },
+    "removed_symbol_holes_below_px": 25,
+    "pixel_ground_size_m_at_city_center": 3.480228278327745
+  },
+  "model_calibration_checks": [
+    {
+      "id": "model-01-173-411",
+      "image": "model-01",
+      "label": [
+        173,
+        411
+      ],
+      "probe": [
+        201,
+        422
+      ],
+      "printed_code": "Р-1",
+      "highres_phase": "first",
+      "probe_rgb_median": [
+        38,
+        116,
+        1
+      ],
+      "polygon_id": "almaty-z15-00091",
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [
+        "Р-1",
+        "Р-4"
+      ],
+      "target": true,
+      "lon": 76.9714755,
+      "lat": 43.3760873,
+      "label_lon": 76.9711751,
+      "label_lat": 43.3761731,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "candidate_includes_code"
+    },
+    {
+      "id": "model-01-237-651",
+      "image": "model-01",
+      "label": [
+        237,
+        651
+      ],
+      "probe": [
+        251,
+        629
+      ],
+      "printed_code": "Р-1",
+      "highres_phase": "first",
+      "probe_rgb_median": [
+        38,
+        116,
+        1
+      ],
+      "polygon_id": "almaty-z15-00091",
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [
+        "Р-1",
+        "Р-4"
+      ],
+      "target": true,
+      "lon": 76.9720119,
+      "lat": 43.3744731,
+      "label_lon": 76.9718617,
+      "label_lat": 43.3743015,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "candidate_includes_code"
+    },
+    {
+      "id": "model-02-96-389",
+      "image": "model-02",
+      "label": [
+        96,
+        389
+      ],
+      "probe": [
+        98,
+        410
+      ],
+      "printed_code": "Р-3",
+      "highres_phase": "first",
+      "probe_rgb_median": [
+        27,
+        74,
+        0
+      ],
+      "polygon_id": "almaty-z15-00748",
+      "pre_label_code": "Р-3",
+      "pre_label_phase": "first",
+      "pre_label_candidates": [
+        "Р-3"
+      ],
+      "target": true,
+      "lon": 76.8352729,
+      "lat": 43.3256889,
+      "label_lon": 76.8352515,
+      "label_lat": 43.3258528,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "model-02-234-33",
+      "image": "model-02",
+      "label": [
+        234,
+        33
+      ],
+      "probe": [
+        246,
+        63
+      ],
+      "printed_code": "Р-3",
+      "highres_phase": "first",
+      "probe_rgb_median": [
+        26,
+        74,
+        1
+      ],
+      "polygon_id": "almaty-z15-00752",
+      "pre_label_code": "Р-3",
+      "pre_label_phase": "first",
+      "pre_label_candidates": [
+        "Р-3"
+      ],
+      "target": true,
+      "lon": 76.8368608,
+      "lat": 43.3283971,
+      "label_lon": 76.836732,
+      "label_lat": 43.3286313,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "model-02-446-186",
+      "image": "model-02",
+      "label": [
+        446,
+        186
+      ],
+      "probe": [
+        454,
+        210
+      ],
+      "printed_code": "Р-1",
+      "highres_phase": "existing",
+      "probe_rgb_median": [
+        38,
+        105,
+        1
+      ],
+      "polygon_id": "almaty-z15-00633",
+      "pre_label_code": "Р-1",
+      "pre_label_phase": "existing",
+      "pre_label_candidates": [
+        "Р-1"
+      ],
+      "target": true,
+      "lon": 76.8390924,
+      "lat": 43.3272499,
+      "label_lon": 76.8390065,
+      "label_lat": 43.3274372,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "model-02-441-308",
+      "image": "model-02",
+      "label": [
+        441,
+        308
+      ],
+      "probe": [
+        457,
+        317
+      ],
+      "printed_code": "Р-1",
+      "highres_phase": "existing",
+      "probe_rgb_median": [
+        38,
+        105,
+        3
+      ],
+      "polygon_id": "almaty-z15-00650",
+      "pre_label_code": "Р-1",
+      "pre_label_phase": "existing",
+      "pre_label_candidates": [
+        "Р-1"
+      ],
+      "target": true,
+      "lon": 76.8391246,
+      "lat": 43.3264147,
+      "label_lon": 76.8389529,
+      "label_lat": 43.326485,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "model-02-436-351",
+      "image": "model-02",
+      "label": [
+        436,
+        351
+      ],
+      "probe": [
+        416,
+        399
+      ],
+      "printed_code": "О-1",
+      "highres_phase": "existing",
+      "probe_rgb_median": [
+        77,
+        191,
+        123
+      ],
+      "polygon_id": "almaty-z15-00680",
+      "pre_label_code": "О-1",
+      "pre_label_phase": "existing",
+      "pre_label_candidates": [
+        "О-1"
+      ],
+      "target": true,
+      "lon": 76.8386847,
+      "lat": 43.3257748,
+      "label_lon": 76.8388993,
+      "label_lat": 43.3261494,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "model-02-529-563",
+      "image": "model-02",
+      "label": [
+        529,
+        563
+      ],
+      "probe": [
+        511,
+        540
+      ],
+      "printed_code": "О-1",
+      "highres_phase": "existing",
+      "probe_rgb_median": [
+        77,
+        191,
+        123
+      ],
+      "polygon_id": "almaty-z15-00680",
+      "pre_label_code": "О-1",
+      "pre_label_phase": "existing",
+      "pre_label_candidates": [
+        "О-1"
+      ],
+      "target": true,
+      "lon": 76.8397039,
+      "lat": 43.3246743,
+      "label_lon": 76.839897,
+      "label_lat": 43.3244947,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "model-02-167-251",
+      "image": "model-02",
+      "label": [
+        167,
+        251
+      ],
+      "probe": [
+        173,
+        273
+      ],
+      "printed_code": "Р-2",
+      "highres_phase": null,
+      "probe_rgb_median": [
+        91,
+        137,
+        67
+      ],
+      "polygon_id": null,
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [],
+      "target": false,
+      "lon": 76.8360776,
+      "lat": 43.3267582,
+      "label_lon": 76.8360132,
+      "label_lat": 43.3269299,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "correctly_excluded"
+    },
+    {
+      "id": "model-02-513-407",
+      "image": "model-02",
+      "label": [
+        513,
+        407
+      ],
+      "probe": [
+        517,
+        428
+      ],
+      "printed_code": "Т-1",
+      "highres_phase": null,
+      "probe_rgb_median": [
+        139,
+        187,
+        216
+      ],
+      "polygon_id": null,
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [],
+      "target": false,
+      "lon": 76.8397683,
+      "lat": 43.3255484,
+      "label_lon": 76.8397254,
+      "label_lat": 43.3257123,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "correctly_excluded"
+    },
+    {
+      "id": "model-03-346-295",
+      "image": "model-03",
+      "label": [
+        346,
+        295
+      ],
+      "probe": [
+        353,
+        307
+      ],
+      "printed_code": "О-1",
+      "highres_phase": "first",
+      "probe_rgb_median": [
+        87,
+        191,
+        123
+      ],
+      "polygon_id": "almaty-z15-00846",
+      "pre_label_code": "О-1",
+      "pre_label_phase": "first",
+      "pre_label_candidates": [
+        "О-1"
+      ],
+      "target": true,
+      "lon": 76.9934481,
+      "lat": 43.3183753,
+      "label_lon": 76.993373,
+      "label_lat": 43.318469,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "model-03-562-391",
+      "image": "model-03",
+      "label": [
+        562,
+        391
+      ],
+      "probe": [
+        558,
+        420
+      ],
+      "printed_code": "Р-3",
+      "highres_phase": "first",
+      "probe_rgb_median": [
+        26,
+        74,
+        1
+      ],
+      "polygon_id": "almaty-z15-00858",
+      "pre_label_code": "Р-3",
+      "pre_label_phase": "first",
+      "pre_label_candidates": [
+        "Р-3"
+      ],
+      "target": true,
+      "lon": 76.9956475,
+      "lat": 43.3174932,
+      "label_lon": 76.9956905,
+      "label_lat": 43.3177196,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "model-03-509-462",
+      "image": "model-03",
+      "label": [
+        509,
+        462
+      ],
+      "probe": [
+        497,
+        443
+      ],
+      "printed_code": "Р-4",
+      "highres_phase": null,
+      "probe_rgb_median": [
+        38,
+        116,
+        1
+      ],
+      "polygon_id": "almaty-z15-00883",
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [
+        "Р-1",
+        "Р-4"
+      ],
+      "target": true,
+      "lon": 76.9949931,
+      "lat": 43.3173137,
+      "label_lon": 76.9951218,
+      "label_lat": 43.3171654,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "candidate_includes_code"
+    },
+    {
+      "id": "model-03-134-686",
+      "image": "model-03",
+      "label": [
+        134,
+        686
+      ],
+      "probe": [
+        147,
+        678
+      ],
+      "printed_code": "Р-3",
+      "highres_phase": "first",
+      "probe_rgb_median": [
+        26,
+        74,
+        1
+      ],
+      "polygon_id": "almaty-z15-00898",
+      "pre_label_code": "Р-3",
+      "pre_label_phase": "first",
+      "pre_label_candidates": [
+        "Р-3"
+      ],
+      "target": true,
+      "lon": 76.991238,
+      "lat": 43.3154793,
+      "label_lon": 76.9910985,
+      "label_lat": 43.3154168,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "model-03-142-523",
+      "image": "model-03",
+      "label": [
+        142,
+        523
+      ],
+      "probe": [
+        146,
+        531
+      ],
+      "printed_code": "О-3",
+      "highres_phase": null,
+      "probe_rgb_median": [
+        228,
+        116,
+        122
+      ],
+      "polygon_id": null,
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [],
+      "target": false,
+      "lon": 76.9912273,
+      "lat": 43.3166268,
+      "label_lon": 76.9911844,
+      "label_lat": 43.3166892,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "correctly_excluded"
+    },
+    {
+      "id": "model-04-145-166",
+      "image": "model-04",
+      "label": [
+        145,
+        166
+      ],
+      "probe": [
+        108,
+        150
+      ],
+      "printed_code": "Р-4",
+      "highres_phase": null,
+      "probe_rgb_median": [
+        102,
+        153,
+        204
+      ],
+      "polygon_id": "almaty-z15-02035",
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [
+        "Р-4"
+      ],
+      "target": true,
+      "lon": 76.9115978,
+      "lat": 43.2654993,
+      "label_lon": 76.9119948,
+      "label_lat": 43.2653743,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "candidate_includes_code"
+    },
+    {
+      "id": "model-04-190-261",
+      "image": "model-04",
+      "label": [
+        190,
+        261
+      ],
+      "probe": [
+        181,
+        276
+      ],
+      "printed_code": "Р-1",
+      "highres_phase": "first",
+      "probe_rgb_median": [
+        38,
+        116,
+        1
+      ],
+      "polygon_id": "almaty-z15-02040",
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [
+        "Р-1",
+        "Р-4"
+      ],
+      "target": true,
+      "lon": 76.9123811,
+      "lat": 43.2645149,
+      "label_lon": 76.9124776,
+      "label_lat": 43.2646321,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "candidate_includes_code"
+    },
+    {
+      "id": "model-04-550-47",
+      "image": "model-04",
+      "label": [
+        550,
+        47
+      ],
+      "probe": [
+        553,
+        64
+      ],
+      "printed_code": "Р-1",
+      "highres_phase": "first",
+      "probe_rgb_median": [
+        38,
+        117,
+        2
+      ],
+      "polygon_id": "almaty-z15-01981",
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [
+        "Р-1",
+        "Р-4"
+      ],
+      "target": true,
+      "lon": 76.9163722,
+      "lat": 43.2661712,
+      "label_lon": 76.91634,
+      "label_lat": 43.266304,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "candidate_includes_code"
+    },
+    {
+      "id": "model-04-586-168",
+      "image": "model-04",
+      "label": [
+        586,
+        168
+      ],
+      "probe": [
+        552,
+        176
+      ],
+      "printed_code": "О-1",
+      "highres_phase": "first",
+      "probe_rgb_median": [
+        90,
+        192,
+        121
+      ],
+      "polygon_id": "almaty-z15-02031",
+      "pre_label_code": "О-1",
+      "pre_label_phase": "first",
+      "pre_label_candidates": [
+        "О-1"
+      ],
+      "target": true,
+      "lon": 76.9163615,
+      "lat": 43.2652962,
+      "label_lon": 76.9167262,
+      "label_lat": 43.2653587,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "model-04-554-400",
+      "image": "model-04",
+      "label": [
+        554,
+        400
+      ],
+      "probe": [
+        552,
+        414
+      ],
+      "printed_code": "О-1",
+      "highres_phase": "first",
+      "probe_rgb_median": [
+        89,
+        191,
+        125
+      ],
+      "polygon_id": "almaty-z15-02079",
+      "pre_label_code": "О-1",
+      "pre_label_phase": "first",
+      "pre_label_candidates": [
+        "О-1"
+      ],
+      "target": true,
+      "lon": 76.9163615,
+      "lat": 43.2634367,
+      "label_lon": 76.9163829,
+      "label_lat": 43.2635461,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "model-04-261-595",
+      "image": "model-04",
+      "label": [
+        261,
+        595
+      ],
+      "probe": [
+        229,
+        548
+      ],
+      "printed_code": "Р-4",
+      "highres_phase": null,
+      "probe_rgb_median": [
+        104,
+        153,
+        203
+      ],
+      "polygon_id": null,
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [],
+      "target": true,
+      "lon": 76.912896,
+      "lat": 43.2623898,
+      "label_lon": 76.9132394,
+      "label_lat": 43.2620226,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "uncovered"
+    },
+    {
+      "id": "model-04-572-513",
+      "image": "model-04",
+      "label": [
+        572,
+        513
+      ],
+      "probe": [
+        565,
+        528
+      ],
+      "printed_code": "О-3",
+      "highres_phase": null,
+      "probe_rgb_median": [
+        255,
+        1,
+        0
+      ],
+      "polygon_id": null,
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [],
+      "target": false,
+      "lon": 76.9165009,
+      "lat": 43.2625461,
+      "label_lon": 76.916576,
+      "label_lat": 43.2626633,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "correctly_excluded"
+    },
+    {
+      "id": "model-05-502-82",
+      "image": "model-05",
+      "label": [
+        502,
+        82
+      ],
+      "probe": [
+        492,
+        95
+      ],
+      "printed_code": "Р-4",
+      "highres_phase": null,
+      "probe_rgb_median": [
+        37,
+        116,
+        3
+      ],
+      "polygon_id": "almaty-z15-03471",
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [
+        "Р-1",
+        "Р-4"
+      ],
+      "target": true,
+      "lon": 76.824308,
+      "lat": 43.2210373,
+      "label_lon": 76.8244153,
+      "label_lat": 43.2211389,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "candidate_includes_code"
+    },
+    {
+      "id": "model-05-671-104",
+      "image": "model-05",
+      "label": [
+        671,
+        104
+      ],
+      "probe": [
+        694,
+        122
+      ],
+      "printed_code": "О-1",
+      "highres_phase": "horizon",
+      "probe_rgb_median": [
+        141,
+        205,
+        105
+      ],
+      "polygon_id": "almaty-z15-03391",
+      "pre_label_code": "О-1",
+      "pre_label_phase": "horizon",
+      "pre_label_candidates": [
+        "О-1"
+      ],
+      "target": true,
+      "lon": 76.8264753,
+      "lat": 43.2208262,
+      "label_lon": 76.8262285,
+      "label_lat": 43.2209669,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "model-05-515-388",
+      "image": "model-05",
+      "label": [
+        515,
+        388
+      ],
+      "probe": [
+        496,
+        399
+      ],
+      "printed_code": "О-1",
+      "highres_phase": "first",
+      "probe_rgb_median": [
+        91,
+        192,
+        123
+      ],
+      "polygon_id": "almaty-z15-03491",
+      "pre_label_code": "О-1",
+      "pre_label_phase": "first",
+      "pre_label_candidates": [
+        "О-1"
+      ],
+      "target": true,
+      "lon": 76.824351,
+      "lat": 43.2186605,
+      "label_lon": 76.8245548,
+      "label_lat": 43.2187465,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "model-05-420-445",
+      "image": "model-05",
+      "label": [
+        420,
+        445
+      ],
+      "probe": [
+        432,
+        460
+      ],
+      "printed_code": "О-1",
+      "highres_phase": "first",
+      "probe_rgb_median": [
+        89,
+        191,
+        123
+      ],
+      "polygon_id": "almaty-z15-03491",
+      "pre_label_code": "О-1",
+      "pre_label_phase": "first",
+      "pre_label_candidates": [
+        "О-1"
+      ],
+      "target": true,
+      "lon": 76.8236643,
+      "lat": 43.2181835,
+      "label_lon": 76.8235356,
+      "label_lat": 43.2183008,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "model-05-285-648",
+      "image": "model-05",
+      "label": [
+        285,
+        648
+      ],
+      "probe": [
+        290,
+        663
+      ],
+      "printed_code": "Р-3",
+      "highres_phase": "first",
+      "probe_rgb_median": [
+        26,
+        74,
+        1
+      ],
+      "polygon_id": "almaty-z15-03502",
+      "pre_label_code": "Р-3",
+      "pre_label_phase": "first",
+      "pre_label_candidates": [
+        "Р-3"
+      ],
+      "target": true,
+      "lon": 76.8221408,
+      "lat": 43.2165963,
+      "label_lon": 76.8220872,
+      "label_lat": 43.2167136,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "model-05-110-724",
+      "image": "model-05",
+      "label": [
+        110,
+        724
+      ],
+      "probe": [
+        116,
+        741
+      ],
+      "printed_code": "О-1",
+      "highres_phase": "first",
+      "probe_rgb_median": [
+        86,
+        191,
+        121
+      ],
+      "polygon_id": "almaty-z15-03533",
+      "pre_label_code": "О-1",
+      "pre_label_phase": "first",
+      "pre_label_candidates": [
+        "О-1"
+      ],
+      "target": true,
+      "lon": 76.820274,
+      "lat": 43.2159865,
+      "label_lon": 76.8202096,
+      "label_lat": 43.2161194,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "model-05-726-596",
+      "image": "model-05",
+      "label": [
+        726,
+        596
+      ],
+      "probe": [
+        716,
+        615
+      ],
+      "printed_code": "Р-4",
+      "highres_phase": null,
+      "probe_rgb_median": [
+        38,
+        115,
+        3
+      ],
+      "polygon_id": "almaty-z15-03541",
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [
+        "Р-1",
+        "Р-4"
+      ],
+      "target": true,
+      "lon": 76.8267113,
+      "lat": 43.2169716,
+      "label_lon": 76.8268186,
+      "label_lat": 43.2171202,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "candidate_includes_code"
+    },
+    {
+      "id": "model-05-337-179",
+      "image": "model-05",
+      "label": [
+        337,
+        179
+      ],
+      "probe": [
+        340,
+        200
+      ],
+      "printed_code": "Ж-4",
+      "highres_phase": null,
+      "probe_rgb_median": [
+        208,
+        166,
+        130
+      ],
+      "polygon_id": null,
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [],
+      "target": false,
+      "lon": 76.8226773,
+      "lat": 43.2202164,
+      "label_lon": 76.8226451,
+      "label_lat": 43.2203805,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "correctly_excluded"
+    },
+    {
+      "id": "model-06-734-297",
+      "image": "model-06",
+      "label": [
+        734,
+        297
+      ],
+      "probe": [
+        707,
+        322
+      ],
+      "printed_code": "Р-3",
+      "highres_phase": "first",
+      "probe_rgb_median": [
+        26,
+        74,
+        1
+      ],
+      "polygon_id": "almaty-z15-04082",
+      "pre_label_code": "Р-3",
+      "pre_label_phase": "first",
+      "pre_label_candidates": [
+        "Р-3"
+      ],
+      "target": true,
+      "lon": 76.9944996,
+      "lat": 43.1948639,
+      "label_lon": 76.9947892,
+      "label_lat": 43.1950594,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "model-06-255-678",
+      "image": "model-06",
+      "label": [
+        255,
+        678
+      ],
+      "probe": [
+        262,
+        658
+      ],
+      "printed_code": "Р-4",
+      "highres_phase": null,
+      "probe_rgb_median": [
+        39,
+        116,
+        2
+      ],
+      "polygon_id": "almaty-z15-04075",
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [
+        "Р-1",
+        "Р-4"
+      ],
+      "target": true,
+      "lon": 76.9897252,
+      "lat": 43.1922357,
+      "label_lon": 76.9896501,
+      "label_lat": 43.1920793,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "candidate_includes_code"
+    },
+    {
+      "id": "model-06-256-582",
+      "image": "model-06",
+      "label": [
+        256,
+        582
+      ],
+      "probe": [
+        237,
+        588
+      ],
+      "printed_code": "Т-1",
+      "highres_phase": null,
+      "probe_rgb_median": [
+        139,
+        187,
+        216
+      ],
+      "polygon_id": null,
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [],
+      "target": false,
+      "lon": 76.989457,
+      "lat": 43.1927833,
+      "label_lon": 76.9896609,
+      "label_lat": 43.1928302,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "correctly_excluded"
+    },
+    {
+      "id": "model-06-239-308",
+      "image": "model-06",
+      "label": [
+        239,
+        308
+      ],
+      "probe": [
+        208,
+        324
+      ],
+      "printed_code": "Ж-2",
+      "highres_phase": null,
+      "probe_rgb_median": [
+        78,
+        69,
+        46
+      ],
+      "polygon_id": null,
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [],
+      "target": false,
+      "lon": 76.9891459,
+      "lat": 43.1948482,
+      "label_lon": 76.9894785,
+      "label_lat": 43.1949734,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "correctly_excluded"
+    },
+    {
+      "id": "model-08-76-193",
+      "image": "model-08",
+      "label": [
+        76,
+        193
+      ],
+      "probe": [
+        122,
+        211
+      ],
+      "printed_code": "Р-1",
+      "highres_phase": "existing",
+      "probe_rgb_median": [
+        41,
+        105,
+        4
+      ],
+      "polygon_id": "almaty-z15-00252",
+      "pre_label_code": "Р-1",
+      "pre_label_phase": "existing",
+      "pre_label_candidates": [
+        "Р-1"
+      ],
+      "target": true,
+      "lon": 77.1424609,
+      "lat": 43.3488415,
+      "label_lon": 77.1419674,
+      "label_lat": 43.3489819,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "model-08-64-289",
+      "image": "model-08",
+      "label": [
+        64,
+        289
+      ],
+      "probe": [
+        89,
+        290
+      ],
+      "printed_code": "Р-1",
+      "highres_phase": "existing",
+      "probe_rgb_median": [
+        38,
+        105,
+        1
+      ],
+      "polygon_id": "almaty-z15-00255",
+      "pre_label_code": "Р-1",
+      "pre_label_phase": "existing",
+      "pre_label_candidates": [
+        "Р-1"
+      ],
+      "target": true,
+      "lon": 77.1421069,
+      "lat": 43.3482251,
+      "label_lon": 77.1418387,
+      "label_lat": 43.3482329,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "model-08-362-220",
+      "image": "model-08",
+      "label": [
+        362,
+        220
+      ],
+      "probe": [
+        372,
+        227
+      ],
+      "printed_code": "Р-1",
+      "highres_phase": "existing",
+      "probe_rgb_median": [
+        46,
+        104,
+        16
+      ],
+      "polygon_id": null,
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [],
+      "target": true,
+      "lon": 77.1451432,
+      "lat": 43.3487167,
+      "label_lon": 77.1450359,
+      "label_lat": 43.3487713,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "uncovered"
+    },
+    {
+      "id": "model-08-358-273",
+      "image": "model-08",
+      "label": [
+        358,
+        273
+      ],
+      "probe": [
+        347,
+        290
+      ],
+      "printed_code": "Т-1",
+      "highres_phase": null,
+      "probe_rgb_median": [
+        139,
+        187,
+        216
+      ],
+      "polygon_id": null,
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [],
+      "target": false,
+      "lon": 77.1448749,
+      "lat": 43.3482251,
+      "label_lon": 77.1449929,
+      "label_lat": 43.3483578,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "correctly_excluded"
+    },
+    {
+      "id": "model-08-592-145",
+      "image": "model-08",
+      "label": [
+        592,
+        145
+      ],
+      "probe": [
+        608,
+        152
+      ],
+      "printed_code": "П-2",
+      "highres_phase": null,
+      "probe_rgb_median": [
+        178,
+        178,
+        178
+      ],
+      "polygon_id": null,
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [],
+      "target": false,
+      "lon": 77.1476752,
+      "lat": 43.3493018,
+      "label_lon": 77.1475035,
+      "label_lat": 43.3493564,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "correctly_excluded"
+    },
+    {
+      "id": "park-350-134",
+      "image": "park",
+      "label": [
+        350,
+        134
+      ],
+      "probe": [
+        318,
+        143
+      ],
+      "printed_code": "Р-3",
+      "highres_phase": "first",
+      "probe_rgb_median": [
+        26,
+        74,
+        1
+      ],
+      "polygon_id": "almaty-z15-01874",
+      "pre_label_code": "Р-3",
+      "pre_label_phase": "first",
+      "pre_label_candidates": [
+        "Р-3"
+      ],
+      "target": true,
+      "lon": 76.9728488,
+      "lat": 43.2700773,
+      "label_lon": 76.9731921,
+      "label_lat": 43.2701476,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "park-1142-45",
+      "image": "park",
+      "label": [
+        1142,
+        45
+      ],
+      "probe": [
+        1157,
+        48
+      ],
+      "printed_code": "Р-3",
+      "highres_phase": "first",
+      "probe_rgb_median": [
+        27,
+        75,
+        3
+      ],
+      "polygon_id": null,
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [],
+      "target": true,
+      "lon": 76.9818503,
+      "lat": 43.2708194,
+      "label_lon": 76.9816893,
+      "label_lat": 43.2708429,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "uncovered"
+    },
+    {
+      "id": "park-694-869",
+      "image": "park",
+      "label": [
+        694,
+        869
+      ],
+      "probe": [
+        659,
+        853
+      ],
+      "printed_code": "Р-3",
+      "highres_phase": "existing",
+      "probe_rgb_median": [
+        29,
+        92,
+        0
+      ],
+      "polygon_id": "almaty-z15-02136",
+      "pre_label_code": "Р-3",
+      "pre_label_phase": "existing",
+      "pre_label_candidates": [
+        "Р-3"
+      ],
+      "target": true,
+      "lon": 76.9765073,
+      "lat": 43.2645305,
+      "label_lon": 76.9768828,
+      "label_lat": 43.2644055,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "park-220-812",
+      "image": "park",
+      "label": [
+        220,
+        812
+      ],
+      "probe": [
+        220,
+        835
+      ],
+      "printed_code": "Р-3",
+      "highres_phase": "existing",
+      "probe_rgb_median": [
+        33,
+        92,
+        6
+      ],
+      "polygon_id": "almaty-z15-02029",
+      "pre_label_code": "Р-3",
+      "pre_label_phase": "existing",
+      "pre_label_candidates": [
+        "Р-3"
+      ],
+      "target": true,
+      "lon": 76.9717973,
+      "lat": 43.2646712,
+      "label_lon": 76.9717973,
+      "label_lat": 43.2648508,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "park-164-826",
+      "image": "park",
+      "label": [
+        164,
+        826
+      ],
+      "probe": [
+        151,
+        825
+      ],
+      "printed_code": "Р-4",
+      "highres_phase": null,
+      "probe_rgb_median": [
+        103,
+        154,
+        203
+      ],
+      "polygon_id": null,
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [],
+      "target": true,
+      "lon": 76.9710571,
+      "lat": 43.2647493,
+      "label_lon": 76.9711965,
+      "label_lat": 43.2647415,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "uncovered"
+    },
+    {
+      "id": "park-464-350",
+      "image": "park",
+      "label": [
+        464,
+        350
+      ],
+      "probe": [
+        471,
+        331
+      ],
+      "printed_code": "Р-4",
+      "highres_phase": null,
+      "probe_rgb_median": [
+        39,
+        116,
+        2
+      ],
+      "polygon_id": "almaty-z15-01948",
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [
+        "Р-1",
+        "Р-4"
+      ],
+      "target": true,
+      "lon": 76.9744903,
+      "lat": 43.2686086,
+      "label_lon": 76.9744152,
+      "label_lat": 43.2684602,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "candidate_includes_code"
+    },
+    {
+      "id": "park-786-14",
+      "image": "park",
+      "label": [
+        786,
+        14
+      ],
+      "probe": [
+        801,
+        27
+      ],
+      "printed_code": "Р-4",
+      "highres_phase": null,
+      "probe_rgb_median": [
+        39,
+        117,
+        1
+      ],
+      "polygon_id": "almaty-z15-01861",
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [
+        "Р-1",
+        "Р-4"
+      ],
+      "target": true,
+      "lon": 76.9780308,
+      "lat": 43.2709835,
+      "label_lon": 76.9778699,
+      "label_lat": 43.271085,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "candidate_includes_code"
+    },
+    {
+      "id": "park-944-95",
+      "image": "park",
+      "label": [
+        944,
+        95
+      ],
+      "probe": [
+        937,
+        87
+      ],
+      "printed_code": "Р-1",
+      "highres_phase": "first",
+      "probe_rgb_median": [
+        39,
+        116,
+        7
+      ],
+      "polygon_id": null,
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [],
+      "target": true,
+      "lon": 76.9794899,
+      "lat": 43.2705148,
+      "label_lon": 76.979565,
+      "label_lat": 43.2704523,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "uncovered"
+    },
+    {
+      "id": "park-603-358",
+      "image": "park",
+      "label": [
+        603,
+        358
+      ],
+      "probe": [
+        581,
+        313
+      ],
+      "printed_code": "О-1",
+      "highres_phase": "first",
+      "probe_rgb_median": [
+        88,
+        191,
+        122
+      ],
+      "polygon_id": "almaty-z15-01943",
+      "pre_label_code": "О-1",
+      "pre_label_phase": "first",
+      "pre_label_candidates": [
+        "О-1"
+      ],
+      "target": true,
+      "lon": 76.9756705,
+      "lat": 43.2687492,
+      "label_lon": 76.9759065,
+      "label_lat": 43.2683977,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "park-241-343",
+      "image": "park",
+      "label": [
+        241,
+        343
+      ],
+      "probe": [
+        241,
+        308
+      ],
+      "printed_code": "О-1",
+      "highres_phase": "horizon",
+      "probe_rgb_median": [
+        141,
+        205,
+        106
+      ],
+      "polygon_id": "almaty-z15-01956",
+      "pre_label_code": "О-1",
+      "pre_label_phase": "horizon",
+      "pre_label_candidates": [
+        "О-1"
+      ],
+      "target": true,
+      "lon": 76.9720227,
+      "lat": 43.2687883,
+      "label_lon": 76.9720227,
+      "label_lat": 43.2685149,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "park-272-474",
+      "image": "park",
+      "label": [
+        272,
+        474
+      ],
+      "probe": [
+        268,
+        487
+      ],
+      "printed_code": "О-1",
+      "highres_phase": "horizon",
+      "probe_rgb_median": [
+        142,
+        205,
+        106
+      ],
+      "polygon_id": "almaty-z15-01956",
+      "pre_label_code": "О-1",
+      "pre_label_phase": "horizon",
+      "pre_label_candidates": [
+        "О-1"
+      ],
+      "target": true,
+      "lon": 76.9723123,
+      "lat": 43.2673899,
+      "label_lon": 76.9723552,
+      "label_lat": 43.2674915,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "exact_code"
+    },
+    {
+      "id": "park-1232-986",
+      "image": "park",
+      "label": [
+        1232,
+        986
+      ],
+      "probe": [
+        1182,
+        1002
+      ],
+      "printed_code": "О-1",
+      "highres_phase": "existing",
+      "probe_rgb_median": [
+        68,
+        145,
+        101
+      ],
+      "polygon_id": null,
+      "pre_label_code": null,
+      "pre_label_phase": null,
+      "pre_label_candidates": [],
+      "target": true,
+      "lon": 76.9821185,
+      "lat": 43.2633664,
+      "label_lon": 76.9826549,
+      "label_lat": 43.2634914,
+      "readout": "visible code at printed text, style independently examined on its local field; Р-4 phase visually inseparable",
+      "evaluation": "uncovered"
+    }
+  ]
+}
