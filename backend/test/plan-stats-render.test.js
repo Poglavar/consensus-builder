@@ -553,7 +553,7 @@ describe('comparing plans', () => {
         const before = apartments();
         expect(before.every(count => count > 0)).toBe(true);
         expect(textOf(body.querySelector('[data-plan-compare-rule]'))).toBe(
-            'A building with a suggested layout counts its apartments; any other: gross floor area × 80 % net × 75 % housing ÷ 65 m² per apartment. People = apartments × 2.4.');
+            'Count apartments directly when there is an estimated layout. Otherwise: gross floor area × 80 % net × 75 % housing ÷ 65 m² per apartment. People = apartments × 2.4.');
         const size = body.querySelector('#plan-compare-apartment-size');
         size.value = '130';
         size.listeners.input.forEach(fn => fn());

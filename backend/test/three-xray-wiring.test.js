@@ -490,7 +490,7 @@ describe('three-mode Xray wiring', () => {
         expect(parcelText('B')).toMatch(/^No default layout fits: Too small/);
         expect(parcelText('Z')).toBe('');
         const [proposalText] = extracted('suggestedProposalPanelText', panelVariables, { ...stubs, byParcel: c.byParcel, byProposal: c.byProposal });
-        expect(proposalText({ proposalId: 'p1' })).toBe('Suggested layouts: 1 buildings · 2 apartments per storey · 4 in total 1 in red: too small for a minimum stair core.');
+        expect(proposalText({ proposalId: 'p1' })).toBe('Estimated layouts: 1 buildings · 2 apartments per storey · 4 in total 1 in red: too small for a minimum stair core.');
         const [offText] = extracted('suggestedProposalPanelText', `let suggestedPlansEnabled=false; const suggestedPlanByParcel=new Map(); const suggestedPlanByProposal=this.byProposal;`, { ...stubs, byProposal: c.byProposal });
         expect(offText({ proposalId: 'p1' })).toBe('');
     });

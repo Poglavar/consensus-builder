@@ -1435,7 +1435,7 @@
                             <div class="parameter-group">
                                 <label for="single-building-use">${translateSingleBuildingText('modal.singleBuilding.useLabel', 'Building use')}</label>
                                 <select id="single-building-use">${singleBuildingUseOptions()}</select>
-                                <p class="parameter-info-text">${translateSingleBuildingText('modal.singleBuilding.useInfo', 'Plan stats counts apartments only on housing storeys; a housing use gets a suggested layout in X-ray.')}</p>
+                                <p class="parameter-info-text">${translateSingleBuildingText('modal.singleBuilding.useInfo', 'Plan stats count apartments on housing storeys. X-ray can show their estimated layouts.')}</p>
                             </div>
                             <div class="parameter-group">
                                 <label for="single-building-access">${translateSingleBuildingText('urbanRule.accessLabel', 'Access to flats')}</label>

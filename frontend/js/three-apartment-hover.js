@@ -58,6 +58,7 @@
             polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
         const sharedMaterial = material.clone();
         const selectionMaterial = material.clone();
+        selectionMaterial.color.setHex(0x00c9ff);
         selectionMaterial.opacity = .8;
         sharedMaterial.color.setHex(0xffffff);
         sharedMaterial.onBeforeCompile = shader => {
@@ -162,7 +163,8 @@
             const floor = floorAtHit(hit);
             return floor ? apartmentAtHit(hit) || { floor, region: null } : null;
         }
-        return { update, clear, invalidate, dispose, select, pick };
+        const visibleSelectedFloor = () => selected && isVisible(selected.floor) ? selected.floor : null;
+        return { update, clear, invalidate, dispose, select, pick, visibleSelectedFloor };
     }
 
     const api = { inRing, apartmentAtHit, spaceAtHit, attach };

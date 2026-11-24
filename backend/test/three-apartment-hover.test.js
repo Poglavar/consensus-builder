@@ -47,6 +47,10 @@ describe('apartment hover',()=>{
         s.hover.select(picked);
         const selected = s.floor.children.find(child => child.name === 'FloorUnitSelection:floor-1:west');
         expect(selected).toBeDefined();
+        expect(s.hover.visibleSelectedFloor()).toBe(s.floor);
+        s.root.visible = false;
+        expect(s.hover.visibleSelectedFloor()).toBeNull();
+        s.root.visible = true;
         s.event('pointermove', 75);
         s.hover.update(true);
         s.event('pointerleave');

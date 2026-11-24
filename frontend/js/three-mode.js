@@ -1205,7 +1205,7 @@
         const L = panelLabels();
         const suggestedText = suggestedParcelPanelText(parcelId);
         const suggestedRow = suggestedText ? `
-            <p class="parcel-panel-subnote parcel-panel-suggested">${escapeHtml(threeI18n('threeMode.parcelPanel.suggestedLayout', 'Suggested layout'))}: ${escapeHtml(suggestedText)}</p>` : '';
+            <p class="parcel-panel-subnote parcel-panel-suggested">${escapeHtml(threeI18n('threeMode.parcelPanel.suggestedLayout', 'Estimated layout'))}: ${escapeHtml(suggestedText)}</p>` : '';
         // The full cadastral id: the stack's row shows the short number.
         panel.innerHTML = `
             ${panelPage('info', threeI18n('clickStackNavigation.info', 'Info'), `
@@ -2351,9 +2351,9 @@
         suggestedPlansButton.type = 'button';
         suggestedPlansButton.id = 'three-mode-suggested-layouts';
         suggestedPlansButton.className = 'btn three-mode-xray-button';
-        suggestedPlansButton.textContent = threeI18n('threeMode.controls.suggestedLayouts', 'Suggested layouts');
+        suggestedPlansButton.textContent = threeI18n('threeMode.controls.suggestedLayouts', 'Estimated layouts');
         suggestedPlansButton.title = threeI18n('threeMode.controls.suggestedLayoutsTooltip',
-            'Generate a default layout for proposed buildings without a modelled interior: stair cores with two apartments each, or a corridor with flats on both sides where the floor plate is 15 m deep or more. A suggestion, not part of the proposal.');
+            'Estimate floor plans for proposed buildings without a modelled interior, using their footprints and storeys.');
         suggestedPlansButton.addEventListener('click', () => setSuggestedPlansEnabled(!suggestedPlansEnabled));
         xrayButtons.appendChild(suggestedPlansButton);
         xrayRow.appendChild(xrayButtons);
@@ -2369,7 +2369,7 @@
         suggestedExistingText.className = 'three-mode-emphasis-label';
         suggestedExistingText.textContent = threeI18n('threeMode.controls.suggestedExisting', 'Existing buildings too');
         suggestedExistingRow.title = threeI18n('threeMode.controls.suggestedExistingTooltip',
-            'Also show typical layouts by era for the existing buildings around: a guess from footprint and height, not a survey.');
+            'Also estimate floor plans for nearby existing buildings from their footprint and height.');
         suggestedExistingRow.setAttribute('aria-label', suggestedExistingRow.title);
         suggestedExistingRow.append(suggestedExistingCheckbox, suggestedExistingText);
         const suggestedExistingHost = document.createElement('div');
@@ -2394,7 +2394,7 @@
         });
         suggestedAccessSelect.value = suggestedAccess;
         suggestedAccessControl.title = threeI18n('threeMode.controls.accessViewTooltip',
-            'How suggested layouts reach the flats. Each building\'s own follows the Access its design states, else a corridor from 15 m deep; the other choices apply to every building in this view without changing the designs.');
+            'Access to the apartments in estimated layouts. The default follows the design\'s Access setting or uses a corridor from 15 m deep. The other options apply to all buildings in this view.');
         suggestedAccessSelect.title = suggestedAccessControl.title;
         suggestedAccessSelect.addEventListener('change', () => setSuggestedAccess(suggestedAccessSelect.value));
         suggestedAccessControl.append(suggestedAccessText, suggestedAccessSelect);
@@ -9866,7 +9866,7 @@
         const totals = suggestedPlanByProposal.get(String(proposal.proposalId ?? proposal.id));
         if (!totals || (!totals.buildings && !totals.flagged)) return '';
         const line = threeI18n('threeMode.proposalPanel.suggestedTotals',
-            `Suggested layouts: ${totals.buildings} buildings · ${totals.apartmentsPerFloor} apartments per storey · ${totals.apartments} in total`,
+            `Estimated layouts: ${totals.buildings} buildings · ${totals.apartmentsPerFloor} apartments per storey · ${totals.apartments} in total`,
             { buildings: totals.buildings, apartmentsPerFloor: totals.apartmentsPerFloor, apartments: totals.apartments });
         return totals.flagged ? `${line} ${threeI18n('threeMode.controls.suggestedFlagged', `${totals.flagged} in red: too small for a minimum stair core.`, { count: totals.flagged })}` : line;
     }
@@ -10451,6 +10451,15 @@
         }
     }
 
+    function selectedApartmentShells() {
+        const group = apartmentHover?.visibleSelectedFloor()?.parent;
+        if (builtDisplay !== 'ghost' || group?.userData.floorPlanFamily !== 'existing-suggested') return [];
+        const building = group.userData.planningBuiltFeature?.properties;
+        if (!building) return [];
+        const key = threeBuildingKey({ source: building.source, object_id: building.object_id ?? building.id });
+        return existingFloorPlanShells.get(key)?.meshes || [];
+    }
+
     function renderScene(fullFrame = true, { shadowsPerPass = false } = {}) {
         // Entry tilt, restored cameras and captures need the same lighting as the steady loop.
         // `sceneChanged`: something in the scene changed since the last render (a rebuild, a proposal, a
@@ -10469,7 +10478,7 @@
         apartmentHover?.update(xrayEnabled && !realisticLayerActive);
         floorPlanRenderer.renderCutaway(renderer, scene, camera,
             sectionedModels.size ? [floorPlanGroup, ...[...sectionedModels].filter(wrapper => wrapper.parent)] : floorPlanGroup,
-            xrayEnabled && floorCutawayLevel !== null && floorCutawayLevel < 0);
+            xrayEnabled && floorCutawayLevel !== null && floorCutawayLevel < 0, selectedApartmentShells());
         renderedBuildingDisplaySnapshot = buildingDisplaySnapshot;
         renderedSceneVisualRevision = sceneVisualRevision;
         // From the first drawn frame of an entry the 3D view covers the 2D map (map-shell.css);
@@ -10773,10 +10782,10 @@
         if (floorPlanErrors) lines.push(threeI18n('threeMode.controls.xrayError',
             'Some floor plans could not be displayed.'));
         if (suggestedPlansEnabled) {
-            lines.push(threeI18n('threeMode.controls.suggestedNote', 'Suggested layouts are generated defaults, not part of the design.'));
+            lines.push(threeI18n('threeMode.controls.suggestedNote', 'Estimated layouts use building dimensions and typical floor plans.'));
             const buildings = suggestedPlanTotals.slices - suggestedPlanTotals.flagged;
             if (buildings) lines.push(threeI18n('threeMode.controls.suggestedCount',
-                `Suggested: ${buildings} buildings · ${suggestedPlanTotals.apartments} apartments per storey`,
+                `Estimated: ${buildings} buildings · ${suggestedPlanTotals.apartments} apartments per storey`,
                 { buildings, apartments: suggestedPlanTotals.apartments }));
             if (suggestedPlanTotals.flagged) lines.push(threeI18n('threeMode.controls.suggestedFlagged',
                 `${suggestedPlanTotals.flagged} in red: too small for a minimum stair core.`, { count: suggestedPlanTotals.flagged }));
@@ -10785,7 +10794,7 @@
             if (suggestedPlanTotals.pendingStreets) lines.push(threeI18n('threeMode.controls.suggestedPendingStreets',
                 'Street data is loading; entrances face the longest facade until it arrives.'));
             if (suggestedExistingEnabled && suggestedPlanTotals.existing) lines.push(threeI18n('threeMode.controls.suggestedExistingCount',
-                `Existing: ${suggestedPlanTotals.existing} buildings with a typical layout by era.`, { count: suggestedPlanTotals.existing }));
+                `Existing: ${suggestedPlanTotals.existing} buildings with estimated layouts.`, { count: suggestedPlanTotals.existing }));
         }
         xrayNote.textContent = lines.join(' ');
     }
@@ -11566,6 +11575,8 @@
                 : [builtDisplay === 'solid' ? existingBuildingsGroup : null, plannedDisplay === 'solid' ? proposedBuildingsGroup : null],
             onPointerChange: queueThreeFrame,
             onHover: (picked, pointer) => {
+                const canSelect = picked?.region.kind !== 'non-apartment' && !!picked?.floor.parent?.userData.apartmentBuilding;
+                renderer.domElement.classList.toggle('three-apartment-target', canSelect);
                 apartmentHoverNote.hidden = picked?.region.flag !== 'north-single-aspect';
                 if (apartmentHoverNote.hidden) return;
                 const text = threeI18n('threeMode.controls.northOrientationOnly', 'North orientation only');

@@ -1068,7 +1068,7 @@
         rule.dataset.planCompareRule = '';
         const describeRule = current => {
             rule.textContent = tPlanStats('planCompare.apartmentRule',
-                'A building with a suggested layout counts its apartments; any other: gross floor area × {{efficiency}} % net × {{housing}} % housing ÷ {{size}} m² per apartment. People = apartments × {{persons}}.',
+                'Count apartments directly when there is an estimated layout. Otherwise: gross floor area × {{efficiency}} % net × {{housing}} % housing ÷ {{size}} m² per apartment. People = apartments × {{persons}}.',
                 { efficiency: formatNumber(current.efficiency * 100), housing: formatNumber(current.housingShare * 100),
                     size: formatNumber(current.avgApartmentM2), persons: formatNumber(current.personsPerApartment, 1) });
         };

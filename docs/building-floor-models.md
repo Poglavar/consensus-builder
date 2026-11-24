@@ -53,10 +53,10 @@ The server reads every city's light configuration (`frontend/data/city-index.js`
 
 A proposed building drawn from an uploaded glTF model (`properties.modelUrl`) needs no floor model: when the model has interiors, X-ray opens it with a horizontal [model section](vocabulary.md#model-section) at the chosen storey, found in the model's own horizontal surfaces (`frontend/js/model-section.js`). With no storey chosen the cut opens the ground storey. The cut is a clipping plane on the model's materials (`applyModelSection` in `three-mode.js`), which also swap the facade skin for the model's own tinted materials, so toggling X-ray or the floor cutaway rebuilds nothing; the model's levels join the floor cutaway's list. A [georeferenced model](vocabulary.md#georeferenced-building-model) keeps its storeys below ground, which show only at a basement cutaway (`renderCutaway` keeps the cut models and hides the rest).
 
-## Suggested default layouts
+## Estimated layouts
 
 A proposed building without a registered model can show a generated default interior in X-ray when
-**Suggested layouts** is on (`?suggested=1`): a point-access stair-and-lift core entered from the
+**Estimated layouts** is on (`?suggested=1`): a point-access stair-and-lift core entered from the
 street-facing facade, two apartments per core, blind party walls, one core per ~240 m² of floor.
 The shared interior-viewer planner (`frontend/vendor/interior-viewer/interior-planner.js`) produces the same v3 contract with `suggested: true` and layout
 sources of `kind: 'generated'`; the validator accepts such sources only inside a suggested model, the
@@ -81,7 +81,7 @@ Native-model requests have two concurrent slots and at most 24 resident answers,
 Suggested existing interiors are generated for at most 24 nearby buildings in view. Their footprint
 request covers the camera's 200 m neighbourhood, independently of the wider exterior-building radius.
 
-Suggested layouts use the same pure planner in one worker, with one outstanding calculation and a
+Estimated layouts use the same pure planner in one worker, with one outstanding calculation and a
 10-second watchdog. Disabling suggestions or X-ray, leaving model view, or disposing the scene stops
 outstanding calculation. The worker retains at most 64 generated results, bounded by 16 MiB of
 serialized content with a 4 MiB per-result ceiling. Old entries are evicted individually. Parcel
@@ -100,8 +100,10 @@ build queue and shared between storeys; pointer movement performs no polygon cli
 subtrees are excluded from picking, and unchanged camera/pointer states do no new picking work.
 The blue overlay sits above the red warning patches even in a straight-down view. Generated
 north-only apartments show **North orientation only** beside the pointer. Warning patches are
-batched once per storey. Clicking an apartment region selects its storey's unit, opens the cutaway at
-that level and shows a keyboard-accessible list of apartments in the building. **Copy apartment link**
+batched once per storey. Clicking an apartment region or choosing it from the dropdown selects its
+storey's unit, opens the cutaway at that level and highlights the unit until selection changes. The
+selected existing building's ghost shell is hidden for that draw so its depth pass cannot cover
+the highlight. **Copy apartment link**
 opens the same building and unit in X-ray. Shared space retains the usual map selection.
 
 `xrayBuilding` names the building by city, building source and source ID, or by published design CID
@@ -109,7 +111,7 @@ and building feature ID (the immutable revision's building index when no feature
 `unit` names the storey level and unit ID, using `::` between escaped components. Suggested units
 also carry a SHA-256 fingerprint prefix of their registration, elevation and apartment region. If
 regeneration changes a unit's boundary or elevation, the old link cannot silently select the new
-unit occupying the same slot. Suggested layouts and links are read-only, with no authored record,
+unit occupying the same slot. Estimated layouts and links are read-only, with no authored record,
 editing operation or MCP editing schema changes.
 
 ## Read paths

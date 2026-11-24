@@ -81,7 +81,7 @@ function harness({ request = vi.fn(async () => ({ items: [], complete: true })),
     context.nearbyProposalBuildings = [];
     context.buildingGroup.add(context.existingBuildingsGroup, context.proposedBuildingsGroup);
     const names = [
-        'ensureNearbyProposalBuildings', 'rebuild3DBuildingsOnly', 'build3DBuildingFamilies', 'renderScene',
+        'ensureNearbyProposalBuildings', 'rebuild3DBuildingsOnly', 'build3DBuildingFamilies', 'renderScene', 'selectedApartmentShells',
         'getSceneReadiness', 'invalidateThreeView', 'queueThreeFrame', 'scheduleThreeFrame', 'threeBuildingKey', 'awaitingPhotoReveal',
         'sharedPlanReconcile'
     ];

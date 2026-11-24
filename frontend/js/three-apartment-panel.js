@@ -42,7 +42,7 @@
             panel.hidden = false;
             const changedUnit = selected?.key !== unit?.key;
             selected = unit;
-            const title = suggested ? t('threeMode.controls.suggestedApartments', 'Suggested apartments')
+            const title = suggested ? t('threeMode.controls.suggestedApartments', 'Estimated apartments')
                 : t('threeMode.controls.apartments', 'Apartments');
             if (label.textContent !== title) label.textContent = title;
             const choices = units.map(item => [item.key, t('threeMode.controls.apartmentOption',

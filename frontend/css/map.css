@@ -267,6 +267,7 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     box-shadow: var(--cb-shadow-sm);
 }
 .three-apartment-hover-note[hidden] { display: none; }
+.three-apartment-target { cursor: pointer; }
 
 .three-apartment-panel {
     position: fixed;
@@ -274,7 +275,7 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     left: 50%;
     bottom: max(72px, env(safe-area-inset-bottom));
     transform: translateX(-50%);
-    width: min(360px, calc(100vw - 32px));
+    width: min(420px, calc(100vw - 32px));
     box-sizing: border-box;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;

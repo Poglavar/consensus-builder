@@ -379,13 +379,13 @@
         label.setAttribute('data-i18n-key', 'sidebar.buildings.showSuggestedLayoutsTooltip');
         label.setAttribute('data-i18n-attr', 'title');
         label.title = t('sidebar.buildings.showSuggestedLayoutsTooltip',
-            'Draw a suggested ground-floor layout inside each proposed building without a modelled interior. Red dashed outlines are too small for a minimum stair core. A suggestion, not part of the proposal.');
+            'Estimate the ground floor of proposed buildings without a modelled interior. A dashed red outline marks a footprint too small for a stair core.');
         const input = doc.createElement('input');
         input.type = 'checkbox';
         input.id = TOGGLE_ID;
         const text = doc.createElement('span');
         text.setAttribute('data-i18n-key', 'sidebar.buildings.showSuggestedLayouts');
-        text.textContent = t('sidebar.buildings.showSuggestedLayouts', 'Suggested layouts (ground floor)');
+        text.textContent = t('sidebar.buildings.showSuggestedLayouts', 'Estimated layouts (ground floor)');
         label.append(input, ' ', text);
         row.parentNode.insertBefore(label, row.nextSibling);
         input.addEventListener('change', () => {

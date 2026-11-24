@@ -139,6 +139,18 @@ describe('three-floor-plans volumetric adapter',()=>{
         expect(seen[0]).toEqual({floor:true,buildings:true,model:true,other:false,ground:false,light:true});
         expect([otherBuilding.visible,ground.visible]).toEqual([true,true]);
     });
+    it('temporarily removes only the selected apartment building’s ghost shell', () => {
+        const selectedShell = new Object3D(), otherShell = new Object3D(), alreadyHidden = new Object3D();
+        alreadyHidden.visible = false;
+        const scene = { children: [selectedShell, otherShell, alreadyHidden] };
+        const draw = () => {
+            expect([selectedShell.visible, otherShell.visible, alreadyHidden.visible]).toEqual([false, true, false]);
+            throw new Error('draw failed');
+        };
+        expect(() => rendererApi.renderCutaway({ render: draw }, scene, {}, null, false, [selectedShell, alreadyHidden]))
+            .toThrow('draw failed');
+        expect([selectedShell.visible, otherShell.visible, alreadyHidden.visible]).toEqual([true, true, false]);
+    });
     it('uses the cheap shell for distant details and preserves the storey cutaway when returning',()=>{
         const proxyMaterial=new Material({color:1});
         const f={geometry:{type:'Polygon',coordinates:[[[0,0],[1,0],[1,1],[0,0]]]},properties:feature.properties};

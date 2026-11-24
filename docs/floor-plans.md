@@ -233,7 +233,7 @@ that is settled.
 ### Existing buildings
 
 The same generator can guess a typical interior for the existing buildings around a proposal
-("Existing buildings too", inside the Suggested layouts toggle). Footprints and heights come from the
+("Existing buildings too", inside the Estimated layouts toggle). Footprints and heights come from the
 2D building pool, which X-ray asks once to cover the whole 3D radius (the pool otherwise holds only the
 viewports the map has shown); the nearest 400 are planned. A footprint without a height stays a plain
 volume, and one a proposal builds over is skipped. Era presets choose the rules from whatever the footprint says: a construction year where
@@ -253,7 +253,7 @@ sequenceDiagram
     participant CX as planner context (interior-planner.js)
     participant GEN as planner generator (interior-planner.js)
     participant R as three-floor-plans.js
-    TM->>TM: X-ray on, Suggested layouts on, no evidence model, no glTF
+    TM->>TM: X-ray on, Estimated layouts on, no evidence model, no glTF
     TM->>CX: planBuilding(build-out feature, parcels, neighbours, streets, height)
     CX->>CX: slice by parcels · storeys · party neighbours · entrance side (long side nearer a road)
     CX->>GEN: planDefaultFloorPlans(slice, floors, storey, neighbours, front)
@@ -271,7 +271,7 @@ sequenceDiagram
   and the worker client (`window.__defaultFloorPlanWorker`). Its sources, rules and tests are in the interior-viewer
   repository (`src/planner`, `test/planner`, README "Planner" and its release notes); copies here are never edited.
   `frontend/js/default-floor-plan-worker.js` is the app's worker that loads it.
-- `frontend/js/three-mode.js` — the **Suggested layouts** button beside X-ray (visible only in
+- `frontend/js/three-mode.js` — the **Estimated layouts** button beside X-ray (visible only in
   X-ray; `?suggested=1` on the URL turns it on), the **Existing buildings too** checkbox
   (`?suggestedExisting=1`), the **Access** select (`?access=`, passed to the context as
   `accessOverride`), the red patches on north-only flats, the render path, the `flagged` material and the note lines. Roads for
@@ -290,7 +290,7 @@ sequenceDiagram
   layout (too small for a stair core, another or no stated use, an existing building, an uploaded
   model without floor plans, no height) keeps the per-m² rule of plan-yield.js.
   The cells spin until the count arrives.
-- `frontend/js/suggested-layouts-2d.js` — the 2D counterpart: the "Suggested layouts (ground
+- `frontend/js/suggested-layouts-2d.js` — the 2D counterpart: the "Estimated layouts (ground
   floor)" toggle in the Layers sheet under the building layers (`?suggested2d=1`) draws the ground
   floor of every suggested layout on the map from the same generator and `floorPlanToGeoJSON`, on
   its own pane above the proposed-buildings canvas, from zoom 17 for the buildings in view plus a
@@ -352,7 +352,7 @@ none decided:
 Each of these needs the same thing: a registration to the footprint and an explicit `basis`, so the
 model can say what it knows. The generator's `suggested` flag and generated sources are the hook.
 
-### Suggested layouts: next steps
+### Estimated layouts: next steps
 
 - Choosing the entrance side and the number of cores in the editor. Saving a layout belongs only
   to single-building proposals: an urban rule is massing, never a blueprint, so suggestions stay
