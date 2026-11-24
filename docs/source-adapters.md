@@ -28,6 +28,10 @@ A parcel source the browser cannot read directly (no CORS, or `browserTransport:
 
 A building source that is a public URL (`building.<base64url>`) is read in the browser: the parcel adapter worker (`backend/parcels/browser-worker.js`, method `buildingCell`) runs the same adapter through `backend/buildings/building-cell-read.js`, which the server's reader (`custom-source-3d.js`, kept for MCP) shares, and answers one building cell in the shape of `POST /buildings/cell`. The browser never sends such a source to our server. Discovery (`/building-sources/discover`) refuses a service that does not send CORS headers for a browser origin, with `building-source-no-cors` (422): there is no server relay. Database sources (`gdi-3d`, `dgu`, `osm`, New York's) answer `POST /buildings/cell`; a provider's `mapFootprints` gives every building touching the cell, and the cell loader files each under the cell holding its first vertex (`frontend/js/building-cells.js`).
 
+## Land and planning rules
+
+The Permitted layer composes cadastral parcels, government-plan lots and applied design plots before applying a rule source. Direct-dimension sources use their parcel rules. A lot-record adapter exposes its source ground and a geometry calculation for a changed plot, returning either a representation or a reason that the plot is unavailable. A stored result belongs to the parcel and edition that produced it. [Permitted parcel calculations](permitted-plan-parcels.md)
+
 ## Preparing a source
 
 1. Choose the actual abstraction and operation. Similar-looking data may have different meanings: frontage streets are filtered for access, block barriers control subdivision, road reservations are polygons, and road classification returns parcel IDs.

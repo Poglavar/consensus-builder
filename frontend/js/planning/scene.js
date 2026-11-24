@@ -208,7 +208,7 @@
             const running = inFlight.get(key);
             if (running) return running.promise;
             const controller = new AbortController();
-            const flight = { key, controller };
+            const flight = { key, scope, bbox: bbox.slice(), controller };
             // The loader starts at once, so a caller sees its request go out before the first await.
             flight.promise = (async () => loader(controller.signal))()
                 .then(value => {
@@ -231,8 +231,15 @@
                 flight.controller.abort();
             }
         }
+        function evict(predicate) {
+            for (const [key, entry] of entries) if (predicate(entry)) entries.delete(key);
+            for (const [key, flight] of inFlight) if (predicate(flight)) {
+                inFlight.delete(key);
+                flight.controller.abort();
+            }
+        }
         function clear() { abortExcept([]); entries.clear(); }
-        return { keyOf, find, load, abortExcept, clear, get size() { return entries.size; }, get pending() { return inFlight.size; } };
+        return { keyOf, find, load, abortExcept, evict, clear, get size() { return entries.size; }, get pending() { return inFlight.size; } };
     }
     // The loading ring on the Buildings and massing button: a third of the rim for each role still
     // loading and shown, in role order, packed from the first slot.

@@ -177,7 +177,7 @@ describe('planning source adapters', () => {
 describe('bounded planning route', () => {
     async function invoke(parameters, query = vi.fn().mockResolvedValue({ items: [] })) {
         let handler;
-        setupPlanningRoutes({ get: (_path, fn) => { handler = fn; } }, {}, { query });
+        setupPlanningRoutes({ post() {}, get: (_path, fn) => { handler = fn; } }, {}, { query });
         const res = { statusCode: 200, headers: {}, set(key, value) { this.headers[key] = value; return this; },
             status(code) { this.statusCode = code; return this; }, json(body) { this.body = body; return this; } };
         await handler({ query: parameters }, res);
@@ -194,7 +194,7 @@ describe('bounded planning route', () => {
         expect(res.headers['Access-Control-Allow-Origin']).toBe('*');
         const failing = vi.fn(async () => { throw new Error('upstream'); });
         let handler;
-        setupPlanningRoutes({ get: (_path, fn) => { handler = fn; } }, {}, { query: failing });
+        setupPlanningRoutes({ post() {}, get: (_path, fn) => { handler = fn; } }, {}, { query: failing });
         const broken = { statusCode: 200, headers: {}, set(key, value) { this.headers[key] = value; return this; },
             status(code) { this.statusCode = code; return this; }, json(body) { this.body = body; return this; } };
         const errorLog = vi.spyOn(console, 'error').mockImplementation(() => {});

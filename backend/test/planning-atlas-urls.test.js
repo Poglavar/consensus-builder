@@ -67,7 +67,7 @@ describe('Atlas URL configuration', () => {
     it('lists bounds-scoped sources for a viewport through the sources route', () => {
         const sources = createPlanningSources(config({ id: 'atlas-national', bbox: [-125, 24, -66, 50], label: 'n', edition: 'e', url: metadata.url }, metadata));
         const handlers = {};
-        setupPlanningRoutes({ get: (path, fn) => { handlers[path] = fn; } }, {}, { sources });
+        setupPlanningRoutes({ post() {}, get: (path, fn) => { handlers[path] = fn; } }, {}, { sources });
         const res = { set: vi.fn(), status: vi.fn().mockReturnThis(), json: vi.fn() };
         handlers['/planning/sources']({ query: { city: 'colorado' } }, res);
         expect(res.json.mock.lastCall[0].sources).toContainEqual(expect.objectContaining({id:'atlas-national'}));
@@ -133,7 +133,7 @@ describe('Atlas URL loading', () => {
     it('exposes configured URLs through the existing sources, representations and record routes', async () => {
         const fetchImpl = vi.fn(async () => response(collection()));
         const handlers = {}, sources = createPlanningSources(config(metadata), { fetchImpl });
-        setupPlanningRoutes({ get: (path, fn) => { handlers[path] = fn; } }, {}, { sources });
+        setupPlanningRoutes({ post() {}, get: (path, fn) => { handlers[path] = fn; } }, {}, { sources });
         const res = { set: vi.fn().mockReturnThis(), status: vi.fn().mockReturnThis(), json: vi.fn() };
         await handlers['/planning/sources']({ query: { city: 'example' } }, res);
         expect(res.json.mock.lastCall[0].sources).toContainEqual(expect.objectContaining(metadata));

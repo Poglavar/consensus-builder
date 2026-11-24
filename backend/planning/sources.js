@@ -1,6 +1,9 @@
 // Planning dataset services selected explicitly by consumers; one representation schema.
-import { queryZagrebGup, readZagrebParcel, readZagrebRecord, zagrebAreasAt, zagrebGupSource, zagrebGup2016Source } from './providers/zagreb-gup.js';
-import { queryNycPilot, readNycPilotParcel, nycPilotSource } from './providers/nyc-pilot.js';
+import { queryZagrebGup, readZagrebParcel, readZagrebRecord, zagrebAreasAt, zagrebGupSource, zagrebGup2016Source, evaluatePlot as evaluateZagrebPlot } from './providers/zagreb-gup.js';
+import { queryNycPilot, readNycPilotParcel, nycPilotSource, evaluatePlot as evaluateNycPlot } from './providers/nyc-pilot.js';
+import { openDatabaseParcelSource } from '../parcels/database-sources.js';
+import { parcelSourceById } from '../parcels/sources.js';
+import { bboxPolygon } from '@turf/turf';
 import { createBogotaPotProvider, bogotaPotSource } from './providers/bogota-pot.js';
 import { createAlatauGenplanProvider, alatauGenplanSource } from './providers/alatau-genplan.js';
 import { createHash } from 'node:crypto';
@@ -11,8 +14,8 @@ import { createRequire } from 'node:module';
 const SourceRuntime = createRequire(import.meta.url)('../../frontend/js/source-runtime.js');
 
 const builtInDefinitions = [zagrebGupSource, zagrebGup2016Source].map(descriptor =>
-    SourceRuntime.source('planning', 'gup', descriptor, { label: descriptor.label }));
-builtInDefinitions.push(SourceRuntime.source('planning', 'nyc-pilot', nycPilotSource, { label: nycPilotSource.label }));
+    SourceRuntime.source('planning', 'gup', { ...descriptor, planPlotCalculation: true }, { label: descriptor.label }));
+builtInDefinitions.push(SourceRuntime.source('planning', 'nyc-pilot', { ...nycPilotSource, planPlotCalculation: true }, { label: nycPilotSource.label }));
 builtInDefinitions.push(SourceRuntime.source('planning', 'bogota-pot', bogotaPotSource, { label: bogotaPotSource.label }));
 builtInDefinitions.push(SourceRuntime.source('planning', 'alatau-genplan', alatauGenplanSource, { label: alatauGenplanSource.label }));
 export const planningSourceRegistry = SourceRuntime.createRegistry({
@@ -23,10 +26,16 @@ export const planningSourceRegistry = SourceRuntime.createRegistry({
             query: (pool, query) => queryZagrebGup(pool, { ...query, edition: descriptor.edition }),
             parcel: (pool, query) => readZagrebParcel(pool, { ...query, edition: descriptor.edition }),
             record: (pool, query) => readZagrebRecord(pool, { ...query, edition: descriptor.edition }),
+            plotGround: (pool, bbox) => openDatabaseParcelSource('oss-wfs', pool).queryGeometry(bboxPolygon(bbox).geometry),
+            evaluatePlot: (pool, context) => evaluateZagrebPlot(pool, context, { gupId: Number(descriptor.edition) }),
             ...(descriptor.zoningOverview ? { areasAt: zagrebAreasAt } : {})
         }) },
         'nyc-pilot': { custom: false, required: ['parcel'], create: descriptor => ({
             descriptor, query: queryNycPilot, parcel: readNycPilotParcel,
+            plotGround: (pool, bbox, plots) => plots.some(plot => plot.cadastreParcelIds.some(id => id.startsWith('US-NYC-BBL-')))
+                ? parcelSourceById('us-nyc-dof-digital-tax-map').adapter.queryBounds(bbox)
+                : openDatabaseParcelSource('parcel-nyc', pool).queryGeometry(bboxPolygon(bbox).geometry),
+            evaluatePlot: evaluateNycPlot,
             record: (pool, query) => readNycPilotParcel(pool, { ...query, parcel: `US-NY-${query.recordId}` })
         }) },
         'atlas-url': { create: createAtlasUrlProvider },

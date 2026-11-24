@@ -9,11 +9,13 @@ import { buildTypedDesign, validateTrackDesign } from './mcp-constructors.js';
 import { trustedMetadata } from './mcp-results.js';
 import { cityDrivingSide } from '../scripts/lib/frontend-city-money.mjs';
 import { MAX_SOURCE_BINDING_PARCELS } from '../parcels/source-binding.js';
+import { materializeWithApp } from './mcp-ground-runtime.js';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const DesignRecord = require('../../frontend/js/design-record.js');
 const PlanningSourceProposal = require('../../frontend/js/planning/source-proposal.js');
 const { hasVerifiedCoverage } = require('../../frontend/js/proposals/site-binding.js');
+const PlanPlots = require('../../frontend/js/planning/plan-plots.js');
 const fail = (code, message, next) => Object.assign(new Error(message), { code, next });
 const geometry = value => value?.type === 'Feature' ? value.geometry : value;
 function union(features) {
@@ -72,6 +74,34 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference, re
                 ...(!groundKnown ? ['The plan supplies the design boundary. Cadastral binding is pending.'] : []),
                 ...(binding?.unsurveyedM2 > 0 ? ['The site includes ground outside the parcel register.'] : []) ],
             ...await previewArtifact({ origin: appOrigin, design, parcelSourceId }) };
+    }
+    async function planEnvelopes(building, members, parcelSourceId, planningSource) {
+        const city = building.city, box = turf.bbox(turf.feature(building.footprint));
+        const ids = new Set(), designs = [];
+        for (const member of members) {
+            if (member.content.city !== city) continue;
+            if (member.parcelSourceId && parcelSourceId && member.parcelSourceId !== parcelSourceId) throw fail('mixed-source-ground-unavailable', 'These plan members use different parcel sources.');
+            const answer = await bindingOf(member.content, member.parcelSourceId || parcelSourceId);
+            if (!hasVerifiedCoverage(answer.binding)) throw fail('ground-incomplete', 'The parcel source could not establish this layout’s ground.');
+            parcelSourceId ||= parcelSourceIdOf(answer);
+            const parcelIds = answer.binding.parcels.map(row => row.parcelId);
+            parcelIds.forEach(id => ids.add(id));
+            designs.push({ cid: member.cid, content: member.content, parcelIds, binding: answer.binding });
+        }
+        const parcels = ids.size ? (await read.parcels({ city, parcelSourceId, parcelIds: [...ids] })).features : [];
+        const { fabric, records } = await materializeWithApp({ designs, parcels });
+        const byId = new Map(records.map(record => [record.proposalId, record]));
+        const plots = PlanPlots.serialize(fabric, box, { getDesign: id => byId.get(id), geometry: turf });
+        if (!plots.length) return null;
+        const footprint = turf.feature(building.footprint), area = turf.area(footprint);
+        const containing = plots.filter(plot => {
+            if (['road', 'track'].includes(plot.kind)) return false;
+            const shared = turf.intersect(footprint, turf.feature(plot.geometry));
+            return shared && area - turf.area(shared) <= 0.05;
+        });
+        if (containing.length > 1) throw fail('envelope-ambiguous', 'Several plan plots cover this building.');
+        const answer = await read.request('/planning/envelopes', {}, { city, source: planningSource, bbox: box, plots });
+        return { items: answer.items, subject: containing[0]?.id, unavailable: answer.unavailable || [] };
     }
     async function draft(kind, args) {
         // A new artifact needs its actual authoring time. A null time would be filled by browser
@@ -140,7 +170,9 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference, re
             if (kind === 'building' && args.permitted) {
                 if (!args.planningSource) throw fail('planning-source-required', 'Choose the planning source for the permitted envelope.', { action: 'Read ugt_parcel_context and supply planningSource.' });
                 const envelopes = await read.request('/planning/envelopes', { city: args.city, source: args.planningSource, bbox: turf.bbox(turf.feature(intent.site)).join(',') });
-                const items = envelopes.items.filter(item => args.parcelIds?.includes(item.source?.parcel));
+                const items = envelopes.items.filter(item => args.planningArea
+                    ? item.sourceEvidence?.planningArea?.source === args.planningArea.source && item.sourceEvidence.planningArea.recordId === args.planningArea.recordId
+                    : args.parcelIds?.includes(item.source?.parcel));
                 if (items.length !== 1) throw fail('envelope-ambiguous', 'Choose one parcel with a supported permitted envelope.', { action: 'Read ugt_parcel_context; choose one supported parcel and planningSource.' });
                 intent.footprint = items[0].site;
                 intent.height = items[0].metrics.heightM;
@@ -216,18 +248,50 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference, re
                 next: { tool: 'ugt_inspect_design', arguments: { design }, action: 'Inspect this reference and use its current CID as expectedCid.' } });
             return result(editedDesign(resolved.content, expectedCid, edits), parcelSourceId || resolved.parcelSourceId);
         },
-        async modifyDesign({ design, changes, parcelSourceId, plan }) {
+        async modifyDesign({ design, changes, parcelSourceId, plan }, { groundDesigns = [] } = {}) {
             const resolved = await resolveDesignSource(design, plan), original = resolved.content;
             parcelSourceId ||= resolved.parcelSourceId;
             let modified = original;
             for (const change of changes) {
                 if (change.type === 'fit_to_permitted') {
                     if (!modified.buildingProposal) throw fail('invalid-change', 'Only a building can fit a permitted envelope.', { action: 'Choose a building design.' });
-                    const answer = await read.request('/designs/binding', {}, { site: read.siteOfDesign(modified), city: modified.city, parcelSourceId });
-                    const ids = answer.binding?.parcels?.map(p => p.parcelId) || [];
-                    if (ids.length !== 1) throw fail('envelope-ambiguous', 'Choose a building on one parcel.', { action: 'Draft one parcel-bound building.' });
-                    const fitted = await draft('building', { city: modified.city, parcelSourceId, parcelIds: ids, permitted: true, planningSource: change.planningSource, title: modified.title, description: modified.description, author: modified.author, authoredAt: modified.authoredAt });
-                    modified = fitted.design;
+                    if (!change.planningSource) throw fail('planning-source-required', 'Choose the planning source for this fit.');
+                    const buildings = modified.geometry.buildings;
+                    const index = change.buildingIndex ?? (buildings.length === 1 ? 0 : null);
+                    const footprint = buildings[index]?.geometry;
+                    if (!footprint) throw fail('building-selection-required', 'Select the building to fit in this design.');
+                    const city = modified.city, box = turf.bbox(turf.feature(footprint));
+                    const live = groundDesigns.length ? await planEnvelopes({ city, footprint }, groundDesigns, parcelSourceId, change.planningSource) : null;
+                    const areaRef = !live?.subject && modified.sourceReferences?.find(ref => ref.providerId === change.planningSource && ref.recordId);
+                    const answer = live || await read.request('/planning/envelopes', { city, source: change.planningSource, bbox: box.join(',') });
+                    const areaItems = areaRef ? answer.items.filter(item => item.sourceEvidence?.planningArea?.recordId === areaRef.recordId &&
+                        turf.booleanWithin(turf.feature(footprint), turf.feature(item.derivation.parcel))) : [];
+                    const binding = live?.subject || areaItems.length ? null : await bindingOf({ ...modified, site: footprint }, parcelSourceId);
+                    const ids = live?.subject ? [live.subject] : binding?.binding?.parcels?.map(p => p.parcelId) || [];
+                    if (!areaItems.length && ids.length !== 1) throw fail('envelope-ambiguous', 'The building needs to fit within one parcel or plan plot.');
+                    const subjects = areaItems.length ? areaItems : answer.items.filter(item => item.source?.parcel === ids[0]);
+                    const matches = subjects.filter(item => item.site && item.metrics?.heightM > 0);
+                    if (matches.length !== 1) {
+                        const reason = answer.unavailable?.find(entry => entry.parcelId === ids[0])?.reason;
+                        throw fail(reason || 'envelope-ambiguous', 'There is no single supported building envelope on the selected parcel.');
+                    }
+                    const envelope = matches[0];
+                    const fitted = buildTypedDesign({ kind: 'building', city, site: envelope.site, footprint: envelope.site, height: envelope.metrics.heightM,
+                        title: modified.title, description: modified.description, author: modified.author, authoredAt: modified.authoredAt });
+                    if (buildings.length === 1) modified = { ...modified, ...fitted };
+                    else {
+                        const updated = buildings.map((feature, i) => i === index ? fitted.geometry.buildings[0] : feature);
+                        const site = union(updated);
+                        modified = editedDesign(modified, cidOfObject(modified), [
+                            { op: 'replace', path: '/geometry/buildings', value: updated },
+                            { op: 'replace', path: '/site', value: site },
+                            { op: 'replace', path: '/geometry/landTake', value: site }
+                        ]);
+                    }
+                    modified.geometry.buildings[index].properties.permittedEvidence = { source: change.planningSource, envelopeId: envelope.id,
+                        parcelReference: envelope.sourceEvidence?.parcelReference || null,
+                        ...(envelope.sourceEvidence?.planningArea ? { planningArea: envelope.sourceEvidence.planningArea } : {}) };
+
                 } else modified = builder.modify(modified, [change], { turf });
             }
             modified.origin = { cid: cidOfObject(original) };

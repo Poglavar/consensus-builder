@@ -15,7 +15,7 @@ const scripts = [
 const classic = ['proposal-parcel-identity.js', 'proposal-road-geometry.js', 'proposals/apply/finalize.js', 'proposal-manager.js', 'agreement-headless.js']
     .map(path => ({ path, source: readFileSync(new URL(path, root), 'utf8') }));
 
-export async function deriveWithApp({ designs, parcels }) {
+function groundRuntime() {
     const logger = Object.fromEntries(['log', 'debug', 'info', 'warn', 'error'].map(level => [level, (...args) => console.error(`[${new Date().toISOString()}] [mcp-ground]`, ...args)]));
     // crypto: site-hash.js names an open-ground host by the sha256 of its site (WebCrypto).
     const ctx = createContext({ console: logger, structuredClone, performance, URL, TextEncoder, Uint8Array, Buffer, crypto: globalThis.crypto });
@@ -30,5 +30,7 @@ export async function deriveWithApp({ designs, parcels }) {
         ctx.require = createRequire(new URL(script.path, root));
         runInContext(script.source, ctx, { filename: script.path, timeout: 10_000 });
     }
-    return ctx.AgreementHeadless.derive({ designs, parcels });
+    return ctx.AgreementHeadless;
 }
+export const deriveWithApp = input => groundRuntime().derive(input);
+export const materializeWithApp = input => groundRuntime().materialize(input);

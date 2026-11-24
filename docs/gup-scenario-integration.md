@@ -2,7 +2,7 @@
 
 **Direction confirmed with the user: Built / Currently permitted / Proposed, compared through shared spatial results. Official or edited GUP rules compile into spatial results; CB proposals are authored spatially. Proposal-to-GUP-text conversion is out of scope.** Represent an alternative plan as a pinned base GUP plus explicit, spatially scoped amendments, with the implementation details below still proposed.
 
-**Solver scope confirmed with the user: evaluate existing cadastral parcels only.** Compare GUPs and amended plans on the same parcel snapshot. Do not generate or solve hypothetical merged, subdivided or newly formed plots; the possible combinations are outside this task. Directly authored CB spatial results enter through their adapter.
+**Citywide evaluation uses a fixed cadastral snapshot.** The GUP comparison evaluates each edition on the same parcel set. For an individual plot created by an applied design, the Permitted layer can send its geometry to the shared GUP solver and record the edition and rule variables alongside the result. [Permitted parcel calculations](permitted-plan-parcels.md)
 
 **Incremental evaluation required by the user: inherit unaffected, compatible base results without resolving or solving those parcels again.** Store and evaluate the amendment's actual effects, while reporting the complete effective plan.
 

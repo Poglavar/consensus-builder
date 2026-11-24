@@ -36,9 +36,42 @@ function fixture() {
     const drafts=createMcpDraftTools({read,appOrigin:'https://app.example',resolveDraftReference});
     const publishDesign=vi.fn(async({design,parcelSourceId,confirm})=>{expect(confirm).toBe(true);const cid=cidOfObject(design);store.set(cid,{cid,content:design,parcelSourceId});return {cid};});
     const tools=createMcpNamedPlanTools({read,drafts,appOrigin:'https://app.example',resolveDraftReference,publishDesign});
-    return {tools,read,store,plans,refs,calls,publishDesign,tower,park,other,layout};
+    return {tools,drafts,read,store,plans,refs,calls,publishDesign,tower,park,other,layout};
 }
 describe('first-class named plans',()=>{
+    it('fits a building to its applied layout plot and fits the standalone design to its cadastral parcel', async () => {
+        const { tools, drafts, read, layout } = fixture();
+        const parcel = turf.feature(layout.content.site, { parcelId:'A' }, { id:'A' });
+        const first = layout.content.parcelLayout.plots[0].geometry;
+        const footprint = turf.transformScale(turf.feature(first), 0.3).geometry;
+        const building = intentDesign.build({ kind:'building', site:footprint, footprint, city:'london', title:'Home', height:9,
+            authoredAt:'2026-10-25T10:00:00.000Z' }, { turf });
+        const home = { ...designObject({ ...building, createdAt:building.authoredAt }), parcelSourceId:layout.parcelSourceId };
+        read.parcels = vi.fn(async () => ({ parcelSourceId: layout.parcelSourceId, features:[parcel] }));
+        const reads = [];
+        read.request.mockImplementation(async (path, query, body) => {
+            if (path === '/designs/binding') return { parcelSourceId:layout.parcelSourceId, binding:{ coverage:'complete', parcels:[{parcelId:'A'}] } };
+            if (path !== '/planning/envelopes') throw new Error(path);
+            reads.push({ query, body });
+            const plots = body?.plots || [{id:'A', geometry:parcel.geometry}];
+            return { items:plots.map(p => ({
+                id:'envelope:test:' + p.id, source:{ parcel:p.id }, site:p.geometry,
+                metrics:{heightM: !body ? 12 : turf.booleanPointInPolygon(turf.centroid(footprint), p.geometry) ? 24 : 36},
+                sourceEvidence:{ parcelReference:{ sourceId:body ? 'plan' : 'cadastre', parcelId:p.id } }
+            })) };
+        });
+        const plan = await tools.draftPlan({ title:'Layout and home', designs:[layout,home], view });
+        const changes = [{ type:'fit_to_permitted', planningSource:'test' }];
+        const edited = await tools.editPlan({ plan, expectedCid:plan.cid, operations:[{ type:'modify', ref:`building:${home.cid}:0`, changes }] });
+        const fitted = edited.designs.find(row => row.content.title === 'Home').content;
+        expect(reads[0].body.bbox).toHaveLength(4);
+        expect(reads[0].body.plots.filter(p => p.kind === 'plot')).toHaveLength(2);
+        expect(fitted.geometry.buildings[0].properties.permittedEvidence.parcelReference).toMatchObject({sourceId:'plan',parcelId:expect.stringContaining('#')});
+        expect(fitted.geometry.buildings[0].properties.height).toBe(24);
+        const standalone = await drafts.modifyDesign({ design:home, changes });
+        expect(reads.at(-1).body).toBeUndefined();
+        expect(standalone.design.geometry.buildings[0].properties.height).toBe(12);
+    });
     it('returns walking and cycling coverage and individual routes through MCP', async () => {
         const { tools, calls } = fixture();
         const plan = JSON.parse(readFileSync(new URL('../../docs/demo/alatau-neighbourhoods/gardens.json', import.meta.url), 'utf8'));

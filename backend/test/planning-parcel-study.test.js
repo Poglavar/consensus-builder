@@ -196,7 +196,7 @@ describe('Atlas parcel study', () => {
     });
     it('checks route inputs before invoking source reads', async () => {
         const handlers = {}, calls = [];
-        setupPlanningRoutes({ get: (path, fn) => { handlers[path] = fn; } }, {}, { sources: [], studyQuery: async input => { calls.push(input); return { ok: true }; } });
+        setupPlanningRoutes({ post() {}, get: (path, fn) => { handlers[path] = fn; } }, {}, { sources: [], studyQuery: async input => { calls.push(input); return { ok: true }; } });
         const res = { code: 200, set() { return this; }, status(code) { this.code = code; return this; }, json(body) { this.body = body; } };
         await handlers['/planning/study']({ query: { city: 'colorado', source: metadata.id, point: 'NaN,40' } }, res);
         expect(res.code).toBe(400); expect(calls).toEqual([]);

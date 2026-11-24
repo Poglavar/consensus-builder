@@ -706,8 +706,6 @@
             const appearance = window.PlanningViews.getAppearance(item);
             if (appearance === 'off') continue;
             const color = window.PlanningViews.itemColor(item);
-            // A zone with a height cap stands as a faint volume up to it, so the city's permitted heights read at a glance.
-            const capM = item.assessment?.meaning === 'zoning-area' && item.metrics?.heightM > 0 ? item.metrics.heightM : 0;
             for (const area of item.areas || []) {
                 const material = new THREE.MeshBasicMaterial({ color, transparent: true,
                     opacity: appearance === 'solid' ? 0.55 : 0.15, depthWrite: false, side: THREE.DoubleSide });
@@ -716,16 +714,6 @@
                 for (const mesh of meshes) {
                     markOwnedMaterial(mesh, material); mesh.userData.planningRepresentationId = item.id;
                     mesh.renderOrder = 2; planningSourcesGroup.add(mesh);
-                }
-                if (capM) {
-                    const cap = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: appearance === 'solid' ? 0.3 : 0.08,
-                        depthWrite: false, side: THREE.DoubleSide });
-                    const volumes = polygonFeatureToMeshes({ type: 'Feature', geometry: area.geometry }, cap, 0, capM);
-                    if (!volumes.length) cap.dispose();
-                    for (const mesh of volumes) {
-                        markOwnedMaterial(mesh, cap); mesh.userData.planningRepresentationId = item.id;
-                        mesh.renderOrder = 2; planningSourcesGroup.add(mesh);
-                    }
                 }
                 if (item.id === selectedId) {
                     const line = new THREE.LineBasicMaterial({ color, depthWrite: false });

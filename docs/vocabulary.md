@@ -730,6 +730,14 @@ The geographic area to which supplied zoning evidence refers. It is distinct fro
 
 The land a zoning area's rules are applied to when Permitted massing is derived. By default it is the registered parcels as they stand: the plan regulates building on existing land, and each parcel under the area gets its own envelope. Where the plan lays the land out anew, with streets and blocks of its own drawn over parcels it does not keep (a plan that presupposes land readjustment), the zoning area itself is the lot (`landBasis: "zone"`): it gets one envelope per polygon of its outline, and a parcel wholly under such areas gets none. A parcel lying partly under an area that keeps its parcels keeps the envelope of that part. The provider states the basis per zoning area from the plan's own evidence; it is never inferred from geometry, because a zone line crossing a parcel occurs under both kinds of plan. The zoning area and the envelopes derived on it carry the statement; absent, the basis is the parcel. A parcel study of a parcel wholly under such areas studies the plan's lot that holds most of it and names the parcel asked for (`requestedParcel`). The land basis says which land the source's rules are read on. It forms no parcels and is not a parcel layout: the map's ground stays the cadastre.
 
+### Plan plot
+
+A parcel in the applied design’s land layout. Its identity and shape come from the live parcel fabric. Its permitted massing uses the selected planning source’s rules. A plot drawn on a government-plan site keeps the source-area reference, including where the site has no cadastral parcels.
+
+### Block assembly standing
+
+In Bogotá’s Renovación calculation, whether a parcel holds a street corner or a whole block. This is measured from street-facing edges and neighbouring parcel boundaries. Cession is the area of public ground contributed by the layout, in square metres. It counts toward the corner index when it exceeds 400 m².
+
 ### Functional zone (Alatau)
 
 A zoning area of Alatau's general plan (Decree No. 727, 2025) from the state urban-planning cadastre. The source records land use, a storey class for housing, and implementation stage where known. For Permitted massing the adapter uses the planned zone as its calculation boundary and uses existing parcels elsewhere. The source supplies no future plot identifier. A residential class's upper storey count is a maximum. Other uses hand the building parameters to the detailed plan (ПДП), and open land carries no building. See [Alatau general plan source](alatau-genplan-source.md).

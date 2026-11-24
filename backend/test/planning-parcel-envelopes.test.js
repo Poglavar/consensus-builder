@@ -281,7 +281,7 @@ describe('viewport parcel envelopes', () => {
     });
     it('validates viewport route inputs before reading providers', async () => {
         const handlers={}, envelopeQuery=vi.fn(async()=>({items:[]}));
-        setupPlanningRoutes({get:(path,fn)=>{handlers[path]=fn;}},{},{sources:[],envelopeQuery});
+        setupPlanningRoutes({post() {}, get:(path,fn)=>{handlers[path]=fn;}},{},{sources:[],envelopeQuery});
         const res={set:vi.fn(),status:vi.fn().mockReturnThis(),json:vi.fn()};
         await handlers['/planning/envelopes']({query:{...query,bbox:'-105,40,,41'}},res);
         expect(res.status).toHaveBeenCalledWith(400);expect(envelopeQuery).not.toHaveBeenCalled();

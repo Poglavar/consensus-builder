@@ -343,7 +343,8 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
                 if (!typed?.length) fail('invalid-change', 'Supply typed design changes.');
                 if (operation.type === 'modify' && typed.some(change => change.type === 'remove_building')) fail('use-remove-operation', 'Remove a building with its explicit building reference.');
                 if (typed.some(change => change.type === 'fit_to_permitted')) {
-                    const modified = await drafts.modifyDesign({ design: row, changes: typed, parcelSourceId });
+                    const modified = await drafts.modifyDesign({ design: row, changes: typed, parcelSourceId },
+                        { groundDesigns: [...working.values()].filter(member => member !== row) });
                     content = modified.design; parcelSourceId = modified.parcelSourceId || parcelSourceId;
                 } else {
                     content = intentDesign.modify(structuredClone(row.content), typed, { turf });

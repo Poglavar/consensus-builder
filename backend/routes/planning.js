@@ -1,9 +1,11 @@
 // Read-only, bounded provider results for the shared Built / Permitted / Proposed experience.
-import { validateBounds } from '../parcels/source-contract.js';
+import { AREA_LIMIT_CODE, validateBounds } from '../parcels/source-contract.js';
 import { planningRepresentations, planningParcel, planningRecord, getPlanningSources, providersFor, sourcesFor } from '../planning/sources.js';
 import { loadParcelStudy, readStudyZoning } from '../planning/parcel-study.js';
 import { booleanPointInPolygon } from '@turf/turf';
 import { loadParcelEnvelopes } from '../planning/parcel-envelopes.js';
+import { validatePlanPlots } from '../planning/plan-plots.js';
+import { sourceRevision } from '../planning/source-proposal.js';
 import { createFrontageStreetRegistry, NETWORK_ENVIRONMENT_SOURCES } from '../sources/network-environment.js';
 
 function validCity(city) { return city === undefined || typeof city === 'string' && /^[a-z][a-z0-9_-]{0,79}$/.test(city); }
@@ -15,10 +17,10 @@ const ENVELOPE_CACHE_MS = 10 * 60 * 1000, ENVELOPE_CACHE_SIZE = 64;
 export function createEnvelopeCache(envelopeQuery, { now = Date.now } = {}) {
     const answers = new Map();
     return query => {
-        const key = JSON.stringify([query.city, query.source, query.scenario ?? null, query.bbox]);
+        const key = JSON.stringify([query.city, query.source, query.scenario ?? null, query.bbox, query.plots?.length ? sourceRevision(query.plots) : null]);
         const cached = answers.get(key);
         if (cached && now() - cached.at < ENVELOPE_CACHE_MS) return cached.promise;
-        const promise = envelopeQuery(query).catch(error => { answers.delete(key); throw error; });
+        const promise = envelopeQuery(query).catch(error => { if (answers.get(key)?.promise === promise) answers.delete(key); throw error; });
         if (answers.size >= ENVELOPE_CACHE_SIZE) answers.delete(answers.keys().next().value);
         answers.set(key, { at: now(), promise });
         return promise;
@@ -50,25 +52,32 @@ export function setupPlanningRoutes(app, pool, { sources = getPlanningSources(),
     query = (pool, query) => planningRepresentations(pool, query, sources),
     parcelQuery = (pool, query) => planningParcel(pool, query, sources),
     studyQuery = query => loadParcelStudy(query, { sources }),
-    envelopeQuery = createEnvelopeCache(query => loadParcelEnvelopes(query, { sources, streetProvider })) } = {}) {
-    app.get('/planning/envelopes', async (req, res) => {
+    envelopeQuery = createEnvelopeCache(query => loadParcelEnvelopes(query, { sources, streetProvider, pool })) } = {}) {
+    const envelopes = async (req, res) => {
         res.set('Cache-Control', 'no-store');
-        const { city, source, scenario } = req.query;
-        const bbox = typeof req.query.bbox === 'string' ? req.query.bbox.split(',').map(value => value.trim() ? Number(value) : NaN) : [];
+        const posted = req.method === 'POST';
+        const input = (posted ? req.body : req.query) || {};
+        const { city, source, scenario } = input;
+        const bbox = posted ? input.bbox : typeof input.bbox === 'string' ? input.bbox.split(',').map(value => value.trim() ? Number(value) : NaN) : [];
         try {
-            if (!validCity(city) || !source || !validSource(source) || !validSource(scenario)) {
+            if (posted && !city || !validCity(city) || !source || !validSource(source) || !validSource(scenario)) {
                 return res.status(400).json({ code: 'invalid-planning-query' });
             }
             validateBounds(bbox, 0.5);
-            const answer = await envelopeQuery({ city, source, scenario, bbox });
-            cacheableAnswer(res, answer);
+            const plots = posted ? validatePlanPlots(input.plots, bbox) : [];
+            const answer = await envelopeQuery({ city, source, scenario, bbox, ...(plots.length ? { plots } : {}) });
+            if (plots.length) res.set('Cache-Control', 'private, no-store');
+            else cacheableAnswer(res, answer);
             res.json(answer);
         } catch (error) {
             const status = [400, 422].includes(error.status) ? error.status : 503;
-            if (status === 503) console.error(`[${new Date().toISOString()}] [planning-envelopes] Source read failed (${city} ${source} ${bbox.join(',')})`, error);
-            res.status(status).json({ code: status === 400 ? 'envelope-area-too-large' : 'planning-source-unavailable' });
+            if (status === 503) console.error(`[${new Date().toISOString()}] [planning-envelopes] Source read failed (${city} ${source} ${bbox})`, error);
+            res.status(status).json({ code: status === 503 ? 'planning-source-unavailable' : status === 422 ? error.code || 'study-unavailable'
+                : error.code === AREA_LIMIT_CODE || error.code === 'envelope-area-too-large' ? 'envelope-area-too-large' : 'invalid-planning-query' });
         }
-    });
+    };
+    app.get('/planning/envelopes', envelopes);
+    app.post('/planning/envelopes', envelopes);
     app.get('/planning/study', async (req, res) => {
         res.set('Cache-Control', 'no-store');
         const { city, source, scenario, parcel, point } = req.query;

@@ -825,6 +825,13 @@
     // the item), zoning areas do, so a housing-type change redraws the envelopes at once and re-reads
     // only the areas, when they are shown. A source re-read clears the cache.
     const viewCache = core.createViewportCache({ limit: 2048, maxAgeMs: 10 * 60 * 1000 });
+    const knownPlanPieces = new Map(), changedPieces = new Set();
+    let fabricTimer = null;
+    function rememberPlanPiece(piece) {
+        const entry = { bbox: root.PlanPlots.bbox(piece), parcelIds: [piece.properties.parcelId, ...(piece.properties.cadastreParcelIds || [])] };
+        knownPlanPieces.set(piece.properties.parcelId, entry);
+        return entry;
+    }
     const zoningViewportCache = core.createViewportCache({ limit: 12, maxAgeMs: 10 * 60 * 1000 });
     // Upstream parcel services slow down under parallel reads (Bogotá's times cells out at four), so
     // two cells at a time, and a cell that fails is asked once more, alone, after the rest.
@@ -962,10 +969,11 @@
         const wholePlanZoning = currentSource?.viewportZoning && overviewSource(currentSource);
         if (!wholePlanZoning && !(await ensureSources(city, bbox))) return;
         const descriptor = sourceOptions.find(source => source.id === sourceId);
-        const envelopeScope = descriptor?.parcelStudy && policy().permitted !== 'off' && !zoningOnly ? `envelopes:${city}:${sourceId}` : '';
-        massingWaits = Boolean(zoningOnly && descriptor?.parcelStudy && policy().permitted !== 'off');
+        const canLoadEnvelopes = Boolean(descriptor?.parcelStudy || descriptor?.planPlotCalculation === true);
+        const envelopeScope = canLoadEnvelopes && policy().permitted !== 'off' && !zoningOnly ? `envelopes:${city}:${sourceId}` : '';
+        massingWaits = Boolean(zoningOnly && canLoadEnvelopes && policy().permitted !== 'off');
         // A source without zoning areas answers representations with massing, which waits as envelopes do.
-        const areaScope = descriptor && (descriptor.capabilities.areas ? store.get().zoningAreas !== 'off' : !zoningOnly)
+        const areaScope = descriptor && (descriptor.capabilities.areas ? store.get().zoningAreas !== 'off' : !zoningOnly && !descriptor.planPlotCalculation)
             ? `areas:${city}:${sourceId}:${scenarioId}` : '';
         if (zoningOnly && !areaScope && drawn3d) { freeze(); return; }
         if (zoningOnly && !areaScope) {
@@ -1001,7 +1009,7 @@
         const failedKeys = new Set();
         const range = core.rangeAround(bbox, view.mode === '3d' ? { centre: view.centre, reachM: view.reachM } : {});
         // The model view between the gates keeps the massing it drew in range and loads no more of it.
-        const paused = drawn3d && zoningOnly && descriptor?.parcelStudy && policy().permitted !== 'off' ? [`envelopes:${city}:${sourceId}`] : [];
+        const paused = drawn3d && zoningOnly && canLoadEnvelopes && policy().permitted !== 'off' ? [`envelopes:${city}:${sourceId}`] : [];
         const assemble = () => {
             const wholeView = jobs.find(job => job.wholeView);
             if (wholeView && answers.has(wholeView.key)) {
@@ -1034,7 +1042,13 @@
             if (kind === 'envelopes') target.pathname = '/planning/envelopes';
             else if (scenario) target.searchParams.set('scenario', scenario);
             if (wholeView) target.searchParams.set('limit', '1000');
-            return root.PlanningFeed.loadViewport(target, { city, signal })
+            const pieces = kind === 'envelopes' && root.PlanPlots && root.LiveParcelFabric ? root.PlanPlots.forBox(root.LiveParcelFabric, box) : [];
+            const options = { cessions: new Map() };
+            const plots = pieces.map(piece => {
+                if (root.PlanPlots.isPlanPiece(piece)) rememberPlanPiece(piece);
+                return root.PlanPlots.toPlot(root.LiveParcelFabric, piece, options);
+            });
+            return root.PlanningFeed.loadViewport(target, { city, signal, body: plots.length ? { city, source: sourceId, scenario: scenario || undefined, bbox: box, plots } : undefined })
                 .then(answer => (kind === 'envelopes' ? { ...answer, envelopes: true } : answer));
         };
         status = 'loading'; progress = { count: jobs.length - pending.length, total: jobs.length };
@@ -1328,6 +1342,37 @@
         layer = root.L.featureGroup().addTo(root.map);
         selectionLayer = root.L.featureGroup().addTo(root.map);
         ready = true;
+        // Fabric changes invalidate only envelope cells whose plot cover or frontage can change.
+        // Keep the last geometry for removed pieces: publish removes it before notifying us.
+        const onFabricDelta = delta => {
+            if (!root.PlanPlots) return;
+            for (const id of new Set([...delta.addedIds, ...delta.updatedIds, ...delta.removedIds])) {
+                const previous = knownPlanPieces.get(id);
+                if (previous) { changedPieces.add(previous); knownPlanPieces.delete(id); }
+                const piece = root.LiveParcelFabric.peek(id);
+                if (root.PlanPlots.isPlanPiece(piece)) changedPieces.add(rememberPlanPiece(piece));
+            }
+            if (!changedPieces.size) return;
+            request++;
+            clearTimeout(fabricTimer);
+            fabricTimer = setTimeout(() => {
+                const dirty = [...changedPieces];
+                changedPieces.clear();
+                const cityPrefix = `envelopes:${root.CityConfigManager.getCurrentCityId()}:`;
+                const affected = entry => entry.scope.startsWith(cityPrefix) && dirty.some(change =>
+                    root.PlanPlots.intersects(change.bbox, root.PlanPlots.expand(entry.bbox)));
+                viewCache.evict(affected);
+                const stale = new Set(dirty.flatMap(change => change.parcelIds));
+                for (const [key, cell] of drawn) if (affected(cell)) {
+                    for (const item of cell.value.items || []) stale.add(item.id);
+                    drawn.delete(key);
+                }
+                items = items.filter(item => !stale.has(item.id) && !stale.has(item.source?.parcel));
+                if (payload) payload = { ...payload, items };
+                invalidate(); drawMap(); render(); notifyGeometry(); refresh();
+            }, 150);
+        };
+        root.LiveParcelFabric?.subscribe?.(onFabricDelta);
         document.getElementById('planning-views-button').hidden = false;
         store.subscribe(syncView);
         // A pan is a burst of moveends: re-read once the map has settled, and not at all when it
@@ -1345,6 +1390,7 @@
         root.addEventListener('loadviewchange', scheduleMoveRefresh);
         root.map.on('click', () => select(null));
         root.addEventListener('cityChanged', () => {
+            clearTimeout(fabricTimer); knownPlanPieces.clear(); changedPieces.clear();
             viewCache.clear(); zoningViewportCache.clear(); sourceListings.clear(); request++; invalidate();
             resetOverview(); items = []; payload = null; status = 'loading';
             sourceOptions = []; sourceId = ''; scenarioId = ''; pins = {}; sourcesKey = ''; focusedRecord = null; restoreId = null; catalogReady = false; parcelPanel = null;

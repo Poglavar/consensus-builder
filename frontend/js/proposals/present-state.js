@@ -448,7 +448,7 @@
         // Compare's unapplied plan sides clear standing buildings with the same ground and rule.
         const clearanceOf = (footprint, regions) => clearance(footprint, regions, ops);
         // ops: the shared clip, for Compare plans narrowing a plan to one parcel (plan-scope.js).
-        return Object.freeze({ groundOf, measure, publicSpaces, demolitionGround, clearanceOf, ops });
+        return Object.freeze({ groundOf, measure, publicSpaces, demolitionGround, clearanceOf, ops, PUBLIC_STRUCTURES });
     }
 
     return { OVERPASS_URLS, PUBLIC_STRUCTURES, publicSpaceQuery, publicSpacesFromOverpass, splitLand, builtRecords, remainingBuildings, clearanceSplit, clearance, coveredM2, clipToLand, bboxOf, browser };

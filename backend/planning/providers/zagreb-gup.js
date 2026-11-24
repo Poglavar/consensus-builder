@@ -5,7 +5,7 @@ import { withSourceProposal, sourceRevision } from '../source-proposal.js';
 import { readFile } from 'node:fs/promises';
 import { gunzip } from 'node:zlib';
 import { promisify } from 'node:util';
-import { booleanPointInPolygon } from '@turf/turf';
+import { booleanPointInPolygon, area as turfArea } from '@turf/turf';
 const unzip = promisify(gunzip);
 
 const zagrebGupBase = {
@@ -210,4 +210,70 @@ export async function readZagrebParcel(pool, { parcel, edition = '2025' }) {
           AND e.gup_id=$3 AND e.parcel_id=$4
         ORDER BY e.current DESC, e.computed_at DESC LIMIT 1`, [Number(match[1]), match[2], Number(edition), parcel]);
     return rows.map(({ record }) => record.current ? (gupRepresentation(record) || gupRecord(record)) : gupRecord(record));
+}
+
+// Evaluate a plan-created plot through cadastre-data's shared GUP solver.  This is deliberately
+// opt-in: until the route is deployed a plot must not silently fall back to the citywide parcel
+// snapshot (which answers a different question).
+const PLOT_NOTE = 'what-if on a plan plot; outside the citywide evaluation of existing cadastral parcels';
+const enabledByDefault = () => ['1', 'true', 'yes', 'on'].includes(String(process.env.ZAGREB_PLOT_SOLVER || '').toLowerCase());
+const unavailable = (reason, evidence) => ({ reason, ...(evidence ? { evidence } : {}) });
+
+function plotGeometry(input) {
+    const geometry = input?.plot?.geometry || input?.plot;
+    return validateGeometry(geometry) && geometry.type === 'Polygon' ? geometry : null;
+}
+
+function plotItem(result, { geometry, parcel, city, scenario, gupId }) {
+    const solverVersion = result.solver_version || result.solverVersion || 'unknown';
+    const ruleId = result.rule_id || result.ruleId || result.rule?.id || null;
+    const idPart = parcel?.id || parcel?.parcelId || parcel?.properties?.parcelId || 'plot';
+    const edition = sourceFor({ gup_id: gupId });
+    const id = `envelope:${edition.id}:${idPart}`;
+    const rawVolumes = Array.isArray(result.volumes) ? result.volumes : Array.isArray(result.floors) ? result.floors : [];
+    const volumes = rawVolumes.map((volume, index) => ({
+        id: `${id}:floor:${index}`, geometry: volume.geometry, baseM: volume.baseM ?? volume.base_elevation_m ?? 0,
+        topM: volume.topM ?? volume.top_elevation_m ?? volume.height_m
+    })).filter(volume => validateGeometry(volume.geometry) && Number.isFinite(volume.baseM) && Number.isFinite(volume.topM) && volume.topM > volume.baseM);
+    const evidence = result.resolver_evidence || result.resolverEvidence || result.evidence || null;
+    return withSourceProposal({ id, role: 'permitted', proposalId: null,
+        title: `GUP ${gupId} · plan plot`, site: volumes[0]?.geometry ?? null, areas: [], volumes,
+        spatialReference: { horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' },
+        source: { ...edition, recordId: idPart, parcel: idPart, scenario: scenario || edition.scenario,
+            version: sourceRevision({ gupId, ruleId, solverVersion, geometry, scenario }), solverVersion, rule: ruleId },
+        authority: { effect: 'obligatory', basis: 'shared-gup-solver', applicability: 'unresolved' },
+        assessment: { meaning: 'one-calculated-option', status: result.result_status || result.status || 'solved',
+            reason: result.reason || null, geometry: volumes.length ? 'solver' : 'not-available', constraints: 'not-evaluated', current: true },
+        metrics: { floorAreaM2: Number.isFinite(result.gbp_m2) ? result.gbp_m2 : (Number.isFinite(result.gbp) ? result.gbp : null),
+            heightM: volumes.length ? Math.max(...volumes.map(v => v.topM)) : null }, constraints: [],
+        sourceEvidence: { variables: result.variables || null, resolver: evidence,
+            plot: { solverVersion, gupId, ruleId, note: PLOT_NOTE, hypothetical_plot: true } } });
+}
+
+export async function evaluatePlot(pool, { plot, parcel, city = 'zagreb', scenario, standing } = {}, options = {}) {
+    if (city !== 'zagreb') return unavailable('unsupported-city');
+    if (!(options.enabled ?? enabledByDefault())) return unavailable('plot-solver-disabled');
+    const geometry = plotGeometry({ plot });
+    if (!geometry) return unavailable('invalid-plot-geometry');
+    if (turfArea(geometry) > 1_000_000) return unavailable('plot-area-too-large');
+    const gupId = Number(options.gupId || scenario?.gup_id || scenario?.gupId || parcel?.gup_id || 2025);
+    if (![2016, 2025].includes(gupId)) return unavailable('unsupported-gup');
+    const endpoint = options.endpoint || process.env.ZAGREB_PLOT_SOLVER_URL;
+    if (!endpoint) return unavailable('plot-solver-unconfigured');
+    const fetchFn = options.fetch || globalThis.fetch;
+    if (typeof fetchFn !== 'function') return unavailable('plot-solver-unavailable');
+    const timeoutMs = Math.min(Number(options.timeoutMs) || 5000, 15000);
+    const controller = new AbortController(), timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+        const response = await fetchFn(endpoint, { method: 'POST', headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ gup_id: gupId, geometry }), signal: controller.signal });
+        if (!response?.ok) return unavailable('plot-solver-unavailable', { status: response?.status });
+        const result = await response.json();
+        if (!result || result.status === 'unavailable' || result.error) return unavailable(result?.reason || 'plot-solver-no-result');
+        const item = plotItem(result, { geometry, parcel, city, scenario, standing, gupId });
+        if (!item.volumes.length) return unavailable('plot-solver-no-massing', { status: result.status ?? null, ...item.sourceEvidence });
+        return { item };
+    } catch (error) {
+        return unavailable(error?.name === 'AbortError' ? 'plot-solver-timeout' : 'plot-solver-unavailable');
+    } finally { clearTimeout(timer); }
 }

@@ -70,7 +70,7 @@ describe('cache-only parcel inspection', () => {
     });
     it('bounds parcel input and exposes provider capabilities through the read-only routes', async () => {
         const handlers = {}, parcelQuery = vi.fn().mockResolvedValue({ items: [] });
-        setupPlanningRoutes({ get: (path, fn) => { handlers[path] = fn; } }, {}, { parcelQuery });
+        setupPlanningRoutes({ post() {}, get: (path, fn) => { handlers[path] = fn; } }, {}, { parcelQuery });
         const res = { set: vi.fn(), status: vi.fn().mockReturnThis(), json: vi.fn() };
         await handlers['/planning/parcel']({ query: { city: 'zagreb', parcel: ['a', 'b'] } }, res);
         expect(res.status).toHaveBeenCalledWith(400); expect(parcelQuery).not.toHaveBeenCalled();

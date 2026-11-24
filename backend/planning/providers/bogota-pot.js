@@ -21,7 +21,7 @@ export const bogotaPotSource = Object.freeze({
     issuer: 'Secretaría Distrital de Planeación de Bogotá',
     attribution: 'SDP Bogotá, POT Decreto 555/2021 · copy published by IDE Cundinamarca (IDEC) · CC BY 4.0',
     capabilities: { volumes: false, areas: true, parcelEvidence: false, constraintEvaluation: false },
-    parcelSourceId: 'co-bogota-uaecd-lote', parcelStudy: 'direct-dimensions.v1',
+    parcelSourceId: 'co-bogota-uaecd-lote', parcelStudy: 'direct-dimensions.v1', parcelStanding: true,
     scenarios: BOGOTA_POT_SCENARIOS, scenario: 'general'
 });
 
@@ -142,14 +142,15 @@ export function createBogotaPotProvider(descriptor = bogotaPotSource, { fetchImp
     // The same treatment record read on one lot: its front yard, street width, area and activity
     // area give the lot's constraints. Identity and revision stay the treatment polygon's; the
     // per-lot polygons' revisions are evidence.
-    function refine(item, { antejardin, activity, lotM2, context }) {
+    async function refine(item, { antejardin, activity, lotM2, context }) {
         const { proposal, proposalId, ...base } = item;
         const reading = base.sourceEvidence.interpretation;
         const yard = antejardinConstraint(antejardin.best?.feature.properties ?? {}, antejardin.overlap ?? { candidates: antejardin.candidates,
             ...(antejardin.failed.length ? { unreadable: antejardin.failed } : {}) }, reading.treatment, BOGOTA_RULES, { equipamiento: Boolean(reading.equipamiento) });
         const activityCode = activity?.best ? activity.best.feature.properties.CODIGO_AREA_ACTIVIDAD : null;
+        const standing = reading.resultante && reading.treatment === 'RENOVACION' ? await context.standing?.() : null;
         const lot = parcelReading(reading, { scenario: base.source.scenario, antejardinM: yard.constraint?.value ?? null, streetWidthM: context.streetWidthM ?? null,
-            lotM2, activityCode, measure: context.measure || null });
+            lotM2, activityCode, measure: context.measure || null, standing });
         const constraints = lot.status === 'allowed' ? [...lot.constraints, ...(yard.constraint ? [yard.constraint] : [])].map(constraint => ({ ...constraint, scenario: base.source.scenario })) : [];
         return withSourceProposal({ ...base, title: lot.title || `${reading.treatmentLabel} · ${lot.heightLabel}`,
             assessment: { ...base.assessment, status: lot.status, reason: lot.reason, ...(lot.condition ? { condition: lot.condition } : {}) },
@@ -187,7 +188,7 @@ export function createBogotaPotProvider(descriptor = bogotaPotSource, { fetchImp
             const bounds = turf.bbox(parcel), lotM2 = turf.area(parcel);
             const antejardin = largestUnder(await antejardinUnder(bounds), parcel);
             const activity = records.some(item => item.sourceEvidence?.incentive?.pending === 'parcel') ? largestUnder(await activityUnder(bounds), parcel) : null;
-            return records.map(item => refine(item, { antejardin, activity, lotM2, context }));
+            return Promise.all(records.map(item => refine(item, { antejardin, activity, lotM2, context })));
         }
     };
 }

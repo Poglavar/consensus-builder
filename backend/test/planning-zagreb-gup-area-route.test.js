@@ -11,7 +11,7 @@ describe('Zagreb planning-area discovery route', () => {
         const handlers = {};
         let dbReads = 0;
         const pool = { query: async () => { dbReads++; throw new Error('zone lookup must not query DB'); } };
-        setupPlanningRoutes({ get: (path, fn) => { handlers[path] = fn; } }, pool, { sources: getPlanningSources() });
+        setupPlanningRoutes({ post() {}, get: (path, fn) => { handlers[path] = fn; } }, pool, { sources: getPlanningSources() });
         const found = response();
         await handlers['/planning/areas']({ query: { city: 'zagreb', source, lon: String(point[0]), lat: String(point[1]) } }, found);
         expect(found.statusCode).toBe(200);

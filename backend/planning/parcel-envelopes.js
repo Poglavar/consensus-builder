@@ -7,14 +7,14 @@ import { STUDY_MAX_PARCEL_M2, asPolygonParcel, assembleParcelStudy, formsLand, p
 import { runtimeParcelSource } from '../parcels/sources.js';
 import { validateBounds } from '../parcels/source-contract.js';
 import { configurationTreatments } from './providers/atlas.js';
-import { streetWidthAcross } from './street-width.js';
+import { edgeStanding, streetWidthAcross } from './street-width.js';
+import { addCorridorStreets, composeGovernmentLots, corridor, expandBounds, keepsGovernmentLot, plotRecord, plotReference, replaceCadastre, touches as intersects, validatePlanPlots } from './plan-plots.js';
 const require = createRequire(import.meta.url);
 const core = require('../../frontend/js/planning/parcel-assessment.js');
 const plots = require('../../frontend/js/proposals/site-plots.js');
 const fail = (code, status = 422) => { throw Object.assign(new Error(code), { code, status }); };
-const intersects = (a, b) => a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
 const knownReasons = ['overlapping-parcel-identities', 'use-prohibited', 'use-not-recorded', 'status-not-configurable', 'missing-direct-height', 'empty-supported-bound',
-    'unsupported-parcel-shape', 'study-multiple-zoning-areas', 'study-zoning-missing', 'envelope-geometry-error'];
+    'unsupported-parcel-shape', 'study-multiple-zoning-areas', 'study-zoning-missing', 'envelope-geometry-error', 'plan-plot-source-conflict'];
 
 export function parcelOverlapProblems(records, geometryOps = turf) {
     const problems = new Map();
@@ -196,54 +196,128 @@ function parcelFrontage(parcel, streets, index) {
 
 // Lots a street's width beyond the view are read too, so a lot at the view's edge still finds the
 // lot line across its street; only lots in the view get envelopes.
-const OBSTACLE_MARGIN_M = 45;
-function expand([w, s, e, n], marginM) {
-    const dLat = marginM / 111320, dLng = dLat / Math.cos((s + n) / 2 * Math.PI / 180);
-    return [w - dLng, s - dLat, e + dLng, n + dLat];
+const asRecord = parcel => ({ parcel, bbox: turf.bbox(parcel) });
+const obstacleOf = ({ parcel, bbox }) => ({ id: parcel.id, geometry: parcel.geometry, bbox });
+const fullExtent = (initial, records) => records.reduce((box, { bbox }) => [Math.min(box[0], bbox[0]), Math.min(box[1], bbox[1]),
+    Math.max(box[2], bbox[2]), Math.max(box[3], bbox[3])], initial);
+
+// Lot-record adapters reuse their saved answers on unchanged land. They receive the same plot,
+// street and neighbour geometry as the dimensional evaluator when the parcel fabric changes.
+async function savedParcelEnvelopes(provider, pool, query, authored, streetProvider) {
+    const items = [], unavailable = [];
+    let after = null, stored, omitted = 0, count = 0;
+    const replaced = new Set(authored.flatMap(plot => plot.cadastreParcelIds));
+    do {
+        const page = await provider.query(pool, { ...query, limit: 200, after });
+        stored ??= page.summary;
+        for (const item of page.items) if (!replaced.has(item.source?.parcel)) items.push(item);
+        count += page.items.length + (page.omitted || 0);
+        omitted += page.omitted || 0;
+        after = page.nextAfter;
+        if (count > 1000 || (after != null && count >= 1000)) fail('envelope-area-too-large', 400);
+    } while (after != null);
+    let summary;
+    if (authored.length) {
+        const live = authored.map(plotRecord);
+        const extent = fullExtent(query.bbox, live);
+        const [ground, baseStreets] = await Promise.all([provider.plotGround(pool, expandBounds(extent, 45), authored),
+            readFrontageStreets(extent, streetProvider)]);
+        if (ground.complete !== true) fail('study-parcel-incomplete', 503);
+        const composition = replaceCadastre(ground.features.map(feature => feature.id ? feature : { ...feature, id: feature.properties.parcelId }), authored);
+        summary = composition.summary;
+        const remaining = composition.remaining.map(asRecord);
+        const conflicts = parcelOverlapProblems([...remaining, ...live]);
+        const buildable = live.filter(({ plot }) => !corridor(plot));
+        const neighbours = [...remaining, ...buildable].map(obstacleOf);
+        const streets = addCorridorStreets(baseStreets, live), index = streetIndex(streets);
+        // A conflicting saved parcel is also unavailable. Its building footprint cannot settle a
+        // parcel boundary dispute; use the cadastral read above, including results without massing.
+        for (let i = items.length - 1; i >= 0; i--) {
+            const id = items[i].source?.parcel;
+            if (conflicts.has(id)) { items.splice(i, 1); unavailable.push({ parcelId: id, reason: conflicts.get(id) }); }
+        }
+        for (const { parcel, plot, bbox } of buildable) {
+            if (!intersects(bbox, query.bbox)) continue;
+            if (items.length + unavailable.length >= 1000) fail('envelope-area-too-large', 400);
+            const reference = plotReference(plot);
+            const frontage = parcelFrontage(parcel, streets, index);
+            const result = conflicts.has(parcel.id) ? { reason: conflicts.get(parcel.id) }
+                : await provider.evaluatePlot(pool, { city: query.city, scenario: query.scenario || provider.descriptor.scenario, parcel, plot,
+                    frontage, obstacles: neighbours, streets, standing: () => edgeStanding(parcel, neighbours, streets) });
+            if (!result.item) { unavailable.push({ parcelId: parcel.id, reason: result.reason, parcelReference: reference,
+                ...(result.evidence ? { evidence: result.evidence } : {}) }); continue; }
+            const item = result.item;
+            items.push({ ...item, id: `envelope:${provider.descriptor.id}:${plot.id}`, source: { ...item.source, parcel: plot.id },
+                derivation: { ...item.derivation, parcel: parcel.geometry },
+                sourceEvidence: { ...item.sourceEvidence, parcelReference: reference, frontage: frontage.evidence } });
+        }
+    }
+    return { schemaVersion: 'planning-representations.v1', city: query.city, sources: [provider.descriptor], items,
+        coverage: 'source-results', nextCursor: null, truncated: false, omitted, unavailable,
+        summaries: [{ ...stored, sourceId: provider.descriptor.id, ...(summary ? { planPlots: summary, withGeometry: items.length } : {}) }] };
 }
 
-export async function loadParcelEnvelopes(query, { sources, parcelProvider = descriptor => runtimeParcelSource(descriptor), streetProvider } = {}) {
+export async function loadParcelEnvelopes(query, { sources, parcelProvider = descriptor => runtimeParcelSource(descriptor), streetProvider, pool } = {}) {
     validateBounds(query.bbox, 0.5);
     const provider = sourcesFor(query, sources)[0];
     if (!query.source || !provider) fail('study-unavailable');
+    const authored = validatePlanPlots(query.plots ?? [], query.bbox);
+    if (provider.evaluatePlot) return savedParcelEnvelopes(provider, pool, query, authored, streetProvider);
     const descriptor = studyParcelSource(provider, query.city);
-    const parcels = await parcelProvider(descriptor).queryBounds(expand(query.bbox, OBSTACLE_MARGIN_M));
+    const cadastre = parcelProvider(descriptor);
+    const parcels = await cadastre.queryBounds(expandBounds(query.bbox, 45));
     if (parcels.complete !== true) fail('study-parcel-incomplete', 503);
     // Every outline below (frontage edge indices, derivation.parcel) is a Polygon's outer ring.
-    const lots = parcels.features.map(asPolygonParcel);
-    const obstacles = lots.map(parcel => ({ id: parcel.id, geometry: parcel.geometry, bbox: turf.bbox(parcel) }));
-    const inView = lots.filter((parcel, index) => intersects(obstacles[index].bbox, query.bbox));
-    // A work bound, not a secret: a dense zoom-18 view holds about 1,000 lots, which cost a few
-    // seconds, most of it the upstream parcel read.
-    if (inView.length > 1000) fail('envelope-area-too-large', 400);
-    const all = inView.map(parcel => ({ parcel, bbox: turf.bbox(parcel) }));
+    const { remaining, summary } = replaceCadastre(parcels.features.map(asPolygonParcel), authored);
+    const live = authored.map(plotRecord), buildingLots = live.filter(({ plot }) => !corridor(plot));
+    const cadastral = remaining.map(asRecord);
+    const all = [...cadastral, ...buildingLots].filter(lot => intersects(lot.bbox, query.bbox));
     // A lot over the study limit gets no envelope, so it must not widen the zoning read either: one
     // field kilometres across (common in Alatau) pulled hundreds of zones into every area, which
     // failed as study-zoning-incomplete for the whole view.
-    const records = all.filter(record => turf.area(record.parcel) <= STUDY_MAX_PARCEL_M2);
-    const tooLarge = all.filter(record => !records.includes(record)).map(record => ({ parcelId: record.parcel.id, reason: 'unsupported-parcel-shape' }));
     // Query zoning across full parcel outlines, not just the viewport (a corner can cross a zone),
     // and across the viewport itself: a zoning area that is its own lot is found there, parcels or not.
-    const fullBounds = [Math.min(query.bbox[0], ...records.map(r => r.bbox[0])), Math.min(query.bbox[1], ...records.map(r => r.bbox[1])),
-        Math.max(query.bbox[2], ...records.map(r => r.bbox[2])), Math.max(query.bbox[3], ...records.map(r => r.bbox[3]))];
+    const fullBounds = fullExtent(query.bbox, all.filter(({ parcel }) => turf.area(parcel) <= STUDY_MAX_PARCEL_M2));
     const scenarios = provider.descriptor.scenarios || [provider.descriptor.scenario];
-    const streetsRead = records.length ? readFrontageStreets(fullBounds, streetProvider) : null;
+    const streetsRead = all.length ? readFrontageStreets(fullBounds, streetProvider) : null;
     const zoneEntries = await Promise.all(scenarios.map(async scenario => [scenario, await readStudyZoning(provider, { ...query, scenario }, fullBounds)]));
     const zonesByScenario = Object.fromEntries(zoneEntries);
     // The plan's own lots: its land-forming zoning areas, every one read as a neighbour across a
     // street and those in the view drawn.
     const planLots = zonesByScenario[scenarios[0]].filter(formsLand).flatMap(zoneLots);
-    const planObstacles = planLots.map(lot => ({ id: lot.parcel.id, geometry: lot.parcel.geometry, bbox: lot.bbox }));
-    const planInView = planLots.filter(lot => intersects(lot.bbox, query.bbox));
-    if (inView.length + planInView.length > 1000) fail('envelope-area-too-large', 400);
-    const planRecords = planInView.filter(lot => turf.area(lot.parcel) <= STUDY_MAX_PARCEL_M2);
-    const streets = await (streetsRead || (planRecords.length ? readFrontageStreets(fullBounds, streetProvider) : null));
+    const { ground, conflicts, claimed } = composeGovernmentLots(planLots, live, query.source);
+    const viewport = turf.bboxPolygon(query.bbox);
+    const planInView = ground.filter(lot => {
+        if (!intersects(lot.bbox, query.bbox)) return false;
+        const inside = turf.intersect(lot.parcel, viewport);
+        return inside && turf.area(inside) > 0.01;
+    });
+    if (planInView.length > 1000 || (!planLots.length && all.length > 1000)) fail('envelope-area-too-large', 400);
+    const streets = addCorridorStreets(await (streetsRead || (planInView.length ? readFrontageStreets(fullBounds, streetProvider) : null)), live);
     const streetsNearby = streetIndex(streets);
-    // Overlaps are checked against every lot in view, the large ones too.
-    const overlapProblems = parcelOverlapProblems(all);
-    const items = [], unavailable = [...tooLarge,
-        ...planInView.filter(lot => !planRecords.includes(lot)).map(lot => ({ parcelId: lot.parcel.id, reason: 'unsupported-parcel-shape' }))];
-    for (const { parcel, zone = null } of [...records, ...planRecords]) {
+    // Keep the original cadastral shape for a parcel regulated by several zones. Its land under a
+    // government lot is already represented by that lot and cannot conflict with the layout on it.
+    const overlapProblems = parcelOverlapProblems([...cadastral, ...live.filter(({ parcel }) => !claimed.has(parcel.id))]
+        .filter(record => intersects(record.bbox, expandBounds(query.bbox, 45))));
+    if (claimed.size) for (const [id, reason] of parcelOverlapProblems(live)) overlapProblems.set(id, reason);
+    for (const [id, reason] of conflicts) overlapProblems.set(id, reason);
+    const planObstacles = [...ground, ...buildingLots].map(obstacleOf);
+    const obstacles = [...cadastral, ...buildingLots].map(obstacleOf);
+    let standingNeighbours;
+    const neighboursForStanding = () => {
+        if (!provider.descriptor.parcelStanding || fullBounds.every((value, i) => value === query.bbox[i])) return obstacles;
+        // The far edge of a large plot can lie outside this display cell. All Renovación lots and
+        // scenarios in the request share one full-outline neighbour read when that happens.
+        return standingNeighbours ??= cadastre.queryBounds(expandBounds(fullBounds, 45)).then(answer => {
+            if (answer.complete !== true) fail('study-parcel-incomplete', 503);
+            const all = replaceCadastre(answer.features.map(asPolygonParcel), authored);
+            return [...all.remaining.map(asRecord), ...buildingLots].map(obstacleOf);
+        });
+    };
+    const records = [...all, ...planInView];
+    const items = [], unavailable = [];
+    let evaluated = 0;
+    for (const { parcel, zone = null, plot } of records) {
         // Each lot is CPU work on the API's one thread; yielding between lots lets other requests
         // (the parcel relay among them) answer while a large block is being drawn.
         await new Promise(resolve => setImmediate(resolve));
@@ -251,12 +325,19 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
             // A parcel wholly under land-forming zoning areas gets no envelope: those areas stand for
             // its land. Where the provider reads its rules under the lot, the zones are known later.
             let found = provider.parcelRecords ? null : parcelZones(parcel, zonesByScenario[scenarios[0]]);
-            const replaced = () => !zone && found.major.length > 0 && found.major.every(part => formsLand(part.source));
+            const usesPart = part => !formsLand(part.source) || plot && !keepsGovernmentLot(plot, query.source, part.source.source.recordId);
+            const replaced = () => !zone && found.major.length > 0 && !found.major.some(usesPart);
             if (found && replaced()) continue;
-            if (!zone && overlapProblems.has(parcel.id)) fail(overlapProblems.get(parcel.id));
+            if (++evaluated > 1000) fail('envelope-area-too-large', 400);
+            if (overlapProblems.has(parcel.id)) fail(overlapProblems.get(parcel.id));
+            if (turf.area(parcel) > STUDY_MAX_PARCEL_M2) fail('unsupported-parcel-shape');
             const frontage = parcelFrontage(parcel, streets, streetsNearby);
+            const neighbours = zone || claimed.has(parcel.id) ? planObstacles : obstacles;
             const street = frontage.frontEdge === null ? { widthM: null, hits: [], reason: 'no-front-edge' }
-                : streetWidthAcross(parcel, frontage.frontEdge, zone ? planObstacles : obstacles);
+                : streetWidthAcross(parcel, frontage.frontEdge, neighbours);
+            let lotStanding;
+            const standing = () => lotStanding ??= Promise.resolve(zone || claimed.has(parcel.id) ? planObstacles : neighboursForStanding()).then(ground =>
+                ({ ...edgeStanding(parcel, ground, streets, { frontEdge: frontage.frontEdge }), cessionM2: plot?.cessionM2 ?? 0 }));
             // What the provider may ask of the lot: the floor area a candidate set of constraints leaves on it.
             const measure = constraints => {
                 const tiers = tieredBound({ parcel, source: { constraints } }, frontage.frontEdge, turf);
@@ -264,13 +345,13 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
                 return { floorAreaM2: floorAreaM2(tiers, storeys, tiers[0].heightM), tiers };
             };
             const zones = provider.parcelRecords ? Object.fromEntries(await Promise.all(scenarios.map(async scenario =>
-                [scenario, await parcelRecords(provider, parcel, zonesByScenario[scenario], { frontEdge: frontage.frontEdge, streetWidthM: street.widthM, measure })]))) : zonesByScenario;
+                [scenario, await parcelRecords(provider, parcel, zonesByScenario[scenario], { frontEdge: frontage.frontEdge, streetWidthM: street.widthM, measure, standing })]))) : zonesByScenario;
             const scenarioZones = zones[scenarios[0]];
             found ??= parcelZones(parcel, scenarioZones);
             if (replaced()) continue;
             if (found.stacked) fail('study-multiple-zoning-areas');
             // A plan lot is drawn under its own zoning area; a parcel under each part that keeps it.
-            const parts = zone ? found.major.filter(part => part.source.source.recordId === zone) : found.major.filter(part => !formsLand(part.source));
+            const parts = zone ? found.major.filter(part => part.source.source.recordId === zone) : found.major.filter(usesPart);
             if (!parts.length) fail('study-zoning-missing');
             const failures = [];
             // One envelope per zoning area that partitions the lot: the whole lot's bound, clipped to that part.
@@ -302,7 +383,9 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
                         metrics: { footprintM2: bound.areaM2, heightM: bound.grantedHeightM, ...(bound.heightM > (bound.grantedHeightM ?? 0)
                             ? { conditional: conditionalOf(bound, context.source) } : {}) },
                         constraints: [],
-                        sourceEvidence: { zoningRecordId: recordId, parcelReference: zone ? null : context.parcelReference,
+                        sourceEvidence: { zoningRecordId: recordId, parcelReference: plot ? plotReference(plot) : zone ? null : context.parcelReference,
+                            ...(zone ? { planningArea: { source: query.source, recordId: zone, lotId: parcel.id } } : {}),
+                            ...(context.source.sourceEvidence?.resultante ? { resultante: context.source.sourceEvidence.resultante } : {}),
                             sourceCoverage: context.sourceCoverage, parts: found.major.length, frontEdge: frontage.frontEdge, frontage: frontage.evidence, streetWidth: street,
                             excludedConfigurations: excluded, envelopeMeaning: frontage.frontEdge === null
                                 ? 'outer-bound-across-configurations-and-front-edge-interpretations' : 'outer-bound-across-configurations' } });
@@ -315,7 +398,7 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
             if (failures.length === parts.length) fail(failures[0]);
         } catch (error) {
             // A failed upstream read is the whole request's failure, never one parcel's geometry problem.
-            if (error.status === 503) throw error;
+            if (error.status === 503 || error.status === 400) throw error;
             const reason = knownReasons.includes(error.code || error.message) ? error.code || error.message : 'envelope-geometry-error';
             if (reason === 'envelope-geometry-error' && process.env.PLANNING_ENVELOPE_DEBUG) console.warn(`[${new Date().toISOString()}] [planning-envelopes] ${parcel.id}: ${error.stack || error.message}`);
             unavailable.push({ parcelId: parcel.id, reason });
@@ -323,6 +406,6 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
     }
     return { schemaVersion: 'planning-representations.v1', city: query.city, sources: [provider.descriptor], items,
         coverage: 'source-results', nextCursor: null, truncated: false, omitted: 0,
-        summaries: [{ sourceId: provider.descriptor.id, cachedResults: all.length + planInView.length, withGeometry: items.length,
-            withoutGeometry: unavailable.length, statuses: {} }], unavailable };
+        summaries: [{ sourceId: provider.descriptor.id, cachedResults: evaluated, withGeometry: items.length,
+            withoutGeometry: unavailable.length, statuses: {}, ...(authored.length ? { planPlots: summary } : {}) }], unavailable };
 }

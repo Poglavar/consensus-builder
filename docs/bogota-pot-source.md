@@ -73,11 +73,13 @@ wall applies.
 **Renovación.** The resulting height is solved per lot (`solveRenovacion`): for each storey count
 the lot's floors, each bounded by the rear yard of that height, the side yards above the third
 storey and the street wall, are measured, and the count holding the most floor area within the
-single-lot construction index of 5.0 (arts. 303–304) is the height. Yards deepen with height, so a
+applicable construction index (arts. 303–304) is the height. Yards deepen with height, so a
 storey past some count removes more floor than it adds; the search stops after three such
 storeys, or three over the index. The result is recorded under `sourceEvidence.resultante` (index,
 floor area, limit). A single-parcel study has no street width or measure, so there the polygon's
 reading stands.
+
+A single lot uses index 5.0. A corner with more than 400 m² of cession uses 6.0, and an assembled whole block uses 7.0. Street-facing edges and clear ground across the lot line establish standing. A whole block has street walls on its outside edges. The answer records the basis, cession, open edges and measured widths. Cession uses public pieces and recorded public holders in the applied layout. Agreement allocations are evaluated separately. [Decreto 555, arts. 303–304](https://bogota.gov.co/bog/pot-2022-2035/Decreto_555_de_2021.pdf)
 
 **Sustainability storeys (Decreto 676/2025).** The source has two scenarios: `general` (the map)
 and `sustainable`, the storeys a Consolidación project earns by adopting every ecourbanismo

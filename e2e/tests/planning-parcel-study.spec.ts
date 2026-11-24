@@ -43,7 +43,7 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
     spatialReference:{horizontal:'OGC:CRS84',vertical:'relative-ground',unit:'m'},
     assessment:{meaning:'outer-bound',status:'unresolved'},metrics:{heightM:13.716,footprintM2:1000},constraints:[],
     sourceEvidence:{parcelReference:input.parcelReference,zoningRecordId:'slice-test',frontEdge:0,excludedConfigurations:{family3:'prohibited'}}};
-  const zone={...input.source,title:'Synthetic zoning area',areas:[{geometry}],volumes:[],metrics:{heightM:null},
+  const zone={...input.source,title:'Synthetic zoning area',areas:[{geometry}],volumes:[],metrics:{heightM:36},
     assessment:{meaning:'zoning-area',status:'allowed'}};
   let envelopeReads = 0, studyReads = 0;
   const savedDraft = JSON.stringify({ schemaVersion: 'planning-parcel-study.v1', form: { heightM: 12 } });
@@ -109,8 +109,12 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
   expect(studyReads).toBe(0);
   await page.getByRole('button',{name:'Buildings and massing',exact:true}).click();
   const panel=page.locator('#planning-views');
+  for (const role of ['permitted', 'proposed']) {
+    const section = panel.locator(`[data-role="${role}"] details`);
+    if (!await section.evaluate(element => (element as HTMLDetailsElement).open)) await section.locator('summary').press('Enter');
+  }
   await expect(panel.locator('.planning-scenario-select')).toHaveValue('all');
-  await expect(panel.locator('.planning-view-status')).toHaveAttribute('aria-busy', 'false');
+  await expect(page.locator('#layers-zoning-controls .planning-view-status')).toHaveAttribute('aria-busy', 'false');
   const initialEnvelopeReads = envelopeReads;
   expect(initialEnvelopeReads).toBeGreaterThan(0);
   // The housing type roll preserves frontage evidence; pinning a type overrides the roll.
@@ -126,18 +130,18 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
   expect((await shown()).configuration).toBe('family2');
   await selectNativeOption(panel.locator('.planning-scenario-select'), 'all');
   // The viewport loads several cells; choosing a housing type reuses those envelopes.
-  await expect(panel.locator('.planning-view-status')).toHaveAttribute('aria-busy', 'false');
+  await expect(page.locator('#layers-zoning-controls .planning-view-status')).toHaveAttribute('aria-busy', 'false');
   expect(envelopeReads).toBe(initialEnvelopeReads);
   await selectNativeOption(panel.locator('[data-planning-setting="permittedForm"]'), 'bound');
   await expectShownGeometry();
   await selectNativeOption(panel.locator('[data-planning-setting="permittedForm"]'), 'both');
-  await expect(panel.locator('[data-planning-setting="zoningAreas"]')).toHaveValue('off');
+  await expect(page.locator('#layers-zoning-controls [data-planning-setting="zoningAreas"]')).toHaveValue('off');
   await selectNativeOption(panel.locator('[data-planning-setting="permitted"]'), 'off');
   await expect(page.locator('.planning-envelope-height')).toHaveCount(0);
-  await selectNativeOption(panel.locator('[data-planning-setting="zoningAreas"]'), 'ghost');
+  await page.evaluate(() => (window as any).PlanningViews.configure('zoningAreas', 'ghost'));
   await expect(page.getByRole('button',{name:'Inspect source zoning area Synthetic zoning area',exact:true})).toBeAttached();
   await expect(page.locator('.planning-envelope-height')).toHaveCount(0);
-  await selectNativeOption(panel.locator('[data-planning-setting="zoningAreas"]'), 'off');
+  await page.evaluate(() => (window as any).PlanningViews.configure('zoningAreas', 'off'));
   await selectNativeOption(panel.locator('[data-planning-setting="permitted"]'), 'solid');
   await expectShownGeometry();
   await page.getByRole('button',{name:'Buildings and massing',exact:true}).click();
@@ -187,6 +191,25 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
   await page.locator('#mode-3d-toggle').click();
   await expect.poll(() => page.evaluate(() => !!(window as any).getThreeModeInternals?.())).toBe(true);
   await page.evaluate(() => (window as any).ThreeSceneReady.wait({ requireExisting: false }));
+  await page.evaluate(() => (window as any).PlanningViews.configure('zoningAreas', 'ghost'));
+  const meshHeights = (id:string) => page.evaluate(id => {
+    const group = (window as any).getThreeModeInternals()?.scene.getObjectByName('PermittedMassing');
+    return (group?.children || []).filter((mesh:any) => mesh.isMesh && mesh.userData.planningRepresentationId === id).map((mesh:any) => {
+      mesh.geometry.computeBoundingBox();
+      return mesh.geometry.boundingBox.max.z - mesh.geometry.boundingBox.min.z;
+    });
+  }, id);
+  await expect.poll(async () => (await meshHeights(zone.id)).length).toBeGreaterThan(0);
+  expect(Math.max(...await meshHeights(zone.id))).toBe(0);
+  await expect.poll(async () => Math.max(...await meshHeights(envelope.id))).toBeGreaterThan(0);
+  await page.evaluate(() => (window as any).PlanningViews.configure('permitted', 'off'));
+  await expect.poll(() => meshHeights(envelope.id)).toEqual([]);
+  expect(Math.max(...await meshHeights(zone.id))).toBe(0);
+  await page.evaluate(() => {
+    (window as any).PlanningViews.configure('zoningAreas', 'off');
+    (window as any).PlanningViews.configure('permitted', 'solid');
+  });
+  await expect.poll(async () => Math.max(...await meshHeights(envelope.id))).toBeGreaterThan(0);
   await page.getByRole('button',{name:'Buildings and massing',exact:true}).click();
   await selectNativeOption(panel.locator('.planning-scenario-select'), 'family1');
   const beforeSample = await page.evaluate(() => JSON.stringify((window as any).PlanningViews.permittedFeatures((window as any).PlanningViews.getItems()[0]).body));

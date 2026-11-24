@@ -51,8 +51,8 @@ export const BOGOTA_RULES = Object.freeze({
     streetWallCitation: 'Anexo 5 §1.11: altura del paramento A = 2,5·D (consolidación y renovación); retroceso mínimo máx(4 m, (H − A)/5); sin regla con D > 30 m',
     // Renovación (arts. 303–304): a single lot builds up to an effective construction index of 5.0;
     // its height is whatever the yards, the street wall and that index leave (art. 260).
-    renovacion: Object.freeze({ constructionIndex: 5, maxStoreys: 40 }),
-    renovacionCitation: 'Decreto 555/2021 arts. 260, 303–304: altura resultante; índice de construcción efectivo máximo 5,0 en predio individual',
+    renovacion: Object.freeze({ constructionIndex: 5, wholeBlockIndex: 7, cornerCessionIndex: 6, cornerCessionMinM2: 400, maxStoreys: 40 }),
+    renovacionCitation: 'Decreto 555/2021, arts. 260, 303–304: índice efectivo 5,0 en predio individual, 6,0 con esquina y cesión mayor a 400 m², 7,0 con manzana completa',
     // Decreto 676/2025 (Anexo 5 §5.7): sustainable-construction storeys in Consolidación, a
     // project's choice: +2 on lots of 300–800 m², +3 from 800 m², never above 12 storeys, in
     // Proximidad or Estructurante activity areas, not on lots with a storey range.
@@ -144,7 +144,7 @@ export function streetWallConstraint({ treatment, heightM, antejardinM = null, s
 // The metric constraints of a storey count under one treatment, for the shared evaluator. A
 // yard that starts above the ground carries `fromHeightM`; the evaluator's tiers apply it there.
 export function dimensionalConstraints({ treatment, tipologia = null, storeys, storeyHeightM = BOGOTA_RULES.storeyHeightM, storeyCitation = BOGOTA_RULES.storeyHeightCitation,
-    altura = null, antejardinM = null, streetWidthM = null }, rules = BOGOTA_RULES) {
+    altura = null, antejardinM = null, streetWidthM = null, roleWidths = null }, rules = BOGOTA_RULES) {
     const heightM = round(storeys * storeyHeightM);
     const constraints = [
         constraint('storeys', storeys, 'count', 'maximum', 'direct', 'ALTURA_MAXIMA', altura ? { range: [altura.min, altura.max] } : {}),
@@ -157,7 +157,14 @@ export function dimensionalConstraints({ treatment, tipologia = null, storeys, s
     else if (sideFromM < heightM) constraints.push(constraint('sideSetback', round(rules.sideSetbackM(heightM, sideFromM)), 'm', 'minimum', 'literal', rules.sideSetbackCitation,
         { fromHeightM: sideFromM, derivation: `máx((${heightM} − ${sideFromM}) m / 5, 4 m) desde ${sideFromM} m` }));
     const streetWall = streetWallConstraint({ treatment, heightM, antejardinM, streetWidthM }, rules);
-    if (streetWall.constraint) constraints.push(streetWall.constraint);
+    if (!roleWidths && streetWall.constraint) constraints.push(streetWall.constraint);
+    if (roleWidths) for (const role of ['front', 'side', 'rear']) {
+        const width = roleWidths[role];
+        if (finite(width)) {
+            const roleWall = streetWallConstraint({ treatment, heightM, streetWidthM: width }, rules);
+            if (roleWall.constraint) constraints.push({ ...roleWall.constraint, quantity: `${role}Setback`, role });
+        }
+    }
     return { heightM, constraints, streetWall: streetWall.evidence };
 }
 
@@ -238,13 +245,22 @@ export function antejardinConstraint(properties, overlap, treatment = 'CONSOLIDA
 // construction index. Yards deepen with height, so past some count a further storey adds nothing
 // or removes more floor below than it adds; the search stops after three such storeys in a row,
 // or three in a row over the index. `measure(constraints)` returns the floor area the constraints leave.
-export function solveRenovacion({ tipologia = null, lotM2, streetWidthM = null, storeyCap = null }, measure, rules = BOGOTA_RULES) {
+export function assemblyIndex(standing = {}, rules = BOGOTA_RULES) {
+    if (standing.wholeBlock) return { index: rules.renovacion.wholeBlockIndex, basis: 'whole-block' };
+    if (standing.corner && finite(standing.cessionM2) && standing.cessionM2 > rules.renovacion.cornerCessionMinM2) return { index: rules.renovacion.cornerCessionIndex, basis: 'corner-cession' };
+    return { index: rules.renovacion.constructionIndex, basis: 'individual-lot' };
+}
+
+export function solveRenovacion({ tipologia = null, lotM2, streetWidthM = null, storeyCap = null, standing = null }, measure, rules = BOGOTA_RULES) {
     if (!finite(lotM2) || lotM2 <= 0) return null;
-    const index = rules.renovacion.constructionIndex, limitM2 = index * lotM2;
+    const assembly = assemblyIndex(standing || {}, rules), index = assembly.index, limitM2 = index * lotM2;
     const cap = Math.min(rules.renovacion.maxStoreys, storeyCap ?? Infinity);
     let best = null, previous = 0, declines = 0, over = 0;
     for (let storeys = 1; storeys <= cap; storeys++) {
-        const { heightM, constraints, streetWall } = dimensionalConstraints({ treatment: 'RENOVACION', tipologia, storeys, streetWidthM }, rules);
+        const { heightM, constraints: baseConstraints, streetWall } = dimensionalConstraints({ treatment: 'RENOVACION', tipologia, storeys, streetWidthM,
+            roleWidths: standing?.wholeBlock ? standing.roleWidths : null }, rules);
+        const constraints = standing?.wholeBlock ? [...baseConstraints.filter(item => item.role || !['rearSetback', 'sideSetback'].includes(item.quantity)),
+            ...['rearSetback', 'sideSetback'].map(role => constraint(role, 0, 'm', 'minimum', 'literal', rules.renovacionCitation))] : baseConstraints;
         const measured = measure(constraints);
         const floorAreaM2 = measured && finite(measured.floorAreaM2) ? measured.floorAreaM2 : 0;
         if (floorAreaM2 <= 0) break;
@@ -253,7 +269,7 @@ export function solveRenovacion({ tipologia = null, lotM2, streetWidthM = null, 
         previous = floorAreaM2;
         if (declines >= 3 || over >= 3) break;
         if (over === 0 && (!best || floorAreaM2 > best.floorAreaM2)) {
-            best = { storeys, heightM, constraints, streetWall, floorAreaM2: round(floorAreaM2), lotM2: round(lotM2), limitM2: round(limitM2), index };
+            best = { storeys, heightM, constraints, streetWall, floorAreaM2: round(floorAreaM2), lotM2: round(lotM2), limitM2: round(limitM2), index, indexBasis: assembly.basis };
         }
     }
     return best;
@@ -289,7 +305,7 @@ export function incentive(reading, { lotM2, activityCode = null }, rules = BOGOT
 // The record's reading on one lot: the front yard, the street width, the lot area and (for the
 // sustainability configuration) the activity area turn the polygon's reading into the lot's
 // constraints. `measure` (optional) evaluates candidate constraints on the lot for Renovación.
-export function parcelReading(reading, { scenario = 'general', antejardinM = null, streetWidthM = null, lotM2 = null, activityCode = null, measure = null } = {}, rules = BOGOTA_RULES) {
+export function parcelReading(reading, { scenario = 'general', antejardinM = null, streetWidthM = null, lotM2 = null, activityCode = null, measure = null, standing = null } = {}, rules = BOGOTA_RULES) {
     const evidence = {};
     let { status, reason, storeys, heightM, heightLabel, title = null, constraints = reading.constraints, storeyHeightM = reading.storeyHeightM } = reading;
     if (scenario === 'sustainable') {
@@ -299,13 +315,13 @@ export function parcelReading(reading, { scenario = 'general', antejardinM = nul
     }
     if (reading.resultante) {
         if (!measure) return { status, reason, storeys, heightM, heightLabel, constraints: [], evidence: { resultante: { solved: false, reason: 'no-parcel-measure' } } };
-        const solved = solveRenovacion({ tipologia: reading.tipologia, lotM2, streetWidthM, storeyCap: reading.storeyCap }, measure, rules);
+        const solved = solveRenovacion({ tipologia: reading.tipologia, lotM2, streetWidthM, storeyCap: reading.storeyCap, standing }, measure, rules);
         if (!solved) return { status: 'unsupported_calculation', reason: 'Altura resultante sin solución: ningún piso cabe dentro de los aislamientos', storeys: null, heightM: null, heightLabel,
             constraints: [], evidence: { resultante: { solved: false, reason: 'no-storey-fits', lotM2 } } };
         ({ storeys, heightM, constraints } = solved);
         status = 'allowed'; reason = null;
         heightLabel = `${storeys} pisos (altura resultante, índice ${solved.index.toFixed(1).replace('.', ',')})`;
-        evidence.resultante = { solved: true, index: solved.index, floorAreaM2: solved.floorAreaM2, lotM2: solved.lotM2, limitM2: solved.limitM2, rule: rules.renovacionCitation };
+        evidence.resultante = { solved: true, index: solved.index, indexBasis: solved.indexBasis, wholeBlock: Boolean(standing?.wholeBlock), corner: Boolean(standing?.corner), cessionM2: standing?.cessionM2 ?? null, openEdges: standing?.openEdges ?? [], edgeWidthsM: standing?.edgeWidthsM ?? [], assemblyRule: rules.renovacionCitation, floorAreaM2: solved.floorAreaM2, lotM2: solved.lotM2, limitM2: solved.limitM2, rule: rules.renovacionCitation };
         evidence.streetWall = solved.streetWall;
         return { status, reason, storeys, heightM, heightLabel, constraints, evidence };
     }

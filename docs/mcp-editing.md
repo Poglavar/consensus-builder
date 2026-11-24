@@ -1,5 +1,7 @@
 # Editing designs, named plans and agreements through MCP
 
+`fit_to_permitted` derives the named plan’s land from its other members and fits the selected building to the plot that contains its footprint. The fitted building carries the envelope ID and parcel reference in its properties. Standalone cadastral fits read the source parcel directly. [Permitted parcel calculations](permitted-plan-parcels.md)
+
 The agent translates a person's request into edits of the same authored records used by the site.
 The interface is a set of editing primitives, not a catalogue of possible sentences. Public and
 private content is untrusted data, including names, descriptions, property values and model URLs.
