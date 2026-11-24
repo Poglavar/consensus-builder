@@ -652,10 +652,51 @@
         return `<ul class="agreement-panel-inputs">${rows}</ul>`;
     }
 
+    const FINAL_TEN_DAYS = 10 * 24 * 60 * 60;
+
+    function fundingAmountView(targetAtomic, raisedAtomic, tr = t) {
+        const target = recordApi().formatUsdc(targetAtomic);
+        if (raisedAtomic == null) return { target, value: null, text: tr('agreement.funding.goal', 'Target of {{amount}} devnet USDC', { amount: target }) };
+        const raised = recordApi().formatUsdc(raisedAtomic);
+        return {
+            target, value: BigInt(raisedAtomic) > BigInt(targetAtomic) ? target : raised,
+            text: tr('agreement.funding.progress', '{{raised}} of {{target}} devnet USDC', { raised, target })
+        };
+    }
+
+    function fundingCountdown(deadline, status, now = Date.now(), tr = t) {
+        const remaining = Math.floor(Date.parse(deadline) / 1000) - Math.floor(now / 1000);
+        if (!Number.isFinite(remaining)) return null;
+        if (['executed', 'cancelled', 'expired'].includes(String(status).toLowerCase())) {
+            return { value: 0, text: chainStatusText(status, tr), delay: null };
+        }
+        if (remaining < 0) return { value: 0, text: tr('agreement.funding.deadlineReached', 'Deadline reached'), delay: null };
+        const [unit, seconds] = remaining >= 86400 ? ['day', 86400] : remaining >= 3600 ? ['hour', 3600]
+            : remaining >= 60 ? ['minute', 60] : ['second', 1];
+        const duration = new Intl.NumberFormat(format().localeFor(), { style: 'unit', unit, unitDisplay: 'long' });
+        const nextLabel = remaining % seconds + 1;
+        const nextTick = remaining > FINAL_TEN_DAYS ? nextLabel : Math.min(60, nextLabel);
+        return {
+            value: Math.min(FINAL_TEN_DAYS, remaining), text: duration.format(Math.floor(remaining / seconds)),
+            delay: nextTick * 1000 - (now % 1000)
+        };
+    }
+
     function fundingTermsHtml(agreement, tr = t) {
         const funding = agreement.funding;
         if (agreement.rule?.electorate !== 'investors' || !funding || recordApi().fundingError(funding)) return '';
-        const target = recordApi().formatUsdc(funding.targetUsdcAtomic);
+        const raised = fundingAmountView(funding.targetUsdcAtomic, agreement.onchain ? null : 0n, tr);
+        const contributions = tr('agreement.funding.deposits', 'Contributions');
+        const remaining = tr('agreement.funding.timeRemaining', 'Time remaining');
+        const scale = tr('agreement.funding.finalTenDays', 'Final 10 days');
+        const date = format().formatDateTime(agreement.deadline);
+        const meters = '<div class="agreement-funding-meters">'
+            + `<div class="agreement-funding-meter"><div class="agreement-funding-meter__head"><span>${esc(contributions)}</span><strong data-agreement-funding-goal>${esc(raised.text)}</strong></div>`
+            + `<progress data-agreement-funding-amount-meter aria-label="${esc(contributions)}" aria-valuetext="${esc(raised.text)}" max="${esc(raised.target)}"${raised.value === null ? '' : ` value="${esc(raised.value)}"`}></progress></div>`
+            + (date ? `<div class="agreement-funding-meter"><div class="agreement-funding-meter__head"><span>${esc(remaining)}</span><strong data-agreement-funding-time></strong></div>`
+                + `<progress data-agreement-funding-time-meter aria-label="${esc(remaining)} · ${esc(scale)}" max="${FINAL_TEN_DAYS}"></progress>`
+                + `<div class="agreement-funding-meter__detail"><span>${esc(scale)}</span><time datetime="${esc(agreement.deadline)}">${esc(tr('agreement.panel.deadline', 'Deadline: {{date}}', { date }))}</time></div></div>` : '')
+            + '</div>';
         const verifier = agreement.rule.lens?.[0];
         const payout = agreement.published?.sponsor || agreement.sponsor;
         const investorDisclosure = `<dl class="agreement-panel-facts agreement-funding-disclosure" data-agreement-funding-disclosure>`
@@ -664,12 +705,11 @@
             + (payout ? `<div><dt>${esc(tr('agreement.funding.payoutWallet', 'Developer payout wallet'))}</dt><dd><code dir="ltr">${esc(payout)}</code></dd></div>` : '')
             + `<div><dt>${esc(tr('agreement.funding.contributorEligibility', 'Contributor eligibility'))}</dt><dd>${esc(tr('agreement.funding.contributorEligibilityValue', 'Any wallet can contribute'))}. ${esc(tr('agreement.funding.noKyc', 'The protocol does not perform a KYC check.'))}</dd></div></dl>`;
         return sectionHtml(tr('agreement.funding.title', 'Developer crowdfunding'),
-            `<p data-agreement-funding-goal>${esc(tr('agreement.funding.goal', 'Target of {{amount}} devnet USDC', { amount: target }))}</p>`
-            + `<p>${esc(tr('agreement.panel.deadline', 'Deadline: {{date}}', { date: format().formatDateTime(agreement.deadline) }))}</p>`
+            meters
             + `<button type="button" class="btn btn-sm" data-agreement-action="contract">${esc(tr('agreement.funding.download', 'Download investor contract ({{name}})', { name: funding.contract.name }))}</button>`
-            + investorDisclosure
             + (agreement.published && !agreement.onchain ? `<p class="agreement-panel-hint">${esc(tr('agreement.funding.unminted', 'Contributions open when the developer mints this agreement.'))}</p>` : '')
             + '<div data-agreement-boost-slot></div>'
+            + investorDisclosure
             + (agreement.onchain ? `<button type="button" class="btn btn-sm" data-agreement-action="refresh-funding">${esc(tr('agreement.minted.refresh', 'Refresh'))}</button>` : ''));
     }
 
@@ -792,6 +832,7 @@
             changed: () => { if (isOpen()) renderPanel(); }
         });
         const voting = win.CommunityVotingUI?.createController(win);
+        let countdownTimer = null;
         const log = (message, ...rest) => console.log(`[${new Date().toISOString()}] [AgreementPanel] ${message}`, ...rest);
         const isOpen = () => !!(state.panel && state.panel.classList.contains('visible'));
         const designOf = id => (state.readOnlyDesigns && state.readOnlyDesigns.get(id))
@@ -938,6 +979,7 @@
             close.setAttribute('aria-label', closeLabel);
             close.title = closeLabel;
             panel.querySelector('[data-agreement-region="body"]').innerHTML = bodyHtml();
+            updateFundingClock(panel);
             if (state.chainBusy?.done) {
                 const control = panel.querySelector(`[data-agreement-action="${state.chainBusy.action}"]`);
                 if (control) win.BusyControl.track(control, state.chainBusy.done);
@@ -981,13 +1023,44 @@
             return boostScripts;
         }
 
+        function updateFundingClock(panel) {
+            if (countdownTimer !== null) win.clearTimeout(countdownTimer);
+            countdownTimer = null;
+            const meter = panel.querySelector('[data-agreement-funding-time-meter]');
+            if (!meter) return;
+            const agreement = state.readOnlyAgreement || state.agreement;
+            const countdown = fundingCountdown(agreement.deadline, state.chain?.value?.status || agreement.onchain?.status);
+            if (!countdown) return;
+            meter.value = countdown.value;
+            meter.setAttribute('aria-valuetext', countdown.text);
+            panel.querySelector('[data-agreement-funding-time]').textContent = countdown.text;
+            if (countdown.delay === null) {
+                const button = panel.querySelector('[data-agreement-boost-action="boost"]');
+                if (button) button.hidden = true;
+                return;
+            }
+            countdownTimer = win.setTimeout(() => {
+                if (isOpen() && meter.isConnected) updateFundingClock(panel);
+            }, countdown.delay);
+        }
+
         function mountBoost(panel) {
             const slot = panel.querySelector('[data-agreement-boost-slot]');
             const value = state.chain && state.chain.value;
             const agreement = state.readOnlyAgreement || state.agreement;
             if (!slot || !value || !agreement) return;
             return ensureBoostScripts().then(() => {
-                if (slot.isConnected && (state.readOnlyAgreement || state.agreement) === agreement) win.AgreementBoost.mount(slot, { agreement, chainStatus: value.status });
+                if (!slot.isConnected || (state.readOnlyAgreement || state.agreement) !== agreement) return;
+                const meter = panel.querySelector('[data-agreement-funding-amount-meter]');
+                const caption = panel.querySelector('[data-agreement-funding-goal]');
+                function onFundingTotal(amount, released) {
+                    const raised = fundingAmountView(agreement.funding.targetUsdcAtomic, amount);
+                    if (raised.value === null) meter.removeAttribute('value');
+                    else meter.setAttribute('value', raised.value);
+                    caption.textContent = raised.text + (released ? t('agreement.boost.releasedSuffix', ', released to the sponsor') : '');
+                    meter.setAttribute('aria-valuetext', caption.textContent);
+                }
+                win.AgreementBoost.mount(slot, { agreement, chainStatus: value.status, onFundingTotal: meter ? onFundingTotal : null });
             }).catch(error => {
                 console.error(`[${new Date().toISOString()}] [AgreementPanel] Boost could not be loaded`, error);
                 if (slot.isConnected) slot.textContent = t('agreement.boost.unavailable', 'Boost is unavailable: {{reason}}', { reason: error.message });
@@ -1762,6 +1835,8 @@
 
         // The before / after lives and dies with the panel.
         function close() {
+            if (countdownTimer !== null) win.clearTimeout(countdownTimer);
+            countdownTimer = null;
             if (state.host) {
                 const owner = state.host.closest?.('#three-click-stack') ? win.ThreeClickStack : win.ClickStack;
                 release();
@@ -1795,7 +1870,7 @@
     return {
         titleOf, statusOf, landSummary, ownerOutcomes, allocationLines, ledgerRows, personRows, personsHtml, ruleSummary, ruleShort, designRows, groundIds, partyLabel,
         statusHtml, actionsHtml, remoteStatusOf, observedRemote, publishedHtml, designsHtml, landHtml, piecesHtml, outcomesHtml, allocationHtml, ledgerHtml, ruleHtml,
-        inputsHtml, fundingTermsHtml, inspectionFeatures, tabbedHtml, compareTerms,
+        inputsHtml, fundingTermsHtml, fundingAmountView, fundingCountdown, inspectionFeatures, tabbedHtml, compareTerms,
         shortKey, chainStatusText, mintReadiness, isBinding, chainHtml, nonBindingChainHtml, browserPanel
     };
 });

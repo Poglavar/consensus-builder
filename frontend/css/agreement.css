@@ -344,6 +344,54 @@
     overflow-wrap: anywhere;
 }
 
+.agreement-funding-meters,
+.agreement-funding-meter {
+    display: grid;
+    min-width: 0;
+    gap: var(--cb-space-1);
+}
+.agreement-funding-meters { gap: var(--cb-space-3); }
+.agreement-funding-meter__head,
+.agreement-funding-meter__detail {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--cb-space-1) var(--cb-space-2);
+    font-size: var(--cb-text-sm);
+}
+.agreement-funding-meter__head strong { font-variant-numeric: tabular-nums; }
+.agreement-funding-meter__detail { color: var(--cb-text-muted); }
+.agreement-funding-meter progress {
+    --meter-color: var(--cb-primary);
+    display: block;
+    width: 100%;
+    height: var(--cb-space-2);
+    appearance: none;
+    border: 0;
+    border-radius: var(--cb-radius-pill);
+    overflow: hidden;
+    background: var(--cb-surface-3);
+    accent-color: var(--meter-color);
+}
+.agreement-funding-meter [data-agreement-funding-amount-meter] { --meter-color: var(--cb-success); }
+.agreement-funding-meter progress::-webkit-progress-bar { background: var(--cb-surface-3); }
+.agreement-funding-meter progress::-webkit-progress-value { background: var(--meter-color); }
+.agreement-funding-meter progress::-moz-progress-bar { background: var(--meter-color); }
+/* Keep the first small deposit visible on a phone, even when its share is subpixel. */
+.agreement-funding-meter [data-agreement-funding-amount-meter][value]:not([value="0"])::-webkit-progress-value { min-width: 2px; }
+.agreement-funding-meter [data-agreement-funding-amount-meter][value]:not([value="0"])::-moz-progress-bar { min-width: 2px; }
+
+.agreement-funding-meters ~ [data-agreement-boost-slot] .agreement-boost { border: 0; padding: 0; }
+.agreement-funding-meters ~ [data-agreement-boost-slot] .agreement-panel-actions { align-items: center; }
+.agreement-funding-meters ~ [data-agreement-boost-slot] .agreement-panel-actions > .btn { flex: 0 0 auto; }
+.agreement-panel-actions > .agreement-boost__status {
+    flex: 1 1 10ch;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+.agreement-panel-actions > .agreement-boost__status--success { font-weight: var(--cb-weight-semibold); }
+
 /* ---- Allocation: piece and area on one line, who receives it under them on a narrow panel ---- */
 .agreement-panel-allocation {
     display: flex;

@@ -113,6 +113,7 @@ test.describe('Agreements on chain @core', () => {
       toleranceM: null, geometry: null, origin: null, authoredAt: null, structureProposal: { kind: 'park', blockName: null, geometry: PARCEL_GEOMETRY } });
     const planCid = filePlan(index, require('../../frontend/js/plan-record.js').create('Park plan', [design], view));
     const deadline = '2030-12-31T23:59:59.000Z';
+    await page.clock.install({ time: new Date(Date.parse(deadline) - 55_000) });
     const cid = fileAgreement(index, { schema: 'agreement/v1', title: 'Investor round', author: null, sponsor: SPONSOR, city, planCid, createdAt: null, deadline,
       inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: 'USD', lines: [] }, valuation: null, consultation: null,
       rule: { electorate: 'investors', binding: true, approvalConfig: null, settlement: null, lens: [E2E_LENS_MEMBER_KEY] },
@@ -123,7 +124,18 @@ test.describe('Agreements on chain @core', () => {
     index.agreements.get(cid)!.onchain = { chain: 'solana', cluster: 'devnet', account, sponsor: SPONSOR, status: 'active', decision: 'pending' };
     await page.goto(`/agreements/${cid}?city=${city}&at=${view.at}&act=donate&amount=1.25&lang=en`, { waitUntil: 'domcontentloaded' });
     const panel = agreementPanel(page);
-    await expect(panel.locator('[data-agreement-funding-goal]')).toContainText('12.5 devnet USDC');
+    const fundingGoal = panel.locator('[data-agreement-funding-goal]');
+    await expect(fundingGoal).toContainText('0 of 12.5 devnet USDC');
+    const fundingBar = panel.getByRole('progressbar', { name: 'Contributions', exact: true });
+    const timeBar = panel.getByRole('progressbar', { name: 'Time remaining · Final 10 days' });
+    await expect(fundingBar).toHaveAttribute('max', '12.5');
+    await expect(fundingBar).toHaveAttribute('value', '0');
+    await expect(timeBar).toHaveAttribute('max', '864000');
+    await expect(timeBar).toHaveAttribute('aria-valuetext', /^\d+ seconds$/);
+    const deadlineDate = panel.locator('.agreement-funding-meter time');
+    await expect(deadlineDate).toHaveAttribute('datetime', deadline);
+    await expect(deadlineDate).toContainText(await page.evaluate(value => (window as any).CbFormat.formatDateTime(value), deadline));
+    const contribution = panel.locator('[data-agreement-boost-action="boost"]');
     await expect(panel.locator('[data-agreement-chain="minted"]')).toHaveCount(1);
     await expect(panel.locator('[data-agreement-action="fund"], [data-agreement-action="bet"]')).toHaveCount(0);
     const download = page.waitForEvent('download');
@@ -133,7 +145,6 @@ test.describe('Agreements on chain @core', () => {
     // An approval/deep link may focus the contribution affordance, but cannot send or open a wallet
     // prompt by itself.  This active round has no automatic transfer in the fixture.
     await expect(page.locator('.cb-dialog--prompt')).toHaveCount(0);
-    const contribution = panel.locator('[data-agreement-boost-action="boost"]');
     await expect(contribution).toBeVisible({ timeout: 30_000 });
     await contribution.focus();
     await page.keyboard.press('Enter');
@@ -141,6 +152,12 @@ test.describe('Agreements on chain @core', () => {
     await expect(prompt).toContainText('How much devnet USDC will you contribute');
     const amount = prompt.getByRole('textbox', { name: /How much devnet USDC/ });
     await expect(amount).toHaveValue('1.25');
+    await expect(amount).toBeFocused();
+    const clockInBackground = panel.locator('[data-agreement-funding-time-meter]');
+    const initialTime = Number(await clockInBackground.getAttribute('value'));
+    expect(initialTime).toBeGreaterThan(0);
+    await expect.poll(async () => Number(await clockInBackground.getAttribute('value'))).toBeLessThan(initialTime);
+    await expect(amount).toBeFocused();
     await prompt.getByRole('button', { name: 'Cancel' }).press('Enter');
     await expect(prompt).toHaveCount(0);
     await expect(panel.locator('[data-agreement-boost-status]')).not.toContainText('Contributed');
@@ -171,8 +188,7 @@ test.describe('Agreements on chain @core', () => {
     await expect(amount).toHaveValue('0.10');
     await expect(connect).toBeFocused();
 
-    // Reopen, connect the injected account, then make contribution submission explicit. The bridge
-    // is controlled here to exercise a declined RPC result followed by one successful retry.
+    // Exercise a declined signature, a pending transaction and confirmation before a slow escrow read.
     await connect.click();
     await expect(page.locator('.wallet-modal-overlay')).toBeVisible();
     await page.locator('[data-wallet-connector="solana-phantom"]').click();
@@ -182,12 +198,24 @@ test.describe('Agreements on chain @core', () => {
     await page.evaluate(() => {
       const root = window as any;
       let calls = 0;
+      let escrow = { totalDonated: 0n, totalRefunded: 0n, donorCount: 0n, released: false };
       root.__contributionCalls = () => calls;
-      root.AgreementBridge = { ...root.AgreementBridge, donate: async ({ amountAtomic }: { amountAtomic: bigint }) => {
-        if (amountAtomic !== 100000n) throw new Error('Unexpected contribution amount.');
-        calls += 1;
-        if (calls === 1) throw new Error('Transaction declined by wallet.');
-      } };
+      const confirmed = new Promise<void>(resolve => { root.__confirmContribution = resolve; });
+      const reread = new Promise<void>(resolve => { root.__finishEscrowRead = resolve; });
+      root.AgreementBridge = { ...root.AgreementBridge,
+        donations: async () => {
+          if (escrow.totalDonated > 0n) await reread;
+          return { escrow, mine: [] };
+        },
+        donate: async ({ amountAtomic, onStatus }: { amountAtomic: bigint; onStatus: (status: { state: string }) => void }) => {
+          if (amountAtomic !== 100000n) throw new Error('Unexpected contribution amount.');
+          calls += 1;
+          if (calls === 1) throw new Error('Transaction declined by wallet.');
+          onStatus({ state: 'submitted' });
+          await confirmed;
+          escrow = { ...escrow, totalDonated: amountAtomic, donorCount: 1n };
+        }
+      };
     });
     const contribute = prompt.getByRole('button', { name: 'Contribute', exact: true });
     await contribute.click();
@@ -195,10 +223,31 @@ test.describe('Agreements on chain @core', () => {
     await expect(prompt).toContainText('Transaction declined by wallet.');
     await expect(amount).toHaveValue('0.10');
     await expect.poll(() => page.evaluate(() => (window as any).__contributionCalls())).toBe(1);
-
-    await contribute.click();
+    const receipt = page.getByRole('alertdialog', { name: 'Contribution confirmed' });
+    await expect(receipt).toHaveCount(0);
+    await contribute.press('Enter');
+    await expect(prompt).toContainText('Waiting for confirmation');
+    await expect(receipt).toHaveCount(0);
+    await page.evaluate(() => (window as any).__confirmContribution());
     await expect(prompt).toHaveCount(0);
-    await expect(panel.locator('[data-agreement-boost-status]')).toContainText('Contributed 0.1 devnet USDC.');
+    await expect(receipt).toContainText('Contributed 0.1 devnet USDC.');
+    const inline = panel.locator('[data-agreement-boost-action="boost"] + [data-agreement-boost-status]');
+    await expect(inline).toHaveText('Contributed 0.1 devnet USDC.');
+    await page.evaluate(() => (window as any).__finishEscrowRead());
+    await expect(fundingGoal).toContainText('0.1 of 12.5 devnet USDC');
+    await expect(receipt.getByRole('button', { name: 'OK', exact: true })).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(receipt).toHaveCount(0);
+    await expect(contribution).toBeFocused();
+    await expect(fundingBar).toHaveAttribute('value', '0.1');
+    await expect(inline).toHaveText('Contributed 0.1 devnet USDC.');
+    await expect(inline).toHaveClass(/status--success/);
+    await expect(inline).toBeInViewport();
+    expect(await inline.evaluate(node => {
+      const button = node.previousElementSibling!.getBoundingClientRect();
+      const line = node.getBoundingClientRect();
+      return line.left >= button.right && line.top < button.bottom && line.bottom > button.top;
+    })).toBe(true);
     await expect.poll(() => page.evaluate(() => (window as any).__contributionCalls())).toBe(2);
     expect(await storedAgreements(page)).toHaveLength(0);
   });

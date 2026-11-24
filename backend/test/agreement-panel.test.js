@@ -44,6 +44,36 @@ describe('agreement panel tabs', () => {
     });
 });
 
+describe('crowdfunding progress', () => {
+    it('distinguishes unread escrow from zero and keeps exact totals beyond the target', () => {
+        const amount = raised => panel.fundingAmountView('2500000000', raised);
+        expect(amount(null)).toEqual({ target: '2500', value: null, text: 'Target of 2500 devnet USDC' });
+        expect(amount(0n)).toMatchObject({ value: '0', text: '0 of 2500 devnet USDC' });
+        expect(amount(1n).value).toBe('0.000001');
+        expect(amount(1000000n)).toEqual({ target: '2500', value: '1', text: '1 of 2500 devnet USDC' });
+        expect(amount(2500000000n).value).toBe('2500');
+        expect(amount(18446744073709551615n)).toMatchObject({ value: '2500', text: '18446744073709.551615 of 2500 devnet USDC' });
+    });
+
+    it('shows the actual time left and drains only over the ten days through the deadline', () => {
+        const deadline = '2030-12-31T23:59:59Z';
+        const day = 86400;
+        const countdown = (seconds, status = 'Active') => panel.fundingCountdown(deadline, status, Date.parse(deadline) - seconds * 1000);
+        expect(countdown(365 * day)).toMatchObject({ value: 10 * day, text: '365 days' });
+        expect(countdown(10 * day).value).toBe(10 * day);
+        expect(countdown(5 * day)).toMatchObject({ value: 5 * day, text: '5 days' });
+        expect(countdown(3600).text).toBe('1 hour');
+        expect(countdown(60).text).toBe('1 minute');
+        expect(countdown(1)).toEqual({ value: 1, text: '1 second', delay: 1000 });
+        expect(countdown(0)).toEqual({ value: 0, text: '0 seconds', delay: 1000 });
+        expect(countdown(-1)).toEqual({ value: 0, text: 'Deadline reached', delay: null });
+        for (const status of ['Executed', 'Cancelled', 'Expired']) {
+            expect(countdown(10 * day, status.toLowerCase())).toEqual({ value: 0, text: status, delay: null });
+        }
+        expect(panel.fundingCountdown(null, 'Active')).toBeNull();
+    });
+});
+
 // A translator that shows which key was asked for, and with what count.
 const keys = (key, _fallback, params = {}) => (params.count === undefined ? key : `${key}#${params.count}`);
 

@@ -54,6 +54,8 @@
 
     const doc = root.document;
     const cache = new Map();   // agreement account → { loading, error, escrow, mine, boosts, balances }
+    // The last confirmed deposit in this tab survives escrow rereads and panel redraws.
+    const contributionConfirmations = new Map(); // agreement account → { wallet, amount }
     const t = (key, fallback, params = {}) => {
         const helper = typeof root.getProposalI18nHelper === 'function' ? root.getProposalI18nHelper() : null;
         const text = helper ? helper(key, fallback, params) : fallback;
@@ -67,6 +69,7 @@
         return node;
     }
     const slotOf = account => doc.querySelector(`[data-agreement-boost="${CSS.escape(account)}"]`);
+    const contributionText = amount => t('agreement.funding.contributed', 'Contributed {{amount}} devnet USDC.', { amount: formatAmount(amount) });
 
     // A refund is possible only once the agreement is cancelled or expired: only then are this
     // wallet's own donations listed (a getProgramAccounts read the primary RPC does not serve).
@@ -100,7 +103,7 @@
     }
 
     const inFlight = new Set();
-    async function run(slot, button, work, { feedback, signal } = {}) {
+    async function run(slot, button, work, { feedback, signal, confirmed } = {}) {
         const context = slot.__boostContext;
         if (inFlight.has(context.account)) return false;
         inFlight.add(context.account);
@@ -114,6 +117,7 @@
                 if (item?.state === 'awaiting_signature') report(t('bets.trade.sign', 'Confirm in your wallet…'));
                 else if (item?.state === 'submitted') report(t('bets.trade.submitted', 'Waiting for confirmation…'));
             }));
+            confirmed?.();
             const current = slotOf(context.account);
             if (current) await load(current.__boostContext);
             return true;
@@ -197,6 +201,9 @@
         });
         const primary = dialog.getActionButton('ok');
         let displayedAddress;
+        function restoreFocus() {
+            if (doc.activeElement === doc.body) slotOf(account)?.querySelector('[data-agreement-boost-action="boost"]')?.focus({ preventScroll: true });
+        }
         function update() {
             const address = root.AgreementBridge.connectedWallet();
             primary.disabled = root.BusyControl.isBusy(primary) || (!!address && parseAmount(input.value) === null);
@@ -224,6 +231,8 @@
             }
             const amountAtomic = parseAmount(input.value);
             if (amountAtomic === null) return;
+            const payer = displayedAddress;
+            contributionConfirmations.delete(account);
             input.readOnly = true;
             primary.disabled = true;
             const { signal } = controller;
@@ -232,12 +241,22 @@
                     if (item.state === 'submitted') dialog.getActionButton('cancel').textContent = t('modal.common.close', 'Close');
                     report(item);
                 }
-            }), { feedback, signal });
-            if (ok) {
-                dialog.close();
-                const current = slotOf(account);
-                if (current) status(current, t('agreement.funding.contributed', 'Contributed {{amount}} devnet USDC.', { amount: formatAmount(amountAtomic) }), 'success');
-            } else {
+            }), {
+                feedback, signal,
+                confirmed() {
+                    contributionConfirmations.set(account, { wallet: payer, amount: amountAtomic });
+                    const current = root.AgreementBridge.connectedWallet() === payer && slotOf(account);
+                    dialog.close();
+                    if (!current) return;
+                    const message = contributionText(amountAtomic);
+                    status(current, message, 'success');
+                    if (current.getClientRects().length && !root.ModalEscape?.topmost()) {
+                        restoreFocus();
+                        root.CbDialog.alert(message, { title: t('agreement.funding.confirmed', 'Contribution confirmed') }).then(restoreFocus);
+                    }
+                }
+            });
+            if (!ok) {
                 input.readOnly = false;
                 update();
                 if (dialog.overlay.isConnected && doc.activeElement === doc.body) input.focus({ preventScroll: true });
@@ -251,7 +270,7 @@
         });
         await dialog.closed;
         unsubscribe();
-        if (doc.activeElement === doc.body) slotOf(account)?.querySelector('[data-agreement-boost-action="boost"]')?.focus({ preventScroll: true });
+        restoreFocus();
     }
 
     function draw(slot, context) {
@@ -260,24 +279,26 @@
         const crowdfunding = context.crowdfunding;
         const focusAction = slot.contains(doc.activeElement) ? doc.activeElement.dataset.agreementBoostAction : null;
         const section = el('div', 'agreement-boost');
-        section.append(el('h4', 'agreement-boost__title', crowdfunding ? t('agreement.funding.deposits', 'Contributions') : t('agreement.boost.title', 'Boost')));
+        if (!crowdfunding) section.append(el('h4', 'agreement-boost__title', t('agreement.boost.title', 'Boost')));
+        if (!entry || entry.loading || entry.error) context.onFundingTotal?.(null);
         if (!entry || entry.loading) {
             section.append(el('p', 'agreement-panel-hint', crowdfunding ? t('agreement.funding.reading', 'Reading contributions…') : t('agreement.boost.reading', 'Reading boosts…')));
         } else if (entry.error) {
             section.append(el('p', 'agreement-panel-note agreement-panel-note--danger', crowdfunding ? entry.error : t('agreement.boost.readFailed', 'Boosts could not be read: {{reason}}', { reason: entry.error })));
         } else {
             const state = boostState({ chainStatus: context.chainStatus, escrow: entry.escrow, mine: entry.mine, boosts: entry.boosts });
-            const facts = el('dl', 'agreement-panel-facts');
-            const fact = (label, value) => { const row = el('div'); row.append(el('dt', null, label), el('dd', null, value)); facts.append(row); };
-            if (crowdfunding) fact(t('agreement.funding.deposits', 'Contributions'),
-                t('agreement.funding.progress', '{{raised}} of {{target}} devnet USDC', { raised: formatAmount(state.usdc.amount), target: formatAmount(context.agreement.funding.targetUsdcAtomic) })
-                + (state.usdc.released ? t('agreement.boost.releasedSuffix', ', released to the sponsor') : ''));
-            else fact('USDC', state.usdc.amount > 0n
-                ? t('agreement.boost.usdcTotal', '{{amount}} from {{count}} supporter(s){{released}}', { amount: formatAmount(state.usdc.amount), count: state.usdc.donors,
-                    released: state.usdc.released ? t('agreement.boost.releasedSuffix', ', released to the sponsor') : '' })
-                : t('agreement.boost.none', 'None yet'));
-            state.tokens.forEach(row => fact(row.symbol, t('agreement.boost.tokenTotal', '{{amount}} from {{count}} supporter(s)', { amount: formatAmount(row.amount), count: row.boosters })));
-            section.append(facts);
+            if (crowdfunding) {
+                context.onFundingTotal?.(state.usdc.amount, state.usdc.released);
+            } else {
+                const facts = el('dl', 'agreement-panel-facts');
+                const fact = (label, value) => { const row = el('div'); row.append(el('dt', null, label), el('dd', null, value)); facts.append(row); };
+                fact('USDC', state.usdc.amount > 0n
+                    ? t('agreement.boost.usdcTotal', '{{amount}} from {{count}} supporter(s){{released}}', { amount: formatAmount(state.usdc.amount), count: state.usdc.donors,
+                        released: state.usdc.released ? t('agreement.boost.releasedSuffix', ', released to the sponsor') : '' })
+                    : t('agreement.boost.none', 'None yet'));
+                state.tokens.forEach(row => fact(row.symbol, t('agreement.boost.tokenTotal', '{{amount}} from {{count}} supporter(s)', { amount: formatAmount(row.amount), count: row.boosters })));
+                section.append(facts);
+            }
             const actions = el('div', 'agreement-panel-actions');
             const add = (action, icon, label, handler, primary = false) => {
                 const button = el('button', `btn${primary ? ' btn-primary' : ''}`);
@@ -304,7 +325,14 @@
                 : t('agreement.boost.rule', 'City-token boosts settle when the agreement ends: 30% to the sponsor and 70% to the parcel owners if it executes, back to you if not.')));
         }
         const line = el('p', 'agreement-panel-hint agreement-boost__status'); line.dataset.agreementBoostStatus = ''; line.setAttribute('role', 'status'); line.setAttribute('aria-live', 'polite');
-        section.append(line);
+        const confirmation = contributionConfirmations.get(context.account);
+        if (crowdfunding && confirmation && confirmation.wallet === context.wallet) {
+            line.textContent = contributionText(confirmation.amount);
+            line.classList.add('agreement-boost__status--success');
+        }
+        const contributeButton = crowdfunding && section.querySelector('[data-agreement-boost-action="boost"]');
+        if (contributeButton) contributeButton.after(line);
+        else section.append(line);
         slot.replaceChildren(section);
         // A donate approval link may have opened the agreement before this lazy module loaded.
         // This is presentation readiness only; ApprovalLink focuses the button and never clicks it.
@@ -313,12 +341,12 @@
     }
 
     /** Draw into the panel's slot from the cache, reading the boosts when there are none yet. */
-    function mount(slot, { agreement, chainStatus }) {
+    function mount(slot, { agreement, chainStatus, onFundingTotal }) {
         const account = root.AgreementBridge.onchainRef(agreement)?.account;
         if (!slot || !account) return;
         slot.dataset.agreementBoost = account;
         const wallet = root.AgreementBridge.connectedWallet?.() || null;
-        const context = { agreement, account, chainStatus, wallet, crowdfunding: agreement.rule?.electorate === 'investors', city: agreement.city || null };
+        const context = { agreement, account, chainStatus, wallet, onFundingTotal, crowdfunding: agreement.rule?.electorate === 'investors', city: agreement.city || null };
         const previous = cache.get(account);
         if (!previous || previous.wallet !== wallet || previous.chainStatus !== chainStatus) load(context);
         draw(slot, context);
