@@ -365,4 +365,14 @@ test('developer crowdfunding opens from an unapplied plan, saves its attached te
   await expect(reopened.locator('input[name="agreement-electorate"][value="investors"]')).toBeChecked();
   await editorCancel(reopened).click();
   await editorClosed(page);
+
+  const disclosure = agreementPanel(page).locator('[data-agreement-funding-disclosure]');
+  await expect(disclosure).toBeVisible();
+  await expect(disclosure.locator('code').first()).toHaveText(saved.rule.lens[0]);
+  await expect(disclosure).toContainText('Any wallet can contribute');
+  expect(await disclosure.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
+  const download = agreementPanel(page).getByRole('button', { name: 'Download investor contract (investor-terms.txt)' });
+  const downloaded = page.waitForEvent('download');
+  await download.press('Enter');
+  expect((await downloaded).suggestedFilename()).toBe('investor-terms.txt');
 });

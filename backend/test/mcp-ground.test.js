@@ -111,7 +111,11 @@ describe('headless app formation host', () => {
         expect(draft.agreement).toMatchObject({ rule: { electorate: 'investors', binding: true, approvalConfig: null, settlement: null },
             inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], funding: { targetUsdcAtomic: '1000000', contract: terms.contract } });
         const inspected = await tools.inspectAgreement({ plan: draft.draftArtifact });
-        expect(inspected).toMatchObject({ funding: draft.agreement.funding, investorReview: { contract: 'investor-terms.txt' }, parties: null, cashSchedule: null });
+        expect(inspected).toMatchObject({ funding: draft.agreement.funding, investorReview: {
+            contract: 'investor-terms.txt', payout: terms.sponsor,
+            decisionVerifierWallets: [terms.lens], decisionMethod: 'lens-attestation',
+            contributorEligibility: 'any-wallet', kycEnforcedOnChain: false
+        }, parties: null, cashSchedule: null });
         const revised = await tools.editAgreement({ plan: draft.draftArtifact, expectedCid: draft.cid, terms: { targetUsdcAtomic: '2000000' } });
         expect(revised.agreement.funding.targetUsdcAtomic).toBe('2000000');
         expect(revised.cid).not.toBe(draft.cid);

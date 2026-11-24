@@ -27,6 +27,21 @@ describe('agreement panel tabs', () => {
         expect(html).toContain('data-agreement-properties-tab="overview">Info</button>');
         expect(html).toContain('data-agreement-properties-tab="decision">Decision</button>');
     });
+
+    it('shows truthful crowdfunding verifier, payout and unrestricted contributor terms', () => {
+        const verifier = '9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt';
+        const payout = 'So11111111111111111111111111111111111111112';
+        const html = panel.fundingTermsHtml({
+            rule: { electorate: 'investors', lens: [verifier] },
+            funding: { targetUsdcAtomic: '1000000', contract: { name: 'terms.txt', mediaType: 'text/plain', data: 'dGVybXM=' } },
+            published: { sponsor: payout }, deadline: '2099-01-01T00:00:00.000Z'
+        }, (_key, fallback) => fallback);
+        expect(html).toContain(verifier);
+        expect(html).toContain(payout);
+        expect(html).toContain('The program accepts the named lens’s funding decision.');
+        expect(html).toContain('Any wallet can contribute');
+        expect(html).toContain('The protocol does not perform a KYC check.');
+    });
 });
 
 // A translator that shows which key was asked for, and with what count.

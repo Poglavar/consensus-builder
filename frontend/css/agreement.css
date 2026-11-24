@@ -339,6 +339,11 @@
     font-variant-numeric: tabular-nums;
 }
 
+.agreement-funding-disclosure {
+    grid-template-columns: fit-content(40%) minmax(0, 1fr);
+    overflow-wrap: anywhere;
+}
+
 /* ---- Allocation: piece and area on one line, who receives it under them on a narrow panel ---- */
 .agreement-panel-allocation {
     display: flex;

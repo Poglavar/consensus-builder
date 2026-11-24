@@ -139,7 +139,15 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
         const rights = plan.agreement.rule?.approvalConfig?.rights;
         return { cid: plan.cid, parcelSourceId: plan.parcelSourceId, title: plan.agreement.title, rule,
             ...(community ? { communityPosition: { allocations: 'not-defined', cashTransfers: 'not-defined' } } : {}),
-            ...(crowdfunding ? { funding: plan.agreement.funding, investorReview: { contract: plan.agreement.funding?.contract?.name ?? null, action: 'Review the attached contract before using ugt_approval_link with action donate.' } } : {}),
+            ...(crowdfunding ? { funding: plan.agreement.funding, investorReview: {
+                contract: plan.agreement.funding?.contract?.name ?? null,
+                payout: plan.agreement.sponsor ?? null,
+                decisionVerifierWallets: Array.isArray(plan.agreement.rule?.lens) ? plan.agreement.rule.lens : [],
+                decisionMethod: 'lens-attestation',
+                contributorEligibility: 'any-wallet',
+                kycEnforcedOnChain: false,
+                action: 'Review the attached contract before using ugt_approval_link with action donate.'
+            } } : {}),
             items: matched.slice(offset, offset + limit).map(({ geometry, ...item }) => {
                 const value = item.kind === 'piece' && !community ? { ...item, recipient: recipients.get(item.ref.slice(6)) || null } : item;
                 return includeGeometry ? { ...value, geometry } : value;

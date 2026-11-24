@@ -656,10 +656,18 @@
         const funding = agreement.funding;
         if (agreement.rule?.electorate !== 'investors' || !funding || recordApi().fundingError(funding)) return '';
         const target = recordApi().formatUsdc(funding.targetUsdcAtomic);
+        const verifier = agreement.rule.lens?.[0];
+        const payout = agreement.published?.sponsor || agreement.sponsor;
+        const investorDisclosure = `<dl class="agreement-panel-facts agreement-funding-disclosure" data-agreement-funding-disclosure>`
+            + (verifier ? `<div><dt>${esc(tr('agreement.funding.verifierWallet', 'Funding verifier'))}</dt><dd><code dir="ltr">${esc(verifier)}</code></dd></div>` : '')
+            + `<div><dt>${esc(tr('agreement.funding.verifierMethod', 'Decision method'))}</dt><dd>${esc(tr('agreement.funding.verifierMethodValue', 'The program accepts the named lens’s funding decision.'))}</dd></div>`
+            + (payout ? `<div><dt>${esc(tr('agreement.funding.payoutWallet', 'Developer payout wallet'))}</dt><dd><code dir="ltr">${esc(payout)}</code></dd></div>` : '')
+            + `<div><dt>${esc(tr('agreement.funding.contributorEligibility', 'Contributor eligibility'))}</dt><dd>${esc(tr('agreement.funding.contributorEligibilityValue', 'Any wallet can contribute'))}. ${esc(tr('agreement.funding.noKyc', 'The protocol does not perform a KYC check.'))}</dd></div></dl>`;
         return sectionHtml(tr('agreement.funding.title', 'Developer crowdfunding'),
             `<p data-agreement-funding-goal>${esc(tr('agreement.funding.goal', 'Target of {{amount}} devnet USDC', { amount: target }))}</p>`
             + `<p>${esc(tr('agreement.panel.deadline', 'Deadline: {{date}}', { date: format().formatDateTime(agreement.deadline) }))}</p>`
             + `<button type="button" class="btn btn-sm" data-agreement-action="contract">${esc(tr('agreement.funding.download', 'Download investor contract ({{name}})', { name: funding.contract.name }))}</button>`
+            + investorDisclosure
             + (agreement.published && !agreement.onchain ? `<p class="agreement-panel-hint">${esc(tr('agreement.funding.unminted', 'Contributions open when the developer mints this agreement.'))}</p>` : '')
             + '<div data-agreement-boost-slot></div>'
             + (agreement.onchain ? `<button type="button" class="btn btn-sm" data-agreement-action="refresh-funding">${esc(tr('agreement.minted.refresh', 'Refresh'))}</button>` : ''));
