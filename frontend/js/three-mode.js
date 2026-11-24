@@ -76,7 +76,6 @@
     let xrayEnabled = new URLSearchParams(window.location.search).get('xray') === '1';
     let xrayButton = null;
     let xrayNote = null;
-    let xraySolidNotice = null;
     // The radius the footprint pool was last asked to cover for typical layouts (one request each).
     let suggestedExistingPoolKey = null;
     let floorCutawayControl = null;
@@ -2414,27 +2413,6 @@
         });
         floorCutawayControl.append(cutawayLabel, floorCutawaySelect);
         xrayRow.appendChild(floorCutawayControl);
-        // Typical layouts draw inside the existing volumes, which X-ray does not cut: solid ones hide
-        // them. Said here, with the one click that turns existing buildings transparent.
-        xraySolidNotice = document.createElement('div');
-        xraySolidNotice.className = 'three-mode-xray-solid-notice';
-        const solidNoticeText = document.createElement('span');
-        solidNoticeText.textContent = threeI18n('threeMode.controls.xraySolidExisting',
-            'Existing buildings are solid, so their interiors are hidden.');
-        const makeTransparentButton = document.createElement('button');
-        makeTransparentButton.type = 'button';
-        makeTransparentButton.id = 'three-mode-xray-make-transparent';
-        makeTransparentButton.className = 'btn three-mode-xray-button';
-        makeTransparentButton.textContent = threeI18n('threeMode.controls.xrayMakeTransparent', 'Make transparent');
-        makeTransparentButton.addEventListener('click', () => {
-            if (window.BusyControl.isBusy(makeTransparentButton)) return;
-            window.BusyControl.track(makeTransparentButton, async () => {
-                window.PlanningViews.configure('existing', 'ghost');
-                await window.ThreeSceneReady.wait({ requireExisting: true });
-            }).catch(error => console.error(`[${new Date().toISOString()}] [3D] Could not make existing buildings transparent`, error));
-        });
-        xraySolidNotice.append(solidNoticeText, makeTransparentButton);
-        xrayRow.appendChild(xraySolidNotice);
         xrayNote = document.createElement('div');
         xrayNote.id = 'three-mode-xray-note';
         xrayNote.className = 'three-mode-xray-note';
@@ -10066,6 +10044,8 @@
         apartmentPanel.show(units, unit, groups.some(group => group.userData.suggested), units.length > 0 && apartmentAddress.unit !== null);
         if (unit && apartmentAddress.openFloor) {
             apartmentAddress.openFloor = false;
+            window.ThreeClickStack?.close({ silent: true });
+            if (window.PlanningViews?.getSelected()?.role === 'existing') window.PlanningViews.select(null);
             if (floorCutawayLevel !== unit.level) setFloorCutaway(unit.level);
         }
     }
@@ -10306,7 +10286,7 @@
             const current = () => isActive && xrayEnabled && floorPlanGroup === target && generation === buildingsWorkGeneration;
             const group = await floorPlanRenderer.createBuildingGroupCooperative(THREE, feature,
                 (lng, lat) => latLngToXY(lat, lng), floorPlanGeometry,
-                { proxyMaterial, proxyHeightM, withDistantShell: family !== 'existing-suggested', turf },
+                { proxyMaterial, proxyHeightM, useSourceShellAtDistance: family === 'existing-suggested', turf },
                 { forEach: sceneWork.forEach, isCurrent: current });
             if (!current()) { if (group) floorPlanRenderer.disposeGroup(group); return false; }
             if (group) {
@@ -10451,13 +10431,17 @@
         }
     }
 
-    function selectedApartmentShells() {
-        const group = apartmentHover?.visibleSelectedFloor()?.parent;
-        if (builtDisplay !== 'ghost' || group?.userData.floorPlanFamily !== 'existing-suggested') return [];
-        const building = group.userData.planningBuiltFeature?.properties;
-        if (!building) return [];
-        const key = threeBuildingKey({ source: building.source, object_id: building.object_id ?? building.id });
-        return existingFloorPlanShells.get(key)?.meshes || [];
+    function replacedXrayShells() {
+        const shells = new Set();
+        if (!xrayEnabled || realisticLayerActive || !floorPlanGroup?.visible) return shells;
+        for (const group of floorPlanGroup.children) {
+            if (!group.visible || group.userData.floorPlanFamily !== 'existing-suggested' || !group.userData.detailVisible) continue;
+            const building = group.userData.planningBuiltFeature?.properties;
+            if (!building) continue;
+            const key = threeBuildingKey({ source: building.source, object_id: building.object_id ?? building.id });
+            for (const mesh of existingFloorPlanShells.get(key)?.meshes || []) shells.add(mesh);
+        }
+        return shells;
     }
 
     function renderScene(fullFrame = true, { shadowsPerPass = false } = {}) {
@@ -10478,7 +10462,7 @@
         apartmentHover?.update(xrayEnabled && !realisticLayerActive);
         floorPlanRenderer.renderCutaway(renderer, scene, camera,
             sectionedModels.size ? [floorPlanGroup, ...[...sectionedModels].filter(wrapper => wrapper.parent)] : floorPlanGroup,
-            xrayEnabled && floorCutawayLevel !== null && floorCutawayLevel < 0, selectedApartmentShells());
+            xrayEnabled && floorCutawayLevel !== null && floorCutawayLevel < 0, replacedXrayShells());
         renderedBuildingDisplaySnapshot = buildingDisplaySnapshot;
         renderedSceneVisualRevision = sceneVisualRevision;
         // From the first drawn frame of an entry the 3D view covers the 2D map (map-shell.css);
@@ -10737,7 +10721,6 @@
             if (suggestedAccessSelect) suggestedAccessSelect.value = suggestedAccess;
         }
         if (floorCutawayControl) floorCutawayControl.hidden = !xrayEnabled;
-        if (xraySolidNotice) xraySolidNotice.hidden = !(xrayEnabled && suggestedPlansEnabled && suggestedExistingEnabled && builtDisplay === 'solid');
         if (xrayEnabled && floorCutawaySelect) {
             const levels = [...new Set([...(floorPlanGroup?.children || []).filter(group => group.visible !== false)
                 .flatMap(group => group.userData.availableLevels || []),
@@ -11573,6 +11556,7 @@
             canvas: renderer.domElement, camera, floorPlanGroup,
             occluders: () => floorCutawayLevel !== null && floorCutawayLevel < 0 ? []
                 : [builtDisplay === 'solid' ? existingBuildingsGroup : null, plannedDisplay === 'solid' ? proposedBuildingsGroup : null],
+            replacedShells: replacedXrayShells,
             onPointerChange: queueThreeFrame,
             onHover: (picked, pointer) => {
                 const canSelect = picked?.region.kind !== 'non-apartment' && !!picked?.floor.parent?.userData.apartmentBuilding;
@@ -12054,7 +12038,6 @@
         facadeNote = null;
         xrayButton = null;
         xrayNote = null;
-        xraySolidNotice = null;
         floorCutawayControl = null;
         floorCutawaySelect = null;
         sunLayer?.detach();

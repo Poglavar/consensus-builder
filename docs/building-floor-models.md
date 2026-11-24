@@ -101,9 +101,10 @@ subtrees are excluded from picking, and unchanged camera/pointer states do no ne
 The blue overlay sits above the red warning patches even in a straight-down view. Generated
 north-only apartments show **North orientation only** beside the pointer. Warning patches are
 batched once per storey. Clicking an apartment region or choosing it from the dropdown selects its
-storey's unit, opens the cutaway at that level and highlights the unit until selection changes. The
-selected existing building's ghost shell is hidden for that draw so its depth pass cannot cover
-the highlight. **Copy apartment link**
+storey's unit, opens the cutaway at that level and highlights the unit until selection changes.
+Selecting a unit releases the whole-building outline. When detailed estimated storeys are visible,
+they replace that building's source shell for drawing and picking in both Solid and Transparent
+modes. Other buildings and distant shells keep their normal display. **Copy apartment link**
 opens the same building and unit in X-ray. Shared space retains the usual map selection.
 
 `xrayBuilding` names the building by city, building source and source ID, or by published design CID

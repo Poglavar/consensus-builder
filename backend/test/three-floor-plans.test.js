@@ -139,7 +139,7 @@ describe('three-floor-plans volumetric adapter',()=>{
         expect(seen[0]).toEqual({floor:true,buildings:true,model:true,other:false,ground:false,light:true});
         expect([otherBuilding.visible,ground.visible]).toEqual([true,true]);
     });
-    it('temporarily removes only the selected apartment building’s ghost shell', () => {
+    it('temporarily removes only the source shell replaced by the cutaway', () => {
         const selectedShell = new Object3D(), otherShell = new Object3D(), alreadyHidden = new Object3D();
         alreadyHidden.visible = false;
         const scene = { children: [selectedShell, otherShell, alreadyHidden] };
@@ -147,9 +147,22 @@ describe('three-floor-plans volumetric adapter',()=>{
             expect([selectedShell.visible, otherShell.visible, alreadyHidden.visible]).toEqual([false, true, false]);
             throw new Error('draw failed');
         };
-        expect(() => rendererApi.renderCutaway({ render: draw }, scene, {}, null, false, [selectedShell, alreadyHidden]))
+        expect(() => rendererApi.renderCutaway({ render: draw }, scene, {}, null, false, new Set([selectedShell, alreadyHidden])))
             .toThrow('draw failed');
         expect([selectedShell.visible, otherShell.visible, alreadyHidden.visible]).toEqual([true, true, false]);
+    });
+    it('keeps source massing at a distance and draws bands for omitted detailed storeys', () => {
+        const geometry = { type: 'Polygon', coordinates: [[[0,0],[1,0],[1,1],[0,0]]] };
+        const group = renderer.createBuildingGroup(THREE, { geometry, properties: feature.properties }, (x,y) => [x,y], api,
+            { proxyHeightM: 6, proxyMaterial: new Material({ color: 1 }), useSourceShellAtDistance: true });
+        const shell = group.children.find(child => child.userData.cbFloorPlanDistantShell);
+        const bands = () => group.children.filter(child => child.userData.cbFloorPlanCoarseBand && child.visible);
+        renderer.setVisibleStoreys(THREE, group, new Set([1]));
+        expect(bands()).toHaveLength(1);
+        renderer.setDetailVisibility(group, false);
+        expect(shell.visible).toBe(false);
+        expect(bands()).toHaveLength(0);
+        renderer.disposeGroup(group);
     });
     it('uses the cheap shell for distant details and preserves the storey cutaway when returning',()=>{
         const proxyMaterial=new Material({color:1});

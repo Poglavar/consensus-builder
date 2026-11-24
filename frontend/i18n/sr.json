@@ -6558,8 +6558,6 @@
             "apartmentUnavailable": "Стан са линка није у тренутном распореду.",
             "apartmentsLoading": "Учитавање тлоцрта…",
             "suggestedNorthFlats": "{{count}} stanova po spratu gleda samo na sever (jednostrano), prikazano crveno.",
-            "xraySolidExisting": "Postojeće zgrade su pune pa se njihova unutrašnjost ne vidi.",
-            "xrayMakeTransparent": "Učini providnim",
             "suggestedExistingCount": "Постојеће зграде с процењеним тлоцртом: {{count}}.",
             "facadeStyles": {
                 "mixed": "Mešovito",

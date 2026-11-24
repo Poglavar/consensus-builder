@@ -17,12 +17,13 @@ function setup() {
     ] };
     floor.add(new THREE.Mesh(new THREE.PlaneGeometry(10,10),new THREE.MeshBasicMaterial()));
     root.add(floor);
-    const blockers = new THREE.Group();
+    const blockers = new THREE.Group(), replaced = new Set();
     let wakeups = 0, hovered = null;
-    const hover = attach(THREE,{ canvas,camera,floorPlanGroup:root,occluders:()=>[blockers],onPointerChange:()=>wakeups++,onHover:(picked,pointer)=>{hovered=picked?{flag:picked.region.flag,pointer}:null} });
+    const hover = attach(THREE,{ canvas,camera,floorPlanGroup:root,occluders:()=>[blockers],replacedShells:()=>replaced,
+        onPointerChange:()=>wakeups++,onHover:(picked,pointer)=>{hovered=picked?{flag:picked.region.flag,pointer}:null} });
     const event = (type,x=25,extra={}) => listeners.get(type)({clientX:x,clientY:50,buttons:0,pointerType:'mouse',...extra});
     const highlight = () => floor.children.find(c=>c.userData.cbApartmentHover);
-    return {root,floor,hover,event,highlight,listeners,blockers,camera,wakeups:()=>wakeups,hovered:()=>hovered};
+    return {root,floor,hover,event,highlight,listeners,blockers,replaced,camera,wakeups:()=>wakeups,hovered:()=>hovered};
 }
 describe('apartment hover',()=>{
     it('highlights exactly one unit, reuses it within that unit, and clears in common space',()=>{
@@ -47,10 +48,6 @@ describe('apartment hover',()=>{
         s.hover.select(picked);
         const selected = s.floor.children.find(child => child.name === 'FloorUnitSelection:floor-1:west');
         expect(selected).toBeDefined();
-        expect(s.hover.visibleSelectedFloor()).toBe(s.floor);
-        s.root.visible = false;
-        expect(s.hover.visibleSelectedFloor()).toBeNull();
-        s.root.visible = true;
         s.event('pointermove', 75);
         s.hover.update(true);
         s.event('pointerleave');
@@ -63,6 +60,24 @@ describe('apartment hover',()=>{
         block.position.z=5;s.blockers.add(block);s.blockers.updateMatrixWorld(true);
         s.event('pointermove');s.hover.update(true);expect(s.highlight()).toBeUndefined();
         block.visible=false;s.hover.invalidate();s.hover.update(true);expect(s.highlight()).toBeDefined();s.hover.dispose();
+    });
+    it('ignores a replaced solid shell and its depth pass while retaining other occluders', () => {
+        const s = setup();
+        const shell = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new THREE.MeshBasicMaterial());
+        shell.position.z = 4;
+        const depthPass = new THREE.Mesh(shell.geometry, shell.material);
+        depthPass.position.z = .1;
+        shell.add(depthPass);
+        s.blockers.add(shell);
+        const click = () => s.hover.pick({ x: 25, y: 50 });
+        expect(click()).toBeNull();
+        s.replaced.add(shell);
+        expect(click()?.region.id).toBe('west');
+        const neighbour = new THREE.Mesh(shell.geometry, shell.material);
+        neighbour.position.z = 2;
+        s.blockers.add(neighbour);
+        expect(click()).toBeNull();
+        s.hover.dispose();
     });
     it('clears on drag, exit, disabled x-ray and disposal without installing click handlers',()=>{
         const s=setup();expect(s.listeners.has('click')).toBe(false);

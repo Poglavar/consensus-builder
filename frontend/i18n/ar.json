@@ -5160,8 +5160,6 @@
             "apartmentUnavailable": "الشقة المشار إليها غير موجودة في المخطط الحالي.",
             "apartmentsLoading": "جارٍ تحميل مخططات الطوابق…",
             "suggestedNorthFlats": "{{count}} شقق في كل طابق تطل على الشمال فقط (واجهة واحدة)، باللون الأحمر.",
-            "xraySolidExisting": "المباني القائمة معتمة، لذلك تُخفى تصميماتها الداخلية.",
-            "xrayMakeTransparent": "اجعلها شفافة",
             "suggestedExistingCount": "المباني القائمة ذات المخططات التقديرية: {{count}}.",
             "representationMassing": "الغلاف الأقصى",
             "representationMassingTooltip": "الغلاف الأقصى — الحجم الخارجي المسموح به الذي يحدده التصميم",

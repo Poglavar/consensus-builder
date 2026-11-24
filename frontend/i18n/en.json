@@ -6524,8 +6524,6 @@
             "apartmentUnavailable": "The linked apartment is not in the current layout.",
             "apartmentsLoading": "Waiting for the floor plans…",
             "suggestedNorthFlats": "{{count}} flats per storey face only north (single aspect), shown in red.",
-            "xraySolidExisting": "Existing buildings are solid, so their interiors are hidden.",
-            "xrayMakeTransparent": "Make transparent",
             "suggestedExistingCount": "Existing: {{count}} buildings with estimated layouts.",
             "facadeStyles": {
                 "mixed": "Mixed",

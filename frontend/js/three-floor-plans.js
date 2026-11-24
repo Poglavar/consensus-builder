@@ -153,13 +153,14 @@
                 wrapper.add(mesh);
             }
         }
-        if (options.withDistantShell !== false && polygons.length && options.proxyMaterial && Number.isFinite(options.proxyHeightM) && options.proxyHeightM > 0) {
+        if (polygons.length && options.proxyMaterial && Number.isFinite(options.proxyHeightM) && options.proxyHeightM > 0) {
             const shell = new THREE.Mesh(geometryFor(THREE, polygons.map(rings => ({
                 rings: rings.map(ring => ring.map(p => project(p[0], p[1]))), baseM: 0, heightM: options.proxyHeightM
             }))), options.proxyMaterial.clone());
             shell.name = 'DistantFloorPlanShell';
             shell.userData.cbFloorPlanDistantShell = true;
             shell.userData.heightM = options.proxyHeightM;
+            shell.userData.useSourceShellAtDistance = options.useSourceShellAtDistance === true;
             shell.visible = false;
             wrapper.add(shell);
         }
@@ -226,7 +227,7 @@
                     .filter(child => child.userData.cbFloorPlanFloor && child.userData.level <= maxLevel)
                     .map(child => child.position.z + child.userData.heightM));
                 floor.scale.z = Math.min(height, top) / height;
-                floor.visible = !details && top > 0;
+                floor.visible = !details && !floor.userData.useSourceShellAtDistance && top > 0;
             } else if (floor.userData.cbFloorPlanCoarseBand) {
                 floor.visible = details;
             } else if (floor.userData.cbFloorPlanProxy) {
@@ -269,9 +270,8 @@
     // building model inside the buildings group): they stay, and everything beside them and their
     // ancestors is hidden.
     function renderCutaway(renderer, scene, camera, kept, belowGround, shells = []) {
-        // The selected building's ghost shell writes depth even though it blends color. Remove
-        // that shell for this draw so it cannot mask the floor overlay inside it.
-        const hidden = shells.filter(shell => shell.visible);
+        // When detailed estimated storeys are shown, the source shell yields to the cutaway.
+        const hidden = [...shells].filter(shell => shell.visible);
         if (!belowGround && !hidden.length) { renderer.render(scene, camera); return; }
         if (belowGround) {
             const keep = new Set((Array.isArray(kept) ? kept : [kept]).filter(Boolean));

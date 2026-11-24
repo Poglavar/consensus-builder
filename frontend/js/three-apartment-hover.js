@@ -50,7 +50,8 @@
         return nearest ? { floor, region: nearest } : null;
     }
 
-    function attach(THREE, { canvas, camera, floorPlanGroup, occluders = () => [], onPointerChange = () => {}, onHover = () => {} }) {
+    function attach(THREE, { canvas, camera, floorPlanGroup, occluders = () => [], replacedShells = () => null,
+        onPointerChange = () => {}, onHover = () => {} }) {
         const raycaster = new THREE.Raycaster(), ndc = new THREE.Vector2(), lastCamera = new THREE.Matrix4();
         let pointer = null, dirty = true, highlight = null, current = null, selected = null, selectionMesh = null;
         const material = new THREE.MeshBasicMaterial({ color: 0x20bfff, transparent: true, opacity: .55,
@@ -108,7 +109,13 @@
             }
             // The closest visible solid wins. An unmodelled band or another building blocks
             // the unit behind it; hidden upper floors and isolated-away buildings cannot win.
-            return raycaster.intersectObjects(targets, false)[0];
+            const hits = raycaster.intersectObjects(targets, false);
+            const shells = replacedShells();
+            if (!shells?.size) return hits[0];
+            return hits.find(({ object }) => {
+                for (let node = object; node; node = node.parent) if (shells.has(node)) return false;
+                return true;
+            });
         }
         function overlay(picked, name, active = false) {
             const shapes = picked.region.polygons.map(polygon => {
@@ -163,8 +170,7 @@
             const floor = floorAtHit(hit);
             return floor ? apartmentAtHit(hit) || { floor, region: null } : null;
         }
-        const visibleSelectedFloor = () => selected && isVisible(selected.floor) ? selected.floor : null;
-        return { update, clear, invalidate, dispose, select, pick, visibleSelectedFloor };
+        return { update, clear, invalidate, dispose, select, pick };
     }
 
     const api = { inRing, apartmentAtHit, spaceAtHit, attach };

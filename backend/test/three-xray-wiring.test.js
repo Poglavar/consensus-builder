@@ -556,28 +556,37 @@ describe('three-mode Xray wiring', () => {
         await vi.waitFor(() => expect(streetsFor(feature)).toEqual(['loaded-street']));
         expect(fetch).toHaveBeenCalledExactlyOnceWith('http://api/streets/near?bbox=1%2C2%2C3%2C4', { signal: expect.any(AbortSignal) });
     });
-    it('the solid-existing notice shows only while typical layouts of existing buildings sit inside solid volumes', () => {
-        const notice = { hidden: true }, access = { hidden: true }, accessSelect = { value: 'auto' };
+    it('shows access options while estimated layouts are on', () => {
+        const access = { hidden: true }, accessSelect = { value: 'auto' };
         const [update, c] = extracted('updateXrayControls', `
             let xrayButton=null, suggestedPlansButton=null, suggestedExistingRow=null, suggestedExistingCheckbox=null;
             let suggestedAccessControl=this.access, suggestedAccessSelect=this.accessSelect, suggestedAccess='point';
-            let floorCutawayControl=null, floorCutawaySelect=null, xrayNote=null, xraySolidNotice=this.notice;
-            let xrayEnabled=true, suggestedPlansEnabled=true, suggestedExistingEnabled=true, builtDisplay='solid';
-            this.set=(key, value)=>{ eval(key + '=value'); };`, { notice, access, accessSelect });
+            let floorCutawayControl=null, floorCutawaySelect=null, xrayNote=null;
+            let xrayEnabled=true, suggestedPlansEnabled=true, suggestedExistingEnabled=true;
+            this.set=(key, value)=>{ eval(key + '=value'); };`, { access, accessSelect });
         update();
-        expect(notice.hidden).toBe(false);
         // The Access select shows with the suggested layouts and says the view's choice.
         expect(access.hidden).toBe(false);
         expect(accessSelect.value).toBe('point');
-        for (const [key, value] of [['builtDisplay', 'ghost'], ['suggestedExistingEnabled', false], ['suggestedPlansEnabled', false], ['xrayEnabled', false]]) {
+        for (const [key, value] of [['suggestedExistingEnabled', false], ['suggestedPlansEnabled', false], ['xrayEnabled', false]]) {
             c.set(key, value);
             update();
-            expect(notice.hidden).toBe(true);
             expect(access.hidden).toBe(key === 'suggestedPlansEnabled' || key === 'xrayEnabled');
-            c.set(key, key === 'builtDisplay' ? 'solid' : true);
+            c.set(key, true);
             update();
-            expect(notice.hidden).toBe(false);
         }
+    });
+    it('replaces only the source shell of a visible building with detailed estimated storeys', () => {
+        const group = (id, detailVisible, visible = true) => ({ visible, userData: { floorPlanFamily: 'existing-suggested',
+            detailVisible, planningBuiltFeature: { properties: { source: 'buildings', id } } } });
+        const shells = new Map([1, 2, 3, 4].map(id => [`buildings:${id}`, { meshes: [{ id }] }]));
+        const groups = [group(1, true), group(2, false), group(3, true, false)];
+        const [replaced] = extracted('replacedXrayShells', 'let xrayEnabled = true;', {
+            floorPlanGroup: { visible: true, children: groups }, existingFloorPlanShells: shells
+        }, ['threeBuildingKey']);
+        expect([...replaced()]).toEqual(shells.get('buildings:1').meshes);
+        groups[0].userData.detailVisible = false;
+        expect([...replaced()]).toEqual([]);
     });
     it('typical layouts of existing buildings ask once for the whole radius and plan the nearest first', async () => {
         const ensure = vi.fn(() => Promise.resolve());
