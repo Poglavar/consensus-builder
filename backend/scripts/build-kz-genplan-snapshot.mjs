@@ -7,11 +7,13 @@ import { createHttpsJsonFetch } from '../parcels/https-json-fetch.js';
 import { validateGeometry } from '../parcels/source-contract.js';
 import { alatauGenplanSource, interpretZone } from '../planning/providers/alatau-genplan.js';
 import { astanaGenplanSource, interpretAstanaZone } from '../planning/providers/astana-genplan.js';
+import { almatyDetailedPlanSource, interpretAlmatyDetailedZone } from '../planning/providers/almaty-detailed-plan.js';
 
 const [sourceId, input] = process.argv.slice(2);
 const sources = new Map([
     [alatauGenplanSource.id, { descriptor: alatauGenplanSource, interpret: interpretZone }],
-    [astanaGenplanSource.id, { descriptor: astanaGenplanSource, interpret: interpretAstanaZone }]
+    [astanaGenplanSource.id, { descriptor: astanaGenplanSource, interpret: interpretAstanaZone }],
+    [almatyDetailedPlanSource.id, { descriptor: almatyDetailedPlanSource, interpret: interpretAlmatyDetailedZone }]
 ]);
 const source = sources.get(sourceId);
 if (!source || !input) throw new Error('Pass a source ID followed by a complete WFS FeatureCollection file or --fetch.');

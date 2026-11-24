@@ -7,6 +7,7 @@ import { bboxPolygon } from '@turf/turf';
 import { createBogotaPotProvider, bogotaPotSource } from './providers/bogota-pot.js';
 import { createAlatauGenplanProvider, alatauGenplanSource } from './providers/alatau-genplan.js';
 import { createAstanaGenplanProvider, astanaGenplanSource } from './providers/astana-genplan.js';
+import { almatyDetailedPlanSource, createAlmatyDetailedPlanProvider } from './providers/almaty-detailed-plan.js';
 import { createHash } from 'node:crypto';
 import configuredSources from '../../frontend/data/planning-sources.json' with { type: 'json' };
 import { parseAtlasSources, createAtlasUrlProvider } from './atlas-url-sources.js';
@@ -20,6 +21,7 @@ builtInDefinitions.push(SourceRuntime.source('planning', 'nyc-pilot', { ...nycPi
 builtInDefinitions.push(SourceRuntime.source('planning', 'bogota-pot', bogotaPotSource, { label: bogotaPotSource.label }));
 builtInDefinitions.push(SourceRuntime.source('planning', 'alatau-genplan', alatauGenplanSource, { label: alatauGenplanSource.label }));
 builtInDefinitions.push(SourceRuntime.source('planning', 'astana-genplan', astanaGenplanSource, { label: astanaGenplanSource.label }));
+builtInDefinitions.push(SourceRuntime.source('planning', 'kz-detailed-plan', almatyDetailedPlanSource, { label: almatyDetailedPlanSource.label }));
 export const planningSourceRegistry = SourceRuntime.createRegistry({
     abstraction: 'planning',
     adapters: {
@@ -43,7 +45,8 @@ export const planningSourceRegistry = SourceRuntime.createRegistry({
         'atlas-url': { create: createAtlasUrlProvider },
         'bogota-pot': { custom: false, create: (descriptor, context) => createBogotaPotProvider(descriptor, context) },
         'alatau-genplan': { custom: false, create: createAlatauGenplanProvider },
-        'astana-genplan': { custom: false, create: createAstanaGenplanProvider }
+        'astana-genplan': { custom: false, create: createAstanaGenplanProvider },
+        'kz-detailed-plan': { custom: false, create: createAlmatyDetailedPlanProvider }
     },
     sources: [...builtInDefinitions, ...parseAtlasSources(JSON.stringify(configuredSources.sources))
         .map(metadata => SourceRuntime.source('planning', 'atlas-url', metadata, { label: metadata.label }))],

@@ -82,6 +82,12 @@ A binding agreement to raise devnet USDC for one exact plan revision. The sponso
 
 The developer’s attached PDF or UTF-8 text specifying what a contributor receives in return. The file’s name, media type and bytes are part of the crowdfunding agreement’s content identity. The escrow records contributions and settles the funding round. The developer is responsible for delivering the promised return.
 
+### Apartment reservation
+
+A crowdfunding offer for one whole apartment at a fixed price and deposit. The developer wallet, permanent project ID and permanent unit ID identify it across rounds. The unit’s X-ray address and attached drawing identify the layout the buyer reviewed. A funded reservation belongs to one buyer wallet. Execution retains its allocation. A refunded position permits the unit to be released and listed again.
+
+The **contract schedule** ties that apartment, its full price and its deposit position to the buyer, developer, exact agreement and attached contract.
+
 ### Poll
 
 An owners' or community agreement whose decisions are counted without binding chain settlement. A poll can be published and receive signed decisions; it is not minted.
@@ -751,6 +757,10 @@ A zoning area of Alatau's general plan (Decree No. 727, 2025) from the state urb
 ### Functional zone (Astana)
 
 A zoning area in the state urban-planning cadastre's Astana snapshot. It carries the source's land use, housing class where stated, and implementation stage where known. The snapshot date identifies the data edition. A bounded housing class supplies its upper storey count for a height-derived Permitted envelope on the covered parcel. A zone can also supply a design site by reference. Its authority for current parcel rules is unresolved. See [Astana general plan source](astana-genplan-source.md).
+
+### Detailed-plan zone (Almaty)
+
+A functional zone in one of the named Almaty detailed plans in the state urban-planning cadastre. A bounded housing class in the local plan label supplies its upper storey count for a height-derived Permitted envelope. The plan name, captured date and zone ID identify the evidence. Approval metadata is unrecorded in the published snapshot. See [Almaty planning sources](almaty-plan-source.md).
 
 ### Treatment area (Bogotá)
 

@@ -962,6 +962,7 @@
                 liveRadiusKm: 8,
                 attribution: 'Almaty municipal land-cadastral map / GZK'
             },
+            planning: { sourceIds: ['almaty-pdp-cadastre-2026-11-24'] },
             buildings: {
                 sources: [{ id: 'osm' }]
             },

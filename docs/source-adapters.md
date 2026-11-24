@@ -54,6 +54,8 @@ and exact record lookup. An overview alone makes no claim about parcel-level rul
 capacity. The configured source uses the same adapter for its other representations. The
 [Astana zoning reference](astana-genplan-source.md) uses the same Kazakh cadastre snapshot reader
 as [Alatau](alatau-genplan-source.md), with its own use classification and source capabilities.
+The [Almaty detailed plans](almaty-plan-source.md) use the same reader with the separate
+`kz:pdpzone` layer and its plan-specific labels.
 
 | Abstraction | Current adapter boundary and normalized operation | Preparation constraints |
 | --- | --- | --- |
