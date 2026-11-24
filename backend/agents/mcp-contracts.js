@@ -84,6 +84,9 @@ const cyclingAssessment = z.object({ score: z.number().int().min(0).max(100).nul
 assign(['ugt_inspect_plan'], inventory.extend({ openingAssessment: openingAssessment.optional(), walkingAssessment: walkingAssessment.optional(), cyclingAssessment: cyclingAssessment.optional() }));
 assign(['ugt_inspect_agreement'], inventory);
 assign(['ugt_inspect_design'], mcpResultSchema.extend({ cid, values: z.array(z.object({ path: z.string(), untrustedValue: z.unknown() })).min(1) }));
+assign(['ugt_apartment_offers'], mcpResultSchema.extend({ offers: z.array(z.object({
+    cid, city: z.string(), unitId: z.string(), untrusted: z.object({ title: z.string().nullable(), label: z.string() })
+})) }));
 assign(['ugt_publish_plan'], mcpResultSchema.extend({ cid, untrusted: authored('plan/v1'), publication: z.literal('published'), url: z.string().url(), publishedDesignCids: z.array(cid) }));
 assign(['ugt_validate_plan'], mcpResultSchema.extend({ cid, valid: z.boolean(), issues: z.array(z.object({ code: z.string(), ref: z.string() }).passthrough()), metrics: object, assessmentBasis: z.literal('authored-geometry'), sourceAssessment: object }));
 assign(['ugt_capabilities'], mcpResultSchema.extend({ version: z.string(), mode: z.enum(['local', 'hosted']), endpoint: z.string().url(), workflow: z.array(z.string()).min(1), features: z.array(object), tools: z.array(z.object({ name: z.string(), title: z.string(), readOnly: z.boolean() })), drafts: z.object({ retention: z.string(), exportTool: z.literal('ugt_export_draft') }).passthrough() }));

@@ -682,4 +682,14 @@ describe('consultation metadata', () => {
             expect(record.validate(community({ participationUrl })).errors).toContainEqual(expect.objectContaining({ code: 'consultation-participation-url', section: 'consultation' }));
         }
     });
+
+    it('validates apartment inventory and commits stable unit terms', () => {
+        const pdf = { name: 'unit.pdf', mediaType: 'application/pdf', data: Buffer.from('%PDF-1.7').toString('base64') };
+        const unit = { unitId: 'unit-a', label: 'A', xrayBuilding: 'zagreb::gdi-3d::building-1', unit: '3::a::000000000000000000000000', at: '45.8,15.96,18', priceUsdcAtomic: '1000000', depositUsdcAtomic: '1000000', drawing: pdf };
+        const funding = { targetUsdcAtomic: '1000000', contract: pdf, apartments: { projectId: 'project-a', units: [unit] } };
+        expect(record.fundingError(funding)).toBeNull();
+        expect(record.apartmentUnitKey('project-a', 'unit-a')).toMatch(/^[a-f0-9]{64}$/);
+        expect(record.apartmentTermsHash(funding, unit)).toMatch(/^[a-f0-9]{64}$/);
+        expect(record.fundingError({ ...funding, apartments: { projectId: 'project-a', units: [{ ...unit, at: '46,16,18' }, { ...unit, unitId: 'unit-b' }] } })).toMatch(/unique physical/);
+    });
 });

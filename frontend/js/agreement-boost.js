@@ -56,6 +56,7 @@
     const cache = new Map();   // agreement account → { loading, error, escrow, mine, boosts, balances }
     // The last confirmed deposit in this tab survives escrow rereads and panel redraws.
     const contributionConfirmations = new Map(); // agreement account → { wallet, amount }
+    const apartmentConfirmations = new Map();
     const t = (key, fallback, params = {}) => {
         const helper = typeof root.getProposalI18nHelper === 'function' ? root.getProposalI18nHelper() : null;
         const text = helper ? helper(key, fallback, params) : fallback;
@@ -75,17 +76,114 @@
     // wallet's own donations listed (a getProgramAccounts read the primary RPC does not serve).
     const refundable = status => status === 'Cancelled' || status === 'Expired';
 
+    const apartmentText = (key, fallback, params) => t(`agreement.funding.apartments.${key}`, fallback, params);
+    const amountOf = atomic => formatAmount(BigInt(atomic));
+    const confirmationKey = (account, unitId) => `${account}:${unitId}`;
+    const reservedText = unit => apartmentText('confirmedDeposit', '{{label}} reserved. Your deposit was {{amount}} devnet USDC.',
+        { label: unit.label, amount: amountOf(unit.depositUsdcAtomic) });
+
+    function actionButton(label, handler, primary = false) {
+        const button = el('button', primary ? 'btn btn-primary' : 'btn btn-sm', label);
+        button.type = 'button';
+        button.addEventListener('click', () => handler(button));
+        return button;
+    }
+
+    function downloadFile(file) {
+        root.FileDownload.save(root, Uint8Array.from(root.atob(file.data), char => char.charCodeAt(0)), file.name, file.mediaType);
+    }
+
+    function unitDetails(agreement, unit) {
+        const details = el('div', 'agreement-apartment-unit__details');
+        details.append(el('strong', null, unit.label), el('span', 'agreement-panel-meta',
+            apartmentText('priceAndDeposit', 'Price {{price}} USDC · Reservation deposit {{deposit}} USDC', {
+                price: amountOf(unit.priceUsdcAtomic), deposit: amountOf(unit.depositUsdcAtomic)
+            })));
+        const links = el('div', 'agreement-panel-actions');
+        const link = el('a', 'cb-link', apartmentText('openUnit', 'View apartment in X-ray'));
+        const context = { city: agreement.city, backend: new URL(root.location.href).searchParams.get('backend'), language: root.i18n?.getLanguage?.() };
+        link.href = root.BuildingUnitLinks.offerLink(root.location.href, root.MapShare, context, unit);
+        link.dataset.agreementXrayUnit = unit.unitId;
+        const drawing = actionButton(apartmentText('downloadDrawing', 'Download drawing ({{name}})', { name: unit.drawing.name }), () => downloadFile(unit.drawing));
+        drawing.dataset.agreementDrawingUnit = unit.unitId;
+        links.append(link, drawing);
+        details.append(links);
+        return details;
+    }
+
+    function downloadSchedule(agreement, unit, offer, buyer, signature) {
+        const schedule = {
+            schema: 'apartment-reservation-schedule/v1', agreementCid: agreement.published.cid,
+            agreementAccount: agreement.onchain.account, cluster: agreement.onchain.cluster, planCid: agreement.plan.cid,
+            developer: agreement.sponsor, projectId: agreement.funding.apartments.projectId, unit,
+            targetUsdcAtomic: agreement.funding.targetUsdcAtomic, contract: agreement.funding.contract,
+            termsHash: offer.termsHash, apartmentAccount: offer.account, buyer, position: offer.position,
+            depositPaidUsdcAtomic: unit.depositUsdcAtomic, ...(signature ? { signature } : {})
+        };
+        root.FileDownload.save(root, JSON.stringify(schedule, null, 2), `apartment-${unit.unitId}-contract-schedule.json`, 'application/json');
+    }
+
+    function inventoryView(slot, context, statuses = [], active = false) {
+        const { agreement, account, wallet } = context;
+        const wrap = el('section', 'agreement-apartment-inventory');
+        wrap.append(el('h4', 'agreement-boost__title', apartmentText('inventory', 'Apartments')));
+        for (const unit of agreement.funding.apartments.units) {
+            const offer = statuses.find(item => item.unitId === unit.unitId);
+            const row = el('article', 'agreement-apartment-unit');
+            row.dataset.agreementApartmentUnit = unit.unitId;
+            row.append(unitDetails(agreement, unit));
+            const actions = el('div', 'agreement-panel-actions');
+            if (offer?.status === 'unlisted' && active && context.isSponsor) {
+                const list = actionButton(apartmentText('list', 'List apartment'), button => run(slot, button, onStatus =>
+                    root.AgreementBridge.listApartment({ agreement, unitId: unit.unitId, onStatus })));
+                list.dataset.agreementListUnit = unit.unitId;
+                actions.append(list);
+            } else if (offer?.status === 'available' && active) {
+                const reserve = actionButton(apartmentText('reserve', 'Reserve apartment'), () => contribute(slot, unit), true);
+                reserve.dataset.agreementReserveUnit = unit.unitId;
+                actions.append(reserve);
+            } else if (offer?.status === 'reserved' && offer.buyer === wallet) {
+                const receipt = apartmentConfirmations.get(confirmationKey(account, unit.unitId));
+                const schedule = actionButton(apartmentText('downloadSchedule', 'Download contract schedule'),
+                    () => downloadSchedule(agreement, unit, offer, wallet, receipt?.payer === wallet ? receipt.signature : null));
+                schedule.dataset.agreementScheduleUnit = unit.unitId;
+                actions.append(schedule);
+            }
+            if (offer) {
+                const captions = {
+                    available: active ? apartmentText('available', 'Available') : apartmentText('closed', 'Round closed'),
+                    reserved: apartmentText('taken', 'Reserved'),
+                    unavailable: apartmentText('heldElsewhere', 'Reserved in another round'),
+                    unlisted: apartmentText('unlisted', 'Awaiting developer listing')
+                };
+                const mine = offer.status === 'reserved' && offer.buyer === wallet;
+                const caption = el('span', 'agreement-panel-hint', mine ? reservedText(unit) : captions[offer.status]);
+                caption.setAttribute('role', 'status');
+                if (mine) caption.classList.add('agreement-boost__status--success');
+                actions.append(caption);
+            }
+            row.append(actions);
+            wrap.append(row);
+        }
+        return wrap;
+    }
+
+    function mountDraft(slot, agreement) {
+        if (agreement.funding?.apartments) slot.replaceChildren(inventoryView(slot, { agreement }));
+    }
+
     async function load({ agreement, account, chainStatus, wallet, crowdfunding }) {
         const entry = { wallet, chainStatus, loading: true, error: null, escrow: null, mine: [], boosts: [], balances: [] };
         cache.set(account, entry);
         try {
-            const [chain, boosts, balances] = await Promise.all([
+            const [chain, boosts, balances, inventory] = await Promise.all([
                 root.AgreementBridge.donations(agreement, { mine: refundable(chainStatus) }),
                 !crowdfunding && root.BetsTrading ? root.BetsTrading.agreementBoosts(account) : [],
                 !crowdfunding && root.BetsTrading ? root.BetsTrading.asset() === 'points' ? root.BetsTrading.cityTokens().catch(() => null)
-                    : null : null
+                    : null : null,
+                agreement.funding?.apartments ? root.AgreementBridge.apartmentInventory(agreement) : []
             ]);
-            Object.assign(entry, { escrow: chain.escrow, mine: chain.mine, boosts, balances: balances?.balances || [] });
+            Object.assign(entry, { escrow: chain.escrow, mine: chain.mine, boosts, balances: balances?.balances || [], inventory });
         } catch (error) {
             console.error(`[${new Date().toISOString()}] [AgreementBoost] reading the boosts of ${account} failed`, error);
             entry.error = error?.message || String(error);
@@ -113,14 +211,14 @@
             feedback?.(message, tone);
         }
         try {
-            await root.BusyControl.track(button, () => work(item => {
+            const result = await root.BusyControl.track(button, () => work(item => {
                 if (item?.state === 'awaiting_signature') report(t('bets.trade.sign', 'Confirm in your wallet…'));
                 else if (item?.state === 'submitted') report(t('bets.trade.submitted', 'Waiting for confirmation…'));
             }));
-            confirmed?.();
+            confirmed?.(result);
             const current = slotOf(context.account);
             if (current) await load(current.__boostContext);
-            return true;
+            return result || true;
         } catch (error) {
             if (signal?.aborted && error === signal.reason) { report(''); return false; }
             console.error(`[${new Date().toISOString()}] [AgreementBoost] action failed`, error);
@@ -160,9 +258,9 @@
         if (current && !current.querySelector('.agreement-boost__status--danger')) status(current, t('agreement.boost.done', 'Boosted with {{amount}} {{unit}}.', { amount: formatAmount(amount), unit }), 'success');
     }
 
-    async function contribute(slot) {
+    async function contribute(slot, unit = null) {
         const { agreement, account } = slot.__boostContext;
-        const label = t('agreement.funding.contribute', 'Contribute');
+        const label = unit ? apartmentText('reserve', 'Reserve apartment') : t('agreement.funding.contribute', 'Contribute');
         const text = t('agreement.funding.amount', 'How much devnet USDC will you contribute under {{name}}?', { name: agreement.funding.contract.name });
         const intent = root.ApprovalLink?.parse(root.location);
         const field = el('label', null, text);
@@ -191,9 +289,12 @@
         }
         const connect = t('wallet.connect', 'Connect wallet');
         const controller = new AbortController();
+        const review = unit ? [unitDetails(agreement, unit), actionButton(t('agreement.funding.download', 'Download investor contract ({{name}})', { name: agreement.funding.contract.name }),
+            () => downloadFile(agreement.funding.contract))] : [field];
         const dialog = root.CbDialog.open({
-            title: label, size: 'sm', className: 'cb-dialog--prompt', initialFocus: input,
-            body: [field, walletLine, requirements, faucets, notice], onClose: () => controller.abort(),
+            title: unit ? apartmentText('reviewTitle', 'Review apartment reservation') : label,
+            size: 'sm', className: 'cb-dialog--prompt', initialFocus: unit ? undefined : input,
+            body: [...review, walletLine, requirements, faucets, notice], onClose: () => controller.abort(),
             actions: [
                 { id: 'cancel', label: t('common.cancel', 'Cancel') },
                 { id: 'ok', label: connect, role: 'primary', keepOpen: true, onClick: proceed }
@@ -201,12 +302,14 @@
         });
         const primary = dialog.getActionButton('ok');
         let displayedAddress;
+        const amount = () => unit ? BigInt(unit.depositUsdcAtomic) : parseAmount(input.value);
         function restoreFocus() {
-            if (doc.activeElement === doc.body) slotOf(account)?.querySelector('[data-agreement-boost-action="boost"]')?.focus({ preventScroll: true });
+            const selector = unit ? `[data-agreement-schedule-unit="${unit.unitId}"],[data-agreement-reserve-unit="${unit.unitId}"]` : '[data-agreement-boost-action="boost"]';
+            if (doc.activeElement === doc.body) slotOf(account)?.querySelector(selector)?.focus({ preventScroll: true });
         }
         function update() {
             const address = root.AgreementBridge.connectedWallet();
-            primary.disabled = root.BusyControl.isBusy(primary) || (!!address && parseAmount(input.value) === null);
+            primary.disabled = root.BusyControl.isBusy(primary) || (!!address && amount() === null);
             if (address !== displayedAddress) {
                 displayedAddress = address;
                 primary.textContent = address ? label : connect;
@@ -229,37 +332,45 @@
                 if (dialog.overlay.isConnected && doc.activeElement === doc.body) (primary.disabled ? input : primary).focus({ preventScroll: true });
                 return;
             }
-            const amountAtomic = parseAmount(input.value);
+            const amountAtomic = amount();
             if (amountAtomic === null) return;
             const payer = displayedAddress;
             contributionConfirmations.delete(account);
             input.readOnly = true;
             primary.disabled = true;
             const { signal } = controller;
-            const ok = await run(slot, primary, report => root.AgreementBridge.donate({
-                agreement, amountAtomic, signal, onStatus(item) {
+            const ok = await run(slot, primary, report => {
+                const onStatus = item => {
                     if (item.state === 'submitted') dialog.getActionButton('cancel').textContent = t('modal.common.close', 'Close');
                     report(item);
-                }
-            }), {
+                };
+                return unit ? root.AgreementBridge.reserveApartment({ agreement, unitId: unit.unitId, expectedBuyer: payer, signal, onStatus })
+                    : root.AgreementBridge.donate({ agreement, amountAtomic, signal, onStatus });
+            }, {
                 feedback, signal,
-                confirmed() {
-                    contributionConfirmations.set(account, { wallet: payer, amount: amountAtomic });
+                confirmed(receipt) {
+                    if (unit) apartmentConfirmations.set(confirmationKey(account, unit.unitId), { payer, signature: receipt.signature });
+                    else contributionConfirmations.set(account, { wallet: payer, amount: amountAtomic });
                     const current = root.AgreementBridge.connectedWallet() === payer && slotOf(account);
                     dialog.close();
                     if (!current) return;
-                    const message = contributionText(amountAtomic);
-                    status(current, message, 'success');
+                    const message = unit ? reservedText(unit) : contributionText(amountAtomic);
+                    const offered = unit && current.querySelector(`[data-agreement-apartment-unit="${unit.unitId}"] [role="status"]`);
+                    if (offered) {
+                        offered.textContent = message;
+                        offered.classList.add('agreement-boost__status--success');
+                    } else status(current, message, 'success');
                     if (current.getClientRects().length && !root.ModalEscape?.topmost()) {
                         restoreFocus();
-                        root.CbDialog.alert(message, { title: t('agreement.funding.confirmed', 'Contribution confirmed') }).then(restoreFocus);
+                        const title = unit ? apartmentText('confirmed', 'Apartment reserved') : t('agreement.funding.confirmed', 'Contribution confirmed');
+                        root.CbDialog.alert(message, { title }).then(restoreFocus);
                     }
                 }
             });
             if (!ok) {
                 input.readOnly = false;
                 update();
-                if (dialog.overlay.isConnected && doc.activeElement === doc.body) input.focus({ preventScroll: true });
+                if (dialog.overlay.isConnected && doc.activeElement === doc.body) (unit ? primary : input).focus({ preventScroll: true });
             }
         }
         update();
@@ -277,7 +388,10 @@
         slot.__boostContext = context;
         const entry = cache.get(context.account);
         const crowdfunding = context.crowdfunding;
-        const focusAction = slot.contains(doc.activeElement) ? doc.activeElement.dataset.agreementBoostAction : null;
+        const active = doc.activeElement;
+        const focusKey = slot.contains(active) && ['data-agreement-boost-action', 'data-agreement-list-unit', 'data-agreement-reserve-unit',
+            'data-agreement-schedule-unit', 'data-agreement-xray-unit', 'data-agreement-drawing-unit'].find(key => active.hasAttribute(key));
+        const focusSelector = focusKey && `[${focusKey}="${CSS.escape(active.getAttribute(focusKey))}"]`;
         const section = el('div', 'agreement-boost');
         if (!crowdfunding) section.append(el('h4', 'agreement-boost__title', t('agreement.boost.title', 'Boost')));
         if (!entry || entry.loading || entry.error) context.onFundingTotal?.(null);
@@ -287,8 +401,12 @@
             section.append(el('p', 'agreement-panel-note agreement-panel-note--danger', crowdfunding ? entry.error : t('agreement.boost.readFailed', 'Boosts could not be read: {{reason}}', { reason: entry.error })));
         } else {
             const state = boostState({ chainStatus: context.chainStatus, escrow: entry.escrow, mine: entry.mine, boosts: entry.boosts });
+            const accepting = state.canBoost && Math.floor(Date.now() / 1000) <= Math.floor(Date.parse(context.agreement.deadline) / 1000);
+            const apartments = context.agreement.funding?.apartments;
             if (crowdfunding) {
-                context.onFundingTotal?.(state.usdc.amount, state.usdc.released);
+                const raised = apartments ? entry.inventory.reduce((sum, row) => sum + (row.status === 'reserved' ? BigInt(row.deposit) : 0n), 0n) : state.usdc.amount;
+                context.onFundingTotal?.(raised, state.usdc.released);
+                if (apartments) section.append(inventoryView(slot, context, entry.inventory, accepting));
             } else {
                 const facts = el('dl', 'agreement-panel-facts');
                 const fact = (label, value) => { const row = el('div'); row.append(el('dt', null, label), el('dd', null, value)); facts.append(row); };
@@ -308,8 +426,8 @@
                 button.addEventListener('click', () => handler(slot, button));
                 actions.append(button);
             };
-            if (crowdfunding && state.canBoost && Math.floor(Date.now() / 1000) <= Math.floor(Date.parse(context.agreement.deadline) / 1000)) {
-                add('boost', 'fas fa-coins', t('agreement.funding.contribute', 'Contribute'), contribute, true);
+            if (crowdfunding && !apartments && accepting) {
+                add('boost', 'fas fa-coins', t('agreement.funding.contribute', 'Contribute'), s => contribute(s), true);
             } else if (!crowdfunding && state.canBoost) add('boost', 'fas fa-rocket', t('agreement.boost.title', 'Boost'), boost, true);
             if (state.canRelease) add('release', 'fas fa-hand-holding-dollar', crowdfunding ? t('agreement.funding.release', 'Release USDC to the developer') : t('agreement.boost.release', 'Release USDC boosts to the sponsor'),
                 (s, b) => run(s, b, onStatus => root.AgreementBridge.releaseDonations({ agreement: context.agreement, onStatus })));
@@ -337,7 +455,7 @@
         // A donate approval link may have opened the agreement before this lazy module loaded.
         // This is presentation readiness only; ApprovalLink focuses the button and never clicks it.
         doc.dispatchEvent(new CustomEvent('agreement-boost-ready', { detail: { cid: context.agreement?.published?.cid || context.agreement?.cid || null } }));
-        if (focusAction) slot.querySelector(`[data-agreement-boost-action="${CSS.escape(focusAction)}"]`)?.focus({ preventScroll: true });
+        if (focusSelector) slot.querySelector(focusSelector)?.focus({ preventScroll: true });
     }
 
     /** Draw into the panel's slot from the cache, reading the boosts when there are none yet. */
@@ -346,11 +464,13 @@
         if (!slot || !account) return;
         slot.dataset.agreementBoost = account;
         const wallet = root.AgreementBridge.connectedWallet?.() || null;
-        const context = { agreement, account, chainStatus, wallet, onFundingTotal, crowdfunding: agreement.rule?.electorate === 'investors', city: agreement.city || null };
+        const sponsor = agreement.published?.sponsor || agreement.sponsor;
+        const context = { agreement, account, chainStatus, wallet, crowdfunding: agreement.rule?.electorate === 'investors', city: agreement.city || null,
+            isSponsor: !!wallet && !!sponsor && wallet === sponsor, onFundingTotal };
         const previous = cache.get(account);
         if (!previous || previous.wallet !== wallet || previous.chainStatus !== chainStatus) load(context);
         draw(slot, context);
     }
 
-    return { model, mount, refresh: account => cache.delete(account) };
+    return { model, mount, mountDraft, refresh: account => cache.delete(account) };
 });

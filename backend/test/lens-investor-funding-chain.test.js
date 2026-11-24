@@ -29,13 +29,14 @@ function fixture({ vaultAmount = 1_000_000n, state = 1 } = {}) {
     return { sponsor, lens, cid, account, escrow, vault, agreementData: encodeAgreementAccount({ authority: sponsor, lens, payout: sponsor, deadline, cid }), escrowData, vaultData };
 }
 
-function adapter(row) {
+function adapter(row, unitAccounts = []) {
     const rpc = {
         getGenesisHash: vi.fn(async () => DEVNET_GENESIS_HASH),
         getMultipleAccountsInfoAndContext: vi.fn(async () => ({ context: { slot: 12345 }, value: [
             { owner: new web3.PublicKey(agreementClient.constants.AGREEMENT_PROGRAM_ID), data: row.agreementData },
             { owner: new web3.PublicKey(pledgeClient.constants.PROGRAM_ID), data: row.escrowData },
-            { owner: new web3.PublicKey(pledgeClient.constants.TOKEN_PROGRAM_ID), data: row.vaultData }
+            { owner: new web3.PublicKey(pledgeClient.constants.TOKEN_PROGRAM_ID), data: row.vaultData },
+            ...unitAccounts
         ] })),
         getBlockTime: vi.fn(async slot => slot === 12345 ? 1_900_000_000 : null)
     };
@@ -49,6 +50,33 @@ describe('finalized investor funding chain adapter', () => {
         expect(found).toMatchObject({ slot: 12345, blockTime: 1_900_000_000, escrow: row.escrow, vault: row.vault, vaultUsdcAtomic: 1_000_000n,
             agreement: { cid: row.cid, authority: row.sponsor, payout: row.sponsor }, donation: { proposal: row.account, beneficiary: row.sponsor, vault: row.vault } });
         expect(rpc.getMultipleAccountsInfoAndContext).toHaveBeenCalledWith(expect.any(Array), 'finalized');
+    });
+
+    it('reads every offered apartment alongside its round and escrow at the same finalized slot', async () => {
+        const row = fixture();
+        const pdf = { name: 'floor.pdf', mediaType: 'application/pdf', data: Buffer.from('%PDF-1.7').toString('base64') };
+        const unit = (id, deposit) => ({ unitId: id, label: id, xrayBuilding: 'zagreb::gdi-3d::148972', unit: '6::' + id,
+            at: '45.7665,15.9722,19', priceUsdcAtomic: '5000000', depositUsdcAtomic: deposit, drawing: pdf });
+        const funding = { targetUsdcAtomic: '1000000', contract: pdf, apartments: { projectId: 'courtyard',
+            units: [unit('a', '600000'), unit('b', '400000')] } };
+        const offers = pledgeClient.apartmentOffers(funding, row.sponsor, require('../../frontend/js/agreement-record.js'));
+        const first = offers[0];
+        const buyer = Keypair.generate().publicKey;
+        const position = pledgeClient.getDonationPositionPda(row.escrow, buyer, pledgeClient.hashBytes(first.unitKey))[0];
+        const listing = { owner: new web3.PublicKey(pledgeClient.constants.PROGRAM_ID), data: Buffer.concat([
+            Buffer.from(pledgeClient.ACCOUNT_DISCRIMINATORS.ApartmentUnit), key(row.sponsor), Buffer.from(first.unitKey, 'hex'),
+            key(row.account), Buffer.from(first.termsHash, 'hex'), u64(first.deposit), key(buyer), key(position), Buffer.from([255])
+        ]) };
+        const { rpc, chain } = adapter(row, [listing, null]);
+        const found = await chain.observe({ cid: row.cid, sponsor: row.sponsor, account: row.account, funding });
+        expect(rpc.getMultipleAccountsInfoAndContext).toHaveBeenCalledTimes(1);
+        expect(rpc.getMultipleAccountsInfoAndContext).toHaveBeenCalledWith(
+            [row.account, row.escrow, row.vault, ...offers.map(offer => offer.account)].map(address => new web3.PublicKey(address)), 'finalized');
+        expect(found.vaultUsdcAtomic).toBe(1_000_000n);
+        expect(found.reservations).toMatchObject([
+            { unitId: 'a', status: 'reserved', buyer: buyer.toBase58(), position: position.toBase58(), deposit: '600000' },
+            { unitId: 'b', status: 'unlisted', buyer: null, deposit: '400000' }
+        ]);
     });
 
     it('rejects a frozen or uninitialized canonical vault before it reaches the lens', async () => {

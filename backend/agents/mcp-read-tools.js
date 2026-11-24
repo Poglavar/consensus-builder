@@ -151,13 +151,17 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
         if (row.cid !== designCid || !row.content || cidOfObject(row.content) !== designCid) throw failure('cid-mismatch', 'The index returned a different design.', { action: 'Retry from a trusted index.' });
         return { ...row, parcelSourceId: parcelSourceIdOf(row), previewUrl: `${appOrigin}/designs/${designCid}` };
     }
-    async function getAgreement({ agreementCid }) {
-        const row = await request(`/agreements/${encodeURIComponent(agreementCid)}`);
+    async function getAgreement({ agreementCid, includeAvailability = false }) {
+        const row = await request(`/agreements/${encodeURIComponent(agreementCid)}`, includeAvailability ? { inventory: '1' } : {});
         if (row.cid !== agreementCid || !row.content || cidOfObject(row.content) !== agreementCid) throw failure('cid-mismatch', 'The index returned a different agreement.', { action: 'Retry from a trusted index.' });
         return { ...row, previewUrl: `${appOrigin}/agreements/${agreementCid}` };
     }
+    async function apartmentOffers({ city, xrayBuilding, unit }) {
+        const { offers } = await request('/agreements/apartment-offers', { city, xrayBuilding, unit });
+        return { offers: offers.map(({ cid, city, unitId, title, label }) => ({ cid, city, unitId, untrusted: { title, label } })) };
+    }
     return {
-        request, parcels, mapUrl, listDesigns, getDesign, getAgreement,
+        request, parcels, mapUrl, listDesigns, getDesign, getAgreement, apartmentOffers,
         chatCost: args => request('/chat/cost', args),
         siteOfDesign(content) {
             if (content.site) return content.site;

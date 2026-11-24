@@ -306,9 +306,79 @@
 
     const originalMessage = (_key, message) => message;
 
+    function apartmentId(value) {
+        return typeof value === 'string' && /^[a-z0-9][a-z0-9-]{0,63}$/.test(value);
+    }
+
+    // BuildingUnitLinks.pack encodes each segment independently. Reject aliases for the same
+    // selection so a camera change or an alternate spelling cannot list it twice in a round.
+    function locatorParts(value) {
+        if (typeof value !== 'string' || value.length > 1024) return [];
+        try {
+            const encoded = value.split('::');
+            const parts = encoded.map(decodeURIComponent);
+            return parts.every((part, i) => part && !/[\x00-\x1f\x7f]/.test(part) && encodeURIComponent(part) === encoded[i]) ? parts : [];
+        } catch (_) { return []; }
+    }
+
+    function apartmentLocator(value) {
+        const parts = locatorParts(value);
+        if (parts.length !== 3 || (parts[0] === 'design' && !/^baf(?:krei|ybei)[a-z2-7]{52}$/.test(parts[1]))) return null;
+        return parts;
+    }
+
+    function apartmentUnitLocator(value) {
+        const parts = locatorParts(value);
+        if (![2, 3].includes(parts.length) || !/^(?:0|-?[1-9]\d*)$/.test(parts[0]) || !Number.isSafeInteger(Number(parts[0]))) return null;
+        return parts.length === 3 && !/^[a-f0-9]{24}$/.test(parts[2]) ? null : parts;
+    }
+
+    function apartmentLocation(at) {
+        if (typeof at !== 'string' || !/^-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?,\d+(?:\.\d+)?$/.test(at)) return false;
+        const [lat, lng, zoom] = at.split(',').map(Number);
+        return Math.abs(lat) <= 85.0511 && Math.abs(lng) <= 180 && zoom <= 24;
+    }
+
+    function apartmentDrawingError(file) {
+        if (!isObject(file) || Object.keys(file).some(key => !['name', 'mediaType', 'data'].includes(key))
+            || typeof file.name !== 'string' || !file.name.trim() || file.name !== file.name.trim()
+            || file.name.length > 255 || /[\x00-\x1f\x7f/\\]/.test(file.name)
+            || file.mediaType !== 'application/pdf' || !/\.pdf$/i.test(file.name)
+            || typeof file.data !== 'string' || !file.data || file.data.length > 4 * Math.ceil(MAX_CONTRACT_BYTES / 3)) return 'Attach a non-empty PDF drawing of up to 256 KiB.';
+        try {
+            const binary = atob(file.data);
+            if (binary.length > MAX_CONTRACT_BYTES || btoa(binary) !== file.data || !binary.startsWith('%PDF-')) return 'The apartment drawing must contain valid PDF bytes.';
+        } catch (_) { return 'The apartment drawing must contain the original PDF bytes in base64.'; }
+        return null;
+    }
+
+    function apartmentsError(apartments, target) {
+        if (apartments == null) return null;
+        if (!isObject(apartments) || Object.keys(apartments).some(key => !['projectId', 'units'].includes(key))
+            || !apartmentId(apartments.projectId) || !Array.isArray(apartments.units)
+            || apartments.units.length < 1 || apartments.units.length > 8) return 'Apartment inventory needs a projectId and 1–8 units.';
+        const ids = new Set(), locators = new Set(); let deposits = 0n;
+        for (const unit of apartments.units) {
+            if (!isObject(unit) || Object.keys(unit).some(key => !['unitId','label','xrayBuilding','unit','at','priceUsdcAtomic','depositUsdcAtomic','drawing','access'].includes(key))) return 'Each apartment unit has unsupported fields.';
+            if (!apartmentId(unit.unitId) || ids.has(unit.unitId) || typeof unit.label !== 'string' || unit.label !== unit.label.trim() || !unit.label || unit.label.length > 160
+                || !apartmentLocator(unit.xrayBuilding) || !apartmentUnitLocator(unit.unit) || !apartmentLocation(unit.at)
+                || (unit.access != null && !['auto', 'point', 'corridor'].includes(unit.access))) return 'Each apartment needs a unique unit ID, label and valid X-ray location.';
+            const positiveAtomic = value => typeof value === 'string' && /^[1-9]\d{0,19}$/.test(value);
+            if (!positiveAtomic(unit.priceUsdcAtomic) || !positiveAtomic(unit.depositUsdcAtomic)) return 'Enter a positive apartment price and deposit in devnet USDC.';
+            const price = BigInt(unit.priceUsdcAtomic), deposit = BigInt(unit.depositUsdcAtomic);
+            if (price > MAX_U64 || deposit > MAX_U64 || deposit > price) return 'Each apartment deposit must not exceed its price.';
+            const locator = `${unit.xrayBuilding}\u0000${unit.unit}`;
+            if (locators.has(locator)) return 'Apartment units must have unique physical locators.';
+            ids.add(unit.unitId); locators.add(locator); deposits += deposit;
+            const drawingError = apartmentDrawingError(unit.drawing); if (drawingError) return drawingError;
+        }
+        if (target != null && deposits < BigInt(target)) return 'Apartment deposits must cover the funding target.';
+        return null;
+    }
+
     function fundingError(funding, translate = originalMessage) {
         const fileError = message => translate('agreement.funding.fileInvalid', message);
-        if (!isObject(funding) || Object.keys(funding).some(key => !['targetUsdcAtomic', 'contract'].includes(key))
+        if (!isObject(funding) || Object.keys(funding).some(key => !['targetUsdcAtomic', 'contract', 'apartments'].includes(key))
             || typeof funding.targetUsdcAtomic !== 'string' || !/^[1-9]\d{0,19}$/.test(funding.targetUsdcAtomic)
             || BigInt(funding.targetUsdcAtomic) > MAX_U64) return translate('agreement.funding.invalidTarget', 'Enter a positive funding target in devnet USDC.');
         const file = funding.contract;
@@ -331,7 +401,20 @@
                 if (!text.trim() || text.includes('\0')) return fileError('Attach a non-empty UTF-8 text contract.');
             }
         } catch (_) { return fileError('The contract must contain the original file bytes in base64.'); }
-        return null;
+        return apartmentsError(funding.apartments, funding.targetUsdcAtomic);
+    }
+
+    // Stable inventory identity and terms commitment used by apartment purchase flows.
+    function apartmentUnitKey(projectId, unitId) {
+        if (!apartmentId(projectId) || !apartmentId(unitId)) throw new Error('Apartment projectId and unitId must be lowercase ASCII slugs.');
+        return sha256().sha256Hex(stableStringify(['apartment-unit/v1', projectId, unitId]));
+    }
+    function apartmentTermsHash(funding, unit) {
+        if (!isObject(funding) || !isObject(funding.apartments) || !isObject(unit)) throw new Error('Apartment funding terms are required.');
+        const projectId = funding.apartments.projectId;
+        const error = apartmentsError({ projectId, units: [unit] }, null);
+        if (error) throw new Error(error);
+        return sha256().sha256Hex(stableStringify({ schema: SCHEMA, projectId, targetUsdcAtomic: funding.targetUsdcAtomic, contract: funding.contract, unit }));
     }
 
     function crowdfundingError(content, { requireSponsor = false, translate = originalMessage } = {}) {
@@ -938,6 +1021,6 @@
         rightsFromInputs, approvalSubject, stableStringify, published, publishedCid, consultationOf, participationUrl,
         planReference, matchesPlan, PARTY_PREFIX, partyKey, parcelOfParty, partyName, landParties, defaultAllocations, settle, landBalance, contributionLimit, settlementValid, DEFAULT_SETTLEMENT,
         METHODS, schemeOf, schemeCheck, settlementIssues, valueGainOf,
-        MAX_CONTRACT_BYTES, parseUsdc, formatUsdc, fundingError, crowdfundingError
+        MAX_CONTRACT_BYTES, parseUsdc, formatUsdc, fundingError, crowdfundingError, apartmentUnitKey, apartmentTermsHash, apartmentLocator, apartmentUnitLocator
     };
 });

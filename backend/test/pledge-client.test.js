@@ -99,6 +99,11 @@ describe('agreement support codec (proposal_pledge)', () => {
             fulfill_pledge: support.buildFulfillPledgeIx({ proposal, pledger: wallet, beneficiary }),
             void_pledge: support.buildVoidPledgeIx({ proposal, pledger: wallet })
         };
+        const unitKey = '11'.repeat(32); const termsHash = '22'.repeat(32);
+        builders.list_apartment = support.buildListApartmentIx({ developer: wallet, proposal, unitKey, termsHash, deposit: 600000n });
+        builders.reserve_apartment = support.buildReserveApartmentIx({ developer: wallet, proposal, buyer: beneficiary, unitKey, termsHash });
+        const unit = support.getApartmentUnitPda(wallet, unitKey)[0];
+        builders.clear_apartment_refund = support.buildClearApartmentRefundIx({ unitAccount: unit, position: other });
         for (const [name, ix] of Object.entries(builders)) {
             expect(ix.programId.toBase58(), name).toBe(IDL.address);
             expect(actual(ix, name), name).toEqual(flags(name));
@@ -106,6 +111,30 @@ describe('agreement support codec (proposal_pledge)', () => {
         }
         expect(Buffer.from(builders.donate.data).readBigUInt64LE(40)).toBe(250000n);
         expect(Buffer.from(builders.set_pledge.data).readBigUInt64LE(8)).toBe(750000n);
+        expect(Array.from(builders.list_apartment.data.slice(0, 8))).toEqual(IDL.instructions.find(ix => ix.name === 'list_apartment').discriminator);
+        expect(builders.list_apartment.keys[0].pubkey.equals(unit)).toBe(true);
+    });
+
+    it('derives and classifies a two-unit inventory, failing closed on wrong terms', () => {
+        const unitKeyA = '11'.repeat(32); const unitKeyB = '33'.repeat(32);
+        const termsA = '22'.repeat(32); const termsB = '44'.repeat(32);
+        const record = { apartmentUnitKey: (_, id) => id === 'A' ? unitKeyA : unitKeyB, apartmentTermsHash: (_, unit) => unit.unitId === 'A' ? termsA : termsB };
+        const funding = { apartments: { projectId: 'p1', units: [{ unitId: 'A', depositUsdcAtomic: '600000' }, { unitId: 'B', depositUsdcAtomic: '400000' }] } };
+        const offers = support.apartmentOffers(funding, wallet.toBase58(), record);
+        const makeUnit = (offer, agreement, terms, buyerKey = null) => {
+            const data = account('ApartmentUnit', support.APARTMENT_UNIT_SIZE);
+            wallet.toBuffer().copy(data, 8); Buffer.from(offer.unitKey, 'hex').copy(data, 40); new web3.PublicKey(agreement).toBuffer().copy(data, 72);
+            Buffer.from(terms, 'hex').copy(data, 104); data.writeBigUInt64LE(BigInt(offer.deposit), 136);
+            (buyerKey ? new web3.PublicKey(buyerKey) : web3.SystemProgram.programId).toBuffer().copy(data, 144);
+            (buyerKey ? support.getDonationPositionPda(support.getDonationEscrowPda(proposal)[0], buyerKey, Uint8Array.from(Buffer.from(offer.unitKey, 'hex')))[0] : web3.SystemProgram.programId).toBuffer().copy(data, 176);
+            return accountInfo(data);
+        };
+        const infos = [makeUnit(offers[0], proposal.toBase58(), termsA, wallet.toBase58()), makeUnit(offers[1], proposal.toBase58(), '55'.repeat(32))];
+        const rows = support.apartmentInventoryRows(offers, infos, proposal, wallet);
+        expect(rows.map(row => row.status)).toEqual(['reserved', 'unlisted']);
+        expect(rows[0].position).toBeTruthy();
+        const revised = [{ ...offers[0], termsHash: termsB }, offers[1]];
+        expect(support.apartmentInventoryRows(revised, infos, proposal, wallet)[0].status).toBe('unavailable');
     });
 
     it('decodes funded donation totals and a soft pledge commitment', () => {

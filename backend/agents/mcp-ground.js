@@ -49,7 +49,7 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
             const result = await groundFor(await resolveDesigns(designs, parcelSourceId));
             return result.land;
         },
-        async draftAgreement({ plan: value, rulePreset = 'owner-vote', rule: ruleOverride, rights, lens, allocations, settlement, valuation = null, currency = null, deadline = null, sponsor = null, title = null, author = null, createdAt = null, consultation = null, includeGround = false, targetUsdcAtomic = null, contract = null }) {
+        async draftAgreement({ plan: value, rulePreset = 'owner-vote', rule: ruleOverride, rights, lens, allocations, settlement, valuation = null, currency = null, deadline = null, sponsor = null, title = null, author = null, createdAt = null, consultation = null, includeGround = false, targetUsdcAtomic = null, contract = null, apartments = null }) {
             if (!resolvePlan) throw fail('plan-resolver-unavailable', 'Named plan resolution is unavailable.');
             // Funding refers to the published member CIDs. Only newly carried designs need authoring checks.
             const selected = await resolvePlan(value, { referenceMembers: rulePreset === 'crowdfunding' });
@@ -66,7 +66,7 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
                 const rule = { electorate: 'investors', binding: true, lens: lens ? [lens] : [], approvalConfig: null, settlement: null };
                 const published = agreementObject({ title, author, sponsor, city, createdAt: createdAt || new Date().toISOString(), plan: { cid: selected.cid, content: selected.plan },
                     designs: designs.map(d => ({ cid: d.cid, goal: d.content?.goal, title: d.content?.title })), parcels: [], openGroundM2: 0, outputs: [], allocations: [],
-                    money: { currency: currency || cityMoney(city).currentCurrency(), lines: [] }, valuation: null, rule, deadline, funding: { targetUsdcAtomic, contract }, requireSponsor: false });
+                    money: { currency: currency || cityMoney(city).currentCurrency(), lines: [] }, valuation: null, rule, deadline, funding: { targetUsdcAtomic, contract, ...(apartments ? { apartments } : {}) }, requireSponsor: false });
                 const plan = { cid: selected.cid, content: selected.plan };
                 return { agreement: published.content, cid: published.cid, parcelSourceId: null, takes: [], groundEffects: [], persons: null,
                     warnings: ['This crowdfunding agreement references the existing named plan and has no land effects.'], plan, designs,

@@ -71,4 +71,25 @@ describe('investor funding AgreementDecision-v1', () => {
         await expect(planInvestorFundingDecision({ agreement: { ...base, content: { ...base.content, funding: { ...base.content.funding, contract: { ...base.content.funding.contract, data: 'QW1lbmRlZA==' } } } }, lensKey: lens, nowSeconds: now, chain: chain() }))
             .rejects.toMatchObject({ code: 'invalid_funding_content' });
     });
+
+    it('counts only finalized reservations whose two unit ids, terms and deposits match the funding schedule', async () => {
+        const drawing = { name: 'unit.pdf', mediaType: 'application/pdf', data: 'JVBERi0xLjQK' };
+        const unitA = { unitId: 'unit-a', label: 'Unit A', xrayBuilding: 'zagreb::gdi-3d::building-1', unit: '3::a::000000000000000000000000', at: '45.8,15.96,18', priceUsdcAtomic: '600000', depositUsdcAtomic: '600000', drawing };
+        const unitB = { unitId: 'unit-b', label: 'Unit B', xrayBuilding: 'zagreb::gdi-3d::building-1', unit: '4::a::000000000000000000000001', at: '45.8,15.96,18', priceUsdcAtomic: '400000', depositUsdcAtomic: '400000', drawing };
+        const apartments = { projectId: 'preview-1', units: [unitA, unitB] };
+        const content = { ...base.content, funding: { ...base.content.funding, targetUsdcAtomic: '1000000', apartments } };
+        const agreement = { ...base, cid: cidOfObject(content), content };
+        const reservations = [
+            { unitId: 'unit-a', status: 'reserved', deposit: '600000', unitKey: 'a'.repeat(64), termsHash: 'b'.repeat(64), position: 'pos-a' },
+            { unitId: 'unit-b', status: 'reserved', deposit: '400000', unitKey: 'c'.repeat(64), termsHash: 'd'.repeat(64), position: 'pos-b' }
+        ];
+        const valid = await planInvestorFundingDecision({ agreement, lensKey: lens, nowSeconds: now,
+            chain: chain(observed({ reservations, agreement: { ...observed().agreement, cid: agreement.cid } })) });
+        expect(valid.evidence.kind).toBe('apartment_reservations');
+        expect(valid.evidence.reservations).toHaveLength(2);
+        await expect(planInvestorFundingDecision({ agreement, lensKey: lens, nowSeconds: now,
+            chain: chain(observed({ reservations: [reservations[0]], agreement: { ...observed().agreement, cid: agreement.cid } })) })).rejects.toMatchObject({ code: 'apartment_observation_missing' });
+        await expect(planInvestorFundingDecision({ agreement, lensKey: lens, nowSeconds: now,
+            chain: chain(observed({ reservations: reservations.map((row, i) => i ? { ...row, status: 'available' } : row), agreement: { ...observed().agreement, cid: agreement.cid } })) })).rejects.toMatchObject({ code: 'funding_target_not_met' });
+    });
 });

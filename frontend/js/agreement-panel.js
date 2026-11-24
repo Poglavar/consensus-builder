@@ -972,7 +972,9 @@
             const panel = ensurePanel();
             const active = doc.activeElement;
             const focusKey = state.agreement?.rule?.electorate === 'investors' && panel.contains(active)
-                && ['data-agreement-action', 'data-agreement-boost-action', 'data-agreement-properties-tab', 'data-agreement-funding-wallet'].find(key => active.hasAttribute(key));
+                && ['data-agreement-action', 'data-agreement-boost-action', 'data-agreement-properties-tab', 'data-agreement-funding-wallet',
+                    'data-agreement-list-unit', 'data-agreement-reserve-unit', 'data-agreement-schedule-unit',
+                    'data-agreement-xray-unit', 'data-agreement-drawing-unit'].find(key => active.hasAttribute(key));
             const focusSelector = focusKey && `[${focusKey}="${CSS.escape(active.getAttribute(focusKey))}"]`;
             panel.querySelector('#agreement-panel-title').textContent = state.agreement ? titleOf(state.agreement) : t('agreement.panel.title', 'Agreement');
             panel.querySelector('.agreement-panel-kind').textContent = state.agreement?.rule?.electorate === 'investors'
@@ -1039,8 +1041,7 @@
             meter.setAttribute('aria-valuetext', countdown.text);
             panel.querySelector('[data-agreement-funding-time]').textContent = countdown.text;
             if (countdown.delay === null) {
-                const button = panel.querySelector('[data-agreement-boost-action="boost"]');
-                if (button) button.hidden = true;
+                panel.querySelectorAll('[data-agreement-boost-action="boost"],[data-agreement-reserve-unit],[data-agreement-list-unit]').forEach(button => { button.hidden = true; });
                 return;
             }
             countdownTimer = win.setTimeout(() => {
@@ -1052,9 +1053,10 @@
             const slot = panel.querySelector('[data-agreement-boost-slot]');
             const value = state.chain && state.chain.value;
             const agreement = state.readOnlyAgreement || state.agreement;
-            if (!slot || !value || !agreement) return;
+            if (!slot || !agreement || (!value && !agreement.funding?.apartments)) return;
             return ensureBoostScripts().then(() => {
                 if (!slot.isConnected || (state.readOnlyAgreement || state.agreement) !== agreement) return;
+                if (!value) { win.AgreementBoost.mountDraft(slot, agreement); return; }
                 const meter = panel.querySelector('[data-agreement-funding-amount-meter]');
                 const caption = panel.querySelector('[data-agreement-funding-goal]');
                 function onFundingTotal(amount, released) {

@@ -16,6 +16,9 @@
         donate: [121, 186, 218, 211, 73, 70, 196, 180],
         release_donations: [179, 132, 96, 218, 222, 133, 8, 41],
         refund_donation: [122, 218, 183, 126, 27, 195, 121, 196],
+        list_apartment: [29, 183, 167, 68, 184, 74, 203, 34],
+        reserve_apartment: [50, 77, 228, 182, 181, 68, 114, 45],
+        clear_apartment_refund: [41, 35, 231, 167, 173, 52, 239, 230],
         create_pledge_book: [72, 156, 10, 193, 200, 63, 147, 146],
         set_pledge: [28, 155, 221, 80, 2, 110, 77, 26],
         revoke_pledge: [148, 10, 32, 57, 46, 23, 47, 154],
@@ -25,6 +28,7 @@
     const ACCOUNT_DISCRIMINATORS = Object.freeze({
         DonationEscrow: [80, 16, 66, 221, 66, 84, 175, 228],
         DonationPosition: [126, 11, 141, 195, 219, 123, 134, 42],
+        ApartmentUnit: [11, 70, 40, 231, 17, 179, 185, 169],
         Donor: [43, 66, 58, 146, 38, 217, 15, 26],
         PledgeBook: [24, 193, 154, 165, 1, 51, 253, 96],
         PledgeCommitment: [238, 112, 179, 175, 31, 209, 249, 219]
@@ -43,6 +47,7 @@
     });
     const DONATION_ESCROW_SIZE = 178;
     const DONATION_POSITION_SIZE = 114;
+    const APARTMENT_UNIT_SIZE = 8 + 6 * 32 + 8 + 1;
     const DONOR_SIZE = 89;
     const PLEDGE_BOOK_SIZE = 153;
     const PLEDGE_COMMITMENT_SIZE = 115;
@@ -90,6 +95,11 @@
         if (result.length !== 32) throw new Error('donationId must be exactly 32 bytes');
         return result;
     }
+    function hashBytes(hex) {
+        if (typeof hex !== 'string' || !/^[a-f0-9]{64}$/.test(hex)) throw new TypeError('Expected a SHA-256 digest in lowercase hex.');
+        return Uint8Array.from(hex.match(/../g), pair => parseInt(pair, 16));
+    }
+    const hexOf = value => Array.from(value, byte => byte.toString(16).padStart(2, '0')).join('');
     function u64(value, label) {
         let parsed;
         if (typeof value === 'bigint') parsed = value;
@@ -109,6 +119,9 @@
     function getDonationEscrowPda(proposal, programId) { return pda([utf8('donation_escrow'), key(proposal).toBytes()], programId); }
     function getDonationPositionPda(escrow, owner, donationId, programId) {
         return pda([utf8('donation'), key(escrow).toBytes(), key(owner).toBytes(), idBytes(donationId)], programId);
+    }
+    function getApartmentUnitPda(developer, unitKey, programId) {
+        return pda([utf8('apartment_unit'), key(developer).toBytes(), hashBytes(unitKey)], programId);
     }
     function getDonorPda(escrow, owner, programId) { return pda([utf8('donor'), key(escrow).toBytes(), key(owner).toBytes()], programId); }
     function getPledgeBookPda(proposal, programId) { return pda([utf8('pledge_book'), key(proposal).toBytes()], programId); }
@@ -147,6 +160,22 @@
             meta(associatedTokenAddress(owner, mint), false, true), meta(owner, true, true),
             meta(key(constants.TOKEN_PROGRAM_ID), false, false), meta(web3().SystemProgram.programId, false, false)],
         concat([disc('donate'), donationId, encodeU64(amount)]));
+    }
+    function buildListApartmentIx({ developer, proposal, unitKey, termsHash, deposit, programId }) {
+        const [unit] = getApartmentUnitPda(developer, unitKey, programId);
+        return ix(programId, [meta(unit, false, true), meta(key(proposal), false, false), meta(key(developer), true, true),
+            meta(web3().SystemProgram.programId, false, false)],
+        concat([disc('list_apartment'), hashBytes(unitKey), hashBytes(termsHash), encodeU64(deposit)]));
+    }
+    function buildReserveApartmentIx({ developer, proposal, buyer, unitKey, termsHash, programId }) {
+        const [unit] = getApartmentUnitPda(developer, unitKey, programId);
+        const [escrow] = getDonationEscrowPda(proposal, programId);
+        const [position] = getDonationPositionPda(escrow, buyer, hashBytes(unitKey), programId);
+        return ix(programId, [meta(unit, false, true), meta(key(proposal), false, false), meta(escrow, false, false),
+            meta(position, false, false), meta(key(buyer), true, false)], concat([disc('reserve_apartment'), hashBytes(termsHash)]));
+    }
+    function buildClearApartmentRefundIx({ unitAccount, position, programId }) {
+        return ix(programId, [meta(key(unitAccount), false, true), meta(key(position), false, false)], disc('clear_apartment_refund'));
     }
     function buildReleaseDonationsIx(options) {
         const o = options || {}; const { subject, mint, owner } = supportKeys(o); const beneficiary = key(o.beneficiary, 'beneficiary');
@@ -227,6 +256,74 @@
         const totalDonated = readU64(value, at); at += 8; const donationCount = readU64(value, at); at += 8;
         return { escrow, owner, totalDonated, donationCount, bump: value[at] };
     }
+    function decodeApartmentUnit(data) {
+        const value = assertAccount(data, APARTMENT_UNIT_SIZE, 'ApartmentUnit');
+        const buyer = readKey(value, 144), position = readKey(value, 176);
+        return { developer: readKey(value, 8), unitKey: hexOf(value.subarray(40, 72)), agreement: readKey(value, 72),
+            termsHash: hexOf(value.subarray(104, 136)), deposit: readU64(value, 136),
+            buyer: buyer === constants.SYSTEM_PROGRAM_ID ? null : buyer, position: position === constants.SYSTEM_PROGRAM_ID ? null : position, bump: value[208] };
+    }
+    // All readers derive the same addresses and compare the on-chain listing with the published unit schedule.
+    function apartmentOffers(funding, developer, record, programId) {
+        return (funding?.apartments?.units || []).map(unit => {
+            const unitKey = record.apartmentUnitKey(funding.apartments.projectId, unit.unitId);
+            return { unitId: unit.unitId, unitKey, termsHash: record.apartmentTermsHash(funding, unit), deposit: unit.depositUsdcAtomic,
+                account: getApartmentUnitPda(developer, unitKey, programId)[0].toBase58() };
+        });
+    }
+    function apartmentInventoryRows(offers, infos, proposal, developer, programId) {
+        if (infos.length !== offers.length) throw new Error('Incomplete apartment inventory response.');
+        const agreement = key(proposal).toBase58();
+        return offers.map((offer, i) => {
+            const listing = readAccountInfo(infos[i], decodeApartmentUnit, { developer }, programId);
+            if (listing && (listing.unitKey !== offer.unitKey || Boolean(listing.buyer) !== Boolean(listing.position))) throw new Error('Invalid apartment reservation account.');
+            if (listing?.buyer) {
+                const escrow = getDonationEscrowPda(listing.agreement, programId)[0];
+                const position = getDonationPositionPda(escrow, listing.buyer, hashBytes(offer.unitKey), programId)[0].toBase58();
+                if (position !== listing.position) throw new Error('Invalid apartment deposit position.');
+            }
+            const matched = listing?.agreement === agreement && listing.termsHash === offer.termsHash && listing.deposit === BigInt(offer.deposit);
+            const status = matched ? (listing.buyer ? 'reserved' : 'available') : (listing?.buyer ? 'unavailable' : 'unlisted');
+            return { ...offer, status, buyer: listing?.buyer || null, position: listing?.position || null };
+        });
+    }
+    async function readApartmentInventory(connection, proposal, developer, funding, record) {
+        const offers = apartmentOffers(funding, developer, record);
+        if (!offers.length) return [];
+        const infos = await connection.getMultipleAccountsInfo(offers.map(offer => key(offer.account)), 'confirmed');
+        const rows = apartmentInventoryRows(offers, infos, proposal, developer);
+        const held = rows.filter(row => row.position);
+        if (held.length) {
+            const positions = await connection.getMultipleAccountsInfo(held.map(row => key(row.position)), 'confirmed');
+            held.forEach((row, i) => {
+                const paid = readAccountInfo(positions[i], decodeDonationPosition, { owner: row.buyer });
+                if (!paid || hexOf(paid.donationId) !== row.unitKey) throw new Error('Apartment deposit position could not be verified.');
+                if (paid.refunded) {
+                    row.clearedPosition = row.position;
+                    row.status = 'unlisted';
+                    row.position = null;
+                    row.buyer = null;
+                }
+            });
+        }
+        return rows;
+    }
+
+    // An inventory round has at most eight deposit IDs, so refunds need no program-wide address scan.
+    async function apartmentPositions(connection, proposal, owner, funding, record) {
+        const escrow = getDonationEscrowPda(proposal)[0];
+        const ids = funding.apartments.units.map(unit => record.apartmentUnitKey(funding.apartments.projectId, unit.unitId));
+        const keys = ids.map(id => getDonationPositionPda(escrow, owner, hashBytes(id))[0]);
+        const infos = await connection.getMultipleAccountsInfo(keys, 'confirmed');
+        if (infos.length !== ids.length) throw new Error('Apartment deposit positions could not be read.');
+        return infos.flatMap((info, i) => {
+            const value = readAccountInfo(info, decodeDonationPosition, { escrow, owner });
+            if (!value) return [];
+            if (hexOf(value.donationId) !== ids[i]) throw new Error('Apartment deposit ID does not match the unit.');
+            return [{ ...value, address: keys[i].toBase58() }];
+        });
+    }
+
     function decodePledgeBook(data) {
         const value = assertAccount(data, PLEDGE_BOOK_SIZE, 'PledgeBook'); let at = 8;
         const proposal = readKey(value, at); at += 32; const beneficiary = readKey(value, at); at += 32; const mint = readKey(value, at); at += 32;
@@ -306,6 +403,8 @@
     const api = {
         constants, IX_DISCRIMINATORS, ACCOUNT_DISCRIMINATORS, configure,
         DONATION_ESCROW_SIZE, DONATION_POSITION_SIZE, DONOR_SIZE, PLEDGE_BOOK_SIZE, PLEDGE_COMMITMENT_SIZE,
+        APARTMENT_UNIT_SIZE, getApartmentUnitPda, hashBytes, decodeApartmentUnit, apartmentOffers, apartmentInventoryRows, readApartmentInventory, apartmentPositions,
+        buildListApartmentIx, buildReserveApartmentIx, buildClearApartmentRefundIx,
         getDonationEscrowPda, getDonationPositionPda, getDonorPda, getPledgeBookPda, getPledgeCommitmentPda,
         getAssociatedTokenAddress: associatedTokenAddress,
         buildCreateDonationEscrowIx, buildDonateIx, buildReleaseDonationsIx, buildRefundDonationIx,

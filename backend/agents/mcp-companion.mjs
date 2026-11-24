@@ -35,7 +35,19 @@ const consultation = z.object({ organiser: z.string().max(2048).nullable(), part
     const investorContract = z.object({ name: z.string().trim().min(1).max(255).refine(value => !/[\x00-\x1f\x7f/\\]/.test(value), 'Contract name cannot contain control characters or path separators.'),
         mediaType: z.enum(['application/pdf', 'text/plain']), data: z.string().min(1).max(350000) }).strict()
         .describe('Immutable investor contract attachment. data is the original file bytes encoded as base64; PDF names end .pdf, UTF-8 text names end .txt.');
-    const crowdfundingTerms = { targetUsdcAtomic: z.string().regex(/^[1-9]\d{0,19}$/).describe('Positive devnet-USDC target in atomic units (1 USDC = 1000000).'), contract: investorContract };
+    const permanentId = z.string().regex(/^[a-z0-9][a-z0-9-]{0,63}$/);
+    const atomicUsdc = z.string().regex(/^[1-9]\d{0,19}$/);
+    const apartmentUnit = z.object({
+        unitId: permanentId, label: z.string().min(1).max(160),
+        xrayBuilding: z.string().min(1).max(1024).describe('Exact xrayBuilding from Copy apartment link.'),
+        unit: z.string().min(1).max(1024).describe('Storey and source unit ID, including the fingerprint for a generated unit.'),
+        at: z.string().max(100).describe('Latitude, longitude and zoom from the reviewed X-ray link.'),
+        priceUsdcAtomic: atomicUsdc, depositUsdcAtomic: atomicUsdc,
+        drawing: investorContract.refine(file => file.mediaType === 'application/pdf' && /\.pdf$/i.test(file.name)),
+        access: z.enum(['auto', 'point', 'corridor']).optional()
+    }).strict();
+    const apartments = z.object({ projectId: permanentId, units: z.array(apartmentUnit).min(1).max(8) }).strict();
+    const crowdfundingTerms = { targetUsdcAtomic: z.string().regex(/^[1-9]\d{0,19}$/).describe('Positive devnet-USDC target in atomic units (1 USDC = 1000000).'), contract: investorContract, apartments };
 
 export function registerMcpCompanion(server, { actions, handler, readOnly, discovery, debugCosts = false }) {
     const add = (name, description, shape, method) => server.registerTool(name, {
@@ -50,8 +62,8 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
             expectedVersion: z.number().int().nonnegative(), requestId: z.uuid(), confirm: z.literal(true) }).strict(),
         annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true }
     }, handler(args => actions.castCommunityVote(args)));
-    add('ugt_approval_link', 'Build a wallet approval link. The person reviews and presses the action; links never open a wallet prompt on load. Amount is SOL for fund, USDC for bet, pledge or donate.',
-        { action: z.enum(['mint', 'fund', 'decide', 'execute', 'cancel', 'expire', 'bet', 'pledge', 'donate']), target: z.string().max(100), params: z.object({ amount: z.string().optional(), side: z.enum(['yes', 'no']).optional(), decision: z.enum(['accept', 'reject']).optional(), city: city.optional() }).default({}) }, 'approvalLink');
+    add('ugt_approval_link', 'Build a wallet approval link. The person reviews and presses the action; links never open a wallet prompt on load. Amount is SOL for fund, USDC for bet, pledge or donate. Apartment reserve/list links require unitId and never sign automatically.',
+        { action: z.enum(['mint', 'fund', 'decide', 'execute', 'cancel', 'expire', 'bet', 'pledge', 'donate', 'reserve', 'list-apartment']), target: z.string().max(100), params: z.object({ amount: z.string().optional(), side: z.enum(['yes', 'no']).optional(), decision: z.enum(['accept', 'reject']).optional(), city: city.optional(), unitId: permanentId.optional() }).default({}) }, 'approvalLink');
     add('ugt_find_place', 'Find a place, address, street intersection, longitude/latitude, parcel id or design title. Place, address and intersection searches require a WGS84 bbox no larger than 0.5 degrees. Candidates include map links; choose one before drafting.',
         { query: z.string().min(1).max(200).optional(), street: z.string().min(1).max(160).optional(), houseNumber: z.string().min(1).max(20).optional(),
             streetA: z.string().min(1).max(160).optional(), streetB: z.string().min(1).max(160).optional(), city: city.optional(), parcelSourceId: z.string().max(3507).optional(), bbox: bbox.optional(),
@@ -78,6 +90,8 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
             q: z.string().max(200).optional(), order: z.enum(['newest', 'oldest']).optional(), offset: z.number().int().min(0).max(1000000).optional(),
             limit: z.number().int().min(1).max(100).default(20) }, 'listDesigns');
     add('ugt_get_design', 'Read a design by CID and return its map link.', { designCid: cid }, 'getDesign');
+    add('ugt_apartment_offers', 'Read active minted apartment offers matching the exact X-ray building and unit. Availability is checked again from chain when the agreement opens.',
+        { city, xrayBuilding: z.string().min(1).max(1024), unit: z.string().min(1).max(1024) }, 'apartmentOffers');
     add('ugt_markets', 'Read city contests, pools and devnet USDC stakes.', { city }, 'markets');
     add('ugt_explain', 'Look up a term in the maintained domain vocabulary.', { term: z.string().min(1).max(100) }, 'explain');
 
@@ -187,7 +201,7 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
         z.object({ type: z.literal('modify'), ref, changes: z.array(changes).min(1).max(20), displace })
     ])).max(100).default([]);
     add('ugt_inspect_agreement', 'Inspect an agreement by CID, /agreements link or draftRef. For developer crowdfunding, review the committed funding target and contract, payout wallet, funding verifier and on-chain contributor eligibility before donating. Land agreements return design and building references and derived land pieces. Edit a derived piece through its source design.',
-        { plan: designInput, ...inventory }, 'inspectAgreement');
+        { plan: designInput, ...inventory, includeAvailability: z.boolean().optional().describe('Read the current confirmed listings and reservations for a published apartment round.') }, 'inspectAgreement');
     add('ugt_edit_agreement', 'Revise agreement terms against the exact existing named plan. For crowdfunding, targetUsdcAtomic, contract, sponsor, lens and deadline form one immutable investor offer; changing any yields a new agreement CID and requires renewed review. terms.plan selects a different existing plan revision. Design composition and named-plan membership are edited with ugt_edit_plan; prior decisions stay with the original agreement.',
         { plan: designInput, expectedCid: cid, terms: z.object({ plan: designInput.optional(), rule: agreementRule.optional(), rights: z.record(z.string(), z.unknown()).optional(), allocations: z.array(allocation).optional(), settlement: settlement.optional(), valuation: valuation.nullable().optional(),
             title: z.string().max(200).nullable().optional(), author: z.string().max(100).nullable().optional(), sponsor: z.string().nullable().optional(), lens: z.string().optional(), deadline: z.iso.datetime().nullable().optional(), consultation, rulePreset: z.enum(['owner-deal', 'owner-vote', 'crowdfunding']).optional(), ...Object.fromEntries(Object.entries(crowdfundingTerms).map(([key, value]) => [key, value.optional()]))

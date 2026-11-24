@@ -117,6 +117,7 @@ describe("proposal_pledge", () => {
     const vaultOf = (escrow: PublicKey) => getAssociatedTokenAddressSync(USDC, escrow, true);
     const positionOf = (escrow: PublicKey, donor: PublicKey, id: Buffer) =>
         pda([Buffer.from("donation"), escrow.toBuffer(), donor.toBuffer(), id]);
+    const apartmentOf = (developer: PublicKey, id: Buffer) => pda([Buffer.from("apartment_unit"), developer.toBuffer(), id]);
     const donorRecordOf = (escrow: PublicKey, donor: PublicKey) => pda([Buffer.from("donor"), escrow.toBuffer(), donor.toBuffer()]);
     const bookOf = (proposal: PublicKey) => pda([Buffer.from("pledge_book"), proposal.toBuffer()]);
     const commitmentOf = (book: PublicKey, owner: PublicKey) => pda([Buffer.from("pledge"), book.toBuffer(), owner.toBuffer()]);
@@ -169,6 +170,38 @@ describe("proposal_pledge", () => {
             vault: vaultOf(escrow), donorTokenAccount: donor.usdc, donor: donor.pk,
             tokenProgram: TOKEN_PROGRAM_ID, systemProgram: SystemProgram.programId, ...over,
         } as any).signers([donor.kp]).rpc();
+    }
+
+    function listApartment(proposal: PublicKey, unitKey: Buffer, terms: Buffer, deposit: number) {
+        return program.methods.listApartment(Array.from(unitKey), Array.from(terms), new anchor.BN(deposit)).accountsStrict({
+            unit: apartmentOf(creator.publicKey, unitKey), proposal, developer: creator.publicKey, systemProgram: SystemProgram.programId,
+        } as any).signers([creator]).rpc();
+    }
+    async function reserveApartment(buyer: Party, proposal: PublicKey, unitKey: Buffer, terms: Buffer, amount: number) {
+        const escrow = escrowOf(proposal);
+        const position = positionOf(escrow, buyer.pk, unitKey);
+        const deposit = await program.methods.donate(Array.from(unitKey), new anchor.BN(amount)).accountsStrict({
+            escrow, proposal, position, donorRecord: donorRecordOf(escrow, buyer.pk), vault: vaultOf(escrow),
+            donorTokenAccount: buyer.usdc, donor: buyer.pk, tokenProgram: TOKEN_PROGRAM_ID, systemProgram: SystemProgram.programId,
+        } as any).instruction();
+        const claim = await program.methods.reserveApartment(Array.from(terms)).accountsStrict({
+            unit: apartmentOf(creator.publicKey, unitKey), proposal, escrow, position, buyer: buyer.pk,
+        } as any).instruction();
+        const latest = await connection.getLatestBlockhash('confirmed');
+        const transaction = new Transaction({ feePayer: buyer.pk, ...latest }).add(deposit, claim);
+        transaction.sign(buyer.kp);
+        const signature = await connection.sendRawTransaction(transaction.serialize(), { skipPreflight: true });
+        const confirmation = await connection.confirmTransaction({ ...latest, signature }, 'confirmed');
+        if (confirmation.value.err) {
+            const tx = await connection.getTransaction(signature, { commitment: 'confirmed', maxSupportedTransactionVersion: 0 });
+            throw new Error([JSON.stringify(confirmation.value.err), ...(tx?.meta?.logMessages || [])].join('\n'));
+        }
+        return signature;
+    }
+    function clearApartment(unitKey: Buffer, position: PublicKey) {
+        return program.methods.clearApartmentRefund().accountsStrict({
+            unit: apartmentOf(creator.publicKey, unitKey), position,
+        } as any).rpc();
     }
 
     function release(proposal: PublicKey, releaser: Party, over: any = {}) {
@@ -780,6 +813,54 @@ describe("proposal_pledge", () => {
                 expect(await bookState(expiringPledges.proposal)).to.include({ activePledged: 0, activeCount: 0, totalRevoked: 0 });
                 await expectFailure(() => voidPledge(pledgerA.pk, expiringPledges.proposal), "PledgeNotActive");
                 expect(await balance(pledgerA.usdc)).to.equal(USDC_FUNDING);
+            });
+        });
+
+        describe("apartment reservations", () => {
+            it("charges one competing buyer, rebooks after refund and retains a paid apartment across rounds", async () => {
+                const round = await newAgreement("outside-garden");
+                const revision = await newAgreement("inside-garden");
+                const unitA = donationId("permanent-a"), unitB = donationId("permanent-b");
+                const terms = donationId("terms"), revisedTerms = donationId("revised-terms");
+                const deposit = 2_000_000;
+                await createEscrow(round.proposal);
+                await listApartment(round.proposal, unitA, terms, deposit);
+                await listApartment(round.proposal, unitB, terms, 3_000_000);
+                const buyers = [donorA, donorB];
+                const before = await Promise.all(buyers.map(buyer => balance(buyer.usdc)));
+                const claims = await Promise.allSettled(buyers.map(buyer => reserveApartment(buyer, round.proposal, unitA, terms, deposit)));
+                const issues = claims.flatMap(result => result.status === "rejected" ? [errorText(result.reason)] : []);
+                expect(claims.filter(result => result.status === "fulfilled"), issues.join("\n")).to.have.length(1);
+                const first = claims.findIndex(result => result.status === "fulfilled");
+                const winner = buyers[first], second = buyers[1 - first];
+                const rejected = claims[1 - first] as PromiseRejectedResult;
+                expect(errorText(rejected.reason), errorText(rejected.reason)).to.match(/ApartmentReserved|"Custom":6018/);
+                const escrow = escrowOf(round.proposal);
+                const position = positionOf(escrow, winner.pk, unitA);
+                expect(await balance(second.usdc)).to.equal(before[1 - first]);
+                expect(await connection.getAccountInfo(positionOf(escrow, second.pk, unitA))).to.equal(null);
+                expect(await balance(vaultOf(escrow))).to.equal(deposit);
+                expect(await balance(winner.usdc)).to.equal(before[first] - deposit);
+                await expectFailure(() => listApartment(revision.proposal, unitA, revisedTerms, deposit), /ApartmentRetained/);
+                await expectFailure(() => clearApartment(unitA, position), /NotRefunded/);
+                await cancel(round);
+                await refund(winner, round.proposal, "permanent-a");
+                await clearApartment(unitA, position);
+                expect(await balance(winner.usdc)).to.equal(before[first]);
+
+                await createEscrow(revision.proposal);
+                await listApartment(revision.proposal, unitA, revisedTerms, deposit);
+                await expectFailure(() => reserveApartment(second, revision.proposal, unitA, terms, deposit), /TermsMismatch|"Custom":6020/);
+                await reserveApartment(second, revision.proposal, unitA, revisedTerms, deposit);
+                await execute(revision);
+                const payoutBefore = await connection.getAccountInfo(beneficiaryUsdc) ? await balance(beneficiaryUsdc) : 0;
+                await release(revision.proposal, attacker);
+                expect(await balance(beneficiaryUsdc)).to.equal(payoutBefore + deposit);
+                const newer = await newAgreement("later-round");
+                await expectFailure(() => listApartment(newer.proposal, unitA, terms, deposit), /ApartmentRetained/);
+                const held = await (program.account as any).apartmentUnit.fetch(apartmentOf(creator.publicKey, unitA));
+                expect(held.buyer.toBase58()).to.equal(second.pk.toBase58());
+                expect(held.position.toBase58()).to.equal(positionOf(escrowOf(revision.proposal), second.pk, unitA).toBase58());
             });
         });
     });

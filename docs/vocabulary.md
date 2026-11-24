@@ -86,7 +86,9 @@ The developer’s attached PDF or UTF-8 text specifying what a contributor recei
 
 A crowdfunding offer for one whole apartment at a fixed price and deposit. The developer wallet, permanent project ID and permanent unit ID identify it across rounds. The unit’s X-ray address and attached drawing identify the layout the buyer reviewed. A funded reservation belongs to one buyer wallet. Execution retains its allocation. A refunded position permits the unit to be released and listed again.
 
-The **contract schedule** ties that apartment, its full price and its deposit position to the buyer, developer, exact agreement and attached contract.
+The **reservation deposit** is the fixed USDC amount the buyer pays into the agreement’s escrow to reserve the unit. Only deposits attached to reserved units count toward an apartment round’s funding target.
+
+The **contract schedule** ties that apartment, its full price and paid deposit to the buyer wallet, developer, exact agreement, attached contract and unit drawing. Its deposit position identifies the payment on Solana.
 
 ### Poll
 

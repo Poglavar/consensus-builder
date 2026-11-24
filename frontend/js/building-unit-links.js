@@ -51,5 +51,14 @@
             camera: { targetLat: lat, targetLng: lng, headingDeg: 0, pitchRad: -1.52, range: 95 } });
     }
 
-    return { nativeBuilding, designBuilding, unitsForStorey, read, link };
+    function offerLink(base, mapShare, context, offer) {
+        const [lat, lng] = offer.at.split(',').map(Number);
+        const [source, revision] = offer.xrayBuilding.split('::');
+        const city = source === 'design' ? context.city : decodeURIComponent(source);
+        return link(base, mapShare, { ...context, city }, { building: offer.xrayBuilding, unit: offer.unit,
+            designCid: source === 'design' ? revision : null, suggested: offer.unit.split('::').length === 3,
+            access: offer.access || 'auto', center: [lng, lat] });
+    }
+
+    return { nativeBuilding, designBuilding, unitsForStorey, read, link, offerLink };
 });

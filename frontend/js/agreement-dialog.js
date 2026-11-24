@@ -337,7 +337,11 @@
                     lens: Array.isArray(state.lens) ? state.lens.slice() : [] }, consultation: null,
                 deadline: values.fundingDeadlineDirty ? deadlineFromDate(values.deadline, 0)
                     : (values.fundingDeadline || deadlineFromDate(values.deadline, 0)),
-                funding: { targetUsdcAtomic: funding.targetUsdcAtomic || '', contract: funding.contract || null } };
+                funding: { targetUsdcAtomic: funding.targetUsdcAtomic || '', contract: funding.contract || null,
+                    ...(funding.apartments ? { apartments: { projectId: funding.apartments.projectId, units: (funding.apartments.units || []).map(unit => ({
+                        unitId: unit.unitId, label: unit.label, xrayBuilding: unit.xrayBuilding, unit: unit.unit, at: unit.at,
+                        priceUsdcAtomic: unit.priceUsdcAtomic, depositUsdcAtomic: unit.depositUsdcAtomic, drawing: unit.drawing,
+                        ...(unit.access ? { access: unit.access } : {}) })) } } : {}) } };
             return rawFunding;
         }
         const land = state.land || emptyLand();
@@ -674,6 +678,7 @@
             + `<label class="proposal-editor-field"><span>${esc(t('agreement.funding.target', 'Funding target (devnet USDC)'))}</span><input type="text" inputmode="decimal" data-agreement-funding-target value="${esc(funding.targetInput || '')}"></label>`
             + `<label class="proposal-editor-field"><span>${esc(t('agreement.funding.contract', 'Investor contract (PDF or UTF-8 text, up to 256 KiB)'))}</span><input type="file" accept="application/pdf,text/plain,.txt" data-agreement-funding-file></label>`
             + `<p class="agreement-hint" data-agreement-funding-file-name>${esc(funding.contract?.name || '')}</p>`
+            + apartmentEditorHtml(funding)
             + detailsHtml({ title: values.title, deadline: values.deadline, today: view.today, deadlineRequired: values.electorate === 'investors' })
             + '<section class="agreement-lens" aria-labelledby="agreement-funding-lens-title"><h4 id="agreement-funding-lens-title" class="agreement-object-heading">' + esc(t('agreement.funding.lens', 'Lens that verifies funding')) + '</h4><button type="button" class="btn btn-icon btn-sm lens-pattern-button" data-lens-pattern data-agreement-action="lens" aria-label="' + esc(t('agreement.funding.chooseKey', 'Choose funding verification lens')) + '"><i class="fa-solid fa-glasses" aria-hidden="true"></i></button></section></section>';
         if (values.electorate === 'investors') {
@@ -691,6 +696,42 @@
         return '<ul class="agreement-issues agreement-issues--error" data-agreement-errors aria-live="assertive"></ul><ul class="agreement-issues agreement-issues--warning" data-agreement-warnings aria-live="polite"></ul>'
             + `<div class="cb-tabs agreement-editor__tabs" role="tablist" aria-label="${esc(t('agreement.panel.title', 'Agreement'))}">${TABS.map(tab => `<button type="button" class="cb-tab" role="tab" id="agreement-tab-${tab}" aria-controls="agreement-tabpanel-${tab}" aria-selected="${tab === 'inputs'}" tabindex="${tab === 'inputs' ? 0 : -1}" data-agreement-tab="${tab}">${esc(tabLabel(tab, view.counts))}</button>`).join('')}</div>`
             + TABS.map(tab => `<section role="tabpanel" id="agreement-tabpanel-${tab}" aria-labelledby="agreement-tab-${tab}" data-agreement-tabpanel="${tab}"${tab === 'inputs' ? '' : ' hidden'}>${panels[tab]}</section>`).join('');
+    }
+
+    function apartmentRowHtml(unit = {}) {
+        return `<fieldset class="agreement-apartment-unit" data-apartment-unit><legend>${esc(t('agreement.funding.apartments.unitTitle', 'Apartment'))}</legend>`
+            + `<label><span>${esc(t('agreement.funding.apartments.unitId', 'Unit ID'))}</span><input data-apartment="unitId" value="${esc(unit.unitId || '')}"></label>`
+            + `<label><span>${esc(t('agreement.funding.apartments.label', 'Label'))}</span><input data-apartment="label" value="${esc(unit.label || '')}"></label>`
+            + `<label><span>${esc(t('agreement.funding.apartments.source', 'X-ray building or apartment link'))}</span><input data-apartment="xrayBuilding" value="${esc(unit.xrayBuilding || '')}"></label>`
+            + `<label><span>${esc(t('agreement.funding.apartments.unit', 'Building unit'))}</span><input data-apartment="unit" value="${esc(unit.unit || '')}"></label>`
+            + `<label><span>${esc(t('agreement.funding.apartments.at', 'Location (latitude, longitude, zoom)'))}</span><input data-apartment="at" placeholder="45.80,15.97,18" value="${esc(unit.at || '')}"></label>`
+            + `<label><span>${esc(t('agreement.funding.apartments.price', 'Price (USDC)'))}</span><input inputmode="decimal" data-apartment="priceInput" value="${esc(unit.priceInput || (unit.priceUsdcAtomic ? recordApi().formatUsdc(unit.priceUsdcAtomic) : ''))}"></label>`
+            + `<label><span>${esc(t('agreement.funding.apartments.deposit', 'Deposit (USDC)'))}</span><input inputmode="decimal" data-apartment="depositInput" value="${esc(unit.depositInput || (unit.depositUsdcAtomic ? recordApi().formatUsdc(unit.depositUsdcAtomic) : ''))}"></label>`
+            + `<label><span>${esc(t('agreement.funding.apartments.drawing', 'Drawing (PDF)'))}</span><input type="file" accept="application/pdf,.pdf" data-apartment-drawing></label><p data-apartment-drawing-name>${esc(unit.drawing?.name || '')}</p>`
+            + `<label><span>${esc(t('agreement.funding.apartments.access', 'Access'))}</span><input data-apartment="access" value="${esc(unit.access || '')}"></label>`
+            + `<button type="button" class="btn btn-sm" data-apartment-remove>${esc(t('agreement.funding.apartments.remove', 'Remove apartment'))}</button></fieldset>`;
+    }
+
+    function apartmentEditorHtml(funding) {
+        const apartments = funding.apartments || { projectId: '', units: [] };
+        return `<section class="agreement-apartments" aria-labelledby="agreement-apartments-title"><h4 id="agreement-apartments-title">${esc(t('agreement.funding.apartments.title', 'Apartment inventory'))}</h4>`
+            + `<label><span>${esc(t('agreement.funding.apartments.projectId', 'Project ID'))}</span><input data-apartments-project value="${esc(apartments.projectId)}"></label>`
+            + `<div data-apartment-list>${apartments.units.map(apartmentRowHtml).join('')}</div><button type="button" class="btn btn-sm" data-apartment-add>${esc(t('agreement.funding.apartments.add', 'Add apartment'))}</button></section>`;
+    }
+
+    function syncApartmentInputs(state, body) {
+        if (state.values.electorate !== 'investors') return;
+        const projectId = body.querySelector('[data-apartments-project]')?.value.trim() || '';
+        const units = [...body.querySelectorAll('[data-apartment-unit]')].map((row, index) => {
+            const value = key => row.querySelector(`[data-apartment="${key}"]`)?.value.trim() || '';
+            const previous = state.values.funding?.apartments?.units[index] || {};
+            const price = recordApi().parseUsdc(value('priceInput')), deposit = recordApi().parseUsdc(value('depositInput'));
+            return { unitId: value('unitId'), label: value('label'), xrayBuilding: value('xrayBuilding'), unit: value('unit'), at: value('at'),
+                priceInput: value('priceInput'), depositInput: value('depositInput'), priceUsdcAtomic: price === null ? '' : String(price), depositUsdcAtomic: deposit === null ? '' : String(deposit),
+                drawing: previous.drawing || null, access: value('access') || undefined };
+        });
+        if (projectId || units.length) state.values.funding.apartments = { projectId, units };
+        else delete state.values.funding.apartments;
     }
 
     // ---- the editor: a panel on the right dock ---------------------------------------------------
@@ -833,7 +874,7 @@
         const closed = new Promise(resolve => { resolveClosed = resolve; });
         const current = { cancel: () => finish(null) };
         session = current;
-        const draft = () => recordFromForm(state, state.values);
+        const draft = () => { syncApartmentInputs(state, body); return recordFromForm(state, state.values); };
         let rosterPending = false;
         const roster = root.CommunityVotingRoster?.mount(part('[data-voting-roster]'), {
             value: state.values.voting,
@@ -872,7 +913,7 @@
                 if (state.values.electorate === 'investors') {
                     part('[data-agreement-errors]').innerHTML = issuesHtml(checked.errors);
                     waiting.textContent = state.contractReading ? t('agreement.funding.fileReading', 'Reading the investor contract…') : '';
-                    saveButton.disabled = state.contractReading || !checked.valid;
+                    saveButton.disabled = state.contractReading || !!body.querySelector('[data-drawing-loading]') || !checked.valid;
                     return;
                 }
                 // A scheme rule the plan breaks or a land value that is missing follows a choice the
@@ -1087,7 +1128,7 @@
             try {
                 readRule(); const record = draft();
                 const checked = api.validate(record, { designOf: id => root.proposalStorage.getProposal(id), isApplied: root.isApplied, translate: t });
-                if (!checked.valid || state.contractReading) { issues(); return; }
+                if (!checked.valid || state.contractReading || body.querySelector('[data-drawing-loading]')) { issues(); return; }
                 finish(root.AgreementStore.save(record));
             } catch (error) { part('[data-agreement-errors]').textContent = error.message; report(error); }
         }, { signal });
@@ -1140,9 +1181,51 @@
             const next = { ArrowRight: (index + 1) % 4, ArrowLeft: (index + 3) % 4, Home: 0, End: 3 }[event.key];
             if (next !== undefined) { event.preventDefault(); activate(TABS[next], true); }
         }, { signal });
-        body.addEventListener('change', event => {
+        body.addEventListener('click', event => {
+            const button = event.target.closest('[data-apartment-add],[data-apartment-remove]');
+            if (!button) return;
+            const list = body.querySelector('[data-apartment-list]');
+            if (button.hasAttribute('data-apartment-add')) {
+                if (list.children.length >= 8) return;
+                list.insertAdjacentHTML('beforeend', apartmentRowHtml());
+                list.lastElementChild.querySelector('input').focus();
+            } else {
+                const row = button.closest('[data-apartment-unit]');
+                const index = [...list.children].indexOf(row);
+                state.values.funding.apartments.units.splice(index, 1);
+                row.remove();
+                (list.children[index]?.querySelector('input') || body.querySelector('[data-apartment-add]')).focus();
+            }
+            body.querySelector('[data-apartment-add]').disabled = list.children.length >= 8;
+            issues();
+        }, { signal });
+        body.addEventListener('change', async event => {
             const target = event.target;
             try {
+                if (target.matches('[data-apartment-drawing]')) {
+                    const file = target.files[0];
+                    if (!file) return;
+                    const row = target.closest('[data-apartment-unit]');
+                    const fileName = row.querySelector('[data-apartment-drawing-name]');
+                    const currentUnit = () => state.values.funding.apartments.units[[...body.querySelectorAll('[data-apartment-unit]')].indexOf(row)];
+                    row.dataset.drawingLoading = '';
+                    currentUnit().drawing = null;
+                    fileName.textContent = '';
+                    issues();
+                    try {
+                        if (file.size > api.MAX_CONTRACT_BYTES || !/\.pdf$/i.test(file.name)) throw new Error(t('agreement.funding.apartments.pdfOnly', 'Choose a PDF drawing no larger than 256 KiB.'));
+                        const bytes = new Uint8Array(await file.arrayBuffer());
+                        if (!row.isConnected || target.files[0] !== file) return;
+                        let binary = '';
+                        for (const byte of bytes) binary += String.fromCharCode(byte);
+                        currentUnit().drawing = { name: file.name, mediaType: 'application/pdf', data: btoa(binary) };
+                        fileName.textContent = file.name;
+                    } finally {
+                        if (target.files[0] === file) delete row.dataset.drawingLoading;
+                        issues();
+                    }
+                    return;
+                }
                 if (target.matches('[data-agreement-funding-file]')) {
                     const file = target.files && target.files[0];
                     if (!file) return;
@@ -1255,6 +1338,22 @@
             else if (target.matches('[data-agreement-participation-url]')) state.values.participationUrl = target.value;
             if (state.values.electorate === 'investors') { issues(); return; }
             renderPersons(); issues();
+        }, { signal });
+        body.addEventListener('paste', event => {
+            const target = event.target;
+            if (!target.matches('[data-apartment="xrayBuilding"]')) return;
+            let url;
+            try { url = new URL(event.clipboardData.getData('text').trim()); } catch (_) { return; }
+            if (!['http:', 'https:'].includes(url.protocol)) return;
+            const params = url.searchParams, building = params.get('xrayBuilding'), unit = params.get('unit');
+            if (!api.apartmentLocator(building) || !api.apartmentUnitLocator(unit)) return;
+            event.preventDefault();
+            target.value = building;
+            const row = target.closest('[data-apartment-unit]');
+            row.querySelector('[data-apartment="unit"]').value = unit;
+            row.querySelector('[data-apartment="at"]').value = params.get('at') || '';
+            row.querySelector('[data-apartment="access"]').value = params.get('access') || '';
+            issues();
         }, { signal });
         unregisterEscape = root.ModalEscape?.register(panel, event => { if (typingIn(event.target)) return false; finish(null); return true; });
         modal.addEventListener('cancel', event => event.preventDefault(), { signal });

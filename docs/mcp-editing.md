@@ -133,6 +133,18 @@ through `ugt_edit_agreement` creates a new agreement CID. After `ugt_propose_agr
 The investor can download the contract and confirm the contribution in their own wallet. The existing
 devnet USDC escrow handles deposits and refunds.
 
+For a round with apartment reservations, supply `apartments.projectId` and an entry in
+`apartments.units` for each apartment. Each entry carries its permanent unit ID, label, X-ray
+building and unit locators, map position, full price, fixed deposit and PDF drawing. The contract
+and drawings are part of the agreement CID. Use `ugt_edit_agreement` to revise the schedule.
+`ugt_inspect_agreement` with `includeAvailability: true` reads the listing and buyer from Solana
+for a minted agreement. A private draft returns `unverified`.
+
+`ugt_apartment_offers` finds active minted offers by `city`, `xrayBuilding` and `unit`.
+After minting, the developer opens `ugt_approval_link` with `action: "list-apartment"` and
+`params.unitId` to sign a listing. The buyer uses `action: "reserve"` with the same permanent
+unit ID to review the current availability, download the documents and sign the deposit.
+
 Draft and edit tools that accept `plan` can resolve an unpublished member by its CID within that
 exact plan revision. Pass the plan's private `draftRef` or canonical artifact, then use the member
 CID with `ugt_inspect_design`, `ugt_edit_design` or `ugt_modify_design`; this does not require a

@@ -455,14 +455,76 @@
             const connection = win.SolanaChainDataLoader.getConnection(ref.cluster);
             const escrow = await pledge().readDonationEscrow(connection, ref.account);
             const wallet = connectedWallet();
-            const mine = listMine && escrow && wallet ? await pledge().listDonationPositions(connection, ref.account, wallet) : [];
+            const mine = listMine && escrow && wallet ? await positionsFor(agreement, connection, ref.account, wallet) : [];
             return { escrow, mine };
+        }
+
+        async function apartmentInventory(agreement) {
+            await dependencies();
+            const { sponsor } = publishedOf(agreement);
+            const ref = mintedRef(agreement);
+            checkFundingAccount(agreement, ref.cluster);
+            const connection = win.SolanaChainDataLoader.getConnection(ref.cluster);
+            return pledge().readApartmentInventory(connection, ref.account, sponsor, agreement.funding, win.AgreementRecord);
+        }
+
+        function positionsFor(agreement, connection, account, owner) {
+            return agreement.funding?.apartments
+                ? pledge().apartmentPositions(connection, account, owner, agreement.funding, win.AgreementRecord)
+                : pledge().listDonationPositions(connection, account, owner);
+        }
+
+        async function apartmentAction({ agreement, unitId, expectedBuyer, onStatus, signal }, listing) {
+            const api = await dependencies();
+            const { provider, wallet } = walletContext();
+            const { ref, connection, value } = await current(api, agreement);
+            const client = pledge();
+            const offer = (await apartmentInventory(agreement)).find(row => row.unitId === unitId);
+            if (!offer) throw codedError(t('agreement.funding.apartments.unknown', 'Choose an apartment offered by this round.'), 'unknown-unit');
+            const developer = agreement.sponsor;
+            const payer = wallet.toBase58();
+            if (expectedBuyer && expectedBuyer !== payer) throw codedError(t('agreement.chain.errors.connectWallet', 'Connect the wallet shown in the reservation.'), 'wallet-changed');
+            const receipt = { account: ref.account, cluster: ref.cluster, signature: null, explorerUrl: explorerUrl(ref), position: offer.position };
+            if (listing && payer !== developer) throw codedError(t('agreement.funding.apartments.developerOnly', 'Only the developer can list this apartment.'), 'developer-required');
+            if ((!listing && offer.status === 'reserved' && offer.buyer === payer) || (listing && offer.status === 'available')) return receipt;
+            if (value.status !== 'Active' || api.deadlinePassed(value, Math.floor(Date.now() / 1000))) {
+                throw codedError(t('agreement.funding.apartments.closed', 'This apartment round is closed.'), 'round-closed');
+            }
+            const options = { ...offer, developer, proposal: ref.account, buyer: wallet };
+            const instructions = [];
+            if (listing) {
+                if (offer.status !== 'unlisted') throw codedError(t('agreement.funding.apartments.held', 'This apartment is already reserved.'), 'unit-held');
+                if (!await client.readDonationEscrow(connection, ref.account)) {
+                    instructions.push(client.buildCreateDonationEscrowIx({ proposal: ref.account, creator: wallet }));
+                }
+                if (offer.clearedPosition) instructions.push(client.buildClearApartmentRefundIx({ unitAccount: offer.account, position: offer.clearedPosition }));
+                instructions.push(client.buildListApartmentIx(options));
+            } else {
+                if (offer.status !== 'available') throw codedError(t('agreement.funding.apartments.unavailable', 'This apartment is unavailable for reservation.'), 'unit-unavailable');
+                const donationId = client.hashBytes(offer.unitKey);
+                const escrow = client.getDonationEscrowPda(ref.account)[0];
+                receipt.position = client.getDonationPositionPda(escrow, wallet, donationId)[0].toBase58();
+                const [vault, previous] = await Promise.all([client.readDonationEscrow(connection, ref.account),
+                    client.readDonationPosition(connection, ref.account, wallet, donationId)]);
+                if (previous && (previous.refunded || previous.amount !== BigInt(offer.deposit))) throw new Error(t('agreement.funding.apartments.invalidPosition', 'The existing deposit does not match this apartment.'));
+                if (!vault) instructions.push(client.buildCreateDonationEscrowIx({ proposal: ref.account, creator: wallet }));
+                if (!previous) instructions.push(client.buildDonateIx({ proposal: ref.account, donor: wallet, amount: offer.deposit, donationId }));
+                instructions.push(client.buildReserveApartmentIx(options));
+            }
+            try {
+                const sent = await send(connection, provider, wallet, ref.cluster, instructions, { onStatus, signal });
+                return { ...receipt, ...result(sent, ref) };
+            } catch (error) {
+                if (!listing && error.code === 'simulation-failed') throw await investorFundingError(connection, wallet, offer.deposit, error);
+                throw error;
+            }
         }
 
         // After a lost confirmation the same wallet retries the same on-chain position. A new,
         // intentional contribution gets a new ID after the previous receipt is observed.
         const pendingDeposits = new Map();
         async function donate({ agreement, amountAtomic, onStatus, signal } = {}) {
+            if (agreement?.funding?.apartments) throw codedError(t('agreement.funding.apartments.choose', 'Choose an apartment to reserve.'), 'apartment-required');
             const api = await dependencies();
             const { provider, wallet } = walletContext();
             const { ref, connection, value } = await current(api, agreement);
@@ -504,12 +566,18 @@
             const { provider, wallet } = walletContext();
             const ref = mintedRef(agreement);
             const connection = win.SolanaChainDataLoader.getConnection(ref.cluster);
-            const open = (await pledge().listDonationPositions(connection, ref.account, wallet.toBase58())).filter(row => !row.refunded);
+            const open = (await positionsFor(agreement, connection, ref.account, wallet.toBase58())).filter(row => !row.refunded);
             if (!open.length) throw codedError(t('agreement.boost.errors.nothingToRefund', 'This wallet has no boost to take back.'), 'nothing-to-refund');
             // Each position adds accounts and instruction data to a Solana transaction.
             const batch = agreement.rule?.electorate === 'investors' ? open.slice(0, MAX_REFUNDS_PER_TX) : open;
-            const sent = await send(connection, provider, wallet, ref.cluster,
-                batch.map(row => pledge().buildRefundDonationIx({ proposal: ref.account, donor: wallet, donationId: row.donationId })), { onStatus });
+            const inventory = agreement.funding?.apartments ? await apartmentInventory(agreement) : [];
+            const instructions = [];
+            for (const row of batch) {
+                instructions.push(pledge().buildRefundDonationIx({ proposal: ref.account, donor: wallet, donationId: row.donationId }));
+                const unit = inventory.find(item => item.status === 'reserved' && item.position === row.address);
+                if (unit) instructions.push(pledge().buildClearApartmentRefundIx({ unitAccount: unit.account, position: row.address }));
+            }
+            const sent = await send(connection, provider, wallet, ref.cluster, instructions, { onStatus });
             log(`refunded ${batch.length} contribution(s) on ${ref.account}`, { signature: sent.signature });
             return result(sent, ref);
         }
@@ -529,7 +597,8 @@
         }
 
         return { mint, fund, attest, execute, cancel, expire, read, findAttestation, connectedWallet, cluster, programId,
-            donations, donate, refundDonations, releaseDonations };
+            donations, donate, refundDonations, releaseDonations, apartmentInventory,
+            listApartment: options => apartmentAction(options, true), reserveApartment: options => apartmentAction(options, false) };
     }
 
     return { LAMPORTS_PER_SOL, MAX_REFUNDS_PER_TX, lamportsFromSol, solOf, explorerUrl, onchainRef, mintLens, chainActions, decisionAttestationOf, anchorError, browser };

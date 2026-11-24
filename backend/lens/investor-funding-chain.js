@@ -9,6 +9,7 @@ const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
 const agreementClient = require('../../frontend/js/solana/agreement-client.js').configure({ web3 });
 const pledgeClient = require('../../frontend/js/solana/pledge-client.js').configure({ web3 });
+const agreementRecord = require('../../frontend/js/agreement-record.js');
 
 const TOKEN_ACCOUNT_SIZE = 165;
 
@@ -47,16 +48,17 @@ export function createInvestorFundingChain({ connection, rpcUrl = 'https://api.d
     return {
         agreementProgramId: AGREEMENT_PROGRAM_ID,
         pledgeProgramId: pledgeClient.constants.PROGRAM_ID,
-        async observe({ cid, sponsor, account }) {
+        async observe({ cid, sponsor, account, funding }) {
             const conn = await ready();
             const expectedAgreement = agreementClient.getAgreementPda(cid, sponsor)[0].toBase58();
             if (expectedAgreement !== account) throw new Error('agreement account is not the sponsor/CID PDA');
             const escrow = pledgeClient.getDonationEscrowPda(account)[0].toBase58();
             const vault = pledgeClient.getAssociatedTokenAddress(escrow, pledgeClient.constants.USDC_DEVNET_MINT).toBase58();
+            const offers = pledgeClient.apartmentOffers(funding, sponsor, agreementRecord);
             const { context, value } = await conn.getMultipleAccountsInfoAndContext([
-                new web3.PublicKey(account), new web3.PublicKey(escrow), new web3.PublicKey(vault)
+                new web3.PublicKey(account), new web3.PublicKey(escrow), new web3.PublicKey(vault), ...offers.map(offer => new web3.PublicKey(offer.account))
             ], 'finalized');
-            if (!Array.isArray(value) || value.length !== 3) throw new Error('funding RPC did not return all canonical accounts');
+            if (!Array.isArray(value) || value.length !== 3 + offers.length) throw new Error('funding RPC did not return all canonical accounts');
             const [agreementInfo, escrowInfo, vaultInfo] = value;
             if (!agreementInfo?.data || agreementInfo.owner?.toBase58?.() !== AGREEMENT_PROGRAM_ID) {
                 throw new Error(`agreement ${account} is absent or belongs to another program`);
@@ -72,6 +74,7 @@ export function createInvestorFundingChain({ connection, rpcUrl = 'https://api.d
                 throw new Error(`finalized slot ${context.slot} has no usable block time`);
             }
             return { slot: context.slot, blockTime, agreement, donation, escrow, vault,
+                ...(offers.length ? { reservations: pledgeClient.apartmentInventoryRows(offers, value.slice(3), account, sponsor) } : {}),
                 vaultUsdcAtomic: tokenAmount(vaultInfo, vault, escrow) };
         }
     };

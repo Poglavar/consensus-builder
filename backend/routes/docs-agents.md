@@ -466,6 +466,19 @@ USDC moves only when the pledger fulfils it after execution, and a cancelled or 
 it. There is no admin withdrawal path. Read the totals at `GET $(base)/agent/pledges/<agreement-account>`.
 The codec is `frontend/js/solana/pledge-client.js`, the IDL `blockchain/solana/idl/proposal_pledge.json`.
 
+### Reserve an apartment
+
+Add `apartments` to a crowdfunding agreement with `ugt_draft_agreement` or `ugt_edit_agreement`.
+The developer signs a listing for each unit. The buyer signs one transaction to deposit the fixed
+amount and reserve the unit. `ugt_approval_link` opens the relevant wallet action with
+`action: "list-apartment"` or `action: "reserve"` and `params.unitId`.
+
+`GET $(base)/agreements/apartment-offers?city=<city>&xrayBuilding=<building>&unit=<unit>` finds
+active minted rounds offering a selected apartment. Each result includes the agreement CID, title,
+city, permanent unit ID and label. Agents can use `ugt_apartment_offers` for the same lookup.
+Read current on-chain availability with `GET $(base)/agreements/<cid>?inventory=1` or
+`ugt_inspect_agreement` with `includeAvailability: true`.
+
 ## 8. Decisions, the lens attestation, execution and expiry
 
 - **Owner decisions** (owner votes and owner deals): each party the rule counts (an owner, a leaseholder,

@@ -321,8 +321,19 @@
         if (typeof designOf !== 'function' || typeof isApplied !== 'function' || typeof fingerprintOf !== 'function') {
             throw new TypeError('check needs designOf, isApplied and fingerprintOf functions.');
         }
+        // Funding names the saved plan revision. Its members can be reviewed and published
+        // directly from that snapshot even when none has been placed on this device's map.
+        if (agreement?.rule?.electorate === 'investors') {
+            const matches = record().matchesPlan(agreement.plan, agreement.designs.map(design => design.cid));
+            const changed = agreement.designs.filter(design => {
+                const local = designOf(design.proposalId);
+                return local && fingerprintOf(local) !== design.cid;
+            });
+            const reasons = changed.map(design => ({ code: 'design-changed', proposalId: design.proposalId }));
+            if (!matches) reasons.push({ code: 'design-changed' });
+            return { current: reasons.length === 0, reasons };
+        }
         const reasons = [];
-        const usesGround = agreement?.rule?.electorate !== 'investors';
         const records = ((agreement && agreement.designs) || []).map(design => {
             const proposalId = String(design.proposalId);
             const found = designOf(proposalId);
@@ -330,14 +341,14 @@
                 reasons.push({ code: 'design-missing', proposalId });
                 return null;
             }
-            if (usesGround && !isApplied(found)) {
+            if (!isApplied(found)) {
                 reasons.push({ code: 'design-not-applied', proposalId });
                 return null;
             }
             if (fingerprintOf(found) !== design.cid) reasons.push({ code: 'design-changed', proposalId });
             return found;
         });
-        if (usesGround && records.every(Boolean)) {
+        if (records.every(Boolean)) {
             const fresh = derive({ designs: records, fabric, originals, area });
             const storedInputs = new Set(((agreement.inputs && agreement.inputs.parcels) || []).map(parcel => String(parcel.parcelId)));
             const storedOutputs = new Set((agreement.outputs || []).map(output => output.hash));

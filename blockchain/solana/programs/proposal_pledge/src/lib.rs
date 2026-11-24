@@ -28,6 +28,7 @@ pub const DONATION_SEED: &[u8] = b"donation";
 pub const DONOR_SEED: &[u8] = b"donor";
 pub const PLEDGE_BOOK_SEED: &[u8] = b"pledge_book";
 pub const PLEDGE_SEED: &[u8] = b"pledge";
+pub const APARTMENT_UNIT_SEED: &[u8] = b"apartment_unit";
 
 #[program]
 pub mod proposal_pledge {
@@ -226,6 +227,49 @@ pub mod proposal_pledge {
         ctx.accounts.book.active_count = sub(ctx.accounts.book.active_count, 1)?;
         Ok(())
     }
+
+    pub fn list_apartment(ctx: Context<ListApartment>, unit_key: [u8; 32], terms_hash: [u8; 32], deposit: u64) -> Result<()> {
+        require!(deposit > 0, SupportError::ZeroAmount);
+        let view = agreement::read_agreement_view(&ctx.accounts.proposal).ok_or_else(|| error!(SupportError::InvalidProposalAccount))?;
+        require_keys_eq!(view.authority, ctx.accounts.developer.key(), SupportError::UnauthorizedDeveloper);
+        require!(view.status == STATUS_ACTIVE, SupportError::ProposalNotActive);
+        require!(view.deadline == agreement::NO_DEADLINE || Clock::get()?.unix_timestamp <= view.deadline, SupportError::DeadlinePassed);
+        let unit = &mut ctx.accounts.unit;
+        require!(unit.buyer == Pubkey::default(), SupportError::ApartmentRetained);
+        unit.developer = ctx.accounts.developer.key(); unit.unit_key = unit_key; unit.agreement = ctx.accounts.proposal.key();
+        unit.terms_hash = terms_hash; unit.deposit = deposit; unit.position = Pubkey::default(); unit.bump = ctx.bumps.unit;
+        Ok(())
+    }
+
+    pub fn reserve_apartment(ctx: Context<ReserveApartment>, terms_hash: [u8; 32]) -> Result<()> {
+        let view = agreement::read_agreement_view(&ctx.accounts.proposal).ok_or_else(|| error!(SupportError::InvalidProposalAccount))?;
+        let unit = &mut ctx.accounts.unit;
+        require_keys_eq!(unit.agreement, ctx.accounts.proposal.key(), SupportError::InvalidApartment);
+        require!(unit.terms_hash == terms_hash, SupportError::TermsMismatch);
+        require!(view.status == STATUS_ACTIVE, SupportError::ProposalNotActive);
+        require!(view.deadline == agreement::NO_DEADLINE || Clock::get()?.unix_timestamp <= view.deadline, SupportError::DeadlinePassed);
+        require!(unit.buyer == Pubkey::default() || unit.buyer == ctx.accounts.buyer.key(), SupportError::ApartmentReserved);
+        require_keys_eq!(ctx.accounts.escrow.proposal, ctx.accounts.proposal.key(), SupportError::InvalidEscrow);
+        let position = &ctx.accounts.position;
+        require_keys_eq!(position.escrow, ctx.accounts.escrow.key(), SupportError::InvalidPosition);
+        require_keys_eq!(position.owner, ctx.accounts.buyer.key(), SupportError::InvalidPosition);
+        require!(position.donation_id == unit.unit_key && position.amount == unit.deposit && !position.refunded, SupportError::InvalidPosition);
+        if unit.position != Pubkey::default() {
+            require_keys_eq!(unit.position, position.key(), SupportError::ApartmentReserved);
+            require_keys_eq!(unit.buyer, ctx.accounts.buyer.key(), SupportError::ApartmentReserved);
+            return Ok(());
+        }
+        unit.buyer = ctx.accounts.buyer.key(); unit.position = position.key();
+        Ok(())
+    }
+
+    pub fn clear_apartment_refund(ctx: Context<ClearApartmentRefund>) -> Result<()> {
+        let unit = &mut ctx.accounts.unit;
+        require_keys_eq!(unit.position, ctx.accounts.position.key(), SupportError::InvalidPosition);
+        require!(ctx.accounts.position.refunded, SupportError::NotRefunded);
+        unit.buyer = Pubkey::default(); unit.position = Pubkey::default();
+        Ok(())
+    }
 }
 
 pub fn is_refundable_status(status: u8) -> bool {
@@ -279,6 +323,39 @@ pub struct PledgeBook {
 pub struct PledgeCommitment {
     pub book: Pubkey, pub proposal: Pubkey, pub owner: Pubkey, pub amount: u64,
     pub status: u8, pub initialized: bool, pub bump: u8,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct ApartmentUnit {
+    pub developer: Pubkey, pub unit_key: [u8; 32], pub agreement: Pubkey, pub terms_hash: [u8; 32],
+    pub deposit: u64, pub buyer: Pubkey, pub position: Pubkey, pub bump: u8,
+}
+
+#[derive(Accounts)]
+#[instruction(unit_key: [u8; 32])]
+pub struct ListApartment<'info> {
+    #[account(init_if_needed, payer = developer, space = 8 + ApartmentUnit::INIT_SPACE, seeds = [APARTMENT_UNIT_SEED, developer.key().as_ref(), unit_key.as_ref()], bump)]
+    pub unit: Account<'info, ApartmentUnit>,
+    /// CHECK: validated by instruction.
+    pub proposal: UncheckedAccount<'info>,
+    #[account(mut)] pub developer: Signer<'info>, pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct ReserveApartment<'info> {
+    #[account(mut, seeds = [APARTMENT_UNIT_SEED, unit.developer.as_ref(), unit.unit_key.as_ref()], bump = unit.bump)] pub unit: Account<'info, ApartmentUnit>,
+    /// CHECK: validated by instruction.
+    pub proposal: UncheckedAccount<'info>,
+    #[account(seeds = [DONATION_ESCROW_SEED, proposal.key().as_ref()], bump = escrow.bump)] pub escrow: Account<'info, DonationEscrow>,
+    #[account(seeds = [DONATION_SEED, escrow.key().as_ref(), buyer.key().as_ref(), unit.unit_key.as_ref()], bump = position.bump)] pub position: Account<'info, DonationPosition>,
+    pub buyer: Signer<'info>,
+}
+
+#[derive(Accounts)]
+pub struct ClearApartmentRefund<'info> {
+    #[account(mut, seeds = [APARTMENT_UNIT_SEED, unit.developer.as_ref(), unit.unit_key.as_ref()], bump = unit.bump)] pub unit: Account<'info, ApartmentUnit>,
+    #[account(seeds = [DONATION_SEED, position.escrow.as_ref(), position.owner.as_ref(), position.donation_id.as_ref()], bump = position.bump)] pub position: Account<'info, DonationPosition>,
 }
 
 #[derive(Accounts)]
@@ -413,6 +490,14 @@ pub enum SupportError {
     #[msg("Invalid pledge commitment")] InvalidCommitment,
     #[msg("Pledge is not active")] PledgeNotActive,
     #[msg("Fulfilled pledge cannot be changed")] PledgeAlreadyFulfilled,
+    #[msg("Only the agreement developer may list apartments")] UnauthorizedDeveloper,
+    #[msg("Agreement deadline has passed")] DeadlinePassed,
+    #[msg("Apartment is retained by a prior buyer")] ApartmentRetained,
+    #[msg("Apartment is already reserved")] ApartmentReserved,
+    #[msg("Invalid apartment")] InvalidApartment,
+    #[msg("Terms hash does not match listing")] TermsMismatch,
+    #[msg("Invalid escrow")] InvalidEscrow,
+    #[msg("Donation has not been refunded")] NotRefunded,
 }
 
 #[cfg(test)]

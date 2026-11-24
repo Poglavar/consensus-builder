@@ -121,6 +121,29 @@ describe('headless app formation host', () => {
         expect(revised.cid).not.toBe(draft.cid);
     });
 
+    it('authors, inspects and revises the same apartment schedule a buyer reviews in the browser', async () => {
+        const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {} });
+        const design = make('space', { spaceKind: 'park', city: 'zagreb' });
+        const plan = await tools.draftPlan({ title: 'Podbrežje courtyard', designs: [design.content] });
+        const drawing = { name: 'floor-six.pdf', mediaType: 'application/pdf', data: Buffer.from('%PDF-1.7').toString('base64') };
+        const apartment = id => ({ unitId: id, label: id.toUpperCase(), xrayBuilding: 'zagreb::gdi-3d::148972', unit: '6::' + id.toUpperCase(),
+            at: '45.7665,15.9722,19', priceUsdcAtomic: '100000000', depositUsdcAtomic: '10000000', drawing });
+        const apartments = { projectId: 'podbrezje', units: [apartment('a4-c-23'), apartment('a4-c-21')] };
+        const draft = await tools.draftAgreement({ rulePreset: 'crowdfunding', plan: plan.draftArtifact,
+            sponsor: 'So11111111111111111111111111111111111111112', lens: '9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt',
+            deadline: '2099-01-01T00:00:00.000Z', targetUsdcAtomic: '20000000',
+            contract: { name: 'terms.txt', mediaType: 'text/plain', data: 'dGVybXM=' }, apartments });
+        const preview = await tools.inspectAgreement({ plan: draft.draftArtifact, includeAvailability: true });
+        expect(preview.funding.apartments).toMatchObject(apartments);
+        expect(preview.investorReview.availability).toEqual({ status: 'unverified' });
+        expect(preview.investorReview.action).toContain('reserve');
+        const updated = { ...apartments, units: [{ ...apartments.units[0], priceUsdcAtomic: '110000000' }, apartments.units[1]] };
+        const revised = await tools.editAgreement({ plan: draft.draftArtifact, expectedCid: draft.cid, terms: { apartments: updated } });
+        expect(revised.cid).not.toBe(draft.cid);
+        expect(revised.agreement.funding.apartments).toMatchObject(updated);
+        expect(draft.agreement.funding.apartments.units[0].priceUsdcAtomic).toBe('100000000');
+    });
+
     it('takes crowdfunding city and default currency from the canonical plan view', async () => {
         const design = make('space', { spaceKind: 'park', city: 'alatau' });
         const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {} });

@@ -10384,8 +10384,8 @@
         Object.assign(group.userData, { floorPlanFamily: 'existing-model', floorModelKey: key, proxySource: shell.material,
             ...(shell.inspectionFeature ? { planningBuiltFeature: shell.inspectionFeature } : {}) });
         const city = window.CityConfigManager?.getCurrentCityId?.();
-        const ref = buildingUnitLinks.nativeBuilding(city, shell.building.floorPlansAvailable?.source, shell.building.object_id);
-        registerApartmentBuilding(group, feature, shell.inspectionFeature, nativeApartmentBuilding(shell.inspectionFeature) || ref);
+        const ref = buildingUnitLinks.nativeBuilding(city, shell.building.source, shell.building.object_id);
+        registerApartmentBuilding(group, feature, shell.inspectionFeature, ref);
         floorPlanRenderer.setCutaway(group, floorCutawayLevel);
         floorPlanGroup.add(group);
         existingFloorPlanGroups.set(key, group);

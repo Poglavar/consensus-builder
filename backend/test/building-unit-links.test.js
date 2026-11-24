@@ -47,4 +47,13 @@ describe('building unit addresses', () => {
         expect(design.pathname).toBe('/designs/revision-a');
         expect(design.searchParams.has('suggestedExisting')).toBe(false);
     });
+
+    it('opens an apartment in its source city when the funding agreement is based elsewhere', () => {
+        const apartment = { xrayBuilding: 'astana::kz-nsdi-buildings::KZ-NSDI-B-43399',
+            unit: '7::core-2-whole-7::7984e5b4a4760b077382e106', at: '51.12,71.42,19', access: 'point' };
+        const context = { city: 'alatau', backend: 'https://api.example.test' };
+        const url = new URL(links.offerLink('https://app.example.test', mapShare, context, apartment));
+        expect(Object.fromEntries(url.searchParams)).toMatchObject({ city: 'astana', xrayBuilding: apartment.xrayBuilding,
+            unit: apartment.unit, suggestedExisting: '1', access: 'point', backend: context.backend });
+    });
 });

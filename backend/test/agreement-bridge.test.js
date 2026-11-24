@@ -214,12 +214,13 @@ describe('minting', () => {
     const records = require('../../frontend/js/agreement-record.js');
     const pledge = require('../../frontend/js/solana/pledge-client.js');
     const cids = require('../../frontend/js/cid.js');
-    function crowdfunding(deadline = nowSeconds() + 3600) {
+    function crowdfunding(deadline = nowSeconds() + 3600, apartments) {
         const content = require('../../frontend/js/plan-record.js').create('District', [CID], { at: '43.797866,77.087621,16', mode: '2d' });
         const local = { schema: 'agreement/v1', id: 'district-funding', title: 'Developer funding', city: 'alatau', sponsor: SPONSOR, plan: { cid: cids.cidOfObject(content), content },
             designs: [{ proposalId: 'p', cid: CID }], inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: 'KZT', lines: [] },
             rule: { electorate: 'investors', binding: true, lens: [LENS], settlement: null, approvalConfig: null },
-            funding: { targetUsdcAtomic: '20000000', contract: { name: 'terms.txt', mediaType: 'text/plain', data: 'VGVybXM=' } }, deadline: new Date(deadline * 1000).toISOString() };
+            funding: { targetUsdcAtomic: '20000000', contract: { name: 'terms.txt', mediaType: 'text/plain', data: 'VGVybXM=' },
+                ...(apartments ? { apartments } : {}) }, deadline: new Date(deadline * 1000).toISOString() };
         const cid = records.publishedCid(local);
         const address = client.getAgreementPda(cid, SPONSOR)[0].toBase58();
         return { agreement: { ...local, published: { cid, sponsor: SPONSOR, apiBase: 'https://api.example.test' } }, address, cid, deadline };
@@ -240,6 +241,39 @@ describe('minting', () => {
         expect(ixs.map(i => i.programId.toBase58())).toEqual([pledge.constants.PROGRAM_ID, pledge.constants.PROGRAM_ID]);
         expect(Buffer.from(ixs[1].data).readBigUInt64LE(ixs[1].data.length - 8)).toBe(1000001n);
         expect(investor.provider.signTransaction).toHaveBeenCalledTimes(1);
+    });
+
+    it('opens escrow with the developer listing, then asks the buyer to sign one deposit and unit claim', async () => {
+        const unit = { unitId: 'a4-c-23', label: 'Apartment A4-C-23', xrayBuilding: 'zagreb::gdi-3d::148972', unit: '6::A4-C-23',
+            at: '45.7665,15.9722,19', priceUsdcAtomic: '200000000', depositUsdcAtomic: '20000000',
+            drawing: { name: 'floor.pdf', mediaType: 'application/pdf', data: Buffer.from('%PDF-1.7').toString('base64') } };
+        const { agreement, address, cid, deadline } = crowdfunding(undefined, { projectId: 'courtyard', units: [unit] });
+        agreement.onchain = { chain: 'solana', cluster: 'devnet', account: address };
+        const accounts = new Map([[address, { data: agreementData({ cid, payout: SPONSOR, required: 0n, deadline }) }]]);
+        const client = pledge.configure({ web3 });
+        const [offer] = client.apartmentOffers(agreement.funding, SPONSOR, records);
+        const developer = fakeWindow({ connection: fakeConnection({ accounts }) });
+        developer.win.AgreementRecord = records;
+        developer.win.SolanaPledgeClient = { ...client, readApartmentInventory: async () => [{ ...offer, status: 'unlisted' }] };
+        await developer.bridge.listApartment({ agreement, unitId: unit.unitId });
+        const discriminators = transaction => transaction.instructions.map(ix => Array.from(ix.data.slice(0, 8)));
+        expect(discriminators(developer.connection.sent[0])).toEqual([client.IX_DISCRIMINATORS.create_donation_escrow, client.IX_DISCRIMINATORS.list_apartment]);
+
+        const buyer = fakeWindow({ wallet: STRANGER, connection: fakeConnection({ accounts }) });
+        buyer.win.AgreementRecord = records;
+        const readApartmentInventory = vi.fn(async () => [{ ...offer, status: 'available' }]);
+        buyer.win.SolanaPledgeClient = { ...client, readApartmentInventory, readDonationEscrow: async () => ({ proposal: address }) };
+        const intent = { agreement, expectedBuyer: STRANGER, unitId: unit.unitId };
+        await expect(buyer.bridge.donate({ agreement, amountAtomic: 1n })).rejects.toMatchObject({ code: 'apartment-required' });
+        const receipt = await buyer.bridge.reserveApartment(intent);
+        expect(discriminators(buyer.connection.sent[0])).toEqual([client.IX_DISCRIMINATORS.donate, client.IX_DISCRIMINATORS.reserve_apartment]);
+        expect(Buffer.from(buyer.connection.sent[0].instructions[0].data).readBigUInt64LE(40)).toBe(BigInt(unit.depositUsdcAtomic));
+        const escrow = client.getDonationEscrowPda(address)[0];
+        const position = client.getDonationPositionPda(escrow, STRANGER, client.hashBytes(offer.unitKey))[0].toBase58();
+        expect(receipt).toMatchObject({ position, signature: 'sig-1' });
+        readApartmentInventory.mockResolvedValue([{ ...offer, status: 'reserved', buyer: STRANGER, position }]);
+        await expect(buyer.bridge.reserveApartment(intent)).resolves.toMatchObject({ signature: null, position });
+        expect(buyer.provider.signTransaction).toHaveBeenCalledTimes(1);
     });
 
     it('explains investor funding failures only when the devnet account reads establish them', async () => {

@@ -70,7 +70,8 @@ export async function planInvestorFundingDecision({ agreement, lensKey, nowSecon
     if (onchain.decision && onchain.decision !== 'pending') refusal(409, 'decision_recorded', `the agreement account already records ${onchain.decision}`);
     let observed;
     try {
-        observed = await chain.observe({ cid: agreement.cid, sponsor: content.sponsor, account: onchain.account });
+        observed = await chain.observe({ cid: agreement.cid, sponsor: content.sponsor, account: onchain.account,
+            ...(funding.apartments ? { funding } : {}) });
     } catch (error) {
         refusal(422, 'funding_chain_invalid', error.message || 'the finalized funding accounts cannot be verified');
     }
@@ -86,15 +87,28 @@ export async function planInvestorFundingDecision({ agreement, lensKey, nowSecon
         || escrow.released || escrow.totalReleased !== 0n) {
         refusal(422, 'invalid_donation_vault', 'the canonical devnet USDC donation vault is missing or closed');
     }
-    const active = escrow.totalDonated - escrow.totalRefunded;
-    if (active < 0n || observed.vaultUsdcAtomic < active) {
+    const netDeposits = escrow.totalDonated - escrow.totalRefunded;
+    if (netDeposits < 0n || observed.vaultUsdcAtomic < netDeposits) {
         refusal(422, 'invalid_donation_vault', 'the canonical devnet USDC donation vault does not hold its recorded active contributions');
+    }
+    let active = netDeposits;
+    let reservations;
+    if (funding.apartments) {
+        const units = funding.apartments.units;
+        if (!Array.isArray(observed.reservations) || observed.reservations.length !== units.length
+            || observed.reservations.some((row, i) => row.unitId !== units[i].unitId || row.deposit !== units[i].depositUsdcAtomic)) {
+            refusal(422, 'apartment_observation_missing', 'the finalized apartment inventory differs from the published schedule');
+        }
+        reservations = observed.reservations.filter(row => row.status === 'reserved');
+        active = reservations.reduce((sum, row) => sum + BigInt(row.deposit), 0n);
+        if (active > netDeposits) refusal(422, 'invalid_donation_vault', 'the funded apartment reservations exceed recorded deposits');
     }
     if (active < BigInt(funding.targetUsdcAtomic)) refusal(409, 'funding_target_not_met', 'recorded active investor donations are below the target', { activeUsdcAtomic: String(active), targetUsdcAtomic: funding.targetUsdcAtomic });
     if (!Number.isSafeInteger(observed.slot) || !Number.isSafeInteger(observed.blockTime)) refusal(422, 'chain_observation_missing', 'funding evidence requires a finalized slot and block time');
     if (observed.blockTime > nowSeconds || (agreement.deadline && observed.blockTime > seconds(agreement.deadline)) || (account.deadline && observed.blockTime > account.deadline))
         refusal(409, 'funding_observation_after_deadline', 'the finalized funding observation is not before the agreement deadline');
-    const evidence = { kind: 'proposal_pledge_donation', agreement: onchain.account, sponsor: content.sponsor,
+    const evidence = { kind: reservations ? 'apartment_reservations' : 'proposal_pledge_donation', ...(reservations ? { reservations } : {}),
+        agreement: onchain.account, sponsor: content.sponsor,
         agreementProgram: chain.agreementProgramId, pledgeProgram: chain.pledgeProgramId, escrow: observed.escrow, vault: observed.vault,
         mint: escrow.mint, targetUsdcAtomic: funding.targetUsdcAtomic, activeUsdcAtomic: String(active),
         totalDonatedUsdcAtomic: String(escrow.totalDonated), totalRefundedUsdcAtomic: String(escrow.totalRefunded),

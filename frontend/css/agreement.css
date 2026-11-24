@@ -101,6 +101,11 @@
     overflow-wrap: anywhere;
 }
 
+.agreement-apartment-inventory { display: grid; gap: var(--cb-space-2); margin-block: var(--cb-space-3); }
+.agreement-apartment-unit { display: grid; min-width: 0; gap: var(--cb-space-2); padding: var(--cb-space-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-sm); }
+.agreement-apartment-unit__details { display: grid; gap: var(--cb-space-1); min-width: 0; }
+.agreement-apartment-unit__details strong { overflow-wrap: anywhere; }
+
 .agreement-panel-note--danger {
     background: var(--cb-danger-soft);
     color: var(--cb-danger-soft-ink);

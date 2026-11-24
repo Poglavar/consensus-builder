@@ -16,8 +16,8 @@ const shape = geometry => turf.feature(geometry);
 const designRef = cid => `design:${cid}`;
 
 export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolveDraftReference }) {
-    async function resolvePlan(value) {
-        let artifact = value, claimedCid = value?.cid;
+    async function resolvePlan(value, includeAvailability = false) {
+        let artifact = value, claimedCid = value?.cid, apartmentAvailability;
         const reference = typeof value === 'string' ? value : value?.draftRef;
         if (reference) {
             let cid = isCid(reference) ? reference : null;
@@ -26,7 +26,10 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
                 try { url = new URL(reference); } catch { fail('plan-reference-invalid', 'Use an agreement CID, its published link, or a private draftRef.'); }
                 if (url.origin === new URL(appOrigin).origin && /^\/agreements\/baf(?:krei|ybei)[a-z2-7]{52}\/?$/.test(url.pathname)) cid = url.pathname.split('/')[2];
             }
-            if (cid) artifact = await read.getAgreement({ agreementCid: cid });
+            if (cid) {
+                artifact = await read.getAgreement({ agreementCid: cid, ...(includeAvailability ? { includeAvailability: true } : {}) });
+                apartmentAvailability = artifact.apartmentAvailability;
+            }
             else {
                 if (!resolveDraftReference) fail('draft-reference-unavailable', 'This client needs canonical agreement content and its carried designs.');
                 artifact = await resolveDraftReference(reference);
@@ -72,7 +75,8 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
         const localAgreement = { ...content, id: `mcp-${cid}`, updatedAt: null, plan,
             outputs: content.outputs.map(output => ({ ...output, pieceId: output.hash, geometry: null })),
             designs: designs.map(row => ({ proposalId: row.cid, cid: row.cid, title: row.content.title, goal: row.content.goal })) };
-        return { agreement: localAgreement, plan, cid, parcelSourceId, designs };
+        return { agreement: localAgreement, plan, cid, parcelSourceId, designs,
+            ...(includeAvailability && content.funding?.apartments ? { apartmentAvailability: apartmentAvailability || { status: 'unverified' } } : {}) };
     }
 
     function inventory(plan) {
@@ -98,8 +102,8 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
         return items;
     }
 
-    async function inspectPlan({ plan: value, filter = {}, includeGeometry = false, offset = 0, limit = 100 }) {
-        const plan = await resolvePlan(value);
+    async function inspectPlan({ plan: value, filter = {}, includeGeometry = false, includeAvailability = false, offset = 0, limit = 100 }) {
+        const plan = await resolvePlan(value, includeAvailability);
         const crowdfunding = plan.agreement.rule.electorate === 'investors';
         if (!crowdfunding && (!['design','building'].includes(filter.kind) || filter.relativeTo?.ref.startsWith('piece:'))) {
             // Published outputs commit hashes, not another copy of geometry. Recover exact pieces
@@ -146,7 +150,10 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
                 decisionMethod: 'lens-attestation',
                 contributorEligibility: 'any-wallet',
                 kycEnforcedOnChain: false,
-                action: 'Review the attached contract before using ugt_approval_link with action donate.'
+                ...(plan.apartmentAvailability ? { availability: plan.apartmentAvailability } : {}),
+                action: plan.agreement.funding?.apartments
+                    ? 'Review a unit, its drawing and the developer contract. Prepare a reserve approval link with the permanent unitId for the buyer to sign.'
+                    : 'Review the attached contract before using ugt_approval_link with action donate.'
             } } : {}),
             items: matched.slice(offset, offset + limit).map(({ geometry, ...item }) => {
                 const value = item.kind === 'piece' && !community ? { ...item, recipient: recipients.get(item.ref.slice(6)) || null } : item;
@@ -162,7 +169,9 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
             total: matched.length, offset, truncated: offset + limit < matched.length,
             selectionBasis: 'References belong to this immutable plan CID. Compass selection requires the whole object bbox beyond the reference bbox; crossing objects are excluded.',
             next: trustedMetadata(crowdfunding
-                ? { tool: 'ugt_approval_link', action: 'Review the attached investor contract, then create a donate approval link for the minted agreement account.' }
+                ? { tool: 'ugt_approval_link', action: plan.agreement.funding?.apartments
+                    ? 'Review availability and the unit schedule, then prepare a reserve link for the agreement CID and unitId.'
+                    : 'Review the attached investor contract, then create a donate approval link for the agreement CID.' }
                 : { tool: 'ugt_edit_agreement', action: 'Use expectedCid and explicit terms; revise membership in the named plan first.' }) };
     }
 
@@ -184,7 +193,7 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
             if (crowdfunding) {
                 const revised = await agreements.draftAgreement({ plan: terms.plan, rulePreset: 'crowdfunding', lens: terms.lens ?? previous.rule.lens?.[0],
                     currency: previous.money.currency, targetUsdcAtomic: terms.targetUsdcAtomic ?? previous.funding?.targetUsdcAtomic,
-                    contract: terms.contract ?? previous.funding?.contract, title: terms.title ?? previous.title, author: terms.author ?? previous.author,
+                    contract: terms.contract ?? previous.funding?.contract, apartments: terms.apartments ?? previous.funding?.apartments, title: terms.title ?? previous.title, author: terms.author ?? previous.author,
                     sponsor: terms.sponsor ?? previous.sponsor, deadline: terms.deadline ?? previous.deadline, createdAt: new Date().toISOString() });
                 return { ...revised, previousCid: original.cid, warnings: ['This private crowdfunding revision uses the explicitly selected plan. The original agreement and its investor terms retain their identity.'] };
             }
@@ -208,7 +217,7 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
             const checked = agreementObject({ ...previous, plan: original.plan, designs: original.designs.map(row => ({ cid: row.cid, title: row.content.title, goal: row.content.goal })),
                 parcels: [], openGroundM2: 0, outputs: [], allocations: [], money: previous.money, valuation: null,
                 rule: { electorate: 'investors', binding: true, approvalConfig: null, lens: terms.lens ? [terms.lens] : previous.rule.lens, settlement: null },
-                funding: { targetUsdcAtomic: terms.targetUsdcAtomic ?? previous.funding?.targetUsdcAtomic, contract: terms.contract ?? previous.funding?.contract },
+                funding: { targetUsdcAtomic: terms.targetUsdcAtomic ?? previous.funding?.targetUsdcAtomic, contract: terms.contract ?? previous.funding?.contract, ...(terms.apartments ?? previous.funding?.apartments ? { apartments: terms.apartments ?? previous.funding?.apartments } : {}) },
                 title: Object.hasOwn(terms, 'title') ? terms.title : previous.title, author: Object.hasOwn(terms, 'author') ? terms.author : previous.author,
                 sponsor: Object.hasOwn(terms, 'sponsor') ? terms.sponsor : previous.sponsor, deadline,
                 consultation: null, createdAt: new Date().toISOString(), requireSponsor: false });

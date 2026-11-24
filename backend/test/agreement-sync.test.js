@@ -330,6 +330,20 @@ describe('publishAgreement', () => {
         expect(AgreementRecord.publishedCid({ ...imported, funding: { ...funding, targetUsdcAtomic: '1000002' } })).not.toBe(result.cid);
     });
 
+    it('publishes the exact archived members of a crowdfunding plan reopened on a fresh device', async () => {
+        const draft = round();
+        for (const member of draft.designs) member.proposalId = 'plan-member-' + member.cid;
+        const { sync, win, server } = fakeWindow({ saved: [draft], records: [] });
+        const designs = [layout(), road()].map(record => ({ cid: DesignRecord.cidOf(record), content: DesignRecord.published(record) }));
+        win.PlanWorkspace = { resolve: async plan => {
+            expect(plan.cid).toBe(draft.plan.cid);
+            return { designs };
+        } };
+        await sync.publishAgreement(draft.id);
+        expect(server.calls.map(call => call.pathname)).toEqual(['/agreements']);
+        expect(server.calls[0].body.designs.map(({ cid, content }) => ({ cid, content }))).toEqual(designs);
+    });
+
     it('refuses a missing developer wallet or a changed member before writing any part of the round', async () => {
         const draft = round();
         const disconnected = fakeWindow({ saved: [draft], wallet: null });

@@ -21,6 +21,15 @@ import {
 
 test.beforeEach(async ({ mockApi: page }) => {
   await stubBasemapTiles(page);
+  // Agreement chain fixtures are land-free, but the app still bootstraps the selected city’s
+  // parcel register. Keep this setup local and deterministic so an external registry 502 cannot
+  // open the blocking “parcel source unavailable” sheet and steal focus from funding dialogs.
+  await page.route('**/parcel-sources/**', route => route.fulfill({
+    status: 200, contentType: 'application/json', body: JSON.stringify({ type: 'FeatureCollection', features: [] }),
+  }));
+  await page.route('http://localhost:3000/parcel-nyc**', route => route.fulfill({
+    status: 200, contentType: 'application/json', body: JSON.stringify({ type: 'FeatureCollection', features: [] }),
+  }));
 });
 
 const SPONSOR = '7v54NWdBtkjuAFJrLGsS2SXnuk8nKam81mZJeeYxVFi9';
@@ -250,6 +259,75 @@ test.describe('Agreements on chain @core', () => {
     })).toBe(true);
     await expect.poll(() => page.evaluate(() => (window as any).__contributionCalls())).toBe(2);
     expect(await storedAgreements(page)).toHaveLength(0);
+  });
+
+  test('an apartment inventory round lets a buyer review, reserve and download the exact apartment schedule', async ({ mockApi: page }) => {
+    await page.setViewportSize({ width: 390, height: 760 });
+    const buyer = ATTESTATION;
+    await injectMockSolanaWallet(page, { publicKey: buyer, providerName: 'phantom' });
+    const index = pageIndex(page), city = 'new_york', deadline = '2030-12-31T23:59:59.000Z';
+    const view = { at: '40.7143,-74.0085,18', mode: '2d', city, language: 'en' };
+    const design = fileDesign(index, { schema: 'design/v1', goal: 'park', title: 'Garden court', description: null,
+      author: null, city, site: PARCEL_GEOMETRY, toleranceM: null, geometry: null, origin: null, authoredAt: null,
+      structureProposal: { kind: 'park', blockName: null, geometry: PARCEL_GEOMETRY } });
+    const planCid = filePlan(index, require('../../frontend/js/plan-record.js').create('Courtyard homes', [design], view));
+    const unit = { unitId: 'a-101', label: 'Apartment A-101', xrayBuilding: 'new_york::buildings::tower-1', unit: '1::A-101', at: view.at,
+      priceUsdcAtomic: '250000000', depositUsdcAtomic: '12500000', drawing: { name: 'tower-floor.pdf', mediaType: 'application/pdf', data: Buffer.from('%PDF-1.7\nDrawing').toString('base64') } };
+    const funding = { targetUsdcAtomic: '12500000', apartments: { projectId: 'garden-court', units: [unit] },
+      contract: { name: 'terms.txt', mediaType: 'text/plain', data: Buffer.from('Reservation deposits are credited to the purchase price.').toString('base64') } };
+    const cid = fileAgreement(index, { schema: 'agreement/v1', title: 'Apartment round', author: null, sponsor: SPONSOR, city, planCid, createdAt: null, deadline,
+      inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: 'USD', lines: [] }, valuation: null, consultation: null,
+      rule: { electorate: 'investors', binding: true, approvalConfig: null, settlement: null, lens: [E2E_LENS_MEMBER_KEY] }, funding });
+    const account = agreementAccountAddress(cid, SPONSOR);
+    await serveAgreementAccounts(page, new Map([[account, encodeAgreementAccount({ cid, authority: SPONSOR, lens: E2E_LENS_MEMBER_KEY, payout: SPONSOR, deadline: Date.parse(deadline) / 1000, requiredLamports: 0n })]]));
+    index.agreements.get(cid)!.onchain = { chain: 'solana', cluster: 'devnet', account, sponsor: SPONSOR, status: 'active', decision: 'pending' };
+    await page.goto(`/agreements/${cid}?city=${city}&at=${view.at}&act=reserve&unitId=a-101&lang=en`, { waitUntil: 'domcontentloaded' });
+    const panel = agreementPanel(page), row = panel.locator('[data-agreement-apartment-unit="a-101"]');
+    await expect(row).toContainText('Awaiting developer listing', { timeout: 30000 });
+    await page.evaluate(({ buyer, account }) => {
+      const root = window as any;
+      let reserved = false;
+      const offer = { unitId: 'a-101', account: 'unit-account', termsHash: 'ab'.repeat(32), deposit: '12500000' };
+      root.AgreementBridge = { ...root.AgreementBridge,
+        apartmentInventory: async () => [{ ...offer, status: reserved ? 'reserved' : 'available', buyer: reserved ? buyer : null, position: reserved ? 'position-account' : null }],
+        reserveApartment: async ({ expectedBuyer, onStatus }: { expectedBuyer: string; onStatus: (status: { state: string }) => void }) => {
+          if (reserved || expectedBuyer !== buyer) throw Error('Invalid duplicate or buyer.');
+          onStatus({ state: 'submitted' }); reserved = true;
+          return { account, signature: 'reservation-signature', position: 'position-account' };
+        } };
+    }, { buyer, account });
+    await panel.locator('[data-agreement-action="refresh-funding"]').click();
+    const reserve = row.getByRole('button', { name: 'Reserve apartment', exact: true });
+    await expect(reserve).toBeVisible();
+    await reserve.press('Enter');
+    const review = page.locator('.cb-dialog--prompt');
+    await expect(review).toContainText('Apartment A-101');
+    await expect(review).toContainText('250 USDC');
+    await expect(review).toContainText('12.5 USDC');
+    await expect(review.getByRole('link', { name: 'View apartment in X-ray' })).toHaveAttribute('href', /unit=1%3A%3AA-101/);
+    await expect(review.getByRole('button', { name: /Download drawing/ })).toBeVisible();
+    await review.getByRole('button', { name: 'Connect wallet', exact: true }).press('Enter');
+    await page.locator('[data-wallet-connector="solana-phantom"]').click();
+    await expect(review).toContainText(buyer);
+    await expect(page.getByRole('alertdialog', { name: 'Apartment reserved' })).toHaveCount(0);
+    await review.getByRole('button', { name: 'Reserve apartment', exact: true }).press('Enter');
+    const receipt = page.getByRole('alertdialog', { name: 'Apartment reserved' });
+    await expect(receipt).toContainText('Apartment A-101');
+    await expect(receipt).toContainText('12.5 devnet USDC');
+    await receipt.getByRole('button', { name: 'OK' }).press('Enter');
+    await expect(row.getByRole('status')).toHaveText('Apartment A-101 reserved. Your deposit was 12.5 devnet USDC.');
+    await expect(panel.locator('[data-agreement-funding-goal]')).toContainText('12.5 of 12.5');
+    await expect(reserve).toHaveCount(0);
+    const download = page.waitForEvent('download');
+    await row.getByRole('button', { name: 'Download contract schedule' }).press('Enter');
+    const file = await download;
+    expect(file.suggestedFilename()).toBe('apartment-a-101-contract-schedule.json');
+    const stream = await file.createReadStream();
+    const chunks = [];
+    for await (const chunk of stream!) chunks.push(chunk);
+    const schedule = JSON.parse(Buffer.concat(chunks).toString());
+    expect(schedule).toMatchObject({ buyer, developer: SPONSOR, unit, projectId: 'garden-court', agreementCid: cid, agreementAccount: account,
+      contract: funding.contract, planCid, termsHash: 'ab'.repeat(32), depositPaidUsdcAtomic: '12500000', position: 'position-account', signature: 'reservation-signature' });
   });
 
   test('a binding owners’ agreement is minted by its sponsor: proposed without a wallet it is proposed again with one, and Mint asks the mint’s terms', async ({ mockApi: page, browser, baseURL }) => {

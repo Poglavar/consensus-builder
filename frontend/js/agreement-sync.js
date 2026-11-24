@@ -233,20 +233,30 @@
             // Each design as it is published (an own draft carries the current profile's name first).
             const cids = new Map();
             const designs = [];
+            let snapshotMembers;
             for (const design of agreement.designs) {
                 const record = designOf(design.proposalId);
-                if (!record) throw failure('design-missing', t('agreement.publish.errors.designMissing', 'A design of this agreement is no longer on this device.'));
                 if (crowdfunding) {
-                    const content = win.DesignRecord.published(record);
+                    let content;
+                    if (record) content = win.DesignRecord.published(record);
+                    else {
+                        if (!snapshotMembers) {
+                            const snapshot = await win.PlanWorkspace.resolve(agreement.plan);
+                            snapshotMembers = new Map(snapshot.designs.map(member => [member.cid, member.content]));
+                        }
+                        content = snapshotMembers.get(design.cid);
+                    }
+                    if (!content) throw failure('design-missing', t('agreement.publish.errors.designMissing', 'A design of this agreement is no longer on this device.'));
                     const cid = cidApi().cidOfObject(content);
                     if (cid !== design.cid || !agreement.plan.content.designCids.includes(cid)) {
                         throw failure('plan-changed', t('agreement.funding.planChanged', 'The selected plan has changed. Select the revision you want to fund.'));
                     }
-                    if (record.published?.cid !== cid || record.published.apiBase !== win.DesignSync.apiBase()) {
+                    if (snapshotMembers?.has(design.cid) || record?.published?.cid !== cid || record.published.apiBase !== win.DesignSync.apiBase()) {
                         designs.push({ cid, content, parcelSourceId: win.DesignSync.parcelSourceForDesign(content) });
                     }
                     cids.set(design.proposalId, cid);
                 } else {
+                    if (!record) throw failure('design-missing', t('agreement.publish.errors.designMissing', 'A design of this agreement is no longer on this device.'));
                     cids.set(design.proposalId, (await win.DesignSync.publishDesign(record)).cid);
                 }
             }

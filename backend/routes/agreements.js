@@ -34,6 +34,7 @@ import {
 const require = createRequire(import.meta.url);
 const approval = require('../../frontend/js/proposals/approval.js');
 const agreementRecord = require('../../frontend/js/agreement-record.js');
+const apartmentClient = require('../../frontend/js/solana/pledge-client.js').configure({ web3: require('@solana/web3.js') });
 const communityDidWeb = require('../../frontend/js/community/did-web.js');
 const cityMoney = require('../../frontend/js/city-money.js');
 
@@ -657,6 +658,30 @@ export function setupAgreementsRoute(app, deps) {
         }
     });
 
+    // Published apartment offers for an X-ray selection. Keep this lookup compact; the agreement
+    // route remains the source of drawings, terms and on-chain availability.
+    app.get('/agreements/apartment-offers', async (req, res) => {
+        const { city: rawCity, xrayBuilding, unit } = req.query;
+        const building = agreementRecord.apartmentLocator(xrayBuilding);
+        if (typeof rawCity !== 'string' || !rawCity.trim() || !building || !agreementRecord.apartmentUnitLocator(unit)) {
+            return res.status(400).json({ error: 'city, xrayBuilding and unit are required.', code: 'bad-request' });
+        }
+        const city = normalizeCityCode(rawCity);
+        if (!city) return res.status(400).json({ error: 'Unknown city.', code: 'bad-city' });
+        const buildingCity = building[0] === 'design' ? null : normalizeCityCode(building[0]);
+        try {
+            const { rows } = await pool.query(`SELECT cid, title, city, item->>'unitId' AS "unitId", item->>'label' AS label
+                FROM ${AGREEMENT_TABLE} CROSS JOIN LATERAL jsonb_array_elements(content->'funding'->'apartments'->'units') item
+                WHERE COALESCE($4::text, city) = $1 AND onchain IS NOT NULL AND ${STATUS_SQL} = 'active'
+                  AND item->>'xrayBuilding' = $2 AND item->>'unit' = $3
+                ORDER BY created_at DESC, cid`, [city, xrayBuilding, unit, buildingCity]);
+            return res.json({ offers: rows });
+        } catch (error) {
+            console.error(`[${new Date().toISOString()}] Error in GET /agreements/apartment-offers:`, error);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
     app.get('/agreements/:cid', async (req, res) => {
         const cid = String(req.params.cid || '');
         if (!isCid(cid)) return res.status(400).json({ error: 'Not an agreement CID.', code: 'invalid-cid' });
@@ -664,6 +689,19 @@ export function setupAgreementsRoute(app, deps) {
             const row = await loadAgreement(pool, cid);
             if (!row) return res.status(404).json({ error: 'Agreement not found', code: 'agreement-not-found' });
             if (req.query.format === 'jsonld') return res.type('application/ld+json').json(agreementDocument(row));
+            if (req.query.inventory === '1' && row.content.funding?.apartments) {
+                const { sponsor, funding } = row.content;
+                if (!row.onchain) return res.json({ ...row, apartmentAvailability: { status: 'unminted' } });
+                const { account, cluster } = row.onchain;
+                if (cluster !== 'devnet' || agreementAccountOf(cid, sponsor) !== account) return send(res, 409, { code: 'funding-mismatch', error: 'Invalid apartment agreement account.' });
+                try {
+                    const connection = await agreementChain(cluster).connection();
+                    const units = await apartmentClient.readApartmentInventory(connection, account, sponsor, funding, agreementRecord);
+                    return res.json({ ...row, apartmentAvailability: { status: 'confirmed', units } });
+                } catch (error) {
+                    return send(res, 503, { code: 'inventory-unavailable', error: error.message });
+                }
+            }
             return res.json(row);
         } catch (error) {
             if (error?.code === 'retired-agreement-format') return res.status(410).json({ error: error.message, code: error.code });

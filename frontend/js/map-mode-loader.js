@@ -13,7 +13,7 @@
             ...floorPlans, 'js/corridor-terrain-formation.js',
             'js/building-height.js', 'js/proposals/gain.js', 'js/three-mesh-sanitize.js',
             'js/three-screen-door.js', 'js/three-smooth-transparency.js', 'js/three-building-display.js?v=20261113-passages', 'js/three-use-bands.js',
-            'js/three-floor-plans.js?v=20261124-solid-xray', 'js/three-apartment-hover.js?v=20261124-solid-xray', 'js/building-unit-links.js', 'js/three-apartment-panel.js?v=20261124-estimated-layouts', 'js/floor-plan-proximity.js', 'js/model-section.js', 'js/three-building-facades.js', 'js/rule-building-details.js', 'js/three-rule-roofs.js', 'js/three-resources.js',
+            'js/three-floor-plans.js?v=20261124-solid-xray', 'js/three-apartment-hover.js?v=20261124-solid-xray', 'js/three-apartment-panel.js?v=20261124-estimated-layouts', 'js/floor-plan-proximity.js', 'js/model-section.js', 'js/three-building-facades.js', 'js/rule-building-details.js', 'js/three-rule-roofs.js', 'js/three-resources.js',
             'js/three-scene-work.js', 'js/three-scene-readiness.js', 'js/three-structure-refresh.js', 'js/three-square-paving.js', 'js/three-lake-basin.js',
             'js/three-snapshot-navigation.js', 'js/three-regional-water.js', 'js/three-keyboard-context.js', 'js/three-scene-isolation.js',
             'js/elevated-rail-3d.js', 'js/three-focus-plan.js', 'js/three-click-plan.js', 'js/three-click-stack.js?v=20261121-stack-body-classes',

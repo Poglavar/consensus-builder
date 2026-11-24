@@ -8,6 +8,94 @@
   },
   "instructions": [
     {
+      "name": "clear_apartment_refund",
+      "discriminator": [
+        41,
+        35,
+        231,
+        167,
+        173,
+        52,
+        239,
+        230
+      ],
+      "accounts": [
+        {
+          "name": "unit",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  112,
+                  97,
+                  114,
+                  116,
+                  109,
+                  101,
+                  110,
+                  116,
+                  95,
+                  117,
+                  110,
+                  105,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "unit.developer",
+                "account": "ApartmentUnit"
+              },
+              {
+                "kind": "account",
+                "path": "unit.unit_key",
+                "account": "ApartmentUnit"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  111,
+                  110,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position.escrow",
+                "account": "DonationPosition"
+              },
+              {
+                "kind": "account",
+                "path": "position.owner",
+                "account": "DonationPosition"
+              },
+              {
+                "kind": "account",
+                "path": "position.donation_id",
+                "account": "DonationPosition"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "create_donation_escrow",
       "discriminator": [
         17,
@@ -577,6 +665,92 @@
       "args": []
     },
     {
+      "name": "list_apartment",
+      "discriminator": [
+        29,
+        183,
+        167,
+        68,
+        184,
+        74,
+        203,
+        34
+      ],
+      "accounts": [
+        {
+          "name": "unit",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  112,
+                  97,
+                  114,
+                  116,
+                  109,
+                  101,
+                  110,
+                  116,
+                  95,
+                  117,
+                  110,
+                  105,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "developer"
+              },
+              {
+                "kind": "arg",
+                "path": "unit_key"
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposal"
+        },
+        {
+          "name": "developer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "unit_key",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "terms_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "deposit",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "refund_donation",
       "docs": [
         "Refund one funded donation to its owner after cancellation or expiry."
@@ -858,6 +1032,140 @@
       "args": []
     },
     {
+      "name": "reserve_apartment",
+      "discriminator": [
+        50,
+        77,
+        228,
+        182,
+        181,
+        68,
+        114,
+        45
+      ],
+      "accounts": [
+        {
+          "name": "unit",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  112,
+                  97,
+                  114,
+                  116,
+                  109,
+                  101,
+                  110,
+                  116,
+                  95,
+                  117,
+                  110,
+                  105,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "unit.developer",
+                "account": "ApartmentUnit"
+              },
+              {
+                "kind": "account",
+                "path": "unit.unit_key",
+                "account": "ApartmentUnit"
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposal"
+        },
+        {
+          "name": "escrow",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  111,
+                  110,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "proposal"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  111,
+                  110,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "escrow"
+              },
+              {
+                "kind": "account",
+                "path": "buyer"
+              },
+              {
+                "kind": "account",
+                "path": "unit.unit_key",
+                "account": "ApartmentUnit"
+              }
+            ]
+          }
+        },
+        {
+          "name": "buyer",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "terms_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
       "name": "revoke_pledge",
       "discriminator": [
         148,
@@ -1116,6 +1424,19 @@
   ],
   "accounts": [
     {
+      "name": "ApartmentUnit",
+      "discriminator": [
+        11,
+        70,
+        40,
+        231,
+        17,
+        179,
+        185,
+        169
+      ]
+    },
+    {
       "name": "DonationEscrow",
       "discriminator": [
         80,
@@ -1256,9 +1577,99 @@
       "code": 6014,
       "name": "PledgeAlreadyFulfilled",
       "msg": "Fulfilled pledge cannot be changed"
+    },
+    {
+      "code": 6015,
+      "name": "UnauthorizedDeveloper",
+      "msg": "Only the agreement developer may list apartments"
+    },
+    {
+      "code": 6016,
+      "name": "DeadlinePassed",
+      "msg": "Agreement deadline has passed"
+    },
+    {
+      "code": 6017,
+      "name": "ApartmentRetained",
+      "msg": "Apartment is retained by a prior buyer"
+    },
+    {
+      "code": 6018,
+      "name": "ApartmentReserved",
+      "msg": "Apartment is already reserved"
+    },
+    {
+      "code": 6019,
+      "name": "InvalidApartment",
+      "msg": "Invalid apartment"
+    },
+    {
+      "code": 6020,
+      "name": "TermsMismatch",
+      "msg": "Terms hash does not match listing"
+    },
+    {
+      "code": 6021,
+      "name": "InvalidEscrow",
+      "msg": "Invalid escrow"
+    },
+    {
+      "code": 6022,
+      "name": "NotRefunded",
+      "msg": "Donation has not been refunded"
     }
   ],
   "types": [
+    {
+      "name": "ApartmentUnit",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "developer",
+            "type": "pubkey"
+          },
+          {
+            "name": "unit_key",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "agreement",
+            "type": "pubkey"
+          },
+          {
+            "name": "terms_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "deposit",
+            "type": "u64"
+          },
+          {
+            "name": "buyer",
+            "type": "pubkey"
+          },
+          {
+            "name": "position",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
     {
       "name": "DonationEscrow",
       "type": {

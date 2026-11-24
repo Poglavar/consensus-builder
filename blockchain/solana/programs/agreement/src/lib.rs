@@ -485,6 +485,7 @@ pub struct AgreementView {
     pub lens: Pubkey,
     /// AgreementStatus code: 0 Active, 1 Executed, 2 Cancelled, 3 Expired.
     pub status: u8,
+    pub deadline: i64,
     /// Chain time of execution (0 unless Executed).
     pub executed_at: i64,
 }
@@ -506,6 +507,7 @@ pub fn read_agreement_view(account: &AccountInfo) -> Option<AgreementView> {
     Some(AgreementView {
         authority: key_at(8)?,
         lens: key_at(LENS_OFFSET)?,
+        deadline: i64::from_le_bytes(data.get(8 + 3 * 32..8 + 3 * 32 + 8)?.try_into().ok()?),
         status: data[STATUS_OFFSET],
         executed_at: i64::from_le_bytes(data.get(EXECUTED_AT_OFFSET..EXECUTED_AT_OFFSET + 8)?.try_into().ok()?),
     })
