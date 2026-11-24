@@ -55,4 +55,57 @@ test.describe('Parcel loading and rendering @core', () => {
     await zoomTo(17);
     await expect.poll(shown).toEqual({ parcels: true, buildings: true });
   });
+
+  test('hiding parcels in 2D hides their 3D mesh and pick surface across refreshes', async ({ mockApi: page }) => {
+    await page.setViewportSize({ width: 420, height: 760 });
+    await openCity(page);
+    const parcels = page.locator('#parcelsCheckbox');
+    const switchMode = async (mode: '2d' | 'model') => {
+      await page.locator(mode === 'model' ? '#mode-3d-toggle' : '#mode-2d-toggle').click();
+      await expect.poll(() => page.evaluate(() => (window as any).__mapModeState)).toMatchObject({ desired: mode, pending: false });
+    };
+    const visibleMeshes = () => page.evaluate(id => {
+      let count = 0;
+      (window as any).getThreeModeInternals().scene.traverseVisible((object: any) => {
+        if (object.userData.isParcel && object.userData.parcelId === id) count++;
+      });
+      return count;
+    }, PARCEL_ID);
+    const clickParcelInModel = async () => {
+      const point = await page.evaluate(() => {
+        const w = window as any, model = w.getThreeModeInternals();
+        const [x, y] = model.latLngToXY(45.80025, 15.9822);
+        const projected = new w.THREE.Vector3(x, y, 0).project(model.camera);
+        const rect = model.renderer.domElement.getBoundingClientRect();
+        return { x: rect.left + (1 + projected.x) * rect.width / 2, y: rect.top + (1 - projected.y) * rect.height / 2 };
+      });
+      await page.mouse.click(point.x, point.y);
+    };
+    const clickedParcels = () => page.evaluate(() => (window as any).ThreeClickStack.current()
+      ?.sections.find((section: any) => section.kind === 'parcels')?.instances.map((item: any) => item.id) || []);
+
+    await openLayerSection(page, 'parcels');
+    await parcels.press('Space');
+    await expect(parcels).not.toBeChecked();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#layers-sheet')).toBeHidden();
+    await switchMode('model');
+    await expect.poll(visibleMeshes).toBe(0);
+    await page.setViewportSize({ width: 412, height: 740 });
+    await clickParcelInModel();
+    expect(await clickedParcels()).toEqual([]);
+    expect(await visibleMeshes()).toBe(0);
+
+    await switchMode('2d');
+    await openLayerSection(page, 'parcels');
+    await expect(parcels).not.toBeChecked();
+    await parcels.press('Space');
+    await expect(parcels).toBeChecked();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#layers-sheet')).toBeHidden();
+    await switchMode('model');
+    await expect.poll(visibleMeshes).toBeGreaterThan(0);
+    await clickParcelInModel();
+    await expect.poll(clickedParcels).toContain(PARCEL_ID);
+  });
 });

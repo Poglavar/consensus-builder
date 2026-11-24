@@ -247,7 +247,8 @@
     let manualAutoRotateLastTs = 0;
 
     // Groups for layers
-    let flatGroup = null; // existing parcels + existing roads (always part of "built")
+    let flatGroup = null; // parcel fills and boundaries from the live fabric
+    let roadGroundGroup = null; // independently mapped roads
     let corridorGroup = null; // applied corridor cross-sections — kept visible in realistic mode
     // Realistic mode gets a separately-built ruled road group. Keeping the abstract group untouched
     // makes leaving photoreal an exact restoration instead of a lossy reverse vertex mutation.
@@ -1310,8 +1311,7 @@
             } catch (_) { return false; }
         };
         const onGround = child => isolation.standsOn(child.userData, parcelIdSet, contains);
-        // flatGroup holds parcels (tagged) and roads (untagged).
-        if (!options.keepGround) isolation.hideChildren([flatGroup], onGround, isolationHidden);
+        if (!options.keepGround) isolation.hideChildren([flatGroup, roadGroundGroup], onGround, isolationHidden);
         // Proposed slices are tagged with their parcel; existing context buildings stand by footprint centre.
         // A design's view keeps only that design's buildings among those tagged with one.
         const onDesignGround = options.proposalId
@@ -1585,7 +1585,9 @@
             finally { window.suppressCameraMoves = false; }
         }
         try {
-            if (typeof window.fetchParcelData === 'function') await window.fetchParcelData(map.getBounds());
+            if (typeof window.fetchParcelData === 'function' && window.ParcelPresenter?.isEnabled?.() !== false) {
+                await window.fetchParcelData(map.getBounds(), { viewport: true });
+            }
         } catch (error) { console.warn(`[${new Date().toISOString()}] [3D] parcels around ${ids.join(',')} did not load`, error); }
     }
 
@@ -1595,7 +1597,7 @@
     // map's view holds no parcel yet.
     function viewGroundMissing() {
         const fabric = window.LiveParcelFabric;
-        if (typeof map === 'undefined' || !map || typeof map.getBounds !== 'function'
+        if (window.ParcelPresenter?.isEnabled?.() === false || typeof map === 'undefined' || !map || typeof map.getBounds !== 'function'
             || typeof fabric?.countBounds !== 'function' || typeof window.fetchParcelData !== 'function') return false;
         try {
             const view = map.getBounds();
@@ -1604,7 +1606,7 @@
     }
 
     async function settleGroundForView() {
-        try { await window.fetchParcelData(map.getBounds()); }
+        try { await window.fetchParcelData(map.getBounds(), { viewport: true }); }
         catch (error) { console.warn(`[${new Date().toISOString()}] [3D] parcels of the view did not load`, error); }
     }
 
@@ -2127,7 +2129,7 @@
         const proposal = window.proposalStorage?.getProposal?.(key);
         if (!proposal) return false;
         const id = String(proposalIdOf(proposal));
-        const parcel = parcelId || [...getProposalParcelIdSet(proposal)][0] || null;
+        const parcel = window.ParcelPresenter?.isEnabled?.() === false ? null : parcelId || [...getProposalParcelIdSet(proposal)][0] || null;
         withStackDriving(() => showClickStack({ proposalId: id }, {
             proposal: { id }, parcel: parcel ? { id: String(parcel) } : null, preserveView
         }));
@@ -4752,7 +4754,7 @@
 
     async function buildParcels3D(targetGroup, generation = parcelGroundGeneration, isCurrent = () => true) {
         const fabric = window.LiveParcelFabric;
-        if (!fabric || typeof fabric.queryBounds !== 'function') return;
+        if (window.ParcelPresenter?.isEnabled?.() === false || !fabric || typeof fabric.queryBounds !== 'function') return;
         const signal = sceneAbort?.signal;
         const stillCurrent = () => isActive && !signal?.aborted && targetGroup === flatGroup
             && generation === parcelGroundGeneration && isCurrent();
@@ -4784,6 +4786,7 @@
             const borders = polygonFeatureToBorderLines(f, edgeMat, 0.5);
             borders.forEach(line => { tag(line); targetGroup.add(line); });
         }, { isCurrent: stillCurrent });
+        if (stillCurrent()) targetGroup.userData.parcelsBuilt = true;
     }
 
     async function rebuildParcelGround3D() {
@@ -4791,6 +4794,7 @@
         const targetGroup = flatGroup;
         const signal = sceneAbort?.signal;
         const generation = ++parcelGroundGeneration;
+        targetGroup.userData.parcelsBuilt = false;
         const stillCurrent = () => isActive && !signal?.aborted && generation === parcelGroundGeneration && targetGroup === flatGroup;
         for (let index = targetGroup.children.length - 1; index >= 0; index--) {
             const child = targetGroup.children[index];
@@ -4800,6 +4804,18 @@
         if (!stillCurrent()) return;
         rebuildGroundOnly(null);
         applyParcelVisibilityForMode(derivedParcelVisibilityMode());
+    }
+
+    // A retained scene may have been opened with parcels off. Populate only its parcel group
+    // the first time it is needed. Other layers can continue using the same scene and camera.
+    function restoreModelParcelGround() {
+        if (!flatGroup || flatGroup.userData.parcelsBuilt || window.ParcelPresenter?.isEnabled?.() === false) return;
+        if (lifeQueryBounds) sceneParcelSnapshot = window.LiveParcelFabric.queryBounds(lifeQueryBounds, { includeCorridors: true });
+        return rebuildParcelGround3D();
+    }
+
+    function syncParcelGroundVisibility() {
+        if (flatGroup) flatGroup.visible = !realisticLayerActive && window.ParcelPresenter?.isEnabled?.() !== false;
     }
 
     // Set of parcel IDs that exist *only* because of an applied/executed proposal.
@@ -11291,6 +11307,8 @@
 
         // Groups
         flatGroup = new THREE.Group();
+        roadGroundGroup = new THREE.Group();
+        syncParcelGroundVisibility();
         corridorGroup = new THREE.Group();
         plannedFlatGroup = new THREE.Group();
         parkGroundGroup = new THREE.Group();
@@ -11338,7 +11356,7 @@
         treesGroup.visible = treesEnabled;
         waterGroup.visible = waterEnabled && !realisticLayerActive;
         greenGroup.visible = greenEnabled && !realisticLayerActive;
-        scene.add(flatGroup);
+        scene.add(flatGroup, roadGroundGroup);
         scene.add(corridorGroup);
         scene.add(plannedFlatGroup);
         scene.add(buildingGroup);
@@ -11409,7 +11427,7 @@
         const parcelGeneration = ++parcelGroundGeneration;
         await buildParcels3D(flatGroup, parcelGeneration, isCurrent);
         if (!isCurrent()) return false;
-        buildRoads3D(flatGroup);
+        buildRoads3D(roadGroundGroup);
         // Corridors render into their own group (not flatGroup): in realistic mode the parcel
         // and road slabs hide behind the photoreal mesh while the corridor cross-sections stay.
         try { buildCorridorStrips3D(corridorGroup); } catch (error) { console.warn('[three-mode] corridor strips failed', error); }
@@ -12070,6 +12088,7 @@
         nearbyGreenKey = null;
         nearbyGroundKey = null;
         flatGroup = null;
+        roadGroundGroup = null;
         corridorGroup = null;
         terrainCorridorGroup = null;
         corridorTerrainProfiles = [];
@@ -12286,6 +12305,12 @@
             const signal = sceneAbort.signal;
             handleResize();
             if (controls) controls.enabled = true;
+            syncParcelGroundVisibility();
+            const parcelBuild = restoreModelParcelGround();
+            if (parcelBuild) {
+                await parcelBuild;
+                if (!isActive || signal.aborted) return false;
+            }
             if (buildingWorkIncomplete) {
                 buildingWorkIncomplete = false;
                 buildingViewDirty = false;
@@ -12345,7 +12370,7 @@
         // 2D map has not moved since entry), so what the 3D view showed stays shown in 2D.
         const exitZoom = window.LoadView?.returnZoom?.(window.LoadView.ofCamera(getGeoCameraView(), getViewport())?.zoom, {
             parcelRange: window.parcelZoomRange?.(),
-            parcelsShown: typeof isZoomWithinParcelRange === 'function' && isZoomWithinParcelRange()
+            parcelsShown: window.ParcelPresenter?.isVisible?.() === true
         });
         isActive = false;
         suggestedPlanner?.dispose();
@@ -12401,9 +12426,17 @@
         }
     }
 
-    // Deliberately do not listen for `parcelDataLoaded` while 3D is active. `buildParcels3D` copies
-    // the entry-time Leaflet layers into `flatGroup`; keeping that mesh untouched makes parcels the
-    // same fixed scene snapshot as buildings and trees. OrbitControls never moves Leaflet itself.
+    // Orbiting uses the scene's fixed ground snapshot. The Layers switch also applies to
+    // a retained scene while the person is back on the map.
+    window.addEventListener('parcellayerchange', () => {
+        syncParcelGroundVisibility();
+        if (!isActive || !flatGroup) return;
+        if (window.ParcelPresenter?.isEnabled?.() === false) parcelGroundGeneration++;
+        else if (sceneReady && !realisticLayerActive) {
+            restoreModelParcelGround()?.catch(error => console.error('[3D] Parcel ground could not be restored', error));
+        }
+        invalidateThreeView();
+    });
 
     // Rebuild buildings if the 2D buildings layer updates (e.g., after fetch)
     for (const event of ['parcelFabricCommitted', 'buildingsLayerUpdated', 'proposedBuildingsUpdated', 'parksUpdated', 'squaresUpdated', 'lakesUpdated', 'stationsUpdated', 'buildingGroundsUpdated']) {
@@ -12606,7 +12639,7 @@
         const targets = [];
         if (proposalInteractionGroup) targets.push(proposalInteractionGroup);
         if (buildingGroup) targets.push(buildingGroup);
-        if (flatGroup) targets.push(flatGroup);
+        if (flatGroup?.visible) targets.push(flatGroup);
         if (plannedFlatGroup) targets.push(plannedFlatGroup);
         if (stationGroup) targets.push(stationGroup);
         // A road's raised span is picked where it is drawn, not on the ground the ray reaches past it.
@@ -12620,7 +12653,7 @@
             const onParcel = centre => { try { return !!parcel && turf.booleanPointInPolygon(turf.point(centre), parcel); } catch (_) { return false; } };
             hits = hits.filter(hit => window.__threeSceneIsolation.pickVolumeShown(hit.object, onParcel));
         }
-        const subject = window.__threeClickPlan.subjectHit(hits);
+        const subject = window.__threeClickPlan.subjectHit(hits, { includeParcels: window.ParcelPresenter?.isEnabled?.() !== false });
         if (subject?.picked.planningId) {
             const item = window.PlanningViews.getItems().find(item => item.id === subject.picked.planningId);
             subject.picked.planningKind = window.__clickStackModel.permittedKind(item);
@@ -12722,8 +12755,8 @@
             focus: proposal ? 'designs' : window.ThreeClickStack?.focusOf({ ...(picked && !picked.proposalId ? picked : {}),
                 formed: !!groundParcelId && groundInstance(groundParcelId).kind === 'formed' }) };
         if (window.ThreeClickStack?.retainClick(click)) return;
-        // Every click is also a parcel click (three-click-plan.js): the parcel under the point comes
-        // into view, and what the ray hit keeps its own meaning on top.
+        // A shown parcel under the point joins the click stack. What the ray hit keeps
+        // its own meaning on top.
         const plan = window.__threeClickPlan.planThreeClick({
             picked, groundParcelId, viewedParcelId, isolatedParcelId, isolatedProposalId, proposalKnown: !!proposal,
             pointParcelId: proposal ? pointParcelId : null
@@ -12748,7 +12781,7 @@
     // The parcel a hit volume stands on: straight down from the hit point, taken half a metre
     // further along the ray so a wall on a parcel boundary resolves to the building's side of it.
     function parcelUnderPoint(point, direction) {
-        if (!point || !flatGroup) return null;
+        if (!point || !flatGroup?.visible) return null;
         const inside = direction ? point.clone().addScaledVector(direction, 0.5) : point;
         const raycaster = new THREE.Raycaster(new THREE.Vector3(inside.x, inside.y, 100000), new THREE.Vector3(0, 0, -1));
         const slabs = flatGroup.children.filter(o => o && o.isMesh && o.visible && o.userData?.isParcel && o.userData.parcelId);
@@ -12758,7 +12791,7 @@
 
     // The parcel under a click, through whatever stands on it: the ray against the parcel slabs alone.
     function parcelUnderClick(evt) {
-        if (!renderer || !camera || !flatGroup) return null;
+        if (!renderer || !camera || !flatGroup?.visible) return null;
         const rect = renderer.domElement.getBoundingClientRect();
         const ndc = new THREE.Vector2(((evt.clientX - rect.left) / rect.width) * 2 - 1, -((evt.clientY - rect.top) / rect.height) * 2 + 1);
         const raycaster = new THREE.Raycaster();
@@ -13130,7 +13163,8 @@
         realisticLayerActive = !!on;
         applyOrbitDistanceLimit();
         rebuildPlanningSources3D();
-        if (flatGroup) flatGroup.visible = !realisticLayerActive;
+        syncParcelGroundVisibility();
+        if (roadGroundGroup) roadGroundGroup.visible = !realisticLayerActive;
         rebuildTreesOnly(); // which context trees stand depends on the view (buildTreesGroup)
         rebuildFurnitureOnly(); // street furniture follows the trees (rebuildFurnitureOnly)
         if (waterGroup) waterGroup.visible = waterEnabled && !realisticLayerActive;

@@ -20,6 +20,7 @@ function toggleAccordion(checkbox) {
         } else {
             window.ParcelsUIVisibility?.hideAllParcels();
         }
+        window.dispatchEvent(new Event('parcellayerchange'));
     } else if (layerName === 'blocks') {
         toggleBlocksVisibility();
     } else if (layerName === 'buildings') {

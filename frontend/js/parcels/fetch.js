@@ -688,7 +688,7 @@
     }
 
     async function fetchParcelData(customBounds, { viewport = false } = {}) {
-        if (viewport && global.ParcelPresenter?.isVisible?.() === false) return null;
+        if (viewport && global.ParcelPresenter?.isVisible?.(global.__mapModeState?.desired) === false) return null;
         if (global.ParcelGroundFallback?.isWithoutParcels?.(currentCity())) {
             global.updateStatus?.(statusText('without_parcels', 'Continuing without parcels. Designs use their own geometry.'));
             return null;

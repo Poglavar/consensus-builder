@@ -60,7 +60,7 @@ describe('source parcel projection and picking', () => {
     });
 });
 
-function fixture({ pending = false, visible = true } = {}) {
+function fixture({ pending = false, visible = true, master = true } = {}) {
     const nodes = new Map();
     function element() {
         const handlers = {};
@@ -85,7 +85,8 @@ function fixture({ pending = false, visible = true } = {}) {
         MutationObserver: class { observe() {} disconnect() {} }, __photorealFrame: { mercatorScaleFactor: () => 1 },
         getComputedStyle: () => ({ getPropertyValue: () => '#ffffff' }), L: { latLngBounds: (sw, ne) => [sw, ne] },
         CadastralParcelRepository: { ensureBounds: vi.fn(() => source) }, turf: { area: () => 100 }, invalidateThreeView: vi.fn(),
-        MapHighlight: { color: '#ffdd00', halo: '#292000' }
+        MapHighlight: { color: '#ffdd00', halo: '#292000' },
+        ParcelPresenter: { isEnabled: () => master }
     };
     const internals = { originLatLng: () => ({ lat: 0 }), controls: { target: { x: 0, y: 0 } }, latLngToXY: project,
         camera: { position: { distanceTo: () => 400 } },
@@ -95,6 +96,18 @@ function fixture({ pending = false, visible = true } = {}) {
 }
 
 describe('photo overlay lifecycle', () => {
+    it('does not fetch source parcels while the master layer starts off', () => {
+        const f = fixture({ master: false });
+        expect(f.overlay.setHighlight([f.response.features[0]])).toBe(true);
+        const reposition = vi.spyOn(f.overlay.uniforms.uParcelMin.value, 'set');
+        f.internals.controls.target.x = 300;
+        f.overlay.update();
+        expect(reposition).toHaveBeenCalledOnce();
+        expect(f.overlay.uniforms.uParcelOn.value).toBe(1);
+        expect(f.root.CadastralParcelRepository.ensureBounds).not.toHaveBeenCalled();
+        expect(f.nodes.get('photo-parcels-visible').disabled).toBe(true);
+        f.overlay.dispose();
+    });
     it('paints the selected outline on the surface, with the parcel layer off, and clears it', async () => {
         const f = fixture({ visible: false });
         await Promise.resolve();
@@ -118,6 +131,16 @@ describe('photo overlay lifecycle', () => {
         expect(f.overlay.setHighlight([f.response.features[0]])).toBe(false);
         f.overlay.dispose();
     });
+    it('keeps independent selection highlights drawable while master layer is off', async () => {
+        let master = true;
+        const f = fixture();
+        await Promise.resolve();
+        master = false; f.root.ParcelPresenter.isEnabled = () => master;
+        f.root.handlers.parcellayerchange();
+        expect(f.overlay.setHighlight([f.response.features[0]])).toBe(true);
+        expect(f.overlay.at(5, 5)).toEqual([]);
+        f.overlay.dispose();
+    });
     it('projects polygon rings and road lines as highlight strokes, skipping unusable geometry', () => {
         const lines = projectHighlightLines([
             { geometry: { type: 'MultiPolygon', coordinates: [[ring(0, 0)], [ring(5, 5)]] } },
@@ -134,7 +157,7 @@ describe('photo overlay lifecycle', () => {
         expect(f.overlay.at(5, 5).map(parcel => parcel.id)).toEqual(['source-1', 'overlap-2']);
         expect(f.overlay.at(50, 50)).toEqual([]);
         expect(f.screen.handlers).toEqual({});
-        expect(f.root.handlers).toEqual({});
+        expect(f.root.handlers).toHaveProperty('parcellayerchange');
         f.overlay.dispose();
         expect(f.overlay.at(5, 5)).toEqual([]);
     });
@@ -150,6 +173,38 @@ describe('photo overlay lifecycle', () => {
         expect(f.overlay.uniforms.uParcelOn.value).toBe(1);
         toggle.checked = false; toggle.handlers.change();
         expect(f.overlay.uniforms.uParcelOn.value).toBe(0);
+        expect(f.overlay.at(5, 5)).toHaveLength(2);
+        f.overlay.dispose();
+    });
+    it('master layer off suppresses picks and cancels reads while retaining independent highlights', async () => {
+        let master = true;
+        const f = fixture({ pending: true });
+        f.root.ParcelPresenter.isEnabled = () => master;
+        const signal = f.root.CadastralParcelRepository.ensureBounds.mock.calls[0][1].signal;
+        master = false;
+        f.root.handlers.parcellayerchange();
+        expect(signal.aborted).toBe(true);
+        expect(f.overlay.at(5, 5)).toEqual([]);
+        expect(f.overlay.setHighlight([f.response.features[0]])).toBe(true);
+        f.overlay.dispose();
+    });
+    it('ignores a late off-generation answer after rapid master re-enable', async () => {
+        let master = true;
+        const f = fixture({ pending: true });
+        f.root.ParcelPresenter.isEnabled = () => master;
+        const firstSignal = f.root.CadastralParcelRepository.ensureBounds.mock.calls[0][1].signal;
+        master = false; f.root.handlers.parcellayerchange();
+        let finishSecond;
+        f.root.CadastralParcelRepository.ensureBounds.mockImplementationOnce(() => new Promise(resolve => { finishSecond = resolve; }));
+        master = true; f.root.handlers.parcellayerchange();
+        expect(firstSignal.aborted).toBe(true);
+        f.finish(); await Promise.resolve();
+        f.root.handlers.parcellayerchange();
+        f.internals.controls.target.x = 300;
+        f.overlay.update();
+        expect(f.root.CadastralParcelRepository.ensureBounds).toHaveBeenCalledTimes(2);
+        expect(f.overlay.at(5, 5)).toEqual([]);
+        finishSecond(f.response); await Promise.resolve();
         expect(f.overlay.at(5, 5)).toHaveLength(2);
         f.overlay.dispose();
     });

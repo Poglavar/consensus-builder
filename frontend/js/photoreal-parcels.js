@@ -99,7 +99,6 @@ if (uParcelOn > 0.5) {
         const { THREE, document: doc } = root;
         const size = 2048;
         const k = root.__photorealFrame.mercatorScaleFactor(internals.originLatLng().lat);
-        let span = null;
         const canvas = doc.createElement('canvas');
         canvas.width = canvas.height = size;
         const context = canvas.getContext('2d');
@@ -115,9 +114,10 @@ if (uParcelOn > 0.5) {
         uniforms.uParcelOn.value = 0;
         const toggle = doc.getElementById('photo-parcels-visible');
         const status = doc.getElementById('photo-parcels-status');
-        let enabled = toggle?.checked === true;
-        let disposed = false, busy = false, dirty = true;
+        let masterEnabled = root.ParcelPresenter?.isEnabled?.() !== false;
+        let disposed = false, dirty = true;
         let bounds = null, parcels = [], request = null;
+        const drawBoundaries = () => masterEnabled && toggle?.checked === true;
         // The selected object's boundary, painted on the photo surface like the parcel lines so it
         // lies on the ground wherever the tiles are. A 3D line placed at a sampled height stayed at
         // that height when finer tiles or a re-seat moved the ground under it.
@@ -149,7 +149,7 @@ if (uParcelOn > 0.5) {
             }));
         }
         function overlayOn() {
-            return (enabled && parcels.length) || highlightFeatures.length ? 1 : 0;
+            return (drawBoundaries() && parcels.length) || highlightFeatures.length ? 1 : 0;
         }
         function draw() {
             context.clearRect(0, 0, size, size);
@@ -157,7 +157,7 @@ if (uParcelOn > 0.5) {
             const colors = palette();
             context.lineJoin = 'round';
             // Two passes keep a dark halo beneath shared edges, rather than darkening a neighbour's line.
-            if (enabled) {
+            if (drawBoundaries()) {
                 for (const [width, color] of [[4.5, colors.halo], [2, colors.edge]]) {
                     context.lineWidth = width;
                     context.strokeStyle = color;
@@ -192,49 +192,70 @@ if (uParcelOn > 0.5) {
             parcels = projectFeatures(features, internals.latLngToXY, bounds);
             draw();
         }
-        async function load(x, y, nextSpan) {
-            busy = true;
-            requestedCenter = [x, y];
-            requestedSpan = nextSpan;
-            const next = [x - nextSpan / 2, y - nextSpan / 2, x + nextSpan / 2, y + nextSpan / 2];
+        function setWindow(next, nextSpan) {
+            bounds = next;
+            uniforms.uParcelMin.value.set(bounds[0], bounds[1]);
+            uniforms.uParcelInvSpan.value = 1 / nextSpan;
+        }
+        async function load(next, nextSpan) {
             const sw = internals.xyToLatLng(next[0], next[1]);
             const ne = internals.xyToLatLng(next[2], next[3]);
-            request = new AbortController();
+            const controller = new AbortController();
+            request = controller;
             setStatus('loading', 'Loading source parcel boundaries…');
             try {
-                const result = await root.CadastralParcelRepository.ensureBounds(root.L.latLngBounds(sw, ne), { signal: request.signal });
-                if (disposed || request.signal.aborted) return;
-                bounds = next;
-                span = nextSpan;
-                uniforms.uParcelMin.value.set(bounds[0], bounds[1]);
-                uniforms.uParcelInvSpan.value = 1 / span;
+                const result = await root.CadastralParcelRepository.ensureBounds(root.L.latLngBounds(sw, ne), { signal: controller.signal });
+                if (controller.signal.aborted) return;
+                setWindow(next, nextSpan);
                 rebuild(result.features);
                 setStatus(parcels.length ? 'ready' : 'empty', parcels.length
                     ? 'Source parcels · click the city to inspect' : 'No source parcels returned for this area.');
             } catch (error) {
-                if (disposed || request.signal.aborted) return;
+                if (controller.signal.aborted) return;
                 console.error(`[${new Date().toISOString()}] [photo-parcels] Source boundaries unavailable`, error);
                 bounds = null; parcels = []; draw();
                 uniforms.uParcelOn.value = 0;
                 setStatus('failed', 'Parcel boundaries could not load. Toggle the layer to retry.');
-            } finally { busy = false; }
+            } finally { if (request === controller) request = null; }
         }
         function update() {
-            if (disposed || busy) return;
+            if (disposed || request) return;
             const target = internals.controls.target;
             const nextSpan = windowSpan(internals.camera.position.distanceTo(target), k);
             if (dirty || requestedSpan !== nextSpan || !requestedCenter || Math.hypot(target.x - requestedCenter[0], target.y - requestedCenter[1]) > requestedSpan / 4) {
                 dirty = false;
-                void load(target.x, target.y, nextSpan);
+                requestedCenter = [target.x, target.y];
+                requestedSpan = nextSpan;
+                const half = nextSpan / 2;
+                const next = [target.x - half, target.y - half, target.x + half, target.y + half];
+                if (masterEnabled) void load(next, nextSpan);
+                else {
+                    // Independent selection outlines still follow the camera with parcel data off.
+                    setWindow(next, nextSpan);
+                    draw();
+                }
             }
         }
         function onToggle() {
-            enabled = toggle.checked;
             draw();
             if (!bounds) uniforms.uParcelOn.value = 0;
-            if (status) status.hidden = !enabled;
-            if (enabled) { dirty = true; update(); }
+            if (status) status.hidden = !drawBoundaries();
+            if (drawBoundaries() && !bounds) { dirty = true; update(); }
             root.invalidateThreeView?.();
+        }
+        function onMasterToggle() {
+            const next = root.ParcelPresenter?.isEnabled?.() !== false;
+            if (next === masterEnabled) return;
+            masterEnabled = next;
+            if (!masterEnabled) {
+                request?.abort();
+                request = null;
+                parcels = [];
+            }
+            if (toggle) toggle.disabled = !masterEnabled;
+            if (status) status.hidden = !drawBoundaries();
+            dirty = true;
+            update();
         }
         const themeObserver = new root.MutationObserver(() => draw());
         themeObserver.observe(doc.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
@@ -242,11 +263,13 @@ if (uParcelOn > 0.5) {
             if (statusSpec) setStatus(...statusSpec);
         });
         toggle?.addEventListener('change', onToggle);
-        if (status) status.hidden = !enabled;
+        if (toggle) toggle.disabled = !masterEnabled;
+        root.addEventListener?.('parcellayerchange', onMasterToggle);
+        if (status) status.hidden = !drawBoundaries();
         update();
         return {
             uniforms, update, setHighlight,
-            at: (x, y) => parcelsAt(parcels, x, y),
+            at: (x, y) => masterEnabled ? parcelsAt(parcels, x, y) : [],
             dispose() {
                 disposed = true;
                 parcels = [];
@@ -259,6 +282,8 @@ if (uParcelOn > 0.5) {
                 uniforms.uParcelOn.value = 0;
                 uniforms.uParcelOverlay.value = null;
                 toggle?.removeEventListener('change', onToggle);
+                if (toggle) toggle.disabled = false;
+                root.removeEventListener?.('parcellayerchange', onMasterToggle);
             }
         };
     }

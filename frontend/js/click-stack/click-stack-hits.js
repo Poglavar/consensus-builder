@@ -87,8 +87,8 @@
     }
 
     function hitsAt(latlng, { onPublished } = {}) {
-        // Photo view uses the same hit collection with its own parcel controls.
-        const includeParcels = global.isThreeModeActive?.() === true || global.ParcelPresenter?.isVisible?.() !== false;
+        // The map has its own zoom gate. The Layers switch applies to every view.
+        const includeParcels = global.ParcelPresenter?.isVisible?.(global.isThreeModeActive?.() ? 'model' : '2d') !== false;
         const stack = global.__drillUi?.stackAt(latlng, { includeParcels }) || [];
         const designs = [], formed = [], parcels = [];
         for (const entry of stack) {

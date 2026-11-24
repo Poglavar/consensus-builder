@@ -162,14 +162,16 @@ describe('the buildings under an aerial surface point (observedBuildingsOver)', 
 
 describe('entering the scene before its parcels are loaded (viewGroundMissing)', () => {
     const bounds = { getWest: () => 1, getSouth: () => 2, getEast: () => 3, getNorth: () => 4 };
-    const run = (count, fetch = () => { }) => {
+    const run = (count, fetch = () => { }, enabled = true) => {
         const asked = [];
         const api = load(['viewGroundMissing'], { map: { getBounds: () => bounds },
-            window: { LiveParcelFabric: { countBounds: box => { asked.push(box); return count; } }, fetchParcelData: fetch } });
+            window: { ParcelPresenter: { isEnabled: () => enabled },
+                LiveParcelFabric: { countBounds: box => { asked.push(box); return count; } }, fetchParcelData: fetch } });
         return { missing: api.viewGroundMissing(), asked };
     };
     it('waits only while the view holds no parcel, and never without a way to load them', () => {
         expect(run(0)).toEqual({ missing: true, asked: [[1, 2, 3, 4]] });
+        expect(run(0, () => {}, false)).toEqual({ missing: false, asked: [] });
         expect(run(12).missing).toBe(false);
         expect(run(0, null).missing).toBe(false);
         expect(load(['viewGroundMissing'], { map: null, window: {} }).viewGroundMissing()).toBe(false);

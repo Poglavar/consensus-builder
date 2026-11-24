@@ -42,7 +42,7 @@
     // Only a surface is picked: a building's edge and floor lines are drawn detail, and the ray
     // takes a line from a metre away, so a line near the click named its parcel instead of the
     // building it outlines.
-    function subjectHit(hits) {
+    function subjectHit(hits, { includeParcels = true } = {}) {
         let yielding = null;
         for (const hit of hits) {
             if (hit.object.isLine || hit.object.isPoints) continue;
@@ -56,7 +56,7 @@
                 if (data.planningSeeThrough) seeThrough = true;
                 if (data.condemned) condemned = true;
                 if (!proposalId && data.proposalId) proposalId = String(data.proposalId);
-                if (!parcelId && data.parcelId) parcelId = String(data.parcelId);
+                if (includeParcels && !parcelId && data.parcelId) parcelId = String(data.parcelId);
             }
             if (!visible) continue;
             const picked = planningId ? { planningId } : builtFeature && !proposalId

@@ -112,6 +112,7 @@ it('resolves a caller waiting on scene readiness as false when the pending scene
         handleResize() {},
         cancelLoop() {},
         apartmentHover: null,
+        apartmentPanel: null,
         apartmentHoverNote: null,
         suggestedStreetLoader: null,
         suggestedPlanner: null,
@@ -166,6 +167,7 @@ it('resolves a caller waiting on scene readiness as false when the pending scene
         sceneParcelSnapshot: [],
         nearbyWaterKey: null,
         flatGroup: null,
+        roadGroundGroup: null,
         corridorGroup: null,
         terrainCorridorGroup: null,
         corridorTerrainProfiles: [],
@@ -383,6 +385,8 @@ function warmEnterFixture() {
         disableLeafletInteractions() {},
         closeAllPanelsAndModalsFor3D() {},
         handleResize() {},
+        syncParcelGroundVisibility() {},
+        restoreModelParcelGround() {},
         startLoop() { calls.startLoop += 1; },
         ensureNearbyProposalBuildings() {},
         ensureNearbyTrees() {},
@@ -473,10 +477,28 @@ it('does not let a cancelled warm rebuild restart the render loop after re-entry
     expect(calls.rebuild).toBe(1);
 });
 
+it('builds a retained scene’s parcel ground once when the layer returns', async () => {
+    const group = { visible: true, userData: {} };
+    let enabled = false, built = 0, queried = 0;
+    const context = loadInContext(threeModeDeclarations(['syncParcelGroundVisibility', 'restoreModelParcelGround']), {
+        flatGroup: group, realisticLayerActive: false, lifeQueryBounds: [0, 0, 1, 1], sceneParcelSnapshot: [],
+        window: { ParcelPresenter: { isEnabled: () => enabled }, LiveParcelFabric: { queryBounds() { queried++; return []; } } },
+        rebuildParcelGround3D() { built++; group.userData.parcelsBuilt = true; return Promise.resolve(); }
+    });
+    for (const [on, expectedBuilds] of [[false, 0], [true, 1], [false, 1], [true, 1]]) {
+        enabled = on;
+        context.syncParcelGroundVisibility();
+        await context.restoreModelParcelGround();
+        expect(group.visible).toBe(on);
+        expect(built).toBe(expectedBuilds);
+    }
+    expect(queried).toBe(1);
+});
+
 it('does not apply parcel visibility after an async ground rebuild is cancelled', async () => {
     const calls = [];
     let completeBuild;
-    const group = { children: [] };
+    const group = { children: [], userData: {} };
     const context = loadInContext(threeModeDeclarations(['rebuildParcelGround3D']), {
         isActive: true,
         flatGroup: group,

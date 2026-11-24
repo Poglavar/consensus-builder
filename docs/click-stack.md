@@ -288,13 +288,14 @@ closes on Escape, a click on nothing, another selection, or the mobile close but
   nothing). A road's raised or sunk span is picked on the span itself, not on the ground the ray
   reaches past it. In the single-parcel view the pick volume of a building the view hides is left
   out, so a click where it stood selects the ground shown there.
-- The scene's parcels are those loaded when it is entered. Entering a view whose place has no
-  parcels loaded yet (a reload straight into the model view) waits for them first, so the
-  ground is there to click.
+- **Layers → Show parcels** controls parcel fills, boundaries and map picking in both 2D and
+  the 3D model. With parcels enabled, the model takes a snapshot of the visible ground on entry
+  and loads missing parcels for it. With parcels off, the model loads its building, design
+  and planning layers independently.
 - The parcel shown with a clicked building, massing or design is the one straight under the point
   the ray met it at (the formed plot under a drawn building, as in 2D), never the ground the ray
-  would reach behind it. Its designs, buildings and massing fill the other sections: here every
-  click is also a parcel click, so the Design section lists the parcel's designs, where the 2D
+  would reach behind it. With parcels shown, its designs, buildings and massing fill the other
+  sections. The Design section lists the parcel's designs, where the 2D
   stack lists only those under the point.
 - In the Design section a drawn design comes before one that only authors the ground (a parcel
   layout), as in 2D; the clicked design is the selected one wherever it sorts.
@@ -367,6 +368,7 @@ unlabelled visual mesh alone.
 Yellow selection boundaries follow the loaded photo surface. Authored drawn volumes retain
 volume outlines; Google buildings without an addressable authored mesh use their source
 footprint boundary. Missing surface heights leave gaps rather than introducing zero heights.
-The cadastral boundary layer remains a drawing preference: hiding it neither closes the
-selection nor disables parcel clicks. The former independent photo parcel picker and its
-read-only reference/area card are retired.
+**Layers → Show parcels** also controls cadastral boundaries, parcel clicks and automatic
+parcel downloads in Photo. Turning it off cancels pending boundary reads. With the layer on,
+**Cadastral parcel boundaries** controls the lines drawn on the tiles. Parcels remain
+selectable with those lines hidden.

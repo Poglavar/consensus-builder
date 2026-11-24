@@ -60,8 +60,8 @@
         return global.document?.getElementById('parcelsCheckbox')?.checked !== false;
     }
 
-    function isVisible() {
-        return isEnabled() && global.isZoomWithinParcelRange?.() !== false;
+    function isVisible(mode = '2d') {
+        return isEnabled() && (mode !== '2d' || global.isZoomWithinParcelRange?.() !== false);
     }
 
     function addGroupToMapIfAppropriate() {

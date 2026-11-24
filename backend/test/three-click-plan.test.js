@@ -9,6 +9,15 @@ const { planThreeClick, clickKey, subjectHit, photoHit, drapeSegments } = requir
 const idle = { viewedParcelId: null, isolatedParcelId: null, isolatedProposalId: null };
 
 describe('shared scene hit resolution', () => {
+    it('picks buildings and designs independently of their hidden parcel', () => {
+        const parcel = { object: { userData: { parcelId: 'lot' } }, distance: 1 };
+        const design = { object: { userData: { proposalId: 'house', parcelId: 'lot' } }, distance: 2 };
+        const built = { object: { userData: { planningBuiltFeature: { id: 'survey' }, parcelId: 'lot' } }, distance: 2 };
+        const options = { includeParcels: false };
+        expect(subjectHit([parcel], options)).toBeNull();
+        expect(subjectHit([parcel, design], options).picked).toEqual({ proposalId: 'house', parcelId: null });
+        expect(subjectHit([parcel, built], options).picked).toEqual({ builtFeature: { id: 'survey' }, parcelId: null });
+    });
     it('ignores hidden model context and retains authored identity through nested pick meshes', () => {
         const hidden = { visible: false, userData: { parcelId: 'hidden' } };
         const authored = { visible: true, userData: { proposalId: 'design', parcelId: 'parcel' } };

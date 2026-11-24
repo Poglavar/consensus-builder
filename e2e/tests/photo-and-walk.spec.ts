@@ -4,6 +4,7 @@ import { openCity, createSpace, createBuilding, PARCEL_GEOMETRY } from '../helpe
 import { mockPhotoTiles } from '../helpers/mocks/photo-data';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 import { openAndClosePopup, selectNativeOption } from '../helpers/controls';
+import { openLayerSection } from '../helpers/layers';
 import { pageIndex } from '../helpers/mocks/shared-server';
 
 test('walk chooses a real 3D ground point, cancels with Escape, and opens the configured walking map', async ({ mockApi: page, context }) => {
@@ -153,6 +154,26 @@ test('photo seating diagnostics can be copied from their accessible button', asy
   await expect(diagnostics).toContainText(/seat grounded=.*tiles=/);
   await diagnostics.click();
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toContain('seat grounded=');
+});
+
+test('Photo entry respects Show parcels even with source parcels already loaded', async ({ mockApi: page }) => {
+  const tiles = await mockPhotoTiles(page);
+  await openCity(page);
+  await openLayerSection(page, 'parcels');
+  await page.locator('#parcelsCheckbox').uncheck();
+  await page.locator('#layers-button').click();
+  await page.locator('#mode-realistic-toggle').click();
+  await expect.poll(tiles.requests, { timeout: 20_000 }).toBeGreaterThan(0);
+  await expect.poll(() => page.evaluate(() => (window as any).__mapModeState)).toMatchObject({ desired: 'photo', pending: false });
+  await page.locator('#layers-button').click();
+  await expect(page.locator('#photo-parcels-visible')).toBeDisabled();
+  const hits = await page.evaluate(() => {
+    const w = window as any;
+    const latlng = { lat: 45.80025, lng: 15.9822 };
+    const [x, y] = w.getThreeModeInternals().latLngToXY(latlng.lat, latlng.lng);
+    return { photo: w.PhotorealMode.sourceParcelsAt({ x, y }), stack: w.ClickStackHits.hitsAt(latlng).parcels };
+  });
+  expect(hits).toEqual({ photo: [], stack: [] });
 });
 
 test('Photo clicks use the shared parcel section independently of boundary visibility', async ({ mockApi: page }) => {

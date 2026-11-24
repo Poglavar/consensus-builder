@@ -27,7 +27,8 @@ const group = (...children) => ({ visible: true, children });
 function scene() {
     const parcels = { A: { id: 'A', contains: point => point === 'in-A' }, B: { id: 'B', contains: point => point === 'in-B' } };
     const g = {
-        flatGroup: group(object({ isParcel: true, parcelId: 'A' }), object({ isParcel: true, parcelId: 'B' }), object({ road: true })),
+        flatGroup: group(object({ isParcel: true, parcelId: 'A' }), object({ isParcel: true, parcelId: 'B' })),
+        roadGroundGroup: group(object({ road: true })),
         existingBuildingsGroup: group(object({ isNearbyBuilding3D: true, footprintLatLng: 'in-A' }),
             object({ isNearbyBuilding3D: true, footprintLatLng: 'in-B' }),
             object({ isNearbyBuilding3D: true, footprintLatLng: 'in-A', demolished: true }, false)),
@@ -104,7 +105,8 @@ describe('the parcel view (three-mode.js)', () => {
         const view = scene();
         view.isolateParcel('A');
         expect(view.state()).toMatchObject({ isolatedParcelId: 'A', viewedParcelId: 'A' });
-        expect(shown(view.g.flatGroup)).toEqual([true, true, true]);
+        expect(shown(view.g.flatGroup)).toEqual([true, true]);
+        expect(shown(view.g.roadGroundGroup)).toEqual([true]);
         expect(shown(view.g.existingBuildingsGroup)).toEqual([true, false, false]);
         expect(shown(view.g.proposedBuildingsGroup)).toEqual([true, false]);
         expect(shown(view.g.planningSourcesGroup)).toEqual([true, false]);
@@ -145,12 +147,14 @@ describe('the design view (three-mode.js)', () => {
         const view = scene();
         view.designOf('design-1');
         view.applyIsolationVisibility(new Set(['A']), [view.parcels.A]);
-        expect(shown(view.g.flatGroup)).toEqual([true, false, false]);
+        expect(shown(view.g.flatGroup)).toEqual([true, false]);
+        expect(shown(view.g.roadGroundGroup)).toEqual([false]);
         expect(shown(view.g.plannedFlatGroup)).toEqual([false]);
         expect(shown(view.g.treesGroup)).toEqual([true]);
         expect(shown(view.g.planningSourcesGroup)).toEqual([true, true]);
         view.clearIsolation();
-        expect(shown(view.g.flatGroup)).toEqual([true, true, true]);
+        expect(shown(view.g.flatGroup)).toEqual([true, true]);
+        expect(shown(view.g.roadGroundGroup)).toEqual([true]);
         expect(shown(view.g.existingBuildingsGroup)).toEqual([true, true, false]);
         expect(shown(view.g.plannedFlatGroup)).toEqual([true]);
         expect(view.stubs.rebuild3DBuildingsOnly).not.toHaveBeenCalled();
