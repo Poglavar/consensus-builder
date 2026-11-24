@@ -1,0 +1,1153 @@
+{
+  "source": "https://map.almatygenplan.kz/t/genplan-raster.json",
+  "grid": {
+    "zoom": 17,
+    "top_left_global_pixels": [
+      23951287,
+      12294913
+    ],
+    "width": 1280,
+    "height": 1280,
+    "x_direction": "east",
+    "y_direction": "south"
+  },
+  "reviewed_labels": [
+    {
+      "code": "Р-1",
+      "pixel": [
+        297,
+        40
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        840,
+        13
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        945,
+        96
+      ],
+      "template": true
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        963,
+        139
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        1154,
+        248
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        1200,
+        489
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        1074,
+        925
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        1001,
+        965
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        989,
+        1019
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        984,
+        1057
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        1087,
+        1124
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        493,
+        385
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        198,
+        389
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        652,
+        238
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        768,
+        440
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        180,
+        172
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        350,
+        133
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        1142,
+        46
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        1159,
+        115
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        914,
+        343
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        421,
+        546
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        464,
+        572
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        554,
+        549
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        458,
+        652
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        220,
+        812
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        693,
+        869
+      ],
+      "template": true
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        1157,
+        935
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        1269,
+        663
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        998,
+        1126
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        951,
+        1243
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        490,
+        64
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        785,
+        12
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        422,
+        158
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        402,
+        391
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        465,
+        351
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        855,
+        296
+      ],
+      "template": true
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        910,
+        490
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        1073,
+        490
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        401,
+        729
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        164,
+        825
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        367,
+        1007
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        441,
+        929
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        1132,
+        806
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        1004,
+        905
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        963,
+        985
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        916,
+        1085
+      ],
+      "template": false
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        823,
+        1248
+      ],
+      "template": false
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        306,
+        86
+      ],
+      "template": false
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        147,
+        220
+      ],
+      "template": false
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        384,
+        271
+      ],
+      "template": false
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        241,
+        343
+      ],
+      "template": false
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        273,
+        473
+      ],
+      "template": false
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        603,
+        358
+      ],
+      "template": true
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        778,
+        370
+      ],
+      "template": false
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        1220,
+        229
+      ],
+      "template": false
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        1268,
+        490
+      ],
+      "template": false
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        1233,
+        986
+      ],
+      "template": false
+    }
+  ],
+  "automatic_label_reads": [
+    {
+      "code": "Р-4",
+      "pixel": [
+        785,
+        12
+      ]
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        841,
+        13
+      ]
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        296,
+        40
+      ]
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        1143,
+        45
+      ]
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        490,
+        63
+      ]
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        306,
+        85
+      ]
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        945,
+        96
+      ]
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        1160,
+        115
+      ]
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        351,
+        133
+      ]
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        963,
+        142
+      ]
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        424,
+        157
+      ]
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        180,
+        172
+      ]
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        924,
+        177
+      ]
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        149,
+        221
+      ]
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        1222,
+        228
+      ]
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        655,
+        239
+      ]
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        1153,
+        250
+      ]
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        384,
+        269
+      ]
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        855,
+        296
+      ]
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        241,
+        342
+      ]
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        915,
+        345
+      ]
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        465,
+        350
+      ]
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        603,
+        358
+      ]
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        777,
+        368
+      ]
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        494,
+        384
+      ]
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        406,
+        390
+      ]
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        768,
+        445
+      ]
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        272,
+        472
+      ]
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        1201,
+        487
+      ]
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        910,
+        490
+      ]
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        1072,
+        490
+      ]
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        1269,
+        491
+      ]
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        421,
+        545
+      ]
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        554,
+        548
+      ]
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        1172,
+        549
+      ]
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        465,
+        571
+      ]
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        1271,
+        662
+      ]
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        401,
+        726
+      ]
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        1130,
+        806
+      ]
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        220,
+        813
+      ]
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        693,
+        869
+      ]
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        1004,
+        905
+      ]
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        1076,
+        926
+      ]
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        442,
+        928
+      ]
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        1157,
+        935
+      ]
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        1002,
+        967
+      ]
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        963,
+        982
+      ]
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        1233,
+        984
+      ]
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        368,
+        1006
+      ]
+    },
+    {
+      "code": "О-1",
+      "pixel": [
+        982,
+        1058
+      ]
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        916,
+        1084
+      ]
+    },
+    {
+      "code": "Р-1",
+      "pixel": [
+        1087,
+        1124
+      ]
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        998,
+        1125
+      ]
+    },
+    {
+      "code": "Р-3",
+      "pixel": [
+        952,
+        1243
+      ]
+    },
+    {
+      "code": "Р-4",
+      "pixel": [
+        823,
+        1246
+      ]
+    }
+  ],
+  "phase_checks": [
+    {
+      "pixel": [
+        235,
+        315
+      ],
+      "reviewed_code": "О-1",
+      "reviewed_phase": "horizon",
+      "extracted_code": "О-1",
+      "extracted_phase": "horizon"
+    },
+    {
+      "pixel": [
+        285,
+        495
+      ],
+      "reviewed_code": "О-1",
+      "reviewed_phase": "horizon",
+      "extracted_code": "О-1",
+      "extracted_phase": "horizon"
+    },
+    {
+      "pixel": [
+        580,
+        310
+      ],
+      "reviewed_code": "О-1",
+      "reviewed_phase": "first",
+      "extracted_code": "О-1",
+      "extracted_phase": "first"
+    },
+    {
+      "pixel": [
+        775,
+        393
+      ],
+      "reviewed_code": "О-1",
+      "reviewed_phase": "first",
+      "extracted_code": "О-1",
+      "extracted_phase": "first"
+    },
+    {
+      "pixel": [
+        300,
+        110
+      ],
+      "reviewed_code": "О-1",
+      "reviewed_phase": "first",
+      "extracted_code": "О-1",
+      "extracted_phase": "first"
+    },
+    {
+      "pixel": [
+        1221,
+        203
+      ],
+      "reviewed_code": "О-1",
+      "reviewed_phase": "first",
+      "extracted_code": "О-1",
+      "extracted_phase": "first"
+    },
+    {
+      "pixel": [
+        1238,
+        1010
+      ],
+      "reviewed_code": "О-1",
+      "reviewed_phase": "existing",
+      "extracted_code": null,
+      "extracted_phase": null
+    },
+    {
+      "pixel": [
+        1250,
+        1077
+      ],
+      "reviewed_code": "О-1",
+      "reviewed_phase": "existing",
+      "extracted_code": null,
+      "extracted_phase": null
+    },
+    {
+      "pixel": [
+        650,
+        850
+      ],
+      "reviewed_code": "Р-3",
+      "reviewed_phase": "existing",
+      "extracted_code": "Р-3",
+      "extracted_phase": "existing"
+    },
+    {
+      "pixel": [
+        110,
+        990
+      ],
+      "reviewed_code": "Р-3",
+      "reviewed_phase": "existing",
+      "extracted_code": null,
+      "extracted_phase": null
+    },
+    {
+      "pixel": [
+        347,
+        132
+      ],
+      "reviewed_code": "Р-3",
+      "reviewed_phase": "first",
+      "extracted_code": "Р-3",
+      "extracted_phase": null
+    },
+    {
+      "pixel": [
+        1137,
+        48
+      ],
+      "reviewed_code": "Р-3",
+      "reviewed_phase": "first",
+      "extracted_code": "Р-3",
+      "extracted_phase": "first"
+    },
+    {
+      "pixel": [
+        786,
+        330
+      ],
+      "reviewed_code": "О-1",
+      "reviewed_phase": "first",
+      "extracted_code": "О-1",
+      "extracted_phase": "first"
+    },
+    {
+      "pixel": [
+        805,
+        26
+      ],
+      "reviewed_code": "Р-4",
+      "reviewed_phase": null,
+      "extracted_code": "Р-4",
+      "extracted_phase": null
+    },
+    {
+      "pixel": [
+        470,
+        336
+      ],
+      "reviewed_code": "Р-4",
+      "reviewed_phase": null,
+      "extracted_code": null,
+      "extracted_phase": null
+    },
+    {
+      "pixel": [
+        946,
+        90
+      ],
+      "reviewed_code": "Р-1",
+      "reviewed_phase": null,
+      "extracted_code": "Р-1",
+      "extracted_phase": null
+    }
+  ],
+  "hand_outlines": {
+    "park strip": {
+      "pixel_vertices": [
+        [
+          269,
+          137
+        ],
+        [
+          426,
+          101
+        ],
+        [
+          424,
+          130
+        ],
+        [
+          277,
+          164
+        ]
+      ],
+      "component": 3,
+      "intersection_over_union": 0.8883
+    },
+    "education grid": {
+      "pixel_vertices": [
+        [
+          503,
+          262
+        ],
+        [
+          515,
+          240
+        ],
+        [
+          648,
+          213
+        ],
+        [
+          674,
+          317
+        ],
+        [
+          694,
+          398
+        ],
+        [
+          714,
+          448
+        ],
+        [
+          534,
+          490
+        ],
+        [
+          520,
+          475
+        ],
+        [
+          516,
+          443
+        ],
+        [
+          502,
+          403
+        ],
+        [
+          503,
+          349
+        ],
+        [
+          509,
+          324
+        ],
+        [
+          508,
+          286
+        ]
+      ],
+      "component": 37,
+      "intersection_over_union": 0.9725
+    },
+    "education diagonals": {
+      "pixel_vertices": [
+        [
+          162,
+          288
+        ],
+        [
+          283,
+          272
+        ],
+        [
+          342,
+          534
+        ],
+        [
+          300,
+          542
+        ],
+        [
+          274,
+          544
+        ],
+        [
+          245,
+          537
+        ],
+        [
+          217,
+          518
+        ],
+        [
+          209,
+          471
+        ],
+        [
+          200,
+          404
+        ],
+        [
+          190,
+          366
+        ],
+        [
+          177,
+          326
+        ]
+      ],
+      "component": 41,
+      "intersection_over_union": 0.9185
+    }
+  }
+}
