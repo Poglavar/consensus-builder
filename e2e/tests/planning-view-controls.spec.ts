@@ -43,12 +43,13 @@ for (const blocksEnabled of [false, true]) test(`planning source, scenario, disp
     return route.fulfill({ json: { parcel: url.searchParams.get('parcel'), items: [] } });
   });
   await openCity(page);
-  await page.locator('#planning-views-button').click();
   const panel = page.locator('#planning-views');
+  const zoning = page.locator('#layers-zoning-controls');
+  await openLayerSection(page, 'zoning-land-use');
   // Area sources load when their source-area layer is enabled.
-  await selectNativeOption(panel.locator('[data-planning-setting="zoningAreas"]'), 'ghost');
+  await selectNativeOption(zoning.locator('[data-planning-setting="zoningAreas"]'), 'ghost');
   expect(new URL(page.url()).searchParams.get('zoningAreas')).toBe('ghost');
-  const retry = panel.locator('#planning-view-retry');
+  const retry = zoning.locator('#planning-view-retry');
   await expect(retry).toBeVisible();
   const failedRequests = requests.length;
   fail = false;
@@ -56,7 +57,9 @@ for (const blocksEnabled of [false, true]) test(`planning source, scenario, disp
   await expect(retry).toBeHidden();
   expect(requests.length).toBeGreaterThan(failedRequests);
   await expect.poll(() => page.evaluate(() => (window as any).PlanningViews.getItems().length)).toBe(1);
-
+  await page.locator('#layers-button').click();
+  await page.locator('#planning-views-button').click();
+  for (const summary of await panel.locator('.planning-role-disclosure > summary').all()) await summary.press('Enter');
   for (const [key, value] of Object.entries({
     existing: 'off', existingScope: 'removed', permitted: 'solid', permittedMap: 'steps',
     proposed: 'ghost', proposedForm: 'massing',
@@ -162,7 +165,9 @@ test('Permitted keeps its Illustration dropdown visible for a single-option sour
   narrowCatalog = true;
   await page.locator('#planning-views-button').click();
   const panel = page.locator('#planning-views');
-  const sourceSelect = panel.locator('.planning-source-select');
+  const permitted = panel.locator('.planning-layer-row[data-role="permitted"]');
+  await permitted.locator('summary').press('Enter');
+  const sourceSelect = permitted.locator('.planning-source-select');
   const form = panel.locator('[data-planning-setting="permittedForm"]');
   await expect(form).toBeVisible();
   await expect(form).toBeDisabled();
@@ -244,7 +249,7 @@ test('Alatau zoning overview uses static data below zoom 15 and one viewport rea
   await expect.poll(() => staticReads.length).toBe(1);
   await page.waitForFunction(() => (window as any).PlanningViews.getItems().length === 6659);
   expect(representations).toHaveLength(0);
-  await page.locator('#planning-views-button').click();
+  await openLayerSection(page, 'zoning-land-use');
   const fit = page.getByRole('button', { name: 'Fit plan', exact: true });
   await expect(fit).toBeVisible();
   await fit.press('Enter');

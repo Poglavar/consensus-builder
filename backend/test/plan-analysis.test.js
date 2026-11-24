@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const turf = require('@turf/turf');
-const { prepare, planLand, explainRefusal, bindMembers, localDeclaration } = require('../../frontend/js/plan-analysis.js');
+const { prepare, planLand, explainRefusal, bindMembers, localDeclaration, browser } = require('../../frontend/js/plan-analysis.js');
 
 const snapshot = { cid: 'saved-plan', content: { title: 'Garden plan' },
     designs: [{ cid: 'saved-design', content: { title: 'Original garden' } }],
@@ -24,6 +24,30 @@ function ports() {
 }
 const square = (x, y, size, properties = {}) => ({ type: 'Feature', properties,
     geometry: { type: 'Polygon', coordinates: [[[x, y], [x + size, y], [x + size, y + size], [x, y + size], [x, y]]] } });
+
+describe('binding a plan-supplied design site', () => {
+    const site = { type: 'MultiPolygon', coordinates: [square(0, 0, 0.001).geometry.coordinates] };
+    const siteBinding = require('../../frontend/js/proposals/site-binding.js');
+    it('shares a pending provider read between opening the site and applying the drawing', async () => {
+        const answer = { coverage: 'complete', parcels: [{ parcelId: 'A' }], source: 'provider' };
+        const bindSites = vi.fn(async () => [{ binding: answer }]);
+        const api = browser({ turf, __siteBinding: siteBinding, BrowserParcelSources: { bindSites },
+            DesignSync: { apiBase: () => 'https://example.test', parcelSourceIdOf: () => 'provider' } });
+        const input = { site, city: 'city' };
+        expect(await Promise.all([api.bindDesignSite(input), api.bindDesignSite(structuredClone(input))])).toEqual([answer, answer]);
+        expect(bindSites).toHaveBeenCalledTimes(1);
+    });
+    it('binds the complete local estimate for the site when its parcels are outside the loaded map', async () => {
+        const feature = square(0, 0, 0.001, { parcelId: 'estimated-A' });
+        const estimate = { kind: 'estimated-local', id: 'estimated-source', fetchUnderGeometry: vi.fn(() => ({ features: [feature] })) };
+        const api = browser({ turf, __siteBinding: siteBinding, ParcelGroundFallback: { activeSource: () => estimate },
+            DesignSync: { apiBase: () => 'https://example.test' } });
+        const binding = await api.bindDesignSite({ site, city: 'city' });
+        expect(siteBinding.boundParcelIds(binding)).toEqual(['estimated-A']);
+        expect(siteBinding.hasVerifiedCoverage(binding)).toBe(true);
+        expect(estimate.fetchUnderGeometry).toHaveBeenCalledWith(site);
+    });
+});
 const unite = features => features.slice(1).reduce((sum, feature) => turf.union(sum, feature), features[0]);
 const areaOf = feature => Math.round(turf.area(feature));
 
@@ -119,6 +143,9 @@ describe('exact plan analysis', () => {
         expect(localDeclaration({ ...imported, binding: { coverage: 'none' } }, 'imported')).toEqual([]);
         expect(localDeclaration(imported, 'edited')).toEqual([]);
         expect(localDeclaration({ cadastreParcelIds: [] }, 'authored')).toEqual([]);
+        const area = { cadastreParcelIds: [], sourceReferences: [{ providerId: 'plan', recordId: 'area' }] };
+        expect(localDeclaration(area, 'area-design')).toBeNull();
+        expect(localDeclaration({ ...area, binding: { coverage: 'none', parcels: [], source: 'server' } }, 'area-design')).toEqual([]);
     });
     it('retains open-ground members without inventing source parcels', async () => {
         const deps = ports(); deps.bind.mockResolvedValue({ coverage: 'none', parcels: [], unsurveyedM2: 200 });

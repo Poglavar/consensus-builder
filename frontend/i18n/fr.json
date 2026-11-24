@@ -8805,8 +8805,8 @@
         "excludedConfigurations": "Non configurable ici : {{list}}.",
         "envelopeCoverage": "Les enveloppes partielles sont déduites des données chargées sur les parcelles et le zonage. Les parcelles sans volumétrie sont comptabilisées par motif ; l’absence de volumétrie ne permet pas de conclure à une capacité nulle.",
         "envelopeSummary": "{{count}} fiches de parcelles examinées : {{shapes}} avec une enveloppe partielle, {{missing}} sans volumétrie.",
-        "landBasisZone": "Ici, le plan redessine le sol, avec ses propres rues et îlots. Le gabarit autorisé est tracé sur l'îlot du plan, et non sur les parcelles actuelles, que le plan ne conserve pas.",
-        "envelopeNote": "L’enveloppe maximale combine les types de logement enregistrés. Le côté avant est orienté vers les rues proches lorsque les données sont disponibles ; sinon, l’enveloppe inclut toutes les orientations prises en charge. Choisissez un type de logement ou lancez les dés pour changer la configuration affichée. Les plafonds de surface et les règles non résolues restent applicables.",
+        "landBasisZone": "L’estimation du bâti porte sur toute la zone.",
+        "envelopeNote": "L’enveloppe regroupe les types de logements autorisés. Les rues voisines permettent d’estimer de quel côté se trouve la façade sur rue.",
         "assumedSide": "Côté supposé donnant sur la rue : {{side}}.",
         "lotBelowMinimum": "Terrain inférieur au minimum de {{minimum}}",
         "sideOptions": {
@@ -8898,8 +8898,6 @@
         "footprint": "Emprise au sol",
         "steps": "Paliers de hauteur",
         "permittedOff": "La volumétrie autorisée est masquée.",
-        "coverageTitle": "Que couvre cette source ?",
-        "coverageNote": "Affichage des calculs enregistrés du fournisseur. Certains résultats contiennent une volumétrie ; d’autres signalent des éléments probants manquants, des conditions non remplies ou une autre procédure d’urbanisme. Un résultat sans géométrie ne prouve pas une capacité nulle. Les paliers de hauteur montrent les parties situées à différentes altitudes.",
         "inspectHint": "Sélectionnez un bâtiment ou une géométrie source pour l’examiner.",
         "inspectMassing": "Examiner la volumétrie autorisée sur {{parcel}}",
         "heightParts": "Hauteurs des parties : {{heights}}",
@@ -8944,7 +8942,16 @@
         "referencedSource": "Source : {{source}} · {{revision}}",
         "referenceUnavailable": "La fiche source référencée est indisponible.",
         "scenarioLabel": "Type de logement",
-        "zoningAreaNote": "Zones du zonage source et contraintes enregistrées. Ces zones ne sont pas des enveloppes constructibles. Leur applicabilité reste à vérifier.",
+        "zoningAreaNote": "Le plan définit l’usage du sol dans cette zone.",
+        "zoningAndLandUse": "Zonage et usage des sols",
+        "roleSource": {
+            "built": "Les contours et hauteurs des bâtiments proviennent des sources de bâtiments de la ville.",
+            "proposed": "Les projets appliqués fournissent les bâtiments proposés et les règles de construction.",
+            "envelopes": "Les règles du plan fixent la forme maximale du bâtiment. Choisissez un type de logement pour voir un exemple dans ces limites.",
+            "saved": "Les formes des bâtiments proviennent de calculs enregistrés pour chaque parcelle.",
+            "zoningOnly": "Le plan montre les usages des sols et leurs règles.",
+            "evidence": "La source fournit des dossiers d’urbanisme pour chaque parcelle."
+        },
         "areasLoaded": {
             "one": "{{count}} zone du zonage source dans la vue",
             "other": "{{count}} zones du zonage source dans la vue"
@@ -8970,7 +8977,10 @@
         "zoningArea": "Zone du zonage source",
         "inspectArea": "Examiner la zone du zonage source {{parcel}}",
         "mapContext": "Comparez les emprises au sol et les volumétries des bâtiments sur la carte 2D.",
-        "noPermittedSource": "Aucune source de volumétrie autorisée ici"
+        "noPermittedSource": "Aucune source de volumétrie autorisée ici",
+        "useAreaAsSite": "Utiliser cette zone comme site de projet",
+        "siteOpenFailed": "Impossible d’ouvrir toute la zone. Réessayez.",
+        "areaSiteHint": "Le plan fournit les limites de ce site. Choisissez un projet à réaliser ici."
     },
     "claims": {
         "onParcels": "Sur les parcelles :",

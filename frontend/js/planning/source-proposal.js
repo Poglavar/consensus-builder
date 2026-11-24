@@ -36,6 +36,18 @@
             recordId: proposal.source.recordId, edition: proposal.source.edition, revision: proposal.source.revision,
             city: proposal.source.city, parcelId: proposal.applicability.parcelIds[0] || null, scenario: proposal.applicability.scenario };
     }
+    // A design starts from the complete record returned by /planning/record.
+    // Display records may be simplified for zoom or clipped to a viewport.
+    function designSite(record) {
+        if (record?.role !== 'permitted' || record.overview || record.assessment?.meaning !== 'zoning-area'
+            || !record.areas?.length || !record.proposal) return null;
+        const geometry = record.site;
+        if (!['Polygon', 'MultiPolygon'].includes(geometry?.type) || !geometry.coordinates?.length) return null;
+        const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
+        const sourceReferences = [reference(record.proposal)];
+        validateReferences(sourceReferences);
+        return { site: { type: 'MultiPolygon', coordinates: structuredClone(polygons) }, sourceReferences };
+    }
     function validateReferences(values) {
         if (values === undefined) return;
         if (!Array.isArray(values) || values.length > 100) invalid('Source references must be a bounded array');
@@ -56,5 +68,5 @@
         if (value.revision !== current.revision) return 'changed';
         return proposal.lifecycle.availability === 'withdrawn' ? 'withdrawn' : 'same';
     }
-    return { schemaVersion, fromRepresentation, reference, validateReferences, compareReference };
+    return { schemaVersion, fromRepresentation, reference, designSite, validateReferences, compareReference };
 });

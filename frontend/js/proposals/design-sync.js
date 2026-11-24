@@ -142,6 +142,7 @@
         const binding = copyBinding(row.binding);
         if (binding) record.binding = binding;
         if (content.origin) record.origin = { cid: content.origin.cid };
+        if (content.sourceReferences) record.sourceReferences = structuredClone(content.sourceReferences);
         if (row.screenshotUrl) record.screenshotUrl = row.screenshotUrl;
         designRecord().PAYLOAD_KEYS.forEach(key => {
             if (content[key]) record[key] = content[key];

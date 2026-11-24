@@ -289,6 +289,12 @@
         return ((binding && binding.parcels) || []).map(entry => String(entry.parcelId)).sort();
     }
 
+    function hasVerifiedCoverage(binding) {
+        return Array.isArray(binding?.parcels) && binding.source !== 'client-preview'
+            && [COVERAGE.complete, COVERAGE.partial, COVERAGE.none].includes(binding.coverage)
+            && !(binding.unknownM2 > 0);
+    }
+
     function compareDeclaration(declaredIds, binding) {
         const declared = new Set((declaredIds || []).map(String));
         const boundIds = new Set(boundParcelIds(binding));
@@ -311,6 +317,7 @@
         survivesInwardBuffer: (feature, radiusM, options) => survivesInwardBuffer(T(options), feature, radiusM),
         intrusionWidth,
         bindingFromParcels,
+        hasVerifiedCoverage,
         normalizeParcelSource: parcelSourceOf,
         boundParcelIds,
         compareDeclaration

@@ -3273,7 +3273,8 @@
             // the coverage checks reopen it from the site, never from a parcel selection.
             ...(state.sitePool ? {
                 poolSource: 'site',
-                openGroundM2: Math.round(state.sitePool.pool.openGroundM2 * 100) / 100
+                ...(Number.isFinite(state.sitePool.pool.openGroundM2)
+                    ? { openGroundM2: Math.round(state.sitePool.pool.openGroundM2 * 100) / 100 } : {})
             } : {}),
             totalArea: state.totalArea,
             ...(state.algorithm === 'equal' ? { plotCount: state.plotCount } : {}),
@@ -3540,10 +3541,9 @@
     function sitePoolOfPendingLayout() {
         const seed = window.pendingParcelLayout;
         if (!seed || seed.poolSource !== 'site' || !seed.pool) return null;
+        const fields = window.getActiveProposalDesignDraft?.()?.fields || {};
         let ids = Array.isArray(seed.parcelIds) ? seed.parcelIds.map(String) : null;
         if (!ids || !ids.length) {
-            const draft = typeof window.getActiveProposalDesignDraft === 'function' ? window.getActiveProposalDesignDraft() : null;
-            const fields = (draft && draft.fields) || {};
             const bound = fields.binding && Array.isArray(fields.binding.parcels)
                 ? fields.binding.parcels.map(hit => String(hit && hit.parcelId || '')).filter(Boolean) : [];
             ids = bound.length ? bound : (Array.isArray(fields.cadastreParcelIds) ? fields.cadastreParcelIds.map(String) : []);
@@ -3551,7 +3551,8 @@
         return {
             site: seed.pool,
             boundParcelIds: Array.from(new Set(ids)),
-            expectedOpenGroundM2: Number.isFinite(Number(seed.openGroundM2)) ? Number(seed.openGroundM2) : null
+            sourceReferences: fields.sourceReferences,
+            expectedOpenGroundM2: Number.isFinite(seed.openGroundM2) ? seed.openGroundM2 : null
         };
     }
 
@@ -3564,6 +3565,9 @@
         const site = sitePool && sitePool.site;
         if (!api || !site || !/Polygon/.test(String(site.type || ''))) return null;
         const boundIds = (sitePool.boundParcelIds || []).map(String);
+        // A plan supplies the whole drawing boundary. Authoring plots needs its geometry alone.
+        // Cadastral coverage and competing designs are resolved when the design is applied.
+        if (sitePool.sourceReferences?.length) return { site, boundParcelIds: boundIds, pool: { pool: site } };
         const resolved = boundIds.length ? await resolveInputParcelFeatures(boundIds) : { features: [], missing: [] };
         if (resolved.missing.length) {
             log('warn', 'subdivision: bound parcels not available', resolved.missing);

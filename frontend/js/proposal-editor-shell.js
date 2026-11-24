@@ -1275,6 +1275,7 @@
             description: '',
             selectedParcelIds: (selectedParcelIds || []).map(String),
             site: JSON.parse(JSON.stringify(siteContext.site)),
+            ...(siteContext.sourceReferences ? { sourceReferences: structuredClone(siteContext.sourceReferences) } : {}),
             toleranceM: Number(siteContext.toleranceM) || 0,
             binding: siteContext.binding ? JSON.parse(JSON.stringify(siteContext.binding)) : null
         };

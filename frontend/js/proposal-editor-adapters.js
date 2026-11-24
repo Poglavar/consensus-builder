@@ -114,6 +114,7 @@
             cadastreParcelIds: authoredCadastreParcelIds,
             binding: clone(proposal?.binding || null),
             site: clone(proposal?.site || null),
+            ...(proposal?.sourceReferences ? { sourceReferences: clone(proposal.sourceReferences) } : {}),
             toleranceM: Number.isFinite(Number(proposal?.toleranceM)) ? Number(proposal.toleranceM) : 0,
             acquisitionMode: proposal?.acquisitionMode || null,
             boundaryAdjustment: proposal?.boundaryAdjustment || null,
@@ -445,6 +446,7 @@
         const site = siteDraftApi().draftSite(draft);
         if (site) output.site = site;
         else delete output.site;
+        if (fields.sourceReferences?.length) output.sourceReferences = clone(fields.sourceReferences);
         const toleranceM = Number(fields.toleranceM);
         if (Number.isFinite(toleranceM) && toleranceM > 0) output.toleranceM = toleranceM;
         else delete output.toleranceM;
@@ -1300,7 +1302,7 @@
     // A layout's draft fields: its name, description and ground, never owners.
     function parcelLayoutFields(proposal) {
         const fields = sourceFields(proposal);
-        return Object.fromEntries(['name', 'titleOrigin', 'description', 'selectedParcelIds', 'cadastreParcelIds', 'binding', 'site', 'toleranceM']
+        return Object.fromEntries(['name', 'titleOrigin', 'description', 'selectedParcelIds', 'cadastreParcelIds', 'binding', 'site', 'sourceReferences', 'toleranceM']
             .filter(key => key in fields).map(key => [key, fields[key]]));
     }
 
@@ -1361,6 +1363,7 @@
                 sitePool = {
                     site: clone(site),
                     boundParcelIds: plan.parcelIds.slice(),
+                    sourceReferences: draft.fields?.sourceReferences,
                     expectedOpenGroundM2: typeof plan.openGroundM2 === 'number' && Number.isFinite(plan.openGroundM2) ? plan.openGroundM2 : null
                 };
             } else {

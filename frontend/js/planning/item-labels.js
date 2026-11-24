@@ -53,7 +53,7 @@
     const reason = (item, t) => coded(t, 'planningViews.zoneReason', item?.assessment?.reasonCode, item?.assessment?.reason);
     const condition = (conditional, t) => coded(t, 'planningViews.condition', conditional?.conditionCode, conditional?.condition);
     // A zone the plan keeps free of buildings, or leaves to another instrument, has a dashed edge.
-    const unbuildableZone = item => isZone(item) && !item.overview && item.assessment.status !== 'allowed';
+    const unbuildableZone = item => isZone(item) && !item.overview && item.assessment.status != null && item.assessment.status !== 'allowed';
     // One legend row: the swatch modifier (css/planning-views.css .planning-swatch--<swatch>) and its words.
     const envelopeRow = t => ({ swatch: 'permitted', text: t('planningViews.legend.envelope') });
     const zoneRow = (group, t) => ({ swatch: `zone-${group}`, text: t(`planningViews.useGroup.${group}`) });

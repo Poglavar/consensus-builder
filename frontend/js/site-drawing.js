@@ -27,6 +27,7 @@
         phase: 'idle', // idle | drawing | editing | plots
         ring: [],
         site: null,
+        sourceReferences: null,
         siteError: null,
         toleranceM: 0,
         preview: null,
@@ -419,9 +420,11 @@
         state.serverPending = false;
         // The server cannot read this browser's saved source. Its official-source response would
         // overwrite a complete local binding with "no cadastre" and discard the selected estimates.
-        if (!state.site || hasLocalEstimatedSource()) return;
+        if (!state.site || (!state.sourceReferences && hasLocalEstimatedSource())) return;
         state.serverPending = true;
-        fetchDesignBinding({ site: state.site, toleranceM: state.toleranceM, city: cityId() })
+        const request = { site: state.site, toleranceM: state.toleranceM, city: cityId() };
+        const bindingRequest = state.sourceReferences ? win.PlanAnalysis.bindDesignSite(request) : fetchDesignBinding(request);
+        bindingRequest
             .then(binding => {
                 if (seq !== state.serverSeq) return;
                 state.server = binding;
@@ -442,9 +445,11 @@
 
     // The site changed (drawn, a vertex moved, a parcel included or trimmed).
     function siteChanged(options = {}) {
-        const result = draftApi().siteFromRing(state.ring);
-        state.site = result.ok ? result.site : null;
-        state.siteError = result.ok ? null : result.reason;
+        if (!state.sourceReferences) {
+            const result = draftApi().siteFromRing(state.ring);
+            state.site = result.ok ? result.site : null;
+            state.siteError = result.ok ? null : result.reason;
+        }
         state.plots = [];
         computePreview();
         if (options.server !== false && state.site) requestServerBinding();
@@ -781,6 +786,7 @@
         if (state.phase === 'plots') {
             return t('siteTool.hint.plots', 'Plots are cut along the frontage edge (by default the one facing a street, else the longest). Click another edge of the site to use it instead.');
         }
+        if (state.sourceReferences) return t('planningViews.areaSiteHint', 'The plan supplies this site’s boundary. Choose a design to make here.');
         return t('siteTool.hint.editing', 'Drag corners to reshape, click an edge to add one. Then propose on the site.');
     }
 
@@ -798,7 +804,7 @@
     // scrolls with the card's body under a header that keeps the count in view.
     function parcelListHtml(sum) {
         const warnings = sum.warnings.map(warning => {
-            const canReshape = state.previewParcels.has(warning.parcelId);
+            const canReshape = !state.sourceReferences && state.previewParcels.has(warning.parcelId);
             return `<li class="site-panel__warning site-panel__warning--${warning.kind}">
                 <span>${escapeHtml(warningText(warning))}</span>
                 ${canReshape ? `<span class="site-panel__warning-actions">
@@ -869,6 +875,7 @@
     // over parcels is laid out from its selected parcels instead; a site where the server holds no
     // cadastre cannot tell parcels from open ground.
     function subdividable() {
+        if (state.sourceReferences) return true;
         const sum = summary();
         return !!(sum && sum.openGround && sum.coverage !== 'unknown');
     }
@@ -1193,7 +1200,8 @@
         return {
             site: JSON.parse(JSON.stringify(state.site)),
             toleranceM: state.toleranceM,
-            binding: JSON.parse(JSON.stringify(state.server || state.preview || null)),
+            binding: structuredClone(state.server || (state.sourceReferences ? null : state.preview) || null),
+            ...(state.sourceReferences ? { sourceReferences: structuredClone(state.sourceReferences) } : {}),
             selectionIds: state.selectionIds.slice()
         };
     }
@@ -1209,7 +1217,8 @@
         if (STRUCTURES.includes(toolKey)) {
             if (state.structureBuildPending) return;
             const restoreOptions = {
-                ring: state.ring.map(coordinate => coordinate.slice()),
+                ...(context.sourceReferences ? { site: context.site, sourceReferences: context.sourceReferences }
+                    : { ring: state.ring.map(coordinate => coordinate.slice()) }),
                 selectionIds: context.selectionIds.slice(),
                 ground: state.ground
             };
@@ -1260,9 +1269,8 @@
         if (toolKey === 'row' || toolKey === 'parcelBased') { enterPlots(toolKey); return; }
         if (toolKey === 'parcel-layout') {
             teardown({ keepSynthetic: false });
-            Promise.resolve(win.startSiteSubdivision(context))
+            return Promise.resolve(win.startSiteSubdivision(context))
                 .catch(error => console.error('[SiteTool] subdivision editor failed to open', error));
-            return;
         }
         if (toolKey === 'buildings' || toolKey === 'single') {
             // The whole site as one superparcel (proposals/site-plots.js), as an MCP draft on an
@@ -1338,7 +1346,10 @@
         state.plots = [];
         state.frontageBasis = null;
         state.frontageSeq += 1;
-        beginEditing(state.ring);
+        if (state.sourceReferences) {
+            renderLayers();
+            renderPanel();
+        } else beginEditing(state.ring);
     }
 
     function continueWithPlots() {
@@ -1366,6 +1377,7 @@
     function reset() {
         state.ring = [];
         state.site = null;
+        state.sourceReferences = null;
         state.siteError = null;
         state.preview = null;
         state.previewParcels = new Map();
@@ -1398,7 +1410,8 @@
         try { if (typeof win.hideParcelInfoPanel === 'function') win.hideParcelInfoPanel(); } catch (_) { }
     }
 
-    // Draw a new site. options.ring starts with that outline in edit mode instead.
+    // A drawn ring has editable vertices. A source site's complete plan boundary stays fixed,
+    // including interior rings and disconnected parts, while designing on it.
     function start(options = {}) {
         if (!map() || !win.L || !win.turf || !draftApi() || !bindingApi()) throw new Error('SiteTool: the map or geometry libraries are not loaded');
         if (isActive()) teardown({ keepSynthetic: false });
@@ -1411,7 +1424,18 @@
         state.ground = options.ground || null;
         state.selectionIds = (options.selectionIds || []).map(String);
         wireMap();
-        if (Array.isArray(options.ring) && options.ring.length >= 3) {
+        if (options.site && options.sourceReferences?.length) {
+            state.phase = 'editing';
+            state.site = draftApi().toMultiPolygon(options.site);
+            state.sourceReferences = structuredClone(options.sourceReferences);
+            state.proposeOpen = true;
+            state.proposeMinimized = false;
+            state.proposeTab = 'propose';
+            state.panelMinimized = isPhone();
+            siteChanged();
+            keepSiteClear();
+            state.infoPanel?.querySelector('[data-site-tab="propose"]')?.focus({ preventScroll: true });
+        } else if (Array.isArray(options.ring) && options.ring.length >= 3) {
             beginEditing(options.ring);
         } else {
             state.phase = 'drawing';

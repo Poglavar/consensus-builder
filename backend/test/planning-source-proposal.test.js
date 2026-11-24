@@ -5,10 +5,27 @@ import { gupRecord } from '../planning/providers/zagreb-gup.js';
 import { stripLocalProposalState } from '../proposals/archive-state.js';
 const require = createRequire(import.meta.url);
 const contract = require('../../frontend/js/planning/source-proposal.js');
+const DesignRecord = require('../../frontend/js/design-record.js');
 const row = { gup_id: 2025, parcel_id: 'HR-1-17', gbp_m2: 123, current: true,
     result_status: 'evidence_missing', reason: 'exception_unresolved', computed_at: '2026-10-09T00:00:00Z', floors: [] };
 
 describe('source-backed obligatory proposal', () => {
+    it('pins the full site, including holes and islands, independently of the source projection', () => {
+        const ring = (x, y, size) => [[x, y], [x + size, y], [x + size, y + size], [x, y + size], [x, y]];
+        const site = { type: 'MultiPolygon', coordinates: [[ring(15, 45, .01), ring(15.002, 45.002, .002)], [ring(15.1, 45.1, .006)]] };
+        const record = { ...gupRecord(row), site, areas: [{ geometry: site }], assessment: { meaning: 'zoning-area' } };
+        expect(contract.designSite({ ...record, overview: true })).toBeNull();
+        expect(contract.designSite(gupRecord(row))).toBeNull();
+        const draft = contract.designSite(record);
+        const local = { ...draft, goal: 'parcel-layout', parcelLayout: { poolSource: 'site', pool: draft.site } };
+        const published = DesignRecord.published(local);
+        expect(published.site).toEqual(site);
+        expect(published.sourceReferences).toEqual([contract.reference(record.proposal)]);
+        expect(DesignRecord.validate(published).valid).toBe(true);
+        expect(DesignRecord.validate({ ...published, sourceReferences: [{ recordId: 'unknown' }] }).valid).toBe(false);
+        site.coordinates[1][0][0][0] = 16;
+        expect(draft.site.coordinates).toEqual(published.site.coordinates);
+    });
     it('has stable provider identity and explicit authority/applicability without an authored deal or fabricated validity dates', () => {
         const item = gupRecord(row), proposal = item.proposal;
         expect(item.proposalId).toBe(proposal.proposalId);

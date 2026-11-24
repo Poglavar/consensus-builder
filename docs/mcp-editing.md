@@ -99,7 +99,7 @@ votes, signatures, funding or execution state. Publication remains a separate co
 | `ugt_draft_plan`, `ugt_get_plan` | Create or retrieve a named `plan/v1` snapshot: title, design membership and saved map view. |
 | `ugt_edit_plan` | Revise named-plan membership, designs, title, view or construction schedule; return a new private snapshot. It carries no agreement terms or derived land pieces. `schedule` maps a design CID or design ref to `{ start, end }` months (`YYYY-MM`, inclusive) or `null` to clear it; windows follow revised designs ([build-out timeline](buildout-timeline.md)). `when` and `buildout` open the preview at a month or as a simulated build-out. |
 | `ugt_edit_agreement` | Revise agreement terms against the same named plan. Use `ugt_edit_plan` to change membership or designs, then draft a new agreement. |
-| `ugt_draft_*` | Generate a new design, which can then be added or used as a replacement. |
+| `ugt_draft_*` | Generate a new design, which can then be added or used as a replacement. Site-based tools accept a `planningArea` returned by `ugt_planning_areas` for a selected source and WGS84 point. The complete area supplies the site. |
 | `ugt_validate_plan` | Check authored geometry, retained constraints, building overlaps and station attachment presence; source coverage and statutory compliance remain explicit unknowns. |
 | `ugt_compare` | Compare revisions and expose absent source measurements as unknown. |
 

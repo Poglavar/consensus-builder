@@ -8805,8 +8805,8 @@
         "excludedConfigurations": "Não configurável aqui: {{list}}.",
         "envelopeCoverage": "As envolventes parciais são derivadas da parcela e dos registos de zonamento carregados. As parcelas sem volumetria são contabilizadas por motivo; a ausência de volumetria não demonstra capacidade nula.",
         "envelopeSummary": "{{count}} registos de parcelas analisados: {{shapes}} com envolventes parciais, {{missing}} sem volumetria.",
-        "landBasisZone": "Aqui o plano reorganiza o solo, com as suas próprias ruas e quarteirões. A volumetria permitida é desenhada sobre o quarteirão do plano, não sobre as parcelas atuais, que o plano não mantém.",
-        "envelopeNote": "A envolvente máxima combina os tipos de habitação registados. A frente orienta-se pelas ruas próximas quando há dados disponíveis; caso contrário, a envolvente inclui todas as orientações suportadas. Escolha um tipo de habitação ou lance os dados para mudar a configuração apresentada. Os limites de área e as regras por resolver continuam a aplicar-se.",
+        "landBasisZone": "A estimativa de edificação abrange toda a zona.",
+        "envelopeNote": "A envolvente reúne os tipos de habitação permitidos. As ruas próximas servem de referência para estimar a frente do lote.",
         "assumedSide": "Lado da rua assumido: {{side}}.",
         "lotBelowMinimum": "Lote abaixo do mínimo de {{minimum}}",
         "sideOptions": {
@@ -8898,8 +8898,6 @@
         "footprint": "Área de implantação",
         "steps": "Escalonamento de alturas",
         "permittedOff": "A volumetria permitida está oculta.",
-        "coverageTitle": "O que abrange esta fonte?",
-        "coverageNote": "A mostrar os cálculos guardados do fornecedor. Alguns resultados contêm volumetria; outros indicam falta de elementos comprovativos, condições não cumpridas ou outro procedimento urbanístico. Um resultado sem geometria não comprova uma capacidade nula. O escalonamento de alturas mostra as partes a diferentes cotas.",
         "inspectHint": "Selecione um edifício ou uma geometria da fonte para o inspecionar.",
         "inspectMassing": "Inspecionar a volumetria permitida em {{parcel}}",
         "heightParts": "Partes por altura: {{heights}}",
@@ -8944,7 +8942,16 @@
         "referencedSource": "Fonte: {{source}} · {{revision}}",
         "referenceUnavailable": "O registo da fonte referenciado não está disponível.",
         "scenarioLabel": "Tipo de habitação",
-        "zoningAreaNote": "Áreas de zonamento e condicionantes registadas na fonte. Estas áreas não são envolventes de edificação. A aplicabilidade continua por verificar.",
+        "zoningAreaNote": "O plano atribui um uso do solo a esta área.",
+        "zoningAndLandUse": "Zonamento e uso do solo",
+        "roleSource": {
+            "built": "Os contornos e alturas dos edifícios vêm das fontes de edifícios da cidade.",
+            "proposed": "Os projetos aplicados fornecem os edifícios propostos e as regras de construção.",
+            "envelopes": "As regras do plano definem a forma máxima do edifício. Escolha um tipo de habitação para ver um exemplo dentro desses limites.",
+            "saved": "As formas dos edifícios vêm de cálculos guardados para parcelas individuais.",
+            "zoningOnly": "O plano mostra os usos do solo e as suas regras.",
+            "evidence": "A fonte fornece registos de planeamento para parcelas individuais."
+        },
         "areasLoaded": {
             "one": "{{count}} área de zonamento da fonte visível",
             "other": "{{count}} áreas de zonamento da fonte visíveis"
@@ -8970,7 +8977,10 @@
         "zoningArea": "Área de zonamento da fonte",
         "inspectArea": "Inspecionar a área de zonamento da fonte {{parcel}}",
         "mapContext": "Compare as implantações dos edifícios e a volumetria no mapa 2D.",
-        "noPermittedSource": "Sem fonte de volumetria permitida neste local"
+        "noPermittedSource": "Sem fonte de volumetria permitida neste local",
+        "useAreaAsSite": "Usar esta área como local de projeto",
+        "siteOpenFailed": "Não foi possível abrir toda a área. Tente novamente.",
+        "areaSiteHint": "O plano fornece os limites deste local. Escolha um projeto para realizar aqui."
     },
     "claims": {
         "onParcels": "Nas parcelas:",

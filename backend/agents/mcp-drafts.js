@@ -12,6 +12,8 @@ import { MAX_SOURCE_BINDING_PARCELS } from '../parcels/source-binding.js';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const DesignRecord = require('../../frontend/js/design-record.js');
+const PlanningSourceProposal = require('../../frontend/js/planning/source-proposal.js');
+const { hasVerifiedCoverage } = require('../../frontend/js/proposals/site-binding.js');
 const fail = (code, message, next) => Object.assign(new Error(message), { code, next });
 const geometry = value => value?.type === 'Feature' ? value.geometry : value;
 function union(features) {
@@ -54,12 +56,21 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference, re
         }
     }
     async function result(design, parcelSourceId) {
-        const binding = await bindingOf(design, parcelSourceId);
-        parcelSourceId = parcelSourceIdOf(binding) || parcelSourceId;
-        if (binding.binding?.coverage === 'unknown' || binding.binding?.unknownM2 > 0) throw fail('ground-unavailable', 'The site binding is unknown.', { action: 'Retry when parcel coverage is available.' });
-        return { design, cid: cidOfObject(design), parcelSourceId, takes: (binding.binding?.parcels || []).map(p => p.parcelId), binding: binding.binding,
+        let binding = null;
+        try {
+            const answer = await bindingOf(design, parcelSourceId);
+            binding = answer.binding;
+            parcelSourceId = parcelSourceIdOf(answer) || parcelSourceId;
+        } catch (error) {
+            if (!design.sourceReferences?.length) throw error;
+        }
+        const groundKnown = hasVerifiedCoverage(binding);
+        if (!groundKnown && !design.sourceReferences?.length) throw fail('ground-unavailable', 'The site binding is unknown.', { action: 'Retry when parcel coverage is available.' });
+        return { design, cid: cidOfObject(design), parcelSourceId, binding,
+            ...(groundKnown ? { takes: binding.parcels.map(p => p.parcelId) } : {}),
             warnings: [ ...(design.goal === 'buildings' ? ['An intent drawing is not a planning permission; envelope applicability remains unresolved.'] : []),
-                ...(binding.binding?.unsurveyedM2 > 0 ? ['The site includes ground outside the parcel register.'] : []) ],
+                ...(!groundKnown ? ['The plan supplies the design boundary. Cadastral binding is pending.'] : []),
+                ...(binding?.unsurveyedM2 > 0 ? ['The site includes ground outside the parcel register.'] : []) ],
             ...await previewArtifact({ origin: appOrigin, design, parcelSourceId }) };
     }
     async function draft(kind, args) {
@@ -98,10 +109,20 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference, re
             if (ways.length !== 1) throw fail('street-ambiguous', `Found ${ways.length} matching street stretches. Choose one streetId or supply points.`, { action: 'Choose a specific streetId from /streets/near or supply WGS84 points.' });
             intent.points = ways[0].geometry.coordinates;
         } else if (!['road', 'track'].includes(kind)) {
-            if (!args.parcelIds?.length && !args.outline) throw fail('site-required', 'Choose source parcels or supply a WGS84 outline.',
+            if (args.planningArea && (args.parcelIds?.length || args.outline)) throw fail('site-ambiguous', 'Choose either a planning area, source parcels, or an outline.', { action: 'Remove planningArea or the other site input.' });
+            if (!args.parcelIds?.length && !args.outline && !args.planningArea) throw fail('site-required', 'Choose source parcels, a planning area, or supply a WGS84 outline.',
                 { tool: 'ugt_help', arguments: { topic: kind === 'building' ? 'ugt_draft_building' : `ugt_draft_${kind.replaceAll('-', '_')}` }, action: 'Supply parcelIds with parcelSourceId, or outline.' });
-            if (args.parcelIds?.length && args.outline) throw fail('site-ambiguous', 'Choose either source parcels or an outline, not both.', { action: 'Remove one of parcelIds or outline.' });
-            if (args.parcelIds?.length) {
+            if (args.planningArea) {
+                const area = args.planningArea;
+                if (!area || typeof area.source !== 'string' || typeof area.recordId !== 'string') throw fail('planning-area-invalid', 'planningArea needs source and recordId.');
+                const answer = await read.request('/planning/record', { city: args.city, source: area.source, recordId: area.recordId, ...(area.scenario ? { scenario: area.scenario } : {}) });
+                const item = (answer.items || []).find(candidate => candidate.source?.id === area.source && candidate.source?.recordId === area.recordId && candidate.areas?.length);
+                if (!item) throw fail('planning-area-unavailable', 'The planning area record has no usable geometry.');
+                const authored = PlanningSourceProposal.designSite(item);
+                if (!authored) throw fail('planning-area-unavailable', 'The planning area record is not an exact zoning area.');
+                intent.site = authored.site;
+                intent.sourceReferences = authored.sourceReferences;
+            } else if (args.parcelIds?.length) {
                 const source = await read.parcels(args);
                 parcelFeatures = source.features;
                 intent.site = union(source.features);
@@ -127,7 +148,7 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference, re
         }
         const design = ['building', 'station', 'track'].includes(kind)
             ? buildTypedDesign(intent, { parcels: parcelFeatures }) : builder.build(intent, { turf });
-        const checked = designObject({ ...design, createdAt: design.authoredAt });
+        const checked = designObject({ ...design, ...(intent.sourceReferences ? { sourceReferences: intent.sourceReferences } : {}), createdAt: design.authoredAt });
         // Roads join the roads of the plan the caller places them in (agent-working-plan.md), not here.
         const drafted = await result(checked.content, intent.parcelSourceId || args.parcelSourceId);
         // A freeform outline is the site, as on the map: without footprint or coverage the building

@@ -469,8 +469,8 @@ had to be made are marked **(call)**.
   `cidVersion: 1`. The courier compares the provider's answer with the computed CID and refuses a difference.
 - **Design object** `design/v1`: `{ schema, goal, title, description, author, city, site, toleranceM,
   roadProposal | buildingProposal | structureProposal | parcelLayout (cleaned
-  as `proposalContentPayload` cleans them today), geometry, origin: { cid } | null, authoredAt }`.
-  Nothing else: no cadastre ids, terms, kind, approval, lens, lifecycle, server ids, thumbnails.
+  as `proposalContentPayload` cleans them today), geometry, origin: { cid } | null, authoredAt, sourceReferences? }`.
+  A design that cites a planning source includes its pinned record references. Cadastral binding, terms and approval are held separately.
   A local design's CID replaces `proposalContentFingerprint` (`c2-…`), `effectHash`, the consent
   fingerprint and the LR design fingerprint; `designs[].fingerprint` of a local agreement becomes
   `designs[].cid`.

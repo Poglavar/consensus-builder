@@ -676,7 +676,6 @@
                     <p class="planning-view-status"></p>
                     <button type="button" id="planning-view-retry" class="cb-link planning-view-retry" hidden></button>
                     <p class="planning-inspect-hint"></p>
-                    <details class="planning-coverage"><summary></summary><p></p><p class="planning-cache-summary"></p><dl class="planning-result-counts"></dl></details>
                     <button type="button" id="planning-open-model" class="cb-link planning-open-model" hidden></button>
                 </div>
                 <!-- Side by side comparison in the model view and on the map (js/three-compare.js, js/compare-on-map.js). -->
@@ -1004,6 +1003,14 @@
                                 <span data-i18n-key="buildingSources.listTitle">Building sources</span>
                             </button></div>
                     </div>
+                </details>
+
+                <details class="accordion-section" data-section="zoning-land-use" hidden>
+                    <summary class="sheet-section-title">
+                        <i class="fas fa-layer-group" aria-hidden="true"></i>
+                        <span data-i18n-key="planningViews.zoningAndLandUse">Zoning and land use</span>
+                    </summary>
+                    <div id="layers-zoning-controls" class="sheet-section-body"></div>
                 </details>
 
                 <details data-map-modes="2d" class="accordion-section" data-section="parks-squares">

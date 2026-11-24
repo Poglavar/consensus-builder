@@ -89,6 +89,7 @@
             const payload = payloadOf(key, localDesign[key]);
             if (payload) design[key] = payload;
         });
+        if (localDesign.sourceReferences?.length) design.sourceReferences = copy(localDesign.sourceReferences);
         return design;
     }
 
@@ -112,9 +113,16 @@
         FIELDS.filter(field => field !== 'schema' && field !== 'goal' && !has(object, field)).forEach(field => {
             add('design-field-missing', `A design lists ${field}, as null when it has none.`, field);
         });
-        Object.keys(object).filter(key => !FIELDS.includes(key) && !PAYLOAD_KEYS.includes(key)).forEach(key => {
+        Object.keys(object).filter(key => !FIELDS.includes(key) && !PAYLOAD_KEYS.includes(key) && key !== 'sourceReferences').forEach(key => {
             add('design-field-unknown', `A design carries no ${key}.`, key);
         });
+        if (has(object, 'sourceReferences')) {
+            const contract = root.PlanningSourceProposal || (typeof require === 'function' ? require('./planning/source-proposal.js') : null);
+            try {
+                contract.validateReferences(object.sourceReferences);
+                if (!object.sourceReferences.length) throw new Error('Omit sourceReferences when the design cites no source.');
+            } catch (error) { add('design-field-invalid', error.message, 'sourceReferences'); }
+        }
 
         const payloads = PAYLOAD_KEYS.filter(key => has(object, key));
         if (payloads.length !== 1) {

@@ -3348,6 +3348,22 @@ const ProposalManager = {
             return false;
         }
 
+        // A plan area supplies the drawing boundary. A map preview can see only the loaded parcels.
+        const root = typeof window !== 'undefined' ? window : globalThis;
+        if (proposal.site && proposal.sourceReferences?.length && !_withoutParcelsSelected()
+            && !root.__siteBinding.hasVerifiedCoverage(proposal.binding)) {
+            try {
+                const binding = await root.PlanAnalysis.bindDesignSite(proposal);
+                if (!root.__siteBinding.hasVerifiedCoverage(binding)) throw new Error('Parcel coverage is incomplete.');
+                proposal.binding = binding;
+                proposal.cadastreParcelIds = root.__siteBinding.boundParcelIds(binding);
+            } catch (error) {
+                console.warn('[ProposalManager] Could not bind the plan area before applying', error);
+                this._setLastApplyFailure(proposalId, _proposalApplyFailure('cadastral-ground-unavailable'));
+                return false;
+            }
+        }
+
         // Standing rivals down is what an explicit Apply click means: "this design, not that one".
         // Shared-plan application validates with validateSharedProposalGround instead.
         const switchedAlternatives = this._standDownAppliedRivals(proposal, {

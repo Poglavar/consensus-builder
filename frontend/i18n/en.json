@@ -8628,8 +8628,8 @@
         "excludedConfigurations": "Not configurable here: {{list}}.",
         "envelopeCoverage": "Partial envelopes are derived from the loaded parcel and zoning records. Parcels without massing are counted by reason; missing massing does not establish zero capacity.",
         "envelopeSummary": "{{count}} parcel records inspected: {{shapes}} with partial envelopes, {{missing}} without massing.",
-        "landBasisZone": "This plan lays the land out anew here, with its own streets and blocks. Permitted massing is drawn on the plan's block, not on today's parcels, which the plan does not keep.",
-        "envelopeNote": "The maximum envelope combines the recorded housing types. Frontage follows nearby streets when available; otherwise the bound includes all supported orientations. Choose a housing type, then roll the dice for another sample building within its limits. Area budgets and unresolved rules still apply.",
+        "landBasisZone": "The building estimate uses the whole zoning area.",
+        "envelopeNote": "The envelope combines the housing types allowed here. Nearby streets guide the assumed frontage.",
         "assumedSide": "Assumed street side: {{side}}.",
         "lotBelowMinimum": "Lot below the {{minimum}} minimum",
         "sideOptions": {
@@ -8721,8 +8721,6 @@
         "footprint": "Footprint",
         "steps": "Height steps",
         "permittedOff": "Permitted massing is hidden.",
-        "coverageTitle": "What does this source cover?",
-        "coverageNote": "Showing the provider’s saved calculations. Some results contain massing; others report missing evidence, unmet conditions or another planning procedure. A result without geometry is not proof of zero capacity. Height steps shows the parts at different elevations.",
         "inspectHint": "Select a building or source geometry to inspect it.",
         "inspectMassing": "Inspect permitted massing on {{parcel}}",
         "heightParts": "Height parts: {{heights}}",
@@ -8768,7 +8766,16 @@
         "referencedSource": "Source: {{source}} · {{revision}}",
         "referenceUnavailable": "The referenced source record is unavailable.",
         "scenarioLabel": "Housing type",
-        "zoningAreaNote": "Source zoning areas and recorded constraints. These areas are not building envelopes. Applicability remains unchecked.",
+        "zoningAreaNote": "The plan assigns a land use to this area.",
+        "zoningAndLandUse": "Zoning and land use",
+        "roleSource": {
+            "built": "Building outlines and heights come from the city’s building sources.",
+            "proposed": "Applied designs supply the proposed buildings and building rules.",
+            "envelopes": "The plan’s rules set the maximum building form. Choose a housing type to see an example within those limits.",
+            "saved": "Building forms come from saved calculations for individual parcels.",
+            "zoningOnly": "The plan shows land uses and their rules.",
+            "evidence": "The source provides planning records for individual parcels."
+        },
         "areasLoaded": {
             "one": "{{count}} source zoning area in view",
             "other": "{{count}} source zoning areas in view"
@@ -8794,7 +8801,10 @@
         "zoningArea": "Source zoning area",
         "inspectArea": "Inspect source zoning area {{parcel}}",
         "mapContext": "Compare building footprints and massing on the 2D map.",
-        "noPermittedSource": "No permitted source here"
+        "noPermittedSource": "No permitted source here",
+        "useAreaAsSite": "Use this area as a design site",
+        "siteOpenFailed": "Couldn’t open the full area. Try again.",
+        "areaSiteHint": "The plan supplies this site’s boundary. Choose a design to make here."
     },
     "clickStack": {
         "formedMany": "Formed parcels ({{count}})",

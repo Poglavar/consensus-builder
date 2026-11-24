@@ -8674,8 +8674,8 @@
         "excludedConfigurations": "Ovde nije moguće: {{list}}.",
         "envelopeCoverage": "Delimični omotači izvedeni su iz učitanih katastarskih i planskih zapisa. Parcele bez volumena prebrojane su prema razlogu; izostanak volumena ne dokazuje nulti kapacitet.",
         "envelopeSummary": "Pregledano {{count}} katastarskih zapisa: {{shapes}} sa delimičnim omotačima, {{missing}} bez volumena.",
-        "landBasisZone": "Plan ovde zemljište oblikuje iznova, sa sopstvenim ulicama i blokovima. Dozvoljena izgradnja crta se na bloku iz plana, a ne na današnjim parcelama, koje plan ne zadržava.",
-        "envelopeNote": "Maksimalni gabarit objedinjuje zabeležene tipove stanovanja. Ulična strana određuje se prema obližnjim ulicama kada su podaci dostupni; inače gabarit uključuje sve podržane orijentacije. Izaberite tip stanovanja pa bacite kockicu za drugi primer zgrade unutar njegovih granica. Ograničenja površine i nerazrešena pravila i dalje važe.",
+        "landBasisZone": "Procena izgradnje obuhvata celu zonu.",
+        "envelopeNote": "Omotač obuhvata dozvoljene tipove stanovanja. Položaj obližnjih ulica određuje pretpostavljenu uličnu stranu.",
         "assumedSide": "Pretpostavljena ulična strana: {{side}}.",
         "lotBelowMinimum": "Parcela je manja od minimuma od {{minimum}}",
         "sideOptions": {
@@ -8772,8 +8772,6 @@
         "footprint": "Osnova",
         "steps": "Visinski delovi",
         "permittedOff": "Dozvoljeni volumeni su skriveni.",
-        "coverageTitle": "Šta obuhvata ovaj izvor?",
-        "coverageNote": "Prikazuju se sačuvani proračuni izvora. Neki sadrže građevinsku masu, a drugi navode nedostatak dokaza, neispunjene uslove ili drugi planski postupak. Rezultat bez geometrije nije dokaz nultog kapaciteta. Visinski delovi prikazuju delove na različitim visinama.",
         "inspectHint": "Izaberite zgradu ili izvornu geometriju za pregled.",
         "inspectMassing": "Pregledaj dozvoljeni volumen na parceli {{parcel}}",
         "heightParts": "Visinski delovi: {{heights}}",
@@ -8819,7 +8817,16 @@
         "referencedSource": "Izvor: {{source}} · {{revision}}",
         "referenceUnavailable": "Navedeni izvorni zapis nije dostupan.",
         "scenarioLabel": "Vrsta stanovanja",
-        "zoningAreaNote": "Izvorna područja zoniranja i zabeležena ograničenja. Ta područja nisu omotači zgrada. Primenljivost nije proverena.",
+        "zoningAreaNote": "Plan određuje namenu ovog područja.",
+        "zoningAndLandUse": "Zoniranje i namena zemljišta",
+        "roleSource": {
+            "built": "Obrisi i visine zgrada dolaze iz gradskih izvora podataka o zgradama.",
+            "proposed": "Primenjeni projekti daju predložene zgrade i pravila gradnje.",
+            "envelopes": "Pravila plana određuju najveći oblik zgrade. Izaberite tip stanovanja za primer unutar tih granica.",
+            "saved": "Oblici zgrada dolaze iz sačuvanih proračuna za pojedinačne parcele.",
+            "zoningOnly": "Plan prikazuje namene zemljišta i njihova pravila.",
+            "evidence": "Izvor daje planske zapise za pojedinačne parcele."
+        },
         "areasLoaded": {
             "one": "{{count}} izvorno područje zoniranja u prikazu",
             "few": "{{count}} izvorna područja zoniranja u prikazu",
@@ -8846,7 +8853,10 @@
         "zoningArea": "Izvorno područje zoniranja",
         "inspectArea": "Pregledaj izvorno područje zoniranja {{parcel}}",
         "mapContext": "Uporedite osnove zgrada i volumene na 2D karti.",
-        "noPermittedSource": "Nema izvora dozvoljene izgradnje za ovo područje"
+        "noPermittedSource": "Nema izvora dozvoljene izgradnje za ovo područje",
+        "useAreaAsSite": "Koristi ovo područje kao lokaciju za projekat",
+        "siteOpenFailed": "Nije moguće otvoriti celo područje. Pokušajte ponovo.",
+        "areaSiteHint": "Plan određuje granice ove lokacije. Izaberite projekat koji ćete ovde izvesti."
     },
     "clickStack": {
         "formedMany": "Nastale parcele ({{count}})",

@@ -257,6 +257,8 @@ The source context captured for a cadastral-dependent calculation or commitment,
 
 The geographic land on which a design operates. An authored site can cover parts of parcels, several parcels or modeled open ground; it can be larger than the building footprint.
 
+Any mapped zoning area can supply a design site. The design copies the entire source record boundary, including holes and separate parts, and pins the source edition and revision. A parcel-layout design can divide this site into proposed plots. Cadastral binding identifies the underlying registered parcels separately.
+
 The site is a design's saved land boundary, not a restriction against editing its geometry.
 Editing a road's footprint updates its site to the new corridor land and invalidates its old
 parcel binding. Geometry must fit the current authored site at publication; a refusal returns
@@ -728,7 +730,7 @@ The land a zoning area's rules are applied to when Permitted massing is derived.
 
 ### Functional zone (Alatau)
 
-A zoning area of Alatau's general plan (Decree No. 727, 2025) from the state urban-planning cadastre: one polygon with a use and, for housing, a storey class (detached houses, 2–3, 4–6, 6–12, above 12), marked existing or planned. A planned zone is a block of the plan's own layout and is its own lot (Land basis); an existing one keeps its parcels. A residential class's upper storey count is a maximum; other uses hand the building parameters to the detailed plan (ПДП), and open land carries no building. See [Alatau general plan source](alatau-genplan-source.md).
+A zoning area of Alatau's general plan (Decree No. 727, 2025) from the state urban-planning cadastre. The source records land use, a storey class for housing, and implementation stage where known. For Permitted massing the adapter uses the planned zone as its calculation boundary and uses existing parcels elsewhere. The source supplies no future plot identifier. A residential class's upper storey count is a maximum. Other uses hand the building parameters to the detailed plan (ПДП), and open land carries no building. See [Alatau general plan source](alatau-genplan-source.md).
 
 ### Treatment area (Bogotá)
 

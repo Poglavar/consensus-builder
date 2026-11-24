@@ -247,6 +247,25 @@ const HR1 = parcel('HR-330264-1', rect(0, 0, 6, 6));
 const MIXED_SITE = rect(3, 0, 15, 6); // half over HR-1, half over the hole beside it
 
 describe('subdivision on bare ground (empty binding)', () => {
+    it('keeps a plan-area layout saved when coverage is unknown and binds the real parcels on retry', async () => {
+        const record = subdivisionRecord('plan-area', MIXED_SITE, {
+            binding: { parcels: [], coverage: 'none', source: 'client-preview' }
+        });
+        record.sourceReferences = [{ providerId: 'plan', recordId: 'area' }];
+        const { manager, fabric, store } = await harness({ facts: [HR1], records: [record] });
+        const bindDesignSite = vi.fn()
+            .mockResolvedValueOnce({ parcels: [], coverage: 'partial', unknownM2: 10 })
+            .mockResolvedValueOnce({ parcels: [{ parcelId: 'HR-330264-1' }], coverage: 'partial', unknownM2: 0, source: 'server' });
+        install('PlanAnalysis', { bindDesignSite });
+        await expect(manager.applyProposal(record.proposalId)).resolves.toBe(false);
+        expect(manager.getLastApplyFailureInfo(record.proposalId).code).toBe('cadastral-ground-unavailable');
+        expect(store.getProposal(record.proposalId).applied).toBe(false);
+        expect(liveIds(fabric)).toEqual(['HR-330264-1']);
+        await expect(manager.applyProposal(record.proposalId)).resolves.toBe(true);
+        expect(store.getProposal(record.proposalId).cadastreParcelIds).toEqual(['HR-330264-1']);
+        expect(bindDesignSite).toHaveBeenCalledTimes(2);
+    });
+
     it('forms rootless, unowned plots on the open-ground host, and unapply/replay restore exactly', async () => {
         const record = subdivisionRecord('sub-bare', BARE_SITE, { binding: { parcels: [], coverage: 'none', source: 'server' } });
         const { manager, fabric } = await harness({ records: [record] });

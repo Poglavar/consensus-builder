@@ -2,6 +2,11 @@
 // Source-specific fields stop here; map and model consume the same city-neutral representation.
 import { validateGeometry } from '../../parcels/source-contract.js';
 import { withSourceProposal, sourceRevision } from '../source-proposal.js';
+import { readFile } from 'node:fs/promises';
+import { gunzip } from 'node:zlib';
+import { promisify } from 'node:util';
+import { booleanPointInPolygon } from '@turf/turf';
+const unzip = promisify(gunzip);
 
 const zagrebGupBase = {
     city: 'zagreb',
@@ -18,6 +23,40 @@ export const zagrebGup2016Source = Object.freeze({ ...zagrebGupBase,
     id: 'zagreb-gup-2016', label: 'Zagreb GUP 2016', edition: '2016', default: false,
     url: 'https://geoportal.zagreb.hr/' });
 const sourceFor = row => Number(row.gup_id) === 2016 ? zagrebGup2016Source : zagrebGupSource;
+const exactZonesUrl = new URL('../data/zagreb-gup-2025-zones.json.gz', import.meta.url);
+let exactZones;
+async function loadExactZones() {
+    if (!exactZones) exactZones = readFile(exactZonesUrl).then(unzip).then(bytes => new Map(JSON.parse(bytes)))
+        .catch(error => { exactZones = null; throw error; });
+    return exactZones;
+}
+function zagrebGupZoneRecord(recordId, zone) {
+    const source = zagrebGupSource, id = `${source.id}:${recordId}`;
+    return withSourceProposal({ id, role: 'permitted', title: zone.use.label, use: zone.use,
+        site: zone.geometry, areas: [{ id: `${id}:area`, geometry: zone.geometry }], volumes: [],
+        spatialReference: { horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' },
+        source: { ...source, storage: 'map-1-snapshot', recordId, version: zone.version },
+        authority: { effect: 'obligatory', basis: 'source-summary', applicability: 'unresolved' },
+        assessment: { meaning: 'zoning-area', status: null, reason: null, geometry: 'source-area', constraints: 'not-evaluated', current: true },
+        metrics: { floorAreaM2: null, heightM: null }, constraints: [], sourceEvidence: { map: 1, use: zone.use.label } });
+}
+export async function zagrebAreasAt(point) {
+    const matches = [];
+    for (const [id, zone] of await loadExactZones()) {
+        const [w, s, e, n] = zone.bbox;
+        if (point[0] >= w && point[0] <= e && point[1] >= s && point[1] <= n && booleanPointInPolygon(point, zone.geometry)) {
+            matches.push(zagrebGupZoneRecord(id, zone));
+        }
+    }
+    return matches;
+}
+export async function readZagrebRecord(pool, { recordId, edition }) {
+    if (edition === '2025' && /^[a-f0-9]{64}$/.test(recordId)) {
+        const zone = (await loadExactZones()).get(recordId);
+        return zone ? [zagrebGupZoneRecord(recordId, zone)] : [];
+    }
+    return readZagrebParcel(pool, { parcel: recordId, edition });
+}
 const finite = value => typeof value === 'number' && Number.isFinite(value);
 const isStock = row => row.result_status === 'existing_stock_estimate' || row.source === 'empirical';
 

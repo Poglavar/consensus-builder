@@ -171,6 +171,27 @@
             return new Map(members.map((member, index) => [member.cid, { cid: member.cid, content: member.content,
                 city: member.content.city, parcelSourceId: sourceOf(member), binding: bindings[index] }]));
         }
+        // Opening the site and finishing a quick drawing can ask for the same ground concurrently.
+        const siteBindingsInFlight = new Map();
+        async function bindDesignSite({ site, toleranceM = 0, city }) {
+            const active = win.ParcelGroundFallback?.activeSource?.(city);
+            const localEstimate = active?.kind === 'estimated-local' ? active : null;
+            const sourceId = localEstimate?.id || win.DesignSync.parcelSourceIdOf(city, site);
+            const key = JSON.stringify([win.DesignSync.apiBase(), city, sourceId, toleranceM, site.coordinates]);
+            if (siteBindingsInFlight.has(key)) return siteBindingsInFlight.get(key);
+            const operation = (async () => {
+                if (localEstimate) {
+                    const { features } = await localEstimate.fetchUnderGeometry(site);
+                    return win.__siteBinding.bindingFromParcels(site, features.map(feature => ({
+                        id: feature.properties.parcelId, geometry: feature.geometry
+                    })), { turf: win.turf, toleranceM, source: localEstimate.id, parcelSource: { sourceId } });
+                }
+                const [binding] = await bind([{ content: { site, toleranceM, city }, source: { sourceId } }]);
+                return binding;
+            })();
+            siteBindingsInFlight.set(key, operation);
+            try { return await operation; } finally { siteBindingsInFlight.delete(key); }
+        }
         async function parcels(source, ids, city, signal) {
             const path = SERVER_SOURCES[source];
             const provider = win.CityConfigManager?.getCityConfig?.(city)?.parcels;
@@ -221,10 +242,14 @@
             if (completed.size > 8) completed.delete(completed.keys().next().value);
             return value;
         }
-        return { prepare: preparePlan, bindPrivateRows };
+        return { prepare: preparePlan, bindPrivateRows, bindDesignSite };
     }
     function localDeclaration(record, cid) {
         if (!Array.isArray(record?.cadastreParcelIds)) return null;
+        if (record.sourceReferences?.length) {
+            const siteBinding = (typeof window !== 'undefined' && window.__siteBinding) || require('./proposals/site-binding.js');
+            if (!siteBinding.hasVerifiedCoverage(record.binding)) return null;
+        }
         if (!record.cadastreParcelIds.length && !record.binding && record.planFileUnboundCid === cid) return null;
         return record.cadastreParcelIds;
     }

@@ -188,7 +188,7 @@
 
     // A parcel layout is geometry only (plan-design-agreement.md, M1 (a)): its draft holds its name,
     // description and ground, never terms, owners or approval.
-    const PARCEL_LAYOUT_FIELDS = Object.freeze(['name', 'titleOrigin', 'description', 'selectedParcelIds', 'cadastreParcelIds', 'site', 'toleranceM']);
+    const PARCEL_LAYOUT_FIELDS = Object.freeze(['name', 'titleOrigin', 'description', 'selectedParcelIds', 'cadastreParcelIds', 'site', 'sourceReferences', 'toleranceM']);
 
     function proposalFields(proposal) {
         const fields = allProposalFields(proposal);
@@ -211,6 +211,7 @@
             // The authored site and its intrusion tolerance (PARCEL-OPTIONAL.md); null for
             // records whose site is their footprint.
             site: cloneDraftValue(proposal?.site || null),
+            ...(proposal?.sourceReferences ? { sourceReferences: cloneDraftValue(proposal.sourceReferences) } : {}),
             toleranceM: Number.isFinite(Number(proposal?.toleranceM)) ? Number(proposal.toleranceM) : 0,
             ownership: cloneDraftValue(proposal?.ownership || proposal?.proposalFacets?.ownership || proposal?.facets?.ownership || null),
             recipientScope: proposal?.recipientScope || proposal?.proposalFacets?.recipientScope || proposal?.facets?.recipientScope || null,

@@ -1,5 +1,5 @@
 // Planning dataset services selected explicitly by consumers; one representation schema.
-import { queryZagrebGup, readZagrebParcel, zagrebGupSource, zagrebGup2016Source } from './providers/zagreb-gup.js';
+import { queryZagrebGup, readZagrebParcel, readZagrebRecord, zagrebAreasAt, zagrebGupSource, zagrebGup2016Source } from './providers/zagreb-gup.js';
 import { queryNycPilot, readNycPilotParcel, nycPilotSource } from './providers/nyc-pilot.js';
 import { createBogotaPotProvider, bogotaPotSource } from './providers/bogota-pot.js';
 import { createAlatauGenplanProvider, alatauGenplanSource } from './providers/alatau-genplan.js';
@@ -22,7 +22,8 @@ export const planningSourceRegistry = SourceRuntime.createRegistry({
             descriptor,
             query: (pool, query) => queryZagrebGup(pool, { ...query, edition: descriptor.edition }),
             parcel: (pool, query) => readZagrebParcel(pool, { ...query, edition: descriptor.edition }),
-            record: (pool, query) => readZagrebParcel(pool, { ...query, parcel: query.recordId, edition: descriptor.edition })
+            record: (pool, query) => readZagrebRecord(pool, { ...query, edition: descriptor.edition }),
+            ...(descriptor.zoningOverview ? { areasAt: zagrebAreasAt } : {})
         }) },
         'nyc-pilot': { custom: false, required: ['parcel'], create: descriptor => ({
             descriptor, query: queryNycPilot, parcel: readNycPilotParcel,

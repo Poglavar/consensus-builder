@@ -221,6 +221,10 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
             return { parcel, parcelSourceId: result.parcelSourceId, areaM2: turf.area(parcel), designs, agreements, markets, buildings, history, planning, studies, urbanRules,
                 economics: cityEconomics(args.city), previewUrl: mapUrl(args.city, bbox) };
         },
+        async planningAreas({ city, point, source }) {
+            if (!source || !Array.isArray(point) || point.length !== 2) throw failure('planning-area-query-required', 'Provide a planning source and WGS84 point.');
+            return request('/planning/areas', { city, lon: point[0], lat: point[1], source });
+        },
         markets: ({ city }) => request('/markets', { city }),
         explain({ term }) {
             const sections = vocabulary().split(/(?=^#{2,4} )/m);

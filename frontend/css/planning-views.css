@@ -36,8 +36,18 @@ body:is([data-planning-proposed="solid"], [data-planning-proposed="ghost"]) .pla
     font-weight: var(--cb-weight-semibold);
 }
 .planning-layer-controls { --planning-action-size: var(--cb-control-height); display: grid; gap: var(--cb-space-2); }
-.planning-layer-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 1.3fr) var(--planning-action-size); gap: var(--cb-space-2); align-items: center; }
-.planning-layer-detail { display: flex; flex-direction: column; gap: var(--cb-space-2); min-width: 0; }
+.planning-layer-row { position: relative; border: 1px solid var(--cb-line); border-radius: var(--cb-radius-md); padding: var(--cb-space-1) var(--cb-space-2); }
+.planning-layer-row > select { position: absolute; inset-block-start: var(--cb-space-1); inset-inline-end: var(--cb-space-2); width: 44%; height: var(--cb-control-height); }
+.planning-layer-summary { display: flex; align-items: center; gap: var(--cb-space-2); width: 51%; min-height: var(--cb-control-height); cursor: pointer; list-style: none; }
+.planning-layer-summary::-webkit-details-marker { display: none; }
+.planning-layer-summary::before { content: ''; width: .42em; height: .42em; border-block-end: 2px solid; border-inline-end: 2px solid; transform: rotate(-45deg); }
+[dir="rtl"] .planning-layer-summary::before { transform: rotate(45deg); }
+.planning-role-disclosure[open] > summary::before { transform: rotate(45deg); }
+[dir="rtl"] .planning-role-disclosure[open] > summary::before { transform: rotate(-45deg); }
+.planning-layer-detail { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--cb-space-2); align-items: center; min-width: 0; border-top: 1px solid var(--cb-line); padding: var(--cb-space-2) 0; }
+.planning-layer-detail > .planning-source-field, .planning-layer-detail > select { grid-column: 1 / -1; }
+.planning-layer-detail > select:has(+ .planning-layer-actions) { grid-column: 1; }
+.planning-layer-source-note { grid-column: 1 / -1; margin: 0; font-size: var(--cb-text-xs); line-height: var(--cb-leading); color: var(--cb-text-muted); }
 .planning-layer-actions { min-width: 0; }
 .planning-layer-actions .planning-reroll { width: var(--planning-action-size); height: var(--planning-action-size); }
 .planning-layer-name { display: flex; align-items: center; gap: var(--cb-space-2); font-size: var(--cb-text-sm); font-weight: var(--cb-weight-semibold); }
@@ -69,12 +79,7 @@ body:is([data-planning-proposed="solid"], [data-planning-proposed="ghost"]) .pla
 /* The inspector's key to the colours of the item shown, above the full legend. */
 .planning-colour-key { grid-template-columns: 1fr; }
 .planning-view-status { margin: var(--cb-space-2) 0 0; font-size: var(--cb-text-sm); line-height: var(--cb-leading); color: var(--cb-text-muted); }
-.planning-inspect-hint, .planning-coverage { font-size: var(--cb-text-xs); line-height: var(--cb-leading); color: var(--cb-text-muted); margin: var(--cb-space-2) 0 0; }
-.planning-coverage summary { cursor: pointer; color: var(--cb-text); }
-.planning-coverage p { margin: var(--cb-space-2) 0 0; }
-.planning-coverage[open] { max-height: 28dvh; overflow: auto; }
-.planning-result-counts { display: grid; grid-template-columns: 1fr auto; gap: var(--cb-space-1); }
-.planning-result-counts dd { margin: 0; font-variant-numeric: tabular-nums; }
+.planning-inspect-hint { font-size: var(--cb-text-xs); line-height: var(--cb-leading); color: var(--cb-text-muted); margin: var(--cb-space-2) 0 0; }
 .planning-open-model { margin-top: var(--cb-space-2); }
 .planning-source-field { display: flex; align-items: center; gap: var(--cb-space-2); margin-top: var(--cb-space-2); font-size: var(--cb-text-sm); }
 .planning-source-field[hidden] { display: none; }
@@ -145,7 +150,6 @@ body[data-planning-existing-scope="removed"] .leaflet-observedReferences-pane { 
 .planning-views[hidden], .planning-inspector[hidden] { display: none; }
 @media (max-width: 899.98px) {
     .planning-layer-name { gap: var(--cb-space-1); font-size: var(--cb-text-sm); }
-    .planning-layer-row { grid-template-columns: minmax(64px, 1fr) minmax(0, 1.1fr) minmax(0, 1.3fr) var(--planning-action-size); }
     .planning-layer-select { font-size: var(--cb-text-sm); }
     .planning-inspector { top: auto; bottom: var(--map-shell-bottom-clearance); left: var(--cb-space-2); right: var(--cb-space-2); width: auto; max-height: min(50dvh, calc(100dvh - var(--map-shell-bottom-clearance) - var(--map-shell-top-clearance) - var(--cb-space-2))); padding: var(--cb-space-4); }
 }

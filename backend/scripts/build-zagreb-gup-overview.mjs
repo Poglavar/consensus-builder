@@ -5,12 +5,15 @@
 // The overview is deliberately descriptive: status is null because land-use codes do
 // not by themselves establish building eligibility.
 import { readFileSync, writeFileSync, renameSync } from 'node:fs';
-import { coordEach, simplify } from '@turf/turf';
+import { bbox, coordEach, simplify } from '@turf/turf';
+import { gzipSync } from 'node:zlib';
+import { sourceRevision } from '../planning/source-proposal.js';
 import proj4 from 'proj4';
 import { validateGeometry } from '../parcels/source-contract.js';
 
 const input = process.argv[2] || new URL('../../../cadastre-data/government_plans/land-use-2025.geojson', import.meta.url);
 const output = new URL('../../frontend/data/planning/zagreb-gup-2025-overview.json', import.meta.url);
+const exactOutput = new URL('../planning/data/zagreb-gup-2025-zones.json.gz', import.meta.url);
 const sourceId = 'zagreb-gup-2025';
 const source = JSON.parse(readFileSync(input, 'utf8'));
 const sourceCrs = '+proj=tmerc +lat_0=0 +lon_0=16.5 +k=0.9999 +x_0=500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs';
@@ -35,16 +38,16 @@ function groupFor(code) {
     return null;
 }
 
-function transformCoordinates(coords) {
-    if (Array.isArray(coords[0])) return coords.map(transformCoordinates);
+function transformCoordinates(coords, rounded) {
+    if (Array.isArray(coords[0])) return coords.map(part => transformCoordinates(part, rounded));
     const [lon, lat] = wgs84.forward(coords);
-    return [Math.round(lon * 1e5) / 1e5, Math.round(lat * 1e5) / 1e5];
+    return rounded ? [Math.round(lon * 1e5) / 1e5, Math.round(lat * 1e5) / 1e5] : [lon, lat];
 }
 
 function overviewGeometry(feature) {
     // Input units are metres, so this tolerance is a local ~9 m simplification.
     const simplified = simplify(feature, { tolerance: 9, highQuality: true, mutate: false });
-    const geometry = { type: simplified.geometry.type, coordinates: transformCoordinates(simplified.geometry.coordinates) };
+    const geometry = { type: simplified.geometry.type, coordinates: transformCoordinates(simplified.geometry.coordinates, true) };
     if (!validateGeometry(geometry)) throw new Error(`Invalid geometry for ${feature.id}`);
     return geometry;
 }
@@ -52,6 +55,7 @@ function overviewGeometry(feature) {
 const uses = [];
 const useIndexes = new Map();
 const ids = new Set();
+const exactZones = [];
 const zones = source.features.map(feature => {
     if (!feature.id || ids.has(feature.id) || !feature.properties?.title) throw new Error('Missing or duplicate Map 1 feature');
     ids.add(feature.id);
@@ -60,6 +64,9 @@ const zones = source.features.map(feature => {
         label: code, stage: null, status: null };
     const useKey = JSON.stringify(use);
     if (!useIndexes.has(useKey)) { useIndexes.set(useKey, uses.length); uses.push(use); }
+    const geometry = { type: feature.geometry.type, coordinates: transformCoordinates(feature.geometry.coordinates, false) };
+    if (!validateGeometry(geometry)) throw new Error(`Invalid source geometry for ${feature.id}`);
+    exactZones.push([String(feature.id), { use, geometry, bbox: bbox(geometry), version: sourceRevision(feature) }]);
     return [String(feature.id), useIndexes.get(useKey), overviewGeometry(feature)];
 });
 
@@ -74,6 +81,9 @@ const bytes = Buffer.from(JSON.stringify(overview));
 const temporary = new URL(`.zagreb-gup-2025-overview.${process.pid}.tmp`, output);
 writeFileSync(temporary, bytes);
 renameSync(temporary, output);
+const exactTemporary = new URL(`.zagreb-gup-2025-zones.${process.pid}.tmp`, exactOutput);
+writeFileSync(exactTemporary, gzipSync(Buffer.from(JSON.stringify(exactZones)), { level: 9 }));
+renameSync(exactTemporary, exactOutput);
 const positions = geometry => { let n = 0; const walk = x => Array.isArray(x[0]) ? x.forEach(walk) : n++; walk(geometry.coordinates); return n; };
 console.log(JSON.stringify({ sourceFeatures: source.features.length, zones: zones.length, uses: uses.length, bbox: overview.bbox,
     overviewPositions: zones.reduce((n, [, , geometry]) => n + positions(geometry), 0), overviewBytes: bytes.length }, null, 2));

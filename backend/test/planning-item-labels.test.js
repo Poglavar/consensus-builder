@@ -85,6 +85,7 @@ describe('colour keys', () => {
         expect(labels.colourKey(zone, t)).toEqual([{ swatch: 'zone-housing-mid', text: 'Mid-rise housing' }]);
         const park = { ...zone, use: { key: 'parks', group: 'green' }, assessment: { meaning: 'zoning-area', status: 'prohibited' } };
         expect(labels.colourKey(park, t).map(row => row.swatch)).toEqual(['zone-green', 'dashed']);
+        expect(labels.colourKey({ ...zone, assessment: { meaning: 'zoning-area', status: null } }, t).map(row => row.swatch)).toEqual(['zone-housing-mid']);
     });
 
     it('keys an envelope by the use of its land, or by the Permitted colour when the source states none', () => {

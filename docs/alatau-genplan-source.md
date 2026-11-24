@@ -35,10 +35,11 @@ records by `object_id_i32`. The zoning requests have no parcel grid or live cada
 Permitted building envelopes start at zoom 16 and read parcel and street evidence for their separate
 calculation. A study or envelope zoning read follows up to 10 pages of 1,000 zones.
 
-A zone the plan marks planned (`implementation` Проектируемые) is a block of the plan's own
-layout, drawn across the field parcels it replaces. It is its own lot (vocabulary: Land basis):
-the envelope is derived on the zone's outline, and the cadastral parcels under it get none. A zone
-marked existing, or unmarked, regulates the parcels as they stand. The plan's streets are one road
+A zone marked planned (`implementation` Проектируемые) supplies the boundary for the app's
+massing estimate. The source identifies functional areas and their implementation stage. It
+supplies no future plot identifiers. For existing or unmarked zones the estimate uses the
+cadastral parcels. A designer can use the complete area at any stage as a site and lay out
+plots within it. The plan's streets are one road
 zone surrounding the blocks (18.7 km² on 2026-11-23, over the study limit, so never a lot).
 OpenStreetMap holds no planned street, so a block's envelope has no street to face and is the
 unoriented bound. A zone with a hole (a block around another zone) is `unsupported-parcel-shape`.

@@ -8656,8 +8656,8 @@
         "excludedConfigurations": "No configurable aquí: {{list}}.",
         "envelopeCoverage": "Las envolventes parciales se derivan de los registros parcelarios y urbanísticos cargados. Las parcelas sin volumen se cuentan por motivo; la ausencia de volumen no demuestra una capacidad nula.",
         "envelopeSummary": "{{count}} registros parcelarios examinados: {{shapes}} con envolventes parciales, {{missing}} sin volumen.",
-        "landBasisZone": "Aquí el plan ordena el suelo de nuevo, con sus propias calles y manzanas. La edificabilidad permitida se dibuja sobre la manzana del plan, no sobre las parcelas actuales, que el plan no conserva.",
-        "envelopeNote": "La envolvente máxima combina los tipos de vivienda registrados. El frente se orienta hacia las calles cercanas cuando hay datos; de lo contrario, la envolvente incluye todas las orientaciones admitidas. Elige un tipo de vivienda y tira el dado para generar otro edificio de ejemplo dentro de sus límites. Siguen aplicándose los límites de superficie y las reglas pendientes.",
+        "landBasisZone": "La estimación de edificación abarca toda la zona.",
+        "envelopeNote": "La envolvente reúne los tipos de vivienda permitidos. Las calles cercanas orientan la estimación del frente de parcela.",
         "assumedSide": "Lado de calle supuesto: {{side}}.",
         "lotBelowMinimum": "Parcela por debajo del mínimo de {{minimum}}",
         "sideOptions": {
@@ -8749,8 +8749,6 @@
         "footprint": "Huella",
         "steps": "Niveles de altura",
         "permittedOff": "Los volúmenes permitidos están ocultos.",
-        "coverageTitle": "¿Qué cubre esta fuente?",
-        "coverageNote": "Se muestran los cálculos guardados por la fuente. Algunos contienen volúmenes; otros indican falta de pruebas, condiciones incumplidas u otro procedimiento urbanístico. Un resultado sin geometría no demuestra capacidad nula. Los niveles muestran las partes a distintas alturas.",
         "inspectHint": "Seleccione un edificio o geometría de la fuente para inspeccionarlo.",
         "inspectMassing": "Inspeccionar el volumen permitido en {{parcel}}",
         "heightParts": "Alturas de las partes: {{heights}}",
@@ -8796,7 +8794,16 @@
         "referencedSource": "Fuente: {{source}} · {{revision}}",
         "referenceUnavailable": "El registro de fuente citado no está disponible.",
         "scenarioLabel": "Tipo de vivienda",
-        "zoningAreaNote": "Áreas de zonificación y restricciones registradas de la fuente. Estas áreas no son envolventes de edificios. La aplicabilidad sigue sin verificar.",
+        "zoningAreaNote": "El plan asigna un uso del suelo a esta zona.",
+        "zoningAndLandUse": "Zonificación y uso del suelo",
+        "roleSource": {
+            "built": "Las siluetas y alturas de los edificios proceden de las fuentes de edificios de la ciudad.",
+            "proposed": "Los diseños aplicados proporcionan los edificios propuestos y las reglas de construcción.",
+            "envelopes": "Las reglas del plan fijan la forma máxima del edificio. Elige un tipo de vivienda para ver un ejemplo dentro de esos límites.",
+            "saved": "Las formas de los edificios proceden de cálculos guardados para parcelas individuales.",
+            "zoningOnly": "El plan muestra los usos del suelo y sus reglas.",
+            "evidence": "La fuente proporciona registros urbanísticos de parcelas individuales."
+        },
         "areasLoaded": {
             "one": "{{count}} área de zonificación de la fuente visible",
             "other": "{{count}} áreas de zonificación de la fuente visibles"
@@ -8822,7 +8829,10 @@
         "zoningArea": "Área de zonificación de la fuente",
         "inspectArea": "Inspeccionar área de zonificación {{parcel}}",
         "mapContext": "Compara las huellas de edificios y los volúmenes en el mapa 2D.",
-        "noPermittedSource": "No hay fuente de edificación permitida aquí"
+        "noPermittedSource": "No hay fuente de edificación permitida aquí",
+        "useAreaAsSite": "Usar esta área como sitio de diseño",
+        "siteOpenFailed": "No se pudo abrir el área completa. Inténtalo de nuevo.",
+        "areaSiteHint": "El plan proporciona los límites de este sitio. Elige un diseño para construir aquí."
     },
     "clickStack": {
         "formedMany": "Parcelas resultantes ({{count}})",

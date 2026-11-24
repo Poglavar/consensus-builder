@@ -273,6 +273,7 @@
             const record = { proposalId: key, goal: c.goal, title: c.title, name: c.title,
                 description: c.description, author: c.author, city: c.city, site: c.site,
                 toleranceM: c.toleranceM, geometry: c.geometry, origin: c.origin,
+                ...(c.sourceReferences ? { sourceReferences: c.sourceReferences } : {}),
                 createdAt: c.authoredAt, lifecycleStatus: 'draft', applied: false,
                 ...boundFields(bindings[row.cid], row.cid),
                 ...(file.designSources[row.cid] ? { planFileSource: clone(file.designSources[row.cid]) } : {}) };

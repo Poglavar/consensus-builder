@@ -396,6 +396,7 @@ in commits.
 - 2026-11-21: Who consented is the chosen lens's call, never the server's: it has no reliable knowledge of owners or their
   acts. The server keeps its technical cadastre check (agreement inputs = the parcels the designs take) where it holds the
   cadastre; on land it cannot see (coverage unknown) inputs pass unverified, and the lens is not asked to make up for it. User decision.
+- Any zoning area can supply the full site for an authored design, including a parcel layout. The user wants to design against the plan’s vision independently of cadastral boundaries.
 - 2026-11-23: Permitted massing has a land basis (vocabulary): a zoning area whose plan re-forms the land (Alatau's planned
   zones) is its own lot, stated by the provider per zone, never inferred from geometry; elsewhere rules apply to parcels as
   they stand. User asked for the general form ("works for all cities, stated in vocabulary and UX"). Open: whether
