@@ -234,6 +234,7 @@ describe('i18n locale coverage', () => {
     it('defines dynamically selected planning and imagery labels in every locale', () => {
         const dynamicKeys = [
             ...['height', 'lotArea'].map(value => `planningViews.constraint.${value}`),
+            ...['direct', 'literal', 'estimated', 'derived', 'assumed'].map(value => `planningViews.evidence.${value}`),
             ...['condition_failed', 'evidence_missing', 'existing_stock_estimate', 'geometry_failed', 'geometry_validated',
                 'instrument_handoff', 'no_validated_candidate', 'procedure_required', 'route', 'unresolved_context',
                 'unsupported_calculation', 'allowed', 'hearing', 'prohibited', 'overlay', 'nomention', 'clear', 'flagged']

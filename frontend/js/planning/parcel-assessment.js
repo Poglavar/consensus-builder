@@ -126,9 +126,13 @@
         }
         return output;
     }
-    function direct(source, quantity, units) {
-        const value = source.constraints?.find(c => c.quantity === quantity && Object.hasOwn(units, c.unit));
-        return ['direct', 'literal'].includes(value?.evidence) && finite(value.value) && value.value >= 0 ? value.value * units[value.unit] : null;
+    function constraintValue(constraint, units) {
+        if (!constraint || !finite(constraint.value) || constraint.value < 0 || !Object.hasOwn(units, constraint.unit)) return null;
+        const supported = ['direct', 'literal'].includes(constraint.evidence) || (constraint.quantity === 'height' && constraint.evidence === 'derived');
+        return supported ? constraint.value * units[constraint.unit] : null;
+    }
+    function dimension(source, quantity, units) {
+        return constraintValue(source.constraints?.find(c => c.quantity === quantity && Object.hasOwn(units, c.unit)), units);
     }
     function derive(context, frontEdge = 0, geometryOps) {
         const local = frame(context.parcel.geometry);
@@ -140,7 +144,7 @@
         const edges = local.edges.map(edge => ({ ...edge, role: edge.degenerate ? 'none' : dot(edge.normal, front.normal) > 0.9 ? 'frontSetback'
             : dot(edge.normal, front.normal) < -0.5 ? 'rearSetback' : 'sideSetback' }));
         if (!edges.some(edge => edge.role === 'rearSetback' || edge.role === 'sideSetback')) invalid('unsupported-parcel-shape');
-        const limits = Object.fromEntries(['frontSetback', 'sideSetback', 'rearSetback'].map(key => [key, direct(context.source, key, LENGTH_M)]));
+        const limits = Object.fromEntries(['frontSetback', 'sideSetback', 'rearSetback'].map(key => [key, dimension(context.source, key, LENGTH_M)]));
         let points = [], geometry = null;
         if (local.convex) {
             points = local.points;
@@ -162,7 +166,7 @@
             geometry = geometryOps.intersect(geometryOps.feature(geometry), geometryOps.feature(context.coveredGeometry))?.geometry || null;
         }
         return { local, edges, limits, points, geometry,
-            heightM: direct(context.source, 'height', LENGTH_M),
+            heightM: dimension(context.source, 'height', LENGTH_M),
             areaM2: geometry ? geometryOps ? geometryOps.area(geometryOps.feature(geometry)) : area(points) : 0, frontEdge };
     }
     function designFromForm(context, form, geometryOps, basis) {
@@ -201,12 +205,12 @@
         if (!local.convex) {
             // On a concave lot every edge takes each role in some interpretation, so the joined bound
             // keeps the ground beyond the smallest yard any role assigns; unknown yards clip nothing.
-            const limits = Object.fromEntries(['frontSetback', 'sideSetback', 'rearSetback'].map(key => [key, direct(context.source, key, LENGTH_M)]));
+            const limits = Object.fromEntries(['frontSetback', 'sideSetback', 'rearSetback'].map(key => [key, dimension(context.source, key, LENGTH_M)]));
             const smallest = Math.min(...Object.values(limits).map(value => value === null ? 0 : value));
             geometry = groundBeyondYards(context.parcel.geometry, local, local.edges, edge => edge.degenerate ? null : smallest, geometryOps);
             if (geometry && context.coveredGeometry) geometry = geometryOps.intersect(geometryOps.feature(geometry), geometryOps.feature(context.coveredGeometry))?.geometry || null;
             const all = local.edges.filter(edge => !edge.degenerate).map(edge => edge.index);
-            return { geometry, heightM: direct(context.source, 'height', LENGTH_M), interpretations: all.length, edges: all,
+            return { geometry, heightM: dimension(context.source, 'height', LENGTH_M), interpretations: all.length, edges: all,
                 areaM2: geometry ? geometryOps.area(geometryOps.feature(geometry)) : 0 };
         }
         for (let edge = 0; edge < ring(context.parcel.geometry).length; edge++) {
@@ -249,7 +253,7 @@
             add(key, measured, bound.limits[key], 'm', 'minimum', evidence, 'edge-assumption');
         }
         add('height', design.topM, bound.heightM, 'm', 'maximum', source.constraints?.find(c => c.quantity === 'height')?.evidence || 'absent', 'vertical-reference');
-        add('lotArea', local.areaM2, direct(source, 'lotArea', AREA_M2), 'm2');
+        add('lotArea', local.areaM2, dimension(source, 'lotArea', AREA_M2), 'm2');
         const coverage = source.sourceEvidence?.numericEvidence?.[`${source.source.scenario}_maxlotcoverage_building`];
         add('buildingCoverage', 100 * area(points) / local.areaM2,
             coverage?.status === 'direct' && finite(coverage.value) && coverage.value >= 0 && coverage.value <= 100 ? coverage.value : null,
@@ -275,5 +279,5 @@
         const local = frame(geometry);
         return { convex: local.convex, edges: local.edges.filter(edge => !edge.degenerate).length, areaM2: local.areaM2 };
     }
-    return { derive, unorientedEnvelope, assess, designFromForm, referenceState, inspect };
+    return { derive, unorientedEnvelope, assess, designFromForm, referenceState, inspect, constraintValue };
 });

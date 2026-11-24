@@ -8698,6 +8698,8 @@
         "sourceDetails": "Source and evidence",
         "computed": "Calculated {{date}}",
         "sourceTerms": "Saved source calculation and assessment",
+        "calculationSource": "UGT source configuration",
+        "publishedReference": "Published reference",
         "readSource": "Read the source plan",
         "constraint": {
             "coverage": "Site coverage",
@@ -8771,7 +8773,7 @@
         "roleSource": {
             "built": "Building outlines and heights come from the city’s building sources.",
             "proposed": "Applied designs supply the proposed buildings and building rules.",
-            "envelopes": "The plan’s rules set the maximum building form. Choose a housing type to see an example within those limits.",
+            "envelopes": "UGT estimates building height and footprint from this plan’s rules.",
             "saved": "Building forms come from saved calculations for individual parcels.",
             "zoningOnly": "The plan shows land uses and their rules.",
             "evidence": "The source provides planning records for individual parcels."
@@ -8796,7 +8798,9 @@
         "evidence": {
             "direct": "Direct source value",
             "literal": "Recorded number",
-            "estimated": "Source estimate"
+            "estimated": "Source estimate",
+            "derived": "Calculated by UGT",
+            "assumed": "Assumed by UGT"
         },
         "zoningArea": "Source zoning area",
         "inspectArea": "Inspect source zoning area {{parcel}}",

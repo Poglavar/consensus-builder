@@ -2,8 +2,9 @@
 # Alatau general plan source (`alatau-genplan-727`)
 
 Permitted massing for Alatau (Almaty region, Kazakhstan) comes from the city's general plan as
-corrected by Government Decree No. 727 of 9 September 2025. Its functional zones come from a complete
-state urban-planning cadastre snapshot interpreted by
+corrected by Government Decree No. 727 of 9 September 2025. UGT reads the 6,659 functional zones
+from the bundled `alatau-genplan-727.geojson.gz` snapshot of the state urban-planning cadastre. The
+registered `alatau-genplan` adapter interprets each zone's attributes in
 [`backend/planning/providers/alatau-genplan.js`](../backend/planning/providers/alatau-genplan.js).
 The `alatau` city configuration pins it (`planning.sourceIds: ['alatau-genplan-727']`) together with
 the parcel source `kz-alatau-pkk` (the national public cadastral map, district view 364).
@@ -61,9 +62,16 @@ in Alatau) are listed as `unsupported-parcel-shape` and do not widen the zoning 
 | Green space, parks, water, forest, protected land, roads, railways, cemeteries, burial grounds | `prohibited` | none |
 | Any other label | `unrecorded` | none |
 
-Height is storeys × 3.0 m. The plan states storey classes, not heights; 3.0 m floor-to-floor is
-an assumption recorded with every height constraint (`sourceEvidence.rules`). No setbacks, coverage
-or density limits are derived: the general plan does not set them per lot.
+UGT assumes 3.0 m per storey. For example, zone `479341` has the 6–12 storey class. The maximum
+of 12 comes from the legend (`direct`), and UGT calculates 36 m (`derived`). For detached houses
+the legend gives no number, so the adapter marks its three-storey value as `assumed`. Each height
+constraint carries the multiplication, and `sourceEvidence.rules` records the assumption. The
+general plan supplies no lot-specific setbacks, coverage or density limits for this calculation.
+
+Under **Buildings and massing → Permitted**, **UGT source configuration** opens the edition's registry
+entry with the dataset, adapter, snapshot filename and upstream service. **Published reference** opens
+the government's plan text. The selected zoning area's **Source and evidence** shows its original
+attributes and the adapter's interpretation.
 
 Every zone also carries its `use` (vocabulary: Permitted use): the key and colour group of its
 class, the plan's label, and its stage (`existing` or `planned`, from `implementation`). A parcel's

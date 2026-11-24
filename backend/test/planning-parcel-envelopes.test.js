@@ -428,11 +428,12 @@ describe('configuration display logic', () => {
         expect(envelopes.edgeSide({type:'Polygon',coordinates:[ring]},22)).toBe('w');
         expect(envelopes.edgeSide({type:'Polygon',coordinates:[ring.slice().reverse()]},0)).toBe('w');
     });
-    it('shows a fixed Illustration control for a source with one calculated option', () => {
+    it('allows opening a single Illustration option when the source has a calculated volume', () => {
         const source = { id: 'cached-option', capabilities: { volumes: true } };
         expect(scene.permittedRepresentationControl(source, 'both')).toEqual({
-            values: ['configuration'], value: 'configuration', disabled: true
+            values: ['configuration'], value: 'configuration', disabled: false
         });
+        expect(scene.permittedRepresentationControl({ capabilities: { areas: true, volumes: false } })).toMatchObject({ disabled: true });
         expect(scene.permittedRepresentationControl(null)).toMatchObject({ disabled: true });
     });
     it('detects a same-ID source metadata change while ignoring object key order', () => {
@@ -486,6 +487,9 @@ describe('tiered bounds and street width', () => {
         expect(areaOf(tiers[0].geometry)).toBeCloseTo((widthM - 2) * (depthM - 4), -1);
         // A yard starting at or above the height adds no level.
         expect(tieredBound(context([constraint('sideSetback', 1, { fromHeightM: 30 })]), 0, turf)).toHaveLength(1);
+        const derived = { parcel: site, source: { constraints: [constraint('height', 36, { evidence: 'derived' }),
+            constraint('sideSetback', 5, { fromHeightM: 40 })] } };
+        expect(tieredBound(derived, 0, turf)).toMatchObject([{ baseM: 0, topM: 36 }]);
         // Without a front edge every tier joins the interpretations, as the unoriented bound does.
         const unoriented = tieredBound(context([constraint('rearSetback', 4), constraint('sideSetback', 3, { fromHeightM: 10 })]), null, turf);
         expect(unoriented.map(tier => [tier.baseM, tier.topM, tier.interpretations])).toEqual([[0, 10, 4], [10, 30, 4]]);

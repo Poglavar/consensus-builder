@@ -14,7 +14,7 @@ if (!input) throw new Error('Pass a complete WFS FeatureCollection file or --fet
 const sourceId = alatauGenplanSource.id;
 const snapshotDir = new URL('../planning/data/', import.meta.url);
 const overviewDir = new URL('../../frontend/data/planning/', import.meta.url);
-const snapshotFile = new URL(`${sourceId}.geojson.gz`, snapshotDir);
+const snapshotFile = new URL(alatauGenplanSource.snapshotFilename, snapshotDir);
 const overviewFile = new URL(`${sourceId}-overview.json`, overviewDir);
 
 async function fetchAllZones() {

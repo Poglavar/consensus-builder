@@ -248,6 +248,11 @@
             names.length ? `${translate('memberPlans', win)} ${names.join(', ')}` : ''].filter(Boolean).join(' · ');
     }
 
+    function permittedOptionKind(item) {
+        if (item?.assessment?.meaning === 'zoning-area' || item?.areas?.length) return 'planningViews.zoningArea';
+        return item?.volumes?.length ? 'planningViews.sourceProposal' : null;
+    }
+
     function updateSelector(section, container, win, plans = []) {
         let select = container.querySelector('.click-stack__selector');
         if (!section.multi) { select?.closest('.click-stack__selector-wrap')?.remove(); return; }
@@ -264,8 +269,10 @@
         }
         [...select.children].forEach((option, index) => {
             const instance = section.instances[index];
+            const kindKey = section.kind === 'permitted' && permittedOptionKind(instance.item);
             option.textContent = section.kind === 'designs' ? designOptionLabel(instance, win, plans, peers)
-                : [instanceLabel(instance, section.kind, win, peers), recordTime(instance, section.kind, win)?.label].filter(Boolean).join(' · ');
+                : [kindKey && win?.i18n?.t?.(kindKey), instanceLabel(instance, section.kind, win, peers),
+                    recordTime(instance, section.kind, win)?.label].filter(Boolean).join(' · ');
             option.title = recordId(instance, section.kind, win);
         });
         select.selectedIndex = Number.isInteger(section.selectedIndex) ? section.selectedIndex : 0;
@@ -285,7 +292,8 @@
         caption.className = 'click-stack__selector-label';
         const captions = { designs: 'chooseDesign', built: 'chooseBuilding', parcels: 'chooseParcel', formed: 'chooseParcel',
             plans: 'choosePlan', agreements: 'chooseAgreement', permitted: 'choosePermitted' };
-        caption.textContent = translate(captions[section.kind] || 'chooseInstance', win);
+        const hasArea = section.kind === 'permitted' && section.instances.some(instance => permittedOptionKind(instance.item) === 'planningViews.zoningArea');
+        caption.textContent = translate(hasArea ? 'chooseInstance' : captions[section.kind] || 'chooseInstance', win);
         const select = doc.createElement('select');
         select.id = id;
         select.className = 'click-stack__selector';

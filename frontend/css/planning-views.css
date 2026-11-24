@@ -82,6 +82,8 @@ body:is([data-planning-proposed="solid"], [data-planning-proposed="ghost"]) .pla
 .planning-source-field { display: flex; align-items: center; gap: var(--cb-space-2); margin-top: var(--cb-space-2); font-size: var(--cb-text-sm); }
 .planning-source-field[hidden] { display: none; }
 .planning-source-label { flex: 0 0 auto; color: var(--cb-text-muted); }
+.planning-source-configuration, .planning-published-reference { justify-self: start; min-width: 0; max-width: 100%; color: var(--cb-text-muted); font-size: var(--cb-text-xs); }
+.planning-source-url { color: inherit; overflow-wrap: anywhere; }
 .planning-source-note, .planning-map-context { font-size: var(--cb-text-xs); color: var(--cb-text-muted); margin: var(--cb-space-1) 0 0; }
 .planning-source-note:empty { display: none; }
 .planning-parcel-evidence { border-top: 1px solid var(--cb-line); padding-top: var(--cb-space-3); margin-top: var(--cb-space-3); font-size: var(--cb-text-sm); }

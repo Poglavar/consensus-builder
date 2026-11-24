@@ -659,6 +659,8 @@ A derived Atlas area representing a combination of base-district and overlay rul
 
 A complete numeric value recorded in a source field with a known unit, without an unresolved expression or alternative value kind. Spreadsheet dates remain date values even when stored as numeric serials; cached formula results are not literal observations. The `literal` evidence state distinguishes public district-table values from the Atlas Slices product's `direct` numeric method. Both can supply a supported dimensional calculation; neither resolves applicability, missing constraints or overlay precedence.
 
+A `derived` dimension is calculated by UGT from stated inputs. An `assumed` dimension is a value UGT supplies. In Alatau the zoning legend gives the upper storey count for a numbered housing class. UGT supplies the floor-to-floor height and derives the height in metres.
+
 ### Planning representation
 
 An inspection or display projection of a source record, existing building or authored design. It retains the subject's identity and provenance without becoming a new design or an applied change.

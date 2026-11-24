@@ -8876,6 +8876,8 @@
         "sourceDetails": "Fonte e elementos comprovativos",
         "computed": "Calculado em {{date}}",
         "sourceTerms": "Cálculo e avaliação da fonte guardados",
+        "calculationSource": "Configuração da fonte UGT",
+        "publishedReference": "Referência publicada",
         "readSource": "Ler o plano de origem",
         "constraint": {
             "coverage": "Taxa de ocupação",
@@ -8948,7 +8950,7 @@
         "roleSource": {
             "built": "Os contornos e alturas dos edifícios vêm das fontes de edifícios da cidade.",
             "proposed": "Os projetos aplicados fornecem os edifícios propostos e as regras de construção.",
-            "envelopes": "As regras do plano definem a forma máxima do edifício. Escolha um tipo de habitação para ver um exemplo dentro desses limites.",
+            "envelopes": "A UGT estima a altura e a implantação do edifício com base nas regras deste plano.",
             "saved": "As formas dos edifícios vêm de cálculos guardados para parcelas individuais.",
             "zoningOnly": "O plano mostra os usos do solo e as suas regras.",
             "evidence": "A fonte fornece registos de planeamento para parcelas individuais."
@@ -8973,7 +8975,9 @@
         "evidence": {
             "direct": "Valor direto da fonte",
             "literal": "Número registado",
-            "estimated": "Estimativa da fonte"
+            "estimated": "Estimativa da fonte",
+            "derived": "Calculado pela UGT",
+            "assumed": "Assumido pela UGT"
         },
         "zoningArea": "Área de zonamento da fonte",
         "inspectArea": "Inspecionar a área de zonamento da fonte {{parcel}}",

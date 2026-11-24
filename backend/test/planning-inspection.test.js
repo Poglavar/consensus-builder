@@ -156,14 +156,14 @@ describe('shared building and proposal representations', () => {
     it('separates a permitted result into Info, Options and Rules pages without moving evidence out of Info', () => {
         const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');
         const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
-        const declaration = body.find(node => node.type === 'FunctionDeclaration' && node.id.name === 'renderInspector');
+        const declaration = name => body.find(node => node.type === 'FunctionDeclaration' && node.id.name === name);
         const document = makeDocument();
         const inspector = document.createElement('aside'); inspector.className = 'planning-inspector'; document.body.append(inspector);
         const item = {
             role: 'permitted', title: 'Permitted fixture', parcelEnvelope: false, areas: [], volumes: [{}],
             assessment: { meaning: 'source-result', refresh: null, status: null, reason: null, current: true },
             metrics: { floorAreaM2: 100, heightM: 12, conditional: null, footprintM2: 40 },
-            constraints: [{ quantity: 'height', value: 12, unit: 'm', evidence: null }], configurations: [{ id: 'family', metrics: { heightM: 12, footprintM2: 40 } }],
+            constraints: [{ quantity: 'height', value: 12, unit: 'm', evidence: 'derived', derivation: '4 × 3 m' }], configurations: [{ id: 'family', metrics: { heightM: 12, footprintM2: 40 } }],
             source: { label: 'Fixture source', computedAt: null, fetchedAt: null, solverVersion: null, parcel: null, url: null }, sourceEvidence: null
         };
         const element = (tag, className, text) => {
@@ -171,7 +171,7 @@ describe('shared building and proposal representations', () => {
         };
         const t = key => ({ sourceProposal: 'Permitted massing', sourceEvidenceBadge: 'Source evidence', approximate: 'Approximate',
             conditionsTitle: 'Conditions', conditionsNote: 'Rules need checking', sourceDetails: 'Source and evidence',
-            floorArea: 'Floor area', height: 'Height', footprintArea: 'Footprint', close: 'Close', info: 'Info' }[key] || key);
+            'evidence.derived': 'Calculated by UGT', floorArea: 'Floor area', height: 'Height', footprintArea: 'Footprint', close: 'Close', info: 'Info' }[key] || key);
         const root = { i18n: { t: key => ({ 'clickStackNavigation.info': 'Info', 'planningViews.tabs.options': 'Options', 'proposalDrafts.approval.policyType': 'Rules' }[key] || key) },
             CbFormat: { formatLength: value => `${value} m`, formatNumber: value => String(value), formatArea: value => `${value} m²`, formatDate: value => String(value) } };
         const context = vm.createContext({ selected: () => item, inspector, root, element, t, parcelOf: () => null,
@@ -179,11 +179,11 @@ describe('shared building and proposal representations', () => {
             permittedFeatures: () => ({ configuration: null }), renderConfigurations: () => element('section', 'planning-configurations'), scenarioLabel: value => value,
             sourceRecord: async () => [], selectRecord() {}, select() {}, referenceStatus: null, document, itemTitle: value => value.title,
             labels, fullT: key => key, sourceText: text => element('q', 'planning-source-text', text), legendRows: () => [], sceneItems: () => [item], appearance: () => 'ghost' });
-        vm.runInContext(source.slice(declaration.start, declaration.end), context);
+        for (const name of ['sourcePlanUrl', 'renderInspector']) vm.runInContext(source.slice(declaration(name).start, declaration(name).end), context);
         context.renderInspector();
         expect(inspector.querySelector('[data-stack-page-key="info"] .planning-evidence')).not.toBeNull();
         expect(inspector.querySelector('[data-stack-page-key="options"] .planning-configurations')).not.toBeNull();
-        expect(inspector.querySelector('[data-stack-page-key="rules"] .planning-limits')).not.toBeNull();
+        expect(inspector.querySelector('[data-stack-page-key="rules"] .planning-limits').textContent).toContain('12 m · Calculated by UGT · 4 × 3 m');
         expect(inspector.querySelector('[data-stack-page-key="info"] .planning-limits')).toBeNull();
     });
     it('names an Alatau envelope in the reader\'s language, quotes the plan\'s words in its language and keys its colours', () => {
@@ -214,7 +214,7 @@ describe('shared building and proposal representations', () => {
             inspectorBadgeKey: () => 'bound', area: value => `${value} m²`, number: value => String(value), resultLabel: value => String(value),
             permittedFeatures: () => ({ configuration: null }), renderConfigurations: () => element('section'), scenarioLabel: value => value,
             sourceRecord: async () => [], selectRecord() {}, select() {}, referenceStatus: null, document, sceneItems: () => [item, zone], appearance: () => 'ghost' });
-        for (const name of ['renderInspector', 'sourceText', 'legendRows']) vm.runInContext(source.slice(declaration(name).start, declaration(name).end), context);
+        for (const name of ['renderInspector', 'sourceText', 'sourcePlanUrl', 'legendRows']) vm.runInContext(source.slice(declaration(name).start, declaration(name).end), context);
         vm.runInContext(source.match(/const itemTitle = .*;/)[0], context);
         context.renderInspector();
         expect(inspector.querySelector('h2').textContent).toBe('Mid-rise housing (4–6 floors) · planned');

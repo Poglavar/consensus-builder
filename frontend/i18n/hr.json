@@ -8749,6 +8749,8 @@
         "sourceDetails": "Izvor i dokazi",
         "computed": "Izračunato {{date}}",
         "sourceTerms": "Spremljeni izvorni izračun i ocjena",
+        "calculationSource": "UGT-ova konfiguracija izvora",
+        "publishedReference": "Objavljena referenca",
         "readSource": "Pročitaj izvorni plan",
         "constraint": {
             "coverage": "Koeficijent izgrađenosti",
@@ -8822,7 +8824,7 @@
         "roleSource": {
             "built": "Obrisi i visine zgrada dolaze iz gradskih izvora podataka o zgradama.",
             "proposed": "Primijenjeni projekti daju predložene zgrade i pravila gradnje.",
-            "envelopes": "Pravila plana određuju najveći oblik zgrade. Odaberi tip stanovanja za primjer unutar tih granica.",
+            "envelopes": "UGT procjenjuje visinu i tlocrt zgrade prema pravilima ovog plana.",
             "saved": "Oblici zgrada dolaze iz spremljenih izračuna za pojedinačne čestice.",
             "zoningOnly": "Plan prikazuje namjene zemljišta i njihova pravila.",
             "evidence": "Izvor daje planske zapise za pojedinačne čestice."
@@ -8848,7 +8850,9 @@
         "evidence": {
             "direct": "Izravna izvorna vrijednost",
             "literal": "Zabilježeni broj",
-            "estimated": "Procjena izvora"
+            "estimated": "Procjena izvora",
+            "derived": "Izračunao UGT",
+            "assumed": "Pretpostavio UGT"
         },
         "zoningArea": "Izvorno područje zoniranja",
         "inspectArea": "Pregledaj izvorno područje zoniranja {{parcel}}",

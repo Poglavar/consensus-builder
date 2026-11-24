@@ -8876,6 +8876,8 @@
         "sourceDetails": "Source et éléments probants",
         "computed": "Calculé le {{date}}",
         "sourceTerms": "Calcul et évaluation enregistrés de la source",
+        "calculationSource": "Configuration de source UGT",
+        "publishedReference": "Référence publiée",
         "readSource": "Lire le plan source",
         "constraint": {
             "coverage": "Emprise au sol",
@@ -8948,7 +8950,7 @@
         "roleSource": {
             "built": "Les contours et hauteurs des bâtiments proviennent des sources de bâtiments de la ville.",
             "proposed": "Les projets appliqués fournissent les bâtiments proposés et les règles de construction.",
-            "envelopes": "Les règles du plan fixent la forme maximale du bâtiment. Choisissez un type de logement pour voir un exemple dans ces limites.",
+            "envelopes": "UGT estime la hauteur et l’emprise du bâtiment à partir des règles de ce plan.",
             "saved": "Les formes des bâtiments proviennent de calculs enregistrés pour chaque parcelle.",
             "zoningOnly": "Le plan montre les usages des sols et leurs règles.",
             "evidence": "La source fournit des dossiers d’urbanisme pour chaque parcelle."
@@ -8973,7 +8975,9 @@
         "evidence": {
             "direct": "Valeur directe de la source",
             "literal": "Valeur numérique consignée",
-            "estimated": "Estimation de la source"
+            "estimated": "Estimation de la source",
+            "derived": "Calculé par UGT",
+            "assumed": "Supposé par UGT"
         },
         "zoningArea": "Zone du zonage source",
         "inspectArea": "Examiner la zone du zonage source {{parcel}}",

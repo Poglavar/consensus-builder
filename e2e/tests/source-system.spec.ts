@@ -108,8 +108,10 @@ test.describe('Sources and adapters explorer @features', () => {
 
     await selectNativeOption(page.locator('#source-config'), 'fixture-arcgis-other');
     await expect(page.locator('#source-config-json')).toContainText('Alternate polygon parcels');
+    expect(new URL(page.url()).searchParams.get('source')).toBe('fixture-arcgis-other');
     await selectNativeOption(page.locator('#source-family'), 'buildings');
     await expect(page.locator('#source-adapter')).toBeDisabled();
+    expect(new URL(page.url()).searchParams.has('source')).toBe(false);
     await selectNativeOption(page.locator('#source-family'), 'parcels');
     await expect(page.locator('#source-adapter')).toBeEnabled();
     await selectNativeOption(page.locator('#source-adapter'), 'msda-point');
@@ -117,6 +119,18 @@ test.describe('Sources and adapters explorer @features', () => {
     await expect(page.locator('#source-config-json')).toContainText('"id": "fixture-point"');
     await expect(page.locator('#source-example-json')).toContainText('"queryMode": "point"');
     await expect(page.locator('#source-operations article h3')).toHaveText(['queryPoint']);
+
+    const switchedUrl = new URL(page.url());
+    expect(switchedUrl.searchParams.get('abstraction')).toBe('parcels');
+    expect(switchedUrl.searchParams.get('adapter')).toBe('msda-point');
+    expect(switchedUrl.searchParams.get('source')).toBe('fixture-point');
+
+    await page.goto(`/sources.html?backend=${encodeURIComponent(backend)}&city=alatau&at=43.61%2C77.02%2C14&lang=kk&abstraction=parcels&source=fixture-point#source-config-title`, {
+      waitUntil: 'domcontentloaded',
+    });
+    await expect(page.locator('#source-adapter')).toHaveValue('msda-point');
+    await expect(page.locator('#source-config')).toHaveValue('fixture-point');
+    expect(new URL(page.url()).hash).toBe('#source-config-title');
 
     await selectNativeOption(page.locator('#source-language'), 'hr');
     await expect(page.locator('h1[data-i18n-key="sourceSystem.title"]')).toHaveText('Izvori i adapteri');

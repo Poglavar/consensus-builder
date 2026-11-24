@@ -65,6 +65,21 @@ describe('click stack relationship rendering', () => {
         expect(open.textContent).toBe('');
     });
 
+    it('distinguishes overlapping zoning areas and permitted massing in the picker', () => {
+        const doc = makeDocument();
+        const win = { i18n: testI18n('en') };
+        const instances = [
+            { id: 'area', label: 'Housing', item: { areas: [{}], assessment: { meaning: 'zoning-area' } } },
+            { id: 'massing', label: 'Housing', item: { role: 'permitted', volumes: [{}] } }
+        ];
+        const wrapper = relations.renderSelector({ kind: 'permitted', multi: true, selectedIndex: 0, instances }, doc, win);
+        expect(wrapper.querySelector('.click-stack__selector-label').textContent).toBe(dictionary('en').clickStackRelations.chooseInstance);
+        expect(wrapper.querySelector('select').children.map(option => option.textContent)).toEqual([
+            `${dictionary('en').planningViews.zoningArea} · Housing`,
+            `${dictionary('en').planningViews.sourceProposal} · Housing`
+        ]);
+    });
+
     it('outlines an item on hover and focus, keeps a clicked one until clicked again, and never navigates', () => {
         const doc = makeDocument();
         const panel = doc.createElement('div');

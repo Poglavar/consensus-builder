@@ -26,7 +26,7 @@
     function permittedRepresentationControl(source, preferred = defaults.permittedForm) {
         const values = source?.parcelStudy ? [...choices.permittedForm] : ['configuration'];
         return { values, value: values.includes(preferred) ? preferred : values[values.length - 1],
-            disabled: values.length === 1 || !source };
+            disabled: !source?.parcelStudy && !source?.capabilities?.volumes };
     }
     // Source IDs do not fully describe a planning catalog: representation policy follows source
     // metadata such as parcelStudy. Sort object keys so equivalent descriptors never cause a rerender.

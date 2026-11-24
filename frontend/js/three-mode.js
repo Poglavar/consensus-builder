@@ -2117,7 +2117,10 @@
                 preserveView: plan.preserveView === true,
                 // A design that only authors ground sorts after the drawn ones (three-click-stack.js).
                 ...(window.__drillStack?.isGroundAuthoring?.(p) ? { ground: true } : {}) })),
-            permitted: massingIds.map(id => ({ id, label: items.find(item => item.id === id)?.title || '' })),
+            permitted: massingIds.map(id => {
+                const item = items.find(entry => entry.id === id);
+                return { id, item, label: item?.source?.parcel || (item && window.PlanningViews?.itemTitle?.(item)) || item?.title || id };
+            }),
             formed: [...(ground?.kind === 'formed' ? [ground.instance] : []), ...(hits?.formed || [])],
             parcels: [...(ground?.kind === 'parcels' ? [ground.instance] : []), ...(hits?.parcels || [])]
         };

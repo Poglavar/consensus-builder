@@ -19,7 +19,8 @@ export const alatauGenplanSource = Object.freeze({
     language: 'ru',
     kind: 'regulation', coverage: 'zoning-areas', scope: 'city',
     url: 'https://primeminister.kz/assets/media/prilozenie-1-rus-727.pdf',
-    storage: 'ogc-wfs', service: ALATAU_GENPLAN_SERVICE, layer: ALATAU_GENPLAN_LAYER, admterrId: ALATAU_ADMTERR_ID,
+    storage: 'bundled-snapshot', snapshotFilename: 'alatau-genplan-727.geojson.gz',
+    service: ALATAU_GENPLAN_SERVICE, layer: ALATAU_GENPLAN_LAYER, admterrId: ALATAU_ADMTERR_ID,
     issuer: 'Правительство Республики Казахстан',
     attribution: 'Генеральный план города Алатау, Постановление Правительства РК № 727 от 9 сентября 2025 г. · зоны из государственного градостроительного кадастра (map.gov4c.kz)',
     capabilities: { volumes: false, areas: true, parcelEvidence: false, constraintEvaluation: false },
@@ -44,7 +45,7 @@ const NOT_FOR_BUILDING = 'Зона не предназначена для зас
 // upper limit as the legend writes it; `uplift` keeps a legend value marked with an asterisk.
 const ZONES = new Map(Object.entries({
     'Территория усадебной застройки с земельным участком при доме (квартире)': { key: 'residential-estate', group: 'housing-low', use: 'Усадебная застройка', status: 'allowed', storeys: 3,
-        storeysBasis: 'assumed: detached houses with plots; the legend gives no storey count' },
+        storeysEvidence: 'assumed', storeysBasis: 'assumed: detached houses with plots; the legend gives no storey count' },
     'Территория малоэтажной застройки (2-3 этажа) без участка': { key: 'residential-low', group: 'housing-low', use: 'Малоэтажная застройка', status: 'allowed', storeys: 3, storeysBasis: 'legend: 2–3 этажа' },
     'Территория среднеэтажной застройки (4-5 и 6* этажей)': { key: 'residential-mid', group: 'housing-mid', use: 'Среднеэтажная застройка', status: 'allowed', storeys: 5,
         uplift: { storeys: 6, condition: '6* этажей по легенде генплана; условие примечания не прочитано', conditionCode: 'legend-asterisk' }, storeysBasis: 'legend: 4–5 и 6* этажей' },
@@ -105,24 +106,22 @@ export function interpretZone(properties, rules = ALATAU_RULES) {
     return { ...base, useKey: zone.key, useGroup: zone.group, use: zone.use, status: 'allowed', reason: null, storeys: zone.storeys, heightM, uplift: zone.uplift || null,
         heightLabel: zone.uplift ? `до ${zone.storeys} эт. (${zone.uplift.storeys}*)` : `до ${zone.storeys} эт.`,
         constraints: [
-            constraint('storeys', zone.storeys, 'count', 'maximum', 'direct', 'functional', { basis: zone.storeysBasis }),
-            // As in Bogotá's provider: a storey count times the recorded storey height, its derivation attached.
-            constraint('height', heightM, 'm', 'maximum', 'direct', 'functional',
+            constraint('storeys', zone.storeys, 'count', 'maximum', zone.storeysEvidence || 'direct', 'functional', { basis: zone.storeysBasis }),
+            constraint('height', heightM, 'm', 'maximum', 'derived', 'functional',
                 { derivation: `${zone.storeys} × ${rules.storeyHeightM} m`, rule: rules.storeyHeightNote })
         ] };
 }
 
 const upstream = message => Object.assign(new Error(message), { status: 503, code: 'planning-source-unavailable' });
 const spatialReference = Object.freeze({ horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' });
-const SNAPSHOT_URL = new URL('../data/alatau-genplan-727.geojson.gz', import.meta.url);
 const unzip = promisify(gunzip);
-const readSnapshot = async () => JSON.parse((await unzip(await readFile(SNAPSHOT_URL))).toString('utf8'));
+const readSnapshot = async filename => JSON.parse((await unzip(await readFile(new URL(`../data/${filename}`, import.meta.url)))).toString('utf8'));
 
 export function createAlatauGenplanProvider(descriptor = alatauGenplanSource, { snapshot = readSnapshot } = {}) {
     const { layer = ALATAU_GENPLAN_LAYER, service = ALATAU_GENPLAN_SERVICE, admterrId = ALATAU_ADMTERR_ID } = descriptor;
     let index;
     function load() {
-        return index ??= Promise.resolve().then(snapshot).then(data => {
+        return index ??= Promise.resolve().then(() => snapshot(descriptor.snapshotFilename)).then(data => {
             if (data?.type !== 'FeatureCollection' || !Array.isArray(data.features)) throw new Error('Invalid feature collection');
             const byId = new Map();
             for (const feature of data.features) {

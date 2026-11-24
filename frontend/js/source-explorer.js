@@ -32,7 +32,19 @@
         return Object.entries({ ...contract?.operations, ...adapter.contract?.operations })
             .filter(([name]) => supported.has(name));
     }
-    const api = Object.freeze({ backendBase, loadMetadata, operationNames, operationEntries });
+    function adapterForSource(family, sourceId) {
+        const source = family?.sources?.find(item => item.id === sourceId);
+        return source ? family.adapters?.find(adapter => adapter.id === source.adapter) || null : null;
+    }
+    function explorerUrl(location, values) {
+        const url = new URL(location.href);
+        for (const [key, value] of Object.entries(values)) {
+            if (value) url.searchParams.set(key, value);
+            else url.searchParams.delete(key);
+        }
+        return url.href;
+    }
+    const api = Object.freeze({ backendBase, loadMetadata, operationNames, operationEntries, adapterForSource, explorerUrl });
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (!root?.document) return;
     root.SourceExplorer = api;
@@ -80,15 +92,18 @@
         example.hidden = !source;
         example.textContent = source ? json(source) : '';
         byId('source-config-note').textContent = text(source ? 'configNote' : family?.registered === false ? 'browserSources' : 'noSources');
+        const url = explorerUrl(root.location, { abstraction: family?.id, adapter: adapterSelect.value, source: source?.id });
+        if (url !== root.location.href) root.history.replaceState(root.history.state, '', url);
     }
     function renderAdapter(preferredSource) {
         const family = currentFamily();
         if (!family) return;
         const adapter = family.adapters.find(adapter => adapter.id === adapterSelect.value);
-        if (!adapter) return;
-        const sources = family.sources.filter(source => source.adapter === adapter.id);
+        const sources = family.sources.filter(source => source.adapter === adapter?.id);
         options(sourceSelect, sources, preferredSource);
         sourceSelect.hidden = !sources.length;
+        renderSource();
+        if (!adapter) return;
         const configSchema = adapter.configSchema || adapter.contract?.configSchema;
         const example = adapter.example || adapter.contract?.example;
         const preparation = adapter.preparation || adapter.contract?.preparation;
@@ -133,11 +148,6 @@
             section.append(details);
             operationArea.append(section);
         }
-        const params = new URLSearchParams(root.location.search);
-        params.set('abstraction', family.id);
-        params.set('adapter', adapter.id);
-        root.history.replaceState(null, '', '?' + params.toString());
-        renderSource();
     }
     function renderFamily(preferredAdapter, preferredSource) {
         const family = currentFamily();
@@ -159,17 +169,17 @@
             try { saved = root.localStorage.getItem('cb_dev_backend_base'); } catch (_) { }
             base = backendBase(root.location, saved);
             byId('source-api-base').textContent = base;
-            const mapUrl = new URL('/', root.location.href);
-            if (new URLSearchParams(root.location.search).has('backend')) mapUrl.searchParams.set('backend', base);
-            byId('source-back-link').href = mapUrl.href;
             data = await loadMetadata(base, (...args) => root.fetch(...args));
             const params = new URLSearchParams(root.location.search);
             options(familySelect, data.catalogue.abstractions, params.get('abstraction'));
-            renderFamily(params.get('adapter'), params.get('source'));
+            const family = currentFamily();
+            const sourceAdapter = adapterForSource(family, params.get('source'));
+            renderFamily(sourceAdapter?.id || params.get('adapter'), params.get('source'));
             byId('source-wrapper-schema').href = base + '/source-system/schemas/source';
             byId('source-operations-schema').href = base + '/source-system/schemas/operations';
             byId('source-content').hidden = false;
             byId('source-download').disabled = false;
+            if (root.location.hash === '#source-config-title') byId('source-config-title').scrollIntoView({ block: 'start' });
         } catch (error) {
             data = null;
             lastFailure = error.message;
@@ -197,7 +207,9 @@
     });
     root.addEventListener('i18n:translationsLoaded', translate);
     const backParams = new URLSearchParams(root.location.search);
-    for (const key of [...backParams.keys()]) if (!['backend', 'lang'].includes(key)) backParams.delete(key);
+    const plan = backParams.get('abstraction') === 'planning' && backParams.get('source');
+    for (const key of [...backParams.keys()]) if (!['backend', 'city', 'at', 'lang'].includes(key)) backParams.delete(key);
+    if (plan) backParams.set('planningSource', plan);
     byId('source-back-link').href = '/' + (backParams.size ? '?' + backParams.toString() : '');
     Promise.resolve(root.i18n?.translationsReady || root.i18n?.ready).then(() => { translate(); return load(); });
 })(typeof window !== 'undefined' ? window : null);

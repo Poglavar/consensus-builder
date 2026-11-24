@@ -45,7 +45,7 @@ export function lotAreaTest(parcelM2, constraints = []) {
 }
 
 const LENGTH_M = { m: 1, ft: 0.3048 }, SETBACKS = ['frontSetback', 'sideSetback', 'rearSetback'];
-const metres = c => ['direct', 'literal'].includes(c.evidence) && Number.isFinite(c.value) && c.value >= 0 && LENGTH_M[c.unit] ? c.value * LENGTH_M[c.unit] : null;
+const metres = constraint => core.constraintValue(constraint, LENGTH_M);
 const trimmed = bound => ({ geometry: bound.geometry, areaM2: bound.areaM2, heightM: bound.heightM, interpretations: bound.interpretations, edges: bound.edges });
 // A yard that starts above the ground (`fromHeightM` on a setback constraint: a side yard from
 // the second floor, a street-wall setback above the facade height) makes the bound a stack of
@@ -82,7 +82,7 @@ export function floorAreaM2(tiers, storeys, heightM) {
     return total;
 }
 
-// One configuration per usable housing type. A configuration without a direct height or
+// One configuration per usable housing type. A configuration without a supported height or
 // without space inside its supported setbacks is listed with its reason, never drawn.
 export function parcelConfigurations(baseContext, scenarios, zonesByScenario, geometryOps = turf, frontEdge = null) {
     const configurations = [], excluded = {};

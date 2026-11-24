@@ -88,6 +88,24 @@
         if (item?.source?.language) quote.lang = item.source.language;
         return quote;
     }
+    function sourcePlanUrl(source) {
+        if (!source?.url) return null;
+        try {
+            const url = new URL(source.url);
+            return ['https:', 'http:'].includes(url.protocol) && !url.username && !url.password ? url.href : null;
+        } catch { return null; }
+    }
+    function sourceConfigurationUrl(source) {
+        const url = new URL('/sources.html', location.href);
+        url.searchParams.set('abstraction', 'planning');
+        url.searchParams.set('source', source.id);
+        url.searchParams.set('backend', root.getBackendBase());
+        url.searchParams.set('city', root.CityConfigManager.getCurrentCityId());
+        const context = new URLSearchParams(location.search);
+        for (const key of ['at', 'lang']) if (context.has(key)) url.searchParams.set(key, context.get(key));
+        url.hash = 'source-config-title';
+        return url.href;
+    }
     // Swatch rows (planning/item-labels.js legend/colourKey) as list items.
     function legendRows(rows) {
         return rows.map(row => {
@@ -529,7 +547,8 @@
                     : constraint.unit === 'percent' ? `${measured}%`
                         : constraint.unit === 'count' ? number(constraint.value) : `${measured} ${constraint.unit}`;
                 const evidence = constraint.evidence ? ` · ${t(`evidence.${constraint.evidence}`)}` : '';
-                limits.append(element('dt', '', t(`constraint.${constraint.quantity}`)), element('dd', '', value + evidence));
+                const formula = constraint.evidence === 'derived' && constraint.derivation ? ` · ${constraint.derivation}` : '';
+                limits.append(element('dt', '', t(`constraint.${constraint.quantity}`)), element('dd', '', value + evidence + formula));
             }
             (rules || info).append(limits);
         }
@@ -564,9 +583,10 @@
             evidence.append(button);
         }
         const footer = element('footer', 'planning-inspector__footer');
-        if (item.source.url) {
-            const link = element('a', 'cb-link cb-link--external', t('readSource'));
-            link.href = item.source.url; link.target = '_blank'; link.rel = 'noopener noreferrer';
+        const sourceUrl = sourcePlanUrl(item.source);
+        if (sourceUrl) {
+            const link = element('a', 'cb-link cb-link--external', t('publishedReference'));
+            link.href = sourceUrl; link.target = '_blank'; link.rel = 'noopener noreferrer';
             footer.append(link);
         }
         evidence.append(footer);
@@ -657,7 +677,28 @@
         permittedRow.setAttribute('aria-disabled', String(!descriptor));
         permittedRow.title = noPermittedSource ? t('noPermittedSource') : '';
         permittedRow.querySelectorAll('select').forEach(input => { input.disabled = !descriptor; });
-        sourceSelect.disabled = sourceOptions.length < 2;
+        const configurationLink = permittedRow.querySelector('.planning-source-configuration');
+        configurationLink.textContent = t('calculationSource');
+        configurationLink.hidden = !descriptor;
+        if (descriptor) configurationLink.href = sourceConfigurationUrl(descriptor);
+        else configurationLink.removeAttribute('href');
+        const reference = permittedRow.querySelector('.planning-published-reference');
+        const referenceLabel = t('publishedReference');
+        reference.querySelector('span').textContent = referenceLabel;
+        const sourceLink = reference.querySelector('a');
+        const sourceUrl = sourcePlanUrl(descriptor);
+        reference.hidden = !sourceUrl;
+        if (sourceUrl) {
+            if (sourceLink.getAttribute('href') !== sourceUrl) {
+                sourceLink.href = sourceUrl;
+                sourceLink.textContent = sourceUrl;
+            }
+            sourceLink.setAttribute('aria-label', `${referenceLabel} (${sourceUrl})`);
+        } else {
+            sourceLink.removeAttribute('href');
+            sourceLink.removeAttribute('aria-label');
+            sourceLink.textContent = '';
+        }
         const hasZoning = !!descriptor?.capabilities.areas || overviewSource(descriptor);
         zoning.closest('details').hidden = catalogReady && !hasZoning && status !== 'error';
         const mapContext = panel.querySelector('.planning-map-context');
@@ -1167,6 +1208,13 @@
         sourceField.append(element('span', 'planning-source-label'));
         const sourceInput = element('select', 'planning-layer-select planning-source-select');
         sourceField.append(sourceInput); zoningPanel.prepend(element('p', 'planning-source-note'));
+        const configurationLink = element('a', 'cb-link cb-link--external planning-source-configuration');
+        configurationLink.hidden = true; configurationLink.target = '_blank'; configurationLink.rel = 'noopener noreferrer';
+        const reference = element('div', 'planning-published-reference');
+        reference.hidden = true;
+        const sourceLink = element('a', 'cb-link cb-link--external planning-source-url');
+        sourceLink.target = '_blank'; sourceLink.rel = 'noopener noreferrer'; sourceLink.dir = 'ltr';
+        reference.append(element('span'), ' ', sourceLink);
         const scenarioField = element('label', 'planning-source-field');
         scenarioField.append(element('span', 'planning-scenario-label'));
         const scenarioInput = element('select', 'planning-layer-select planning-scenario-select');
@@ -1182,6 +1230,7 @@
             drawMap(); render(); notifyGeometry(); refresh();
         });
         sourceInput.addEventListener('change', () => {
+            if (sourceInput.value === sourceId) return;
             const clearSourceSelection = selected()?.role === 'permitted';
             const previousSource = sourceId;
             sourceId = sourceInput.value; pins = {}; scenarioId = ''; viewCache.abortExcept([]); request++; invalidate(); items = []; payload = null;
@@ -1197,7 +1246,10 @@
         function control(key) {
             const input = element('select', 'planning-layer-select'); input.dataset.planningSetting = key;
             for (const value of core.choices[key]) input.add(new Option(t(value), value));
-            input.addEventListener('change', () => store.configure(key, input.value));
+            input.addEventListener('change', () => {
+                // A source with just Illustration keeps the saved preference for other editions.
+                if (input.options.length > 1) store.configure(key, input.value);
+            });
             return input;
         }
         for (const role of ['permitted', 'existing', 'proposed']) {
@@ -1217,7 +1269,7 @@
                 formRow.append(control(`${role}Form`), panel.querySelector(`[data-planning-reroll="${role}"]`));
                 content.append(formRow);
             }
-            if (role === 'permitted') content.append(sourceField, scenarioField, control('permittedMap'));
+            if (role === 'permitted') content.append(sourceField, configurationLink, reference, scenarioField, control('permittedMap'));
             const sourceNote = element('p', 'planning-layer-source-note'); sourceNote.dataset.roleSource = role; content.append(sourceNote);
             disclosure.append(summary, content); row.append(disclosure, roleControl); controls.append(row);
         }

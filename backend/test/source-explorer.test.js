@@ -1,9 +1,23 @@
 import { createRequire } from 'node:module';
 import { describe, expect, it, vi } from 'vitest';
 const require = createRequire(import.meta.url);
-const { backendBase, loadMetadata, operationNames, operationEntries } = require('../../frontend/js/source-explorer.js');
+const { backendBase, loadMetadata, operationNames, operationEntries, adapterForSource, explorerUrl } = require('../../frontend/js/source-explorer.js');
 
 describe('source explorer backend metadata reads', () => {
+    it('resolves a deep-linked source to its registered catalogue adapter', () => {
+        const family = { adapters: [{ id: 'gup' }, { id: 'alatau-genplan' }], sources: [{ id: 'alatau-genplan-727', adapter: 'alatau-genplan' }] };
+        expect(adapterForSource(family, 'alatau-genplan-727')).toEqual({ id: 'alatau-genplan' });
+        expect(adapterForSource(family, 'missing')).toBeNull();
+    });
+    it('updates explorer state without dropping unrelated parameters or the hash', () => {
+        const location = { href: 'https://example.test/sources.html?backend=http%3A%2F%2Flocalhost%3A3000&city=alatau&at=43.61%2C77.02%2C14&lang=kk#source-config-title' };
+        const url = new URL(explorerUrl(location, { abstraction: 'planning', adapter: 'alatau-genplan', source: 'alatau-genplan-727' }));
+        expect(url.searchParams.get('backend')).toBe('http://localhost:3000');
+        expect(url.searchParams.get('city')).toBe('alatau');
+        expect(url.searchParams.get('source')).toBe('alatau-genplan-727');
+        expect(url.searchParams.get('at')).toBe('43.61,77.02,14');
+        expect(url.hash).toBe('#source-config-title');
+    });
     it('uses native adapter method shapes while retaining methods from both runtime implementations', () => {
         const generic = { semantics: 'generic lookup' };
         const native = { semantics: 'native projected lookup' };

@@ -6,7 +6,7 @@ import { openLayerSection } from '../helpers/layers';
 
 const sources = ['a', 'b'].map((suffix, index) => ({
   id: suffix === 'a' ? 'zagreb-gup-2025' : 'zagreb-gup-2016', city: 'zagreb', label: `Planning edition ${suffix.toUpperCase()}`,
-  edition: 'test', recordId: 'record-1', version: 'revision-1', url: 'https://example.test/planning',
+  edition: 'test', recordId: 'record-1', version: 'revision-1', url: `https://example.test/planning-${suffix}`,
   scenario: 'family1', scenarios: ['family1', 'family2'], default: index === 0,
   capabilities: { areas: true, volumes: true },
 }));
@@ -141,7 +141,7 @@ test('the Buildings and massing button rims a third of its circle in green while
   await expect(button).toHaveAttribute('aria-busy', 'false');
 });
 
-test('Permitted keeps its Illustration dropdown visible for a single-option source', async ({ mockApi: page }) => {
+test('Permitted keeps its Illustration dropdown enabled for a single-option source', async ({ mockApi: page }) => {
   const available = [sources[0], { ...sources[1], parcelStudy: 'direct-dimensions.v1' }];
   const broadFirst = [{ ...available[0], parcelStudy: 'direct-dimensions.v1' }, available[1]];
   let sourceRequests = 0;
@@ -167,10 +167,10 @@ test('Permitted keeps its Illustration dropdown visible for a single-option sour
   const panel = page.locator('#planning-views');
   const permitted = panel.locator('.planning-layer-row[data-role="permitted"]');
   await permitted.locator('summary').press('Enter');
-  const sourceSelect = permitted.locator('.planning-source-select');
+  const sourceSelect = panel.locator('.planning-source-select');
   const form = panel.locator('[data-planning-setting="permittedForm"]');
   await expect(form).toBeVisible();
-  await expect(form).toBeDisabled();
+  await expect(form).toBeEnabled();
   await expect(form).toHaveValue('configuration');
   expect(await form.locator('option').allTextContents()).toEqual(['Illustration']);
   expect(await panel.locator('[data-planning-setting="proposedForm"] option').allTextContents())
@@ -180,10 +180,56 @@ test('Permitted keeps its Illustration dropdown visible for a single-option sour
   expect(await form.locator('option').allTextContents()).toEqual(['Max envelope', 'Illustration', 'Both']);
   await selectNativeOption(form, 'bound');
   await selectNativeOption(sourceSelect, available[0].id);
-  await expect(form).toBeDisabled();
+  await expect(form).toBeEnabled();
   await expect(form).toHaveValue('configuration');
   await selectNativeOption(sourceSelect, available[1].id);
   await expect(form).toHaveValue('bound');
+});
+
+test('Permitted links to the registered source and distinguishes its published reference', async ({ mockApi: page }) => {
+  const general = { ...sources[0], label: 'General planning edition', scenarios: ['general'], scenario: 'general', url: 'https://example.test/general-plan' };
+  const unavailable = { ...sources[1], label: 'Non-HTTP edition', url: 'javascript:alert(1)' };
+  let available = [general];
+  await page.route('**/planning/**', async route => {
+    if (!['xhr', 'fetch'].includes(route.request().resourceType())) return route.fallback();
+    const url = new URL(route.request().url());
+    if (url.pathname.endsWith('/sources')) return route.fulfill({ json: { city: 'zagreb', sources: available } });
+    return route.fulfill({ json: payload([massing(general)], available) });
+  });
+  await openCity(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.locator('#planning-views-button').click();
+  const panel = page.locator('#planning-views');
+  const permitted = panel.locator('.planning-layer-row[data-role="permitted"]');
+  await permitted.locator('summary').press('Enter');
+  const sourceSelect = permitted.getByRole('combobox', { name: 'Source / edition', exact: true });
+  await expect(sourceSelect).toBeEnabled();
+  await expect(sourceSelect.locator('option')).toHaveCount(1);
+  await sourceSelect.focus();
+  await sourceSelect.press('ArrowDown');
+  await expect(sourceSelect).toHaveValue(general.id);
+  await sourceSelect.press('Tab');
+  const config = permitted.getByRole('link', { name: 'UGT source configuration' });
+  await expect(config).toBeFocused();
+  const configUrl = new URL((await config.getAttribute('href'))!);
+  expect(configUrl.pathname).toBe('/sources.html');
+  expect(configUrl.searchParams.get('abstraction')).toBe('planning');
+  expect(configUrl.searchParams.get('source')).toBe(general.id);
+  expect(configUrl.searchParams.get('backend')).toBe(await page.evaluate(() => (window as any).getBackendBase()));
+  expect(configUrl.hash).toBe('#source-config-title');
+  const sourceUrl = permitted.locator('.planning-source-url');
+  await expect(sourceUrl).toHaveAttribute('href', general.url);
+  await expect(sourceUrl).toHaveAttribute('target', '_blank');
+  await expect(sourceUrl).toHaveAccessibleName(`Published reference (${general.url})`);
+  await expect(panel.locator('.planning-scenario-select')).toBeHidden();
+  available = [general, unavailable];
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.locator('#planning-views-button').click();
+  await permitted.locator('summary').press('Enter');
+  await selectNativeOption(sourceSelect, unavailable.id);
+  await expect(config).toHaveAttribute('href', new RegExp(unavailable.id));
+  await expect(sourceUrl).toBeHidden();
+  await expect(sourceUrl).not.toHaveAttribute('href');
 });
 
 test('Permitted and Proposed keep Both and dice together on the first expanded row @features', async ({ mockApi: page }) => {

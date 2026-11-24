@@ -4,7 +4,8 @@ import { describe, it, expect, vi } from 'vitest';
 import * as turf from '@turf/turf';
 import { createAlatauGenplanProvider, alatauGenplanSource, interpretZone, ALATAU_ADMTERR_ID } from '../planning/providers/alatau-genplan.js';
 import { planningRepresentations, getPlanningSources } from '../planning/sources.js';
-import { assembleParcelStudy, parcelZones } from '../planning/parcel-study.js';
+import { assembleParcelStudy, parcelZones, zoneLots } from '../planning/parcel-study.js';
+import { tieredBound } from '../planning/parcel-envelopes.js';
 
 // A real zone in Yntymak (object 481223, existing detached housing), coordinates as served.
 const yntymakRing = [[76.97164927, 43.41549894], [76.97021284, 43.41102108], [76.9691655, 43.41136301], [76.97055485, 43.41571063], [76.97164927, 43.41549894]];
@@ -23,10 +24,19 @@ const bbox = [76.965, 43.405, 76.975, 43.42];
 describe('Alatau general plan zones', () => {
     it('reads residential storey classes as storey and height limits', () => {
         expect(interpretZone({ functional: HOUSES })).toMatchObject({ status: 'allowed', storeys: 3, heightM: 9, use: 'Усадебная застройка' });
+        expect(interpretZone({ functional: HOUSES }).constraints.map(item => [item.quantity, item.value, item.evidence]))
+            .toEqual([['storeys', 3, 'assumed'], ['height', 9, 'derived']]);
         expect(interpretZone({ functional: 'Территория многоэтажной застройки (6-12 этажей)' })).toMatchObject({ status: 'allowed', storeys: 12, heightM: 36 });
+        expect(interpretZone({ functional: 'Территория многоэтажной застройки (6-12 этажей)' }).constraints.map(item => [item.quantity, item.value, item.evidence]))
+            .toEqual([['storeys', 12, 'direct'], ['height', 36, 'derived']]);
         const mid = interpretZone({ functional: 'Территория среднеэтажной застройки (4-5 и 6* этажей)' });
         expect(mid).toMatchObject({ status: 'allowed', storeys: 5, uplift: { storeys: 6 } });
         expect(mid.constraints.map(item => [item.quantity, item.value, item.bound])).toEqual([['storeys', 5, 'maximum'], ['height', 15, 'maximum']]);
+    });
+
+    it('describes the bundled snapshot while retaining its WFS provenance', () => {
+        expect(alatauGenplanSource).toMatchObject({ storage: 'bundled-snapshot', snapshotFilename: 'alatau-genplan-727.geojson.gz',
+            service: 'https://map.gov4c.kz/ggkgs/ows', layer: 'kz:gpzone', city: 'alatau' });
     });
 
     it('hands taller and non-residential building zones to the detailed plan, and keeps open land unbuilt', () => {
@@ -116,6 +126,12 @@ describe('Alatau general plan provider', () => {
             const provider = createAlatauGenplanProvider();
             const [record] = await provider.record(null, { recordId: '481223' });
             expect(record).toMatchObject({ use: { key: 'residential-estate' }, metrics: { heightM: 9 } });
+            const [planned] = await provider.record(null, { recordId: '479341' });
+            expect(planned.sourceEvidence.properties.functional).toContain('6-12');
+            expect(planned.constraints).toMatchObject([{ quantity: 'storeys', value: 12, evidence: 'direct' },
+                { quantity: 'height', value: 36, evidence: 'derived', derivation: '12 × 3 m' }]);
+            const [{ parcel }] = zoneLots(planned);
+            expect(tieredBound({ parcel, source: planned }, null, turf)).toMatchObject([{ baseM: 0, topM: 36 }]);
             const page = await provider.query(null, { bbox, limit: 1000 });
             expect(page.items.find(item => item.id === record.id)?.source.version).toBe(record.source.version);
             expect(fetch).not.toHaveBeenCalled();
