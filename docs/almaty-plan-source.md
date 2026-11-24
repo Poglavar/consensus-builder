@@ -11,3 +11,11 @@ The detailed-plan overview and exact backend snapshot share the same source IDs.
 ```sh
 node backend/scripts/build-kz-genplan-snapshot.mjs almaty-pdp-cadastre-2026-11-24 /path/to/captured-zones.geojson
 ```
+
+## Digitizing the citywide drawing
+
+The [drawing and polygon comparison](research_notes/almaty-vectorization/almaty-comparison.png) and [geographic polygons](research_notes/almaty-vectorization/almaty-sample.geojson) cover a square about 890 m across, centred on [43.229566° N, 76.881101° E](https://map.almatygenplan.kz/#16.8/43.229566/76.881101). The sample covers four land uses from the [institute’s legend](https://map.almatygenplan.kz/layers.json): mid-rise housing (Ж-3), multi-storey housing (Ж-4), housing above 12 storeys (Ж-5) and education (О-1). The polygons represent connected classified fills. Adjacent areas of the same use can merge across plan phases. The GeoJSON flags shapes clipped by the sample edge.
+
+The sample uses a 512 × 512 pixel crop at zoom 16, about 1.74 m per pixel. Each pixel was compared with the dominant RGB colours of the official legend swatches. Nearby exposed colour helped classify dark building overprints. A nine-pixel closing operation bridged narrow gaps from lettering and hatching. Compact bright label holes surrounded by a single class were filled. Connected components below 100 pixels were dropped. The remaining pixel edges were traced and converted from the tile grid to longitude and latitude.
+
+The four classes occupy 53.6% of the crop across 26 polygons. Grey in the comparison includes other land uses and unresolved pixels. Three education sites traced by hand on the same drawing gave intersection-over-union values of 86% (upper right), 92% (lower centre) and 83% (upper left). That measures agreement with a reading of the drawing. Surveyed boundary accuracy is unknown. Four multi-storey housing labels landed in gaps in the extracted polygons. Roads and overprints can split a zone, and several recreational legend entries share the same green. A broader extraction would need the printed codes and hatch patterns to distinguish those uses and phases.
