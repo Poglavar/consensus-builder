@@ -6,6 +6,7 @@
 // actions its state allows, from AgreementBridge.chainActions), a vote gets one line instead; and the
 // rows of the Minted agreements dialog.
 import { describe, it, expect, vi } from 'vitest';
+import { load } from 'cheerio';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -31,16 +32,48 @@ describe('agreement panel tabs', () => {
     it('shows truthful crowdfunding verifier, payout and unrestricted contributor terms', () => {
         const verifier = '9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt';
         const payout = 'So11111111111111111111111111111111111111112';
+        const funding = {
+            targetUsdcAtomic: '1000000',
+            contract: { name: 'terms.txt', mediaType: 'text/plain', data: 'dGVybXM=' }
+        };
         const html = panel.fundingTermsHtml({
             rule: { electorate: 'investors', lens: [verifier] },
-            funding: { targetUsdcAtomic: '1000000', contract: { name: 'terms.txt', mediaType: 'text/plain', data: 'dGVybXM=' } },
+            funding,
             published: { sponsor: payout }, deadline: '2099-01-01T00:00:00.000Z'
         }, (_key, fallback) => fallback);
-        expect(html).toContain(verifier);
-        expect(html).toContain(payout);
+        const disclosureLink = (markup, label) => {
+            const $ = load(markup);
+            const row = $('[data-agreement-funding-disclosure] > div').filter((_, element) => $(element).find('dt').text() === label);
+            return { href: row.find('a').attr('href'), text: row.find('a').text() };
+        };
+        expect(disclosureLink(html, 'Funding verifier')).toEqual({
+            href: `https://explorer.solana.com/address/${verifier}?cluster=devnet`, text: verifier
+        });
+        expect(disclosureLink(html, 'Developer payout wallet')).toEqual({
+            href: `https://explorer.solana.com/address/${payout}?cluster=devnet`, text: payout
+        });
         expect(html).toContain('The program accepts the named lens’s funding decision.');
         expect(html).toContain('Any wallet can contribute');
         expect(html).toContain('The protocol does not perform a KYC check.');
+
+        // An unminted published agreement still discloses its configured wallets.
+        const unminted = panel.fundingTermsHtml({
+            rule: { electorate: 'investors', lens: [verifier] }, funding,
+            sponsor: payout, published: { sponsor: null }, deadline: '2099-01-01T00:00:00.000Z'
+        }, (_key, fallback) => fallback);
+        expect(disclosureLink(unminted, 'Funding verifier')).toEqual({
+            href: `https://explorer.solana.com/address/${verifier}?cluster=devnet`, text: verifier
+        });
+        expect(disclosureLink(unminted, 'Developer payout wallet')).toEqual({
+            href: `https://explorer.solana.com/address/${payout}?cluster=devnet`, text: payout
+        });
+
+        const missing = panel.fundingTermsHtml({
+            rule: { electorate: 'investors', lens: [] }, funding,
+            published: {}, deadline: '2099-01-01T00:00:00.000Z'
+        }, (_key, fallback) => fallback);
+        const $missing = load(missing);
+        expect($missing('[data-agreement-funding-disclosure] a')).toHaveLength(0);
     });
 });
 

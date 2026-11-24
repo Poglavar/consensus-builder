@@ -697,12 +697,16 @@
                 + `<progress data-agreement-funding-time-meter aria-label="${esc(remaining)} · ${esc(scale)}" max="${FINAL_TEN_DAYS}"></progress>`
                 + `<div class="agreement-funding-meter__detail"><span>${esc(scale)}</span><time datetime="${esc(agreement.deadline)}">${esc(tr('agreement.panel.deadline', 'Deadline: {{date}}', { date }))}</time></div></div>` : '')
             + '</div>';
-        const verifier = agreement.rule.lens?.[0];
-        const payout = agreement.published?.sponsor || agreement.sponsor;
+        function walletRow(role, label, address) {
+            if (!address) return '';
+            const url = bridgeApi().explorerUrl({ account: address, cluster: agreement.onchain?.cluster });
+            return `<div><dt>${esc(label)}</dt><dd><code dir="ltr"><a class="cb-link cb-link--external" data-agreement-funding-wallet="${role}"`
+                + ` href="${esc(url)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(label)} · ${esc(address)} · Solana Explorer">${esc(address)}</a></code></dd></div>`;
+        }
         const investorDisclosure = `<dl class="agreement-panel-facts agreement-funding-disclosure" data-agreement-funding-disclosure>`
-            + (verifier ? `<div><dt>${esc(tr('agreement.funding.verifierWallet', 'Funding verifier'))}</dt><dd><code dir="ltr">${esc(verifier)}</code></dd></div>` : '')
+            + walletRow('verifier', tr('agreement.funding.verifierWallet', 'Funding verifier'), agreement.rule.lens?.[0])
             + `<div><dt>${esc(tr('agreement.funding.verifierMethod', 'Decision method'))}</dt><dd>${esc(tr('agreement.funding.verifierMethodValue', 'The program accepts the named lens’s funding decision.'))}</dd></div>`
-            + (payout ? `<div><dt>${esc(tr('agreement.funding.payoutWallet', 'Developer payout wallet'))}</dt><dd><code dir="ltr">${esc(payout)}</code></dd></div>` : '')
+            + walletRow('payout', tr('agreement.funding.payoutWallet', 'Developer payout wallet'), agreement.published?.sponsor || agreement.sponsor)
             + `<div><dt>${esc(tr('agreement.funding.contributorEligibility', 'Contributor eligibility'))}</dt><dd>${esc(tr('agreement.funding.contributorEligibilityValue', 'Any wallet can contribute'))}. ${esc(tr('agreement.funding.noKyc', 'The protocol does not perform a KYC check.'))}</dd></div></dl>`;
         return sectionHtml(tr('agreement.funding.title', 'Developer crowdfunding'),
             meters
@@ -968,7 +972,7 @@
             const panel = ensurePanel();
             const active = doc.activeElement;
             const focusKey = state.agreement?.rule?.electorate === 'investors' && panel.contains(active)
-                && ['data-agreement-action', 'data-agreement-boost-action', 'data-agreement-properties-tab'].find(key => active.hasAttribute(key));
+                && ['data-agreement-action', 'data-agreement-boost-action', 'data-agreement-properties-tab', 'data-agreement-funding-wallet'].find(key => active.hasAttribute(key));
             const focusSelector = focusKey && `[${focusKey}="${CSS.escape(active.getAttribute(focusKey))}"]`;
             panel.querySelector('#agreement-panel-title').textContent = state.agreement ? titleOf(state.agreement) : t('agreement.panel.title', 'Agreement');
             panel.querySelector('.agreement-panel-kind').textContent = state.agreement?.rule?.electorate === 'investors'
