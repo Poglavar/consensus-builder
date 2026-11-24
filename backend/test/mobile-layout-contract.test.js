@@ -8,6 +8,7 @@ import { existsSync, readFileSync } from 'node:fs';
 
 const read = path => readFileSync(new URL(`../../frontend/${path}`, import.meta.url), 'utf8');
 const mapCss = read('css/map.css');
+const tokensCss = read('css/tokens.css');
 const utilitiesCss = read('css/utilities.css');
 const panelsCss = read('css/panels.css');
 const photorealCss = read('css/photoreal-mode.css');
@@ -268,6 +269,18 @@ describe('3D and photo view', () => {
         expect(ruleBody(panelsCss, '#parcel-info-panel')).toMatch(/bottom:\s*var\(--right-dock-bottom\)/);
         expect(ruleBody(panelsCss, '(?:^|\\n)#road-info-panel')).toMatch(/bottom:\s*var\(--right-dock-bottom\)/);
         expect(ruleBody(mapShellCss, '\\.map-shell-cluster--bottom-right \\.map-shell-button--labelled')).toMatch(/border-radius:\s*var\(--cb-radius-pill\)/);
+    });
+
+    it('keeps the scale ink and halo fixed across the dark theme', () => {
+        expect(tokensCss).toMatch(/--cb-map-scale-ink:\s*#000000;/);
+        expect(tokensCss).toMatch(/--cb-map-scale-halo:\s*#ffffff;/);
+        const darkTheme = tokensCss.slice(tokensCss.indexOf(':root[data-theme="dark"]'));
+        expect(darkTheme).not.toMatch(/--cb-map-scale-(?:ink|halo)\s*:/);
+        const scale = ruleBody(mapCss, '\\.leaflet-control-scale-line');
+        expect(scale).toMatch(/color:\s*var\(--cb-map-scale-ink\)/);
+        expect(scale).toMatch(/border-color:\s*currentColor/);
+        expect(scale).toMatch(/text-shadow:[\s\S]*var\(--cb-map-scale-halo\)/);
+        expect(scale).toMatch(/box-shadow:[\s\S]*var\(--cb-map-scale-halo\)/);
     });
 
     it('stacks persistent banners in one card under the top row and keeps notices below it', () => {

@@ -106,9 +106,11 @@ body {
 
 .leaflet-control-scale-line {
     background: transparent;
-    border-color: var(--cb-text);
-    color: var(--cb-text);
-    text-shadow: var(--cb-text-halo);
+    color: var(--cb-map-scale-ink);
+    border-color: currentColor;
+    text-shadow: -1px 0 var(--cb-map-scale-halo), 1px 0 var(--cb-map-scale-halo),
+        0 -1px var(--cb-map-scale-halo), 0 1px var(--cb-map-scale-halo);
+    box-shadow: -1px 1px var(--cb-map-scale-halo), 1px 1px var(--cb-map-scale-halo);
 }
 
 /* The scale bar measures the flat 2D map. Over the perspective model/photo views it is simply

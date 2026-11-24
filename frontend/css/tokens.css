@@ -55,6 +55,8 @@
     --cb-photo-parcel-boundary: #fff3a6;
     --cb-photo-parcel-halo: #282418;
     --cb-map-road-track-line: #000000; /* saved Road/track layer: thick black reference lines over light map tiles */
+    --cb-map-scale-ink: #000000;
+    --cb-map-scale-halo: #ffffff;
     /* Map-object interaction keeps the model view's yellow in both themes and renderers. */
     --cb-map-highlight: #ffdd00;
     --cb-map-highlight-halo: #292000;
@@ -227,7 +229,7 @@
     --cb-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
     --cb-shadow-md: 0 6px 20px rgba(0, 0, 0, 0.18);
     --cb-shadow-lg: 0 16px 50px rgba(15, 23, 42, 0.35);
-    /* Text set straight on the map with no box behind it (credits, scale bar): a surface-coloured halo. */
+    /* Map credits and other theme-coloured labels drawn directly over tiles. */
     --cb-text-halo: 0 0 2px var(--cb-surface), 0 0 3px var(--cb-surface), 0 0 6px var(--cb-surface);
 
     /* ---- Space (4px grid) ---- */

@@ -237,9 +237,10 @@ palette is the legend beside each tick.
 - The 2D bottom dock contains **Lists**, **Activity** and **Bets**. On a phone the buttons share a
   full-width translucent bar (`--cb-glass-veil`). On a wide map the three buttons sit together
   at the centre of the bottom edge. Its height is `--map-shell-bar-height` in both layouts, and
-  `--map-shell-bottom-clearance` keeps the tray and toast above it. The credits and
-  the scale bar are set straight on the map with a text halo (`--cb-text-halo`) and no boxes: on a
-  phone in the row right above the bar, on a wide map in the pills' own row, from the corners.
+  `--map-shell-bottom-clearance` keeps the tray and toast above it. The credits and scale sit
+  directly on the map in opposite corners, above the bar on a phone and in the pills' row on a
+  wide map. The credits use `--cb-text-halo`. The scale has black lettering and a black ruler
+  with thin white edges in both themes.
 - Mobile map panels, navigation sheets, lists and task forms use one top-handle interaction, as
   Material 3 and iOS sheets do: a 32 × 4 px grabber in a 44 px touch strip. The sheet follows the
   finger; released, it rests at half or full height, whichever is nearer, or the next one in a
