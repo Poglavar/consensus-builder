@@ -78,7 +78,9 @@ bands in place, without generating layouts or rebuilding exterior buildings.
 
 Native-model requests have two concurrent slots and at most 24 resident answers, with the existing
 200 m load / 300 m unload hysteresis. Hidden Built layers, Photo view and X-ray off stop these reads.
-Suggested existing interiors are generated for at most 24 nearby buildings in view. Their footprint
+With **Estimated layouts** on, **Existing buildings too** extends estimates to visible existing
+buildings. This option appears when the Built layer is visible. X-ray, estimates and their scope
+are saved in the view URL. Suggested existing interiors are generated for at most 24 nearby buildings in view. Their footprint
 request covers the camera's 200 m neighbourhood, independently of the wider exterior-building radius.
 
 Estimated layouts use the same pure planner in one worker, with one outstanding calculation and a
@@ -102,7 +104,10 @@ The blue overlay sits above the red warning patches even in a straight-down view
 north-only apartments show **North orientation only** beside the pointer. Warning patches are
 batched once per storey. Clicking an apartment region or choosing it from the dropdown selects its
 storey's unit, opens the cutaway at that level and highlights the unit until selection changes.
-Selecting a unit releases the whole-building outline. When detailed estimated storeys are visible,
+The building selection outlines the exterior shell. Selecting a unit releases that outline.
+Apartments in a local design can be inspected by clicking or using the same floor and apartment
+picker. Publishing the design gives its apartments addresses for sharing and offers.
+When detailed estimated storeys are visible,
 they replace that building's source shell for drawing and picking in both Solid and Transparent
 modes. Other buildings and distant shells keep their normal display. **Copy apartment link**
 opens the same building and unit in X-ray. Shared space retains the usual map selection.

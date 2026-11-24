@@ -5205,6 +5205,7 @@
             "chooseApartment": "اختر شقة",
             "apartmentCopy": "نسخ رابط الشقة",
             "apartmentCopyFailed": "تعذّر نسخ رابط الشقة.",
+            "apartmentPublishHint": "انشر هذا التصميم لمشاركة الشقة أو تقديم عرض.",
             "offerToBuyApartment": "تقديم عرض لشراء الشقة",
             "offerToSellApartment": "تقديم عرض لبيع الشقة",
             "apartmentFundingDeposit": "الحجز ضمن {{title}} · عربون بقيمة {{amount}} USDC",

@@ -34,6 +34,9 @@
         if (settings) for (const key of ['planningSource', 'planningScenario']) {
             if (source.has(key)) settings[key] = source.get(key);
         }
+        if (settings && mode === 'model') for (const key of ['xray', 'suggested', 'suggestedExisting', 'access']) {
+            if (source.has(key)) settings[key] = source.get(key);
+        }
         return { mode, at: [lat, lng, Math.round(zoom * 100) / 100].join(','),
             camera,
             rotate: mode !== '2d' && source.get('rotate') === '1',

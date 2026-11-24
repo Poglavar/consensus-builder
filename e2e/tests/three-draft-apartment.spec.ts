@@ -1,0 +1,120 @@
+import { Page } from '@playwright/test';
+import { test, expect } from '../helpers/fixtures';
+import { openCity, createBuilding } from '../helpers/runtime';
+import { mockBuildingScene } from '../helpers/mocks/building-data';
+
+async function enter3D(page: Page) {
+  await page.locator('#mode-3d-toggle').click();
+  await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 20_000 });
+  await expect.poll(() => page.evaluate(() => !!(window as any).getThreeModeInternals?.()?.scene)).toBe(true);
+}
+
+async function openXray(page: Page) {
+  if (!(await page.locator('#model-layer-controls').isVisible())) await page.locator('#layers-button').click();
+  await expect(page.locator('#model-layer-controls .three-mode-ui-panel')).toBeVisible();
+  await page.locator('#three-mode-xray').click();
+  await page.locator('#three-mode-suggested-layouts').click();
+  await expect.poll(() => page.evaluate(() => {
+    const plans = (window as any).getThreeModeInternals().scene.getObjectByName('FloorPlans');
+    return plans?.children.filter((group: any) => group.userData?.proposalId).length || 0;
+  }), { timeout: 30_000 }).toBeGreaterThan(0);
+}
+
+async function closeSheets(page: Page) {
+  for (const close of await page.locator('.map-sheet:visible [data-sheet-close]').all()) {
+    await close.focus();
+    await close.press('Enter');
+  }
+  await expect(page.locator('.map-sheet:visible')).toHaveCount(0);
+}
+
+// Use a polygon from the rendered floor plan itself, rather than a guessed canvas coordinate.
+async function apartmentPoint(page: Page) {
+  return page.evaluate(() => {
+    const w = window as any;
+    const { scene, camera, renderer } = w.getThreeModeInternals();
+    const group = scene.getObjectByName('FloorPlans').children.find((item: any) => item.userData?.proposalId);
+    const floor = group.children.filter((item: any) => item.visible && item.userData?.cbFloorPlanFloor && item.userData.apartmentRegions?.length).at(-1);
+    const ring = floor.userData.apartmentRegions[0].polygons[0][0];
+    const local = new w.THREE.Vector3(
+      ring.reduce((sum: number, point: number[]) => sum + point[0], 0) / ring.length,
+      ring.reduce((sum: number, point: number[]) => sum + point[1], 0) / ring.length,
+      (floor.userData.apartmentRegions[0].elevationM || 0) + 0.04,
+    );
+    floor.localToWorld(local);
+    const ndc = local.project(camera), rect = renderer.domElement.getBoundingClientRect();
+    return { x: rect.left + (ndc.x + 1) * rect.width / 2, y: rect.top + (1 - ndc.y) * rect.height / 2 };
+  });
+}
+
+test('a private proposed residential building selects apartments in X-ray without a building outline', async ({ mockApi: page }) => {
+  test.setTimeout(90_000);
+  await mockBuildingScene(page);
+  await openCity(page);
+  const designId = await createBuilding(page);
+  await enter3D(page);
+
+  // This is the requested ghost-only state: proposed is visible as a ghost and existing is off.
+  await page.evaluate(() => (window as any).PlanningViews.configure('proposed', 'ghost'));
+  await page.evaluate(() => (window as any).PlanningViews.configure('existing', 'off'));
+  await openXray(page);
+  await expect(page.locator('#three-mode-suggested-existing')).toBeHidden();
+  await expect(page).toHaveURL(/suggested=1/);
+  await closeSheets(page);
+  await page.evaluate(() => {
+    const w = window as any;
+    const group = w.getThreeModeInternals().scene.getObjectByName('FloorPlans').children.find((g: any) => g.userData.proposalId);
+    const [targetLng, targetLat] = group.userData.footprintLatLng;
+    w.applyThree3DGeoView({targetLat, targetLng, headingDeg: 0, pitchRad: -1.52, range: 75});
+  });
+  await expect.poll(() => page.evaluate(() => (window as any).getThreeModeInternals().scene.getObjectByName('FloorPlans').children
+    .some((g: any) => g.children.some((f: any) => f.visible && f.userData.apartmentRegions?.length)))).toBe(true);
+
+  const point = await apartmentPoint(page);
+  await page.mouse.move(point.x, point.y);
+  await page.mouse.click(point.x, point.y);
+
+  const panel = page.locator('.three-apartment-panel');
+  await expect(panel).toBeVisible();
+  const select = panel.locator('#three-apartment-select');
+  await expect.poll(() => select.locator('option').count()).toBeGreaterThan(2); // placeholder + adjacent generated apartments
+  await expect(select).toHaveValue(/.+/);
+
+  const selected = await select.inputValue();
+  const sceneState = await page.evaluate(() => {
+    const scene = (window as any).getThreeModeInternals().scene;
+    return { selectedUnit: scene.getObjectsByProperty('isMesh', true)
+      .some((object: any) => object.name.startsWith('FloorUnitSelection:')),
+      outline: !!scene.getObjectByName('click-stack-focus') };
+  });
+  expect(sceneState.selectedUnit).toBe(true);
+  expect(sceneState.outline).toBe(false);
+
+  // Keyboard adjacent-unit selection must update the same live panel and cutaway level.
+  await select.focus();
+  // Native type-ahead moves to the next option labelled "Floor".
+  await select.press('f');
+  await expect.poll(() => select.inputValue()).not.toBe(selected);
+  const cutaway = await page.evaluate(() => {
+    const plans = (window as any).getThreeModeInternals().scene.getObjectByName('FloorPlans');
+    const group = plans.children.find((item: any) => item.userData?.proposalId);
+    return group?.userData?.cutawayLevel;
+  });
+  expect(cutaway).toBe(Number((await select.inputValue()).split('::')[0]));
+
+  const actions = panel.getByRole('button', { name: /Offer to (buy|sell) apartment/i });
+  for (const action of await actions.all()) await expect(action).toBeDisabled();
+  await expect(panel.getByRole('button', { name: /Find apartment offers/i })).toBeDisabled();
+  await expect(panel.getByRole('button', { name: 'Copy apartment link' })).toBeDisabled();
+  await expect(panel.getByRole('status')).toContainText('Publish this design');
+  await page.setViewportSize({ width: 390, height: 844 });
+  const bounds = await panel.boundingBox();
+  expect(bounds!.x).toBeGreaterThanOrEqual(0);
+  expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(390);
+  await panel.getByRole('button', { name: 'Close', exact: true }).press('Enter');
+  await expect(panel).toBeHidden();
+  await page.reload({ waitUntil: 'commit' });
+  await expect(page.locator('#three-mode-xray')).toHaveAttribute('aria-pressed', 'true', { timeout: 20_000 });
+  await expect(page.locator('#three-mode-suggested-layouts')).toHaveAttribute('aria-pressed', 'true');
+  await expect.poll(() => page.evaluate(id => !!(window as any).proposalStorage?.getProposal(id), designId)).toBe(true);
+});

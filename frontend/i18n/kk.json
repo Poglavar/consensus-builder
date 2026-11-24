@@ -6521,6 +6521,7 @@
             "chooseApartment": "Пәтерді таңдаңыз",
             "apartmentCopy": "Пәтер сілтемесін көшіру",
             "apartmentCopyFailed": "Пәтер сілтемесін көшіру мүмкін болмады.",
+            "apartmentPublishHint": "Пәтерді бөлісу немесе ұсыныс жасау үшін жобаны жариялаңыз.",
             "offerToBuyApartment": "Пәтерді сатып алуға ұсыныс жасау",
             "offerToSellApartment": "Пәтерді сатуға ұсыныс жасау",
             "apartmentFundingDeposit": "{{title}} келісімі бойынша брондау · кепілақы {{amount}} USDC",

@@ -6521,6 +6521,7 @@
             "chooseApartment": "Choose an apartment",
             "apartmentCopy": "Copy apartment link",
             "apartmentCopyFailed": "Could not copy the apartment link.",
+            "apartmentPublishHint": "Publish this design to share the apartment or make an offer.",
             "offerToBuyApartment": "Offer to buy apartment",
             "offerToSellApartment": "Offer to sell apartment",
             "apartmentFundingDeposit": "Reserve in {{title}} · {{amount}} USDC deposit",

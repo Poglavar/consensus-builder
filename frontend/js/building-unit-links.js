@@ -59,7 +59,7 @@
     function read(search) {
         const params = new URLSearchParams(search);
         const building = params.get('xrayBuilding');
-        return building ? { building, unit: params.get('unit') || null, openFloor: true } : null;
+        return apartmentLocator(building) ? { building, unit: params.get('unit') || null, openFloor: true } : null;
     }
 
     function link(base, mapShare, context, selection) {

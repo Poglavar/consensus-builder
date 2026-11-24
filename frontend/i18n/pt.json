@@ -5028,6 +5028,7 @@
             "chooseApartment": "Escolha um apartamento",
             "apartmentCopy": "Copiar ligação do apartamento",
             "apartmentCopyFailed": "Não foi possível copiar a ligação do apartamento.",
+            "apartmentPublishHint": "Publique este projeto para partilhar o apartamento ou fazer uma oferta.",
             "offerToBuyApartment": "Propor a compra do apartamento",
             "offerToSellApartment": "Propor a venda do apartamento",
             "apartmentFundingDeposit": "Reservar em {{title}} · depósito de {{amount}} USDC",

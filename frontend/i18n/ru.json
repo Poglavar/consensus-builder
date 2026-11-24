@@ -6603,6 +6603,7 @@
             "chooseApartment": "Выберите квартиру",
             "apartmentCopy": "Скопировать ссылку на квартиру",
             "apartmentCopyFailed": "Не удалось скопировать ссылку на квартиру.",
+            "apartmentPublishHint": "Опубликуйте проект, чтобы поделиться ссылкой на квартиру или сделать предложение.",
             "offerToBuyApartment": "Предложить купить квартиру",
             "offerToSellApartment": "Предложить продать квартиру",
             "apartmentFundingDeposit": "Бронирование по соглашению «{{title}}» · задаток {{amount}} USDC",

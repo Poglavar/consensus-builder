@@ -48,7 +48,7 @@
         panel.append(label, close, select, copy, buy, sell, offers, status, results);
         doc.body.appendChild(panel);
 
-        let shown = null, selected = null, message = '';
+        let shown = null, selected = null, message = '', addressable = false;
         let request = null;
         function resetOffers() {
             request?.abort();
@@ -112,7 +112,10 @@
         function show(units, unit, suggested, requested) {
             panel.hidden = false;
             const changedUnit = selected?.key !== unit?.key || selected?.group !== unit?.group;
-            if (changedUnit) resetOffers();
+            if (changedUnit) {
+                resetOffers();
+                addressable = !!(unit && linkFor(unit));
+            }
             selected = unit;
             const title = suggested ? t('threeMode.controls.suggestedApartments', 'Estimated apartments')
                 : t('threeMode.controls.apartments', 'Apartments');
@@ -125,16 +128,15 @@
                 select.replaceChildren(new Option(t('threeMode.controls.chooseApartment', 'Choose an apartment'), ''),
                     ...choices.map(([key, name]) => new Option(name, key)));
             }
-            select.value = unit?.key || '';
+            if (select.value !== (unit?.key || '')) select.value = unit?.key || '';
             select.disabled = choices.length === 0;
-            copy.disabled = !unit;
-            buy.disabled = sell.disabled = !unit;
-            if (!win.BusyControl.isBusy(offers)) offers.disabled = !unit;
+            copy.disabled = buy.disabled = sell.disabled = offers.disabled = !addressable;
             const next = requested && !unit ? t('threeMode.controls.apartmentUnavailable', 'The linked apartment is not in the current layout.')
-                : !choices.length ? t('threeMode.controls.apartmentsLoading', 'Waiting for the floor plans…') : '';
+                : !choices.length ? t('threeMode.controls.apartmentsLoading', 'Waiting for the floor plans…')
+                : unit && !addressable ? t('threeMode.controls.apartmentPublishHint', 'Publish this design to share the apartment or make an offer.') : '';
             if (next !== message || changedUnit) status.textContent = message = next;
         }
-        return { show, hide() { if (!panel.hidden) resetOffers(); panel.hidden = true; }, dispose() { resetOffers(); panel.remove(); } };
+        return { show, hide() { if (!panel.hidden) resetOffers(); panel.hidden = true; message = ''; }, dispose() { resetOffers(); panel.remove(); } };
     }
 
     win.ThreeApartmentPanel = { create };

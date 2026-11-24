@@ -24,7 +24,8 @@ function extracted(name, variables = '', stubs = {}, helpers = []) {
     // Functions are extracted from a long-lived closure. Keep its inert runtime state
     // available to the VM, while each characterization supplies the dependencies it uses.
     const context = { console, window: {}, apartmentHover: { clear() {}, invalidate() {}, select() {} }, refreshSettledSuggestedStreets() {},
-        apartmentAddress: null, nativeApartmentBuilding: () => null, registerApartmentBuilding() {}, refreshApartmentSelection() {},
+        apartmentAddress: null, dismissedApartmentDesign: null, stackFocusGroup: null, writeXrayView() {},
+        builtDisplay: 'solid', nativeApartmentBuilding: () => null, registerApartmentBuilding() {}, refreshApartmentSelection() {},
         buildingUnitLinks: require('../../frontend/js/building-unit-links.js'),
         realisticLayerActive: false, buildingsWorkGeneration: 0, xrayVisibilityDirty: false,
         suggestedStreetLoader: null, suggestedStreetRefreshPending: false, ...stubs, calls };
@@ -86,6 +87,24 @@ describe('uploaded model facade', () => {
 });
 
 describe('three-mode Xray wiring', () => {
+    it('outlines the floor-plan shell once even when many interior walls are visible', () => {
+        const THREE = require('three'), scene = new THREE.Scene();
+        const group = new THREE.Group();
+        group.userData = { cbFloorPlan: true, proposalId: 'tower' };
+        const shell = new THREE.Mesh(new THREE.BoxGeometry(20, 10, 30));
+        shell.userData.cbFloorPlanDistantShell = true;
+        const floor = new THREE.Group();
+        floor.add(new THREE.Mesh(new THREE.BoxGeometry(5, 1, 3)));
+        group.add(shell, floor);
+        scene.add(group);
+        const [segments] = extracted('stackVolumeSegments', '', { THREE, scene });
+        for (const visible of [false, true]) {
+            shell.visible = visible;
+            const coordinates = segments('designs', { id: 'tower' });
+            expect(coordinates).toHaveLength(12 * 2 * 3);
+            expect(coordinates.filter((_, i) => i % 3 === 0).every(value => Math.abs(value) === 10)).toBe(true);
+        }
+    });
     it('keeps translucent envelopes behind coincident building surfaces in color and depth passes', () => {
         class Material {
             constructor(parameters) { this.userData = {}; Object.assign(this, parameters); }
@@ -557,14 +576,17 @@ describe('three-mode Xray wiring', () => {
         expect(fetch).toHaveBeenCalledExactlyOnceWith('http://api/streets/near?bbox=1%2C2%2C3%2C4', { signal: expect.any(AbortSignal) });
     });
     it('shows access options while estimated layouts are on', () => {
-        const access = { hidden: true }, accessSelect = { value: 'auto' };
+        const access = { hidden: true }, accessSelect = { value: 'auto' }, existingRow = {};
         const [update, c] = extracted('updateXrayControls', `
-            let xrayButton=null, suggestedPlansButton=null, suggestedExistingRow=null, suggestedExistingCheckbox=null;
+            let xrayButton=null, suggestedPlansButton=null, suggestedExistingRow=this.existingRow, suggestedExistingCheckbox=null;
             let suggestedAccessControl=this.access, suggestedAccessSelect=this.accessSelect, suggestedAccess='point';
             let floorCutawayControl=null, floorCutawaySelect=null, xrayNote=null;
             let xrayEnabled=true, suggestedPlansEnabled=true, suggestedExistingEnabled=true;
-            this.set=(key, value)=>{ eval(key + '=value'); };`, { access, accessSelect });
+            this.set=(key, value)=>{ eval(key + '=value'); };`, { access, accessSelect, existingRow });
         update();
+        expect(existingRow.hidden).toBe(false);
+        c.set('builtDisplay', 'off'); update();
+        expect(existingRow.hidden).toBe(true);
         // The Access select shows with the suggested layouts and says the view's choice.
         expect(access.hidden).toBe(false);
         expect(accessSelect.value).toBe('point');

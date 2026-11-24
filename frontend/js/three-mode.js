@@ -71,6 +71,7 @@
     }
     const buildingUnitLinks = window.BuildingUnitLinks;
     let apartmentAddress = buildingUnitLinks.read(window.location.search);
+    let dismissedApartmentDesign = null;
     let apartmentPanel = null;
     const apartmentCatalogs = new WeakMap();
     let xrayEnabled = new URLSearchParams(window.location.search).get('xray') === '1';
@@ -1724,11 +1725,16 @@
         if (!['built', 'designs', 'permitted'].includes(kind)) return [];
         const segments = [];
         scene.updateMatrixWorld(true);
-        scene.traverseVisible(object => {
-            if (!object.isMesh || !object.geometry || object.isInstancedMesh) return;
+        scene.traverseVisible(node => {
+            // A floor plan already owns an exterior shell. Outlining its storeys would
+            // draw every wall, window and door through the apartments.
+            const object = node.userData.cbFloorPlan
+                ? node.children.find(child => child.userData.cbFloorPlanDistantShell) : node;
+            if (!object?.isMesh || !object.geometry || object.isInstancedMesh) return;
             let matches = false;
-            for (let owner = object; owner && owner !== scene; owner = owner.parent) {
+            for (let owner = node; owner && owner !== scene; owner = owner.parent) {
                 const data = owner.userData || {};
+                if (owner !== node && data.cbFloorPlan) return;
                 if (kind === 'designs' && String(data.proposalId || '') === String(instance.id)) matches = true;
                 if (kind === 'permitted' && data.planningRepresentationId === instance.id) matches = true;
                 if (kind === 'built' && data.planningBuiltFeature
@@ -1864,6 +1870,7 @@
         scene.add(stackFocusGroup);
         stackFocusPulseStart = 0;
         if (!window.__reducedMotion) frameHooks.push(pulseStackFocus);
+        if (kind === 'designs' && xrayEnabled && !apartmentAddress?.unit) refreshApartmentSelection();
         invalidateThreeView();
     }
 
@@ -2189,6 +2196,7 @@
     function refreshClickStackFigures() {
         const expanded = window.ThreeClickStack?.expanded?.();
         if (['designs', 'parcels', 'formed'].includes(expanded)) window.ThreeClickStack.refresh();
+        else if (xrayEnabled && ['built', 'designs'].includes(stackFocusGroup?.userData.kind)) window.ThreeClickStack.restoreFocus();
     }
 
     // Isolation is entered by a click, but exited by clicking "somewhere else" — which nothing on
@@ -2343,7 +2351,7 @@
         xrayButton.textContent = threeI18n('threeMode.controls.xray', 'X-ray');
         xrayButton.title = threeI18n('threeMode.controls.xrayTooltip',
             'Show modelled storeys, walls, doors and windows.');
-        xrayButton.addEventListener('click', () => setXrayEnabled(!xrayEnabled));
+        xrayButton.addEventListener('click', () => window.BusyControl.track(xrayButton, () => setXrayEnabled(!xrayEnabled)));
         const xrayButtons = document.createElement('div');
         xrayButtons.className = 'three-mode-xray-buttons';
         xrayButtons.appendChild(xrayButton);
@@ -2355,7 +2363,7 @@
         suggestedPlansButton.textContent = threeI18n('threeMode.controls.suggestedLayouts', 'Estimated layouts');
         suggestedPlansButton.title = threeI18n('threeMode.controls.suggestedLayoutsTooltip',
             'Estimate floor plans for proposed buildings without a modelled interior, using their footprints and storeys.');
-        suggestedPlansButton.addEventListener('click', () => setSuggestedPlansEnabled(!suggestedPlansEnabled));
+        suggestedPlansButton.addEventListener('click', () => window.BusyControl.track(suggestedPlansButton, () => setSuggestedPlansEnabled(!suggestedPlansEnabled)));
         xrayButtons.appendChild(suggestedPlansButton);
         xrayRow.appendChild(xrayButtons);
         // Existing buildings get typical layouts by era, a guess from footprint and height.
@@ -2371,7 +2379,6 @@
         suggestedExistingText.textContent = threeI18n('threeMode.controls.suggestedExisting', 'Existing buildings too');
         suggestedExistingRow.title = threeI18n('threeMode.controls.suggestedExistingTooltip',
             'Also estimate floor plans for nearby existing buildings from their footprint and height.');
-        suggestedExistingRow.setAttribute('aria-label', suggestedExistingRow.title);
         suggestedExistingRow.append(suggestedExistingCheckbox, suggestedExistingText);
         const suggestedExistingHost = document.createElement('div');
         suggestedExistingHost.setAttribute('data-map-modes', '3d');
@@ -10014,12 +10021,15 @@
     function setSuggestedPlansEnabled(enabled) {
         suggestedPlansEnabled = enabled === true;
         if (!suggestedPlansEnabled) { suggestedPlanner?.dispose(); suggestedPlanner = null; }
-        rebuild3DBuildingsOnly({ family: 'planned' });
+        writeXrayView();
+        const work = rebuild3DBuildingsOnly({ family: 'planned' });
         updateXrayControls();
+        return work;
     }
 
     function setSuggestedExistingEnabled(enabled) {
         suggestedExistingEnabled = enabled === true;
+        writeXrayView();
         rebuild3DBuildingsOnly({ family: 'planned' });
         updateXrayControls();
     }
@@ -10038,7 +10048,22 @@
         // use their index inside the immutable design revision.
         const id = props.sourceFeatureId ?? feature.id ?? props.id ?? props.buildingIndex;
         const building = nativeReference || nativeApartmentBuilding(nativeFeature) || buildingUnitLinks.designBuilding(designCid, id);
-        if (building) Object.assign(group.userData, { apartmentBuilding: building, apartmentModel: props.floorPlans, apartmentDesignCid: designCid || null });
+        Object.assign(group.userData, { apartmentBuilding: building, apartmentModel: props.floorPlans, apartmentDesignCid: designCid || null });
+    }
+
+    // The render key identifies an unpublished building inside this workspace. Only a
+    // source address or published design revision can be shared or referenced by an offer.
+    function apartmentSelectionKey(group) {
+        const data = group?.userData;
+        return data?.apartmentBuilding || (data?.proposalId && data.floorPlanKey);
+    }
+
+    function apartmentBuildingForDesign(id) {
+        if (!id || !floorPlanGroup) return null;
+        const buildings = new Set(floorPlanGroup.children
+            .filter(group => group.userData.proposalId === id && group.userData.apartmentCount)
+            .map(apartmentSelectionKey));
+        return buildings.size === 1 ? [...buildings][0] : null;
     }
 
     function apartmentCatalog(group) {
@@ -10053,12 +10078,18 @@
     }
 
     function refreshApartmentSelection() {
+        if (xrayEnabled && !apartmentAddress && stackFocusGroup?.userData.kind === 'designs') {
+            const design = stackFocusGroup.userData.id;
+            const building = design !== dismissedApartmentDesign && apartmentBuildingForDesign(design);
+            if (building) apartmentAddress = { building, unit: null, openFloor: false };
+        }
         if (!apartmentPanel || !floorPlanGroup || !xrayEnabled || !apartmentAddress) {
             apartmentHover?.select(null);
             apartmentPanel?.hide();
             return;
         }
-        const groups = floorPlanGroup.children.filter(group => group.userData.apartmentBuilding === apartmentAddress.building);
+        const groups = floorPlanGroup.children.filter(group => group.userData.apartmentBuilding === apartmentAddress.building
+            || group.userData.floorPlanKey === apartmentAddress.building);
         const units = groups.flatMap(apartmentCatalog).sort((a, b) => a.level - b.level || a.ordinal - b.ordinal);
         const matches = units.filter(unit => unit.key === apartmentAddress.unit);
         const unit = matches.length === 1 ? matches[0] : null;
@@ -10068,6 +10099,7 @@
         if (unit && apartmentAddress.openFloor) {
             apartmentAddress.openFloor = false;
             window.ThreeClickStack?.close({ silent: true });
+            clearStackFocus();
             if (window.PlanningViews?.getSelected()?.role === 'existing') window.PlanningViews.select(null);
             if (floorCutawayLevel !== unit.level) setFloorCutaway(unit.level);
         }
@@ -10083,6 +10115,7 @@
         const next = ['auto', 'point', 'corridor'].includes(value) ? value : 'auto';
         if (next === suggestedAccess) return;
         suggestedAccess = next;
+        writeXrayView();
         rebuild3DBuildingsOnly({ family: 'planned' });
         updateXrayControls();
     }
@@ -10116,7 +10149,7 @@
     // (transparent) built volumes. Footprints come from the 2D pool; a footprint without a height
     // gets nothing, and buildings being replaced by a proposal are skipped.
     async function appendSuggestedExistingFloorPlans(buildingMaterial) {
-        if (!xrayEnabled || !suggestedPlansEnabled || !suggestedExistingEnabled || !floorPlanGroup || !suggestedFloorPlans || !suggestedPlanContext) return;
+        if (builtDisplay === 'off' || !xrayEnabled || !suggestedPlansEnabled || !suggestedExistingEnabled || !floorPlanGroup || !suggestedFloorPlans || !suggestedPlanContext) return;
         const view = getGeoCameraView();
         if (!view) return;
         const generation = buildingsWorkGeneration;
@@ -10736,7 +10769,7 @@
             suggestedPlansButton.setAttribute('aria-pressed', String(suggestedPlansEnabled));
         }
         if (suggestedExistingRow) {
-            suggestedExistingRow.hidden = !(xrayEnabled && suggestedPlansEnabled);
+            suggestedExistingRow.hidden = builtDisplay === 'off' || !(xrayEnabled && suggestedPlansEnabled);
             if (suggestedExistingCheckbox) suggestedExistingCheckbox.checked = suggestedExistingEnabled;
         }
         if (suggestedAccessControl) {
@@ -10811,15 +10844,28 @@
     function xrayRebuildsDesigns() {
         return suggestedPlansEnabled || (Array.isArray(window.proposedBuildings) && window.proposedBuildings.some(feature => feature?.properties?.floorPlans));
     }
+    function writeXrayView() {
+        const url = new URL(window.location.href);
+        for (const [key, active] of [['xray', xrayEnabled], ['suggested', suggestedPlansEnabled], ['suggestedExisting', suggestedExistingEnabled]]) {
+            if (active) url.searchParams.set(key, '1');
+            else url.searchParams.delete(key);
+        }
+        if (suggestedAccess === 'auto') url.searchParams.delete('access');
+        else url.searchParams.set('access', suggestedAccess);
+        if (url.href !== window.location.href) window.history.replaceState(window.history.state, '', url);
+    }
     function setXrayEnabled(enabled) {
         xrayEnabled = enabled === true;
+        dismissedApartmentDesign = null;
+        writeXrayView();
         if (!xrayEnabled) { suggestedStreetLoader?.cancel(); suggestedStreetRefreshPending = false; suggestedPlanner?.dispose(); suggestedPlanner = null; }
-        if (xrayRebuildsDesigns()) rebuild3DBuildingsOnly({ family: 'planned' });
+        const work = xrayRebuildsDesigns() ? rebuild3DBuildingsOnly({ family: 'planned' }) : null;
         updateFloorModelLoads(true);
         reconcileExistingFloorPlans();
         applyModelSections();
         updateXrayControls();
         invalidateThreeView();
+        return work;
     }
 
     function applyRetainedBuildingDisplay() {
@@ -11584,7 +11630,7 @@
             replacedShells: replacedXrayShells,
             onPointerChange: queueThreeFrame,
             onHover: (picked, pointer) => {
-                const canSelect = picked?.region.kind !== 'non-apartment' && !!picked?.floor.parent?.userData.apartmentBuilding;
+                const canSelect = picked?.region.kind !== 'non-apartment' && !!apartmentSelectionKey(picked?.floor.parent);
                 renderer.domElement.classList.toggle('three-apartment-target', canSelect);
                 apartmentHoverNote.hidden = picked?.region.flag !== 'north-single-aspect';
                 if (apartmentHoverNote.hidden) return;
@@ -11597,8 +11643,14 @@
         apartmentPanel = window.ThreeApartmentPanel.create({
             translate: threeI18n,
             onChoose: key => selectApartment(apartmentAddress.building, key),
-            onClose: () => { apartmentAddress = null; refreshApartmentSelection(); renderer.domElement.focus(); queueThreeFrame(); },
-            linkFor: unit => buildingUnitLinks.link(window.location.href, window.MapShare, window.MapShare.capture(window), {
+            onClose: () => {
+                dismissedApartmentDesign = stackFocusGroup?.userData.id || window.ProposalSelection?.getKey?.();
+                apartmentAddress = null;
+                refreshApartmentSelection();
+                renderer.domElement.focus();
+                queueThreeFrame();
+            },
+            linkFor: unit => unit.group.userData.apartmentBuilding && buildingUnitLinks.link(window.location.href, window.MapShare, window.MapShare.capture(window), {
                 building: unit.group.userData.apartmentBuilding, unit: unit.key, designCid: unit.group.userData.apartmentDesignCid,
                 suggested: unit.group.userData.suggested, access: suggestedAccess, center: unit.group.userData.footprintLatLng
             })
@@ -12343,7 +12395,7 @@
         const resuming = !!window.UpdateResume?.pending();
         const selectedDesign = resuming ? null : window.ProposalSelection?.getKey?.();
         const focusedDesign = !resuming && focusProposalIds?.size ? [...focusProposalIds][0] : null;
-        if (focusedDesign || selectedDesign) {
+        if ((focusedDesign || selectedDesign) && !(xrayEnabled && apartmentAddress?.unit)) {
             // An exact shared camera describes the whole map, not an isolated view of its first
             // design. Keep the selected section and outline without filtering or reframing it.
             showThreeModeDesign(focusedDesign || selectedDesign, null, { preserveView: !!options.restoreView });
@@ -12717,21 +12769,23 @@
         // A design drawn without being applied (a simulation ghost, the Agent city) opens itself.
         if (xrayEnabled && !realisticLayerActive && !window.multiParcelSelection?.isActive) {
             const picked = apartmentHover?.pick({ x: evt.clientX, y: evt.clientY });
-            const group = picked?.floor.parent;
-            if (group?.userData.apartmentBuilding) {
+            const group = picked?.group;
+            const building = apartmentSelectionKey(group);
+            if (building) {
                 const catalog = apartmentCatalog(group);
                 const unit = picked.region && catalog.find(item => item.floor === picked.floor && item.regionId === picked.region.id);
-                if (unit) { selectApartment(group.userData.apartmentBuilding, unit.key); return; }
-                if (catalog.length && apartmentAddress?.building !== group.userData.apartmentBuilding) selectApartment(group.userData.apartmentBuilding);
+                if (unit) { selectApartment(building, unit.key); return; }
+                if (catalog.length && !picked.floor) { selectApartment(building); return; }
+                if (catalog.length && apartmentAddress?.building !== building) selectApartment(building);
             }
         }
         const displayKey = window.multiParcelSelection?.isActive ? null : pickDesignDisplayKey(evt);
         if (displayKey && window.DesignDisplay?.openKey(displayKey, { view: '3d' })) return;
         const subject = realisticLayerActive ? null : pickMapSubjectFromEvent(evt);
         if (xrayEnabled && !window.multiParcelSelection?.isActive) {
-            const building = nativeApartmentBuilding(subject?.picked?.builtFeature);
+            const building = apartmentBuildingForDesign(subject?.picked?.proposalId) || nativeApartmentBuilding(subject?.picked?.builtFeature);
             if (building && apartmentAddress?.building !== building && floorPlanGroup.children.some(group =>
-                group.userData.apartmentBuilding === building && apartmentCatalog(group).length)) selectApartment(building);
+                apartmentSelectionKey(group) === building && apartmentCatalog(group).length)) selectApartment(building);
         }
         // A building, a massing or a design stands on the parcel under the point the ray met it
         // at. The slab the ray would go on to reach behind a tall one can be another parcel.

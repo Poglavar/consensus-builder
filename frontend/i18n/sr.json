@@ -6555,6 +6555,7 @@
             "chooseApartment": "Изаберите стан",
             "apartmentCopy": "Копирај линк до стана",
             "apartmentCopyFailed": "Није могуће копирати линк до стана.",
+            "apartmentPublishHint": "Објавите пројекат да бисте поделили стан или дали понуду.",
             "offerToBuyApartment": "Понуди куповину стана",
             "offerToSellApartment": "Понуди продају стана",
             "apartmentFundingDeposit": "Резервација у споразуму {{title}} · депозит {{amount}} USDC",

@@ -55,6 +55,20 @@ describe('apartment hover',()=>{
         s.hover.dispose();
         expect(s.floor.children).not.toContain(selected);
     });
+    it('picks a coarse building shell for the picker without selecting a hidden apartment', () => {
+        const s = setup();
+        const building = new THREE.Group();
+        building.userData.cbFloorPlan = true;
+        const shell = new THREE.Mesh(new THREE.BoxGeometry(8, 8, 3), new THREE.MeshBasicMaterial());
+        building.add(shell, s.floor);
+        s.root.add(building);
+        s.floor.visible = false;
+        const hit = s.hover.pick({ x: 25, y: 50 });
+        expect(hit.group).toBe(building);
+        expect(hit.floor).toBeNull();
+        expect(hit.region).toBeNull();
+        s.hover.dispose();
+    });
     it('does not pick through an opaque building in front of the apartment',()=>{
         const s=setup();const block=new THREE.Mesh(new THREE.PlaneGeometry(10,10),new THREE.MeshBasicMaterial());
         block.position.z=5;s.blockers.add(block);s.blockers.updateMatrixWorld(true);

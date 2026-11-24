@@ -35,6 +35,7 @@ describe('building unit addresses', () => {
     });
 
     it('opens the same unit with the correct source, camera and layout settings', () => {
+        expect(links.read('?xrayBuilding=local-layout-key&unit=1::a')).toBeNull();
         const selection = { building: links.nativeBuilding('astana', 'kz-nsdi-buildings', 'KZ-NSDI-B-43399'),
             unit: '1::flat-a-1::proof', suggested: true, access: 'corridor', center: [71.42, 51.12] };
         const url = new URL(links.link('http://localhost:8173/?draft=private', mapShare,

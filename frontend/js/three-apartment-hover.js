@@ -168,7 +168,11 @@
         function pick(point) {
             const hit = surfaceAt(point);
             const floor = floorAtHit(hit);
-            return floor ? apartmentAtHit(hit) || { floor, region: null } : null;
+            if (floor) return { group: floor.parent, floor, region: apartmentAtHit(hit)?.region ?? null };
+            // A distant shell or an unmodelled storey can still open the building's unit list.
+            let group = hit?.object;
+            while (group && !group.userData.cbFloorPlan) group = group.parent;
+            return group ? { group, floor: null, region: null } : null;
         }
         return { update, clear, invalidate, dispose, select, pick };
     }
