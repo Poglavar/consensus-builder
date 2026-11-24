@@ -100,8 +100,17 @@ build queue and shared between storeys; pointer movement performs no polygon cli
 subtrees are excluded from picking, and unchanged camera/pointer states do no new picking work.
 The blue overlay sits above the red warning patches even in a straight-down view. Generated
 north-only apartments show **North orientation only** beside the pointer. Warning patches are
-batched once per storey, and clicking keeps the existing whole-building/design selection. These are
-presentation changes; no authored editing operation or MCP editing schema changes.
+batched once per storey. Clicking an apartment region selects its storey's unit, opens the cutaway at
+that level and shows a keyboard-accessible list of apartments in the building. **Copy apartment link**
+opens the same building and unit in X-ray. Shared space retains the usual map selection.
+
+`xrayBuilding` names the building by city, building source and source ID, or by published design CID
+and building feature ID (the immutable revision's building index when no feature ID is available).
+`unit` names the storey level and unit ID, using `::` between escaped components. Suggested units
+also carry a SHA-256 fingerprint prefix of their registration, elevation and apartment region. If
+regeneration changes a unit's boundary or elevation, the old link cannot silently select the new
+unit occupying the same slot. Suggested layouts and links are read-only, with no authored record,
+editing operation or MCP editing schema changes.
 
 ## Read paths
 

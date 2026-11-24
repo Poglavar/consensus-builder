@@ -40,6 +40,20 @@ describe('apartment hover',()=>{
         s.root.visible=true;s.floor.visible=false;s.hover.invalidate();s.hover.update(true);expect(s.highlight()).toBeUndefined();
         s.floor.visible=true;s.hover.invalidate();s.hover.update(true);expect(s.highlight()).toBeDefined();s.hover.dispose();
     });
+    it('picks a click without prior hover and keeps the selected apartment after pointer exit', () => {
+        const s = setup();
+        const picked = s.hover.pick({ x: 25, y: 50 });
+        expect(picked.region.id).toBe('west');
+        s.hover.select(picked);
+        const selected = s.floor.children.find(child => child.name === 'FloorUnitSelection:floor-1:west');
+        expect(selected).toBeDefined();
+        s.event('pointermove', 75);
+        s.hover.update(true);
+        s.event('pointerleave');
+        expect(s.floor.children).toContain(selected);
+        s.hover.dispose();
+        expect(s.floor.children).not.toContain(selected);
+    });
     it('does not pick through an opaque building in front of the apartment',()=>{
         const s=setup();const block=new THREE.Mesh(new THREE.PlaneGeometry(10,10),new THREE.MeshBasicMaterial());
         block.position.z=5;s.blockers.add(block);s.blockers.updateMatrixWorld(true);

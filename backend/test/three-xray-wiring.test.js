@@ -23,7 +23,9 @@ function extracted(name, variables = '', stubs = {}, helpers = []) {
     const calls = [];
     // Functions are extracted from a long-lived closure. Keep its inert runtime state
     // available to the VM, while each characterization supplies the dependencies it uses.
-    const context = { console, apartmentHover: { clear() {}, invalidate() {} }, refreshSettledSuggestedStreets() {},
+    const context = { console, window: {}, apartmentHover: { clear() {}, invalidate() {}, select() {} }, refreshSettledSuggestedStreets() {},
+        apartmentAddress: null, nativeApartmentBuilding: () => null, registerApartmentBuilding() {}, refreshApartmentSelection() {},
+        buildingUnitLinks: require('../../frontend/js/building-unit-links.js'),
         realisticLayerActive: false, buildingsWorkGeneration: 0, xrayVisibilityDirty: false,
         suggestedStreetLoader: null, suggestedStreetRefreshPending: false, ...stubs, calls };
     const code = `${variables}\n${Array.from(Object.entries(stubs)).map(([key]) => `const ${key}=this.${key};`).join('\n')}\n${[name, ...helpers].map(helper => declarations.get(helper)).join('\n')}\nthis.fn=${name};`;

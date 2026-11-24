@@ -1126,6 +1126,8 @@ A versioned architectural model associated with `(city, source, ownerId, buildin
 
 An identified accommodation or layout within a building or storey (CityGML `BuildingUnit`). A floor model's unit has a kind: apartment, shop, office or garage; only apartments count as housing. A modeled unit or its count does not by itself establish a separately registered property title. A reusable architectural layout may carry normalized `apartmentRegions` for hover highlighting; a region identifies a position in that layout, while the storey's unit records retain their own identities. Regions come from the generated apartment partitions or a retained source drawing and do not create additional units.
 
+An apartment link names its building (city, building source and source ID, or published design CID and building feature ID), storey level and the unit's own ID. A suggested apartment also carries a fingerprint of its modeled boundary and elevation. Apartment numbers in the picker are display labels. They are separate from unit IDs and street addresses.
+
 ### Room
 
 A subdivision of an architectural layout. Its modeled walls, openings and use belong to the storey's interpretation or design.

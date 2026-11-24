@@ -1,4 +1,4 @@
-// Pick sourced apartment regions on visible architectural surfaces without changing click selection.
+// Pick apartment regions on visible architectural surfaces.
 (function (global) {
     'use strict';
 
@@ -20,10 +20,15 @@
         return true;
     }
 
-    function apartmentAtHit(hit) {
+    function floorAtHit(hit) {
         let floor = hit?.object;
         while (floor && !floor.userData.cbFloorPlanFloor) floor = floor.parent;
-        if (!floor || !isVisible(floor)) return null;
+        return floor && isVisible(floor) ? floor : null;
+    }
+
+    function apartmentAtHit(hit) {
+        const floor = floorAtHit(hit);
+        if (!floor) return null;
         const point = floor.worldToLocal(hit.point.clone());
         const region = floor.userData.apartmentRegions?.find(region => region.polygons.some(polygon =>
             inRing(point, polygon[0]) && !polygon.slice(1).some(hole => inRing(point, hole))));
@@ -33,9 +38,8 @@
     function spaceAtHit(hit) {
         const apartment = apartmentAtHit(hit);
         if (apartment) return apartment;
-        let floor = hit?.object;
-        while (floor && !floor.userData.cbFloorPlanFloor) floor = floor.parent;
-        if (!floor || !isVisible(floor)) return null;
+        const floor = floorAtHit(hit);
+        if (!floor) return null;
         const point = floor.worldToLocal(hit.point.clone());
         let nearest = null, distance = Infinity;
         for (const region of floor.userData.nonApartmentRegions || []) {
@@ -48,11 +52,13 @@
 
     function attach(THREE, { canvas, camera, floorPlanGroup, occluders = () => [], onPointerChange = () => {}, onHover = () => {} }) {
         const raycaster = new THREE.Raycaster(), ndc = new THREE.Vector2(), lastCamera = new THREE.Matrix4();
-        let pointer = null, dirty = true, highlight = null, current = null;
+        let pointer = null, dirty = true, highlight = null, current = null, selected = null, selectionMesh = null;
         const material = new THREE.MeshBasicMaterial({ color: 0x20bfff, transparent: true, opacity: .55,
             side: THREE.DoubleSide, depthTest: true, depthWrite: false, polygonOffset: true,
             polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
         const sharedMaterial = material.clone();
+        const selectionMaterial = material.clone();
+        selectionMaterial.opacity = .8;
         sharedMaterial.color.setHex(0xffffff);
         sharedMaterial.onBeforeCompile = shader => {
             shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', `
@@ -82,15 +88,11 @@
         const listeners = { pointermove: move, pointerleave: leave, pointerdown: leave, pointerup: move, pointercancel: leave };
         Object.entries(listeners).forEach(([type, listener]) => canvas.addEventListener(type, listener, { passive: true }));
 
-        function update(enabled) {
-            if (!enabled || !pointer) { if (current) clear(); return; }
+        function surfaceAt(point) {
             camera.updateMatrixWorld();
-            if (!dirty && lastCamera.equals(camera.matrixWorld)) return;
-            dirty = false;
-            lastCamera.copy(camera.matrixWorld);
             const rect = canvas.getBoundingClientRect();
-            if (!rect.width || !rect.height) { clear(); return; }
-            ndc.set((pointer.x-rect.left)/rect.width*2-1, -(pointer.y-rect.top)/rect.height*2+1);
+            if (!rect.width || !rect.height) return null;
+            ndc.set((point.x-rect.left)/rect.width*2-1, -(point.y-rect.top)/rect.height*2+1);
             raycaster.setFromCamera(ndc, camera);
             floorPlanGroup.updateWorldMatrix(true, false);
             const targets = [];
@@ -105,37 +107,62 @@
             }
             // The closest visible solid wins. An unmodelled band or another building blocks
             // the unit behind it; hidden upper floors and isolated-away buildings cannot win.
-            const hit = raycaster.intersectObjects(targets, false)[0];
-            const picked = spaceAtHit(hit);
-            onHover(picked, pointer);
-            if (picked?.floor === current?.floor && picked?.region === current?.region) return;
-            removeHighlight();
-            if (!picked) return;
+            return raycaster.intersectObjects(targets, false)[0];
+        }
+        function overlay(picked, name, active = false) {
             const shapes = picked.region.polygons.map(polygon => {
                 const shape = new THREE.Shape(polygon[0].map(p => new THREE.Vector2(...p)));
                 polygon.slice(1).forEach(ring => shape.holes.push(new THREE.Path(ring.map(p => new THREE.Vector2(...p)))));
                 return shape;
             });
             const shared = picked.region.kind === 'non-apartment';
-            highlight = new THREE.Mesh(new THREE.ShapeGeometry(shapes), shared ? sharedMaterial : material);
-            highlight.name = `FloorSpaceHover:${picked.floor.userData.id}:${picked.region.id}`;
-            highlight.userData = { cbApartmentHover: true, apartmentId: shared ? null : picked.region.id,
+            const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shapes), active ? selectionMaterial : shared ? sharedMaterial : material);
+            mesh.name = `${name}:${picked.floor.userData.id}:${picked.region.id}`;
+            mesh.userData = { cbApartmentHover: true, apartmentId: shared ? null : picked.region.id,
                 regionKind: shared ? 'non-apartment' : 'apartment', floorId: picked.floor.userData.id };
             // Warning patches end at .07 m. A slope offset alone cannot lift a .035 m
             // highlight above them when the camera looks straight down.
-            highlight.position.z = (picked.region.elevationM || 0) + .08;
-            highlight.renderOrder = 5;
-            highlight.raycast = () => {};
-            picked.floor.add(highlight);
+            mesh.position.z = (picked.region.elevationM || 0) + (active ? .09 : .08);
+            mesh.renderOrder = active ? 6 : 5;
+            mesh.raycast = () => {};
+            picked.floor.add(mesh);
+            return mesh;
+        }
+        function select(picked) {
+            if (picked?.floor === selected?.floor && picked?.region === selected?.region) return;
+            selectionMesh?.removeFromParent();
+            selectionMesh?.geometry.dispose();
+            selected = picked;
+            selectionMesh = picked ? overlay(picked, 'FloorUnitSelection', true) : null;
+        }
+        function update(enabled) {
+            if (!enabled || !pointer) { if (current) clear(); return; }
+            camera.updateMatrixWorld();
+            if (!dirty && lastCamera.equals(camera.matrixWorld)) return;
+            dirty = false;
+            lastCamera.copy(camera.matrixWorld);
+            const picked = spaceAtHit(surfaceAt(pointer));
+            onHover(picked, pointer);
+            if (picked?.floor === current?.floor && picked?.region === current?.region) return;
+            removeHighlight();
+            if (!picked) return;
+            highlight = overlay(picked, 'FloorSpaceHover');
             current = picked;
         }
         function dispose() {
             Object.entries(listeners).forEach(([type, listener]) => canvas.removeEventListener(type, listener));
             leave();
+            select(null);
             material.dispose();
             sharedMaterial.dispose();
+            selectionMaterial.dispose();
         }
-        return { update, clear, invalidate, dispose };
+        function pick(point) {
+            const hit = surfaceAt(point);
+            const floor = floorAtHit(hit);
+            return floor ? apartmentAtHit(hit) || { floor, region: null } : null;
+        }
+        return { update, clear, invalidate, dispose, select, pick };
     }
 
     const api = { inRing, apartmentAtHit, spaceAtHit, attach };
