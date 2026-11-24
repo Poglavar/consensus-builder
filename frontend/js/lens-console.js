@@ -9,9 +9,10 @@
     const SERVICE_URL_KEY = 'lensConsoleServiceUrl';
     const core = root.LensCore;
     const client = root.LensServiceClient;
+    const subjectTitles = new Map();
     // directoryError: why the directory could not be read (null when it was). attestations: the last
     // list rendered, kept so a language switch can redraw it.
-    const state = { serviceUrl: null, status: null, directory: [], directoryError: null, wallet: null, attestations: null };
+    const state = { serviceUrl: null, status: null, directory: [], directoryError: null, wallet: null, attestations: null, serviceRequest: 0, listRequest: 0, expectedKey: null };
 
     function t(key, fallback, params = {}) {
         const api = root.i18n;
@@ -36,18 +37,23 @@
         return row;
     }
 
-    function explorerLink(address) {
-        const cluster = root.solanaWalletManager ? root.solanaWalletManager.getCluster() : 'devnet';
+    function explorerLink(address, kind = 'address') {
+        const cluster = 'devnet';
         const link = el('a', 'cb-link cb-link--external lc-mono', address);
-        link.href = `https://explorer.solana.com/address/${encodeURIComponent(address)}?cluster=${encodeURIComponent(cluster)}`;
+        link.href = `https://explorer.solana.com/${kind}/${encodeURIComponent(address)}?cluster=${encodeURIComponent(cluster)}`;
         link.target = '_blank';
         link.rel = 'noopener noreferrer';
         return link;
     }
 
-    // An attestation's kind (ownership, decision, evidence) as a neutral badge.
-    function kindBadge(kind) {
-        return el('span', 'cb-badge', kind || '?');
+    function kindLabel(kind) {
+        const labels = {
+            ownership: ['lensConsole.attestations.kindOwnership', 'Ownership'],
+            decision: ['lensConsole.attestations.kindDecision', 'Agreement decision'],
+            evidence: ['lensConsole.attestations.kindEvidence', 'Market evidence'],
+            propertyOffer: ['lensActivity.propertyOffer', 'Property qualification']
+        };
+        return labels[kind] ? t(...labels[kind]) : kind || '—';
     }
 
     function outcomeMessage(outcome) {
@@ -107,73 +113,159 @@
         if (status.ephemeralKey) target.append(el('p', 'lc-warn', t('lensConsole.status.ephemeral', 'Ephemeral key: this member has no persistent identity; restart it with a keypair to be listed in a lens.')));
     }
 
+    function internalLink(label, selection) {
+        const link = el('a', 'cb-link', label);
+        link.href = root.LensLinks.pageUrl(selection);
+        return link;
+    }
+
+    // A feed may contain hundreds of decisions. Resolve the content-addressed title only for
+    // a statement the reader opens. Repeated statements about one agreement share the request.
+    function showAgreementTitle(link, cid) {
+        if (!root.Cid.isCid(cid)) return;
+        if (!subjectTitles.has(cid)) {
+            const url = root.getBackendBase().replace(/\/$/, '') + '/agreements/' + encodeURIComponent(cid);
+            subjectTitles.set(cid, root.fetch(url).then(async response => {
+                if (!response.ok) throw new Error('Agreement unavailable');
+                const record = await response.json();
+                if (record.cid !== cid || !record.content || root.Cid.cidOfObject(record.content) !== cid) throw new Error('Agreement CID mismatch');
+                return record.content.title;
+            }).catch(() => { subjectTitles.delete(cid); return null; }));
+        }
+        subjectTitles.get(cid).then(title => {
+            if (title) link.textContent = t('lensActivity.openSubject', 'Follow this agreement') + ' · ' + title;
+        });
+    }
+
+    function statementText(att) {
+        const p = att.payload || {};
+        if (att.kind === 'decision' && p.decision === 'satisfied') return t('lensWalk.met', 'The agreement’s approval rule was met.');
+        if (att.kind === 'ownership' && p.owner && p.parcelUid) return t('lensActivity.ownershipClaim', '{{owner}} holds ownership rights on parcel {{parcel}}.', { owner: p.owner, parcel: p.parcelUid });
+        if (att.kind === 'evidence' && p.subject && p.value != null) return t('lensActivity.evidenceClaim', '{{subject}} was reported as {{value}}.', p);
+        if (att.kind === 'propertyOffer' && p.counterpartyQualified === 1 && p.cid) return t('lensActivity.offerClaim', 'The counterparty qualified for offer {{offer}}.', { offer: p.cid });
+        return kindLabel(att.kind);
+    }
+
+    function dateLine(label, value) {
+        const row = line(label, t('lensConsole.attestations.unknownTime', 'unknown'));
+        if (!value) return row;
+        const date = new Date(typeof value === 'number' ? value * 1000 : value);
+        if (!Number.isFinite(date.getTime())) return row;
+        const time = el('time', 'lc-v', date.toLocaleString(root.i18n?.getLocale?.() || 'en', { dateStyle: 'medium', timeStyle: 'medium' }));
+        time.dateTime = date.toISOString();
+        time.title = time.dateTime;
+        row.lastChild.replaceWith(time);
+        return row;
+    }
+
+    function receiptCard(att, exact) {
+        const li = el('li', 'lc-item');
+        const payload = att.payload || {};
+        const entry = state.directory.find(m => m.key === att.authority);
+        const issuer = entry?.name ? `${entry.name} · ${core.shortKey(att.authority)}` : att.authority;
+        li.append(el('p', 'lc-meta', kindLabel(att.kind)), el('h3', 'lc-claim', statementText(att)),
+            line(t('lensActivity.signedBy', 'Issued by'), issuer),
+            dateLine(t('lensConsole.attestations.issuedAt', 'Issued (chain time)'), att.issuedAt));
+        if (state.status.dryRun) li.append(el('p', 'lc-warn', t('lensActivity.dryRun', 'Simulated statement')));
+        const subject = payload.agreementCid;
+        const subjectLink = subject && internalLink(t('lensActivity.openSubject', 'Follow this agreement') + ' · ' + subject.slice(0, 12) + '…' + subject.slice(-6), { agreement: subject });
+        if (subjectLink) li.append(subjectLink);
+        const details = el('details', 'lc-proof');
+        details.id = 'lc-att-' + att.address;
+        details.open = !!exact;
+        if (subjectLink) {
+            if (exact) showAgreementTitle(subjectLink, subject);
+            else details.addEventListener('toggle', () => { if (details.open) showAgreementTitle(subjectLink, subject); });
+        }
+        details.append(el('summary', '', t('lensActivity.details', 'Statement details')),
+            line(t('lensConsole.status.key', 'Member key'), att.authority, true));
+        if (subject) details.append(line(t('lensConsole.attestations.agreement', 'Agreement'), subject, true));
+        if (payload.sourceObservedAt) details.append(dateLine(t('lensActivity.sourceObservedAt', 'Source observed'), payload.sourceObservedAt));
+        if (payload.evidenceRef || payload.sourceRef) details.append(line(t('lensActivity.source', 'Evidence source'), payload.evidenceRef || payload.sourceRef, true));
+        if (att.expiry) details.append(dateLine(t('lensActivity.expiry', 'Expires'), att.expiry));
+        const identifiers = [[t('lensConsole.decision.address', 'Attestation'), att.address], [t('lensActivity.credential', 'Credential'), att.credential],
+            [t('lensActivity.schema', 'Schema'), att.schema], [t('lensActivity.transaction', 'Issuance transaction'), att.transactionSignature, 'tx']];
+        for (const [label, id, kind] of identifiers) {
+            if (!id) continue;
+            const row = line(label, id, true);
+            if (!state.status.dryRun) row.lastChild.replaceWith(explorerLink(id, kind));
+            details.append(row);
+        }
+        if (att.accountHash) details.append(line(t('lensConsole.attestations.hash', 'Account hash'), att.accountHash, true));
+        const raw = el('details', 'lc-proof');
+        raw.id = details.id + '-payload';
+        raw.append(el('summary', '', t('lensActivity.raw', 'Statement payload')), el('pre', '', JSON.stringify(payload, null, 2)));
+        details.append(raw);
+        li.append(details);
+        if (!exact) li.append(internalLink(t('lensActivity.openReceipt', 'Open this statement'), { member: att.authority, attestation: att.address, subject }));
+        return li;
+    }
+
     function renderAttestations(list) {
         state.attestations = list;
         const target = doc.getElementById('lc-attestations');
-        target.replaceChildren();
-        if (!list.length) {
-            target.append(el('p', 'lc-muted', t('lensConsole.attestations.empty', 'No attestations match.')));
-            return;
-        }
+        const exact = new URLSearchParams(root.location.search).get('attestation');
+        const open = Array.from(target.querySelectorAll?.('details[open]') || [], d => d.id);
+        const focus = target.contains?.(doc.activeElement) && doc.activeElement.closest('details')?.id;
         const ul = el('ul', 'lc-list');
-        list.forEach(att => {
-            const li = el('li', 'lc-item');
-            const head = el('div', 'lc-item-head');
-            head.append(kindBadge(att.kind), explorerLink(att.address));
-            li.append(head);
-            if (att.parcelUid) li.append(line(t('lensConsole.attestations.parcel', 'Parcel'), att.parcelUid));
-            if (att.owner) li.append(line(t('lensConsole.attestations.owner', 'Owner'), att.owner, true));
-            // An AgreementDecision names its agreement and the decision in its payload.
-            if (att.payload && att.payload.agreementCid) li.append(line(t('lensConsole.attestations.agreement', 'Agreement'), att.payload.agreementCid, true));
-            if (att.payload && att.payload.decision) li.append(line(t('lensConsole.attestations.decision', 'Decision'), att.payload.decision));
-            if (att.accountHash) li.append(line(t('lensConsole.attestations.hash', 'Account hash'), att.accountHash, true));
-            li.append(line(t('lensConsole.attestations.issuedAt', 'Issued (chain time)'), att.issuedAt || t('lensConsole.attestations.unknownTime', 'unknown')));
-            ul.append(li);
-        });
-        target.append(ul);
+        for (const att of list) ul.append(receiptCard(att, exact));
+        target.replaceChildren(list.length ? ul : el('p', 'lc-muted', t('lensActivity.empty', 'This response contains no matching statements from this member.')));
+        if (exact) target.append(internalLink(t('lensActivity.allStatements', 'See all statements by this member'), { member: state.status.key }));
+        for (const id of open) { const d = doc.getElementById(id); if (d) d.open = true; }
+        if (focus) doc.getElementById(focus)?.querySelector('summary')?.focus({ preventScroll: true });
     }
 
     async function loadAttestations() {
         const target = doc.getElementById('lc-attestations');
-        if (!state.serviceUrl) return showError(target, t('lensConsole.errors.noService', 'Load a service URL first.'));
+        if (!state.status) return;
+        const request = ++state.listRequest;
+        const memberKey = state.status.key;
+        const params = new URLSearchParams(root.location.search);
+        const address = params.get('attestation');
+        const agreementCid = address ? params.get('subject') : null;
         state.attestations = null;
-        target.replaceChildren(el('p', 'lc-muted', t('lensConsole.loading', 'Loading…')));
-        const result = await client.fetchAttestations({
-            serviceUrl: state.serviceUrl,
-            filter: { kind: doc.getElementById('lc-filter-kind').value, parcelUid: doc.getElementById('lc-filter-parcel').value }
-        });
+        target.replaceChildren(el('p', 'lc-muted lc-loading', t('lensConsole.loading', 'Loading…')));
+        const filter = { address, agreementCid, kind: doc.getElementById('lc-filter-kind').value, parcelUid: doc.getElementById('lc-filter-parcel').value };
+        const result = await client.fetchAttestations({ serviceUrl: state.serviceUrl, filter });
+        if (request !== state.listRequest) return;
         if (result.outcome.kind !== 'ok') return showError(target, outcomeMessage(result.outcome));
-        renderAttestations(result.attestations);
+        const records = core.filterMemberAttestations(result.attestations, { memberKey, address });
+        renderAttestations(agreementCid ? records.filter(r => r.payload?.agreementCid === agreementCid) : records);
     }
 
-    async function refreshStatus() {
-        const serviceUrl = state.serviceUrl;
-        const result = await client.fetchStatus({ serviceUrl });
-        if (state.serviceUrl !== serviceUrl) return;
-        if (result.outcome.kind !== 'ok') return showError(doc.getElementById('lc-status'), outcomeMessage(result.outcome));
+    async function readStatus(request) {
+        const result = await client.fetchStatus({ serviceUrl: state.serviceUrl });
+        if (request !== state.serviceRequest) return false;
+        const error = result.outcome.kind !== 'ok' ? outcomeMessage(result.outcome)
+            : !core.isBase58Pubkey(result.body?.key) || (state.expectedKey && result.body.key !== state.expectedKey)
+                ? t('lensActivity.wrongMember', 'The service returned a different member identity.') : null;
+        if (error) {
+            showError(doc.getElementById('lc-status'), error);
+            showError(doc.getElementById('lc-attestations'), error);
+            return false;
+        }
         state.status = result.body;
-        renderStatus();
-        renderWallet();
+        renderStatus(); renderWallet();
+        return true;
     }
 
-    async function loadService() {
+    async function loadService({ persist = false, expectedKey = null } = {}) {
         const input = doc.getElementById('lc-service-url');
-        const target = doc.getElementById('lc-status');
         const url = core.normalizeServiceUrl(input.value);
+        const request = ++state.serviceRequest;
+        state.listRequest++;
+        if (state.serviceUrl && state.serviceUrl !== url) {
+            doc.getElementById('lc-decision-token').value = '';
+            doc.getElementById('lc-decision-result').replaceChildren();
+        }
+        state.serviceUrl = url; state.status = null; state.attestations = null; state.expectedKey = expectedKey;
+        const target = doc.getElementById('lc-status');
+        const feed = doc.getElementById('lc-attestations');
+        feed.replaceChildren();
         if (!url) return showError(target, t('lensConsole.errors.badUrl', 'Enter an http(s) URL of a lens member service.'));
-        state.serviceUrl = url;
-        state.status = null;
-        storeServiceUrl(url);
-        target.replaceChildren(el('p', 'lc-muted', t('lensConsole.loading', 'Loading…')));
-        // The previous service's attestations must not stay under a service that failed to load.
-        state.attestations = null;
-        doc.getElementById('lc-attestations').replaceChildren();
-        const result = await client.fetchStatus({ serviceUrl: url });
-        if (result.outcome.kind !== 'ok') return showError(target, outcomeMessage(result.outcome));
-        state.status = result.body;
-        renderStatus();
-        renderWallet();
-        await loadAttestations();
+        if (persist) storeServiceUrl(url);
+        for (const node of [target, feed]) node.replaceChildren(el('p', 'lc-muted lc-loading', t('lensConsole.loading', 'Loading…')));
+        if (await readStatus(request)) await loadAttestations();
     }
 
     async function loadDirectory() {
@@ -191,8 +283,9 @@
             state.directoryError = error && error.message ? error.message : String(error);
             console.warn(`[${new Date().toISOString()}] [lens-console] directory failed`, error);
         }
-        state.directory = members.filter(member => member.serviceUrl);
+        state.directory = members;
         renderDirectory();
+        return selectDirectoryFromQuery();
     }
 
     function renderDirectory() {
@@ -206,11 +299,26 @@
         placeholder.value = '';
         select.append(placeholder);
         state.directory.forEach(member => {
-            const option = el('option', '', `${member.name || core.shortKey(member.key)} — ${member.serviceUrl}`);
-            option.value = member.serviceUrl;
+            const option = el('option', '', `${member.name || member.kind || '—'} · ${core.shortKey(member.key)}`);
+            option.value = member.serviceUrl || '';
             select.append(option);
         });
         select.disabled = !state.directory.length;
+        select.value = state.serviceUrl || '';
+    }
+
+    function selectDirectoryFromQuery() {
+        const params = new URLSearchParams(root.location.search);
+        const requestedKey = params.get('member');
+        const input = doc.getElementById('lc-service-url');
+        if (state.serviceRequest) return;
+        const member = requestedKey ? state.directory.find(entry => entry.key === requestedKey) : state.directory[0];
+        if (requestedKey && !member?.serviceUrl) return showError(doc.getElementById('lc-attestations'), state.directoryError || t('lensActivity.unknownMember', 'This member has no service listed in the directory.'));
+        const url = requestedKey ? member?.serviceUrl : params.get('service') || member?.serviceUrl || input.value;
+        if (!url) return;
+        input.value = url;
+        doc.getElementById('lc-directory').value = url;
+        return loadService({ expectedKey: state.directory.find(entry => entry.serviceUrl === url)?.key });
     }
 
     async function connectWallet() {
@@ -295,6 +403,7 @@
             settle('invalid', 'service');
             return showError(target, t('lensConsole.errors.noService', 'Load a service URL first.'));
         }
+        if (!state.status) return showError(target, t('lensConsole.errors.noService', 'Load a service URL first.'));
         const cid = doc.getElementById('lc-decision-cid').value.trim();
         if (!root.Cid.isCid(cid)) {
             settle('invalid', 'cid');
@@ -307,7 +416,9 @@
         }
         settle('pending');
         target.replaceChildren(el('p', 'lc-muted', t('lensConsole.loading', 'Loading…')));
+        const serviceRequest = state.serviceRequest;
         const result = await client.postAgreementDecision({ serviceUrl: state.serviceUrl, token: tokenInput.value, cid });
+        if (serviceRequest !== state.serviceRequest) return;
         tokenInput.value = '';
         if (result.outcome.kind !== 'ok') {
             settle('refused', result.outcome.code || `http_${result.outcome.status}`);
@@ -323,7 +434,7 @@
         }
         settle(answer.reused ? 'reused' : 'issued');
         renderDecisionAnswer(target, answer);
-        await Promise.all([refreshStatus(), loadAttestations()]);
+        await Promise.all([readStatus(state.serviceRequest), loadAttestations()]);
     }
 
     // Everything rendered from state, redrawn in the new language.
@@ -343,26 +454,38 @@
         }
         root.addEventListener('i18n:translationsLoaded', rerender);
 
+        if (!root.LensLinks.isMemberView(root.location) && doc.getElementById('lc-walkthrough')) return;
         doc.getElementById('lc-run-own').href = `${String(root.getBackendBase()).replace(/\/+$/, '')}/docs/agents`;
-
         const input = doc.getElementById('lc-service-url');
-        const fromQuery = new URLSearchParams(root.location.search).get('service');
-        input.value = fromQuery || readStoredServiceUrl() || '';
+        const params = new URLSearchParams(root.location.search);
+        input.value = params.get('service') || readStoredServiceUrl() || '';
         doc.getElementById('lc-directory').addEventListener('change', event => {
-            if (event.target.value) {
-                input.value = event.target.value;
-                loadService();
-            }
+            const member = state.directory.find(m => m.serviceUrl === event.target.value);
+            if (!member) return;
+            input.value = member.serviceUrl;
+            root.history.replaceState(null, '', root.LensLinks.pageUrl({ member: member.key }));
+            return loadService({ expectedKey: member.key });
         });
-        doc.getElementById('lc-service-load').addEventListener('click', loadService);
-        input.addEventListener('keydown', event => { if (event.key === 'Enter') loadService(); });
-        doc.getElementById('lc-attestations-load').addEventListener('click', loadAttestations);
-        doc.getElementById('lc-wallet-connect').addEventListener('click', connectWallet);
-        doc.getElementById('lc-decision-form').addEventListener('submit', submitDecision);
-
+        const listen = (id, fn) => {
+            const button = doc.getElementById(id);
+            button.addEventListener('click', () => root.BusyControl.track(button, fn));
+        };
+        function manualService() {
+            const entry = state.directory.find(m => m.serviceUrl === core.normalizeServiceUrl(input.value));
+            if (root.history) root.history.replaceState(null, '', root.LensLinks.pageUrl(entry ? { member: entry.key } : { view: 'members' }));
+            return loadService({ persist: true, expectedKey: entry?.key });
+        }
+        listen('lc-service-load', manualService);
+        input.addEventListener('keydown', event => { if (event.key === 'Enter') doc.getElementById('lc-service-load').click(); });
+        listen('lc-attestations-load', () => state.status ? loadAttestations() : state.serviceUrl ? loadService({ expectedKey: state.expectedKey }) : loadDirectory());
+        listen('lc-wallet-connect', connectWallet);
+        doc.getElementById('lc-decision-form').addEventListener('submit', event => {
+            event.preventDefault();
+            const button = doc.getElementById('lc-decision-submit');
+            if (!root.BusyControl.isBusy(button)) return root.BusyControl.track(button, () => submitDecision(event));
+        });
         renderWallet();
         loadDirectory();
-        if (input.value) loadService();
     }
 
     if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', init);

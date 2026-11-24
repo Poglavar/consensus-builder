@@ -29,7 +29,7 @@ const seconds = instant => Math.floor(Date.parse(instant) / 1000);
 export function countAgreementDecisions(agreement, receipts) {
     const subject = decisionSubject(agreement);
     const folded = relay.fold(subject, receipts || []);
-    const counted = folded.applied.filter(receipt => folded.ownerApprovals[receipt.ownerId] === receipt);
+    const counted = relay.countedApprovals(folded);
     const last = folded.applied.at(-1) ?? null;
     return { subject, counted, tally: approval.tally(subject, Object.keys(folded.ownerApprovals)), lastDecidedAt: last?.decidedAt ?? null };
 }
@@ -39,9 +39,7 @@ export function countAgreementDecisions(agreement, receipts) {
  * signing order. Anyone re-derives it from GET /agreements/:cid/decisions: fold the receipts, keep
  * each party's current approval in signing order, stringify, hash.
  */
-export function decisionEvidenceRef(counted) {
-    return `sha256:${createHash('sha256').update(approval.stableStringify(counted), 'utf8').digest('hex')}`;
-}
+export const decisionEvidenceRef = approval.decisionEvidenceRef;
 
 // Investor-funded agreements use the same Agreement program and proposal_pledge donation escrow as
 // ordinary support donations.  This is deliberately separate from owner tallying: a soft pledge,

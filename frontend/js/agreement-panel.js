@@ -952,6 +952,7 @@
                 + `<p class="agreement-panel-meta" data-agreement-plan-design-count>${esc(`${t('agreement.panel.designs', 'Designs in the plan')} (${(agreement.designs || []).length})`)}</p>`) : '') + fundingTermsHtml(agreement);
             // Decision keeps the agreement's mutable status, voting and settlement controls together.
             const decision = (!published ? `<p class="agreement-panel-meta"><span class="cb-badge">${esc(t('designMemberships.draft', 'Draft'))}</span></p>` : '') + status
+                + (agreement.published?.cid && win.LensLinks ? `<p><a class="cb-link" target="_blank" rel="noopener" href="${esc(win.LensLinks.pageUrl({ agreement: agreement.published.cid, city: agreement.city }))}">${esc(t('lensWalk.follow', 'Follow the lens decision'))}</a></p>` : '')
                 + publishedHtml({ published: agreement.published, remote: observedRemote(state.remote, chainView(agreement)?.chain), electorate: agreement.rule && agreement.rule.electorate, readOnly, consultation: community && agreement.consultation })
                 + (community && agreement.rule?.electorate === 'community' ? '<section class="agreement-panel-section" data-community-consultation></section>' : '')
                 + (voting && agreement.rule?.electorate === 'community' && agreement.consultation?.voting && agreement.published ? '<section class="agreement-panel-section" data-community-voting></section>' : '')

@@ -346,10 +346,11 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
     app.get('/lens/attestations', wrap(async (req, res) => {
         const text = name => (typeof req.query[name] === 'string' && req.query[name].trim() ? req.query[name].trim() : null);
         const kind = text('kind');
+        const address = text('address');
         if (kind && !LENS_SCHEMA_KINDS.includes(kind)) throw new LensError(400, 'bad_request', `kind must be one of ${LENS_SCHEMA_KINDS.join(', ')}`);
         const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 200, 1), 500);
         const attestations = await member.listAttestations({
-            parcelUid: text('parcelUid'), agreementCid: text('agreementCid'), owner: text('owner'), recipeHash: text('recipeHash'), kind, limit
+            address, parcelUid: text('parcelUid'), agreementCid: text('agreementCid'), owner: text('owner'), recipeHash: text('recipeHash'), kind, limit
         });
         res.json({ attestations: attestations.map(publicRecord) });
     }));

@@ -29,6 +29,43 @@ code.lc-v, .lc-mono { font:12px/1.4 var(--cb-font-mono); overflow-wrap:anywhere;
 .lc-ok { color:var(--cb-success-soft-ink); }
 .lc-warn { color:var(--cb-warning-soft-ink); }
 .lc-error { color:var(--cb-danger); overflow-wrap:anywhere; }
+
+/* Agreement trail and its public evidence. Keep long addresses out of the reading column. */
+.lc-body [hidden], .lc-body [role="status"]:empty { display:none; }
+.lc-views { display:flex; flex-wrap:wrap; gap:4px; padding:4px; margin:0 0 18px; border:1px solid var(--cb-line); border-radius:var(--cb-radius-lg); background:var(--cb-surface-2); }
+.lc-views a { flex:1 1 auto; padding:9px 12px; border-radius:var(--cb-radius-sm); color:var(--cb-text-muted); font-weight:600; text-align:center; text-decoration:none; }
+.lc-views a:hover { color:var(--cb-link); }
+.lc-views a[aria-current="page"] { background:var(--cb-surface); color:var(--cb-primary-soft-ink); box-shadow:0 1px 3px var(--cb-line); }
+.lc-lead { margin:0 0 16px; max-width:68ch; }
+.lc-filters { display:grid; gap:6px 12px; }
+.lc-filters > div { min-width:0; }
+.lc-subject { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; margin:24px 0 12px; }
+.lc-subject h2 { margin:0; font-size:1.3rem; overflow-wrap:anywhere; }
+.lc-stages { margin:0; padding:0; list-style:none; counter-reset:stage; }
+.lc-stages > li { position:relative; counter-increment:stage; padding:0 0 14px; padding-inline-start:38px; }
+.lc-stages > li::before { content:counter(stage); position:absolute; inset-inline-start:0; top:12px; display:grid; place-items:center; height:27px; width:27px; border-radius:50%; background:var(--cb-primary-soft); color:var(--cb-primary-soft-ink); font-weight:700; border:1px solid var(--cb-line); }
+.lc-stages > li:not(:last-child)::after { content:""; position:absolute; inset-inline-start:13px; top:42px; bottom:-8px; border-inline-start:1px solid var(--cb-line); }
+.lc-stages section { min-width:0; padding:12px 14px; border:1px solid var(--cb-line); border-radius:var(--cb-radius-lg); background:var(--cb-surface); }
+.lc-stages section > div { min-width:0; }
+.lc-stages h3, .lc-claim { margin:0 0 5px; font-size:1.02rem; overflow-wrap:anywhere; }
+.lc-stages p { margin:2px 0 6px; }
+.lc-facts { margin:0; }
+.lc-fact { display:flex; flex-wrap:wrap; gap:0 10px; padding:2px 0; }
+.lc-facts dt { flex:0 1 142px; color:var(--cb-text-muted); font-size:.88rem; }
+.lc-facts dd { flex:1 1 130px; margin:0; overflow-wrap:anywhere; }
+.lc-proof { margin:6px 0; padding:0 10px; border:1px solid var(--cb-line); border-radius:var(--cb-radius-sm); }
+.lc-proof > summary, .lc-operator > summary { cursor:pointer; padding:8px 0; font-weight:600; overflow-wrap:anywhere; }
+.lc-proof pre { max-height:20rem; overflow:auto; padding:8px; background:var(--cb-surface-2); white-space:pre-wrap; overflow-wrap:anywhere; font:12px/1.45 var(--cb-font-mono); }
+.lc-meta { margin:0 0 3px; font-size:.83rem; color:var(--cb-text-muted); }
+.lc-result { font-weight:650; }
+#lc-directory { margin-bottom:14px; }
+.lc-loading::before { display:inline-block; content:""; width:.8em; height:.8em; margin-inline-end:.5em; border:2px solid var(--cb-line); border-top-color:var(--cb-primary); border-radius:50%; animation:lc-turn 1s linear infinite; }
+@keyframes lc-turn { to { transform:rotate(360deg); } }
+@media (prefers-reduced-motion:reduce) { .lc-loading::before { animation:none; } }
+@media (min-width:700px) {
+    .lc-filters { grid-template-columns:minmax(120px,1fr) minmax(0,2.5fr); }
+    .lc-stages section { display:grid; grid-template-columns:minmax(120px,1fr) minmax(0,3fr); gap:18px; }
+}
 @media (min-width:640px) {
     .lc-wrap { padding:20px 18px 48px; }
     .lc-grid { grid-template-columns:minmax(150px,220px) minmax(0,1fr); align-items:center; column-gap:10px; }

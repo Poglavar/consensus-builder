@@ -127,6 +127,11 @@ test.describe('Lens settings @features', () => {
     await expect(lens).toBeVisible();
     const member = lens.locator(`[data-lens-member="${MEMBER}"]`);
     await expect(member).toBeVisible();
+    const statements = lens.getByRole('link', { name: 'See issued statements' });
+    const memberLink = new URL(await statements.getAttribute('href') as string, page.url());
+    expect(memberLink.pathname).toBe('/lens.html');
+    expect(memberLink.searchParams.get('member')).toBe(MEMBER);
+    await expect(member).not.toBeChecked();
     await member.check();
     await expect.poll(() => page.evaluate(() => (window as any).LensPicker.getEntries().map((entry: any) => entry.address)))
       .toEqual([MEMBER]);

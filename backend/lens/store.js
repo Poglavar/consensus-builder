@@ -12,8 +12,10 @@ function emptyCounts() {
 
 // recipeHash selects MarketEvidence-v1 records by the recipe they answer and agreementCid
 // AgreementDecision-v1 records by their agreement (both live in the payload).
-function matches(record, { parcelUid, agreementCid, owner, recipeHash, kind }) {
-    return (!parcelUid || record.parcelUid === parcelUid)
+function matches(record, { authority, address, parcelUid, agreementCid, owner, recipeHash, kind }) {
+    return (!authority || record.authority === authority)
+        && (!address || record.address === address)
+        && (!parcelUid || record.parcelUid === parcelUid)
         && (!agreementCid || record.payload?.agreementCid === agreementCid)
         && (!owner || record.owner === owner)
         && (!recipeHash || record.payload?.recipeHash === recipeHash)
@@ -24,11 +26,13 @@ export function createMemoryStore({ initial = [], onRecord = null } = {}) {
     const records = new Map(initial.map(record => [record.address, { ...record }]));
     return {
         kind: 'memory',
-        async get(address) {
-            return records.get(address) ?? null;
+        async get(address, { authority = null } = {}) {
+            const record = records.get(address) ?? null;
+            return record && (!authority || record.authority === authority) ? record : null;
         },
-        async qualification({ credential, schema, terms, now }) {
+        async qualification({ authority, credential, schema, terms, now }) {
             return [...records.values()].find(r => r.credential === credential && r.schema === schema && r.expiry > now
+                && (!authority || r.authority === authority)
                 && Object.entries(terms).every(([k, v]) => r.payload?.[k] === v)) ?? null;
         },
         async record(record) {
@@ -39,11 +43,12 @@ export function createMemoryStore({ initial = [], onRecord = null } = {}) {
         async list(filter = {}) {
             return [...records.values()].filter(record => matches(record, filter)).slice(0, filter.limit ?? 200);
         },
-        async counts() {
+        async counts({ authority = null } = {}) {
             const counts = emptyCounts();
             const parcels = new Set();
             const agreements = new Set();
             for (const record of records.values()) {
+                if (authority && record.authority !== authority) continue;
                 counts[record.kind] += 1;
                 if (record.parcelUid) parcels.add(record.parcelUid);
                 if (record.kind === 'decision') agreements.add(record.payload?.agreementCid);
@@ -97,14 +102,14 @@ export function createPgStore(pool) {
     if (!pool || typeof pool.query !== 'function') throw new Error('createPgStore: a pg pool is required');
     return {
         kind: 'postgres',
-        async get(address) {
-            const { rows } = await pool.query(`SELECT ${COLUMNS} FROM consensus.lens_attestation WHERE address = $1`, [address]);
+        async get(address, { authority = null } = {}) {
+            const { rows } = await pool.query(`SELECT ${COLUMNS} FROM consensus.lens_attestation WHERE address = $1 AND ($2::text IS NULL OR authority = $2)`, [address, authority]);
             return rows[0] ? recordOf(rows[0]) : null;
         },
-        async qualification({ credential, schema, terms, now }) {
+        async qualification({ authority, credential, schema, terms, now }) {
             const { rows } = await pool.query(`SELECT ${COLUMNS} FROM consensus.lens_attestation
-                WHERE kind = 'propertyOffer' AND credential = $1 AND schema = $2 AND expiry > $3 AND payload @> $4::jsonb
-                ORDER BY expiry DESC LIMIT 1`, [credential, schema, now, JSON.stringify(terms)]);
+                WHERE kind = 'propertyOffer' AND authority = $1 AND credential = $2 AND schema = $3 AND expiry > $4 AND payload @> $5::jsonb
+                ORDER BY expiry DESC LIMIT 1`, [authority, credential, schema, now, JSON.stringify(terms)]);
             return rows[0] ? recordOf(rows[0]) : null;
         },
         async record(r) {
@@ -117,20 +122,22 @@ export function createPgStore(pool) {
                 r.payment ? JSON.stringify(r.payment) : null, r.issuedAt]);
             if (rowCount !== 1) throw new Error(`attestation ${r.address} is already recorded`);
         },
-        async list({ parcelUid = null, agreementCid = null, owner = null, recipeHash = null, kind = null, limit = 200 } = {}) {
+        async list({ authority = null, address = null, parcelUid = null, agreementCid = null, owner = null, recipeHash = null, kind = null, limit = 200 } = {}) {
             const { rows } = await pool.query(`
                 SELECT ${COLUMNS} FROM consensus.lens_attestation
-                WHERE ($1::text IS NULL OR parcel_uid = $1)
-                  AND ($2::text IS NULL OR payload->>'agreementCid' = $2)
-                  AND ($3::text IS NULL OR owner = $3)
-                  AND ($4::text IS NULL OR kind = $4)
-                  AND ($5::text IS NULL OR payload->>'recipeHash' = $5)
+                WHERE ($1::text IS NULL OR authority = $1)
+                  AND ($2::text IS NULL OR address = $2)
+                  AND ($3::text IS NULL OR parcel_uid = $3)
+                  AND ($4::text IS NULL OR payload->>'agreementCid' = $4)
+                  AND ($5::text IS NULL OR owner = $5)
+                  AND ($6::text IS NULL OR kind = $6)
+                  AND ($7::text IS NULL OR payload->>'recipeHash' = $7)
                 ORDER BY issued_at DESC NULLS LAST, address
-                LIMIT $6
-            `, [parcelUid, agreementCid, owner, kind, recipeHash, limit]);
+                LIMIT $8
+            `, [authority, address, parcelUid, agreementCid, owner, kind, recipeHash, limit]);
             return rows.map(recordOf);
         },
-        async counts() {
+        async counts({ authority = null } = {}) {
             const { rows } = await pool.query(`
                 SELECT count(*) FILTER (WHERE kind = 'ownership')::int AS ownership,
                        count(*) FILTER (WHERE kind = 'decision')::int AS decision,
@@ -139,7 +146,8 @@ export function createPgStore(pool) {
                        count(DISTINCT parcel_uid)::int AS parcels,
                        count(DISTINCT payload->>'agreementCid') FILTER (WHERE kind = 'decision')::int AS agreements
                 FROM consensus.lens_attestation
-            `);
+                WHERE ($1::text IS NULL OR authority = $1)
+            `, [authority]);
             return { ...emptyCounts(), ...rows[0] };
         }
     };

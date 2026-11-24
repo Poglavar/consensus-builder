@@ -290,11 +290,21 @@
             parcelUid: cleanText(att.parcelUid),
             owner: cleanText(att.owner),
             accountHash: cleanText(att.accountHash),
-            expiry: Number.isFinite(Number(att.expiry)) ? Number(att.expiry) : null,
+            expiry: att.expiry != null && Number.isFinite(Number(att.expiry)) ? Number(att.expiry) : null,
             issuedAt: cleanText(att.issuedAt),
             payload: att.payload && typeof att.payload === 'object' ? att.payload : null,
-            transactionSignature: cleanText(att.transactionSignature)
+            transactionSignature: cleanText(att.transactionSignature),
+            credential: cleanText(att.credential),
+            schema: cleanText(att.schema)
         }));
+    }
+
+    // Keep a shared/older feed safe to display: only records actually signed by the
+    // selected authority are member records.  Address filtering is intentionally exact.
+    function filterMemberAttestations(list, { memberKey = null, address = null } = {}) {
+        return (Array.isArray(list) ? list : []).filter(att => att
+            && (!memberKey || att.authority === memberKey)
+            && (!address || att.address === address));
     }
 
     // The approval engine's tally a member returns with an agreement decision, issued or refused
@@ -354,6 +364,7 @@
         classifyServiceResponse,
         describeOwnershipPrice,
         normalizeAttestations,
+        filterMemberAttestations,
         describeDecisionTally,
         readDecisionAnswer
     };

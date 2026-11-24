@@ -242,6 +242,7 @@
         return '{' + Object.keys(value).sort().map(key => JSON.stringify(key) + ':' + stableStringify(value[key])).join(',') + '}';
     }
     const hash = (prefix, value) => prefix + crypto().sha256Hex(stableStringify(value));
+    const decisionEvidenceRef = counted => hash('sha256:', counted);
     const contextHash = proposal => hash('approval1-sha256:', contextContent(proposal));
     function inspect(proposal) {
         const context = contextContent(proposal);
@@ -460,6 +461,6 @@
     }
     return { RIGHTS_SCHEMA, RIGHTS_SCHEMA_V2, CONFIG_SCHEMA, CONTEXT_SCHEMA, DECISION_SCHEMA, MEASURES, CLASSES, SCOPES, MAX_TESTS, MAX_AUTHORITIES,
         normalizeRights, normalizeConfig, normalizePolicy, policyRules, testOf,
-        lensKeys, contextContent, contextHash, stableStringify, inspect, ownerLabel, partyOf, partyLabel, letters, createTemplate,
+        lensKeys, contextContent, contextHash, stableStringify, decisionEvidenceRef, inspect, ownerLabel, partyOf, partyLabel, letters, createTemplate,
         tally, participantTally, evidenceAllows, subjectOf, decisionContent, validOwnerIds, recordDecision };
 });

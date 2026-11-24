@@ -70,7 +70,7 @@ function boot({ answer = { outcome: { kind: 'ok' }, body: decisionBody() } } = {
             attestationReads += 1;
             return {
                 outcome: { kind: 'ok' },
-                attestations: attestationReads === 1 ? [] : [{ kind: 'decision', address: KEY, payload: { agreementCid: CID, decision: 'satisfied' } }]
+                attestations: attestationReads === 1 ? [] : [{ kind: 'decision', address: KEY, authority: KEY, payload: { agreementCid: CID, decision: 'satisfied' } }]
             };
         },
         async postAgreementDecision(request) {
@@ -87,6 +87,8 @@ function boot({ answer = { outcome: { kind: 'ok' }, body: decisionBody() } } = {
     const window = {
         document,
         LensCore,
+        LensLinks: require('../../frontend/js/lens-links.js'),
+        BusyControl: require('../../frontend/js/ui/busy-control.js'),
         Cid,
         LensServiceClient: client,
         location: { search: '' },

@@ -264,8 +264,8 @@ describe('postgres store', () => {
         const pool = { query: async (sql, params) => { queries.push({ sql, params }); return { rows: [{ ownership: 0, decision: 1, propertyOffer: 3, evidence: 2, parcels: 0, agreements: 1 }], rowCount: 0 }; } };
         const store = createPgStore(pool);
         await store.list({ kind: 'evidence', recipeHash: RECIPE_HASH });
-        expect(queries[0].sql).toContain("payload->>'recipeHash' = $5");
-        expect(queries[0].params).toEqual([null, null, null, 'evidence', RECIPE_HASH, 200]);
+        expect(queries[0].sql).toContain("payload->>'recipeHash' = $7");
+        expect(queries[0].params).toEqual([null, null, null, null, null, 'evidence', RECIPE_HASH, 200]);
         expect(await store.counts()).toEqual({ ownership: 0, decision: 1, propertyOffer: 3, evidence: 2, parcels: 0, agreements: 1 });
         expect(queries[1].sql).toContain("count(*) FILTER (WHERE kind = 'evidence')::int AS evidence");
         // Agreements are counted by the CID their decisions name in the payload.

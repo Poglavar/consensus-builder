@@ -20,6 +20,7 @@ import { createLensMemberApp } from '../lens/server.js';
 const NOW = 1790000000; // 2026-09-21
 const clock = { nowSeconds: () => NOW };
 const AUTHORITY = 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ';
+const BOB_AUTHORITY = 'Gsvt6nMhsvfrEDgvcqZDzPKZhhqACFEi3mueMxQNQ6UT';
 const SPONSOR = 'Gsvt6nMhsvfrEDgvcqZDzPKZhhqACFEi3mueMxQNQ6UT';
 const AGREEMENT_CID = cidOfObject({ schema: 'agreement/v1', title: 'lens member service' });
 const TOKEN = 'operator-secret';
@@ -199,6 +200,28 @@ describe('reference lens member', () => {
         expect(status.body.counts).toMatchObject({ ownership: 2, decision: 1, evidence: 0, parcels: 2, agreements: 1 });
     });
 
+    it('scopes shared-store reads to the serving member and supports exact address lookup', async () => {
+        const shared = createMemoryStore({ initial: [
+            { address: 'issuer-a-record', kind: 'ownership', credential: 'credential-a', schema: 'schema-a', authority: AUTHORITY,
+                parcelUid: 'parcel-a', owner: alice.address, payload: { parcelUid: 'parcel-a', owner: alice.address }, accountHash: 'a', expiry: NOW + 100,
+                transactionSignature: null, payment: null, issuedAt: new Date(NOW * 1000).toISOString() },
+            { address: 'issuer-b-record', kind: 'ownership', credential: 'credential-b', schema: 'schema-b', authority: BOB_AUTHORITY,
+                parcelUid: 'parcel-b', owner: bob.address, payload: { parcelUid: 'parcel-b', owner: bob.address }, accountHash: 'b', expiry: NOW + 100,
+                transactionSignature: null, payment: null, issuedAt: new Date(NOW * 1000).toISOString() }
+        ] });
+        const issuer = createFakeIssuer({ authority: AUTHORITY, clock });
+        const identity = createDevnetRegistryIdentity({ rows: registryRows(), clock, authority: AUTHORITY });
+        const member = createLensMember({ authority: AUTHORITY, issuer, store: shared, identity, clock, dryRun: true });
+        const app = createLensMemberApp({ member, pricing: createLensPricing({ dryRun: true }) });
+        const all = await request(app).get('/lens/attestations');
+        expect(all.body.attestations.map(row => row.address)).toEqual(['issuer-a-record']);
+        const exact = await request(app).get('/lens/attestations').query({ address: 'issuer-a-record' });
+        expect(exact.body.attestations).toHaveLength(1);
+        const foreign = await request(app).get('/lens/attestations').query({ address: 'issuer-b-record' });
+        expect(foreign.body.attestations).toEqual([]);
+        expect((await request(app).get('/lens/status')).body.counts).toMatchObject({ ownership: 1, parcels: 1 });
+    });
+
     it('refuses to issue for free when a live member has no x402 config', async () => {
         const { app, issuer } = setup({ dryRun: false, pricing: createLensPricing({ dryRun: false, env: {} }) });
         const res = await request(app).post('/lens/ownership').send(await challengeAndSign(app, alice, 'HR-335550-1/1'));
@@ -231,8 +254,8 @@ describe('reference lens member', () => {
         expect(queries[0].params.at(-1)).toBe('2026-09-21T00:00:00.000Z');
 
         await store.list({ agreementCid: AGREEMENT_CID, kind: 'decision' });
-        expect(queries[1].sql).toMatch(/payload->>'agreementCid' = \$2/);
-        expect(queries[1].params).toEqual([null, AGREEMENT_CID, null, 'decision', null, 200]);
+        expect(queries[1].sql).toMatch(/payload->>'agreementCid' = \$4/);
+        expect(queries[1].params).toEqual([null, null, null, AGREEMENT_CID, null, 'decision', null, 200]);
 
         const identity = createDevnetRegistryIdentity({ pool, clock, authority: AUTHORITY });
         await identity.ownerSet('HR-335550-1/1');

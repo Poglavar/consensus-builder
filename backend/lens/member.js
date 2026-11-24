@@ -120,7 +120,7 @@ export function createLensMember({
     async function issue(schemaKind, fields, nonce, extra) {
         const schema = schemas[schemaKind];
         const address = deriveAttestationPda({ credential, schema, nonce });
-        const existing = await store.get(address);
+        const existing = await store.get(address, { authority });
         if (existing) {
             lensLog(`${schemaKind} ${address} already issued, returning the stored record`);
             return { ...existing, reused: true };
@@ -179,7 +179,7 @@ export function createLensMember({
         }
         const nonce = factNonce([LENS_SCHEMAS.ownership.id, parcelUid, owner, fields.ownerCount, fields.sourceObservedAt]);
         const address = deriveAttestationPda({ credential, schema: schemas.ownership, nonce });
-        return { fields, nonce, address, existing: await store.get(address) };
+        return { fields, nonce, address, existing: await store.get(address, { authority }) };
     }
 
     // The MarketEvidence-v1 the member would issue. recipe: { recipeHash, subject }, the recipe's hash
@@ -204,7 +204,7 @@ export function createLensMember({
         }
         const nonce = factNonce([LENS_SCHEMAS.evidence.id, fields.recipeHash, fields.value, fields.eventTime]);
         const address = deriveAttestationPda({ credential, schema: schemas.evidence, nonce });
-        const existing = await store.get(address);
+        const existing = await store.get(address, { authority });
         if (existing && existing.payload?.subject !== fields.subject) {
             throw new LensError(409, 'evidence_conflict',
                 `attestation ${address} already states recipe ${fields.recipeHash} for subject ${JSON.stringify(existing.payload?.subject)}`);
@@ -228,14 +228,14 @@ export function createLensMember({
                 identity: identity.kind,
                 dryRun,
                 ephemeralKey: ephemeral,
-                counts: await store.counts()
+                counts: await store.counts({ authority })
             };
         },
 
         planOwnership,
 
         listAttestations(filter = {}) {
-            return store.list(filter);
+            return store.list({ ...filter, authority });
         },
 
         async attestOwnership({ payment = null, ...request }) {
@@ -247,8 +247,8 @@ export function createLensMember({
         // whatever its decision and source time, or null. The program records only the first decision
         // an account receives, so the member issues at most one per agreement.
         async findDecision({ agreementCid, sponsor }) {
-            const records = await store.list({ kind: 'decision', agreementCid, limit: 50 });
-            return records.find(record => record.authority === authority && record.payload?.sponsor === sponsor) ?? null;
+            const records = await store.list({ authority, kind: 'decision', agreementCid, limit: 50 });
+            return records.find(record => record.payload?.sponsor === sponsor) ?? null;
         },
 
         // Issues AgreementDecision-v1 (programs/agreement/README.md). The nonce is deterministic per
@@ -265,7 +265,7 @@ export function createLensMember({
         },
 
         async findPropertyOfferQualification({ cid, offer, termsHash, payoutsHash, buyer, seller }) {
-            return store.qualification({ credential, schema: schemas.propertyOffer, now: clock.nowSeconds(),
+            return store.qualification({ authority, credential, schema: schemas.propertyOffer, now: clock.nowSeconds(),
                 terms: { cid, offer, termsHash, payoutsHash, buyer, seller, counterpartyQualified: 1 } });
         },
 

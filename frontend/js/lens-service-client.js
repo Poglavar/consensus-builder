@@ -58,11 +58,14 @@
     // agreementCid finds an agreement's AgreementDecision-v1, agreement-bridge.js).
     async function fetchAttestations({ serviceUrl, filter = {}, fetchImpl } = {}) {
         const params = new URLSearchParams();
-        ['parcelUid', 'agreementCid', 'owner', 'kind', 'limit'].forEach(name => {
+        ['address', 'parcelUid', 'agreementCid', 'owner', 'kind', 'limit'].forEach(name => {
             if (filter[name] !== undefined && filter[name] !== null && String(filter[name]).trim()) params.set(name, String(filter[name]).trim());
         });
         const query = params.toString();
         const result = await request(joinUrl(serviceUrl, `/lens/attestations${query ? `?${query}` : ''}`), { fetchImpl });
+        if (result.outcome.kind === 'ok' && !Array.isArray(result.body?.attestations)) {
+            return { ...result, outcome: { kind: 'error', status: result.status, code: 'invalid_attestations' }, attestations: null };
+        }
         return { ...result, attestations: result.outcome.kind === 'ok' ? LensCore.normalizeAttestations(result.body) : null };
     }
 

@@ -1,13 +1,10 @@
 <!doctype html>
-<!-- Lens member console: a lens member (notary, cadastre office) connects its wallet, reads its
-     member service's status and issued attestations, and attests the decision of an agreement with an
-     operator token that is entered here and never stored. Standalone page; logic lives in js/lens-core.js. -->
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Lens member console · Consensus Builder</title>
-    <meta name="description" content="Console for Urban Game Theory lens members: status, issued attestations and the decisions of agreements." />
+    <title>Lens activity · Urban Game Theory</title>
+    <meta name="description" content="Follow the approval rule, signed statements and execution of a published agreement." />
     <link rel="icon" href="favicon.ico" />
     <link rel="stylesheet" href="css/tokens.css?v=2" />
     <link rel="stylesheet" href="css/primitives.css?v=20261027-locales" />
@@ -15,14 +12,14 @@
     <link rel="stylesheet" href="css/mobile-sheets.css?v=20261027-style">
     <script src="js/mobile-dock-sheet.js" defer></script>
     <link rel="stylesheet" href="vendor/fontawesome-6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="css/lens-console.css?v=2" />
+    <link rel="stylesheet" href="css/lens-console.css?v=lens-activity" />
     <meta name="robots" content="noindex" />
     <link rel="canonical" href="https://urbangametheory.xyz/lens.html" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Consensus Builder" />
     <meta property="og:locale" content="en_US" />
-    <meta property="og:title" content="Lens member console · Consensus Builder" />
-    <meta property="og:description" content="Console for Urban Game Theory lens members: status, issued attestations and the decisions of agreements." />
+    <meta property="og:title" content="Lens activity · Urban Game Theory" />
+    <meta property="og:description" content="Follow the approval rule, signed statements and execution of a published agreement." />
     <meta property="og:url" content="https://urbangametheory.xyz/lens.html" />
     <meta property="og:image" content="https://urbangametheory.xyz/images/og-globe-20261019.jpg" />
     <meta property="og:image:width" content="1200" />
@@ -30,16 +27,16 @@
     <meta property="og:image:alt" content="The Consensus Builder globe showing parcel-data coverage across countries and cities." />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@UrbanGameTheory" />
-    <meta name="twitter:title" content="Lens member console · Consensus Builder" />
-    <meta name="twitter:description" content="Console for Urban Game Theory lens members: status, issued attestations and the decisions of agreements." />
+    <meta name="twitter:title" content="Lens activity · Urban Game Theory" />
+    <meta name="twitter:description" content="Follow the approval rule, signed statements and execution of a published agreement." />
     <meta name="twitter:image" content="https://urbangametheory.xyz/images/og-globe-20261019.jpg" />
     <meta name="twitter:image:alt" content="The Consensus Builder globe showing parcel-data coverage across countries and cities.">
 </head>
 <body class="cb-page lc-body">
     <header class="cb-page-header">
         <span class="cb-page-header__brand"><img class="cb-page-header__logo" src="images/consensus-builder-logo.png" alt="" width="28" height="28"><span>Consensus Builder</span></span>
-        <div class="cb-page-header__title"><h1 data-i18n-key="lensConsole.title">Lens member console</h1></div>
-        <a class="cb-link cb-back-link" href="/"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i><span data-i18n-key="lensConsole.backToMap">Back to the map</span></a>
+        <div class="cb-page-header__title"><h1 data-i18n-key="lensWalk.title">Lens activity</h1></div>
+        <a id="lc-back" class="cb-link cb-back-link" href="/"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i><span data-i18n-key="lensConsole.backToMap">Back to the map</span></a>
         <select id="lc-language" data-i18n-locale-select="language" class="cb-page-header__lang" aria-label="Language" data-i18n-key="language.switcher.aria" data-i18n-attr="aria-label">
             <option value="en">EN</option>
             <option value="hr">HR</option>
@@ -48,32 +45,37 @@
         </select>
     </header>
     <main class="lc-wrap">
-        <div class="lc-intro">
-            <p data-i18n-key="lensConsole.introAgreements">A lens member states facts about parcels and agreements as attestations. Point this console at your member service to see what it has issued and to attest the decisions of agreements.</p>
-            <p data-i18n-key="lensConsole.runOwn">Anyone can run a lens member: register a credential, start the reference service and it lists itself in the directory.</p>
-            <p><a id="lc-run-own" class="cb-link cb-link--external" target="_blank" rel="noopener noreferrer" data-i18n-key="lensConsole.runOwnLink">How to run your own member</a></p>
-        </div>
-
-        <section class="lc-card" aria-labelledby="lc-service-title">
-            <h2 id="lc-service-title" data-i18n-key="lensConsole.service.title">Member service</h2>
+        <nav class="lc-views" aria-label="Lens activity" data-i18n-key="lensWalk.title" data-i18n-attr="aria-label">
+            <a id="lc-flow-link" href="lens.html" data-i18n-key="lensWalk.walkthrough">Agreement walkthrough</a>
+            <a id="lc-members-link" href="lens.html?view=members" data-i18n-key="lensWalk.members">Member statements</a>
+        </nav>
+        <section id="lc-walkthrough" aria-labelledby="lc-flow-link">
+            <p class="lc-lead" data-i18n-key="lensWalk.intro">A lens is the set of members an agreement trusts to attest facts. Follow who signed and what happened next.</p>
+            <div class="lc-filters">
+                <div><label for="lc-search" class="lc-label" data-i18n-key="lensWalk.search">Find an agreement</label>
+                    <input id="lc-search" class="lc-field" type="search" autocomplete="off"></div>
+                <div><label for="lc-agreement" class="lc-label" data-i18n-key="lensWalk.choose">Published agreement</label>
+                    <select id="lc-agreement" class="lc-field"><option data-i18n-key="lensConsole.loading">Loading…</option></select></div>
+            </div>
+            <p id="lc-list-status" class="lc-muted" role="status"></p>
+            <div id="lc-flow-status" role="status"></div>
+            <div id="lc-story" hidden>
+                <div class="lc-subject">
+                    <h2 id="lc-subject"></h2>
+                    <a id="lc-map-agreement" class="cb-link" href="/" data-i18n-key="lensWalk.openAgreement">Open agreement on the map</a>
+                </div>
+                <ol class="lc-stages">
+                    <li><section aria-labelledby="lc-rule-title"><h3 id="lc-rule-title" data-i18n-key="lensWalk.rule">Who decides</h3><div id="lc-rule"></div></section></li>
+                    <li id="lc-owner-stage"><section aria-labelledby="lc-receipts-title"><h3 id="lc-receipts-title" data-i18n-key="lensWalk.receipts">Owner decisions</h3><div id="lc-receipts" aria-live="polite"></div></section></li>
+                    <li><section aria-labelledby="lc-statement-title"><h3 id="lc-statement-title" data-i18n-key="lensWalk.statement">Lens decision</h3><div id="lc-statement" aria-live="polite"></div></section></li>
+                    <li><section aria-labelledby="lc-execution-title"><h3 id="lc-execution-title" data-i18n-key="lensWalk.execution">Execution</h3><div id="lc-execution" aria-live="polite"></div></section></li>
+                </ol>
+            </div>
+            <button type="button" id="lc-retry" class="btn" hidden data-i18n-key="lensWalk.retry">Retry</button>
+        </section>
+        <section id="lc-members" hidden aria-labelledby="lc-members-link">
             <label class="lc-label" for="lc-directory" data-i18n-key="lensConsole.service.directoryLabel">Known members with a service URL</label>
             <select id="lc-directory" class="lc-field"></select>
-            <label class="lc-label" for="lc-service-url" data-i18n-key="lensConsole.service.urlLabel">Service URL</label>
-            <div class="lc-row">
-                <input id="lc-service-url" class="lc-field" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="http://localhost:3095" />
-                <button id="lc-service-load" class="btn" type="button" data-i18n-key="lensConsole.service.load">Load</button>
-            </div>
-            <div id="lc-status" class="lc-output" aria-live="polite"></div>
-        </section>
-
-        <section class="lc-card" aria-labelledby="lc-wallet-title">
-            <h2 id="lc-wallet-title" data-i18n-key="lensConsole.wallet.title">Member wallet</h2>
-            <div class="lc-row">
-                <button id="lc-wallet-connect" class="btn" type="button" data-i18n-key="lensConsole.wallet.connect">Connect wallet</button>
-            </div>
-            <div id="lc-wallet" class="lc-output" aria-live="polite"></div>
-        </section>
-
         <section class="lc-card" aria-labelledby="lc-attestations-title">
             <h2 id="lc-attestations-title" data-i18n-key="lensConsole.attestations.title">Issued attestations</h2>
             <div class="lc-grid">
@@ -83,6 +85,7 @@
                     <option value="ownership" data-i18n-key="lensConsole.attestations.kindOwnership">Ownership</option>
                     <option value="decision" data-i18n-key="lensConsole.attestations.kindDecision">Agreement decision</option>
                     <option value="evidence" data-i18n-key="lensConsole.attestations.kindEvidence">Market evidence</option>
+                    <option value="propertyOffer" data-i18n-key="lensActivity.propertyOffer">Property qualification</option>
                 </select>
                 <label class="lc-label" for="lc-filter-parcel" data-i18n-key="lensConsole.attestations.parcel">Parcel</label>
                 <input id="lc-filter-parcel" class="lc-field" type="text" autocomplete="off" spellcheck="false" />
@@ -92,7 +95,23 @@
             </div>
             <div id="lc-attestations" class="lc-output" aria-live="polite"></div>
         </section>
-
+        <details id="lc-operator" class="lc-operator">
+        <summary data-i18n-key="lensWalk.operator">Member operator tools</summary>
+        <section class="lc-card" aria-labelledby="lc-service-title">
+            <h2 id="lc-service-title" data-i18n-key="lensConsole.service.title">Member service</h2>
+            <label class="lc-label" for="lc-service-url" data-i18n-key="lensConsole.service.urlLabel">Service URL</label>
+            <div class="lc-row">
+                <input id="lc-service-url" class="lc-field" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://" />
+                <button id="lc-service-load" class="btn" type="button" data-i18n-key="lensConsole.service.load">Load</button>
+            </div>
+            <div id="lc-status" class="lc-output" aria-live="polite"></div>
+            <p><a id="lc-run-own" class="cb-link cb-link--external" target="_blank" rel="noopener noreferrer" data-i18n-key="lensConsole.runOwnLink">How to run your own member</a></p>
+        </section>
+        <section class="lc-card" aria-labelledby="lc-wallet-title">
+            <h2 id="lc-wallet-title" data-i18n-key="lensConsole.wallet.title">Member wallet</h2>
+            <div class="lc-row"><button id="lc-wallet-connect" class="btn" type="button" data-i18n-key="lensConsole.wallet.connect">Connect wallet</button></div>
+            <div id="lc-wallet" class="lc-output" aria-live="polite"></div>
+        </section>
         <section class="lc-card" aria-labelledby="lc-decision-title">
             <h2 id="lc-decision-title" data-i18n-key="lensConsole.decision.title">Attest the decision of an agreement</h2>
             <p class="lc-muted" data-i18n-key="lensConsole.decision.hint">The member counts the owner decisions relayed for the agreement and, once its rule is met before the deadline, issues the decision the agreement’s account records. Only the member operator can ask for it.</p>
@@ -105,6 +124,8 @@
             </form>
             <div id="lc-decision-result" class="lc-output" aria-live="polite"></div>
         </section>
+        </details>
+        </section>
     </main>
     <script src="js/persistent-storage.js?v=1"></script>
     <script src="js/i18n.js?v=20261124-kazakh"></script>
@@ -114,8 +135,21 @@
     <script src="js/solana/rpc-routing.js?v=1"></script>
     <script src="js/solana/wallet-adapter.js?v=1"></script>
     <script src="js/cid.js?v=1"></script>
-    <script src="js/lens-core.js?v=2"></script>
-    <script src="js/lens-service-client.js?v=2"></script>
-    <script src="js/lens-console.js?v=3"></script>
+    <script src="js/ui/busy-control.js"></script>
+    <script src="js/lens-links.js"></script>
+    <script src="js/lens-core.js?v=lens-activity"></script>
+    <script src="js/lens-service-client.js?v=lens-activity"></script>
+    <script src="js/lens-console.js?v=lens-activity"></script>
+    <script src="vendor/noble-hashes-1.8.0/sha256.js"></script>
+    <script src="js/proposals/approval-regimes.js"></script>
+    <script src="js/proposals/approval.js"></script>
+    <script src="js/proposals/approval-text.js"></script>
+    <script src="js/agreement-record.js"></script>
+    <script src="js/proposals/approval-proof.js"></script>
+    <script src="js/proposals/approval-relay.js"></script>
+    <script src="js/solana/agreement-client.js"></script>
+    <script src="js/solana/chain-data-loader.js"></script>
+    <script src="js/lens-agreement-evidence.js"></script>
+    <script src="js/lens-walkthrough.js"></script>
 </body>
 </html>

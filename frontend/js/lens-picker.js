@@ -157,6 +157,7 @@
                             <span class="lens-picker-coverage">${escapeText(memberCoverageLine(member, coverage, parcelIds.length))}</span>
                         </span>
                     </label>
+                    <a class="cb-link" href="${escapeText(root.LensLinks.pageUrl({ member: member.key }))}" target="_blank" rel="noopener">${escapeText(t('lensWalk.browse', 'See issued statements'))}</a>
                 </li>`).join('')}</ul>`;
         }
 

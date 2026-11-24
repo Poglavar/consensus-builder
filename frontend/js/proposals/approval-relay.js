@@ -82,6 +82,11 @@
         return { ownerApprovals: Object.fromEntries(current), ownerApprovalHistory: history, last, applied };
     }
 
+    // Keep each owner's current acceptance in canonical signing order for the lens evidence hash.
+    function countedApprovals(folded) {
+        return folded.applied.filter(receipt => folded.ownerApprovals[receipt.ownerId] === receipt);
+    }
+
     function refusal(status, code, message) {
         return { ok: false, status, code, message };
     }
@@ -202,5 +207,5 @@
         return { synced: true, changed, sent };
     }
 
-    return { LENS_PROVIDER, MAX_RECEIPT_BYTES, signatureOf, verifyLensReceipt, fold, admit, merge, push, pull, sync };
+    return { LENS_PROVIDER, MAX_RECEIPT_BYTES, signatureOf, verifyLensReceipt, fold, countedApprovals, admit, merge, push, pull, sync };
 });

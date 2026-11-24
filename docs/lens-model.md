@@ -293,9 +293,12 @@ receives an equal share of its parcel's share.
 - **Details, Acceptance section.** Per parcel: ownership attested by which member, how many of the
   attested owners have signed, a Say yes button for an attested owner's wallet, evidence links. The old "mint missing certificates and accept" flow is
   removed.
-- **Member console** (`/lens.html`): a lens member connects its wallet, sees ownership requests,
-  runs the configured identity adapter and signs. This makes a notary or a cadastre office a visible
-  actor in the demo.
+- **Lens activity** (`/lens.html`). Open a published agreement from its Decision tab to follow its
+  rule, signed owner decisions, lens statement and execution. Each stage reads its own source. The
+  walkthrough verifies owner signatures, checks whether the lens cited the current owner approvals,
+  and compares the signed statement with the decision recorded by the agreement on Solana. A member link opens the issuer’s statements, and a decision statement
+  links back to its agreement. These views are public. The member view also contains the service,
+  wallet and operator controls used to issue a decision.
 - **Timeline and Activity.** New action types `attestOwnership`, `acceptance`, `verdict` with
   messages; the Actors explorer shows attesters as actors of kind `attester`.
 
