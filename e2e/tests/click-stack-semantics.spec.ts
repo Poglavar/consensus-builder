@@ -91,7 +91,7 @@ for (const width of [1280, 390]) {
     await planSection.locator('[data-page="actions"]').click();
     const planActions = planSection.locator('.click-stack__actions > button');
     expect(await planActions.evaluateAll(buttons => buttons.map(button => button.className))).toEqual([
-      'btn btn-primary click-stack__share-plan', 'btn click-stack__create-agreement',
+      'btn btn-primary click-stack__share-plan', 'btn click-stack__create-agreement', 'btn click-stack__create-crowdfunding',
       'btn click-stack__collaborate-plan', 'btn click-stack__download-plan',
       // The plan's design is on the map: it can be taken off from here.
       'btn click-stack__unapply-plan']);

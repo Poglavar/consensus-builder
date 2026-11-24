@@ -1432,6 +1432,7 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 .click-stack__plan > .click-stack__actions {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
     gap: var(--cb-space-2);
 }
 .click-stack__plan > .click-stack__actions > .btn {
