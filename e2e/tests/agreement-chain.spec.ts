@@ -289,14 +289,16 @@ test.describe('Agreements on chain @core', () => {
       let reserved = false;
       const offer = { unitId: 'a-101', account: 'unit-account', termsHash: 'ab'.repeat(32), deposit: '12500000' };
       root.AgreementBridge = { ...root.AgreementBridge,
-        apartmentInventory: async () => [{ ...offer, status: reserved ? 'reserved' : 'available', buyer: reserved ? buyer : null, position: reserved ? 'position-account' : null }],
+        apartmentInventory: async () => [{ ...offer, status: reserved ? 'reserved' : 'available', buyer: reserved ? buyer : null, position: reserved ? 'position-account' : null, qualification: reserved ? 'verified-buyer-proof' : null }],
         reserveApartment: async ({ expectedBuyer, onStatus }: { expectedBuyer: string; onStatus: (status: { state: string }) => void }) => {
+          if (!root.__buyerQualified) throw Error('Your wallet is awaiting qualification for this apartment.');
           if (reserved || expectedBuyer !== buyer) throw Error('Invalid duplicate or buyer.');
           onStatus({ state: 'submitted' }); reserved = true;
           return { account, signature: 'reservation-signature', position: 'position-account' };
         } };
     }, { buyer, account });
     await panel.locator('[data-agreement-action="refresh-funding"]').click();
+    await expect(panel.locator('[data-agreement-funding-disclosure]')).toContainText('lens must qualify your wallet');
     const reserve = row.getByRole('button', { name: 'Reserve apartment', exact: true });
     await expect(reserve).toBeVisible();
     await reserve.press('Enter');
@@ -310,6 +312,14 @@ test.describe('Agreements on chain @core', () => {
     await page.locator('[data-wallet-connector="solana-phantom"]').click();
     await expect(review).toContainText(buyer);
     await expect(page.getByRole('alertdialog', { name: 'Apartment reserved' })).toHaveCount(0);
+    await page.evaluate(() => { const w = window as any; w.copyTextWithFeedback = async (value: string) => { w.__qualificationText = value; return true; }; });
+    await review.getByRole('button', { name: 'Copy qualification request' }).press('Enter');
+    expect(await page.evaluate(() => JSON.parse((window as any).__qualificationText))).toMatchObject({
+      agreement: cid, unitId: unit.unitId, unit: unit.unit, xrayBuilding: unit.xrayBuilding, buyer, developer: SPONSOR, lens: E2E_LENS_MEMBER_KEY
+    });
+    await review.getByRole('button', { name: 'Reserve apartment', exact: true }).press('Enter');
+    await expect(review).toContainText('Your wallet is awaiting qualification');
+    await page.evaluate(() => { (window as any).__buyerQualified = true; });
     await review.getByRole('button', { name: 'Reserve apartment', exact: true }).press('Enter');
     const receipt = page.getByRole('alertdialog', { name: 'Apartment reserved' });
     await expect(receipt).toContainText('Apartment A-101');
@@ -327,7 +337,7 @@ test.describe('Agreements on chain @core', () => {
     for await (const chunk of stream!) chunks.push(chunk);
     const schedule = JSON.parse(Buffer.concat(chunks).toString());
     expect(schedule).toMatchObject({ buyer, developer: SPONSOR, unit, projectId: 'garden-court', agreementCid: cid, agreementAccount: account,
-      contract: funding.contract, planCid, termsHash: 'ab'.repeat(32), depositPaidUsdcAtomic: '12500000', position: 'position-account', signature: 'reservation-signature' });
+      contract: funding.contract, planCid, termsHash: 'ab'.repeat(32), qualification: 'verified-buyer-proof', depositPaidUsdcAtomic: '12500000', position: 'position-account', signature: 'reservation-signature' });
   });
 
   test('a binding owners’ agreement is minted by its sponsor: proposed without a wallet it is proposed again with one, and Mint asks the mint’s terms', async ({ mockApi: page, browser, baseURL }) => {

@@ -10,6 +10,35 @@
         ? pack([city, source, id]) : null;
     const designBuilding = (cid, id) => cid && id != null && id !== '' ? pack(['design', cid, id]) : null;
 
+    // BuildingUnitLinks.pack encodes each segment independently. Reject aliases for the same
+    // selection so a camera change or an alternate spelling cannot list it twice in a round.
+    function locatorParts(value) {
+        if (typeof value !== 'string' || value.length > 1024) return [];
+        try {
+            const encoded = value.split('::');
+            const parts = encoded.map(decodeURIComponent);
+            return parts.every((part, i) => part && !/[\x00-\x1f\x7f]/.test(part) && encodeURIComponent(part) === encoded[i]) ? parts : [];
+        } catch (_) { return []; }
+    }
+
+    function apartmentLocator(value) {
+        const parts = locatorParts(value);
+        if (parts.length !== 3 || (parts[0] === 'design' && !/^baf(?:krei|ybei)[a-z2-7]{52}$/.test(parts[1]))) return null;
+        return parts;
+    }
+
+    function apartmentUnitLocator(value) {
+        const parts = locatorParts(value);
+        if (![2, 3].includes(parts.length) || !/^(?:0|-?[1-9]\d*)$/.test(parts[0]) || !Number.isSafeInteger(Number(parts[0]))) return null;
+        return parts.length === 3 && !/^[a-f0-9]{24}$/.test(parts[2]) ? null : parts;
+    }
+
+    function apartmentLocation(at) {
+        if (typeof at !== 'string' || !/^-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?,\d+(?:\.\d+)?$/.test(at)) return false;
+        const [lat, lng, zoom] = at.split(',').map(Number);
+        return Math.abs(lat) <= 85.0511 && Math.abs(lng) <= 180 && zoom <= 24;
+    }
+
     function unitsForStorey(model, storey, layout) {
         const suggested = model.suggested === true;
         const regions = layout.architecture.apartmentRegions || [];
@@ -60,5 +89,5 @@
             access: offer.access || 'auto', center: [lng, lat] });
     }
 
-    return { nativeBuilding, designBuilding, unitsForStorey, read, link, offerLink };
+    return { nativeBuilding, designBuilding, unitsForStorey, read, link, offerLink, apartmentLocator, apartmentUnitLocator, apartmentLocation };
 });

@@ -691,7 +691,8 @@ export function setupAgreementsRoute(app, deps) {
         if (!city) return res.status(400).json({ error: 'Unknown city.', code: 'bad-city' });
         const buildingCity = building[0] === 'design' ? null : normalizeCityCode(building[0]);
         try {
-            const { rows } = await pool.query(`SELECT cid, title, city, item->>'unitId' AS "unitId", item->>'label' AS label
+            const { rows } = await pool.query(`SELECT cid, title, city, item->>'unitId' AS "unitId", item->>'label' AS label,
+                    item->>'depositUsdcAtomic' AS "depositUsdcAtomic"
                 FROM ${AGREEMENT_TABLE} CROSS JOIN LATERAL jsonb_array_elements(content->'funding'->'apartments'->'units') item
                 WHERE COALESCE($4::text, city) = $1 AND onchain IS NOT NULL AND ${STATUS_SQL} = 'active'
                   AND item->>'xrayBuilding' = $2 AND item->>'unit' = $3

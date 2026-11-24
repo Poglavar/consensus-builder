@@ -148,11 +148,12 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
                 payout: plan.agreement.sponsor ?? null,
                 decisionVerifierWallets: Array.isArray(plan.agreement.rule?.lens) ? plan.agreement.rule.lens : [],
                 decisionMethod: 'lens-attestation',
-                contributorEligibility: 'any-wallet',
-                kycEnforcedOnChain: false,
+                ...(plan.agreement.funding?.apartments
+                    ? { contributorEligibility: 'lens-qualified-buyer', qualificationBefore: 'reservation-deposit' }
+                    : { contributorEligibility: 'any-wallet', kycEnforcedOnChain: false }),
                 ...(plan.apartmentAvailability ? { availability: plan.apartmentAvailability } : {}),
                 action: plan.agreement.funding?.apartments
-                    ? 'Review a unit, its drawing and the developer contract. Prepare a reserve approval link with the permanent unitId for the buyer to sign.'
+                    ? 'Review the unit, drawing and developer contract. Prepare a reserve approval link with the permanent unitId. The developer’s lens must qualify the buyer for that unit before the buyer signs the deposit.'
                     : 'Review the attached contract before using ugt_approval_link with action donate.'
             } } : {}),
             items: matched.slice(offset, offset + limit).map(({ geometry, ...item }) => {

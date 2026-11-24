@@ -23,6 +23,7 @@
         const render = () => {
             const focused = body.contains(document.activeElement) ? document.activeElement.dataset.action : null;
             const content = record.content;
+            const apartment = content.apartment || null;
             const published = record.published?.cid;
             const direction = content.direction === 'buy' ? t('directions.buy', 'Offer to buy') : t('directions.sell', 'Offer to sell');
             const state = chain?.status || record.onchain?.status || (published ? t('states.published', 'Published') : t('states.draft', 'Draft'));
@@ -43,29 +44,36 @@
             body.innerHTML = `<h3>${escape(content.title || direction)}</h3><dl class="property-offer-panel__facts">`
                 + row(t('fields.direction', 'Direction'), escape(direction)) + row(t('fields.status', 'Status'), escape(state))
                 + row(t('fields.price', 'Total price'), escape(sol(content.priceLamports))) + row(t('fields.deadline', 'Deadline'), escape(new Date(content.expiresAt).toLocaleString()))
-                + row(t('fields.bundle', 'Parcel bundle'), escape(t('bundle', '{{count}} parcels — all or nothing', { count: content.parcels.length })))
+                + (apartment ? row(t('fields.apartment', 'Apartment'), escape(`${apartment.xrayBuilding} · ${apartment.unit}`)) : row(t('fields.bundle', 'Parcel bundle'), escape(t('bundle', '{{count}} parcels — all or nothing', { count: content.parcels.length }))))
                 + row(t('fields.buyer', 'Buyer'), roleValue(buyer)) + row(t('fields.seller', 'Seller'), roleValue(seller))
                 + row(t('fields.proposer', 'Proposer'), `<code title="${escape(content.proposer)}">${escape(short(content.proposer))}</code>`)
                 + row(t('fields.lens', 'Lens'), `<code title="${escape(content.lens)}">${escape(short(content.lens))}</code>`) + `</dl>`
-                + `<section class="property-offer-panel__section"><h4>${escape(t('fields.parcels', 'Parcels'))}</h4><ul class="property-offer-panel__parcels">${parcels}</ul></section>${payouts}`;
+                + (apartment ? `<p><a class="cb-link" href="${escape(root.BuildingUnitLinks.offerLink(root.location.href, root.MapShare, { city: content.city, language: root.i18n?.getLanguage?.(), backend: new URL(root.location.href).searchParams.get('backend') }, apartment))}">${escape(t('fields.openApartment', 'Open apartment in X-ray'))}</a></p>` : `<section class="property-offer-panel__section"><h4>${escape(t('fields.parcels', 'Parcels'))}</h4><ul class="property-offer-panel__parcels">${parcels}</ul></section>`)+payouts;
             const cluster = record.onchain?.cluster || root.solanaWalletManager?.getCluster?.() || 'devnet';
             let account = chain?.address || record.onchain?.account;
             if (!account && published) {
                 try { account = root.PropertyOfferClient?.getOfferPda?.(published, content.proposer)?.[0]?.toBase58?.() || null; } catch (_) { /* no configured client yet */ }
             }
-            if (published && account) {
-                const section = document.createElement('section'); section.className = 'property-offer-panel__section';
-                const heading = document.createElement('h4'); heading.textContent = t('fields.solanaAccount', 'Solana account'); section.append(heading);
+            function showAccount(label, address) {
+                const section = document.createElement('section');
+                section.className = 'property-offer-panel__section';
+                const heading = document.createElement('h4');
+                heading.textContent = label;
+                section.append(heading);
+                const link = document.createElement(cluster === 'devnet' ? 'a' : 'code');
                 if (cluster === 'devnet') {
-                    const link = document.createElement('a'); link.className = 'cb-link cb-link--external';
-                    link.href = `https://explorer.solana.com/address/${encodeURIComponent(account)}?cluster=devnet`;
-                    link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = account; section.append(link);
-                } else {
-                    const value = document.createElement('code'); value.textContent = account; section.append(value);
-                    const local = document.createElement('p'); local.className = 'property-offer-panel__hint'; local.textContent = t('localnetExplorerUnavailable', 'Localnet accounts are not available on the public Solana explorer.'); section.append(local);
+                    link.className = 'cb-link cb-link--external';
+                    link.href = `https://explorer.solana.com/address/${encodeURIComponent(address)}?cluster=devnet`;
+                    link.target = '_blank';
+                    link.rel = 'noopener noreferrer';
                 }
+                link.textContent = address;
+                section.append(link);
                 body.append(section);
             }
+            if (published && account) showAccount(t('fields.solanaAccount', 'Solana account'), account);
+            const anchor = chain?.apartmentAnchor || record.onchain?.apartmentAnchor;
+            if (apartment && anchor) showAccount(t('fields.apartmentAnchor', 'Apartment address on Solana'), anchor);
             body.querySelectorAll('[data-parcel-id]:not(:disabled)').forEach(button => button.addEventListener('click', () => root.BusyControl.track(button, async () => {
                 const id = button.dataset.parcelId;
                 try {

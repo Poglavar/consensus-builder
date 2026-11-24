@@ -15,6 +15,7 @@
     async function context(record, signing = false) {
         if (!win.solanaWeb3) await win.ensureWalletVendors();
         api().configure({ web3: win.solanaWeb3, sha256Hex: win.__consentSha256.sha256Hex, sha256Bytes: win.__consentSha256.sha256Bytes });
+        if (record.content.apartment) win.SolanaParcelClient.configure({ web3: win.solanaWeb3 });
         const cluster = record.onchain?.cluster || win.solanaWalletManager?.getCluster() || 'devnet';
         if (!['devnet', 'localnet'].includes(cluster)) throw new Error(text('devnetRequired', 'Property offers currently support Solana devnet and localnet.'));
         if (cluster === 'localnet' && !win.SOLANA_RPC_URLS?.localnet) throw new Error('A localnet RPC endpoint must be configured explicitly.');
@@ -30,7 +31,7 @@
         if (record.onchain?.account && record.onchain.account !== address) throw new Error('The chain address does not match the published offer.');
         return { connection, provider, wallet, cluster, address };
     }
-    async function readWith(record, ctx) {
+    async function readWith(record, ctx, { allowMissingAnchor = false } = {}) {
         const chain = await api().fetchPropertyOffer(ctx.connection, { address: ctx.address });
         if (!chain) return null;
         const content = record.content;
@@ -40,6 +41,11 @@
             throw new Error('The chain account does not match the published offer terms.');
         }
         if (content.direction === 'sell' && chain.payoutsHash !== hex(api().payoutScheduleHash(content.payouts))) throw new Error('The sale payout schedule differs from the published offer.');
+        if (content.apartment) {
+            const anchor = await win.SolanaParcelClient.readApartmentAnchor(ctx.connection, win.PropertyOfferRecord.apartmentHash(content.apartment));
+            if (!anchor && !allowMissingAnchor) throw new Error('The apartment address has yet to be minted on this network.');
+            return { ...chain, apartmentAnchor: anchor?.address || null };
+        }
         return chain;
     }
     async function read(record) { return readWith(record, await context(record)); }
@@ -101,6 +107,7 @@
     async function persist(record, ctx, signature) {
         const chain = await readWith(record, ctx);
         const ref = { chain: 'solana', cluster: ctx.cluster, account: ctx.address, signature, status: chain?.status?.toLowerCase() };
+        if (chain?.apartmentAnchor) ref.apartmentAnchor = chain.apartmentAnchor;
         // Keep the confirmed reference locally even if the index is temporarily unreachable.
         const saved = win.PropertyOfferStore.save({ ...record, onchain: ref });
         try { return await win.PropertyOfferSync.recordOnchain(saved, ref); }
@@ -109,12 +116,18 @@
     async function mint(record, options) {
         const ctx = await context(record, true);
         if (ctx.wallet !== record.content.proposer) throw new Error(text('makerOnly', 'Only the proposer can create this offer on Solana.'));
-        if (await readWith(record, ctx)) return persist(record, ctx, record.onchain?.signature || null);
         const content = record.content;
-        const { instruction } = api().buildCreateIx({ maker: ctx.wallet, cid: record.published.cid, lens: content.lens,
+        const prior = await readWith(record, ctx, { allowMissingAnchor: true });
+        if (prior && (!content.apartment || prior.apartmentAnchor)) return persist(record, ctx, record.onchain?.signature || null);
+        const instructions = [];
+        if (content.apartment) {
+            const identityHash = win.PropertyOfferRecord.apartmentHash(content.apartment);
+            instructions.push(win.SolanaParcelClient.buildMintApartmentIx({ payer: ctx.wallet, identityHash }).instruction);
+        }
+        if (!prior) instructions.push(api().buildCreateIx({ maker: ctx.wallet, cid: record.published.cid, lens: content.lens,
             side: content.direction, termsHash: hash(content), priceLamports: content.priceLamports,
-            deadline: Math.floor(Date.parse(content.expiresAt) / 1000), payouts: content.payouts || [] });
-        return persist(record, ctx, await send(ctx, [instruction], options));
+            deadline: Math.floor(Date.parse(content.expiresAt) / 1000), payouts: content.payouts || [] }).instruction);
+        return persist(record, ctx, await send(ctx, instructions, options));
     }
     async function mutate(record, build, options) {
         const ctx = await context(record, true), chain = await readWith(record, ctx);
@@ -129,10 +142,11 @@
         const normalized = win.PropertyOfferRecord.published({ ...c, direction: 'sell', buyer: null, seller: c.proposer,
             payouts: c.direction === 'sell' ? c.payouts : candidate.payouts });
         const prepared = { cid: record.published.cid, offer: ctx.address, termsHash: hex(hash(c)),
-            payoutsHash: hex(api().payoutScheduleHash(normalized.payouts)), ownershipHash: await ownershipBasis(record, candidate),
+            payoutsHash: hex(api().payoutScheduleHash(normalized.payouts)), ...(c.apartment ? {} : { ownershipHash: await ownershipBasis(record, candidate) }),
             buyer, seller, payouts: normalized.payouts, consents: [] };
         const unchanged = ['cid', 'offer', 'termsHash', 'payoutsHash', 'buyer', 'seller'].every(name => candidate[name] === prepared[name]);
-        if (unchanged && Array.isArray(candidate.consents)) prepared.consents = candidate.consents.map(row => ({ owner: row.owner, signature: row.signature }));
+        if (!c.apartment && unchanged && candidate.ownershipHash === prepared.ownershipHash && Array.isArray(candidate.consents))
+            prepared.consents = candidate.consents.map(row => ({ owner: row.owner, signature: row.signature }));
         return prepared;
     }
     async function signMessage(message) {
@@ -154,6 +168,7 @@
         return shared;
     }
     async function signAcceptance(record, candidate) {
+        if (record.content.apartment) throw new Error(text('awaitQualification', 'The named lens must qualify this counterparty before acceptance.'));
         const prepared = await prepareAcceptance(record, candidate), owner = connectedWallet();
         if (!prepared.payouts.some(row => row.recipient === owner)) throw new Error('The connected wallet is not a seller in this payout schedule.');
         const signature = await signMessage(win.PropertyOfferConsent.sellerConsentMessage({ ...prepared, seller: owner }));
@@ -163,7 +178,7 @@
         const prepared = await prepareAcceptance(record, candidate);
         const requester = record.content.direction === 'buy' ? prepared.seller : prepared.buyer;
         if (connectedWallet() !== requester) throw new Error('Connect the accepting counterparty’s wallet.');
-        if (prepared.payouts.some(row => !prepared.consents.some(consent => consent.owner === row.recipient))) throw new Error('Every seller must sign the exact payment schedule before acceptance.');
+        if (!record.content.apartment && prepared.payouts.some(row => !prepared.consents.some(consent => consent.owner === row.recipient))) throw new Error('Every seller must sign the exact payment schedule before acceptance.');
         const signature = await signMessage(win.PropertyOfferConsent.requestMessage(prepared));
         const serviceUrl = await lensService(record);
         const response = await win.fetch(`${serviceUrl}/lens/property-offers/${encodeURIComponent(record.published.cid)}/decision`, {

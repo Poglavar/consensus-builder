@@ -38,7 +38,7 @@ describe('lens schema definitions', () => {
         // programs/agreement/README.md: the agreement program's attest parses exactly this layout.
         expect(LENS_SCHEMAS.decision.sasLayout).toEqual([12, 12, 12, 12, 8]);
         expect(LENS_SCHEMAS.decision).toMatchObject({ id: 'AgreementDecision-v1', name: 'AgreementDecision', version: 1 });
-        expect(describeLensSchemas().map(s => s.id)).toEqual(['ParcelOwnership-v1', 'AgreementDecision-v1', 'PropertyOfferDecision-v1', 'MarketEvidence-v1']);
+        expect(describeLensSchemas().map(s => s.id)).toEqual(['ParcelOwnership-v1', 'AgreementDecision-v1', 'PropertyOfferDecision-v2', 'MarketEvidence-v1']);
     });
 });
 
@@ -158,7 +158,7 @@ describe('PDA derivation', () => {
             schemas: {
                 ownership: 'Hzs9t2CcHVNSJYxrgcBY7sCpr8MoY6VM95Xm5K54m7pv',
                 decision: '7JfxNayp1sLAWjpUvvQnbnSmiPLsKHrMv6BpPPyhjP3T',
-                propertyOffer: '3LNJPyp98dBedh1zWN3apGzi91qr22sDXZEjUTFRv711',
+                propertyOffer: '2Kewu1dkqAaz8mC6dtJ2rg89LeNjtQq2icfBQYdj7pAe',
                 evidence: 'C9Cyyr5HcjUdbBBjsY84Tm1gvPsCrsprc2SPk2EoVjTD'
             }
         });

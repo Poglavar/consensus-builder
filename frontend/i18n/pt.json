@@ -1769,6 +1769,12 @@
             "apartments": {
                 "inventory": "Apartamentos",
                 "priceAndDeposit": "Preço {{price}} USDC · Depósito de reserva {{deposit}} USDC",
+                "standalone": "Ofertas independentes em SOL",
+                "copyQualification": "Copiar pedido de aprovação",
+                "qualificationHint": "A lente do promotor precisa de aprovar a sua carteira para este apartamento antes do depósito de reserva.",
+                "qualificationPending": "A sua carteira aguarda aprovação para este apartamento. Pode partilhar o pedido com a lente do promotor.",
+                "invalidQualification": "A aprovação não corresponde a este comprador e apartamento.",
+                "noLensService": "A lente escolhida não tem serviço de aprovação.",
                 "openUnit": "Ver apartamento em raio X",
                 "downloadDrawing": "Descarregar planta ({{name}})",
                 "list": "Publicar apartamento",
@@ -5022,6 +5028,9 @@
             "chooseApartment": "Escolha um apartamento",
             "apartmentCopy": "Copiar ligação do apartamento",
             "apartmentCopyFailed": "Não foi possível copiar a ligação do apartamento.",
+            "offerToBuyApartment": "Propor a compra do apartamento",
+            "offerToSellApartment": "Propor a venda do apartamento",
+            "apartmentFundingDeposit": "Reservar em {{title}} · depósito de {{amount}} USDC",
             "findApartmentOffers": "Buscar ofertas deste apartamento",
             "apartmentOffersLoading": "Buscando ofertas publicadas…",
             "apartmentOffersFailed": "Não foi possível carregar as ofertas.",
@@ -9913,6 +9922,8 @@
         }
     },
   "propertyOffer": {
+    "lensQualification": "A lente escolhida decide se a outra parte cumpre os requisitos da oferta.",
+    "awaitQualification": "A lente indicada deve aprovar a outra parte antes da aceitação.",
     "buy": "Oferta de compra",
     "sell": "Oferta de venda",
     "createBuy": "Oferecer compra",
@@ -9956,7 +9967,7 @@
       "draft": "Rascunho",
       "published": "Publicada"
     },
-    "fields": {
+    "fields": { "apartment": "Apartamento", "openApartment": "Ver apartamento em raio X", "apartmentAnchor": "Endereço do apartamento na Solana",
       "title": "Título",
       "direction": "Tipo",
       "bundle": "Conjunto de parcelas",
@@ -9974,7 +9985,7 @@
       "parcelSnapshot": "Instantâneo",
       "solanaAccount": "Conta Solana"
     },
-    "defaults": {
+    "defaults": { "buyApartmentTitle": "Propor a compra do apartamento", "sellApartmentTitle": "Propor a venda do apartamento",
       "buyTitle": "Oferta para comprar {{count}} parcela(s)",
       "sellTitle": "Oferta para vender {{count}} parcela(s)"
     },

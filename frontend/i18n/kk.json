@@ -6521,6 +6521,9 @@
             "chooseApartment": "Пәтерді таңдаңыз",
             "apartmentCopy": "Пәтер сілтемесін көшіру",
             "apartmentCopyFailed": "Пәтер сілтемесін көшіру мүмкін болмады.",
+            "offerToBuyApartment": "Пәтерді сатып алуға ұсыныс жасау",
+            "offerToSellApartment": "Пәтерді сатуға ұсыныс жасау",
+            "apartmentFundingDeposit": "{{title}} келісімі бойынша брондау · кепілақы {{amount}} USDC",
             "findApartmentOffers": "Пәтерге қатысты ұсыныстарды іздеу",
             "apartmentOffersLoading": "Жарияланған ұсыныстар ізделуде…",
             "apartmentOffersFailed": "Ұсыныстарды жүктеу мүмкін болмады.",
@@ -8077,6 +8080,12 @@
             "apartments": {
                 "inventory": "Пәтерлер",
                 "priceAndDeposit": "Бағасы {{price}} USDC · Бронь жарнасы {{deposit}} USDC",
+                "standalone": "SOL-мен берілетін жеке ұсыныстар",
+                "copyQualification": "Мақұлдау сұрауын көшіру",
+                "qualificationHint": "Пәтерді кепілақымен брондау үшін алдымен құрылыс салушының линзасы әмияныңызды мақұлдауы керек.",
+                "qualificationPending": "Осы пәтер үшін әмияныңызға мақұлдау күтілуде. Сұрауды құрылыс салушы таңдаған линзаға жіберуге болады.",
+                "invalidQualification": "Мақұлдау осы сатып алушыға немесе пәтерге сәйкес келмейді.",
+                "noLensService": "Таңдалған линзада мақұлдау қызметі жоқ.",
                 "openUnit": "Пәтерді рентген көрінісінде ашу",
                 "downloadDrawing": "Жоспарды жүктеу ({{name}})",
                 "list": "Пәтерді жариялау",
@@ -9905,6 +9914,8 @@
         }
     },
     "propertyOffer": {
+    "lensQualification": "Таңдалған линза екінші тараптың ұсыныс талаптарына сай келетінін анықтайды.",
+    "awaitQualification": "Ұсынысты қабылдауға дейін таңдалған линза екінші тарапты мақұлдауы керек.",
         "buy": "Сатып алу туралы ұсыныс",
         "sell": "Сату туралы ұсыныс",
         "createBuy": "Сатып алуды ұсыну",
@@ -9948,7 +9959,7 @@
             "draft": "Нобай",
             "published": "Жарияланған"
         },
-        "fields": {
+        "fields": { "apartment": "Пәтер", "openApartment": "Пәтерді рентген көрінісінде ашу", "apartmentAnchor": "Пәтердің Solana желісіндегі мекенжайы",
             "title": "Атауы",
             "direction": "Бағыт",
             "bundle": "Учаскелер пакеті",
@@ -9966,7 +9977,7 @@
             "parcelSnapshot": "Сурет",
             "solanaAccount": "Solana санағы"
         },
-        "defaults": {
+        "defaults": { "buyApartmentTitle": "Пәтерді сатып алуға ұсыныс жасау", "sellApartmentTitle": "Пәтерді сатуға ұсыныс жасау",
             "buyTitle": "Учаскелерді сатып алу ұсынысы: {{count}}",
             "sellTitle": "Учаскелерді сату ұсынысы: {{count}}"
         },

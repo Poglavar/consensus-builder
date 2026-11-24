@@ -20,10 +20,10 @@ export function prepareAcceptance(row, raw = {}) {
     if (buyer === seller) reject('Buyer and seller must differ.');
     const payouts = Offer.published({ ...c, direction: 'sell', buyer: null, seller: c.proposer,
         payouts: c.direction === 'sell' ? c.payouts : raw.payouts }).payouts;
-    if (!payouts.some(p => p.recipient === seller)) reject('The seller representative must be a payout recipient.');
+    if (!c.apartment && !payouts.some(p => p.recipient === seller)) reject('The seller representative must be a payout recipient.');
     const candidate = { cid, offer: client.getOfferPda(cid, c.proposer)[0].toBase58(),
         termsHash: hash(canonicalBytes(c)), payoutsHash: Buffer.from(client.payoutScheduleHash(payouts)).toString('hex'),
-        ownershipHash: ownershipHash(raw.ownershipHash), buyer, seller, payouts };
+        ...(c.apartment ? {} : { ownershipHash: ownershipHash(raw.ownershipHash) }), buyer, seller, payouts };
     for (const key of ['cid', 'offer', 'termsHash', 'payoutsHash', 'ownershipHash', 'buyer', 'seller']) {
         if (raw[key] != null && raw[key] !== candidate[key]) reject(`Acceptance ${key} differs from the offer.`);
     }
@@ -31,7 +31,7 @@ export function prepareAcceptance(row, raw = {}) {
     return { id: hash(canonicalBytes(candidate)), candidate };
 }
 export function verifyConsent(candidate, consent) {
-    if (!consent || !candidate.payouts.some(p => p.recipient === consent.owner)
+    if (!candidate.ownershipHash || !consent || !candidate.payouts.some(p => p.recipient === consent.owner)
         || typeof consent.signature !== 'string' || consent.signature.length > 128
         || !verifyWalletSignature({ owner: consent.owner, signature: consent.signature,
             message: Consent.sellerConsentMessage({ ...candidate, seller: consent.owner }) })) reject('Invalid seller consent for these exact terms.');
@@ -45,7 +45,7 @@ export function verifySessionAuthor(id, candidate, { requester, signature } = {}
 export function serializeAcceptance(row) {
     const consents = Object.entries(row.consents || {}).map(([owner, signature]) => ({ owner, signature })).sort((a,b) => a.owner.localeCompare(b.owner));
     return { id: row.id, candidate: { ...row.candidate, consents },
-        waitingFor: row.candidate.payouts.map(p => p.recipient).filter(owner => !consents.some(c => c.owner === owner)) };
+        waitingFor: row.candidate.ownershipHash ? row.candidate.payouts.map(p => p.recipient).filter(owner => !consents.some(c => c.owner === owner)) : [] };
 }
 export function createAcceptanceStore(pool) {
     return {

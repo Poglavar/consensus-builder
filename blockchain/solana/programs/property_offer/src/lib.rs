@@ -1,20 +1,16 @@
-//! Fixed-price property offers. The published CID commits the atomic parcel bundle and price;
-//! this account adds the actual counterparties and a bounded payout schedule. It does not convey
-//! title. A lens's `PropertyOfferDecision-v1` must verify every scheduled recipient's entitlement
-//! before escrow can be released.
+//! Fixed-price property offers. The maker chooses the lens that qualifies the accepting
+//! counterparty for the immutable terms and payout schedule.
 
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::hash::hash;
 use anchor_lang::system_program;
-use sas_attestation::{PayloadReader, SasError, SAS_PROGRAM_ID};
+use sas_attestation::property::{qualification, QualificationError};
 
 declare_id!("BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp");
 
 pub const OFFER_SEED: &[u8] = b"property-offer";
 pub const MAX_CID_LEN: usize = 64;
 pub const MAX_PAYOUTS: usize = 16;
-pub const DECISION_SCHEMA_NAME: &[u8] = b"PropertyOfferDecision";
-pub const DECISION_SCHEMA_VERSION: u8 = 1;
 
 #[program]
 pub mod property_offer {
@@ -80,16 +76,20 @@ pub mod property_offer {
         };
         let schedule_hash = payout_hash(&schedule);
         let data = ctx.accounts.attestation.try_borrow_data()?;
-        let attestation = verify_attestation(&ctx.accounts.attestation, &data, &ctx.accounts.credential, now)?;
-        require_keys_eq!(attestation.authority, offer.lens, OfferError::WrongLens);
-        let decision = parse_decision(attestation.payload)?;
+        let decision = qualification(&ctx.accounts.attestation, &data, &ctx.accounts.credential, offer.lens, now).map_err(|e| match e {
+            QualificationError::Account => error!(OfferError::InvalidAttestation),
+            QualificationError::Payload => error!(OfferError::InvalidDecisionPayload),
+            QualificationError::Expired => error!(OfferError::AttestationExpired),
+            QualificationError::Lens => error!(OfferError::WrongLens),
+            QualificationError::Schema => error!(OfferError::WrongSchema),
+            QualificationError::NotQualified => error!(OfferError::CounterpartyNotQualified),
+            QualificationError::Future => error!(OfferError::AttestationFromFuture),
+        })?;
         require!(decision.cid == offer.cid.as_bytes(), OfferError::WrongDecision);
         require_keys_eq!(decision.offer, offer_key, OfferError::WrongDecision);
         require!(decision.terms_hash == offer.terms_hash && decision.payouts_hash == schedule_hash, OfferError::WrongDecision);
         require_keys_eq!(decision.buyer, buyer, OfferError::WrongDecision);
         require_keys_eq!(decision.seller, seller, OfferError::WrongDecision);
-        require!(decision.ownership_verified, OfferError::OwnershipNotVerified);
-        require!(decision.source_observed_at <= now, OfferError::AttestationFromFuture);
         offer.buyer = buyer; offer.seller = seller; offer.payouts = schedule; offer.payouts_hash = schedule_hash;
         offer.status = OfferStatus::Accepted;
         offer.accepted_at = now;
@@ -227,27 +227,11 @@ fn require_no_offer_recipient(payouts: &[Payout], offer: Pubkey) -> Result<()> {
 fn payout_hash(payouts: &[Payout]) -> [u8; 32] { let mut bytes = Vec::with_capacity(payouts.len() * 40); for p in payouts { bytes.extend_from_slice(p.recipient.as_ref()); bytes.extend_from_slice(&p.lamports.to_le_bytes()); } hash(&bytes).to_bytes() }
 fn transfer_lamports(from: &AccountInfo, to: &AccountInfo, amount: u64) -> Result<()> { if amount == 0 { return Ok(()); } let available = from.lamports(); require!(available >= amount, OfferError::InsufficientEscrow); **from.try_borrow_mut_lamports()? = available.checked_sub(amount).ok_or(OfferError::ArithmeticOverflow)?; **to.try_borrow_mut_lamports()? = to.lamports().checked_add(amount).ok_or(OfferError::ArithmeticOverflow)?; Ok(()) }
 
-fn sas_error(err: SasError) -> Error { match err { SasError::InvalidPayload => error!(OfferError::InvalidDecisionPayload), _ => error!(OfferError::InvalidAttestation) } }
-fn verify_attestation<'a>(attestation_account: &AccountInfo, data: &'a [u8], credential: &AccountInfo, now: i64) -> Result<sas_attestation::Attestation<'a>> {
-    require_keys_eq!(*attestation_account.owner, SAS_PROGRAM_ID, OfferError::InvalidAttestation);
-    let attestation = sas_attestation::parse_attestation(data).map_err(sas_error)?;
-    require!(attestation.expiry > now, OfferError::AttestationExpired);
-    require_keys_eq!(attestation.credential, credential.key(), OfferError::InvalidAttestation);
-    require_keys_eq!(*credential.owner, SAS_PROGRAM_ID, OfferError::InvalidAttestation);
-    let credential_data = credential.try_borrow_data()?;
-    require_keys_eq!(sas_attestation::parse_credential_authority(&credential_data).map_err(sas_error)?, attestation.authority, OfferError::InvalidAttestation);
-    require_keys_eq!(attestation.schema, sas_attestation::schema_address(&credential.key(), DECISION_SCHEMA_NAME, DECISION_SCHEMA_VERSION), OfferError::WrongSchema);
-    Ok(attestation)
-}
-struct DecisionPayload<'a> { cid: &'a [u8], offer: Pubkey, terms_hash: [u8; 32], payouts_hash: [u8; 32], buyer: Pubkey, seller: Pubkey, ownership_verified: bool, source_observed_at: i64 }
-fn parse_hash(bytes: &[u8]) -> Result<[u8; 32]> { let text = core::str::from_utf8(bytes).map_err(|_| error!(OfferError::InvalidDecisionPayload))?; require!(text.len() == 64 && text.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()), OfferError::InvalidDecisionPayload); let mut out = [0u8; 32]; for (i, slot) in out.iter_mut().enumerate() { *slot = u8::from_str_radix(&text[i * 2..i * 2 + 2], 16).map_err(|_| error!(OfferError::InvalidDecisionPayload))?; } Ok(out) }
-fn parse_decision(payload: &[u8]) -> Result<DecisionPayload<'_>> { let mut r = PayloadReader::new(payload); let cid = r.string().map_err(sas_error)?; let offer = sas_attestation::parse_pubkey_string(r.string().map_err(sas_error)?).map_err(sas_error)?; let terms_hash = parse_hash(r.string().map_err(sas_error)?)?; let payouts_hash = parse_hash(r.string().map_err(sas_error)?)?; let buyer = sas_attestation::parse_pubkey_string(r.string().map_err(sas_error)?).map_err(sas_error)?; let seller = sas_attestation::parse_pubkey_string(r.string().map_err(sas_error)?).map_err(sas_error)?; let ownership_verified = match r.u8().map_err(sas_error)? { 0 => false, 1 => true, _ => return err!(OfferError::InvalidDecisionPayload) }; let source_observed_at = r.i64().map_err(sas_error)?; r.finish().map_err(sas_error)?; Ok(DecisionPayload { cid, offer, terms_hash, payouts_hash, buyer, seller, ownership_verified, source_observed_at }) }
-
 #[error_code] pub enum OfferError {
     #[msg("Offer is not open")] NotOpen, #[msg("Offer is not accepted")] NotAccepted, #[msg("Offer deadline has passed")] DeadlinePassed, #[msg("Offer deadline has not passed")] DeadlineNotPassed, #[msg("Unauthorized")] Unauthorized,
     #[msg("CID must be 1-64 ASCII letters and digits")] InvalidCid, #[msg("A lens is required")] NoLens, #[msg("Price must be positive")] ZeroPrice, #[msg("Buy offers have no schedule until acceptance")] BuyHasPayouts, #[msg("Payout schedule is invalid")] InvalidPayoutSchedule, #[msg("Payout recipients must be unique")] DuplicateRecipient, #[msg("Payout amounts must equal the offer price")] PayoutTotalMismatch,
     #[msg("Offer already has a counterparty")] AlreadyAccepted, #[msg("A sell offer's schedule is immutable")] SellScheduleImmutable, #[msg("Offer is already funded")] AlreadyFunded, #[msg("Offer cannot be cancelled now")] NotCancellable, #[msg("Offer cannot be expired now")] NotExpirable, #[msg("No lens decision is recorded")] NotAttested,
-    #[msg("Invalid SAS attestation or credential")] InvalidAttestation, #[msg("Attestation expired")] AttestationExpired, #[msg("Wrong lens")] WrongLens, #[msg("Wrong decision schema")] WrongSchema, #[msg("Malformed property offer decision")] InvalidDecisionPayload, #[msg("Decision does not bind this accepted offer")] WrongDecision, #[msg("Decision did not verify ownership")] OwnershipNotVerified, #[msg("Decision observation is in the future")] AttestationFromFuture,
+    #[msg("Invalid SAS attestation or credential")] InvalidAttestation, #[msg("Attestation expired")] AttestationExpired, #[msg("Wrong lens")] WrongLens, #[msg("Wrong decision schema")] WrongSchema, #[msg("Malformed property offer decision")] InvalidDecisionPayload, #[msg("Decision does not bind this accepted offer")] WrongDecision, #[msg("Decision did not qualify the counterparty")] CounterpartyNotQualified, #[msg("Decision observation is in the future")] AttestationFromFuture,
     #[msg("Recipient differs from the schedule")] WrongRecipient, #[msg("Recipient account list differs from the schedule")] WrongRecipientList, #[msg("Insufficient escrow")] InsufficientEscrow, #[msg("Arithmetic overflow")] ArithmeticOverflow,
 }
 

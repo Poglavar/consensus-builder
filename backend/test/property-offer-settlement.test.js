@@ -45,7 +45,7 @@ describe('property offer settlement trust boundaries',()=>{
         const f=fixture(direction),{app,issue}=lensApp(f);
         const result=await request(app).post(`/lens/property-offers/${f.row.cid}/decision`).send(f.body);
         expect(result.status).toBe(201);expect(issue).toHaveBeenCalledOnce();
-        expect(issue.mock.calls[0][0]).toMatchObject({buyer,seller,ownershipVerified:1,termsHash:f.account.termsHash});
+        expect(issue.mock.calls[0][0]).toMatchObject({buyer,seller,counterpartyQualified:1,termsHash:f.account.termsHash});
     });
     it('rejects a tampered request, an omitted co-owner and an unrelated lens without issuing',async()=>{
         for(const change of [b=>({...b,buyer:coowner}),b=>({...b,consents:b.consents.slice(0,1)}),b=>({...b,signature:'bad'}),b=>({...b,ownershipHash:'0'.repeat(64)})]){
@@ -97,6 +97,28 @@ describe('property offer settlement trust boundaries',()=>{
         expect(new URL(result.url).searchParams.get('acceptance')).toBe(shared.id);
         expect(fetchImpl.mock.calls[0][1].headers.Origin).toBe('http://localhost:5201');
         expect(JSON.parse(fetchImpl.mock.calls[0][1].body)).toMatchObject({ candidate: f.candidate, signature: 'signed-message' });
+    });
+    it('prepares either direction for one apartment with the proposer’s lens and finds only offers for that unit', async () => {
+        const apartment = { xrayBuilding: 'zagreb::gdi-3d::148972', unit: '6::A4-C-23', at: '45.7665,15.9722,19' };
+        const fetchImpl = vi.fn(async () => ({ ok: true, json: async () => ({ propertyOffers: [] }) }));
+        const tools = createPropertyOfferTools({ apiBase: 'http://localhost:4201', appOrigin: 'http://localhost:5201', fetchImpl });
+        for (const direction of ['buy', 'sell']) {
+            const sample = fixture(direction);
+            const draft = tools.draft({ offer: { ...sample.row.content, parcels: null, apartment, city: 'zagreb' } });
+            expect(draft.content).toMatchObject({ apartment, lens, direction });
+            expect(draft.content.parcels).toBeUndefined();
+            const changed = tools.edit({ offer: draft.content, expectedCid: draft.cid, changes: { lens: coowner } });
+            expect(changed.cid).not.toBe(draft.cid);
+            const prepared = tools.prepare({ offer: draft.content, expectedCid: draft.cid, buyer, seller, payouts: sample.candidate.payouts });
+            expect(prepared.candidate).toMatchObject({ buyer, seller, cid: draft.cid, consents: [] });
+            expect(prepared.candidate).not.toHaveProperty('ownershipHash');
+            expect(prepared.sellerMessages).toEqual([]);
+            expect(prepared.requestMessage).toBe(Consent.requestMessage(prepared.candidate));
+        }
+        await tools.list({ city: 'zagreb', xrayBuilding: apartment.xrayBuilding, unit: apartment.unit });
+        const query = new URL(fetchImpl.mock.calls[0][0]).searchParams;
+        expect(Object.fromEntries(query)).toMatchObject({ city: 'zagreb', xrayBuilding: apartment.xrayBuilding, unit: apartment.unit });
+        expect(() => tools.list({ city: 'zagreb', unit: apartment.unit })).toThrow();
     });
     it('MCP drafts and edits the same immutable offer and requires reviewed publication',async()=>{
         const f=fixture(), fetchImpl=vi.fn();const tools=createPropertyOfferTools({apiBase:'http://localhost:4201',appOrigin:'http://localhost:5201',fetchImpl});

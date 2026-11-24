@@ -265,6 +265,16 @@ describe('minting', () => {
         buyer.win.SolanaPledgeClient = { ...client, readApartmentInventory, readDonationEscrow: async () => ({ proposal: address }) };
         const intent = { agreement, expectedBuyer: STRANGER, unitId: unit.unitId };
         await expect(buyer.bridge.donate({ agreement, amountAtomic: 1n })).rejects.toMatchObject({ code: 'apartment-required' });
+        buyer.win.LensPicker = { loadDirectory: async () => ({ members: [{ key: LENS, serviceUrl: 'https://lens.example' }] }) };
+        const proof = { address: ATTESTATION, credential: keyOf(21), authority: LENS, expiry: nowSeconds() + 60,
+            payload: { counterpartyQualified: 1, cid, offer: offer.account, termsHash: offer.termsHash, buyer: STRANGER, seller: SPONSOR } };
+        buyer.win.fetch = vi.fn()
+            .mockResolvedValueOnce({ ok: false, json: async () => ({ error: 'qualification_pending' }) })
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ ...proof, authority: SPONSOR }) })
+            .mockResolvedValueOnce({ ok: true, json: async () => proof });
+        await expect(buyer.bridge.reserveApartment(intent)).rejects.toMatchObject({ code: 'qualification-pending' });
+        await expect(buyer.bridge.reserveApartment(intent)).rejects.toMatchObject({ code: 'invalid-qualification' });
+        expect(buyer.provider.signTransaction).not.toHaveBeenCalled();
         const receipt = await buyer.bridge.reserveApartment(intent);
         expect(discriminators(buyer.connection.sent[0])).toEqual([client.IX_DISCRIMINATORS.donate, client.IX_DISCRIMINATORS.reserve_apartment]);
         expect(Buffer.from(buyer.connection.sent[0].instructions[0].data).readBigUInt64LE(40)).toBe(BigInt(unit.depositUsdcAtomic));

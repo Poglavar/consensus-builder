@@ -1630,6 +1630,7 @@ dependencies = [
  "agreement",
  "anchor-lang",
  "anchor-spl",
+ "sas_attestation",
 ]
 
 [[package]]

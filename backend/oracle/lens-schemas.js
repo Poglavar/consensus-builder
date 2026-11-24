@@ -14,7 +14,7 @@ export { SAS_PROGRAM_ID };
 // SAS layout byte per field type (sas-lib / SAS program IDL: U8=0 … I64=8 … String=12).
 export const SAS_LAYOUT_TYPES = Object.freeze({ uint8: 0, int64: 8, string: 12 });
 
-function schemaDefinition(kind, name, description, layout) {
+function schemaDefinition(kind, name, description, layout, version = 1) {
     const fields = layout.split(',').map((entry) => {
         const [type, fieldName] = entry.trim().split(/\s+/);
         if (!(type in SAS_LAYOUT_TYPES)) throw new Error(`unsupported lens field type ${type}`);
@@ -22,9 +22,9 @@ function schemaDefinition(kind, name, description, layout) {
     });
     return Object.freeze({
         kind,
-        id: `${name}-v1`,
+        id: `${name}-v${version}`,
         name,
-        version: 1,
+        version,
         description,
         layout,
         fields: Object.freeze(fields),
@@ -48,8 +48,8 @@ export const LENS_SCHEMAS = Object.freeze({
         'string agreementCid, string sponsor, string decision, string evidenceRef, int64 sourceObservedAt'
     ),
     propertyOffer: schemaDefinition('propertyOffer', 'PropertyOfferDecision',
-        'A lens member attests a verified open property offer and all seller consents.',
-        'string cid, string offer, string termsHash, string payoutsHash, string buyer, string seller, uint8 ownershipVerified, int64 sourceObservedAt'),
+        'The lens selected for an open offer qualifies its counterparty for the exact terms and payouts.',
+        'string cid, string offer, string termsHash, string payoutsHash, string buyer, string seller, uint8 counterpartyQualified, int64 sourceObservedAt', 2),
     // One schema for every milestone market source: the member's adapter reads the source (a permits
     // dataset, legislation records, a gazette) and states which outcome text it supports and when.
     evidence: schemaDefinition(

@@ -295,6 +295,8 @@ test('choosing an unapplied plan lets the editor apply it, recover its land and 
 test('developer crowdfunding opens from an unapplied plan, saves its attached terms, and reopens unchanged', async ({ mockApi: page }) => {
   test.setTimeout(120_000);
   await page.setViewportSize({ width: 390, height: 760 });
+  const fundingLens = 'H37sgaQuqcbs5GAP3WkurghsnPuMkFYcs2BSR6By2B2E';
+  await page.route('**/lenses/members', route => route.fulfill({ json: { members: [{ key: fundingLens, name: 'Project verifier' }] } }));
   const { layoutId } = await applyLayout(page);
   const planCid = await page.evaluate(async id => {
     const w = window as any;
@@ -327,6 +329,11 @@ test('developer crowdfunding opens from an unapplied plan, saves its attached te
   await investors.press('Tab');
   await expect(plan).toBeFocused();
 
+  await page.evaluate(() => { (window as any).solanaWalletManager = { getState: () => ({ status: 'disconnected', accounts: [] }) }; });
+  await editor.locator('[data-agreement-action="lens"]').press('Enter');
+  const picker = page.getByRole('dialog', { name: 'Choose lens' });
+  await picker.getByRole('radio', { name: /Project verifier/ }).press('Space');
+  await picker.getByRole('button', { name: 'Done' }).press('Enter');
   const title = editor.locator('[data-agreement-title]');
   await title.focus();
   await title.pressSequentially('Crowdfund a park');
@@ -350,7 +357,7 @@ test('developer crowdfunding opens from an unapplied plan, saves its attached te
   expect(saved).toMatchObject({
     plan: { cid: planCid }, inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [],
     money: { currency: 'EUR', lines: [] }, valuation: null,
-    rule: { electorate: 'investors', binding: true, approvalConfig: null, settlement: null, lens: ['EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGJroM6Q3BTT'] },
+    rule: { electorate: 'investors', binding: true, approvalConfig: null, settlement: null, lens: [fundingLens] },
     funding: { targetUsdcAtomic: '12345678', contract: { name: 'investor-terms.txt', mediaType: 'text/plain' } },
   });
   expect(saved.deadline).toBe(await page.evaluate(() => (window as any).AgreementDialog.deadlineFromDate('2030-12-31', 0)));

@@ -157,7 +157,8 @@ for a minted agreement. A private draft returns `unverified`.
 `ugt_apartment_offers` finds active minted offers by `city`, `xrayBuilding` and `unit`.
 After minting, the developer opens `ugt_approval_link` with `action: "list-apartment"` and
 `params.unitId` to sign a listing. The buyer uses `action: "reserve"` with the same permanent
-unit ID to review the current availability, download the documents and sign the deposit.
+unit ID to review availability, download the documents and sign the deposit after the named lens qualifies the buyer.
+For independent SOL bids or listings use `ugt_draft_property_offer` with one `apartment`. Pass its exact `xrayBuilding`, `unit` and `at`, and set the proposer’s `lens`. `ugt_list_property_offer` accepts the same unit and city. Preparing an apartment acceptance requires the buyer, seller and payout terms. The chosen lens qualifies the counterparty. [Property offers](property-offers.md)
 
 Draft and edit tools that accept `plan` can resolve an unpublished member by its CID within that
 exact plan revision. Pass the plan's private `draftRef` or canonical artifact, then use the member

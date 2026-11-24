@@ -17,6 +17,7 @@ export const VERDICT_SCHEMA = "ProposalVerdict";
 export const DECISION_SCHEMA = "AgreementDecision";
 /** The one schema every LMSR recipe-bound market settles from (lmsr-market.md). */
 export const MARKET_EVIDENCE_SCHEMA = "MarketEvidence";
+export const PROPERTY_OFFER_SCHEMA = "PropertyOfferDecision";
 
 /** Far enough ahead that no test run reaches it. */
 export const FAR_EXPIRY = 4_000_000_000;
@@ -109,6 +110,21 @@ export function decisionPayload(p: { agreementCid: string; sponsor: PublicKey | 
         borshBytes(p.agreementCid), borshBytes(p.sponsor.toString()), borshBytes(p.decision ?? "satisfied"),
         borshBytes(p.evidenceRef ?? `sha256:${"ab".repeat(32)}`), i64(p.sourceObservedAt),
     ]);
+}
+
+/** PropertyOfferDecision-v2 payload consumed by apartment reservation tests. */
+export function propertyOfferDecisionPayload(p: { agreementCid: string; offer: PublicKey | string; termsHash: string; payoutsHash: string; buyer: PublicKey | string; seller: PublicKey | string; qualified?: number; sourceObservedAt: number }): Buffer {
+    return Buffer.concat([
+        borshBytes(p.agreementCid), borshBytes(p.offer.toString()), borshBytes(p.termsHash), borshBytes(p.payoutsHash),
+        borshBytes(p.buyer.toString()), borshBytes(p.seller.toString()), Buffer.from([p.qualified ?? 1]), i64(p.sourceObservedAt),
+    ]);
+}
+
+export async function attestPropertyOfferDecision(provider: anchor.AnchorProvider, member: LensMember, p: Omit<Parameters<typeof propertyOfferDecisionPayload>[0], "sourceObservedAt"> & { sourceObservedAt?: number; expiry?: number; credential?: PublicKey; schema?: PublicKey; authority?: PublicKey }): Promise<{ address: PublicKey; bytes: Buffer }> {
+    const sourceObservedAt = p.sourceObservedAt ?? (await chainNow(provider.connection)) - 60;
+    const credential = p.credential ?? member.credential;
+    const bytes = attestationBytes({ credential, schema: p.schema ?? schemaPda(credential, PROPERTY_OFFER_SCHEMA, 2), payload: propertyOfferDecisionPayload({ ...p, sourceObservedAt }), authority: p.authority ?? member.publicKey, expiry: p.expiry });
+    return { address: await writeSasAccount(provider, bytes), bytes };
 }
 
 /** MarketEvidence-v1: string recipeHash, string subject, string value, int64 eventTime, int64 sourceObservedAt, string sourceRef. */

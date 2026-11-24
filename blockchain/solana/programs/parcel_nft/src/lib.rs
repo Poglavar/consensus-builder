@@ -32,6 +32,17 @@ pub mod parcel_nft {
 
         Ok(())
     }
+
+    /// Create an ownerless, idempotent anchor for an apartment identity hash.
+    pub fn mint_apartment(
+        ctx: Context<MintApartment>,
+        identity_hash: [u8; 32],
+    ) -> Result<()> {
+        let apartment = &mut ctx.accounts.apartment;
+        apartment.identity_hash = identity_hash;
+        apartment.bump = ctx.bumps.apartment;
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
@@ -58,6 +69,31 @@ pub struct Parcel {
     pub parcel_id: String,
     pub metadata_uri: String,
     pub owner: Pubkey,
+    pub bump: u8,
+}
+
+#[derive(Accounts)]
+#[instruction(identity_hash: [u8; 32])]
+pub struct MintApartment<'info> {
+    #[account(
+        init_if_needed,
+        payer = payer,
+        space = 8 + 32 + 1,
+        seeds = [b"apartment", identity_hash.as_ref()],
+        bump
+    )]
+    pub apartment: Account<'info, ApartmentAnchor>,
+
+    /// Pays rent only; the anchor has no owner or transfer authority.
+    #[account(mut)]
+    pub payer: Signer<'info>,
+
+    pub system_program: Program<'info, System>,
+}
+
+#[account]
+pub struct ApartmentAnchor {
+    pub identity_hash: [u8; 32],
     pub bump: u8,
 }
 

@@ -118,6 +118,7 @@
             developer: agreement.sponsor, projectId: agreement.funding.apartments.projectId, unit,
             targetUsdcAtomic: agreement.funding.targetUsdcAtomic, contract: agreement.funding.contract,
             termsHash: offer.termsHash, apartmentAccount: offer.account, buyer, position: offer.position,
+            qualification: offer.qualification, lens: agreement.rule.lens[0],
             depositPaidUsdcAtomic: unit.depositUsdcAtomic, ...(signature ? { signature } : {})
         };
         root.FileDownload.save(root, JSON.stringify(schedule, null, 2), `apartment-${unit.unitId}-contract-schedule.json`, 'application/json');
@@ -132,6 +133,15 @@
             const row = el('article', 'agreement-apartment-unit');
             row.dataset.agreementApartmentUnit = unit.unitId;
             row.append(unitDetails(agreement, unit));
+            const standalone = el('details');
+            standalone.append(el('summary', 'cb-link', apartmentText('standalone', 'Independent offers in SOL')));
+            const { xrayBuilding, at, access } = unit;
+            for (const direction of ['buy', 'sell']) {
+                const label = direction === 'buy' ? t('threeMode.controls.offerToBuyApartment', 'Offer to buy apartment')
+                    : t('threeMode.controls.offerToSellApartment', 'Offer to sell apartment');
+                standalone.append(actionButton(label, () => root.PropertyOfferDialog.open({ direction, city: agreement.city,
+                    apartment: { xrayBuilding, unit: unit.unit, at, ...(access ? { access } : {}) } })));
+            }
             const actions = el('div', 'agreement-panel-actions');
             if (offer?.status === 'unlisted' && active && context.isSponsor) {
                 const list = actionButton(apartmentText('list', 'List apartment'), button => run(slot, button, onStatus =>
@@ -163,6 +173,7 @@
                 actions.append(caption);
             }
             row.append(actions);
+            row.append(standalone);
             wrap.append(row);
         }
         return wrap;
@@ -291,6 +302,18 @@
         const controller = new AbortController();
         const review = unit ? [unitDetails(agreement, unit), actionButton(t('agreement.funding.download', 'Download investor contract ({{name}})', { name: agreement.funding.contract.name }),
             () => downloadFile(agreement.funding.contract))] : [field];
+        if (unit) {
+            review.push(el('p', 'sheet-note', apartmentText('qualificationHint', 'The developer’s lens must qualify your wallet for this apartment before your deposit can reserve it.')));
+            const request = actionButton(apartmentText('copyQualification', 'Copy qualification request'), button => root.BusyControl.track(button, async () => {
+                const buyer = root.AgreementBridge.connectedWallet();
+                if (!buyer) { feedback(t('agreement.chain.errors.connectWallet', 'Connect a Solana wallet first.')); return; }
+                const data = { agreement: agreement.published.cid, unitId: unit.unitId, apartment: unit.label,
+                    xrayBuilding: unit.xrayBuilding, unit: unit.unit, buyer, developer: agreement.sponsor, lens: agreement.rule.lens[0] };
+                const copied = await root.copyTextWithFeedback(JSON.stringify(data, null, 2));
+                feedback(copied ? t('common.copied', 'Copied') : t('chat.copyFailed', 'Could not copy the text.'), copied ? undefined : 'danger');
+            }).catch(error => feedback(error.message, 'danger')));
+            review.push(request);
+        }
         const dialog = root.CbDialog.open({
             title: unit ? apartmentText('reviewTitle', 'Review apartment reservation') : label,
             size: 'sm', className: 'cb-dialog--prompt', initialFocus: unit ? undefined : input,

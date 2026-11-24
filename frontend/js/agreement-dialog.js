@@ -1066,6 +1066,7 @@
             if (kind === 'lens') {
                 const names = new Map(root.getLensEntries().map(entry => [entry.address, entry.name]));
                 auxiliary = root.showLensModal({ parent: modal,
+                    ...(state.values.electorate === 'investors' ? { chain: 'solana', single: true } : {}),
                     entries: state.lens.map(address => ({ address, name: names.get(address) || '' })),
                     onChange: entries => {
                         const keys = setup().lensKeys(entries);

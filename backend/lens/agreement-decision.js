@@ -46,11 +46,11 @@ export function decisionEvidenceRef(counted) {
 // Investor-funded agreements use the same Agreement program and proposal_pledge donation escrow as
 // ordinary support donations.  This is deliberately separate from owner tallying: a soft pledge,
 // an owner ballot, a market position, or a naked transfer to the vault is not crowdfunding.
-export async function planInvestorFundingDecision({ agreement, lensKey, nowSeconds, chain }) {
+const refusal = (status, code, message, details = {}) => { throw new LensError(status, code, message, details); };
+export async function observeInvestorFunding({ agreement, lensKey, nowSeconds, chain }) {
     const content = agreement.content || {};
     const rule = content.rule || {};
     const funding = content.funding;
-    const refusal = (status, code, message, details = {}) => { throw new LensError(status, code, message, details); };
     if (content.schema !== agreementRecord.PUBLISHED_SCHEMA || !cidApi.isCid(agreement.cid) || cidApi.cidOfObject(content) !== agreement.cid)
         refusal(422, 'invalid_funding_content', 'the indexed agreement content does not match its CID');
     const fundingIssue = agreementRecord.crowdfundingError(content, { requireSponsor: true });
@@ -91,6 +91,15 @@ export async function planInvestorFundingDecision({ agreement, lensKey, nowSecon
     if (netDeposits < 0n || observed.vaultUsdcAtomic < netDeposits) {
         refusal(422, 'invalid_donation_vault', 'the canonical devnet USDC donation vault does not hold its recorded active contributions');
     }
+    if (!Number.isSafeInteger(observed.slot) || !Number.isSafeInteger(observed.blockTime)) refusal(422, 'chain_observation_missing', 'funding evidence requires a finalized slot and block time');
+    if (observed.blockTime > nowSeconds || (agreement.deadline && observed.blockTime > seconds(agreement.deadline)) || (account.deadline && observed.blockTime > account.deadline))
+        refusal(409, 'funding_observation_after_deadline', 'the finalized funding observation is not before the agreement deadline');
+    return { observed, account, escrow, onchain, netDeposits, funding, content };
+}
+
+export async function planInvestorFundingDecision({ agreement, lensKey, nowSeconds, chain }) {
+    const { observed, escrow, onchain, netDeposits, funding, content } =
+        await observeInvestorFunding({ agreement, lensKey, nowSeconds, chain });
     let active = netDeposits;
     let reservations;
     if (funding.apartments) {
@@ -100,13 +109,12 @@ export async function planInvestorFundingDecision({ agreement, lensKey, nowSecon
             refusal(422, 'apartment_observation_missing', 'the finalized apartment inventory differs from the published schedule');
         }
         reservations = observed.reservations.filter(row => row.status === 'reserved');
+        if (reservations.some(row => !isPublicKey(row.qualification) || row.qualification === pledgeClient.constants.SYSTEM_PROGRAM_ID))
+            refusal(422, 'apartment_qualification_missing', 'a finalized apartment reservation is missing its lens qualification');
         active = reservations.reduce((sum, row) => sum + BigInt(row.deposit), 0n);
         if (active > netDeposits) refusal(422, 'invalid_donation_vault', 'the funded apartment reservations exceed recorded deposits');
     }
     if (active < BigInt(funding.targetUsdcAtomic)) refusal(409, 'funding_target_not_met', 'recorded active investor donations are below the target', { activeUsdcAtomic: String(active), targetUsdcAtomic: funding.targetUsdcAtomic });
-    if (!Number.isSafeInteger(observed.slot) || !Number.isSafeInteger(observed.blockTime)) refusal(422, 'chain_observation_missing', 'funding evidence requires a finalized slot and block time');
-    if (observed.blockTime > nowSeconds || (agreement.deadline && observed.blockTime > seconds(agreement.deadline)) || (account.deadline && observed.blockTime > account.deadline))
-        refusal(409, 'funding_observation_after_deadline', 'the finalized funding observation is not before the agreement deadline');
     const evidence = { kind: reservations ? 'apartment_reservations' : 'proposal_pledge_donation', ...(reservations ? { reservations } : {}),
         agreement: onchain.account, sponsor: content.sponsor,
         agreementProgram: chain.agreementProgramId, pledgeProgram: chain.pledgeProgramId, escrow: observed.escrow, vault: observed.vault,

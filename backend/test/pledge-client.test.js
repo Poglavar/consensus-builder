@@ -101,7 +101,7 @@ describe('agreement support codec (proposal_pledge)', () => {
         };
         const unitKey = '11'.repeat(32); const termsHash = '22'.repeat(32);
         builders.list_apartment = support.buildListApartmentIx({ developer: wallet, proposal, unitKey, termsHash, deposit: 600000n });
-        builders.reserve_apartment = support.buildReserveApartmentIx({ developer: wallet, proposal, buyer: beneficiary, unitKey, termsHash });
+        builders.reserve_apartment = support.buildReserveApartmentIx({ developer: wallet, proposal, buyer: beneficiary, unitKey, termsHash, attestation: other, credential: wallet });
         const unit = support.getApartmentUnitPda(wallet, unitKey)[0];
         builders.clear_apartment_refund = support.buildClearApartmentRefundIx({ unitAccount: unit, position: other });
         for (const [name, ix] of Object.entries(builders)) {
@@ -127,6 +127,7 @@ describe('agreement support codec (proposal_pledge)', () => {
             Buffer.from(terms, 'hex').copy(data, 104); data.writeBigUInt64LE(BigInt(offer.deposit), 136);
             (buyerKey ? new web3.PublicKey(buyerKey) : web3.SystemProgram.programId).toBuffer().copy(data, 144);
             (buyerKey ? support.getDonationPositionPda(support.getDonationEscrowPda(proposal)[0], buyerKey, Uint8Array.from(Buffer.from(offer.unitKey, 'hex')))[0] : web3.SystemProgram.programId).toBuffer().copy(data, 176);
+            if (buyerKey) other.toBuffer().copy(data, 209);
             return accountInfo(data);
         };
         const infos = [makeUnit(offers[0], proposal.toBase58(), termsA, wallet.toBase58()), makeUnit(offers[1], proposal.toBase58(), '55'.repeat(32))];

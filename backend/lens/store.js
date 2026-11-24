@@ -27,6 +27,10 @@ export function createMemoryStore({ initial = [], onRecord = null } = {}) {
         async get(address) {
             return records.get(address) ?? null;
         },
+        async qualification({ credential, schema, terms, now }) {
+            return [...records.values()].find(r => r.credential === credential && r.schema === schema && r.expiry > now
+                && Object.entries(terms).every(([k, v]) => r.payload?.[k] === v)) ?? null;
+        },
         async record(record) {
             if (records.has(record.address)) throw new Error(`attestation ${record.address} is already recorded`);
             records.set(record.address, { ...record });
@@ -95,6 +99,12 @@ export function createPgStore(pool) {
         kind: 'postgres',
         async get(address) {
             const { rows } = await pool.query(`SELECT ${COLUMNS} FROM consensus.lens_attestation WHERE address = $1`, [address]);
+            return rows[0] ? recordOf(rows[0]) : null;
+        },
+        async qualification({ credential, schema, terms, now }) {
+            const { rows } = await pool.query(`SELECT ${COLUMNS} FROM consensus.lens_attestation
+                WHERE kind = 'propertyOffer' AND credential = $1 AND schema = $2 AND expiry > $3 AND payload @> $4::jsonb
+                ORDER BY expiry DESC LIMIT 1`, [credential, schema, now, JSON.stringify(terms)]);
             return rows[0] ? recordOf(rows[0]) : null;
         },
         async record(r) {

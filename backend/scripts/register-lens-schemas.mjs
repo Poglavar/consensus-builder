@@ -96,18 +96,23 @@ async function registerLive(plan, keypairPath, rpcUrl) {
             name: plan.credentialName, signers: [signer.address]
         }), `credential ${plan.credential} created`);
     }
-    for (const schema of plan.schemas) {
-        const [libSchema] = await sas.deriveSchemaPda({ credential: kit.address(plan.credential), name: schema.name, version: schema.version });
-        if (libSchema !== schema.pda) throw new Error(`${schema.id} PDA mismatch: sas-lib ${libSchema} vs ${schema.pda}`);
-        if (await exists(schema.pda)) {
-            log(`${schema.id} ${schema.pda} exists, skipped`);
-            continue;
+    for (const schema of plan.schemas) await registerSchema({ credential: plan.credential, signer, schema, exists, send });
+}
+
+// SAS creates version 1 first and derives each subsequent account from its predecessor.
+export async function registerSchema({ credential, signer, schema, exists, send }) {
+    const common = { authority: signer, payer: signer, credential: kit.address(credential),
+        layout: Buffer.from(schema.sasLayout), fieldNames: schema.fieldNames };
+    let previous;
+    for (let version = 1; version <= schema.version; version++) {
+        const [address] = await sas.deriveSchemaPda({ credential: common.credential, name: schema.name, version });
+        if (version === schema.version && address !== schema.pda) throw new Error(`Schema PDA mismatch for ${schema.id}.`);
+        if (!await exists(address)) {
+            const ix = version === 1 ? sas.getCreateSchemaInstruction({ ...common, name: schema.name, description: schema.description, schema: address })
+                : sas.getChangeSchemaVersionInstruction({ ...common, existingSchema: previous, newSchema: address });
+            await send(ix, `${schema.name}-v${version} ${address} registered`);
         }
-        await send(sas.getCreateSchemaInstruction({
-            authority: signer, payer: signer, name: schema.name, credential: kit.address(plan.credential),
-            description: schema.description, fieldNames: schema.fieldNames, schema: kit.address(schema.pda),
-            layout: Buffer.from(schema.sasLayout)
-        }), `${schema.id} ${schema.pda} created`);
+        previous = address;
     }
 }
 

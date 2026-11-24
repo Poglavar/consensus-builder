@@ -8,6 +8,73 @@
   },
   "instructions": [
     {
+      "name": "mint_apartment",
+      "docs": [
+        "Create an ownerless, idempotent anchor for an apartment identity hash."
+      ],
+      "discriminator": [
+        11,
+        183,
+        37,
+        113,
+        111,
+        99,
+        242,
+        222
+      ],
+      "accounts": [
+        {
+          "name": "apartment",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  112,
+                  97,
+                  114,
+                  116,
+                  109,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "identity_hash"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payer",
+          "docs": [
+            "Pays rent only; the anchor has no owner or transfer authority."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "identity_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
       "name": "mint_parcel",
       "docs": [
         "Create the anchor for one parcel. Anyone may pay for it; nobody owns it."
@@ -73,6 +140,19 @@
   ],
   "accounts": [
     {
+      "name": "ApartmentAnchor",
+      "discriminator": [
+        228,
+        251,
+        95,
+        117,
+        86,
+        31,
+        42,
+        43
+      ]
+    },
+    {
       "name": "Parcel",
       "discriminator": [
         149,
@@ -109,6 +189,27 @@
     }
   ],
   "types": [
+    {
+      "name": "ApartmentAnchor",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "identity_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
     {
       "name": "Parcel",
       "type": {

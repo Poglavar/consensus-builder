@@ -12,7 +12,8 @@
 
     // COPIED from the IDL, never computed at runtime: sha256("global:mint_parcel")[..8].
     const IX_DISCRIMINATORS = Object.freeze({
-        mint_parcel: Object.freeze([158, 42, 246, 137, 217, 57, 167, 210])
+        mint_parcel: Object.freeze([158, 42, 246, 137, 217, 57, 167, 210]),
+        mint_apartment: Object.freeze([11, 183, 37, 113, 111, 99, 242, 222])
     });
 
     const constants = Object.freeze({
@@ -118,6 +119,37 @@
         };
     }
 
-    api = { constants, IX_DISCRIMINATORS, configure, encodeMintParcelData, getParcelPda, buildMintParcelIx };
+    function hashBytes(identityHashHex) {
+        if (typeof identityHashHex !== 'string' || !/^[0-9a-f]{64}$/i.test(identityHashHex)) throw new Error('identityHash must be 64 hex characters');
+        return Uint8Array.from(identityHashHex.match(/../g).map(pair => parseInt(pair, 16)));
+    }
+
+    function getApartmentPda(identityHashHex, programId = constants.PARCEL_NFT_PROGRAM_ID) {
+        const { PublicKey } = resolveWeb3();
+        return PublicKey.findProgramAddressSync([new TextEncoder().encode('apartment'), hashBytes(identityHashHex)], toKey(programId, 'programId'));
+    }
+
+    function buildMintApartmentInstruction({ identityHash, payer, programId = constants.PARCEL_NFT_PROGRAM_ID } = {}) {
+        const { TransactionInstruction } = resolveWeb3();
+        const [apartment] = getApartmentPda(identityHash, programId);
+        const data = Uint8Array.from([...IX_DISCRIMINATORS.mint_apartment, ...hashBytes(identityHash)]);
+        return { apartment, instruction: new TransactionInstruction({ programId: toKey(programId, 'programId'), keys: [
+            { pubkey: apartment, isSigner: false, isWritable: true }, { pubkey: toKey(payer, 'payer'), isSigner: true, isWritable: true },
+            { pubkey: toKey(constants.SYSTEM_PROGRAM_ID, 'system'), isSigner: false, isWritable: false }
+        ], data: typeof Buffer === 'function' ? Buffer.from(data) : data }) };
+    }
+    async function readApartmentAnchor(connection, identityHashHex, { commitment = 'confirmed', programId = constants.PARCEL_NFT_PROGRAM_ID } = {}) {
+        const hash = hashBytes(identityHashHex);
+        const [address, bump] = getApartmentPda(identityHashHex, programId);
+        const info = await connection.getAccountInfo(address, commitment);
+        if (!info) return null;
+        if (info.owner?.toBase58?.() !== toKey(programId, 'programId').toBase58() || info.executable) throw new Error('invalid apartment anchor account owner');
+        const expected = Uint8Array.from([228, 251, 95, 117, 86, 31, 42, 43]);
+        const data = new Uint8Array(info.data || []);
+        if (data.length !== 41 || !expected.every((byte, i) => data[i] === byte)) throw new Error('invalid apartment anchor account discriminator or size');
+        if (!hash.every((byte, i) => data[i + 8] === byte) || data[40] !== bump) throw new Error('invalid apartment anchor identity hash or bump');
+        return { address: address.toBase58(), identityHash: identityHashHex.toLowerCase(), bump };
+    }
+    api = { constants, IX_DISCRIMINATORS, configure, encodeMintParcelData, getParcelPda, buildMintParcelIx, getApartmentPda, buildMintApartmentIx: buildMintApartmentInstruction, readApartmentAnchor };
     return api;
 });

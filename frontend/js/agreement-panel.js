@@ -703,11 +703,14 @@
             return `<div><dt>${esc(label)}</dt><dd><code dir="ltr"><a class="cb-link cb-link--external" data-agreement-funding-wallet="${role}"`
                 + ` href="${esc(url)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(label)} · ${esc(address)} · Solana Explorer">${esc(address)}</a></code></dd></div>`;
         }
+        const eligibility = funding.apartments
+            ? tr('agreement.funding.apartments.qualificationHint', 'The developer’s lens must qualify your wallet for this apartment before your deposit can reserve it.')
+            : tr('agreement.funding.contributorEligibilityValue', 'Any wallet can contribute') + '. ' + tr('agreement.funding.noKyc', 'The protocol does not perform a KYC check.');
         const investorDisclosure = `<dl class="agreement-panel-facts agreement-funding-disclosure" data-agreement-funding-disclosure>`
             + walletRow('verifier', tr('agreement.funding.verifierWallet', 'Funding verifier'), agreement.rule.lens?.[0])
             + `<div><dt>${esc(tr('agreement.funding.verifierMethod', 'Decision method'))}</dt><dd>${esc(tr('agreement.funding.verifierMethodValue', 'The program accepts the named lens’s funding decision.'))}</dd></div>`
             + walletRow('payout', tr('agreement.funding.payoutWallet', 'Developer payout wallet'), agreement.published?.sponsor || agreement.sponsor)
-            + `<div><dt>${esc(tr('agreement.funding.contributorEligibility', 'Contributor eligibility'))}</dt><dd>${esc(tr('agreement.funding.contributorEligibilityValue', 'Any wallet can contribute'))}. ${esc(tr('agreement.funding.noKyc', 'The protocol does not perform a KYC check.'))}</dd></div></dl>`;
+            + `<div><dt>${esc(tr('agreement.funding.contributorEligibility', 'Contributor eligibility'))}</dt><dd>${esc(eligibility)}</dd></div></dl>`;
         return sectionHtml(tr('agreement.funding.title', 'Developer crowdfunding'),
             meters
             + `<button type="button" class="btn btn-sm" data-agreement-action="contract">${esc(tr('agreement.funding.download', 'Download investor contract ({{name}})', { name: funding.contract.name }))}</button>`

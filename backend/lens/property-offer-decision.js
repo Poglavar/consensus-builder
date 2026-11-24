@@ -1,11 +1,12 @@
-// Pure, fail-closed planner for PropertyOfferDecision-v1.  It never trusts caller hashes,
-// ownershipVerified flags, parcel lists, or an account status supplied by the browser.
+// Pure, fail-closed planner for PropertyOfferDecision-v2.  It never trusts caller hashes,
+// qualification flags, parcel lists, or an account status supplied by the browser.
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { PublicKey } from '@solana/web3.js';
 import { canonicalBytes, cidOf } from '../cid.js';
 import { LensError } from './errors.js';
 import { verifyWalletSignature } from './identity/devnet-registry.js';
+import { expectedApartmentAnchor } from '../property-offers/onchain.js';
 
 const require = createRequire(import.meta.url);
 const Offer = require('../../frontend/js/property-offer-record.js');
@@ -33,11 +34,8 @@ export async function planPropertyOfferDecision({ offer, account, candidate, own
     if (!Number.isFinite(deadline) || deadline <= nowSeconds || Math.floor(Date.parse(content.expiresAt) / 1000) !== deadline) invalid('deadline_mismatch', 'The chain account deadline differs from the immutable offer.');
     const termsHash = hash(canonicalBytes(content));
     if (account.termsHash !== termsHash) invalid('terms_mismatch', 'The chain account does not commit to the indexed offer terms.');
-    if (typeof ownershipHash !== 'string' || !/^[a-f0-9]{64}$/.test(ownershipHash) || candidate?.ownershipHash !== ownershipHash) {
-        invalid('ownership_changed', 'The signatures must name the current ownership evidence.');
-    }
     const buyer = candidate?.buyer, seller = candidate?.seller;
-    if (!key(buyer) || !key(seller)) invalid('invalid_counterparty', 'Buyer and seller must be Solana public keys.');
+    if (!key(buyer) || !key(seller) || buyer === seller) invalid('invalid_counterparty', 'Choose distinct buyer and seller wallets.');
     const payouts = content.direction === 'sell' ? content.payouts : candidate?.payouts;
     if (!Array.isArray(payouts) || !payouts.length || Offer.validate({ ...content, direction: 'sell', buyer: null, seller: content.proposer, payouts })) invalid('invalid_payouts', 'The final payout schedule is invalid.');
     const normalized = Offer.published({ ...content, direction: 'sell', buyer: null, seller: content.proposer, payouts });
@@ -46,6 +44,17 @@ export async function planPropertyOfferDecision({ offer, account, candidate, own
     const expectedBuyer = content.direction === 'buy' ? content.buyer : buyer;
     const expectedSeller = content.direction === 'sell' ? content.seller : seller;
     if (buyer !== expectedBuyer || seller !== expectedSeller) invalid('role_mismatch', 'The candidate counterparties do not match offer direction.');
+    const terms = { cid: offer.cid, offer: account.address, termsHash, payoutsHash: scheduleHash, buyer, seller };
+    if (content.apartment) {
+        if (content.direction === 'sell' && account.payoutsHash !== scheduleHash) invalid('payouts_mismatch', 'The committed sale schedule differs from the chain account.');
+        if (account.apartmentAnchor !== expectedApartmentAnchor(content)) invalid('apartment_anchor_mismatch', 'The offer refers to a different apartment address.');
+        if (candidate.payouts && hash(canonicalBytes(candidate.payouts)) !== hash(canonicalBytes(schedule))) invalid('payouts_mismatch', 'The proposed schedule differs from the offer terms.');
+        // These are the terms the chosen lens is asked to qualify. A wallet request cannot grant qualification.
+        return terms;
+    }
+    if (typeof ownershipHash !== 'string' || !/^[a-f0-9]{64}$/.test(ownershipHash) || candidate?.ownershipHash !== ownershipHash) {
+        invalid('ownership_changed', 'The signatures must name the current ownership evidence.');
+    }
     const sets = await ownerSets(content.parcels);
     let observedAt = 0;
     const observedOwners = new Set();
@@ -67,5 +76,5 @@ export async function planPropertyOfferDecision({ offer, account, candidate, own
     const message = owner => sellerConsentMessage({ cid: offer.cid, offer: account.address, termsHash, payoutsHash: scheduleHash, ownershipHash, buyer, seller: owner });
     for (const owner of observedOwners) if (!verifyWalletSignature({ owner, message: message(owner), signature: consentByOwner.get(owner).signature })) invalid('bad_seller_consent', `Seller consent is invalid for ${owner}.`);
     if (content.direction === 'sell' && account.payoutsHash !== scheduleHash) invalid('payouts_mismatch', 'The committed sale schedule differs from the chain account.');
-    return { cid: offer.cid, offer: account.address, termsHash, payoutsHash: scheduleHash, ownershipHash, buyer, seller, ownershipVerified: 1, sourceObservedAt: observedAt };
+    return { ...terms, ownershipHash, counterpartyQualified: 1, sourceObservedAt: observedAt };
 }

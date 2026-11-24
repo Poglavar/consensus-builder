@@ -25,6 +25,7 @@ const MINT = IDL.instructions.find(ix => ix.name === 'mint_parcel');
 const PAYER = new PublicKey(Uint8Array.from({ length: 32 }, () => 4)).toBase58();
 const PARCEL_ID = 'HR-335550-1/1';
 const URI = 'https://api.example/parcels/HR-335550-1%2F1';
+const APARTMENT_HASH = createHash('sha256').update(JSON.stringify(['apartment/v1', 'xray-building', 'unit-1'])).digest('hex');
 
 // Reads mint_parcel's data back by the IDL's argument types (two borsh strings).
 function decode(data) {
@@ -97,5 +98,45 @@ describe('parcel_nft codec', () => {
         expect(parcel.toBase58()).toBe(PublicKey.findProgramAddressSync([Buffer.from('parcel'), Buffer.from(PARCEL_ID)], new PublicKey(other))[0].toBase58());
         expect(() => client.buildMintParcelIx({ parcelId: PARCEL_ID, metadataUri: URI, payer: 'payer' })).toThrow(/payer must be a base58 public key/);
         expect(client.buildMintParcelIx({ parcelId: PARCEL_ID, metadataUri: URI, payer: new PublicKey(PAYER) }).instruction.keys[1].pubkey.toBase58()).toBe(PAYER);
+    });
+
+    it('derives distinct apartment PDAs and encodes the hash-only mint instruction', () => {
+        const second = createHash('sha256').update('second apartment').digest('hex');
+        const a = client.getApartmentPda(APARTMENT_HASH); const b = client.getApartmentPda(second);
+        expect(a[0].toBase58()).not.toBe(b[0].toBase58());
+        const built = client.buildMintApartmentIx({ identityHash: APARTMENT_HASH, payer: PAYER });
+        expect(built.apartment.toBase58()).toBe(a[0].toBase58());
+        expect(built.instruction.keys.map(k => [k.pubkey.toBase58(), k.isSigner, k.isWritable])).toEqual([
+            [built.apartment.toBase58(), false, true], [PAYER, true, true], [web3.SystemProgram.programId.toBase58(), false, false]
+        ]);
+        expect(Buffer.from(built.instruction.data).subarray(0, 8)).toEqual(Buffer.from(client.IX_DISCRIMINATORS.mint_apartment));
+        expect(Buffer.from(built.instruction.data).subarray(8).toString('hex')).toBe(APARTMENT_HASH);
+    });
+
+    it.each([
+        ['wrong owner', { owner: PublicKey.default }],
+        ['executable', { executable: true }],
+        ['wrong discriminator', { discriminator: Buffer.alloc(8) }],
+        ['wrong size', { size: 40 }],
+        ['wrong hash', { wrongHash: true }],
+        ['wrong bump', { wrongBump: true }],
+    ])('rejects apartment evidence with %s', async (_label, change) => {
+        const [address, bump] = client.getApartmentPda(APARTMENT_HASH);
+        const discriminator = Buffer.from([228, 251, 95, 117, 86, 31, 42, 43]);
+        const body = Buffer.concat([discriminator, Buffer.from(APARTMENT_HASH, 'hex'), Buffer.from([bump])]);
+        if (change.discriminator) change.discriminator.copy(body, 0);
+        if (change.size) body[39] = 0;
+        if (change.wrongHash) body[8] ^= 1;
+        if (change.wrongBump) body[40] ^= 1;
+        const info = { owner: change.owner || new PublicKey(IDL.address), executable: !!change.executable, data: body };
+        await expect(client.readApartmentAnchor({ getAccountInfo: async () => info }, APARTMENT_HASH)).rejects.toThrow();
+    });
+
+    it('reads a valid apartment anchor and returns null for an absent account', async () => {
+        const [address, bump] = client.getApartmentPda(APARTMENT_HASH);
+        const info = { owner: new PublicKey(IDL.address), executable: false, data: Buffer.concat([Buffer.from([228, 251, 95, 117, 86, 31, 42, 43]), Buffer.from(APARTMENT_HASH, 'hex'), Buffer.from([bump])]) };
+        const connection = { getAccountInfo: async (key, commitment) => { expect(key.toBase58()).toBe(address.toBase58()); expect(commitment).toBe('confirmed'); return info; } };
+        await expect(client.readApartmentAnchor(connection, APARTMENT_HASH)).resolves.toEqual({ address: address.toBase58(), identityHash: APARTMENT_HASH, bump });
+        await expect(client.readApartmentAnchor({ getAccountInfo: async () => null }, APARTMENT_HASH)).resolves.toBeNull();
     });
 });

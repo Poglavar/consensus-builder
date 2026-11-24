@@ -15,6 +15,8 @@
 use anchor_lang::prelude::pubkey;
 use anchor_lang::solana_program::pubkey::Pubkey;
 
+pub mod property;
+
 /// SAS program id (same on devnet and mainnet).
 pub const SAS_PROGRAM_ID: Pubkey = pubkey!("22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG");
 

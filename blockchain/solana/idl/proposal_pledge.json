@@ -1151,6 +1151,12 @@
         {
           "name": "buyer",
           "signer": true
+        },
+        {
+          "name": "attestation"
+        },
+        {
+          "name": "credential"
         }
       ],
       "args": [
@@ -1617,6 +1623,11 @@
       "code": 6022,
       "name": "NotRefunded",
       "msg": "Donation has not been refunded"
+    },
+    {
+      "code": 6023,
+      "name": "InvalidBuyerQualification",
+      "msg": "The agreement lens must qualify this buyer for these apartment terms"
     }
   ],
   "types": [
@@ -1666,6 +1677,10 @@
           {
             "name": "bump",
             "type": "u8"
+          },
+          {
+            "name": "qualification",
+            "type": "pubkey"
           }
         ]
       }

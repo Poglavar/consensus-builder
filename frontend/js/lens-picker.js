@@ -128,9 +128,9 @@
         return `${counts} · ${t('modal.lens.picker.coverageSelected', 'Attests {{covered}} of {{total}} selected parcels', { covered: stats.covered, total: parcelCount })}`;
     }
 
-    function renderBody(container, entries) {
+    function renderBody(container, entries, single) {
         const core = root.LensCore;
-        const parcelIds = selectedParcelIds();
+        const parcelIds = single ? [] : selectedParcelIds();
         const chosen = new Set(entries.map(entry => entry.address));
         const coverage = coverageState.coverage;
         const members = core.sortMembersByCoverage(directory.members, coverage);
@@ -148,7 +148,7 @@
             directoryHtml = `<ul class="lens-picker-members">${members.map(member => `
                 <li class="lens-picker-member">
                     <label>
-                        <input type="checkbox" data-lens-member="${escapeText(member.key)}" ${chosen.has(member.key) ? 'checked' : ''} />
+                        <input ${single ? 'type="radio" name="offer-lens-member"' : 'type="checkbox"'} data-lens-member="${escapeText(member.key)}" ${chosen.has(member.key) ? 'checked' : ''} />
                         <span class="lens-picker-member-text">
                             <span class="lens-picker-member-name">${escapeText(member.name || core.shortKey(member.key))}</span>
                             ${member.kind ? `<span class="cb-badge lens-picker-kind">${escapeText(member.kind)}</span>` : ''}
@@ -204,15 +204,16 @@
             ${entries.length ? `<p class="lens-picker-note" data-lens-summary>${escapeText(t('modal.lens.picker.chosenCount', '{{count}} lens member(s) chosen', { count: entries.length }))}</p>` : ''}`;
     }
 
-    function wire(container, rerender, { getEntries, setEntries }) {
+    function wire(container, rerender, { getEntries, setEntries, single }) {
         container.querySelectorAll('[data-lens-member]').forEach(input => {
             input.addEventListener('change', () => {
                 const key = input.getAttribute('data-lens-member');
                 const member = directory.members.find(entry => entry.key === key);
-                const next = getEntries().filter(entry => entry.address !== key);
+                const next = single ? [] : getEntries().filter(entry => entry.address !== key);
                 if (input.checked) next.push({ address: key, name: (member && member.name) || '' });
                 setEntries(next);
                 rerender();
+                container.querySelector(`[data-lens-member="${key}"]`)?.focus();
             });
         });
         container.querySelectorAll('[data-lens-remove]').forEach(button => {
@@ -229,15 +230,16 @@
         const errorNode = container.querySelector('[data-lens-paste-error]');
         const add = () => {
             const { keys, invalid } = root.LensCore.parsePastedKeys(input.value);
-            if (invalid.length || !keys.length) {
+            if (invalid.length || !keys.length || (single && keys.length !== 1)) {
                 errorNode.hidden = false;
                 errorNode.textContent = t('modal.lens.picker.pasteInvalid', 'Not a Solana public key: {{value}}', { value: invalid.join(', ') || input.value });
                 return;
             }
-            const next = getEntries();
+            const next = single ? [] : getEntries();
             keys.forEach(key => { if (!next.some(entry => entry.address === key)) next.push({ address: key, name: '' }); });
             setEntries(next);
             rerender();
+            container.querySelector('#lens-picker-paste-input')?.focus();
         };
         addButton.addEventListener('click', add);
         input.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); add(); } });
@@ -252,19 +254,23 @@
         if (typeof root.closeLensModal === 'function') root.closeLensModal();
         if (pickerDialog) pickerDialog.close();
         const initial = Array.isArray(options.entries) ? options.entries : getEntries();
-        const keys = root.LensCore.validateSolanaLens(initial).keys;
+        const single = options.single === true;
+        const validated = root.LensCore.validateSolanaLens(initial).keys;
+        const keys = single ? validated.slice(0, 1) : validated;
         let workingEntries = keys.map(address => ({ address, name: initial.find(entry => entry.address === address)?.name || '' }));
-        const selection = { getEntries: () => workingEntries.map(entry => ({ ...entry })), setEntries: next => {
-            setEntries(next); workingEntries = getEntries(); options.onChange?.(selection.getEntries());
+        const selection = { single, getEntries: () => workingEntries.map(entry => ({ ...entry })), setEntries: next => {
+            if (single) workingEntries = next;
+            else { setEntries(next); workingEntries = getEntries(); }
+            options.onChange?.(selection.getEntries());
         } };
         const subtitle = document.createElement('p');
         subtitle.className = 'lens-modal-subtitle';
-        subtitle.textContent = t('modal.lens.picker.subtitle', 'Choose the trusted members of your lens. Changes become your default; saved agreements keep their own lens.');
+        subtitle.textContent = single ? '' : t('modal.lens.picker.subtitle', 'Choose the trusted members of your lens. Changes become your default; saved agreements keep their own lens.');
         const body = document.createElement('div');
         body.className = 'lens-picker-body';
         body.setAttribute('data-lens-picker-body', '');
         const dialogApi = root.CbDialog.open({
-            title: t('modal.lens.title', 'The lens through which I see the world'),
+            title: single ? t('propertyOffer.chooseLens', 'Choose lens') : t('modal.lens.title', 'The lens through which I see the world'),
             parent: options.parent,
             size: 'lg',
             top: true,
@@ -274,7 +280,7 @@
             overlayClassName: 'lens-modal-overlay',
             bodyClassName: 'lens-modal-body',
             closeLabel: t('modal.lens.closeLabel', 'Close lens modal'),
-            body: [subtitle, body],
+            body: single ? body : [subtitle, body],
             actions: [{ id: 'done', label: t('modal.lens.picker.done', 'Done'), role: 'primary' }],
             onClose: () => { if (pickerDialog === dialogApi) pickerDialog = null; options.onClose?.(selection.getEntries()); }
         });
@@ -288,13 +294,13 @@
 
         const rerender = () => {
             if (!overlay.isConnected) return;
-            renderBody(body, selection.getEntries());
+            renderBody(body, selection.getEntries(), single);
             wire(body, rerender, selection);
         };
         rerender();
         loadDirectory().then(() => {
             rerender();
-            return loadCoverage(directory.members, selectedParcelIds(), rerender);
+            if (!single) return loadCoverage(directory.members, selectedParcelIds(), rerender);
         }).catch(error => {
             console.error(`[${new Date().toISOString()}] [LensPicker] failed`, error);
             directory.status = 'error';

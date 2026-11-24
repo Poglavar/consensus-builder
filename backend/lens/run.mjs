@@ -17,6 +17,7 @@ import { Connection, Keypair } from '@solana/web3.js';
 import { createRequire } from 'node:module';
 import { loadAgreement } from '../routes/agreements.js';
 import { loadPropertyOffer } from '../routes/property-offers.js';
+import { readOfferAnchor } from '../property-offers/onchain.js';
 import { createOwnershipTransfers } from '../property-offers/ownership-transfers.js';
 import { createTransferStore } from '../property-offers/transfer-store.js';
 import { createAgreementDecisionStore } from '../agreements/decisions.js';
@@ -222,9 +223,10 @@ async function main() {
     // relay admitted, in the same database the API writes (routes/agreements.js, agreements/decisions.js).
     const decisionStore = pool ? createAgreementDecisionStore(pool) : null;
     const agreements = pool ? { load: cid => loadAgreement(pool, cid), decisions: cid => decisionStore.list(cid) } : null;
-    const propertyOffers = pool && (dryRun || transfers) ? {
-        load: loadOffer, transfers,
-        account: async offer => PropertyOfferClient.fetchPropertyOffer(offerConnection, { cid: offer.cid, maker: offer.content.proposer })
+    const propertyOffers = pool ? {
+        load: loadOffer, transfers, parcelDecisions: dryRun || Boolean(transfers),
+        account: async offer => readOfferAnchor(offerConnection, offer,
+            await PropertyOfferClient.fetchPropertyOffer(offerConnection, { cid: offer.cid, maker: offer.content.proposer }), 'finalized')
     } : null;
     const app = createLensMemberApp({ member, pricing, operatorToken, approvalAttester, agreements, propertyOffers, fundingChain, clock });
 

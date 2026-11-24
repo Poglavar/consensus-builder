@@ -552,7 +552,9 @@ export function createUrbanGameTheoryTools({
                     investorReview: content.rule.electorate === 'investors' ? {
                         contract: content.funding?.contract?.name ?? null,
                         targetUsdcAtomic: content.funding?.targetUsdcAtomic ?? null,
-                        action: 'Review the attached immutable contract before any investor donation.'
+                        action: content.funding?.apartments
+                            ? 'Review the unit drawing and contract. The developer’s lens must qualify the buyer before they deposit USDC to reserve that apartment.'
+                            : 'Review the attached immutable contract before any investor donation.'
                     } : null };
             } catch (error) { throw publicationError(error, state, 'ugt_propose_agreement', args); }
         },

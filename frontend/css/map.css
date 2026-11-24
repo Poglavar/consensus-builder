@@ -293,7 +293,9 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 .three-apartment-panel[hidden], .three-apartment-panel [role=status]:empty { display: none; }
 .three-apartment-panel label { grid-column: 1 / -1; padding-inline-end: 36px; font-weight: 600; }
 .three-apartment-panel select { width: 100%; min-height: 36px; }
-.three-apartment-panel [role=status] { grid-column: 1 / -1; }
+.three-apartment-panel [role=status], .three-apartment-panel .cb-link-row { grid-column: 1 / -1; }
+.three-apartment-panel .cb-link-row { overflow-y: auto; max-height: 24vh; }
+.three-apartment-panel .cb-link-row:empty { display: none; }
 .three-apartment-panel .three-apartment-close {
     position: absolute;
     inset-block-start: var(--cb-space-2);

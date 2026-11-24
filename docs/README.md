@@ -68,7 +68,7 @@ Each document describes a current contract, an open plan or research. Verificati
 
 **Markets and chain**
 
-- [Purchase and sale offers](property-offers.md): standalone parcel bundles, owner consent and atomic Solana settlement.
+- [Purchase and sale offers](property-offers.md): apartment bids and listings, parcel bundles, lens qualification and Solana settlement.
 
 - [Blockchain flows](blockchain-flows.md): reading and minting designs, plans and agreements on the connected chain without our server; an open plan.
 - [LMSR market](lmsr-market.md), [betting on agreements](betting-lmsr-points.md), [betting instrumentation](betting-instrumentation.md), [San Francisco demos](sf-agreement-bets.md), [prediction market research](prediction-market-integration.md), [city meme token](citymemetoken.md).

@@ -310,34 +310,9 @@
         return typeof value === 'string' && /^[a-z0-9][a-z0-9-]{0,63}$/.test(value);
     }
 
-    // BuildingUnitLinks.pack encodes each segment independently. Reject aliases for the same
-    // selection so a camera change or an alternate spelling cannot list it twice in a round.
-    function locatorParts(value) {
-        if (typeof value !== 'string' || value.length > 1024) return [];
-        try {
-            const encoded = value.split('::');
-            const parts = encoded.map(decodeURIComponent);
-            return parts.every((part, i) => part && !/[\x00-\x1f\x7f]/.test(part) && encodeURIComponent(part) === encoded[i]) ? parts : [];
-        } catch (_) { return []; }
-    }
-
-    function apartmentLocator(value) {
-        const parts = locatorParts(value);
-        if (parts.length !== 3 || (parts[0] === 'design' && !/^baf(?:krei|ybei)[a-z2-7]{52}$/.test(parts[1]))) return null;
-        return parts;
-    }
-
-    function apartmentUnitLocator(value) {
-        const parts = locatorParts(value);
-        if (![2, 3].includes(parts.length) || !/^(?:0|-?[1-9]\d*)$/.test(parts[0]) || !Number.isSafeInteger(Number(parts[0]))) return null;
-        return parts.length === 3 && !/^[a-f0-9]{24}$/.test(parts[2]) ? null : parts;
-    }
-
-    function apartmentLocation(at) {
-        if (typeof at !== 'string' || !/^-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?,\d+(?:\.\d+)?$/.test(at)) return false;
-        const [lat, lng, zoom] = at.split(',').map(Number);
-        return Math.abs(lat) <= 85.0511 && Math.abs(lng) <= 180 && zoom <= 24;
-    }
+    const unitLinks = () => root.BuildingUnitLinks || (typeof require === 'function' && require('./building-unit-links.js'));
+    const apartmentLocator = value => unitLinks().apartmentLocator(value);
+    const apartmentUnitLocator = value => unitLinks().apartmentUnitLocator(value);
 
     function apartmentDrawingError(file) {
         if (!isObject(file) || Object.keys(file).some(key => !['name', 'mediaType', 'data'].includes(key))
@@ -361,7 +336,7 @@
         for (const unit of apartments.units) {
             if (!isObject(unit) || Object.keys(unit).some(key => !['unitId','label','xrayBuilding','unit','at','priceUsdcAtomic','depositUsdcAtomic','drawing','access'].includes(key))) return 'Each apartment unit has unsupported fields.';
             if (!apartmentId(unit.unitId) || ids.has(unit.unitId) || typeof unit.label !== 'string' || unit.label !== unit.label.trim() || !unit.label || unit.label.length > 160
-                || !apartmentLocator(unit.xrayBuilding) || !apartmentUnitLocator(unit.unit) || !apartmentLocation(unit.at)
+                || !apartmentLocator(unit.xrayBuilding) || !apartmentUnitLocator(unit.unit) || !unitLinks().apartmentLocation(unit.at)
                 || (unit.access != null && !['auto', 'point', 'corridor'].includes(unit.access))) return 'Each apartment needs a unique unit ID, label and valid X-ray location.';
             const positiveAtomic = value => typeof value === 'string' && /^[1-9]\d{0,19}$/.test(value);
             if (!positiveAtomic(unit.priceUsdcAtomic) || !positiveAtomic(unit.depositUsdcAtomic)) return 'Enter a positive apartment price and deposit in devnet USDC.';

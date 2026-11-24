@@ -56,7 +56,11 @@ An arrangement with a decision rule for exactly one immutable plan revision. Dep
 
 ### Property offer
 
-An immutable, atomic offer to buy or sell one or more source-qualified cadastral parcels for one exact total in SOL lamports. A published `property-offer/v1` record names its maker, the initially open counterparty role, a lens, expiry and every parcel. A sale commits its payout schedule; a purchase receives an owner-approved payout schedule only on acceptance. Acceptance and lens attestation bind the exact offer CID, terms and schedule; they do not assert or effect a registered title transfer. Parcel anchors remain ownerless and non-transferable. On finalized settlement, seller signatures become evidence of transfer through the lens.
+An immutable offer to buy or sell one exact apartment or a bundle of cadastral parcels for a price in SOL. The maker specifies the lens, expiry and property in `property-offer/v1`. A listing commits the payout schedule at publication. A bid binds the schedule when accepted. For an apartment, the named lens qualifies the accepting buyer or seller for the exact terms. The reference parcel policy also requires consent from the parcel owners.
+
+### Apartment anchor
+
+An ownerless, non-transferable Solana account identifying an apartment by its published or fingerprinted X-ray building and unit address. Different bids and listings share the same anchor. Creating it grants the payer no rights over the apartment. Its identity is independent of the developer’s inventory IDs used for crowdfunding reservations.
 
 ### Parcel ownership transfer
 
@@ -84,11 +88,11 @@ The developer’s attached PDF or UTF-8 text specifying what a contributor recei
 
 ### Apartment reservation
 
-A crowdfunding offer for one whole apartment at a fixed price and deposit. The developer wallet, permanent project ID and permanent unit ID identify it across rounds. The unit’s X-ray address and attached drawing identify the layout the buyer reviewed. A funded reservation belongs to one buyer wallet. Execution retains its allocation. A refunded position permits the unit to be released and listed again.
+A crowdfunding offer for one whole apartment at a fixed price and deposit. The developer wallet, permanent project ID and permanent unit ID identify it across rounds. The unit’s X-ray address and attached drawing identify the layout the buyer reviewed. The developer’s chosen lens qualifies the buyer wallet for this round, unit and deposit before one funded reservation can be recorded for it. Execution retains its allocation. A refunded position permits the unit to be released and listed again.
 
 The **reservation deposit** is the fixed USDC amount the buyer pays into the agreement’s escrow to reserve the unit. Only deposits attached to reserved units count toward an apartment round’s funding target.
 
-The **contract schedule** ties that apartment, its full price and paid deposit to the buyer wallet, developer, exact agreement, attached contract and unit drawing. Its deposit position identifies the payment on Solana.
+The **contract schedule** ties that apartment, its full price and paid deposit to the buyer wallet, developer, exact agreement, attached contract and unit drawing. Its deposit position identifies the payment on Solana, and its qualification address identifies the lens attestation.
 
 ### Poll
 

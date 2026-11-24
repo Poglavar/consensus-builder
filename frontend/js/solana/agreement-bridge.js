@@ -474,6 +474,29 @@
                 : pledge().listDonationPositions(connection, account, owner);
         }
 
+        async function apartmentQualification({ agreement, offer, buyer, lens, signal }) {
+            const directory = await win.LensPicker.loadDirectory();
+            const service = directory.members.find(member => member.key === lens)?.serviceUrl;
+            if (!service) throw codedError(t('agreement.funding.apartments.noLensService', 'The selected lens has no qualification service.'), 'lens-unavailable');
+            const cid = agreement.published.cid;
+            const url = new URL(`${service.replace(/\/$/, '')}/lens/agreements/${encodeURIComponent(cid)}/apartments/${encodeURIComponent(offer.unitId)}/qualification`);
+            url.searchParams.set('buyer', buyer);
+            const timeout = AbortSignal.timeout(15000);
+            const response = await win.fetch(url.href, { signal: signal ? AbortSignal.any([signal, timeout]) : timeout });
+            const proof = await response.json();
+            if (!response.ok) {
+                if (proof.error === 'qualification_pending') throw codedError(t('agreement.funding.apartments.qualificationPending',
+                    'The developer’s lens has yet to qualify this wallet for this apartment. You can share the qualification request with the lens.'), 'qualification-pending');
+                throw codedError(proof.message || `Lens HTTP ${response.status}`, 'lens-unavailable');
+            }
+            const fields = proof.payload;
+            if (!lensCore().isBase58Pubkey(proof.address) || !lensCore().isBase58Pubkey(proof.credential) || proof.authority !== lens || fields?.counterpartyQualified !== 1
+                || fields.cid !== cid || fields.offer !== offer.account || fields.buyer !== buyer || fields.seller !== agreement.sponsor
+                || fields.termsHash !== offer.termsHash || !Number.isSafeInteger(proof.expiry) || proof.expiry <= Date.now() / 1000) throw codedError(
+                    t('agreement.funding.apartments.invalidQualification', 'The lens qualification does not match this buyer and apartment.'), 'invalid-qualification');
+            return { attestation: proof.address, credential: proof.credential };
+        }
+
         async function apartmentAction({ agreement, unitId, expectedBuyer, onStatus, signal }, listing) {
             const api = await dependencies();
             const { provider, wallet } = walletContext();
@@ -484,7 +507,8 @@
             const developer = agreement.sponsor;
             const payer = wallet.toBase58();
             if (expectedBuyer && expectedBuyer !== payer) throw codedError(t('agreement.chain.errors.connectWallet', 'Connect the wallet shown in the reservation.'), 'wallet-changed');
-            const receipt = { account: ref.account, cluster: ref.cluster, signature: null, explorerUrl: explorerUrl(ref), position: offer.position };
+            const receipt = { account: ref.account, cluster: ref.cluster, signature: null, explorerUrl: explorerUrl(ref),
+                position: offer.position, qualification: offer.qualification };
             if (listing && payer !== developer) throw codedError(t('agreement.funding.apartments.developerOnly', 'Only the developer can list this apartment.'), 'developer-required');
             if ((!listing && offer.status === 'reserved' && offer.buyer === payer) || (listing && offer.status === 'available')) return receipt;
             if (value.status !== 'Active' || api.deadlinePassed(value, Math.floor(Date.now() / 1000))) {
@@ -501,6 +525,8 @@
                 instructions.push(client.buildListApartmentIx(options));
             } else {
                 if (offer.status !== 'available') throw codedError(t('agreement.funding.apartments.unavailable', 'This apartment is unavailable for reservation.'), 'unit-unavailable');
+                const proof = await apartmentQualification({ agreement, offer, buyer: payer, lens: value.lens, signal });
+                receipt.qualification = proof.attestation;
                 const donationId = client.hashBytes(offer.unitKey);
                 const escrow = client.getDonationEscrowPda(ref.account)[0];
                 receipt.position = client.getDonationPositionPda(escrow, wallet, donationId)[0].toBase58();
@@ -509,7 +535,7 @@
                 if (previous && (previous.refunded || previous.amount !== BigInt(offer.deposit))) throw new Error(t('agreement.funding.apartments.invalidPosition', 'The existing deposit does not match this apartment.'));
                 if (!vault) instructions.push(client.buildCreateDonationEscrowIx({ proposal: ref.account, creator: wallet }));
                 if (!previous) instructions.push(client.buildDonateIx({ proposal: ref.account, donor: wallet, amount: offer.deposit, donationId }));
-                instructions.push(client.buildReserveApartmentIx(options));
+                instructions.push(client.buildReserveApartmentIx({ ...options, ...proof }));
             }
             try {
                 const sent = await send(connection, provider, wallet, ref.cluster, instructions, { onStatus, signal });

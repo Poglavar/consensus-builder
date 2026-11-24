@@ -65,7 +65,7 @@ describe('finalized investor funding chain adapter', () => {
         const position = pledgeClient.getDonationPositionPda(row.escrow, buyer, pledgeClient.hashBytes(first.unitKey))[0];
         const listing = { owner: new web3.PublicKey(pledgeClient.constants.PROGRAM_ID), data: Buffer.concat([
             Buffer.from(pledgeClient.ACCOUNT_DISCRIMINATORS.ApartmentUnit), key(row.sponsor), Buffer.from(first.unitKey, 'hex'),
-            key(row.account), Buffer.from(first.termsHash, 'hex'), u64(first.deposit), key(buyer), key(position), Buffer.from([255])
+            key(row.account), Buffer.from(first.termsHash, 'hex'), u64(first.deposit), key(buyer), key(position), Buffer.from([255]), key(Keypair.generate().publicKey)
         ]) };
         const { rpc, chain } = adapter(row, [listing, null]);
         const found = await chain.observe({ cid: row.cid, sponsor: row.sponsor, account: row.account, funding });

@@ -340,7 +340,7 @@ in commits.
 
 ## Purchase and sale
 
-- Restore parcel purchase and sale offers on Solana first, in both directions; leases and individual building/apartment transactions are deferred.
+- Parcel bundles and individual apartments support purchase and sale offers on Solana. Whole-building offers and leases are deferred.
 
 ## Floor plans and Novogradnje
 
@@ -407,3 +407,4 @@ in commits.
   retry is hatched (`planning/failed-cells.js`, one image for map and model view).
 - Developer crowdfunding is an agreement on a named proposal. The developer attaches the contract stating what investors receive. The first flow reuses the existing contribution escrow and agreement decision.
 - Apartment crowdfunding reserves a whole apartment for one buyer. The payment receipt and developer contract schedule identify the unit by developer wallet, permanent project ID and permanent unit ID.
+- The developer’s chosen lens qualifies the buyer before an apartment deposit can reserve the unit. For a standalone apartment buy or sell offer, the proposer chooses the lens that qualifies the counterparty for the exact terms. The apartment’s ownerless on-chain address is common to both sides of the market.

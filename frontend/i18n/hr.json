@@ -6555,6 +6555,9 @@
             "chooseApartment": "Odaberite stan",
             "apartmentCopy": "Kopiraj poveznicu na stan",
             "apartmentCopyFailed": "Nije moguće kopirati poveznicu na stan.",
+            "offerToBuyApartment": "Ponudi kupnju stana",
+            "offerToSellApartment": "Ponudi prodaju stana",
+            "apartmentFundingDeposit": "Rezervacija u sporazumu {{title}} · polog {{amount}} USDC",
             "findApartmentOffers": "Pronađi ponude za stan",
             "apartmentOffersLoading": "Traženje objavljenih ponuda…",
             "apartmentOffersFailed": "Ponude za stan nisu učitane.",
@@ -8118,6 +8121,12 @@
             "apartments": {
                 "inventory": "Stanovi",
                 "priceAndDeposit": "Cijena {{price}} USDC · Polog za rezervaciju {{deposit}} USDC",
+                "standalone": "Samostalne ponude u SOL-u",
+                "copyQualification": "Kopiraj zahtjev za provjeru",
+                "qualificationHint": "Prije uplate pologa leća koju je odabrao investitor mora odobriti tvoj novčanik za ovaj stan.",
+                "qualificationPending": "Tvoj novčanik čeka odobrenje za ovaj stan. Zahtjev možeš poslati leći koju je odabrao investitor.",
+                "invalidQualification": "Potvrda ne odgovara ovom kupcu i stanu.",
+                "noLensService": "Odabrana leća nema uslugu provjere.",
                 "openUnit": "Prikaži stan u rendgenskom prikazu",
                 "downloadDrawing": "Preuzmi nacrt ({{name}})",
                 "list": "Objavi stan",
@@ -9958,6 +9967,8 @@
         }
     },
   "propertyOffer": {
+    "lensQualification": "Odabrana leća odlučuje ispunjava li druga strana uvjete ponude.",
+    "awaitQualification": "Prije prihvata odabrana leća mora potvrditi da druga strana ispunjava uvjete.",
     "buy": "Ponuda za kupnju",
     "sell": "Ponuda za prodaju",
     "createBuy": "Ponudi kupnju",
@@ -10001,7 +10012,7 @@
       "draft": "Skica",
       "published": "Objavljeno"
     },
-    "fields": {
+    "fields": { "apartment": "Stan", "openApartment": "Prikaži stan u rendgenskom prikazu", "apartmentAnchor": "Adresa stana na Solani",
       "title": "Naslov",
       "direction": "Vrsta",
       "bundle": "Paket čestica",
@@ -10019,7 +10030,7 @@
       "parcelSnapshot": "Snimka",
       "solanaAccount": "Račun na Solani"
     },
-    "defaults": {
+    "defaults": { "buyApartmentTitle": "Ponudi kupnju stana", "sellApartmentTitle": "Ponudi prodaju stana",
       "buyTitle": "Ponuda za kupnju {{count}} čestica",
       "sellTitle": "Ponuda za prodaju {{count}} čestica"
     },

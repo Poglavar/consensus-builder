@@ -4,8 +4,19 @@ import { Connection } from '@solana/web3.js';
 import { canonicalBytes } from '../cid.js';
 const require = createRequire(import.meta.url);
 export const client = require('../../frontend/js/solana/property-offer-client.js').configure({ web3: require('@solana/web3.js') });
+const anchors = require('../../frontend/js/solana/parcel-client.js').configure({ web3: require('@solana/web3.js') });
+const Offer = require('../../frontend/js/property-offer-record.js');
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const fail = message => { throw Object.assign(new Error(message), { status: 422, code: 'offer-chain-mismatch' }); };
+export function expectedApartmentAnchor(content) {
+    return content.apartment ? anchors.getApartmentPda(Offer.apartmentHash(content.apartment))[0].toBase58() : null;
+}
+export async function readOfferAnchor(connection, row, account, commitment = 'confirmed') {
+    if (!account || !row.content.apartment) return account;
+    const anchor = await anchors.readApartmentAnchor(connection, Offer.apartmentHash(row.content.apartment), { commitment });
+    if (!anchor) fail('The apartment anchor is missing on this network.');
+    return { ...account, apartmentAnchor: anchor.address };
+}
 export function validateOfferAccount(row, account) {
     const c = row.content;
     const expected = client.getOfferPda(row.cid, c.proposer)[0].toBase58();
@@ -13,6 +24,7 @@ export function validateOfferAccount(row, account) {
         || account.side.toLowerCase() !== c.direction || account.priceLamports !== BigInt(c.priceLamports)
         || account.deadline !== BigInt(Math.floor(Date.parse(c.expiresAt) / 1000)) || account.termsHash !== hash(canonicalBytes(c))) fail('The Solana account does not match the published offer.');
     if (c.direction === 'sell' && Buffer.from(client.payoutScheduleHash(c.payouts)).toString('hex') !== account.payoutsHash) fail('The sale payout schedule differs from the offer.');
+    if (c.apartment && account.apartmentAnchor !== expectedApartmentAnchor(c)) fail('The apartment anchor differs from the published unit.');
     if (!['Open', 'Accepted', 'Settled', 'Cancelled', 'Expired'].includes(account.status)) fail('Unknown offer status.');
     return account;
 }
@@ -28,7 +40,7 @@ export function createOfferChain(cluster, env = process.env) {
     return { async read(row) {
         if (cluster === 'devnet' && await connection.getGenesisHash() !== 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG') fail('RPC network is not Solana devnet.');
         const value = await client.fetchPropertyOffer(connection, { cid: row.cid, maker: row.content.proposer });
-        return validateOfferAccount(row, value);
+        return validateOfferAccount(row, await readOfferAnchor(connection, row, value));
     } };
 }
 export function mirrorOfferAccount(row, account, cluster) {
@@ -37,6 +49,7 @@ export function mirrorOfferAccount(row, account, cluster) {
     const onchain = { chain: 'solana', cluster, programId: client.constants.PROPERTY_OFFER_PROGRAM_ID, account: account.address,
         status: account.status.toLowerCase(), buyer: account.buyer, seller: account.seller, escrowLamports: String(account.escrowLamports),
         priceLamports: String(account.priceLamports), decisionAttestation: account.decisionAttestation, payouts, observedAt: new Date().toISOString() };
+    if (row.content.apartment) onchain.apartmentAnchor = account.apartmentAnchor;
     const acceptance = account.acceptedAt > 0n ? { buyer: account.buyer, seller: account.seller, payouts, attestation: account.decisionAttestation } : null;
     return { onchain, acceptance };
 }

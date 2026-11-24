@@ -264,10 +264,16 @@ export function createLensMember({
             return issue('decision', fields, nonce, {});
         },
 
+        async findPropertyOfferQualification({ cid, offer, termsHash, payoutsHash, buyer, seller }) {
+            return store.qualification({ credential, schema: schemas.propertyOffer, now: clock.nowSeconds(),
+                terms: { cid, offer, termsHash, payoutsHash, buyer, seller, counterpartyQualified: 1 } });
+        },
+
         async attestPropertyOfferDecision(fields, { beforeIssue } = {}) {
-            const required = ['cid', 'offer', 'termsHash', 'payoutsHash', 'ownershipHash', 'buyer', 'seller', 'sourceObservedAt'];
-            if (required.some(name => fields?.[name] == null) || fields.ownershipVerified !== 1) throw new LensError(422, 'invalid_property_offer_decision', 'Property offer decision is incomplete.');
-            const nonce = factNonce([LENS_SCHEMAS.propertyOffer.id, fields.cid, fields.offer, fields.termsHash, fields.payoutsHash, fields.ownershipHash, fields.buyer, fields.seller, fields.sourceObservedAt]);
+            const required = ['cid', 'offer', 'termsHash', 'payoutsHash', 'buyer', 'seller', 'sourceObservedAt'];
+            if (required.some(name => fields?.[name] == null) || fields.counterpartyQualified !== 1) throw new LensError(422, 'invalid_property_offer_decision', 'Property offer decision is incomplete.');
+            const nonce = factNonce([LENS_SCHEMAS.propertyOffer.id, fields.cid, fields.offer, fields.termsHash, fields.payoutsHash,
+                ...(fields.ownershipHash ? [fields.ownershipHash] : []), fields.buyer, fields.seller, fields.sourceObservedAt]);
             if (beforeIssue) await beforeIssue(deriveAttestationPda({ credential, schema: schemas.propertyOffer, nonce }));
             return issue('propertyOffer', fields, nonce, {});
         },

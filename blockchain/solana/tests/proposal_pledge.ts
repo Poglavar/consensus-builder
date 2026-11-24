@@ -20,7 +20,7 @@ import { createHash } from "crypto";
 import { readFileSync } from "fs";
 import path from "path";
 import { expect } from "chai";
-import { LensMember, chainNow, createLensMember, waitForProgramsVisible } from "./sas-mock.ts";
+import { LensMember, attestPropertyOfferDecision, chainNow, createLensMember, waitForProgramsVisible } from "./sas-mock.ts";
 import {
     CreatedAgreement,
     STATUS,
@@ -177,7 +177,21 @@ describe("proposal_pledge", () => {
             unit: apartmentOf(creator.publicKey, unitKey), proposal, developer: creator.publicKey, systemProgram: SystemProgram.programId,
         } as any).signers([creator]).rpc();
     }
-    async function reserveApartment(buyer: Party, proposal: PublicKey, unitKey: Buffer, terms: Buffer, amount: number) {
+    async function qualify(buyer: Party, subject: Subject, unitKey: Buffer, terms: Buffer, amount: number,
+        changes: Partial<Parameters<typeof attestPropertyOfferDecision>[2]> = {}, issuer: LensMember = lens) {
+        const depositBytes = Buffer.alloc(8);
+        depositBytes.writeBigUInt64LE(BigInt(amount));
+        const payout = createHash("sha256").update(vaultOf(escrowOf(subject.proposal)).toBuffer()).update(depositBytes).digest("hex");
+        const { address } = await attestPropertyOfferDecision(provider, issuer, { agreementCid: subject.created.cid,
+            offer: apartmentOf(creator.publicKey, unitKey), termsHash: terms.toString("hex"), payoutsHash: payout,
+            buyer: buyer.pk, seller: creator.publicKey, ...changes });
+        return { attestation: address, credential: issuer.credential };
+    }
+
+    async function reserveApartment(buyer: Party, subject: Subject, unitKey: Buffer, terms: Buffer, amount: number,
+        supplied?: { attestation: PublicKey; credential: PublicKey }) {
+        const proof = supplied || await qualify(buyer, subject, unitKey, terms, amount);
+        const proposal = subject.proposal;
         const escrow = escrowOf(proposal);
         const position = positionOf(escrow, buyer.pk, unitKey);
         const deposit = await program.methods.donate(Array.from(unitKey), new anchor.BN(amount)).accountsStrict({
@@ -186,6 +200,7 @@ describe("proposal_pledge", () => {
         } as any).instruction();
         const claim = await program.methods.reserveApartment(Array.from(terms)).accountsStrict({
             unit: apartmentOf(creator.publicKey, unitKey), proposal, escrow, position, buyer: buyer.pk,
+            ...proof,
         } as any).instruction();
         const latest = await connection.getLatestBlockhash('confirmed');
         const transaction = new Transaction({ feePayer: buyer.pk, ...latest }).add(deposit, claim);
@@ -828,11 +843,30 @@ describe("proposal_pledge", () => {
                 await listApartment(round.proposal, unitB, terms, 3_000_000);
                 const buyers = [donorA, donorB];
                 const before = await Promise.all(buyers.map(buyer => balance(buyer.usdc)));
-                const claims = await Promise.allSettled(buyers.map(buyer => reserveApartment(buyer, round.proposal, unitA, terms, deposit)));
+                const foreignMember = await createLensMember(provider);
+                const refused = [
+                    { attestation: SystemProgram.programId, credential: lens.credential },
+                    await qualify(donorB, round, unitA, terms, deposit),
+                    await qualify(donorA, round, unitB, terms, deposit),
+                    await qualify(donorA, revision, unitA, terms, deposit),
+                    await qualify(donorA, round, unitA, terms, deposit + 1),
+                    await qualify(donorA, round, unitA, terms, deposit, { qualified: 0 }),
+                    await qualify(donorA, round, unitA, terms, deposit, { expiry: (await chainNow(connection)) - 1 }),
+                    await qualify(donorA, round, unitA, terms, deposit, {}, foreignMember),
+                ];
+                for (const proof of refused) {
+                    await expectFailure(() => reserveApartment(donorA, round, unitA, terms, deposit, proof), /InvalidBuyerQualification|"Custom":/);
+                    expect(await balance(donorA.usdc)).to.equal(before[0]);
+                    expect(await balance(vaultOf(escrowOf(round.proposal)))).to.equal(0);
+                    expect(await connection.getAccountInfo(positionOf(escrowOf(round.proposal), donorA.pk, unitA))).to.equal(null);
+                }
+                const claims = await Promise.allSettled(buyers.map(buyer => reserveApartment(buyer, round, unitA, terms, deposit)));
                 const issues = claims.flatMap(result => result.status === "rejected" ? [errorText(result.reason)] : []);
                 expect(claims.filter(result => result.status === "fulfilled"), issues.join("\n")).to.have.length(1);
                 const first = claims.findIndex(result => result.status === "fulfilled");
                 const winner = buyers[first], second = buyers[1 - first];
+                const reserved = await (program.account as any).apartmentUnit.fetch(apartmentOf(creator.publicKey, unitA));
+                expect(reserved.qualification.equals(PublicKey.default)).to.equal(false);
                 const rejected = claims[1 - first] as PromiseRejectedResult;
                 expect(errorText(rejected.reason), errorText(rejected.reason)).to.match(/ApartmentReserved|"Custom":6018/);
                 const escrow = escrowOf(round.proposal);
@@ -850,8 +884,8 @@ describe("proposal_pledge", () => {
 
                 await createEscrow(revision.proposal);
                 await listApartment(revision.proposal, unitA, revisedTerms, deposit);
-                await expectFailure(() => reserveApartment(second, revision.proposal, unitA, terms, deposit), /TermsMismatch|"Custom":6020/);
-                await reserveApartment(second, revision.proposal, unitA, revisedTerms, deposit);
+                await expectFailure(() => reserveApartment(second, revision, unitA, terms, deposit), /TermsMismatch|"Custom":6020/);
+                await reserveApartment(second, revision, unitA, revisedTerms, deposit);
                 await execute(revision);
                 const payoutBefore = await connection.getAccountInfo(beneficiaryUsdc) ? await balance(beneficiaryUsdc) : 0;
                 await release(revision.proposal, attacker);

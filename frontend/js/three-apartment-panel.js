@@ -27,9 +27,25 @@
         offers.type = 'button';
         offers.className = 'btn';
         offers.textContent = t('threeMode.controls.findApartmentOffers', 'Find apartment offers');
+        function offerButton(direction) {
+            const button = doc.createElement('button');
+            button.type = 'button';
+            button.className = 'btn';
+            button.textContent = direction === 'buy' ? t('threeMode.controls.offerToBuyApartment', 'Offer to buy apartment')
+                : t('threeMode.controls.offerToSellApartment', 'Offer to sell apartment');
+            button.addEventListener('click', () => {
+                const href = selected && linkFor(selected);
+                if (!href) return;
+                const source = new URL(href).searchParams;
+                win.PropertyOfferDialog.open({ direction, apartment: { xrayBuilding: source.get('xrayBuilding'),
+                    unit: source.get('unit'), at: source.get('at'), ...(source.has('access') ? { access: source.get('access') } : {}) } });
+            });
+            return button;
+        }
+        const buy = offerButton('buy'), sell = offerButton('sell');
         const results = doc.createElement('div');
         results.className = 'cb-link-row';
-        panel.append(label, close, select, copy, offers, status, results);
+        panel.append(label, close, select, copy, buy, sell, offers, status, results);
         doc.body.appendChild(panel);
 
         let shown = null, selected = null, message = '';
@@ -51,23 +67,38 @@
             const source = new URL(href).searchParams;
             const params = new URLSearchParams(['city', 'xrayBuilding', 'unit'].map(name => [name, source.get(name)]));
             status.textContent = t('threeMode.controls.apartmentOffersLoading', 'Finding published apartment offers…');
-            try {
-                const response = await win.fetch(`${win.getBackendBase()}/agreements/apartment-offers?${params}`, { signal: controller.signal });
-                if (!response.ok) throw new Error(t('threeMode.controls.apartmentOffersFailed', 'Apartment offers could not be loaded.'));
-                const { offers: matches } = await response.json();
-                if (controller.signal.aborted) return;
-                status.textContent = matches.length ? '' : t('threeMode.controls.apartmentOffersEmpty', 'No published apartment offers found.');
-                for (const row of matches) {
-                    const intent = win.ApprovalLink.build({ origin: win.location.origin, action: 'reserve', target: row.cid, params: { city: row.city, unitId: row.unitId } });
-                    const url = new URL(intent);
-                    for (const key of ['at', 'lang', 'backend']) if (source.has(key)) url.searchParams.set(key, source.get(key));
-                    const link = doc.createElement('a');
-                    link.className = 'cb-link'; link.href = url.href; link.textContent = `${row.title || row.cid} · ${row.label}`;
-                    results.append(link);
-                }
-            } catch (error) {
-                if (!controller.signal.aborted) status.textContent = error.message;
+            async function lookup(path) {
+                const response = await win.fetch(`${win.getBackendBase()}/${path}?${params}`, {
+                    signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)])
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return response.json();
             }
+            function appendLink(target, label) {
+                const url = new URL(target, win.location.origin);
+                for (const key of ['city', 'at', 'lang', 'backend']) if (source.has(key) && !url.searchParams.has(key)) url.searchParams.set(key, source.get(key));
+                const link = doc.createElement('a');
+                link.className = 'cb-link';
+                link.href = url.href;
+                link.textContent = label;
+                results.append(link);
+            }
+            const [funding, standalone] = await Promise.allSettled([lookup('agreements/apartment-offers'), lookup('property-offers')]);
+            if (controller.signal.aborted) return;
+            for (const row of funding.value?.offers || []) {
+                const url = win.ApprovalLink.build({ origin: win.location.origin, action: 'reserve', target: row.cid,
+                    params: { city: row.city, unitId: row.unitId } });
+                const title = row.title || row.label, amount = win.AgreementRecord.formatUsdc(row.depositUsdcAtomic);
+                appendLink(url, t('threeMode.controls.apartmentFundingDeposit', `Reserve in ${title} · ${amount} USDC deposit`, { title, amount }));
+            }
+            for (const row of standalone.value?.propertyOffers || []) {
+                const label = row.content.direction === 'buy' ? buy.textContent : sell.textContent;
+                const price = win.PropertyOfferDialog.sol(row.content.priceLamports);
+                appendLink(`/property-offers/${encodeURIComponent(row.cid)}`, [label, price, row.content.title].filter(Boolean).join(' · '));
+            }
+            status.textContent = funding.status === 'rejected' || standalone.status === 'rejected'
+                ? t('threeMode.controls.apartmentOffersFailed', 'Apartment offers could not be loaded.')
+                : results.childElementCount ? '' : t('threeMode.controls.apartmentOffersEmpty', 'No published apartment offers found.');
         }));
         copy.addEventListener('click', async () => {
             const unit = selected;
@@ -97,6 +128,7 @@
             select.value = unit?.key || '';
             select.disabled = choices.length === 0;
             copy.disabled = !unit;
+            buy.disabled = sell.disabled = !unit;
             if (!win.BusyControl.isBusy(offers)) offers.disabled = !unit;
             const next = requested && !unit ? t('threeMode.controls.apartmentUnavailable', 'The linked apartment is not in the current layout.')
                 : !choices.length ? t('threeMode.controls.apartmentsLoading', 'Waiting for the floor plans…') : '';

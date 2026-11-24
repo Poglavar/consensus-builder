@@ -1,9 +1,12 @@
 // The compact authoring surface for immutable property-offer/v1 records.  An offer always names
-// the exact live parcel references selected when this dialog opens; it never follows selection.
+// the exact property selected when this dialog opens.
 (function (root) {
     'use strict';
 
-    const t = (key, fallback, params = {}) => root.i18n?.t?.(`propertyOffer.${key}`, params) || fallback;
+    const t = (key, fallback, params = {}) => {
+        const fullKey = `propertyOffer.${key}`, value = root.i18n?.t?.(fullKey, params);
+        return value && value !== fullKey ? value : fallback;
+    };
     const node = (tag, className, text) => {
         const element = document.createElement(tag);
         if (className) element.className = className;
@@ -56,26 +59,44 @@
     };
     const selectedLens = () => root.LensPicker?.getEntries?.()[0]?.address || '';
 
-    function open({ direction, parcelIds }) {
+    function open({ direction, parcelIds, apartment = null, city: offerCity = city() }) {
         const ids = Array.from(parcelIds || [], String);
         if (!['buy', 'sell'].includes(direction)) throw new Error('Invalid offer direction.');
-        if (!ids.length) throw new Error(t('errors.select', 'Select at least one parcel first.'));
+        if (!ids.length && !apartment) throw new Error(t('errors.select', 'Select at least one parcel first.'));
         if (!root.CbDialog?.open) throw new Error(t('errors.dialog', 'The offer dialog is not available yet.'));
-        const parcels = parcelRefs(ids);
+        const parcels = apartment ? [] : parcelRefs(ids);
+        if (apartment) {
+            const [sourceCity] = root.BuildingUnitLinks.apartmentLocator(apartment.xrayBuilding);
+            if (sourceCity !== 'design') offerCity = sourceCity;
+        }
         const wallet = connectedWallet();
         const form = node('form', 'property-offer-form');
         const title = node('label', 'property-offer-form__field', t('fields.title', 'Title'));
         const titleInput = node('input'); titleInput.type = 'text'; titleInput.maxLength = 140;
-        titleInput.value = direction === 'buy'
-            ? t('defaults.buyTitle', `Offer to buy ${parcels.length} parcel(s)`, { count: parcels.length })
-            : t('defaults.sellTitle', `Offer to sell ${parcels.length} parcel(s)`, { count: parcels.length });
+        titleInput.value = apartment ? (direction === 'buy' ? t('defaults.buyApartmentTitle', 'Offer to buy apartment') : t('defaults.sellApartmentTitle', 'Offer to sell apartment')) : direction === 'buy'
+            ? t('defaults.buyTitle', `Offer to buy ${parcels.length} parcel(s)`, { count: parcels.length }) : t('defaults.sellTitle', `Offer to sell ${parcels.length} parcel(s)`, { count: parcels.length });
         title.append(titleInput); form.append(title);
         const facts = node('dl', 'property-offer-form__facts');
         [[t('fields.direction', 'Direction'), direction === 'buy' ? t('directions.buy', 'Offer to buy') : t('directions.sell', 'Offer to sell')],
-            [t('fields.bundle', 'Parcel bundle'), t('bundle', '{{count}} parcels — all or nothing', { count: parcels.length })],
+            ...(apartment ? [[t('fields.apartment', 'Apartment'), `${apartment.xrayBuilding} · ${apartment.unit}`]] : [[t('fields.bundle', 'Parcel bundle'), t('bundle', '{{count}} parcels — all or nothing', { count: parcels.length })]]),
             [t('fields.wallet', 'Your Solana wallet'), wallet ? shortKey(wallet) : t('walletMissing', 'Connect a Solana wallet first')]]
             .forEach(([label, value]) => { const row = node('div'); row.append(node('dt', '', label), node('dd', '', value)); facts.append(row); });
         form.append(facts);
+        if (!wallet) {
+            const connect = node('button', 'btn btn-quiet', root.i18n?.t('wallet.connect') || 'Connect wallet');
+            connect.type = 'button';
+            connect.addEventListener('click', () => root.BusyControl.track(connect, async () => {
+                await root.walletManager.openConnectorModal({ chain: 'solana' })?.dialog.closed;
+                const address = connectedWallet();
+                if (!address) return;
+                facts.lastElementChild.querySelector('dd').textContent = shortKey(address);
+                const recipient = payouts?.querySelector('input');
+                if (recipient && !recipient.value) recipient.value = address;
+                connect.hidden = true;
+                priceInput.focus();
+            }).catch(error => { status.textContent = error.message; }));
+            form.append(connect);
+        }
         const price = node('label', 'property-offer-form__field', t('fields.price', 'Total price (SOL)'));
         const priceInput = node('input'); priceInput.type = 'text'; priceInput.inputMode = 'decimal'; priceInput.placeholder = '0.00'; priceInput.required = true; price.append(priceInput); form.append(price);
         const deadline = node('label', 'property-offer-form__field', t('fields.deadline', 'Offer deadline'));
@@ -85,8 +106,11 @@
         const lensRow = node('div', 'property-offer-form__lens');
         const lensInput = node('input'); lensInput.type = 'text'; lensInput.required = true; lensInput.value = selectedLens(); lensInput.placeholder = t('lensPlaceholder', 'Solana lens member address');
         const chooseLens = node('button', 'btn', t('chooseLens', 'Choose lens')); chooseLens.type = 'button';
-        chooseLens.addEventListener('click', () => root.LensPicker?.show?.({ parent: dialog?.overlay, onClose: entries => { lensInput.value = entries?.[0]?.address || selectedLens(); lensInput.focus(); } }));
+        chooseLens.addEventListener('click', () => root.LensPicker.show({ parent: dialog.overlay, single: true,
+            entries: lensInput.value.trim() ? [{ address: lensInput.value.trim() }] : [],
+            onClose: entries => { lensInput.value = entries[0]?.address || ''; lensInput.focus(); } }));
         lensRow.append(lensInput, chooseLens); lens.append(lensRow); form.append(lens);
+        if (apartment) form.append(node('p', 'sheet-note', t('lensQualification', 'The lens you choose decides whether the other party qualifies for this offer.')));
         let payouts = null;
         if (direction === 'sell') {
             payouts = node('fieldset', 'property-offer-form__payouts');
@@ -113,9 +137,9 @@
             if (!wallet) throw new Error(t('errors.wallet', 'Connect a Solana wallet first.'));
             if (!priceLamports || BigInt(priceLamports) < 1n) throw new Error(t('errors.price', 'Enter a positive SOL price.'));
             if (!Number.isFinite(Date.parse(expiresAt)) || Date.parse(expiresAt) <= Date.now()) throw new Error(t('errors.deadline', 'Choose a future deadline.'));
-            const content = { schema: 'property-offer/v1', title: titleInput.value.trim() || null, city: city(), createdAt: new Date().toISOString(), expiresAt, direction,
+            const content = { schema: 'property-offer/v1', title: titleInput.value.trim() || null, city: offerCity, createdAt: new Date().toISOString(), expiresAt, direction,
                 proposer: wallet, buyer: direction === 'buy' ? wallet : null, seller: direction === 'sell' ? wallet : null,
-                lens: lensInput.value.trim(), parcels, priceLamports };
+                lens: lensInput.value.trim(), priceLamports, ...(apartment ? { apartment } : { parcels }) };
             if (direction === 'sell') {
                 const payoutRows = [...payouts.querySelectorAll('.property-offer-form__payout')];
                 content.payouts = payoutRows.map(row => ({ recipient: row.children[0].value.trim(), lamports: lamports(row.children[1].value) || '0' }));
@@ -124,13 +148,14 @@
             if (issue) throw new Error(issue.message || String(issue));
             status.textContent = t('working', 'Working…');
             const record = root.PropertyOfferSync.create(content);
-            try {
-                const minted = await root.PropertyOfferSync.mint(record);
-                dialog.close(); root.PropertyOfferPanel.open(minted);
-            } catch (error) {
+            let minted;
+            try { minted = await root.PropertyOfferSync.mint(record); }
+            catch (error) {
                 if (!error.record?.published) { root.PropertyOfferStore.remove(record.id); throw error; }
                 dialog.close(); root.PropertyOfferPanel.open(error.record || record, { error: error.message });
+                return;
             }
+            dialog.close(); root.PropertyOfferPanel.open(minted);
         };
         form.addEventListener('submit', event => root.BusyControl?.track ? root.BusyControl.track(save, () => submit(event)).catch(error => { status.textContent = error.message; }) : submit(event).catch(error => { status.textContent = error.message; }));
         dialog = root.CbDialog.open({ title: direction === 'buy' ? t('createBuy', 'Offer to buy') : t('createSell', 'Offer to sell'), size: 'md', className: 'property-offer-dialog', body: form,
@@ -150,7 +175,9 @@
         const content = record?.content;
         if (!content) throw new Error(t('errors.missing', 'This property offer is not held on this device.'));
         const form = node('form', 'property-offer-form');
-        form.append(node('p', 'sheet-note', t('acceptPayoutHint', 'Every seller signs this exact payout schedule before it can be accepted.')));
+        form.append(node('p', 'sheet-note', content.apartment
+            ? t('awaitQualification', 'The named lens must qualify this counterparty before acceptance.')
+            : t('acceptPayoutHint', 'Every seller signs this exact payout schedule before it can be accepted.')));
         const buyerField = node('label', 'property-offer-form__field', t('fields.buyer', 'Buyer wallet'));
         const buyer = node('input'); buyer.required = true; buyer.value = content.direction === 'buy' ? content.proposer : connectedWallet(); buyer.readOnly = content.direction === 'buy'; buyerField.append(buyer); form.append(buyerField);
         const sellerField = node('label', 'property-offer-form__field', t('fields.seller', 'Seller representative wallet'));
@@ -166,12 +193,13 @@
             if (editable) { const remove = node('button', 'btn', t('remove', 'Remove')); remove.type = 'button'; remove.addEventListener('click', () => row.remove()); row.append(remove); }
             rows.append(row);
         };
-        (content.payouts || [{ recipient: '', lamports: content.priceLamports }]).forEach(row => addRow(row.recipient, sol(row.lamports).replace(' SOL', '')));
+        (content.payouts || [{ recipient: content.apartment ? seller.value : '', lamports: content.priceLamports }]).forEach(row => addRow(row.recipient, sol(row.lamports).replace(' SOL', '')));
         if (editable) { const add = node('button', 'btn', t('addPayout', 'Add recipient')); add.type = 'button'; add.addEventListener('click', () => addRow()); schedule.append(add); }
         const signers = node('p', 'property-offer-form__status'); signers.setAttribute('role', 'status'); form.append(signers);
         const status = node('p', 'property-offer-form__status'); status.setAttribute('role', 'status'); form.append(status);
         let candidate = record.acceptanceDraft || null, dialog;
         const showConsents = () => {
+            if (content.apartment) return;
             const owners = (candidate?.consents || []).map(row => shortKey(row.owner)).join(', ');
             const waiting = (candidate?.payouts || []).filter(row => !(candidate?.consents || []).some(c => c.owner === row.recipient)).map(row => shortKey(row.recipient)).join(', ');
             signers.textContent = (owners ? t('consentsBy', 'Seller consent(s): {{owners}}', { owners }) : t('noConsents', 'No seller consents attached yet.'))
@@ -211,8 +239,8 @@
         dialog = root.CbDialog.open({ title: t('accept', 'Accept offer'), size: 'md', className: 'property-offer-dialog', body: form, actions: [] });
         const actions = node('div', 'cb-actions property-offer-form__actions');
         const button = (label, run, primary = false) => { const item = node('button', `btn${primary ? ' btn-primary' : ''}`, label); item.type = 'button'; item.addEventListener('click', () => root.BusyControl.track(item, run).catch(error => { status.textContent = error.message; })); return item; };
-        actions.append(button(t('shareAcceptance', 'Share acceptance link'), share),
-            button(t('refreshConsents', 'Refresh signatures'), async () => { await makeCandidate(); await refreshShared(); }),
+        actions.append(button(t('shareAcceptance', 'Share acceptance link'), share));
+        if (!content.apartment) actions.append(button(t('refreshConsents', 'Refresh signatures'), async () => { await makeCandidate(); await refreshShared(); }),
             button(t('signConsent', 'Sign my seller consent'), async () => {
                 await makeCandidate(); candidate = await root.PropertyOfferSolanaBridge.signAcceptance(record, candidate);
                 record = root.PropertyOfferStore.save({ ...record, acceptanceDraft: candidate });
@@ -221,8 +249,8 @@
                     receive(await root.PropertyOfferSync.request(`/${record.published.cid}/acceptances/${sharedId}/consents`, candidate.consents.find(c => c.owner === mine)));
                 }
                 showConsents();
-            }),
-            button(t('downloadAcceptance', 'Download acceptance'), async () => { await makeCandidate(); download(); }),
+            }));
+        actions.append(button(t('downloadAcceptance', 'Download acceptance'), async () => { await makeCandidate(); download(); }),
             button(t('importAcceptance', 'Import acceptance JSON'), async () => importInput.click()),
             button(t('accept', 'Accept offer'), async () => { await makeCandidate(); if (sharedId) await refreshShared(); status.textContent = t('working', 'Working…'); record = await root.PropertyOfferSolanaBridge.accept(record, { candidate }); record = root.PropertyOfferStore.save({ ...record, acceptanceDraft: null }); dialog.close(); root.PropertyOfferPanel?.open?.(record); }, true));
         form.append(actions);

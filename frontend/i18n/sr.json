@@ -6555,6 +6555,9 @@
             "chooseApartment": "Изаберите стан",
             "apartmentCopy": "Копирај линк до стана",
             "apartmentCopyFailed": "Није могуће копирати линк до стана.",
+            "offerToBuyApartment": "Понуди куповину стана",
+            "offerToSellApartment": "Понуди продају стана",
+            "apartmentFundingDeposit": "Резервација у споразуму {{title}} · депозит {{amount}} USDC",
             "findApartmentOffers": "Пронађи понуде за стан",
             "apartmentOffersLoading": "Тражење објављених понуда…",
             "apartmentOffersFailed": "Понуде за стан нису учитане.",
@@ -8118,6 +8121,12 @@
             "apartments": {
                 "inventory": "Станови",
                 "priceAndDeposit": "Цена {{price}} USDC · Депозит за резервацију {{deposit}} USDC",
+                "standalone": "Самосталне понуде у SOL-у",
+                "copyQualification": "Копирај захтев за проверу",
+                "qualificationHint": "Пре уплате депозита сочиво које је инвеститор изабрао мора да одобри твој новчаник за овај стан.",
+                "qualificationPending": "Твој новчаник чека одобрење за овај стан. Захтев можеш послати сочиву које је изабрао инвеститор.",
+                "invalidQualification": "Потврда не одговара овом купцу и стану.",
+                "noLensService": "Изабрано сочиво нема услугу провере.",
                 "openUnit": "Прикажи стан у рендгенском приказу",
                 "downloadDrawing": "Преузми нацрт ({{name}})",
                 "list": "Објави стан",
@@ -9958,6 +9967,8 @@
         }
     },
   "propertyOffer": {
+    "lensQualification": "Изабрано сочиво одлучује да ли друга страна испуњава услове понуде.",
+    "awaitQualification": "Пре прихватања изабрано сочиво мора да потврди да друга страна испуњава услове.",
     "buy": "Ponuda za kupovinu",
     "sell": "Ponuda za prodaju",
     "createBuy": "Ponudi kupovinu",
@@ -10001,7 +10012,7 @@
       "draft": "Nacrt",
       "published": "Objavljeno"
     },
-    "fields": {
+    "fields": { "apartment": "Стан", "openApartment": "Прикажи стан у рендгенском приказу", "apartmentAnchor": "Адреса стана на Солани",
       "title": "Naslov",
       "direction": "Vrsta",
       "bundle": "Paket parcela",
@@ -10019,7 +10030,7 @@
       "parcelSnapshot": "Snimak",
       "solanaAccount": "Solana nalog"
     },
-    "defaults": {
+    "defaults": { "buyApartmentTitle": "Понуди куповину стана", "sellApartmentTitle": "Понуди продају стана",
       "buyTitle": "Ponuda za kupovinu {{count}} parcela",
       "sellTitle": "Ponuda za prodaju {{count}} parcela"
     },

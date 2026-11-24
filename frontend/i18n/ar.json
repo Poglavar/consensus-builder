@@ -1857,6 +1857,12 @@
             "apartments": {
                 "inventory": "الشقق",
                 "priceAndDeposit": "السعر {{price}} USDC · عربون الحجز {{deposit}} USDC",
+                "standalone": "عروض مستقلة بعملة SOL",
+                "copyQualification": "نسخ طلب التحقق",
+                "qualificationHint": "يجب أن توافق عدسة المطوّر على محفظتك لهذه الشقة قبل دفع عربون الحجز.",
+                "qualificationPending": "تنتظر محفظتك الموافقة لهذه الشقة. يمكنك مشاركة طلب التحقق مع عدسة المطوّر.",
+                "invalidQualification": "الموافقة لا تطابق المشتري والشقة.",
+                "noLensService": "لا تقدم العدسة المحددة خدمة تحقق.",
                 "openUnit": "عرض الشقة بالأشعة السينية",
                 "downloadDrawing": "تنزيل المخطط ({{name}})",
                 "list": "نشر الشقة",
@@ -5199,6 +5205,9 @@
             "chooseApartment": "اختر شقة",
             "apartmentCopy": "نسخ رابط الشقة",
             "apartmentCopyFailed": "تعذّر نسخ رابط الشقة.",
+            "offerToBuyApartment": "تقديم عرض لشراء الشقة",
+            "offerToSellApartment": "تقديم عرض لبيع الشقة",
+            "apartmentFundingDeposit": "الحجز ضمن {{title}} · عربون بقيمة {{amount}} USDC",
             "findApartmentOffers": "البحث عن عروض لهذه الشقة",
             "apartmentOffersLoading": "جارٍ البحث عن العروض المنشورة…",
             "apartmentOffersFailed": "تعذّر تحميل عروض الشقة.",
@@ -10196,6 +10205,8 @@
         }
     },
   "propertyOffer": {
+    "lensQualification": "تقرر العدسة التي تختارها ما إذا كان الطرف الآخر يستوفي شروط العرض.",
+    "awaitQualification": "يجب أن توافق العدسة المحددة على الطرف الآخر قبل قبول العرض.",
     "buy": "عرض شراء",
     "sell": "عرض بيع",
     "createBuy": "قدّم عرض شراء",
@@ -10239,7 +10250,7 @@
       "draft": "مسودة",
       "published": "منشور"
     },
-    "fields": {
+    "fields": { "apartment": "الشقة", "openApartment": "عرض الشقة بالأشعة السينية", "apartmentAnchor": "عنوان الشقة على سولانا",
       "title": "العنوان",
       "direction": "الاتجاه",
       "bundle": "حزمة القطع",
@@ -10257,7 +10268,7 @@
       "parcelSnapshot": "اللقطة",
       "solanaAccount": "حساب سولانا"
     },
-    "defaults": {
+    "defaults": { "buyApartmentTitle": "تقديم عرض لشراء الشقة", "sellApartmentTitle": "تقديم عرض لبيع الشقة",
       "buyTitle": "عرض لشراء {{count}} قطعة",
       "sellTitle": "عرض لبيع {{count}} قطعة"
     },

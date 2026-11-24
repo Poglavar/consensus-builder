@@ -237,6 +237,7 @@ pub mod proposal_pledge {
         let unit = &mut ctx.accounts.unit;
         require!(unit.buyer == Pubkey::default(), SupportError::ApartmentRetained);
         unit.developer = ctx.accounts.developer.key(); unit.unit_key = unit_key; unit.agreement = ctx.accounts.proposal.key();
+        unit.qualification = Pubkey::default();
         unit.terms_hash = terms_hash; unit.deposit = deposit; unit.position = Pubkey::default(); unit.bump = ctx.bumps.unit;
         Ok(())
     }
@@ -259,6 +260,20 @@ pub mod proposal_pledge {
             require_keys_eq!(unit.buyer, ctx.accounts.buyer.key(), SupportError::ApartmentReserved);
             return Ok(());
         }
+        let data = ctx.accounts.attestation.try_borrow_data()?;
+        let proof = sas_attestation::property::qualification(&ctx.accounts.attestation, &data,
+            &ctx.accounts.credential, view.lens, Clock::get()?.unix_timestamp)
+            .map_err(|_| error!(SupportError::InvalidBuyerQualification))?;
+        let cid_hash = anchor_lang::solana_program::hash::hash(proof.cid);
+        let (approved_round, _) = Pubkey::find_program_address(
+            &[agreement::AGREEMENT_SEED, view.authority.as_ref(), cid_hash.as_ref()], &agreement::ID);
+        let deposit_hash = anchor_lang::solana_program::hash::hashv(
+            &[ctx.accounts.escrow.vault.as_ref(), &unit.deposit.to_le_bytes()]).to_bytes();
+        require!(approved_round == unit.agreement && proof.offer == unit.key() &&
+            proof.terms_hash == unit.terms_hash && proof.payouts_hash == deposit_hash &&
+            proof.buyer == ctx.accounts.buyer.key() && proof.seller == view.authority,
+            SupportError::InvalidBuyerQualification);
+        unit.qualification = ctx.accounts.attestation.key();
         unit.buyer = ctx.accounts.buyer.key(); unit.position = position.key();
         Ok(())
     }
@@ -267,7 +282,7 @@ pub mod proposal_pledge {
         let unit = &mut ctx.accounts.unit;
         require_keys_eq!(unit.position, ctx.accounts.position.key(), SupportError::InvalidPosition);
         require!(ctx.accounts.position.refunded, SupportError::NotRefunded);
-        unit.buyer = Pubkey::default(); unit.position = Pubkey::default();
+        unit.buyer = Pubkey::default(); unit.position = Pubkey::default(); unit.qualification = Pubkey::default();
         Ok(())
     }
 }
@@ -330,6 +345,7 @@ pub struct PledgeCommitment {
 pub struct ApartmentUnit {
     pub developer: Pubkey, pub unit_key: [u8; 32], pub agreement: Pubkey, pub terms_hash: [u8; 32],
     pub deposit: u64, pub buyer: Pubkey, pub position: Pubkey, pub bump: u8,
+    pub qualification: Pubkey,
 }
 
 #[derive(Accounts)]
@@ -350,6 +366,10 @@ pub struct ReserveApartment<'info> {
     #[account(seeds = [DONATION_ESCROW_SEED, proposal.key().as_ref()], bump = escrow.bump)] pub escrow: Account<'info, DonationEscrow>,
     #[account(seeds = [DONATION_SEED, escrow.key().as_ref(), buyer.key().as_ref(), unit.unit_key.as_ref()], bump = position.bump)] pub position: Account<'info, DonationPosition>,
     pub buyer: Signer<'info>,
+    /// CHECK: validated against the agreement lens, apartment listing and buyer.
+    pub attestation: UncheckedAccount<'info>,
+    /// CHECK: verified SAS credential of the issuing lens.
+    pub credential: UncheckedAccount<'info>,
 }
 
 #[derive(Accounts)]
@@ -498,6 +518,7 @@ pub enum SupportError {
     #[msg("Terms hash does not match listing")] TermsMismatch,
     #[msg("Invalid escrow")] InvalidEscrow,
     #[msg("Donation has not been refunded")] NotRefunded,
+    #[msg("The agreement lens must qualify this buyer for these apartment terms")] InvalidBuyerQualification,
 }
 
 #[cfg(test)]

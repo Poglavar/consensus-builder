@@ -38,7 +38,7 @@ describe('property_offer focused lifecycle', () => {
         await program.methods.create(offerCid, lens.publicKey, { sell: {} }, termsHash, new anchor.BN(price), new anchor.BN(deadline), payouts.map(p => ({ recipient: p.recipient, lamports: new anchor.BN(p.amount) }))).accountsStrict({ offer, maker: provider.wallet.publicKey, systemProgram: SystemProgram.programId }).rpc();
         const payload = Buffer.concat([borshBytes(offerCid), borshBytes(offer.toBase58()), borshBytes(hash(Buffer.from('terms')).toString('hex')), borshBytes(scheduleHash.toString('hex')), borshBytes(buyer.publicKey.toBase58()), borshBytes(provider.wallet.publicKey.toBase58()), Buffer.from([1]), i64((await chainNow(provider.connection)) - 1)]);
         const decisionFor = async (member: { publicKey: PublicKey; credential: PublicKey }) => writeSasAccount(provider, Buffer.concat([
-            Buffer.from([2]), Keypair.generate().publicKey.toBuffer(), member.credential.toBuffer(), schemaPda(member.credential, 'PropertyOfferDecision').toBuffer(),
+            Buffer.from([2]), Keypair.generate().publicKey.toBuffer(), member.credential.toBuffer(), schemaPda(member.credential, 'PropertyOfferDecision', 2).toBuffer(),
             borshBytes(payload), member.publicKey.toBuffer(), i64(4_000_000_000), PublicKey.default.toBuffer(),
         ]));
         const wrongDecision = await decisionFor(wrongLens);
@@ -82,7 +82,7 @@ describe('property_offer focused lifecycle', () => {
             borshBytes(provider.wallet.publicKey.toBase58()), borshBytes(seller.publicKey.toBase58()), Buffer.from([1]), i64((await chainNow(provider.connection)) - 1),
         ]);
         const decision = await writeSasAccount(provider, Buffer.concat([
-            Buffer.from([2]), Keypair.generate().publicKey.toBuffer(), lens.credential.toBuffer(), schemaPda(lens.credential, 'PropertyOfferDecision').toBuffer(),
+            Buffer.from([2]), Keypair.generate().publicKey.toBuffer(), lens.credential.toBuffer(), schemaPda(lens.credential, 'PropertyOfferDecision', 2).toBuffer(),
             borshBytes(payload), lens.publicKey.toBuffer(), i64(4_000_000_000), PublicKey.default.toBuffer(),
         ]));
         await program.methods.accept([{ recipient: seller.publicKey, lamports: new anchor.BN(price) }])

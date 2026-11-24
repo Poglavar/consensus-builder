@@ -47,7 +47,7 @@
     });
     const DONATION_ESCROW_SIZE = 178;
     const DONATION_POSITION_SIZE = 114;
-    const APARTMENT_UNIT_SIZE = 8 + 6 * 32 + 8 + 1;
+    const APARTMENT_UNIT_SIZE = 8 + 7 * 32 + 8 + 1;
     const DONOR_SIZE = 89;
     const PLEDGE_BOOK_SIZE = 153;
     const PLEDGE_COMMITMENT_SIZE = 115;
@@ -167,12 +167,13 @@
             meta(web3().SystemProgram.programId, false, false)],
         concat([disc('list_apartment'), hashBytes(unitKey), hashBytes(termsHash), encodeU64(deposit)]));
     }
-    function buildReserveApartmentIx({ developer, proposal, buyer, unitKey, termsHash, programId }) {
+    function buildReserveApartmentIx({ developer, proposal, buyer, unitKey, termsHash, attestation, credential, programId }) {
         const [unit] = getApartmentUnitPda(developer, unitKey, programId);
         const [escrow] = getDonationEscrowPda(proposal, programId);
         const [position] = getDonationPositionPda(escrow, buyer, hashBytes(unitKey), programId);
         return ix(programId, [meta(unit, false, true), meta(key(proposal), false, false), meta(escrow, false, false),
-            meta(position, false, false), meta(key(buyer), true, false)], concat([disc('reserve_apartment'), hashBytes(termsHash)]));
+            meta(position, false, false), meta(key(buyer), true, false), meta(key(attestation, 'qualification'), false, false),
+            meta(key(credential, 'lens credential'), false, false)], concat([disc('reserve_apartment'), hashBytes(termsHash)]));
     }
     function buildClearApartmentRefundIx({ unitAccount, position, programId }) {
         return ix(programId, [meta(key(unitAccount), false, true), meta(key(position), false, false)], disc('clear_apartment_refund'));
@@ -258,10 +259,11 @@
     }
     function decodeApartmentUnit(data) {
         const value = assertAccount(data, APARTMENT_UNIT_SIZE, 'ApartmentUnit');
-        const buyer = readKey(value, 144), position = readKey(value, 176);
+        const buyer = readKey(value, 144), position = readKey(value, 176), qualification = readKey(value, 209);
         return { developer: readKey(value, 8), unitKey: hexOf(value.subarray(40, 72)), agreement: readKey(value, 72),
             termsHash: hexOf(value.subarray(104, 136)), deposit: readU64(value, 136),
-            buyer: buyer === constants.SYSTEM_PROGRAM_ID ? null : buyer, position: position === constants.SYSTEM_PROGRAM_ID ? null : position, bump: value[208] };
+            buyer: buyer === constants.SYSTEM_PROGRAM_ID ? null : buyer, position: position === constants.SYSTEM_PROGRAM_ID ? null : position,
+            qualification: qualification === constants.SYSTEM_PROGRAM_ID ? null : qualification, bump: value[208] };
     }
     // All readers derive the same addresses and compare the on-chain listing with the published unit schedule.
     function apartmentOffers(funding, developer, record, programId) {
@@ -276,7 +278,8 @@
         const agreement = key(proposal).toBase58();
         return offers.map((offer, i) => {
             const listing = readAccountInfo(infos[i], decodeApartmentUnit, { developer }, programId);
-            if (listing && (listing.unitKey !== offer.unitKey || Boolean(listing.buyer) !== Boolean(listing.position))) throw new Error('Invalid apartment reservation account.');
+            if (listing && (listing.unitKey !== offer.unitKey || Boolean(listing.buyer) !== Boolean(listing.position)
+                || Boolean(listing.buyer) !== Boolean(listing.qualification))) throw new Error('Invalid apartment reservation account.');
             if (listing?.buyer) {
                 const escrow = getDonationEscrowPda(listing.agreement, programId)[0];
                 const position = getDonationPositionPda(escrow, listing.buyer, hashBytes(offer.unitKey), programId)[0].toBase58();
@@ -284,7 +287,7 @@
             }
             const matched = listing?.agreement === agreement && listing.termsHash === offer.termsHash && listing.deposit === BigInt(offer.deposit);
             const status = matched ? (listing.buyer ? 'reserved' : 'available') : (listing?.buyer ? 'unavailable' : 'unlisted');
-            return { ...offer, status, buyer: listing?.buyer || null, position: listing?.position || null };
+            return { ...offer, status, buyer: listing?.buyer || null, position: listing?.position || null, qualification: listing?.qualification || null };
         });
     }
     async function readApartmentInventory(connection, proposal, developer, funding, record) {

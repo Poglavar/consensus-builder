@@ -444,7 +444,7 @@
 
         const opts = options && typeof options === 'object' && !Array.isArray(options) ? options : {};
         const readOnly = opts.readOnly === true;
-        if (!readOnly && isSolanaLensPath()) {
+        if (!readOnly && (opts.chain === 'solana' || isSolanaLensPath())) {
             return window.LensPicker.show(opts);
         }
         const sourceEntries = Array.isArray(opts.entries) ? sanitizeEntries(opts.entries) : getActiveLensEntries();

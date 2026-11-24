@@ -135,6 +135,8 @@ describe('headless app formation host', () => {
             contract: { name: 'terms.txt', mediaType: 'text/plain', data: 'dGVybXM=' }, apartments });
         const preview = await tools.inspectAgreement({ plan: draft.draftArtifact, includeAvailability: true });
         expect(preview.funding.apartments).toMatchObject(apartments);
+        expect(preview.investorReview).toMatchObject({ contributorEligibility: 'lens-qualified-buyer', qualificationBefore: 'reservation-deposit',
+            decisionVerifierWallets: draft.agreement.rule.lens });
         expect(preview.investorReview.availability).toEqual({ status: 'unverified' });
         expect(preview.investorReview.action).toContain('reserve');
         const updated = { ...apartments, units: [{ ...apartments.units[0], priceUsdcAtomic: '110000000' }, apartments.units[1]] };
