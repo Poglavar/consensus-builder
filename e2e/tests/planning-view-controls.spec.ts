@@ -186,6 +186,47 @@ test('Permitted keeps its Illustration dropdown visible for a single-option sour
   await expect(form).toHaveValue('bound');
 });
 
+test('Permitted and Proposed keep Both and dice together on the first expanded row @features', async ({ mockApi: page }) => {
+  const available = sources.map(source => ({ ...source, parcelStudy: 'direct-dimensions.v1' }));
+  await page.route('**/planning/**', async route => {
+    if (!['xhr', 'fetch'].includes(route.request().resourceType())) return route.fallback();
+    const url = new URL(route.request().url());
+    if (url.pathname.endsWith('/sources')) return route.fulfill({ json: { city: 'zagreb', sources: available } });
+    return route.fulfill({ json: payload([massing(available[0])], available) });
+  });
+  await openCity(page);
+  await page.locator('#planning-views-button').click();
+  const panel = page.locator('#planning-views');
+  for (const role of ['permitted', 'proposed']) {
+    await panel.locator(`.planning-layer-row[data-role="${role}"] summary`).press('Enter');
+  }
+
+  for (const width of [1280, 390, 320]) {
+    await page.setViewportSize({ width, height: 844 });
+    for (const role of ['permitted', 'proposed']) {
+      const detail = panel.locator(`.planning-layer-row[data-role="${role}"] .planning-layer-detail`);
+      const firstRow = detail.locator(':scope > :first-child');
+      const form = firstRow.locator(`select[data-planning-setting="${role}Form"]`);
+      const reroll = firstRow.locator(`button[data-planning-reroll="${role}"]`);
+      await expect(form).toBeVisible();
+      await expect(reroll).toBeVisible();
+      await expect(form).toHaveValue('both');
+      const [field, die] = await Promise.all([form.boundingBox(), reroll.boundingBox()]);
+      if (!field || !die) throw new Error(`Missing ${role} form controls at ${width}px`);
+      expect(Math.abs(field.y - die.y)).toBeLessThan(1);
+      expect(field.x + field.width).toBeLessThanOrEqual(die.x);
+      expect(die.x + die.width).toBeLessThanOrEqual(width);
+      const below = await detail.locator(':scope > :not(:first-child):visible')
+        .evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().top));
+      expect(below.length).toBeGreaterThan(0);
+      expect(Math.min(...below)).toBeGreaterThanOrEqual(Math.max(field.y + field.height, die.y + die.height) - 1);
+      await form.focus();
+      await form.press('Tab');
+      await expect(reroll).toBeFocused();
+    }
+  }
+});
+
 test('saved parcel evidence opens its pinned source without creating a proposal @features', async ({ mockApi: page }) => {
   const result = { ...massing(), id: 'saved-result', title: 'Saved source result', volumes: [],
     sourceEvidence: { sourceReferences: [reference] }, assessment: { meaning: 'public-screen', status: 'unresolved' } };

@@ -30,10 +30,6 @@ function controlDeclaration() {
 
 describe('abstract 3D display controls', () => {
     it('builds labeled planning selectors from shared choices and forwards changes to the store', () => {
-        expect(planningViewsSource).toContain("const details = { existing: 'existingScope', permitted: 'permittedMap', proposed: 'proposedForm' };");
-        expect(planningViewsSource).toContain('for (const role of core.roles)');
-        expect(planningViewsSource).toContain('content.append(control(details[role]));');
-        expect(planningViewsSource).toContain('row.append(name, control(role), content, actions);');
         expect(planningViewsSource).toContain("select.setAttribute('aria-label', t('displayLabel', { role: t(role) }));");
         expect(planningViewsSource).toContain(".setAttribute('aria-label', t(key));");
 
@@ -61,9 +57,15 @@ describe('abstract 3D display controls', () => {
         existing.listeners.change();
         expect(store.get().existing).toBe('off');
 
-        const representation = context.makeControl('proposedForm');
-        expect(representation.dataset.planningSetting).toBe('proposedForm');
-        expect(representation.options).toEqual(PlanningScene.choices.proposedForm.map(value => ({ text: `label:${value}`, value })));
+        for (const key of ['existingScope', 'permittedForm', 'permittedMap', 'proposedForm']) {
+            const select = context.makeControl(key);
+            const choices = PlanningScene.choices[key];
+            expect(select.dataset.planningSetting).toBe(key);
+            expect(select.options).toEqual(choices.map(value => ({ text: `label:${value}`, value })));
+            select.value = choices[1];
+            select.listeners.change();
+            expect(store.get()[key]).toBe(choices[1]);
+        }
     });
 
     it('starts both selectors from one readable desktop width and lets them fill narrow screens', () => {

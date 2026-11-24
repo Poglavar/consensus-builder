@@ -1194,7 +1194,6 @@
             if (parcelPanel?.container.isConnected) showParcelEvidence(parcelPanel.container, parcelPanel.parcel);
         });
         const controls = panel.querySelector('.planning-layer-controls');
-        const details = { existing: 'existingScope', permitted: 'permittedMap', proposed: 'proposedForm' };
         function control(key) {
             const input = element('select', 'planning-layer-select'); input.dataset.planningSetting = key;
             for (const value of core.choices[key]) input.add(new Option(t(value), value));
@@ -1211,13 +1210,15 @@
             const content = element('div', 'planning-layer-detail');
             const roleControl = control(role);
             summary.append(name);
-            if (role === 'permitted') content.append(sourceField, scenarioField);
-            content.append(control(details[role]));
+            if (role === 'existing') {
+                content.append(control('existingScope'));
+            } else {
+                const formRow = element('div', 'planning-form-row');
+                formRow.append(control(`${role}Form`), panel.querySelector(`[data-planning-reroll="${role}"]`));
+                content.append(formRow);
+            }
+            if (role === 'permitted') content.append(sourceField, scenarioField, control('permittedMap'));
             const sourceNote = element('p', 'planning-layer-source-note'); sourceNote.dataset.roleSource = role; content.append(sourceNote);
-            if (role === 'permitted') content.append(control('permittedForm'));
-            const actions = element('div', 'planning-layer-actions');
-            const reroll = panel.querySelector(`[data-planning-reroll="${role}"]`);
-            if (reroll) { actions.append(reroll); content.append(actions); }
             disclosure.append(summary, content); row.append(disclosure, roleControl); controls.append(row);
         }
         const zoningField = element('label', 'planning-source-field planning-zoning-field');

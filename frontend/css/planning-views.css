@@ -44,12 +44,10 @@ body:is([data-planning-proposed="solid"], [data-planning-proposed="ghost"]) .pla
 [dir="rtl"] .planning-layer-summary::before { transform: rotate(45deg); }
 .planning-role-disclosure[open] > summary::before { transform: rotate(45deg); }
 [dir="rtl"] .planning-role-disclosure[open] > summary::before { transform: rotate(-45deg); }
-.planning-layer-detail { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--cb-space-2); align-items: center; min-width: 0; border-top: 1px solid var(--cb-line); padding: var(--cb-space-2) 0; }
-.planning-layer-detail > .planning-source-field, .planning-layer-detail > select { grid-column: 1 / -1; }
-.planning-layer-detail > select:has(+ .planning-layer-actions) { grid-column: 1; }
-.planning-layer-source-note { grid-column: 1 / -1; margin: 0; font-size: var(--cb-text-xs); line-height: var(--cb-leading); color: var(--cb-text-muted); }
-.planning-layer-actions { min-width: 0; }
-.planning-layer-actions .planning-reroll { width: var(--planning-action-size); height: var(--planning-action-size); }
+.planning-layer-detail { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--cb-space-2); min-width: 0; border-top: 1px solid var(--cb-line); padding: var(--cb-space-2) 0; }
+.planning-form-row { display: grid; grid-template-columns: minmax(0, 1fr) var(--planning-action-size); gap: var(--cb-space-2); }
+.planning-form-row .planning-reroll { width: var(--planning-action-size); height: var(--planning-action-size); }
+.planning-layer-source-note { margin: 0; font-size: var(--cb-text-xs); line-height: var(--cb-leading); color: var(--cb-text-muted); }
 .planning-layer-name { display: flex; align-items: center; gap: var(--cb-space-2); font-size: var(--cb-text-sm); font-weight: var(--cb-weight-semibold); }
 .planning-layer-select { min-width: 0; width: 100%; padding: var(--cb-space-2) var(--cb-space-1); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-md); background: var(--cb-surface); color: var(--cb-text); font: inherit; font-size: var(--cb-text-sm); }
 .planning-swatch { display: inline-block; width: var(--cb-space-2); height: var(--cb-space-2); border-radius: 50%; flex: 0 0 auto; }
