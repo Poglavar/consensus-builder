@@ -29,6 +29,8 @@
         const keys = Object.keys(file).sort().join(',');
         if (keys !== 'agreement,designCids,planFile,schema') fail('The agreement file has unexpected members.');
         const agreement = dependency('AgreementRecord').normalize(file.agreement);
+        const fundingIssue = dependency('AgreementRecord').crowdfundingError(file.agreement);
+        if (fundingIssue) fail(fundingIssue);
         if (!agreement.plan) fail('The agreement in the file has no plan.');
         dependency('PlanFile').validate(file.planFile);
         if (!object(file.designCids)) fail('The agreement file does not map its designs.');

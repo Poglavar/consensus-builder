@@ -260,6 +260,7 @@ function fakeWindow({ blocked = null, applied = true, records = [layout(), road(
         i18n: { getLanguage: () => 'hr' },
         ProposalPublishTerms: PublishTerms,
         AgreementRecord,
+        DesignRecord,
         guestPolicyBlocks: action => (action === 'publish' ? blocked : null),
         stampCurrentAuthor: record => { record.author = record.author || 'Ana'; return record; },
         getCurrentUserAgent: () => ({ id: 'agent-ana', name: ' Ana ' }),
@@ -305,6 +306,60 @@ describe('agreementLink', () => {
 });
 
 describe('publishAgreement', () => {
+    const funding = { targetUsdcAtomic: '1000001', contract: { name: 'terms.txt', mediaType: 'text/plain', data: Buffer.from('An annual report for each investor.').toString('base64') } };
+    const round = () => ({ ...agreement(), sponsor: null, inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [],
+        valuation: null, money: { currency: 'EUR', lines: [] }, rule: { electorate: 'investors', binding: true, lens: [ACCOUNT], approvalConfig: null, settlement: null },
+        deadline: '2030-10-22T12:00:00.000Z', funding });
+
+    it('publishes the exact unapplied plan with its investor contract, then imports the same bytes under the same CID', async () => {
+        const draft = round();
+        const { sync, server, agreements, win } = fakeWindow({ saved: [draft], applied: false });
+        const result = await sync.publishAgreement(draft.id);
+        expect(server.calls.map(call => call.pathname)).toEqual(['/agreements']);
+        const { content, plan, designs } = server.calls[0].body;
+        expect(plan.cid).toBe(draft.plan.cid);
+        expect(designs.map(row => row.cid)).toEqual(draft.designs.map(item => item.cid));
+        expect(designs.every(row => row.parcelSourceId === win.CityConfigManager.getCityConfig(draft.city).parcels.sourceId)).toBe(true);
+        expect(content).toMatchObject({ planCid: draft.plan.cid, sponsor: SPONSOR, funding });
+        const imported = AgreementSync.recordFromPublished({ cid: result.cid, content, plan }, { id: 'ag-view', apiBase: API, localIdOf: value => value });
+        expect(AgreementRecord.publishedCid(imported)).toBe(result.cid);
+        expect(AgreementRecord.publishedCid(agreements.get(draft.id))).toBe(result.cid);
+        expect(imported.funding).toEqual(funding);
+        const altered = { ...imported, funding: { ...funding, contract: { ...funding.contract, data: Buffer.from('A different return.').toString('base64') } } };
+        expect(AgreementRecord.publishedCid(altered)).not.toBe(result.cid);
+        expect(AgreementRecord.publishedCid({ ...imported, funding: { ...funding, targetUsdcAtomic: '1000002' } })).not.toBe(result.cid);
+    });
+
+    it('refuses a missing developer wallet or a changed member before writing any part of the round', async () => {
+        const draft = round();
+        const disconnected = fakeWindow({ saved: [draft], wallet: null });
+        await expect(disconnected.sync.publishAgreement(draft.id)).rejects.toMatchObject({ code: 'wallet-required' });
+        expect(disconnected.server.calls).toEqual([]);
+        const changed = fakeWindow({ saved: [draft], records: [{ ...layout(), title: 'Revised layout' }, road()] });
+        await expect(changed.sync.publishAgreement(draft.id)).rejects.toMatchObject({ code: 'plan-changed' });
+        expect(changed.server.calls).toEqual([]);
+    });
+
+    it('checks the attachment, precise positive target, committed developer and lens, and excludes settlement terms', () => {
+        const draft = round();
+        expect(AgreementRecord.validate(draft).valid).toBe(true);
+        expect(AgreementRecord.parseUsdc('18446744073709.551615')).toBe(18446744073709551615n);
+        expect(AgreementRecord.parseUsdc('18446744073709.551616')).toBeNull();
+        for (const change of [{ targetUsdcAtomic: '0' }, { targetUsdcAtomic: '00012' }, { targetUsdcAtomic: 1000001 }, { targetUsdcAtomic: '18446744073709551616' },
+            { contract: { ...funding.contract, name: '../terms.txt' } }, { contract: { ...funding.contract, data: 'AA==' } },
+            { contract: { ...funding.contract, data: '/w==' } }, { contract: { ...funding.contract, data: Buffer.alloc(262145, 65).toString('base64') } },
+            { contract: { ...funding.contract, name: 'terms.pdf', mediaType: 'application/pdf' } }]) {
+            expect(AgreementRecord.fundingError({ ...funding, ...change })).toBeTruthy();
+        }
+        expect(AgreementRecord.fundingError({ ...funding, contract: { name: 'Résumé.PDF', mediaType: 'application/pdf', data: Buffer.from('%PDF-1.7\n').toString('base64') } })).toBeNull();
+        for (const change of [{ sponsor: 'nobody' }, { deadline: null }, { deadline: '2030-10-22T12:00:00.999Z' }, { rule: { ...draft.rule, lens: [] } },
+            { rule: { ...draft.rule, lens: [ACCOUNT, SPONSOR] } }, { rule: { ...draft.rule, binding: false } }, { inputs: agreement().inputs },
+            { allocations: agreement().allocations }, { rule: agreement().rule }]) {
+            expect(AgreementRecord.validate({ ...draft, ...change }).valid).toBe(false);
+        }
+        expect(() => AgreementRecord.published(draft)).toThrow(/developer/);
+    });
+
     it('publishes every design, the layout included, then indexes the agreement with its plan and marks it proposed', async () => {
         const { sync, server, proposals, agreements } = fakeWindow();
         const result = await sync.publishAgreement('ag-1');
@@ -412,6 +467,15 @@ const indexed = ({ cluster, account }) => ({
 const MINT = { chain: 'solana', cluster: 'devnet', account: ACCOUNT, signature: 'sig-1' };
 
 describe('recordOnchain', () => {
+    it('indexes a sponsor mint from a shared view without storing or applying its plan on the device', async () => {
+        const record = proposed();
+        const server = fakeServer({ onchain: body => ({ status: 200, body: { cid: PROPOSED_CID, onchain: indexed(body) } }) });
+        const { sync, agreements } = fakeWindow({ saved: [], server });
+        const { onchain } = await sync.recordOnchain(record, MINT);
+        expect(record.onchain).toEqual(onchain);
+        expect(agreements.size).toBe(0);
+        expect(server.calls[0].pathname).toBe(`/agreements/${PROPOSED_CID}/onchain`);
+    });
     it('mirrors the mint into the index and keeps the index\'s record of the account', async () => {
         const server = fakeServer({ onchain: (body, cid) => ({ status: 200, body: { cid, onchain: indexed(body) } }) });
         const { sync, agreements } = fakeWindow({ saved: [proposed()], server });

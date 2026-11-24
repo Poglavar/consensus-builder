@@ -196,7 +196,8 @@ function publishedAgreement(content, plan) {
         money: content.money,
         rule: content.rule,
         deadline: content.deadline ?? null,
-        consultation: content.consultation ?? null
+        consultation: content.consultation ?? null,
+        funding: content.funding ?? null
     });
     const cid = cidOfObject(content);
     if (rebuilt.cid !== cid) {
@@ -496,14 +497,27 @@ export function createUrbanGameTheoryTools({
                 if (!plan || cidOfObject(plan.content) !== plan.cid || plan.cid !== content.planCid) throw Object.assign(new Error('The agreement plan does not match its plan CID.'), { code: 'plan-cid-mismatch' });
                 const linked = new Set(plan.content.designCids);
                 const carried = [];
+                const crowdfunding = content.rule?.electorate === 'investors';
+                const client = index();
                 for (const input of [...source.designs, ...designs]) {
-                    const resolved = await drafts.resolveDesignSource(input);
-                    const row = publishedDesign(resolved.content, 'carried design');
+                    const bytes = input?.untrusted?.design || input?.untrusted?.content || input?.design || input?.content || input;
+                    const memberCid = isCid(input) ? input : bytes?.schema === DESIGN_SCHEMA ? cidOfObject(bytes) : null;
+                    if (input?.cid && memberCid && input.cid !== memberCid) throw new Error('The supplied design differs from its claimed CID.');
+                    const indexed = crowdfunding && memberCid ? await client.getDesign(memberCid) : null;
+                    const resolved = indexed ? verifiedRow(indexed, memberCid, 'design') : await drafts.resolveDesignSource(input);
+                    const row = indexed ? { cid: memberCid, content: resolved.content } : publishedDesign(resolved.content, 'carried design');
                     if (!linked.has(row.cid)) throw new Error(`design ${row.cid} is carried, but the agreement does not link it`);
                     if (carried.some(entry => entry.cid === row.cid)) throw new Error('a design is carried twice');
-                    carried.push(row);
+                    const parcelSourceId = resolved.parcelSourceId || input?.parcelSourceId || source.designSources?.[row.cid] || null;
+                    if (crowdfunding && !indexed && !parcelSourceId) {
+                        throw Object.assign(new Error(`Design ${row.cid} needs an explicit parcelSourceId before this investor agreement can index it.`), {
+                            code: 'parcel-source-required', field: 'parcelSourceId',
+                            next: { tool: 'ugt_list_sources', arguments: { city: resolved.content.city, abstraction: 'parcels' }, action: 'Choose the source used for this design, then retry with that parcelSourceId.' }
+                        });
+                    }
+                    carried.push(crowdfunding && parcelSourceId ? { ...row, parcelSourceId } : row);
                 }
-                const client = index(); state.stage = 'lookup';
+                state.stage = 'lookup';
                 const existing = await client.getAgreement(cid);
                 let row, created;
                 if (existing) { row = verifiedRow(existing, cid, 'agreement'); created = false; state.indexed = true; }
@@ -519,19 +533,28 @@ export function createUrbanGameTheoryTools({
                 return { cid, created, carried: carried.map(entry => entry.cid), sponsor,
                     account: sponsor ? agreementAccountOf(cid, sponsor) : null, row, publication: 'published',
                     url: `${appOrigin}/agreements/${cid}`, previewUrl: `${appOrigin}/agreements/${cid}`,
-                    approvalUrl: content.rule.binding && sponsor ? `${appOrigin}/agreements/${cid}?act=mint` : null };
+                    approvalUrl: content.rule.binding && sponsor ? `${appOrigin}/agreements/${cid}?act=mint` : null,
+                    investorReview: content.rule.electorate === 'investors' ? {
+                        contract: content.funding?.contract?.name ?? null,
+                        targetUsdcAtomic: content.funding?.targetUsdcAtomic ?? null,
+                        action: 'Review the attached immutable contract before any investor donation.'
+                    } : null };
             } catch (error) { throw publicationError(error, state, 'ugt_propose_agreement', args); }
         },
 
         // Create the agreement's account as its sponsor and fund the escrow to `lamports` (also the escrow
         // execution requires), then record the account in the index. Repeating it creates nothing twice.
-        // Only a binding owners' agreement is minted: a community or owner vote is a poll in the index.
+        // Binding owners and investor crowdfunding agreements use the same agreement account. Polls do not.
         async mintAgreement({ agreementCid, lamports, confirm } = {}) {
             requireLive(confirm);
             const required = wholeLamports(lamports, 'lamports');
             const { content } = await indexedAgreement(agreementCid);
-            if (content.rule?.electorate !== 'owners' || content.rule?.binding !== true) {
+            if (cidOfObject(content) !== agreementCid) throw new Error(`indexed agreement ${agreementCid} does not match its content hash; refusing to mint`);
+            if (!['owners', 'investors'].includes(content.rule?.electorate) || content.rule?.binding !== true) {
                 throw new Error(`agreement ${agreementCid} is a non-binding ${content.rule?.electorate ?? 'unknown'} vote: it is a poll in the index and is never minted`);
+            }
+            if (content.rule?.electorate === 'investors' && required !== '0') {
+                throw new Error('A crowdfunding agreement has no native execution escrow: mint it with lamports "0". Investor USDC stays in the donation escrow.');
             }
             const { keypair, connection } = signer();
             const self = keypair.publicKey.toBase58();
@@ -638,6 +661,26 @@ export function createUrbanGameTheoryTools({
             requireLive(confirm);
             const amountAtomic = positiveAmount(amountUsdc, maxUsdcPerAction);
             const { keypair, connection } = signer();
+            // Ordinary agreement donations remain chain-only. When the subject decodes as a
+            // published crowdfunding agreement, however, bind the spend to its immutable terms
+            // before creating the USDC escrow position.
+            const account = await impl.readAgreementAccount(connection, { account: agreementAccount });
+            if (!account) throw new Error('The agreement must be minted before it can receive a contribution.');
+            const indexed = await index().getAgreement(account.cid);
+            if (indexed) {
+                const { content } = verifiedRow(indexed, account.cid, 'agreement');
+                if (content.rule?.electorate === 'investors') {
+                    const expectedDeadline = Math.floor(Date.parse(content.deadline) / 1000);
+                    if (account.status !== AGREEMENT_STATUS.active || account.deadline < Math.floor(Date.now() / 1000)) {
+                        throw new Error(`Crowdfunding agreement ${account.cid} is closed or past its deadline.`);
+                    }
+                    if (agreementAccount !== agreementAccountOf(account.cid, content.sponsor) || account.authority !== content.sponsor
+                        || account.payout !== content.sponsor || account.lens !== content.rule?.lens?.[0] || account.deadline !== expectedDeadline
+                        || account.openGround !== false || account.requiredLamports !== 0n) {
+                        throw new Error(`Crowdfunding agreement ${account.cid} account terms differ from its published terms.`);
+                    }
+                }
+            }
             return impl.ensureDonationEscrowAndDonate({
                 connection, donorKeypair: keypair, subject: agreementAccount, amountAtomic,
                 operationId, sendAndConfirm: impl.sendAndConfirmPolling

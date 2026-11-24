@@ -374,6 +374,36 @@ describe('POST /agreements/:cid/onchain', () => {
         expect(await answer({ signature: SIG, transaction: { ...touching(ACCOUNT), meta: { err: 'failed' } } })).toEqual([400, 'onchain-signature-mismatch']);
         expect(await answer({ signature: SIG, transaction: touching(STRANGER) })).toEqual([400, 'onchain-signature-mismatch']);
     });
+
+    it('requires an investor account to retain its immutable USDC-only funding terms, without imposing them on owners', async () => {
+        const investor = {
+            ...content,
+            inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], valuation: null,
+            rule: { electorate: 'investors', binding: true, approvalConfig: null, lens: [LENS], settlement: null },
+            funding: { targetUsdcAtomic: '1000000', contract: { name: 'terms.txt', mediaType: 'text/plain', data: 'dGVybXM=' } }
+        };
+        const investorCid = cidOf(investor), investorAccount = agreementAccountOf(investorCid, SPONSOR);
+        const investorFields = overrides => ({ ...accountFields({ cid: investorCid, payout: SPONSOR, requiredLamports: 0, openGround: false }), ...overrides });
+        const pointerForInvestor = { chain: 'solana', cluster: 'devnet', account: investorAccount };
+        const cases = [
+            [investorFields({ payout: PAYOUT }), 'onchain-payout-mismatch'],
+            [investorFields({ lens: STRANGER }), 'onchain-lens-mismatch'],
+            [investorFields({ deadline: DEADLINE + 1 }), 'onchain-deadline-mismatch'],
+            [investorFields({ requiredLamports: 1n }), 'onchain-native-escrow-mismatch'],
+            [investorFields({ openGround: true }), 'onchain-open-ground-mismatch']
+        ];
+        for (const [fields, code] of cases) {
+            const connection = fakeConnection({ accounts: new Map([[investorAccount, agreementAccountInfo(fields)]]) });
+            const { app, pool } = appFor([agreementRow(investor)], connection);
+            const response = await postOnchain(app, pointerForInvestor, investorCid);
+            expect([response.status, response.body.code], code).toEqual([409, code]);
+            expect(updates(pool)).toEqual([]);
+        }
+
+        // Owners retain their program-configurable payout, lens and native execution escrow.
+        const connection = fakeConnection({ accounts: new Map([[ACCOUNT, agreementAccountInfo(accountFields({ lens: STRANGER, payout: PAYOUT, deadline: DEADLINE + 1, requiredLamports: 1n, openGround: true }))]]) });
+        expect((await postOnchain(appFor([agreementRow(content)], connection).app, pointer())).status).toBe(201);
+    });
 });
 
 describe('GET /agreements?minted=1', () => {

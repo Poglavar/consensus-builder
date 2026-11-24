@@ -37,7 +37,7 @@ const i64 = value => { const out = Buffer.alloc(8); out.writeBigInt64LE(BigInt(v
 const str = text => Buffer.concat([u32(Buffer.byteLength(text)), Buffer.from(text, 'utf8')]);
 
 // An Agreement account (README offsets): status/decision as codes, lamports as BigInt.
-function agreementData({ authority = SPONSOR, lens = LENS, payout = PAYOUT, deadline = 0, required = 1_000_000_000n, escrow = 0n, status = 0, decision = 0 } = {}) {
+function agreementData({ cid = CID, authority = SPONSOR, lens = LENS, payout = PAYOUT, deadline = 0, required = 1_000_000_000n, escrow = 0n, status = 0, decision = 0 } = {}) {
     const bytes = Buffer.alloc(C.AGREEMENT_ACCOUNT_SPACE);
     Buffer.from(client.ACCOUNT_DISCRIMINATORS.Agreement).copy(bytes, 0);
     new PublicKey(authority).toBuffer().copy(bytes, 8);
@@ -48,7 +48,7 @@ function agreementData({ authority = SPONSOR, lens = LENS, payout = PAYOUT, dead
     bytes.writeBigUInt64LE(escrow, 128);
     bytes[136] = status;
     bytes[138] = decision;
-    str(CID).copy(bytes, 228);
+    str(cid).copy(bytes, 228);
     return bytes;
 }
 
@@ -211,6 +211,89 @@ describe('pure helpers', () => {
 });
 
 describe('minting', () => {
+    const records = require('../../frontend/js/agreement-record.js');
+    const pledge = require('../../frontend/js/solana/pledge-client.js');
+    const cids = require('../../frontend/js/cid.js');
+    function crowdfunding(deadline = nowSeconds() + 3600) {
+        const content = require('../../frontend/js/plan-record.js').create('District', [CID], { at: '43.797866,77.087621,16', mode: '2d' });
+        const local = { schema: 'agreement/v1', id: 'district-funding', title: 'Developer funding', city: 'alatau', sponsor: SPONSOR, plan: { cid: cids.cidOfObject(content), content },
+            designs: [{ proposalId: 'p', cid: CID }], inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: 'KZT', lines: [] },
+            rule: { electorate: 'investors', binding: true, lens: [LENS], settlement: null, approvalConfig: null },
+            funding: { targetUsdcAtomic: '20000000', contract: { name: 'terms.txt', mediaType: 'text/plain', data: 'VGVybXM=' } }, deadline: new Date(deadline * 1000).toISOString() };
+        const cid = records.publishedCid(local);
+        const address = client.getAgreementPda(cid, SPONSOR)[0].toBase58();
+        return { agreement: { ...local, published: { cid, sponsor: SPONSOR, apiBase: 'https://api.example.test' } }, address, cid, deadline };
+    }
+
+    it('mints the published crowdfunding terms with zero SOL and contributes devnet USDC using the original program', async () => {
+        const { agreement, address, cid, deadline } = crowdfunding();
+        const { win, bridge, connection } = fakeWindow();
+        win.AgreementRecord = records;
+        await bridge.mint({ agreement, lens: STRANGER, payout: PAYOUT, requiredLamports: 999n });
+        expect(sentInstruction(connection).data).toEqual(client.buildCreateIx({ authority: SPONSOR, cid, lens: LENS, deadline, openGround: false, requiredLamports: 0n, payout: SPONSOR }).instruction.data);
+        const accounts = new Map([[address, { data: agreementData({ cid, payout: SPONSOR, required: 0n, deadline }) }]]);
+        const investor = fakeWindow({ wallet: STRANGER, connection: fakeConnection({ accounts }) });
+        Object.assign(investor.win, { AgreementRecord: records, SolanaPledgeClient: pledge.configure({ web3 }), crypto: globalThis.crypto });
+        agreement.onchain = { chain: 'solana', cluster: 'devnet', account: address };
+        await investor.bridge.donate({ agreement, amountAtomic: 1000001n });
+        const ixs = investor.connection.sent[0].instructions;
+        expect(ixs.map(i => i.programId.toBase58())).toEqual([pledge.constants.PROGRAM_ID, pledge.constants.PROGRAM_ID]);
+        expect(Buffer.from(ixs[1].data).readBigUInt64LE(ixs[1].data.length - 8)).toBe(1000001n);
+        expect(investor.provider.signTransaction).toHaveBeenCalledTimes(1);
+    });
+
+    it('blocks changed contract bytes, wrong network, payout or deadline, and late contributions before asking the wallet', async () => {
+        const { agreement, address, cid, deadline } = crowdfunding();
+        const accounts = new Map();
+        const { win, bridge, provider } = fakeWindow({ wallet: STRANGER, connection: fakeConnection({ accounts }) });
+        win.AgreementRecord = records;
+        agreement.onchain = { chain: 'solana', cluster: 'devnet', account: address };
+        const contribute = (row = agreement) => bridge.donate({ agreement: row, amountAtomic: 1000001n });
+        for (const wrong of [{ payout: STRANGER }, { lens: STRANGER }, { deadline: deadline + 1 }, { required: 5n }]) {
+            accounts.set(address, { data: agreementData({ cid, payout: SPONSOR, required: 0n, deadline, ...wrong }) });
+            await expect(contribute()).rejects.toMatchObject({ code: 'funding-mismatch' });
+        }
+        await expect(contribute({ ...agreement, funding: { ...agreement.funding, contract: { ...agreement.funding.contract, data: 'WA==' } } })).rejects.toMatchObject({ code: 'funding-mismatch' });
+        accounts.set(address, { data: agreementData({ cid, payout: SPONSOR, required: 0n, deadline }) });
+        win.solanaWalletManager.getCluster = () => 'mainnet-beta';
+        await expect(contribute()).rejects.toMatchObject({ code: 'wrong-cluster' });
+        win.solanaWalletManager.getCluster = () => 'devnet';
+        const late = crowdfunding(nowSeconds() - 10);
+        accounts.set(late.address, { data: agreementData({ cid: late.cid, payout: SPONSOR, deadline: late.deadline, required: 0n }) });
+        await expect(contribute({ ...late.agreement, onchain: { ...agreement.onchain, account: late.address } })).rejects.toMatchObject({ code: 'deadline-passed' });
+        expect(provider.signTransaction).not.toHaveBeenCalled();
+    });
+
+    it('recovers the existing investor position after a lost confirmation without signing a second transfer', async () => {
+        const { agreement, address, cid, deadline } = crowdfunding();
+        agreement.onchain = { chain: 'solana', cluster: 'devnet', account: address };
+        const accounts = new Map([[address, { data: agreementData({ cid, payout: SPONSOR, required: 0n, deadline }) }]]);
+        const connection = fakeConnection({ accounts, confirmation: new Error('timeout') });
+        const { win, bridge, provider } = fakeWindow({ wallet: STRANGER, connection });
+        const readPosition = vi.fn(async () => ({ amount: 5000001n, refunded: false }));
+        Object.assign(win, { AgreementRecord: records, SolanaPledgeClient: { ...pledge.configure({ web3 }), readDonationPosition: readPosition }, crypto: globalThis.crypto });
+        const contribution = { agreement, amountAtomic: 5000001n };
+        await expect(bridge.donate(contribution)).rejects.toMatchObject({ code: 'confirmation-unknown' });
+        await expect(bridge.donate(contribution)).resolves.toMatchObject({ account: address, signature: null });
+        const originalId = connection.sent[0].instructions[1].data.slice(8, 40);
+        expect(readPosition.mock.calls[0][3]).toEqual(originalId);
+        expect(provider.signTransaction).toHaveBeenCalledTimes(1);
+    });
+
+    it('refunds the connected investor’s outstanding positions in a wallet-sized transaction', async () => {
+        const { agreement, address } = crowdfunding();
+        agreement.onchain = { chain: 'solana', cluster: 'devnet', account: address };
+        const { win, bridge, connection } = fakeWindow({ wallet: STRANGER });
+        const deposits = Array.from({length: 9}, (_, i) => ({ donationId: Uint8Array.from({length: 32}, () => i), refunded: i === 0 }));
+        const listDonationPositions = vi.fn().mockResolvedValue(deposits);
+        Object.assign(win, { AgreementRecord: records, SolanaPledgeClient: { ...pledge.configure({ web3 }), listDonationPositions } });
+        await bridge.refundDonations({ agreement });
+        expect(listDonationPositions).toHaveBeenCalledWith(connection, address, STRANGER);
+        const transaction = connection.sent[0];
+        expect(transaction.instructions).toHaveLength(Bridge.MAX_REFUNDS_PER_TX);
+        expect(transaction.serialize({ requireAllSignatures: false, verifySignatures: false }).length).toBeLessThanOrEqual(1232);
+    });
+
     it('sends create from the sponsor\'s wallet at its address, for this CID, lens, deadline, escrow and payout', async () => {
         const deadline = new Date(Date.now() + 7 * 86400 * 1000).toISOString();
         const { bridge, provider, connection } = fakeWindow();

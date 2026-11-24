@@ -71,15 +71,18 @@
         if (artifact.agreement) {
             const content = artifact.agreement, cid = root.Cid.cidOfObject(content);
             const records = [...applied.localIds.values()].map(id => root.proposalStorage.getProposal(id));
-            const ids = root.AgreementDialog.inputParcelIds(records, root.LiveParcelFabric);
-            const originals = await root.CadastralParcelRepository.ensureIds(ids, { retainOnly: true });
-            const derived = root.AgreementGround.derive({ designs: records, fabric: root.LiveParcelFabric,
-                originals: root.AgreementDialog.originalsById(originals.features, root.LiveParcelFabric.featureId),
-                ownerOf: () => [] });
+            let derived = null;
+            if (content.rule.electorate !== 'investors') {
+                const ids = root.AgreementDialog.inputParcelIds(records, root.LiveParcelFabric);
+                const originals = await root.CadastralParcelRepository.ensureIds(ids, { retainOnly: true });
+                derived = root.AgreementGround.derive({ designs: records, fabric: root.LiveParcelFabric,
+                    originals: root.AgreementDialog.originalsById(originals.features, root.LiveParcelFabric.featureId),
+                    ownerOf: () => [] });
+                if (derived.outputs.length !== content.outputs.length || derived.outputs.some(o => !content.outputs.some(expected => expected.hash === o.hash))) throw new Error('Draft agreement ground differs here. Review the designs before creating the agreement.');
+            }
             const record = root.AgreementSync.recordFromPublished({ cid, content, plan: { cid: content.planCid, content: artifact.plan } }, { id: `draft-${cid}`, apiBase,
                 localIdOf: designCid => applied.localIds.get(designCid), designOf: id => root.proposalStorage.getProposal(id), derived });
             delete record.published;
-            if (derived.outputs.length !== content.outputs.length || derived.outputs.some(o => !content.outputs.some(expected => expected.hash === o.hash))) throw new Error('Draft agreement ground differs here. Review the designs before creating the agreement.');
             const checked = root.AgreementRecord.validate(record);
             if (!checked.valid) throw new Error(checked.errors[0].message);
             root.AgreementStore.save(record);

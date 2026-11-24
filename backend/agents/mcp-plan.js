@@ -39,10 +39,12 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
         if (plan?.schema === 'plan/v1') plan = { cid: cidOfObject(plan), content: plan };
         if (plan?.content == null && plan?.plan) plan = { cid: plan.cid, content: plan.plan };
         if (!plan || plan.cid !== (content.planCid || plan.cid)) fail('plan-reference-invalid', 'The agreement needs its verified plan record.');
+        const crowdfunding = content.rule?.electorate === 'investors';
         const memberCids = plan.content?.designCids;
         if (!Array.isArray(memberCids)) fail('plan-reference-invalid', 'The referenced plan has no design membership.');
         const checked = agreementObject({ ...content, plan,
-            designs: memberCids.map(cid => ({ cid })), parcels: content.inputs?.parcels, openGroundM2: content.inputs?.openGroundM2 });
+            designs: memberCids.map(cid => ({ cid })), parcels: content.inputs?.parcels, openGroundM2: content.inputs?.openGroundM2,
+            requireSponsor: !crowdfunding });
         const cid = cidOfObject(content);
         if (checked.cid !== cid || (claimedCid && claimedCid !== cid) || (artifact.cid && artifact.cid !== cid)) fail('cid-mismatch', 'The agreement content does not match its claimed canonical revision.');
         const sourceIds = [...new Set(content.inputs.parcels.map(p => p.parcelSourceId).filter(Boolean))];
@@ -52,15 +54,20 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
             const design = row.untrusted?.content || row.content || row;
             const actualCid = cidOfObject(design);
             if (row.cid && row.cid !== actualCid) fail('cid-mismatch', 'A carried design differs from its CID.');
-            return [actualCid, design];
+            return [actualCid, { content: design,
+                parcelSourceId: row.parcelSourceId || artifact.designSources?.[actualCid] || artifact.parcelSourceId || null }];
         }));
         const designs = [];
-        for (const cid of memberCids) {
-            const linked = { cid };
-            const resolved = await drafts.resolveDesignSource(carried.get(linked.cid) || linked.cid);
-            if (cidOfObject(resolved.content) !== linked.cid) fail('cid-mismatch', 'A linked design differs from the plan commitment.');
+        for (const memberCid of memberCids) {
+            const carriedDesign = carried.get(memberCid);
+            // Reading funding terms only needs the committed design bytes. New designs receive
+            // their authoring checks at draft creation and before their first publication.
+            const resolved = crowdfunding ? carriedDesign || await read.getDesign({ designCid: memberCid })
+                : await drafts.resolveDesignSource(carriedDesign || memberCid);
+            if (resolved.content?.schema !== 'design/v1' || cidOfObject(resolved.content) !== memberCid) fail('cid-mismatch', 'A linked design differs from the plan commitment.');
             if (parcelSourceId && resolved.parcelSourceId && parcelSourceId !== resolved.parcelSourceId) fail('agreement-source-mismatch', 'A design uses a different parcel source from this plan.');
-            designs.push({ cid: linked.cid, content: resolved.content });
+            designs.push({ cid: memberCid, content: resolved.content,
+                parcelSourceId: resolved.parcelSourceId || carriedDesign?.parcelSourceId || artifact.designSources?.[memberCid] || parcelSourceId || null });
         }
         const localAgreement = { ...content, id: `mcp-${cid}`, updatedAt: null, plan,
             outputs: content.outputs.map(output => ({ ...output, pieceId: output.hash, geometry: null })),
@@ -93,7 +100,8 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
 
     async function inspectPlan({ plan: value, filter = {}, includeGeometry = false, offset = 0, limit = 100 }) {
         const plan = await resolvePlan(value);
-        if (!['design','building'].includes(filter.kind) || filter.relativeTo?.ref.startsWith('piece:')) {
+        const crowdfunding = plan.agreement.rule.electorate === 'investors';
+        if (!crowdfunding && (!['design','building'].includes(filter.kind) || filter.relativeTo?.ref.startsWith('piece:'))) {
             // Published outputs commit hashes, not another copy of geometry. Recover exact pieces
             // from the shared formation host and require that they still match the commitment.
             const ground = await agreements.inspectGround({ designs: plan.designs, parcelSourceId: plan.parcelSourceId });
@@ -124,27 +132,30 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
         const recipients = new Map(plan.agreement.allocations.map(row => [row.output, row.to]));
         const rule = { electorate: plan.agreement.rule.electorate, binding: plan.agreement.rule.binding };
         const community = rule.electorate === 'community';
-        const ledger = community ? null : AgreementRecord.ledger(plan.agreement);
+        const ledger = community || crowdfunding ? null : AgreementRecord.ledger(plan.agreement);
         // Parties are abstract (one per input parcel); with a rights snapshot in the rule, what each
         // person holds of them is derived, never stored. A community poll defines no party allocation
         // or cash position, so do not expose the owner's hypothetical ledger for that electorate.
         const rights = plan.agreement.rule?.approvalConfig?.rights;
         return { cid: plan.cid, parcelSourceId: plan.parcelSourceId, title: plan.agreement.title, rule,
             ...(community ? { communityPosition: { allocations: 'not-defined', cashTransfers: 'not-defined' } } : {}),
+            ...(crowdfunding ? { funding: plan.agreement.funding, investorReview: { contract: plan.agreement.funding?.contract?.name ?? null, action: 'Review the attached contract before using ugt_approval_link with action donate.' } } : {}),
             items: matched.slice(offset, offset + limit).map(({ geometry, ...item }) => {
                 const value = item.kind === 'piece' && !community ? { ...item, recipient: recipients.get(item.ref.slice(6)) || null } : item;
                 return includeGeometry ? { ...value, geometry } : value;
             }),
             parties: ledger?.parties ?? null, persons: ledger && rights ? personPositions(plan.agreement, rights) : null,
             publicM2: ledger?.publicM2 ?? null, proposerM2: ledger?.proposerM2 ?? null,
-            settlement: community ? null : plan.agreement.rule.settlement,
+            settlement: community || crowdfunding ? null : plan.agreement.rule.settlement,
             valuation: plan.agreement.valuation ?? null, valued: ledger?.valued ?? null, contributedValueCents: ledger?.contributedValueCents ?? null,
             distributableValueCents: ledger?.distributableValueCents ?? null, publicValueCents: ledger?.publicValueCents ?? null, proposerValueCents: ledger?.proposerValueCents ?? null,
-            scheme: community ? null : schemeReport(plan.agreement),
+            scheme: community || crowdfunding ? null : schemeReport(plan.agreement),
             cashSchedule: ledger?.money ?? null,
             total: matched.length, offset, truncated: offset + limit < matched.length,
             selectionBasis: 'References belong to this immutable plan CID. Compass selection requires the whole object bbox beyond the reference bbox; crossing objects are excluded.',
-            next: trustedMetadata({ tool: 'ugt_edit_agreement', action: 'Use expectedCid and explicit terms; revise membership in the named plan first.' }) };
+            next: trustedMetadata(crowdfunding
+                ? { tool: 'ugt_approval_link', action: 'Review the attached investor contract, then create a donate approval link for the minted agreement account.' }
+                : { tool: 'ugt_edit_agreement', action: 'Use expectedCid and explicit terms; revise membership in the named plan first.' }) };
     }
 
     // The distribution rules of the scheme the agreement's rule names, checked against its land
@@ -160,7 +171,15 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
         const original = await resolvePlan(value);
         if (expectedCid !== original.cid) fail('plan-revision-mismatch', 'Inspect the exact agreement revision before editing its terms.');
         const previous = original.agreement;
+        const crowdfunding = previous.rule.electorate === 'investors' || terms.rulePreset === 'crowdfunding';
         if (terms.plan) {
+            if (crowdfunding) {
+                const revised = await agreements.draftAgreement({ plan: terms.plan, rulePreset: 'crowdfunding', lens: terms.lens ?? previous.rule.lens?.[0],
+                    currency: previous.money.currency, targetUsdcAtomic: terms.targetUsdcAtomic ?? previous.funding?.targetUsdcAtomic,
+                    contract: terms.contract ?? previous.funding?.contract, title: terms.title ?? previous.title, author: terms.author ?? previous.author,
+                    sponsor: terms.sponsor ?? previous.sponsor, deadline: terms.deadline ?? previous.deadline, createdAt: new Date().toISOString() });
+                return { ...revised, previousCid: original.cid, warnings: ['This private crowdfunding revision uses the explicitly selected plan. The original agreement and its investor terms retain their identity.'] };
+            }
             const rule = terms.rule ? structuredClone(terms.rule) : structuredClone(previous.rule);
             const rights = terms.rights ?? rule.approvalConfig?.rights ?? previous.rule.approvalConfig?.rights;
             if (terms.rights && rule.approvalConfig) rule.approvalConfig.rights = terms.rights;
@@ -172,6 +191,22 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
                 sponsor: terms.sponsor ?? previous.sponsor, deadline: terms.deadline ?? previous.deadline,
                 consultation: rule.electorate === 'community' ? terms.consultation ?? previous.consultation : null });
             return { ...revised, previousCid: original.cid, warnings: ['This private revision uses the explicitly selected existing named plan. The original agreement and its decisions retain their identity.'] };
+        }
+        if (crowdfunding) {
+            const deadline = Object.hasOwn(terms, 'deadline') ? terms.deadline : previous.deadline;
+            if (typeof deadline !== 'string' || !Number.isFinite(Date.parse(deadline)) || Date.parse(deadline) % 1000 !== 0) {
+                fail('crowdfunding-deadline-invalid', 'Supply a funding deadline on a whole second.');
+            }
+            const checked = agreementObject({ ...previous, plan: original.plan, designs: original.designs.map(row => ({ cid: row.cid, title: row.content.title, goal: row.content.goal })),
+                parcels: [], openGroundM2: 0, outputs: [], allocations: [], money: previous.money, valuation: null,
+                rule: { electorate: 'investors', binding: true, approvalConfig: null, lens: terms.lens ? [terms.lens] : previous.rule.lens, settlement: null },
+                funding: { targetUsdcAtomic: terms.targetUsdcAtomic ?? previous.funding?.targetUsdcAtomic, contract: terms.contract ?? previous.funding?.contract },
+                title: Object.hasOwn(terms, 'title') ? terms.title : previous.title, author: Object.hasOwn(terms, 'author') ? terms.author : previous.author,
+                sponsor: Object.hasOwn(terms, 'sponsor') ? terms.sponsor : previous.sponsor, deadline,
+                consultation: null, createdAt: new Date().toISOString(), requireSponsor: false });
+            return { agreement: checked.content, cid: checked.cid, previousCid: original.cid, plan: original.plan, designs: original.designs,
+                warnings: ['This private crowdfunding revision keeps the same named plan. The original agreement and its investor terms retain their identity.'],
+                ...await previewArtifact({ origin: appOrigin, agreement: checked.content, plan: original.plan, designs: original.designs.map(row => row.content), parcelSourceId: null }) };
         }
         const rule = terms.rule ? structuredClone(terms.rule) : structuredClone(previous.rule);
         if (terms.settlement) rule.settlement = terms.settlement;

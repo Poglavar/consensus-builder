@@ -309,4 +309,13 @@ describe('approval links', () => {
         expect(approval.preselect({ querySelector: () => button }, intent)).toBe(true);
         expect(button.click).toBeUndefined();
     });
+
+    it('round-trips an investor donation intent and only focuses the existing support form', () => {
+        const target = cidOfObject({ schema: 'agreement/v1', title: 'Investor terms' });
+        const intent = { action: 'donate', target, params: { amount: '12.5', city: 'london' } };
+        expect(approval.parse(new URL(approval.build({ origin: 'https://app.example', ...intent })))).toEqual(intent);
+        const button = { focus() {}, setAttribute() {} };
+        expect(approval.preselect({ querySelector: selector => selector === '[data-agreement-boost-action="boost"]' ? button : null }, intent)).toBe(true);
+        expect(button.click).toBeUndefined();
+    });
 });

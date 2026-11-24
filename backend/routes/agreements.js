@@ -46,7 +46,7 @@ export const PLAN_TABLE = 'consensus.plan';
 const isOutputHash = value => typeof value === 'string' && value.startsWith(agreementRecord.OUTPUT_HASH_PREFIX)
     && /^[0-9a-f]{64}$/.test(value.slice(agreementRecord.OUTPUT_HASH_PREFIX.length));
 const ALLOCATION_KINDS = ['party', 'proposer', 'public'];
-const ELECTORATES = ['owners', 'community'];
+const ELECTORATES = ['owners', 'community', 'investors'];
 const MAX_TEXT = { title: 500, author: 255, city: 100 };
 const MAX_ID_LENGTH = 256;
 
@@ -123,6 +123,22 @@ export function validateAgreementContent(content, { now = Date.now(), designCids
     if (Object.hasOwn(content, 'designs') || Object.hasOwn(content, 'designCids')) return invalid('designs', 'Agreement membership is declared by planCid; inline designs and designCids are not allowed.');
     if (designCids !== undefined && (!Array.isArray(designCids) || !designCids.length)) return invalid('designs', 'The referenced plan links at least one design.');
     if (designCids?.length > MAX_AGREEMENT_DESIGNS) return invalid('designs', `A plan used by an agreement links at most ${MAX_AGREEMENT_DESIGNS} designs.`);
+
+    // Crowdfunding is deliberately land-free. Keep this branch ahead of the ordinary land,
+    // allocation and fiat-settlement checks: the shared record validator owns its exact shape.
+    // This is also the publication boundary, so a sponsor is mandatory here (draft builders may
+    // omit it until the person is ready to publish).
+    if (content.rule?.electorate === 'investors' || content.funding != null) {
+        const error = typeof agreementRecord.crowdfundingError === 'function'
+            ? agreementRecord.crowdfundingError(content, { requireSponsor: true }) : 'Crowdfunding agreements are not supported by this server.';
+        if (error) return invalid('funding', error);
+        if (content.deadline != null) {
+            if (!isInstant(content.deadline)) return invalid('details', 'The deadline is an ISO instant or null.');
+            if (Date.parse(content.deadline) % 1000 !== 0) return invalid('details', 'A crowdfunding deadline must fall on a whole second, as the agreement account stores it.');
+            if (Date.parse(content.deadline) <= now) return { ok: false, status: 422, code: 'deadline-past', section: 'details', error: 'The deadline has already passed.' };
+        }
+        return { ok: true, designCids: designCids ?? [], inputParcelIds: [], parcelSourceId: null, deadline: content.deadline ?? null };
+    }
 
     const { inputs } = content;
     if (!isPlainObject(inputs) || !Array.isArray(inputs.parcels)) return invalid('land', 'The agreement lists its input parcels.');
@@ -399,6 +415,7 @@ export function setupAgreementsRoute(app, deps) {
             }
             const plan = storedPlan || carriedPlan;
             const planDesignCids = plan.content.designCids;
+            const crowdfunding = content.rule?.electorate === 'investors';
             const checked = validateAgreementContent(content, { now: now(), designCids: planDesignCids });
             if (!checked.ok) {
                 const { ok: _ok, status, ...refused } = checked;
@@ -406,8 +423,12 @@ export function setupAgreementsRoute(app, deps) {
             }
             const carried = body.designs ?? [];
             if (!Array.isArray(carried) || carried.length > planDesignCids.length
-                || carried.some(entry => !isPlainObject(entry) || Object.keys(entry).some(key => !['cid', 'content'].includes(key)))) {
-                return send(res, 400, { error: 'designs must be a list of { cid, content } of designs the agreement links.', code: 'bad-request' });
+                || carried.some(entry => !isPlainObject(entry) || Object.keys(entry).some(key => !['cid', 'content', 'parcelSourceId'].includes(key))
+                    || (Object.hasOwn(entry, 'parcelSourceId') && !isText(entry.parcelSourceId, 3507)))) {
+                return send(res, 400, { error: 'designs must be a list of linked { cid, content, parcelSourceId? }; parcelSourceId is explicit text when supplied.', code: 'bad-request' });
+            }
+            if (!crowdfunding && carried.some(entry => Object.hasOwn(entry, 'parcelSourceId'))) {
+                return send(res, 400, { error: 'A carried design source is only accepted for a land-free investor agreement.', code: 'carried-design-source-not-allowed' });
             }
             const stray = carried.find(entry => !planDesignCids.includes(entry.cid));
             if (stray) return send(res, 400, { error: `Design ${stray.cid} is not linked by the agreement.`, code: 'design-not-in-agreement', design: stray.cid });
@@ -418,7 +439,7 @@ export function setupAgreementsRoute(app, deps) {
             // Designs sent along are checked and bound now; they are written with the agreement or not at all.
             const prepared = new Map();
             for (const entry of carried) {
-                const outcome = await prepareDesign(pool, entry, { parcelSourceId: checked.parcelSourceId });
+                const outcome = await prepareDesign(pool, entry, { parcelSourceId: crowdfunding ? (entry.parcelSourceId || null) : checked.parcelSourceId });
                 if (outcome.refusal) return send(res, outcome.refusal.status, { ...outcome.refusal.body, design: entry.cid });
                 if (outcome.prepared) prepared.set(entry.cid, outcome.prepared);
             }
@@ -431,7 +452,7 @@ export function setupAgreementsRoute(app, deps) {
                     code: 'design-not-indexed', missing
                 });
             }
-            const land = inputsAgainstBindings(checked.inputParcelIds, designs.map(design => design.binding));
+            const land = crowdfunding ? { missing: [], extra: [] } : inputsAgainstBindings(checked.inputParcelIds, designs.map(design => design.binding));
             if (land.missing.length || land.extra.length) {
                 const parts = [];
                 if (land.missing.length) parts.push(`the designs take ${land.missing.length} parcel(s) the inputs leave out: ${land.missing.join(', ')}`);
@@ -545,9 +566,9 @@ export function setupAgreementsRoute(app, deps) {
         try {
             const row = await loadAgreement(pool, cid);
             if (!row) return send(res, 404, { error: 'Agreement not found', code: 'agreement-not-found' });
-            // Only a binding owners' agreement is minted: a vote binds nobody, so it has no account.
-            if (row.content?.rule?.binding !== true) {
-                return send(res, 422, { error: 'Only a binding owners\' agreement is minted; this one does not bind.', code: 'not-binding' });
+            // Binding owners and investor-funding agreements use the same agreement account. Polls do not.
+            if (row.content?.rule?.binding !== true || !['owners', 'investors'].includes(row.content?.rule?.electorate)) {
+                return send(res, 422, { error: 'Only a binding owners or investor-funding agreement is minted; this one does not bind.', code: 'not-binding' });
             }
             const sponsor = row.content?.sponsor ?? null;
             const expected = agreementAccountOf(cid, sponsor);
@@ -587,6 +608,27 @@ export function setupAgreementsRoute(app, deps) {
             }
             if (read.account.authority !== sponsor) {
                 return send(res, 409, { error: `Account ${expected} belongs to ${read.account.authority}, not the sponsor.`, code: 'onchain-sponsor-mismatch' });
+            }
+            if (row.content.rule?.electorate === 'investors') {
+                if (read.account.payout !== sponsor) {
+                    return send(res, 409, { error: `Account ${expected} pays ${read.account.payout}, not the agreement sponsor.`, code: 'onchain-payout-mismatch' });
+                }
+                const lens = row.content.rule.lens?.[0];
+                if (read.account.lens !== lens) {
+                    return send(res, 409, { error: `Account ${expected} names lens ${read.account.lens}, not the agreement lens ${lens}.`, code: 'onchain-lens-mismatch' });
+                }
+                // Decoded agreement deadlines are safe-integer Unix seconds and requiredLamports is a
+                // u64 BigInt. Investor funding is USDC-only: no native execution escrow or open ground.
+                const expectedDeadline = Math.floor(Date.parse(row.content.deadline) / 1000);
+                if (read.account.deadline !== expectedDeadline) {
+                    return send(res, 409, { error: `Account ${expected} has a different deadline from the agreement.`, code: 'onchain-deadline-mismatch' });
+                }
+                if (read.account.requiredLamports !== 0n) {
+                    return send(res, 409, { error: `Account ${expected} requires native execution lamports, but investor funding requires zero.`, code: 'onchain-native-escrow-mismatch' });
+                }
+                if (read.account.openGround !== false) {
+                    return send(res, 409, { error: `Account ${expected} records open ground, but investor funding is land-free.`, code: 'onchain-open-ground-mismatch' });
+                }
             }
             if (touch === 'not-found') {
                 return send(res, 409, { error: `Transaction ${signature} is not visible on ${body.cluster} yet; send it again once confirmed, or leave it out.`, code: 'onchain-signature-not-found' });

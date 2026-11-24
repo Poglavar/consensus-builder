@@ -52,7 +52,7 @@ A new authored version of a design or agreement. Published content retains its o
 
 ### Agreement
 
-An arrangement referencing exactly one immutable plan revision, with input land and holders, output pieces, allocations, money, a decision rule and a deadline. Published `agreement/v1` content names the plan with `planCid` and its outputs by piece hash. The plan supplies all design membership; it must be created independently before it is selected for an agreement. The agreement has no independently authored spatial layout or design list. Several agreements can reference the same plan. A local editing record can cache design references for replay and preparation, but publication must match the referenced plan exactly. An indexed agreement that lists designs inline (`designs` or `designCids`, a retired experimental format) is not served: the API answers HTTP 410 `retired-agreement-format`, and such an agreement is recreated from a published plan.
+An arrangement with a decision rule for exactly one immutable plan revision. Depending on the rule, its terms can cover land and payments, a community vote, or developer crowdfunding. Published `agreement/v1` content names the plan with `planCid` and any output pieces by hash. The plan supplies all design membership. Several agreements can reference the same plan. A local editing record can cache design references for replay and preparation. Publication must match the referenced plan exactly.
 
 ### Property offer
 
@@ -72,7 +72,15 @@ A new agreement drafted from an existing agreement's plan and terms, optionally 
 
 ### Binding owners' agreement
 
-An agreement whose owners' decision rule is binding. This is the agreement kind eligible for a chain account, escrow, lens decision, execution and an execution market.
+An agreement whose owners' decision rule is binding. It is eligible for a chain account, escrow, lens decision, execution and an execution market.
+
+### Developer crowdfunding agreement
+
+A binding agreement to raise devnet USDC for one exact plan revision. The sponsor is the developer and payout recipient. The agreement commits a minimum funding target, a deadline, one lens member and the investor contract. The chosen lens verifies the recorded USDC deposits against the target. Execution permits release to the developer. Cancellation or expiry permits each contributor to reclaim their deposits.
+
+### Investor contract
+
+The developer’s attached PDF or UTF-8 text specifying what a contributor receives in return. The file’s name, media type and bytes are part of the crowdfunding agreement’s content identity. The escrow records contributions and settles the funding round. The developer is responsible for delivering the promised return.
 
 ### Poll
 

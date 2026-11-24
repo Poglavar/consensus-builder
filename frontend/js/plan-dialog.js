@@ -331,6 +331,9 @@
         actions.append(button(t('editPlan'),async()=>{const latest=current();dialog.close();await create({base:latest});}));
         actions.append(button(t('schedule'),async()=>{const latest=current();dialog.close();await schedule(latest);}));
         actions.append(button(t('createAgreement'),async()=>{const latest=current();dialog.close();await win.AgreementDialog.open({plan:latest});}));
+        const crowdfunding = button(win.i18n.t('agreement.funding.title'),async()=>{const latest=current();dialog.close();await win.AgreementDialog.open({plan:latest,electorate:'investors'});});
+        crowdfunding.dataset.planAction = 'create-crowdfunding';
+        actions.append(crowdfunding);
         if (!collaborationOnly) body.append(actions,win.PlanFileUI.planControls(row, { getRow: current }));
         const collaboration=node('div','plan-details__collaboration');
         body.append(collaboration);

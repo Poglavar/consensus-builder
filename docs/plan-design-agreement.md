@@ -4,6 +4,8 @@
 
 ## Current agreement authoring contract
 
+A developer can also select **Developer crowdfunding** on a named plan. This binding agreement records a funding target, deadline, one lens and the attached investor contract. Its developer is the sponsor and receives the USDC on successful settlement. It carries no input parcels, allocations or owner decisions. [Developer crowdfunding](developer-crowdfunding.md)
+
 Create a named plan independently before creating an agreement. Agreement creation belongs to the plan’s actions. The Input parcels tab selects an existing exact plan revision; its designs are read-only. Neither the editor nor MCP agreement editing creates or edits a plan.
 
 The editor has Rules, Input parcels, Output parcels and Persons tabs. Agreement parties are abstract: every input parcel is represented by exactly one party, “Owner(s) of parcel X” (`parcel-owner:<parcelId>`), whether or not its owners are known. Allocations and money lines name no people; the rule’s rights snapshot can name their holders. Each output of an owners’ agreement has exactly one explicit recipient: one input parcel’s party, Proposer or Public. Output parcels can be assigned individually or all to Proposer/Public land; bulk assignment writes the same explicit allocation lines and disables per-parcel controls. Proposer can receive land without owning inputs, while the sponsor funds the derived compensation. Ownership rights and lens settings are separate dialogs; the rights snapshot lives only in the rule (`rule.approvalConfig.rights`), and owner decisions are verified against it.

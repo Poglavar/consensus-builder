@@ -100,6 +100,46 @@ describe('headless app formation host', () => {
         expect(agreement.agreement.money.currency).toBe('COP');
     });
 
+    it('drafts, inspects and revises a land-free crowdfunding agreement on an existing plan', async () => {
+        const design = make('space', { spaceKind: 'park' });
+        const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {} });
+        const plan = await tools.draftPlan({ designs: [design.content], title: 'Funded park plan' });
+        const terms = { rulePreset: 'crowdfunding', plan: plan.draftArtifact, sponsor: 'So11111111111111111111111111111111111111112',
+            lens: '9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt', deadline: '2099-01-01T00:00:00.000Z', targetUsdcAtomic: '1000000',
+            contract: { name: 'investor-terms.txt', mediaType: 'text/plain', data: 'dGVybXM=' } };
+        const draft = await tools.draftAgreement(terms);
+        expect(draft.agreement).toMatchObject({ rule: { electorate: 'investors', binding: true, approvalConfig: null, settlement: null },
+            inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], funding: { targetUsdcAtomic: '1000000', contract: terms.contract } });
+        const inspected = await tools.inspectAgreement({ plan: draft.draftArtifact });
+        expect(inspected).toMatchObject({ funding: draft.agreement.funding, investorReview: { contract: 'investor-terms.txt' }, parties: null, cashSchedule: null });
+        const revised = await tools.editAgreement({ plan: draft.draftArtifact, expectedCid: draft.cid, terms: { targetUsdcAtomic: '2000000' } });
+        expect(revised.agreement.funding.targetUsdcAtomic).toBe('2000000');
+        expect(revised.cid).not.toBe(draft.cid);
+    });
+
+    it('takes crowdfunding city and default currency from the canonical plan view', async () => {
+        const design = make('space', { spaceKind: 'park', city: 'alatau' });
+        const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {} });
+        const plan = await tools.draftPlan({ designs: [design.content], title: 'Alatau plan' });
+        const agreement = await tools.draftAgreement({ plan: plan.draftArtifact, rulePreset: 'crowdfunding', sponsor: 'So11111111111111111111111111111111111111112',
+            lens: '9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt', deadline: '2099-01-01T00:00:00.000Z', targetUsdcAtomic: '1000000',
+            contract: { name: 'terms.txt', mediaType: 'text/plain', data: 'dGVybXM=' } });
+        expect(agreement.agreement).toMatchObject({ city: 'alatau', money: { currency: 'KZT', lines: [] } });
+    });
+
+    it('keeps an investor draft private without a sponsor, then gives the sponsored revision a new CID', async () => {
+        const design = make('space', { spaceKind: 'park' });
+        const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {} });
+        const plan = await tools.draftPlan({ designs: [design.content], title: 'Private funding plan' });
+        const draft = await tools.draftAgreement({ plan: plan.draftArtifact, rulePreset: 'crowdfunding', lens: '9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt',
+            deadline: '2099-01-01T00:00:00.000Z', targetUsdcAtomic: '1000000', contract: { name: 'terms.txt', mediaType: 'text/plain', data: 'dGVybXM=' } });
+        expect(draft.agreement.sponsor).toBeNull();
+        const revised = await tools.editAgreement({ plan: draft.draftArtifact, expectedCid: draft.cid,
+            terms: { sponsor: 'So11111111111111111111111111111111111111112' } });
+        expect(revised.agreement.sponsor).toBe('So11111111111111111111111111111111111111112');
+        expect(revised.cid).not.toBe(draft.cid);
+    });
+
     it('keeps strict optional consultation metadata in drafting and revision tool schemas', () => {
         const tools = new Map();
         registerMcpCompanion({ registerTool: (name, options) => tools.set(name, options.inputSchema), registerResource() {}, registerPrompt() {} }, { actions: {}, handler: fn => fn, readOnly: {} });
@@ -113,5 +153,16 @@ describe('headless app formation host', () => {
         const edit = tools.get('ugt_edit_agreement');
         expect(edit.parse({ plan: {}, expectedCid: cidOfObject(design), terms: { consultation } }).terms.consultation).toEqual(consultation);
         expect(edit.safeParse({ plan: {}, expectedCid: cidOfObject(design), terms: { consultation: { organiser: null } } }).success).toBe(false);
+    });
+
+    it('exposes bounded crowdfunding contract terms through the registered MCP draft and edit schemas', () => {
+        const tools = new Map();
+        registerMcpCompanion({ registerTool: (name, options) => tools.set(name, options.inputSchema), registerResource() {}, registerPrompt() {} }, { actions: {}, handler: fn => fn, readOnly: {} });
+        const contract = { name: 'terms.txt', mediaType: 'text/plain', data: 'dGVybXM=' };
+        const draft = tools.get('ugt_draft_agreement');
+        expect(draft.parse({ plan: {}, rulePreset: 'crowdfunding', targetUsdcAtomic: '1000000', contract }).rulePreset).toBe('crowdfunding');
+        expect(draft.safeParse({ plan: {}, rulePreset: 'crowdfunding', targetUsdcAtomic: '0', contract }).success).toBe(false);
+        const edit = tools.get('ugt_edit_agreement');
+        expect(edit.parse({ plan: {}, expectedCid: cidOfObject({ schema: 'agreement/v1', title: 'terms' }), terms: { targetUsdcAtomic: '2000000', contract } }).terms.contract).toEqual(contract);
     });
 });

@@ -49,9 +49,29 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
             const result = await groundFor(await resolveDesigns(designs, parcelSourceId));
             return result.land;
         },
-        async draftAgreement({ plan: value, rulePreset = 'owner-vote', rule: ruleOverride, rights, lens, allocations, settlement, valuation = null, currency = null, deadline = null, sponsor = null, title = null, author = null, createdAt = null, consultation = null, includeGround = false }) {
+        async draftAgreement({ plan: value, rulePreset = 'owner-vote', rule: ruleOverride, rights, lens, allocations, settlement, valuation = null, currency = null, deadline = null, sponsor = null, title = null, author = null, createdAt = null, consultation = null, includeGround = false, targetUsdcAtomic = null, contract = null }) {
             if (!resolvePlan) throw fail('plan-resolver-unavailable', 'Named plan resolution is unavailable.');
-            const selected = await resolvePlan(value);
+            // Funding refers to the published member CIDs. Only newly carried designs need authoring checks.
+            const selected = await resolvePlan(value, { referenceMembers: rulePreset === 'crowdfunding' });
+            if (rulePreset === 'crowdfunding') {
+                if (ruleOverride || rights || allocations || settlement || valuation != null || consultation != null) {
+                    throw fail('crowdfunding-terms-invalid', 'Crowdfunding has one fixed investor rule and no land, allocation, settlement, valuation or consultation terms.');
+                }
+                if (typeof deadline !== 'string' || !Number.isFinite(Date.parse(deadline)) || Date.parse(deadline) % 1000 !== 0) {
+                    throw fail('crowdfunding-deadline-invalid', 'Supply a funding deadline on a whole second.');
+                }
+                const designs = selected.designs || [];
+                const city = selected.plan.view?.city || designs[0]?.content?.city || null;
+                if (!city) throw fail('agreement-city-missing', 'The selected plan needs a city in its saved view or member designs.');
+                const rule = { electorate: 'investors', binding: true, lens: lens ? [lens] : [], approvalConfig: null, settlement: null };
+                const published = agreementObject({ title, author, sponsor, city, createdAt: createdAt || new Date().toISOString(), plan: { cid: selected.cid, content: selected.plan },
+                    designs: designs.map(d => ({ cid: d.cid, goal: d.content?.goal, title: d.content?.title })), parcels: [], openGroundM2: 0, outputs: [], allocations: [],
+                    money: { currency: currency || cityMoney(city).currentCurrency(), lines: [] }, valuation: null, rule, deadline, funding: { targetUsdcAtomic, contract }, requireSponsor: false });
+                const plan = { cid: selected.cid, content: selected.plan };
+                return { agreement: published.content, cid: published.cid, parcelSourceId: null, takes: [], groundEffects: [], persons: null,
+                    warnings: ['This crowdfunding agreement references the existing named plan and has no land effects.'], plan, designs,
+                    ...await previewArtifact({ origin: appOrigin, agreement: published.content, plan, designs: designs.map(row => row.content), parcelSourceId: null }) };
+            }
             const resolved = await resolveDesigns(selected.designs, selected.designs[0]?.parcelSourceId);
             createdAt ||= new Date().toISOString();
             const { designs } = resolved;

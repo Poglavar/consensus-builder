@@ -120,6 +120,17 @@ and cash ledgers. Community polls return `communityPosition` with allocations an
 `not-defined`; owner position, settlement and cash metrics are `null`, and pieces have no recipient.
 Their input and output ground describes the plan's scope rather than a land transfer.
 
+`ugt_draft_agreement` also has `rulePreset: "crowdfunding"`. It creates a binding, land-free
+investor agreement attached to an existing named plan. Supply the developer `sponsor`, one selected
+`lens` member (which the agreement program trusts), an ISO `deadline`, `targetUsdcAtomic` (decimal devnet-USDC atomic units), and
+`contract: { name, mediaType, data }`, where `data` is the original PDF or UTF-8 text contract in
+base64. The attachment is part of the agreement CID. `ugt_inspect_agreement` returns its target and
+contract name for explicit review. Changing the target, contract, sponsor, lens, deadline, or plan
+through `ugt_edit_agreement` creates a new agreement CID. After `ugt_propose_agreement` and
+`ugt_mint_agreement`, use `ugt_approval_link` with `action: "donate"` to open the investor’s review.
+The investor can download the contract and confirm the contribution in their own wallet. The existing
+devnet USDC escrow handles deposits and refunds.
+
 Draft and edit tools that accept `plan` can resolve an unpublished member by its CID within that
 exact plan revision. Pass the plan's private `draftRef` or canonical artifact, then use the member
 CID with `ugt_inspect_design`, `ugt_edit_design` or `ugt_modify_design`; this does not require a

@@ -244,6 +244,7 @@ export function settlementMessage(persona, lens, item, type) {
     case 'lens-decision': return `${persona.name} asked lens member ${lens?.name ?? item.lens} for its decision on agreement ${cid}: satisfied.`;
     case 'attest': return `${persona.name} recorded the lens decision on agreement ${cid} on chain.`;
     case 'execute': return `${persona.name} executed its agreement ${cid}; the escrow went to its payout.`;
+    case 'release-donations': return `${persona.name} released the funded USDC donation vault for agreement ${cid} to its sponsor.`;
     case 'expire': return `${persona.name} expired its agreement ${cid} after its deadline; the escrow returned to it.`;
     case 'resolve': return `${persona.name} resolved the market of agreement ${cid} ${item.outcome}.`;
     case 'reclaim-seed': return `${persona.name} took back what the payouts left of its market seed on agreement ${cid}.`;
@@ -336,6 +337,7 @@ export async function settleStage({
                     done.lensDecision ? `lens decision ${done.lensDecision.address}${done.lensDecision.reused ? ' (reused)' : ''}` : null,
                     done.attest ? `attest ${done.attest.signature ?? 'already recorded'}` : null,
                     done.execution ? `execute ${done.execution.signature ?? done.execution.status}` : null,
+                    done.donationRelease ? `release donations ${done.donationRelease.signature ?? done.donationRelease.status}` : null,
                     done.expiry ? `expire ${done.expiry.signature ?? done.expiry.status}` : null,
                     done.resolution ? `resolve ${done.resolution.signature ?? '-'} (${done.resolution.outcome})` : null,
                     done.claim ? `claim ${done.claim.signature ?? done.claim.reason ?? '-'}` : null,

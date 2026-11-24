@@ -101,6 +101,7 @@
             money: content.money,
             valuation: content.valuation ?? null,
             rule: content.rule,
+            ...(content.funding == null ? {} : { funding: content.funding }),
             consultation: content.consultation,
             deadline: content.deadline,
             published: { cid: row.cid, publishedAt: row.createdAt || null, apiBase, sponsor: content.sponsor || null },
@@ -225,13 +226,29 @@
             if (!checked.valid) throw failure('invalid-agreement', checked.errors[0].message);
             const nameNeeded = win.guestPolicyBlocks('publish');
             if (nameNeeded) throw failure('name-needed', nameNeeded, { cancelled: true });
+            const crowdfunding = agreement.rule.electorate === 'investors';
+            const sponsor = sponsorKey();
+            if (crowdfunding && !sponsor) throw failure('wallet-required', t('agreement.funding.wallet', 'Connect the developer wallet to publish this agreement.'));
 
             // Each design as it is published (an own draft carries the current profile's name first).
             const cids = new Map();
+            const designs = [];
             for (const design of agreement.designs) {
                 const record = designOf(design.proposalId);
                 if (!record) throw failure('design-missing', t('agreement.publish.errors.designMissing', 'A design of this agreement is no longer on this device.'));
-                cids.set(design.proposalId, (await win.DesignSync.publishDesign(record)).cid);
+                if (crowdfunding) {
+                    const content = win.DesignRecord.published(record);
+                    const cid = cidApi().cidOfObject(content);
+                    if (cid !== design.cid || !agreement.plan.content.designCids.includes(cid)) {
+                        throw failure('plan-changed', t('agreement.funding.planChanged', 'The selected plan has changed. Select the revision you want to fund.'));
+                    }
+                    if (record.published?.cid !== cid || record.published.apiBase !== win.DesignSync.apiBase()) {
+                        designs.push({ cid, content, parcelSourceId: win.DesignSync.parcelSourceForDesign(content) });
+                    }
+                    cids.set(design.proposalId, cid);
+                } else {
+                    cids.set(design.proposalId, (await win.DesignSync.publishDesign(record)).cid);
+                }
             }
             // Stamping an author changes a design's CID: the record follows what was published.
             if (agreement.designs.some(design => design.cid !== cids.get(design.proposalId))) {
@@ -253,14 +270,14 @@
             const content = win.AgreementRecord.published({
                 ...agreement,
                 author: authorName(),
-                sponsor: sponsorKey(),
+                sponsor,
                 inputs: {
                     ...agreement.inputs,
                     parcels: agreement.inputs.parcels.map(parcel => (parcelSourceId ? { ...parcel, parcelSourceId } : parcel))
                 }
             }, proposalId => (cids.has(proposalId) ? cids.get(proposalId) : null));
             const { cid } = win.DesignSync.addressObject(content);
-            const response = await request('POST', '/agreements', { cid, content, plan });
+            const response = await request('POST', '/agreements', { cid, content, plan, ...(designs.length ? { designs } : {}) });
             if (!response.ok && response.status !== 409) {
                 const code = (response.body && response.body.code) || `http-${response.status}`;
                 throw failure(code, refusalMessage(response.status, response.body), { status: response.status, body: response.body });
@@ -269,7 +286,8 @@
             if (!row || row.cid !== cid) throw failure('cid-mismatch', t('agreement.publish.errors.cidMismatch', 'The server computed a different identity for this agreement, so it was not proposed.'));
             const apiBase = win.DesignSync.apiBase();
             const publishedAt = row.createdAt || new Date().toISOString();
-            store().save({ ...agreement, published: { cid, publishedAt, apiBase, sponsor: content.sponsor } });
+            store().save({ ...agreement, ...(crowdfunding ? { author: content.author, sponsor: content.sponsor } : {}),
+                published: { cid, publishedAt, apiBase, sponsor: content.sponsor } });
             log(`proposed ${agreementId} as ${cid} (${agreement.designs.length} design(s), sponsor ${content.sponsor || 'none'})`);
             return { cid, row, link: agreementLink(cid, { city: agreement.city }) };
         }
@@ -333,8 +351,11 @@
          * 'onchain-cid-mismatch', …), a translated `message` and `kept: true`.
          * @returns {Promise<{ onchain, row }>}
          */
-        async function recordOnchain(agreementId, { chain, cluster, account, signature = null } = {}) {
-            const agreement = store().get(agreementId);
+        async function recordOnchain(subject, { chain, cluster, account, signature = null } = {}) {
+            // A sponsor following an MCP mint link may be inspecting the published plan on a new
+            // device. Keep its observed account in that view without importing the plan's designs.
+            const shared = isObject(subject);
+            const agreement = shared ? subject : store().get(subject);
             if (!agreement) throw failure('agreement-missing', t('agreement.publish.errors.missing', 'The agreement is no longer on this device.'));
             if (!agreement.published) throw failure('not-proposed', t('agreement.chain.errors.notProposed', 'Propose the agreement before minting it.'));
             if (chain !== 'solana' || !idOf(cluster) || !idOf(account)) throw new TypeError('recordOnchain needs { chain: \'solana\', cluster, account }.');
@@ -358,13 +379,15 @@
             } catch (error) {
                 refusal = error;
             }
-            const saved = adoptOnchain(agreementId, row ? row.onchain : pointer);
+            const onchain = row ? row.onchain : pointer;
+            if (shared) agreement.onchain = onchain;
+            else adoptOnchain(subject, onchain);
             if (refusal) {
                 console.warn(`[${new Date().toISOString()}] [AgreementSync] the index did not record the mint of ${cid} at ${account}`, refusal);
                 throw Object.assign(refusal, { kept: true });
             }
             log(`recorded the mint of ${cid} at ${account} (${cluster}) in the index`);
-            return { onchain: saved.onchain, row };
+            return { onchain, row };
         }
 
         // The local agreement published as `cid`, or null.
@@ -395,10 +418,16 @@
          * reads it, applies its designs (handleSharedDesignRoute), stores it as a local agreement with the
          * pieces re-derived on this ground when they match the published ones, and opens its panel.
          */
-        async function handleAgreementRoute(rawCid) {
+        async function handleAgreementRoute(rawCid, { apply = false } = {}) {
             const cid = idOf(rawCid);
             try {
                 const row = await fetchAgreement(cid);
+                const intent = win.ApprovalLink?.parse(win.location);
+                if (row.content.rule?.electorate === 'investors' && !apply) {
+                    await openDetails(cid, row);
+                    if (intent?.target === cid) win.ApprovalLink.preselect(win.document, intent);
+                    return;
+                }
                 // Its plan's saved view (display settings, place, mode) first, as a /plans link applies it.
                 if (win.NamedPlans?.restoreArrival?.(row.plan.content.view, `/agreements/${cid}`)) {
                     log(`opening ${cid}: reloading at its plan's saved view`);
@@ -417,7 +446,7 @@
                 const localIdOf = designCid => opened.localIds.get(designCid) || win.DesignSync.localCopyOf(designCid)?.proposalId || null;
                 const records = designCids.map(localIdOf).map(id => (id ? designOf(id) : null));
                 let derived = null;
-                if (records.every(record => record && win.isApplied(record))) {
+                if (row.content.rule.electorate !== 'investors' && records.every(record => record && win.isApplied(record))) {
                     try {
                         derived = await deriveLand(records);
                     } catch (error) {
@@ -436,7 +465,6 @@
                 const saved = store().save(!record.onchain && existing && existing.onchain ? { ...record, onchain: existing.onchain } : record);
                 log(`stored ${cid} as ${saved.id}${saved.outputs.every(output => output.geometry) ? '' : ' (its pieces differ here)'}`);
                 await win.AgreementPanel.open(saved.id);
-                const intent = win.ApprovalLink?.parse(win.location);
                 if (intent?.target === cid) win.ApprovalLink.preselect(win.document, intent);
             } catch (error) {
                 console.error(`[${new Date().toISOString()}] [AgreementSync] the agreement ${cid} could not be opened`, error);
@@ -445,10 +473,10 @@
         }
 
         // Inspect terms without applying a plan or replacing unrelated local work.
-        async function resolveDetails(cid) {
+        async function resolveDetails(cid, fetched = null) {
             const local = localCopyOf(cid);
             if (local) return { agreement: local, designs: [], readOnly: false };
-            const row = await fetchAgreement(cid);
+            const row = fetched || await fetchAgreement(cid);
             const downloaded = await win.DesignSync.fetchDesigns(row.plan.content.designCids);
             if (downloaded.missing.length) throw failure('design-missing', t('agreement.publish.errors.designMissing', 'A design of this plan could not be loaded.'));
             const designs = row.plan.content.designCids.map(cid => ({ ...win.DesignSync.localDesignFromRow(downloaded.rows.get(cid),
@@ -459,8 +487,8 @@
             return { agreement: record, designs, readOnly: true };
         }
 
-        async function openDetails(cid) {
-            const resolved = await resolveDetails(cid);
+        async function openDetails(cid, fetched = null) {
+            const resolved = await resolveDetails(cid, fetched);
             return resolved.readOnly ? win.AgreementPanel.openReadOnly(resolved.agreement, { designs: resolved.designs })
                 : win.AgreementPanel.open(resolved.agreement.id);
         }

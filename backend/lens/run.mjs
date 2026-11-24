@@ -28,6 +28,7 @@ import { createFileStore, createMemoryStore, createPgStore } from './store.js';
 import { announceLensMember } from '../oracle/lens-registration.js';
 import { createLensPricing, describePricing } from './pricing.js';
 import { createLensMemberApp } from './server.js';
+import { createInvestorFundingChain } from './investor-funding-chain.js';
 import { createApprovalAttester, devnetOwnerRegistry, fileRegistry } from './approval.js';
 import { lensLog } from './errors.js';
 import { retryWithBackoff } from './retry.js';
@@ -158,6 +159,9 @@ async function main() {
 
     const rpcUrl = values.rpc || process.env.SOLANA_RPC_URL || CLUSTERS[values.cluster];
     const offerConnection = new Connection(rpcUrl, 'confirmed');
+    // Investor crowdfunding is decided from finalized Agreement + donation-vault state, never from
+    // index projections or caller-provided totals.  The adapter is read-only and shared by the member.
+    const fundingChain = createInvestorFundingChain({ connection: new Connection(rpcUrl, 'finalized') });
     const loadOffer = cid => loadPropertyOffer(pool, cid);
     const transfers = !dryRun && pool && values.identity === 'devnet-registry'
         ? createOwnershipTransfers({ store: createTransferStore(pool), authority,
@@ -222,7 +226,7 @@ async function main() {
         load: loadOffer, transfers,
         account: async offer => PropertyOfferClient.fetchPropertyOffer(offerConnection, { cid: offer.cid, maker: offer.content.proposer })
     } : null;
-    const app = createLensMemberApp({ member, pricing, operatorToken, approvalAttester, agreements, propertyOffers, clock });
+    const app = createLensMemberApp({ member, pricing, operatorToken, approvalAttester, agreements, propertyOffers, fundingChain, clock });
 
     const status = await retryWithBackoff('reading the member status failed', () => member.status(), STARTUP_RETRY);
     lensLog(`${dryRun ? 'DRY RUN' : 'LIVE'} lens member ${status.key}${status.ephemeralKey ? ' (ephemeral key)' : ''}, kind ${status.kind}`);

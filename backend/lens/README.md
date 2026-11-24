@@ -16,7 +16,7 @@ its devnet owner registry (or a `--rights` file).
 | Attestation | Kind | Layout | Who can get it |
 |---|---|---|---|
 | `ParcelOwnership-v1` | `ownership` | `string parcelUid, string owner, uint8 ownerCount, string evidenceRef, int64 sourceObservedAt` | an owner wallet that passes the identity check; x402-priced |
-| `AgreementDecision-v1` | `decision` | `string agreementCid, string sponsor, string decision, string evidenceRef, int64 sourceObservedAt` | the member's operator only; always `satisfied`, issued only when the member finds the agreement's rule met from its relayed owner decisions |
+| `AgreementDecision-v1` | `decision` | `string agreementCid, string sponsor, string decision, string evidenceRef, int64 sourceObservedAt` | the member's operator only; always `satisfied`, issued after owner approvals or, for investor crowdfunding, finalized donation-vault evidence |
 | `MarketEvidence-v1` | `evidence` | `string recipeHash, string subject, string value, int64 eventTime, int64 sourceObservedAt, string sourceRef` | the member's operator only, with a fact from a source adapter |
 
 ## Files
@@ -85,6 +85,16 @@ then needs only the escrow. So the member takes nothing from the caller but the 
   approval, in signing order), so anyone can recompute it from the relay.
 - One decision per agreement: asked again, the member answers the one it issued (200).
 
+For a binding `investors` agreement the member reads the agreement account derived from its sponsor
+and CID, the `proposal_pledge` donation escrow and its devnet USDC vault in one finalized slot.
+The agreement must be active with a pending decision, the published lens and developer payout, and
+a zero native execution requirement. The escrow must remain open. Recorded contributions
+(`totalDonated - totalRefunded`) must reach the target and be fully covered by the vault.
+A direct transfer to the vault counts for zero towards the target. The evidence hash commits the
+accounts, programs, mint, target, amounts, slot and block time. The block time supplies
+`sourceObservedAt`. Anyone can record the resulting decision, execute the agreement and release
+the escrow to the developer.
+
 ## Ownership rules
 
 - `ownerCount` is the member's recognised owner count for the parcel. Every registry row of the
@@ -104,7 +114,7 @@ then needs only the escrow. So the member takes nothing from the caller but the 
 | `GET /lens/status` | key, kind, credential, schema PDAs, identity adapter, counts, pricing |
 | `POST /lens/challenge {parcelUid, owner}` | `{challenge, message, expiresAt}`; the wallet signs `message` (UTF-8). 404 unknown parcel, 403 wallet not recorded. Valid 5 minutes. |
 | `POST /lens/ownership {parcelUid, owner, signature, challenge}` | signature base58 or base64. Signature, registry and source-time checks run before the x402 gate, so refusals are free. 201 with `address`, `payload`, `accountHash` (sha256 over the account bytes), `issuedAt` (chain time), `payment`. |
-| `POST /lens/agreements/:cid/decision` | header `x-lens-operator-token: $LENS_OPERATOR_TOKEN`; no body. The member decides from the indexed agreement and its relayed decisions (rules below). 201 issued, 200 already issued (`reused`): the attestation record plus `tally` (the engine's) and `counted`. Refusals carry `tally`: 409 `rule_not_met`, `deadline_passed`, `not_in_lens`, `not_agreement_lens`, `agreement_closed`, `decision_recorded`, `source_time_in_future`; 422 `no_sponsor`, `source_time_missing`; 404 `agreement_not_found`; 503 without the token or the index. |
+| `POST /lens/agreements/:cid/decision` | Send the operator token in the `x-lens-operator-token` header with an empty body. The member reads relayed decisions for owners or finalized USDC deposits for investors. HTTP 201 means issued and 200 means already issued. Funding decisions return `tally: null` and `counted: 0`. A missing agreement returns 404. An unconfigured service returns 503. |
 | `POST /lens/market-evidence {recipeHash, subject, value, eventTime, sourceObservedAt, sourceRef}` | same operator header as agreement decisions. Times are Unix seconds (integers only). 201 issued, 200 already issued (`reused`), 409 same key with another subject, 422 invalid or too large. |
 | `GET /lens/attestations?parcelUid=&agreementCid=&owner=&recipeHash=&kind=` | issued attestations from the store; `kind` is `ownership`, `decision` or `evidence` |
 | `POST /lens/approval/rights {cadastreParcelIds, approvalConfig, lens}` | 503 only for an identity adapter without an owner registry and no `--rights`. The member recomputes the approval context hash, requires its own key in `lens`, and compares every in-scope parcel with its registry (complete owner list, exact shares, area). 201 `{rights}`: a signed `lens-rights-attestation/v1`. Free; names no wallet. 409 `rights_mismatch` / `area_mismatch` / `not_in_lens`, 404 `unknown_parcel`, 422 `rights_incomplete`. |

@@ -289,13 +289,14 @@
 
     // A date field's day → the end of that day in local time, as ISO; a day that is not one stays as
     // typed so the validation names it. An ISO deadline → its local day for the field.
-    function deadlineFromDate(text) {
+    function deadlineFromDate(text, milliseconds = 999) {
         const value = String(text ?? '').trim();
         if (!value) return null;
         const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
         if (!match) return value;
         const [year, month, day] = match.slice(1).map(Number);
-        const date = new Date(year, month - 1, day, 23, 59, 59, 999);
+        const fraction = Number.isInteger(milliseconds) && milliseconds >= 0 && milliseconds <= 999 ? milliseconds : 999;
+        const date = new Date(year, month - 1, day, 23, 59, 59, fraction);
         if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return value;
         return date.toISOString();
     }
@@ -321,13 +322,31 @@
      *   organiser (website or did:web), participationUrl (HTTPS) }
      */
     function recordFromForm(state = {}, values = {}) {
+        if (values.electorate === 'investors') {
+            const funding = values.funding || {};
+            const records = Array.isArray(state.designs) ? state.designs.filter(Boolean) : [];
+            const rawFunding = { schema: SCHEMA, id: idOf(state.id), title: String(values.title || '').trim() || null,
+                city: state.city || null, createdAt: state.createdAt || null, updatedAt: state.updatedAt || null,
+                plan: state.plan || null, designs: records.map(record => ({
+                    proposalId: idOf(record.proposalId), title: designTitle(record),
+                    goal: typeof record.goal === 'string' ? record.goal : null,
+                    cid: idOf(record.published?.cid || record.cid || state.fingerprints?.get?.(idOf(record.proposalId))) || null
+                })), inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [],
+                money: { currency: state.currency || null, lines: [] }, valuation: null,
+                rule: { electorate: 'investors', binding: true, approvalConfig: null, settlement: null,
+                    lens: Array.isArray(state.lens) ? state.lens.slice() : [] }, consultation: null,
+                deadline: values.fundingDeadlineDirty ? deadlineFromDate(values.deadline, 0)
+                    : (values.fundingDeadline || deadlineFromDate(values.deadline, 0)),
+                funding: { targetUsdcAtomic: funding.targetUsdcAtomic || '', contract: funding.contract || null } };
+            return rawFunding;
+        }
         const land = state.land || emptyLand();
         const inputs = land.inputs || emptyLand().inputs;
         const outputs = Array.isArray(land.outputs) ? land.outputs : [];
         const fingerprints = state.fingerprints instanceof Map ? state.fingerprints : new Map(Object.entries(state.fingerprints || {}));
         const records = Array.isArray(state.designs) ? state.designs.filter(Boolean) : [];
         const chosen = values.allocations || {};
-        const owners = values.electorate !== 'community';
+        const owners = values.electorate !== 'community' && values.electorate !== 'investors';
         const title = String(values.title ?? '').trim();
         const plan = state.plan || null;
         const recordApi = root.AgreementRecord || (typeof require === 'function' ? require('./agreement-record.js') : null);
@@ -565,19 +584,20 @@
 
     // Who decides, whether it binds, and the owners' rules (filled by the browser layer).
     function ruleHtml({ electorate = 'owners', binding = true } = {}) {
-        const owners = electorate !== 'community';
-        const radio = (value, label) => `<label class="proposal-editor-check"><input type="radio" name="agreement-electorate" value="${value}" data-agreement-electorate${(value === 'owners') === owners ? ' checked' : ''}> ${esc(label)}</label>`;
+        const owners = electorate !== 'community' && electorate !== 'investors';
+        const radio = (value, label) => `<label class="proposal-editor-check"><input type="radio" name="agreement-electorate" value="${value}" data-agreement-electorate${value === electorate ? ' checked' : ''}> ${esc(label)}</label>`;
         return `<fieldset class="agreement-fieldset"><legend>${esc(t('agreement.rule.who', 'Who decides'))}</legend>`
             + radio('owners', t('agreement.rule.owners', 'Seek owners’ decisions'))
             + radio('community', t('agreement.rule.community', 'Ask the community'))
+            + radio('investors', t('agreement.funding.title', 'Developer crowdfunding'))
             + '</fieldset>'
             + `<label class="proposal-editor-check" data-agreement-binding-control${owners ? '' : ' hidden'}><input type="checkbox" data-agreement-binding${owners && binding ? ' checked' : ''}${owners ? '' : ' disabled'}> ${esc(t('agreement.rule.binding', 'Binding: owner approvals can authorize on-chain settlement'))}</label>`
             + `<div class="agreement-rule-form" data-agreement-rule-form${owners ? '' : ' hidden'}></div>`;
     }
 
-    function detailsHtml({ title = '', deadline = '', today = '' } = {}) {
+    function detailsHtml({ title = '', deadline = '', today = '', deadlineRequired = false } = {}) {
         return `<label class="proposal-editor-field"><span>${esc(t('agreement.details.title', 'Title (optional)'))}</span><input type="text" data-agreement-title value="${esc(title)}" autocomplete="off"></label>`
-            + `<label class="proposal-editor-field"><span>${esc(t('agreement.details.deadline', 'Deadline (optional)'))}</span><input type="date" data-agreement-deadline value="${esc(deadline)}"${today ? ` min="${esc(today)}"` : ''}></label>`;
+            + `<label class="proposal-editor-field"><span>${esc(deadlineRequired ? t('agreement.chain.facts.deadline', 'Deadline') : t('agreement.details.deadline', 'Deadline (optional)'))}</span><input type="date" data-agreement-deadline value="${esc(deadline)}"${deadlineRequired ? ' required' : ''}${today ? ` min="${esc(today)}"` : ''}></label>`;
     }
 
     function consultationHtml({ organiser = '', participationUrl = '' } = {}) {
@@ -647,8 +667,21 @@
     }
     function bodyHtml(view) {
         const values = view.values || {};
+        const funding = values.funding || {};
+        const fundingHtml = '<section class="agreement-funding-form" data-agreement-funding-form' + (values.electorate === 'investors' ? '' : ' hidden') + ' aria-labelledby="agreement-funding-title">'
+            + `<h4 id="agreement-funding-title">${esc(t('agreement.funding.title', 'Developer crowdfunding'))}</h4>`
+            + planSelectorHtml(view.plans || [], view.plan)
+            + `<label class="proposal-editor-field"><span>${esc(t('agreement.funding.target', 'Funding target (devnet USDC)'))}</span><input type="text" inputmode="decimal" data-agreement-funding-target value="${esc(funding.targetInput || '')}"></label>`
+            + `<label class="proposal-editor-field"><span>${esc(t('agreement.funding.contract', 'Investor contract (PDF or UTF-8 text, up to 256 KiB)'))}</span><input type="file" accept="application/pdf,text/plain,.txt" data-agreement-funding-file></label>`
+            + `<p class="agreement-hint" data-agreement-funding-file-name>${esc(funding.contract?.name || '')}</p>`
+            + detailsHtml({ title: values.title, deadline: values.deadline, today: view.today, deadlineRequired: values.electorate === 'investors' })
+            + '<section class="agreement-lens" aria-labelledby="agreement-funding-lens-title"><h4 id="agreement-funding-lens-title" class="agreement-object-heading">' + esc(t('agreement.funding.lens', 'Lens that verifies funding')) + '</h4><button type="button" class="btn btn-icon btn-sm lens-pattern-button" data-lens-pattern data-agreement-action="lens" aria-label="' + esc(t('agreement.funding.chooseKey', 'Choose funding verification lens')) + '"><i class="fa-solid fa-glasses" aria-hidden="true"></i></button></section></section>';
+        if (values.electorate === 'investors') {
+            return '<ul class="agreement-issues agreement-issues--error" data-agreement-errors aria-live="assertive"></ul>'
+                + ruleHtml(values) + fundingHtml;
+        }
         const panels = {
-            rules: ruleHtml(values) + '<div data-agreement-settlement></div><section class="agreement-lens" aria-labelledby="agreement-lens-title"><h4 id="agreement-lens-title" class="agreement-object-heading">' + esc(t('agreement.chain.facts.lens', 'Lens')) + '</h4><div class="agreement-lens__row"><button type="button" class="btn btn-icon btn-sm lens-pattern-button" data-lens-pattern data-agreement-action="lens" title="' + esc(t('modal.lens.triggerDescription', 'Lens for viewing the world')) + '" aria-label="' + esc(t('modal.lens.triggerDescription', 'Lens for viewing the world')) + '"><i class="fa-solid fa-glasses" aria-hidden="true"></i></button></div></section>'
+            rules: ruleHtml(values) + '<div data-agreement-settlement></div><section class="agreement-lens" data-agreement-standard-lens aria-labelledby="agreement-lens-title"><h4 id="agreement-lens-title" class="agreement-object-heading">' + esc(t('agreement.chain.facts.lens', 'Lens')) + '</h4><div class="agreement-lens__row"><button type="button" class="btn btn-icon btn-sm lens-pattern-button" data-lens-pattern data-agreement-action="lens" title="' + esc(t('modal.lens.triggerDescription', 'Lens for viewing the world')) + '" aria-label="' + esc(t('modal.lens.triggerDescription', 'Lens for viewing the world')) + '"><i class="fa-solid fa-glasses" aria-hidden="true"></i></button></div></section>'
                 + sectionHtml('consultation', t('agreement.sections.consultation', 'Nonbinding agreement'), consultationHtml(values), values.electorate !== 'community')
                 + detailsHtml({ title: values.title, deadline: values.deadline, today: view.today }),
             inputs: planSelectorHtml(view.plans || [], view.plan) + '<div class="cb-actions"><button type="button" class="btn" data-agreement-action="rights">' + esc(t('agreement.workflow.rights', 'Parcel ownership rights')) + '</button></div><div data-agreement-land></div><div data-agreement-plan-designs></div>',
@@ -735,9 +768,13 @@
         if (session) session.cancel();
         const plans = root.NamedPlans.list();
         const requestedPlan = base?.plan || plan || null;
-        const initialPlan = plans.find(row => row.cid === requestedPlan?.cid) || requestedPlan;
+        let initialPlan = plans.find(row => row.cid === requestedPlan?.cid) || requestedPlan;
+        const crowdfunding = base?.rule?.electorate === 'investors' || electorate === 'investors';
         // A plan opened from a copied address is a preview: its land exists once it is applied.
-        if (initialPlan && !await root.PlanWorkspace.ensureApplied(initialPlan)) return null;
+        if (initialPlan && !crowdfunding && !await root.PlanWorkspace.ensureApplied(initialPlan)) return null;
+        // Crowdfunding commits the saved plan revision, rather than the map application of it. Bind
+        // its carried members without applying or deriving cadastral land.
+        if (initialPlan && crowdfunding && !Array.isArray(initialPlan.designs)) initialPlan = await root.PlanWorkspace.resolve(initialPlan);
         if (initialPlan && !plans.some(row => row.cid === initialPlan.cid)) plans.push(initialPlan);
         const baseConfig = base?.rule.approvalConfig || null;
         const state = {
@@ -754,9 +791,21 @@
                 title: existing?.title || (source ? t('agreement.dialog.counterTitle', 'Counter to {{title}}', { title: source.title || t('agreement.panel.title', 'Agreement') }) : ''),
                 settlement: { ...(base?.rule.settlement || api.DEFAULT_SETTLEMENT) },
                 deadline: dateFromDeadline(base?.deadline), organiser: base?.consultation?.organiser || '',
-                participationUrl: base?.consultation?.participationUrl || '', voting: base?.consultation?.voting || null },
+                participationUrl: base?.consultation?.participationUrl || '', voting: base?.consultation?.voting || null,
+                fundingDeadline: base?.rule?.electorate === 'investors' ? base.deadline || null : null,
+                fundingDeadlineDirty: false },
             loading: false, closed: false, sequence: 0, attempted: false, landError: null
         };
+        state.values.funding = base?.funding ? { ...base.funding, targetInput: api.formatUsdc(base.funding.targetUsdcAtomic) } : { targetInput: '', targetUsdcAtomic: '', contract: null };
+        state.contractSequence = 0;
+        state.contractReading = false;
+        function setFundingPlanDesigns() {
+            if (!state.plan) { state.designs = []; state.fingerprints = new Map(); return; }
+            const records = root.PlanComposition.localRecords(state.plan, { apiBase: root.DesignSync.apiBase() });
+            state.designs = records;
+            state.fingerprints = new Map(records.map(record => [idOf(record.proposalId), root.DesignRecord.cidOf(record)]));
+        }
+        if (state.values.electorate === 'investors') setFundingPlanDesigns();
         const panels = root.AgreementPanel;
         const replaced = panels?.isOpen?.() ? panels.current() : null;
         if (replaced && !preserveContext) panels.close();
@@ -819,7 +868,13 @@
             const waiting = panel.querySelector('[data-agreement-waiting]');
             if (state.loading) { waiting.textContent = waitingText({ loading: true }); return; }
             try {
-                const checked = api.validate(draft(), { designOf: id => root.proposalStorage.getProposal(id), isApplied: root.isApplied });
+                const checked = api.validate(draft(), { designOf: id => root.proposalStorage.getProposal(id), isApplied: root.isApplied, translate: t });
+                if (state.values.electorate === 'investors') {
+                    part('[data-agreement-errors]').innerHTML = issuesHtml(checked.errors);
+                    waiting.textContent = state.contractReading ? t('agreement.funding.fileReading', 'Reading the investor contract…') : '';
+                    saveButton.disabled = state.contractReading || !checked.valid;
+                    return;
+                }
                 // A scheme rule the plan breaks or a land value that is missing follows a choice the
                 // person made, so it is shown at once; the rest waits for a save attempt.
                 part('[data-agreement-errors]').innerHTML = issuesHtml(checked.errors.filter(row => state.attempted || /^(scheme|valuation)-/.test(row.code)));
@@ -858,7 +913,8 @@
             if (state.values.electorate === 'owners' && container.firstElementChild) state.approvalConfig = setup().withPolicyFromForm(container, state.approvalConfig);
         }
         function renderLens() {
-            part('[data-agreement-action="lens"]').dataset.lensEntries = JSON.stringify(state.lens.map(address => ({ address })));
+            const button = part('[data-agreement-action="lens"]');
+            if (button) button.dataset.lensEntries = JSON.stringify(state.lens.map(address => ({ address })));
             root.refreshLensPatternPreviews();
         }
         // Which schemes the plan meets (every scheme, for the dropdown) and how the chosen one reads
@@ -892,7 +948,7 @@
             part('[data-agreement-binding-control]').hidden = !owners;
             part('[data-agreement-binding]').disabled = !owners;
             part('[data-agreement-binding]').checked = owners && state.values.binding === true;
-            part('[data-agreement-section="consultation"]').hidden = owners;
+            part('[data-agreement-section="consultation"]').hidden = owners || state.values.electorate === 'investors';
         }
         const byValue = () => state.values.electorate === 'owners' && state.values.settlement.method === 'value';
         function valuationSection(kind) {
@@ -903,6 +959,7 @@
             return valuationHtml(kind, rows, state.values.valuation[kind], state.currency);
         }
         function renderLand() {
+            if (state.values.electorate === 'investors') return;
             clearInspection();
             const target = part('[data-agreement-land]');
             if (state.loading) target.innerHTML = landHtml({ loading: true });
@@ -969,7 +1026,11 @@
                 const names = new Map(root.getLensEntries().map(entry => [entry.address, entry.name]));
                 auxiliary = root.showLensModal({ parent: modal,
                     entries: state.lens.map(address => ({ address, name: names.get(address) || '' })),
-                    onChange: entries => { state.lens = setup().lensKeys(entries); renderLens(); issues(); }
+                    onChange: entries => {
+                        const keys = setup().lensKeys(entries);
+                        state.lens = state.values.electorate === 'investors' ? keys.slice(0, 1) : keys;
+                        renderLens(); issues();
+                    }
                 });
                 return;
             }
@@ -1024,8 +1085,9 @@
             event.preventDefault(); if (state.loading || (state.values.electorate === 'community' && rosterPending)) return;
             state.attempted = true;
             try {
-                readRule(); const record = draft(); const checked = api.validate(record, { designOf: id => root.proposalStorage.getProposal(id), isApplied: root.isApplied });
-                if (!checked.valid) { issues(); return; }
+                readRule(); const record = draft();
+                const checked = api.validate(record, { designOf: id => root.proposalStorage.getProposal(id), isApplied: root.isApplied, translate: t });
+                if (!checked.valid || state.contractReading) { issues(); return; }
                 finish(root.AgreementStore.save(record));
             } catch (error) { part('[data-agreement-errors]').textContent = error.message; report(error); }
         }, { signal });
@@ -1081,9 +1143,43 @@
         body.addEventListener('change', event => {
             const target = event.target;
             try {
+                if (target.matches('[data-agreement-funding-file]')) {
+                    const file = target.files && target.files[0];
+                    if (!file) return;
+                    const mediaType = file.type || (file.name.toLowerCase().endsWith('.pdf') ? 'application/pdf' : file.name.toLowerCase().endsWith('.txt') ? 'text/plain' : '');
+                    if (!file.size || file.size > api.MAX_CONTRACT_BYTES || !['application/pdf', 'text/plain'].includes(mediaType)) { target.value = ''; throw new Error(t('agreement.funding.fileInvalid', 'Choose one PDF or UTF-8 text file no larger than 256 KiB.')); }
+                    const sequence = ++state.contractSequence;
+                    state.contractReading = true; issues();
+                    const reader = new FileReader();
+                    const failed = () => {
+                        if (state.closed || sequence !== state.contractSequence) return;
+                        state.contractReading = false;
+                        report(new Error(t('agreement.funding.fileReadFailed', 'Could not read the attached terms.'))); issues();
+                    };
+                    reader.onerror = failed;
+                    reader.onabort = failed;
+                    reader.onload = () => {
+                        if (state.closed || sequence !== state.contractSequence) return;
+                        try {
+                            const bytes = new Uint8Array(reader.result);
+                            let binary = ''; bytes.forEach(byte => { binary += String.fromCharCode(byte); });
+                            const contract = { name: file.name, mediaType, data: btoa(binary) };
+                            const error = api.fundingError({ targetUsdcAtomic: '1', contract }, t);
+                            if (error) throw new Error(error);
+                            state.values.funding = { ...state.values.funding, contract };
+                            part('[data-agreement-funding-file-name]').textContent = file.name;
+                        } catch (error) { report(error); }
+                        finally { state.contractReading = false; issues(); }
+                    };
+                    reader.readAsArrayBuffer(file); return;
+                }
                 if (target.matches('[data-agreement-plan]')) {
                     readRule(); state.plan = state.plans.find(plan => plan.cid === target.value) || null;
-                    state.values.allocations = {}; deriveLand(); return;
+                    state.values.allocations = {};
+                    if (state.values.electorate === 'investors') {
+                        setFundingPlanDesigns(); renderLand(); issues(); return;
+                    }
+                    deriveLand(); return;
                 }
                 if (target.closest('[data-agreement-rule-form]')) { readRule(); renderRule(); renderPersons(); issues(); return; }
                 if (target.matches('[data-agreement-allocation-mode]') && target.value === 'random') {
@@ -1101,7 +1197,18 @@
                 }
                 if (target.matches('[data-agreement-binding]')) state.values.binding = target.checked;
                 if (target.matches('[data-agreement-electorate]')) {
-                    readRule(); state.values.electorate = target.value; state.values.binding = false; renderRule(); renderLand();
+                    const previous = state.values.electorate;
+                    readRule(); state.values.electorate = target.value; state.values.binding = target.value === 'investors';
+                    if (target.value === 'investors') setFundingPlanDesigns();
+                    if (previous === 'investors' || target.value === 'investors') {
+                        body.innerHTML = bodyHtml({ ...state, today: dateFromDeadline(new Date().toISOString()) });
+                        if (target.value === 'investors') renderLens(); else { renderRule(); deriveLand(); }
+                        body.querySelector(`[data-agreement-electorate][value="${target.value}"]`)?.focus();
+                    } else {
+                        body.querySelectorAll('[data-agreement-electorate]').forEach(input => { input.checked = input.value === target.value; });
+                        renderRule(); renderLand();
+                    }
+                    issues(); return;
                 }
                 if (target.matches('[data-agreement-compensation]')) {
                     const terms = state.values.settlement;
@@ -1116,6 +1223,7 @@
         }, { signal });
         body.addEventListener('input', event => {
             const target = event.target, terms = state.values.settlement;
+            if (target.matches('[data-agreement-funding-target]')) { state.values.funding.targetInput = target.value; const amount = api.parseUsdc(target.value); state.values.funding.targetUsdcAtomic = amount === null ? '' : String(amount); issues(); return; }
             if (target.matches('[data-agreement-rate-slider]')) {
                 terms.rateCentsPerM2 = Number(target.value); part('[data-agreement-rate]').value = terms.rateCentsPerM2 / 100;
             } else if (target.matches('[data-agreement-rate]')) {
@@ -1139,9 +1247,13 @@
                 if (cents === null || Number.isNaN(cents) || cents < 0) delete state.values.valuation[kind][id];
                 else state.values.valuation[kind][id] = cents;
             } else if (target.matches('[data-agreement-title]')) state.values.title = target.value;
-            else if (target.matches('[data-agreement-deadline]')) state.values.deadline = target.value;
+            else if (target.matches('[data-agreement-deadline]')) {
+                state.values.deadline = target.value;
+                if (state.values.electorate === 'investors') state.values.fundingDeadlineDirty = true;
+            }
             else if (target.matches('[data-agreement-organiser]')) state.values.organiser = target.value;
             else if (target.matches('[data-agreement-participation-url]')) state.values.participationUrl = target.value;
+            if (state.values.electorate === 'investors') { issues(); return; }
             renderPersons(); issues();
         }, { signal });
         unregisterEscape = root.ModalEscape?.register(panel, event => { if (typingIn(event.target)) return false; finish(null); return true; });
@@ -1150,7 +1262,7 @@
         modal.addEventListener('keydown', event => event.stopPropagation(), { signal });
         panel.classList.add('visible'); doc.body.classList.add('agreement-editor-open');
         modal.showModal(); panel.querySelector('#agreement-editor-title').focus({ preventScroll: true });
-        try { renderRule(); await deriveLand(); }
+        try { if (state.values.electorate === 'investors') { renderLens(); issues(); } else { renderRule(); await deriveLand(); } }
         catch (error) { finish(null); throw error; }
         log(`opened ${state.id} for plan ${state.plan?.cid || '(choose plan)'}`);
         return closed;

@@ -322,6 +322,7 @@
             throw new TypeError('check needs designOf, isApplied and fingerprintOf functions.');
         }
         const reasons = [];
+        const usesGround = agreement?.rule?.electorate !== 'investors';
         const records = ((agreement && agreement.designs) || []).map(design => {
             const proposalId = String(design.proposalId);
             const found = designOf(proposalId);
@@ -329,14 +330,14 @@
                 reasons.push({ code: 'design-missing', proposalId });
                 return null;
             }
-            if (!isApplied(found)) {
+            if (usesGround && !isApplied(found)) {
                 reasons.push({ code: 'design-not-applied', proposalId });
                 return null;
             }
             if (fingerprintOf(found) !== design.cid) reasons.push({ code: 'design-changed', proposalId });
             return found;
         });
-        if (records.every(Boolean)) {
+        if (usesGround && records.every(Boolean)) {
             const fresh = derive({ designs: records, fabric, originals, area });
             const storedInputs = new Set(((agreement.inputs && agreement.inputs.parcels) || []).map(parcel => String(parcel.parcelId)));
             const storedOutputs = new Set((agreement.outputs || []).map(output => output.hash));

@@ -357,22 +357,30 @@
                     }
                 };
             }
-            const createAgreement = action(t('createAgreement'), async () => {
-                try {
-                    let selectedPlan;
-                    await win.BusyControl.track(createAgreement, async () => {
-                        const data = session ? await session.details(kind, instance) : await inspect(kind, instance, win);
-                        selectedPlan = win.NamedPlans.remember({ cid: instance.cid, content: data.content }, data.members.map(member => member.id));
-                    });
-                    // Created: the stack moves to its Agreements section with the new agreement; closed
-                    // without saving: the plan stays as it was.
-                    const saved = await win.AgreementDialog.open({ plan: selectedPlan, preserveContext: true });
-                    if (saved?.id) await win.ClickStack.showAgreement(win.AgreementStore.get(saved.id) || saved);
-                    else onFocus(instance);
-                } catch (error) { win.showStyledAlert(error.message); }
-            });
+            const createAgreementFor = (electorate = 'owners') => {
+                let trigger;
+                trigger = action(electorate === 'investors' ? win.i18n.t('agreement.funding.title') : t('createAgreement'), async () => {
+                    try {
+                        let selectedPlan;
+                        await win.BusyControl.track(trigger, async () => {
+                            const data = session ? await session.details(kind, instance) : await inspect(kind, instance, win);
+                            selectedPlan = win.NamedPlans.remember({ cid: instance.cid, content: data.content }, data.members.map(member => member.id));
+                        });
+                        // Created: the stack moves to its Agreements section with the new agreement; closed
+                        // without saving: the plan stays as it was.
+                        const saved = await win.AgreementDialog.open({ plan: selectedPlan, electorate, preserveContext: true });
+                        if (saved?.id) await win.ClickStack.showAgreement(win.AgreementStore.get(saved.id) || saved);
+                        else onFocus(instance);
+                    } catch (error) { win.showStyledAlert(error.message); }
+                });
+                return trigger;
+            };
+            const createAgreement = createAgreementFor();
             createAgreement.className = 'btn click-stack__create-agreement';
             actions.appendChild(createAgreement);
+            const createCrowdfunding = createAgreementFor('investors');
+            createCrowdfunding.className = 'btn click-stack__create-crowdfunding';
+            actions.appendChild(createCrowdfunding);
             // Construction windows of the members: a new plan revision (docs/buildout-timeline.md).
             const editSchedule = (focus = null) => win.BusyControl.track(scheduleButton,
                 () => win.PlanDialog.schedule({ cid: instance.cid, content: instance.content }, { focus, members: instance.localDesigns || [] }))

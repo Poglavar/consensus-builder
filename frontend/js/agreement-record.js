@@ -16,7 +16,9 @@
     const PUBLISHED_SCHEMA = 'agreement/v1';
     const OUTPUT_HASH_PREFIX = 'piece1-sha256:';
     const ROLES = ['plot', 'remainder', 'corridor', 'part', 'parcel'];
-    const ELECTORATES = ['owners', 'community'];
+    const ELECTORATES = ['owners', 'community', 'investors'];
+    const MAX_CONTRACT_BYTES = 256 * 1024;
+    const MAX_U64 = (1n << 64n) - 1n;
     const BASIS_POINTS = 10000;
     // How differences between what a party puts in and gets back are settled: 'area' (a rate per m²
     // of land, after an allowed contribution), 'value' (land values per m², value shares) or 'none'.
@@ -282,8 +284,71 @@
             binding: raw.binding === true,
             approvalConfig: raw.approvalConfig == null ? null : clone(raw.approvalConfig),
             lens: raw.lens == null ? [] : clone(raw.lens),
-            settlement: raw.electorate === 'community' ? null : { ...(raw.settlement || DEFAULT_SETTLEMENT) }
+            settlement: raw.electorate === 'owners' ? { ...(raw.settlement || DEFAULT_SETTLEMENT) } : null
         };
+    }
+
+    // A target is committed as decimal atomic units, so it round-trips through JSON without
+    // converting the token balance to a floating point number.
+    function parseUsdc(input) {
+        const text = String(input ?? '').trim().replace(',', '.');
+        if (!/^\d{1,20}(\.\d{1,6})?$/.test(text)) return null;
+        const [whole, fraction = ''] = text.split('.');
+        const amount = BigInt(whole) * 1000000n + BigInt(fraction.padEnd(6, '0'));
+        return amount > 0n && amount <= MAX_U64 ? amount : null;
+    }
+
+    function formatUsdc(atomic) {
+        const amount = BigInt(atomic);
+        const fraction = (amount % 1000000n).toString().padStart(6, '0').replace(/0+$/, '');
+        return String(amount / 1000000n) + (fraction ? '.' + fraction : '');
+    }
+
+    const originalMessage = (_key, message) => message;
+
+    function fundingError(funding, translate = originalMessage) {
+        const fileError = message => translate('agreement.funding.fileInvalid', message);
+        if (!isObject(funding) || Object.keys(funding).some(key => !['targetUsdcAtomic', 'contract'].includes(key))
+            || typeof funding.targetUsdcAtomic !== 'string' || !/^[1-9]\d{0,19}$/.test(funding.targetUsdcAtomic)
+            || BigInt(funding.targetUsdcAtomic) > MAX_U64) return translate('agreement.funding.invalidTarget', 'Enter a positive funding target in devnet USDC.');
+        const file = funding.contract;
+        if (!isObject(file) || Object.keys(file).some(key => !['name', 'mediaType', 'data'].includes(key))
+            || typeof file.name !== 'string' || !file.name.trim() || file.name !== file.name.trim()
+            || file.name.length > 255 || /[\x00-\x1f\x7f/\\]/.test(file.name)) return translate('agreement.funding.missingContract', 'Attach the investor contract with its file name.');
+        if (!((file.mediaType === 'application/pdf' && /\.pdf$/i.test(file.name))
+            || (file.mediaType === 'text/plain' && /\.txt$/i.test(file.name)))) return fileError('The investor contract must be a PDF or UTF-8 text file.');
+        if (typeof file.data !== 'string' || !file.data || file.data.length > 4 * Math.ceil(MAX_CONTRACT_BYTES / 3)) {
+            return fileError('Attach a non-empty investor contract of up to 256 KiB.');
+        }
+        try {
+            const binary = atob(file.data);
+            if (binary.length > MAX_CONTRACT_BYTES || btoa(binary) !== file.data) return fileError('Invalid investor contract encoding.');
+            if (file.mediaType === 'application/pdf') {
+                if (!binary.startsWith('%PDF-')) return fileError('The attached file has no PDF header.');
+            } else {
+                const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+                const text = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+                if (!text.trim() || text.includes('\0')) return fileError('Attach a non-empty UTF-8 text contract.');
+            }
+        } catch (_) { return fileError('The contract must contain the original file bytes in base64.'); }
+        return null;
+    }
+
+    function crowdfundingError(content, { requireSponsor = false, translate = originalMessage } = {}) {
+        const rule = content.rule;
+        if (rule?.electorate !== 'investors') return content.funding == null ? null : 'Only a crowdfunding agreement has investment terms.';
+        const lensCore = root.LensCore || (typeof require === 'function' ? require('./lens-core.js') : null);
+        const key = value => typeof value === 'string' && value === value.trim() && value !== '11111111111111111111111111111111'
+            && lensCore?.isBase58Pubkey(value);
+        if (rule.binding !== true || rule.approvalConfig != null || rule.settlement != null) return 'Crowdfunding uses a binding funding target.';
+        if (!Array.isArray(rule.lens) || rule.lens.length !== 1 || !key(rule.lens[0])) return translate('agreement.funding.chooseKey', 'Choose one lens member to verify the funding target.');
+        if ((requireSponsor || content.sponsor != null) && !key(content.sponsor)) return translate('agreement.funding.wallet', 'A crowdfunding agreement needs the developer’s Solana wallet.');
+        if (typeof content.deadline !== 'string' || !Number.isFinite(Date.parse(content.deadline)) || Date.parse(content.deadline) % 1000 !== 0) return translate('agreement.errors.deadlineInvalid', 'Set a funding deadline to the nearest second.');
+        if (!Array.isArray(content.inputs?.parcels) || content.inputs.parcels.length || content.inputs.openGroundM2 !== 0
+            || !Array.isArray(content.outputs) || content.outputs.length || !Array.isArray(content.allocations) || content.allocations.length
+            || !Array.isArray(content.money?.lines) || content.money.lines.length || !cityMoney().isFiat(content.money.currency)
+            || content.valuation != null || content.consultation != null) return 'A crowdfunding agreement funds the selected plan and carries no land settlement.';
+        return fundingError(content.funding, translate);
     }
 
     const didWeb = () => root.CommunityDidWeb
@@ -386,6 +451,7 @@
             money: moneyOf(raw.money),
             valuation: valuationOf(raw.valuation),
             rule,
+            ...(raw.funding == null ? {} : { funding: clone(raw.funding) }),
             consultation: consultationOf(raw.consultation, rule.electorate),
             deadline: deadlineOf(raw.deadline),
             published: publishedOf(raw.published),
@@ -605,7 +671,7 @@
      * @returns {{ valid, errors: { code, message, section, proposalId?, output?, ownerKey? }[],
      *   warnings: { code, message, section, reason? }[] }}
      */
-    function validate(raw, { designOf, isApplied } = {}) {
+    function validate(raw, { designOf, isApplied, translate } = {}) {
         const agreement = normalize(raw);
         const errors = [];
         const warnings = [];
@@ -616,7 +682,8 @@
         else if (!matchesPlan(agreement.plan, agreement.designs.map(design => design.cid))) {
             add(errors, 'designs', 'plan-membership', 'The designs differ from the selected plan. Save a plan revision first.');
         }
-        if (typeof designOf === 'function' && typeof isApplied === 'function') {
+        const crowdfunding = agreement.rule.electorate === 'investors';
+        if (!crowdfunding && typeof designOf === 'function' && typeof isApplied === 'function') {
             agreement.designs.forEach(design => {
                 const found = designOf(design.proposalId);
                 if (!found || !isApplied(found)) {
@@ -626,7 +693,7 @@
         }
 
         const { parcels, openGroundM2 } = agreement.inputs;
-        if (!parcels.length && !(openGroundM2 > 0)) add(errors, 'land', 'no-inputs', 'The designs take no land: apply them to the ground first.');
+        if (!crowdfunding && !parcels.length && !(openGroundM2 > 0)) add(errors, 'land', 'no-inputs', 'The designs take no land: apply them to the ground first.');
         if (openGroundM2 > 0) add(warnings, 'land', 'open-ground', `${Math.round(openGroundM2)} m² of the land is open ground, which no owner brings in.`);
         const balance = landBalance(agreement);
         if (!balance.balanced) add(errors, 'land', 'land-unbalanced', balance.inputM2 === null
@@ -655,6 +722,8 @@
         });
 
         const { electorate, binding, approvalConfig } = agreement.rule;
+        const fundingIssue = crowdfundingError(raw, { translate });
+        if (fundingIssue) add(errors, 'funding', 'funding-invalid', fundingIssue);
         if (!ELECTORATES.includes(electorate)) {
             add(errors, 'rule', 'rule-invalid', 'Choose who decides: the owners or the community.');
         } else if (electorate === 'community') {
@@ -662,7 +731,7 @@
             if (raw.money && Array.isArray(raw.money.lines) && raw.money.lines.length) add(errors, 'money', 'community-money', 'A nonbinding agreement cannot include cash payments.');
             if (binding) add(errors, 'rule', 'rule-community-binding', 'A community vote cannot bind the owners.');
             if (approvalConfig !== null) add(errors, 'rule', 'rule-invalid', 'A community vote has no owner approval rule.');
-        } else {
+        } else if (electorate === 'owners') {
             settlementIssues(agreement).forEach(issue => errors.push(issue));
             let state = null;
             try { state = approval().inspect(approvalSubject(agreement)); } catch (error) {
@@ -801,7 +870,9 @@
      *   null means the producer is a design outside this agreement: the piece is then committed by
      *   its hash alone, and a reader whose ground lacks that design sees the agreement as stale.
      */
-    function published(raw, designCidOf = null) {
+    function published(raw, designCidOf = null, { requireSponsor = true } = {}) {
+        const fundingIssue = crowdfundingError(raw, { requireSponsor });
+        if (fundingIssue) fail(fundingIssue);
         const agreement = normalize(raw);
         if (agreement.rule.electorate === 'community' && ((raw.allocations && raw.allocations.length) || (raw.money && raw.money.lines && raw.money.lines.length))) {
             fail('A nonbinding agreement cannot allocate land or include cash payments.');
@@ -853,6 +924,7 @@
             money: agreement.money,
             valuation: agreement.valuation,
             rule: agreement.rule,
+            ...(agreement.funding == null ? {} : { funding: agreement.funding }),
             consultation: agreement.consultation,
             deadline: agreement.deadline
         };
@@ -865,6 +937,7 @@
         SCHEMA, PUBLISHED_SCHEMA, OUTPUT_HASH_PREFIX, ROLES, newId, outputHash, normalize, validate, ledger,
         rightsFromInputs, approvalSubject, stableStringify, published, publishedCid, consultationOf, participationUrl,
         planReference, matchesPlan, PARTY_PREFIX, partyKey, parcelOfParty, partyName, landParties, defaultAllocations, settle, landBalance, contributionLimit, settlementValid, DEFAULT_SETTLEMENT,
-        METHODS, schemeOf, schemeCheck, settlementIssues, valueGainOf
+        METHODS, schemeOf, schemeCheck, settlementIssues, valueGainOf,
+        MAX_CONTRACT_BYTES, parseUsdc, formatUsdc, fundingError, crowdfundingError
     };
 });

@@ -70,7 +70,7 @@ export function decisionCompletion(picks) {
 // refund). These are pure limits and selection; the chain reads and signing live in
 // lifecycle-actions.js (inspectSettlement / executeSettlement).
 
-const SIGNED_STEPS = new Set(['attest', 'execute', 'expire', 'resolve', 'claim', 'reclaim']);
+const SIGNED_STEPS = new Set(['attest', 'execute', 'release-donations', 'expire', 'resolve', 'claim', 'reclaim']);
 const signedCount = steps => (steps || []).filter(step => SIGNED_STEPS.has(step)).length;
 
 export function settlementPolicy(env = {}) {

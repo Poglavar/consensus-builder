@@ -291,3 +291,78 @@ test('choosing an unapplied plan lets the editor apply it, recover its land and 
   const [saved] = await storedAgreements(page);
   expect(saved.plan.cid).toBe(planCid);
 });
+
+test('developer crowdfunding opens from an unapplied plan, saves its attached terms, and reopens unchanged', async ({ mockApi: page }) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 390, height: 760 });
+  const { layoutId } = await applyLayout(page);
+  const planCid = await page.evaluate(async id => {
+    const w = window as any;
+    const plan = w.PlanComposition.create('Unapplied crowdfunding plan', [w.proposalStorage.getProposal(id)], w.MapShare.capture(w));
+    w.PlanWorkspace.save(plan);
+    await w.ProposalManager.unapplyProposal(id);
+    w.solanaWalletManager = { getState: () => ({ status: 'connected', accounts: ['test'] }) };
+    w.LensPicker.setEntries([{ address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGJroM6Q3BTT', name: 'Test verifier' }]);
+    return plan.cid as string;
+  }, layoutId);
+  expect(await isLayoutApplied(page, layoutId)).toBe(false);
+
+  await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+  await page.evaluate(cid => {
+    const w = window as any;
+    void w.PlanDialog.details(w.NamedPlans.list().find((plan: any) => plan.cid === cid));
+  }, planCid);
+  const planDialog = page.locator('.plan-dialog');
+  await expect(planDialog).toBeVisible();
+  await planDialog.locator('[data-plan-action="create-crowdfunding"]').click();
+  const editor = await editorOpen(page, 'Create agreement');
+  const investors = editor.locator('input[name="agreement-electorate"][value="investors"]');
+  const plan = editor.locator('[data-agreement-plan]');
+  await expect(investors).toBeChecked();
+  await expect(plan).toHaveValue(planCid);
+  await expect(editor.getByRole('tab')).toHaveCount(0);
+  await expect(editor.getByRole('button', { name: 'Parcel ownership rights', exact: true })).toHaveCount(0);
+  await expect(editor.locator('[data-agreement-input], [data-agreement-allocation], [data-agreement-persons]')).toHaveCount(0);
+  await investors.focus();
+  await investors.press('Tab');
+  await expect(plan).toBeFocused();
+
+  const title = editor.locator('[data-agreement-title]');
+  await title.focus();
+  await title.pressSequentially('Crowdfund a park');
+  const target = editor.locator('[data-agreement-funding-target]');
+  await target.focus();
+  await target.pressSequentially('12.345678');
+  const deadline = editor.locator('[data-agreement-deadline]');
+  await deadline.scrollIntoViewIfNeeded();
+  await fillNativeDateTime(deadline, '2030-12-31');
+  const contract = editor.locator('[data-agreement-funding-file]');
+  await contract.scrollIntoViewIfNeeded();
+  await contract.setInputFiles({
+    name: 'investor-terms.txt', mimeType: 'text/plain', buffer: Buffer.from('Investors receive the stated project return.', 'utf8'),
+  });
+  await expect(editor.locator('[data-agreement-funding-file-name]')).toHaveText('investor-terms.txt');
+  await expect(editorSave(editor)).toBeEnabled();
+  await editorSave(editor).press('Enter');
+  await editorClosed(page);
+
+  const [saved] = await storedAgreements(page);
+  expect(saved).toMatchObject({
+    plan: { cid: planCid }, inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [],
+    money: { currency: 'EUR', lines: [] }, valuation: null,
+    rule: { electorate: 'investors', binding: true, approvalConfig: null, settlement: null, lens: ['EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGJroM6Q3BTT'] },
+    funding: { targetUsdcAtomic: '12345678', contract: { name: 'investor-terms.txt', mediaType: 'text/plain' } },
+  });
+  expect(saved.deadline).toBe(await page.evaluate(() => (window as any).AgreementDialog.deadlineFromDate('2030-12-31', 0)));
+  expect(saved.funding.contract.data).toBe(Buffer.from('Investors receive the stated project return.', 'utf8').toString('base64'));
+
+  await page.evaluate(id => { void (window as any).AgreementDialog.open({ agreementId: id }); }, saved.id);
+  const reopened = await editorOpen(page, 'Edit agreement');
+  await expect(reopened.locator('[data-agreement-title]')).toHaveValue('Crowdfund a park');
+  await expect(reopened.locator('[data-agreement-funding-target]')).toHaveValue('12.345678');
+  await expect(reopened.locator('[data-agreement-deadline]')).toHaveValue('2030-12-31');
+  await expect(reopened.locator('[data-agreement-funding-file-name]')).toHaveText('investor-terms.txt');
+  await expect(reopened.locator('input[name="agreement-electorate"][value="investors"]')).toBeChecked();
+  await editorCancel(reopened).click();
+  await editorClosed(page);
+});

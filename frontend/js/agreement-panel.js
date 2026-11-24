@@ -244,6 +244,11 @@
 
     // Who decides and whether it binds; for the owners, the approval rule in one line.
     function ruleSummary(rule, tr = t, summaryText = null) {
+        if (rule?.electorate === 'investors') return {
+            electorate: tr('agreement.funding.title', 'Developer crowdfunding'),
+            binding: tr('agreement.funding.rule', 'The selected lens verifies that contributions reach the target.'),
+            detail: ''
+        };
         const owners = !!rule && rule.electorate === 'owners';
         return {
             electorate: owners
@@ -405,7 +410,7 @@
         if (!wallet) hints.push(tr('agreement.chain.hints.connectSponsor', 'Connect the sponsor’s Solana wallet ({{sponsor}}) to mint it.', { sponsor: shortKey(sponsor) }));
         else if (wallet !== sponsor) hints.push(tr('agreement.chain.hints.notSponsor', 'Only the sponsor’s wallet ({{sponsor}}) can mint it; the connected wallet is {{wallet}}.', { sponsor: shortKey(sponsor), wallet: shortKey(wallet) }));
         if (!lens) {
-            hints.push(electorate === 'owners'
+            hints.push(electorate !== 'community'
                 ? tr('agreement.chain.hints.noRuleLens', 'Its decision rule names no lens member, so no lens can attest its decision.')
                 : tr('agreement.chain.hints.noConfiguredLens', 'Choose a lens member in the lens settings: it attests the vote count.'));
         }
@@ -434,17 +439,21 @@
         if (!view || !view.published) return '';
         const busy = view.busy ? `<p class="agreement-panel-hint" role="status" data-agreement-chain-busy="${esc(view.busy.action)}">${esc((CHAIN_PHASE[view.busy.phase] || CHAIN_PHASE.preparing)(tr))}</p>` : '';
         const locked = !!view.busy;
+        const crowdfunding = view.electorate === 'investors';
         const title = tr('agreement.chain.heading', 'On chain');
-        const executionNote = `<p class="agreement-panel-note" data-agreement-chain="binding-note">${esc(tr('agreement.chain.bindingExecutionNote', 'On-chain execution records settlement and pays the configured escrow. Legal registration and construction are separate.'))}</p>`;
+        const executionNote = `<p class="agreement-panel-note" data-agreement-chain="binding-note">${esc(crowdfunding
+            ? tr('agreement.funding.settlement', 'Execution unlocks contributions for the developer. Cancellation or expiry lets each investor reclaim their USDC.')
+            : tr('agreement.chain.bindingExecutionNote', 'On-chain execution records settlement and pays the configured escrow. Legal registration and construction are separate.'))}</p>`;
         if (!view.ref) {
             const ready = mintReadiness(view, tr);
-            const button = view.readOnly ? '' : ready.repropose
+            const showMint = !view.readOnly || (crowdfunding && (!view.wallet || view.wallet === view.sponsor));
+            const button = !showMint ? '' : ready.repropose
                 ? chainButton('repropose', 'fas fa-paper-plane', tr('agreement.chain.actions.repropose', 'Propose again with this wallet'), { tone: 'primary', disabled: locked || !ready.canRepropose })
                 : chainButton('mint', 'fas fa-cube', tr('agreement.chain.actions.mint', 'Mint'), { tone: 'primary', disabled: locked || !ready.canMint });
             return sectionHtml(title, '<div class="agreement-chain" data-agreement-chain="unminted">'
                 + executionNote
                 + `<p class="agreement-panel-meta">${esc(tr('agreement.chain.notMinted', 'Not minted. Minting commits this agreement to Solana at its sponsor’s address; its lens then attests the decision, and executing it releases the escrow.'))}</p>`
-                + (button ? `<div class="agreement-panel-actions">${button}</div>` : '') + `${view.readOnly ? '' : hintsHtml(ready.hints)}${busy}</div>`);
+                + (button ? `<div class="agreement-panel-actions">${button}</div>` : '') + `${showMint ? hintsHtml(ready.hints) : ''}${busy}</div>`);
         }
         const ref = view.ref;
         const link = bridgeApi().explorerUrl({ account: ref.account, cluster: ref.cluster });
@@ -471,7 +480,7 @@
         const facts = [
             [tr('agreement.chain.facts.status', 'Status'), badgeHtml(status, status ? status.text(tr) : value.status, `data-agreement-chain-status="${esc(value.status)}"`)],
             [tr('agreement.chain.facts.decision', 'Decision'), badgeHtml(decision, decision ? decision.text(tr) : value.decision, `data-agreement-chain-decision="${esc(value.decision)}"`)],
-            [tr('agreement.chain.facts.escrow', 'Escrow'), esc(escrow)],
+            ...(crowdfunding ? [] : [[tr('agreement.chain.facts.escrow', 'Escrow'), esc(escrow)]]),
             [tr('agreement.chain.facts.deadline', 'Deadline'), esc(value.deadline ? format().formatDateTime(value.deadline) : tr('agreement.chain.noDeadline', 'None'))],
             [tr('agreement.chain.facts.lens', 'Lens'), `<code title="${esc(value.lens)}">${esc(shortKey(value.lens))}</code>`],
             [tr('agreement.chain.facts.payout', 'Payout'), `<code title="${esc(value.payout)}">${esc(shortKey(value.payout))}</code>`]
@@ -483,13 +492,13 @@
         const active = value.status === 'Active';
         const buttons = [];
         const hints = [];
-        if (active && !view.readOnly) {
+        if (active && (!view.readOnly || crowdfunding)) {
             if (view.attestation && value.decision === 'Pending') {
                 buttons.push(chainButton('attest', 'fas fa-stamp', tr('agreement.chain.actions.attest', 'Record decision'), { tone: 'primary', disabled: locked || !actions.attest }));
             }
             buttons.push(chainButton('execute', 'fas fa-play', tr('agreement.chain.actions.execute', 'Execute'), { tone: value.decision === 'Satisfied' ? 'primary' : '', disabled: locked || !actions.execute }));
             if (actions.authority) {
-                buttons.push(chainButton('fund', 'fas fa-coins', tr('agreement.chain.actions.fund', 'Fund'), { disabled: locked || !actions.fund }));
+                if (!crowdfunding) buttons.push(chainButton('fund', 'fas fa-coins', tr('agreement.chain.actions.fund', 'Fund'), { disabled: locked || !actions.fund }));
                 buttons.push(chainButton('cancel', 'fas fa-ban', tr('agreement.chain.actions.cancel', 'Cancel'), { tone: 'danger', disabled: locked || !actions.cancel }));
             }
             if (actions.deadlinePassed) buttons.push(chainButton('expire', 'fas fa-hourglass-end', tr('agreement.chain.actions.expire', 'Expire'), { disabled: locked || !actions.expire }));
@@ -498,11 +507,12 @@
             else if (value.decision === 'Pending' && !view.attestation && !actions.deadlinePassed) hints.push(tr('agreement.chain.hints.awaitingLens', 'Waiting for its lens to attest the decision.'));
             if (value.decision === 'Pending' && view.attestation) hints.push(tr('agreement.chain.hints.attested', 'Its lens has attested the decision: record it on chain.'));
             if (value.decision === 'Satisfied' && !actions.funded) hints.push(tr('agreement.chain.hints.awaitingFunds', 'Execution waits until the escrow holds {{required}}.', { required: solText(value.requiredLamports) }));
-            if (actions.deadlinePassed) hints.push(tr('agreement.chain.hints.expired', 'Its deadline has passed: anyone can expire it, which returns the escrow to the sponsor.'));
+            if (actions.deadlinePassed) hints.push(crowdfunding ? tr('agreement.funding.expire', 'The deadline has passed. Expire the agreement to enable refunds.')
+                : tr('agreement.chain.hints.expired', 'Its deadline has passed: anyone can expire it, which returns the escrow to the sponsor.'));
         }
         // Boost (js/agreement-boost.js) draws into this slot after each render; a read-only view (a
         // shared address) can boost too, since boosting needs no local copy of the designs.
-        const boost = '<div data-agreement-boost-slot></div>';
+        const boost = crowdfunding ? '' : '<div data-agreement-boost-slot></div>';
         return sectionHtml(title, `<div class="agreement-chain" data-agreement-chain="minted">${head}${executionNote}${factsHtml}`
             + (buttons.length ? `<div class="agreement-panel-actions">${buttons.join('')}</div>` : '')
             + `${hintsHtml(hints)}${busy}${boost}</div>`);
@@ -537,7 +547,7 @@
             ? `<p class="agreement-panel-note" data-agreement-read-only>${esc(tr('agreement.publish.readOnly', 'Read-only published agreement'))}</p>`
             : electorate === 'owners'
             ? '<div class="approval-card-slot" data-approval-card-slot></div>'
-            : consultation ? '' : `<p class="agreement-panel-note" data-agreement-community-note>${esc(tr('agreement.publish.communityNote', 'Community votes are counted without a blockchain transaction.'))}</p>`;
+            : electorate !== 'community' || consultation ? '' : `<p class="agreement-panel-note" data-agreement-community-note>${esc(tr('agreement.publish.communityNote', 'Community votes are counted without a blockchain transaction.'))}</p>`;
         return sectionHtml(tr('threeMode.parcelPanel.proposed', 'Proposed'),
             '<div class="agreement-panel-published">'
             + `<code class="agreement-panel-cid" title="${esc(cid)}">${esc(short)}</code>`
@@ -642,6 +652,19 @@
         return `<ul class="agreement-panel-inputs">${rows}</ul>`;
     }
 
+    function fundingTermsHtml(agreement, tr = t) {
+        const funding = agreement.funding;
+        if (agreement.rule?.electorate !== 'investors' || !funding || recordApi().fundingError(funding)) return '';
+        const target = recordApi().formatUsdc(funding.targetUsdcAtomic);
+        return sectionHtml(tr('agreement.funding.title', 'Developer crowdfunding'),
+            `<p data-agreement-funding-goal>${esc(tr('agreement.funding.goal', 'Target of {{amount}} devnet USDC', { amount: target }))}</p>`
+            + `<p>${esc(tr('agreement.panel.deadline', 'Deadline: {{date}}', { date: format().formatDateTime(agreement.deadline) }))}</p>`
+            + `<button type="button" class="btn btn-sm" data-agreement-action="contract">${esc(tr('agreement.funding.download', 'Download investor contract ({{name}})', { name: funding.contract.name }))}</button>`
+            + (agreement.published && !agreement.onchain ? `<p class="agreement-panel-hint">${esc(tr('agreement.funding.unminted', 'Contributions open when the developer mints this agreement.'))}</p>` : '')
+            + '<div data-agreement-boost-slot></div>'
+            + (agreement.onchain ? `<button type="button" class="btn btn-sm" data-agreement-action="refresh-funding">${esc(tr('agreement.minted.refresh', 'Refresh'))}</button>` : ''));
+    }
+
     // Published output geometry comes from the agreement, inputs from original cadastre, and
     // designs from the exact records displayed in this panel. Missing geometry stays unavailable.
     function inspectionFeatures(agreement, kind, key, { designOf, inputOf, outlineOf }) {
@@ -698,6 +721,8 @@
                 plan: [agreement && agreement.plan ? agreement.plan.content.title : NO_VALUE, agreement && agreement.plan ? agreement.plan.cid : null],
                 status: [status],
                 rule: [`${summary.electorate} · ${rule && rule.binding === true ? tr('agreement.rule.bindingShort', 'Binding') : tr('agreement.rule.nonBinding', 'Non-binding')}`],
+                fundingTarget: [agreement?.funding ? recordApi().formatUsdc(agreement.funding.targetUsdcAtomic) + ' USDC' : NO_VALUE],
+                contract: [agreement?.funding?.contract?.name || NO_VALUE, agreement?.funding?.contract ? JSON.stringify(agreement.funding.contract) : null],
                 approval: [summary.detail || NO_VALUE],
                 settlement: [owners && rule.settlement ? (rule.settlement.method === 'value'
                     ? tr('agreement.workflow.byValue', 'Balance land value differences in money')
@@ -719,6 +744,8 @@
             plan: tr('agreement.panel.plan', 'Agreement plan'),
             status: tr('agreement.chain.facts.status', 'Status'),
             rule: tr('agreement.sections.rule', 'Decision rule'),
+            ...(agreements?.some(item => item.funding) ? { fundingTarget: tr('agreement.funding.target', 'Funding target (devnet USDC)'),
+                contract: tr('agreement.funding.contractLabel', 'Investor contract') } : {}),
             approval: tr('agreement.compare.approval', 'Approval'),
             settlement: tr('agreement.compare.settlement', 'Settlement'),
             contribution: tr('agreement.workflow.contribution', 'Land contribution (%)'),
@@ -793,7 +820,7 @@
             if (!ground || typeof ground.check !== 'function') throw new Error('AgreementGround is not loaded.');
             const fabric = win.LiveParcelFabric;
             const records = (agreement.designs || []).map(design => designOf(design.proposalId)).filter(Boolean);
-            const features = await originalFeatures(groundIds(agreement, records, fabric));
+            const features = agreement.rule?.electorate === 'investors' ? [] : await originalFeatures(groundIds(agreement, records, fabric));
             return ground.check(agreement, {
                 designOf,
                 isApplied: win.isApplied,
@@ -864,9 +891,9 @@
                 : '';
             // Info only identifies the plan and its design count. The same Plan button opens the
             // plan's Designs tab, which is the canonical rich list rather than a second copy here.
-            const overview = agreement.plan ? sectionHtml(t('agreement.panel.plan', 'Agreement plan'),
+            const overview = (agreement.plan ? sectionHtml(t('agreement.panel.plan', 'Agreement plan'),
                 `<button type="button" class="btn btn-sm" data-agreement-action="plan" title="${esc(agreement.plan.cid)}">${esc(recordLabel().label(agreement.plan.content.title, agreement.plan.cid))}</button>`
-                + `<p class="agreement-panel-meta" data-agreement-plan-design-count>${esc(`${t('agreement.panel.designs', 'Designs in the plan')} (${(agreement.designs || []).length})`)}</p>`) : '';
+                + `<p class="agreement-panel-meta" data-agreement-plan-design-count>${esc(`${t('agreement.panel.designs', 'Designs in the plan')} (${(agreement.designs || []).length})`)}</p>`) : '') + fundingTermsHtml(agreement);
             // Decision keeps the agreement's mutable status, voting and settlement controls together.
             const decision = (!published ? `<p class="agreement-panel-meta"><span class="cb-badge">${esc(t('designMemberships.draft', 'Draft'))}</span></p>` : '') + status
                 + publishedHtml({ published: agreement.published, remote: observedRemote(state.remote, chainView(agreement)?.chain), electorate: agreement.rule && agreement.rule.electorate, readOnly, consultation: community && agreement.consultation })
@@ -875,29 +902,38 @@
                 + (community && agreement.rule?.electorate === 'community' ? win.CommunityConsultation.picturesHtml(state.remote) : '')
                 + (binding ? chainHtml({ ...chainView(agreement), readOnly }) : nonBindingChainHtml(agreement.published));
             const hasOutputs = (agreement.outputs || []).length > 0;
-            const hasPeople = agreement.rule?.electorate !== 'community';
+            const hasPeople = agreement.rule?.electorate === 'owners';
             const land = landSummary(agreement);
-            const panels = { overview, decision, inputs: landHtml(land, t) + inputsHtml(agreement),
+            const panels = { overview, decision, ...(agreement.rule?.electorate === 'investors' ? {} : { inputs: landHtml(land, t) + inputsHtml(agreement) }),
                 ...(hasOutputs ? { outputs: byHashOnly + piecesHtml(land, t) + allocationHtml(allocationLines(agreement)) } : {}),
                 ...(hasPeople ? { persons: outcomesHtml(ownerOutcomes(agreement), t)
                     + ledgerHtml(ledger, t, { title: t('agreement.panel.ledger.byParty', 'By parcel party'), collapsible: true, open: true })
                     + personsHtml(persons, t, { title: t('agreement.panel.ledger.byPerson', 'By person'), collapsible: true }) } : {}),
                 rules: ruleHtml(rule, deadline, t, { owners: agreement.rule?.electorate === 'owners', scheme: !!win.AgreementRecord.schemeOf(agreement.rule) }) };
             if (!(state.tab in panels)) state.tab = 'overview';
-            return actionsHtml({ canCompare: current, comparing: comparing(state.id), canPropose: current && !published, published, canBet: binding && betAvailable(agreement), canCounter: true, readOnly })
+            return actionsHtml({ canCompare: current, comparing: comparing(state.id), canPropose: current && !published, published, canBet: binding && agreement.rule.electorate !== 'investors' && betAvailable(agreement), canCounter: true, readOnly })
                 + tabbedHtml(panels, state.tab, t, counts);
         }
 
         function renderPanel() {
             const panel = ensurePanel();
+            const active = doc.activeElement;
+            const focusKey = state.agreement?.rule?.electorate === 'investors' && panel.contains(active)
+                && ['data-agreement-action', 'data-agreement-boost-action', 'data-agreement-properties-tab'].find(key => active.hasAttribute(key));
+            const focusSelector = focusKey && `[${focusKey}="${CSS.escape(active.getAttribute(focusKey))}"]`;
             panel.querySelector('#agreement-panel-title').textContent = state.agreement ? titleOf(state.agreement) : t('agreement.panel.title', 'Agreement');
-            panel.querySelector('.agreement-panel-kind').textContent = state.agreement?.rule?.electorate === 'community'
-                ? t('community.title', 'Nonbinding agreement') : t('agreement.panel.title', 'Agreement');
+            panel.querySelector('.agreement-panel-kind').textContent = state.agreement?.rule?.electorate === 'investors'
+                ? t('agreement.funding.title', 'Developer crowdfunding') : state.agreement?.rule?.electorate === 'community'
+                    ? t('community.title', 'Nonbinding agreement') : t('agreement.panel.title', 'Agreement');
             const close = panel.querySelector('[data-agreement-action="close"]');
             const closeLabel = t('modal.common.close', 'Close');
             close.setAttribute('aria-label', closeLabel);
             close.title = closeLabel;
             panel.querySelector('[data-agreement-region="body"]').innerHTML = bodyHtml();
+            if (state.chainBusy?.done) {
+                const control = panel.querySelector(`[data-agreement-action="${state.chainBusy.action}"]`);
+                if (control) win.BusyControl.track(control, state.chainBusy.done);
+            }
             // The check's outcome for tests and styling; a matching agreement shows no status of its own.
             panel.setAttribute('data-agreement-check', state.readOnlyAgreement ? 'read-only' : state.error ? 'error'
                 : state.checking || !state.check ? 'checking' : state.check.current ? 'current' : 'stale');
@@ -912,9 +948,15 @@
                 win.ProposalApprovalPanel.setStatus(state.id, observedRemote(state.remote, chainView(state.agreement)?.chain)?.status);
                 win.ProposalApprovalPanel.render(slot, state.id);
             }
-            mountBoost(panel);
+            const mounted = mountBoost(panel);
             panel.classList.add('visible');
             doc.body.classList.add('agreement-panel-open');
+            if (focusSelector) {
+                const id = state.id;
+                Promise.resolve(mounted).then(() => {
+                    if (state.id === id && doc.activeElement === doc.body) panel.querySelector(focusSelector)?.focus({ preventScroll: true });
+                });
+            }
         }
 
         // Boost loads on first use: its program client and module are not in the page's script list.
@@ -936,7 +978,7 @@
             const value = state.chain && state.chain.value;
             const agreement = state.readOnlyAgreement || state.agreement;
             if (!slot || !value || !agreement) return;
-            ensureBoostScripts().then(() => {
+            return ensureBoostScripts().then(() => {
                 if (slot.isConnected && (state.readOnlyAgreement || state.agreement) === agreement) win.AgreementBoost.mount(slot, { agreement, chainStatus: value.status });
             }).catch(error => {
                 console.error(`[${new Date().toISOString()}] [AgreementPanel] Boost could not be loaded`, error);
@@ -1095,7 +1137,7 @@
                 console.warn(`[${new Date().toISOString()}] [AgreementPanel] the server status of ${cid} is unavailable`, error);
                 state.remote = { cid, loading: false, status: null, error: (error && error.message) || String(error), onchain: null };
             }
-            if (win.ProposalApprovalPanel && !readOnly) {
+            if (win.ProposalApprovalPanel && !readOnly && agreement.rule?.electorate === 'owners') {
                 win.ProposalApprovalPanel.setStatus(id, observedRemote(state.remote, state.chain)?.status);
                 win.ProposalApprovalPanel.sync(id);
             }
@@ -1269,11 +1311,13 @@
         async function runChain(action, work) {
             if (state.chainBusy) return;
             const id = state.id;
-            state.chainBusy = { action, phase: 'preparing' };
+            let finish;
+            const done = new Promise(resolve => { finish = resolve; });
+            state.chainBusy = { action, phase: 'preparing', done };
             renderPanel();
             const onStatus = ({ state: phase }) => {
                 if (state.id !== id || !state.chainBusy || !CHAIN_PHASE[phase]) return;
-                state.chainBusy = { action, phase };
+                state.chainBusy.phase = phase;
                 const line = state.panel && state.panel.querySelector('[data-agreement-chain-busy]');
                 if (line) line.textContent = CHAIN_PHASE[phase](t);
                 else renderPanel();
@@ -1284,16 +1328,15 @@
                 if (rejectedInWallet(error)) log(`${action} on ${id}: declined in the wallet`);
                 else report(`${action} on ${id} failed`, error);
             } finally {
-                if (state.id === id) {
-                    state.chainBusy = null;
-                    const agreement = store().get(id);
+                try {
+                    const agreement = state.id === id && (state.readOnlyAgreement || store().get(id));
                     if (agreement) {
                         state.agreement = agreement;
-                        readChain(agreement);
-                        readRemote(agreement, { force: true });
-                    } else {
-                        renderPanel();
+                        await Promise.all([readChain(agreement), readRemote(agreement, { force: true })]);
                     }
+                } finally {
+                    finish();
+                    if (state.id === id) { state.chainBusy = null; renderPanel(); }
                 }
             }
         }
@@ -1363,13 +1406,14 @@
             const agreement = state.agreement;
             if (!agreement || !agreement.published) return;
             const lens = mintLensOf(agreement);
-            const terms = await askMintTerms(agreement, lens);
+            const terms = agreement.rule?.electorate === 'investors' ? { requiredLamports: 0n, payout: agreement.published.sponsor } : await askMintTerms(agreement, lens);
             if (!terms || state.id !== id) return;
+            const subject = state.readOnlyAgreement || id;
             await runChain('mint', async (onStatus, phase) => {
                 const minted = await win.AgreementBridge.mint({ agreement, lens, requiredLamports: terms.requiredLamports, payout: terms.payout, onStatus });
                 phase('indexing');
                 try {
-                    await win.AgreementSync.recordOnchain(id, { chain: 'solana', cluster: minted.cluster, account: minted.account, signature: minted.signature });
+                    await win.AgreementSync.recordOnchain(subject, { chain: 'solana', cluster: minted.cluster, account: minted.account, signature: minted.signature });
                     notice(t('agreement.chain.minted', 'Agreement minted.'));
                 } catch (error) {
                     if (!error || !error.kept) throw error;
@@ -1438,7 +1482,8 @@
             if (!agreement) return;
             await runChain('execute', async onStatus => {
                 await win.AgreementBridge.execute({ agreement, onStatus });
-                notice(t('agreement.chain.executed', 'Agreement executed: the escrow went to its payout account.'));
+                notice(agreement.rule?.electorate === 'investors' ? t('agreement.funding.executed', 'Agreement executed. Contributions can be released to the developer.')
+                    : t('agreement.chain.executed', 'Agreement executed: the escrow went to its payout account.'));
             });
         }
 
@@ -1447,7 +1492,9 @@
             const id = state.id;
             const agreement = state.agreement;
             if (!agreement) return;
-            const confirmed = await win.CbDialog.confirm(t('agreement.chain.cancelConfirm', 'Cancel this agreement on chain? It ends for good and the escrow returns to the sponsor.'), {
+            const crowdfunding = agreement.rule?.electorate === 'investors';
+            const confirmed = await win.CbDialog.confirm(crowdfunding ? t('agreement.funding.cancelConfirm', 'Cancel the funding round and enable investor refunds?')
+                : t('agreement.chain.cancelConfirm', 'Cancel this agreement on chain? It ends for good and the escrow returns to the sponsor.'), {
                 destructive: true,
                 okText: t('agreement.chain.actions.cancel', 'Cancel'),
                 cancelText: t('agreement.chain.keep', 'Keep it')
@@ -1455,7 +1502,8 @@
             if (!confirmed || state.id !== id) return;
             await runChain('cancel', async onStatus => {
                 await win.AgreementBridge.cancel({ agreement, onStatus });
-                notice(t('agreement.chain.cancelled', 'Agreement cancelled; the escrow returned to the sponsor.'));
+                notice(crowdfunding ? t('agreement.funding.refundsOpen', 'Investors can now reclaim their USDC.')
+                    : t('agreement.chain.cancelled', 'Agreement cancelled; the escrow returned to the sponsor.'));
             });
         }
 
@@ -1465,7 +1513,8 @@
             if (!agreement) return;
             await runChain('expire', async onStatus => {
                 await win.AgreementBridge.expire({ agreement, onStatus });
-                notice(t('agreement.chain.expired', 'Agreement expired; the escrow returned to the sponsor.'));
+                notice(agreement.rule?.electorate === 'investors' ? t('agreement.funding.refundsOpen', 'Investors can now reclaim their USDC.')
+                    : t('agreement.chain.expired', 'Agreement expired; the escrow returned to the sponsor.'));
             });
         }
 
@@ -1550,9 +1599,22 @@
             const action = event.target.closest('[data-agreement-action]');
             if (!action || action.disabled) return;
             const actionName = action.getAttribute('data-agreement-action');
-            if (state.readOnlyAgreement && !['close', 'link', 'plan', 'scheme-guide', 'counter', 'download', 'apply-agreement'].includes(actionName)) return;
+            const fundingAction = state.agreement?.rule?.electorate === 'investors' && ['contract', 'refresh-funding', 'mint', 'attest', 'execute', 'cancel', 'expire'].includes(actionName);
+            if (state.readOnlyAgreement && !fundingAction && !['close', 'link', 'plan', 'scheme-guide', 'counter', 'download', 'apply-agreement'].includes(actionName)) return;
             switch (actionName) {
                 case 'close': close(); break;
+                case 'contract': {
+                    const funding = state.agreement.funding;
+                    if (!funding || recordApi().fundingError(funding)) break;
+                    const file = funding.contract;
+                    win.FileDownload.save(win, Uint8Array.from(win.atob(file.data), ch => ch.charCodeAt(0)), file.name, file.mediaType);
+                    break;
+                }
+                case 'refresh-funding': {
+                    const agreement = state.agreement;
+                    runChain('refresh-funding', () => win.AgreementBoost?.refresh(agreement.onchain.account));
+                    break;
+                }
                 case 'plan': win.BusyControl.track(action, async () => {
                     await win.ClickStack.showPlan(state.agreement.plan, { designs: state.agreement.designs, draft: !state.agreement.published });
                     // The Agreement's Info count opens the Plan's canonical Designs list, rather
@@ -1564,7 +1626,7 @@
                 case 'compare': win.BusyControl.track(action, () => win.toggleAgreementBeforeAfter(state.id)); break;
                 case 'apply-designs': win.BusyControl.track(action, () => applyDesigns()).catch(error => win.showStyledAlert(error.message)); break;
                 // The agreement's own link route: applies its designs, keeps it here and opens it in full.
-                case 'apply-agreement': win.BusyControl.track(action, () => win.AgreementSync.handleAgreementRoute(state.readOnlyAgreement.published.cid)).catch(error => win.showStyledAlert(error.message)); break;
+                case 'apply-agreement': win.BusyControl.track(action, () => win.AgreementSync.handleAgreementRoute(state.readOnlyAgreement.published.cid, { apply: true })).catch(error => win.showStyledAlert(error.message)); break;
                 case 'propose': win.BusyControl.track(action, () => propose()); break;
                 case 'share': share(); break;
                 // The agreement with the plan file of its plan (agreement-file.js); Import agreement file reads it back.
@@ -1725,7 +1787,7 @@
     return {
         titleOf, statusOf, landSummary, ownerOutcomes, allocationLines, ledgerRows, personRows, personsHtml, ruleSummary, ruleShort, designRows, groundIds, partyLabel,
         statusHtml, actionsHtml, remoteStatusOf, observedRemote, publishedHtml, designsHtml, landHtml, piecesHtml, outcomesHtml, allocationHtml, ledgerHtml, ruleHtml,
-        inputsHtml, inspectionFeatures, tabbedHtml, compareTerms,
+        inputsHtml, fundingTermsHtml, inspectionFeatures, tabbedHtml, compareTerms,
         shortKey, chainStatusText, mintReadiness, isBinding, chainHtml, nonBindingChainHtml, browserPanel
     };
 });

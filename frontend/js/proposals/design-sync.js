@@ -328,6 +328,8 @@
             return parts?.polygons?.length ? { type: 'GeometryCollection', geometries: parts.polygons } : null;
         }
 
+        const parcelSourceForDesign = content => parcelSourceIdOf(content.city, groundOf(content));
+
         // Marks the local record (and the stored one, when it is another object) published.
         function markPublished(localDesign, published) {
             const store = storage();
@@ -364,7 +366,7 @@
             const content = designRecord().published(localDesign);
             clearPublicationProblem();
             const { cid } = addressObject(content);
-            const response = await request('POST', '/designs', { cid, content, parcelSourceId: parcelSourceIdOf(content.city, groundOf(content)) });
+            const response = await request('POST', '/designs', { cid, content, parcelSourceId: parcelSourceForDesign(content) });
             if (!response.ok && response.status !== 409) {
                 throw publicationFailure(localDesign, response.status, response.body);
             }
@@ -730,7 +732,7 @@
             api: {
                 publishDesign: record => observe('publish', 'design-publish-failed', () => publishDesign(record)),
                 addressObject, markPublished, fetchDesign, fetchDesigns, importDesign, importDraft, localCopyOf, localDesignIndex, listPage,
-                designLink, copyLink, prepareMapPreview, parcelSourceIdOf, refusalMessage, clearPublicationProblem,
+                designLink, copyLink, prepareMapPreview, parcelSourceIdOf, parcelSourceForDesign, refusalMessage, clearPublicationProblem,
                 // A local record's exact CID at the current index, or an index summary's own.
                 publishedCid: record => (isObject(record) && record.indexed === true && cidApi().isCid(record.cid)
                     ? record.cid

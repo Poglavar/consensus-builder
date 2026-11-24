@@ -164,12 +164,13 @@
                 else add('info', t('info'), node);
             }
             if (!pages.length) return;
-            const priority = key => key === 'actions' ? 0 : /(^info$|overview$|info-tab$)/.test(key) ? 1
+            const fundingOverview = kind === 'agreements' && body.querySelector('[data-agreement-funding-goal]');
+            const priority = key => fundingOverview && key === 'agreement-overview' ? -1 : key === 'actions' ? 0 : /(^info$|overview$|info-tab$)/.test(key) ? 1
                 : key === 'stats-analysis' ? 1.5
                 : /^(relation-|parcel-(proposals|selected-parcels)-tab)|^design-(inputs|outputs)$|^agreement-(inputs|outputs|persons)$/.test(key) ? 2
                 : key === 'parcel-tools-tab' ? 4 : 3;
             pages.sort((a, b) => priority(a.key) - priority(b.key));
-            if (!pages.some(page => page.key === active)) {
+            if ((fundingOverview && !remembered.has(memoryKey)) || !pages.some(page => page.key === active)) {
                 active = pages[0].key;
             }
             const next = pages.map(page => `${page.key}:${page.label}`).join('|');

@@ -222,6 +222,25 @@ describe('publishing designs and agreements', () => {
         expect(await tools.proposeAgreement({ agreement: poll.content, confirm: true })).toMatchObject({ cid: poll.cid, sponsor: null, account: null, carried: [] });
     });
 
+    it('carries an explicit parcel source only for a new investor design, without asking binding to choose one', async () => {
+        const base = agreementOf();
+        const investor = agreementObject({
+            title: 'Fund the infill', author: 'agent-01', sponsor: AGENT, city: base.content.city, createdAt: '2026-10-22T09:05:00.000Z', plan: base.plan,
+            designs: [{ cid: design.cid, goal: design.content.goal, title: design.content.title }], parcels: [], openGroundM2: 0, outputs: [], allocations: [],
+            money: noMoney('EUR'), valuation: null, rule: { electorate: 'investors', binding: true, approvalConfig: null, lens: [LENS], settlement: null },
+            deadline: '2099-01-01T00:00:00.000Z', funding: { targetUsdcAtomic: '1000000', contract: { name: 'terms.txt', mediaType: 'text/plain', data: 'dGVybXM=' } }
+        });
+        const api = fakeApi({ plans: [investor.plan] });
+        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl });
+        await tools.proposeAgreement({ agreement: investor.content, designs: [{ content: design.content, parcelSourceId: 'oss-wfs' }], confirm: true });
+        expect(api.posts()[0].body.designs).toEqual([{ cid: design.cid, content: design.content, parcelSourceId: 'oss-wfs' }]);
+        expect(api.calls.map(call => call.path)).not.toContain('/designs/binding');
+
+        const missingSource = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: fakeApi({ plans: [investor.plan] }).fetchImpl });
+        await expect(missingSource.proposeAgreement({ agreement: investor.content, designs: [{ content: design.content }], confirm: true }))
+            .rejects.toMatchObject({ code: 'parcel-source-required' });
+    });
+
     it('refuses a stray or doubled carried design, an agreement not in its published form and a sponsor that is no wallet', async () => {
         const agreement = agreementOf();
         const api = fakeApi({ plans: [agreement.plan] });
@@ -340,11 +359,40 @@ describe('betting on an agreement', () => {
 });
 
 describe('support and settlement on the agreement account', () => {
+    it('checks a recognized crowdfunding account CID against the published sponsor, payout, lens and deadline before donating', async () => {
+        const base = agreementOf();
+        const content = { ...base.content, rule: { electorate: 'investors', binding: true, approvalConfig: null, lens: [LENS], settlement: null },
+            inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: 'EUR', lines: [] }, valuation: null,
+            funding: { targetUsdcAtomic: '1000000', contract: { name: 'terms.txt', mediaType: 'text/plain', data: 'dGVybXM=' } }, deadline: '2099-01-01T00:00:00.000Z', consultation: null };
+        const agreement = { cid: cidOfObject(content), content };
+        const agreementAccount = agreementAccountOf(agreement.cid, AGENT);
+        const ensureDonationEscrowAndDonate = vi.fn(async () => ({ signature: 'donate-tx' }));
+        const state = { cid: agreement.cid, status: 'Active', deadline: Math.floor(Date.parse(content.deadline) / 1000),
+            authority: AGENT, payout: AGENT, lens: LENS, openGround: false, requiredLamports: 0n };
+        const readAgreementAccount = vi.fn(async () => state);
+        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: fakeApi({ agreements: [agreement] }).fetchImpl,
+            createConnection: () => ({ getAccountInfo() {} }), dependencies: { readAgreementAccount, ensureDonationEscrowAndDonate, sendAndConfirmPolling: vi.fn() } });
+        const args = { agreementAccount, amountUsdc: '0.01', operationId: 'investor-1', confirm: true };
+        await tools.donate(args);
+        expect(ensureDonationEscrowAndDonate).toHaveBeenCalledTimes(1);
+        for (const change of [{ lens: OTHER }, { payout: OTHER }, { requiredLamports: 1n }, { openGround: true }]) {
+            readAgreementAccount.mockResolvedValueOnce({ ...state, ...change });
+            await expect(tools.donate(args)).rejects.toThrow(/terms differ/);
+        }
+        const swappedTerms = { ...content, rule: base.content.rule };
+        const altered = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: fakeApi({ agreements: [{ cid: agreement.cid, content: swappedTerms }] }).fetchImpl,
+            createConnection: () => ({}), dependencies: { readAgreementAccount, ensureDonationEscrowAndDonate } });
+        await expect(altered.donate(args)).rejects.toMatchObject({ code: 'cid-mismatch' });
+        expect(ensureDonationEscrowAndDonate).toHaveBeenCalledTimes(1);
+    });
+
     it('routes pledges, donations and settlement through the shared adapters, the account as subject, under the cap', async () => {
         const names = ['ensurePledgeBookAndSet', 'ensureDonationEscrowAndDonate', 'refundDonation', 'voidPledge', 'revokePledge',
             'releaseDonations', 'fulfillPledge', 'resolveAgreementMarket', 'claimAgreementMarket', 'resolveExternalMarket', 'claimExternalMarket'];
         const dependencies = Object.fromEntries(names.map(name => [name, vi.fn(async () => ({ signature: `${name}-tx` }))]));
-        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: vi.fn(), createConnection: () => ({}), dependencies: { ...dependencies, sendAndConfirmPolling: vi.fn() } });
+        const readAgreementAccount = vi.fn(async () => ({ cid: agreementOf().cid }));
+        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: fakeApi().fetchImpl, createConnection: () => ({}),
+            dependencies: { ...dependencies, readAgreementAccount, sendAndConfirmPolling: vi.fn() } });
         const subject = 'agreement-account';
 
         await expect(tools.pledge({ agreementAccount: subject, amountUsdc: '0.11', confirm: true })).rejects.toThrow('exceeds UGT_MCP_MAX_USDC_PER_ACTION');

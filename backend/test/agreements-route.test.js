@@ -234,6 +234,23 @@ describe('POST /agreements', () => {
         expect(open.body.deadline).toBeNull();
     });
 
+    it('indexes a land-free investor agreement with its exact committed contract and skips parcel-binding equality', async () => {
+        const base = agreementContent([park]);
+        const content = {
+            schema: 'agreement/v1', title: 'Fund the park', author: 'Developer', sponsor: 'So11111111111111111111111111111111111111112', city: base.city,
+            createdAt: '2026-10-21T12:00:00.000Z', planCid: base.planCid,
+            inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: 'EUR', lines: [] }, valuation: null,
+            rule: { electorate: 'investors', binding: true, approvalConfig: null, lens: ['9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt'], settlement: null },
+            funding: { targetUsdcAtomic: '1000000', contract: { name: 'investor-terms.txt', mediaType: 'text/plain', data: 'dGVybXM=' } },
+            consultation: null, deadline: '2099-01-01T00:00:00.000Z'
+        };
+        const pool = indexPool();
+        const res = await post(appFor(pool).app, content, [{ cid: cidOf(park), content: park, parcelSourceId: 'oss-wfs' }]);
+        expect(res.status, JSON.stringify(res.body)).toBe(201);
+        expect(res.body).toMatchObject({ content, inputParcelIds: [], parcelSourceId: null, designCids: [cidOf(park)] });
+        expect(pool.getBindingCalls()).toEqual([]);
+    });
+
     it('refuses content that does not hash to its CID, and a malformed request', async () => {
         const pool = indexPool();
         const app = appFor(pool).app;

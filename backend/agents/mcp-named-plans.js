@@ -69,7 +69,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
         if (claimedCid && claimedCid !== cid) fail('cid-mismatch', 'The named plan differs from its claimed CID.');
         return cid;
     }
-    async function resolvePlan(value) {
+    async function resolvePlan(value, { referenceMembers = false } = {}) {
         let artifact = value?.draftArtifact || value, requestedCid, published = false;
         const warnings = [];
         // A CityJSON file the site wrote carries its plan file, read back as the Lists import does.
@@ -113,9 +113,11 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
         for (const memberCid of content.designCids) {
             let row = carried.get(memberCid);
             if (!row) {
-                const resolved = await drafts.resolveDesignSource(memberCid);
+                const resolved = referenceMembers && published
+                    ? await read.getDesign({ designCid: memberCid })
+                    : await drafts.resolveDesignSource(memberCid);
                 if (cidOfObject(resolved.content) !== memberCid) fail('cid-mismatch', 'A member design differs from the plan commitment.');
-                row = { cid: memberCid, ...resolved };
+                row = { cid: memberCid, content: resolved.content, parcelSourceId: resolved.parcelSourceId };
             }
             designs.push(row);
         }

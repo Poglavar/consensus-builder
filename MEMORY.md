@@ -403,3 +403,4 @@ in commits.
 - 2026-11-23: No haze over ground the Permitted layers have not loaded: it covered zones already drawn while massing
   loaded and confused more than it helped (user). Loading shows in the status line only; a cell still failing after its
   retry is hatched (`planning/failed-cells.js`, one image for map and model view).
+- Developer crowdfunding is an agreement on a named proposal. The developer attaches the contract stating what investors receive. The first flow reuses the existing contribution escrow and agreement decision.

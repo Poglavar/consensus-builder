@@ -278,7 +278,7 @@ export async function claimExternalMarket({
 
 // Steps that sign a chain transaction; decide (a signed message, relayed) and lens (the member's own
 // transaction) cost the proposer none.
-export const SIGNED_SETTLEMENT_STEPS = Object.freeze(['attest', 'execute', 'expire', 'resolve', 'claim', 'reclaim']);
+export const SIGNED_SETTLEMENT_STEPS = Object.freeze(['attest', 'execute', 'release-donations', 'expire', 'resolve', 'claim', 'reclaim']);
 
 const SETTLEMENT_READERS = {
     readAgreement: (connection, account) => readAgreementAccount(connection, { account }),
@@ -287,6 +287,7 @@ const SETTLEMENT_READERS = {
         const context = await readAgreementMarket(connection, account);
         return context.market ? lmsrClient.readPosition(context.connection, context.address, owner, lmsrClient.constants.SIDE_YES) : null;
     },
+    readDonation: (connection, account) => supportClient.readDonationEscrow(connection, account),
     readVault: (connection, market) => vaultAtomic(connection, market)
 };
 
@@ -328,10 +329,12 @@ export async function inspectSettlement({ connection, owner, agreement, lensKey 
     let label;
     let outcome;
     const steps = [];
+    const investorFunding = agreement.content?.rule?.electorate === 'investors';
     if (active && !due) {
-        if (pending && !agreement.soleOwner) return { ...base, state: 'awaiting-owners', outcome: null, steps: [] };
+        if (pending && !investorFunding && !agreement.soleOwner) return { ...base, state: 'awaiting-owners', outcome: null, steps: [] };
         if (pending && (!lensKey || state.lens !== lensKey)) return { ...base, state: 'lens-not-operated', outcome: null, steps: [], lens: state.lens };
-        if (pending) steps.push('decide', 'lens', 'attest');
+        if (pending && !investorFunding) steps.push('decide');
+        if (pending) steps.push('lens', 'attest');
         if (!funded) return { ...base, state: pending ? 'decidable' : 'awaiting-funds', outcome: null, steps, note: 'the escrow lacks what execution requires' };
         steps.push('execute');
         label = pending ? 'decidable' : 'decided';
@@ -344,6 +347,12 @@ export async function inspectSettlement({ connection, owner, agreement, lensKey 
         label = state.status.toLowerCase();
         if (state.status === AGREEMENT_STATUS.executed) outcome = state.executedAt <= state.deadline ? 'YES' : 'NO';
         else outcome = 'NO';
+    }
+    // Once an investor agreement executes, the existing permissionless release instruction moves
+    // the exact donation-vault balance to the sponsor.  No owner approval is involved.
+    if (investorFunding && (state.status === AGREEMENT_STATUS.executed || (active && !due && funded))) {
+        const donation = await read.readDonation(connection, agreement.account);
+        if (donation && !donation.released) steps.push('release-donations');
     }
     const [market, position] = await Promise.all([
         read.readMarket(connection, agreement.account),
@@ -381,7 +390,7 @@ export async function executeSettlement({
     if (!ownerKeypair?.publicKey) throw new Error('ownerKeypair is required');
     if (typeof perform !== 'function' || typeof checkpoint !== 'function') throw new Error('perform and checkpoint are required');
     const read = { ...SETTLEMENT_READERS, ...readers };
-    const act = { recordAgreementDecision, executeAgreement, expireAgreement, resolveAgreementMarket, claimAgreementMarket, reclaimAgreementMarketSeed, ...adapters };
+    const act = { recordAgreementDecision, executeAgreement, expireAgreement, releaseDonations, resolveAgreementMarket, claimAgreementMarket, reclaimAgreementMarketSeed, ...adapters };
     const subject = item.account;
     const current = { ...record, cid: item.cid, account: subject, pickId: item.pickId ?? null, sourceRunId: item.sourceRunId ?? null, sourceDay: item.sourceDay ?? null };
     const has = step => item.steps.includes(step);
@@ -406,6 +415,12 @@ export async function executeSettlement({
     if (has('execute')) {
         current.execution = await perform({ type: 'execute', agreementCid: item.cid }, () => act.executeAgreement({
             connection, payerKeypair: ownerKeypair, account: subject, sendAndConfirm
+        }));
+        await checkpoint({ ...current });
+    }
+    if (has('release-donations')) {
+        current.donationRelease = await perform({ type: 'release-donations', agreementCid: item.cid }, () => act.releaseDonations({
+            connection, releaserKeypair: ownerKeypair, subject, sendAndConfirm
         }));
         await checkpoint({ ...current });
     }

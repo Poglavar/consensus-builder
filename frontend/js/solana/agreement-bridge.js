@@ -25,6 +25,7 @@
         return api;
     };
     const lensCore = () => root.LensCore || (typeof require === 'function' ? require('../lens-core.js') : null);
+    const MAX_REFUNDS_PER_TX = 4;
     const idOf = value => (value === undefined || value === null ? '' : String(value).trim());
 
     // ---- pure ------------------------------------------------------------------------------------
@@ -60,7 +61,7 @@
     // count too. null when there is none.
     function mintLens(agreement, configured = [], isKey = value => lensCore().isBase58Pubkey(value)) {
         const rule = agreement && agreement.rule;
-        const candidates = rule && rule.electorate === 'owners' ? (Array.isArray(rule.lens) ? rule.lens : []) : configured;
+        const candidates = rule && rule.electorate !== 'community' ? (Array.isArray(rule.lens) ? rule.lens : []) : configured;
         return (candidates || []).map(entry => idOf(entry && typeof entry === 'object' ? entry.address : entry)).find(key => key && isKey(key)) || null;
     }
 
@@ -202,7 +203,20 @@
         function publishedOf(agreement) {
             const published = agreement && agreement.published;
             if (!published || !idOf(published.cid)) throw codedError(t('agreement.chain.errors.notProposed', 'Propose the agreement before minting it.'), 'not-proposed');
+            if (agreement.rule?.electorate === 'investors' && (win.AgreementRecord.publishedCid(agreement) !== published.cid || agreement.sponsor !== published.sponsor)) {
+                throw codedError(t('agreement.funding.mismatch', 'The funding terms differ from the published agreement.'), 'funding-mismatch');
+            }
             return { cid: published.cid, sponsor: idOf(published.sponsor) || null };
+        }
+
+        function checkFundingAccount(agreement, clusterName, value) {
+            if (agreement.rule?.electorate !== 'investors') return;
+            if (clusterName !== 'devnet') throw codedError(t('agreement.funding.devnet', 'Switch to Solana devnet for this funding round.'), 'wrong-cluster');
+            if (value && (value.authority !== agreement.sponsor || value.payout !== agreement.sponsor
+                || value.lens !== agreement.rule.lens[0] || value.deadline !== Math.floor(Date.parse(agreement.deadline) / 1000)
+                || value.requiredLamports !== 0n || value.openGround !== false)) {
+                throw codedError(t('agreement.funding.mismatch', 'The funding terms differ from the published agreement.'), 'funding-mismatch');
+            }
         }
 
         function mintedRef(agreement) {
@@ -221,7 +235,9 @@
             const { cid, sponsor } = publishedOf(agreement);
             const ref = mintedRef(agreement);
             const connection = win.SolanaChainDataLoader.getConnection(ref.cluster);
-            return api.fetchAgreement(connection, { address: ref.account, cid, ...(sponsor ? { authority: sponsor } : {}), programId: programId() });
+            const value = await api.fetchAgreement(connection, { address: ref.account, cid, ...(sponsor ? { authority: sponsor } : {}), programId: programId() });
+            checkFundingAccount(agreement, ref.cluster, value);
+            return value;
         }
 
         /**
@@ -259,6 +275,8 @@
             const connection = win.SolanaChainDataLoader.getConnection(ref.cluster);
             const value = await api.fetchAgreement(connection, { address: ref.account, cid, ...(sponsor ? { authority: sponsor } : {}), programId: programId() });
             if (!value) throw codedError(t('agreement.chain.errors.accountMissing', 'The agreement’s account is not on Solana {{cluster}}.', { cluster: ref.cluster }), 'account-missing');
+            if (agreement.rule?.electorate === 'investors' && cluster() !== ref.cluster) throw codedError(t('agreement.funding.devnet', 'Switch to Solana devnet for this funding round.'), 'wrong-cluster');
+            checkFundingAccount(agreement, ref.cluster, value);
             return { ref, connection, value };
         }
 
@@ -282,6 +300,13 @@
                 throw codedError(t('agreement.chain.errors.noSponsor', 'This agreement was proposed without a wallet, so it cannot be minted. Propose it again with this wallet connected.'), 'no-sponsor');
             }
             const { provider, wallet, cluster: clusterName } = walletContext();
+            if (agreement.rule?.electorate === 'investors') {
+                checkFundingAccount(agreement, clusterName);
+                lens = agreement.rule.lens[0];
+                payout = sponsor;
+                deadline = agreement.deadline;
+                requiredLamports = 0n;
+            }
             if (wallet.toBase58() !== sponsor) {
                 throw codedError(t('agreement.chain.errors.notSponsor', 'Only the sponsor’s wallet ({{sponsor}}) can mint this agreement.', { sponsor: short(sponsor) }), 'not-sponsor');
             }
@@ -306,6 +331,7 @@
             const ref = { cluster: clusterName, account: built.agreement.toBase58() };
             const existing = await api.fetchAgreement(connection, { address: ref.account, cid, authority: sponsor, programId: programId() });
             if (existing) {
+                checkFundingAccount(agreement, clusterName, existing);
                 log(`${cid} is already minted at ${ref.account} (${clusterName})`);
                 return { signature: null, account: ref.account, cluster: clusterName, explorerUrl: explorerUrl(ref) };
             }
@@ -316,6 +342,7 @@
 
         // The sponsor adds `lamports` (BigInt) to the escrow.
         async function fund({ agreement, lamports, onStatus } = {}) {
+            if (agreement?.rule?.electorate === 'investors') throw codedError(t('agreement.funding.usdcOnly', 'Use Contribute to fund this agreement with devnet USDC.'), 'usdc-only');
             const api = await dependencies();
             const { provider, wallet } = walletContext();
             const { ref, connection, value } = await current(api, agreement);
@@ -402,17 +429,36 @@
             return { escrow, mine };
         }
 
+        // After a lost confirmation the same wallet retries the same on-chain position. A new,
+        // intentional contribution gets a new ID after the previous receipt is observed.
+        const pendingDeposits = new Map();
         async function donate({ agreement, amountAtomic, onStatus } = {}) {
             const api = await dependencies();
             const { provider, wallet } = walletContext();
             const { ref, connection, value } = await current(api, agreement);
             if (value.status !== 'Active') throw codedError(t('agreement.boost.errors.notActive', 'Only an active agreement can be boosted.'), 'not-active');
+            if (agreement.rule?.electorate === 'investors' && api.deadlinePassed(value, Math.floor(Date.now() / 1000))) {
+                throw codedError(t('agreement.chain.errors.deadlinePassed', 'The agreement’s deadline has passed.'), 'deadline-passed');
+            }
             const client = pledge();
-            const donationId = await client.hashOperationId(win.crypto.randomUUID());
+            const key = agreement.rule?.electorate === 'investors' ? `ugt-investment:${ref.account}:${wallet.toBase58()}:${amountAtomic}` : null;
+            const previous = key && (pendingDeposits.get(key) || win.sessionStorage?.getItem(key));
+            const operationId = previous || win.crypto.randomUUID();
+            const donationId = await client.hashOperationId(operationId);
+            const clear = () => { if (key) { pendingDeposits.delete(key); win.sessionStorage?.removeItem(key); } };
+            if (previous) {
+                const position = await client.readDonationPosition(connection, ref.account, wallet, donationId);
+                if (position && position.amount === BigInt(amountAtomic)) {
+                    clear();
+                    return { signature: null, account: ref.account, cluster: ref.cluster, explorerUrl: explorerUrl(ref) };
+                }
+            }
+            if (key) { pendingDeposits.set(key, operationId); win.sessionStorage?.setItem(key, operationId); }
             const instructions = [];
             if (!(await client.readDonationEscrow(connection, ref.account))) instructions.push(client.buildCreateDonationEscrowIx({ proposal: ref.account, creator: wallet }));
             instructions.push(client.buildDonateIx({ proposal: ref.account, donor: wallet, donationId, amount: BigInt(amountAtomic) }));
             const sent = await send(connection, provider, wallet, ref.cluster, instructions, { onStatus });
+            clear();
             log(`boosted ${ref.account} with ${client.formatUsdc(BigInt(amountAtomic))} USDC`, { signature: sent.signature });
             return result(sent, ref);
         }
@@ -424,16 +470,19 @@
             const connection = win.SolanaChainDataLoader.getConnection(ref.cluster);
             const open = (await pledge().listDonationPositions(connection, ref.account, wallet.toBase58())).filter(row => !row.refunded);
             if (!open.length) throw codedError(t('agreement.boost.errors.nothingToRefund', 'This wallet has no boost to take back.'), 'nothing-to-refund');
+            // Each position adds accounts and instruction data to a Solana transaction.
+            const batch = agreement.rule?.electorate === 'investors' ? open.slice(0, MAX_REFUNDS_PER_TX) : open;
             const sent = await send(connection, provider, wallet, ref.cluster,
-                open.map(row => pledge().buildRefundDonationIx({ proposal: ref.account, donor: wallet, donationId: row.donationId })), { onStatus });
-            log(`refunded ${open.length} boost(s) on ${ref.account}`, { signature: sent.signature });
+                batch.map(row => pledge().buildRefundDonationIx({ proposal: ref.account, donor: wallet, donationId: row.donationId })), { onStatus });
+            log(`refunded ${batch.length} contribution(s) on ${ref.account}`, { signature: sent.signature });
             return result(sent, ref);
         }
 
         async function releaseDonations({ agreement, onStatus } = {}) {
-            await dependencies();
+            const api = await dependencies();
             const { provider, wallet } = walletContext();
             const ref = mintedRef(agreement);
+            if (agreement.rule?.electorate === 'investors') await current(api, agreement);
             const connection = win.SolanaChainDataLoader.getConnection(ref.cluster);
             const escrow = await pledge().readDonationEscrow(connection, ref.account);
             if (!escrow || escrow.released) throw codedError(t('agreement.boost.errors.nothingToRelease', 'There are no boosts to release.'), 'nothing-to-release');
@@ -447,5 +496,5 @@
             donations, donate, refundDonations, releaseDonations };
     }
 
-    return { LAMPORTS_PER_SOL, lamportsFromSol, solOf, explorerUrl, onchainRef, mintLens, chainActions, decisionAttestationOf, anchorError, browser };
+    return { LAMPORTS_PER_SOL, MAX_REFUNDS_PER_TX, lamportsFromSol, solOf, explorerUrl, onchainRef, mintLens, chainActions, decisionAttestationOf, anchorError, browser };
 });

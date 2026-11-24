@@ -236,14 +236,14 @@ describe('the member issues AgreementDecision-v1', () => {
 
 describe('POST /lens/agreements/:cid/decision', () => {
     // The member with an agreement index: GET /agreements/:cid rows by CID, and the relayed receipts.
-    function memberApp({ rows = [indexed()], receipts = [], operatorToken = TOKEN, withIndex = true } = {}) {
+    function memberApp({ rows = [indexed()], receipts = [], operatorToken = TOKEN, withIndex = true, fundingChain = null } = {}) {
         const { member, issuer, store } = lensMember();
         const index = { rows, receipts };
         const agreements = withIndex ? {
             load: vi.fn(async cid => index.rows.find(row => row.cid === cid) ?? null),
             decisions: vi.fn(async cid => (index.rows.some(row => row.cid === cid) ? index.receipts : []))
         } : null;
-        const app = createLensMemberApp({ member, pricing: createLensPricing({ dryRun: true }), operatorToken, agreements, clock });
+        const app = createLensMemberApp({ member, pricing: createLensPricing({ dryRun: true }), operatorToken, agreements, fundingChain, clock });
         return { app, member, issuer, store, index, agreements };
     }
     const ask = (app, cid = CID, token = TOKEN) => {
@@ -271,6 +271,32 @@ describe('POST /lens/agreements/:cid/decision', () => {
         const listed = await request(app).get('/lens/attestations').query({ kind: 'decision', agreementCid: CID });
         expect(listed.body.attestations.map(row => row.address)).toEqual([res.body.address]);
         expect(listed.body.attestations[0]).not.toHaveProperty('reused');
+    });
+
+    it('issues a funding decision through the registered operator from finalized donation-vault evidence, without owner receipts', async () => {
+        const funding = { ...content(), inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: 'EUR', lines: [] }, valuation: null, consultation: null,
+            rule: { electorate: 'investors', binding: true, approvalConfig: null, settlement: null, lens: [MEMBER] },
+            funding: { targetUsdcAtomic: '1000000', contract: { name: 'investors.txt', mediaType: 'text/plain', data: 'VGVybXM=' } } };
+        const fundingCid = cidOfObject(funding);
+        const fundingAccount = Keypair.generate().publicKey.toBase58();
+        const fundingEscrow = Keypair.generate().publicKey.toBase58();
+        const fundingVault = Keypair.generate().publicKey.toBase58();
+        const row = indexed(funding, { cid: fundingCid, onchain: onchain({ account: fundingAccount }) });
+        row.onchain.account = fundingAccount;
+        const fundingChain = {
+            agreementProgramId: 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ', pledgeProgramId: '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g',
+            observe: vi.fn(async () => ({ slot: 400, blockTime: NOW + 5, escrow: fundingEscrow, vault: fundingVault, vaultUsdcAtomic: 1000000n,
+                agreement: { address: fundingAccount, cid: fundingCid, authority: SPONSOR, payout: SPONSOR, openGround: false, lens: MEMBER, status: 'Active', decision: 'Pending', requiredLamports: 0n, deadline: NOW + 7 * 86400 },
+                donation: { proposal: fundingAccount, beneficiary: SPONSOR, mint: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU', vault: fundingVault, totalDonated: 1000000n, totalRefunded: 0n, totalReleased: 0n, released: false }
+            }))
+        };
+        const { app, issuer, agreements } = memberApp({ rows: [row], fundingChain });
+        const res = await ask(app, fundingCid);
+        expect(res.status).toBe(201);
+        expect(res.body).toMatchObject({ counted: 0, tally: null, payload: { agreementCid: fundingCid, sponsor: SPONSOR, decision: 'satisfied', sourceObservedAt: NOW + 5 } });
+        expect(fundingChain.observe).toHaveBeenCalledWith({ cid: fundingCid, sponsor: SPONSOR, account: fundingAccount });
+        expect(agreements.decisions).not.toHaveBeenCalled();
+        expect(decodeLensAttestation('decision', issuer.accounts.get(res.body.address)).fields).toEqual(res.body.payload);
     });
 
     it('answers the decision it issued, once, whatever the index says later', async () => {

@@ -191,7 +191,7 @@ export function parcelOutputs(parcels) {
  */
 export function agreementObject({
     title = null, author = null, sponsor = null, city = null, createdAt = null,
-    designs, plan, parcels, openGroundM2 = 0, outputs, allocations, money, valuation = null, rule, deadline = null, consultation = null
+    designs, plan, parcels, openGroundM2 = 0, outputs, allocations, money, valuation = null, rule, deadline = null, consultation = null, funding = null, requireSponsor = true
 } = {}) {
     if (!Array.isArray(designs) || !designs.length) throw fail('invalid-agreement', 'an agreement links at least one design');
     const designCids = new Set();
@@ -241,7 +241,8 @@ export function agreementObject({
         valuation,
         rule,
         consultation,
-        deadline
+        deadline,
+        ...(funding ? { funding } : {})
     };
     let checked;
     try {
@@ -254,6 +255,6 @@ export function agreementObject({
     if (!checked.valid) {
         throw fail('invalid-agreement', `invalid ${AGREEMENT_SCHEMA}: ${checked.errors.map(error => `${error.section}: ${error.message}`).join('; ')}`, { errors: checked.errors });
     }
-    const content = agreementRecord.published(record, cid => cid);
+    const content = agreementRecord.published(record, cid => cid, { requireSponsor });
     return { content, cid: cidApi.cidOfObject(content), plan: record.plan };
 }

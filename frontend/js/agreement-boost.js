@@ -9,24 +9,17 @@
 })(typeof window !== 'undefined' ? window : globalThis, function (root) {
     'use strict';
 
-    const DECIMALS = 6;
-    const ONE = 10n ** BigInt(DECIMALS);
+    const records = () => root.AgreementRecord || (typeof require === 'function' ? require('./agreement-record.js') : null);
 
     // ---- pure model --------------------------------------------------------------------------------
 
     /** "12.5" → 12500000n (6 decimals); null for anything that is not a positive amount. */
     function parseAmount(text) {
-        const value = String(text ?? '').trim().replace(',', '.');
-        if (!/^\d+(\.\d{1,6})?$/.test(value)) return null;
-        const [whole, fraction = ''] = value.split('.');
-        const atomic = BigInt(whole) * ONE + BigInt(fraction.padEnd(DECIMALS, '0'));
-        return atomic > 0n ? atomic : null;
+        return records().parseUsdc(text);
     }
 
     function formatAmount(atomic) {
-        const value = BigInt(atomic);
-        const fraction = (value % ONE).toString().padStart(DECIMALS, '0').replace(/0+$/, '');
-        return fraction ? `${value / ONE}.${fraction}` : String(value / ONE);
+        return records().formatUsdc(atomic);
     }
 
     /**
@@ -79,14 +72,14 @@
     // wallet's own donations listed (a getProgramAccounts read the primary RPC does not serve).
     const refundable = status => status === 'Cancelled' || status === 'Expired';
 
-    async function load(agreement, account, chainStatus) {
-        const entry = { loading: true, error: null, escrow: null, mine: [], boosts: [], balances: [] };
+    async function load({ agreement, account, chainStatus, wallet, crowdfunding }) {
+        const entry = { wallet, chainStatus, loading: true, error: null, escrow: null, mine: [], boosts: [], balances: [] };
         cache.set(account, entry);
         try {
             const [chain, boosts, balances] = await Promise.all([
                 root.AgreementBridge.donations(agreement, { mine: refundable(chainStatus) }),
-                root.BetsTrading ? root.BetsTrading.agreementBoosts(account) : [],
-                root.BetsTrading ? root.BetsTrading.asset() === 'points' ? root.BetsTrading.cityTokens().catch(() => null)
+                !crowdfunding && root.BetsTrading ? root.BetsTrading.agreementBoosts(account) : [],
+                !crowdfunding && root.BetsTrading ? root.BetsTrading.asset() === 'points' ? root.BetsTrading.cityTokens().catch(() => null)
                     : null : null
             ]);
             Object.assign(entry, { escrow: chain.escrow, mine: chain.mine, boosts, balances: balances?.balances || [] });
@@ -96,7 +89,7 @@
         }
         entry.loading = false;
         const slot = slotOf(account);
-        if (slot) draw(slot, slot.__boostContext);
+        if (slot && entry === cache.get(account)) draw(slot, slot.__boostContext);
     }
 
     function status(slot, message, tone = '') {
@@ -106,19 +99,25 @@
         line.className = `agreement-panel-hint agreement-boost__status${tone ? ` agreement-boost__status--${tone}` : ''}`;
     }
 
+    const inFlight = new Set();
     async function run(slot, button, work) {
         const context = slot.__boostContext;
+        if (inFlight.has(context.account)) return false;
+        inFlight.add(context.account);
         try {
             await root.BusyControl.track(button, () => work(item => {
                 if (item?.state === 'awaiting_signature') status(slot, t('bets.trade.sign', 'Confirm in your wallet…'));
                 else if (item?.state === 'submitted') status(slot, t('bets.trade.submitted', 'Waiting for confirmation…'));
             }));
-            await load(context.agreement, context.account, context.chainStatus);
+            const current = slotOf(context.account);
+            if (current) await load(current.__boostContext);
+            return true;
         } catch (error) {
             console.error(`[${new Date().toISOString()}] [AgreementBoost] action failed`, error);
             const current = slotOf(context.account);
             if (current) status(current, error?.message || String(error), 'danger');
-        }
+            return false;
+        } finally { inFlight.delete(context.account); }
     }
 
     // The two-step Boost dialog: which currency, then how much.
@@ -152,20 +151,40 @@
         if (current && !current.querySelector('.agreement-boost__status--danger')) status(current, t('agreement.boost.done', 'Boosted with {{amount}} {{unit}}.', { amount: formatAmount(amount), unit }), 'success');
     }
 
+    async function contribute(slot, button) {
+        const { agreement, account } = slot.__boostContext;
+        const label = t('agreement.funding.contribute', 'Contribute');
+        const text = t('agreement.funding.amount', 'How much devnet USDC will you contribute under {{name}}?', { name: agreement.funding.contract.name });
+        const intent = root.ApprovalLink?.parse(root.location);
+        const requested = intent?.action === 'donate' && intent.target === agreement.published?.cid && parseAmount(intent.params.amount) !== null
+            ? intent.params.amount : '';
+        const answer = await root.CbDialog.prompt(text, { title: label, okText: label, defaultValue: requested, placeholder: '10', validate: value => parseAmount(value) !== null });
+        if (answer == null || !slotOf(account)) return;
+        const amountAtomic = parseAmount(answer);
+        const ok = await run(slot, button, onStatus => root.AgreementBridge.donate({ agreement, amountAtomic, onStatus }));
+        const current = slotOf(account);
+        if (ok && current) status(current, t('agreement.funding.contributed', 'Contributed {{amount}} devnet USDC.', { amount: formatAmount(amountAtomic) }), 'success');
+    }
+
     function draw(slot, context) {
         slot.__boostContext = context;
         const entry = cache.get(context.account);
+        const crowdfunding = context.crowdfunding;
+        const focusAction = slot.contains(doc.activeElement) ? doc.activeElement.dataset.agreementBoostAction : null;
         const section = el('div', 'agreement-boost');
-        section.append(el('h4', 'agreement-boost__title', t('agreement.boost.title', 'Boost')));
+        section.append(el('h4', 'agreement-boost__title', crowdfunding ? t('agreement.funding.deposits', 'Contributions') : t('agreement.boost.title', 'Boost')));
         if (!entry || entry.loading) {
-            section.append(el('p', 'agreement-panel-hint', t('agreement.boost.reading', 'Reading boosts…')));
+            section.append(el('p', 'agreement-panel-hint', crowdfunding ? t('agreement.funding.reading', 'Reading contributions…') : t('agreement.boost.reading', 'Reading boosts…')));
         } else if (entry.error) {
-            section.append(el('p', 'agreement-panel-note agreement-panel-note--danger', t('agreement.boost.readFailed', 'Boosts could not be read: {{reason}}', { reason: entry.error })));
+            section.append(el('p', 'agreement-panel-note agreement-panel-note--danger', crowdfunding ? entry.error : t('agreement.boost.readFailed', 'Boosts could not be read: {{reason}}', { reason: entry.error })));
         } else {
             const state = boostState({ chainStatus: context.chainStatus, escrow: entry.escrow, mine: entry.mine, boosts: entry.boosts });
             const facts = el('dl', 'agreement-panel-facts');
             const fact = (label, value) => { const row = el('div'); row.append(el('dt', null, label), el('dd', null, value)); facts.append(row); };
-            fact('USDC', state.usdc.amount > 0n
+            if (crowdfunding) fact(t('agreement.funding.deposits', 'Contributions'),
+                t('agreement.funding.progress', '{{raised}} of {{target}} devnet USDC', { raised: formatAmount(state.usdc.amount), target: formatAmount(context.agreement.funding.targetUsdcAtomic) })
+                + (state.usdc.released ? t('agreement.boost.releasedSuffix', ', released to the sponsor') : ''));
+            else fact('USDC', state.usdc.amount > 0n
                 ? t('agreement.boost.usdcTotal', '{{amount}} from {{count}} supporter(s){{released}}', { amount: formatAmount(state.usdc.amount), count: state.usdc.donors,
                     released: state.usdc.released ? t('agreement.boost.releasedSuffix', ', released to the sponsor') : '' })
                 : t('agreement.boost.none', 'None yet'));
@@ -180,17 +199,29 @@
                 button.addEventListener('click', () => handler(slot, button));
                 actions.append(button);
             };
-            if (state.canBoost) add('boost', 'fas fa-rocket', t('agreement.boost.title', 'Boost'), boost, true);
-            if (state.canRelease) add('release', 'fas fa-hand-holding-dollar', t('agreement.boost.release', 'Release USDC boosts to the sponsor'),
+            if (crowdfunding && state.canBoost && Math.floor(Date.now() / 1000) <= Math.floor(Date.parse(context.agreement.deadline) / 1000)) {
+                add('boost', 'fas fa-coins', t('agreement.funding.contribute', 'Contribute'), contribute, true);
+            } else if (!crowdfunding && state.canBoost) add('boost', 'fas fa-rocket', t('agreement.boost.title', 'Boost'), boost, true);
+            if (state.canRelease) add('release', 'fas fa-hand-holding-dollar', crowdfunding ? t('agreement.funding.release', 'Release USDC to the developer') : t('agreement.boost.release', 'Release USDC boosts to the sponsor'),
                 (s, b) => run(s, b, onStatus => root.AgreementBridge.releaseDonations({ agreement: context.agreement, onStatus })));
-            if (state.canRefund) add('refund', 'fas fa-rotate-left', t('agreement.boost.refund', 'Take back my {{amount}} USDC', { amount: formatAmount(state.refundable) }),
-                (s, b) => run(s, b, onStatus => root.AgreementBridge.refundDonations({ agreement: context.agreement, onStatus })));
+            if (state.canRefund) {
+                const batchSize = root.AgreementBridge.MAX_REFUNDS_PER_TX;
+                const count = entry.mine.filter(item => !item.refunded).length;
+                const label = crowdfunding && count > batchSize ? t('agreement.funding.refundBatch', 'Reclaim {{batch}} of {{count}} contributions', { batch: batchSize, count })
+                    : t('agreement.boost.refund', 'Take back my {{amount}} USDC', { amount: formatAmount(state.refundable) });
+                add('refund', 'fas fa-rotate-left', label, (s, b) => run(s, b, onStatus => root.AgreementBridge.refundDonations({ agreement: context.agreement, onStatus })));
+            }
             if (actions.childElementCount) section.append(actions);
-            if (state.canBoost) section.append(el('p', 'agreement-panel-hint', t('agreement.boost.rule', 'City-token boosts settle when the agreement ends: 30% to the sponsor and 70% to the parcel owners if it executes, back to you if not.')));
+            if (state.canBoost) section.append(el('p', 'agreement-panel-hint', crowdfunding ? t('agreement.funding.settlement', 'Execution unlocks contributions for the developer. Cancellation or expiry lets each investor reclaim their USDC.')
+                : t('agreement.boost.rule', 'City-token boosts settle when the agreement ends: 30% to the sponsor and 70% to the parcel owners if it executes, back to you if not.')));
         }
         const line = el('p', 'agreement-panel-hint agreement-boost__status'); line.dataset.agreementBoostStatus = ''; line.setAttribute('role', 'status'); line.setAttribute('aria-live', 'polite');
         section.append(line);
         slot.replaceChildren(section);
+        // A donate approval link may have opened the agreement before this lazy module loaded.
+        // This is presentation readiness only; ApprovalLink focuses the button and never clicks it.
+        doc.dispatchEvent(new CustomEvent('agreement-boost-ready', { detail: { cid: context.agreement?.published?.cid || context.agreement?.cid || null } }));
+        if (focusAction) slot.querySelector(`[data-agreement-boost-action="${CSS.escape(focusAction)}"]`)?.focus({ preventScroll: true });
     }
 
     /** Draw into the panel's slot from the cache, reading the boosts when there are none yet. */
@@ -198,9 +229,11 @@
         const account = root.AgreementBridge.onchainRef(agreement)?.account;
         if (!slot || !account) return;
         slot.dataset.agreementBoost = account;
-        const context = { agreement, account, chainStatus, city: agreement.city || null };
+        const wallet = root.AgreementBridge.connectedWallet?.() || null;
+        const context = { agreement, account, chainStatus, wallet, crowdfunding: agreement.rule?.electorate === 'investors', city: agreement.city || null };
+        const previous = cache.get(account);
+        if (!previous || previous.wallet !== wallet || previous.chainStatus !== chainStatus) load(context);
         draw(slot, context);
-        if (!cache.has(account)) load(agreement, account, chainStatus);
     }
 
     return { model, mount, refresh: account => cache.delete(account) };

@@ -9,10 +9,10 @@
 import type { Browser, BrowserContext, Locator, Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { chooseProfileName, openOnAnotherDevice, stubBasemapTiles } from '../helpers/runtime';
+import { chooseProfileName, openOnAnotherDevice, PARCEL_GEOMETRY, stubBasemapTiles } from '../helpers/runtime';
 import { connectWalletByConnectorId, injectMockSolanaWallet } from '../helpers/blockchain';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
-import { attachSharedIndex, E2E_LENS_MEMBER_KEY, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
+import { attachSharedIndex, E2E_LENS_MEMBER_KEY, fileAgreement, fileDesign, filePlan, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
 import { agreementAccountAddress, encodeAgreementAccount, serveAgreementAccounts, DECISION, AgreementAccount } from '../helpers/agreement-chain';
 import {
   applyLayout, agreementPanel, storedAgreements, createFromPlan, openStackAgreement, openAgreementsList, agreementListItem, openListedAgreement, closeAgreementPanel,
@@ -104,6 +104,47 @@ async function openDevice(browser: Browser, url: string, index: SharedIndex, acc
 }
 
 test.describe('Agreements on chain @core', () => {
+  test('an investor opens committed terms and must manually confirm a USDC contribution', async ({ mockApi: page }) => {
+    await page.setViewportSize({ width: 390, height: 760 });
+    const index = pageIndex(page);
+    const city = 'new_york', view = { at: '40.7143,-74.0085,16', mode: '2d', city, language: 'en' };
+    const design = fileDesign(index, { schema: 'design/v1', goal: 'park', title: 'Local park', description: null, author: null, city, site: PARCEL_GEOMETRY,
+      toleranceM: null, geometry: null, origin: null, authoredAt: null, structureProposal: { kind: 'park', blockName: null, geometry: PARCEL_GEOMETRY } });
+    const planCid = filePlan(index, require('../../frontend/js/plan-record.js').create('Park plan', [design], view));
+    const deadline = '2030-12-31T23:59:59.000Z';
+    const cid = fileAgreement(index, { schema: 'agreement/v1', title: 'Investor round', author: null, sponsor: SPONSOR, city, planCid, createdAt: null, deadline,
+      inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: 'USD', lines: [] }, valuation: null, consultation: null,
+      rule: { electorate: 'investors', binding: true, approvalConfig: null, settlement: null, lens: [E2E_LENS_MEMBER_KEY] },
+      funding: { targetUsdcAtomic: '12500000', contract: { name: 'return-terms.txt', mediaType: 'text/plain', data: Buffer.from('Quarterly investor reports.').toString('base64') } } });
+    const account = agreementAccountAddress(cid, SPONSOR);
+    const accounts = new Map([[account, encodeAgreementAccount({ cid, authority: SPONSOR, lens: E2E_LENS_MEMBER_KEY, payout: SPONSOR, deadline: Date.parse(deadline) / 1000, requiredLamports: 0n })]]);
+    await serveAgreementAccounts(page, accounts);
+    index.agreements.get(cid)!.onchain = { chain: 'solana', cluster: 'devnet', account, sponsor: SPONSOR, status: 'active', decision: 'pending' };
+    await page.goto(`/agreements/${cid}?city=${city}&at=${view.at}&act=donate&amount=1.25&lang=en`, { waitUntil: 'domcontentloaded' });
+    const panel = agreementPanel(page);
+    await expect(panel.locator('[data-agreement-funding-goal]')).toContainText('12.5 devnet USDC');
+    await expect(panel.locator('[data-agreement-chain="minted"]')).toHaveCount(1);
+    await expect(panel.locator('[data-agreement-action="fund"], [data-agreement-action="bet"]')).toHaveCount(0);
+    const download = page.waitForEvent('download');
+    await panel.locator('[data-agreement-action="contract"]').click();
+    const file = await download;
+    expect(file.suggestedFilename()).toBe('return-terms.txt');
+    // An approval/deep link may focus the contribution affordance, but cannot send or open a wallet
+    // prompt by itself.  This active round has no automatic transfer in the fixture.
+    await expect(page.locator('.cb-dialog--prompt')).toHaveCount(0);
+    const contribution = panel.locator('[data-agreement-boost-action="boost"]');
+    await expect(contribution).toBeVisible({ timeout: 30_000 });
+    await contribution.focus();
+    await page.keyboard.press('Enter');
+    const prompt = page.locator('.cb-dialog--prompt');
+    await expect(prompt).toContainText('How much devnet USDC will you contribute');
+    await expect(prompt.locator('.cb-dialog__prompt')).toHaveValue('1.25');
+    await prompt.locator('[data-action-id="cancel"]').click();
+    await expect(prompt).toHaveCount(0);
+    await expect(panel.locator('[data-agreement-boost-status]')).not.toContainText('Contributed');
+    expect(await storedAgreements(page)).toHaveLength(0);
+  });
+
   test('a binding owners’ agreement is minted by its sponsor: proposed without a wallet it is proposed again with one, and Mint asks the mint’s terms', async ({ mockApi: page, browser, baseURL }) => {
     test.setTimeout(300_000);
     await injectMockSolanaWallet(page, { publicKey: SPONSOR, providerName: 'phantom' });

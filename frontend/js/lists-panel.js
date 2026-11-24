@@ -587,6 +587,10 @@
                         const plan = await win.PlanWorkspace.resolve(await planOf(row));
                         win.MapShell.closeSheets(); return win.AgreementDialog.open({ plan });
                     }, '', 'cb-icon-agreement'));
+                    actions.append(button(t('agreement.funding.title'), async () => {
+                        const plan = await win.PlanWorkspace.resolve(await planOf(row));
+                        win.MapShell.closeSheets(); return win.AgreementDialog.open({ plan, electorate: 'investors' });
+                    }, '', 'cb-icon-agreement'));
                     actions.append(button(t('planDialog.schedule'), async () => {
                         const plan = await planOf(row);
                         win.MapShell.closeSheets(); return win.PlanDialog.schedule(plan);

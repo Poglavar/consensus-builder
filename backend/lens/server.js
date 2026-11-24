@@ -82,7 +82,7 @@ const wrap = handler => (req, res, next) => Promise.resolve(handler(req, res, ne
  *   decisions its relay admitted (lens/run.mjs builds it over DATABASE_URL); without it agreement
  *   decisions answer 503.
  */
-export function createLensMemberApp({ member, pricing, operatorToken = null, corsOrigin = '*', approvalAttester = null, agreements = null, propertyOffers = null, clock = systemClock }) {
+export function createLensMemberApp({ member, pricing, operatorToken = null, corsOrigin = '*', approvalAttester = null, agreements = null, propertyOffers = null, fundingChain = null, clock = systemClock }) {
     if (!member) throw new Error('createLensMemberApp: member is required');
     if (!pricing) throw new Error('createLensMemberApp: pricing is required');
     // One member, one key: approval facts must be signed by the key agreements list in their lens.
@@ -206,7 +206,7 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
 
     // AgreementDecision-v1 `satisfied` for an indexed agreement (programs/agreement/README.md).
     // Operator-only, and the operator supplies nothing but the CID: whether the rule is met comes from
-    // the agreement and its relayed owner decisions (agreement-decision.js). A decision already issued
+    // the published rule and its owner receipts or finalized USDC deposits. A decision already issued
     // for the agreement is final here as on chain: asked again it is answered as stored.
     // → 201 issued, 200 already issued (`reused`), each with the tally.
     app.post('/lens/agreements/:cid/decision', wrap(async (req, res) => {
@@ -216,11 +216,12 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
         if (!isCid(cid)) throw new LensError(400, 'bad_request', 'cid must be an agreement CID (bafkrei…)');
         const agreement = await agreements.load(cid);
         if (!agreement) throw new LensError(404, 'agreement_not_found', `agreement ${cid} is not in the index`);
-        const count = countAgreementDecisions(agreement, await agreements.decisions(cid));
+        const count = agreement.content?.rule?.electorate === 'investors' ? null
+            : countAgreementDecisions(agreement, await agreements.decisions(cid));
         const sponsor = agreement.content?.sponsor;
         const existing = typeof sponsor === 'string' ? await member.findDecision({ agreementCid: cid, sponsor }) : null;
-        if (existing) return res.status(200).json({ ...publicRecord(existing), reused: true, tally: count.tally, counted: count.counted.length });
-        const plan = planAgreementDecision({ agreement, count, lensKey: member.authority, nowSeconds: clock.nowSeconds() });
+        if (existing) return res.status(200).json({ ...publicRecord(existing), reused: true, tally: count?.tally ?? null, counted: count?.counted.length ?? 0 });
+        const plan = await planAgreementDecision({ agreement, count, lensKey: member.authority, nowSeconds: clock.nowSeconds(), chain: fundingChain });
         const record = await member.attestDecision(plan.fields);
         res.status(record.reused ? 200 : 201).json({ ...publicRecord(record), reused: record.reused, tally: plan.tally, counted: plan.counted });
     }));

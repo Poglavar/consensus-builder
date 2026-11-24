@@ -10,7 +10,7 @@
     const ACTIONS = ['mint', 'fund', 'decide', 'execute', 'cancel', 'expire', 'bet', 'pledge', 'donate'];
     const AMOUNT = /^(?:0|[1-9]\d{0,8})(?:\.\d{1,6})?$/;
     function validate({ action, target, params = {} } = {}) {
-        if (['pledge', 'donate'].includes(action)) throw Object.assign(new Error('The app has no pledge or donation wallet form yet; use the local signing tool.'), { code: 'approval-unavailable', next: { tool: action === 'pledge' ? 'ugt_pledge' : 'ugt_donate', action: 'Use an operator-controlled local devnet wallet, or choose a supported app action.' } });
+        if (action === 'pledge') throw Object.assign(new Error('The app has no wallet form for an unfunded pledge.'), { code: 'approval-unavailable', next: { tool: 'ugt_pledge', action: 'Use an operator-controlled local devnet wallet.' } });
         if (action === 'decide' && params.decision === 'reject') throw new Error('Owner decisions currently accept or withdraw acceptance; rejection is not a signed decision in the current contract');
         if (!ACTIONS.includes(action)) throw new Error('Unknown approval action');
         if (!(action === 'bet' ? ACCOUNT : CID).test(target)) throw new Error('Approval target must be an agreement CID, or a chain account for bet');
@@ -32,7 +32,7 @@
         const match = String(loc.pathname || '').match(/^\/(agreements|bets)\/([^/]+)\/?$/);
         const action = params.get('act');
         if (!action) return null;
-        const target = match?.[2] || params.get('bets');
+        const target = match?.[2] || params.get('bets') || params.get('agreement');
         if (!target || (action === 'bet') !== (match?.[1] === 'bets' || params.has('bets'))) return null;
         const values = {};
         for (const key of ['amount', 'side', 'decision', 'city']) if (params.has(key)) values[key] = params.get(key);
@@ -41,9 +41,26 @@
     // Presentation only: focus an existing, enabled action; no click or wallet call is made.
     function preselect(container, intent) {
         if (!container || !intent) return false;
-        const selector = intent.action === 'decide' ? '[data-approval-action="review"]' : `[data-agreement-action="${intent.action}"]`;
+        const selector = intent.action === 'decide' ? '[data-approval-action="review"]'
+            : intent.action === 'donate' ? '[data-agreement-boost-action="boost"]'
+                : `[data-agreement-action="${intent.action}"]`;
         const button = container.querySelector(selector);
-        if (!button) return false;
+        if (!button) {
+            // The donation form is loaded after the agreement panel. Remember only this navigation
+            // intent until that existing form announces itself; never synthesize a click or wallet call.
+            if (intent.action === 'donate' && typeof container.addEventListener === 'function') {
+                const ready = event => {
+                    if (event?.detail?.cid !== intent.target || !container.querySelector(selector)) return;
+                    container.removeEventListener('agreement-boost-ready', ready);
+                    preselect(container, intent);
+                };
+                container.addEventListener('agreement-boost-ready', ready);
+            }
+            return false;
+        }
+        const panel = button.closest?.('[data-agreement-properties-panel]');
+        const body = panel?.closest('.click-stack__body');
+        if (body) globalThis.ClickStackNavigation?.selectPage(body, `agreement-${panel.dataset.agreementPropertiesPanel}`);
         button.setAttribute('data-approval-selected', 'true');
         if (!button.disabled) button.focus({ preventScroll: true });
         return true;

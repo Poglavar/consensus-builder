@@ -97,6 +97,15 @@ describe('inspecting an agreement', () => {
             .toMatchObject({ state: 'awaiting-funds', steps: [] });
     });
 
+    it('settles investor funding through the operated lens without an owner vote and releases its donation vault', async () => {
+        const book = marketBook();
+        const item = { ...placeAgreement('funded investors', { required: 0n, escrow: 0n }),
+            content: { rule: { electorate: 'investors', binding: true } } };
+        const inspected = await inspect(item, { readers: { ...book.readers, readDonation: async () => ({ released: false }) } });
+        expect(inspected).toMatchObject({ state: 'decidable', outcome: 'YES', steps: ['lens', 'attest', 'execute', 'release-donations'] });
+        expect(inspected.steps).not.toContain('decide');
+    });
+
     it('expires one past its deadline and gives YES shares no payout', async () => {
         const book = marketBook();
         const item = { ...placeAgreement('late', { deadline: NOW - 60 }), soleOwner: true };
