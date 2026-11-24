@@ -18,6 +18,7 @@ import { isPlainObject } from '../utils/request-validation.js';
 import { publicApiBaseUrl } from '../utils/public-base-url.js';
 import { createUploadRateLimiter } from '../utils/nft-asset-upload.js';
 import { defaultThumbnailQueue } from '../thumbnails/thumbnail-queue.js';
+import { defaultAgreementPreviewService } from '../thumbnails/agreement-preview.js';
 import { enqueueDesignThumbnail, insertDesign, loadDesigns, parseListLimit, prepareDesign } from './designs.js';
 import { validatePlanContent } from './plans.js';
 import { normalizeCityCode } from '../utils/city-code.js';
@@ -334,8 +335,9 @@ function enqueueAgreementThumbnail(pool, deps, agreement, designs) {
         agreement: {
             cid: agreement.cid,
             city: agreement.city,
-            designs: designs.map(design => ({ content: design.content })),
-            inputParcelIds: agreement.inputParcelIds
+            designs: designs.map(design => ({ content: design.content, binding: design.binding })),
+            inputParcelIds: agreement.inputParcelIds,
+            parcelSourceId: agreement.parcelSourceId
         },
         baseUrl: deps.baseUrl ?? publicApiBaseUrl()
     });
@@ -355,6 +357,7 @@ const send = (res, status, body) => {
  */
 export function setupAgreementsRoute(app, deps) {
     const { pool } = deps;
+    const agreementPreviewService = deps.agreementPreviewService || defaultAgreementPreviewService(pool);
     const now = deps.now || (() => Date.now());
     const chains = new Map();
     const agreementChain = deps.agreementChain || (cluster => {
@@ -370,6 +373,24 @@ export function setupAgreementsRoute(app, deps) {
         if (cidOf(bytes) !== expectedCid) return null;
         return { cid: expectedCid, content: record.content };
     };
+
+    const previewRoute = '/agreements/:cid/model-preview';
+    app.get([previewRoute, previewRoute + '/image.png'], async (req, res) => {
+        try {
+            const preview = await agreementPreviewService.prepare(req.params.cid);
+            res.set('Cache-Control', preview.baselineComplete ? 'public, max-age=3600' : 'no-store');
+            if (req.path.endsWith('/image.png')) {
+                const publicSite = deps.env?.PUBLIC_BASE_URL || process.env.PUBLIC_BASE_URL || 'https://urbangametheory.xyz';
+                return res.redirect(302, preview.pair || preview.after || publicSite.replace(/\/+$/, '') + '/images/og-globe-20261019.jpg');
+            }
+            return res.json(preview);
+        } catch (error) {
+            const status = error.status || 503;
+            if (!error.status) console.error('[agreement-preview] render failed:', error.message);
+            res.set('Cache-Control', 'no-store');
+            return res.status(status).json({ error: error.status ? error.message : 'The agreement preview could not be rendered. Please retry.' });
+        }
+    });
 
     // { cid, content, plan?: { cid, content }, designs?: [{ cid, content }] } → 201; 409 if already indexed.
     app.post('/agreements', async (req, res) => {

@@ -38,13 +38,6 @@ export function describeRow(row) {
     return `Bet with ${unit}: YES if this agreement executes on-chain by its deadline; NO if it expires, is cancelled or misses the deadline. Both agreements can succeed, or neither. Execution does not mean construction.`;
 }
 
-function absoluteImage(screenshotUrl, publicBaseUrl, apiBaseUrl) {
-    const value = typeof screenshotUrl === 'string' ? screenshotUrl.trim() : '';
-    if (/^https?:\/\//i.test(value)) return value;
-    if (value.startsWith('/') && apiBaseUrl) return `${apiBaseUrl}${value}`;
-    return `${publicBaseUrl}${DEFAULT_IMAGE_PATH}`;
-}
-
 // The whole page: tags for crawlers, an immediate hand-over for people. The hand-over is a meta
 // refresh, not a script: the API's content security policy allows no inline script, and crawlers
 // read the tags either way.
@@ -116,8 +109,9 @@ export function setupBetsShareRoute(app, pool, options = {}) {
             const page = {
                 title: `${question} · ${TAGLINE}`,
                 description: book?.kind === 1 ? `Devnet USDC market closing ${end.toISOString()}. The named verifier attests the qualifying public record.` : describeRow(context),
-                // The preview shows before and after side by side when the pair has been rendered.
-                image: absoluteImage(agreement.screenshotPairUrl || agreement.screenshotUrl, publicBaseUrl, apiBaseUrl),
+                image: apiBaseUrl
+                    ? `${apiBaseUrl}/agreements/${encodeURIComponent(agreement.cid)}/model-preview/image.png`
+                    : `${publicBaseUrl}${DEFAULT_IMAGE_PATH}`,
                 canonical: BetsLink.build({ origin: publicBaseUrl, city: linkCity, account, market, asset: context.asset }),
                 next: BetsLink.appHref({ city: linkCity, account, lang, ...context, approval: ApprovalLink.parse({ pathname: req.path, search: new URLSearchParams(req.query).toString() }) })
             };

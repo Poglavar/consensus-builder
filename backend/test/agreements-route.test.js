@@ -128,7 +128,8 @@ describe('POST /agreements', () => {
         const [designJob, agreementJob] = thumbnailQueue.enqueue.mock.calls.map(([job]) => job);
         expect(designJob.design.cid).toBe(cidOf(layout));
         expect(agreementJob.agreement).toEqual({
-            cid: cidOf(content), city: 'zagreb', designs: [{ content: park }, { content: layout }],
+            cid: cidOf(content), city: 'zagreb', parcelSourceId: 'oss-wfs',
+            designs: [{ content: park, binding: designRow(park).binding }, { content: layout, binding: JSON.parse(designInsert.params[7]) }],
             inputParcelIds: ['HR-335649-100', 'HR-335649-101']
         });
         expect(agreementJob.baseUrl).toBe('https://api.example');
@@ -415,6 +416,30 @@ describe('validateAgreementContent', () => {
     it('refuses a deadline at or before now with 422, and is not fooled by a valid shape', () => {
         expect(refused({ deadline: new Date(NOW).toISOString() })).toMatchObject({ ok: false, status: 422, code: 'deadline-past' });
         expect(refused({ deadline: new Date(NOW + 1000).toISOString() }).ok).toBe(true);
+    });
+});
+
+describe('GET agreement model previews', () => {
+    const url = '/agreements/' + cidOf(park) + '/model-preview';
+    it('serves the prepared image paths and redirects a share crawler to the matching view', async () => {
+        const preview = { before: '/before.png', after: '/after.png', pair: '/pair.png', baselineComplete: true };
+        const prepare = vi.fn().mockResolvedValue(preview);
+        const { app } = appFor(indexPool(), { agreementPreviewService: { prepare } });
+        const model = await request(app).get(url).expect(200);
+        expect(model.body).toEqual(preview);
+        expect(model.headers['cache-control']).toContain('public');
+        await request(app).get(url + '/image.png').expect(302).expect('Location', '/pair.png');
+        prepare.mockResolvedValue({ before: null, after: '/after.png', pair: null, baselineComplete: false });
+        await request(app).get(url + '/image.png').expect(302).expect('Location', '/after.png').expect('Cache-Control', 'no-store');
+        prepare.mockResolvedValue({ before: null, after: null, pair: null, baselineComplete: false });
+        await request(app).get(url + '/image.png').expect(302).expect('Location', /\/images\/og-globe-/);
+        expect(prepare).toHaveBeenCalledWith(cidOf(park));
+    });
+
+    it('keeps invalid and unknown agreements out of the image cache', async () => {
+        const { app } = appFor(indexPool());
+        await request(app).get('/agreements/invalid/model-preview').expect(400).expect('Cache-Control', 'no-store');
+        await request(app).get(url + '/image.png').expect(404).expect('Cache-Control', 'no-store');
     });
 });
 

@@ -5334,7 +5334,11 @@
                 "settledSplit": "Chaque part gagnante rapporte 1 ; les parts perdantes rapportent 0. Un marché NUL rapporte la moitié par part pour les deux camps.",
                 "settledRefund": "Le camp gagnant ne détenait aucune part ; il n’y a donc aucune position gagnante à réclamer.",
                 "closed": "L’accord doit être actif et avoir une échéance future pour que son marché puisse ouvrir ou accepter des échanges."
-            }
+            },
+            "previewLoading": "Chargement de l’aperçu du modèle…",
+            "previewBeforeAlt": "Bâtiments existants sur le site",
+            "previewAfterAlt": "Bâtiments proposés et changements du site pour {{name}}",
+            "previewSolo": "Projet proposé"
         },
         "filter": {
             "all": "Tout",

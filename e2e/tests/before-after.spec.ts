@@ -7,8 +7,7 @@ import type { Page } from '@playwright/test';
 import { openCity, openParcel, createSpace, showProposal, drawCorridor, clickMapPoint, PARCEL_ID, PARCEL_GEOMETRY, showProposalTab, unfoldStack, answerBlockScope } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
 import { fileIndexedAgreement, MINTED_ACCOUNT as AGREEMENT_ACCOUNT, OPEN_POOL, selectDevnetUsdc } from '../helpers/agreements';
-// A 1×1 PNG stands in for a rendered picture; the dialog accepts data URLs like any other image.
-const PIXEL_PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+const PIXEL_PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAADCAYAAABbNsX4AAAABmJLR0QA/wD/AP+gvaeTAAAADElEQVQImWNgoAgAAAA/AAFJy1onAAAAAElFTkSuQmCC';
 
 const beforeMap = (page: Page) => page.locator('#map .map-compare__before');
 const divider = (page: Page) => page.locator('#map .map-compare__handle');
@@ -21,12 +20,11 @@ async function openParcelsSection(page: Page): Promise<void> {
   await showProposalTab(page, 'inputs');
 }
 
-// A minted agreement with an open pool, as the page's index lists it (GET /markets), with its rendered
-// pictures: the map with its designs (screenshotUrl) and the same ground without them
-// (screenshotBeforeUrl). An untitled agreement is named by its designs' titles.
-function fileBet(page: Page, pictures: { screenshotUrl: string | null; screenshotBeforeUrl: string | null },
-  { title = 'Plan-led infill', designTitles = ['Infill park'] }: { title?: string | null; designTitles?: string[] } = {}): void {
-  fileIndexedAgreement(pageIndex(page), { title, designTitles, minted: {}, pool: OPEN_POOL, row: pictures });
+async function fileBet(page: Page, pictures: { after: string | null; before: string | null },
+  { title = 'Plan-led infill', designTitles = ['Infill park'] }: { title?: string | null; designTitles?: string[] } = {}) {
+  const { cid } = fileIndexedAgreement(pageIndex(page), { title, designTitles, minted: {}, pool: OPEN_POOL,
+    row: { screenshotUrl: PIXEL_PNG, screenshotBeforeUrl: PIXEL_PNG } });
+  await page.route(`**/agreements/${cid}/model-preview`, route => route.fulfill({ json: pictures }));
 }
 
 test.describe('Before / after on the main map @features', () => {
@@ -311,27 +309,33 @@ test.describe('Before / after on a phone @features', () => {
 test.describe('Before / after in the bet dialog @features', () => {
   test.beforeEach(async ({ mockApi: page }) => { await selectDevnetUsdc(page); });
   for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }]) {
-    test(`keeps the complete portrait image inside its comparison frame at ${viewport.width}px`, async ({ mockApi: page }) => {
+    test(`fits the complete model view and centres the faucets at ${viewport.width}px`, async ({ mockApi: page }) => {
       await page.setViewportSize(viewport);
-      const portrait = await page.evaluate(() => {
+      const image = await page.evaluate(() => {
         const canvas = document.createElement('canvas');
-        canvas.width = 512; canvas.height = 768;
+        canvas.width = 640; canvas.height = 384;
         const ctx = canvas.getContext('2d')!;
-        ctx.fillStyle = '#dddddd'; ctx.fillRect(0, 0, 512, 768);
-        ctx.fillStyle = '#ff0000'; ctx.fillRect(0, 0, 512, 80);
-        ctx.fillStyle = '#0000ff'; ctx.fillRect(0, 688, 512, 80);
+        ctx.fillStyle = '#dddddd'; ctx.fillRect(0, 0, 640, 384);
+        ctx.fillStyle = '#ff0000'; ctx.fillRect(0, 0, 640, 70);
+        ctx.fillStyle = '#0000ff'; ctx.fillRect(0, 314, 640, 70);
         return canvas.toDataURL();
       });
-      fileBet(page, { screenshotUrl: portrait, screenshotBeforeUrl: portrait });
+      await fileBet(page, { after: image, before: image });
       await page.goto(`/bets/${AGREEMENT_ACCOUNT}?city=zg&reduceMotion=1`);
       const compare = page.locator('#proposalMarketOverlay .bets-dialog__compare');
       await expect(compare).toBeVisible({ timeout: 30_000 });
-      await expect.poll(() => compare.locator('img').evaluateAll(images => images.every(image => (image as HTMLImageElement).naturalHeight === 768))).toBe(true);
+      await expect.poll(() => compare.locator('img').evaluateAll(images => images.every(image => (image as HTMLImageElement).naturalHeight === 384))).toBe(true);
       const sizes = await compare.locator('img').evaluateAll(images => images.map(image => {
         const box = image.getBoundingClientRect(); return { width: box.width, height: box.height };
       }));
-      for (const size of sizes) expect(size.width / size.height).toBeCloseTo(512 / 768, 2);
+      for (const size of sizes) expect(size.width / size.height).toBeCloseTo(5 / 3, 2);
       expect((await compare.boundingBox())!.width).toBeLessThanOrEqual(sizes[0].width + 2);
+      const centres = await page.locator('#proposalMarketOverlay .bets-account__wallet-actions').evaluate(row => {
+        const links = [...row.querySelectorAll('a')].map(a => a.getBoundingClientRect());
+        const button = row.querySelector('button')!.getBoundingClientRect();
+        return [button.y + button.height / 2, (links[0].top + links[1].bottom) / 2];
+      });
+      expect(Math.abs(centres[0] - centres[1])).toBeLessThan(1);
       await expect.poll(() => compare.getByRole('slider').evaluate(el => parseFloat((el as HTMLElement).style.left))).toBeCloseTo(sizes[0].width / 4, 0);
       // The phone sheet scrolls: inspect each end where it is exposed, above its fixed footer.
       const pixels = [];
@@ -349,8 +353,8 @@ test.describe('Before / after in the bet dialog @features', () => {
     });
   }
 
-  test('the dialog puts the thumbnail and the same ground without the agreement under one divider', async ({ mockApi: page }) => {
-    fileBet(page, { screenshotUrl: PIXEL_PNG, screenshotBeforeUrl: PIXEL_PNG });
+  test('compares the mapped buildings and the published design under a keyboard divider', async ({ mockApi: page }) => {
+    await fileBet(page, { after: PIXEL_PNG, before: PIXEL_PNG });
     await page.goto(`/?city=zg&bets=${AGREEMENT_ACCOUNT}&reduceMotion=1`);
     const dialog = page.locator('#proposalMarketOverlay');
     await expect(dialog).toBeVisible({ timeout: 30_000 });
@@ -358,6 +362,8 @@ test.describe('Before / after in the bet dialog @features', () => {
     await expect(compare).toBeVisible();
     await expect(compare.locator('img')).toHaveCount(2);
     await expect(compare.locator('img.map-compare__before')).toHaveCount(1);
+    await expect(compare.locator('img.map-compare__before')).toHaveAttribute('alt', 'Existing buildings on the site');
+    await expect(compare.locator('img').first()).toHaveAttribute('alt', /Proposed buildings.*Plan-led infill/);
     const handle = compare.locator('.map-compare__handle');
     await expect(handle).toHaveAttribute('role', 'slider');
     await expect(handle).toHaveAttribute('aria-valuenow', '25');
@@ -378,7 +384,7 @@ test.describe('Before / after in the bet dialog @features', () => {
   // An agreement of several designs is one bet: its pictures show all of them before and after, and
   // an untitled one is named by its designs (bets-model.js labelOf).
   test('a bet on an agreement of several designs uses its whole before and after image pair', async ({ mockApi: page }) => {
-    fileBet(page, { screenshotUrl: PIXEL_PNG, screenshotBeforeUrl: PIXEL_PNG }, { title: null, designTitles: ['North park', 'South square'] });
+    await fileBet(page, { after: PIXEL_PNG, before: PIXEL_PNG }, { title: null, designTitles: ['North park', 'South square'] });
     await page.goto(`/bets/${AGREEMENT_ACCOUNT}?city=zg&reduceMotion=1`);
     const dialog = page.locator('#proposalMarketOverlay');
     await expect(dialog).toBeVisible({ timeout: 30_000 });
@@ -396,12 +402,43 @@ test.describe('Before / after in the bet dialog @features', () => {
     await expect(slider).toHaveAttribute('aria-valuenow', '0');
   });
 
-  test('without a before picture the dialog keeps its plain thumbnail', async ({ mockApi: page }) => {
-    fileBet(page, { screenshotUrl: PIXEL_PNG, screenshotBeforeUrl: null });
+  test('a missing baseline leaves a labelled proposed design', async ({ mockApi: page }) => {
+    await fileBet(page, { after: PIXEL_PNG, before: null });
     await page.goto(`/?city=zg&bets=${AGREEMENT_ACCOUNT}&reduceMotion=1`);
     const dialog = page.locator('#proposalMarketOverlay');
     await expect(dialog).toBeVisible({ timeout: 30_000 });
     await expect(dialog.locator('.bets-dialog__thumb')).toHaveCount(1);
+    await expect(dialog.locator('figcaption')).toHaveText('Proposed design');
     await expect(dialog.locator('.bets-dialog__compare')).toHaveCount(0);
+  });
+
+  test('does not show the stored flat pictures for an agreement without a physical change', async ({ mockApi: page }) => {
+    await fileBet(page, { after: null, before: null });
+    const ready = page.waitForResponse('**/model-preview');
+    await page.goto(`/?city=zg&bets=${AGREEMENT_ACCOUNT}&reduceMotion=1`);
+    await ready;
+    const dialog = page.locator('#proposalMarketOverlay');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator('.bets-dialog__preview-status, .bets-dialog__thumb, .bets-dialog__compare')).toHaveCount(0);
+  });
+
+  test('discards a pending model preview after the dialog closes', async ({ mockApi: page }) => {
+    const { cid } = fileIndexedAgreement(pageIndex(page), { title: 'Delayed preview', minted: {}, pool: OPEN_POOL });
+    let release!: () => void;
+    const gate = new Promise<void>(resolve => { release = resolve; });
+    await page.route(`**/agreements/${cid}/model-preview`, async route => {
+      await gate;
+      await route.fulfill({ json: { before: PIXEL_PNG, after: PIXEL_PNG } });
+    });
+    const started = page.waitForRequest('**/model-preview');
+    await page.goto(`/?city=zg&bets=${AGREEMENT_ACCOUNT}&reduceMotion=1`, { waitUntil: 'domcontentloaded' });
+    await started;
+    const dialog = page.locator('#proposalMarketOverlay');
+    await dialog.getByRole('button', { name: 'Close', exact: true }).click();
+    const finished = page.waitForResponse('**/model-preview');
+    release();
+    await (await finished).finished();
+    await expect(dialog).toHaveCount(0);
+    await expect(page.locator('.bets-dialog__compare, .bets-dialog__solo-preview')).toHaveCount(0);
   });
 });

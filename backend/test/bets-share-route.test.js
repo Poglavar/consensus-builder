@@ -67,23 +67,23 @@ describe('GET /bets/:account', () => {
         expect(meta(unnamed.text, 'og:title')).toBe('Will this agreement execute on-chain by 2026-12-31T00:00:00.000Z? · Bet on cities');
     });
 
-    it('uses the agreement city when no city is supplied and resolves stored images against the API origin', async () => {
+    it('uses the agreement city and resolves the model image against the public API origin', async () => {
         const { app } = appFor({ rows: [row({ screenshot_url: '/uploads/thumbs/789.png' })], env: { PUBLIC_API_BASE_URL: 'https://api.urbangametheory.xyz/' } });
         const res = await request(app).get(`/bets/${ACCOUNT}`);
         expect(res.status).toBe(200);
-        expect(meta(res.text, 'og:image')).toBe('https://api.urbangametheory.xyz/uploads/thumbs/789.png');
+        expect(meta(res.text, 'og:image')).toBe(`https://api.urbangametheory.xyz/agreements/${CID}/model-preview/image.png`);
         expect(meta(res.text, 'og:url')).toBe(`https://urbangametheory.xyz/bets/${ACCOUNT}?city=zagreb&asset=points`);
         expect(res.text).toContain(`content="0; url=/?city=zagreb&amp;bets=${ACCOUNT}&amp;asset=points"`);
     });
 
-    it('uses the before/after image when available, otherwise the thumbnail or default image', async () => {
+    it('ignores flat thumbnails, including absolute URLs, when choosing the social image', async () => {
         const env = { PUBLIC_API_BASE_URL: 'https://api.urbangametheory.xyz' };
         const paired = await request(appFor({ rows: [row({ screenshot_url: '/uploads/images/t.png', screenshot_pair_url: '/uploads/images/p.png' })], env }).app).get(`/bets/${ACCOUNT}`);
-        expect(meta(paired.text, 'og:image')).toBe('https://api.urbangametheory.xyz/uploads/images/p.png');
+        expect(meta(paired.text, 'og:image')).toBe(`https://api.urbangametheory.xyz/agreements/${CID}/model-preview/image.png`);
         const single = await request(appFor({ rows: [row({ screenshot_url: '/uploads/images/t.png', screenshot_pair_url: null })], env }).app).get(`/bets/${ACCOUNT}`);
-        expect(meta(single.text, 'og:image')).toBe('https://api.urbangametheory.xyz/uploads/images/t.png');
+        expect(meta(single.text, 'og:image')).toBe(`https://api.urbangametheory.xyz/agreements/${CID}/model-preview/image.png`);
         const absolute = await request(appFor({ rows: [row({ screenshot_url: 'https://cdn.example/image.png' })] }).app).get(`/bets/${ACCOUNT}`);
-        expect(meta(absolute.text, 'og:image')).toBe('https://cdn.example/image.png');
+        expect(meta(absolute.text, 'og:image')).toBe('https://urbangametheory.xyz/images/og-globe-20261019.jpg');
     });
 
     it('keeps the selected book, its own cutoff and its asset in the preview and redirect', async () => {

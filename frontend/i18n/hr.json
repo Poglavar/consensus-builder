@@ -7925,7 +7925,11 @@
                 "settledSplit": "Svaki pobjednički udio isplaćuje 1, a gubitnički 0. Tržište VOID isplaćuje polovicu po udjelu na obje strane.",
                 "settledRefund": "Pobjednička strana nije imala udjele pa nema pobjedničkog položaja za naplatu.",
                 "closed": "Sporazum mora biti aktivan i imati budući rok kako bi se tržište otvorilo ili prihvaćalo trgovanja."
-            }
+            },
+            "previewLoading": "Učitavanje pregleda modela…",
+            "previewBeforeAlt": "Postojeće zgrade na lokaciji",
+            "previewAfterAlt": "Predložene zgrade i promjene lokacije za {{name}}",
+            "previewSolo": "Predloženi projekt"
         },
         "error": {
             "load": "Oklade se nisu mogle učitati.",

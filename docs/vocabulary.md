@@ -1327,6 +1327,8 @@ A freshly derived composition used by an agent calculation over its stated sourc
 
 A report of specified designs' modeled land, buildings, quantities and agreement allocations under a stated context. Its measures distinguish authored geometry, observed sources and simulated effects.
 
+In a bet, the visual comparison shows the city's mapped buildings before the agreement and the published designs on the same land after their modeled changes. Both views share a camera and scale. When the building source is unavailable, only the proposed design is shown.
+
 ### Unknown measurement
 
 A quantity for which sufficient evidence or inputs are unavailable. It is distinct from a known zero; a calculation requiring that missing quantity remains unknown.

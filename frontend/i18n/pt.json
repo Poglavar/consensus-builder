@@ -5334,7 +5334,11 @@
                 "settledSplit": "Cada participação vencedora paga 1; as participações perdedoras pagam 0. Um mercado ANULADO paga metade por participação em ambos os lados.",
                 "settledRefund": "O lado vencedor não tinha participações, pelo que não há nenhuma posição vencedora a resgatar.",
                 "closed": "O acordo tem de estar Ativo e ter uma data-limite futura para que o seu mercado possa abrir ou aceitar negociações."
-            }
+            },
+            "previewLoading": "A carregar a pré-visualização do modelo…",
+            "previewBeforeAlt": "Edifícios existentes no local",
+            "previewAfterAlt": "Edifícios propostos e alterações no local para {{name}}",
+            "previewSolo": "Projeto proposto"
         },
         "filter": {
             "all": "Todos",

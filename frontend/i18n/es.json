@@ -7912,7 +7912,11 @@
                 "settledSplit": "Cada participación ganadora paga 1 y las perdedoras 0. Un mercado VOID paga la mitad por participación en ambos lados.",
                 "settledRefund": "El lado ganador no tenía participaciones, así que no hay una posición ganadora que cobrar.",
                 "closed": "El acuerdo debe estar Activo y tener una fecha límite futura para abrir el mercado o aceptar operaciones."
-            }
+            },
+            "previewLoading": "Cargando la vista previa del modelo…",
+            "previewBeforeAlt": "Edificios existentes en el sitio",
+            "previewAfterAlt": "Edificios propuestos y cambios del sitio para {{name}}",
+            "previewSolo": "Diseño propuesto"
         },
         "error": {
             "load": "No se pudieron cargar las apuestas.",

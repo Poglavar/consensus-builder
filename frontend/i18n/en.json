@@ -7885,7 +7885,11 @@
                 "settledSplit": "Each winning share pays 1; losing shares pay 0. A VOID market pays half per share on both sides.",
                 "settledRefund": "The winning side had no shares, so there is no winning position to claim.",
                 "closed": "The agreement must be Active and have a future deadline for its market to open or accept trades."
-            }
+            },
+            "previewLoading": "Loading model preview…",
+            "previewBeforeAlt": "Existing buildings on the site",
+            "previewAfterAlt": "Proposed buildings and site changes for {{name}}",
+            "previewSolo": "Proposed design"
         },
         "error": {
             "load": "Bets could not be loaded.",

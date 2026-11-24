@@ -140,13 +140,15 @@
                 }); section.append(retry);
             }).catch(() => { /* balance read above shows the account failure */ });
         } else {
-            const actions = el('p', 'cb-link-row');
+            const actions = el('p', 'cb-link-row bets-account__wallet-actions');
             const connect = el('button', 'btn btn-quiet', t('bets.trade.connect', 'Connect wallet')); connect.type = 'button';
             connect.addEventListener('click', () => root.handleWalletButtonClick?.()); actions.append(connect);
+            const faucets = el('span', 'bets-account__faucets');
             [['https://faucet.solana.com', 'solFaucet', 'Get devnet SOL'], ['https://faucet.circle.com', 'usdcFaucet', 'Get devnet USDC']].forEach(([href, key, text]) => {
                 const link = el('a', 'cb-link cb-link--external', t(`bets.trade.${key}`, text));
-                link.href = href; link.target = '_blank'; link.rel = 'noopener noreferrer'; actions.append(link);
-            }); section.append(actions);
+                link.href = href; link.target = '_blank'; link.rel = 'noopener noreferrer'; faucets.append(link);
+            });
+            actions.append(faucets); section.append(actions);
         }
         return section;
     }

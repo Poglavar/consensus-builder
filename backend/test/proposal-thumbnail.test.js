@@ -20,7 +20,6 @@ import {
     shouldSkipProposalThumbnail,
     normalizeGoalKey,
     getProposalCadastreParcelIds,
-    buildAgreementRenderOptions,
     buildThumbnailRenderOptions,
     designRenderSubject,
     generateAndStoreContentThumbnail,
@@ -434,25 +433,11 @@ describe('design and agreement thumbnails', () => {
         expect(resolveDesignParts(null)).toEqual([]);
     });
 
-    it('frames an agreement on all its designs\' parts over its input land', async () => {
-        const pool = parcelPool();
-        const designs = [{ content: designContent() }, { content: layoutContent() }];
-        const options = await buildAgreementRenderOptions(pool, { city: 'zagreb', designs, inputParcelIds: ['HR-335649-100', 'HR-335649-101'] });
-        expect(options.polygonParts).toEqual([ring(PARK), ...layoutContent().parcelLayout.plots.map(plot => ring(plot.geometry))]);
-        expect(options.polygon).toEqual(ring(PARK));
-        expect(options).toMatchObject({ polygonOrder: 'lnglat', parcelPolygonOrder: 'lnglat' });
-        expect(options.parcelPolygons).toHaveLength(2);
-        // The frame takes in the land as well as the designs.
-        const frame = computeStitchFrame(options);
-        expect(frame.polygons.map(poly => poly.role)).toEqual(['proposal', 'proposal', 'proposal', 'parcel', 'parcel']);
-    });
-
     it('has nothing to draw for an agreement whose designs have no ground, and refuses an unknown subject', async () => {
         const pool = parcelPool();
-        expect(await buildAgreementRenderOptions(pool, { city: 'zagreb', designs: [{ content: {} }], inputParcelIds: ['HR-335649-100'] })).toBeNull();
-        expect(pool.calls).toEqual([]);
         await expect(generateAndStoreContentThumbnail(pool, { kind: 'agreement', cid: 'bafk', city: 'zagreb', designs: [], inputParcelIds: [] },
             { baseUrl: 'https://api.example', dryRun: true })).resolves.toBeNull();
+        expect(pool.calls).toEqual([]);
         await expect(generateAndStoreContentThumbnail(pool, { kind: 'proposal', cid: 'bafk' }, { baseUrl: 'https://api.example' }))
             .rejects.toThrow(/Unknown thumbnail subject proposal/);
         await expect(generateAndStoreContentThumbnail(pool, null)).rejects.toThrow(/Unknown thumbnail subject/);

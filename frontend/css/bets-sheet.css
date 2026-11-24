@@ -86,6 +86,8 @@
 .bets-account__simulation { color: var(--cb-warning); }
 .bets-account__tokens { margin: 0; font-size: var(--cb-text-sm); color: var(--cb-text-strong); }
 .bets-account__tokens:empty { display: none; }
+.bets-account__wallet-actions { display: grid; grid-template-columns: auto minmax(0, max-content); justify-content: start; align-items: center; }
+.bets-account__faucets { display: flex; flex-wrap: wrap; align-items: center; gap: inherit; }
 .bets-standings__content { display: grid; gap: var(--cb-space-3); padding-block: var(--cb-space-3); }
 .bets-standings__table { width: 100%; border-collapse: collapse; font-size: var(--cb-text-sm); }
 .bets-standings__table th, .bets-standings__table td {
@@ -345,23 +347,26 @@
     display: block;
     flex-shrink: 0;
     align-self: center;
-    width: auto;
-    max-width: 100%;
+    width: 100%;
     height: auto;
-    max-height: 240px;
+    aspect-ratio: 5 / 3;
+    max-height: none;
     object-fit: contain;
     background: var(--cb-bg);
     border-radius: var(--cb-radius-md);
     border: 1px solid var(--cb-line);
 }
+.bets-dialog__preview-status { margin: 0; color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
+.bets-dialog__solo-preview { margin: 0; width: min(100%, 460px); align-self: center; }
+.bets-dialog__solo-preview figcaption { margin-top: var(--cb-space-1); color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
 
-/* The thumbnail and the same input land without the agreement's designs under one divider
-   (js/ui/map-before-after.js attachDivider; dividers.md M3). The frame carries the border. */
+/* Both model snapshots fill the same fixed-aspect frame. Only the Before image is clipped. */
 .bets-dialog__compare {
     position: relative;
     flex-shrink: 0;
     align-self: center;
-    max-width: 100%;
+    width: min(100%, 460px);
+    aspect-ratio: 5 / 3;
     overflow: hidden;
     border-radius: var(--cb-radius-md);
     border: 1px solid var(--cb-line);
@@ -562,5 +567,8 @@
 @media (max-width: 767.98px) {
     .bets-dialog {
         max-height: 100dvh;
+    }
+    .bets-dialog:where(:has(.bets-dialog__compare, .bets-dialog__solo-preview, .bets-dialog__preview-status)) {
+        --mobile-sheet-initial-height: 65dvh;
     }
 }

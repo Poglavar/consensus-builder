@@ -6,13 +6,14 @@
 // this replaces (deleted from frontend/js/proposals/dialog-upload.js in the same change), so a
 // server-rendered thumbnail frames a proposal the way the client-side one did.
 //
-// Indexed designs and agreements (plan-design-agreement.md, M2) render here too, keyed by CID: a
-// design as the proposal it was authored as, with the parcels its binding found as its parcels; an
-// agreement as every part of every design it links, in one frame over its input land.
+// A design uses its authored map geometry and bound parcels. An agreement uses the cached
+// orthographic model of the designs it names and the mapped buildings on their land.
 import * as turf from '@turf/turf';
 import { renderProposalThumbnailSet } from './tile-stitch.js';
 import { fetchParcelPolygonsByIds } from './parcel-geometry.js';
 import { saveImageBuffer } from '../utils/image-store.js';
+import { defaultAgreementPreviewService } from './agreement-preview.js';
+import { renderAgreementModel } from './agreement-model.js';
 
 // Mirrors PROPOSAL_GOAL_ICON_MAP in frontend/js/proposals/data.js — the badge drawn top-left.
 const PROPOSAL_GOAL_ICON_MAP = {
@@ -267,29 +268,8 @@ export function resolveDesignParts(content) {
     return polygonCoordinates(content?.site);
 }
 
-/**
- * An agreement's picture: every design it links, each part separate, over the outlines of its input
- * land (which the frame always includes: the agreement settles all of it).
- * @param {{ city: string|null, designs: { content: object }[], inputParcelIds: string[] }} agreement
- * @returns {Promise<Object|null>} renderer options, or null when no design has geometry to draw
- */
-export async function buildAgreementRenderOptions(pool, { city, designs, inputParcelIds }) {
-    const parts = (Array.isArray(designs) ? designs : []).flatMap(design => resolveDesignParts(design?.content));
-    if (!parts.length) return null;
-    const parcelPolygons = await fetchParcelPolygonsByIds(pool, city, inputParcelIds || []);
-    return {
-        polygon: parts[0],
-        polygonParts: parts,
-        polygonOrder: 'lnglat',
-        parcelPolygons,
-        parcelPolygonOrder: 'lnglat',
-        padding: THUMBNAIL_PADDING,
-        zoom: THUMBNAIL_ZOOM
-    };
-}
-
 // One tile fetch, three pictures: the thumbnail, the same ground without the subject, and the two
-// side by side (dividers.md, M3), stored as <kind>-thumb|before|pair-<key>-<stamp>.
+// side by side, stored as <kind>-thumb|before|pair-<key>-<stamp>.
 async function renderAndStore(renderOptions, { kind, key, baseUrl, dryRun }) {
     const set = await renderProposalThumbnailSet(renderOptions);
     const { frame, tiles } = set;
@@ -347,9 +327,18 @@ export async function generateAndStoreProposalThumbnail(pool, proposal, { city, 
  */
 export async function generateAndStoreContentThumbnail(pool, subject, { baseUrl, dryRun = false } = {}) {
     if (!subject || !['design', 'agreement'].includes(subject.kind)) throw new Error(`Unknown thumbnail subject ${subject?.kind}.`);
-    const renderOptions = subject.kind === 'agreement'
-        ? await buildAgreementRenderOptions(pool, subject)
-        : await buildThumbnailRenderOptions(pool, designRenderSubject(subject), subject.city);
+    if (subject.kind === 'agreement') {
+        if (dryRun) {
+            const views = await renderAgreementModel(pool, subject);
+            return views && { url: null, beforeUrl: null, pairUrl: null, buffer: views.after,
+                beforeBuffer: views.before, pairBuffer: views.pair, bytes: views.after.length };
+        }
+        const views = await defaultAgreementPreviewService(pool).prepare(subject.cid, subject);
+        if (!views.after) return null;
+        const url = value => value ? `${String(baseUrl || '').replace(/\/$/, '')}${value}` : null;
+        return { url: url(views.after), beforeUrl: url(views.before), pairUrl: url(views.pair) };
+    }
+    const renderOptions = await buildThumbnailRenderOptions(pool, designRenderSubject(subject), subject.city);
     if (!renderOptions) return null;
     return renderAndStore(renderOptions, { kind: subject.kind, key: subject.cid, baseUrl, dryRun });
 }

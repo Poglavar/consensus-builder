@@ -30,7 +30,7 @@ recorded, nothing deployed without a say-so.
 |---|---|---|---|
 | M1 | Shared helper | The modal's compare runs through `map-before-after.js`; the before map uses the host's own tile source; node tests cover the clip, the tile cloning, the freeze and the teardown; the modal looks and behaves as before in a headed Chrome | done 2026-10-12 |
 | M2 | Proposal details panel | A "Before / after" action on an applied proposal shows the cadastre and existing buildings on one side and the applied proposal on the other; works for buildings, roads, structures, readjustments and plans; keyboard-operable; leaves no trace on close | done 2026-10-12 |
-| M3 | Bet dialog and bet links | The thumbnail renderer also writes a "before" image (same tiles, no plan); the bet dialog shows the pair under the divider; the bet link's social preview carries a two-panel image | done 2026-10-12 (prod needs the DDL + a `--before` backfill at deploy) |
+| M3 | Bet dialog and bet links | A cached pair of orthographic views shows the mapped site and the agreement’s designs from one camera. The bet dialog uses the divider and the share link uses the pair side by side. | Implemented |
 | M4 | Road tool | Build-through and clearance compare the standing fabric against the corridor, the cut pieces and the demolished buildings | done 2026-10-12 |
 | M5 | Replacement versions | For a plan with a newer version, before is the version currently applied and after the new one | done 2026-10-12 for proposal versions (`sourceProposalId`); plan versions (`ens_plan.supersedes`) are a follow-up, see Decisions |
 | M6 | Owner acceptance review | An owner reading a readjustment in the details panel compares their parcel before with their plot after, without opening the editor | done 2026-10-12 |
@@ -82,17 +82,14 @@ recorded, nothing deployed without a say-so.
 - 2026-10-12 (M2): on a phone the expanded details panel covers the map, as it always did; the
   comparison shows once the card is minimised. Left as is.
 
-- 2026-10-12 (M3): one tile fetch, three pictures. `renderProposalThumbnailSet` draws the thumbnail
-  as it was ("after"), the same ground with only the parcel outlines ("before": no proposal
-  polygon, no badge) and the two side by side with a white gap ("pair"). The queue stores all
-  three at publish; `scripts/backfill-proposal-thumbnails.mjs --before` renders them for rows that
-  have a thumbnail but no before picture (re-rendering the thumbnail so the three agree; writes
-  only where `screenshot_before_url IS NULL`, so a rerun is a no-op). Two new nullable columns
-  (`screenshot_before_url`, `screenshot_pair_url`) ship as an ALTER-only DDL in the deploy list;
-  additive, so one deploy. The bet link's `og:image` prefers the pair. The bet dialog shows the
-  two pictures under `attachDivider` (the divider without Leaflet), corner labels.
-- 2026-10-12 (M3): the pair image carries no text, only the gap: an image cannot be translated
-  and the bet page's title and description say what it is.
+- The bet preview is keyed to the agreement’s published design revisions. Before shows mapped
+  building footprints and available heights. After keeps unaffected buildings and incorporates
+  the designs’ demolition, footprints, storeys and surface changes. A shared camera frames the
+  land and the design at the same scale. The publish queue prepares the pictures, and
+  `GET /agreements/:cid/model-preview` also prepares them on first read for an older agreement.
+  If the building source cannot be read, the dialog shows the proposed design alone. Agreements
+  with no physical change have no model image. The social image is available at
+  `GET /agreements/:cid/model-preview/image.png`.
 - 2026-10-12 (M4): the road tool is the cross-section editor, which only opens on a placed
   (applied) road, so the map already shows the corridor, the cut pieces and the building outcomes.
   The editor gets a "Before / after" chip in its header that runs the same session as the details
@@ -125,11 +122,6 @@ recorded, nothing deployed without a say-so.
   details panel. Verified in a headed Chrome on the Borovje block M1-2 v2 (12 parcels): original
   strips on one side, the applied building on the other; keyboard Home/Arrow/PageUp move the
   divider; unapply and close leave nothing behind; checked at 1200 px and 390 px.
-- 2026-10-12: M3 built: renderer set + queue + backfill pass + DDL + API fields + bet dialog, with
-  tests (pixel checks on the three pictures, the queue's UPDATE, the API row, the preview tag, the
-  DDL contract, the bare divider). Verified locally: the `--before` pass rendered one Zagreb row
-  (dry run, apply, rerun no-op); the bet dialog shows the pair under the divider, keyboard moves
-  it, closing tears it down (resize listener removed).
 - 2026-10-12: M4 built: editor chip + CSS + test. Verified in a headed Chrome on the Podbrežje
   road reconstruction (55 parcels, lanes): the chip starts the comparison beside the docked
   editor, closing the editor ends it, unapply leaves nothing behind.

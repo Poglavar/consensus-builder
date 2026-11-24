@@ -8,8 +8,8 @@
 // Restart-safety: the queue is in memory only. A thumbnail that was queued when the process died,
 // that failed, or that was shed because the queue was full simply leaves screenshot_url NULL. For a
 // proposal, scripts/backfill-proposal-thumbnails.mjs (idempotent, only touches screenshot_url IS
-// NULL) renders it later; designs and agreements have no backfill yet, so theirs stays missing. The
-// write below also only fills a NULL, so it never overwrites a newer thumbnail.
+// NULL) renders it later. A missing agreement model renders when its preview is next requested.
+// The write below fills a NULL so it cannot overwrite a newer thumbnail.
 import { generateAndStoreContentThumbnail, generateAndStoreProposalThumbnail } from './proposal-thumbnail.js';
 import { createLimiter } from './tile-source.js';
 
@@ -92,9 +92,10 @@ export function createThumbnailQueue(options = {}) {
                     `UPDATE proposal SET screenshot_url = $1, screenshot_before_url = $2, screenshot_pair_url = $3
                       WHERE id = $4 AND screenshot_url IS NULL`,
                     [...urls, proposalId]);
+            const rendering = result.tiles && result.frame
+                ? `zoom ${result.frame.zoom}, ${result.tiles.loaded}/${result.tiles.total} tiles, ${result.bytes} bytes, ` : '';
             console.log(`[${ts()}] [thumbnail] ${label}: ${result.url} ` +
-                `(zoom ${result.frame?.zoom}, ${result.tiles?.loaded}/${result.tiles?.total} tiles, ` +
-                `${result.bytes} bytes, ${Date.now() - started} ms${update?.rowCount === 0 ? ', row already had one' : ''})`);
+                `(${rendering}${Date.now() - started} ms${update?.rowCount === 0 ? ', row already had one' : ''})`);
             return result;
         } catch (err) {
             // Never thrown to anyone: the record exists either way. For a proposal the backfill script retries.

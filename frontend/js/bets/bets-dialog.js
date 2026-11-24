@@ -248,6 +248,48 @@
         state.compare = null;
     }
 
+    // Decode both stills before enabling the divider. If one source image fails, only a
+    // successfully decoded proposed view can stand alone. A detached slot belongs to an old dialog.
+    async function renderModelPreview(row, slot) {
+        try {
+            const response = await root.fetch(`${backendBase()}/agreements/${encodeURIComponent(row.cid)}/model-preview`, { cache: 'no-store' });
+            if (!response.ok) throw new Error('Model preview unavailable');
+            const preview = await response.json();
+            if (!slot.isConnected) return;
+            async function picture(url, alt) {
+                const src = absoluteImage(url);
+                if (!src) return null;
+                const img = el('img', 'bets-dialog__thumb');
+                img.alt = alt;
+                img.width = 640; img.height = 384;
+                img.src = src;
+                try { await img.decode(); return img; } catch { return null; }
+            }
+            const [after, before] = await Promise.all([
+                picture(preview.after, t('bets.dialog.previewAfterAlt', 'Proposed buildings and site changes for {{name}}', { name: labelOf(row) })),
+                picture(preview.before, t('bets.dialog.previewBeforeAlt', 'Existing buildings on the site'))
+            ]);
+            if (!slot.isConnected) return;
+            if (!after) { slot.remove(); return; }
+            if (before && root.__MapBeforeAfter?.attachDivider) {
+                const compare = el('div', 'bets-dialog__compare');
+                before.classList.add('map-compare__before');
+                compare.append(after, before);
+                slot.replaceWith(compare);
+                state.compare = root.__MapBeforeAfter.attachDivider(compare, before, {
+                    percent: 25,
+                    labels: { before: t('mapCompare.before', 'Before'), after: t('mapCompare.after', 'After') },
+                    sliderLabel: t('mapCompare.sliderLabel', 'Before and after comparison')
+                });
+                trackBet('comparison_view', row, { entryPoint: state.entryPoint });
+            } else {
+                const figure = el('figure', 'bets-dialog__solo-preview');
+                figure.append(after, el('figcaption', null, t('bets.dialog.previewSolo', 'Proposed design')));
+                slot.replaceWith(figure);
+            }
+        } catch { slot.remove(); }
+    }
+
     function close() {
         disposeCompare();
         const overlay = state.overlay;
@@ -373,7 +415,14 @@
         eyebrow.append(el('span', null, t('bets.tagline', 'Bet on cities')));
         const land = landLine(row, contest);
         if (land) eyebrow.append(el('span', null, ` · ${land}`));
-        p.body.append(eyebrow, root.BetsUI.assetControl());
+        p.body.append(eyebrow);
+        if (row.cid) {
+            const slot = el('p', 'bets-dialog__preview-status', t('bets.dialog.previewLoading', 'Loading model preview…'));
+            slot.setAttribute('role', 'status');
+            p.body.append(slot);
+            renderModelPreview(row, slot);
+        }
+        p.body.append(root.BetsUI.assetControl());
 
         // The agreements whose designs take ground overlapping this one's (its contest): back to the
         // contest in the Bets sheet.
@@ -388,29 +437,6 @@
                 if (typeof root.openBetsSheet === 'function') root.openBetsSheet({ contestId: id });
             });
             p.body.append(rivals);
-        }
-
-        const image = absoluteImage(row.screenshotUrl);
-        const beforeImage = absoluteImage(row.screenshotBeforeUrl);
-        if (image) {
-            const img = el('img', 'bets-dialog__thumb');
-            img.src = image; img.alt = ''; img.loading = 'lazy';
-            // The input land without the agreement's designs under a divider (dividers.md, M3), once rendered.
-            if (beforeImage && root.__MapBeforeAfter && typeof root.__MapBeforeAfter.attachDivider === 'function') {
-                const compare = el('div', 'bets-dialog__compare');
-                const before = el('img', 'bets-dialog__thumb map-compare__before');
-                before.src = beforeImage; before.alt = ''; before.loading = 'lazy';
-                compare.append(img, before);
-                p.body.append(compare);
-                state.compare = root.__MapBeforeAfter.attachDivider(compare, before, {
-                    percent: 25,
-                    labels: { before: t('mapCompare.before', 'Before'), after: t('mapCompare.after', 'After') },
-                    sliderLabel: t('mapCompare.sliderLabel', 'Before and after comparison')
-                });
-                trackBet('comparison_view', row, { entryPoint: state.entryPoint });
-            } else {
-                p.body.append(img);
-            }
         }
 
         const chance = el('div', `bets-dialog__chance is-${row.state}`);

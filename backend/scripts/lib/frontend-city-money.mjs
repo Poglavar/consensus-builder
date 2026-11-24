@@ -8,6 +8,7 @@ import { createContext, runInContext } from 'node:vm';
 
 const require = createRequire(import.meta.url);
 const CityMoney = require('../../../frontend/js/city-money.js');
+const SourceList = require('../../../frontend/js/source-list.js');
 
 let manager = null;
 function cityConfigs() {
@@ -35,4 +36,9 @@ export function cityMoney(cityId) {
 // CityConfigManager.getDrivingSide reads it: the MCP drafts and imports roads for that city with it.
 export function cityDrivingSide(cityId) {
     return cityConfigs().getDrivingSide(cityId);
+}
+
+export function cityBuildingSources(cityId) {
+    const config = cityConfigs().getCityConfig(cityId);
+    return config?.id === cityId ? SourceList.inUse(SourceList.cityList(config)) : [];
 }
