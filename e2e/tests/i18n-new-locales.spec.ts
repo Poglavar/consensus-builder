@@ -7,9 +7,10 @@ const locales = [
   { lang: 'fr', locale: 'fr-FR', direction: 'ltr', label: 'Listes' },
   { lang: 'pt', locale: 'pt-PT', direction: 'ltr', label: 'Listas' },
   { lang: 'ru', locale: 'ru-RU', direction: 'ltr', label: 'Списки' },
+  { lang: 'kk', locale: 'kk-KZ', direction: 'ltr', label: 'Тізімдер' },
 ];
 // Every locale the picker offers (js/i18n.js LOCALE_CHOICES), in picker order.
-const pickerLocales = ['en-GB', 'en-US', 'es-ES', 'es-CO', 'sr-Latn-RS', 'hr-HR', 'ar-EG', 'fr-FR', 'pt-PT', 'ru-RU'];
+const pickerLocales = ['en-GB', 'en-US', 'es-ES', 'es-CO', 'sr-Latn-RS', 'hr-HR', 'ar-EG', 'fr-FR', 'pt-PT', 'ru-RU', 'kk-KZ'];
 for (const item of locales) {
   test(`${item.lang}: map renders translated controls and downloads only its selected dictionary`, async ({ mockApi: page }) => {
     const dictionaries: string[] = [];
@@ -72,7 +73,7 @@ test('Arabic feedback is readable on a phone, preserves URL direction and switch
   await expect(input).toHaveValue('https://example.test/?city=new_york');
 });
 
-test('all locale buttons fit in a phone dialog and Arabic and Russian selection complete', async ({ mockApi: page }) => {
+test('all locale buttons fit in a phone dialog and support Arabic, Russian and Kazakh selection', async ({ mockApi: page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/?city=new_york&lang=en&reduceMotion=1', { waitUntil: 'domcontentloaded' });
   await page.evaluate(async () => {
@@ -99,6 +100,17 @@ test('all locale buttons fit in a phone dialog and Arabic and Russian selection 
   await expect(page.locator('#proposals-button .map-shell-button-label')).toHaveText('Списки');
   await expect(russian).toHaveAccessibleName('Переключить на русский');
   await expect.poll(() => page.evaluate(() => (window as any).PersistentStorage.getItem('cb_language'))).toBe('ru-RU');
+  const kazakh = picker.locator('[data-language="kk-KZ"]');
+  await kazakh.focus();
+  await kazakh.press('Enter');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'kk');
+  await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
+  await expect(page.locator('#proposals-button .map-shell-button-label')).toHaveText('Тізімдер');
+  await expect(kazakh).toHaveAccessibleName('Қазақшаға ауысу (KK)');
+  await expect(kazakh).toBeFocused();
+  await expect.poll(() => page.evaluate(() => (window as any).PersistentStorage.getItem('cb_language'))).toBe('kk-KZ');
+  await page.goto('/?city=new_york&reduceMotion=1', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('#proposals-button .map-shell-button-label')).toHaveText('Тізімдер');
 });
 
 test('Arabic report keeps its first column at the reading edge on a phone', async ({ page }) => {

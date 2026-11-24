@@ -16,6 +16,7 @@ describe('CbFormat locales', () => {
         expect(CbFormat.localeFor('es')).toBe('es-ES');
         expect(CbFormat.localeFor('sr')).toBe('sr-Latn-RS');
         expect(CbFormat.localeFor('ru')).toBe('ru-RU');
+        expect(CbFormat.localeFor('kk')).toBe('kk-KZ');
         expect(CbFormat.localeFor('xx')).toBe('en-GB');
     });
 

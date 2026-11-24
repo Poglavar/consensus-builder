@@ -130,13 +130,13 @@ describe('chat conversation routes', () => {
         expect((await request(disabled.app).get('/chat/cost')).status).toBe(404);
     });
 
-    it('enforces the bearer token shape and creates private conversations without returning capabilities', async () => {
+    it.each(['ru', 'kk'])('creates private %s conversations without returning capabilities and enforces bearer tokens', async language => {
         const { app, store } = makeHarness();
         const bad = await request(app).get('/chat/conversations/conv-1').set('Authorization', 'Bearer short');
         expect(bad.status).toBe(401); expect(JSON.stringify(bad.body)).not.toContain(token);
-        const created = await auth(request(app).post('/chat/conversations')).send({ city: 'london', language: 'ru' });
+        const created = await auth(request(app).post('/chat/conversations')).send({ city: 'london', language });
         expect(created.status).toBe(201); expect(created.body).toMatchObject({ id: 'conv-1', city: 'london', expiresAt: expect.any(Number), debugCosts: false });
-        expect(store.rows.get(created.body.id).language).toBe('ru');
+        expect(store.rows.get(created.body.id).language).toBe(language);
         const current = await auth(request(app).get('/chat/conversations/conv-1'));
         expect(current.body).toMatchObject({ city: 'london', debugCosts: false });
         expect(JSON.stringify(created.body)).not.toContain(token);

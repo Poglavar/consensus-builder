@@ -23,7 +23,7 @@ function boot({ language = 'en', storage, fetchImpl } = {}) {
 }
 
 describe('on-demand dictionaries', () => {
-    it.each(['en', 'es', 'ar', 'fr', 'pt', 'ru'])('loads only English and selected %s at startup', async language => {
+    it.each(['en', 'es', 'ar', 'fr', 'pt', 'ru', 'kk'])('loads only English and selected %s at startup', async language => {
         const f = boot({ language });
         await f.api.translationsReady;
         expect(f.requests()).toEqual(language === 'en' ? ['i18n/en.json'] : ['i18n/en.json', `i18n/${language}.json`]);

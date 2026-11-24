@@ -14,7 +14,7 @@ import { DEFAULT_CHAT_PROVIDER, isSupportedChatModel, modelForProvider } from '.
 import { runTurn as defaultRunTurn } from '../chat/turn-runner.js';
 import { openSse } from '../chat/sse.js';
 
-const languages = z.enum(['en','hr','sr','es','ar','fr','pt','ru']);
+const languages = z.enum(['en','hr','sr','es','ar','fr','pt','ru','kk']);
 const contextSchema = z.object({
     city: z.string().min(1).max(100), parcelSourceId: z.string().max(3507).optional(),
     activeEditor: z.object({ kind: z.string().min(1).max(80), tab: z.enum(['editing', 'new', 'old']).optional(),

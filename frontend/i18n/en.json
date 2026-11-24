@@ -9047,7 +9047,8 @@
             "to_ar": "Switch to Arabic",
             "to_fr": "Switch to French",
             "to_pt": "Switch to Portuguese",
-            "to_ru": "Switch to Russian"
+            "to_ru": "Switch to Russian",
+            "to_kk": "Switch to Kazakh (KK)"
         },
         "english": "English",
         "spanish": "Spanish",

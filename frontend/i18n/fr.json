@@ -5592,7 +5592,8 @@
             "to_ar": "Passer à l’arabe",
             "to_fr": "Passer au français",
             "to_pt": "Passer au portugais",
-            "to_ru": "Passer au russe"
+            "to_ru": "Passer au russe",
+            "to_kk": "Passer au kazakh (KK)"
         },
         "arabic": "Arabe",
         "french": "Français",

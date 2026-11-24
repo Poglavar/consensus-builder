@@ -4,7 +4,8 @@
 ## Current behavior
 
 The interface supports Modern Standard Arabic (`ar`, formatting locale `ar-EG`), French (`fr-FR`)
-and European Portuguese (`pt-PT`) alongside the original four languages and Russian (`ru-RU`).
+and European Portuguese (`pt-PT`) alongside the original four languages, Russian (`ru-RU`) and
+Kazakh (`kk-KZ`).
 Every locale picker is
 populated from the shared registry. English-only startup still requests only the English dictionary.
 A selected new language requests English and that language, then reuses loaded dictionaries.
@@ -36,7 +37,7 @@ The formatter consults the locale registry for languages outside its standalone 
 
 ## Saved plans and MCP parity
 
-`PlanRecord` accepts all eight UI languages in a saved map view. Both its JSON Schema and the MCP
+`PlanRecord` accepts all registered UI languages in a saved map view. Both its JSON Schema and the MCP
 saved-view input schema are generated from that shared validator. Targeted tests compare the UI
 registry with the schema, discover the plan resource through a real in-process MCP client, and
 call `ugt_draft_plan` successfully with Arabic, French and Portuguese saved views. There is no new

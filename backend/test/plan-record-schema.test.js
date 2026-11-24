@@ -76,12 +76,13 @@ describe('shared named-plan JSON Schema',()=>{
             const resource=await client.readResource({uri:'ugt://schemas/plan'});expect(JSON.parse(resource.contents[0].text)).toEqual(schema);
             const good={title:'Named',designs:[cids[0]],view:{at:'0,0,17',mode:'2d',city:'c'.repeat(100)}};
             expect((await client.callTool({name:'ugt_draft_plan',arguments:good})).isError).not.toBe(true);expect(received).toHaveLength(1);
-            for(const language of ['ar','fr','pt','ru']){
+            const languages=['ar','fr','pt','ru','kk'];
+            for(const language of languages){
                 const result=await client.callTool({name:'ugt_draft_plan',arguments:{...good,view:{...good.view,language}}});
                 expect(result.isError).not.toBe(true);expect(received.at(-1).view.language).toBe(language);
             }
             const bad=await client.callTool({name:'ugt_draft_plan',arguments:{...good,view:{...good.view,at:'91,0,17'}}});
-            expect(bad.isError).toBe(true);expect(bad.structuredContent).toMatchObject({code:'invalid-arguments',field:'view.at'});expect(received).toHaveLength(5);
+            expect(bad.isError).toBe(true);expect(bad.structuredContent).toMatchObject({code:'invalid-arguments',field:'view.at'});expect(received).toHaveLength(1+languages.length);
         }finally{await client.close();await server.close();}
     });
 

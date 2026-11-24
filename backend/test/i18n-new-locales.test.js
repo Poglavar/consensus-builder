@@ -1,4 +1,4 @@
-// Complete translated dictionaries, Arabic plural selection and formatting for the three added languages.
+// Complete translated dictionaries, locale formatting and language-specific plural selection.
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 import { dictionary, testI18n } from './helpers/i18n.js';
@@ -15,7 +15,7 @@ function flatten(node, prefix = '', output = {}) {
 const english = flatten(dictionary('en'));
 const placeholders = text => [...new Set([...text.matchAll(/\{\{\s*\w+\s*\}\}|\{\w+\}/g)].map(match => match[0]))].sort();
 const tags = text => text.match(/<\/?[a-zA-Z][^>]*>/g) || [];
-for (const language of ['ar', 'fr', 'pt', 'ru']) {
+for (const language of ['ar', 'fr', 'pt', 'ru', 'kk']) {
     describe(`${language} dictionary`, () => {
         const selected = flatten(dictionary(language));
         it('translates every English key and preserves exact parameters and markup', () => {
@@ -80,4 +80,12 @@ describe('Russian plurals', () => {
             expect(testI18n('ru').t('proposals.autoName.parcels', { count })).toBe(title);
         }
     );
+});
+
+it('names Alatau in Kazakh and keeps the noun singular after a number', () => {
+    const api = testI18n('kk');
+    expect(api.t('city.labels.alatau')).toBe('Алатау, Қазақстан');
+    for (const count of [0, 1, 2, 21]) {
+        expect(api.t('proposals.autoName.parcels', { count })).toBe(`${count} жер учаскесі`);
+    }
 });
