@@ -5,9 +5,11 @@ A developer can raise devnet USDC for one published plan revision by creating a 
 ## From proposal to settlement
 
 1. Open the named plan and choose **Developer crowdfunding**. Enter a target and deadline, select the lens member who will verify funding, and attach the investor contract. The attachment can be a PDF or UTF-8 text file up to 256 KiB. Publish with the developer wallet connected. Anyone who opens the agreement can download those exact bytes. A change to the plan or contract creates a different agreement.
-2. The developer mints that agreement on Solana devnet. An investor opens the agreement, downloads the contract, reviews the target and deadline, and signs a USDC contribution. The existing proposal escrow records the amount and the contributing wallet. Further contributions can take the total above the minimum.
+2. The developer mints that agreement on Solana devnet. An investor opens the agreement, downloads the contract and reviews the target and deadline. They select **Contribute**, enter an amount and connect a Solana wallet in the same form. A guest can participate without creating a profile. Selecting **Contribute** in the form asks the wallet to sign after a successful simulation. The proposal escrow records the deposit and the contributing wallet. Further contributions can take the total above the minimum.
 3. The lens operator requests a funding decision. The lens checks the agreement and its USDC escrow at the same finalized Solana slot, and issues approval when the recorded contributions reach the minimum. Anyone can submit that decision and execute the agreement through its deadline. The escrow can then release the funds to the published developer wallet.
 4. While the on-chain decision is pending, the developer can cancel. After the deadline, anyone can expire an unexecuted agreement. In either case, each investor can reclaim their deposits. Delivering the return promised in the attachment remains the developer’s obligation under that contract.
+
+The investor needs devnet USDC for the contribution and devnet SOL in the same wallet for transaction fees and the accounts the deposit creates. Both are available free. Enter the wallet’s public address at each faucet and choose **USDC** and **Solana Devnet** at Circle. The contribution form keeps the amount through wallet connection, a declined signature or a failed simulation. [Solana devnet faucet](https://faucet.solana.com/) · [Circle testnet faucet](https://faucet.circle.com/)
 
 ## Existing records and programs
 

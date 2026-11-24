@@ -1064,7 +1064,7 @@ function translateUM(key, fallback, params = {}) {
 
 // Removed ensureNetworkIndicator - network info is now only in the dialog
 
-function handleWalletButtonClick() {
+async function handleWalletButtonClick() {
     const evmState = window.walletManager ? window.walletManager.getState() : null;
     const evmConnected = evmState && evmState.status === 'connected';
     const solanaConnected = isSolanaWalletActive();
@@ -1072,7 +1072,19 @@ function handleWalletButtonClick() {
     if (evmConnected || solanaConnected) {
         showWalletDisconnectConfirmation();
     } else if (window.walletManager) {
-        window.walletManager.openConnectorModal();
+        const welcomeModal = document.getElementById('welcome-modal');
+        if (!welcomeModal || welcomeModal.hidden) {
+            window.walletManager.openConnectorModal();
+            return;
+        }
+        const button = document.getElementById('welcome-wallet-connect-btn');
+        welcomeModal.hidden = true;
+        try {
+            await window.BusyControl.track(button, () => window.walletManager.openConnectorModal()?.dialog.closed);
+        } finally {
+            welcomeModal.hidden = false;
+            button?.focus({ preventScroll: true });
+        }
     } else {
         console.warn('Wallet manager is not available.');
     }
@@ -1081,9 +1093,24 @@ function handleWalletButtonClick() {
 function updateWalletButtonDisplay() {
     // Update the bubble status icon
     updateUsernameDisplay();
+    updateWelcomeWalletButton();
     // Update the dialog button and chain info
     updateAgentDialogWalletButton();
     updateAgentDialogChainInfo();
+}
+
+function updateWelcomeWalletButton() {
+    const button = document.getElementById('welcome-wallet-connect-btn');
+    if (!button) return;
+    const solanaState = window.solanaWalletManager?.getState?.() || null;
+    const evmState = window.walletManager?.getState?.() || null;
+    const connected = isSolanaWalletActive()
+        || (evmState?.status === 'connected' && Array.isArray(evmState.accounts) && evmState.accounts.length > 0);
+    button.disabled = solanaState?.status === 'connecting' || evmState?.status === 'connecting';
+    button.classList.toggle('connected', connected);
+    const label = renderWalletButtonLabel();
+    button.querySelector('[data-wallet-button-label]').textContent = label;
+    button.setAttribute('aria-label', connected ? `${label}. ${translateUM('wallet.disconnectHint', 'Click to disconnect.')}` : label);
 }
 
 function renderWalletButtonLabel() {

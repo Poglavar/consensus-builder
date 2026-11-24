@@ -106,6 +106,7 @@ async function openDevice(browser: Browser, url: string, index: SharedIndex, acc
 test.describe('Agreements on chain @core', () => {
   test('an investor opens committed terms and must manually confirm a USDC contribution', async ({ mockApi: page }) => {
     await page.setViewportSize({ width: 390, height: 760 });
+    await injectMockSolanaWallet(page, { publicKey: SPONSOR, providerName: 'phantom' });
     const index = pageIndex(page);
     const city = 'new_york', view = { at: '40.7143,-74.0085,16', mode: '2d', city, language: 'en' };
     const design = fileDesign(index, { schema: 'design/v1', goal: 'park', title: 'Local park', description: null, author: null, city, site: PARCEL_GEOMETRY,
@@ -138,10 +139,67 @@ test.describe('Agreements on chain @core', () => {
     await page.keyboard.press('Enter');
     const prompt = page.locator('.cb-dialog--prompt');
     await expect(prompt).toContainText('How much devnet USDC will you contribute');
-    await expect(prompt.locator('.cb-dialog__prompt')).toHaveValue('1.25');
-    await prompt.locator('[data-action-id="cancel"]').click();
+    const amount = prompt.getByRole('textbox', { name: /How much devnet USDC/ });
+    await expect(amount).toHaveValue('1.25');
+    await prompt.getByRole('button', { name: 'Cancel' }).press('Enter');
     await expect(prompt).toHaveCount(0);
     await expect(panel.locator('[data-agreement-boost-status]')).not.toContainText('Contributed');
+    expect(await storedAgreements(page)).toHaveLength(0);
+    await contribution.press('Enter');
+    await amount.fill('0.10');
+    const connect = prompt.getByRole('button', { name: 'Connect wallet', exact: true });
+    await expect(connect).toBeVisible();
+    await page.evaluate(() => {
+      const provider = (window as any).solana;
+      (window as any).__signCalls = 0;
+      const signTransaction = provider.signTransaction.bind(provider);
+      provider.signTransaction = async (transaction: unknown) => {
+        (window as any).__signCalls += 1;
+        return signTransaction(transaction);
+      };
+    });
+
+    // The amount form opens a Solana-only picker. Escape cancels that picker and returns focus to
+    // the same action without changing the amount or starting a signature request.
+    await connect.click();
+    const wallet = page.locator('.wallet-modal-overlay');
+    await expect(wallet).toBeVisible();
+    await expect(wallet.locator('[data-wallet-connector="solana-phantom"]')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(wallet).toHaveCount(0);
+    await expect(prompt).toBeVisible();
+    await expect(amount).toHaveValue('0.10');
+    await expect(connect).toBeFocused();
+
+    // Reopen, connect the injected account, then make contribution submission explicit. The bridge
+    // is controlled here to exercise a declined RPC result followed by one successful retry.
+    await connect.click();
+    await expect(page.locator('.wallet-modal-overlay')).toBeVisible();
+    await page.locator('[data-wallet-connector="solana-phantom"]').click();
+    await expect(page.locator('.wallet-modal-overlay')).toHaveCount(0);
+    expect(await page.evaluate(() => (window as any).__signCalls)).toBe(0);
+    await expect(prompt.getByRole('button', { name: 'Contribute', exact: true })).toBeVisible();
+    await page.evaluate(() => {
+      const root = window as any;
+      let calls = 0;
+      root.__contributionCalls = () => calls;
+      root.AgreementBridge = { ...root.AgreementBridge, donate: async ({ amountAtomic }: { amountAtomic: bigint }) => {
+        if (amountAtomic !== 100000n) throw new Error('Unexpected contribution amount.');
+        calls += 1;
+        if (calls === 1) throw new Error('Transaction declined by wallet.');
+      } };
+    });
+    const contribute = prompt.getByRole('button', { name: 'Contribute', exact: true });
+    await contribute.click();
+    await expect(prompt).toBeVisible();
+    await expect(prompt).toContainText('Transaction declined by wallet.');
+    await expect(amount).toHaveValue('0.10');
+    await expect.poll(() => page.evaluate(() => (window as any).__contributionCalls())).toBe(1);
+
+    await contribute.click();
+    await expect(prompt).toHaveCount(0);
+    await expect(panel.locator('[data-agreement-boost-status]')).toContainText('Contributed 0.1 devnet USDC.');
+    await expect.poll(() => page.evaluate(() => (window as any).__contributionCalls())).toBe(2);
     expect(await storedAgreements(page)).toHaveLength(0);
   });
 

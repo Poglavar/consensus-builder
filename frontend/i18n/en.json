@@ -8059,6 +8059,7 @@
             "contribute": "Contribute",
             "amount": "How much devnet USDC will you contribute under {{name}}?",
             "contributed": "Contributed {{amount}} devnet USDC.",
+            "walletRequirements": "Your wallet needs devnet USDC for the contribution and devnet SOL for fees and account creation.",
             "deposits": "Contributions",
             "reading": "Reading contributions…",
             "progress": "{{raised}} of {{target}} devnet USDC",

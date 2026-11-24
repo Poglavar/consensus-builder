@@ -1798,6 +1798,7 @@
             "contribute": "Contribuer",
             "amount": "Combien d’USDC sur devnet souhaitez-vous verser selon le contrat {{name}} ?",
             "contributed": "Contribution de {{amount}} USDC sur devnet effectuée.",
+            "walletRequirements": "Votre portefeuille doit contenir des USDC sur devnet pour la contribution et des SOL sur devnet pour les frais et la création de comptes.",
             "deposits": "Contributions",
             "reading": "Chargement des contributions…",
             "progress": "{{raised}} sur {{target}} USDC sur devnet",

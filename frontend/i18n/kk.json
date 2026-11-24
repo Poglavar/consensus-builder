@@ -8059,6 +8059,7 @@
             "contribute": "Қаражат енгізу",
             "amount": "{{name}} шарты бойынша devnet-ке қанша USDC енгізесіз?",
             "contributed": "{{amount}} USDC devnet жүйесіне енгізілді.",
+            "walletRequirements": "Жарна үшін әмияныңызда devnet желісіндегі USDC, ал комиссия төлеу және шот ашу үшін сол желідегі SOL болуы керек.",
             "deposits": "Жарналар",
             "reading": "Жарналар жүктейміз…",
             "progress": "{{raised}} {{target}}-ден USDC-ге, де-vnet-ке",

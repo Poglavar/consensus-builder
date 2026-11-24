@@ -242,6 +242,72 @@ describe('minting', () => {
         expect(investor.provider.signTransaction).toHaveBeenCalledTimes(1);
     });
 
+    it('explains investor funding failures only when the devnet account reads establish them', async () => {
+        const { agreement, address, deadline } = crowdfunding();
+        agreement.onchain = { chain: 'solana', cluster: 'devnet', account: address };
+        const accounts = new Map([[address, { data: agreementData({ cid: agreement.published.cid, payout: SPONSOR, required: 0n, deadline }) }]]);
+        const simulation = { err: 'InvalidAccountForFee', logs: [] };
+        const connection = fakeConnection({ accounts, simulation });
+        connection.getMultipleParsedAccounts = vi.fn().mockResolvedValue({ value: [null, null] });
+        const { win, bridge, provider } = fakeWindow({ wallet: STRANGER, connection });
+        Object.assign(win, { AgreementRecord: records, SolanaPledgeClient: pledge.configure({ web3 }), crypto: globalThis.crypto });
+        const attempt = () => thrown(() => bridge.donate({ agreement, amountAtomic: 1000001n }));
+        const error = await attempt();
+        expect(error).toMatchObject({ code: 'insufficient-balance', missingSol: true, missingUsdc: true });
+        expect(error.message).toContain('devnet SOL');
+        expect(error.message).toContain('devnet USDC');
+        const [keys, commitment] = connection.getMultipleParsedAccounts.mock.calls[0];
+        expect(keys.map(key => key.toBase58())).toEqual([STRANGER, pledge.getAssociatedTokenAddress(STRANGER, pledge.constants.USDC_DEVNET_MINT).toBase58()]);
+        expect(commitment).toBe('confirmed');
+
+        // The same fee error with an existing program-owned payer cannot be fixed by adding SOL.
+        const payer = { lamports: 100000000, owner: web3.SystemProgram.programId };
+        connection.getMultipleParsedAccounts.mockResolvedValueOnce({ value: [{ ...payer, owner: new PublicKey(C.AGREEMENT_PROGRAM_ID) }, null] });
+        expect(await attempt()).toMatchObject({ code: 'simulation-failed', simulationError: 'InvalidAccountForFee' });
+        connection.getMultipleParsedAccounts.mockRejectedValueOnce(new Error('RPC unavailable'));
+        expect(await attempt()).toMatchObject({ code: 'simulation-failed' });
+
+        // A wallet with SOL can still lack all or some of the amount it entered.
+        simulation.err = { InstructionError: [1, { Custom: 3012 }] };
+        simulation.logs = ['Program log: AnchorError caused by account: donor_token_account. Error Code: AccountNotInitialized.'];
+        connection.getMultipleParsedAccounts.mockResolvedValueOnce({ value: [payer, null] });
+        expect(await attempt()).toMatchObject({ code: 'insufficient-balance', missingSol: false, missingUsdc: true });
+        const token = { owner: new PublicKey(pledge.constants.TOKEN_PROGRAM_ID), data: { parsed: { info: {
+            mint: pledge.constants.USDC_DEVNET_MINT, owner: STRANGER, tokenAmount: { amount: '1000000' }
+        } } } };
+        simulation.err = { InstructionError: [1, { Custom: 1 }] };
+        simulation.logs = ['Program log: Error: insufficient funds'];
+        connection.getMultipleParsedAccounts.mockResolvedValueOnce({ value: [payer, token] });
+        expect(await attempt()).toMatchObject({ code: 'insufficient-balance', missingUsdc: true });
+        simulation.logs = ['Program log: Error: account frozen'];
+        const reads = connection.getMultipleParsedAccounts.mock.calls.length;
+        expect(await attempt()).toMatchObject({ code: 'simulation-failed' });
+        expect(connection.getMultipleParsedAccounts).toHaveBeenCalledTimes(reads);
+        expect(provider.signTransaction).not.toHaveBeenCalled();
+        expect(connection.sendRawTransaction).not.toHaveBeenCalled();
+    });
+
+    it('can cancel a contribution during simulation or wallet approval before broadcasting it', async () => {
+        const { agreement, address, deadline } = crowdfunding();
+        agreement.onchain = { chain: 'solana', cluster: 'devnet', account: address };
+        const accounts = new Map([[address, { data: agreementData({ cid: agreement.published.cid, payout: SPONSOR, required: 0n, deadline }) }]]);
+        const { win, bridge, provider, connection } = fakeWindow({ wallet: STRANGER, connection: fakeConnection({ accounts }) });
+        Object.assign(win, { AgreementRecord: records, SolanaPledgeClient: pledge.configure({ web3 }), crypto: globalThis.crypto });
+        const duringSimulation = new AbortController();
+        connection.simulateTransaction.mockImplementationOnce(async () => {
+            duringSimulation.abort();
+            return { value: { err: null, logs: [] } };
+        });
+        const stopped = await thrown(() => bridge.donate({ agreement, amountAtomic: 1n, signal: duringSimulation.signal }));
+        expect(stopped).toBe(duringSimulation.signal.reason);
+        expect(provider.signTransaction).not.toHaveBeenCalled();
+        const duringApproval = new AbortController();
+        provider.signTransaction.mockImplementationOnce(async () => { duringApproval.abort(); return {}; });
+        const cancelled = await thrown(() => bridge.donate({ agreement, amountAtomic: 1n, signal: duringApproval.signal }));
+        expect(cancelled).toBe(duringApproval.signal.reason);
+        expect(connection.sendRawTransaction).not.toHaveBeenCalled();
+    });
+
     it('blocks changed contract bytes, wrong network, payout or deadline, and late contributions before asking the wallet', async () => {
         const { agreement, address, cid, deadline } = crowdfunding();
         const accounts = new Map();
@@ -461,7 +527,10 @@ describe('after the mint', () => {
     });
 
     it('knows the connected wallet without asking it', () => {
-        expect(fakeWindow().bridge.connectedWallet()).toBe(SPONSOR);
+        const { provider, bridge } = fakeWindow();
+        expect(bridge.connectedWallet()).toBe(SPONSOR);
+        provider.publicKey = null;
+        expect(bridge.connectedWallet()).toBeNull();
         expect(fakeWindow({ wallet: null }).bridge.connectedWallet()).toBeNull();
     });
 });

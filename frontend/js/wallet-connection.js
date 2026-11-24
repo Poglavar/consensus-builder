@@ -422,13 +422,23 @@
     // opens above the agent dialog or a create dialog that asked for a wallet. One cb-option row per
     // detected wallet. wallet-modal, wallet-modal-overlay, wallet-modal-close and the data-wallet-*
     // attributes are hooks for scripts and the e2e specs; they paint nothing.
-    function openConnectorDialog() {
+    function hasConnectedWallet(chain) {
+        const connected = state => state?.status === 'connected' && state.accounts?.length > 0;
+        const solana = globalScope.solanaWalletManager;
+        if (chain === 'solana') {
+            const provider = solana?.getProvider?.();
+            return !!provider?.publicKey && typeof provider.signTransaction === 'function';
+        }
+        return connected(walletManager.getState()) || connected(solana?.getState?.());
+    }
+
+    function openConnectorDialog(chain) {
         if (connectorModal) {
             return connectorModal;
         }
 
         const modalStrings = {
-            title: translate('wallet.modal.title', 'Connect a Wallet'),
+            title: translate('wallet.modal.title', 'Connect a wallet'),
             closeAria: translate('wallet.modal.closeAria', 'Close wallet modal'),
             description: translate('wallet.modal.description', 'Select one of the detected wallets to continue.')
         };
@@ -461,37 +471,17 @@
             renderConnectorOptions();
         });
 
-        const maybeCloseOnConnected = (detail) => {
-            const evmState = detail && detail.state ? detail.state : walletManager.getState();
-            const solanaState = globalScope.solanaWalletManager && globalScope.solanaWalletManager.getState ? globalScope.solanaWalletManager.getState() : null;
-            const evmConnected = evmState && evmState.status === 'connected' && Array.isArray(evmState.accounts) && evmState.accounts.length > 0;
-            const solanaConnected = solanaState && solanaState.status === 'connected' && Array.isArray(solanaState.accounts) && solanaState.accounts.length > 0;
-            if (evmConnected || solanaConnected) {
+        const maybeCloseOnConnected = () => {
+            if (hasConnectedWallet(chain)) {
                 setModalState({ message: getConnectedMessage(), isError: false, disableAll: false });
-                setTimeout(() => walletManager.closeConnectorModal(), 300);
+                scheduleModalClose();
             }
         };
-
-        const detachConnectListener = walletManager.on('connect', () => {
-            setModalState({ message: getConnectedMessage(), isError: false, disableAll: false });
-            setTimeout(() => walletManager.closeConnectorModal(), 300);
-        });
-        let detachSolanaConnect = () => {};
-        if (globalScope.solanaWalletManager && typeof globalScope.solanaWalletManager.on === 'function') {
-            detachSolanaConnect = globalScope.solanaWalletManager.on('connect', () => {
-                setModalState({ message: getConnectedMessage(), isError: false, disableAll: false });
-                setTimeout(() => walletManager.closeConnectorModal(), 300);
-            });
-        }
-
-        const detachStateListener = walletManager.on('stateChanged', (detail) => {
-            maybeCloseOnConnected(detail);
-        });
+        const detachSolanaConnect = globalScope.solanaWalletManager?.on('connect', maybeCloseOnConnected);
+        const detachStateListener = walletManager.on('stateChanged', maybeCloseOnConnected);
 
         // Safety: poll while modal is open to catch mobile deep-link returns
-        connectorModalCheckTimer = setInterval(() => {
-            maybeCloseOnConnected();
-        }, 500);
+        connectorModalCheckTimer = setInterval(maybeCloseOnConnected, 500);
 
         dialog.body.addEventListener('click', event => {
             const button = event.target.closest('[data-wallet-connector]');
@@ -505,8 +495,9 @@
 
         connectorModal = {
             dialog,
+            chain,
+            closeTimer: null,
             detachProvidersListener,
-            detachConnectListener,
             detachSolanaConnect,
             detachStateListener
         };
@@ -515,7 +506,7 @@
     }
 
     function renderConnectorOptions() {
-        if (!connectorModal) return;
+        if (!connectorModal || connectorModal.connecting) return;
         const { body } = connectorModal.dialog;
         const list = body.querySelector('[data-wallet-options]');
         const errorNode = body.querySelector('[data-wallet-modal-error]');
@@ -524,7 +515,7 @@
         }
         if (!list) return;
 
-        const evmConnectors = walletManager.getConnectors();
+        const evmConnectors = connectorModal.chain === 'solana' ? [] : walletManager.getConnectors();
         const solanaConnectors = (globalScope.solanaWalletManager && typeof globalScope.solanaWalletManager.getConnectors === 'function')
             ? globalScope.solanaWalletManager.getConnectors()
             : [];
@@ -615,6 +606,8 @@
     }
 
     async function handleConnectorSelection(connectorId, buttonNode) {
+        const openedModal = connectorModal;
+        if (!openedModal || openedModal.connecting) return;
         const evmConnectors = walletManager.getConnectors();
         const solanaConnectors = (globalScope.solanaWalletManager && typeof globalScope.solanaWalletManager.getConnectors === 'function')
             ? globalScope.solanaWalletManager.getConnectors()
@@ -629,20 +622,27 @@
             return;
         }
 
+        openedModal.connecting = true;
         try {
             setModalState({
                 message: translate('wallet.modal.connecting', 'Connecting to {{wallet}}...', { wallet: entry.name }),
                 disableAll: true,
                 isError: false
             });
-            if (isSolana && globalScope.solanaWalletManager) {
-                await globalScope.solanaWalletManager.connect(connectorId);
-            } else {
-                await walletManager.connect(connectorId);
+            const manager = isSolana ? globalScope.solanaWalletManager : walletManager;
+            await globalScope.BusyControl.track(buttonNode, () => manager.connect(connectorId));
+            // A request can outlive the picker (for example a mobile wallet handoff). Never let
+            // its completion close a newer picker opened for another action.
+            if (connectorModal !== openedModal) return;
+            if (openedModal.chain === 'solana' && !hasConnectedWallet('solana')) {
+                setModalState({ message: translate('wallet.modal.unusable', 'The selected wallet cannot be used in this browser session.'), disableAll: false, isError: true });
+                return;
             }
             walletManager.closeConnectorModal();
         } catch (err) {
-            setModalState({ message: describeError(err), disableAll: false, isError: true });
+            if (connectorModal === openedModal) setModalState({ message: describeError(err), disableAll: false, isError: true });
+        } finally {
+            openedModal.connecting = false;
         }
     }
 
@@ -651,13 +651,11 @@
     // in which case its close() is a no-op.
     function destroyConnectorModal() {
         if (!connectorModal) return;
-        const { dialog, detachProvidersListener, detachConnectListener, detachSolanaConnect, detachStateListener } = connectorModal;
+        const { dialog, detachProvidersListener, detachSolanaConnect, detachStateListener, closeTimer } = connectorModal;
         connectorModal = null;
+        if (closeTimer) clearTimeout(closeTimer);
         if (detachProvidersListener) {
             detachProvidersListener();
-        }
-        if (detachConnectListener) {
-            detachConnectListener();
         }
         if (typeof detachSolanaConnect === 'function') {
             detachSolanaConnect();
@@ -670,6 +668,14 @@
             connectorModalCheckTimer = null;
         }
         dialog.close();
+    }
+
+    function scheduleModalClose() {
+        const modal = connectorModal;
+        if (!modal || modal.closeTimer) return;
+        modal.closeTimer = setTimeout(() => {
+            if (connectorModal === modal) walletManager.closeConnectorModal();
+        }, 300);
     }
 
     const walletManager = {
@@ -828,27 +834,19 @@
             if (typeof handler !== 'function') return;
             eventHub.removeEventListener(event, handler);
         },
-        openConnectorModal() {
+        openConnectorModal(options = {}) {
             // Re-run provider detection when the user explicitly opens the modal to catch late-injected wallets
             try {
                 detectLegacyProviders();
                 globalScope.dispatchEvent(new Event('eip6963:requestProvider'));
             } catch (_) { /* ignore detection refresh failures */ }
 
-            const currentState = walletManager.getState();
-            const solanaState = globalScope.solanaWalletManager && globalScope.solanaWalletManager.getState ? globalScope.solanaWalletManager.getState() : null;
-            const isAlreadyConnected = (currentState && currentState.status === 'connected' && Array.isArray(currentState.accounts) && currentState.accounts.length > 0)
-                || (solanaState && solanaState.status === 'connected' && Array.isArray(solanaState.accounts) && solanaState.accounts.length > 0);
-            if (isAlreadyConnected) {
-                // Nothing to choose: a dialog that is already open says so and closes; none is opened.
-                if (connectorModal) {
-                    setModalState({ message: translate('wallet.modal.connected', 'Wallet connected'), isError: false, disableAll: false });
-                    setTimeout(() => walletManager.closeConnectorModal(), 150);
-                }
-                return;
-            }
-            openConnectorDialog();
+            const chain = options.chain === 'solana' ? 'solana' : null;
+            if (connectorModal) return connectorModal;
+            if (hasConnectedWallet(chain)) return null;
+            openConnectorDialog(chain);
             renderConnectorOptions();
+            return connectorModal;
         },
         closeConnectorModal() {
             destroyConnectorModal();

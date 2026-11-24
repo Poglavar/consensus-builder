@@ -1886,6 +1886,7 @@
             "contribute": "تقديم مساهمة",
             "amount": "كم من USDC على devnet تريد المساهمة به بموجب عقد {{name}}؟",
             "contributed": "تمت المساهمة بمبلغ {{amount}} USDC على devnet.",
+            "walletRequirements": "تحتاج محفظتك إلى USDC على شبكة devnet للمساهمة، وإلى SOL على الشبكة نفسها لدفع الرسوم وإنشاء الحسابات.",
             "deposits": "المساهمات",
             "reading": "جارٍ تحميل المساهمات…",
             "progress": "{{raised}} من {{target}} USDC على devnet",

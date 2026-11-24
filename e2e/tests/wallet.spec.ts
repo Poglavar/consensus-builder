@@ -165,4 +165,53 @@ test.describe('Wallet connection @features', () => {
     expect(states.solana?.status).toBe('connected');
     expect(states.evm?.status).not.toBe('connected');
   });
+
+  test('scoped Solana picker ignores an existing EVM wallet and stale picker work', async ({ mockApi: page }) => {
+    await injectMockEvmWallet(page, {
+      account: '0x1234567890abcdef1234567890abcdef12345678',
+      chainIdHex: '0x1',
+      walletKind: 'metamask',
+    });
+    await injectMockSolanaWallet(page, {
+      publicKey: '7xKXtg2CWcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT',
+      providerName: 'phantom',
+    });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await waitForMapReady(page);
+    await openWalletModal(page);
+    await page.locator(`${selectors.walletConnectorButton}[data-wallet-connector="metamask"]`).click();
+    await expect(page.locator(selectors.walletModalOverlay)).toHaveCount(0);
+
+    await page.evaluate(() => { (window as any).walletManager.openConnectorModal({ chain: 'solana' }); });
+    const scoped = page.locator(selectors.walletModalOverlay);
+    await expect(scoped).toBeVisible();
+    await expect(scoped.locator('[data-wallet-connector]')).toHaveCount(1);
+    await expect(scoped.locator('[data-wallet-connector="solana-phantom"]')).toBeVisible();
+    await page.waitForTimeout(1200); // longer than the modal poll; the EVM state must not close it
+    await expect(scoped).toBeVisible();
+
+    // A provider request can outlive the first picker. Its rejection must not replace the
+    // message or controls in the next picker, even if a different wallet is already connected.
+    await page.evaluate(() => {
+      const root = window as any;
+      const connect = root.solana.connect.bind(root.solana);
+      root.solana.connect = () => new Promise((_resolve, reject) => {
+        root.rejectFirstConnection = () => { root.solana.connect = connect; reject(new Error('Cancelled first request')); };
+      });
+    });
+    await scoped.locator('[data-wallet-connector="solana-phantom"]').click();
+    await expect(scoped.locator('[data-wallet-connector="solana-phantom"]')).toHaveAttribute('aria-busy', 'true');
+    await page.keyboard.press('Escape');
+    await expect(scoped).toHaveCount(0);
+    await page.evaluate(() => { (window as any).walletManager.openConnectorModal({ chain: 'solana' }); });
+    await page.evaluate(() => (window as any).rejectFirstConnection());
+    await expect(scoped.locator('[data-wallet-modal-error]')).toBeEmpty();
+    await page.locator(`${selectors.walletConnectorButton}[data-wallet-connector="solana-phantom"]`).click();
+    await expect(page.locator(selectors.walletModalOverlay)).toHaveCount(0);
+
+    const states = await getWalletStates(page);
+    expect(states.evm?.status).toBe('connected');
+    expect(states.solana?.status).toBe('connected');
+    expect(states.solana?.accounts).toEqual(['7xKXtg2CWcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT']);
+  });
 });

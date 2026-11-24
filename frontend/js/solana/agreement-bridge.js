@@ -128,20 +128,16 @@
 
         // The connected Solana wallet. Its PublicKey may come from the wallet's own web3.js copy, so
         // it is rebuilt in ours.
-        function walletContext() {
-            const manager = win.solanaWalletManager;
-            const provider = manager && typeof manager.getProvider === 'function' ? manager.getProvider() : null;
-            if (!provider || !provider.publicKey || typeof provider.signTransaction !== 'function') {
-                throw codedError(t('agreement.chain.errors.walletRequired', 'Connect a Solana wallet first.'), 'wallet-required');
-            }
-            const key = typeof provider.publicKey.toBase58 === 'function' ? provider.publicKey.toBase58() : String(provider.publicKey);
-            return { provider, wallet: new win.solanaWeb3.PublicKey(key), cluster: manager.getCluster() };
+        function connectedWallet(provider = win.solanaWalletManager?.getProvider?.()) {
+            if (!provider?.publicKey || typeof provider.signTransaction !== 'function') return null;
+            return provider.publicKey.toBase58?.() || String(provider.publicKey);
         }
 
-        // The connected wallet's address without asking it for anything, or null.
-        function connectedWallet() {
-            const state = win.solanaWalletManager && typeof win.solanaWalletManager.getState === 'function' ? win.solanaWalletManager.getState() : null;
-            return state && state.status === 'connected' && Array.isArray(state.accounts) && state.accounts.length ? String(state.accounts[0]) : null;
+        function walletContext() {
+            const provider = win.solanaWalletManager?.getProvider?.();
+            const key = connectedWallet(provider);
+            if (!key) throw codedError(t('agreement.chain.errors.walletRequired', 'Connect a Solana wallet first.'), 'wallet-required');
+            return { provider, wallet: new win.solanaWeb3.PublicKey(key), cluster: win.solanaWalletManager.getCluster() };
         }
 
         const cluster = () => (win.solanaWalletManager && typeof win.solanaWalletManager.getCluster === 'function' ? win.solanaWalletManager.getCluster() : 'devnet');
@@ -172,6 +168,7 @@
             // A legacy Transaction goes to web3.js 1.x's (transaction, signers?) overload: a config
             // object there throws before anything is signed. No signers: an unsigned simulation.
             const simulation = await connection.simulateTransaction(transaction);
+            options.signal?.throwIfAborted();
             if (simulation && simulation.value && simulation.value.err) {
                 const logs = simulation.value.logs || [];
                 const program = anchorError(logs);
@@ -182,6 +179,7 @@
             }
             emitStatus(options, 'awaiting_signature');
             const signed = await provider.signTransaction(transaction);
+            options.signal?.throwIfAborted();
             const signature = await connection.sendRawTransaction(signed.serialize(), { skipPreflight: false });
             const link = explorerUrl({ signature, cluster: clusterName });
             emitStatus(options, 'submitted', { signature, explorerUrl: link });
@@ -216,6 +214,38 @@
                 || value.lens !== agreement.rule.lens[0] || value.deadline !== Math.floor(Date.parse(agreement.deadline) / 1000)
                 || value.requiredLamports !== 0n || value.openGround !== false)) {
                 throw codedError(t('agreement.funding.mismatch', 'The funding terms differ from the published agreement.'), 'funding-mismatch');
+            }
+        }
+
+        // Only explain funding failures. InvalidAccountForFee also occurs for accounts with an
+        // ineligible owner or account type. Check the payer and the source ATA at the same slot.
+        async function investorFundingError(connection, wallet, amountAtomic, error) {
+            const reason = error.simulationError;
+            const invalidPayer = reason === 'InvalidAccountForFee' || reason === 'AccountNotFound';
+            const logs = error.logs || [];
+            const insufficientSol = reason === 'InsufficientFundsForFee' || reason?.InsufficientFundsForRent?.account_index === 0
+                || logs.some(line => /Transfer: insufficient lamports/.test(line));
+            const tokenError = logs.some(line => /Error: insufficient funds|donor_token_account.*AccountNotInitialized/.test(line));
+            if (!invalidPayer && !insufficientSol && !tokenError) return error;
+            try {
+                const client = pledge();
+                const ata = client.getAssociatedTokenAddress(wallet, client.constants.USDC_DEVNET_MINT);
+                const { value: [payer, token] } = await connection.getMultipleParsedAccounts([wallet, ata], 'confirmed');
+                if (payer !== null && (payer.owner.toBase58() !== client.constants.SYSTEM_PROGRAM_ID || !Number.isSafeInteger(payer.lamports) || payer.lamports < 0)) return error;
+                const missingSol = payer === null || payer.lamports === 0 || insufficientSol;
+                if (invalidPayer && !missingSol) return error;
+                const info = token?.data?.parsed?.info;
+                const balance = info?.tokenAmount?.amount;
+                if (token !== null && (token.owner.toBase58() !== client.constants.TOKEN_PROGRAM_ID || info?.mint !== client.constants.USDC_DEVNET_MINT
+                    || info.owner !== wallet.toBase58() || typeof balance !== 'string' || !/^\d+$/.test(balance))) return error;
+                const missingUsdc = token === null || BigInt(balance) < BigInt(amountAtomic);
+                if (!missingSol && !missingUsdc) return error;
+                const messages = [];
+                if (missingSol) messages.push(t('bets.trade.insufficientSol', 'This wallet needs devnet SOL for transaction fees.'));
+                if (missingUsdc) messages.push(t('bets.trade.insufficientUsdc', 'This wallet needs devnet USDC. Use the test-money faucet.'));
+                return codedError(messages.join(' '), 'insufficient-balance', { cause: error, missingSol, missingUsdc });
+            } catch (_) {
+                return error;
             }
         }
 
@@ -432,7 +462,7 @@
         // After a lost confirmation the same wallet retries the same on-chain position. A new,
         // intentional contribution gets a new ID after the previous receipt is observed.
         const pendingDeposits = new Map();
-        async function donate({ agreement, amountAtomic, onStatus } = {}) {
+        async function donate({ agreement, amountAtomic, onStatus, signal } = {}) {
             const api = await dependencies();
             const { provider, wallet } = walletContext();
             const { ref, connection, value } = await current(api, agreement);
@@ -457,7 +487,13 @@
             const instructions = [];
             if (!(await client.readDonationEscrow(connection, ref.account))) instructions.push(client.buildCreateDonationEscrowIx({ proposal: ref.account, creator: wallet }));
             instructions.push(client.buildDonateIx({ proposal: ref.account, donor: wallet, donationId, amount: BigInt(amountAtomic) }));
-            const sent = await send(connection, provider, wallet, ref.cluster, instructions, { onStatus });
+            let sent;
+            try {
+                sent = await send(connection, provider, wallet, ref.cluster, instructions, { onStatus, signal });
+            } catch (error) {
+                if (key && error.code === 'simulation-failed') throw await investorFundingError(connection, wallet, amountAtomic, error);
+                throw error;
+            }
             clear();
             log(`boosted ${ref.account} with ${client.formatUsdc(BigInt(amountAtomic))} USDC`, { signature: sent.signature });
             return result(sent, ref);

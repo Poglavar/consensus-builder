@@ -1,5 +1,6 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity } from '../helpers/runtime';
+import { injectMockSolanaWallet } from '../helpers/blockchain';
 
 for (const width of [1280, 375]) {
   test(`agent setup precedes the product introduction at ${width}px`, async ({ mockApi: page }, testInfo) => {
@@ -109,4 +110,29 @@ test('the profile wallet button opens the connector modal and its close button r
   await expect(profile).toBeVisible();
   await profile.locator('.agent-dialog-modal-close').click();
   await expect(profile).toHaveCount(0);
+});
+
+test('a fresh guest can find the wallet entry on the welcome screen', async ({ mockApi: page }) => {
+  await injectMockSolanaWallet(page, { publicKey: '7v54NWdBtkjuAFJrLGsS2SXnuk8nKam81mZJeeYxVFi9' });
+  await page.setViewportSize({ width: 375, height: 812 });
+  await openCity(page);
+  await page.locator('#username-display').click();
+  const welcome = page.locator('#welcome-modal');
+  await expect(welcome).toBeVisible();
+  const connect = welcome.locator('#welcome-wallet-connect-btn');
+  await expect(connect).toBeVisible();
+  await expect(connect).toContainText('Connect wallet');
+  await connect.click();
+  const wallet = page.locator('.wallet-modal-overlay');
+  await expect(wallet).toBeVisible();
+  await wallet.getByRole('button', { name: 'Close wallet modal' }).press('Enter');
+  await expect(wallet).toHaveCount(0);
+  await expect(welcome).toBeVisible();
+  await expect(connect).toBeFocused();
+  await connect.press('Enter');
+  await wallet.getByRole('button', { name: /Phantom.*Solana/i }).press('Enter');
+  await expect(wallet).toHaveCount(0);
+  await expect(connect).toHaveAccessibleName(/7v54\.\.\.VFi9.*disconnect/i);
+  await expect(connect).toBeFocused();
+  await expect(welcome.locator('#welcome-submit-btn')).toBeVisible();
 });

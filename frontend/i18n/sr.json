@@ -8100,6 +8100,7 @@
             "contribute": "Uplati",
             "amount": "Koliko USDC na devnetu želiš da uplatiš po ugovoru {{name}}?",
             "contributed": "Uplaćeno je {{amount}} USDC na devnetu.",
+            "walletRequirements": "Za uplatu vam je potreban USDC na devnetu, a za naknade i otvaranje računa SOL na devnetu. Oba moraju biti u istom novčaniku.",
             "deposits": "Uplate",
             "reading": "Učitavanje uplata…",
             "progress": "{{raised}} od {{target}} USDC na devnetu",

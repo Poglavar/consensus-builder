@@ -1798,6 +1798,7 @@
             "contribute": "Contribuir",
             "amount": "Quantos USDC da devnet pretende contribuir ao abrigo do contrato {{name}}?",
             "contributed": "Contribuição de {{amount}} USDC na devnet efetuada.",
+            "walletRequirements": "A sua carteira precisa de USDC na devnet para a contribuição e de SOL na devnet para as taxas e a criação de contas.",
             "deposits": "Contribuições",
             "reading": "A carregar as contribuições…",
             "progress": "{{raised}} de {{target}} USDC na devnet",

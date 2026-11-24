@@ -100,22 +100,27 @@
     }
 
     const inFlight = new Set();
-    async function run(slot, button, work) {
+    async function run(slot, button, work, { feedback, signal } = {}) {
         const context = slot.__boostContext;
         if (inFlight.has(context.account)) return false;
         inFlight.add(context.account);
+        function report(message, tone) {
+            const current = slotOf(context.account);
+            if (current) status(current, message, tone);
+            feedback?.(message, tone);
+        }
         try {
             await root.BusyControl.track(button, () => work(item => {
-                if (item?.state === 'awaiting_signature') status(slot, t('bets.trade.sign', 'Confirm in your wallet…'));
-                else if (item?.state === 'submitted') status(slot, t('bets.trade.submitted', 'Waiting for confirmation…'));
+                if (item?.state === 'awaiting_signature') report(t('bets.trade.sign', 'Confirm in your wallet…'));
+                else if (item?.state === 'submitted') report(t('bets.trade.submitted', 'Waiting for confirmation…'));
             }));
             const current = slotOf(context.account);
             if (current) await load(current.__boostContext);
             return true;
         } catch (error) {
+            if (signal?.aborted && error === signal.reason) { report(''); return false; }
             console.error(`[${new Date().toISOString()}] [AgreementBoost] action failed`, error);
-            const current = slotOf(context.account);
-            if (current) status(current, error?.message || String(error), 'danger');
+            report(error?.message || String(error), 'danger');
             return false;
         } finally { inFlight.delete(context.account); }
     }
@@ -151,19 +156,102 @@
         if (current && !current.querySelector('.agreement-boost__status--danger')) status(current, t('agreement.boost.done', 'Boosted with {{amount}} {{unit}}.', { amount: formatAmount(amount), unit }), 'success');
     }
 
-    async function contribute(slot, button) {
+    async function contribute(slot) {
         const { agreement, account } = slot.__boostContext;
         const label = t('agreement.funding.contribute', 'Contribute');
         const text = t('agreement.funding.amount', 'How much devnet USDC will you contribute under {{name}}?', { name: agreement.funding.contract.name });
         const intent = root.ApprovalLink?.parse(root.location);
-        const requested = intent?.action === 'donate' && intent.target === agreement.published?.cid && parseAmount(intent.params.amount) !== null
-            ? intent.params.amount : '';
-        const answer = await root.CbDialog.prompt(text, { title: label, okText: label, defaultValue: requested, placeholder: '10', validate: value => parseAmount(value) !== null });
-        if (answer == null || !slotOf(account)) return;
-        const amountAtomic = parseAmount(answer);
-        const ok = await run(slot, button, onStatus => root.AgreementBridge.donate({ agreement, amountAtomic, onStatus }));
-        const current = slotOf(account);
-        if (ok && current) status(current, t('agreement.funding.contributed', 'Contributed {{amount}} devnet USDC.', { amount: formatAmount(amountAtomic) }), 'success');
+        const field = el('label', null, text);
+        const input = el('input', 'cb-dialog__prompt');
+        input.type = 'text'; input.inputMode = 'decimal'; input.placeholder = '10';
+        if (intent?.action === 'donate' && intent.target === agreement.published?.cid && parseAmount(intent.params.amount) !== null) input.value = intent.params.amount;
+        field.append(input);
+
+        const walletLine = el('p', 'agreement-panel-hint');
+        walletLine.setAttribute('role', 'status');
+        const requirements = el('p', 'agreement-panel-hint', t('agreement.funding.walletRequirements',
+            'Your wallet needs devnet USDC for the contribution and devnet SOL for fees and account creation.'));
+        const faucets = el('p', 'cb-link-row');
+        for (const [href, key, fallback] of [
+            ['https://faucet.solana.com/', 'bets.trade.solFaucet', 'Get devnet SOL'],
+            ['https://faucet.circle.com/', 'bets.trade.usdcFaucet', 'Get devnet USDC']
+        ]) {
+            const link = el('a', 'cb-link cb-link--external', t(key, fallback));
+            link.href = href; link.target = '_blank'; link.rel = 'noopener noreferrer'; faucets.append(link);
+        }
+        const notice = el('p', 'agreement-panel-hint agreement-boost__status');
+        notice.setAttribute('role', 'status');
+        function feedback(message, tone) {
+            notice.classList.toggle('agreement-boost__status--danger', tone === 'danger');
+            notice.textContent = message;
+        }
+        const connect = t('wallet.connect', 'Connect wallet');
+        const controller = new AbortController();
+        const dialog = root.CbDialog.open({
+            title: label, size: 'sm', className: 'cb-dialog--prompt', initialFocus: input,
+            body: [field, walletLine, requirements, faucets, notice], onClose: () => controller.abort(),
+            actions: [
+                { id: 'cancel', label: t('common.cancel', 'Cancel') },
+                { id: 'ok', label: connect, role: 'primary', keepOpen: true, onClick: proceed }
+            ]
+        });
+        const primary = dialog.getActionButton('ok');
+        let displayedAddress;
+        function update() {
+            const address = root.AgreementBridge.connectedWallet();
+            primary.disabled = root.BusyControl.isBusy(primary) || (!!address && parseAmount(input.value) === null);
+            if (address !== displayedAddress) {
+                displayedAddress = address;
+                primary.textContent = address ? label : connect;
+                walletLine.hidden = !address;
+                walletLine.textContent = address ? t('wallet.connectedTitle', 'Connected wallet: {{account}}', { account: address }) : '';
+                feedback('');
+            }
+        }
+        async function proceed() {
+            if (root.BusyControl.isBusy(primary)) return;
+            if (!slotOf(account)) { dialog.close(); return; }
+            // If the provider changed accounts in its extension, show the new payer for review.
+            if (root.AgreementBridge.connectedWallet() !== displayedAddress) { update(); return; }
+            feedback('');
+            if (!displayedAddress) {
+                try {
+                    await root.BusyControl.track(primary, () => root.walletManager.openConnectorModal({ chain: 'solana' })?.dialog.closed);
+                } catch (error) { feedback(error.message, 'danger'); }
+                update();
+                if (dialog.overlay.isConnected && doc.activeElement === doc.body) (primary.disabled ? input : primary).focus({ preventScroll: true });
+                return;
+            }
+            const amountAtomic = parseAmount(input.value);
+            if (amountAtomic === null) return;
+            input.readOnly = true;
+            primary.disabled = true;
+            const { signal } = controller;
+            const ok = await run(slot, primary, report => root.AgreementBridge.donate({
+                agreement, amountAtomic, signal, onStatus(item) {
+                    if (item.state === 'submitted') dialog.getActionButton('cancel').textContent = t('modal.common.close', 'Close');
+                    report(item);
+                }
+            }), { feedback, signal });
+            if (ok) {
+                dialog.close();
+                const current = slotOf(account);
+                if (current) status(current, t('agreement.funding.contributed', 'Contributed {{amount}} devnet USDC.', { amount: formatAmount(amountAtomic) }), 'success');
+            } else {
+                input.readOnly = false;
+                update();
+                if (dialog.overlay.isConnected && doc.activeElement === doc.body) input.focus({ preventScroll: true });
+            }
+        }
+        update();
+        const unsubscribe = root.solanaWalletManager.on('stateChanged', update);
+        input.addEventListener('input', () => { feedback(''); update(); });
+        input.addEventListener('keydown', event => {
+            if (event.key === 'Enter') { event.preventDefault(); primary.click(); }
+        });
+        await dialog.closed;
+        unsubscribe();
+        if (doc.activeElement === doc.body) slotOf(account)?.querySelector('[data-agreement-boost-action="boost"]')?.focus({ preventScroll: true });
     }
 
     function draw(slot, context) {
