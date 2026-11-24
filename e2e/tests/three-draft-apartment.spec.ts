@@ -13,7 +13,9 @@ async function openXray(page: Page) {
   if (!(await page.locator('#model-layer-controls').isVisible())) await page.locator('#layers-button').click();
   await expect(page.locator('#model-layer-controls .three-mode-ui-panel')).toBeVisible();
   await page.locator('#three-mode-xray').click();
-  await page.locator('#three-mode-suggested-layouts').click();
+  await expect(page.locator('#three-xray-toolbar')).toHaveAttribute('aria-label', 'X-ray');
+  await page.locator('#three-xray-proposed').click();
+  await expect(page.locator('#model-layer-controls')).toBeHidden();
   await expect.poll(() => page.evaluate(() => {
     const plans = (window as any).getThreeModeInternals().scene.getObjectByName('FloorPlans');
     return plans?.children.filter((group: any) => group.userData?.proposalId).length || 0;
@@ -58,8 +60,9 @@ test('a private proposed residential building selects apartments in X-ray withou
   await page.evaluate(() => (window as any).PlanningViews.configure('proposed', 'ghost'));
   await page.evaluate(() => (window as any).PlanningViews.configure('existing', 'off'));
   await openXray(page);
-  await expect(page.locator('#three-mode-suggested-existing')).toBeHidden();
-  await expect(page).toHaveURL(/suggested=1/);
+  await expect(page.locator('#three-xray-proposed')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#three-xray-built')).toHaveAttribute('aria-pressed', 'false');
+  await expect(page).toHaveURL(/xray=proposed/);
   await closeSheets(page);
   await page.evaluate(() => {
     const w = window as any;
@@ -115,6 +118,6 @@ test('a private proposed residential building selects apartments in X-ray withou
   await expect(panel).toBeHidden();
   await page.reload({ waitUntil: 'commit' });
   await expect(page.locator('#three-mode-xray')).toHaveAttribute('aria-pressed', 'true', { timeout: 20_000 });
-  await expect(page.locator('#three-mode-suggested-layouts')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#three-xray-proposed')).toHaveAttribute('aria-pressed', 'true');
   await expect.poll(() => page.evaluate(id => !!(window as any).proposalStorage?.getProposal(id), designId)).toBe(true);
 });

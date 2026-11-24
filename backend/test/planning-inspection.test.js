@@ -11,6 +11,7 @@ import { planningParcel, sourcesFor } from '../planning/sources.js';
 import { setupPlanningRoutes } from '../routes/planning.js';
 const require = createRequire(import.meta.url);
 const representations = require('../../frontend/js/planning/representations.js');
+const PlanningSourceProposal = require('../../frontend/js/planning/source-proposal.js');
 const labels = require('../../frontend/js/planning/item-labels.js');
 const Cid = require('../../frontend/js/cid.js');
 const geometry = { type: 'Polygon', coordinates: [[[10,40],[10.001,40],[10.001,40.001],[10,40]]] };
@@ -174,7 +175,7 @@ describe('shared building and proposal representations', () => {
             'evidence.derived': 'Calculated by UGT', floorArea: 'Floor area', height: 'Height', footprintArea: 'Footprint', close: 'Close', info: 'Info' }[key] || key);
         const root = { i18n: { t: key => ({ 'clickStackNavigation.info': 'Info', 'planningViews.tabs.options': 'Options', 'proposalDrafts.approval.policyType': 'Rules' }[key] || key) },
             CbFormat: { formatLength: value => `${value} m`, formatNumber: value => String(value), formatArea: value => `${value} m²`, formatDate: value => String(value) } };
-        const context = vm.createContext({ selected: () => item, inspector, root, element, t, parcelOf: () => null,
+        const context = vm.createContext({ selected: () => item, inspector, root: { ...root, PlanningSourceProposal }, element, t, parcelOf: () => null,
             inspectorBadgeKey: () => 'sourceEvidenceBadge', area: value => `${value} m²`, number: value => String(value), resultLabel: value => String(value),
             permittedFeatures: () => ({ configuration: null }), renderConfigurations: () => element('section', 'planning-configurations'), scenarioLabel: value => value,
             sourceRecord: async () => [], selectRecord() {}, select() {}, referenceStatus: null, document, itemTitle: value => value.title,
@@ -210,7 +211,7 @@ describe('shared building and proposal representations', () => {
         const fullT = (key, params = {}) => (dictionary[key] || key).replace(/{{(\w+)}}/g, (_, name) => params[name]);
         const t = key => ({ sourceWording: 'Source wording:', envelopeTitle: 'Permitted envelope', conditionalHeight: 'Height under a condition' }[key] || key);
         const root = { i18n: { t: fullT }, CbFormat: { formatLength: value => `${value} m`, formatNumber: value => String(value), formatArea: value => `${value} m²`, formatDate: String } };
-        const context = vm.createContext({ selected: () => item, inspector, root, element, t, fullT, labels, parcelOf: () => 'KZ-1',
+        const context = vm.createContext({ selected: () => item, inspector, root: { ...root, PlanningSourceProposal }, element, t, fullT, labels, parcelOf: () => 'KZ-1',
             inspectorBadgeKey: () => 'bound', area: value => `${value} m²`, number: value => String(value), resultLabel: value => String(value),
             permittedFeatures: () => ({ configuration: null }), renderConfigurations: () => element('section'), scenarioLabel: value => value,
             sourceRecord: async () => [], selectRecord() {}, select() {}, referenceStatus: null, document, sceneItems: () => [item, zone], appearance: () => 'ghost' });
@@ -279,7 +280,7 @@ describe('shared building and proposal representations', () => {
             displayedPassages3D: () => [], openBuildingPassages: () => {}, addBuildingTunnelLiners3D: () => {},
             nearbyBuildingGeometryCache: { beginPass: () => ({}) }, nearbyProposalBuildings: [{ object_id: 12, source: 'gdi-3d' }],
             threeBuildingKey: building => `${building.source}:${building.object_id}`, buildingFootprintPolygon: () => null,
-            xrayEnabled: false, suggestedPlansEnabled: false, suggestedExistingEnabled: false, suggestedAccess: 'auto', origin3857: null,
+            xrayScope: null, suggestedAccess: 'auto', origin3857: null,
             sceneWork: { forEach: async (items, fn) => items.forEach(fn) },
             buildingDisplayPolicy: { resolveBuildingRenderParts: () => ({ detailed: true, remainder: true, demolished: true }) },
             appendBuildingFloorPlans: () => false, building3DHeightMeters: () => 8, buildMeshFromBuilding3D: mesh,

@@ -403,12 +403,12 @@ describe('three-mode (3D display)', () => {
         const fns = extract(file, ['reportThreeClip', 'appendSuggestedExistingFloorPlans'], {
             ...base(['intersect']),
             window: {
-                __parcelArrangement: A,
+                __parcelArrangement: A, PlanningViews: { getState: () => ({ existingScope: 'surviving' }) },
                 buildingFeaturePool: [{ ...LEFT, properties: { height_m: 9 } }],
                 proposedBuildings: [RIGHT],
                 BuildingUse: require('../../frontend/js/building-use.js')
             },
-            xrayEnabled: true, suggestedPlansEnabled: true, suggestedExistingEnabled: true,
+            xrayScope: 'built', apartmentAddress: null, existingFloorPlanShells: new Map(), threeBuildingKey: () => 'source:one',
             floorPlanGroup: {}, suggestedFloorPlans: {}, suggestedPlanTotals: {},
             suggestedPlanContext: { planBuilding: () => null, neighbourPool: () => [] },
             getGeoCameraView: () => ({ targetLng: 16.0005, targetLat: 46.0005 }),

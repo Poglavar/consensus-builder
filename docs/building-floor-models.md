@@ -1,7 +1,7 @@
 <!-- Storage, source-adapter and rendering contract for optional architectural interiors. -->
 # Building floor models
 
-X-ray displays authored architectural interiors when a building has evidence for them. Buildings without a model continue through the existing exterior renderer, with the same Built/Planned settings. No developer, city or project name participates in the runtime renderer.
+**X-ray** opens from Layers. Layers closes and the map shows **Proposed**, **Built** and **Close X-ray**. Proposed shows interiors of design buildings, including in Photo view. Built uses the 3D model to show interiors of existing buildings. Both use available floor models and estimate residential layouts where possible. Select a flat on the map or in the apartment picker. Reopen Layers to change **Cut above** or choose **Access** in the 3D model. Closing X-ray restores the building layers selected in Layers.
 
 ## Where floor plans are stored
 
@@ -55,8 +55,7 @@ A proposed building drawn from an uploaded glTF model (`properties.modelUrl`) ne
 
 ## Estimated layouts
 
-A proposed building without a registered model can show a generated default interior in X-ray when
-**Estimated layouts** is on (`?suggested=1`): a point-access stair-and-lift core entered from the
+In **Proposed** X-ray, the default residential interior has a point-access stair-and-lift core entered from the
 street-facing facade, two apartments per core, blind party walls, one core per ~240 m² of floor.
 The shared interior-viewer planner (`frontend/vendor/interior-viewer/interior-planner.js`) produces the same v3 contract with `suggested: true` and layout
 sources of `kind: 'generated'`; the validator accepts such sources only inside a suggested model, the
@@ -77,14 +76,14 @@ models, unit counts or calculated quantities. Camera movement changes visibility
 bands in place, without generating layouts or rebuilding exterior buildings.
 
 Native-model requests have two concurrent slots and at most 24 resident answers, with the existing
-200 m load / 300 m unload hysteresis. Hidden Built layers, Photo view and X-ray off stop these reads.
-With **Estimated layouts** on, **Existing buildings too** extends estimates to visible existing
-buildings. This option appears when the Built layer is visible. X-ray, estimates and their scope
-are saved in the view URL. Suggested existing interiors are generated for at most 24 nearby buildings in view. Their footprint
-request covers the camera's 200 m neighbourhood, independently of the wider exterior-building radius.
+200 m load / 300 m unload hysteresis. **Built** activates these reads. Its footprint request
+covers the camera’s 200 m neighbourhood. It estimates up to 24 nearby buildings in view and defers
+to published floor models. The selected building family can be inspected with its exterior layer
+switched off. Its saved exterior setting applies again on exit. Model-view links record the
+active scope with `xray=proposed` or `xray=built`. An apartment address identifies its own scope.
 
 Estimated layouts use the same pure planner in one worker, with one outstanding calculation and a
-10-second watchdog. Disabling suggestions or X-ray, leaving model view, or disposing the scene stops
+10-second watchdog. Switching scope, closing X-ray, leaving model view, or disposing the scene stops
 outstanding calculation. The worker retains at most 64 generated results, bounded by 16 MiB of
 serialized content with a 4 MiB per-result ceiling. Old entries are evicted individually. Parcel
 panels retain scalar summaries rather than full floor models. Mesh construction yields between

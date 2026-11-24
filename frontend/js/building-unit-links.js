@@ -63,18 +63,16 @@
     }
 
     function link(base, mapShare, context, selection) {
-        const { building, unit, designCid, suggested, access, center } = selection;
+        const { building, unit, suggested, access, center } = selection;
+        const [source, revision] = locatorParts(building);
+        const designCid = source === 'design' ? revision : null;
         const url = new URL(designCid ? `/designs/${designCid}` : '/', base);
-        url.searchParams.set('xray', '1');
+        url.searchParams.set('xray', designCid ? 'proposed' : 'built');
         url.searchParams.set('xrayBuilding', building);
         url.searchParams.set('unit', unit);
         if (designCid) url.searchParams.set('proposed', 'solid');
         else url.searchParams.set('existing', 'ghost');
-        if (suggested) {
-            url.searchParams.set('suggested', '1');
-            if (!designCid) url.searchParams.set('suggestedExisting', '1');
-            if (access !== 'auto') url.searchParams.set('access', access);
-        }
+        if (suggested && access && access !== 'auto') url.searchParams.set('access', access);
         const [lng, lat] = center;
         return mapShare.link(url, { ...context, settings: null, rotate: false, mode: 'model', at: `${lat},${lng},19`,
             camera: { targetLat: lat, targetLng: lng, headingDeg: 0, pitchRad: -1.52, range: 95 } });
@@ -82,10 +80,10 @@
 
     function offerLink(base, mapShare, context, offer) {
         const [lat, lng] = offer.at.split(',').map(Number);
-        const [source, revision] = offer.xrayBuilding.split('::');
+        const [source] = offer.xrayBuilding.split('::');
         const city = source === 'design' ? context.city : decodeURIComponent(source);
         return link(base, mapShare, { ...context, city }, { building: offer.xrayBuilding, unit: offer.unit,
-            designCid: source === 'design' ? revision : null, suggested: offer.unit.split('::').length === 3,
+            suggested: offer.unit.split('::').length === 3,
             access: offer.access || 'auto', center: [lng, lat] });
     }
 

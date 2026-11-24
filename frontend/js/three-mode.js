@@ -74,7 +74,11 @@
     let dismissedApartmentDesign = null;
     let apartmentPanel = null;
     const apartmentCatalogs = new WeakMap();
-    let xrayEnabled = new URLSearchParams(window.location.search).get('xray') === '1';
+    const requestedXray = new URLSearchParams(window.location.search).get('xray');
+    let xrayScope = apartmentAddress ? (apartmentAddress.building.startsWith('design::') ? 'proposed' : 'built')
+        : ['proposed', 'built'].includes(requestedXray) ? requestedXray : null;
+    let xrayToolbar = null;
+    let xrayScopeButtons = null;
     let xrayButton = null;
     let xrayNote = null;
     // The radius the footprint pool was last asked to cover for typical layouts (one request each).
@@ -96,12 +100,6 @@
     // centrelines fetched per cell so entrances face the street. Never written to any proposal.
     const suggestedFloorPlans = window.__defaultFloorPlans || null;
     const suggestedPlanContext = window.__defaultFloorPlanContext || null;
-    let suggestedPlansEnabled = new URLSearchParams(window.location.search).get('suggested') === '1';
-    // Typical layouts by era for the existing buildings around, inside the same toggle.
-    let suggestedExistingEnabled = new URLSearchParams(window.location.search).get('suggestedExisting') === '1';
-    let suggestedPlansButton = null;
-    let suggestedExistingRow = null;
-    let suggestedExistingCheckbox = null;
     // How the suggested layouts reach the flats in this view (`?access=`): 'auto' follows each
     // building's own Access (building-use.js), else point cores or a corridor for every building.
     // A view setting: no design is changed.
@@ -1870,7 +1868,7 @@
         scene.add(stackFocusGroup);
         stackFocusPulseStart = 0;
         if (!window.__reducedMotion) frameHooks.push(pulseStackFocus);
-        if (kind === 'designs' && xrayEnabled && !apartmentAddress?.unit) refreshApartmentSelection();
+        if (kind === 'designs' && xrayScope && !apartmentAddress?.unit) refreshApartmentSelection();
         invalidateThreeView();
     }
 
@@ -2196,7 +2194,7 @@
     function refreshClickStackFigures() {
         const expanded = window.ThreeClickStack?.expanded?.();
         if (['designs', 'parcels', 'formed'].includes(expanded)) window.ThreeClickStack.refresh();
-        else if (xrayEnabled && ['built', 'designs'].includes(stackFocusGroup?.userData.kind)) window.ThreeClickStack.restoreFocus();
+        else if (xrayScope && ['built', 'designs'].includes(stackFocusGroup?.userData.kind)) window.ThreeClickStack.restoreFocus();
     }
 
     // Isolation is entered by a click, but exited by clicking "somewhere else" — which nothing on
@@ -2349,41 +2347,66 @@
         xrayButton.id = 'three-mode-xray';
         xrayButton.className = 'btn three-mode-xray-button';
         xrayButton.textContent = threeI18n('threeMode.controls.xray', 'X-ray');
-        xrayButton.title = threeI18n('threeMode.controls.xrayTooltip',
-            'Show modelled storeys, walls, doors and windows.');
-        xrayButton.addEventListener('click', () => window.BusyControl.track(xrayButton, () => setXrayEnabled(!xrayEnabled)));
-        const xrayButtons = document.createElement('div');
-        xrayButtons.className = 'three-mode-xray-buttons';
-        xrayButtons.appendChild(xrayButton);
-        // Only meaningful inside X-ray: generated default interiors for buildings without evidence.
-        suggestedPlansButton = document.createElement('button');
-        suggestedPlansButton.type = 'button';
-        suggestedPlansButton.id = 'three-mode-suggested-layouts';
-        suggestedPlansButton.className = 'btn three-mode-xray-button';
-        suggestedPlansButton.textContent = threeI18n('threeMode.controls.suggestedLayouts', 'Estimated layouts');
-        suggestedPlansButton.title = threeI18n('threeMode.controls.suggestedLayoutsTooltip',
-            'Estimate floor plans for proposed buildings without a modelled interior, using their footprints and storeys.');
-        suggestedPlansButton.addEventListener('click', () => window.BusyControl.track(suggestedPlansButton, () => setSuggestedPlansEnabled(!suggestedPlansEnabled)));
-        xrayButtons.appendChild(suggestedPlansButton);
-        xrayRow.appendChild(xrayButtons);
-        // Existing buildings get typical layouts by era, a guess from footprint and height.
-        suggestedExistingRow = document.createElement('label');
-        suggestedExistingRow.className = 'three-mode-trees-toggle three-mode-wide-toggle three-mode-suggested-existing';
-        suggestedExistingCheckbox = document.createElement('input');
-        suggestedExistingCheckbox.type = 'checkbox';
-        suggestedExistingCheckbox.id = 'three-mode-suggested-existing';
-        suggestedExistingCheckbox.checked = suggestedExistingEnabled;
-        suggestedExistingCheckbox.addEventListener('change', () => setSuggestedExistingEnabled(suggestedExistingCheckbox.checked));
-        const suggestedExistingText = document.createElement('span');
-        suggestedExistingText.className = 'three-mode-emphasis-label';
-        suggestedExistingText.textContent = threeI18n('threeMode.controls.suggestedExisting', 'Existing buildings too');
-        suggestedExistingRow.title = threeI18n('threeMode.controls.suggestedExistingTooltip',
-            'Also estimate floor plans for nearby existing buildings from their footprint and height.');
-        suggestedExistingRow.append(suggestedExistingCheckbox, suggestedExistingText);
-        const suggestedExistingHost = document.createElement('div');
-        suggestedExistingHost.setAttribute('data-map-modes', '3d');
-        suggestedExistingHost.appendChild(suggestedExistingRow);
-        xrayRow.appendChild(suggestedExistingHost);
+        xrayButton.title = threeI18n('threeMode.controls.xrayTooltip', 'Look inside proposed or built buildings using floor plans and estimated layouts.');
+        xrayButton.setAttribute('aria-controls', 'three-xray-toolbar');
+        xrayRow.appendChild(xrayButton);
+
+        xrayToolbar = document.createElement('div');
+        xrayToolbar.id = 'three-xray-toolbar';
+        xrayToolbar.className = 'three-xray-toolbar';
+        xrayToolbar.setAttribute('role', 'group');
+        xrayToolbar.setAttribute('aria-label', xrayButton.textContent);
+        const xrayLabel = document.createElement('span');
+        xrayLabel.className = 'three-xray-label';
+        xrayLabel.textContent = xrayButton.textContent;
+        xrayToolbar.appendChild(xrayLabel);
+        xrayScopeButtons = {};
+        async function openXrayScope(scope) {
+            // Photo has proposed design meshes. Existing interiors need the building model.
+            if (scope === 'built' && window.__mapModeState?.desired === 'photo') {
+                if (!await window.requestMapMode('model', { restoreView: getGeoCameraView() })) return;
+            }
+            if (!isActive) return;
+            const work = setXrayScope(scope);
+            xrayScopeButtons[scope].focus();
+            await work;
+        }
+        for (const scope of ['proposed', 'built']) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'btn';
+            button.id = 'three-xray-' + scope;
+            button.textContent = scope === 'built' ? threeI18n('threeMode.parcelPanel.built', 'Built')
+                : threeI18n('threeMode.parcelPanel.proposed', 'Proposed');
+            button.addEventListener('click', () => window.BusyControl.track(button, () => openXrayScope(scope)));
+            xrayScopeButtons[scope] = button;
+            xrayToolbar.appendChild(button);
+        }
+        const closeXray = document.createElement('button');
+        closeXray.type = 'button';
+        closeXray.id = 'three-xray-close';
+        closeXray.className = 'btn three-xray-close';
+        closeXray.textContent = '×';
+        closeXray.title = threeI18n('threeMode.controls.closeXray', 'Close X-ray');
+        closeXray.setAttribute('aria-label', closeXray.title);
+        closeXray.addEventListener('click', () => {
+            window.BusyControl.track(closeXray, () => setXrayScope(null));
+            document.getElementById('layers-button')?.focus();
+        });
+        xrayToolbar.appendChild(closeXray);
+        threeContainer.appendChild(xrayToolbar);
+        xrayButton.addEventListener('click', () => {
+            const fromPhoto = window.__mapModeState?.desired === 'photo';
+            if (xrayScope && !(fromPhoto && xrayScope === 'built')) {
+                window.BusyControl.track(xrayButton, () => setXrayScope(null));
+                return;
+            }
+            const inspectBuilt = stackFocusGroup?.userData.kind === 'built' || window.PlanningViews?.getSelected()?.role === 'existing'
+                || (plannedDisplay === 'off' && builtDisplay !== 'off');
+            const scope = !fromPhoto && inspectBuilt ? 'built' : 'proposed';
+            window.MapShell.closeSheet({ restoreFocus: false });
+            window.BusyControl.track(xrayScopeButtons[scope], () => openXrayScope(scope));
+        });
         // Point cores or a corridor for the suggested layouts in this view; Automatic keeps each building's own.
         suggestedAccessControl = document.createElement('label');
         suggestedAccessControl.className = 'three-mode-suggested-access';
@@ -2414,8 +2437,7 @@
         floorCutawaySelect = document.createElement('select');
         floorCutawaySelect.id = 'three-mode-floor-cutaway';
         floorCutawaySelect.className = 'three-mode-display-select';
-        floorCutawaySelect.setAttribute('aria-label', threeI18n('threeMode.controls.floorCutawayTooltip', 'Choose which storeys remain visible in X-ray view'));
-        floorCutawaySelect.title = floorCutawaySelect.getAttribute('aria-label');
+        floorCutawaySelect.title = threeI18n('threeMode.controls.floorCutawayTooltip', 'Choose which storeys remain visible in X-ray view');
         floorCutawayControl.title = floorCutawaySelect.title;
         floorCutawaySelect.addEventListener('change', () => {
             setFloorCutaway(floorCutawaySelect.value === 'all' ? null : Number(floorCutawaySelect.value));
@@ -6459,9 +6481,7 @@
                 // Where passages open the buildings.
                 passages: passages.map(passage => [passage.id, passage.ring]),
                 visibility,
-                xrayEnabled,
-                suggestedPlansEnabled,
-                suggestedExistingEnabled,
+                xrayScope,
                 suggestedAccess,
                 origin: origin3857 ? { x: origin3857.x, y: origin3857.y } : null
             });
@@ -8938,8 +8958,8 @@
     function applyModelSection(wrapper) {
         const storeys = wrapper?.userData?.cbModelStoreys;
         if (!storeys || !modelSection) return;
-        const heightM = xrayEnabled ? modelSection.sectionHeightM(storeys, floorCutawayLevel) : null;
-        const basementShown = xrayEnabled && floorCutawayLevel !== null && floorCutawayLevel < 0;
+        const heightM = xrayScope === 'proposed' ? modelSection.sectionHeightM(storeys, floorCutawayLevel) : null;
+        const basementShown = xrayScope === 'proposed' && floorCutawayLevel !== null && floorCutawayLevel < 0;
         const planes = [];
         if (heightM !== null) planes.push(new THREE.Plane(new THREE.Vector3(0, 0, -1), heightM));
         if (!basementShown && storeys.some(storey => storey.level < 0)) planes.push(new THREE.Plane(new THREE.Vector3(0, 0, 1), 0.05));
@@ -9856,7 +9876,7 @@
 
     // One line for the parcel and proposal panels, or '' when suggestions are off or absent.
     function suggestedParcelPanelText(parcelId) {
-        if (!suggestedPlansEnabled || parcelId == null) return '';
+        if (xrayScope !== 'proposed' || parcelId == null) return '';
         const entry = suggestedPlanByParcel.get(String(parcelId));
         if (!entry) return '';
         const planned = entry.slices.filter(slice => slice.result.floorPlans);
@@ -9870,7 +9890,7 @@
         return threeI18n('threeMode.parcelPanel.suggestedSummary', `${cores} core(s) · ${apartments} apartments per storey · ${rooms} rooms`, { cores, apartments, rooms });
     }
     function suggestedProposalPanelText(proposal) {
-        if (!suggestedPlansEnabled || !proposal) return '';
+        if (xrayScope !== 'proposed' || !proposal) return '';
         const totals = suggestedPlanByProposal.get(String(proposal.proposalId ?? proposal.id));
         if (!totals || (!totals.buildings && !totals.flagged)) return '';
         const line = threeI18n('threeMode.proposalPanel.suggestedTotals',
@@ -9883,7 +9903,7 @@
     // entrance faces the longest facade; their arrival drops the plan cache and rebuilds once.
     function refreshSettledSuggestedStreets() {
         if (!suggestedStreetRefreshPending || buildingBuildPending || suggestedStreetLoader?.pending
-            || !isActive || !xrayEnabled || !suggestedPlansEnabled) return;
+            || !isActive || !xrayScope) return;
         suggestedStreetRefreshPending = false;
         // Frontage is already in each layout's cache key: retain unrelated cached layouts.
         rebuild3DBuildingsOnly({ family: 'planned' }).catch(error =>
@@ -9927,7 +9947,7 @@
         return suggestedPlanner.plan(feature, context);
     }
     async function appendSuggestedFloorPlans(feature, buildingMaterial, targetGroup, variationDeps) {
-        if (!xrayEnabled || !suggestedPlansEnabled || !floorPlanGroup || !suggestedFloorPlans || !suggestedPlanContext) return false;
+        if (xrayScope !== 'proposed' || !floorPlanGroup || !suggestedFloorPlans || !suggestedPlanContext) return false;
         if (!feature?.geometry || feature.properties?.modelUrl || feature.properties?.floorPlans) return false;
         // Housing and offices have suggested layouts: a building stated for another use gets none, and
         // a stated housing use sets its ground floor (building-use.js).
@@ -9935,7 +9955,7 @@
         const uses = parts.map(part => window.BuildingUse.statedUse(part.properties));
         if (uses.some(stated => stated && !window.BuildingUse.hasSuggestedLayout(stated))) return false;
         const generation = buildingsWorkGeneration;
-        const current = () => isActive && xrayEnabled && generation === buildingsWorkGeneration;
+        const current = () => isActive && xrayScope === 'proposed' && generation === buildingsWorkGeneration;
         const use = uses[0];
         const steppedKey = parts.length > 1 ? `${feature.properties.proposalId}|${feature.properties.buildingId}` : null;
         if (steppedKey && suggestedSteppedDone.has(steppedKey)) return suggestedSteppedDone.get(steppedKey);
@@ -10018,22 +10038,6 @@
         return parts.length > 1 && parts.includes(feature) ? parts : [feature];
     }
 
-    function setSuggestedPlansEnabled(enabled) {
-        suggestedPlansEnabled = enabled === true;
-        if (!suggestedPlansEnabled) { suggestedPlanner?.dispose(); suggestedPlanner = null; }
-        writeXrayView();
-        const work = rebuild3DBuildingsOnly({ family: 'planned' });
-        updateXrayControls();
-        return work;
-    }
-
-    function setSuggestedExistingEnabled(enabled) {
-        suggestedExistingEnabled = enabled === true;
-        writeXrayView();
-        rebuild3DBuildingsOnly({ family: 'planned' });
-        updateXrayControls();
-    }
-
     function nativeApartmentBuilding(feature) {
         const props = feature?.properties;
         return buildingUnitLinks.nativeBuilding(window.CityConfigManager?.getCurrentCityId?.(), props?.source,
@@ -10048,7 +10052,7 @@
         // use their index inside the immutable design revision.
         const id = props.sourceFeatureId ?? feature.id ?? props.id ?? props.buildingIndex;
         const building = nativeReference || nativeApartmentBuilding(nativeFeature) || buildingUnitLinks.designBuilding(designCid, id);
-        Object.assign(group.userData, { apartmentBuilding: building, apartmentModel: props.floorPlans, apartmentDesignCid: designCid || null });
+        Object.assign(group.userData, { apartmentBuilding: building, apartmentModel: props.floorPlans });
     }
 
     // The render key identifies an unpublished building inside this workspace. Only a
@@ -10078,12 +10082,13 @@
     }
 
     function refreshApartmentSelection() {
-        if (xrayEnabled && !apartmentAddress && stackFocusGroup?.userData.kind === 'designs') {
-            const design = stackFocusGroup.userData.id;
+        if (xrayScope === 'proposed' && !apartmentAddress) {
+            const design = stackFocusGroup ? (stackFocusGroup.userData.kind === 'designs' && stackFocusGroup.userData.id)
+                : window.ProposalSelection?.getKey?.();
             const building = design !== dismissedApartmentDesign && apartmentBuildingForDesign(design);
             if (building) apartmentAddress = { building, unit: null, openFloor: false };
         }
-        if (!apartmentPanel || !floorPlanGroup || !xrayEnabled || !apartmentAddress) {
+        if (!apartmentPanel || !floorPlanGroup || !xrayScope || (realisticLayerActive && xrayScope === 'built') || !apartmentAddress) {
             apartmentHover?.select(null);
             apartmentPanel?.hide();
             return;
@@ -10145,15 +10150,13 @@
         return count;
     }
 
-    // Typical layouts by era for the existing buildings in the loaded radius, drawn inside their
-    // (transparent) built volumes. Footprints come from the 2D pool; a footprint without a height
-    // gets nothing, and buildings being replaced by a proposal are skipped.
+    // Built X-ray uses published interiors first, then estimates from nearby source footprints.
     async function appendSuggestedExistingFloorPlans(buildingMaterial) {
-        if (builtDisplay === 'off' || !xrayEnabled || !suggestedPlansEnabled || !suggestedExistingEnabled || !floorPlanGroup || !suggestedFloorPlans || !suggestedPlanContext) return;
+        if (xrayScope !== 'built' || !floorPlanGroup || !suggestedFloorPlans || !suggestedPlanContext) return;
         const view = getGeoCameraView();
         if (!view) return;
         const generation = buildingsWorkGeneration;
-        const current = () => isActive && xrayEnabled && generation === buildingsWorkGeneration;
+        const current = () => isActive && xrayScope === 'built' && generation === buildingsWorkGeneration;
         const at = xyToLatLng(camera.position.x, camera.position.y);
         const centre = turf.point([at.lng, at.lat]), radiusM = floorPlanProximity.DETAIL_DEFAULTS.radiusM;
         // Typical layouts use only the immediate camera neighbourhood, independently of the
@@ -10162,12 +10165,18 @@
         if (suggestedExistingPoolKey !== radiusKey) {
             suggestedExistingPoolKey = radiusKey;
             const [west, south, east, north] = turf.bbox(turf.circle(centre, radiusM / 1000, { units: 'kilometers' }));
-            window.ensureBuildingFootprintsForBounds?.([[south, west], [north, east]])?.catch(error =>
-                console.error(`[${new Date().toISOString()}] [3D] Footprints for typical layouts could not be loaded`, error));
+            try {
+                await window.ensureBuildingFootprintsForBounds?.([[south, west], [north, east]]);
+            } catch (error) {
+                if (suggestedExistingPoolKey === radiusKey) suggestedExistingPoolKey = null;
+                console.error(`[${new Date().toISOString()}] [3D] Footprints for typical layouts could not be loaded`, error);
+            }
+            if (!current()) return;
         }
         const pool = Array.isArray(window.buildingFeaturePool) ? window.buildingFeaturePool : [];
         if (!pool.length) return;
         const proposed = Array.isArray(window.proposedBuildings) ? window.proposedBuildings : [];
+        const scope = window.PlanningViews?.getState()?.existingScope || 'all';
         const storeyM = window.STOREY_HEIGHT_M || 3.3;
         let count = 0;
         // Nearest first, so the cap keeps the buildings around the view rather than the oldest loaded.
@@ -10195,6 +10204,8 @@
             if (!current()) return;
             if (count >= SUGGESTED_EXISTING_CAP) { suggestedPlanTotals.existingCapped = true; break; }
             const props = feature.properties || {};
+            const sourceKey = threeBuildingKey({ source: props.source, object_id: props.object_id ?? props.id ?? feature.id });
+            if (props.floorPlansAvailable || existingFloorPlanShells.get(sourceKey)?.building?.floorPlansAvailable) continue;
             // A building its source states for another use than housing gets no housing layout.
             const statedUse = window.BuildingUse.normalize(props.use);
             if (statedUse && !window.BuildingUse.housesPeople(statedUse)) continue;
@@ -10203,24 +10214,24 @@
                 : Number.isFinite(props.floors) && props.floors > 0 ? props.floors * storeyM
                 : (props.height || props.levels || props.storeys) ? estimateBuildingHeightMeters(props) : null;
             if (!height) continue;
-            // A footprint a proposal builds over is being replaced; its interior is not worth guessing.
-            let replaced = false;
-            try {
-                const bbox = turf.bbox(feature);
-                replaced = proposed.some(building => {
-                    if (!building?.geometry) return false;
-                    const other = turf.bbox(building);
-                    if (other[2] < bbox[0] || other[0] > bbox[2] || other[3] < bbox[1] || other[1] > bbox[3]) return false;
-                    let overlap = null;
-                    try { overlap = turf.intersect(feature, building); } catch (error) {
-                        // Taken as not replaced: the suggested interior is drawn.
-                        reportThreeClip('intersect', error, 'three-mode.appendSuggestedExistingFloorPlans', [feature, building]);
-                        return false;
-                    }
-                    return !!overlap && turf.area(overlap) > 1;
-                });
-            } catch (_) { replaced = false; }
-            if (replaced) continue;
+            if (scope !== 'all') {
+                let replaced = false;
+                try {
+                    const bbox = turf.bbox(feature);
+                    replaced = proposed.some(building => {
+                        if (!building?.geometry) return false;
+                        const other = turf.bbox(building);
+                        if (other[2] < bbox[0] || other[0] > bbox[2] || other[3] < bbox[1] || other[1] > bbox[3]) return false;
+                        let overlap = null;
+                        try { overlap = turf.intersect(feature, building); } catch (error) {
+                            reportThreeClip('intersect', error, 'three-mode.appendSuggestedExistingFloorPlans', [feature, building]);
+                            return false;
+                        }
+                        return !!overlap && turf.area(overlap) > 1;
+                    });
+                } catch (_) { replaced = false; }
+                if ((scope === 'surviving' && replaced) || (scope === 'removed' && !replaced)) continue;
+            }
             let planned;
             try {
                 planned = await planSuggestedBuilding(feature, {
@@ -10296,7 +10307,7 @@
     }
     function updateFloorModelLoads(force = false) {
         if (!floorPlanProximity || !origin3857) return;
-        const enabled = xrayEnabled && isActive && !realisticLayerActive && existingBuildingsGroup?.visible !== false;
+        const enabled = xrayScope === 'built' && isActive && !realisticLayerActive;
         if (!enabled && !floorModelLoads.models.size && !floorModelLoads.pending.size) { floorModelLoads.enabled = false; return; }
         const k = lifeMercatorK();
         // The scene is in Web Mercator units, heights included (applyGeoCameraView): k turns them into metres.
@@ -10331,7 +10342,8 @@
     // true when the drawing is already shown.
     async function appendBuildingFloorPlans(feature, proxyMaterial, proxyHeightM, inspectionFeature = null, family = 'planned') {
         const plans = feature?.properties?.floorPlans;
-        if (!xrayEnabled || !floorPlanGroup || !plans) return false;
+        const scope = family === 'planned' ? 'proposed' : 'built';
+        if (xrayScope !== scope || !floorPlanGroup || !plans) return false;
         // A building can have several parcel slices or appear in both data families. Its
         // registered drawing is owned once, independent of how many exterior meshes it has.
         try {
@@ -10339,7 +10351,7 @@
                 plans.registration, plans.storeys?.map(storey => storey.id)]);
             if (renderedFloorPlanKeys.has(key)) return true;
             const generation = buildingsWorkGeneration, target = floorPlanGroup;
-            const current = () => isActive && xrayEnabled && floorPlanGroup === target && generation === buildingsWorkGeneration;
+            const current = () => isActive && xrayScope === scope && floorPlanGroup === target && generation === buildingsWorkGeneration;
             const group = await floorPlanRenderer.createBuildingGroupCooperative(THREE, feature,
                 (lng, lat) => latLngToXY(lat, lng), floorPlanGeometry,
                 { proxyMaterial, proxyHeightM, useSourceShellAtDistance: family === 'existing-suggested', turf },
@@ -10392,7 +10404,7 @@
     async function addExistingFloorPlanGroup(key, placeholder) {
         const owned = () => existingFloorPlanGroups.get(key) === placeholder;
         const abandon = () => { if (owned()) existingFloorPlanGroups.delete(key); };
-        const current = () => owned() && isActive && xrayEnabled && !!floorPlanGroup
+        const current = () => owned() && isActive && xrayScope === 'built' && !!floorPlanGroup
             && existingBuildingsGroup?.visible !== false && floorModelLoads.models.has(key) && existingFloorPlanShells.has(key);
         if (!current()) { abandon(); return; }
         const shell = existingFloorPlanShells.get(key), model = floorModelLoads.models.get(key);
@@ -10432,7 +10444,7 @@
         for (const [key, group] of existingFloorPlanGroups) {
             if (group.isObject3D && group.userData.proxySource !== existingFloorPlanShells.get(key)?.material) removeExistingFloorPlanGroup(key);
         }
-        const enabled = xrayEnabled && isActive && existingBuildingsGroup?.visible !== false;
+        const enabled = xrayScope === 'built' && isActive && !realisticLayerActive && existingBuildingsGroup?.visible !== false;
         const { add, remove } = floorPlanProximity.reconcileFloorPlanGroups({ enabled, models: floorModelLoads.models,
             shells: existingFloorPlanShells, shown: existingFloorPlanGroups });
         remove.forEach(removeExistingFloorPlanGroup);
@@ -10463,7 +10475,7 @@
             group.updateWorldMatrix(true, false);
             xrayBox.min.fromArray(bounds.min); xrayBox.max.fromArray(bounds.max);
             xrayBox.applyMatrix4(group.matrixWorld);
-            candidates.push({ key, group, visible: xrayEnabled && !realisticLayerActive && group.visible && floorPlanGroup.visible && xrayFrustum.intersectsBox(xrayBox),
+            candidates.push({ key, group, visible: xrayScope && group.visible && floorPlanGroup.visible && xrayFrustum.intersectsBox(xrayBox),
                 distanceM: xrayBox.distanceToPoint(camera.position) / k });
         });
         const detailed = floorPlanProximity.visibleFloorDetails(candidates), storeys = [];
@@ -10489,7 +10501,7 @@
 
     function replacedXrayShells() {
         const shells = new Set();
-        if (!xrayEnabled || realisticLayerActive || !floorPlanGroup?.visible) return shells;
+        if (!xrayScope || realisticLayerActive || !floorPlanGroup?.visible) return shells;
         for (const group of floorPlanGroup.children) {
             if (!group.visible || group.userData.floorPlanFamily !== 'existing-suggested' || !group.userData.detailVisible) continue;
             const building = group.userData.planningBuiltFeature?.properties;
@@ -10515,10 +10527,10 @@
         updateLampGlow();
         updateSkyAndWindows();
         updateAtmosphere(renderedSceneVisualRevision !== sceneVisualRevision);
-        apartmentHover?.update(xrayEnabled && !realisticLayerActive);
+        apartmentHover?.update(!!xrayScope);
         floorPlanRenderer.renderCutaway(renderer, scene, camera,
             sectionedModels.size ? [floorPlanGroup, ...[...sectionedModels].filter(wrapper => wrapper.parent)] : floorPlanGroup,
-            xrayEnabled && floorCutawayLevel !== null && floorCutawayLevel < 0, replacedXrayShells());
+            xrayScope && floorCutawayLevel !== null && floorCutawayLevel < 0, replacedXrayShells());
         renderedBuildingDisplaySnapshot = buildingDisplaySnapshot;
         renderedSceneVisualRevision = sceneVisualRevision;
         // From the first drawn frame of an entry the 3D view covers the 2D map (map-shell.css);
@@ -10763,21 +10775,20 @@
         xrayVisibilityDirty = true;
         apartmentHover?.invalidate();
         refreshApartmentSelection();
-        if (xrayButton) xrayButton.setAttribute('aria-pressed', String(xrayEnabled));
-        if (suggestedPlansButton) {
-            suggestedPlansButton.hidden = !xrayEnabled;
-            suggestedPlansButton.setAttribute('aria-pressed', String(suggestedPlansEnabled));
-        }
-        if (suggestedExistingRow) {
-            suggestedExistingRow.hidden = builtDisplay === 'off' || !(xrayEnabled && suggestedPlansEnabled);
-            if (suggestedExistingCheckbox) suggestedExistingCheckbox.checked = suggestedExistingEnabled;
+        const visible = !!xrayScope && !(realisticLayerActive && xrayScope === 'built');
+        if (xrayButton) xrayButton.setAttribute('aria-pressed', String(visible));
+        if (xrayToolbar) {
+            xrayToolbar.hidden = !visible;
+            for (const [scope, button] of Object.entries(xrayScopeButtons)) {
+                button.setAttribute('aria-pressed', String(scope === xrayScope));
+            }
         }
         if (suggestedAccessControl) {
-            suggestedAccessControl.hidden = !(xrayEnabled && suggestedPlansEnabled);
+            suggestedAccessControl.hidden = !visible;
             if (suggestedAccessSelect) suggestedAccessSelect.value = suggestedAccess;
         }
-        if (floorCutawayControl) floorCutawayControl.hidden = !xrayEnabled;
-        if (xrayEnabled && floorCutawaySelect) {
+        if (floorCutawayControl) floorCutawayControl.hidden = !visible;
+        if (visible && floorCutawaySelect) {
             const levels = [...new Set([...(floorPlanGroup?.children || []).filter(group => group.visible !== false)
                 .flatMap(group => group.userData.availableLevels || []),
                 ...[...sectionedModels].filter(wrapper => wrapper.parent).flatMap(wrapper => wrapper.userData.cbModelStoreys.map(storey => storey.level))])]
@@ -10800,14 +10811,14 @@
             floorCutawaySelect.value = floorCutawayLevel === null ? 'all' : String(floorCutawayLevel);
         }
         if (!xrayNote) return;
-        xrayNote.hidden = !xrayEnabled;
-        if (!xrayEnabled) return;
+        xrayNote.hidden = !visible;
+        if (!visible) return;
         const totals = (floorPlanGroup?.children || []).reduce((total, group) => {
             const counts = floorPlanRenderer.summarize(group);
             Object.keys(total).forEach(key => { total[key] += counts[key]; });
             return total;
         }, { floors: 0, buildings: 0, estimatedFloors: 0, apartments: 0 });
-        const openedModels = [...sectionedModels].filter(wrapper => wrapper.parent && wrapper.visible !== false).length;
+        const openedModels = xrayScope === 'proposed' ? [...sectionedModels].filter(wrapper => wrapper.parent && wrapper.visible !== false).length : 0;
         const lines = totals.floors
             ? [threeI18n('threeMode.controls.xrayCount', `Storeys: ${totals.floors} · Buildings: ${totals.buildings}`, totals)]
             : openedModels ? [] : [threeI18n('threeMode.controls.xrayEmpty', 'No floor plans available for the visible buildings.')];
@@ -10820,57 +10831,69 @@
         }
         if (floorPlanErrors) lines.push(threeI18n('threeMode.controls.xrayError',
             'Some floor plans could not be displayed.'));
-        if (suggestedPlansEnabled) {
-            lines.push(threeI18n('threeMode.controls.suggestedNote', 'Estimated layouts use building dimensions and typical floor plans.'));
-            const buildings = suggestedPlanTotals.slices - suggestedPlanTotals.flagged;
-            if (buildings) lines.push(threeI18n('threeMode.controls.suggestedCount',
-                `Estimated: ${buildings} buildings · ${suggestedPlanTotals.apartments} apartments per storey`,
-                { buildings, apartments: suggestedPlanTotals.apartments }));
-            if (suggestedPlanTotals.flagged) lines.push(threeI18n('threeMode.controls.suggestedFlagged',
-                `${suggestedPlanTotals.flagged} in red: too small for a minimum stair core.`, { count: suggestedPlanTotals.flagged }));
-            if (suggestedPlanTotals.northFlats) lines.push(threeI18n('threeMode.controls.suggestedNorthFlats',
-                `${suggestedPlanTotals.northFlats} flats per storey face only north (single aspect), shown in red.`, { count: suggestedPlanTotals.northFlats }));
-            if (suggestedPlanTotals.pendingStreets) lines.push(threeI18n('threeMode.controls.suggestedPendingStreets',
-                'Street data is loading; entrances face the longest facade until it arrives.'));
-            if (suggestedExistingEnabled && suggestedPlanTotals.existing) lines.push(threeI18n('threeMode.controls.suggestedExistingCount',
-                `Existing: ${suggestedPlanTotals.existing} buildings with estimated layouts.`, { count: suggestedPlanTotals.existing }));
-        }
+        lines.push(threeI18n('threeMode.controls.suggestedNote', 'Estimated layouts use building dimensions and typical floor plans.'));
+        const buildings = suggestedPlanTotals.slices - suggestedPlanTotals.flagged;
+        if (buildings) lines.push(threeI18n('threeMode.controls.suggestedCount',
+            `Estimated: ${buildings} buildings · ${suggestedPlanTotals.apartments} apartments per storey`,
+            { buildings, apartments: suggestedPlanTotals.apartments }));
+        if (suggestedPlanTotals.flagged) lines.push(threeI18n('threeMode.controls.suggestedFlagged',
+            `${suggestedPlanTotals.flagged} in red: too small for a minimum stair core.`, { count: suggestedPlanTotals.flagged }));
+        if (suggestedPlanTotals.northFlats) lines.push(threeI18n('threeMode.controls.suggestedNorthFlats',
+            `${suggestedPlanTotals.northFlats} flats per storey face only north (single aspect), shown in red.`, { count: suggestedPlanTotals.northFlats }));
+        if (suggestedPlanTotals.pendingStreets) lines.push(threeI18n('threeMode.controls.suggestedPendingStreets',
+            'Street data is loading; entrances face the longest facade until it arrives.'));
+        if (xrayScope === 'built' && suggestedPlanTotals.existing) lines.push(threeI18n('threeMode.controls.suggestedExistingCount',
+            `Existing: ${suggestedPlanTotals.existing} buildings with estimated layouts.`, { count: suggestedPlanTotals.existing }));
         xrayNote.textContent = lines.join(' ');
     }
 
-    // X-ray changes only what depends on it: existing buildings' interiors are added and removed per
-    // building; designs are rebuilt only when X-ray replaces some of their solids (an authored model or
-    // a suggested layout, which also brings the suggested existing layouts).
-    function xrayRebuildsDesigns() {
-        return suggestedPlansEnabled || (Array.isArray(window.proposedBuildings) && window.proposedBuildings.some(feature => feature?.properties?.floorPlans));
-    }
     function writeXrayView() {
         const url = new URL(window.location.href);
-        for (const [key, active] of [['xray', xrayEnabled], ['suggested', suggestedPlansEnabled], ['suggestedExisting', suggestedExistingEnabled]]) {
-            if (active) url.searchParams.set(key, '1');
-            else url.searchParams.delete(key);
-        }
-        if (suggestedAccess === 'auto') url.searchParams.delete('access');
+        if (xrayScope) url.searchParams.set('xray', xrayScope);
+        else url.searchParams.delete('xray');
+        if (!xrayScope || suggestedAccess === 'auto') url.searchParams.delete('access');
         else url.searchParams.set('access', suggestedAccess);
+        if (!apartmentAddress) {
+            url.searchParams.delete('xrayBuilding');
+            url.searchParams.delete('unit');
+        }
         if (url.href !== window.location.href) window.history.replaceState(window.history.state, '', url);
     }
-    function setXrayEnabled(enabled) {
-        xrayEnabled = enabled === true;
+
+    // Scope is a model-view override. The Layers sheet keeps the user's exterior settings.
+    function xrayBuildingDisplay(scope, display) {
+        if (!xrayScope || realisticLayerActive) return display;
+        if (xrayScope !== scope) return 'off';
+        return display === 'off' ? 'ghost' : display;
+    }
+
+    function setXrayScope(scope) {
+        if (scope === xrayScope || ![null, 'proposed', 'built'].includes(scope)) return;
+        const previous = xrayScope;
+        xrayScope = scope;
+        apartmentAddress = null;
         dismissedApartmentDesign = null;
+        floorCutawayLevel = null;
+        suggestedStreetLoader?.cancel();
+        suggestedStreetRefreshPending = false;
+        suggestedPlanner?.dispose();
+        suggestedPlanner = null;
+        const focused = stackFocusGroup?.userData.kind;
+        if ((previous && scope) || (scope === 'built' && focused === 'designs') || (scope === 'proposed' && focused === 'built')) {
+            window.ThreeClickStack?.close({ silent: true });
+        }
         writeXrayView();
-        if (!xrayEnabled) { suggestedStreetLoader?.cancel(); suggestedStreetRefreshPending = false; suggestedPlanner?.dispose(); suggestedPlanner = null; }
-        const work = xrayRebuildsDesigns() ? rebuild3DBuildingsOnly({ family: 'planned' }) : null;
+        updateXrayControls();
         updateFloorModelLoads(true);
         reconcileExistingFloorPlans();
         applyModelSections();
-        updateXrayControls();
         invalidateThreeView();
-        return work;
+        return rebuild3DBuildingsOnly();
     }
 
     function applyRetainedBuildingDisplay() {
         // The use highlight holds each mesh's own material aside; a rebuild re-applies it instead.
-        if (!buildingDisplaySnapshot || buildingBuildPending || pendingModelLoads || xrayEnabled || useHighlight.isActive()
+        if (!buildingDisplaySnapshot || buildingBuildPending || pendingModelLoads || xrayScope || useHighlight.isActive()
             || BUILDING_GHOST_STYLE !== 'smooth' || !existingBuildingsGroup || !proposedBuildingsGroup) return false;
         const builtPolicy = buildingDisplayPolicy.resolveBuiltDisplayPolicy(builtDisplay, window.PlanningViews?.getState()?.existingScope);
         const existingVisible = builtPolicy.visible && !realisticLayerActive;
@@ -11162,9 +11185,9 @@
         const generation = ++buildingsWorkGeneration;
         const signal = sceneAbort?.signal;
         const isCurrent = () => isActive && !signal?.aborted && generation === buildingsWorkGeneration;
-        const builtPolicy = buildingDisplayPolicy.resolveBuiltDisplayPolicy(builtDisplay, window.PlanningViews?.getState()?.existingScope);
+        const builtPolicy = buildingDisplayPolicy.resolveBuiltDisplayPolicy(xrayBuildingDisplay('built', builtDisplay), window.PlanningViews?.getState()?.existingScope);
         const showExisting = builtPolicy.visible && !realisticLayerActive;
-        const showProposed = realisticLayerActive || plannedDisplay !== 'off';
+        const showProposed = realisticLayerActive || xrayBuildingDisplay('proposed', plannedDisplay) !== 'off';
         const existingDataRevision = nearbyBuildingsRevision;
         let existingBuildFailures = rebuildExisting ? 0 : (previous?.existingBuildFailures || 0);
         let nextShells = rebuildExisting ? new Map() : existingFloorPlanShells;
@@ -11651,7 +11674,7 @@
                 queueThreeFrame();
             },
             linkFor: unit => unit.group.userData.apartmentBuilding && buildingUnitLinks.link(window.location.href, window.MapShare, window.MapShare.capture(window), {
-                building: unit.group.userData.apartmentBuilding, unit: unit.key, designCid: unit.group.userData.apartmentDesignCid,
+                building: unit.group.userData.apartmentBuilding, unit: unit.key,
                 suggested: unit.group.userData.suggested, access: suggestedAccess, center: unit.group.userData.footprintLatLng
             })
         });
@@ -11677,9 +11700,7 @@
         // Checkbox listeners (sync 3D buildings with the Layers sheet's state)
         const showExistingEl = document.getElementById('showBuildings');
         const showProposedEl = document.getElementById('showProposedBuildings');
-        onShowExistingBuildingsChange = () => { rebuild3DBuildingsOnly(); };
         onShowProposedBuildingsChange = () => { rebuild3DBuildingsOnly(); };
-        if (showExistingEl) showExistingEl.addEventListener('change', onShowExistingBuildingsChange);
         if (showProposedEl) showProposedEl.addEventListener('change', onShowProposedBuildingsChange);
         return ready;
     }
@@ -12113,6 +12134,9 @@
         facadeCheckbox = null;
         facadeStyleSelect = null;
         facadeNote = null;
+        xrayToolbar?.remove();
+        xrayToolbar = null;
+        xrayScopeButtons = null;
         xrayButton = null;
         xrayNote = null;
         floorCutawayControl = null;
@@ -12395,7 +12419,7 @@
         const resuming = !!window.UpdateResume?.pending();
         const selectedDesign = resuming ? null : window.ProposalSelection?.getKey?.();
         const focusedDesign = !resuming && focusProposalIds?.size ? [...focusProposalIds][0] : null;
-        if ((focusedDesign || selectedDesign) && !(xrayEnabled && apartmentAddress?.unit)) {
+        if ((focusedDesign || selectedDesign) && !(xrayScope && apartmentAddress?.unit)) {
             // An exact shared camera describes the whole map, not an isolated view of its first
             // design. Keep the selected section and outline without filtering or reframing it.
             showThreeModeDesign(focusedDesign || selectedDesign, null, { preserveView: !!options.restoreView });
@@ -12767,7 +12791,7 @@
             if (moved > 6) return;
         }
         // A design drawn without being applied (a simulation ghost, the Agent city) opens itself.
-        if (xrayEnabled && !realisticLayerActive && !window.multiParcelSelection?.isActive) {
+        if (xrayScope && !window.multiParcelSelection?.isActive) {
             const picked = apartmentHover?.pick({ x: evt.clientX, y: evt.clientY });
             const group = picked?.group;
             const building = apartmentSelectionKey(group);
@@ -12782,7 +12806,7 @@
         const displayKey = window.multiParcelSelection?.isActive ? null : pickDesignDisplayKey(evt);
         if (displayKey && window.DesignDisplay?.openKey(displayKey, { view: '3d' })) return;
         const subject = realisticLayerActive ? null : pickMapSubjectFromEvent(evt);
-        if (xrayEnabled && !window.multiParcelSelection?.isActive) {
+        if (xrayScope && !window.multiParcelSelection?.isActive) {
             const building = apartmentBuildingForDesign(subject?.picked?.proposalId) || nativeApartmentBuilding(subject?.picked?.builtFeature);
             if (building && apartmentAddress?.building !== building && floorPlanGroup.children.some(group =>
                 apartmentSelectionKey(group) === building && apartmentCatalog(group).length)) selectApartment(building);
@@ -13215,6 +13239,7 @@
 
     window.setRealisticLayerActive = function (on, options = {}) {
         realisticLayerActive = !!on;
+        updateXrayControls();
         applyOrbitDistanceLimit();
         rebuildPlanningSources3D();
         syncParcelGroundVisibility();
@@ -13361,10 +13386,8 @@
         return { widthPx: threeContainer.clientWidth, heightPx: threeContainer.clientHeight, fovDeg: camera.fov };
     }
     window.getThree3DViewport = getViewport;
-    window.setThreeXrayEnabled = setXrayEnabled;
+    window.setThreeXrayScope = setXrayScope;
     window.setThreeFloorCutaway = setFloorCutaway;
-    window.setThreeSuggestedLayoutsEnabled = setSuggestedPlansEnabled;
-    window.setThreeSuggestedExistingEnabled = setSuggestedExistingEnabled;
 
     // Window capture runs before every document-level shortcut, including the few legacy handlers
     // that also use capture. This is the keyboard-context boundary between the 3D and 2D apps.

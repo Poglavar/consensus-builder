@@ -55,7 +55,7 @@ function harness({ request = vi.fn(async () => ({ items: [], complete: true })),
         sceneLoadGeometry: { type: 'Point', coordinates: [2, 1] },
         sceneLoadGeometrySource: 'proposal', sceneAbort: null, buildingLoadRadiusM: 300,
         pendingModelLoads: 0, buildingsWorkGeneration: 0, buildingsRenderGeneration: 0,
-        xrayEnabled: false, plannedDisplay: 'off', showIneligibleParcels: false,
+        xrayScope: null, plannedDisplay: 'off', showIneligibleParcels: false,
         isolatedParcelId: null, isolatedProposalId: null,
         buildingMaterials: { solid: {}, ghost: {} },
         buildingDisplayPolicy: { resolveBuiltDisplayPolicy: () => ({ visible: true, material: 'ghost', showSurviving: true, showDemolished: true, showExistingRail: false }) },
@@ -81,7 +81,7 @@ function harness({ request = vi.fn(async () => ({ items: [], complete: true })),
     context.nearbyProposalBuildings = [];
     context.buildingGroup.add(context.existingBuildingsGroup, context.proposedBuildingsGroup);
     const names = [
-        'ensureNearbyProposalBuildings', 'rebuild3DBuildingsOnly', 'build3DBuildingFamilies', 'renderScene', 'replacedXrayShells',
+        'ensureNearbyProposalBuildings', 'rebuild3DBuildingsOnly', 'build3DBuildingFamilies', 'renderScene', 'replacedXrayShells', 'xrayBuildingDisplay',
         'getSceneReadiness', 'invalidateThreeView', 'queueThreeFrame', 'scheduleThreeFrame', 'threeBuildingKey', 'awaitingPhotoReveal',
         'sharedPlanReconcile'
     ];

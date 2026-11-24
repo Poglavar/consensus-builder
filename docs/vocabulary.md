@@ -1136,6 +1136,8 @@ The deterministic area value used in agreement input and output commitments, exp
 
 A drawing or architectural layout describing a whole storey or an accommodation unit. The source drawing, its interpreted reconstruction and an estimated layout are distinct artifacts. The app generates estimated layouts from building dimensions and typical floor plans.
 
+In X-ray, **Proposed** shows interiors of buildings in designs and **Built** shows interiors of existing buildings. Each view uses available floor models and estimates layouts for eligible buildings that lack them.
+
 ### Published floor plan
 
 An architectural artifact with a stable publication ID, retained source evidence, unit or whole-storey scope, architectural content and review status. Its geographic building association and interpretation revision are separate from that publication identity.

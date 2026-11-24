@@ -271,6 +271,54 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 .three-apartment-hover-note[hidden] { display: none; }
 .three-apartment-target { cursor: pointer; }
 
+/* Keep the building switch on the map while Layers is closed. */
+#three-xray-toolbar.three-xray-toolbar {
+    position: fixed;
+    z-index: var(--cb-z-editor-popup);
+    inset-block-start: max(12px, env(safe-area-inset-top));
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+    max-width: calc(100vw - 32px);
+    padding: 6px;
+    border: 1px solid color-mix(in srgb, var(--cb-line) 82%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--cb-surface) 92%, transparent);
+    color: var(--cb-text);
+    box-shadow: var(--cb-shadow-sm);
+    backdrop-filter: blur(12px);
+}
+#three-xray-toolbar[hidden] { display: none; }
+.three-xray-label {
+    padding-inline: 8px 2px;
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+    white-space: nowrap;
+}
+#three-xray-toolbar .btn {
+    min-height: 32px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+#three-xray-toolbar .three-xray-close {
+    min-width: 32px;
+    padding-inline: 8px;
+}
+@media (max-width: 500px) {
+    #three-xray-toolbar.three-xray-toolbar {
+        inset-block-start: calc(max(8px, env(safe-area-inset-top)) + 58px);
+        max-width: calc(100vw - 16px);
+        gap: 4px;
+        padding: 4px;
+    }
+    .three-xray-label { padding-inline-start: 6px; }
+    #three-xray-toolbar .btn { padding-inline: 8px; }
+}
+
 .three-apartment-panel {
     position: fixed;
     z-index: var(--cb-z-editor-popup);
@@ -316,26 +364,9 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     border-top: 1px solid var(--cb-line-strong);
 }
 
-/* X-ray and its suggested-layouts companion sit side by side: .btn toggles, each pressed
-   (aria-pressed) while on. The companions (the layouts toggle, the existing-buildings checkbox)
-   come and go with X-ray; a .btn and the toggle rows set their own display, so [hidden] needs
-   saying. */
-#model-layer-controls .three-mode-xray-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--cb-space-2);
-}
-
+/* Cutaway and access controls appear in Layers while X-ray is open. */
 #model-layer-controls .three-mode-xray-row [hidden] {
     display: none;
-}
-
-/* The existing-buildings checkbox under the two buttons; hidden with the toggle off. */
-#model-layer-controls .three-mode-suggested-existing:not([hidden]) {
-    display: flex;
-    align-items: center;
-    gap: var(--cb-space-2);
-    font-size: var(--cb-text-sm);
 }
 
 #model-layer-controls .three-mode-xray-note {
@@ -345,7 +376,7 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     color: var(--cb-text-muted);
 }
 
-/* Labelled selects in the X-ray row: the storey cutaway and the estimated layouts' Access. */
+/* Labelled selects in the X-ray row: cutaway and estimated-layout access. */
 #model-layer-controls .three-mode-floor-cutaway:not([hidden]),
 #model-layer-controls .three-mode-suggested-access:not([hidden]) {
     display: flex;

@@ -118,10 +118,14 @@ test('Google 3D shares proposed-building layer controls and retains choices in m
   await expect.poll(async () => (await uniforms()).includes(1)).toBe(true);
   const xray = page.locator('#three-mode-xray');
   await xray.click();
-  await page.locator('#three-mode-suggested-layouts').click();
+  const toolbar = page.locator('#three-xray-toolbar');
+  await expect(toolbar).toBeVisible();
+  await expect(page.locator('#three-xray-proposed')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('.map-sheet:visible')).toHaveCount(0);
+  await expect(page.locator('body')).toHaveClass(/realistic-mode-active/);
   const floorPlans = () => page.evaluate(() => (window as any).getThreeModeInternals().scene.getObjectByName('FloorPlans')?.children.length || 0);
   await expect.poll(floorPlans, { timeout: 15_000 }).toBeGreaterThan(0);
-  await expect(page.locator('#three-mode-suggested-existing')).toBeHidden();
+  await page.locator('#layers-button').click();
   await expect(page.locator('#three-mode-floor-cutaway')).toBeVisible();
   await page.screenshot({ path: '/tmp/google-shared-layer-controls.png' });
 
@@ -134,10 +138,10 @@ test('Google 3D shares proposed-building layer controls and retains choices in m
   await expect(facade).toBeChecked();
   await expect(page.locator('#three-mode-facade-style')).toHaveValue('brick');
   await expect(xray).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('#three-mode-suggested-existing')).toBeVisible();
+  await expect(page.locator('#three-xray-proposed')).toHaveAttribute('aria-pressed', 'true');
   await expect.poll(floorPlans).toBeGreaterThan(0);
   await xray.click();
-  await expect(page.locator('#three-mode-suggested-existing')).toBeHidden();
+  await expect(toolbar).toBeHidden();
   await expect.poll(floorPlans).toBe(0);
 });
 

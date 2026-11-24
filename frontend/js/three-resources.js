@@ -266,9 +266,7 @@
                 showSurviving: pass.visibility?.showSurviving !== false,
                 showDemolished: pass.visibility?.showDemolished !== false
             }),
-            pass.xrayEnabled === true,
-            pass.suggestedPlansEnabled === true,
-            pass.suggestedExistingEnabled === true,
+            pass.xrayScope || null,
             stableSerialize(pass.origin || null)
         ]);
         const release = () => {

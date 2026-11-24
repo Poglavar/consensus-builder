@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { parse } from '@babel/parser';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 const source = readFileSync(new URL('../../frontend/js/three-resources.js', import.meta.url), 'utf8');
 const threeModeSource = readFileSync(new URL('../../frontend/js/three-mode.js', import.meta.url), 'utf8');
@@ -193,9 +193,7 @@ describe('three resource ownership', () => {
             carveRecords: [{ id: 'carve-1' }],
             structureRegions: [],
             visibility: { showSurviving: true, showDemolished: true },
-            xrayEnabled: false,
-            suggestedPlansEnabled: false,
-            suggestedExistingEnabled: false,
+            xrayScope: null,
             origin: { x: 10, y: 20 }
         };
         const firstState = cache.beginPass(pass);
@@ -278,7 +276,7 @@ describe('three resource ownership', () => {
         expect(geometry.disposed).toBe(1);
     });
 
-    it('invalidates the pass when source array identity or carve signature changes', () => {
+    it('invalidates the pass when source array identity, carve signature or X-ray scope changes', () => {
         const ownership = loadResources();
         const cache = ownership.createBuildingGeometryCache();
         const source = [{ id: 'a' }];
@@ -294,5 +292,11 @@ describe('three resource ownership', () => {
         expect(secondState.geometryCacheSession.beginEntry(secondState).finish(secondGeometry)).toBe(true);
         cache.beginPass({ ...pass, carveRecords: [{ id: 'c2' }] });
         expect(secondGeometry.disposed).toBe(1);
+
+        const proposed = cache.beginPass({ ...pass, xrayScope: 'proposed' });
+        const shell = { attributes: {}, dispose: vi.fn() };
+        expect(proposed.geometryCacheSession.beginEntry(proposed).finish(shell)).toBe(true);
+        cache.beginPass({ ...pass, xrayScope: 'built' });
+        expect(shell.dispose).toHaveBeenCalledOnce();
     });
 });

@@ -42,10 +42,14 @@ describe('building unit addresses', () => {
             { city: 'astana', backend: 'https://api.example.test', language: 'kk' }, selection));
         expect(links.read(url.search)).toEqual({ building: selection.building, unit: selection.unit, openFloor: true });
         expect(Object.fromEntries(url.searchParams)).toMatchObject({ city: 'astana', backend: 'https://api.example.test', lang: 'kk',
-            at: '51.12,71.42,19', camera: '51.12,71.42,0,-1.52,95', xray: '1', suggested: '1', suggestedExisting: '1', access: 'corridor', existing: 'ghost' });
+            at: '51.12,71.42,19', camera: '51.12,71.42,0,-1.52,95', xray: 'built', access: 'corridor', existing: 'ghost' });
         expect(url.searchParams.has('draft')).toBe(false);
-        const design = new URL(links.link(url, mapShare, { city: 'astana' }, { ...selection, designCid: 'revision-a', suggested: false }));
-        expect(design.pathname).toBe('/designs/revision-a');
+        const revision = 'bafkrei' + 'a'.repeat(52);
+        const design = new URL(links.link(url, mapShare, { city: 'astana' }, {
+            ...selection, building: links.designBuilding(revision, 'building-a'), suggested: false
+        }));
+        expect(design.pathname).toBe('/designs/' + revision);
+        expect(design.searchParams.get('xray')).toBe('proposed');
         expect(design.searchParams.has('suggestedExisting')).toBe(false);
     });
 
@@ -55,6 +59,6 @@ describe('building unit addresses', () => {
         const context = { city: 'alatau', backend: 'https://api.example.test' };
         const url = new URL(links.offerLink('https://app.example.test', mapShare, context, apartment));
         expect(Object.fromEntries(url.searchParams)).toMatchObject({ city: 'astana', xrayBuilding: apartment.xrayBuilding,
-            unit: apartment.unit, suggestedExisting: '1', access: 'point', backend: context.backend });
+            unit: apartment.unit, xray: 'built', access: 'point', backend: context.backend });
     });
 });

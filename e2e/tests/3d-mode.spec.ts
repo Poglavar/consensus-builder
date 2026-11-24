@@ -2,6 +2,7 @@ import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, createSpace, createBuilding, proposalState } from '../helpers/runtime';
 import { buildings3D, mockBuildingScene, mockFootprintCells } from '../helpers/mocks/building-data';
+import { mockPhotoTiles } from '../helpers/mocks/photo-data';
 import { openLayerSection } from '../helpers/layers';
 import { Page } from '@playwright/test';
 
@@ -687,42 +688,56 @@ test.describe('3D rendering and controls @features', () => {
   });
 });
 
-test('X-ray and Suggested layouts buttons render and remove real generated floor plans', async ({ mockApi: page }) => {
+test('X-ray toolbar scopes proposed layouts and closes by keyboard', async ({ mockApi: page }) => {
   await mockBuildingScene(page);
   await openCity(page);
   await createBuilding(page);
   await enter3D(page);
   await openModelLayers(page);
   const xray = page.locator('#three-mode-xray');
-  const suggested = page.locator('#three-mode-suggested-layouts');
   const floorPlans = () => page.evaluate(() => (window as any).getThreeModeInternals().scene.getObjectByName('FloorPlans')?.children.length || 0);
   await expect(xray).toHaveAttribute('aria-pressed', 'false');
-  await expect(suggested).toBeHidden();
   await xray.click();
-  await expect(xray).toHaveAttribute('aria-pressed', 'true');
-  await expect(suggested).toBeVisible();
-  await expect(page.locator('#three-mode-xray-note')).toBeVisible();
-  await suggested.click();
-  await expect(suggested).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#three-xray-toolbar')).toHaveAttribute('aria-label', 'X-ray');
+  const proposed = page.locator('#three-xray-proposed');
+  const built = page.locator('#three-xray-built');
+  await proposed.click();
+  await expect(proposed).toHaveAttribute('aria-pressed', 'true');
+  await expect(built).toHaveAttribute('aria-pressed', 'false');
+  await expect(page).toHaveURL(/xray=proposed/);
   await expect.poll(floorPlans, { timeout: 15_000 }).toBeGreaterThan(0);
-  await expect(page.locator('#three-mode-xray-note')).toContainText('Suggested layouts');
-  await suggested.click();
-  await expect(suggested).toHaveAttribute('aria-pressed', 'false');
-  await expect.poll(floorPlans).toBe(0);
-  await xray.click();
-  await expect(suggested).toBeHidden();
-  await expect(page.locator('#three-mode-xray-note')).toBeHidden();
+  await page.locator('#three-xray-close').focus();
+  await page.locator('#three-xray-close').press('Enter');
+  await expect(page.locator('#three-xray-toolbar')).toBeHidden();
+  await expect(page).not.toHaveURL(/xray=/);
 });
 
-test('3D suggested-existing toggle and floor cutaway change rendered floor plans', async ({ mockApi: page }) => {
+test('X-ray toolbar stays in Photo for Proposed and opens the model for Built', async ({ mockApi: page }) => {
+  test.setTimeout(60_000);
+  await mockBuildingScene(page);
+  const tiles = await mockPhotoTiles(page);
+  await openCity(page);
+  await page.locator('#mode-realistic-toggle').click();
+  await expect(page.locator('body')).toHaveClass(/realistic-mode-active/, { timeout: 15_000 });
+  await expect.poll(tiles.requests, { timeout: 20_000 }).toBeGreaterThan(0);
+  await openModelLayers(page);
+  await page.locator('#three-mode-xray').click();
+  await expect(page.locator('#three-xray-toolbar')).toBeVisible();
+  await expect(page.locator('body')).toHaveClass(/realistic-mode-active/);
+  await expect(page.locator('.map-sheet:visible')).toHaveCount(0);
+  await expect(page.locator('#three-xray-proposed')).toBeFocused();
+  await page.locator('#three-xray-built').press('Enter');
+  await expect(page.locator('body')).not.toHaveClass(/realistic-mode-active/);
+  await expect(page.locator('#three-xray-built')).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('X-ray built scope reveals an initially hidden existing layer and restores it on close', async ({ mockApi: page }) => {
   await mockBuildingScene(page);
   await mockFootprintCells(page, () => [{ id: 91001, height_m: 18, floors: 5, building: 'yes',
     geometry: { type: 'Polygon', coordinates: [[[15.98270,45.80029],[15.98284,45.80029],[15.98284,45.80043],[15.98270,45.80043],[15.98270,45.80029]]] } }]);
   await openCity(page);
   await openLayerSection(page, 'buildings');
-  await page.locator('#showBuildings').check();
-  await expect.poll(() => page.evaluate(() => (window as any).buildingFeaturePool
-    ?.some((feature: any) => feature.properties?.id === 91001) ?? false)).toBe(true);
+  await expect(page.locator('#showBuildings')).not.toBeChecked();
   await closeSheets(page);
   await enter3D(page);
   // Suggested existing layouts are built only for visible buildings close to the camera.
@@ -732,26 +747,36 @@ test('3D suggested-existing toggle and floor cutaway change rendered floor plans
   await openModelLayers(page);
 
   const xray = page.locator('#three-mode-xray');
-  const suggested = page.locator('#three-mode-suggested-layouts');
+  await page.setViewportSize({ width: 390, height: 844 });
   await xray.click();
-  await suggested.click();
-  const existingToggle = page.locator('#three-mode-suggested-existing');
-  await expect(existingToggle).toBeVisible();
-  await expect(existingToggle).not.toBeChecked();
+  const built = page.locator('#three-xray-built');
+  await built.click();
+  await expect(built).toBeFocused();
+  await expect(built).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#three-xray-proposed')).toHaveAttribute('aria-pressed', 'false');
+  await expect.poll(() => page.evaluate(() => (window as any).buildingFeaturePool
+    ?.some((feature: any) => feature.properties?.id === 91001) ?? false)).toBe(true);
+  const buildingVisibility = () => page.evaluate(() => {
+    const scene = (window as any).getThreeModeInternals().scene;
+    return {
+      existing: scene.getObjectByName('ExistingBuildings')?.visible === true,
+      proposed: scene.getObjectByName('ProposedBuildings')?.visible === true,
+    };
+  });
+  await expect.poll(buildingVisibility).toMatchObject({ existing: true, proposed: false });
+  const toolbarBox = await page.locator('#three-xray-toolbar').boundingBox();
+  expect(toolbarBox).not.toBeNull();
+  expect(toolbarBox!.x).toBeGreaterThanOrEqual(0);
+  expect(toolbarBox!.x + toolbarBox!.width).toBeLessThanOrEqual(390);
   const existingFloorPlans = () => page.evaluate(() => {
     const floors = (window as any).getThreeModeInternals().scene.getObjectByName('FloorPlans');
     return floors?.children.filter((group: any) => group.userData?.suggested
       && group.userData?.proposalId == null && group.userData?.parcelId == null).length || 0;
   });
-  await existingToggle.check();
   await expect.poll(existingFloorPlans).toBeGreaterThan(0);
-  await expect(page.locator('#three-mode-xray-note')).toContainText(/Existing: [1-9]/);
+  await expect(page.locator('#showBuildings')).not.toBeChecked();
 
-  // X-ray opens detailed interiors in Solid mode without changing the Built display setting.
-  await page.evaluate(() => (window as any).PlanningViews.configure('existing', 'solid'));
-  expect(await page.evaluate(() => (window as any).PlanningViews.getState().existing)).toBe('solid');
-  await expect.poll(existingFloorPlans).toBeGreaterThan(0);
-
+  await openModelLayers(page);
   const floorCutaway = page.locator('#three-mode-floor-cutaway');
   await expect(floorCutaway).toBeEnabled();
   const visibleFloorCount = () => page.evaluate(() => {
@@ -767,6 +792,11 @@ test('3D suggested-existing toggle and floor cutaway change rendered floor plans
   await expect.poll(visibleFloorCount).toBeLessThan(allFloors);
   await selectNativeOption(floorCutaway, 'all');
   await expect.poll(visibleFloorCount).toBe(allFloors);
+  await closeSheets(page);
+  await page.locator('#three-xray-close').click();
+  await expect(page.locator('#three-xray-toolbar')).toBeHidden();
+  await expect(page.locator('#showBuildings')).not.toBeChecked();
+  await expect.poll(buildingVisibility).toMatchObject({ existing: false });
 });
 
 test('3D trees use real instanced geometry, toggle off and restore their saved preference', async ({ mockApi: page }) => {

@@ -28,6 +28,8 @@ function extracted(name, variables = '', stubs = {}, helpers = []) {
         builtDisplay: 'solid', nativeApartmentBuilding: () => null, registerApartmentBuilding() {}, refreshApartmentSelection() {},
         buildingUnitLinks: require('../../frontend/js/building-unit-links.js'),
         realisticLayerActive: false, buildingsWorkGeneration: 0, xrayVisibilityDirty: false,
+        xrayScope: null, suggestedPlanner: null, floorCutawayLevel: null, existingFloorPlanShells: new Map(),
+        threeBuildingKey: building => [building.source, building.object_id].join(':'),
         suggestedStreetLoader: null, suggestedStreetRefreshPending: false, ...stubs, calls };
     const code = `${variables}\n${Array.from(Object.entries(stubs)).map(([key]) => `const ${key}=this.${key};`).join('\n')}\n${[name, ...helpers].map(helper => declarations.get(helper)).join('\n')}\nthis.fn=${name};`;
     vm.runInNewContext(code, context);
@@ -136,14 +138,14 @@ describe('three-mode Xray wiring', () => {
         }
     });
 
-    function rebuildHarness(enabled, built = 'ghost', planned = 'solid', isolated = null) {
+    function rebuildHarness(scope, built = 'ghost', planned = 'solid', isolated = null) {
         const existingBuildingsGroup = { children: [], userData: {} };
         const proposedBuildingsGroup = { children: [{ id: 'proposal-survives' }], userData: {} };
         const ineligibleBuildingsGroup = { children: [{ id: 'ineligible-survives' }] };
         const clear = vi.fn();
         const stubs = {
             window: {},
-            enabled, built, planned, isolated, existingGroup: existingBuildingsGroup, proposedGroup: proposedBuildingsGroup, ineligibleGroup: ineligibleBuildingsGroup,
+            scope, built, planned, isolated, existingGroup: existingBuildingsGroup, proposedGroup: proposedBuildingsGroup, ineligibleGroup: ineligibleBuildingsGroup,
             clearGroupChildren: clear, retireGroupAfterFrame: group => clear(group), disposeFloorPlans: vi.fn(),
             buildingDisplayPolicy: { resolveBuiltDisplayPolicy: mode => ({ visible: mode !== 'off', material: mode, showSurviving: true, showDemolished: false }) },
             buildingMaterials: { xray: 'xray-material', solid: 'solid-material', ghost: 'ghost-material' },
@@ -167,26 +169,25 @@ describe('three-mode Xray wiring', () => {
             let buildingsRenderGeneration=0, sceneAbort=null;
             let existingBuildingsGroup=this.existingGroup, proposedBuildingsGroup=this.proposedGroup;
             let ineligibleBuildingsGroup=this.ineligibleGroup;
-            let xrayEnabled=this.enabled, builtDisplay=this.built, plannedDisplay=this.planned;
+            let xrayScope=this.scope, builtDisplay=this.built, plannedDisplay=this.planned;
             let realisticLayerActive=false, existingTransitAlignmentGroup={ visible: true }, showIneligibleParcels=false;
             let isolatedParcelId=this.isolated, isolatedProposalId=null;
             let existingFloorPlanShells=new Map();
-        `, stubs, ['build3DBuildingFamilies', 'sharedPlanReconcile']);
+        `, stubs, ['build3DBuildingFamilies', 'sharedPlanReconcile', 'xrayBuildingDisplay']);
         return [rebuild, context];
     }
 
-    it.each([true, false])('X-ray=%s preserves chosen exterior materials for buildings without models', async enabled => {
-        const [rebuild, c] = rebuildHarness(enabled);
+    it.each([null, 'built', 'proposed'])('draws the building family selected by X-ray scope %s', async scope => {
+        const [rebuild, c] = rebuildHarness(scope);
         await rebuild();
         expect(c.disposeFloorPlans).toHaveBeenCalledOnce();
-        expect(c.buildNearbyProposalBuildings3D.mock.calls[0][1]).toBe('ghost-material');
-        expect(c.buildProposedBuildings3D.mock.calls[0][1]).toBe('solid-material');
+        expect(c.buildNearbyProposalBuildings3D.mock.calls.map(call => call[1])).toEqual(scope === 'proposed' ? [] : ['ghost-material']);
+        expect(c.buildProposedBuildings3D.mock.calls.map(call => call[1])).toEqual(scope === 'built' ? [] : ['solid-material']);
         expect(c.updateXrayControls).toHaveBeenCalledOnce();
-        // Highlight by use recolours the rebuilt meshes once they are in the scene.
         expect(c.applyUseHighlight3D).toHaveBeenCalledOnce();
     });
     it('respects display-off families and reapplies isolation after a rebuild', async () => {
-        const [rebuild, c] = rebuildHarness(true, 'off', 'off', 'parcel-42');
+        const [rebuild, c] = rebuildHarness(null, 'off', 'off', 'parcel-42');
         await rebuild();
         expect(c.disposeFloorPlans).toHaveBeenCalledOnce();
         expect(c.buildNearbyProposalBuildings3D).not.toHaveBeenCalled();
@@ -194,7 +195,7 @@ describe('three-mode Xray wiring', () => {
         expect(c.applyParcelIsolation).toHaveBeenCalledOnce();
     });
     it('an existing-context refresh preserves proposed families and does not rebuild scene scenery', async () => {
-        const [rebuild, c] = rebuildHarness(false);
+        const [rebuild, c] = rebuildHarness(null);
         await rebuild({ family: 'existing' });
 
         expect(c.clearGroupChildren.mock.calls).toEqual([[c.existingGroup]]);
@@ -206,7 +207,7 @@ describe('three-mode Xray wiring', () => {
         expect(c.rebuildWaterOnly).not.toHaveBeenCalled();
     });
     it('rebuilds only the asked family with X-ray on, keeps the designs\' floor plans, and reconciles interiors after the commit', async () => {
-        const [rebuild, c] = rebuildHarness(true);
+        const [rebuild, c] = rebuildHarness('built');
         await rebuild({ family: 'existing' });
         expect(c.buildNearbyProposalBuildings3D).toHaveBeenCalledOnce();
         expect(c.buildProposedBuildings3D).not.toHaveBeenCalled();
@@ -215,20 +216,18 @@ describe('three-mode Xray wiring', () => {
         expect(c.reconcileExistingFloorPlans).toHaveBeenCalledOnce();
     });
 
-    it('setXrayEnabled rebuilds nothing when only existing interiors depend on it, and only the designs otherwise', () => {
-        const toggle = (suggested, proposedBuildings) => {
-            const [set, context] = extracted('setXrayEnabled', `let xrayEnabled=false; let suggestedPlansEnabled=${suggested};`, {
-                window: { proposedBuildings }, rebuild3DBuildingsOnly: options => context.calls.push(`rebuild ${options.family}`),
-                updateFloorModelLoads: force => context.calls.push(`floor models ${force}`), reconcileExistingFloorPlans: () => context.calls.push('reconcile'),
-                applyModelSections: () => context.calls.push('sections'),
-                updateXrayControls: () => context.calls.push('update'), invalidateThreeView: () => context.calls.push('invalidate') }, ['xrayRebuildsDesigns']);
-            set(true);
-            return context.calls;
-        };
-        // Uploaded models are cut by their materials (applyModelSections), never rebuilt.
-        expect(toggle(false, [{ properties: {} }])).toEqual(['floor models true', 'reconcile', 'sections', 'update', 'invalidate']);
-        expect(toggle(false, [{ properties: { floorPlans: {} } }])).toEqual(['rebuild planned', 'floor models true', 'reconcile', 'sections', 'update', 'invalidate']);
-        expect(toggle(true, [])).toEqual(['rebuild planned', 'floor models true', 'reconcile', 'sections', 'update', 'invalidate']);
+    it('switches the active family and restores the exterior view on close', () => {
+        const rebuild = vi.fn();
+        const [set, context] = extracted('setXrayScope', '', {
+            rebuild3DBuildingsOnly: rebuild, updateFloorModelLoads: vi.fn(), reconcileExistingFloorPlans: vi.fn(),
+            applyModelSections: vi.fn(), updateXrayControls: vi.fn(), invalidateThreeView: vi.fn()
+        });
+        for (const scope of ['proposed', 'built', null]) {
+            set(scope);
+            expect(context.xrayScope).toBe(scope);
+        }
+        set(null);
+        expect(rebuild).toHaveBeenCalledTimes(3);
     });
     it("an arriving floor model adds only its building's group, rebuilds nothing, and its drop restores only that shell", async () => {
         const proximity = require('../../frontend/js/floor-plan-proximity.js');
@@ -236,7 +235,7 @@ describe('three-mode Xray wiring', () => {
         const existing = { visible: true, children: [meshA, meshB] };
         const added = [], removed = [], disposed = [];
         const modelB = { floorPlans: { storeys: [] }, footprint: null };
-        const variables = `let xrayEnabled = true, isActive = true, buildingBuildPending = false, floorCutawayLevel = null, floorPlanErrors = 0;
+        const variables = `let xrayScope = 'built', isActive = true, buildingBuildPending = false, floorCutawayLevel = null, floorPlanErrors = 0;
             let existingBuildingsGroup = this.existing;
             let floorPlanGroup = { add: group => this.added.push(group), remove: group => this.removed.push(group) };
             const renderedFloorPlanKeys = new Set();
@@ -280,11 +279,11 @@ describe('three-mode Xray wiring', () => {
             { source: 's', object_id: 2, floorPlansAvailable: { city: 'c', source: 's' }, faces: [face(1)] },
             { source: 's', object_id: 3, faces: [face(0)] }];
         const requested = [], abort = vi.fn();
-        const variables = `let xrayEnabled = true; let isActive = true; let nearbyBuildingsRevision = 1; let origin3857 = {}; let realisticLayerActive = false;
+        const variables = `let xrayScope = 'built'; let isActive = true; let nearbyBuildingsRevision = 1; let origin3857 = {}; let realisticLayerActive = false;
             let existingBuildingsGroup = { visible: true };
             const floorModelLoads = { models: new Map(), pending: new Map(), camera: null, revision: -1 };
             const floorModelCentres = new WeakMap(); const FLOOR_MODEL_RECHECK_M = 20;
-            this.setXray = value => { xrayEnabled = value; }; this.loads = floorModelLoads;`;
+            this.setScope = value => { xrayScope = value; }; this.loads = floorModelLoads;`;
         const [update, context] = extracted('updateFloorModelLoads', variables, { floorPlanProximity: proximity, nearbyProposalBuildings: buildings,
             camera: { position: { x: 0, y: 0, z: 30 } }, lifeMercatorK: () => 1, latLngToXY: (lat, lng) => [lng * 111320, lat * 111320],
             threeBuildingKey: b => `${b.source}:${b.object_id}`, rebuild3DBuildingsOnly: vi.fn(),
@@ -292,7 +291,7 @@ describe('three-mode Xray wiring', () => {
         update(true);
         // Building 2 is ~111 km away, building 3 has no marker.
         expect(requested).toEqual(['s:1']);
-        context.setXray(false);
+        context.setScope(null);
         update(true);
         expect(abort).toHaveBeenCalledTimes(1);
         expect(context.loads.pending.size).toBe(0);
@@ -304,7 +303,7 @@ describe('three-mode Xray wiring', () => {
         const proximity = require('../../frontend/js/floor-plan-proximity.js');
         const order = [], frames = [];
         const shell = { meshes: [{ visible: true }], building: { properties: {} }, material: 'ghost' };
-        const variables = `let xrayEnabled = true, isActive = true, buildingBuildPending = false, floorCutawayLevel = null, floorPlanErrors = 0;
+        const variables = `let xrayScope = 'built', isActive = true, buildingBuildPending = false, floorCutawayLevel = null, floorPlanErrors = 0;
             let existingBuildingsGroup = { visible: true };
             let floorPlanGroup = { add() {}, remove() {} };
             const floorModelLoads = { models: new Map([['a', { floorPlans: {} }], ['b', { floorPlans: {} }]]), pending: new Map() };
@@ -326,11 +325,11 @@ describe('three-mode Xray wiring', () => {
         const add = vi.fn(), create = vi.fn(() => ({ userData: { cbFloorPlan: true } }));
         const feature = { properties: { floorPlans: { registration: { corners: [[1, 2]] }, storeys: [{ id: 'f1' }] } } };
         const renderer = { createBuildingGroupCooperative: vi.fn(async () => create()), setCutaway: vi.fn() };
-        const [append] = extracted('appendBuildingFloorPlans', 'let xrayEnabled=false; let floorPlanGroup={add:this.add}; let renderedFloorPlanKeys=new Set(); let floorPlanErrors=0; let buildingsWorkGeneration=0;', { add, THREE: {}, turf: {}, sceneWork, floorPlanRenderer: renderer, floorPlanGeometry: {}, latLngToXY: () => [0, 0], isActive: true });
+        const [append] = extracted('appendBuildingFloorPlans', 'let xrayScope=null; let floorPlanGroup={add:this.add}; let renderedFloorPlanKeys=new Set(); let floorPlanErrors=0; let buildingsWorkGeneration=0;', { add, THREE: {}, turf: {}, sceneWork, floorPlanRenderer: renderer, floorPlanGeometry: {}, latLngToXY: () => [0, 0], isActive: true });
         await expect(append(feature)).resolves.toBe(false);
         expect(create).not.toHaveBeenCalled();
         expect(add).not.toHaveBeenCalled();
-        const [enabledAppend] = extracted('appendBuildingFloorPlans', 'let xrayEnabled=true; let floorCutawayLevel=1; let floorPlanGroup={add:this.add}; let renderedFloorPlanKeys=new Set(); let floorPlanErrors=0; let buildingsWorkGeneration=0;', { add, THREE: {}, turf: {}, sceneWork, isActive: true, floorPlanRenderer: renderer, floorPlanGeometry: {}, latLngToXY: () => [0, 0] });
+        const [enabledAppend] = extracted('appendBuildingFloorPlans', 'let xrayScope="proposed"; let floorCutawayLevel=1; let floorPlanGroup={add:this.add}; let renderedFloorPlanKeys=new Set(); let floorPlanErrors=0; let buildingsWorkGeneration=0;', { add, THREE: {}, turf: {}, sceneWork, isActive: true, floorPlanRenderer: renderer, floorPlanGeometry: {}, latLngToXY: () => [0, 0] });
         await expect(enabledAppend(feature)).resolves.toMatchObject({ userData: { cbFloorPlan: true, floorPlanFamily: 'planned' } });
         await expect(enabledAppend(feature)).resolves.toBe(true); expect(create).toHaveBeenCalledTimes(1); expect(add).toHaveBeenCalledTimes(1);
     });
@@ -339,7 +338,7 @@ describe('three-mode Xray wiring', () => {
         const error = new Error('bad plan');
         try {
             const [append] = extracted('appendBuildingFloorPlans', `
-                let xrayEnabled=true, floorPlanGroup={add() {}}, floorPlanErrors=0;
+                let xrayScope='proposed', floorPlanGroup={add() {}}, floorPlanErrors=0;
                 const renderedFloorPlanKeys=new Set();`, {
                 THREE: {}, turf: {}, sceneWork, floorPlanGeometry: {}, latLngToXY: () => [0, 0],
                 floorPlanRenderer: { createBuildingGroupCooperative: vi.fn().mockRejectedValue(error) }
@@ -411,7 +410,7 @@ describe('three-mode Xray wiring', () => {
         };
         stubs.planSuggestedBuilding = (feature, context) => stubs.suggestedPlanContext.planBuilding(feature, context);
         const [append, c] = extracted('appendSuggestedFloorPlans', `
-            let xrayEnabled=${overrides.xray !== false}, suggestedPlansEnabled=${overrides.suggested !== false}, floorPlanGroup={}, floorPlanErrors=0, buildingsWorkGeneration=0, isActive=true;
+            let xrayScope=${JSON.stringify(overrides.scope === undefined ? 'proposed' : overrides.scope)}, floorPlanGroup={}, floorPlanErrors=0, buildingsWorkGeneration=0, isActive=true;
             let plannedRepresentation='both', buildOutDisplaySalt=0, suggestedAccess='${overrides.access || 'auto'}';
             const suggestedPlanCache=new Map(), suggestedSteppedDone=new Map();
             const suggestedPlanTotals={buildings:0,slices:0,flagged:0,apartments:0,cores:0,northFlats:0,pendingStreets:false};
@@ -420,12 +419,12 @@ describe('three-mode Xray wiring', () => {
         `, stubs, ['suggestedSteppedParts']);
         return { append, c, slices };
     }
-    it('appendSuggestedFloorPlans stays out of the way while X-ray or the toggle is off, and never second-guesses evidence', async () => {
+    it('appendSuggestedFloorPlans stays out of the way outside Proposed X-ray, and never second-guesses evidence', async () => {
         const feature = { geometry: {}, properties: { name: 'house' } };
-        const off = suggestedHarness({ suggested: false });
+        const off = suggestedHarness({ scope: 'built' });
         await expect(off.append(feature, 'm', { add: vi.fn() }, {})).resolves.toBe(false);
         expect(off.c.suggestedPlanContext.planBuilding).not.toHaveBeenCalled();
-        await expect(suggestedHarness({ xray: false }).append(feature, 'm', { add: vi.fn() }, {})).resolves.toBe(false);
+        await expect(suggestedHarness({ scope: null }).append(feature, 'm', { add: vi.fn() }, {})).resolves.toBe(false);
         const on = suggestedHarness();
         await expect(on.append({ geometry: {}, properties: { floorPlans: {} } }, 'm', { add: vi.fn() }, {})).resolves.toBe(false);
         await expect(on.append({ geometry: {}, properties: { modelUrl: 'x.glb' } }, 'm', { add: vi.fn() }, {})).resolves.toBe(false);
@@ -492,7 +491,7 @@ describe('three-mode Xray wiring', () => {
     });
     it('records slices per parcel and per proposal, and the panels read them back', () => {
         const variables = `
-            let suggestedPlansEnabled=true;
+            let xrayScope='proposed';
             const suggestedPlanByParcel=new Map(); const suggestedPlanByProposal=new Map();
             this.byParcel=suggestedPlanByParcel; this.byProposal=suggestedPlanByProposal;`;
         const stubs = { threeI18n: (key, fallback) => fallback };
@@ -503,21 +502,15 @@ describe('three-mode Xray wiring', () => {
         record(owner, { parcelId: 'A', wing: null, result: ok }, 2);
         record(owner, { parcelId: 'B', wing: null, result: bad }, 2);
         expect(c.byProposal.get('p1')).toEqual({ buildings: 1, flagged: 1, apartmentsPerFloor: 2, apartments: 4, cores: 1 });
-        const panelVariables = `let suggestedPlansEnabled=true; const suggestedPlanByParcel=this.byParcel; const suggestedPlanByProposal=this.byProposal;`;
+        const panelVariables = `let xrayScope='proposed'; const suggestedPlanByParcel=this.byParcel; const suggestedPlanByProposal=this.byProposal;`;
         const [parcelText] = extracted('suggestedParcelPanelText', panelVariables, { ...stubs, byParcel: c.byParcel, byProposal: c.byProposal });
         expect(parcelText('A')).toBe('1 core(s) · 2 apartments per storey · 9 rooms');
         expect(parcelText('B')).toMatch(/^No default layout fits: Too small/);
         expect(parcelText('Z')).toBe('');
         const [proposalText] = extracted('suggestedProposalPanelText', panelVariables, { ...stubs, byParcel: c.byParcel, byProposal: c.byProposal });
         expect(proposalText({ proposalId: 'p1' })).toBe('Estimated layouts: 1 buildings · 2 apartments per storey · 4 in total 1 in red: too small for a minimum stair core.');
-        const [offText] = extracted('suggestedProposalPanelText', `let suggestedPlansEnabled=false; const suggestedPlanByParcel=new Map(); const suggestedPlanByProposal=this.byProposal;`, { ...stubs, byProposal: c.byProposal });
+        const [offText] = extracted('suggestedProposalPanelText', `let xrayScope=null; const suggestedPlanByParcel=new Map(); const suggestedPlanByProposal=this.byProposal;`, { ...stubs, byProposal: c.byProposal });
         expect(offText({ proposalId: 'p1' })).toBe('');
-    });
-    it('setSuggestedPlansEnabled rebuilds and refreshes the controls', () => {
-        const [set, context] = extracted('setSuggestedPlansEnabled', 'let suggestedPlansEnabled=false;',
-            { rebuild3DBuildingsOnly: () => context.calls.push('rebuild'), updateXrayControls: () => context.calls.push('update') });
-        set(true);
-        expect(context.calls).toEqual(['rebuild', 'update']);
     });
     it('setSuggestedAccess rebuilds once per change of the view\'s Access and reads anything else as automatic', () => {
         const [set, context] = extracted('setSuggestedAccess', `let suggestedAccess='auto'; this.read=()=>suggestedAccess;`,
@@ -575,35 +568,30 @@ describe('three-mode Xray wiring', () => {
         await vi.waitFor(() => expect(streetsFor(feature)).toEqual(['loaded-street']));
         expect(fetch).toHaveBeenCalledExactlyOnceWith('http://api/streets/near?bbox=1%2C2%2C3%2C4', { signal: expect.any(AbortSignal) });
     });
-    it('shows access options while estimated layouts are on', () => {
-        const access = { hidden: true }, accessSelect = { value: 'auto' }, existingRow = {};
+    it('keeps one scope pressed and exposes access options while X-ray is active', () => {
+        const access = {}, select = {}, toolbar = {}, buttons = Object.fromEntries(['proposed', 'built']
+            .map(scope => [scope, { setAttribute: vi.fn() }]));
         const [update, c] = extracted('updateXrayControls', `
-            let xrayButton=null, suggestedPlansButton=null, suggestedExistingRow=this.existingRow, suggestedExistingCheckbox=null;
-            let suggestedAccessControl=this.access, suggestedAccessSelect=this.accessSelect, suggestedAccess='point';
-            let floorCutawayControl=null, floorCutawaySelect=null, xrayNote=null;
-            let xrayEnabled=true, suggestedPlansEnabled=true, suggestedExistingEnabled=true;
-            this.set=(key, value)=>{ eval(key + '=value'); };`, { access, accessSelect, existingRow });
-        update();
-        expect(existingRow.hidden).toBe(false);
-        c.set('builtDisplay', 'off'); update();
-        expect(existingRow.hidden).toBe(true);
-        // The Access select shows with the suggested layouts and says the view's choice.
-        expect(access.hidden).toBe(false);
-        expect(accessSelect.value).toBe('point');
-        for (const [key, value] of [['suggestedExistingEnabled', false], ['suggestedPlansEnabled', false], ['xrayEnabled', false]]) {
-            c.set(key, value);
+            let xrayButton=null, xrayToolbar=this.toolbar, xrayScopeButtons=this.buttons;
+            let suggestedAccessControl=this.access, suggestedAccessSelect=this.select, suggestedAccess='point';
+            let floorCutawayControl=null, floorCutawaySelect=null, xrayNote=null;`, { toolbar, buttons, access, select });
+        for (const scope of ['built', 'proposed', null]) {
+            c.xrayScope = scope;
             update();
-            expect(access.hidden).toBe(key === 'suggestedPlansEnabled' || key === 'xrayEnabled');
-            c.set(key, true);
-            update();
+            expect(toolbar.hidden).toBe(scope === null);
+            expect(access.hidden).toBe(scope === null);
+            for (const role of ['proposed', 'built']) {
+                expect(buttons[role].setAttribute).toHaveBeenLastCalledWith('aria-pressed', String(role === scope));
+            }
         }
+        expect(select.value).toBe('point');
     });
     it('replaces only the source shell of a visible building with detailed estimated storeys', () => {
         const group = (id, detailVisible, visible = true) => ({ visible, userData: { floorPlanFamily: 'existing-suggested',
             detailVisible, planningBuiltFeature: { properties: { source: 'buildings', id } } } });
         const shells = new Map([1, 2, 3, 4].map(id => [`buildings:${id}`, { meshes: [{ id }] }]));
         const groups = [group(1, true), group(2, false), group(3, true, false)];
-        const [replaced] = extracted('replacedXrayShells', 'let xrayEnabled = true;', {
+        const [replaced] = extracted('replacedXrayShells', 'let xrayScope = "built";', {
             floorPlanGroup: { visible: true, children: groups }, existingFloorPlanShells: shells
         }, ['threeBuildingKey']);
         expect([...replaced()]).toEqual(shells.get('buildings:1').meshes);
@@ -619,7 +607,7 @@ describe('three-mode Xray wiring', () => {
             centroid: feature => feature, distance: (_, feature) => feature.properties.d };
         const planBuilding = vi.fn(feature => ({ slices: [{ footprint: feature, result: { floorPlans: {}, summary: { heightM: 9.9 } } }] }));
         const [append, c] = extracted('appendSuggestedExistingFloorPlans', `
-            let xrayEnabled=true, suggestedPlansEnabled=true, suggestedExistingEnabled=true, floorPlanGroup={}, buildingsWorkGeneration=0, isActive=true;
+            let xrayScope='built', floorPlanGroup={}, buildingsWorkGeneration=0, isActive=true;
             let nearbyProposalBuildingsKey='near', buildingLoadRadiusM=300, suggestedExistingPoolKey=null, floorPlanErrors=0, suggestedAccess='corridor';
             const SUGGESTED_EXISTING_CAP=2, suggestedFloorPlans={}, suggestedPlanCache=new Map();
             const suggestedPlanTotals={existing:0,existingCapped:false}; this.totals=suggestedPlanTotals;`,

@@ -17,7 +17,7 @@ pieces fit, and what is still open. The storage and import contract is specified
 | Source adapter for developer PDF catalogues (vector CAD insets → architecture) | **Done**, 67 storeys / 9 buildings / 4 sites | `backend/scripts/pionir_floor_architecture.py`, `backend/scripts/reconstruct-*-floors.py`, `restatements/**/floor-plan-sources.json` |
 | Agency floor-plan archive (public listing drawings → immutable archive → OCR drafts → reviewed unit models) | **Done**, daily crawl; 5 reviewed apartment units for one project | [Private zagreb-novogradnje owner](https://github.com/Poglavar/zagreb-novogradnje), schema `floor_plan` |
 | **New buildings**: a repeatable way to obtain more or less every floor plan | **Done** through the two sources above | this file, section "New buildings" |
-| **Old buildings**: deduce floor plans where no drawing exists | **Pending** (TBD); first step: typical layouts by era behind "Existing buildings too" | section "Pending: old buildings", section "Existing buildings" |
+| **Old buildings**: deduce floor plans where no drawing exists | **Pending** (TBD); first step: typical layouts by era in Built X-ray | section "Pending: old buildings", section "Existing buildings" |
 | **Proposed buildings**: default layouts to see something in X-ray for every proposal / urban rule | **Built on branch `default-floor-plans`** (this document's branch): cores, rooms, balconies, wings, blind walls, shops, garage, regional presets, 2D layer | `frontend/js/default-floor-plans.js`, `default-floor-plan-rooms.js`, `default-floor-plan-context.js`, `suggested-layouts-2d.js` |
 
 ## The data model, once
@@ -232,18 +232,15 @@ that is settled.
 
 ### Existing buildings
 
-The same generator can guess a typical interior for the existing buildings around a proposal
-("Existing buildings too", inside the Estimated layouts toggle). Footprints and heights come from the
-2D building pool, which X-ray asks once to cover the whole 3D radius (the pool otherwise holds only the
-viewports the map has shown); the nearest 400 are planned. A footprint without a height stays a plain
-volume, and one a proposal builds over is skipped. Era presets choose the rules from whatever the footprint says: a construction year where
+**Built** X-ray displays published floor plans where available. It estimates residential
+interiors from nearby source footprints and heights, with up to 24 in a 200 m neighbourhood.
+A footprint without a height stays a plain volume. The Built layer’s coverage filter determines
+whether to include buildings that a design replaces. Era presets choose the rules from whatever the footprint says: a construction year where
 one exists, else the storey height as a proxy. Pre-war (or storeys of 3.4 m and more): no lift,
 flats up to 160 m², shops on the ground floor from three storeys. Post-war slabs (or storeys up to
 3.05 m from four floors): the default scheme without a lift up to five storeys. Anything else uses
-the contemporary defaults. The interiors draw inside the transparent built volumes and are never
-painted red; while existing buildings are solid, X-ray shows a notice that their interiors are hidden,
-with a **Make transparent** button that switches existing buildings to transparent; they are labelled as a guess in the note. This is the first step of the pending "old
-buildings" work, not evidence.
+the contemporary defaults. The detailed interior replaces its exterior shell in both Solid and Transparent display.
+The apartment picker labels generated units as estimated.
 
 ### How it is wired
 
@@ -253,7 +250,7 @@ sequenceDiagram
     participant CX as planner context (interior-planner.js)
     participant GEN as planner generator (interior-planner.js)
     participant R as three-floor-plans.js
-    TM->>TM: X-ray on, Estimated layouts on, no evidence model, no glTF
+    TM->>TM: Proposed X-ray, no floor model or glTF
     TM->>CX: planBuilding(build-out feature, parcels, neighbours, streets, height)
     CX->>CX: slice by parcels · storeys · party neighbours · entrance side (long side nearer a road)
     CX->>GEN: planDefaultFloorPlans(slice, floors, storey, neighbours, front)
@@ -271,10 +268,9 @@ sequenceDiagram
   and the worker client (`window.__defaultFloorPlanWorker`). Its sources, rules and tests are in the interior-viewer
   repository (`src/planner`, `test/planner`, README "Planner" and its release notes); copies here are never edited.
   `frontend/js/default-floor-plan-worker.js` is the app's worker that loads it.
-- `frontend/js/three-mode.js` — the **Estimated layouts** button beside X-ray (visible only in
-  X-ray; `?suggested=1` on the URL turns it on), the **Existing buildings too** checkbox
-  (`?suggestedExisting=1`), the **Access** select (`?access=`, passed to the context as
-  `accessOverride`), the red patches on north-only flats, the render path, the `flagged` material and the note lines. Roads for
+- `frontend/js/three-mode.js` draws the **Proposed** and **Built** X-ray views and provides the
+  persistent scope buttons. The URL carries `xray=proposed` or `xray=built`. The **Access** select
+  in Layers passes `accessOverride` to the planner. North-only apartments receive a red overlay. Roads for
   the entrance side are street centrelines from `GET /streets/near` once per ~500 m cell, the plan's
   own applied corridors, and road parcels of the fabric; each source is optional. Until streets
   arrive the entrance takes the longest facade and the note says so; their arrival drops the cache
@@ -340,7 +336,7 @@ none decided:
    (interwar block, 1960s slab, 1980s tower, family house) and generate a typology default with the
    same generator, parameterised per typology (core type, corridor vs point access, bay depth).
    Cheap, honest if labelled "typical for this type", wrong in detail. **A first step exists**: the
-   era presets behind "Existing buildings too" (see above), driven by year or storey height alone.
+   era presets in Built X-ray, driven by year or storey height.
 2. **Archive matching** — the agency archive already associates listings with buildings; a reviewed
    unit plan plus the footprint can anchor a whole-floor layout where the unit's position in the
    building is evidenced (balcony pattern, corner, orientation).

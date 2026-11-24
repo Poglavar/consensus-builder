@@ -78,11 +78,13 @@ describe('current-map sharing', () => {
     it('keeps X-ray and layout scope when sharing the model view', () => {
         const context = capture({ map: { getCenter: () => ({ lat: 45, lng: 16 }), getZoom: () => 18 },
             __mapModeState: { desired: 'model' }, PlanningScene: { settings: () => ({ existing: 'ghost' }) },
-            location: { search: '?xray=1&suggested=1&suggestedExisting=1&access=point' } });
+            location: { search: '?xray=proposed&suggested=1&suggestedExisting=1&access=point' } });
         const url = new URL(link('https://app.example.test/', context));
         expect(Object.fromEntries(url.searchParams)).toMatchObject({
-            xray: '1', suggested: '1', suggestedExisting: '1', access: 'point', existing: 'ghost'
+            xray: 'proposed', access: 'point', existing: 'ghost'
         });
+        expect(url.searchParams.has('suggested')).toBe(false);
+        expect(url.searchParams.has('suggestedExisting')).toBe(false);
     });
     it('writes the zoom the 3D camera stands for, the one the 2D map takes on leaving 3D', () => {
         const context = capture({
