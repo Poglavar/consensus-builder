@@ -197,10 +197,11 @@ describe('base58 helpers', () => {
 
 describe('loadIdls', () => {
     it('indexes the app programs by address and by name: the agreement program, not proposal_nft (M3)', () => {
-        expect([...idls.byName.keys()].sort()).toEqual(['agreement', 'parcel_nft', 'proposal_market', 'proposal_pledge']);
+        expect([...idls.byName.keys()].sort()).toEqual(['agreement', 'parcel_nft', 'property_offer', 'proposal_market', 'proposal_pledge']);
         expect(idls.byAddress.get(AGREEMENT_PROGRAM_ID).name).toBe('agreement');
         expect(idls.byAddress.get(MARKET_PROGRAM).name).toBe('proposal_market');
         expect(idls.byAddress.get('4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1').name).toBe('parcel_nft');
+        expect(idls.byAddress.get('BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp').name).toBe('property_offer');
         // Designs are not minted: the proposal program's instructions are no longer decoded.
         expect(idls.byAddress.has(PROPOSAL_PROGRAM)).toBe(false);
     });

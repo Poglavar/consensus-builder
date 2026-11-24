@@ -44,7 +44,7 @@ describe('deriveAssociatedTokenAddress', () => {
 });
 
 describe('buildAddressBook', () => {
-    it('labels our four programs, the agreement program by the id its codec carries', () => {
+    it('labels our five programs, the agreement program by the id its codec carries', () => {
         const book = makeBook();
 
         expect(book.labelFor('4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1')).toEqual({
@@ -57,6 +57,7 @@ describe('buildAddressBook', () => {
         expect(book.entryFor('3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg')).toBeNull();
         expect(book.labelFor('GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB').label).toBe('proposal_market program');
         expect(book.labelFor('1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g').label).toBe('proposal_pledge program');
+        expect(book.labelFor('BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp').label).toBe('property_offer program');
         expect(AGREEMENT_PROGRAM_ID).toBe('GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ');
         expect(book.labelFor(AGREEMENT_PROGRAM_ID)).toMatchObject({ label: 'agreement program', kind: 'program' });
     });
@@ -175,6 +176,7 @@ describe('watchedAddresses', () => {
             '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1',
             'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB',
             '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g',
+            'BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp',
             AGREEMENT_PROGRAM_ID,
             TREASURY,
             TREASURY_USDC,

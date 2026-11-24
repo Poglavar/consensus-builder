@@ -1060,7 +1060,7 @@ A modeled value of an agent's assigned land, expressed in a stated currency and 
 
 ### Market
 
-A funded YES/NO forecast attached to an agreement. Any wallet can create a devnet USDC market with its own question, closing time and liquidity. An execution market pays YES for an on-chain execution by its chosen deadline. A public-record market commits to its evidence source, verifier and qualifying outcomes. Each market owns its vault, prices and share positions. The Bets tab labels creators whose wallets match the agreement proposer or verifier and ranks open markets by funded liquidity. The points simulator keeps one independent execution book per agreement.
+A funded YES/NO forecast attached to an agreement. Any wallet can create a devnet USDC market with its own question, closing time and liquidity. An execution market pays YES for an on-chain execution by its chosen deadline. A public-record market commits to its evidence source, verifier and qualifying outcomes. Each market owns its vault, prices and share positions. The market address that opened the vault continues to authorize its payouts. The Bets tab labels creators whose wallets match the agreement proposer or verifier and ranks open markets by funded liquidity. The points simulator keeps one independent execution book per agreement.
 
 ### Contest
 

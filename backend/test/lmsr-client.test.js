@@ -184,6 +184,14 @@ describe('Solana LMSR client codec', () => {
         expect(lmsr.decodeMarket(external.out).kind).toBe(1);
         expect(await lmsr.readMarket({ getAccountInfo: async () => ({ data: external.out, owner: program }) }, external.market)).toMatchObject({ kind: 1 });
 
+        const legacyAddress = web3.PublicKey.findProgramAddressSync([Buffer.from('lmsr'), proposal.toBuffer(), creator.toBuffer()], program)[0];
+        const legacy = marketData({ address: legacyAddress });
+        expect(await lmsr.readMarket({ getAccountInfo: async () => ({ data: legacy.out, owner: program }) }, legacy.market)).toMatchObject({ kind: 0 });
+        const legacyExternalAddress = web3.PublicKey.findProgramAddressSync([Buffer.from('lmsr_recipe'), Buffer.from(hash(70)), creator.toBuffer()], program)[0];
+        const legacyExternal = marketData({ kind: 1, address: legacyExternalAddress });
+        expect(await lmsr.readMarket({ getAccountInfo: async () => ({ data: legacyExternal.out, owner: program }) }, legacyExternal.market)).toMatchObject({ kind: 1 });
+        await expect(lmsr.readMarket({ getAccountInfo: async () => ({ data: legacy.out, owner: program }) }, other)).rejects.toThrow(/address does not match/);
+
         const zeroLiquidity = Buffer.from(out); zeroLiquidity.writeBigUInt64LE(0n, 137);
         expect(() => lmsr.decodeMarket(zeroLiquidity)).toThrow(/liquidity/);
         const excessiveLiquidity = Buffer.from(out); excessiveLiquidity.writeBigUInt64LE(10000000000000001n, 137);

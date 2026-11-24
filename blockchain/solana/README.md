@@ -237,6 +237,7 @@ so the programs there can still be fixed and redeployed.
 | `proposal_nft` | `3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg` | [`idl/proposal_nft.json`](idl/proposal_nft.json) |
 | `proposal_market` | `GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB` | [`idl/proposal_market.json`](idl/proposal_market.json) |
 | `proposal_pledge` | `1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g` | [`idl/proposal_pledge.json`](idl/proposal_pledge.json) |
+| `property_offer` | `BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp` | [`idl/property_offer.json`](idl/property_offer.json) |
 
 The same IDs are pinned in `Anchor.toml`, each program's `declare_id!()`, the generated IDLs, and
 `frontend/contracts/addresses.json`. Backend contract tests fail when those copies diverge. See

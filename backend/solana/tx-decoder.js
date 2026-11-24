@@ -8,7 +8,7 @@ import path from 'path';
 import { formatAtomicAmount } from '../utils/x402-payment.js';
 import { shortAddress } from './address-book.js';
 
-const IDL_FILES = ['parcel_nft.json', 'agreement.json', 'proposal_market.json', 'proposal_pledge.json'];
+const IDL_FILES = ['parcel_nft.json', 'agreement.json', 'proposal_market.json', 'proposal_pledge.json', 'property_offer.json'];
 
 const LAMPORTS_DECIMALS = 9;
 

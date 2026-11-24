@@ -1,9 +1,8 @@
 <!-- Current LMSR market contract and implementation notes. -->
 # LMSR markets
 
-The dated agreement market is the current betting contract. It replaces parimutuel pools for new
-records and intentionally changes the experimental data shape: old pool records are not migrated or
-read through a compatibility path. Recreate test markets against the current contract.
+New agreement markets use the dated LMSR contract. Each funded LMSR pool keeps its original
+market address, vault and share positions.
 
 The Rust program and browser share the funded market contract. The independent server-side points
 book uses the agreement's execution deadline and can be traded without a wallet.
@@ -61,8 +60,10 @@ Any wallet can open one or more funded markets on the same agreement. The creato
 The kind 0 PDA uses `["lmsr", agreement, creator, stake_mint, b, closes_at, grace_seconds, max_position]`.
 Kind 1 uses `["lmsr_recipe", recipe_hash, creator, stake_mint, b, closes_at, grace_seconds, max_position, identity_seed]`. The final seed is SHA-256 of the subject hash, YES hash, NO hash, attester, credential, schema and bound agreement, in that order. An unbound recipe uses the default public key for the agreement. Integers use their little-endian instruction widths. The vault signs with the complete market seeds and bump. A position uses `["lmsr_position", market, owner, side]`.
 
-This address contract breaks the earlier experimental LMSR addresses. An in-place upgrade with funded positions would change the signer derived for their vaults. Settle outstanding claims and reclaim available seed under the earlier program before replacing it, or deploy the new contract separately while those vaults remain accessible.
-not read by this codec.
+Markets opened with the original seeds `["lmsr", agreement, creator]` or
+`["lmsr_recipe", recipe_hash, creator]` retain those vault signers. The program selects the
+signer by matching the stored seeds and bump to the market account's address. Selling shares,
+claiming winnings and reclaiming the creator's available seed all pay from that same vault.
 
 ## Instructions
 

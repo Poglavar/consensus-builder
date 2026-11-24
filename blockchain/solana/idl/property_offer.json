@@ -1,0 +1,585 @@
+{
+  "address": "BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp",
+  "metadata": {
+    "name": "property_offer",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Atomic property purchase and sale escrow with lens-attested ownership"
+  },
+  "instructions": [
+    {
+      "name": "accept",
+      "docs": [
+        "Binds the previously open side. A BUY offer supplies its seller schedule here; a SELL",
+        "offer's schedule was immutable at create and the accepting wallet becomes its buyer."
+      ],
+      "discriminator": [
+        65,
+        150,
+        70,
+        216,
+        133,
+        6,
+        107,
+        4
+      ],
+      "accounts": [
+        {
+          "name": "offer",
+          "writable": true
+        },
+        {
+          "name": "counterparty",
+          "signer": true
+        },
+        {
+          "name": "attestation"
+        },
+        {
+          "name": "credential"
+        }
+      ],
+      "args": [
+        {
+          "name": "payouts",
+          "type": {
+            "vec": {
+              "defined": {
+                "name": "Payout"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "cancel",
+      "docs": [
+        "An open offer belongs to its maker. Acceptance is lens-gated and irreversible; expiry is",
+        "the recovery path for an uncompleted funded escrow."
+      ],
+      "discriminator": [
+        232,
+        219,
+        223,
+        41,
+        219,
+        236,
+        220,
+        190
+      ],
+      "accounts": [
+        {
+          "name": "offer",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create",
+      "discriminator": [
+        24,
+        30,
+        200,
+        40,
+        5,
+        28,
+        7,
+        119
+      ],
+      "accounts": [
+        {
+          "name": "offer",
+          "writable": true
+        },
+        {
+          "name": "maker",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "cid",
+          "type": "string"
+        },
+        {
+          "name": "lens",
+          "type": "pubkey"
+        },
+        {
+          "name": "side",
+          "type": {
+            "defined": {
+              "name": "OfferSide"
+            }
+          }
+        },
+        {
+          "name": "terms_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "price_lamports",
+          "type": "u64"
+        },
+        {
+          "name": "deadline",
+          "type": "i64"
+        },
+        {
+          "name": "payouts",
+          "type": {
+            "vec": {
+              "defined": {
+                "name": "Payout"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "execute",
+      "docs": [
+        "Atomically settle every recipient in the fixed schedule. The remaining accounts must be",
+        "the writable recipients in schedule order; any mismatch rolls the whole instruction back."
+      ],
+      "discriminator": [
+        130,
+        221,
+        242,
+        154,
+        13,
+        193,
+        189,
+        29
+      ],
+      "accounts": [
+        {
+          "name": "offer",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "expire",
+      "discriminator": [
+        243,
+        83,
+        205,
+        58,
+        57,
+        201,
+        247,
+        146
+      ],
+      "accounts": [
+        {
+          "name": "offer",
+          "writable": true
+        },
+        {
+          "name": "buyer",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "fund",
+      "docs": [
+        "Exactly one fixed-price deposit by the bound buyer. Preventing top-ups makes refunds and",
+        "the price/schedule invariant trivial to audit."
+      ],
+      "discriminator": [
+        218,
+        188,
+        111,
+        221,
+        152,
+        113,
+        174,
+        7
+      ],
+      "accounts": [
+        {
+          "name": "offer",
+          "writable": true
+        },
+        {
+          "name": "buyer",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "offer"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "PropertyOffer",
+      "discriminator": [
+        122,
+        70,
+        152,
+        136,
+        45,
+        32,
+        234,
+        85
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "NotOpen",
+      "msg": "Offer is not open"
+    },
+    {
+      "code": 6001,
+      "name": "NotAccepted",
+      "msg": "Offer is not accepted"
+    },
+    {
+      "code": 6002,
+      "name": "DeadlinePassed",
+      "msg": "Offer deadline has passed"
+    },
+    {
+      "code": 6003,
+      "name": "DeadlineNotPassed",
+      "msg": "Offer deadline has not passed"
+    },
+    {
+      "code": 6004,
+      "name": "Unauthorized",
+      "msg": "Unauthorized"
+    },
+    {
+      "code": 6005,
+      "name": "InvalidCid",
+      "msg": "CID must be 1-64 ASCII letters and digits"
+    },
+    {
+      "code": 6006,
+      "name": "NoLens",
+      "msg": "A lens is required"
+    },
+    {
+      "code": 6007,
+      "name": "ZeroPrice",
+      "msg": "Price must be positive"
+    },
+    {
+      "code": 6008,
+      "name": "BuyHasPayouts",
+      "msg": "Buy offers have no schedule until acceptance"
+    },
+    {
+      "code": 6009,
+      "name": "InvalidPayoutSchedule",
+      "msg": "Payout schedule is invalid"
+    },
+    {
+      "code": 6010,
+      "name": "DuplicateRecipient",
+      "msg": "Payout recipients must be unique"
+    },
+    {
+      "code": 6011,
+      "name": "PayoutTotalMismatch",
+      "msg": "Payout amounts must equal the offer price"
+    },
+    {
+      "code": 6012,
+      "name": "AlreadyAccepted",
+      "msg": "Offer already has a counterparty"
+    },
+    {
+      "code": 6013,
+      "name": "SellScheduleImmutable",
+      "msg": "A sell offer's schedule is immutable"
+    },
+    {
+      "code": 6014,
+      "name": "AlreadyFunded",
+      "msg": "Offer is already funded"
+    },
+    {
+      "code": 6015,
+      "name": "NotCancellable",
+      "msg": "Offer cannot be cancelled now"
+    },
+    {
+      "code": 6016,
+      "name": "NotExpirable",
+      "msg": "Offer cannot be expired now"
+    },
+    {
+      "code": 6017,
+      "name": "NotAttested",
+      "msg": "No lens decision is recorded"
+    },
+    {
+      "code": 6018,
+      "name": "InvalidAttestation",
+      "msg": "Invalid SAS attestation or credential"
+    },
+    {
+      "code": 6019,
+      "name": "AttestationExpired",
+      "msg": "Attestation expired"
+    },
+    {
+      "code": 6020,
+      "name": "WrongLens",
+      "msg": "Wrong lens"
+    },
+    {
+      "code": 6021,
+      "name": "WrongSchema",
+      "msg": "Wrong decision schema"
+    },
+    {
+      "code": 6022,
+      "name": "InvalidDecisionPayload",
+      "msg": "Malformed property offer decision"
+    },
+    {
+      "code": 6023,
+      "name": "WrongDecision",
+      "msg": "Decision does not bind this accepted offer"
+    },
+    {
+      "code": 6024,
+      "name": "CounterpartyNotQualified",
+      "msg": "Decision did not qualify the counterparty"
+    },
+    {
+      "code": 6025,
+      "name": "AttestationFromFuture",
+      "msg": "Decision observation is in the future"
+    },
+    {
+      "code": 6026,
+      "name": "WrongRecipient",
+      "msg": "Recipient differs from the schedule"
+    },
+    {
+      "code": 6027,
+      "name": "WrongRecipientList",
+      "msg": "Recipient account list differs from the schedule"
+    },
+    {
+      "code": 6028,
+      "name": "InsufficientEscrow",
+      "msg": "Insufficient escrow"
+    },
+    {
+      "code": 6029,
+      "name": "ArithmeticOverflow",
+      "msg": "Arithmetic overflow"
+    }
+  ],
+  "types": [
+    {
+      "name": "OfferSide",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Buy"
+          },
+          {
+            "name": "Sell"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OfferStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Open"
+          },
+          {
+            "name": "Accepted"
+          },
+          {
+            "name": "Settled"
+          },
+          {
+            "name": "Cancelled"
+          },
+          {
+            "name": "Expired"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Payout",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "recipient",
+            "type": "pubkey"
+          },
+          {
+            "name": "lamports",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PropertyOffer",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "maker",
+            "type": "pubkey"
+          },
+          {
+            "name": "lens",
+            "type": "pubkey"
+          },
+          {
+            "name": "buyer",
+            "type": "pubkey"
+          },
+          {
+            "name": "seller",
+            "type": "pubkey"
+          },
+          {
+            "name": "side",
+            "type": {
+              "defined": {
+                "name": "OfferSide"
+              }
+            }
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "OfferStatus"
+              }
+            }
+          },
+          {
+            "name": "price_lamports",
+            "type": "u64"
+          },
+          {
+            "name": "escrow_lamports",
+            "type": "u64"
+          },
+          {
+            "name": "deadline",
+            "type": "i64"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "accepted_at",
+            "type": "i64"
+          },
+          {
+            "name": "attested_at",
+            "type": "i64"
+          },
+          {
+            "name": "terms_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "payouts_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "payouts",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "Payout"
+                }
+              }
+            }
+          },
+          {
+            "name": "payouts_released",
+            "type": "u8"
+          },
+          {
+            "name": "paid_bitmap",
+            "type": "u16"
+          },
+          {
+            "name": "decision_attestation",
+            "type": "pubkey"
+          },
+          {
+            "name": "decision_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "cid",
+            "type": "string"
+          }
+        ]
+      }
+    }
+  ]
+}

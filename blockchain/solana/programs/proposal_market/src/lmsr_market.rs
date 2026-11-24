@@ -240,6 +240,13 @@ fn deposit_seed<'info>(
 }
 
 /// Pay `amount` out of the vault, signed by the market PDA.
+fn uses_original_market_seeds(market_key: &Pubkey, kind: u8, identity: &[u8; 32], creator: &Pubkey, bump: u8) -> bool {
+    let prefix = if kind == KIND_PROPOSAL { LMSR_SEED } else { LMSR_RECIPE_SEED };
+    let bump_bytes = [bump];
+    let seeds: &[&[u8]] = &[prefix, identity, creator.as_ref(), &bump_bytes];
+    Pubkey::create_program_address(seeds, &crate::ID) == Ok(*market_key)
+}
+
 fn pay_from_vault<'info>(
     market: &Account<'info, LmsrMarket>,
     vault: &Account<'info, TokenAccount>,
@@ -252,15 +259,22 @@ fn pay_from_vault<'info>(
     let closes_at = market.closes_at.to_le_bytes();
     let grace_seconds = market.grace_seconds.to_le_bytes();
     let max_position = market.max_position.to_le_bytes();
-    let identity_seed = external_identity_seed(
-        &market.subject_hash, &market.yes_value_hash, &market.no_value_hash,
-        &market.trusted_attester, &market.credential, &market.schema, &market.proposal,
-    );
     let identity = market.seed_key();
-    let seeds: &[&[u8]] = if market.kind == KIND_PROPOSAL {
+    let prefix = if market.kind == KIND_PROPOSAL { LMSR_SEED } else { LMSR_RECIPE_SEED };
+    let original_seeds: &[&[u8]] = &[prefix, &identity, market.creator.as_ref(), &bump];
+    // The market account is the token vault's authority. Pools opened before the terms
+    // became PDA seeds still sign transfers with their original address and stored bump.
+    let identity_seed;
+    let seeds: &[&[u8]] = if uses_original_market_seeds(&market.key(), market.kind, &identity, &market.creator, market.bump) {
+        original_seeds
+    } else if market.kind == KIND_PROPOSAL {
         &[LMSR_SEED, identity.as_ref(), market.creator.as_ref(), market.stake_mint.as_ref(),
           &b, &closes_at, &grace_seconds, &max_position, &bump]
     } else {
+        identity_seed = external_identity_seed(
+            &market.subject_hash, &market.yes_value_hash, &market.no_value_hash,
+            &market.trusted_attester, &market.credential, &market.schema, &market.proposal,
+        );
         &[LMSR_RECIPE_SEED, identity.as_ref(), market.creator.as_ref(), market.stake_mint.as_ref(),
           &b, &closes_at, &grace_seconds, &max_position, &identity_seed, &bump]
     };
@@ -1246,5 +1260,41 @@ mod tests {
         // VOID is final.
         assert_eq!(challenge_outcome(OUTCOME_VOID, true, SIDE_YES), None);
         assert_eq!(challenge_outcome(OUTCOME_VOID, true, SIDE_NO), None);
+    }
+
+    #[test]
+    fn payout_signer_selection_accepts_original_and_current_pdas_for_both_market_kinds() {
+        // This mirrors the discriminator used by pay_from_vault: old pools must continue to
+        // select the four-seed signer, while current pools select the terms-bound signer.
+        let creator = Pubkey::new_unique();
+        let mint = Pubkey::new_unique();
+        for kind in [KIND_PROPOSAL, KIND_RECIPE] {
+            let identity = [kind; 32];
+            let prefix = if kind == KIND_PROPOSAL { LMSR_SEED } else { LMSR_RECIPE_SEED };
+            let (old, old_bump) = Pubkey::find_program_address(&[prefix, &identity, creator.as_ref()], &crate::ID);
+            let old_seeds: &[&[u8]] = &[prefix, &identity, creator.as_ref(), &[old_bump]];
+            assert_eq!(Pubkey::create_program_address(old_seeds, &crate::ID), Ok(old));
+            assert!(uses_original_market_seeds(&old, kind, &identity, &creator, old_bump));
+
+            let b = 7u64.to_le_bytes();
+            let closes = 11i64.to_le_bytes();
+            let grace = 13u32.to_le_bytes();
+            let max_position = 17u64.to_le_bytes();
+            let external_identity = external_identity_seed(&identity, &[1; 32], &[2; 32], &creator, &mint, &mint, &Pubkey::default());
+            let extra: Vec<&[u8]> = if kind == KIND_PROPOSAL {
+                vec![mint.as_ref(), &b, &closes, &grace, &max_position]
+            } else {
+                vec![mint.as_ref(), &b, &closes, &grace, &max_position, &external_identity]
+            };
+            let mut current_seed_parts = vec![prefix, &identity, creator.as_ref()];
+            current_seed_parts.extend(extra);
+            let (current, current_bump) = Pubkey::find_program_address(&current_seed_parts, &crate::ID);
+            let mut signed_parts = current_seed_parts;
+            let current_bump_bytes = [current_bump];
+            signed_parts.push(&current_bump_bytes);
+            assert_eq!(Pubkey::create_program_address(&signed_parts, &crate::ID), Ok(current));
+            assert!(!uses_original_market_seeds(&current, kind, &identity, &creator, current_bump));
+            assert_ne!(current, old);
+        }
     }
 }

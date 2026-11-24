@@ -83,11 +83,11 @@ Whole-building offers would need their own building-scoped identity. The current
 
 ## Solana and lens runtime
 
-The new program is `blockchain/solana/programs/property_offer`, with browser codec
-`frontend/js/solana/property-offer-client.js`. Its configured address is
-`BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp`. This source configuration is not a statement that the
-program is deployed on devnet. The bridge checks deployment at runtime. The existing `agreement`
-program remains the program for plan agreements.
+The devnet `property_offer` program is `blockchain/solana/programs/property_offer`, with browser codec
+`frontend/js/solana/property-offer-client.js` and address
+`BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp`. The bridge checks that this program is executable on the
+selected Solana network before it builds an offer instruction. The existing `agreement` program remains
+the program for plan agreements.
 
 The SAS schema is `PropertyOfferDecision` v2. It binds the offer CID and account, canonical terms hash,
 ordered payout hash, buyer, seller, affirmative counterparty qualification and observation time. The

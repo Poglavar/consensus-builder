@@ -265,7 +265,7 @@ export async function auditHackathonProof({
         check('release_artifact_identity', Boolean(
             values.proofManifest?.releaseArtifacts?.backend?.commit
             && values.proofManifest?.releaseArtifacts?.frontend?.manifest
-            && ['Agreement', 'ProposalMarket', 'ProposalPledge'].every(name =>
+            && ['Agreement', 'ProposalMarket', 'ProposalPledge', 'PropertyOffer'].every(name =>
                 values.proofManifest?.releaseArtifacts?.programs?.some(program => program.name === name))
             && values.proofManifest.releaseArtifacts.programs.every(program =>
                 Number.isSafeInteger(program.lastDeployedSlot)

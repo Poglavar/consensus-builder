@@ -50,7 +50,7 @@ function fixtures(overrides = {}) {
                 backend: { commit: 'release-sha' },
                 frontend: { manifest: 'https://urbangametheory.xyz/release.json' },
                 verification: { state: 'verified' }, verifiedAt: new Date(NOW).toISOString(),
-                programs: ['Agreement', 'ProposalMarket', 'ProposalPledge'].map((name, index) => ({
+                programs: ['Agreement', 'ProposalMarket', 'ProposalPledge', 'PropertyOffer'].map((name, index) => ({
                     name, programDataAddress: `program-data-${index}`, lastDeployedSlot: 500000000 + index, binarySha256: `${index + 1}`.repeat(64)
                 }))
             },
@@ -254,6 +254,7 @@ describe('public hackathon proof audit', () => {
         const manifest = structuredClone(fixtures()['/hackathon/proof.json']);
         const cases = [
             ['missing ProposalPledge identity', { manifest: { ...manifest, releaseArtifacts: { ...manifest.releaseArtifacts, programs: manifest.releaseArtifacts.programs.filter(program => program.name !== 'ProposalPledge') } }, id: 'release_artifact_identity' }],
+            ['missing PropertyOffer identity', { manifest: { ...manifest, releaseArtifacts: { ...manifest.releaseArtifacts, programs: manifest.releaseArtifacts.programs.filter(program => program.name !== 'PropertyOffer') } }, id: 'release_artifact_identity' }],
             ['unverified release', { manifest: { ...manifest, releaseArtifacts: { ...manifest.releaseArtifacts, verification: { state: 'unverified' } } }, id: 'release_artifact_freshness' }],
             ['stale release observation', { manifest: { ...manifest, releaseArtifacts: { ...manifest.releaseArtifacts, verifiedAt: new Date(NOW - 3_600_001).toISOString() } }, id: 'release_artifact_freshness' }],
             ['future release observation', { manifest: { ...manifest, releaseArtifacts: { ...manifest.releaseArtifacts, verifiedAt: new Date(NOW + 1).toISOString() } }, id: 'release_artifact_freshness' }]

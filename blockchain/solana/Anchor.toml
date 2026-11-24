@@ -5,6 +5,7 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
+property_offer = "BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp"
 # agreement: deployed to devnet 2026-10-23 (programs/agreement/README.md).
 agreement = "GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ"
 parcel_nft = "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1"

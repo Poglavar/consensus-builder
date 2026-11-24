@@ -163,6 +163,15 @@
         const identitySeed = externalIdentitySeed(t);
         return web3.PublicKey.findProgramAddressSync([seedText('lmsr_recipe'), checkedHash(recipeHash, 'recipeHash'), key(creator, 'creator').toBytes(), t.stakeMint.toBytes(), le(t.b, 8), le(t.closesAt, 8, true), le(t.graceSeconds, 4), le(t.maxPosition, 8), identitySeed], programKey(id));
     }
+    // Accounts created before terms became part of the market identity keep the same
+    // program id and data layout. They remain readable so their holders can settle them.
+    function legacyMarketPda(market, id) {
+        const web3 = resolveWeb3();
+        const seeds = market.kind === 0
+            ? [seedText('lmsr'), key(market.proposal, 'proposal').toBytes(), key(market.creator, 'creator').toBytes()]
+            : [seedText('lmsr_recipe'), checkedHash(market.recipeHash, 'recipeHash'), key(market.creator, 'creator').toBytes()];
+        return web3.PublicKey.findProgramAddressSync(seeds, programKey(id))[0];
+    }
     function getPositionPda(market, owner, value, id) {
         const web3 = resolveWeb3();
         return web3.PublicKey.findProgramAddressSync([seedText('lmsr_position'), key(market, 'market').toBytes(), key(owner, 'owner').toBytes(), le(side(value), 1)], programKey(id));
@@ -328,7 +337,7 @@
             : getExternalMarketPda(market.recipeHash, market.creator, { stakeMint: market.stakeMint, b: market.b, closesAt: market.closesAt, graceSeconds: market.graceSeconds, maxPosition: market.maxPosition,
                 subjectHash: market.subjectHash, yesValueHash: market.yesValueHash, noValueHash: market.noValueHash, trustedAttester: market.trustedAttester,
                 credential: market.credential, schema: market.schema, proposal: market.proposal }, id);
-        if (!expected.equals(requested)) throw new Error('LMSR market address does not match its kind, identity and creator');
+        if (!expected.equals(requested) && !legacyMarketPda(market, id).equals(requested)) throw new Error('LMSR market address does not match its kind, identity and creator');
         if (!getVaultAddress(requested, market.stakeMint).equals(key(market.vault, 'vault'))) throw new Error('LMSR market vault does not match its mint and market');
         return market;
     }
