@@ -41,15 +41,15 @@ test('OSM block commands use their own section while cadastral block commands re
 
 test('the palette offers the Buildings layer and hides a control the city hides', () => {
     const document = makeDocument();
-    document.body.innerHTML = '<section class="map-sheet" hidden><label><input id="showBuildings"></label><label data-feature-hidden="true"><input id="showProposedBuildings"></label></section>';
+    document.body.innerHTML = '<section class="map-sheet" hidden><label><select id="planning-existing-appearance"></select></label><label data-feature-hidden="true"><select id="planning-proposed-appearance"></select></label></section>';
     // The shared fake DOM models parentNode; browser controls expose the same link as parentElement.
-    document.querySelectorAll('section, label, input').forEach(el => Object.defineProperty(el, 'parentElement', { get: () => el.parentNode }));
+    document.querySelectorAll('section, label, select').forEach(el => Object.defineProperty(el, 'parentElement', { get: () => el.parentNode }));
     const context = commands.createBrowserContext({ document });
     assert.equal(commands.isAvailable('layers.buildings', context), true);
-    assert.equal(commands.findCommand('layers.buildings').labelKey, 'sidebar.buildings.showLayer');
-    assert.equal(commands.findCommand('layers.buildings').fallbackLabel, 'Show buildings');
+    assert.equal(commands.findCommand('layers.buildings').labelKey, 'threeMode.controls.built');
+    assert.equal(commands.findCommand('layers.buildings').control, 'planning-existing-appearance');
     assert.equal(commands.isAvailable('layers.proposedBuildings', context), false);
-    assert.equal(context.controlUnavailableReason('showProposedBuildings'), 'hiddenForCity');
+    assert.equal(context.controlUnavailableReason('planning-proposed-appearance'), 'hiddenForCity');
 });
 
 test('actor reset clears selection, returns to the chooser and reports the event count', () => {

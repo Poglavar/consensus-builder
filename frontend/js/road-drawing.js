@@ -2426,19 +2426,19 @@ function handleRoadDrawingMoveEnd() {
 // LOOK clear of a building the click then reports as hit (the raster basemap draws a different,
 // smaller outline). WYSIWYG: R turns the Buildings layer on silently (no B dialog, outlines
 // untouched); leaving the tool restores the map as it was, unless the user flipped the layer
-// themselves in between.
+// themselves in between. The automatic state is the transparent (ghost) Built appearance;
+// a user changing it to Solid while drawing must remain visible on exit.
 let roadDrawingAutoShowedBuildings = false;
 function autoShowBuildingsForRoadDrawing() {
-    const gdiBox = document.getElementById('showBuildings');
-    if (!gdiBox || gdiBox.checked) { roadDrawingAutoShowedBuildings = false; return; }
+    const shown = window.PlanningViews?.isBuiltVisible();
+    if (shown) { roadDrawingAutoShowedBuildings = false; return; }
     setBuildingReferenceLayers(true);
     roadDrawingAutoShowedBuildings = true;
 }
 function restoreBuildingsAfterRoadDrawing() {
     if (!roadDrawingAutoShowedBuildings) return;
     roadDrawingAutoShowedBuildings = false;
-    const gdiBox = document.getElementById('showBuildings');
-    if (!gdiBox || !gdiBox.checked) return; // the user turned it off themselves — nothing to undo
+    if (window.PlanningViews?.getState().existing !== 'ghost') return;
     setBuildingReferenceLayers(false);
 }
 

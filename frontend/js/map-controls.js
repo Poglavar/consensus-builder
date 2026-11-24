@@ -15,27 +15,13 @@ function toggleAccordion(checkbox) {
 
     // Toggle layer visibility
     if (layerName === 'parcels') {
-        if (checkbox.checked) {
-            window.ParcelsUIVisibility?.showAllParcels();
-        } else {
-            window.ParcelsUIVisibility?.hideAllParcels();
+        if (!window.isThreeModeActive?.()) {
+            if (checkbox.checked) window.ParcelsUIVisibility?.showAllParcels();
+            else window.ParcelsUIVisibility?.hideAllParcels();
         }
         window.dispatchEvent(new Event('parcellayerchange'));
     } else if (layerName === 'blocks') {
         toggleBlocksVisibility();
-    } else if (layerName === 'buildings') {
-        const showBuildings = document.getElementById('showBuildings').checked;
-        if (showBuildings) announceBuildingZoomGate();
-        if (showBuildings) {
-            if (typeof fetchBuildings === 'function') {
-                fetchBuildings(null, { announce: true });
-            }
-        } else if (typeof buildingLayer !== 'undefined' && buildingLayer) {
-            map.removeLayer(buildingLayer);
-        }
-    } else if (layerName === 'buildingsDgu' || layerName === 'buildingsOsm') {
-        if (checkbox.checked) announceBuildingZoomGate();
-        toggleLayer(layerName);
     }
     // Proposals section no longer has a checkbox - proposals are always shown
     // Update interactivity of this section's controls
@@ -139,20 +125,8 @@ function updateSectionControlsState(section) {
 
     interactive.forEach(el => {
         try {
-            // Never disable the checkbox itself - it should always be enabled
-            if (el === checkbox) {
-                return;
-            }
-            const sectionIndependent = el.dataset && el.dataset.sectionIndependent === 'true';
-            if (sectionIndependent) {
-                el.removeAttribute('data-section-disabled');
-                el.removeAttribute('data-prev-disabled');
-                el.disabled = false;
-                if (el.classList && el.classList.contains('btn')) {
-                    el.classList.remove('disabled');
-                }
-                return;
-            }
+            // These controls manage their own availability (zoom, photo boundaries or editor locks).
+            if (el === checkbox || el.dataset?.sectionIndependent === 'true') return;
 
             if (shouldDisable) {
                 // Mark as disabled by section gating and remember previous disabled state
@@ -319,8 +293,7 @@ function toggleBlocksVisibility() {
     }
 }
 
-// The Buildings row of the Layers panel: one line naming the city's building source list (the sources
-// in use, then the outlined ones), kept current as the list, the city or the language changes.
+// The Built disclosure names the city's sources in use and any outlined for comparison.
 function renderBuildingSourceSummary() {
     const line = document.getElementById('building-sources-summary');
     if (!line) return;
@@ -332,11 +305,10 @@ function renderBuildingSourceSummary() {
 // stock's demolitions, so while buildings are shown with any outlined, the existing-buildings view
 // leaves the scope that would hide them, including one set by a share link.
 function applyOutlinedSourceScope() {
-    if (!document.getElementById('showBuildings')?.checked) return;
+    if (!window.PlanningViews?.isBuiltVisible()) return;
     const sources = window.CityConfigManager?.getBuildingSources?.();
     if (!sources || !window.SourceList?.outlined(sources).length) return;
     const state = window.PlanningViews?.getState?.();
-    if (state?.existing === 'off') window.PlanningViews.configure('existing', 'ghost');
     if (state?.existingScope && state.existingScope !== 'all') window.PlanningViews.configure('existingScope', 'all');
 }
 
@@ -347,27 +319,9 @@ function onBuildingSourceListChanged() {
 }
 
 // Toggle layer visibility.
-// `buildings` = the existing buildings, from the city's building source list (source-list.js), with
-// any outlined sources drawn beside them. No layer changes what a corridor cuts: detection reads
-// window.buildingFeaturePool (the data), never a Leaflet layer.
 function toggleLayer(layerType) {
-    const showBuildings = document.getElementById('showBuildings').checked;
-    const showProposedBuildings = document.getElementById('showProposedBuildings').checked;
-
-    if (layerType === 'buildings') {
-        if (showBuildings) {
-            if (window.PlanningViews?.getState?.().existing === 'off') window.PlanningViews.configure('existing', 'ghost');
-            applyOutlinedSourceScope();
-            if (typeof fetchBuildings === 'function') {
-                fetchBuildings(null, { announce: true });
-            }
-        } else if (typeof buildingLayer !== 'undefined' && buildingLayer) {
-            map.removeLayer(buildingLayer);
-        }
-    }
-
     if (layerType === 'proposedBuildings') {
-        if (showProposedBuildings) {
+        if (document.getElementById('showProposedBuildings').checked) {
             if (typeof updateProposedBuildingsLayer === 'function') {
                 updateProposedBuildingsLayer();
             }
@@ -376,8 +330,7 @@ function toggleLayer(layerType) {
         }
     }
 
-    // The suggested ground-floor layouts of proposed buildings (js/suggested-layouts-2d.js, which also
-    // adds the #showSuggestedLayouts row). Drawn from building zoom only, so the same zoom notice applies.
+    // Ground-floor layouts in Buildings and massing draw from building zoom.
     if (layerType === 'suggestedLayouts') {
         const showSuggested = !!document.getElementById('showSuggestedLayouts')?.checked;
         if (showSuggested) announceBuildingZoomGate();
@@ -567,22 +520,22 @@ function updateParcelsCheckboxByZoom(within) {
         const parcelsHeader = parcelsSection ? parcelsSection.querySelector('[data-section-title="parcels"]') : null;
         const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
 
-        // Zoom gates availability. The checked value stays the user's choice across zoom levels.
-        parcelsCheckbox.disabled = !within;
+        // The model and aerial views can show parcel ground independently of Leaflet's zoom.
+        const available = within || (window.__mapModeState?.desired ?? '2d') !== '2d';
+        parcelsCheckbox.disabled = !available;
         if (parcelsHeader) {
-            parcelsHeader.setAttribute('data-i18n-key', within ? 'sidebar.parcels.title' : 'sidebar.parcels.titleZoomHint');
+            parcelsHeader.setAttribute('data-i18n-key', available ? 'sidebar.parcels.title' : 'sidebar.parcels.titleZoomHint');
             if (typeof i18nApi?.applyTranslations === 'function') i18nApi.applyTranslations(parcelsHeader);
-            else parcelsHeader.textContent = within ? 'Parcels' : 'Parcels (zoom in more)';
+            else parcelsHeader.textContent = available ? 'Parcels' : 'Parcels (zoom in more)';
         }
         if (parcelsSection && typeof updateSectionControlsState === 'function') {
             updateSectionControlsState(parcelsSection);
         }
 
-        // Enable/disable building toggles based on zoom so they stay usable only when parcels are visible
-        const showBuildingsCheckbox = document.getElementById('showBuildings');
+        // Leaflet building overlays require building zoom.
         const showProposedBuildingsCheckbox = document.getElementById('showProposedBuildings');
         const showSuggestedLayoutsCheckbox = document.getElementById('showSuggestedLayouts');
-        [showBuildingsCheckbox, showProposedBuildingsCheckbox, showSuggestedLayoutsCheckbox].forEach(cb => {
+        [showProposedBuildingsCheckbox, showSuggestedLayoutsCheckbox].forEach(cb => {
             if (!cb) return;
             cb.disabled = !within;
         });
@@ -590,6 +543,11 @@ function updateParcelsCheckboxByZoom(within) {
 }
 
 window.updateParcelsCheckboxByZoom = updateParcelsCheckboxByZoom;
+window.addEventListener('mapmodechange', ({ detail }) => {
+    if (detail?.pending || typeof isZoomWithinParcelRange !== 'function') return;
+    updateParcelsCheckboxByZoom(isZoomWithinParcelRange());
+    if (detail?.desired === '2d') window.ParcelsUIVisibility?.syncParcelLayerVisibility();
+});
 
 // Make functions globally available
 window.toggleAccordion = toggleAccordion;

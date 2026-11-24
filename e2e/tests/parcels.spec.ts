@@ -1,6 +1,6 @@
 import { openLayerSection } from '../helpers/layers';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, PARCEL_GEOMETRY, PARCEL_ID, openParcel } from '../helpers/runtime';
+import { openCity, PARCEL_GEOMETRY, PARCEL_ID, openParcel, setExistingBuildings } from '../helpers/runtime';
 import { mockFootprintCells } from '../helpers/mocks/building-data';
 
 test.describe('Parcel loading and rendering @core', () => {
@@ -41,7 +41,7 @@ test.describe('Parcel loading and rendering @core', () => {
     await mockFootprintCells(page, () => [{ id: 'building-in-view', geometry: PARCEL_GEOMETRY }]);
     await openCity(page);
     await openLayerSection(page, 'buildings');
-    await page.locator('#showBuildings').check();
+    await setExistingBuildings(page);
     const shown = () => page.evaluate(() => {
       const w = window as any;
       return { parcels: w.map.hasLayer(w.parcelLayer), buildings: !!w.buildingLayer && w.map.hasLayer(w.buildingLayer) };

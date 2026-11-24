@@ -495,9 +495,8 @@ function ensureRoadOperationBuildings(bounds) {
     if ((window.__mapModeState?.desired && window.__mapModeState.desired !== '2d')
         || window.__pending3DMode || window.isThreeModeActive?.()) return Promise.resolve();
     try {
-        const box = document.getElementById('showBuildings');
         const outlined = window.SourceList?.outlined(window.CityConfigManager?.getBuildingSources?.() || []) || [];
-        if (box && !box.checked && !outlined.length) setBuildingReferenceLayers(true);
+        if (!window.PlanningViews?.isBuiltVisible() && !outlined.length) setBuildingReferenceLayers(true);
         if (typeof window.rebuildBuildingLayerFromPool === 'function') {
             try { window.rebuildBuildingLayerFromPool(); }
             catch (error) { console.warn('[road-shared] Could not redraw the loaded buildings', error); }
@@ -516,17 +515,7 @@ function ensureRoadOperationBuildings(bounds) {
 
 // The Buildings layer on or off (the sources in use); outlined sources are the source list's.
 function setBuildingReferenceLayers(on) {
-    const box = document.getElementById('showBuildings');
-    if (box && box.checked !== on) {
-        box.checked = on;
-        if (typeof toggleLayer === 'function') toggleLayer('buildings');
-    }
-    // The road profiler measures against whatever is on the map, so it has to hear about it.
-    try {
-        document.dispatchEvent(new CustomEvent('building-layers-changed'));
-    } catch (error) {
-        console.warn('[road-shared] Could not announce building layer changes', error);
-    }
+    window.PlanningViews?.setBuiltVisible(on);
 }
 
 // B opens the building source list (BuildingLayersDialog): which sources are in use, in what order,

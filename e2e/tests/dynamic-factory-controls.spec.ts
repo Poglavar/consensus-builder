@@ -1,6 +1,6 @@
 // Verify shared dynamic dialogs and controls produce the expected corridor, plan, and claim effects.
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, createBuilding, createSpace, drawCorridor, openCity, openParcel } from '../helpers/runtime';
+import { clickMapPoint, createBuilding, createSpace, drawCorridor, openCity, openParcel, setExistingBuildings } from '../helpers/runtime';
 import { connectWalletByConnectorId, injectMockSolanaWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
 import { selectNativeOption } from '../helpers/controls';
 import { openLayerSection } from '../helpers/layers';
@@ -215,7 +215,7 @@ test.describe('shared dynamic button factories @features', () => {
     });
     await openCity(page);
     await openLayerSection(page, 'buildings');
-    await page.locator('#showBuildings').check();
+    await setExistingBuildings(page);
 
     const banner = page.locator('#building-source-status');
     await expect(banner).toBeVisible();

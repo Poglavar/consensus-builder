@@ -7203,6 +7203,14 @@
         },
         "share": "Compartir",
         "shareMap": "Compartir este mapa",
+        "layerActions": {
+            "open2d": "Abrir en 2D",
+            "ownershipIn2d": "Resaltar por tipo de propiedad en 2D",
+            "floorsIn3d": "Explorar las plantas en 3D",
+            "floorPlans": "Planos de planta",
+            "buildingAppearance": "Apariencia del edificio",
+            "scenery": "Entorno y sonido"
+        },
         "designActions": "Acciones de diseño"
     },
     "parcelMenu": {

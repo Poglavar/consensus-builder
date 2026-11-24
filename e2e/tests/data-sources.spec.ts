@@ -5,7 +5,7 @@ import { selectNativeOption } from '../helpers/controls';
 // building list is edited in place: a source checked against a mocked discover endpoint is added
 // first and in use, Outline and order are switched, and every change is saved at once with no reload.
 import { test, expect } from '../helpers/fixtures';
-import { openCity } from '../helpers/runtime';
+import { openCity, setExistingBuildings } from '../helpers/runtime';
 import { waitForMapReady } from '../helpers/app';
 import { createHash } from 'node:crypto';
 
@@ -229,7 +229,7 @@ test.describe('Data sources @features', () => {
     await page.route('**/buildings**', failing);
     await openCity(page);
     await openLayerSection(page, 'buildings');
-    await page.locator('#showBuildings').check();
+    await setExistingBuildings(page);
     const banner = page.locator('#building-source-status');
     await expect(banner).toContainText('Our server could not complete the building-data request (HTTP 503).');
     expect(requests).toBeGreaterThan(0);

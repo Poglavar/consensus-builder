@@ -2,6 +2,7 @@ import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady, zoomToParcelLevel } from '../helpers/app';
 import { selectors } from '../helpers/selectors';
 import { selectNativeOption } from '../helpers/controls';
+import { setExistingBuildings } from '../helpers/runtime';
 
 // The fixture defaults to New York. Keep its normal cadastral startup deterministic without
 // depending on the developer's local parcel API; the polygon sits around the configured map center.
@@ -128,14 +129,7 @@ test.describe('Basemap and layer controls @features', () => {
     await zoomToParcelLevel(page);
 
     await page.locator(selectors.layersButton).click();
-    await page.locator(`${selectors.layersSheet} [data-section="buildings"] > summary`).click();
-    const checkbox = page.locator(`${selectors.layersSheet} #showBuildings`);
-    await expect(checkbox).toBeVisible();
-    await expect(checkbox).toBeEnabled();
-    // The persisted map-layer preference may arrive enabled; establish an off baseline before
-    // spying so the first measured click always means "show buildings".
-    if (await checkbox.isChecked()) await checkbox.click();
-    await expect(checkbox).not.toBeChecked();
+    await expect(page.locator('#layers-open-buildings')).toBeVisible();
 
     await page.evaluate(() => {
       const w = window as any;
@@ -146,15 +140,15 @@ test.describe('Basemap and layer controls @features', () => {
       };
     });
 
-    await checkbox.click();
-    await expect(checkbox).toBeChecked();
+    await page.locator('#layers-open-buildings').click();
+    await expect(page.locator('#planning-views')).toBeVisible();
+    await setExistingBuildings(page);
     await expect.poll(() => page.evaluate(() => (window as any).__fetchBuildingsCalls.length)).toBe(1);
     const options = await page.evaluate(() => (window as any).__fetchBuildingsCalls[0]);
     expect(options).toMatchObject({ announce: true });
 
     // Turning it off hides the layer; it must not fetch again.
-    await checkbox.click();
-    await expect(checkbox).not.toBeChecked();
+    await setExistingBuildings(page, 'off');
     expect(await page.evaluate(() => (window as any).__fetchBuildingsCalls.length)).toBe(1);
   });
 

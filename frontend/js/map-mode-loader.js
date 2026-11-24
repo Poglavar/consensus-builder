@@ -103,8 +103,9 @@
     // The AI render is a photo of the photo view, so it follows the photo tile.
     const LOCKABLE_TILES = [['2d', 'mode-2d-toggle'], ['model', 'mode-3d-toggle'], ['photo', 'mode-realistic-toggle'], ['photo', 'mode-ai-toggle']];
     function paintModeLocks() {
-        for (const [mode, id] of LOCKABLE_TILES) {
-            const button = document.getElementById(id);
+        const buttons = LOCKABLE_TILES.map(([mode, id]) => [mode, document.getElementById(id)]);
+        for (const action of document.querySelectorAll('[data-open-mode]')) buttons.push([action.dataset.openMode, action]);
+        for (const [mode, button] of buttons) {
             if (!button) continue;
             const locked = !canRequestMapMode(mode);
             const wasLocked = button.dataset.lockedDisabled !== undefined;

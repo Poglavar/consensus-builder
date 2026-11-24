@@ -11,7 +11,7 @@
     'use strict';
 
     const SURFACES = Object.freeze([
-        'layers', 'measurement', 'proposals', 'activity', 'settings', 'parcel-menu', 'parcel-selection', 'palette', 'ground-menu'
+        'layers', 'planning', 'measurement', 'proposals', 'activity', 'settings', 'parcel-menu', 'parcel-selection', 'palette', 'ground-menu'
     ]);
 
     // Every control id the old sidebar held that still exists (rehoused into a sheet). Existing code finds these by id, so the test fails if index.html loses one.
@@ -38,7 +38,7 @@
         // Layers sheet: blocks, buildings, roads
         'road-track-layer-checkbox', 'road-track-layer-status', 'showUrbanBlocks', 'urban-blocks-refresh', 'urban-blocks-browse',
         'parcelBlocksCheckbox', 'showBlockNames', 'showParksCheckbox', 'showSquaresCheckbox',
-        'showBuildings', 'showProposedBuildings',
+        'layers-open-buildings', 'showProposedBuildings',
         'showGovernmentRoadPlan', 'showOSMRoadLines', 'showGUPRoadLines', 'showWFSPolygons',
         'showLegacyRoadCenterlines',
         // Tools sheet
@@ -318,10 +318,14 @@
             labelKey: 'sidebar.blocks.showParks', fallbackLabel: 'Parks', icon: 'fas fa-tree' }),
         control('showSquaresCheckbox', { id: 'layers.squares', group: 'layers', kind: 'toggle', surfaces: ['layers'],
             labelKey: 'sidebar.blocks.showSquares', fallbackLabel: 'Squares', icon: 'fas fa-square' }),
-        control('showBuildings', { id: 'layers.buildings', group: 'layers', kind: 'toggle', surfaces: ['layers'],
-            labelKey: 'sidebar.buildings.showLayer', fallbackLabel: 'Show buildings', icon: 'fas fa-building' }),
-        control('showProposedBuildings', { id: 'layers.proposedBuildings', group: 'layers', kind: 'toggle', surfaces: ['layers'],
-            labelKey: 'sidebar.buildings.showProposed', fallbackLabel: 'Show Proposed Buildings', icon: 'fas fa-city' }),
+        control('planning-existing-appearance', { id: 'layers.buildings', group: 'layers', kind: 'input', surfaces: ['planning'],
+            labelKey: 'threeMode.controls.built', fallbackLabel: 'Built', icon: 'fas fa-building' }),
+        control('planning-permitted-appearance', { id: 'layers.permittedBuildings', group: 'layers', kind: 'input', surfaces: ['planning'],
+            labelKey: 'planningViews.permitted', fallbackLabel: 'Permitted', icon: 'fas fa-city' }),
+        control('planning-proposed-appearance', { id: 'layers.proposedBuildings', group: 'layers', kind: 'input', surfaces: ['planning'],
+            labelKey: 'threeMode.parcelPanel.proposed', fallbackLabel: 'Proposed', icon: 'fas fa-city' }),
+        control('showSuggestedLayouts', { id: 'layers.estimatedLayouts', group: 'layers', kind: 'toggle', surfaces: ['planning'], modes: ['2d'],
+            labelKey: 'sidebar.buildings.showSuggestedLayouts', fallbackLabel: 'Estimated layouts (ground floor)', icon: 'fas fa-building' }),
         control('showGovernmentRoadPlan', { id: 'layers.governmentRoadPlan', group: 'layers', kind: 'toggle', surfaces: ['layers'],
             labelKey: 'sidebar.roads.govPlanToggle', fallbackLabel: 'Government road plan', icon: 'fas fa-map' }),
         control('showOSMRoadLines', { id: 'layers.osmRoadLines', group: 'layers', kind: 'toggle', surfaces: ['layers'],
@@ -467,7 +471,7 @@
             labelKey: 'parcelSourceNotice.title', fallbackLabel: 'Parcel source information', icon: 'fas fa-info-circle' }),
         control('parcel-source-settings-button', { id: 'settings.parcelSourceSettings', group: 'settings', surfaces: ['layers'], modes: ['2d'],
             labelKey: 'parcelSources.title', fallbackLabel: 'Choose a parcel source', icon: 'fas fa-database' }),
-        control('building-source-settings-button', { id: 'settings.buildingSourceSettings', group: 'settings', surfaces: ['layers'], modes: ['2d'],
+        control('building-source-settings-button', { id: 'settings.buildingSourceSettings', group: 'layers', surfaces: ['planning'], section: 'buildings',
             labelKey: 'buildingSources.listTitle', fallbackLabel: 'Building sources', icon: 'fas fa-building' }),
         // The city list and "Use my location" live in the search box (city chip, Cities group).
         { id: 'settings.city', group: 'settings', surfaces: [], run: callSearch('showCities'),

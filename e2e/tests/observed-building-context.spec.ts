@@ -1,17 +1,21 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, clickMapPoint, stackSection } from '../helpers/runtime';
+import { openCity, clickMapPoint, stackSection, setExistingBuildings } from '../helpers/runtime';
 import { proposeOverPark } from '../helpers/agreements';
+import { mockFootprintCells } from '../helpers/mocks/building-data';
 import path from 'node:path';
 
 test('an existing building cannot inherit a previously inspected design’s plans', async ({ mockApi: page }, testInfo) => {
-  await page.setViewportSize({ width: 1280, height: 900 }); await openCity(page);
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await mockFootprintCells(page, () => [{ id: 'observed-house', name: 'Existing house', building: 'yes',
+    geometry: { type: 'Polygon', coordinates: [[[15.98272,45.80015],[15.98290,45.80015],[15.98290,45.80035],[15.98272,45.80035],[15.98272,45.80015]]] } }]);
+  await openCity(page);
   const record = await proposeOverPark(page, { title: 'Park agreement' });
+  await setExistingBuildings(page);
+  await page.locator('#planning-views-button').click();
+  await expect.poll(() => page.evaluate(() => (window as any).buildingFeaturePool.some((f: any) => f.properties.id === 'observed-house'))).toBe(true);
   await page.evaluate(async id => {
     const w = window as any; w.ClickStack.showDesign(id);
     await w.CadastralParcelRepository.ensureIds(['HR-335754-1235']);
-    w.buildingFeaturePool = [{ type: 'Feature', id: 'observed-house', properties: { id: 'observed-house', name: 'Existing house', building: 'yes' },
-      geometry: { type: 'Polygon', coordinates: [[[15.98272,45.80015],[15.98290,45.80015],[15.98290,45.80035],[15.98272,45.80035],[15.98272,45.80015]]] } }];
-    w.document.getElementById('showBuildings').checked = true; w.rebuildBuildingLayerFromPool();
   }, record.parkId);
   await expect(stackSection(page, 'plans')).toBeVisible();
   const before = await page.evaluate(() => {

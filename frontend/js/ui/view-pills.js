@@ -1,8 +1,6 @@
 // View pills: top centre of the map, one pill per setting that changes how the map reads (Highlight
-// by use, Highlight by ownership type), each naming what is on and with × to turn it off, so nobody
-// forgets a highlight or has to go back to Layers for it. Also renders the Highlight by use ticks
-// into every `[data-use-highlight]` host in Layers (the Buildings section in 2D, the model view's
-// layers in 3D); the choice itself lives in building-use-highlight.js.
+// by use, Highlight by ownership type), each naming what is on and with × to turn it off.
+// The storey-use choices in Buildings and massing share the building-use-highlight.js state.
 (function (global) {
     'use strict';
     const doc = global.document;
@@ -87,9 +85,6 @@
     function renderUseOptions() {
         const api = highlight();
         doc.querySelectorAll('[data-use-highlight]').forEach(host => {
-            const title = doc.createElement('div');
-            title.className = 'control-group-title';
-            title.textContent = t('buildingUseHighlight.highlight');
             const group = doc.createElement('div');
             group.className = 'checkbox-group';
             api.CATEGORIES.forEach(category => {
@@ -97,6 +92,7 @@
                 const input = doc.createElement('input');
                 input.type = 'checkbox';
                 input.className = 'use-highlight-checkbox';
+                input.id = 'highlight-use-' + category;
                 input.dataset.useHighlightCategory = category;
                 input.checked = api.selected().includes(category);
                 input.addEventListener('change', () => api.setSelected(category, input.checked));
@@ -112,7 +108,7 @@
             const note = doc.createElement('p');
             note.className = 'sheet-note';
             note.textContent = t('buildingUseHighlight.note');
-            host.replaceChildren(title, group, note);
+            host.replaceChildren(group, note);
         });
     }
 

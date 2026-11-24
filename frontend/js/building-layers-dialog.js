@@ -1,7 +1,4 @@
-// The building-layers dialog behind the B key: the Buildings switch (the Layers panel's
-// #showBuildings) and the city's building source list, drawn by the same renderer as the Building
-// sources dialog (ParcelSourceSettings.renderBuildingSourceList). Every change applies at once, as in
-// the Layers panel, so B is "change what I am looking at"; Done, Enter and Escape close it.
+// B opens the shared Built visibility switch and the city's building source list. Changes apply immediately.
 (function (global) {
     'use strict';
 
@@ -15,14 +12,6 @@
         return fallback;
     }
 
-    // The Buildings switch flips the Layers panel's checkbox, so the two never disagree.
-    function setBuildingsShown(shown) {
-        const box = document.getElementById('showBuildings');
-        if (!box || box.checked === shown) return;
-        box.checked = shown;
-        if (typeof global.toggleLayer === 'function') global.toggleLayer('buildings');
-    }
-
     // The shared dialog (js/ui/dialogs.js) with `building-layers-dialog` as its identity class;
     // resolves when it closes (Done, Enter, Escape, the backdrop).
     function open() {
@@ -33,8 +22,9 @@
         const input = document.createElement('input');
         input.type = 'checkbox';
         input.setAttribute('role', 'switch');
-        input.checked = !!document.getElementById('showBuildings')?.checked;
-        input.addEventListener('change', () => setBuildingsShown(input.checked));
+        const syncVisibility = () => { input.checked = global.PlanningViews.isBuiltVisible(); };
+        syncVisibility();
+        input.addEventListener('change', () => global.PlanningViews.setBuiltVisible(input.checked));
         const label = document.createElement('span');
         label.textContent = translate('sidebar.buildings.showLayer', 'Show buildings');
         master.append(input, label);
@@ -65,8 +55,10 @@
             ]
         });
         if (!dialogApi) return Promise.resolve();
+        document.addEventListener('building-layers-changed', syncVisibility);
         document.addEventListener('keydown', onKeydown, true);
         return dialogApi.closed.then(() => {
+            document.removeEventListener('building-layers-changed', syncVisibility);
             document.removeEventListener('keydown', onKeydown, true);
         });
     }

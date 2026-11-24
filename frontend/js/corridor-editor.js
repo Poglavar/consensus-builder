@@ -2945,8 +2945,7 @@ function corridorEditorRenderLimitRow() {
         option.addEventListener('click', () => {
             const key = option.dataset.survey;
             if (key === 'used') {
-                const box = document.getElementById('showBuildings');
-                if (typeof window.setBuildingReferenceLayers === 'function') window.setBuildingReferenceLayers(!(box && box.checked));
+                window.PlanningViews?.setBuiltVisible(!window.PlanningViews.isBuiltVisible());
                 return;
             }
             const manager = window.CityConfigManager;

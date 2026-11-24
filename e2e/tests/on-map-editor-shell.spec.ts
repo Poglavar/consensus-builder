@@ -2,7 +2,7 @@ import { openPlanActions } from '../helpers/plan-actions';
 // Purpose: exercise the shared editor shell where map context, mode changes, and narrow screens
 // used to make controls drift, disappear, or unlock too early.
 import { test, expect } from '../helpers/fixtures';
-import { placeFreeformBuilding, openCity, openParcel, openBlockEditor, clickMapPoint, createBuilding, PARCEL_GEOMETRY, closeParcel, showSelectionDesignTab, answerBlockScope } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, openBlockEditor, clickMapPoint, createBuilding, PARCEL_GEOMETRY, closeParcel, showSelectionDesignTab, answerBlockScope, setExistingBuildings } from '../helpers/runtime';
 import { buildings3D, mockBuildingScene } from '../helpers/mocks/building-data';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import type { Page } from '@playwright/test';
@@ -26,9 +26,7 @@ async function expectEditorDockedRight(page: Page, root: string) {
 }
 
 async function enableGdiContext(page: Page) {
-  await page.evaluate(() => (window as any).MapShell.revealControl('showBuildings'));
-  const gdi = page.locator('#showBuildings');
-  if (!(await gdi.isChecked())) await gdi.check();
+  await setExistingBuildings(page);
   await page.evaluate(() => (window as any).MapShell.closeSheets());
 }
 

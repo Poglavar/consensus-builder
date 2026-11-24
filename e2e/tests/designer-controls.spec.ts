@@ -3,6 +3,7 @@ import { test, expect } from '../helpers/fixtures';
 import { placeFreeformBuilding, openCity, openParcel, clickMapPoint, closeParcel, showSelectionDesignTab, parcelTab, answerBlockScope } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
+import { openPlanningSection } from '../helpers/layers';
 
 const BLOCK_PARCEL_IDS = [
   'HR-335754-1234', 'HR-335754-1235', 'HR-335754-1236', 'HR-335754-1237', 'HR-335754-1238',
@@ -236,17 +237,10 @@ test.describe('Designer controls persist their edits @features', () => {
 
     await page.locator('#mode-3d-toggle').click();
     await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 15_000 });
-    if (!(await page.locator('#model-layer-controls').isVisible())) await page.locator('#layers-button').click();
-    await expect(page.locator('#model-layer-controls .three-mode-ui-panel')).toBeVisible();
-    if (!(await page.locator('#planning-views').isVisible())) await page.locator('#planning-views-button').click();
-    await expect(page.locator('#planning-views')).toBeVisible();
+    await openPlanningSection(page, 'building-appearance');
     await selectNativeOption(page.locator('[data-planning-setting="existing"]'), 'off');
     await selectNativeOption(page.locator('[data-planning-setting="proposed"]'), 'off');
-    // Planning Views is its own sheet; the exclusion overlay toggle belongs to Layers.
-    await page.locator('#layers-button').click();
-    await expect(page.locator('#planning-views')).toBeHidden();
-    await expect(page.locator('#model-layer-controls .three-mode-ui-panel')).toBeVisible();
-    const toggle = page.locator('#model-layer-controls label.three-mode-wide-toggle[aria-label*="current applied rule"] input[type="checkbox"]');
+    const toggle = page.locator('#model-building-appearance label.three-mode-wide-toggle[aria-label*="current applied rule"] input[type="checkbox"]');
     const ineligibleVisibleMeshes = () => page.evaluate(() => {
       const scene = (window as any).getThreeModeInternals()?.scene;
       const group = scene?.getObjectByName('IneligibleBuildings');

@@ -459,13 +459,14 @@ test.describe('Editor button effects @features', () => {
     const dialog = page.locator('.building-layers-dialog');
     await expect(dialog).toBeVisible();
     const buildings = dialog.getByRole('switch', { name: 'Show buildings' });
-    const wasChecked = await page.locator('#showBuildings').isChecked();
+    const shown = () => page.evaluate(() => (window as any).PlanningViews.isBuiltVisible());
+    const wasChecked = await shown();
     await expect(buildings).toHaveJSProperty('checked', wasChecked);
     await buildings.setChecked(!wasChecked);
-    await expect(page.locator('#showBuildings')).toHaveJSProperty('checked', !wasChecked);
+    await expect.poll(shown).toBe(!wasChecked);
     await dialog.getByRole('button', { name: 'Done', exact: true }).click();
     await expect(dialog).toHaveCount(0);
-    await expect(page.locator('#showBuildings')).toHaveJSProperty('checked', !wasChecked);
+    await expect.poll(shown).toBe(!wasChecked);
   });
 
   test('transit station editor Close, Cancel, and Done close the editor with the expected draft result', async ({ mockApi: page }) => {

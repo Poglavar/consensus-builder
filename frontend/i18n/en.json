@@ -7176,6 +7176,14 @@
         },
         "share": "Share",
         "shareMap": "Share this map",
+        "layerActions": {
+            "open2d": "Open in 2D",
+            "ownershipIn2d": "Open ownership highlighting in 2D",
+            "floorsIn3d": "Explore floors in 3D",
+            "floorPlans": "Floor plans",
+            "buildingAppearance": "Building appearance",
+            "scenery": "Scenery and sound"
+        },
         "designActions": "Design actions"
     },
     "parcelMenu": {

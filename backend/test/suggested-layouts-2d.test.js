@@ -402,8 +402,10 @@ describe('the Layers toggle', () => {
         proposedBox.id = 'showProposedBuildings';
         proposedRow.append(proposedBox);
         const nextRow = element('label');
-        group.append(proposedRow, nextRow);
-        return { group, proposedRow, nextRow, document: { readyState: 'complete', getElementById: name => byId.get(name) || null, createElement: element, addEventListener() {} } };
+        const suggestedRow = element('label');
+        const suggestedBox = element('input'); suggestedBox.id = 'showSuggestedLayouts'; suggestedRow.append(suggestedBox);
+        group.append(proposedRow, suggestedRow, nextRow);
+        return { group, proposedRow, suggestedRow, suggestedBox, nextRow, document: { readyState: 'complete', getElementById: name => byId.get(name) || null, createElement: element, addEventListener() {} } };
     }
 
     function loadInto(fakeWindow) {
@@ -429,19 +431,14 @@ describe('the Layers toggle', () => {
         return { win, dom };
     }
 
-    it('adds a translatable row right after "Show proposed buildings", off by default, routed through toggleLayer', () => {
+    it('binds the static planning floor-plan row, off by default, through toggleLayer', () => {
         const { win, dom } = fakeWindow('');
         const api = loadInto(win);
         expect(win.__suggestedLayouts2D).toBe(api);
         const [, row, after] = dom.group.children;
         expect(dom.group.children[0]).toBe(dom.proposedRow);
         expect(after).toBe(dom.nextRow);
-        expect(row.attributes).toEqual({ 'data-i18n-key': 'sidebar.buildings.showSuggestedLayoutsTooltip', 'data-i18n-attr': 'title' });
-        expect(row.title).toBe('translated sidebar.buildings.showSuggestedLayoutsTooltip');
-        const box = row.children[0], text = row.children[2];
-        expect(box).toMatchObject({ tagName: 'INPUT', type: 'checkbox', id: 'showSuggestedLayouts', checked: false });
-        expect(text.attributes['data-i18n-key']).toBe('sidebar.buildings.showSuggestedLayouts');
-        expect(text.textContent).toBe('translated sidebar.buildings.showSuggestedLayouts');
+        const box = dom.suggestedBox;
         expect(win.toggled).toEqual([]);
         box.checked = true;
         box.listeners.change.forEach(fn => fn());
@@ -452,7 +449,7 @@ describe('the Layers toggle', () => {
     it('turns on at load for ?suggested2d=1', () => {
         const { win, dom } = fakeWindow('?suggested2d=1');
         loadInto(win);
-        expect(dom.group.children[1].children[0].checked).toBe(true);
+        expect(dom.suggestedBox.checked).toBe(true);
         expect(win.toggled).toEqual(['suggestedLayouts']);
     });
 });

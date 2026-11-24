@@ -367,37 +367,9 @@
 
     const snapshot = () => ({ enabled: state.enabled, drawn: state.drawn, flagged: state.flagged.length, cached: state.cache.size });
 
-    // The Layers sheet row, beside "Show proposed buildings". index.html carries no markup for it: the
-    // layer and its toggle arrive together. The change goes through toggleLayer like the other buildings.
-    function installToggle(doc) {
-        const existing = doc.getElementById(TOGGLE_ID);
-        if (existing) return existing;
-        const anchor = doc.getElementById('showProposedBuildings');
-        const row = anchor && anchor.closest('label');
-        if (!row || !row.parentNode) return null;
-        const label = doc.createElement('label');
-        label.setAttribute('data-i18n-key', 'sidebar.buildings.showSuggestedLayoutsTooltip');
-        label.setAttribute('data-i18n-attr', 'title');
-        label.title = t('sidebar.buildings.showSuggestedLayoutsTooltip',
-            'Estimate the ground floor of proposed buildings without a modelled interior. A dashed red outline marks a footprint too small for a stair core.');
-        const input = doc.createElement('input');
-        input.type = 'checkbox';
-        input.id = TOGGLE_ID;
-        const text = doc.createElement('span');
-        text.setAttribute('data-i18n-key', 'sidebar.buildings.showSuggestedLayouts');
-        text.textContent = t('sidebar.buildings.showSuggestedLayouts', 'Estimated layouts (ground floor)');
-        label.append(input, ' ', text);
-        row.parentNode.insertBefore(label, row.nextSibling);
-        input.addEventListener('change', () => {
-            if (typeof global.toggleLayer === 'function') global.toggleLayer('suggestedLayouts');
-            else setEnabled(input.checked);
-        });
-        return input;
-    }
-
     function install() {
-        const doc = global.document;
-        const input = installToggle(doc);
+        const input = global.document.getElementById(TOGGLE_ID);
+        input?.addEventListener('change', () => global.toggleLayer('suggestedLayouts'));
         global.addEventListener('proposedBuildingsUpdated', scheduleRebuild);
         global.addEventListener('parcelFabricCommitted', scheduleRebuild);
         if (!requestedByUrl(global.location && global.location.search)) return;

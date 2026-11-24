@@ -33,6 +33,7 @@ function mapCoreHarness() {
         __mapModeState: { desired: 'model', pending: false },
         addEventListener: (name, listener) => listeners.set(name, listener),
         isThreeModeActive: () => false,
+        PlanningViews: { isBuiltVisible: () => true },
         ParcelsUIVisibility: { syncParcelLayerVisibility: calls.counts },
         buildingLayer: null
     };
@@ -50,7 +51,7 @@ function mapCoreHarness() {
         isZoomWithinParcelRange: () => true,
         MapCityConfigManager: { hasParcelData: () => true },
         updateParcelsCheckboxByZoom: calls.checkbox, updateVisibleParcelsCount: calls.counts,
-        document: { getElementById: id => id === 'showBuildings' ? { checked: true } : null },
+        document: { getElementById: () => null },
         fetchBuildings: calls.buildings, fetchOutlineBuildings: () => {},
         setTimeout: callback => { const id = ++timerId; timers.set(id, callback); return id; },
         clearTimeout: id => timers.delete(id),

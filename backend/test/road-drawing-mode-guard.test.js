@@ -71,10 +71,13 @@ function loadMapModeLoader({ roadDrawingMode, OnMapEditor } = {}) {
     };
     const documentListeners = new Map();
     const observers = [];
+    const floors = tile(false, 'Explore floors in 3D');
+    floors.dataset.openMode = 'model';
     const document = {
         body: {},
         head: { appendChild: vi.fn() },
         getElementById: id => buttons.get(id) || null,
+        querySelectorAll: selector => selector === '[data-open-mode]' ? [floors] : [],
         createElement: () => ({ remove: vi.fn() }),
         addEventListener: (name, listener) => documentListeners.set(name, listener)
     };
@@ -90,7 +93,7 @@ function loadMapModeLoader({ roadDrawingMode, OnMapEditor } = {}) {
         const button = buttons.get(id);
         return { disabled: button.disabled, locked: button.classList.contains('map-mode-btn--locked'), title: button.title };
     });
-    return { root, controller, buttons, document, documentListeners, observers, state };
+    return { root, controller, buttons, floors, document, documentListeners, observers, state };
 }
 
 const LOCKED = 'Not available while you are editing — finish or cancel first';
@@ -190,6 +193,7 @@ describe('road and track drawing mode guard', () => {
         expect(h.state()).toEqual(AS_LEFT);
         h.root.roadDrawingMode = true;
         h.documentListeners.get('corridor-drawing-mode-changed')();
+        expect(h.floors).toMatchObject({ disabled: true, title: LOCKED });
         expect(h.state()).toEqual([
             AS_LEFT[0],
             { disabled: true, locked: true, title: LOCKED },
@@ -198,6 +202,7 @@ describe('road and track drawing mode guard', () => {
         ]);
         h.root.roadDrawingMode = false;
         h.documentListeners.get('corridor-drawing-mode-changed')();
+        expect(h.floors).toMatchObject({ disabled: false, title: 'Explore floors in 3D' });
         expect(h.state()).toEqual(AS_LEFT);
     });
 

@@ -155,6 +155,10 @@
         });
     }
     function policy() { return core.displayPolicy(store?.get()); }
+    function isBuiltVisible() { return (store?.get().existing ?? core.defaults.existing) !== 'off'; }
+    function setBuiltVisible(shown) {
+        if (store && shown !== isBuiltVisible()) store.configure('existing', shown ? 'ghost' : 'off');
+    }
     function sceneItems() { return showingOverview() ? items.length ? [...items, ...overview.items] : overview.items : items; }
     function appearance(item) {
         const state = store?.get();
@@ -889,13 +893,17 @@
             history.replaceState(history.state, '', url);
             const proposed = document.getElementById('showProposedBuildings');
             if (proposed && !proposed.checked && view.proposed !== 'off') { proposed.checked = true; root.toggleLayer?.('proposedBuildings'); }
-            const existing = document.getElementById('showBuildings');
-            if (existing && !existing.checked && view.existing !== 'off') { existing.checked = true; root.toggleLayer?.('buildings'); }
+            const wasBuiltVisible = (previous.existing ?? core.defaults.existing) !== 'off';
+            if (wasBuiltVisible !== isBuiltVisible()) {
+                root.syncBuiltLayerVisibility?.();
+                document.dispatchEvent(new CustomEvent('building-layers-changed'));
+            }
             if (previous.existingScope !== state.existingScope) root.rebuildBuildingLayerFromPool?.();
             if (previous.proposedForm !== state.proposedForm || previous.proposedVariation !== state.proposedVariation) {
                 root.updateProposedBuildingsLayer?.({ announce: false });
             }
             root.dispatchEvent(new CustomEvent('planningviewchange', { detail: { settings: core.settings(state), policy: view } }));
+            if (!wasBuiltVisible && isBuiltVisible()) root.applyOutlinedSourceScope?.();
         }
         drawMap(); render();
         if (lastSelectedId !== state.selectedId) {
@@ -1353,8 +1361,8 @@
             if (parcelPanel?.container.isConnected) showParcelEvidence(parcelPanel.container, parcelPanel.parcel);
         });
         const controls = panel.querySelector('.planning-layer-controls');
-        function control(key) {
-            const input = element('select', 'planning-layer-select'); input.dataset.planningSetting = key;
+        function control(key, input = element('select', 'planning-layer-select')) {
+            input.dataset.planningSetting = key;
             for (const value of core.choices[key]) input.add(new Option(t(value), value));
             input.addEventListener('change', () => {
                 // A source with just Illustration keeps the saved preference for other editions.
@@ -1377,10 +1385,12 @@
             const heading = element('span', 'planning-layer-heading');
             heading.append(name, counter);
             const content = element('div', 'planning-layer-detail');
-            const roleControl = control(role);
+            const roleControl = control(role, document.getElementById(`planning-${role}-appearance`));
             summary.append(heading);
             if (role === 'existing') {
-                content.append(control('existingScope'));
+                const scope = control('existingScope');
+                scope.id = 'planning-existing-scope';
+                content.append(scope, document.getElementById('planning-built-sources'));
             } else {
                 const formRow = element('div', 'planning-form-row');
                 formRow.append(control(`${role}Form`), panel.querySelector(`[data-planning-reroll="${role}"]`));
@@ -1398,7 +1408,9 @@
             disclosure.append(summary, content); row.append(disclosure, roleControl, loadingBar); controls.append(row);
         }
         const zoningField = element('label', 'planning-source-field planning-zoning-field');
-        zoningField.append(element('span', 'planning-zoning-label'), control('zoningAreas')); zoningPanel.append(zoningField);
+        const zoningVisibility = control('zoningAreas');
+        zoningVisibility.id = 'planning-zoning-areas';
+        zoningField.append(element('span', 'planning-zoning-label'), zoningVisibility); zoningPanel.append(zoningField);
         const fit = element('button', 'btn planning-fit-plan', t('fitPlan'));
         fit.type = 'button'; fit.hidden = true;
         zoningField.after(fit);
@@ -1484,6 +1496,7 @@
         };
         root.LiveParcelFabric?.subscribe?.(onFabricDelta);
         document.getElementById('planning-views-button').hidden = false;
+        document.getElementById('layers-open-buildings').hidden = false;
         store.subscribe(syncView);
         // A pan is a burst of moveends: re-read once the map has settled, and not at all when it
         // moves again first. A request already in flight is cancelled by the next refresh that no
@@ -1529,6 +1542,7 @@
         loadSources();
     }
     root.PlanningViews = { getState: () => store?.get() || { ...core.defaults, proposedVariation: '', permittedVariation: '' }, getPolicy: policy, getItems: sceneItems,
+        isBuiltVisible, setBuiltVisible,
         getAppearance: appearance,
         getSelected: selected, isReady: () => ready, isInspecting: () => ready && !inspector.hidden,
         select, selectRecord, inspectBuilding, inspectProposal, showParcelEvidence, color, itemColor, itemTitle, refresh,

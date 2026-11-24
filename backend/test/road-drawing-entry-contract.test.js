@@ -168,4 +168,24 @@ describe('an edge under decision', () => {
         releaseAll(loads);
         await placing;
     });
+
+    it('restores Off after auto-transparent, but preserves a user-selected Solid state', () => {
+        let existing = 'off';
+        const planning = {
+            isBuiltVisible: () => existing !== 'off',
+            getState: () => ({ existing }),
+            setBuiltVisible: shown => { existing = shown ? 'ghost' : 'off'; }
+        };
+        env = loadRoadDrawing({ globals: { PlanningViews: planning } });
+        env.api.autoShowBuildingsForRoadDrawing();
+        expect(existing).toBe('ghost');
+        env.api.restoreBuildingsAfterRoadDrawing();
+        expect(existing).toBe('off');
+
+        existing = 'off';
+        env.api.autoShowBuildingsForRoadDrawing();
+        existing = 'solid';
+        env.api.restoreBuildingsAfterRoadDrawing();
+        expect(existing).toBe('solid');
+    });
 });

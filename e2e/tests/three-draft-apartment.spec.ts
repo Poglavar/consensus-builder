@@ -1,6 +1,7 @@
 import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, createBuilding } from '../helpers/runtime';
+import { openPlanningSection } from '../helpers/layers';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 
 async function enter3D(page: Page) {
@@ -10,12 +11,11 @@ async function enter3D(page: Page) {
 }
 
 async function openXray(page: Page) {
-  if (!(await page.locator('#model-layer-controls').isVisible())) await page.locator('#layers-button').click();
-  await expect(page.locator('#model-layer-controls .three-mode-ui-panel')).toBeVisible();
+  await openPlanningSection(page, 'floor-plans');
   await page.locator('#three-mode-xray').click();
+  await expect(page.locator('#planning-views')).toBeHidden();
   await expect(page.locator('#three-xray-toolbar')).toHaveAttribute('aria-label', 'X-ray');
   await page.locator('#three-xray-proposed').click();
-  await expect(page.locator('#model-layer-controls')).toBeHidden();
   await expect.poll(() => page.evaluate(() => {
     const plans = (window as any).getThreeModeInternals().scene.getObjectByName('FloorPlans');
     return plans?.children.filter((group: any) => group.userData?.proposalId).length || 0;

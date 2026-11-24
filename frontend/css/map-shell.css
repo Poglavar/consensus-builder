@@ -33,11 +33,17 @@
     position: absolute;
     top: var(--map-shell-edge);
     left: var(--map-shell-edge);
+    max-width: calc(100vw - 2 * var(--map-shell-edge));
     z-index: var(--cb-z-map-chrome);
     display: flex;
     align-items: center;
     gap: var(--map-shell-gap);
 }
+
+/* Search owns the row when expanded; keep the adjacent Layers control from sitting beneath its
+   full-width mobile input. */
+body.map-search-expanded #layers-button { display: none; }
+.map-shell-slot--search .map-search { flex: 1 1 auto; min-width: 0; }
 
 
 
@@ -156,6 +162,18 @@ body.three-mode-active .map-view-pill--2d {
 
 .layer-source-actions { margin-bottom: var(--cb-space-3); }
 
+.sheet-mode-action { margin-block-end: var(--cb-space-2); }
+#layers-open-buildings {
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    text-align: start;
+    cursor: pointer;
+}
+#layers-open-buildings .fa-arrow-right { margin-inline-start: auto; }
+[dir="rtl"] #layers-open-buildings .fa-arrow-right { transform: rotate(180deg); }
+
 details > summary.sheet-section-title::before {
     content: '▸';
 }
@@ -164,7 +182,7 @@ details[open] > summary.sheet-section-title::before {
     content: '▾';
 }
 
-#model-layer-controls:empty { display: none; }
+.model-view-controls:empty { display: none; }
 
 #cadastre-view-toggle[aria-pressed="true"] {
     background: var(--cb-primary-soft);
@@ -481,11 +499,11 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     }
 }
 
-/* The user bubble sits left of Chat, Layers and Settings in the same top row. */
+/* The user button sits beside Chat and Settings. */
 #map-container .username-display {
     position: absolute;
     top: var(--map-shell-edge);
-    right: calc(var(--map-shell-edge) + 3 * var(--map-shell-button-size) + 3 * var(--map-shell-gap));
+    right: calc(var(--map-shell-edge) + 2 * (var(--map-shell-button-size) + var(--map-shell-gap)));
     height: var(--map-shell-button-size);
     box-sizing: border-box;
     min-width: 0;

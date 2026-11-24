@@ -41,6 +41,7 @@ function loadBuildingLayerRuntime() {
     const optionsByFeature = new Map();
     const panes = new Map();
     const map = {
+        getZoom() { return 18; },
         getPane(name) { return panes.get(name); },
         createPane(name) { const pane = {}; panes.set(name, pane); return pane; },
         hasLayer(layer) { return mapLayers.has(layer); },
@@ -69,16 +70,15 @@ function loadBuildingLayerRuntime() {
             return group;
         }
     };
-    const checkbox = { checked: false };
     const context = vm.createContext({
-        console, map, L, performance, dirtyBuildingIds: new Set(), document: { getElementById: id => id === 'showBuildings' ? checkbox : null },
+        console, map, L, performance, BUILDING_MIN_ZOOM: 17, dirtyBuildingIds: new Set(), document: { getElementById: () => null },
         window: null,
         buildingFeaturePool: [],
         collectDemolishedBuildingRecords: () => Array.from(fixture.state.demolishedById.values())
     });
     context.window = context;
     context.PlanningScene = planningScene;
-    context.PlanningViews = { getState: () => ({ existingScope: fixture.existingScope || 'all' }) };
+    context.PlanningViews = { isBuiltVisible: () => fixture.builtVisible === true, getState: () => ({ existingScope: fixture.existingScope || 'all' }) };
     // A building click is a map click: the click stack collects everything under the point.
     context.ClickStack = { handleClick: latlng => fixture.clicks.push(latlng) };
     context.__mapEditLock = { isHeld: () => fixture.editLocked === true };
@@ -87,7 +87,7 @@ function loadBuildingLayerRuntime() {
     vm.runInContext('let buildingLayer = null; let buildingFeatureById = new Map(); let buildingRenderedLayersById = new Map(); let renderedBuildingOutcomeSignatures = new Map(); let renderedBuildingFeatureSignatures = new Map();', context);
     declarations.forEach(node => vm.runInContext(`${mapCoreSource.slice(node.start, node.end)}\nthis.${node.id.name} = ${node.id.name};`, context));
     vm.runInContext('this.getBuildingLayer = () => buildingLayer; this.getRenderedLayers = () => buildingRenderedLayersById; this.getRenderedLayerIds = () => Array.from(buildingRenderedLayersById.keys());', context);
-    return { context, fixture, layersById, allLayers, mapLayers, checkbox };
+    return { context, fixture, layersById, allLayers, mapLayers };
 }
 
 function makeMapContext(features) {
@@ -221,7 +221,7 @@ describe('incremental building presentation model', () => {
     });
 
     it('keeps one group, honors checkbox visibility, updates changed outcomes, and removes evicted features', () => {
-        const { context, fixture, layersById, allLayers, mapLayers, checkbox } = loadBuildingLayerRuntime();
+        const { context, fixture, layersById, allLayers, mapLayers } = loadBuildingLayerRuntime();
         const a = { type: 'Feature', properties: { object_id: 'a', name: 'unchanged' }, geometry: { coordinates: [1, 2] } };
         const b = { type: 'Feature', properties: { object_id: 'b', name: 'cut later' }, geometry: { coordinates: [3, 4] } };
         context.buildingFeaturePool = [a, b];
@@ -241,7 +241,7 @@ describe('incremental building presentation model', () => {
         expect(fixture.stoppedEvents).toHaveLength(1);
         fixture.editLocked = false;
 
-        checkbox.checked = true;
+        fixture.builtVisible = true;
         context.rebuildBuildingLayerFromPool();
         expect(context.getBuildingLayer()).toBe(group);
         expect(mapLayers.has(group)).toBe(true);
@@ -267,8 +267,8 @@ describe('incremental building presentation model', () => {
     });
 
     it('drains removed and changed dirty IDs without rebuilding untouched layers', () => {
-        const { context, layersById, checkbox } = loadBuildingLayerRuntime();
-        checkbox.checked = true;
+        const { context, fixture, layersById } = loadBuildingLayerRuntime();
+        fixture.builtVisible = true;
         const features = Array.from({ length: 103 }, (_, index) => ({ type: 'Feature', properties: { object_id: `b${index}`, value: 0 }, geometry: { coordinates: [index, 0] } }));
         context.buildingFeaturePool = features;
         context.buildingPoolByKey = new Map(features.map(feature => [feature.properties.object_id, feature]));

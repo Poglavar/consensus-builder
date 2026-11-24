@@ -7260,6 +7260,14 @@
         },
         "share": "Поделиться",
         "shareMap": "Поделиться картой",
+        "layerActions": {
+            "open2d": "Открыть в 2D",
+            "ownershipIn2d": "Открыть подсветку собственности в 2D",
+            "floorsIn3d": "Изучить этажи в 3D",
+            "floorPlans": "Поэтажные планы",
+            "buildingAppearance": "Внешний вид здания",
+            "scenery": "Окружение и звук"
+        },
         "designActions": "Действия с проектом"
     },
     "parcelMenu": {

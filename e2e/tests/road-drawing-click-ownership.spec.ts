@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, openParcel, stubBasemapTiles } from '../helpers/runtime';
+import { clickMapPoint, openCity, openParcel, stubBasemapTiles, setExistingBuildings } from '../helpers/runtime';
 
 declare const roadSegments: any[][];
 declare const roadSegmentPlacementInProgress: boolean;
@@ -22,7 +22,6 @@ for (const kind of ['road', 'track'] as const) {
       });
       w.buildingFeaturePool = [{ type: 'Feature', properties: { id: 'drawing-building', object_id: 'drawing-building', source: 'osm-footprints' },
         geometry: rectangle(15.98196, 45.80031, 15.98208, 45.80039) }];
-      (document.getElementById('showBuildings') as HTMLInputElement).checked = true;
       w.rebuildBuildingLayerFromPool();
       w.parks = [{ type: 'Feature', properties: { proposalId: 'drawing-park' },
         geometry: rectangle(15.98232, 45.80031, 15.98246, 45.80039) }];
@@ -30,6 +29,8 @@ for (const kind of ['road', 'track'] as const) {
       w.__receivedDrawingClicks = [];
       w.map.on('click', (event: any) => w.__receivedDrawingClicks.push([event.latlng.lng, event.latlng.lat]));
     });
+    await setExistingBuildings(page);
+    await page.locator('#planning-views-button').click();
 
     const nodes = [[15.98202, 45.80035], [15.98239, 45.80035], [15.98239, 45.80010], [15.98202, 45.80010]];
     for (let index = 0; index < nodes.length; index += 1) {

@@ -2,7 +2,8 @@
 import { test, expect } from '../helpers/fixtures';
 import { createBuilding, openCity, openParcel, PARCEL_ID, PARCEL_GEOMETRY } from '../helpers/runtime';
 import { selectNativeOption } from '../helpers/controls';
-import { openLayerSection } from '../helpers/layers';
+import { openLayerSection, openPlanningSection } from '../helpers/layers';
+import { mockBuildingScene, mockFootprintCells } from '../helpers/mocks/building-data';
 
 const sources = ['a', 'b'].map((suffix, index) => ({
   id: suffix === 'a' ? 'zagreb-gup-2025' : 'zagreb-gup-2016', city: 'zagreb', label: `Planning edition ${suffix.toUpperCase()}`,
@@ -25,6 +26,102 @@ function massing(source = sources[0]) {
 const payload = (items: unknown[] = [], available = sources) => ({
   schemaVersion: 'planning-representations.v1', city: 'zagreb', sources: available, items,
   summaries: [], unavailable: [], coverage: 'source-results', nextCursor: null, omitted: 0,
+});
+
+test('layer shortcuts keep display settings, map location and keyboard focus across views on a phone', async ({ mockApi: page }) => {
+  test.setTimeout(60_000);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await mockBuildingScene(page);
+  await mockFootprintCells(page, () => [{ id: 'nearby', geometry: PARCEL_GEOMETRY, height_m: 12 }]);
+  const source = { ...sources[0], parcelStudy: 'direct-dimensions.v1' };
+  const building = massing(source);
+  const zone = { ...building, id: 'zoning-area', title: 'Land use', areas: [{ geometry: PARCEL_GEOMETRY }], volumes: [],
+    assessment: { meaning: 'zoning-area', status: 'unresolved' } };
+  await page.route('**/planning/**', route => {
+    if (!['xhr', 'fetch'].includes(route.request().resourceType())) return route.fallback();
+    const path = new URL(route.request().url()).pathname;
+    const json = path.endsWith('/sources') ? { city: 'zagreb', sources: [source] }
+      : payload(path.endsWith('/envelopes') ? [building] : [zone], [source]);
+    return route.fulfill({ json });
+  });
+  await openCity(page);
+  const center = await page.evaluate(() => (window as any).map.getCenter());
+  const planningButton = page.locator('#planning-views-button');
+  const layersButton = page.locator('#layers-button');
+  const bounds = await Promise.all([planningButton, layersButton].map(button => button.boundingBox()));
+  expect(bounds[1]!.y).toEqual(bounds[0]!.y);
+  expect(bounds[1]!.x - bounds[0]!.x - bounds[0]!.width).toBeGreaterThanOrEqual(0);
+  expect(bounds[1]!.x - bounds[0]!.x - bounds[0]!.width).toBeLessThan(16);
+  const profile = await page.locator('#username-display').boundingBox();
+  expect(bounds[1]!.x + bounds[1]!.width).toBeLessThanOrEqual(profile!.x);
+  await planningButton.press('Enter');
+  await page.locator('#planning-tab-compare').press('Enter');
+  await layersButton.press('Enter');
+  await page.locator('#layers-open-buildings').press('Enter');
+  await expect(page.locator('#planning-existing-scope')).toBeFocused();
+  await expect(page.locator('#building-source-settings-button')).toBeVisible();
+  const built = page.locator('#planning-existing-appearance');
+  const visibleFootprints = () => page.evaluate(() => {
+    const w = window as any;
+    return !!w.buildingLayer && w.map.hasLayer(w.buildingLayer) && w.buildingLayer.getLayers().length > 0;
+  });
+  await built.selectOption('solid');
+  await expect.poll(visibleFootprints).toBe(true);
+  await built.selectOption('off');
+  await expect.poll(visibleFootprints).toBe(false);
+  await built.selectOption('ghost');
+  await expect.poll(visibleFootprints).toBe(true);
+
+  await openLayerSection(page, 'zoning-land-use');
+  const zoning = page.locator('#planning-zoning-areas');
+  await zoning.selectOption('ghost');
+  await layersButton.press('Enter');
+  const shape = page.getByRole('button', { name: 'Inspect permitted massing on Planning edition A massing', exact: true });
+  await shape.press('Enter');
+  const selected = () => page.evaluate(() => (window as any).PlanningViews.getState().selectedId);
+  await expect.poll(selected).toBe(building.id);
+  await openPlanningSection(page, 'use-highlight');
+  const shops = page.getByRole('checkbox', { name: 'Shops', exact: true });
+  await shops.check();
+  await openPlanningSection(page, 'floor-plans');
+  await page.getByRole('button', { name: 'Explore floors in 3D' }).press('Enter');
+  await expect(page.locator('#three-mode-xray')).toBeFocused({ timeout: 15_000 });
+  await expect(page.locator('#three-container canvas')).toBeVisible();
+  await expect.poll(selected).toBe(building.id);
+  await openPlanningSection(page, 'use-highlight');
+  await expect(shops).toBeChecked();
+  await openLayerSection(page, 'zoning-land-use');
+  await expect(zoning).toHaveValue('ghost');
+  const zoneVisible = () => page.evaluate(id => {
+    const group = (window as any).getThreeModeInternals().scene.getObjectByName('PermittedMassing');
+    return group.visible && group.children.some((mesh: any) => mesh.visible && mesh.userData.planningRepresentationId === id);
+  }, zone.id);
+  await expect.poll(zoneVisible).toBe(true);
+  await zoning.selectOption('off');
+  await expect.poll(zoneVisible).toBe(false);
+  await expect.poll(selected).toBe(building.id);
+  await openLayerSection(page, 'parcels');
+  const parcels = page.getByRole('checkbox', { name: 'Show parcels', exact: true });
+  const modelParcels = () => page.evaluate(() => {
+    let count = 0;
+    (window as any).getThreeModeInternals().scene.traverseVisible((o: any) => { if (o.userData.isParcel) count++; });
+    return count;
+  });
+  await expect.poll(modelParcels).toBeGreaterThan(0);
+  await parcels.uncheck();
+  await expect.poll(modelParcels).toBe(0);
+  await parcels.check();
+  await expect.poll(modelParcels).toBeGreaterThan(0);
+  await page.locator('[data-reveal-control="parcel-ownership-title"]').press('Enter');
+  await expect(page.locator('#parcel-ownership-title')).toBeFocused();
+  await expect(parcels).toBeChecked();
+  await expect.poll(selected).toBe(building.id);
+  expect(await page.evaluate(point => (window as any).map.distance((window as any).map.getCenter(), point), center)).toBeLessThan(20);
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await openLayerSection(page, 'zoning-land-use');
+  await expect(zoning).toHaveValue('off');
+  await openLayerSection(page, 'buildings');
+  await expect(built).toHaveValue('ghost');
 });
 
 for (const blocksEnabled of [false, true]) test(`planning source, scenario, display and retry controls update the actual view (OSM blocks ${blocksEnabled ? 'on' : 'off'}) @features`, async ({ mockApi: page }) => {

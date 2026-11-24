@@ -198,7 +198,7 @@ A **view pill** names a setting that changes how the map reads while it is on, a
 with × to turn it off (`js/ui/view-pills.js`, `.map-view-pill` in css/map-shell.css): Highlight by
 use and Highlight by ownership type. Ordinary layer switches get none; what they show is on the map.
 In the model view, and on a phone, the pills take the row under the top buttons. Highlight by use
-(`js/building-use-highlight.js`, Layers → Buildings and the model view's Layers) colours the storeys
+(`js/building-use-highlight.js`, Buildings and massing → Display → Highlight by use) colours the storeys
 of the ticked storey uses, existing buildings and designs alike, and fades everything else; its
 palette is the legend beside each tick.
 
@@ -262,12 +262,16 @@ palette is the legend beside each tick.
 ## Map shell structure
 
 - The bottom navigation belongs to the 2D map. The model and aerial views use their selection controls.
-  The top-right Layers, Settings and Profile controls are shared across those views.
+  The **Layers** toolbar trigger is on the left beside **Buildings and massing**; it opens the
+  right-screen Layers sheet, whose existing column remains shared across those views.
 - The left view strip chooses 2D map, 3D models or 3D aerial imagery. Measure is a 2D utility beside
   that strip, not a destination in the bottom dock.
-- Layers presents the controls for the selected view: original cadastre in 2D, model appearance in
-  3D models, and existing-city visibility in aerial imagery. Keep these view-specific controls in
-  Layers rather than adding another global panel.
+- In **Buildings and massing → Display**, **Highlight by use** sits above the Built, Permitted and
+  Proposed appearance selectors. Open **Built** to choose building sources, **Building appearance**
+  for facades or model radius, and **Floor plans** for estimated ground floors or X-ray.
+- **Layers** groups the surrounding map and scene by subject. Parcel visibility and official zoning
+  use the same controls in the 2D map and the 3D model. A group that needs another view offers a
+  switch that opens the relevant controls there. Photo parcel boundaries sit under **Parcels**.
 - A visitor can search for a place or parcel, select a parcel on the 2D map, or click open ground
   and choose **Draw a parcel**. Selecting a parcel opens its tools under **Actions**.
   **Lists → Designs** shows the newest designs first. **Filters** also offers sorting by title.
@@ -315,9 +319,9 @@ The names to use for the shell's elements in follow-up discussion.
 | Name | What and where |
 |---|---|
 | **search box** | top-left omnibox (`#map-search-slot`): cities, parcels, places and commands |
-| **Buildings and massing** button and sheet | beside the search box (`#planning-views-button`, `#planning-views`) |
+| **Buildings and massing** button and sheet | beside the search box (`#planning-views-button`, `#planning-views`); **Display** owns Built/Permitted/Proposed appearance, use highlight and the Built source list; **Floor plans** enters X-ray |
 | **user bubble** | top-right `#username-display`: profile name or Guest |
-| **Layers** button and sheet | top-right; the controls for the current view (see Map shell structure) |
+| **Layers** button and sheet | left toolbar beside **Buildings and massing**; opens the right-screen Layers sheet for current-view controls (see Map shell structure) |
 | **Settings** button and sheet | top-right; Appearance, Data & assumptions, Help & about, and Advanced (Local (browser) data, Simulation, Diagnostics, Reset browser data) |
 | **view strip** | left edge: 2D map, 3D models, 3D aerial imagery (`map-mode-tile`), with the Measure (2D) and Sun and shadows (3D) utilities beside it |
 | **bottom dock** | **Lists**, **Activity** and **Bets** each open a dock sheet. |

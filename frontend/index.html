@@ -503,6 +503,15 @@
                     <g class="planning-cube planning-cube--permitted"><polygon points="17,11.06 21.5,13.65 17,16.25 12.5,13.65"/><polygon class="planning-cube-left" points="12.5,13.65 17,16.25 17,21.29 12.5,18.69"/><polygon class="planning-cube-right" points="17,16.25 21.5,13.65 21.5,18.69 17,21.29"/></g>
                 </svg>
             </button>
+            <button type="button" id="layers-button" class="map-shell-button" data-sheet-target="layers-sheet"
+                aria-controls="layers-sheet" aria-expanded="false" title="Layers" aria-label="Layers"
+                aria-describedby="layers-button-zoom-text"
+                data-i18n-key="mapShell.layers" data-i18n-attr="title,aria-label">
+                <i class="fas fa-layer-group" aria-hidden="true"></i>
+                <span id="layers-button-zoom" class="cb-badge map-shell-button-zoom" aria-hidden="true"
+                    title="Map zoom level. In 3D, the 2D zoom that shows the same ground." hidden></span>
+                <span id="layers-button-zoom-text" hidden></span>
+            </button>
         </div>
 
         <!-- Username Display -->
@@ -513,19 +522,10 @@
 
         <!-- Phase 3 hook: the selection tray mounts here, bottom-centre, while parcels are selected. -->
 
-        <!-- Top-right, beside the user bubble: Layers and Settings -->
+        <!-- Chat and Settings beside the user button -->
         <div id="map-shell-top-right" class="map-shell-cluster map-shell-cluster--top-right">
             <button type="button" id="chat-button" class="map-shell-button" data-sheet-target="chat-sheet" aria-controls="chat-sheet" aria-expanded="false" data-i18n-key="chat.title" data-i18n-attr="title,aria-label">
                 <i class="cb-icon-robot-smile" aria-hidden="true"></i>
-            </button>
-            <button type="button" id="layers-button" class="map-shell-button" data-sheet-target="layers-sheet"
-                aria-controls="layers-sheet" aria-expanded="false" title="Layers" aria-label="Layers"
-                aria-describedby="layers-button-zoom-text"
-                data-i18n-key="mapShell.layers" data-i18n-attr="title,aria-label">
-                <i class="fas fa-layer-group" aria-hidden="true"></i>
-                <span id="layers-button-zoom" class="cb-badge map-shell-button-zoom" aria-hidden="true"
-                    title="Map zoom level. In 3D, the 2D zoom that shows the same ground." hidden></span>
-                <span id="layers-button-zoom-text" hidden></span>
             </button>
             <button type="button" id="settings-button" class="map-shell-button" data-sheet-target="settings-sheet"
                 aria-controls="settings-sheet" aria-expanded="false" title="Settings" aria-label="Settings"
@@ -669,10 +669,45 @@
             </div>
             <div class="map-sheet-body">
                 <div id="planning-views-display" role="tabpanel" aria-labelledby="planning-tab-display" data-planning-tab-panel="display">
+                    <details id="planning-use-highlight" class="accordion-section">
+                        <summary class="sheet-section-title" data-i18n-key="buildingUseHighlight.highlight">Highlight by use</summary>
+                        <div class="sheet-section-body" data-use-highlight data-map-modes="2d 3d"></div>
+                        <button type="button" class="cb-link sheet-mode-action" data-map-modes="photo" data-open-mode="model" data-reveal-control="highlight-use-residential" data-i18n-key="planningViews.openModel" hidden>Open 3D model view</button>
+                    </details>
                     <div class="planning-layer-controls">
+                        <select id="planning-existing-appearance" class="planning-layer-select"></select>
+                        <select id="planning-permitted-appearance" class="planning-layer-select"></select>
+                        <select id="planning-proposed-appearance" class="planning-layer-select"></select>
                         <button type="button" id="planning-reroll-permitted" class="btn btn-icon planning-reroll" data-planning-reroll="permitted"><i class="fa-solid fa-dice" aria-hidden="true"></i></button>
                         <button type="button" id="planning-reroll" class="btn btn-icon planning-reroll" data-planning-reroll="proposed"><i class="fa-solid fa-dice" aria-hidden="true"></i></button>
+                        <input type="checkbox" id="showProposedBuildings" hidden onchange="toggleLayer('proposedBuildings')">
+                        <div id="planning-built-sources">
+                            <p id="building-sources-summary" class="sheet-note building-sources-summary"></p>
+                            <button type="button" id="building-source-settings-button" class="btn" onclick="openBuildingSourceSettings()">
+                                <span data-i18n-key="buildingSources.listTitle">Building sources</span>
+                            </button>
+                        </div>
                     </div>
+                    <details id="planning-building-appearance" class="accordion-section">
+                        <summary class="sheet-section-title" data-i18n-key="mapShell.layerActions.buildingAppearance">Building appearance</summary>
+                        <div class="sheet-section-body">
+                            <button type="button" class="cb-link" data-map-modes="2d" data-open-mode="model" data-reveal-control="three-mode-facades" data-i18n-key="planningViews.openModel">Open 3D model view</button>
+                            <div id="model-building-appearance" class="model-view-controls" data-map-modes="3d photo" hidden></div>
+                        </div>
+                    </details>
+                    <details id="planning-floor-plans" class="accordion-section">
+                        <summary class="sheet-section-title" data-i18n-key="mapShell.layerActions.floorPlans">Floor plans</summary>
+                        <div class="sheet-section-body">
+                            <div class="checkbox-group" data-map-modes="2d">
+                                <label data-i18n-key="sidebar.buildings.showSuggestedLayoutsTooltip" data-i18n-attr="title">
+                                    <input id="showSuggestedLayouts" type="checkbox">
+                                    <span data-i18n-key="sidebar.buildings.showSuggestedLayouts">Estimated layouts (ground floor)</span>
+                                </label>
+                            </div>
+                            <button type="button" class="cb-link" data-map-modes="2d" data-open-mode="model" data-reveal-control="three-mode-xray" data-i18n-key="mapShell.layerActions.floorsIn3d">Explore floors in 3D</button>
+                            <div id="model-floor-controls" class="model-view-controls" data-map-modes="3d photo" hidden></div>
+                        </div>
+                    </details>
                     <p class="planning-view-status"></p>
                     <button type="button" id="planning-view-retry" class="cb-link planning-view-retry" hidden></button>
                     <p class="planning-inspect-hint"></p>
@@ -766,8 +801,8 @@
                     <i class="fas fa-copy" aria-hidden="true"></i>
                 </button>
             </div>
-            <div class="map-sheet-body" data-map-modes="2d">
-                <details data-map-modes="2d" class="accordion-section" data-section="base-map">
+            <div class="map-sheet-body">
+                <details class="accordion-section" data-section="base-map" data-layer-mode="2d">
                     <summary class="sheet-section-title">
                         <i class="fas fa-map" aria-hidden="true"></i>
                         <span id="base-map-title" data-i18n-key="mapShell.commands.baseMap">Base map</span>
@@ -783,7 +818,7 @@
                     </div>
                 </details>
 
-                <details data-map-modes="2d" class="accordion-section" data-section="parcels">
+                <details class="accordion-section" data-section="parcels">
                     <summary class="sheet-section-title">
                         <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
                         <span class="accordion-title-text" data-section-title="parcels"
@@ -797,6 +832,9 @@
                                         onchange="toggleAccordion(this)" checked>
                                     <span data-i18n-key="sidebar.parcels.showParcels">Show parcels</span>
                                 </label>
+                            </div>
+                        </div>
+                        <div class="checkbox-group" data-map-modes="2d">
                                 <label>
                                     <input type="checkbox" id="showAdParcelsCheckbox" data-section-independent="true">
                                     <span data-i18n-key="sidebar.parcels.showAdParcels">Show ad parcels</span>
@@ -820,10 +858,9 @@
                                     <input type="checkbox" id="markMintedCheckbox">
                                     <span data-i18n-key="sidebar.parcels.markMinted">Mark minted</span>
                                 </label>
-                            </div>
                         </div>
 
-                        <div class="cb-actions cb-actions--grid layer-source-actions">
+                        <div class="cb-actions cb-actions--grid layer-source-actions" data-map-modes="2d">
 <button type="button" id="parcel-source-settings-button" class="btn" data-section-independent="true" onclick="openParcelSourceSettings()">
                                 <span data-i18n-key="parcelSources.title">Choose a parcel source</span>
                             </button>
@@ -835,8 +872,9 @@
                                 </button>
                         </div>
 
-                        <div class="control-group">
-                            <div class="control-group-title" data-i18n-key="sidebar.parcels.highlightOwnershipTitle">
+                        <button type="button" class="cb-link" data-map-modes="3d photo" data-open-mode="2d" data-reveal-control="parcel-ownership-title" data-section-independent="true" data-i18n-key="mapShell.layerActions.ownershipIn2d" hidden>Open ownership highlighting in 2D</button>
+                        <div class="control-group" data-map-modes="2d">
+                            <div class="control-group-title" id="parcel-ownership-title" tabindex="-1" data-i18n-key="sidebar.parcels.highlightOwnershipTitle">
                                 Highlight by ownership type (T)</div>
                             <div class="checkbox-group">
                                 <!-- The swatch is painted by ownership-highlight.js from the same colour
@@ -871,40 +909,47 @@
 
                         <!-- The cadastre's state land views (js/state-land-layer.js); shown for cities
                              whose configuration has a stateLand block. Each swatch is its map colour. -->
-                        <div class="control-group" id="state-land-layers" hidden>
-                            <div class="control-group-title" data-i18n-key="sidebar.parcels.stateLand.title">State land</div>
-                            <div class="checkbox-group">
-                                <label>
-                                    <input type="checkbox" id="showStateFreePlots">
-                                    <span class="state-land-swatch state-land-swatch--free" aria-hidden="true"></span>
-                                    <span data-i18n-key="sidebar.parcels.stateLand.freePlots">Free state plots</span>
-                                </label>
-                                <label>
-                                    <input type="checkbox" id="showLandApplications">
-                                    <span class="state-land-swatch state-land-swatch--application" aria-hidden="true"></span>
-                                    <span data-i18n-key="sidebar.parcels.stateLand.applications">Land applications</span>
-                                </label>
+                        <div data-map-modes="2d">
+                            <div class="control-group" id="state-land-layers" hidden>
+                                <div class="control-group-title" data-i18n-key="sidebar.parcels.stateLand.title">State land</div>
+                                <div class="checkbox-group">
+                                    <label>
+                                        <input type="checkbox" id="showStateFreePlots">
+                                        <span class="state-land-swatch state-land-swatch--free" aria-hidden="true"></span>
+                                        <span data-i18n-key="sidebar.parcels.stateLand.freePlots">Free state plots</span>
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" id="showLandApplications">
+                                        <span class="state-land-swatch state-land-swatch--application" aria-hidden="true"></span>
+                                        <span data-i18n-key="sidebar.parcels.stateLand.applications">Land applications</span>
+                                    </label>
+                                </div>
+                                <div class="state-land-legend">
+                                    <span class="state-land-swatch state-land-swatch--granted" aria-hidden="true"></span>
+                                    <span data-i18n-key="sidebar.parcels.stateLand.grantedLegend">Granted or registered</span>
+                                </div>
+                                <div class="state-land-legend">
+                                    <span class="state-land-swatch state-land-swatch--stopped" aria-hidden="true"></span>
+                                    <span data-i18n-key="sidebar.parcels.stateLand.stoppedLegend">Refused or cancelled</span>
+                                </div>
+                                <div id="state-land-status" class="sheet-note" role="status" aria-live="polite" hidden></div>
                             </div>
-                            <div class="state-land-legend">
-                                <span class="state-land-swatch state-land-swatch--granted" aria-hidden="true"></span>
-                                <span data-i18n-key="sidebar.parcels.stateLand.grantedLegend">Granted or registered</span>
-                            </div>
-                            <div class="state-land-legend">
-                                <span class="state-land-swatch state-land-swatch--stopped" aria-hidden="true"></span>
-                                <span data-i18n-key="sidebar.parcels.stateLand.stoppedLegend">Refused or cancelled</span>
-                            </div>
-                            <div id="state-land-status" class="sheet-note" role="status" aria-live="polite" hidden></div>
                         </div>
 
-                        <div id="parcels-in-view" class="sheet-note"
+                        <div id="parcels-in-view" class="sheet-note" data-map-modes="2d"
                             data-i18n-key="sidebar.parcels.inViewDefault">Parcels in map view / total: 0
                             / 0</div>
 
-<button type="button" id="cadastre-view-toggle" class="btn" data-map-modes="2d" title="Cadastre view: original parcels only" data-i18n-key="claims.cadastreViewToggle" data-i18n-attr="title"><i class="fas fa-table-cells" aria-hidden="true"></i><span data-i18n-key="mapShell.reorg.originalCadastre">Original cadastre</span></button>
-</div>
+                        <button type="button" id="cadastre-view-toggle" class="btn" data-map-modes="2d" title="Cadastre view: original parcels only" data-i18n-key="claims.cadastreViewToggle" data-i18n-attr="title"><i class="fas fa-table-cells" aria-hidden="true"></i><span data-i18n-key="mapShell.reorg.originalCadastre">Original cadastre</span></button>
+                        <div data-map-modes="photo" hidden>
+                            <div class="checkbox-group"><label><input id="photo-parcels-visible" type="checkbox" data-section-independent="true" checked><span data-i18n-key="threeMode.photoParcels.toggle">Cadastral parcel boundaries</span></label></div>
+                            <p id="photo-parcels-status" class="photoreal-parcel-note"></p>
+                            <p class="photoreal-parcel-note" data-i18n-key="threeMode.photoParcels.note">Source boundaries projected onto Google imagery. Imagery and cadastre may differ in date and alignment.</p>
+                        </div>
+                    </div>
                 </details>
 
-                <details data-map-modes="2d" class="accordion-section" data-section="blocks">
+                <details class="accordion-section" data-section="blocks" data-layer-mode="2d">
                     <summary class="sheet-section-title">
                         <i class="fas fa-th-large" aria-hidden="true"></i>
                         <span class="accordion-title-text" data-section-title="blocks"
@@ -970,50 +1015,24 @@
                     </div>
                 </details>
 
-                <details data-map-modes="2d" class="accordion-section" data-section="buildings">
-                    <summary class="sheet-section-title">
+                <div class="accordion-section" data-section="buildings">
+                    <button type="button" id="layers-open-buildings" class="sheet-section-title" data-sheet-target="planning-views" data-reveal-control="planning-existing-scope" aria-controls="planning-views" aria-expanded="false" hidden>
                         <i class="fas fa-building" aria-hidden="true"></i>
-                        <span class="accordion-title-text" data-section-title="buildings"
-                            data-i18n-key="sidebar.buildings.title">Buildings</span>
-                    </summary>
-                    <div class="sheet-section-body">
-                        <!-- One switch for the existing buildings. Where they come from is the city's
-                             building source list (js/source-list.js): the sources in use stand in for
-                             each other area by area, and a source with Outline on is drawn beside them
-                             for comparison. The summary line names the list; Building sources edits it.
-                             No toggle changes what a corridor cuts. -->
-                        <div class="control-group">
-                            <div class="checkbox-group">
-                                <label>
-                                    <input type="checkbox" id="showBuildings" onchange="toggleLayer('buildings')">
-                                    <span data-i18n-key="sidebar.buildings.title">Buildings</span>
-                                </label>
-                                <!-- The shared view selector owns proposed-building visibility. -->
-                                <label hidden>
-                                    <input type="checkbox" id="showProposedBuildings"
-                                        onchange="toggleLayer('proposedBuildings')">
-                                    <span data-i18n-key="sidebar.buildings.showProposed">Show Proposed Buildings</span>
-                                </label>
-                            </div>
-                            <p id="building-sources-summary" class="sheet-note building-sources-summary"></p>
-                        </div>
-                        <!-- Highlight by use: its ticks are rendered by js/ui/view-pills.js. -->
-                        <div class="control-group" data-use-highlight></div>
-                        <div class="cb-actions layer-source-actions"><button type="button" id="building-source-settings-button" class="btn" data-section-independent="true" onclick="openBuildingSourceSettings()">
-                                <span data-i18n-key="buildingSources.listTitle">Building sources</span>
-                            </button></div>
-                    </div>
-                </details>
+                        <span data-i18n-key="planningViews.title">Buildings and massing</span>
+                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    </button>
+                </div>
 
                 <details class="accordion-section" data-section="zoning-land-use" hidden>
                     <summary class="sheet-section-title">
                         <i class="fas fa-layer-group" aria-hidden="true"></i>
                         <span data-i18n-key="planningViews.zoningAndLandUse">Zoning and land use</span>
                     </summary>
-                    <div id="layers-zoning-controls" class="sheet-section-body"></div>
+                    <div id="layers-zoning-controls" class="sheet-section-body" data-map-modes="2d 3d"></div>
+                    <button type="button" class="cb-link sheet-mode-action" data-map-modes="photo" data-open-mode="model" data-reveal-control="planning-zoning-areas" data-i18n-key="planningViews.openModel" hidden>Open 3D model view</button>
                 </details>
 
-                <details data-map-modes="2d" class="accordion-section" data-section="parks-squares">
+                <details class="accordion-section" data-section="parks-squares" data-layer-mode="2d">
                     <summary class="sheet-section-title">
                         <i class="fas fa-tree" aria-hidden="true"></i>
                         <span data-i18n-key="mapShell.reorg.parksSquares">Parks and squares</span>
@@ -1034,7 +1053,7 @@
                     </div>
                 </details>
 
-                <details data-map-modes="2d" class="accordion-section" data-section="roads">
+                <details class="accordion-section" data-section="roads" data-layer-mode="2d">
                     <summary class="sheet-section-title">
                         <i class="fas fa-road" aria-hidden="true"></i>
                         <span class="accordion-title-text" data-section-title="roads"
@@ -1198,7 +1217,7 @@
 </div>
                 </details>
 
-                <details data-map-modes="2d" class="accordion-section" data-section="schelling-plan">
+                <details class="accordion-section" data-section="schelling-plan" data-layer-mode="2d">
                     <summary class="sheet-section-title">
                         <i class="fas fa-bullseye" aria-hidden="true"></i>
                         <span data-i18n-key="schellingPlan.title">Schelling plan</span>
@@ -1211,14 +1230,13 @@
                         <p class="sheet-note" data-i18n-key="schellingPlan.layerNote">Its settings and Propose open in their own panel on the map.</p>
                     </div>
                 </details>
-            </div>
-            <div id="model-layer-controls" class="map-sheet-body" data-map-modes="3d photo" hidden>
-                <div class="control-group" data-use-highlight data-map-modes="3d"></div>
-            </div>
-            <div class="map-sheet-body" data-map-modes="photo" hidden>
-                <div class="checkbox-group"><label><input id="photo-parcels-visible" type="checkbox" checked><span data-i18n-key="threeMode.photoParcels.toggle">Cadastral parcel boundaries</span></label></div>
-                <p id="photo-parcels-status" class="photoreal-parcel-note"></p>
-                <p class="photoreal-parcel-note" data-i18n-key="threeMode.photoParcels.note">Source boundaries projected onto Google imagery. Imagery and cadastre may differ in date and alignment.</p>
+                <details class="accordion-section" data-section="scenery">
+                    <summary class="sheet-section-title" data-i18n-key="mapShell.layerActions.scenery">Scenery and sound</summary>
+                    <div class="sheet-section-body">
+                        <button type="button" class="cb-link" data-map-modes="2d" data-open-mode="model" data-i18n-key="planningViews.openModel">Open 3D model view</button>
+                        <div id="model-layer-controls" class="model-view-controls" data-map-modes="3d photo" hidden></div>
+                    </div>
+                </details>
             </div>
         </section>
 
@@ -2160,7 +2178,7 @@
             // bundle:end parcel-data-clients
             // What each Buildings and massing role is still loading; the map's first fetches report to it.
             'js/planning/loading.js',
-            // Highlight by use: the 2D and 3D building styles read it (Layers → Building use).
+            // Highlight by use in Buildings and massing feeds the 2D and 3D building styles.
             'js/building-use-highlight.js',
             'js/map-core.js?v=20261121-deep-link-address',
             'js/user-management.js?v=20261020-modeled-totals',
@@ -2324,7 +2342,7 @@
             'js/map-pick.js',
             // What a building is for, by storey: the editor, layouts and Plan stats read it.
             'js/building-use.js',
-            // The top-centre view pills and the Highlight by use ticks in Layers.
+            // The top-centre view pills and the Highlight by use controls.
             'js/ui/view-pills.js',
             'js/single-building-geometry.js',
             'js/freeform-placement.js?v=20261119-pointer-placement',

@@ -4,6 +4,7 @@ import { applyLayout, createFromPlan, editorSave, openStackAgreement } from '../
 import { installAreaMonitorSpaFallback } from '../helpers/mocks/area-monitor-server';
 import { waitForMapReady } from '../helpers/app';
 import { openWalletModal } from '../helpers/blockchain';
+import { openLayerSection } from '../helpers/layers';
 
 async function dragHandle(page: any, surface: any, deltaY: number) {
   const box = await surface.locator(':scope > .mobile-dock-sheet-handle').boundingBox();
@@ -177,7 +178,7 @@ test('model 3D keeps its scene while the same Layers sheet resizes and closes', 
   await createSpace(page, 'park');
   await page.locator('#mode-3d-toggle').click();
   await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 20_000 });
-  await page.locator('#layers-button').click();
+  await openLayerSection(page, 'scenery');
   const layers = page.locator('#layers-sheet');
   await layers.locator(':scope > .mobile-dock-sheet-handle').focus();
   await page.keyboard.press('End');

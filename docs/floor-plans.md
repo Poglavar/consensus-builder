@@ -7,6 +7,10 @@ pieces fit, and what is still open. The storage and import contract is specified
 [`docs/building-floor-models.md`](building-floor-models.md); the agency evidence pipeline in
 [private Novogradnje producer workflow](https://github.com/Poglavar/zagreb-novogradnje/blob/main/backend/floor-plans/README.md). Dates are 2026.
 
+Open **Buildings and massing → Display → Floor plans**. In 2D, turn on estimated ground floors
+or choose **Explore floors in 3D**. In X-ray, **Built** opens existing interiors and **Proposed**
+opens design interiors.
+
 ## Status at a glance
 
 | Part | State | Where |
@@ -287,7 +291,7 @@ sequenceDiagram
   model without floor plans, no height) keeps the per-m² rule of plan-yield.js.
   The cells spin until the count arrives.
 - `frontend/js/suggested-layouts-2d.js` — the 2D counterpart: the "Estimated layouts (ground
-  floor)" toggle in the Layers sheet under the building layers (`?suggested2d=1`) draws the ground
+  floor)" toggle in Buildings and massing → Display → Floor plans (`?suggested2d=1`) draws the ground
   floor of every suggested layout on the map from the same generator and `floorPlanToGeoJSON`, on
   its own pane above the proposed-buildings canvas, from zoom 17 for the buildings in view plus a
   margin. A slice with no layout is a red dashed outline whose reasons follow the pointer. It

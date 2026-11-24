@@ -406,11 +406,7 @@
             // Keep framed land clear of the details panel (proposals/list-ui.js).
             fitPadding: () => (typeof w.getProposalPanelFitPadding === 'function' ? w.getProposalPanelFitPadding(40) : null),
             buildingPool: () => (Array.isArray(w.buildingFeaturePool) ? w.buildingFeaturePool : []),
-            buildingsShown: () => {
-                const box = w.document.getElementById('showBuildings');
-                if (box) return !!box.checked;
-                return !!(w.buildingLayer && w.map && typeof w.map.hasLayer === 'function' && w.map.hasLayer(w.buildingLayer));
-            },
+            buildingsShown: () => !!w.PlanningViews?.isBuiltVisible(),
             buildingStyle: () => (typeof w.buildingStyleForFeature === 'function' ? w.buildingStyleForFeature({}) : {}),
             parcelStyle: (id, feature) => (typeof w.getParcelBaseStyle === 'function' ? w.getParcelBaseStyle(id, null, { feature }) : null)
                 || w.normalStyle || {},

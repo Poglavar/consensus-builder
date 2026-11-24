@@ -113,6 +113,7 @@ it('resolves a caller waiting on scene readiness as false when the pending scene
         cancelLoop() {},
         apartmentHover: null,
         apartmentPanel: null,
+        xrayToolbar: null,
         apartmentHoverNote: null,
         suggestedStreetLoader: null,
         suggestedPlanner: null,
@@ -186,9 +187,8 @@ it('resolves a caller waiting on scene readiness as false when the pending scene
         proposalInteractionGroup: null,
         proposalDraftGroup: null,
         threeContainer: null,
-        buildingModeControlsEl: null,
+        modelControlGroups: [],
         buildingModeButtons: {},
-        onShowExistingBuildingsChange: null,
         onShowProposedBuildingsChange: null,
         windowResizeRemoved: false,
         windowListeners: [],
@@ -481,8 +481,9 @@ it('builds a retained scene’s parcel ground once when the layer returns', asyn
     const group = { visible: true, userData: {} };
     let enabled = false, built = 0, queried = 0;
     const context = loadInContext(threeModeDeclarations(['syncParcelGroundVisibility', 'restoreModelParcelGround']), {
-        flatGroup: group, realisticLayerActive: false, lifeQueryBounds: [0, 0, 1, 1], sceneParcelSnapshot: [],
-        window: { ParcelPresenter: { isEnabled: () => enabled }, LiveParcelFabric: { queryBounds() { queried++; return []; } } },
+        flatGroup: group, sceneAbort: null, parcelGroundGeneration: 0, lifeQueryBounds: [0, 0, 1, 1], sceneParcelSnapshot: [],
+        realisticLayerActive: false,
+        window: { ParcelPresenter: { isEnabled: () => enabled }, LiveParcelFabric: { queryBounds() { queried++; return [{ id: 'cached' }]; } } },
         rebuildParcelGround3D() { built++; group.userData.parcelsBuilt = true; return Promise.resolve(); }
     });
     for (const [on, expectedBuilds] of [[false, 0], [true, 1], [false, 1], [true, 1]]) {
@@ -493,6 +494,34 @@ it('builds a retained scene’s parcel ground once when the layer returns', asyn
         expect(built).toBe(expectedBuilds);
     }
     expect(queried).toBe(1);
+});
+
+for (const cancel of [false, true]) it(`loads empty model parcel ground and honours a subsequent toggle (cancel=${cancel})`, async () => {
+    let complete;
+    const pending = new Promise(resolve => { complete = resolve; });
+    const signal = new AbortController().signal;
+    const record = { id: 'parcel' };
+    let records = [], builds = 0;
+    const context = loadInContext(threeModeDeclarations(['restoreModelParcelGround']), {
+        isActive: true, flatGroup: { userData: {} }, realisticLayerActive: false, sceneAbort: { signal },
+        lifeQueryBounds: [2, 3, 4, 5], parcelGroundGeneration: 1, sceneParcelSnapshot: [],
+        window: { LiveParcelFabric: { queryBounds: () => records }, CadastralParcelRepository: {
+            ensureBounds(bounds, options) {
+                expect(bounds).toEqual([[3, 2], [5, 4]]);
+                expect(options.signal).toBe(signal);
+                return pending;
+            }
+        } },
+        L: { latLngBounds: (...corners) => corners },
+        rebuildParcelGround3D() { builds++; }
+    });
+    const restoring = context.restoreModelParcelGround();
+    if (cancel) context.parcelGroundGeneration++;
+    records = [record];
+    complete();
+    await restoring;
+    expect(builds).toBe(cancel ? 0 : 1);
+    expect(context.sceneParcelSnapshot).toEqual(cancel ? [] : [record]);
 });
 
 it('does not apply parcel visibility after an async ground rebuild is cancelled', async () => {

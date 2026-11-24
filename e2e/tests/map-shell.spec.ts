@@ -29,19 +29,19 @@ test.describe('Map shell sheets @features', () => {
   test('Layers opens with ordered, collapsed sections every time', async ({ mockApi: page }, testInfo) => {
     await page.locator(selectors.layersButton).click();
     const sheet = page.locator(selectors.layersSheet);
-    const sections = sheet.locator('.map-sheet-body[data-map-modes="2d"] > details.accordion-section');
+    const sections = sheet.locator('.map-sheet-body > .accordion-section');
     expect(await sections.evaluateAll(nodes => nodes.map(node => (node as HTMLElement).dataset.section))).toEqual([
-      'base-map', 'parcels', 'blocks', 'buildings', 'parks-squares', 'roads', 'schelling-plan'
+      'base-map', 'parcels', 'blocks', 'buildings', 'zoning-land-use', 'parks-squares', 'roads', 'schelling-plan', 'scenery'
     ]);
-    await expect(sections.locator('> summary')).toHaveText([
-      'Base map', 'Parcels', 'Parcel blocks', 'Buildings', 'Parks and squares', 'Roads', 'Schelling plan'
+    await expect(sections.locator('> .sheet-section-title')).toHaveText([
+      'Base map', 'Parcels', 'Parcel blocks', 'Buildings and massing', 'Zoning and land use', 'Parks and squares', 'Roads', 'Schelling plan', 'Scenery and sound'
     ]);
     await expect(sheet.locator('details.accordion-section[open]')).toHaveCount(0);
     await expect(sheet.locator('[data-section="schelling-plan"] > summary .fa-bullseye')).toHaveCount(1);
     await page.screenshot({ path: testInfo.outputPath('layers-collapsed.png') });
     await sheet.locator('[data-section="base-map"] > summary').click();
     await expect(sheet.locator('#tile-source-select')).toBeVisible();
-    await sheet.locator('[data-section="buildings"] > summary').click();
+    await sheet.locator('[data-section="roads"] > summary').click();
     await expect(sheet.locator('details.accordion-section[open]')).toHaveCount(2);
     await sheet.locator(selectors.sheetClose).click();
     await page.locator(selectors.layersButton).click();
@@ -131,7 +131,7 @@ test.describe('Map shell sheets @features', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.locator(selectors.layersButton).click();
     const sheet = page.locator(selectors.layersSheet);
-    const section = sheet.locator('[data-section="buildings"]');
+    const section = sheet.locator('[data-section="parcels"]');
     await sheet.locator(':scope > .mobile-dock-sheet-handle').focus();
     await page.keyboard.press('End');
     const collapsed = (await sheet.boundingBox())!.height;

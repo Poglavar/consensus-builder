@@ -4,6 +4,7 @@ import { openCity, openParcel, clickMapPoint, showProposal, PARCEL_ID, PARCEL_GE
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { installAreaMonitorSpaFallback } from '../helpers/mocks/area-monitor-server';
 import { selectNativeOption } from '../helpers/controls';
+import { openPlanningSection } from '../helpers/layers';
 import { waitForMapReady } from '../helpers/app';
 import type { Page } from '@playwright/test';
 
@@ -383,9 +384,7 @@ test.describe('Remaining UI controls @features', () => {
       }];
       w.dispatchEvent(new Event('proposedBuildingsUpdated'));
     }, { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
-    await page.locator('#layers-button').click();
-    const buildings = page.locator('#layers-sheet details.accordion-section[data-section="buildings"]');
-    if (!(await buildings.evaluate((details: HTMLDetailsElement) => details.open))) await buildings.locator(':scope > summary').click();
+    await openPlanningSection(page, 'floor-plans');
     const checkbox = page.locator('#showSuggestedLayouts');
     await expect(checkbox).toBeVisible();
     await expect(checkbox).not.toBeChecked();

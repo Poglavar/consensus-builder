@@ -486,7 +486,7 @@ window.clearBuildingsUnavailable = clearBuildingsUnavailable;
 // `announce` is what the user ASKED FOR, and only that talks. A demolition scan or a corridor
 // preload is not, and on a reload of a big plan it would fire once per proposal. The pool is filled
 // either way: what a road demolishes must never depend on a display toggle, and the LAYER already
-// respects it (rebuildBuildingLayerFromPool only adds it to the map when the box is checked).
+// respects the Built appearance when it draws those footprints.
 // Fetches still running, for the Built arc around the Buildings and massing button (planning/loading.js).
 let buildingFetchesInFlight = 0;
 async function fetchBuildings(boundsOverride = null, options = {}) {
@@ -803,11 +803,8 @@ function buildingLayerOptions() {
 // tunnelled = yellow, untouched = blue (see buildingOutcomeStyle in corridor-tunnel.js).
 function rebuildBuildingLayerFromPool(dirtyIds = null) {
     const state = currentBuildingOutcomeState();
-    // The Layers-sheet checkbox is the source of truth for visibility. Deciding from "was the old
-    // layer on the map" broke the show-buildings toggle: the corridor preload fills the pool and
-    // rebuilds the layer OFF-map while the box is unticked, and the next tick inherited hidden.
-    const checkbox = document.getElementById('showBuildings');
-    const shouldShow = checkbox ? checkbox.checked : (buildingLayer ? map.hasLayer(buildingLayer) : true);
+    // Corridor preloads and late network responses may fill the pool with Built switched off.
+    const shouldShow = window.PlanningViews?.isBuiltVisible() && map.getZoom() >= BUILDING_MIN_ZOOM;
     if (!buildingLayer) {
         buildingLayer = L.geoJSON(null, buildingLayerOptions());
         buildingRenderedLayersById = new Map();
@@ -915,8 +912,7 @@ window.addEventListener('sourceListChanged', event => {
     outlineBuildingsByKey = new Map();
     rebuildBuildingLayerFromPool();
     drawOutlineBuildings();
-    const box = document.getElementById('showBuildings');
-    if (!box || box.checked) fetchBuildings(null, { announce: true });
+    if (window.PlanningViews?.isBuiltVisible() && isTwoDimensionalViewportActive()) fetchBuildings(null, { announce: true });
     fetchOutlineBuildings();
 });
 
@@ -936,6 +932,20 @@ function isTwoDimensionalViewportActive() {
     if (mode && (mode.pending || mode.desired !== '2d')) return false;
     return typeof window.isThreeModeActive !== 'function' || !window.isThreeModeActive();
 }
+
+// Showing Built can reuse an already loaded layer even when every requested cell is cached.
+function syncBuiltLayerVisibility() {
+    const shown = window.PlanningViews?.isBuiltVisible();
+    if (buildingLayer && map.hasLayer(buildingLayer) && !shown) map.removeLayer(buildingLayer);
+    if (!shown || !isTwoDimensionalViewportActive()) return;
+    if (map.getZoom() < BUILDING_MIN_ZOOM) { window.announceBuildingZoomGate?.(); return; }
+    if (buildingLayer && !map.hasLayer(buildingLayer)) buildingLayer.addTo(map);
+    fetchBuildings(null, { announce: true });
+}
+window.syncBuiltLayerVisibility = syncBuiltLayerVisibility;
+window.addEventListener('mapmodechange', event => {
+    if (event.detail?.desired === '2d' && !event.detail.pending) syncBuiltLayerVisibility();
+});
 
 // Set up map event handlers
 function setupMapEventHandlers() {
@@ -957,8 +967,7 @@ function setupMapEventHandlers() {
         buildingFollowTimer = setTimeout(() => {
             buildingFollowTimer = null;
             if (!isTwoDimensionalViewportActive()) return;
-            const box = document.getElementById('showBuildings');
-            if (!box || box.checked) fetchBuildings();
+            if (window.PlanningViews?.isBuiltVisible()) fetchBuildings();
             fetchOutlineBuildings();
         }, debounceMs);
 
@@ -991,7 +1000,7 @@ function setupMapEventHandlers() {
                     try { map.removeLayer(layer); } catch (_) { }
                 }
             });
-        } else if (buildingLayer && !map.hasLayer(buildingLayer) && document.getElementById('showBuildings')?.checked) {
+        } else if (buildingLayer && !map.hasLayer(buildingLayer) && window.PlanningViews?.isBuiltVisible()) {
             // Back at building zoom the layer returns by itself: cells already loaded answer from the
             // cache without a rebuild, so nothing else would add it. (The outlines redraw on every move.)
             buildingLayer.addTo(map);

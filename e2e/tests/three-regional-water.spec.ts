@@ -1,5 +1,6 @@
 import { test, expect } from '../helpers/fixtures';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
+import { openLayerSection } from '../helpers/layers';
 
 const target = { targetLat: 45.80025, targetLng: 15.9822, headingDeg: 0, pitchRad: -1.15, range: 160_000 };
 const cameraParam = Object.values(target).join(',');
@@ -61,7 +62,7 @@ test('regional water follows a restored distant model view, changes detail, and 
   await expect.poll(() => waterTiles(page).then(names => Math.max(...names.map((name: string) => Number(name.split('/')[1])))))
     .toBeGreaterThan(regionalDetail);
 
-  await page.locator('#layers-button').click();
+  await openLayerSection(page, 'scenery');
   const waterToggle = page.getByLabel('Water', { exact: true });
   await expect(waterToggle).toBeVisible();
   await waterToggle.uncheck();

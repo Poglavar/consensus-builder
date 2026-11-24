@@ -283,7 +283,7 @@ describe('carried into the applied plan', () => {
         expect(threeMode).toContain("threeI18n('threeMode.controls.ineligibleParcels', 'Non-buildable plots')");
         // Its own full-width row: sharing one with a dropdown squeezed the label into two lines.
         expect(threeMode).toContain('three-mode-trees-row three-mode-wide-row');
-        expect(mapCss).toContain('#model-layer-controls .three-mode-wide-toggle {');
+        expect(mapCss).toContain('.model-view-controls .three-mode-wide-toggle {');
     });
 
     it.each(locales)('%s names the toggle', locale => {

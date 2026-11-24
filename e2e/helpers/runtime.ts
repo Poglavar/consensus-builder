@@ -4,6 +4,14 @@ import { mockAllApiRoutes } from './mocks/api-routes';
 import { attachSharedIndex, ensurePageIndex, fileDesign, SharedIndex } from './mocks/shared-server';
 import { waitForMapReady } from './app';
 import { selectNativeOption } from './controls';
+import { openPlanningDisplay } from './layers';
+
+// Existing building visibility is authored in Buildings and massing → Display. Keep tests on the
+// real visible control now that Layers no longer owns a duplicate checkbox.
+export async function setExistingBuildings(page: Page, value: 'solid' | 'ghost' | 'off' = 'solid'): Promise<void> {
+  await openPlanningDisplay(page);
+  await selectNativeOption(page.locator('#planning-existing-appearance'), value);
+}
 
 export const PARCEL_ID = sampleParcels.features[0].properties.parcelId;
 export const PARCEL_GEOMETRY = sampleParcels.features[0].geometry;

@@ -1,7 +1,7 @@
 <!-- Storage, source-adapter and rendering contract for optional architectural interiors. -->
 # Building floor models
 
-**X-ray** opens from Layers. Layers closes and the map shows **Proposed**, **Built** and **Close X-ray**. Proposed shows interiors of design buildings, including in Photo view. Built uses the 3D model to show interiors of existing buildings. Both use available floor models and estimate residential layouts where possible. Select a flat on the map or in the apartment picker. Reopen Layers to change **Cut above** or choose **Access** in the 3D model. Closing X-ray restores the building layers selected in Layers.
+**X-ray** opens from **Buildings and massing → Display → Floor plans**. The planning sheet closes and the map shows **Proposed**, **Built** and **Close X-ray**. Proposed shows interiors of design buildings, including in Photo view. Built uses the 3D model to show interiors of existing buildings. Both use available floor models and estimate residential layouts where possible. Select a flat on the map or in the apartment picker. Reopen **Buildings and massing → Display → Floor plans** to change **Cut above** or choose **Access** in the 3D model. Closing X-ray restores the shared Built appearance selected in **Buildings and massing → Display**.
 
 ## Where floor plans are stored
 

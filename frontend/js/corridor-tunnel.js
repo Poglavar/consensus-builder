@@ -260,7 +260,7 @@
         const list = global.CityConfigManager?.getBuildingSources?.() || [];
         const sourceList = global.SourceList;
         if (!sourceList) return { sources: [], fallback: true };
-        const shown = !!global.document?.getElementById?.('showBuildings')?.checked;
+        const shown = global.PlanningViews?.isBuiltVisible();
         const sources = [...(shown ? sourceList.inUse(list) : []), ...sourceList.outlined(list).map(entry => entry.id)];
         return sources.length ? { sources } : { sources: sourceList.inUse(list), fallback: true };
     }

@@ -13,6 +13,7 @@ import { openLayerSection } from '../helpers/layers';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
+import { setExistingBuildings } from '../helpers/runtime';
 
 // A GDI footprint as it lands in the pool from a gdi-3d cell: its object_id and its source.
 const GDI_FEATURE = {
@@ -60,8 +61,7 @@ test.describe('Building reference layers @features', () => {
     await waitForMapReady(page);
     await page.evaluate(() => (window as any).map.setView([45.80015, 15.98216], 18, { animate: false }));
     await openLayerSection(page, 'buildings');
-    const gdi = page.locator('#showBuildings');
-    await gdi.check();
+    await setExistingBuildings(page);
     await expect.poll(() => page.evaluate(() => ((window as any).buildingFeaturePool || []).some((feature: any) => feature.properties.source === 'gdi-3d' && feature.properties.id === 61075))).toBe(true);
 
     const detect = () => page.evaluate(() => {
@@ -74,10 +74,10 @@ test.describe('Building reference layers @features', () => {
       return (window as any).detectLoadedBuildingTunnelIntersections(ring).map((hit: any) => hit.id);
     });
     const shown = await detect();
-    await gdi.uncheck();
+    await setExistingBuildings(page, 'off');
     await expect.poll(() => page.evaluate(() => !(window as any).map.hasLayer((window as any).buildingLayer))).toBe(true);
     const hidden = await detect();
-    await gdi.check();
+    await setExistingBuildings(page);
     const shownAgain = await detect();
 
     // The corridor cuts the same building no matter what is switched on. This is the assertion the
@@ -94,7 +94,7 @@ test.describe('Building reference layers @features', () => {
     await waitForMapReady(page);
     await page.evaluate(() => (window as any).map.setView([45.80015, 15.98216], 18, { animate: false }));
     await openLayerSection(page, 'buildings');
-    await page.locator('#showBuildings').check();
+    await setExistingBuildings(page);
     await expect.poll(() => page.evaluate(() => ((window as any).buildingFeaturePool || []).some((feature: any) => feature.properties.source === 'gdi-3d' && feature.properties.id === 61075))).toBe(true);
     await expect.poll(() => page.evaluate(() => {
       let found = false;
@@ -109,12 +109,11 @@ test.describe('Building reference layers @features', () => {
     await waitForMapReady(page);
     await page.evaluate(() => (window as any).map.setView([45.80015, 15.98216], 18, { animate: false }));
     await openLayerSection(page, 'buildings');
-    await page.locator('#showBuildings').check();
+    await setExistingBuildings(page);
     await expect.poll(() => page.evaluate(() => (window as any).map.hasLayer((window as any).buildingLayer))).toBe(true);
 
-    // Move keyboard focus out of the layer checkbox and close the layers sheet, as a user would
-    // before invoking the global B shortcut.
-    await page.locator('#layers-button').click();
+    // Return focus to the toolbar before invoking the global B shortcut.
+    await page.locator('#planning-views-button').click();
     await page.keyboard.press('b');
     const dialog = page.locator('.building-layers-dialog');
     await expect(dialog).toBeVisible();
@@ -136,9 +135,9 @@ test.describe('Building reference layers @features', () => {
     await waitForMapReady(page);
     await page.evaluate(() => (window as any).map.setView([45.80015, 15.98216], 18, { animate: false }));
     await openLayerSection(page, 'buildings');
-    await page.locator('#showBuildings').uncheck();
-    await page.locator('#layers-button').click();
-    const shown = () => page.evaluate(() => (document.getElementById('showBuildings') as HTMLInputElement).checked);
+    await setExistingBuildings(page, 'off');
+    await page.locator('#planning-views-button').click();
+    const shown = () => page.evaluate(() => (window as any).PlanningViews.isBuiltVisible());
     const outlined = () => page.evaluate(() => {
       const w = window as any;
       return w.SourceList.outlined(w.SourceList.forConfig(w.CityConfigManager.getCurrentCityConfig(), w)).map((entry: any) => entry.id);

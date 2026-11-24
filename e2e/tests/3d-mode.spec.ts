@@ -3,18 +3,13 @@ import { test, expect } from '../helpers/fixtures';
 import { openCity, createSpace, createBuilding, proposalState } from '../helpers/runtime';
 import { buildings3D, mockBuildingScene, mockFootprintCells } from '../helpers/mocks/building-data';
 import { mockPhotoTiles } from '../helpers/mocks/photo-data';
-import { openLayerSection } from '../helpers/layers';
+import { openLayerSection, openPlanningSection } from '../helpers/layers';
 import { Page } from '@playwright/test';
 
 async function enter3D(page: Page) {
   await page.locator('#mode-3d-toggle').click();
   await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 15000 });
   await expect.poll(() => page.evaluate(() => !!(window as any).getThreeModeInternals?.())).toBe(true);
-}
-// The model's Built/Planned/facade/scenery controls live in the Layers sheet (fbe3758d).
-async function openModelLayers(page: Page) {
-  if (!(await page.locator('#model-layer-controls').isVisible())) await page.locator('#layers-button').click();
-  await expect(page.locator('#model-layer-controls .three-mode-ui-panel')).toBeVisible();
 }
 async function openPlanningViews(page: Page) {
   if (!(await page.locator('#planning-views').isVisible())) await page.locator('#planning-views-button').click();
@@ -28,7 +23,7 @@ async function closeSheets(page: Page) {
   }
   await expect(page.locator('.map-sheet:visible')).toHaveCount(0);
 }
-// Built-context rendering and its load radius are both discoverable in the 3D Layers sheet.
+// Measure the ring drawn by the model's Building appearance radius control.
 async function modelRadiusPreview(page: Page) {
   return page.evaluate(() => {
     const w = window as any;
@@ -327,8 +322,7 @@ test.describe('3D rendering and controls @features', () => {
     const modeBoxes = () => Promise.all(modeIds.map(async id => await page.locator('#' + id).boundingBox()));
     const flat = await modeBoxes();
     await enter3D(page);
-    await openModelLayers(page);
-    await openPlanningViews(page);
+    await openPlanningSection(page, 'building-appearance');
     await selectNativeOption(page.locator('[data-planning-setting="existing"]'), 'solid');
     await closeSheets(page);
     await expect.poll(async () => (await sceneBuildings(page)).length).toBe(2);
@@ -422,8 +416,7 @@ test.describe('3D rendering and controls @features', () => {
     await mockBuildingScene(page);
     await openCity(page);
     await enter3D(page);
-    await openModelLayers(page);
-    await openPlanningViews(page);
+    await openPlanningSection(page, 'building-appearance');
     await selectNativeOption(page.locator('[data-planning-setting="existing"]'), 'solid');
     await closeSheets(page);
     await expect.poll(async () => (await sceneBuildings(page)).length).toBe(2);
@@ -454,8 +447,7 @@ test.describe('3D rendering and controls @features', () => {
     const isolation = page.locator('.three-mode-isolation-banner');
     if (await isolation.isVisible()) await isolation.locator('.isolation-banner-close').click();
     await expect(isolation).toBeHidden();
-    await openModelLayers(page);
-    await openPlanningViews(page);
+    await openPlanningSection(page, 'building-appearance');
     const display = page.locator('[data-planning-setting="existing"]');
     const scope = page.locator('[data-planning-setting="existingScope"]');
     for (const [state, count] of [['solid', 2], ['ghost', 2], ['surviving', 1], ['removed', 1], ['off', 0]] as const) {
@@ -526,7 +518,7 @@ test.describe('3D rendering and controls @features', () => {
     await expect.poll(async () => (await sceneBuildings(page)).length).toBe(1);
   });
 
-  test('radius preview follows hover, keyboard, and drag in Layers, then refetches on release', async ({ mockApi: page }) => {
+  test('radius preview follows hover, keyboard, and drag in Building appearance, then refetches on release', async ({ mockApi: page }) => {
     const requests = await mockBuildingScene(page);
     // A load asks for the building cells it has not seen yet; wait until a load has asked for all of them.
     const settled = async () => {
@@ -540,8 +532,8 @@ test.describe('3D rendering and controls @features', () => {
     await openCity(page);
     await enter3D(page);
     const initialCells = await settled();
-    await openModelLayers(page);
-    const slider = page.locator('#layers-sheet .three-mode-radius-slider');
+    await openPlanningSection(page, 'building-appearance');
+    const slider = page.locator('#planning-building-appearance .three-mode-radius-slider');
     await expect(page.locator('#settings-sheet .three-mode-radius-slider')).toHaveCount(0);
 
     // Hovering previews the full circle at its actual ground-plane radius without fetching.
@@ -598,12 +590,12 @@ test.describe('3D rendering and controls @features', () => {
     await expect.poll(async () => (await modelRadiusPreview(page))?.visible ?? false).toBe(false);
     await page.mouse.move(box.x + box.width * 0.45, box.y + box.height / 2);
     await expect.poll(async () => (await modelRadiusPreview(page))?.visible).toBe(true);
-    await closeSheets(page);
+    await page.locator('#planning-views [data-sheet-close]').click();
     await expect.poll(async () => (await modelRadiusPreview(page))?.visible ?? false).toBe(false);
     await page.locator('#mode-2d-toggle').click();
     await expect.poll(async () => page.evaluate(() => !(window as any).isThreeModeActive?.())).toBe(true);
     await enter3D(page);
-    await openModelLayers(page);
+    await openPlanningSection(page, 'building-appearance');
     await expect(slider).toHaveValue(saved);
     await expect(page.locator('.three-mode-radius-value')).toContainText(saved);
     const reopenedBox = await slider.boundingBox();
@@ -666,9 +658,8 @@ test.describe('3D rendering and controls @features', () => {
     await expect.poll(allMeshes).toBeGreaterThan(Math.max(massingCount, buildoutCount));
     expect(await proposalState(page, id)).toEqual(source);
 
-    // The facade controls belong to the Layers sheet; switch back from Planning Views before
-    // querying or changing them. The two control sheets are mutually exclusive.
-    await openModelLayers(page);
+    // Facade controls belong to the Buildings and massing appearance section.
+    await openPlanningSection(page, 'building-appearance');
     const uniforms = () => page.evaluate(() => {
       return (window as any).getThreeModeInternals().renderer.info.programs.map((program: any) => {
         const map = program.getUniforms().map;
@@ -693,7 +684,7 @@ test('X-ray toolbar scopes proposed layouts and closes by keyboard', async ({ mo
   await openCity(page);
   await createBuilding(page);
   await enter3D(page);
-  await openModelLayers(page);
+  await openPlanningSection(page, 'floor-plans');
   const xray = page.locator('#three-mode-xray');
   const floorPlans = () => page.evaluate(() => (window as any).getThreeModeInternals().scene.getObjectByName('FloorPlans')?.children.length || 0);
   await expect(xray).toHaveAttribute('aria-pressed', 'false');
@@ -720,7 +711,7 @@ test('X-ray toolbar stays in Photo for Proposed and opens the model for Built', 
   await page.locator('#mode-realistic-toggle').click();
   await expect(page.locator('body')).toHaveClass(/realistic-mode-active/, { timeout: 15_000 });
   await expect.poll(tiles.requests, { timeout: 20_000 }).toBeGreaterThan(0);
-  await openModelLayers(page);
+  await openPlanningSection(page, 'floor-plans');
   await page.locator('#three-mode-xray').click();
   await expect(page.locator('#three-xray-toolbar')).toBeVisible();
   await expect(page.locator('body')).toHaveClass(/realistic-mode-active/);
@@ -736,15 +727,15 @@ test('X-ray built scope reveals an initially hidden existing layer and restores 
   await mockFootprintCells(page, () => [{ id: 91001, height_m: 18, floors: 5, building: 'yes',
     geometry: { type: 'Polygon', coordinates: [[[15.98270,45.80029],[15.98284,45.80029],[15.98284,45.80043],[15.98270,45.80043],[15.98270,45.80029]]] } }]);
   await openCity(page);
-  await openLayerSection(page, 'buildings');
-  await expect(page.locator('#showBuildings')).not.toBeChecked();
+  await openPlanningSection(page, 'building-appearance');
+  await expect(page.locator('[data-planning-setting="existing"]')).toHaveValue('off');
   await closeSheets(page);
   await enter3D(page);
   // Suggested existing layouts are built only for visible buildings close to the camera.
   expect(await page.evaluate(() => (window as any).applyThree3DGeoView({
     targetLat: 45.80036, targetLng: 15.98277, pitchRad: -Math.PI / 4, range: 75,
   }))).toBe(true);
-  await openModelLayers(page);
+  await openPlanningSection(page, 'floor-plans');
 
   const xray = page.locator('#three-mode-xray');
   await page.setViewportSize({ width: 390, height: 844 });
@@ -774,9 +765,9 @@ test('X-ray built scope reveals an initially hidden existing layer and restores 
       && group.userData?.proposalId == null && group.userData?.parcelId == null).length || 0;
   });
   await expect.poll(existingFloorPlans).toBeGreaterThan(0);
-  await expect(page.locator('#showBuildings')).not.toBeChecked();
+  await expect(page.locator('[data-planning-setting="existing"]')).toHaveValue('off');
 
-  await openModelLayers(page);
+  await openPlanningSection(page, 'floor-plans');
   const floorCutaway = page.locator('#three-mode-floor-cutaway');
   await expect(floorCutaway).toBeEnabled();
   const visibleFloorCount = () => page.evaluate(() => {
@@ -795,7 +786,8 @@ test('X-ray built scope reveals an initially hidden existing layer and restores 
   await closeSheets(page);
   await page.locator('#three-xray-close').click();
   await expect(page.locator('#three-xray-toolbar')).toBeHidden();
-  await expect(page.locator('#showBuildings')).not.toBeChecked();
+  await openPlanningSection(page, 'building-appearance');
+  await expect(page.locator('[data-planning-setting="existing"]')).toHaveValue('off');
   await expect.poll(buildingVisibility).toMatchObject({ existing: false });
 });
 
@@ -810,7 +802,7 @@ test('3D trees use real instanced geometry, toggle off and restore their saved p
   });
   await openCity(page);
   await enter3D(page);
-  await openModelLayers(page);
+  await openLayerSection(page, 'scenery');
   // Scenery is asked for by place (location-first.md): the box in view and the scene's geometry, no city.
   const layersQuery = new URL(layerUrls.at(-1)!).searchParams;
   expect(layersQuery.get('bbox')).toMatch(/^-?\d+\.\d+(,-?\d+\.\d+){3}$/);
@@ -831,7 +823,7 @@ test('3D trees use real instanced geometry, toggle off and restore their saved p
   await closeSheets(page);
   await page.locator('#mode-2d-toggle').click();
   await enter3D(page);
-  await openModelLayers(page);
+  await openLayerSection(page, 'scenery');
   await expect(trees).not.toBeChecked();
   await expect.poll(instances).toEqual([]);
   await trees.check();
@@ -841,8 +833,8 @@ test('3D trees use real instanced geometry, toggle off and restore their saved p
 test('3D selection and deselection retain the surrounding scene', async ({ mockApi: page }) => {
   await mockBuildingScene(page);
   await openCity(page);
-  await openLayerSection(page, 'buildings');
-  await page.locator('#showBuildings').check();
+  await openPlanningSection(page, 'building-appearance');
+  await selectNativeOption(page.locator('[data-planning-setting="existing"]'), 'solid');
   await closeSheets(page);
   const proposalId = await createSpace(page, 'park');
   await enter3D(page);

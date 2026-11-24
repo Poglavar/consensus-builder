@@ -7211,6 +7211,14 @@
         },
         "share": "Podeli",
         "shareMap": "Podeli ovu kartu",
+        "layerActions": {
+            "open2d": "Otvori u 2D-u",
+            "ownershipIn2d": "Otvori isticanje vlasništva u 2D-u",
+            "floorsIn3d": "Istraži spratove u 3D-u",
+            "floorPlans": "Osnove spratova",
+            "buildingAppearance": "Izgled zgrade",
+            "scenery": "Ambijent i zvuk"
+        },
         "designActions": "Radnje za dizajni"
     },
     "parcelMenu": {

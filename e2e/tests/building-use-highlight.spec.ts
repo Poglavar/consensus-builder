@@ -28,10 +28,13 @@ test('Highlight by use colours a design by its storeys and the view pill turns i
   expect(before.length).toBeGreaterThan(0);
   const colors = await page.evaluate(() => (window as any).BuildingUseHighlight.COLORS);
 
-  await page.locator('#layers-button').click();
-  const sheet = page.locator('#layers-sheet');
-  await sheet.locator('details[data-section="buildings"] > summary').click();
-  const buildings = sheet.locator('details[data-section="buildings"] [data-use-highlight]');
+  await page.locator('#planning-views-button').click();
+  const sheet = page.locator('#planning-views');
+  const display = sheet.locator('[data-planning-tab-panel="display"]');
+  await expect(display).toBeVisible();
+  const useDisclosure = display.locator('#planning-use-highlight');
+  if (!(await useDisclosure.evaluate((element: HTMLDetailsElement) => element.open))) await useDisclosure.locator('> summary').click();
+  const buildings = display.locator('[data-use-highlight]');
   await buildings.getByRole('checkbox', { name: 'Housing' }).check();
   const pill = page.locator('#map-view-pills [data-view-pill="use"]');
   await expect(pill).toHaveText(/Highlighting use: Housing/);
@@ -45,17 +48,18 @@ test('Highlight by use colours a design by its storeys and the view pill turns i
 
   await pill.getByRole('button', { name: 'Turn off this highlight' }).click();
   await expect(page.locator('#map-view-pills .map-view-pill')).toHaveCount(0);
-  // The click outside closed the Layers sheet; the tick is cleared all the same.
+  // The click outside closed the Buildings and massing sheet; the tick is cleared all the same.
   await expect(buildings.locator('[data-use-highlight-category="shop"]')).not.toBeChecked();
   await expect.poll(designFill).toEqual(before);
 
   // Highlight by ownership type shows the same kind of pill.
   await page.locator('#layers-button').click();
-  await sheet.locator('details[data-section="parcels"] > summary').click();
-  await sheet.locator('#highlightOwnershipGovernment').check();
+  const layers = page.locator('#layers-sheet');
+  await layers.locator('details[data-section="parcels"] > summary').click();
+  await layers.locator('#highlightOwnershipGovernment').check();
   const ownership = page.locator('#map-view-pills [data-view-pill="ownership"]');
   await expect(ownership).toHaveText(/Highlighting ownership: Government/);
   await ownership.getByRole('button', { name: 'Turn off this highlight' }).click();
-  await expect(sheet.locator('#highlightOwnershipGovernment')).not.toBeChecked();
+  await expect(layers.locator('#highlightOwnershipGovernment')).not.toBeChecked();
   await expect(ownership).toHaveCount(0);
 });

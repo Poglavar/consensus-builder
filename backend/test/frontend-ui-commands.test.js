@@ -41,6 +41,7 @@ const openingTags = (html, tagName) => [...html.matchAll(new RegExp(`<${tagName}
 
 // Interactive controls in the sheets that are deliberately NOT commands, and why.
 const NOT_COMMANDS = {
+    'showProposedBuildings': 'internal applied-design hydration control; the Proposed appearance command drives the visible selector',
     'designs-browse-tab': 'switches the Designs panel back to its browse tab',
     'username-display': 'opens the profile and wallet controls, handled by UserManagement',
     // View controls now follow the search/user row in DOM order, inside the floating shell's
@@ -217,6 +218,7 @@ describe('rehoused sidebar controls', () => {
                 const id = attr(tag, 'id');
                 if (id && (byControl.has(id) || NOT_COMMANDS[id])) continue;
                 if (tagName === 'button' && attr(tag, 'data-sheet-target') !== null) continue; // shell buttons
+                if (tagName === 'button' && attr(tag, 'data-open-mode') !== null) continue; // contextual shortcuts to a map view
                 if (tagName === 'button' && attr(tag, 'data-sheet-close') !== null) continue;
                 // Update Reload is contextual and uses the guarded release-notice action.
                 if (tagName === 'button' && attr(tag, 'data-app-update-reload') !== null) continue;
@@ -328,12 +330,13 @@ describe('availability and search', () => {
         expect(UiCommands.findCommand('areaMonitor.cityPlan')).toBeFalsy();
     });
 
-    it('places map data sources and parcel refresh on 2D Layers, with diagnostics in Settings', () => {
+    it('keeps map sources with their display controls and diagnostics in Settings', () => {
         const layers = UiCommands.commandsFor('layers', fakeCtx()).map(c => c.id);
         const settings = UiCommands.commandsFor('settings', fakeCtx()).map(c => c.id);
         expect(layers).toEqual(expect.arrayContaining([
-            'settings.parcelSourceSettings', 'settings.buildingSourceSettings', 'settings.baseMap', 'parcels.refresh'
+            'settings.parcelSourceSettings', 'settings.baseMap', 'parcels.refresh'
         ]));
+        expect(UiCommands.commandsFor('planning', fakeCtx()).map(c => c.id)).toContain('settings.buildingSourceSettings');
         expect(settings).toContain('parcels.coverage');
         expect(settings).not.toContain('settings.dataSource');
         expect(settings).not.toContain('parcels.refresh');

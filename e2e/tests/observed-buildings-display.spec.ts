@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, stubBasemapTiles, PARCEL_GEOMETRY } from '../helpers/runtime';
+import { openCity, stubBasemapTiles, PARCEL_GEOMETRY, setExistingBuildings } from '../helpers/runtime';
 import { selectNativeOption } from '../helpers/controls';
 import { openLayerSection } from '../helpers/layers';
 
@@ -17,7 +17,7 @@ for (const reference of ['osm', 'dgu']) {
       });
       await page.goto(`/?city=zg&reduceMotion=1&at=45.80025,15.9822,18&existing=${display.existing}&existingScope=${display.scope}`, { waitUntil: 'domcontentloaded' });
       await openLayerSection(page, 'buildings');
-      await page.locator('#showBuildings').check();
+      await setExistingBuildings(page, display.existing === 'off' ? 'ghost' : 'solid');
       const outline = (on: boolean) => page.evaluate(([id, on]) => {
         const w = window as any;
         const list = w.CityConfigManager.getBuildingSources().map((entry: any) => (entry.id === id ? { ...entry, outline: on } : entry));
@@ -44,8 +44,7 @@ test('observed buildings start off and retain a faint contrasting fill when show
     return route.fulfill({ json: { supported: true, kind: body.kind, bbox: body.bbox, complete: true, items: [{ id: 'survey-one', geometry: PARCEL_GEOMETRY }] } });
   });
   await openCity(page);
-  expect(await page.evaluate(()=>(window as any).PlanningViews.getState().existing)).toBe('off');
-  await expect(page.locator('#showBuildings')).not.toBeChecked();
+  await expect.poll(() => page.evaluate(() => (window as any).PlanningViews.getState().existing)).toBe('off');
   await page.locator('#planning-views-button').click();
   const built=page.locator('[data-planning-setting="existing"]');
   await selectNativeOption(built,'solid');
@@ -76,11 +75,10 @@ test('NYC exposes its source footprints and can display them from the common end
   } }));
   await page.goto('/?city=new_york&reduceMotion=1', { waitUntil: 'domcontentloaded' });
   await expect.poll(() => page.evaluate(() => !!(window as any).PlanningViews)).toBe(true);
-  const row = page.locator('#showBuildings').locator('..');
-  await expect(row).not.toHaveAttribute('hidden');
-  await expect(row).not.toHaveAttribute('data-feature-hidden');
-  await expect(row).toContainText('Buildings');
-  await page.locator('#planning-views-button').click();
+  await page.locator('#layers-button').click();
+  await expect(page.locator('#layers-open-buildings')).toBeVisible();
+  await page.locator('#layers-open-buildings').click();
+  await expect(page.locator('#planning-views')).toBeVisible();
   await selectNativeOption(page.locator('[data-planning-setting="existing"]'), 'solid');
   await expect(page.locator('.leaflet-observedBuildings-pane path').first()).toBeVisible();
 });

@@ -36,6 +36,10 @@ body:is([data-planning-proposed="solid"], [data-planning-proposed="ghost"]) .pla
     font-weight: var(--cb-weight-semibold);
 }
 .planning-layer-controls { --planning-action-size: var(--cb-control-height); display: grid; gap: var(--cb-space-2); }
+#planning-views-display > .accordion-section { padding-block: var(--cb-space-2); }
+#planning-views-display > .accordion-section > summary { margin-block-end: 0; }
+#planning-views-display > .accordion-section[open] > summary { margin-block-end: var(--cb-space-2); }
+#planning-floor-plans .cb-link { margin-block-start: var(--cb-space-2); }
 .planning-layer-row { position: relative; border: 1px solid var(--cb-line); border-radius: var(--cb-radius-md); padding: var(--cb-space-1) var(--cb-space-2) calc(var(--cb-space-1) + 3px); }
 .planning-layer-row > select { position: absolute; inset-block-start: var(--cb-space-1); inset-inline-end: var(--cb-space-2); width: 44%; height: var(--cb-control-height); }
 .planning-layer-summary { display: flex; align-items: center; gap: var(--cb-space-2); width: 51%; min-height: var(--cb-control-height); cursor: pointer; list-style: none; }

@@ -1,6 +1,6 @@
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, PARCEL_ID, closeParcel, parcelTab, runSelectionCommand, showSelectionDesignTab, selectionSection } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint, PARCEL_ID, closeParcel, parcelTab, runSelectionCommand, showSelectionDesignTab, selectionSection, setExistingBuildings } from '../helpers/runtime';
 
 test.describe('Multi-parcel selection @core', () => {
   test('the Parcels tab temporarily distinguishes selected parcels without changing selection or camera', async ({ mockApi: page }) => {
@@ -118,13 +118,9 @@ test.describe('Multi-parcel selection @core', () => {
 test('manual mode picks parcels through existing buildings without inspecting building content', async ({ mockApi: page }) => {
   await installLayerDatasets(page);
   await openCity(page);
-  await page.locator('#layers-button').click();
-  const layers = page.locator('#layers-sheet');
-  const buildings = layers.locator('details.accordion-section[data-section="buildings"]');
-  await buildings.locator(':scope > summary').click();
-  await page.locator('#showBuildings').check();
-  await page.locator('#layers-button').click();
-  await expect(layers).toBeHidden();
+  await setExistingBuildings(page);
+  await page.locator('#planning-views-button').click();
+  await expect(page.locator('#planning-views')).toBeHidden();
   await expect.poll(() => page.evaluate(() => (window as any).buildingsAt({ lat: 45.80021, lng: 15.98212 }).length)).toBeGreaterThan(0);
   await openParcel(page);
   await parcelTab(page, 'propose-tab').click();

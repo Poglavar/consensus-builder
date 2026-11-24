@@ -3,6 +3,7 @@ import { test, expect } from '../helpers/fixtures';
 import { openCity, clickMapPoint, PARCEL_ID, PARCEL_GEOMETRY, runParcelCommand, openParcelAt, selectionSection, parcelTab } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
+import { openLayerSection } from '../helpers/layers';
 
 test('Escape dismisses the parcel and History opens its actual history card', async ({ mockApi: page }) => {
   await openCity(page);
@@ -95,7 +96,7 @@ test('global 3D mode keeps the selected parcel while inspecting its unapplied de
   await expect(page.locator('.three-mode-isolation-banner')).toContainText('Selected parcel');
   await page.getByRole('button', { name: 'Exit this view', exact: true }).click();
   await expect(page.locator('.three-mode-isolation-banner')).toBeHidden();
-  await page.locator('#layers-button').click();
+  await openLayerSection(page, 'scenery');
   const sound = page.locator('#model-layer-controls label').filter({ hasText: 'City sounds' }).locator('input');
   await sound.check();
   await expect(sound).toBeChecked();

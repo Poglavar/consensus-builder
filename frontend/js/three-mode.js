@@ -303,8 +303,6 @@
     // "why is there nothing on this plot", it is not part of the plan being looked at.
     let showIneligibleParcels = false;
 
-    // Checkbox listeners to sync 3D buildings with the Layers sheet
-    let onShowExistingBuildingsChange = null;
     let onShowProposedBuildingsChange = null;
 
     const threeContainer = document.getElementById('three-container');
@@ -553,7 +551,7 @@
     // derive and draws identically in all three.
     let plannedRepresentation = 'both';
     let buildOutDisplaySalt = '';
-    let buildingModeControlsEl = null;
+    let modelControlGroups = [];
     let decorTogglesEl = null; // container for per-layer scenery toggles, populated from /decor/layers
 
     // The parcel view, which the 3D click stack's parcel section opens: the parcel with what stands
@@ -2240,13 +2238,17 @@
 
     function ensureBuildingModeControls() {
         const layersHost = document.getElementById('model-layer-controls');
-        if (!threeContainer || !layersHost) return;
-        if (buildingModeControlsEl && buildingModeControlsEl.parentElement === layersHost) return;
-
-        buildingModeControlsEl = document.createElement('div');
-        buildingModeControlsEl.className = 'three-mode-ui-panel';
-        buildingModeControlsEl.setAttribute('role', 'group');
-        buildingModeControlsEl.setAttribute('aria-label', threeI18n('threeMode.controls.buildingRenderingAria', 'Building rendering'));
+        const appearanceHost = document.getElementById('model-building-appearance');
+        const floorHost = document.getElementById('model-floor-controls');
+        if (!threeContainer || !layersHost || !appearanceHost || !floorHost) return;
+        if (modelControlGroups.length) return;
+        modelControlGroups = [layersHost, appearanceHost, floorHost].map(host => {
+            const group = document.createElement('div');
+            group.className = 'three-mode-ui-panel';
+            host.appendChild(group);
+            return group;
+        });
+        const [sceneryControls, appearanceControls, floorControls] = modelControlGroups;
 
         // Radius row — controls how wide a band of built context is loaded/rendered.
         const radiusRow = document.createElement('div');
@@ -2301,7 +2303,7 @@
 
         radiusRow.appendChild(radiusHeader);
         radiusRow.appendChild(radiusSlider);
-        buildingModeControlsEl.appendChild(radiusRow);
+        appearanceControls.appendChild(radiusRow);
 
         // Building visibility and representation choices live in the shared planning controls.
 
@@ -2332,11 +2334,11 @@
         });
         facadeStyleSelect.addEventListener('change', () => setFacadeAppearance(facadesEnabled, facadeStyleSelect.value));
         facadeRow.append(facadeLabel, facadeStyleSelect);
-        buildingModeControlsEl.appendChild(facadeRow);
+        appearanceControls.appendChild(facadeRow);
         facadeNote = document.createElement('div');
         facadeNote.className = 'three-mode-facade-note';
         facadeNote.textContent = threeI18n('threeMode.controls.facadesNote', 'Illustrative designs for proposed buildings.');
-        buildingModeControlsEl.appendChild(facadeNote);
+        appearanceControls.appendChild(facadeNote);
         setFacadeAppearance(facadesEnabled, facadeStyle, false);
 
         const xrayRow = document.createElement('div');
@@ -2391,7 +2393,7 @@
         closeXray.setAttribute('aria-label', closeXray.title);
         closeXray.addEventListener('click', () => {
             window.BusyControl.track(closeXray, () => setXrayScope(null));
-            document.getElementById('layers-button')?.focus();
+            document.getElementById('planning-views-button')?.focus();
         });
         xrayToolbar.appendChild(closeXray);
         threeContainer.appendChild(xrayToolbar);
@@ -2457,7 +2459,7 @@
         // Belgrade, nothing for cities without scenery). Independent of the Built/Planned mode.
         decorTogglesEl = document.createElement('div');
         decorTogglesEl.className = 'three-mode-decor-toggles';
-        buildingModeControlsEl.appendChild(decorTogglesEl);
+        sceneryControls.appendChild(decorTogglesEl);
 
         // Plots an applied urban rule left out — see-through volumes showing what each would carry.
         // Not a city scenery layer, so it is not fetched from /decor/layers: every city can have one.
@@ -2482,7 +2484,7 @@
         ineligibleLabel.appendChild(ineligibleBox);
         ineligibleLabel.appendChild(ineligibleText);
         ineligibleRow.appendChild(ineligibleLabel);
-        buildingModeControlsEl.appendChild(ineligibleRow);
+        appearanceControls.appendChild(ineligibleRow);
 
         // Schematic people and vehicles: a frontend-only layer every city can show, so it is not
         // fetched from /decor/layers either. Same row shape as the plots toggle above.
@@ -2503,7 +2505,7 @@
         lifeLabel.appendChild(lifeBox);
         lifeLabel.appendChild(lifeText);
         lifeRow.appendChild(lifeLabel);
-        buildingModeControlsEl.appendChild(lifeRow);
+        sceneryControls.appendChild(lifeRow);
         lifeToggleEl = lifeBox;
 
         // City sound heard from the camera (three-sound.js). Off until asked for: a page that starts
@@ -2525,7 +2527,7 @@
         soundLabel.appendChild(soundBox);
         soundLabel.appendChild(soundText);
         soundRow.appendChild(soundLabel);
-        buildingModeControlsEl.appendChild(soundRow);
+        sceneryControls.appendChild(soundRow);
         soundToggleEl = soundBox;
         if (soundEnabled) setSoundEnabled(true);
 
@@ -2548,7 +2550,7 @@
         groundLabel.appendChild(groundBox);
         groundLabel.appendChild(groundText);
         groundRow.appendChild(groundLabel);
-        buildingModeControlsEl.appendChild(groundRow);
+        sceneryControls.appendChild(groundRow);
         groundToggleEl = groundBox;
 
         // Where the context buildings came from, and how many heights are estimates (OSM).
@@ -2558,17 +2560,15 @@
         const sourceNoteHost = document.createElement('div');
         sourceNoteHost.setAttribute('data-map-modes', '3d');
         sourceNoteHost.appendChild(buildingsSourceNoteEl);
-        buildingModeControlsEl.appendChild(sourceNoteHost);
+        appearanceControls.appendChild(sourceNoteHost);
         updateBuildingsSourceNote();
-        // Keep X-ray as a clearly separated final section after scenery and plot diagnostics.
-        buildingModeControlsEl.appendChild(xrayRow);
+        floorControls.appendChild(xrayRow);
 
         // These layers describe the flat model context. Google supplies its own ground and
         // existing scenery; proposed-building appearance and inspection work in both views.
         // City sound is heard in both views, so its row stays in photo view too.
         [radiusRow, decorTogglesEl, lifeRow, groundRow].forEach(row => row.setAttribute('data-map-modes', '3d'));
 
-        layersHost.appendChild(buildingModeControlsEl);
         updateIsolationButton();
     }
 
@@ -4838,9 +4838,20 @@
     // A retained scene may have been opened with parcels off. Populate only its parcel group
     // the first time it is needed. Other layers can continue using the same scene and camera.
     function restoreModelParcelGround() {
-        if (!flatGroup || flatGroup.userData.parcelsBuilt || window.ParcelPresenter?.isEnabled?.() === false) return;
-        if (lifeQueryBounds) sceneParcelSnapshot = window.LiveParcelFabric.queryBounds(lifeQueryBounds, { includeCorridors: true });
-        return rebuildParcelGround3D();
+        if (!flatGroup || flatGroup.userData.parcelsBuilt || !lifeQueryBounds || window.ParcelPresenter?.isEnabled?.() === false) return;
+        const bounds = lifeQueryBounds;
+        const signal = sceneAbort?.signal;
+        const group = flatGroup;
+        const generation = parcelGroundGeneration;
+        const read = () => window.LiveParcelFabric.queryBounds(bounds, { includeCorridors: true });
+        sceneParcelSnapshot = read();
+        if (sceneParcelSnapshot.length) return rebuildParcelGround3D();
+        const [west, south, east, north] = bounds;
+        return window.CadastralParcelRepository.ensureBounds(L.latLngBounds([south, west], [north, east]), { signal }).then(() => {
+            if (!isActive || signal?.aborted || flatGroup !== group || generation !== parcelGroundGeneration || realisticLayerActive) return;
+            sceneParcelSnapshot = read();
+            return rebuildParcelGround3D();
+        });
     }
 
     function syncParcelGroundVisibility() {
@@ -10860,7 +10871,7 @@
         if (url.href !== window.location.href) window.history.replaceState(window.history.state, '', url);
     }
 
-    // Scope is a model-view override. The Layers sheet keeps the user's exterior settings.
+    // X-ray scope overrides the exterior appearance for this view.
     function xrayBuildingDisplay(scope, display) {
         if (!xrayScope || realisticLayerActive) return display;
         if (xrayScope !== scope) return 'off';
@@ -11697,8 +11708,6 @@
             });
         }
 
-        // Checkbox listeners (sync 3D buildings with the Layers sheet's state)
-        const showExistingEl = document.getElementById('showBuildings');
         const showProposedEl = document.getElementById('showProposedBuildings');
         onShowProposedBuildingsChange = () => { rebuild3DBuildingsOnly(); };
         if (showProposedEl) showProposedEl.addEventListener('change', onShowProposedBuildingsChange);
@@ -12185,22 +12194,18 @@
         proposalInteractionGroup = null;
         designDisplayGroup = null;
         proposalDraftGroup = null;
-        buildingModeControlsEl?.remove();
+        modelControlGroups.forEach(group => group.remove());
+        modelControlGroups = [];
         buildingRadiusPreview = null;
         stopBuildingRadiusPreview = null;
         threeContainer && (threeContainer.innerHTML = '');
-        buildingModeControlsEl = null;
         buildingModeButtons = { built: null, planned: null };
         window.removeEventListener('resize', handleResize);
 
-        // Remove checkbox listeners
         try {
-            const showExistingEl = document.getElementById('showBuildings');
             const showProposedEl = document.getElementById('showProposedBuildings');
-            if (showExistingEl && onShowExistingBuildingsChange) showExistingEl.removeEventListener('change', onShowExistingBuildingsChange);
             if (showProposedEl && onShowProposedBuildingsChange) showProposedEl.removeEventListener('change', onShowProposedBuildingsChange);
         } catch (_) { }
-        onShowExistingBuildingsChange = null;
         onShowProposedBuildingsChange = null;
     }
 
@@ -12509,7 +12514,9 @@
         if (!isActive || !flatGroup) return;
         if (window.ParcelPresenter?.isEnabled?.() === false) parcelGroundGeneration++;
         else if (sceneReady && !realisticLayerActive) {
-            restoreModelParcelGround()?.catch(error => console.error('[3D] Parcel ground could not be restored', error));
+            restoreModelParcelGround()?.catch(error => {
+                if (error?.name !== 'AbortError') console.error('[3D] Parcel ground could not be restored', error);
+            });
         }
         invalidateThreeView();
     });
@@ -12562,7 +12569,7 @@
         rebuildPlanningSources3D();
     });
     window.addEventListener('planningviewchange', syncPlanningView3D);
-    // Ticking a use in Layers → Building use recolours the built meshes in place.
+    // Highlight by use recolours the built meshes in place.
     useHighlight.onChange(() => { if (isActive) applyUseHighlight3D(); });
 
     // Rebuild on proposed buildings updates. Invalidate the nearby cache too so the
@@ -13400,7 +13407,7 @@
     document.addEventListener('on-map-editor-preview-change', handleOnMapEditorPreviewChange);
 
     document.addEventListener('mapshell:sheetclosed', event => {
-        if (event.detail?.id === 'layers-sheet') stopBuildingRadiusPreview?.();
+        if (event.detail?.id === 'planning-views') stopBuildingRadiusPreview?.();
     });
 
     threeContainer?.addEventListener('input', invalidateThreeView);

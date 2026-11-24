@@ -1,6 +1,6 @@
 import { openLayerSection } from '../helpers/layers';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, createBuilding, proposalState, parcelTab, PARCEL_ID, expectStatusLogged, answerBlockScope } from '../helpers/runtime';
+import { openCity, openParcel, clickMapPoint, createBuilding, proposalState, parcelTab, PARCEL_ID, expectStatusLogged, answerBlockScope, setExistingBuildings } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { openAndClosePopup, selectNativeOption } from '../helpers/controls';
 
@@ -228,13 +228,14 @@ test.describe('Layers sheet behavior @features', () => {
     await expect.poll(() => page.evaluate(() => (window as any).__viewportParcelCalls)).toBeGreaterThan(0);
   });
 
-  test('building and road reference layers load real features on checkbox clicks', async ({ mockApi: page }) => {
+  test('building and road display controls load the reference features', async ({ mockApi: page }) => {
     await openLayers(page);
     await openLayerSection(page, 'buildings');
-    await page.locator('#showBuildings').check();
+    await setExistingBuildings(page);
     await expect.poll(() => page.evaluate(() => (window as any).buildingFeaturePool.some((feature: any) => feature.properties.source === 'gdi-3d' && feature.properties.id === 9001))).toBe(true);
     await expect.poll(() => page.evaluate(() => (window as any).map.hasLayer((window as any).buildingLayer))).toBe(true);
 
+    await openLayerSection(page, 'roads');
     await page.locator('#showGovernmentRoadPlan').check();
     await expect.poll(() => page.evaluate(() => (window as any).governmentRoadPlanLayer?.getLayers?.().length || 0)).toBeGreaterThan(0);
     await expect.poll(() => page.evaluate(() => (window as any).map.hasLayer((window as any).governmentRoadPlanLayer))).toBe(true);

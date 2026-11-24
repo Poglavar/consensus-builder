@@ -3,6 +3,7 @@ import { test, expect } from '../helpers/fixtures';
 import { createBuilding, PARCEL_ID } from '../helpers/runtime';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 import { waitForMapReady } from '../helpers/app';
+import { openLayerSection } from '../helpers/layers';
 
 const osmLifeWays = {
   type: 'FeatureCollection',
@@ -49,8 +50,7 @@ async function enter3D(page: any) {
 }
 
 async function openLifeLayers(page: any) {
-  if (!(await page.locator('#model-layer-controls').isVisible())) await page.locator('#layers-button').click();
-  await expect(page.locator('#model-layer-controls .three-mode-ui-panel')).toBeVisible();
+  await openLayerSection(page, 'scenery');
 }
 
 async function lifeScene(page: any) {

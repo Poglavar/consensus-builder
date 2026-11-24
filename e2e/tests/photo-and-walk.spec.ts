@@ -4,7 +4,7 @@ import { openCity, createSpace, createBuilding, PARCEL_GEOMETRY } from '../helpe
 import { mockPhotoTiles } from '../helpers/mocks/photo-data';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 import { openAndClosePopup, selectNativeOption } from '../helpers/controls';
-import { openLayerSection } from '../helpers/layers';
+import { openLayerSection, openPlanningSection } from '../helpers/layers';
 import { pageIndex } from '../helpers/mocks/shared-server';
 
 test('walk chooses a real 3D ground point, cancels with Escape, and opens the configured walking map', async ({ mockApi: page, context }) => {
@@ -70,7 +70,7 @@ test('Photo view enters the actual tiles renderer and returning to 2D releases i
     return true;
   });
   await expect.poll(meshVisible, { timeout: 20000 }).toBe(true);
-  await page.locator('#layers-button').click();
+  await openLayerSection(page, 'parcels');
   await expect(page.locator('#aerial-city-visible')).toHaveCount(0);
   await expect(page.locator('#photo-parcels-visible')).toBeVisible();
   await expect.poll(meshVisible).toBe(true);
@@ -98,16 +98,17 @@ test('Google 3D shares proposed-building layer controls and retains choices in m
   await page.locator('#mode-realistic-toggle').click();
   await expect.poll(tiles.requests, { timeout: 20_000 }).toBeGreaterThan(0);
   await expect(page.locator('body')).toHaveClass(/realistic-mode-active/);
-  await page.locator('#layers-button').click();
-  await expect(page.locator('#model-layer-controls')).toBeVisible();
+  await openLayerSection(page, 'parcels');
   await expect(page.locator('#photo-parcels-visible')).toBeVisible();
-  await expect(page.locator('.three-mode-radius-row')).toBeHidden();
+  await openLayerSection(page, 'scenery');
   await expect(page.locator('.three-mode-decor-toggles')).toBeHidden();
   for (const label of ['People and traffic', 'Streets and pavement']) {
     const row = page.locator('.three-mode-wide-toggle').filter({ hasText: label });
     await expect(row).toHaveCount(1);
     await expect(row).toBeHidden();
   }
+  await openPlanningSection(page, 'building-appearance');
+  await expect(page.locator('.three-mode-radius-row')).toBeHidden();
   await expect(page.getByText('Non-buildable plots', { exact: true })).toBeVisible();
   const facade = page.locator('#three-mode-facades');
   await facade.check();
@@ -116,6 +117,7 @@ test('Google 3D shares proposed-building layer controls and retains choices in m
     .map((program: any) => program.getUniforms().map.cbFacadeEnabled?.cache?.[0])
     .filter((enabled: any) => enabled !== undefined));
   await expect.poll(async () => (await uniforms()).includes(1)).toBe(true);
+  await openPlanningSection(page, 'floor-plans');
   const xray = page.locator('#three-mode-xray');
   await xray.click();
   const toolbar = page.locator('#three-xray-toolbar');
@@ -125,18 +127,19 @@ test('Google 3D shares proposed-building layer controls and retains choices in m
   await expect(page.locator('body')).toHaveClass(/realistic-mode-active/);
   const floorPlans = () => page.evaluate(() => (window as any).getThreeModeInternals().scene.getObjectByName('FloorPlans')?.children.length || 0);
   await expect.poll(floorPlans, { timeout: 15_000 }).toBeGreaterThan(0);
-  await page.locator('#layers-button').click();
+  await openPlanningSection(page, 'floor-plans');
   await expect(page.locator('#three-mode-floor-cutaway')).toBeVisible();
   await page.screenshot({ path: '/tmp/google-shared-layer-controls.png' });
 
-  await page.locator('#layers-button').click();
   await page.locator('#mode-3d-toggle').click();
   await expect(page.locator('body')).not.toHaveClass(/realistic-mode-active/);
-  await page.locator('#layers-button').click();
-  await expect(page.locator('.three-mode-radius-row')).toBeVisible();
+  await openLayerSection(page, 'parcels');
   await expect(page.locator('#photo-parcels-visible')).toBeHidden();
+  await openPlanningSection(page, 'building-appearance');
+  await expect(page.locator('.three-mode-radius-row')).toBeVisible();
   await expect(facade).toBeChecked();
   await expect(page.locator('#three-mode-facade-style')).toHaveValue('brick');
+  await openPlanningSection(page, 'floor-plans');
   await expect(xray).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('#three-xray-proposed')).toHaveAttribute('aria-pressed', 'true');
   await expect.poll(floorPlans).toBeGreaterThan(0);
@@ -165,11 +168,10 @@ test('Photo entry respects Show parcels even with source parcels already loaded'
   await openCity(page);
   await openLayerSection(page, 'parcels');
   await page.locator('#parcelsCheckbox').uncheck();
-  await page.locator('#layers-button').click();
   await page.locator('#mode-realistic-toggle').click();
   await expect.poll(tiles.requests, { timeout: 20_000 }).toBeGreaterThan(0);
   await expect.poll(() => page.evaluate(() => (window as any).__mapModeState)).toMatchObject({ desired: 'photo', pending: false });
-  await page.locator('#layers-button').click();
+  await openLayerSection(page, 'parcels');
   await expect(page.locator('#photo-parcels-visible')).toBeDisabled();
   const hits = await page.evaluate(() => {
     const w = window as any;
@@ -178,6 +180,14 @@ test('Photo entry respects Show parcels even with source parcels already loaded'
     return { photo: w.PhotorealMode.sourceParcelsAt({ x, y }), stack: w.ClickStackHits.hitsAt(latlng).parcels };
   });
   expect(hits).toEqual({ photo: [], stack: [] });
+  const master = page.locator('#parcelsCheckbox');
+  const boundaries = page.locator('#photo-parcels-visible');
+  await master.check();
+  await expect(boundaries).toBeEnabled();
+  await master.uncheck();
+  await expect(boundaries).toBeDisabled();
+  await master.check();
+  await expect(boundaries).toBeEnabled();
 });
 
 test('Photo clicks use the shared parcel section independently of boundary visibility', async ({ mockApi: page }) => {

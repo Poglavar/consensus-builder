@@ -39,7 +39,7 @@ const MAINTENANCE = [
 
 const LAYERS_DATA_ACTIONS = [
     { marker: 'id="parcel-source-settings-button"', command: 'settings.parcelSourceSettings' },
-    { marker: 'id="building-source-settings-button"', command: 'settings.buildingSourceSettings' },
+    { marker: 'id="building-source-settings-button"', command: 'settings.buildingSourceSettings', section: 'planning' },
     { marker: 'id="refreshParcelDataButton"', command: 'parcels.refresh' },
     { marker: 'id="tile-source-select"', command: 'settings.baseMap' }
 ];
@@ -76,12 +76,13 @@ describe('Data & maintenance section', () => {
 
     it('keeps parcel refresh and map sources with Layers and removes the global data-source switch', () => {
         const layers = sheetHtml('layers-sheet');
-        for (const { marker, command } of LAYERS_DATA_ACTIONS) {
-            expect(layers, marker).toContain(marker);
+        for (const { marker, command, section } of LAYERS_DATA_ACTIONS) {
+            const host = section === 'planning' ? sheetHtml('planning-views') : layers;
+            expect(host, marker).toContain(marker);
             const entry = UiCommands.findCommand(command);
             expect(entry, command).toBeTruthy();
-            expect(entry.surfaces, command).toContain('layers');
-            expect(entry.surfaces, command).not.toContain('settings');
+            expect(entry.surfaces, command).toContain(section || 'layers');
+            expect(entry.surfaces, command).not.toContain(section === 'planning' ? 'layers' : 'settings');
         }
         const settings = sheetHtml('settings-sheet');
         expect(settings).not.toContain('id="data-source-select"');

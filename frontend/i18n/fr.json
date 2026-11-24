@@ -6094,6 +6094,14 @@
         "zoomLevelTitle": "Niveau de zoom de la carte. En 3D, le zoom 2D qui montre le même terrain.",
         "viewCoordinates": "Copier les coordonnées du centre de la vue : {{coordinates}}",
         "layers": "Couches",
+        "layerActions": {
+            "open2d": "Ouvrir en 2D",
+            "ownershipIn2d": "Ouvrir la mise en évidence de la propriété en 2D",
+            "floorsIn3d": "Explorer les étages en 3D",
+            "floorPlans": "Plans des étages",
+            "buildingAppearance": "Apparence du bâtiment",
+            "scenery": "Décor et son"
+        },
         "settings": "Paramètres",
         "maintenance": {
             "localData": "Données locales (navigateur)"

@@ -203,19 +203,20 @@ describe('planning view refresh', () => {
         });
         const box = { current: view, zoom };
         const context = vm.createContext({
-            URL, console: { ...console, error: vi.fn() }, Promise, Math, Array, ready: true, catalogReady: true, core: scene, request: 0, items: [], payload: null, status: 'loading', progress: null,
+            URL, console: { ...console, error: vi.fn() }, Promise, Math, Array, ready: true, catalogReady: true, core: scene, request: 0, items: [], payload: null, status: 'loading', progress: null, telemetry: { track() {} },
             viewCache: scene.createViewportCache({ limit: 2048 }), CELL_CONCURRENCY: 2, assembled: '', failedCells: 0, drawn: new Map(),
             zoningViewportCache: scene.createViewportCache({ limit: 12 }), overviewSourceId: '', overview: null,
             overviewOnly: false, overviewRead: null, overviewLayer: null, overviewDisplay: '',
             overviewSource: source => Boolean(source?.zoningOverview),
             policy: () => ({ permitted: 'ghost' }), store: { get: () => state, select: vi.fn() }, selected: () => null,
-            ensureSources: async () => true, sourceOptions: [descriptor], sourceId: descriptor.id, scenarioId: '', scenarioParam: () => '',
+            ensureSources: async () => true, readPermittedJson: response => response.json(), sourceOptions: [descriptor], sourceId: descriptor.id, scenarioId: '', scenarioParam: () => '',
             drawMap: vi.fn(), render() {}, notifyGeometry() {}, restoreSelection() {},
             // The hatch as the grid it is painted from: the image and its map layer need a browser.
             failedGrid: failedCellGrid, hatch: null, hatchSignature: '', frozen: false,
             ZONING_ZOOM: 15, MASSING_ZOOM: 16, massingWaits: false,
             hatchImage: grid => grid, drawHatch() {}, CustomEvent: class { constructor(type) { this.type = type; } },
             root: {
+                PlanningLoading: { track: (_kind, promise) => promise },
                 dispatchEvent: vi.fn(),
                 ZoningOverview: { load: vi.fn(async source => ({ sourceId: source.id, entries: [], items: [] })) },
                 LoadView: { current: () => ({ mode: box.mode || '2d', bbox: box.current, zoom: box.zoom,
@@ -645,10 +646,10 @@ describe('building fetch on pan', () => {
         let timerId = 0;
         const fetchBuildings = vi.fn();
         const context = vm.createContext({
-            window: { __mapModeState: { desired: '2d', pending: false }, addEventListener() {}, isThreeModeActive: () => false },
+            window: { __mapModeState: { desired: '2d', pending: false }, addEventListener() {}, isThreeModeActive: () => false, PlanningViews: { isBuiltVisible: () => true } },
             map: { on: (name, listener) => handlers.set(name, listener), getBounds: () => ({ view: true }) },
             isMapMoving: false, buildingFollowTimer: null, parcelFetchConfig: { getDebounce: () => 10 },
-            document: { getElementById: id => (id === 'showBuildings' ? { checked: true } : null) },
+            document: { getElementById: () => null },
             fetchBuildings, fetchOutlineBuildings: () => {},
             setTimeout: callback => { const id = ++timerId; timers.set(id, callback); return id; },
             clearTimeout: id => timers.delete(id)

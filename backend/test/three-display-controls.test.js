@@ -69,7 +69,7 @@ describe('abstract 3D display controls', () => {
     });
 
     it('starts both selectors from one readable desktop width and lets them fill narrow screens', () => {
-        expect(mapCssSource).toMatch(/#model-layer-controls \.three-mode-display-select\s*\{\s*flex: 1 1 168px;\s*width: auto;/);
-        expect(mapCssSource).toMatch(/@media \(max-width: 480px\)[\s\S]*?#model-layer-controls \.three-mode-display-select\s*\{[\s\S]*?width: auto;/);
+        expect(mapCssSource).toMatch(/\.model-view-controls \.three-mode-display-select\s*\{\s*flex: 1 1 168px;\s*width: auto;/);
+        expect(mapCssSource).toMatch(/@media \(max-width: 480px\)[\s\S]*?\.model-view-controls \.three-mode-display-select\s*\{[\s\S]*?width: auto;/);
     });
 });

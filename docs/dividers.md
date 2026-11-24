@@ -75,7 +75,7 @@ recorded, nothing deployed without a say-so.
   except those deriving from a parcel the proposal claims (the parcel itself, a plot of its
   readjustment, a piece a corridor cut), which are replaced by the claimed parcel's original
   cadastre feature from `CadastralParcelRepository`; plus the existing-building pool when the
-  Layers sheet shows buildings. Drawn on one canvas. The host map is frozen while comparing, the
+  shared Built setting shows buildings. Drawn on one canvas. The host map is frozen while comparing, the
   divider takes focus, and the labels ride the divider (`labelPlacement: 'divider'`) because the
   main map's bottom corners sit under the tab bar. The comparison ends with the panel: closing it,
   switching proposal, unapplying, or entering 3D (which hides the panel).

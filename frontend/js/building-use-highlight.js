@@ -1,4 +1,4 @@
-// Highlight by building use: the storey uses ticked in Layers → Building use (housing, shops,
+// Highlight by building use: the storey uses ticked in Buildings and massing (housing, shops,
 // offices, public, industrial, not stated) colour the storeys of that use, in existing buildings and
 // designs alike, and everything else fades. A residential building with shops lights its ground floor
 // under Shops and the storeys above under Housing. 3D colours each storey band; 2D draws a building
