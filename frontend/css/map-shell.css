@@ -562,6 +562,15 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     display: flex;
 }
 
+@media (min-width: 768px) {
+    .map-sheet--left {
+        top: var(--map-shell-top-clearance);
+        left: 0;
+        width: var(--map-panel-width);
+        max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance));
+    }
+}
+
 .map-sheet [hidden],
 [data-map-modes][hidden] {
     display: none;

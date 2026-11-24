@@ -1,7 +1,6 @@
-// ui/map-shell.js — the floating map shell that replaced the left sidebar: the Layers/Settings
-// buttons (top-right), the Proposals/Bets/Activity dock and the sheets they
-// open. Right-screen panels use the shared inspection column on desktop; other sheets are
-// popovers anchored to their buttons. Bets and Activity share a wider frame centred on the dock.
+// ui/map-shell.js — floating toolbar and navigation sheets. Desktop display controls share the
+// left screen edge. Inspectors use the right column and popovers follow their buttons.
+// Bets and Activity share a wider frame centred on the dock.
 // Phones use the shared sheet controls. One is open at a time; Escape closes it. The controls
 // inside the sheets are the old sidebar's, moved with their ids and handlers.
 // placePopover is pure and exported for backend/test/frontend-ui-commands.test.js.
@@ -135,7 +134,7 @@
 
     function positionSheet(sheet, trigger) {
         const props = ['--sheet-top', '--sheet-bottom', '--sheet-left', '--sheet-right', '--sheet-max-height'];
-        if (!trigger || isMobile() || sheet.classList.contains('right-screen-panel')) {
+        if (!trigger || isMobile() || sheet.matches('.map-sheet--left, .right-screen-panel')) {
             props.forEach(prop => sheet.style.removeProperty(prop));
             return;
         }

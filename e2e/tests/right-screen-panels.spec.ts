@@ -17,7 +17,7 @@ for (const width of [1600, 1000, 390]) {
     });
     await page.keyboard.press('Escape');
     const barBefore = await page.locator('#map-shell-bottom-right').boundingBox();
-    for (const name of ['layers', 'settings', 'proposals']) {
+    for (const name of ['settings', 'proposals']) {
       const panel = page.locator(`#${name}-sheet`);
       await page.locator(`#${name}-button`).click();
       await expect(panel).toBeVisible();

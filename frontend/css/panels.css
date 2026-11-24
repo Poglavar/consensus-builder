@@ -29,7 +29,8 @@
    `.right-dock-panel` additionally opts inspectors into the resizable phone dock. It opens tall enough to make the parcel build
    palette useful, stays above the Game bar, and can be resized from its handle. */
 :root {
-    --right-dock-width: 400px;
+    --map-panel-width: 400px;
+    --right-dock-width: var(--map-panel-width);
     --right-dock-gap: 10px;
     /* Phones reserve the navigation row; desktop clearance follows actual control bounds. */
     --right-dock-bottom: var(--map-shell-bottom-clearance);

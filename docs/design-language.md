@@ -262,8 +262,9 @@ palette is the legend beside each tick.
 ## Map shell structure
 
 - The bottom navigation belongs to the 2D map. The model and aerial views use their selection controls.
-  The **Layers** toolbar trigger is on the left beside **Buildings and massing**; it opens the
-  right-screen Layers sheet, whose existing column remains shared across those views.
+- **Layers** and **Buildings and massing** sit beside each other in the left toolbar. On desktop,
+  both panels open flush with the left edge of the screen, directly below the toolbar. On phones,
+  both open as bottom sheets.
 - The left view strip chooses 2D map, 3D models or 3D aerial imagery. Measure is a 2D utility beside
   that strip, not a destination in the bottom dock.
 - In **Buildings and massing → Display**, **Highlight by use** sits above the Built, Permitted and
@@ -301,7 +302,7 @@ its own, and hosted content fits its parent stack card.
 The class covers both click stacks; the parcel, design, road and source inspectors; block details
 and the urban-block browser; road analysis; agreement creation and properties; custom-site panels;
 map geometry editors and the design draft editor; watched-area details; the Schelling layer panel;
-and the plan critic's result card. Lists, Layers and Settings share the column's right edge and top
+and the plan critic's result card. Lists and Settings share the column's right edge and top
 clearance. Bets and Activity keep their wider frame centred on the dock. Wide comparisons and
 tables belong in a centred or full-screen dialog, never in a wider right column; left-anchored
 utilities and centred dialogs are separate presentation types. On a phone these surfaces keep the
@@ -321,7 +322,7 @@ The names to use for the shell's elements in follow-up discussion.
 | **search box** | top-left omnibox (`#map-search-slot`): cities, parcels, places and commands |
 | **Buildings and massing** button and sheet | beside the search box (`#planning-views-button`, `#planning-views`); **Display** owns Built/Permitted/Proposed appearance, use highlight and the Built source list; **Floor plans** enters X-ray |
 | **user bubble** | top-right `#username-display`: profile name or Guest |
-| **Layers** button and sheet | left toolbar beside **Buildings and massing**; opens the right-screen Layers sheet for current-view controls (see Map shell structure) |
+| **Layers** button and sheet | beside **Buildings and massing** in the left toolbar. Opens controls for the surrounding map and scene. |
 | **Settings** button and sheet | top-right; Appearance, Data & assumptions, Help & about, and Advanced (Local (browser) data, Simulation, Diagnostics, Reset browser data) |
 | **view strip** | left edge: 2D map, 3D models, 3D aerial imagery (`map-mode-tile`), with the Measure (2D) and Sun and shadows (3D) utilities beside it |
 | **bottom dock** | **Lists**, **Activity** and **Bets** each open a dock sheet. |

@@ -2,12 +2,7 @@ import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady, clickMapAt } from '../helpers/app';
 import { selectors } from '../helpers/selectors';
 
-// The map shell replaced the left sidebar (design-language.md): Layers/Settings buttons top-right, the
-// Measure ruler beside the map-mode buttons, Proposals/Bets/Activity bottom-right each toggle a sheet
-// (frontend/js/ui/map-shell.js). This file took over sidebar.spec.ts, which clicked the sidebar
-// toggle and asserted the `collapsed` class flipped; the equivalent here is that each button really
-// shows/hides its sheet and keeps aria-expanded in step, plus the shell's closing rules (one sheet at
-// a time, Esc with focus restored, the close button, an outside click).
+// The toolbar and dock buttons share the sheet controller in frontend/js/ui/map-shell.js.
 
 const SHEETS = [
   { name: 'Buildings and massing', button: '#planning-views-button', sheet: '#planning-views' },
@@ -79,6 +74,46 @@ test.describe('Map shell sheets @features', () => {
       await expect(page.locator(selectors.openSheet)).toHaveCount(0);
     });
   }
+
+  test('Layers and Buildings and massing share the left screen edge on desktop and the bottom edge on phones', async ({ mockApi: page }) => {
+    const height = 844;
+    const layersButton = page.locator(selectors.layersButton);
+    const buildingsButton = page.locator('#planning-views-button');
+    const layers = page.locator(selectors.layersSheet);
+    const buildings = page.locator('#planning-views');
+    for (const width of [1280, 768, 390]) {
+      await page.setViewportSize({ width, height });
+      await layersButton.press('Enter');
+      await expect(layers).toBeVisible();
+      const layerBox = (await layers.boundingBox())!;
+      await layers.getByRole('button', { name: 'Buildings and massing', exact: true }).press('Enter');
+      await expect(layers).toBeHidden();
+      await expect(buildings).toBeVisible();
+      const buildingBox = (await buildings.boundingBox())!;
+      expect(layerBox.x).toBe(0);
+      expect(buildingBox.x).toBe(0);
+      if (width >= 768) {
+        const toolbar = (await layersButton.boundingBox())!;
+        expect(layerBox.y).toBeGreaterThanOrEqual(toolbar.y + toolbar.height);
+        expect(buildingBox.y).toBe(layerBox.y);
+        expect(layerBox.width).toBe(400);
+        expect(buildingBox.width).toBe(440);
+      } else {
+        for (const box of [layerBox, buildingBox]) {
+          expect(box.width).toBe(width);
+          expect(box.y + box.height).toBe(height);
+        }
+      }
+      await page.keyboard.press('Escape');
+      await buildingsButton.press('Enter');
+      await expect(buildings).toBeVisible();
+      const fromToolbar = (await buildings.boundingBox())!;
+      expect(fromToolbar.x).toBe(buildingBox.x);
+      if (width >= 768) expect(fromToolbar.y).toBe(buildingBox.y);
+      await page.keyboard.press('Escape');
+      await expect(buildingsButton).toBeFocused();
+    }
+  });
 
   test('Buildings and massing stays beside the city on narrow screens and starts collapsed after reload', async ({ mockApi: page }) => {
     const trigger = page.getByRole('button', { name: 'Buildings and massing', exact: true });
