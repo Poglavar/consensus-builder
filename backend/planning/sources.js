@@ -6,6 +6,7 @@ import { parcelSourceById } from '../parcels/sources.js';
 import { bboxPolygon } from '@turf/turf';
 import { createBogotaPotProvider, bogotaPotSource } from './providers/bogota-pot.js';
 import { createAlatauGenplanProvider, alatauGenplanSource } from './providers/alatau-genplan.js';
+import { createAstanaGenplanProvider, astanaGenplanSource } from './providers/astana-genplan.js';
 import { createHash } from 'node:crypto';
 import configuredSources from '../../frontend/data/planning-sources.json' with { type: 'json' };
 import { parseAtlasSources, createAtlasUrlProvider } from './atlas-url-sources.js';
@@ -18,6 +19,7 @@ const builtInDefinitions = [zagrebGupSource, zagrebGup2016Source].map(descriptor
 builtInDefinitions.push(SourceRuntime.source('planning', 'nyc-pilot', { ...nycPilotSource, planPlotCalculation: true }, { label: nycPilotSource.label }));
 builtInDefinitions.push(SourceRuntime.source('planning', 'bogota-pot', bogotaPotSource, { label: bogotaPotSource.label }));
 builtInDefinitions.push(SourceRuntime.source('planning', 'alatau-genplan', alatauGenplanSource, { label: alatauGenplanSource.label }));
+builtInDefinitions.push(SourceRuntime.source('planning', 'astana-genplan', astanaGenplanSource, { label: astanaGenplanSource.label }));
 export const planningSourceRegistry = SourceRuntime.createRegistry({
     abstraction: 'planning',
     adapters: {
@@ -40,7 +42,8 @@ export const planningSourceRegistry = SourceRuntime.createRegistry({
         }) },
         'atlas-url': { create: createAtlasUrlProvider },
         'bogota-pot': { custom: false, create: (descriptor, context) => createBogotaPotProvider(descriptor, context) },
-        'alatau-genplan': { custom: false, create: (descriptor, context) => createAlatauGenplanProvider(descriptor, context) }
+        'alatau-genplan': { custom: false, create: createAlatauGenplanProvider },
+        'astana-genplan': { custom: false, create: createAstanaGenplanProvider }
     },
     sources: [...builtInDefinitions, ...parseAtlasSources(JSON.stringify(configuredSources.sources))
         .map(metadata => SourceRuntime.source('planning', 'atlas-url', metadata, { label: metadata.label }))],

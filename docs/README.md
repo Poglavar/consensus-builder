@@ -53,7 +53,7 @@ Each document describes a current contract, an open plan or research. Verificati
 **Sources and cities**
 
 - [Source adapters](source-adapters.md), [frontend source configuration](frontend-source-configuration.md), [Atlas public sources](atlas-public-sources.md), [economic sources](economic-sources.md), [world parcels](world-parcels.md).
-- [GUP scenario integration](gup-scenario-integration.md), [Bogotá POT source](bogota-pot-source.md), [Alatau general plan source](alatau-genplan-source.md), [Kazakhstan planning and building sources](reports/Kazakhstan%20planning%20and%20building%20sources.md), [land use and zoning standards research](zoning-standards-research.md), [planning usage and diagnostics](planning-usage-and-diagnostics.md).
+- [GUP scenario integration](gup-scenario-integration.md), [Bogotá POT source](bogota-pot-source.md), [Alatau general plan source](alatau-genplan-source.md), [Astana general plan source](astana-genplan-source.md), [Kazakhstan planning and building sources](reports/Kazakhstan%20planning%20and%20building%20sources.md), [land use and zoning standards research](zoning-standards-research.md), [planning usage and diagnostics](planning-usage-and-diagnostics.md).
 - [Alatau neighbourhood alternatives](demo/alatau-neighbourhoods/README.md): published courtyard and garden plans with small building plots and editable plan files.
 - [Alatau investment and apartment rights](reports/Alatau%20investment%20and%20apartment%20rights.md) covers the four tradable house proposals, state-land decisions, developer funding and off-plan apartment sales.
 - [Permitted massing for plan-made parcels](permitted-plan-parcels.md): how cadastral parcels, government-plan lots and applied design plots receive their permitted massing.

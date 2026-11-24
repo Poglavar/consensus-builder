@@ -748,6 +748,10 @@ In Bogotá’s Renovación calculation, whether a parcel holds a street corner o
 
 A zoning area of Alatau's general plan (Decree No. 727, 2025) from the state urban-planning cadastre. The source records land use, a storey class for housing, and implementation stage where known. For Permitted massing the adapter uses the planned zone as its calculation boundary and uses existing parcels elsewhere. The source supplies no future plot identifier. A residential class's upper storey count is a maximum. Other uses hand the building parameters to the detailed plan (ПДП), and open land carries no building. See [Alatau general plan source](alatau-genplan-source.md).
 
+### Functional zone (Astana)
+
+A zoning area in the state urban-planning cadastre's Astana snapshot. It carries the source's land use, housing class where stated, and implementation stage where known. The snapshot date identifies the data edition. A zone can supply a design site by reference. Its authority for current parcel rules is unresolved, so the source supplies no building constraints or Permitted envelope. See [Astana general plan source](astana-genplan-source.md).
+
 ### Treatment area (Bogotá)
 
 A zoning area of Bogotá's POT treatment map (Decreto 555/2021): one polygon with a treatment (consolidación, renovación, desarrollo, mejoramiento integral, conservación), an optional typology (`TA`, detached) and a height code. A storey count on the map is the base height; a range's upper number, development ranges and instrument codes are evidence, not geometry. A blank Consolidación polygon is an equipamiento whose storeys Decreto 253/2026 assigns by polygon; a blank Renovación polygon has a resulting height. Storeys become metres through the decree's clear height plus an assumed slab ([Bogotá POT source](bogota-pot-source.md)).

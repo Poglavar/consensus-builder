@@ -1,20 +1,25 @@
 #!/usr/bin/env node
-// Rebuild the Alatau plan's exact backend snapshot and simplified browser overview together.
+// Build a cadastre general plan's exact backend snapshot and simplified browser overview together.
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { bbox, coordReduce, simplify } from '@turf/turf';
 import { createHttpsJsonFetch } from '../parcels/https-json-fetch.js';
 import { validateGeometry } from '../parcels/source-contract.js';
-import {
-    alatauGenplanSource, ALATAU_ADMTERR_ID, ALATAU_GENPLAN_LAYER, ALATAU_GENPLAN_SERVICE, interpretZone
-} from '../planning/providers/alatau-genplan.js';
+import { alatauGenplanSource, interpretZone } from '../planning/providers/alatau-genplan.js';
+import { astanaGenplanSource, interpretAstanaZone } from '../planning/providers/astana-genplan.js';
 
-const [input] = process.argv.slice(2);
-if (!input) throw new Error('Pass a complete WFS FeatureCollection file or --fetch.');
-const sourceId = alatauGenplanSource.id;
+const [sourceId, input] = process.argv.slice(2);
+const sources = new Map([
+    [alatauGenplanSource.id, { descriptor: alatauGenplanSource, interpret: interpretZone }],
+    [astanaGenplanSource.id, { descriptor: astanaGenplanSource, interpret: interpretAstanaZone }]
+]);
+const source = sources.get(sourceId);
+if (!source || !input) throw new Error('Pass a source ID followed by a complete WFS FeatureCollection file or --fetch.');
+const { descriptor, interpret } = source;
+if (input === '--fetch' && descriptor.kind === 'reference') throw new Error('Rebuild a dated reference from its captured FeatureCollection.');
 const snapshotDir = new URL('../planning/data/', import.meta.url);
 const overviewDir = new URL('../../frontend/data/planning/', import.meta.url);
-const snapshotFile = new URL(alatauGenplanSource.snapshotFilename, snapshotDir);
+const snapshotFile = new URL(descriptor.snapshotFilename, snapshotDir);
 const overviewFile = new URL(`${sourceId}-overview.json`, overviewDir);
 
 async function fetchAllZones() {
@@ -22,13 +27,13 @@ async function fetchAllZones() {
     const fetchPage = createHttpsJsonFetch(certificate, { maxBytes: 32 * 1024 * 1024 });
     const filter = '<fes:Filter xmlns:fes="http://www.opengis.net/fes/2.0"><fes:PropertyIsEqualTo>'
         + '<fes:ValueReference>admterr_id</fes:ValueReference>'
-        + `<fes:Literal>${ALATAU_ADMTERR_ID}</fes:Literal></fes:PropertyIsEqualTo></fes:Filter>`;
+        + `<fes:Literal>${descriptor.admterrId}</fes:Literal></fes:PropertyIsEqualTo></fes:Filter>`;
     const features = [];
     let numberMatched;
     do {
-        const url = new URL(ALATAU_GENPLAN_SERVICE);
+        const url = new URL(descriptor.service);
         url.search = new URLSearchParams({
-            service: 'WFS', version: '2.0.0', request: 'GetFeature', typeNames: ALATAU_GENPLAN_LAYER,
+            service: 'WFS', version: '2.0.0', request: 'GetFeature', typeNames: descriptor.layer,
             outputFormat: 'application/json', sortBy: 'object_id_i32', FILTER: filter,
             count: '1000', startIndex: String(features.length)
         });
@@ -57,8 +62,8 @@ function validateSource(source) {
     for (const feature of source.features) {
         const id = feature.properties?.object_id_i32;
         if (feature.type !== 'Feature' || !Number.isSafeInteger(id) || id < 0 || ids.has(id)
-            || String(feature.properties.admterr_id) !== ALATAU_ADMTERR_ID || !validateGeometry(feature.geometry)) {
-            throw new Error(`Invalid or duplicate Alatau zone ${id}`);
+            || String(feature.properties.admterr_id) !== descriptor.admterrId || !validateGeometry(feature.geometry)) {
+            throw new Error(`Invalid or duplicate zone ${id} for ${descriptor.id}`);
         }
         ids.add(id);
     }
@@ -77,9 +82,9 @@ function overviewGeometry(feature) {
 function buildOverview(collection) {
     const uses = [], useIndexes = new Map();
     const zones = collection.features.map(feature => {
-        const reading = interpretZone(feature.properties);
+        const reading = interpret(feature.properties);
         const use = { key: reading.useKey, group: reading.useGroup, label: reading.use, stage: reading.stage, status: reading.status,
-            ...(reading.stage === 'planned' ? { landBasis: 'zone' } : {}) };
+            ...(reading.landBasis ? { landBasis: reading.landBasis } : {}) };
         const key = JSON.stringify(use);
         if (!useIndexes.has(key)) {
             useIndexes.set(key, uses.length);
@@ -96,11 +101,11 @@ function writeAsset(file, bytes) {
     renameSync(temporary, file);
 }
 
-const source = input === '--fetch' ? await fetchAllZones() : JSON.parse(readFileSync(input, 'utf8'));
-const features = validateSource(source).map(feature => ({
+const data = input === '--fetch' ? await fetchAllZones() : JSON.parse(readFileSync(input, 'utf8'));
+const features = validateSource(data).map(feature => ({
     type: 'Feature', id: feature.properties.object_id_i32, properties: feature.properties, geometry: feature.geometry
 }));
-const collection = { type: 'FeatureCollection', source: sourceId, features };
+const collection = { type: 'FeatureCollection', source: sourceId, numberMatched: features.length, features };
 const overview = buildOverview(collection);
 const exact = Buffer.from(JSON.stringify(collection));
 const simplified = Buffer.from(JSON.stringify(overview));

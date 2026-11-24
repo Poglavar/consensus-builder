@@ -18694,6 +18694,7 @@
             },
             // Free state plots and land applications from the same cadastre (js/state-land.js).
             stateLand: { provider: 'kazakhstan-pkk', relaySourceId: 'kz-astana-pkk-esil', districtId: 254, zone: 12 },
+            planning: { sourceIds: ['astana-genplan-cadastre-2026-11-24'] },
             // Sale, rent and construction per m² of total floor area from the Bureau of National Statistics
             // (docs/economic-sources.md). Sale price and rent are published per m² of dwelling area, so they are
             // scaled by the city's useful ÷ total area of the housing commissioned in the same period. The

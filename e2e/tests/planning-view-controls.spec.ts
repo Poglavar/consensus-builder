@@ -450,3 +450,43 @@ test('Alatau zoning overview uses static data below zoom 15 and one viewport rea
   expect(representations[0].searchParams.has('bbox')).toBe(true);
   expect(representations[0].searchParams.get('envelopes')).toBeNull();
 });
+
+test('Astana uses its configured zoning reference and fits the whole plan on a narrow screen @features', async ({ mockApi: page }) => {
+  const source = {
+    id: 'astana-genplan-cadastre-2026-11-24', city: 'astana', label: 'Генплан Астаны · справочный слой кадастра (24.11.2026)',
+    kind: 'reference', capabilities: { areas: true, volumes: false }, viewportZoning: true,
+    zoningOverview: { detailZoom: 15 }, scenarios: ['general'], scenario: 'general',
+  };
+  const zoningRequests: URL[] = [];
+  const envelopeRequests: URL[] = [];
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.route('**/planning/**', async route => {
+    if (!['xhr', 'fetch'].includes(route.request().resourceType())) return route.fallback();
+    const url = new URL(route.request().url());
+    if (url.pathname.startsWith('/data/')) return route.fallback();
+    if (url.pathname.endsWith('/sources')) return route.fulfill({ json: { city: source.city, sources: [source] } });
+    if (url.pathname.endsWith('/representations')) zoningRequests.push(url);
+    if (url.pathname.endsWith('/envelopes')) envelopeRequests.push(url);
+    return route.fulfill({ json: { schemaVersion: 'planning-representations.v1', city: source.city, sources: [source],
+      items: [], summaries: [], coverage: 'source-results', nextCursor: null, omitted: 0 } });
+  });
+  const overview = page.waitForResponse(response => response.url().includes(`/data/planning/${source.id}-overview.json`) && response.ok());
+  await page.goto('/?city=astana&at=51.1282,71.4304,12&permitted=solid&zoningAreas=ghost&reduceMotion=1', { waitUntil: 'domcontentloaded' });
+  const { bbox } = await (await overview).json();
+  await page.waitForFunction(() => (window as any).PlanningViews?.getItems().length === 12914);
+  expect(zoningRequests).toHaveLength(0);
+  await openLayerSection(page, 'zoning-land-use');
+  const fit = page.getByRole('button', { name: 'Fit plan', exact: true });
+  await expect(fit).toBeVisible();
+  await fit.press('Enter');
+  await expect.poll(() => page.evaluate(([w, s, e, n]) => {
+    return (window as any).map.getBounds().contains([[s, w], [n, e]]);
+  }, bbox)).toBe(true);
+  await expect(page.getByRole('button', { name: 'Layers', exact: true })).toBeFocused();
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.waitForFunction(() => (window as any).PlanningViews?.getItems().length === 12914);
+  expect(new URL(page.url()).searchParams.get('zoningAreas')).toBe('ghost');
+  await page.evaluate(() => (window as any).map.setView([51.1282, 71.4304], 16, { animate: false }));
+  await expect.poll(() => zoningRequests.at(-1)?.searchParams.get('source')).toBe(source.id);
+  expect(envelopeRequests).toHaveLength(0);
+});

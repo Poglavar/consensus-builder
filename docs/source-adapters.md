@@ -51,7 +51,9 @@ viewer resolves the source through the city configuration, then exposes **Fit pl
 control. A source with an exact zoning feed can set `zoningOverview.detailZoom`; at that zoom the
 viewer requests detailed zoning. `viewportZoning` separately declares a whole-viewport zoning read
 and exact record lookup. An overview alone makes no claim about parcel-level rules or permitted
-capacity. The configured source uses the same adapter for its other representations.
+capacity. The configured source uses the same adapter for its other representations. The
+[Astana zoning reference](astana-genplan-source.md) uses the same Kazakh cadastre snapshot reader
+as [Alatau](alatau-genplan-source.md), with its own use classification and source capabilities.
 
 | Abstraction | Current adapter boundary and normalized operation | Preparation constraints |
 | --- | --- | --- |

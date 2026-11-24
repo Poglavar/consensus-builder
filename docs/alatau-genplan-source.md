@@ -22,7 +22,7 @@ the parcel source `kz-alatau-pkk` (the national public cadastral map, district v
 | Acquisition | WFS pages ordered by `object_id_i32`. The importer supplements the host's TLS chain with the certificate pinned by the parcel source (`backend/parcels/certificates/`) |
 | Detailed plans | `kz:pdpzone`/`kz:pdpreg` hold no Alatau zones (2026-11-12) |
 
-Run `node backend/scripts/build-alatau-genplan-snapshot.mjs --fetch` from the repository root to
+Run `node backend/scripts/build-kz-genplan-snapshot.mjs alatau-genplan-727 --fetch` from the repository root to
 refresh both assets together. The importer also accepts a complete WFS GeoJSON file with its match
 count. It writes the full-precision compressed snapshot under `backend/planning/data/` and the
 simplified map asset under `frontend/data/planning/`.

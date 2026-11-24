@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { cityConfigSource } from './helpers/city-config-source.js';
 import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
+import { astanaGenplanSource } from '../planning/providers/astana-genplan.js';
 
 const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
 const cityContext = { URLSearchParams, console };
@@ -29,6 +30,7 @@ describe('Astana city config', () => {
                 fallbackDataset: [71.4304, 51.1282]
             },
             buildings: { sources: [{ id: 'kz-nsdi-buildings' }, { id: 'osm' }] },
+            planning: { sourceIds: [astanaGenplanSource.id] },
             parcels: {
                 strategy: 'grid',
                 gridSize: 0.0025,
