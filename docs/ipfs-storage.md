@@ -16,17 +16,24 @@ Pinned on IPFS:
 - owner-decision bundles anchored on Solana (`POST /agreements/:cid/decisions/bundle`,
   `approval-anchor.js`);
 - signed community reports, which the UI links on `ipfs.io`;
-- parcel NFT images and metadata (`/ipfs/upload`).
+- parcel NFT images and metadata (`/ipfs/upload`);
+- every agreement minted on Solana, its plan and the plan's designs, once the index records the mint.
 
-Not pinned: designs, named plans and agreements. Publishing one is server-only. The
-client computes the CID from the canonical bytes, and `POST /designs`, `POST /plans`
-or `POST /agreements` indexes the object after checking that CID. Readers get these
-objects only from the server index, never from IPFS.
+Publishing a design, named plan or agreement is server-only and pins nothing: the client
+computes the CID from the canonical bytes, and `POST /designs`, `POST /plans` or
+`POST /agreements` indexes the object after checking that CID. The index and IPFS are
+separate stores, and content reaches IPFS only when something minted references it.
 
-`POST /pins` stays available, but no publication path calls it. It is kept for the
-objects a chain record will reference, so the blockchain work can pin them again.
-Until then, an agreement minted on Solana points at agreement, plan and design CIDs
-that only our index holds.
+Pin on mint (`agreements/pin-minted.js`): when `POST /agreements/:cid/onchain` first records a
+mint, the server pins the agreement, its plan and every member design from the index's own
+copies, in the background, after answering. The lifecycle job (`oracle/agreement-lifecycle-job.mjs`)
+repeats this every pass for every minted agreement, so it retries failures and covers agreements
+minted before. Each object is pinned only when its canonical bytes hash to its CID.
+`consensus.ipfs_pin` (`db/ipfs-pin-ddl.sql`) has one row per pinned CID; a CID with a row is
+never pinned again, so a design that several minted agreements share is pinned once, and nothing
+is ever unpinned. Pin failures and referenced objects missing from the index fail the job's run.
+
+`POST /pins` stays available, but no publication path calls it.
 
 ## Configuration
 

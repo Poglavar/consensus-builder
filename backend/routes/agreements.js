@@ -24,6 +24,7 @@ import { validatePlanContent } from './plans.js';
 import { normalizeCityCode } from '../utils/city-code.js';
 import { agreementDocument, SEMANTIC_BASE_ERROR, SEMANTIC_RECORD_ERROR } from '../semantics/published-records.js';
 import { createAgreementDecisionHandlers, createAgreementDecisionStore } from '../agreements/decisions.js';
+import { createPinStore, pinAgreementTrees } from '../agreements/pin-minted.js';
 import { createCommunityReportHandlers, createCommunityReportStore } from '../agreements/community-reports.js';
 import { rateLimit } from 'express-rate-limit';
 import { createVotingStore } from '../agreements/voting-store.js';
@@ -355,7 +356,7 @@ const send = (res, status, body) => {
  * POST /agreements, GET /agreements/:cid, GET /agreements, the decision relay under
  * /agreements/:cid/decisions and the chain account at POST /agreements/:cid/onchain.
  * @param deps { pool, thumbnailQueue?, baseUrl?, pinBytes?, decisionStore?, now?, uploadRateLimiter?,
- *   agreementChain?, reportStore?, reportPinBytes? } (routes/content-routes.js); agreementChain(cluster) gives the account reader of a
+ *   agreementChain?, reportStore?, reportPinBytes?, pinMinted? } (routes/content-routes.js); agreementChain(cluster) gives the account reader of a
  *   cluster (agreements/onchain.js createAgreementChain by default)
  */
 export function setupAgreementsRoute(app, deps) {
@@ -366,6 +367,16 @@ export function setupAgreementsRoute(app, deps) {
     const agreementChain = deps.agreementChain || (cluster => {
         if (!chains.has(cluster)) chains.set(cluster, createAgreementChain({ cluster }));
         return chains.get(cluster);
+    });
+
+    // Pin on mint (agreements/pin-minted.js): once the index learns an agreement is minted, its record,
+    // plan and designs are pinned in the background. The lifecycle job retries whatever this misses.
+    const pinMinted = deps.pinMinted || (async agreementCid => {
+        const store = createPinStore(pool);
+        const agreement = await store.agreement(agreementCid);
+        if (!agreement) return null;
+        return pinAgreementTrees({ store, agreements: [agreement], apply: true, log,
+            ...(deps.pinBytes ? { pinBytes: deps.pinBytes } : {}) });
     });
 
     const readPlan = async cid => (await pool.query(`SELECT cid, content FROM ${PLAN_TABLE} WHERE cid = $1`, [cid])).rows[0] || null;
@@ -680,7 +691,13 @@ export function setupAgreementsRoute(app, deps) {
                 : fresh;
             const wrote = await writeOnchain(pool, cid, next);
             log(`${row.onchain ? 'refreshed' : 'recorded'} ${cid} on ${body.cluster} as ${expected}: ${next.status}, ${next.decision}${wrote ? '' : ' (a later observation was already stored)'}`);
-            return res.status(row.onchain ? 200 : 201).json(await loadAgreement(pool, cid));
+            res.status(row.onchain ? 200 : 201).json(await loadAgreement(pool, cid));
+            // After the answer: a pinning failure never fails recording the mint.
+            if (!row.onchain) {
+                Promise.resolve().then(() => pinMinted(cid)).catch(error =>
+                    console.error(`[${new Date().toISOString()}] pinning minted agreement ${cid} failed (the lifecycle job retries):`, error));
+            }
+            return undefined;
         } catch (error) {
             if (error?.code === 'retired-agreement-format') return res.status(410).json({ error: error.message, code: error.code });
             console.error(`[${new Date().toISOString()}] Error in POST /agreements/${cid}/onchain:`, error);

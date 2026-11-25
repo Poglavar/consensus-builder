@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // CLI of the agreement lifecycle oracle (agreement-lifecycle.js through land-event-job.js): reads the
-// chain account of every minted agreement in the index, refreshes its `onchain` record and writes the
+// chain account of every minted agreement in the index, refreshes its `onchain` record, writes the
 // land events of terminal agreements (`agreement_lifecycle`, and one `agreement_executed` per input
-// parcel). Dry run unless --apply. --once runs one pass and exits; without it a pass runs every
+// parcel) and pins on IPFS the agreements, plans and designs minted agreements reference
+// (agreements/pin-minted.js). Dry run unless --apply. --once runs one pass and exits; without it a pass runs every
 // --interval seconds. Restartable and idempotent: every pass re-derives everything from the chain and
 // the index, and nothing is written twice. Applied passes write the run-stats artifact
 // (LAND_ORACLE_RUN_STATS) the operations page and the monitor read.
@@ -24,7 +25,8 @@ function usage(code = 0) {
         'Usage: node oracle/agreement-lifecycle-job.mjs (--once | --apply) [options]',
         '',
         '  --once              One pass, then exit (exit code 1 when the pass fails or finds a problem).',
-        '  --apply             Write: refresh consensus.agreement.onchain and insert the land events.',
+        '  --apply             Write: refresh consensus.agreement.onchain, insert the land events and pin',
+        '                      what minted agreements reference that is not pinned yet (consensus.ipfs_pin).',
         '                      Without it the pass is a dry run that reads the chain and writes nothing.',
         `  --interval <s>      Seconds between passes when not --once (default ${DEFAULT_INTERVAL_SECONDS}).`,
         `  --cluster <name>    ${Object.keys(AGREEMENT_CLUSTERS).join(' | ')} (default devnet).`,
@@ -35,6 +37,7 @@ function usage(code = 0) {
         '  node oracle/agreement-lifecycle-job.mjs --once --apply    # one written pass (the PM2 cron job)',
         '',
         'Env (backend/.env): DATABASE_URL, SOLANA_RPC_URL (the cluster\'s RPC), SOLANA_RPC_MAX_ACCOUNTS,',
+        'IPFS_PINNING_PROVIDER and its credentials (storage/pinning.js),',
         'LAND_ORACLE_RUN_STATS (run-stats file, default logs/land-oracle-stats.json; written by --apply passes).'
     ].join('\n'));
     process.exit(code);
@@ -81,7 +84,7 @@ async function main() {
         const job = await runLandEventJob({ pool, chain, apply: opts.apply });
         if (job.error) timestampedLog(`pass FAILED: ${job.error.message}`);
         if (opts.apply) {
-            const stats = buildLandOracleRunStats({ startedAt, endedAt: new Date().toISOString(), result: job.result, error: job.error, dryRun: false });
+            const stats = buildLandOracleRunStats({ startedAt, endedAt: new Date().toISOString(), result: job.result, pins: job.pins, error: job.error, dryRun: false });
             try {
                 writeRunStatsAtomic(landOracleStatsPath(process.env), stats);
             } catch (error) {

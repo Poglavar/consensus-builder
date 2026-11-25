@@ -23,6 +23,8 @@ function harness({ connection = async () => ({}), result = CLEAN, throws = null 
             pool: { query: async () => ({ rows: [] }) },
             chain: { cluster: 'devnet', connection: async () => { calls.push('network'); return connection(); } },
             log: line => lines.push(line),
+            // The pin step (agreements/pin-minted.js) is quiet and clean here; 'the pin step' tests it.
+            pin: async () => ({ agreements: 0, referenced: 0, alreadyPinned: 0, pinned: [], wouldPin: [], failed: [], missing: [] }),
             sync: async options => {
                 calls.push('sync');
                 if (throws) throw new Error(throws);
@@ -83,6 +85,47 @@ describe('runLandEventJob', () => {
         expect(job.result.failed).toHaveLength(4);
         expect(job.error.message).toBe('1 agreement account(s) missing or not the agreement\'s; 2 terminal agreement(s) lack their transaction; '
             + '4 agreement(s) failed: cid-1 (boom 1), cid-2 (boom 2), cid-3 (boom 3)');
+    });
+});
+
+describe('the pin step', () => {
+    const PINS = Object.freeze({ agreements: 1, referenced: 3, alreadyPinned: 0, pinned: [{}, {}, {}], wouldPin: [], failed: [], missing: [] });
+    const pinning = (outcome = PINS) => {
+        const calls = [];
+        return { calls, pin: async options => { calls.push(options); if (outcome instanceof Error) throw outcome; return outcome; } };
+    };
+
+    it('runs after the pass on the same cluster and pool, and a clean pin keeps the run clean', async () => {
+        const h = harness();
+        const p = pinning();
+        const job = await runLandEventJob({ ...h.options, apply: true, pin: p.pin });
+        expect(p.calls).toEqual([expect.objectContaining({ pool: h.options.pool, cluster: 'devnet', apply: true })]);
+        expect(job).toMatchObject({ exitCode: 0, error: null, pins: { pinned: [{}, {}, {}] } });
+    });
+
+    it('still runs when the lifecycle pass throws, and both failures reach the verdict', async () => {
+        const h = harness({ throws: 'database down' });
+        const p = pinning({ ...PINS, failed: [{ kind: 'design', cid: 'bafk1', error: 'quota' }] });
+        const job = await runLandEventJob({ ...h.options, pin: p.pin });
+        expect(p.calls).toHaveLength(1);
+        expect(job).toMatchObject({ result: null, exitCode: 1 });
+        expect(job.error.message).toBe('database down; 1 object(s) could not be pinned: design bafk1 (quota)');
+    });
+
+    it('fails the run, keeping the pass result, when pinning fails or the step throws', async () => {
+        const failing = await runLandEventJob({ ...harness().options, pin: pinning({ ...PINS, missing: [{ kind: 'plan', cid: 'bafk2' }] }).pin });
+        expect(failing).toMatchObject({ exitCode: 1, result: { inserted: 2 } });
+        expect(failing.error.message).toBe('1 referenced object(s) are not in the index');
+        const thrown = await runLandEventJob({ ...harness().options, pin: pinning(new Error('no table')).pin });
+        expect(thrown).toMatchObject({ exitCode: 1, pins: null, result: { inserted: 2 } });
+        expect(thrown.error.message).toBe('pin step failed: no table');
+    });
+
+    it('does not run when the RPC is not the cluster', async () => {
+        const h = harness({ connection: async () => { throw new Error('wrong genesis'); } });
+        const p = pinning();
+        await runLandEventJob({ ...h.options, pin: p.pin });
+        expect(p.calls).toEqual([]);
     });
 });
 

@@ -8,7 +8,8 @@ rework ([plan-design-agreement.md](plan-design-agreement.md)), which kept the pr
 lost it in code: publishing a design, plan or agreement only indexes it and pins nothing, reading
 comes only from the index, and the chain reader (`chain-proposal-loader.js`) was removed with the
 proposal-era readers. An agreement minted on Solana therefore points at agreement, plan and design
-CIDs that only our index holds, until Flow 2 puts what chain records reference on IPFS.
+CIDs that only our index holds until the server pins them after the mint (see Flow 2), which is
+not yet the retrievability gate before the mint that Flow 2 requires.
 
 Decisions taken 2026-10-29 are stated as rules; what is still open is listed at the end. Every
 program and contract may be changed, rewritten or replaced to fit this plan (user, 2026-10-29):
@@ -87,6 +88,11 @@ used only when the one before is unavailable:
    pinning.
 3. **Self-pinned**: the dialog offers the canonical bytes as a file download and names the CID; the
    person pins it wherever they like and continues when it is retrievable.
+
+Built so far is only the after-the-fact half: once the index records an agreement's mint, the server
+pins the agreement, its plan and its designs and records each CID in `consensus.ipfs_pin`
+([ipfs-storage.md](ipfs-storage.md)). It covers agreements minted before the gate exists and retries
+failures; it is not the gate.
 
 Whatever the courier, the **retrievability gate** is the same: at least one public gateway that is
 not our backend returns bytes hashing to the CID. The checklist retries with a visible count while
