@@ -9,6 +9,9 @@
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 export const EQUIPAMIENTOS = require('./bogota-pot-equipamientos.json');
+// The street wall is a relative rule term, height = (street width + front yard) × ratio, read by the
+// shared evaluator every rule source uses (frontend/js/planning/rule-terms.js).
+const RuleTerms = require('../../../frontend/js/planning/rule-terms.js');
 
 const finite = value => typeof value === 'number' && Number.isFinite(value);
 const clean = value => typeof value === 'string' ? value.trim() : value == null ? '' : String(value).trim();
@@ -129,10 +132,12 @@ export function streetWallConstraint({ treatment, heightM, antejardinM = null, s
     const ratio = rules.streetWall.ratio[treatment];
     const base = { rule: rules.streetWallCitation, ratio: ratio ?? null, streetWidthM, antejardinM };
     if (!ratio) return { constraint: null, evidence: { ...base, applies: false, reason: 'treatment-without-street-wall-rule' } };
-    if (!finite(streetWidthM)) return { constraint: null, evidence: { ...base, applies: false, reason: 'street-width-unknown' } };
-    const distanceM = round(streetWidthM + (finite(antejardinM) ? antejardinM : 0));
+    const context = { street: { widthM: streetWidthM } };
+    const distance = RuleTerms.evaluate({ of: 'streetWidth', add: finite(antejardinM) ? antejardinM : 0 }, context);
+    if (!distance.known) return { constraint: null, evidence: { ...base, applies: false, reason: distance.reason } };
+    const distanceM = round(distance.value);
     if (distanceM > rules.streetWall.maxDistanceM) return { constraint: null, evidence: { ...base, applies: false, distanceM, reason: 'street-wider-than-rule' } };
-    const facadeM = round(ratio * distanceM);
+    const facadeM = round(RuleTerms.evaluate({ of: 'streetWidth', add: distanceM - streetWidthM, times: ratio }, context).value);
     if (!finite(heightM) || heightM <= facadeM) return { constraint: null, evidence: { ...base, applies: false, distanceM, facadeHeightM: facadeM, reason: 'building-below-facade-height' } };
     const setbackM = round(rules.streetWall.setbackM(heightM, facadeM));
     const value = round(setbackM + (finite(antejardinM) ? antejardinM : 0));

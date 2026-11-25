@@ -336,5 +336,67 @@
       },
       "parcelSourceId": "us-ma-massgis-l3-tax-parcels"
     }
+  ],
+  "constraintSources": [
+    {
+      "id": "gb-eng-planning-data",
+      "adapter": "planning-data-entity",
+      "label": "planning.data.gov.uk",
+      "endpoint": "https://www.planning.data.gov.uk",
+      "coverage": {
+        "countries": ["GB-ENG"],
+        "note": "England only: planning.data.gov.uk publishes no designations for Wales, Scotland or Northern Ireland."
+      },
+      "licence": {
+        "name": "Open Government Licence v3.0",
+        "url": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+      },
+      "attribution": "Contains public sector information from planning.data.gov.uk licensed under the Open Government Licence v3.0; Historic England, Environment Agency, Ordnance Survey and local planning authority data © Crown copyright and database rights.",
+      "pageSize": 500,
+      "maxPages": 4
+    }
+  ],
+  "ruleSets": [
+    {
+      "id": "gb-eng-planning",
+      "label": "Planning designations (England)",
+      "jurisdiction": "GB-ENG",
+      "constraintSourceId": "gb-eng-planning-data",
+      "baseRule": null,
+      "evidence": {
+        "label": "National Planning Policy Framework (2026), chapters 13, 18 and 20",
+        "url": "https://www.gov.uk/guidance/national-planning-policy-framework"
+      },
+      "effects": [
+        { "dataset": "scheduled-monument", "effect": "prohibit", "reasonCode": "scheduled-monument" },
+        { "dataset": "listed-building-outline", "effect": "prohibit", "subject": "existing-building", "reasonCode": "listed-building" },
+        { "dataset": "listed-building", "effect": "prohibit", "subject": "existing-building", "reasonCode": "listed-building",
+          "sameAs": { "dataset": "listed-building-outline", "field": "listed-building" } },
+        { "dataset": "article-4-direction-area", "effect": "restrict", "reasonCode": "article-4-direction", "requirement": "planning-permission" },
+        { "dataset": "conservation-area", "effect": "restrict", "reasonCode": "conservation-area", "requirement": "design-scrutiny" },
+        { "dataset": "green-belt", "effect": "note", "reasonCode": "green-belt" },
+        { "dataset": "flood-risk-zone", "where": { "field": "flood-risk-level", "in": ["3"] }, "effect": "note", "reasonCode": "flood-zone-3" },
+        { "dataset": "world-heritage-site", "effect": "note", "reasonCode": "world-heritage-site" },
+        { "dataset": "tree-preservation-zone", "effect": "note", "reasonCode": "tree-preservation" }
+      ],
+      "policies": [
+        {
+          "id": "nppf-2026-l2-1-d-iii",
+          "citation": "NPPF (2026) policy L2(1)(d)(iii) and footnote 38",
+          "url": "https://www.gov.uk/guidance/national-planning-policy-framework-chapter-12-making-effective-use-of-land-l1-3",
+          "text": "Where the development would involve the use of residential curtilages, not occupy more than twice the footprint of all the existing buildings on the site, and, following development, would retain at least 50% of the non-developed area within the curtilage of the existing buildings; unless additional development can be accommodated without harm to the overall character of the area.",
+          "appliesTo": "residential-curtilage",
+          "existingBuildingsAsAt": "the date of the publication of this Framework (footnote 38)",
+          "grants": "substantial-weight",
+          "constraints": [
+            { "quantity": "footprintArea", "bound": "maximum", "unit": "m2", "term": { "of": "existingFootprint", "times": 2 },
+              "beyond": "condition", "conditionCode": "no-harm-to-character" },
+            { "quantity": "naturalGround", "bound": "minimum", "unit": "m2", "term": { "of": "existingNaturalGround", "times": 0.5 },
+              "beyond": "condition", "conditionCode": "no-harm-to-character" }
+          ],
+          "notComputable": ["street-scene", "daylight", "sunlight", "privacy", "external-amenity-space", "safe-access"]
+        }
+      ]
+    }
   ]
 }
