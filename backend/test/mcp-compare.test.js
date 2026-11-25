@@ -113,19 +113,21 @@ describe('MCP comparison money', () => {
         const removed = existingFloorArea(stock.geometry, standing);
         expect(removed).toBeCloseTo(turf.area(stock) * 3);
         expect(built.removedFloorAreaM2).toBeCloseTo(removed);
-        // London: the authority's land rate; the editable starting assumptions for the rest.
+        // London, at the site's place (its extent's centre is in Southwark, value band B): the borough's
+        // land rate, the band's sale price and construction cost, the editable assumptions for the rest.
+        const sale = 11844, cost = 3730, land = 5385;
         expect(built.money).toMatchObject({ currency: 'GBP', unit: 'm2-floor', prices: {
-            sale: { amount: 4000, basis: 'assumption', sourceId: 'scenario-assumptions' }, construction: { amount: 2000 },
-            land: { amount: 8799, basis: 'policy-appraisal', sourceId: 'uk-mhclg-land-2023' }, saleTax: { amount: 0 },
+            sale: { amount: sale, basis: 'market', sourceId: 'gla-lpvs-2026' }, construction: { amount: cost, basis: 'construction-cost' },
+            land: { amount: land, basis: 'policy-appraisal', sourceId: 'uk-mhclg-land-2023', scope: 'E09000028 · Southwark' }, saleTax: { amount: 0 },
             rent: { amount: 15, unit: 'm2-floor-month' } } });
         expect(built.money.landAreaM2).toBeCloseTo(siteM2);
-        expect(built.money.landCost).toBeCloseTo(siteM2 * 8799);
-        expect(built.money.totalCost).toBeCloseTo(built.floorAreaM2 * 2000 + siteM2 * 8799 + removed * 4000);
-        expect(built.money.profit).toBeCloseTo(built.floorAreaM2 * 4000 - built.money.totalCost);
+        expect(built.money.landCost).toBeCloseTo(siteM2 * land);
+        expect(built.money.totalCost).toBeCloseTo(built.floorAreaM2 * cost + siteM2 * land + removed * sale);
+        expect(built.money.profit).toBeCloseTo(built.floorAreaM2 * sale - built.money.totalCost);
         expect(built.money.annualRent).toBeCloseTo(built.floorAreaM2 * 15 * 12);
         expect(built.money.rentYieldOnCost).toBeCloseTo(built.money.annualRent / built.money.totalCost);
         // The park builds nothing: it still pays for its land and what it clears.
-        expect(result.alternatives[0].money.profit).toBeCloseTo(-(siteM2 * 8799 + removed * 4000));
+        expect(result.alternatives[0].money.profit).toBeCloseTo(-(siteM2 * land + removed * sale));
         expect(result.warnings.some(text => text.startsWith('Money is a model'))).toBe(true);
     });
 
@@ -160,6 +162,7 @@ describe('MCP comparison money', () => {
         const built = result.alternatives[1];
         expect(built.removedFloorAreaM2).toBeNull();
         expect(built.money).toMatchObject({ profit: null, totalCost: null });
-        expect(built.money.constructionCost).toBeCloseTo(built.floorAreaM2 * 2000);
+        // Value band B's 4-6 storey construction cost at the site.
+        expect(built.money.constructionCost).toBeCloseTo(built.floorAreaM2 * 3730);
     });
 });

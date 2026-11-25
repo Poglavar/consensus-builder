@@ -1,7 +1,11 @@
 // Statistics for one exact saved plan, independently of the displayed map.
 (function () {
-    // The sales price is in the city's currency and starts at the city's default (city-money.js).
-    const salesPrice = () => window.CityMoney.currentAssumptions();
+    // The sales price is in the city's currency and starts at the city's default (city-money.js), for
+    // the place the plan's land is: planLocation, [lng, lat] (EconomicSources.locationOf of that land),
+    // null until a plan is measured. Rates published per area (an English authority's land value, a
+    // London value band) are that place's.
+    let planLocation = null;
+    const salesPrice = (at = planLocation) => window.CityMoney.currentAssumptions(at);
 
     let latestStats = null;
     let planStatsTrigger = null;
@@ -246,11 +250,11 @@
     const ASSUMPTION_INPUTS = [
         // The prices, each with a slider over the city's range (CityMoney.currentFloorAreaPrices, slider)
         // as well as the exact number; the sale tax is typed as a percentage of the sale price.
-        { id: 'plan-stats-price', slider: 'sale', i18nKey: 'sidebar.proposals.planStats.salesSuffix', label: '{{currency}} per m² sale price', min: 0, step: 100, value: () => salesPrice().salesPerSqm, params: () => ({ currency: salesPrice().currency }) },
-        { id: 'plan-stats-construction', slider: 'construction', i18nKey: 'sidebar.proposals.planStats.constructionSuffix', label: '{{currency}} per m² construction cost', min: 0, step: 100, value: () => salesPrice().constructionPerSqm, params: () => ({ currency: salesPrice().currency }) },
-        { id: 'plan-stats-land', slider: 'land', i18nKey: 'sidebar.proposals.planStats.landSuffix', label: '{{currency}} per m² of land', min: 0, step: 10, value: () => salesPrice().landPerSqm, params: () => ({ currency: salesPrice().currency }) },
-        { id: 'plan-stats-sale-tax', slider: 'saleTax', percent: true, i18nKey: 'sidebar.proposals.planStats.saleTaxSuffix', label: '% sale tax in the price', min: 0, max: 99, step: 0.5, value: () => (finiteNumber(salesPrice().saleTaxShare) ? Math.round(salesPrice().saleTaxShare * 1000) / 10 : null) },
-        { id: 'plan-stats-rent', slider: 'rent', i18nKey: 'sidebar.proposals.planStats.rentSuffix', label: '{{currency}} per m² rent a month', min: 0, step: 1, value: () => salesPrice().rentPerSqmMonth, params: () => ({ currency: salesPrice().currency }) },
+        { id: 'plan-stats-price', slider: 'sale', i18nKey: 'sidebar.proposals.planStats.salesSuffix', label: '{{currency}} per m² sale price', min: 0, step: 100, value: (d, price = salesPrice()) => price.salesPerSqm, params: () => ({ currency: salesPrice().currency }) },
+        { id: 'plan-stats-construction', slider: 'construction', i18nKey: 'sidebar.proposals.planStats.constructionSuffix', label: '{{currency}} per m² construction cost', min: 0, step: 100, value: (d, price = salesPrice()) => price.constructionPerSqm, params: () => ({ currency: salesPrice().currency }) },
+        { id: 'plan-stats-land', slider: 'land', i18nKey: 'sidebar.proposals.planStats.landSuffix', label: '{{currency}} per m² of land', min: 0, step: 10, value: (d, price = salesPrice()) => price.landPerSqm, params: () => ({ currency: salesPrice().currency }) },
+        { id: 'plan-stats-sale-tax', slider: 'saleTax', percent: true, i18nKey: 'sidebar.proposals.planStats.saleTaxSuffix', label: '% sale tax in the price', min: 0, max: 99, step: 0.5, value: (d, price = salesPrice()) => (finiteNumber(price.saleTaxShare) ? Math.round(price.saleTaxShare * 1000) / 10 : null) },
+        { id: 'plan-stats-rent', slider: 'rent', i18nKey: 'sidebar.proposals.planStats.rentSuffix', label: '{{currency}} per m² rent a month', min: 0, step: 1, value: (d, price = salesPrice()) => price.rentPerSqmMonth, params: () => ({ currency: salesPrice().currency }) },
         { id: 'plan-stats-housing-share', i18nKey: 'sidebar.proposals.planStats.housingShareSuffix', label: '% housing share', min: 0, max: 100, step: 5, value: d => Math.round((d.housingShare ?? 0.75) * 100) },
         { id: 'plan-stats-efficiency', i18nKey: 'sidebar.proposals.planStats.efficiencySuffix', label: '% net of gross', min: 1, max: 100, step: 5, value: d => Math.round((d.efficiency ?? 0.8) * 100) },
         { id: 'plan-stats-apartment-size', i18nKey: 'sidebar.proposals.planStats.apartmentSizeSuffix', label: 'm² per apartment', min: 1, step: 5, value: d => d.avgApartmentM2 ?? 65 },
@@ -272,6 +276,8 @@
     // The assumption inputs and their labels for one dialog; ids are `${prefix}-${key}`. The prices
     // come first, each a label, a slider and the exact number, kept in step; moving a slider calls
     // onSlide with its number input. A price without a starting value (no land price) is empty until set.
+    // The prices the reader set (by input key), which a plan's place does not reset.
+    const typedPrices = new Set();
     function assumptionGrid(prefix, onSlide = () => {}) {
         const groups = el('div', 'plan-stats-assumption-groups');
         const prices = el('div', 'plan-stats-prices');
@@ -311,8 +317,8 @@
             slider.step = range.step === 'any' ? 'any' : String(range.step * scale);
             slider.value = input.value === '' ? slider.min : input.value;
             slider.setAttribute('aria-label', labelText);
-            slider.addEventListener('input', () => { input.value = slider.value; onSlide(input); });
-            input.addEventListener('input', () => { if (input.value.trim() !== '') slider.value = input.value; });
+            slider.addEventListener('input', () => { typedPrices.add(inputKey(spec)); input.value = slider.value; onSlide(input); });
+            input.addEventListener('input', () => { typedPrices.add(inputKey(spec)); if (input.value.trim() !== '') slider.value = input.value; });
             prices.appendChild(suffix);
             prices.appendChild(slider);
             prices.appendChild(input);
@@ -322,7 +328,29 @@
         return groups;
     }
     function rememberAssumptions(container) {
-        container.querySelectorAll('[data-assumption]').forEach(input => { typedAssumptions[input.dataset.assumption] = input.value; });
+        container.querySelectorAll('[data-assumption]').forEach(input => {
+            const key = input.dataset.assumption;
+            if (!PRICE_KEYS.has(key) || typedPrices.has(key)) typedAssumptions[key] = input.value;
+        });
+    }
+    // The prices the reader has not set, and their sliders' ranges, at the rates of the place `at`.
+    function placePrices(container, prefix, at) {
+        const ranges = window.CityMoney.currentFloorAreaPrices(at);
+        const price = salesPrice(at);
+        ASSUMPTION_INPUTS.forEach(spec => {
+            const key = inputKey(spec);
+            const input = container.querySelector(`#${prefix}-${key}`);
+            const slider = container.querySelector(`#${prefix}-${key}-slider`);
+            if (!spec.slider || !input || typedPrices.has(key)) return;
+            const start = spec.value({}, price);
+            input.value = start === null || start === undefined ? '' : String(start);
+            if (!slider) return;
+            const scale = spec.percent ? 100 : 1, range = ranges[spec.slider];
+            slider.min = String(range.min * scale);
+            slider.max = String(range.max * scale);
+            slider.step = range.step === 'any' ? 'any' : String(range.step * scale);
+            slider.value = input.value === '' ? slider.min : input.value;
+        });
     }
     function restoreAssumptions(container) {
         container.querySelectorAll('[data-assumption]').forEach(input => {
@@ -804,6 +832,8 @@
             if (signal.aborted) return;
             const snapshot = await measureGeometry(await window.PlanAnalysis.prepare(plan, { signal }), signal);
             if (signal.aborted) return;
+            planLocation = window.EconomicSources.locationOf(snapshot.landFeature);
+            placePrices(modal, 'plan-stats', planLocation);
             const show = data => renderPlanStatsModal(computePlanStatsSync(data, readAssumptionsFromModal(modal)));
             show({ ...snapshot, unitsCounting: true });
             for (const key of ['public-land', 'private-land', 'buildings-remaining']) modal.querySelector(`[data-plan-stat="${key}"]`).textContent = waiting;
@@ -1115,11 +1145,18 @@
             onClose: () => { controller.abort(); measuring++; scoping++; if (activeCompare === handle) activeCompare = null; } });
         const handle = { close() { controller.abort(); dialog.close?.(); } };
         activeCompare = handle;
-        let next = 0;
+        let next = 0, placed = false;
         async function prepareColumn() {
             while (!signal.aborted && next < plans.length) {
                 const index = next++, plan = plans[index], entry = entries[index];
                 const show = snapshot => {
+                    // One set of prices for every column: those of the first plan's place.
+                    if (index === 0 && !placed) {
+                        placed = true;
+                        placePrices(grid, 'plan-compare', window.EconomicSources.locationOf(snapshot.landFeature));
+                        price = priceIn(grid, 'plan-compare');
+                        [...entries, present].forEach(other => { if (other.stats) other.figures = summaryTexts(other.stats, price); });
+                    }
                     entry.stats = computePlanStatsSync({ ...snapshot, unitsCounting: true }, readAssumptionsFromModal(grid, { prefix: 'plan-compare' }));
                     entry.figures = summaryTexts(entry.stats, price);
                     entry.groundError = entry.stats.groundError;

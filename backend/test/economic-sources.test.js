@@ -6,9 +6,14 @@ const require = createRequire(import.meta.url);
 const EconomicSources = require('../../frontend/js/economic-sources.js');
 const CityMoney = require('../../frontend/js/city-money.js');
 const UkLandRates = require('../../frontend/js/uk-land-rates.js');
+const UkEconomicAreas = require('../../frontend/data/uk-economic-areas.js');
 
 const birmingham = { id: 'birmingham', currency: { code: 'GBP' } };
-const cityContext = city => ({ city, ukLandRates: UkLandRates });
+const cityContext = (city, at = null) => ({ city, ukLandRates: UkLandRates, ukAreas: UkEconomicAreas, at });
+// Points, [lng, lat], in named places: their authorities are the land rate's areas.
+const PLACES = { islington: [-0.1030, 51.5380], croydon: [-0.0982, 51.3727], barking: [0.0810, 51.5390],
+    trafalgarSquare: [-0.1281, 51.5080], salford: [-2.2900, 53.4875], birminghamCentre: [-1.8904, 52.4862],
+    guildford: [-0.5700, 51.2362], cardiff: [-3.1791, 51.4816] };
 const rateSource = (id, rates, extra = {}) => ({
     version: 1, id, name: `Source ${id}`, adapter: 'rate-table', rates, ...extra
 });
@@ -19,7 +24,7 @@ const rate = (metric, amount, overrides = {}) => ({
 describe('economic source adapters', () => {
     it('returns UK authority land evidence with provenance, units, basis, and valuation date', () => {
         const source = EconomicSources.defaults(birmingham, UkLandRates);
-        const rates = EconomicSources.resolve(source, cityContext(birmingham));
+        const rates = EconomicSources.resolve(source, cityContext(birmingham, PLACES.birminghamCentre));
         expect(rates.land).toMatchObject({
             metric: 'land', unit: 'm2-land', amount: 688, currency: 'GBP', basis: 'policy-appraisal',
             asOf: '2023-10-01', sourceId: 'uk-mhclg-land-2023',
@@ -29,10 +34,10 @@ describe('economic source adapters', () => {
         expect(rates.roadLand).toMatchObject({ metric: 'roadLand', unit: 'm2-land', amount: 688, asOf: '2023-10-01' });
     });
 
-    it('does not treat an England-median fallback as local evidence outside authority coverage', () => {
+    it('has no UK land evidence for a city outside England', () => {
         const cardiff = { id: 'cardiff', currency: { code: 'GBP' } };
-        expect(UkLandRates.cities.cardiff.basis).toBe('england-median');
-        const rates = EconomicSources.resolve(EconomicSources.defaults(cardiff, UkLandRates), cityContext(cardiff));
+        expect(UkLandRates.cities).not.toHaveProperty('cardiff');
+        const rates = EconomicSources.resolve(EconomicSources.defaults(cardiff, UkLandRates), cityContext(cardiff, PLACES.cardiff));
         expect(rates).not.toHaveProperty('land');
         expect(rates).not.toHaveProperty('roadLand');
     });
@@ -206,5 +211,81 @@ describe('sale tax', () => {
         // ... sized to the city's money by its sale price over the 4,000 standard.
         expect(EconomicSources.slider('land', null, 566000 / 4000)).toMatchObject({ perSqm: null, min: 0, max: 283000 });
         expect(EconomicSources.slider('land', null, 0.5).max).toBe(2000);
+    });
+});
+
+describe('UK rates follow the location', () => {
+    const london = { id: 'london', currency: { code: 'GBP' }, map: { defaultCenter: [51.5097885891913, -0.126303973484058] },
+        economics: { sources: ['uk-mhclg-land-2023', 'gla-lpvs-2026', 'scenario-assumptions'] } };
+    const manchester = { id: 'manchester', currency: { code: 'GBP' } };
+    const at = (city, point) => CityMoney.ratesFor(city, null, point);
+
+    it('finds the English local authority and the London value band a point lies in', () => {
+        const lad = point => EconomicSources.areaAt(UkEconomicAreas, 'lad', point)?.id;
+        expect(lad(PLACES.islington)).toBe('E09000019');
+        expect(lad(PLACES.croydon)).toBe('E09000008');
+        expect(lad(PLACES.barking)).toBe('E09000002');
+        expect(lad(PLACES.salford)).toBe('E08000006');
+        expect(lad(PLACES.cardiff)).toBeUndefined();
+        const band = point => EconomicSources.areaAt(UkEconomicAreas, 'lpvsBand', point)?.id;
+        expect(band(PLACES.islington)).toBe('C');
+        expect(band(PLACES.croydon)).toBe('F');
+        expect(band(PLACES.trafalgarSquare)).toBeUndefined();
+    });
+
+    it("prices land at the authority of the plan's place, not the city's", () => {
+        // Islington and Croydon are both London; a per-city rate would give them Westminster's 8,799.
+        expect(at(london, PLACES.islington).land).toMatchObject({ amount: 5018, scope: 'E09000019 · Islington', basis: 'policy-appraisal' });
+        expect(at(london, PLACES.croydon).land).toMatchObject({ amount: 1428, scope: 'E09000008 · Croydon' });
+        expect(at(london, PLACES.barking).roadLand).toMatchObject({ amount: 821, scope: 'E09000002 · Barking and Dagenham' });
+        // Manchester's parcels across the city boundary are Salford's.
+        expect(CityMoney.landPriceOptions(manchester, 'land', null, PLACES.salford).economicSource).toMatchObject({ amount: 775, scope: 'E08000006 · Salford' });
+    });
+
+    it("falls back to the city's authority only without a place, and says so", () => {
+        expect(at(london, null).land).toMatchObject({ amount: 8799, scope: "E09000033 · Westminster (the city's authority: no location given)" });
+        expect(at(manchester, PLACES.cardiff).land).toMatchObject({ amount: 1048,
+            scope: "E08000003 · Manchester (the city's authority: the location is outside the mapped areas)" });
+    });
+
+    it("prices London's sale and construction at the GLA value band of the place", () => {
+        const islington = at(london, PLACES.islington), croydon = at(london, PLACES.croydon);
+        expect(islington.sale).toMatchObject({ amount: Math.round(12666 * 0.675), basis: 'market', asOf: '2025-06-30', sourceId: 'gla-lpvs-2026' });
+        expect(islington.construction).toMatchObject({ amount: 3560, basis: 'construction-cost', asOf: '2026-06-08', unit: 'm2-floor' });
+        expect(croydon.sale.amount).toBe(Math.round(5511 * 0.675));
+        expect(croydon.construction.amount).toBe(3200);
+        expect(islington.sale.scope).toMatch(/^Value band C: .*Table C\.2/);
+        // The map leaves central postcode districts unbanded: the nearest band, said so.
+        expect(at(london, PLACES.trafalgarSquare).sale.scope).toMatch(/^Value band A, nearest:/);
+        // Outside Greater London, or without a place, the band of the city's centre, said so.
+        expect(at(london, PLACES.guildford).sale.scope).toContain("city centre's: outside Greater London");
+        expect(at(london, null).construction.scope).toContain("city centre's: no location given");
+        // Rent stays the editable assumption.
+        expect(islington.rent).toMatchObject({ amount: 15, sourceId: 'scenario-assumptions' });
+    });
+
+    it('locates land at the centre of its extent', () => {
+        const square = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [[[0, 0], [2, 0], [2, 4], [0, 4], [0, 0]]] } };
+        expect(EconomicSources.locationOf(square)).toEqual([1, 2]);
+        expect(EconomicSources.locationOf([square, { type: 'Point', coordinates: [6, 4] }])).toEqual([3, 2]);
+        expect(EconomicSources.locationOf(null)).toBeNull();
+    });
+});
+
+describe('configured UK cities', () => {
+    it('price London per borough and value band, as the MCP reads it, and Birmingham from its viability evidence', async () => {
+        const { cityMoney } = await import('../scripts/lib/frontend-city-money.mjs');
+        const { cityEconomics } = await import('../agents/mcp-read-tools.js');
+        const islington = cityMoney('london').currentEconomicRates(PLACES.islington);
+        expect(islington).toMatchObject({ land: { amount: 5018 }, sale: { amount: 8550 }, construction: { amount: 3560 } });
+        expect(cityEconomics('london', PLACES.croydon).rates).toMatchObject({ land: { amount: 1428 }, sale: { amount: 3720 }, construction: { amount: 3200 } });
+        expect(cityMoney('london').currentFloorAreaPrices(PLACES.islington)).toMatchObject({ sale: { perSqm: 8550 }, construction: { perSqm: 3560 } });
+        const birmingham = cityMoney('birmingham').currentEconomicRates(PLACES.birminghamCentre);
+        expect(birmingham.land).toMatchObject({ amount: 688, scope: 'E08000025 · Birmingham' });
+        expect(birmingham.sale).toMatchObject({ amount: 2509, basis: 'market', asOf: '2023-08-31', sourceId: 'bcc-residential-market-paper-2024' });
+        expect(birmingham.construction).toMatchObject({ amount: 1638, basis: 'construction-cost', asOf: '2024-04-01', sourceId: 'bcc-whole-plan-viability-2024' });
+        expect(birmingham.rent).toMatchObject({ amount: 15, sourceId: 'scenario-assumptions' });
+        // Other English cities keep the editable sale and construction assumptions.
+        expect(cityMoney('manchester').currentEconomicRates()).toMatchObject({ sale: { amount: 4000, sourceId: 'scenario-assumptions' } });
     });
 });

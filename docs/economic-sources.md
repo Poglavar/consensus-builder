@@ -29,6 +29,12 @@ totals are deliberately outside this rate contract: they need source-qualified p
 assessment dates, and a distinction between land-only and whole-property value. They must not be
 silently renamed market prices or divided by an unrelated area.
 
+Rates are resolved for a location, `at` ([lng, lat]): `CityMoney.ratesFor(city, override, at)` and the
+`current…(at)` views. A source published per area returns the observation of the area containing it
+(see below); other sources ignore it. Every consumer takes the location of the land it prices with
+`EconomicSources.locationOf`, the centre of that land's extent (one point per priced land). Without a
+location the per-area sources answer for the city's own area, and the observation's `scope` says so.
+
 Source resolution uses the first usable observation for each metric. Only observations in the
 place's explicit currency are usable in that model; no implicit conversion is performed. A browser
 override can supply one or several metrics, leaving the remaining configured sources in place.
@@ -37,10 +43,46 @@ explicit rate and differs from missing evidence.
 
 ## Adapters and frontend selection
 
-- `uk-mhclg-2023` adapts the existing generated UK table. It exposes the English authority's
-  residential policy-appraisal rate, dated 1 October 2023, with the source workbook and authority.
-  City-wide application is an illustrative authority-rate assumption, not a site-specific valuation.
-  `roadLand` uses the same residential proxy and retains that provenance.
+- `uk-mhclg-2023` reads the generated table `frontend/js/uk-land-rates.js`
+  (`scripts/build-uk-land-rates.py`): MHCLG "Land value estimates for policy appraisal 2023", sheet
+  Residential, medium site density at the median house price, for every English local authority,
+  dated 1 October 2023. It gives the rate of the authority the location lies in (scope
+  `E09000019 · Islington`). The city's own authority (named like the city, else under its map centre)
+  stands in only without a location, outside the mapped authorities (Wales, Scotland, the sea) or in an
+  authority without an estimate (Cumberland, Isles of Scilly), and the scope says which, e.g.
+  `E09000033 · Westminster (the city's authority: no location given)`. It is a policy-appraisal
+  figure, not a site valuation. `roadLand` uses the same residential proxy and retains that
+  provenance. Hammersmith and Fulham's estimate (£19,390/m²) is about twice Kensington and Chelsea's
+  (£9,215): the workbook assumes 400 dwellings/ha as its medium density there against 140; it is the
+  published figure and is used as published.
+- `gla-lpvs-2026` gives London's sale price and construction cost from the GLA London Plan Viability
+  Study, Phase 1 (July 2026), by its value band A–F (the GLA's value band map, a postcode-district
+  layer). Sale: the band's indicative average blended market value at the mid-point (Tables A.2–F.2,
+  new-build sales June 2022–June 2025, £ per m² of dwelling), × 0.675, the midpoint of the 65–70 %
+  net-to-gross the study found for schemes under 6 storeys counting the ground floor (Annex 3 ¶7), to
+  give a price per m² of the building's floor area: A 18,729, B 11,844, C 8,550, D 6,355, E 5,014,
+  F 3,720. Construction: Mace's build-for-sale cost of 4–6 storey flats per m² GIA at Q2 2026 prices
+  (Appendix 1; Tables A.6–F.10): A 3,910, B 3,730, C 3,560, D 3,380, E and F 3,200; it excludes
+  demolition, externals, fees, finance, CIL/S106 and VAT. The rate contract has no building height or
+  typology, so the 4–6 storey figure stands for every building (taller flats cost up to £5,290 in
+  band A). The map leaves postcode districts with too few new-build sales unbanded, much of the centre
+  among them: a location in Greater London there takes the nearest band (`Value band A, nearest`).
+  Outside Greater London, or without a location, it gives the band of the city's centre, and says so.
+- Birmingham configures two `rate-table` snapshots from the council's 2024 viability evidence
+  (AspinallVerdi): sale 2,509, the median achieved price of new-build flats, August 2021–August 2023,
+  £2,952 per m² of dwelling (Residential Market Paper Table 4.4), × 0.85, the assessment's net-to-gross
+  for apartments (Whole Plan Viability Assessment Table 5.4); construction 1,638, flats of 3–5 storeys,
+  median BCIS rebased to Birmingham (Table 5.16; estate housing 1,260–1,423, 6+ storeys in the core
+  2,045). The study's value zones are a ward map in a figure, not published data, so the sale price is
+  city-wide.
+- The areas of those sources are `frontend/data/uk-economic-areas.js`
+  (`scripts/build-uk-economic-areas.mjs`): the 296 English districts (ONS May 2023 BFE, to the extent of
+  the realm) and the six value bands, simplified to 30 m on shared borders (250 m on districts' sea and
+  Welsh/Scottish edges), shared borders stored once so neighbours leave no gaps. About 560 KB
+  (230 KB compressed), loaded by `city-config.js` only for a city in the UK land table (the 112
+  English cities) and read in node on first use. `EconomicSources.areaAt` finds the area of a point
+  synchronously; a point within about 30 m of a border can fall in the neighbour (0.2–0.4 % of a
+  London grid against the source polygons).
 - `scenario-assumptions` exposes the existing editable floor-area starting points: 4,000 sale,
   2,000 construction and 15 rent a month in local currency (a 4.5 % gross yield on the sale price),
   and no sale tax (0) until a source states one.
@@ -61,8 +103,9 @@ explicit rate and differs from missing evidence.
   districts. Both take the Tax Code's 16 % VAT on new housing whose construction starts from 2026.
 
 City configuration can supply `economics.sources`, an ordered array of registered IDs and/or
-`rate-table` descriptors. The standard frontend policy selects the UK adapter only where the table
-has an actual authority observation, followed by scenario assumptions. Explicit source lists replace
+`rate-table` descriptors. The standard frontend policy selects the UK adapter for a city the table
+names an authority for, followed by scenario assumptions; London and Birmingham configure their
+sources explicitly. Explicit source lists replace
 that policy; include `scenario-assumptions` explicitly if wanted. No backend city routing is added.
 
 Settings → **Valuation & costs** displays effective rates and provenance. Visitors can enter local
@@ -89,7 +132,9 @@ reset restores configured sources. Importing a table is not a subscription to a 
 
 ## Consumers and intentional changes
 
-Parcel panels, selection estimates and browser road-acquisition models use `CityMoney` land rates.
+Parcel panels, selection estimates and browser road-acquisition models use `CityMoney` land rates at
+each parcel (a road: one rate at the centre of its affected parcels; an agreement's default unit
+value: at its input parcels).
 Modeled parcel estimates retain their economic observation. The road model retains it in
 `priceBasis`. Parcel and road amount tooltips expose the source and basis. The 3D comparison and
 plan statistics use selected sale/construction rates; slider changes remain temporary scenario
@@ -106,17 +151,20 @@ tax-inclusive construction cost, the value of the floor area it replaces), profi
 rent's yield on the construction, land and replaced value: a landlord who charges no tax on the rent
 and reclaims none. The land is the
 plan's land in Plan stats, the parcel or the design's parcels or site in the 3D panel, and the union of
-the designs' sites in `ugt_compare`. Plan stats and the 3D panel show the all-in cost with a Cost
+the designs' sites in `ugt_compare`; each takes its rates at that land's location. Compare plans uses
+one set of prices for every column, at the first plan's land. A price the visitor slides or types is
+kept when another plan's place changes the others. Plan stats and the 3D panel show the all-in cost with a Cost
 details disclosure of its parts, and a slider for each price; Plan stats also takes the exact number.
 An empty input is no price, and what depends on it reads "—"; without a land price the all-in cost
 and profit are unknown, and Plan stats says how to set one. `ugt_compare` gives each alternative's
 `money` with the prices and their sources under `prices`, or the caller's `prices` as assumptions;
-`ugt_parcel_context` gives the city's rates. The 3D panel does not show rent.
+`ugt_parcel_context` gives the city's rates at the parcel. The 3D panel does not show rent.
 
 The shared sale starting assumption is now 4,000 in both 3D and plan statistics (previously the EUR
 plan-statistics dialog used a separate 5,000). Unsupported currencies no longer borrow EUR land
-rates. The old generated England-median placeholders are not used as local observations for other
-UK jurisdictions or unknown cities. Rebuilding the generated table alone does not change this rule.
+rates. The UK table no longer carries England-median placeholders: a UK city outside England has no UK land
+rate. English cities other than London and Birmingham keep the editable sale and construction
+assumptions.
 
 The server corridor-statistics endpoint's explicit-source contract is documented in its route:
 it takes the supported parcel source and a selected economic rate descriptor, never a fixed EUR

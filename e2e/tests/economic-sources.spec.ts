@@ -127,6 +127,12 @@ test.describe('Valuation and costs sources @features', () => {
     expect(birmingham.currency).toBe('GBP');
     expect(birmingham.land).not.toBe(777);
     expect(birmingham.landSource?.sourceId).not.toBe('local-rates');
+    // An English city loads the authority areas, so a place's rates are its authority's.
+    expect(await page.evaluate(() => {
+      const w = window as any;
+      const at = w.CityMoney.currentEconomicRates([-1.8904, 52.4862]);
+      return { areas: Boolean(w.UkEconomicAreas), land: at.land?.scope, sale: at.sale?.amount };
+    })).toEqual({ areas: true, land: 'E08000025 · Birmingham', sale: 2509 });
 
     await page.goto('/?city=new_york');
     await waitForApp(page);

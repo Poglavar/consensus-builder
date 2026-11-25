@@ -41,14 +41,22 @@
     // The frontend owns selection. No backend infers a rate provider from a currency or city.
     const ukLandRates = () => (root && root.UkLandRates)
         || (typeof require === 'function' ? require('./uk-land-rates.js') : null);
-    function ratesFor(cityConfig, override = null) {
+    // The areas UK rates are published for: in the browser data/uk-economic-areas.js, which
+    // city-config.js loads for a city in the UK land rate table; under node read on first use.
+    const ukAreas = () => (root ? root.UkEconomicAreas || null
+        : typeof require === 'function' ? require('../data/uk-economic-areas.js') : null);
+    // `at` is the location the rates are for, [lng, lat]: a plan's land, a parcel, a design's site.
+    // Rates published per area (UK local authority land values, London value bands) follow it; without
+    // it they are the city's own, and their scope says so.
+    function ratesFor(cityConfig, override = null, at = null) {
         const api = economicSources();
         const table = ukLandRates();
         const sources = cityConfig?.economics?.sources || api.defaults(cityConfig, table);
-        return api.resolve(override ? [override, ...sources] : sources, { city: cityConfig, ukLandRates: table });
+        const context = { city: cityConfig, ukLandRates: table, at, get ukAreas() { return ukAreas(); } };
+        return api.resolve(override ? [override, ...sources] : sources, context);
     }
-    function assumptionsFor(cityConfig, override = null) {
-        const rates = ratesFor(cityConfig, override);
+    function assumptionsFor(cityConfig, override = null, at = null) {
+        const rates = ratesFor(cityConfig, override, at);
         return { currency: currencyOf(cityConfig) || DEFAULT_ASSUMPTION_CURRENCY,
             landPerSqm: rates.land?.amount ?? null, roadLandPerSqm: rates.roadLand?.amount ?? null,
             salesPerSqm: rates.sale?.amount ?? null, constructionPerSqm: rates.construction?.amount ?? null,
@@ -92,8 +100,8 @@
     }
 
     // Parcel and road estimates retain the selected observation, including its unit and provenance.
-    function landPriceOptions(cityConfig, kind = 'land', override = null) {
-        const observation = ratesFor(cityConfig, override)[kind === 'road' ? 'roadLand' : 'land'];
+    function landPriceOptions(cityConfig, kind = 'land', override = null, at = null) {
+        const observation = ratesFor(cityConfig, override, at)[kind === 'road' ? 'roadLand' : 'land'];
         return { areaPricePerSqm: observation?.amount, currency: currencyOf(cityConfig), economicSource: observation || null };
     }
 
@@ -114,15 +122,16 @@
         return Object.freeze({
             // The city's currency, EUR when it declares none.
             currentCurrency: () => currencyOf(city()) || DEFAULT_ASSUMPTION_CURRENCY,
-            currentAssumptions: () => assumptionsFor(city(), getOverride(city())),
-            currentEconomicRates: () => ratesFor(city(), getOverride(city())),
-            currentLandPriceOptions: kind => landPriceOptions(city(), kind, getOverride(city())),
+            // Each takes the location, [lng, lat], the rates are for (see ratesFor).
+            currentAssumptions: (at = null) => assumptionsFor(city(), getOverride(city()), at),
+            currentEconomicRates: (at = null) => ratesFor(city(), getOverride(city()), at),
+            currentLandPriceOptions: (kind, at = null) => landPriceOptions(city(), kind, getOverride(city()), at),
             currentOfferCurrencies: current => offerCurrencies(city(), current),
             // Not city-specific; every city's view carries it so its consumers need only that view.
             newBuildMoney,
             // The 3D panel's slider prices, in the city's currency.
-            currentFloorAreaPrices: () => {
-                const rates = ratesFor(city(), getOverride(city()));
+            currentFloorAreaPrices: (at = null) => {
+                const rates = ratesFor(city(), getOverride(city()), at);
                 return {
                     currency: currencyOf(city()) || DEFAULT_ASSUMPTION_CURRENCY,
                     sourceKey: JSON.stringify(rates), sources: rates,

@@ -11,6 +11,7 @@ const openGround = require('../../frontend/js/proposals/open-ground.js');
 const format = require('../../frontend/js/format.js');
 const financials = require('../../frontend/js/financials.js');
 const CityMoney = require('../../frontend/js/city-money.js');
+const EconomicSources = require('../../frontend/js/economic-sources.js');
 const RecordLabel = require('../../frontend/js/ui/record-label.js');
 const SetProposals = require('../../frontend/js/parcels/parcel-set-proposals.js');
 const ParcelPriceModel = {
@@ -72,7 +73,8 @@ function renderParcelPanel(properties, { currency = 'EUR', id = 'test-city', pro
         RecordLabel,
         ParcelMenuModel: parcelMenu,
         __openGround: openGround,
-        CityMoney: { currentLandPriceOptions: kind => CityMoney.landPriceOptions(cityConfig, kind) },
+        CityMoney: { currentLandPriceOptions: (kind, at) => CityMoney.landPriceOptions(cityConfig, kind, null, at) },
+        EconomicSources,
         ParcelPriceModel,
         proposalStorage: { getProposalsForParcel: () => proposals },
         proposalLadderBadgesHtml: () => '',

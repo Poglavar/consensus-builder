@@ -582,6 +582,9 @@
     // The land under the panel's figures (the parcel, or the design's parcels or site), m²: a new
     // building's all-in cost pays for it at the land price.
     let lastLandM2 = null;
+    // Where that land is ([lng, lat], EconomicSources.locationOf): rates published per area (an English
+    // authority's land value, a London value band) are that place's.
+    let lastLocation = null;
 
     // Assumptions for the value panel. GFA (floor area) is derived from the built, planned and
     // proposed volumes by dividing out a typical storey height; value and profit use two prices per
@@ -592,7 +595,7 @@
 
     // Keep slider positions only while the currency and economic source observations stay the same.
     function currentPanelPrices() {
-        const fresh = window.CityMoney.currentFloorAreaPrices();
+        const fresh = window.CityMoney.currentFloorAreaPrices(lastLocation);
         if (!panelPrices || panelPrices.currency !== fresh.currency || panelPrices.sourceKey !== fresh.sourceKey) panelPrices = fresh;
         return panelPrices;
     }
@@ -1198,6 +1201,7 @@
         lastParcelCount = null; // single parcel — no per-parcel average
         lastParcelFloorAreas = null;
         lastLandM2 = m.landM2;
+        lastLocation = window.EconomicSources.locationOf(getParcelFeatureById(parcelId));
 
         const L = panelLabels();
         const suggestedText = suggestedParcelPanelText(parcelId);
@@ -1264,6 +1268,8 @@
         lastParcelCount = summary.parcelCount;
         lastParcelFloorAreas = summary.parcelFloorAreas;
         lastLandM2 = summary.landM2;
+        // The design's site, as ugt_compare locates it; else the parcels it stands on.
+        lastLocation = window.EconomicSources.locationOf(proposalSiteFeature(proposal) || [...idSet].map(getParcelFeatureById).filter(Boolean));
 
         const L = panelLabels();
         const lines = [];

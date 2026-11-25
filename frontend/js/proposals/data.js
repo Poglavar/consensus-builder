@@ -1418,7 +1418,6 @@ const multiParcelSelection = {
     showMultiParcelInfo() {
         this.clearInfoListHighlight();
         const parcels = this.getSelectedParcels();
-        const landPrice = window.CityMoney.currentLandPriceOptions('land');
         const priceModel = window.ParcelPriceModel;
 
         const parcelSummaries = parcels.map(parcel => {
@@ -1431,7 +1430,7 @@ const multiParcelSelection = {
                 || props.informationTechnical?.superficie_total;
             const area = Number.isFinite(Number(areaSource)) ? Number(areaSource) : 0;
             const estimate = priceModel
-                ? priceModel.buildEstimate(props, area, landPrice)
+                ? priceModel.buildEstimate(props, area, window.CityMoney.currentLandPriceOptions('land', window.EconomicSources.locationOf(feature)))
                 : { amount: null, currency: null, basis: 'unavailable' };
             return { parcel, parcelId, feature, area, estimate };
         }).filter(summary => summary.feature);

@@ -88,6 +88,7 @@ function makeWindow(proposals, { city = null } = {}) {
         __planScope: planScope,
         CbFormat,
         CityMoney: CityMoney.forCity(() => city),
+        EconomicSources: require('../../frontend/js/economic-sources.js'),
         PlanAnalysis: { prepare: async plan => {
             if (!plan) throw new Error('Choose a plan.');
             if (plan.failure) throw new Error(plan.failure);

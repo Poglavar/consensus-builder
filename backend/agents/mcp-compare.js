@@ -14,6 +14,7 @@ const planYield = require('../../frontend/js/proposals/plan-yield.js');
 const demolition = require('../../frontend/js/proposals/demolition-prefetch.js');
 const route = require('../../frontend/js/proposals/apply/route.js');
 const DemolitionDerive = require('../../frontend/js/demolition-derive.js');
+const { locationOf } = require('../../frontend/js/economic-sources.js');
 const finite = value => typeof value === 'number' && Number.isFinite(value);
 const union = features => features.reduce((out, feature) => out ? turf.union(out, feature) : feature, null);
 const fail = (code, message) => Object.assign(new Error(message), { code, next: { action: 'Review the alternative and its current parcel source in the app.' } });
@@ -50,11 +51,12 @@ export function existingFloorArea(geometry, building) {
 // What an alternative's new floor area is worth and costs in its city's currency
 // (CityMoney.newBuildMoney, the rule of Plan stats and the 3D panel): value, the all-in cost
 // (construction, land, the sale tax inside the value less the tax reclaimed on a tax-inclusive
-// construction cost, the floor area it removes), profit and rent, at the city's rates or at the prices
-// the caller gives, which are scenario assumptions. Each price keeps its source under `prices`; a given
+// construction cost, the floor area it removes), profit and rent, at the city's rates where its land is
+// (`at`, [lng, lat], EconomicSources.locationOf of its designs' sites, as the 3D panel and Plan stats
+// locate theirs) or at the prices the caller gives, which are scenario assumptions. Each price keeps its source under `prices`; a given
 // construction price keeps the tax basis (taxIncluded) of the city's rate, as the slider does.
-export function moneyOf({ city, floorAreaM2, replacedFloorAreaM2, landAreaM2, prices = {} }) {
-    const { currency, rates, unavailable, reason } = cityEconomics(city);
+export function moneyOf({ city, floorAreaM2, replacedFloorAreaM2, landAreaM2, at = null, prices = {} }) {
+    const { currency, rates, unavailable, reason } = cityEconomics(city, at);
     if (unavailable) throw fail('city-money-unavailable', reason);
     const price = (metric, given) => (finite(given) && given >= 0
         ? { amount: given, currency, basis: 'assumption', sourceId: 'caller',
@@ -242,7 +244,8 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
                 const city = designs.find(design => typeof design?.city === 'string' && design.city)?.city;
                 if (!city) throw fail('city-unknown', 'No design names its city, so its money is unknown.');
                 money = moneyOf({ city, floorAreaM2: areas.floorAreaM2, replacedFloorAreaM2: removedFloorAreaM2,
-                    landAreaM2: landAreaOf(designs, design => read.siteOfDesign(design)), prices: prices || {} });
+                    landAreaM2: landAreaOf(designs, design => read.siteOfDesign(design)),
+                    at: locationOf(designs.map(design => read.siteOfDesign(design)).filter(Boolean)), prices: prices || {} });
             } catch (error) {
                 measurementErrors.push({ code: error.code || 'money-unavailable', message: error.message,
                     next: trustedMetadata(error.next || { action: 'Give salePerM2, constructionPerM2 and landPerM2 in prices, in the city currency.' }) });
