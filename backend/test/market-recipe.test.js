@@ -20,7 +20,7 @@ const AGREEMENT = 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR';
 const OTHER = 'Fh3K8apDKKKjPUPLVV5Y327Hd5s2HY9Y7bqAvjidFcC5';
 const MARKET = '5A9kzK2SzjP5nU2Dnz958wQcy96KkMnavoMNGxt7p1h3';
 const CID = 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku';
-const MARKET_PROGRAM = 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB';
+const MARKET_PROGRAM = '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71';
 const SCHEMA = JSON.parse(fs.readFileSync(new URL('../oracle/recipe.schema.json', import.meta.url), 'utf8'));
 
 const canonical = value => (Array.isArray(value) ? `[${value.map(canonical).join(',')}]`

@@ -34,7 +34,7 @@
         PledgeCommitment: [238, 112, 179, 175, 31, 209, 249, 219]
     });
     const constants = Object.freeze({
-        PROGRAM_ID: '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g',
+        PROGRAM_ID: '5RvXB53atCdCkDEydpvgUDz4Ph6uFUVyMgpjdSzNwXAq',
         USDC_DEVNET_MINT: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
         TOKEN_PROGRAM_ID: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
         ASSOCIATED_TOKEN_PROGRAM_ID: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',

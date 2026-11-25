@@ -12,8 +12,8 @@ const read = relative => fs.readFileSync(path.join(root, relative), 'utf8');
 const PROGRAMS = [
     '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1',
     '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
-    'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB',
-    '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g'
+    '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71',
+    '5RvXB53atCdCkDEydpvgUDz4Ph6uFUVyMgpjdSzNwXAq'
 ];
 
 describe('hackathon repository documentation', () => {

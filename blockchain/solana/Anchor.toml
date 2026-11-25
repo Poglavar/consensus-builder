@@ -7,20 +7,20 @@ skip-lint = false
 [programs.devnet]
 property_offer = "BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp"
 # agreement: deployed to devnet 2026-10-23 (programs/agreement/README.md).
-agreement = "GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ"
+agreement = "ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH"
 parcel_nft = "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1"
-proposal_market = "GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB"
+proposal_market = "9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71"
 proposal_nft = "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg"
-proposal_pledge = "1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g"
+proposal_pledge = "5RvXB53atCdCkDEydpvgUDz4Ph6uFUVyMgpjdSzNwXAq"
 
 [programs.localnet]
 property_offer = "BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp"
 # agreement: deployed to devnet 2026-10-23 (programs/agreement/README.md).
-agreement = "GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ"
+agreement = "ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH"
 parcel_nft = "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1"
-proposal_market = "GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB"
+proposal_market = "9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71"
 proposal_nft = "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg"
-proposal_pledge = "1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g"
+proposal_pledge = "5RvXB53atCdCkDEydpvgUDz4Ph6uFUVyMgpjdSzNwXAq"
 
 [registry]
 url = "https://api.apr.dev"

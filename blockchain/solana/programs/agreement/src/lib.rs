@@ -68,7 +68,7 @@ use sas_attestation::{PayloadReader, SasError, SAS_PROGRAM_ID};
 
 // Placeholder id, never deployed. Whoever deploys generates the program keypair and replaces it here,
 // in Anchor.toml and in frontend/js/solana/agreement-client.js (programs/agreement/README.md, "Program id").
-declare_id!("GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ");
+declare_id!("ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH");
 
 pub const AGREEMENT_SEED: &[u8] = b"agreement";
 /// Longest CID an agreement can store (a raw sha2-256 CIDv1 in base32 is 59 bytes).
@@ -91,7 +91,7 @@ pub const MORE_LENSES: usize = MAX_LENSES - 1;
 /// proposal_pledge, whose donation escrow `confirm_funding` reads. That program depends on this
 /// crate, so its id and the escrow layout are restated here; proposal_pledge's tests assert they
 /// match its own (proposal_pledge::tests).
-pub const PLEDGE_PROGRAM_ID: Pubkey = pubkey!("1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g");
+pub const PLEDGE_PROGRAM_ID: Pubkey = pubkey!("5RvXB53atCdCkDEydpvgUDz4Ph6uFUVyMgpjdSzNwXAq");
 pub const DONATION_ESCROW_SEED: &[u8] = b"donation_escrow";
 /// DonationEscrow: discriminator, then proposal, beneficiary, mint, vault (4 × 32), then
 /// total_donated, total_released, total_refunded, donation_count, donor_count (5 × u64), released.

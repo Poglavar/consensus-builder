@@ -36,7 +36,7 @@ const observed = (overrides = {}) => ({
     donation: { proposal: account, beneficiary: sponsor, mint, vault, totalDonated: 1250000n, totalRefunded: 250000n, totalReleased: 0n, released: false },
     ...overrides
 });
-const chain = (row = observed()) => ({ agreementProgramId: 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ', pledgeProgramId: '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g', observe: async () => row });
+const chain = (row = observed()) => ({ agreementProgramId: 'ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH', pledgeProgramId: '5RvXB53atCdCkDEydpvgUDz4Ph6uFUVyMgpjdSzNwXAq', observe: async () => row });
 
 describe('investor funding observation', () => {
     const observe = (agreement = base, row = observed(), lensKey = lens) => observeInvestorFunding({ agreement, lensKey, nowSeconds: now, chain: chain(row) });

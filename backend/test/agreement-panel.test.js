@@ -592,7 +592,7 @@ describe('Agreements list rows', () => {
 
 const SPONSOR = '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin';
 const OTHER_WALLET = 'HrcX5vC2ws2sKiLwpTyYG6Dnc3dmHT6zvuUp2xDs2pEx';
-const LENS = 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB';
+const LENS = '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71';
 const ACCOUNT = 'Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W';
 const CID = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
 const PUBLISHED = { cid: CID, publishedAt: '2026-10-21T12:00:00.000Z', apiBase: 'https://api.example.test', sponsor: SPONSOR };

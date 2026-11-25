@@ -30,7 +30,7 @@
 
     const constants = Object.freeze({
         // Placeholder, not deployed: replace with the deployed id (programs/agreement/README.md, "Program id").
-        AGREEMENT_PROGRAM_ID: 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ',
+        AGREEMENT_PROGRAM_ID: 'ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH',
         SAS_PROGRAM_ID: '22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG',
         SYSTEM_PROGRAM_ID: '11111111111111111111111111111111',
         DEFAULT_PUBKEY: '11111111111111111111111111111111',

@@ -19,7 +19,7 @@ export const AGENT_ORACLE_FACTS_PATH = '/agent/oracle/facts';
 export const AGENT_ORACLE_FACTS_DISCOVERY = declareDiscoveryExtension({
     input: {
         subject: 'Gsvt6nMhsvfrEDgvcqZDzPKZhhqACFEi3mueMxQNQ6UT',
-        market: 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB'
+        market: '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71'
     },
     inputSchema: {
         type: 'object',

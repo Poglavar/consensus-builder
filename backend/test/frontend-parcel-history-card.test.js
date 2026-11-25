@@ -21,7 +21,7 @@ const history = {
     anchor: { account: 'AnchorPda1111111111111111111111111111111111', exists: true, source: 'chain' },
     events: [
         { type: 'agreement_published', at: '2026-10-21T10:00:00.000Z', agreementCid: CID, title: 'Corner <b>', link: `/agreements/${CID}` },
-        { type: 'parcel_ownership', at: '2026-10-21T12:00:00.000Z', member: MEMBER, owner: 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB', ownerCount: 2, hash: 'sha256:' + 'ab'.repeat(32), link: 'https://explorer.solana.com/address/x?cluster=devnet' },
+        { type: 'parcel_ownership', at: '2026-10-21T12:00:00.000Z', member: MEMBER, owner: '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71', ownerCount: 2, hash: 'sha256:' + 'ab'.repeat(32), link: 'https://explorer.solana.com/address/x?cluster=devnet' },
         { type: 'agreement_executed', at: '2026-10-22T08:00:00.000Z', outcome: 'executed', agreementCid: CID, account: 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR', lens: LENS, hash: 'sha256:' + 'cd'.repeat(32), link: 'https://explorer.solana.com/tx/sig?cluster=devnet' },
         { type: 'parcel_survey', at: null, link: 'javascript:alert(1)' }
     ]

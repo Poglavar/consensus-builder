@@ -10,7 +10,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
 
-declare_id!("1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g");
+declare_id!("5RvXB53atCdCkDEydpvgUDz4Ph6uFUVyMgpjdSzNwXAq");
 
 pub const DEVNET_USDC_MINT: Pubkey = pubkey!("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
 /// agreement::AgreementStatus codes, the status byte donations and pledges read.

@@ -178,7 +178,7 @@ decision: schemaDefinition(
 
 ## Program id
 
-`GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ` on devnet (the one-lens layout deployed 2026-10-23, upgrade authority the
+`ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH` on devnet (the lens-set layout deployed 2026-11-25 at a new address, upgrade authority the
 deployer wallet `~/.config/solana/id.json`), in `declare_id!`, both `Anchor.toml` sections,
 `frontend/js/solana/agreement-client.js` and `idl/agreement.json`. The program keypair is kept outside
 the repo (`~/.config/solana/program-keys/`). `proposal_market` and `proposal_pledge` compile this id in

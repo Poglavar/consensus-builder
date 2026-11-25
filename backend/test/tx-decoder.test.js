@@ -20,8 +20,8 @@ const FACILITATOR = 'CKPKJWNdJEqa81x7CkZ14BVPiY6y16Sxs7owznqtWYp5';
 const USDC = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 const TOKEN_PROGRAM = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
 const SYSTEM_PROGRAM = '11111111111111111111111111111111';
-const MARKET_PROGRAM = 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB';
-const PLEDGE_PROGRAM = '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g';
+const MARKET_PROGRAM = '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71';
+const PLEDGE_PROGRAM = '5RvXB53atCdCkDEydpvgUDz4Ph6uFUVyMgpjdSzNwXAq';
 const PROPOSAL_PROGRAM = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
 
 // Deterministic PDAs standing in for market accounts that do not exist on devnet yet. SUBJECT is the
