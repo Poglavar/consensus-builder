@@ -1,7 +1,7 @@
 // MCP source reads use current catalogue identities, including database-backed cities, and fail
 // incomplete coverage explicitly rather than turning unknown ground into an empty parcel set.
 import { describe, expect, it, vi } from 'vitest';
-import { createMcpReadTools, parcelSourceIdOf, cityEconomics } from '../agents/mcp-read-tools.js';
+import { createMcpReadTools, parcelSourceIdOf, cityEconomics, landEstimateOf } from '../agents/mcp-read-tools.js';
 import { markUntrusted } from '../agents/mcp-results.js';
 const geometry = { type: 'Polygon', coordinates: [[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]] };
 const sourceFeature = id => ({ type: 'Feature', id, properties: { parcelId: id }, geometry });
@@ -92,6 +92,18 @@ describe('MCP public source reads', () => {
         expect(result.economics.currency).toBe('EUR');
         expect(result.economics.rates.sale).toMatchObject({ amount: 4000, unit: 'm2-floor', basis: 'assumption', sourceId: 'scenario-assumptions' });
         expect(result.economics.rates.construction).toMatchObject({ amount: 2000, unit: 'm2-floor' });
+    });
+
+    it("prices a parcel as the parcel panel does: the stated area, else the measured one, at the land rate where it lies", () => {
+        // An HMLR parcel at the Angel, Islington, with no area field.
+        const parcel = { type: 'Feature', properties: { parcelId: 'GB-HMLR-BROWSER-v1-1' }, geometry: { type: 'Polygon',
+            coordinates: [[[-0.1030, 51.5380], [-0.1027, 51.5380], [-0.1027, 51.53819], [-0.1030, 51.53819], [-0.1030, 51.5380]]] } };
+        const estimate = landEstimateOf('london', parcel);
+        expect(estimate.areaM2).toBeGreaterThan(300);
+        expect(estimate).toMatchObject({ basis: 'area-model', currency: 'GBP', rate: 5018, economicSource: { scope: 'E09000019 · Islington' } });
+        expect(estimate.amount).toBeCloseTo(estimate.areaM2 * 5018, 6);
+        expect(landEstimateOf('london', { ...parcel, properties: { area: 500 } })).toMatchObject({ areaM2: 500, amount: 500 * 5018 });
+        expect(landEstimateOf('atlantis', parcel)).toMatchObject({ amount: null, basis: 'unavailable' });
     });
 
     it('gives a city no economics it does not configure, and says why', () => {

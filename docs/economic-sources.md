@@ -200,7 +200,7 @@ details disclosure of its parts, and a slider for each price; Plan stats also ta
 An empty input is no price, and what depends on it reads "—"; without a land price the all-in cost
 and profit are unknown, and Plan stats says how to set one. `ugt_compare` gives each alternative's
 `money` with the prices and their sources under `prices` (`devCharge` among them), or the caller's `prices` as assumptions (`devChargePerM2` among them);
-`ugt_parcel_context` gives the city's rates at the parcel. The 3D panel does not show rent.
+`ugt_parcel_context` gives the city's rates at the parcel and `landEstimate`, the parcel panel's estimate (the stated area, else the measured one, × the land rate there, with its source). The 3D panel does not show rent.
 
 The shared sale starting assumption is now 4,000 in both 3D and plan statistics (previously the EUR
 plan-statistics dialog used a separate 5,000). Unsupported currencies no longer borrow EUR land
