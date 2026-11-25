@@ -61,8 +61,14 @@ explicit rate and differs from missing evidence.
   without a location, outside the mapped areas (Wales, Scotland, the sea) or in an area without a rate,
   and the scope says which, e.g. `E09000033 · Westminster (the city's area: no location given)`. A
   configured source may add `scale: { factor, note }` to convert the table's unit to the contract's
-  (net to gross); the note is appended to the scope. Any country's per-area statistics (land values,
-  rents, development charges) fit this shape; only the dataset reader is specific.
+  (net to gross); the note is appended to the scope. A table may name its areas its own way (`label`,
+  `{code} · {name}` by default), date a rate apart from the table (a rate's `asOf`), and, where its map
+  leaves gaps inside the region it covers, give a location in that region the nearest area
+  (`nearestWithin`: the region's areas in another layer and its name; the scope says `, nearest`, and a
+  location outside the region is `outside <name>`). A table of other areas than the city's extent
+  (value bands) stands in with the area at the city's centre (`(city centre's: …)`). Any country's
+  per-area statistics (land values, rents, development charges, a viability study's value zones) fit
+  this shape; only the dataset reader is specific, and no city has an adapter of its own.
   - `uk-mhclg-land-2023` (`frontend/js/uk-land-rates.js`, `scripts/build-uk-land-rates.py`): MHCLG
     "Land value estimates for policy appraisal 2023", sheet Residential, medium site density at the
     median house price, for every English local authority, dated 1 October 2023, as `land` and
@@ -91,9 +97,10 @@ explicit rate and differs from missing evidence.
     against 79.04, Birmingham 14.62 against 29.23), with `landCategory: 'previously-developed'`, and the
     scope gives the other. It charges all new floor area: the levy's exemptions (affordable housing and
     others) and non-residential floor area are not modelled.
-- `gla-lpvs-2026` gives London's sale price and construction cost from the GLA London Plan Viability
+  - `gla-lpvs-2026` (`frontend/js/uk-gla-value-bands.js`, `scripts/build-uk-area-rates.py bands`, transcribed
+    from the PDF): London's sale price and construction cost from the GLA London Plan Viability
   Study, Phase 1 (July 2026), by its value band A–F (the GLA's value band map, a postcode-district
-  layer). Sale: the band's indicative average blended market value at the mid-point (Tables A.2–F.2,
+  layer, `lpvsBand`). Sale: the band's indicative average blended market value at the mid-point (Tables A.2–F.2,
   new-build sales June 2022–June 2025, £ per m² of dwelling), × 0.675, the midpoint of the 65–70 %
   net-to-gross the study found for schemes under 6 storeys counting the ground floor (Annex 3 ¶7), to
   give a price per m² of the building's floor area: A 18,729, B 11,844, C 8,550, D 6,355, E 5,014,
@@ -102,15 +109,19 @@ explicit rate and differs from missing evidence.
   demolition, externals, fees, finance, CIL/S106 and VAT. The rate contract has no building height or
   typology, so the 4–6 storey figure stands for every building (taller flats cost up to £5,290 in
   band A). The map leaves postcode districts with too few new-build sales unbanded, much of the centre
-  among them: a location in Greater London there takes the nearest band (`Value band A, nearest`).
-  Outside Greater London, or without a location, it gives the band of the city's centre, and says so.
+  among them: a location in Greater London there takes the nearest band (`Value band A, nearest`;
+  `nearestWithin` the 33 boroughs). Outside Greater London, or without a location, it gives the band of
+  the city's centre, and says so (`Value band A, nearest (city centre's: outside Greater London)`).
 - Birmingham configures two `rate-table` snapshots from the council's 2024 viability evidence
   (AspinallVerdi): sale 2,509, the median achieved price of new-build flats, August 2021–August 2023,
   £2,952 per m² of dwelling (Residential Market Paper Table 4.4), × 0.85, the assessment's net-to-gross
   for apartments (Whole Plan Viability Assessment Table 5.4); construction 1,638, flats of 3–5 storeys,
   median BCIS rebased to Birmingham (Table 5.16; estate housing 1,260–1,423, 6+ storeys in the core
-  2,045). The study's value zones are a ward map in a figure, not published data, so the sale price is
-  city-wide.
+  2,045). The study's four value zones (lower, medium, higher, and the city centre core inside the ring
+  road) are wards plus the ring road, listed only on a workshop slide and drawn in a figure (Residential
+  Market Paper Figure 5.3), not published as data, so the sale price is city-wide. Once the zones are
+  data they become an area table like London's bands (Table 7.2, 2-bed flat per m²: 2,357 / 2,857 /
+  3,786 / 4,357).
 - The areas of those sources are `frontend/data/uk-economic-areas.js`
   (`scripts/build-uk-economic-areas.mjs`): the 318 English and Welsh districts (ONS May 2023 BFE, to the
   extent of the realm; the Welsh ones have no MHCLG rate and serve the cities' administrative extents,

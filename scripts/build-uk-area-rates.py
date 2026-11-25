@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""Build English per-local-authority rate tables (area rate tables, scripts/lib/area_rate_table.py) from
-two national datasets, one subcommand each:
+"""Build English area rate tables (scripts/lib/area_rate_table.py), one subcommand each:
 
   rents  frontend/js/uk-private-rents.js from the ONS "Price Index of Private Rents, UK: monthly price
          statistics" (OGL v3): each English authority's two-bedroom private rent in the latest month (a
@@ -12,15 +11,23 @@ two national datasets, one subcommand each:
          dataset (OGL v3; The Building Safety Levy (England) Regulations 2025, SI 2025/1236, Schedule 3):
          each authority's levy per m² of new residential floorspace on previously developed land, and on
          other land.
+  bands  frontend/js/uk-gla-value-bands.js from the GLA London Plan Viability Study, Phase 1 (July 2026),
+         per value band A-F (the `lpvsBand` layer of data/uk-economic-areas.js), transcribed from the PDF
+         below: the sale price per m² of the building's floor area (the band's indicative average blended
+         market value at the mid-point, £ per m² of dwelling, Tables A.2-F.2, × 0.675, the midpoint of the
+         65-70 % net to gross for schemes under 6 storeys, Annex 3 ¶7) and Mace's build-for-sale cost of
+         4-6 storey flats per m² GIA at Q2 2026 prices (Appendix 1). The band map leaves postcode districts
+         with too few sales unbanded inside Greater London: a location there takes the nearest band.
 
 Downloads are cached in --cache (outside the repo) and read as data only.
 
-Usage: python3 -I scripts/build-uk-area-rates.py rents|levy --write [--cache DIR]
-       python3 -I scripts/build-uk-area-rates.py rents|levy --dry-run   (print, write nothing)
+Usage: python3 -I scripts/build-uk-area-rates.py rents|levy|bands --write [--cache DIR]
+       python3 -I scripts/build-uk-area-rates.py rents|levy|bands --dry-run   (print, write nothing)
 """
 import argparse
 import csv
 import datetime
+import math
 import os
 import re
 import sys
@@ -39,6 +46,14 @@ ENGLISH_DISTRICT = re.compile(r'E0[6-9]\d{6}')
 # The area layer has the May 2023 districts; the ONS has since recoded Barnsley and Sheffield (2024 boundary
 # changes of a few streets), so their rents are filed under the 2023 codes.
 RECODED = {'E08000038': 'E08000016', 'E08000039': 'E08000019'}
+LPVS_URL = ('https://data.london.gov.uk/download/e6j99/7n9/'
+            'LONDON%20PLAN%20VIABILITY%20STUDY%20-%20PHASE%201%20REPORT%20-%20JULY%202026.pdf')
+LPVS_NET_TO_GROSS = 0.675
+# Band: (dwelling sale £/m², its table; construction £/m² GIA, its table), transcribed from the study.
+LPVS_BANDS = {'A': (27746, 'A.2', 3910, 'A.6'), 'B': (17546, 'B.2', 3730, 'B.9'), 'C': (12666, 'C.2', 3560, 'C.9'),
+              'D': (9415, 'D.2', 3380, 'D.10'), 'E': (7428, 'E.2', 3200, 'E.10'), 'F': (5511, 'F.2', 3200, 'F.10')}
+# Greater London: the 33 London boroughs, E09000001 (City of London) to E09000033 (Westminster).
+GREATER_LONDON = [f'E09{n:06d}' for n in range(1, 34)]
 
 
 def log(message):
@@ -110,9 +125,28 @@ def levy(cache):
         'floorspace (SI 2025/1236 Schedule 3, planning.data.gov.uk). Read by js/economic-sources.js.')
 
 
+def bands(cache):
+    del cache  # transcribed from the study's PDF: nothing to download
+    areas = {band: {'name': f'Value band {band}', 'sale': math.floor(dwelling * LPVS_NET_TO_GROSS + 0.5), 'dwellingSale': dwelling,
+                    'saleTable': sale_table, 'construction': cost, 'costTable': cost_table}
+             for band, (dwelling, sale_table, cost, cost_table) in LPVS_BANDS.items()}
+    return {
+        'id': 'gla-lpvs-2026', 'name': 'GLA London Plan Viability Study 2026', 'url': LPVS_URL, 'licence': 'OGL v2',
+        'layer': 'lpvsBand', 'currency': 'GBP', 'asOf': '2025-06-30', 'label': '{name}',
+        'nearestWithin': {'layer': 'lad', 'name': 'Greater London', 'areas': GREATER_LONDON},
+        'rates': [{'metric': 'sale', 'unit': 'm2-floor', 'basis': 'market', 'field': 'sale',
+                   'note': f'new builds {{dwellingSale}} per m² of dwelling (Table {{saleTable}}) × {LPVS_NET_TO_GROSS} net to gross'},
+                  {'metric': 'construction', 'unit': 'm2-floor', 'basis': 'construction-cost', 'field': 'construction',
+                   'asOf': '2026-06-08',
+                   'note': '4-6 storey flats for sale, per m² GIA, Q2 2026 (Table {costTable}); no externals, fees or VAT'}],
+        'areas': areas
+    }, ('London\'s sale price and construction cost per value band of the GLA London Plan Viability Study,\n'
+        'Phase 1 (July 2026). Read by js/economic-sources.js.')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('table', nargs='?', choices=['rents', 'levy'])
+    parser.add_argument('table', nargs='?', choices=['rents', 'levy', 'bands'])
     parser.add_argument('--write', action='store_true', help='write the table into frontend/js/')
     parser.add_argument('--dry-run', action='store_true', help='print the table only')
     parser.add_argument('--cache', default=os.path.join(os.path.expanduser('~'), '.cache', 'consensus-builder', 'uk-area-rates'),
@@ -122,9 +156,10 @@ def main():
         parser.print_help()
         return 0
     os.makedirs(args.cache, exist_ok=True)
-    table, comment = {'rents': rents, 'levy': levy}[args.table](args.cache)
-    output = os.path.join(ROOT, 'frontend', 'js', {'rents': 'uk-private-rents.js', 'levy': 'uk-building-safety-levy.js'}[args.table])
-    for code in ('E09000019', 'E08000025'):
+    table, comment = {'rents': rents, 'levy': levy, 'bands': bands}[args.table](args.cache)
+    output = os.path.join(ROOT, 'frontend', 'js', {'rents': 'uk-private-rents.js', 'levy': 'uk-building-safety-levy.js',
+                                                    'bands': 'uk-gla-value-bands.js'}[args.table])
+    for code in ('E09000019', 'E08000025', 'C'):
         log(f'{code}: {table["areas"].get(code)}')
     if args.write:
         write_area_rate_table(output, table, comment, 'scripts/build-uk-area-rates.py')

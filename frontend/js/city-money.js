@@ -41,7 +41,7 @@
     // The frontend owns selection. No backend infers a rate provider from a currency or city.
     // The area rate tables by id (scripts/lib/area_rate_table.py): in the browser each registers itself
     // in window.EconomicAreaRates (index.html loads them); under node they are required here.
-    const AREA_RATE_FILES = ['./uk-land-rates.js', './uk-private-rents.js', './uk-building-safety-levy.js'];
+    const AREA_RATE_FILES = ['./uk-land-rates.js', './uk-private-rents.js', './uk-building-safety-levy.js', './uk-gla-value-bands.js'];
     let nodeAreaRates = null;
     const areaRates = () => (root ? root.EconomicAreaRates || {}
         : nodeAreaRates || (nodeAreaRates = Object.fromEntries(AREA_RATE_FILES.map(file => require(file)).map(table => [table.id, table]))));

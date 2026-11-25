@@ -10,8 +10,13 @@ table = {
   'id': source id, 'name': readable name, 'url': the source document (https), 'licence': …,
   'layer': area layer id, 'currency': ISO 4217, 'asOf': 'YYYY-MM-DD' (the source's own date),
   'rates': [{'metric', 'unit', 'basis', 'field': the area row's amount field,
-             'note': scope text, '{field}' placeholders filled from the area row}],
+             'note': scope text, '{field}' placeholders filled from the area row,
+             'asOf': optional, this rate's own date where it differs from the table's}],
   'areas': {code: {'name': …, field: amount, …}},
+  'label': optional, how the scope names an area ('{code} · {name}' by default),
+  'nearestWithin': optional {'layer', 'name', 'areas'}: a map that leaves gaps inside a region (the
+             areas of another layer, e.g. Greater London's boroughs): a location in the region that no
+             area covers takes the nearest area; a location outside it is "outside <name>",
   'cities': {cityId: code} (optional: the area a city stands for where a location gives none;
              without it the area under the city's map centre)
 }
