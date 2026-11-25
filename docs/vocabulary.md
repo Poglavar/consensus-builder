@@ -739,7 +739,7 @@ An area a publisher designates for protection or control, such as a conservation
 
 ### Constraint source
 
-A publisher of planning designations read for a box through one adapter (`frontend/js/planning/constraint-sources.js`), configured in `planning-sources.json` `constraintSources` with its endpoint, coverage, licence, attribution, page size and page cap. A read stopped at its page cap is `partial`, and the layer and the check say so. The first is `gb-eng-planning-data`, planning.data.gov.uk's entity API, England only. The browser asks it directly; the server reads it only for its own MCP answers.
+A publisher of planning designations read for a box through one adapter (`frontend/js/planning/constraint-sources.js`), configured in `planning-sources.json` `constraintSources` with its endpoint, coverage, licence, attribution, page size and page cap. A read stopped at its page cap is `partial`, and the layer and the check say so. Designations that cut the envelope are read with their geometry for a box; the others are read per footprint or parcel as membership, without geometry: the publisher tests the intersection (the footprint set in by 0.25 m, so a shared edge does not count) and the check lists them for the buildings found inside. The first is `gb-eng-planning-data`, planning.data.gov.uk's entity API, England only. The browser asks it directly; the server reads it only for its own MCP answers.
 
 ### Rule set
 
@@ -759,7 +759,7 @@ Permitted where a rule set applies but no base rule source is recorded: "unknown
 
 ### Existing context
 
-What stands on a parcel, which relative rule terms read (`frontend/js/planning/rule-terms.js`): the existing buildings on it with their footprints and heights, each height with its basis and whether it is known; the parcel's built footprint and its natural ground (the parcel area no building stands on); the street width in front (the street-width measure); and the heights of its neighbours along the street. A height is known when measured or stated as storeys; a display height a building source estimates is unknown, never its number. No building source answer leaves every building term unknown; a parcel with no buildings has a known footprint and height of zero.
+What stands on a parcel, which relative rule terms read (`frontend/js/planning/rule-terms.js`): the existing buildings on it with their footprints and heights, each height with its basis and whether it is known; the parcel's built footprint and its natural ground (the parcel area no building stands on); the street width in front (the street-width measure: from the edge facing the street across to the next lot); and the heights of its neighbours along the street (the existing buildings of the lots within 60 m that face the same street, by name, else by line). A height is known when measured or stated as storeys; a display height a building source estimates is unknown, never its number. No building source answer leaves every building term unknown; a parcel with no buildings has a known footprint and height of zero.
 
 ### Relative rule term
 
