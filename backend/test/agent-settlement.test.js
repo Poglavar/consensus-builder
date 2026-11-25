@@ -154,6 +154,16 @@ describe('inspecting an agreement', () => {
         expect(await inspect({ ...placeAgreement('strangers', { authority: Keypair.generate().publicKey.toBase58() }), soleOwner: true })).toMatchObject({ state: 'foreign', steps: [] });
         expect(await inspect({ cid: 'x', account: Keypair.generate().publicKey.toBase58() })).toMatchObject({ state: 'missing', steps: [] });
     });
+
+    it('retires an agreement minted under a superseded agreement program instead of failing on it', async () => {
+        const oldProgram = Keypair.generate().publicKey;
+        const connection = { getAccountInfo: async () => ({ owner: oldProgram, data: Buffer.alloc(580) }) };
+        const item = { cid: 'old-program', account: Keypair.generate().publicKey.toBase58(), soleOwner: true };
+        expect(await inspectSettlement({ connection, owner: OWNER, agreement: item, lensKey: LENS, nowSeconds: NOW }))
+            .toMatchObject({ state: 'retired', outcome: null, steps: [] });
+        const broken = { getAccountInfo: async () => { throw new Error('rpc down'); } };
+        await expect(inspectSettlement({ connection: broken, owner: OWNER, agreement: item, lensKey: LENS, nowSeconds: NOW })).rejects.toThrow('rpc down');
+    });
 });
 
 describe('reclaiming the proposer\'s market seed (2026-11-12)', () => {

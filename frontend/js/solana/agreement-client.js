@@ -604,7 +604,7 @@
         const info = await connection.getAccountInfo(key, 'confirmed');
         if (!info || !info.data) return null;
         if (!toKey(info.owner, 'owner').equals(toKey(programId, 'programId'))) {
-            throw new Error(`account ${key.toBase58()} belongs to another program`);
+            throw Object.assign(new Error(`account ${key.toBase58()} belongs to another program`), { code: 'agreement-wrong-program' });
         }
         const value = readAgreement(new Uint8Array(info.data), key.toBase58());
         if (!value) throw new Error(`account ${key.toBase58()} does not have the Agreement discriminator`);
