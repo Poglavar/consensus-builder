@@ -558,9 +558,10 @@
             </dl>
             <dl class="metric-group">
                 <dt class="metric-label">${marketPriceLabel}</dt>
-                <dd class="metric-value" title="${escapeHtml(economicEvidence)}">${formattedPrice}</dd>
+                <dd class="metric-value" title="${escapeHtml(economicEvidence)}" aria-describedby="parcel-price-source">${formattedPrice}</dd>
             </dl>
         </div>
+        ${estimate.economicSource ? '<p id="parcel-price-source" class="economic-source-note parcel-price-source"></p>' : ''}
         <div class="parcel-metric-row">
             <dl class="metric-group">
                 <dt class="metric-label" data-i18n-key="panel.parcel.metrics.block">${blockLabel}</dt>
@@ -685,6 +686,9 @@
         }
 
         global.document.getElementById('info-content').innerHTML = infoContent;
+        // The estimate's land rate source as visible text (the 3D panel and Plan stats show theirs alike).
+        const priceSource = global.document.getElementById('parcel-price-source');
+        if (priceSource) global.EconomicSourceSettings?.renderSource(priceSource, estimate.economicSource, global);
         global.document.getElementById('selected-parcels-content').innerHTML = '';
         setSelectedParcelsTabCount(0);
         global.PlanningViews?.showParcelEvidence(global.document.getElementById('info-content'), parcelId);
