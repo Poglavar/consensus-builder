@@ -190,7 +190,7 @@ describe('planning view refresh', () => {
     function planningHarness({ view, zoom = 19, descriptor = { id: 'src', parcelStudy: true, capabilities: { areas: false } }, fail = () => null, zoningAreas = 'off' }) {
         const source = read('../../frontend/js/planning/views.js');
         const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
-        const functions = ['refresh', 'refreshOverview', 'resetOverview', 'freeze', 'invalidate', 'joinAreas', 'markFailed'].map(name => {
+        const functions = ['refresh', 'refreshOverview', 'resetOverview', 'freeze', 'invalidate', 'joinAreas', 'markFailed', 'loadRestrictions', 'withRestrictions'].map(name => {
             const node = body.find(entry => entry.type === 'FunctionDeclaration' && entry.id.name === name);
             return source.slice(node.start, node.end);
         });
@@ -214,6 +214,8 @@ describe('planning view refresh', () => {
             // The hatch as the grid it is painted from: the image and its map layer need a browser.
             failedGrid: failedCellGrid, hatch: null, hatchSignature: '', frozen: false,
             ZONING_ZOOM: 15, MASSING_ZOOM: 16, massingWaits: false,
+            // Zagreb has no planning rule set, so no designations are read (restriction-feed.js).
+            restrictionView: null, restrictionRequest: 0, reassemble: null,
             hatchImage: grid => grid, drawHatch() {}, CustomEvent: class { constructor(type) { this.type = type; } },
             root: {
                 PlanningLoading: { track: (_kind, promise) => promise },
