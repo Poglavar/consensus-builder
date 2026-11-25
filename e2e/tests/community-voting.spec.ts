@@ -112,7 +112,10 @@ test('organiser generates codes from a resident CSV, regroups a household and ke
   await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
   await editor.locator('[data-agreement-electorate][value="community"]').check();
   await editor.locator('[data-agreement-title]').fill('Street vote');
-  await roster.locator('[data-roster-import-csv]').setInputFiles({name:'residents.csv',mimeType:'text/csv',
+  // The import is a native button, so the keyboard opens the file picker.
+  const chooser=page.waitForEvent('filechooser');
+  await roster.getByRole('button',{name:'Generate codes from a resident CSV'}).press('Enter');
+  await (await chooser).setFiles({name:'residents.csv',mimeType:'text/csv',
     buffer:Buffer.from('Person,Household\r\nResident A,No. 1\r\nResident B,No. 1\r\nResident C,No. 3\r\n')});
   await expect(roster).toContainText('3 eligible codes prepared');
   await roster.getByText('Show local code assignments').click();

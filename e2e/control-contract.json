@@ -4339,6 +4339,20 @@
       "markup": "<input type=\"file\" accept=\"application/json,.json\" data-roster-import hidden>"
     },
     {
+      "id": "control-a80a24a709c5a4-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-roster-pick=\"json\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-2142a7d96ab66f-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-roster-pick=\"csv\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-aea91cac9f1cd2-1",
       "source": "js/community/voting-roster.js",
       "markup": "<button type=\"button\" class=\"btn btn-quiet\" data-roster-action=\"remove\">",

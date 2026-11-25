@@ -46,7 +46,7 @@
                 + `<label class="proposal-editor-field"><span>${esc(t('householdBatch','Household for these people (optional)'))}</span><input type="text" data-roster-household-batch value="${esc(local.household)}" autocomplete="off" spellcheck="false"></label>`
                 + `<p class="agreement-hint">${esc(t('householdHint','People who live together share a household label. A code without one counts as a household of its own. Household labels stay local; the agreement records only which codes share a household.'))}</p>`
                 + `<label class="proposal-editor-field"><span>${esc(t('count','Or number of unassigned codes'))}</span><input type="number" data-roster-count min="1" max="100" value="${local.count}"></label>`
-                + `<div class="cb-actions"><button type="button" class="btn btn-secondary" data-roster-action="generate">${esc(t('generate','Generate codes locally'))}</button><button type="button" class="btn btn-secondary" data-roster-action="save"${local.entries.length?'':' disabled'}>${esc(t('export','Save voter list'))}</button><button type="button" class="btn btn-secondary" data-roster-action="csv"${local.entries.length?'':' disabled'}>${esc(t('csv','Export for distribution'))}</button><label class="btn btn-secondary" data-roster-open><i class="fa-solid fa-folder-open" aria-hidden="true"></i> ${esc(t('import','Open a saved voter list'))}<input type="file" accept="application/json,.json" data-roster-import hidden></label><label class="btn btn-secondary" data-roster-open-csv><i class="fa-solid fa-file-csv" aria-hidden="true"></i> ${esc(t('importCsv','Generate codes from a resident CSV'))}<input type="file" accept="text/csv,.csv,text/plain" data-roster-import-csv hidden></label></div>`
+                + `<div class="cb-actions"><button type="button" class="btn btn-secondary" data-roster-action="generate">${esc(t('generate','Generate codes locally'))}</button><button type="button" class="btn btn-secondary" data-roster-action="save"${local.entries.length?'':' disabled'}>${esc(t('export','Save voter list'))}</button><button type="button" class="btn btn-secondary" data-roster-action="csv"${local.entries.length?'':' disabled'}>${esc(t('csv','Export for distribution'))}</button><button type="button" class="btn btn-secondary" data-roster-pick="json"><i class="fa-solid fa-folder-open" aria-hidden="true"></i> ${esc(t('import','Open a saved voter list'))}</button><input type="file" accept="application/json,.json" data-roster-import hidden><button type="button" class="btn btn-secondary" data-roster-pick="csv"><i class="fa-solid fa-file-csv" aria-hidden="true"></i> ${esc(t('importCsv','Generate codes from a resident CSV'))}</button><input type="file" accept="text/csv,.csv,text/plain" data-roster-import-csv hidden></div>`
                 + `<p class="agreement-hint">${esc(t('csvHint','The CSV needs Person and Household columns, one resident per row.'))}</p>`
                 + `<p role="status" data-roster-progress>${!local.saved?esc(t('saveFirst','Save your voter-list file before saving this agreement. Keep the file to distribute codes and resume later.')):''}</p>`
                 + (local.value?`<button type="button" class="btn btn-quiet" data-roster-action="remove">${esc(t('remove','Remove code voting from this draft'))}</button>`:'')
@@ -90,7 +90,7 @@
             }
             if(event.target.matches('[data-roster-import-csv]') && event.target.files[0]) {
                 const file=event.target.files[0];
-                run(event.target.closest('label') || event.target,async()=>{
+                run(slot.querySelector('[data-roster-pick="csv"]') || event.target,async()=>{
                     if(file.size>8*1024*1024)throw new Error(t('fileLarge','The voter-list file is too large.'));
                     await generate(V().residentsCsv(await file.text()));
                 });
@@ -98,7 +98,7 @@
             }
             if(!event.target.matches('[data-roster-import]') || !event.target.files[0])return;
             const file=event.target.files[0];
-            run(event.target.closest('label') || event.target,async()=>{
+            run(slot.querySelector('[data-roster-pick="json"]') || event.target,async()=>{
                 if(file.size>8*1024*1024)throw new Error(t('fileLarge','The voter-list file is too large.'));
                 const imported=await V().importLocalFile(JSON.parse(await file.text()),progress);
                 if(local.value && !root.confirm(t('replaceLocal','Replace this draft’s voter list with the selected file?')))return;
@@ -107,6 +107,9 @@
             });
         };
         slot.onclick=event=>{
+            // Native buttons open the hidden file pickers, so both imports work from the keyboard.
+            const pick=event.target.closest('[data-roster-pick]');
+            if(pick){if(!pick.disabled && !local.busy)slot.querySelector(pick.dataset.rosterPick==='csv'?'[data-roster-import-csv]':'[data-roster-import]')?.click();return;}
             const button=event.target.closest('[data-roster-action]');if(!button || button.disabled)return;
             run(button,async()=>{
                 const action=button.dataset.rosterAction;
