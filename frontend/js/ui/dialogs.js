@@ -463,5 +463,20 @@
         return api.closed.then(result => (typeof result === 'string' ? result : null));
     }
 
-    return Object.freeze({ isolate, open, confirm, alert, choice, prompt, renderLines, appendBody, confirmActions, linkedMessageParts, dialogClassName });
+    // Enter submits a form from its text fields only. Chrome also submits on Enter in a select, a
+    // checkbox, a radio and the other non-text inputs (implicit submission), which saved
+    // half-finished forms such as an agreement; there Enter does nothing. One capture-phase
+    // listener covers every form on the page, also in dialogs that stop keys reaching the page.
+    // Buttons, links and textareas keep their own Enter; arrows and Space still work the select.
+    const NO_IMPLICIT_SUBMIT_INPUTS = new Set(['checkbox', 'radio', 'range', 'color', 'file']);
+    function blocksImplicitSubmit(target) {
+        if (!target || !target.form) return false;
+        if (target.tagName === 'SELECT') return true;
+        return target.tagName === 'INPUT' && NO_IMPLICIT_SUBMIT_INPUTS.has(String(target.type || '').toLowerCase());
+    }
+    doc()?.addEventListener?.('keydown', event => {
+        if (event.key === 'Enter' && !event.isComposing && blocksImplicitSubmit(event.target)) event.preventDefault();
+    }, true);
+
+    return Object.freeze({ isolate, open, confirm, alert, choice, prompt, renderLines, appendBody, confirmActions, linkedMessageParts, dialogClassName, blocksImplicitSubmit });
 });

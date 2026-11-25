@@ -531,6 +531,14 @@ test.describe('Bets sheet @features', () => {
     await expect(dialog.getByLabel('Permit number (optional)')).toBeHidden();
     await dialog.getByLabel('Credential public key').fill(OPEN_POOL.address);
     await dialog.getByLabel('Schema public key').fill(SOLANA_WALLET);
+    // Enter on the select does not submit the form before Open market (every form, js/ui/dialogs.js).
+    const form = dialog.locator('form');
+    await form.evaluate((element: HTMLFormElement) => {
+      element.dataset.submits = '0';
+      element.addEventListener('submit', () => { element.dataset.submits = String(Number(element.dataset.submits) + 1); });
+    });
+    await dialog.getByLabel('Question type').press('Enter');
+    await expect(form).toHaveAttribute('data-submits', '0');
     await expect(dialog.locator('form')).toContainText(/UPU Riverside.*2027/);
     await dialog.getByRole('button', { name: 'Open market', exact: true }).click();
     await expect.poll(() => page.evaluate(() => (window as any).__marketSeedCalls[0])).toMatchObject({
