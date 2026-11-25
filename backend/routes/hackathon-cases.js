@@ -7,8 +7,8 @@ import { fileURLToPath } from 'node:url';
 import fs from 'node:fs';
 import { buildHackathonCase } from '../hackathon/case-model.js';
 import { eventFromRow } from './land-events.js';
-import { agreementAccountIndex, agreementEvents, chainEvents, mergeEvents, runEvents } from './agent-activity.js';
-import { loadIdls } from '../solana/tx-decoder.js';
+import { agreementAccountIndex, agreementEvents, chainEvents, marketAccountIndex, mergeEvents, runEvents } from './agent-activity.js';
+import { decodeParsedTransaction, loadIdls } from '../solana/tx-decoder.js';
 import { buildAddressBook } from '../solana/address-book.js';
 import { loadAgreement } from './agreements.js';
 import { agreementAccountOf } from '../agreements/onchain.js';
@@ -69,13 +69,20 @@ async function loadActivity(pool, cid, { decode, book = caseBook } = {}) {
     ]);
     const agreementsByAccount = agreementAccountIndex(agreements.rows);
     // Scope before limiting: unrelated new activity must never age a headline case out of its proof.
-    const transactions = agreementsByAccount.size ? await pool.query(`
+    const touching = async addresses => addresses.length ? (await pool.query(`
         SELECT signature, slot, block_time, raw, created_at FROM consensus.solana_transaction
          WHERE cluster = 'devnet' AND touched_addresses && $1::text[]
          ORDER BY block_time DESC NULLS LAST, slot DESC LIMIT 1000
-    `, [[...agreementsByAccount.keys()]]) : { rows: [] };
+    `, [addresses])).rows : [];
     caseIdls ??= loadIdls(fileURLToPath(new URL('../../blockchain/solana/idl', import.meta.url)));
-    const confirmed = chainEvents(transactions.rows, { book, idls: caseIdls, agreementsByAccount, ...(decode ? { decode } : {}) })
+    const decodeRaw = decode || decodeParsedTransaction;
+    const direct = await touching([...agreementsByAccount.keys()]);
+    // Claims and finalizes name only their market, so a second read takes the transactions of the markets
+    // the first read shows opened on this agreement.
+    const markets = [...marketAccountIndex(direct.map(row => decodeRaw(row.raw, { book, idls: caseIdls })), agreementsByAccount).keys()]
+        .filter(address => !agreementsByAccount.has(address));
+    const rows = [...new Map([...direct, ...await touching(markets)].map(row => [row.signature, row])).values()];
+    const confirmed = chainEvents(rows, { book, idls: caseIdls, agreementsByAccount, decode: decodeRaw })
         .filter(event => event.ok === true);
     return mergeEvents(
         agreementEvents(agreements.rows),
