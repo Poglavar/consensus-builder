@@ -236,8 +236,8 @@ function indexFake(agreements) {
     const pool = createMockPool();
     const rows = new Map(agreements.map(agreement => [agreement.cid, structuredClone(agreement)]));
     const events = new Map();
-    pool.answer(/FROM consensus\.agreement\s+WHERE onchain->>'chain' = 'solana' AND onchain->>'cluster' = \$1/, (sql, params) => ({
-        rows: [...rows.values()].filter(row => row.onchain?.cluster === params[0]).map(row => ({
+    pool.answer(/FROM consensus\.agreement\s+WHERE onchain->>'chain' = 'solana' AND onchain->>'cluster' = \$1 AND onchain->>'programId' = \$2/, (sql, params) => ({
+        rows: [...rows.values()].filter(row => row.onchain?.cluster === params[0] && row.onchain?.programId === params[1]).map(row => ({
             cid: row.cid, sponsor: row.sponsor, input_parcel_ids: row.inputParcelIds, parcel_source_id: row.parcelSourceId ?? null, onchain: structuredClone(row.onchain)
         }))
     }));
@@ -330,6 +330,13 @@ function threeAgreements() {
 
 describe('syncAgreementLifecycle', () => {
     const NOW = () => Date.parse('2026-10-22T08:00:00.000Z');
+
+    it('leaves out agreements minted under a superseded agreement program instead of calling them invalid', async () => {
+        const old = agreementCid('old program');
+        const index = indexFake([{ cid: old, sponsor: SPONSOR, inputParcelIds: ['HR-7/1'], onchain: storedOnchain(agreementAccountOf(old, SPONSOR), { programId: 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ' }) }]);
+        const result = await syncAgreementLifecycle({ pool: index.pool, chain: chainFake({ accounts: new Map() }).chain, apply: true, now: NOW });
+        expect(result).toMatchObject({ scanned: 0, invalidAccounts: [], failed: [] });
+    });
 
     it('reads every minted agreement and, as a dry run, says what it would write without writing', async () => {
         const { index, fake, ACC_C } = threeAgreements();

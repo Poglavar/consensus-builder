@@ -285,7 +285,9 @@ async function storedEventCounts(pool, accounts) {
 }
 
 /**
- * One pass over the minted agreements of `chain.cluster` (agreements/onchain.js createAgreementChain).
+ * One pass over the minted agreements of `chain.cluster` and `chain.programId` (agreements/onchain.js
+ * createAgreementChain). Agreements minted under a superseded agreement program (the 2026-11-25
+ * redeploy) read as unminted and are not scanned.
  * Dry run unless `apply`: then nothing is written, and the result says what would be. One agreement's
  * failure (an RPC or database error) is recorded and the pass goes on with the next.
  * @returns {Promise<{ scanned: number, reconciled: number, moved: number, terminal: number, events: object[],
@@ -299,8 +301,8 @@ export async function syncAgreementLifecycle({ pool, chain, apply = false, now =
     const { rows } = await pool.query(`
         SELECT cid, content->>'sponsor' AS sponsor, input_parcel_ids, parcel_source_id, onchain
         FROM consensus.agreement
-        WHERE onchain->>'chain' = 'solana' AND onchain->>'cluster' = $1
-        ORDER BY created_at, cid`, [chain.cluster]);
+        WHERE onchain->>'chain' = 'solana' AND onchain->>'cluster' = $1 AND onchain->>'programId' = $2
+        ORDER BY created_at, cid`, [chain.cluster, chain.programId]);
     const total = rows.length;
     log(`${total} minted agreement(s) on ${chain.cluster}${apply ? '' : ' (dry run: nothing is written)'}`);
     const result = { scanned: total, reconciled: 0, moved: 0, terminal: 0, events: [], inserted: 0, invalidAccounts: [], missingEvidence: [], failed: [], dryRun: !apply };
