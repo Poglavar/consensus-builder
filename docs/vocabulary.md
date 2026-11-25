@@ -166,7 +166,7 @@ Removal of this browser's copy of a published design, plan or agreement (Lists).
 
 ### Publication
 
-The retention of canonical record bytes and their inclusion in the publication index. Publishing a design, named plan or agreement is server-only: the server checks the client's CID and indexes the object, and nothing is pinned on IPFS. A locally computed CID, preview, saved draft or local map application does not by itself constitute publication.
+The retention of canonical record bytes and their inclusion in the publication index. Publishing a design, named plan or agreement is server-only: the server checks the client's CID and indexes the object, and nothing is pinned on IPFS at publication. A locally computed CID, preview, saved draft or local map application does not by itself constitute publication.
 
 ### Pinning provider
 
@@ -259,7 +259,7 @@ A canonical sorted set of parcel IDs with its parcel-source descriptor. Its `set
 
 ### Detected parcel block
 
-A temporary selection derived from one seed parcel and one complete surface enclosure. The enclosure uses loaded OSM highways, railway tracks and waterways, plus `natural=coastline` and `natural=water` ways; current applied surface-level corridor boundaries may also participate. Bridges, tunnels and other non-ground features do not divide surface blocks. Railway facilities such as workshops, stations and platforms are not track boundaries; proposed and razed tracks are excluded. A seed and every member must fit wholly inside one enclosure; representative points do not decide membership and geometry is never clipped. Any parcel touched by an eligible OSM road/street or track is a border parcel, including touches on its outer or hole boundaries, and cannot seed or join a block. A rejected enclosing parcel also excludes parcels enclosed by its holes or outline. The Road/track layer in Layers draws eligible OSM transport borders as thick black lines using the same classification. Known road and track ground is excluded from membership, including source parcels marked by the configured road classification and their disconnected cadastral pieces. Authored plots do not inherit road use solely through source ancestry. Detection requires complete OSM boundary, parcel and available road-classification coverage. More than 100 members is refused; the first 100 are shown as a temporary preview without changing the current selection or persisting a block record.
+A temporary selection derived from one seed parcel and one complete surface enclosure. The enclosure uses loaded OSM highways other than pedestrian ways (footway, path, steps, cycleway, bridleway and the like: a separately mapped sidewalk runs through the lots it borders), railway tracks and waterways, plus `natural=coastline` and `natural=water` ways; a street mapped to stop within 10 m of another enclosure way is carried on to it, since its ground still divides the blocks on either side; current applied surface-level corridor boundaries may also participate. Bridges, tunnels and other non-ground features do not divide surface blocks. Railway facilities such as workshops, stations and platforms are not track boundaries; proposed and razed tracks are excluded. A seed and every member must fit wholly inside one enclosure; representative points do not decide membership and geometry is never clipped. Any parcel touched by an eligible OSM street or track is a border parcel, including touches on its outer or hole boundaries, and cannot seed or join a block; a pedestrian way, service way or farm track (`highway=track`) touching a parcel does not make it one. A rejected enclosing parcel also excludes parcels enclosed by its holes or outline. The Road/track layer in Layers draws every eligible OSM transport line as a thick black line, pedestrian and service ways included. Known road and track ground is excluded from membership, including source parcels marked by the configured road classification and their disconnected cadastral pieces. Authored plots do not inherit road use solely through source ancestry. Detection requires complete OSM boundary, parcel and available road-classification coverage. More than 100 members is refused; the first 100 are shown as a temporary preview without changing the current selection or persisting a block record.
 
 ### Road parcel
 
@@ -976,7 +976,7 @@ The agreement program account identified by network, program, sponsor and agreem
 
 ### Minting
 
-The creation of a binding agreement's chain account. Publishing a design, creating a local fabric piece and computing a CID are separate operations. The account commits to an agreement CID whose content, with its plan and designs, only the publication index holds; none of it is pinned on IPFS.
+The creation of a binding agreement's chain account. Publishing a design, creating a local fabric piece and computing a CID are separate operations. The account commits to an agreement CID and, through the CIDs inside each record, to its plan and the plan's designs. Once the index records the mint, the server pins all of them on IPFS ([ipfs-storage.md](ipfs-storage.md)); each CID is pinned once and never unpinned.
 
 ### Settlement
 
