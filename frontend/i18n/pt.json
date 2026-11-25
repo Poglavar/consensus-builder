@@ -1,8 +1,19 @@
 {
+    "deviceModels": {
+        "publishTitle": "Modelos só neste dispositivo",
+        "publishMessage": "Os modelos 3D importados no que está a publicar estão guardados só neste dispositivo. Carregue-os para que os outros os vejam, ou publique sem eles e os outros veem um bloco simples. Um modelo carregado é público: qualquer pessoa com uma ligação para o projeto pode descarregá-lo.",
+        "upload": "Carregar os modelos e publicar",
+        "keep": "Publicar sem os modelos",
+        "cancel": "Cancelar",
+        "cancelled": "Nada foi publicado.",
+        "missing": "Um modelo já não está guardado neste dispositivo. Importe-o de novo ou publique sem ele.",
+        "uploadFailed": "Não foi possível carregar um modelo, por isso nada foi publicado. Tente de novo ou publique sem os modelos."
+    },
     "planFile": {
         "modelUrl": "Não é possível descarregar o URL do modelo em segurança.",
         "modelFailed": "Não foi possível descarregar um modelo. O ficheiro do plano não foi criado.",
         "modelLarge": "O modelo é demasiado grande para um ficheiro de plano portátil.",
+        "modelElsewhere": "Um modelo está guardado noutro dispositivo. O ficheiro do plano não foi criado.",
         "missingMembers": "Alguns projetos importados foram removidos deste dispositivo. Importe novamente o ficheiro para os restaurar.",
         "tooLarge": "Os ficheiros de plano estão limitados a 32 MiB.",
         "json": "Descarregar plano editável",
@@ -69,7 +80,7 @@
         "accessCorridor": "Corredor (habitações dos dois lados)"
     },
     "common": {
-        "modelFileFormats": "glTF, CityGML ou CityJSON",
+        "modelFileFormats": "glTF, CityGML, CityJSON ou IFC",
         "cityModelCrsUnsupported": "Ainda não conseguimos ler o sistema de coordenadas do ficheiro ({{crs}}).",
         "cityModelCrsMissing": "O ficheiro não indica que sistema de coordenadas usa.",
         "footprintFileFormats": "GeoJSON, CityGML ou CityJSON",
@@ -533,6 +544,11 @@
             "errorIfc": "Não foi possível ler este ficheiro como modelo IFC de um edifício.",
             "errorIfcComplex": "Este modelo IFC excede o limite de tamanho mesmo sem portas, escadas e guardas. Exporte-o com menos detalhe e tente de novo.",
             "ifcLeftOut": "Deixado de fora para respeitar o limite de tamanho: {{classes}}.",
+            "storageLegend": "Onde guardar o modelo",
+            "storageDevice": "Só neste dispositivo: os outros veem um bloco simples até o publicar com o modelo",
+            "storagePublic": "Carregá-lo agora: qualquer pessoa com uma ligação para o projeto pode descarregar o modelo",
+            "saving": "A guardar o modelo neste dispositivo…",
+            "saveFailed": "Não foi possível guardar o modelo neste dispositivo. O ficheiro continua selecionado; tente de novo ou carregue-o.",
             "errorManyBuildings": "Este ficheiro tem {{count}} edifícios. Use Carregar implantações para os importar todos ou escolha um ficheiro com um só edifício.",
             "errorCityModel": "Não foi possível ler este ficheiro como um edifício CityGML ou CityJSON.",
             "noFile": "Ainda não foi carregado nenhum modelo.",

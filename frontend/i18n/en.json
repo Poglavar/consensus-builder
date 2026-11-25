@@ -1,8 +1,19 @@
 {
+    "deviceModels": {
+        "publishTitle": "Models on this device only",
+        "publishMessage": "Imported 3D models in what you are publishing are kept only on this device. Upload them so others see them, or publish without them and others see a plain block. An uploaded model is public: anyone with a link to the design can download it.",
+        "upload": "Upload the models and publish",
+        "keep": "Publish without the models",
+        "cancel": "Cancel",
+        "cancelled": "Nothing was published.",
+        "missing": "A model is no longer stored on this device. Import it again, or publish without it.",
+        "uploadFailed": "A model could not be uploaded, so nothing was published. Try again, or publish without the models."
+    },
     "planFile": {
         "modelUrl": "The model URL cannot be downloaded safely.",
         "modelFailed": "A model could not be downloaded. The plan file was not created.",
         "modelLarge": "The model is too large for a portable plan file.",
+        "modelElsewhere": "A model is kept on another device. The plan file was not created.",
         "missingMembers": "Some imported designs were removed from this device. Import the file again to restore them.",
         "tooLarge": "Plan files are limited to 32 MiB.",
         "json": "Download editable plan",
@@ -1070,7 +1081,7 @@
         "accessCorridor": "Corridor (flats on both sides)"
     },
     "common": {
-        "modelFileFormats": "glTF, CityGML or CityJSON",
+        "modelFileFormats": "glTF, CityGML, CityJSON or IFC",
         "cityModelCrsUnsupported": "The file's coordinate system ({{crs}}) is not one we can read yet.",
         "cityModelCrsMissing": "The file does not say which coordinate system it uses.",
         "footprintFileFormats": "GeoJSON, CityGML or CityJSON",
@@ -2535,6 +2546,11 @@
             "errorIfc": "Could not read this file as an IFC building model.",
             "errorIfcComplex": "This IFC model is over the size limit even without its doors, stairs and railings. Export it at a coarser level of detail and try again.",
             "ifcLeftOut": "Left out to stay within the size limit: {{classes}}.",
+            "storageLegend": "Where to keep the model",
+            "storageDevice": "Only on this device: others see a plain block until you publish it with the model",
+            "storagePublic": "Upload it now: anyone with a link to the design can download the model",
+            "saving": "Saving the model on this device…",
+            "saveFailed": "The model could not be saved on this device. Your file is still selected; try again, or upload it.",
             "errorManyBuildings": "This file holds {{count}} buildings. Use Upload footprints to import them all, or choose a file with one building.",
             "errorCityModel": "Could not read this file as a CityGML or CityJSON building.",
             "noFile": "No model loaded yet.",

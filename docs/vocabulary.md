@@ -572,7 +572,7 @@ The transverse arrangement of corridor elements, such as lanes and their widths.
 
 The application's area-feature design category, including parks, squares, lakes and stations. This category is broader than the engineering meaning of a load-bearing structure. A park, square or lake's authored area is its occupied land and supplies its site when reshaped; applying it forms modeled ground borders. An unsaved drawn outline is temporary and has no land effect until a design is applied.
 
-A park, square or lake may carry an uploaded glTF model: `structureProposal.modelUrl` (the served model reference), `modelName` (at most 120 characters), `rotation` (degrees, default 0) and `source: 'upload'`. Its geometry stays the site polygon; an upload sets it to the model's projected footprint placed unrotated at a point on the site. In the 3D view the model replaces the generated ground (lawn, paving or lake basin), fitted to the geometry's bounding box in the rotation frame at its native height, while authored decorations still render; a model that fails to load falls back to the generated ground.
+A park, square or lake may carry an uploaded glTF model: `structureProposal.modelUrl` (the model reference: a served URL or a [device-only model](#device-only-model)), `modelName` (at most 120 characters), `rotation` (degrees, default 0) and `source: 'upload'`. Its geometry stays the site polygon; an upload sets it to the model's projected footprint placed unrotated at a point on the site. In the 3D view the model replaces the generated ground (lawn, paving or lake basin), fitted to the geometry's bounding box in the rotation frame at its native height, while authored decorations still render; a model that fails to load falls back to the generated ground.
 
 A park or square's city furniture may also use uploaded models, one per furniture kind: `decorationDesign.models` maps a kind (parks: bench, stall, tree, lamp, swing, seesaw, slide; squares: bench, statue, fountain, stall, tree, lamp) to `{ url, name? }`, and every item of that kind draws that model, instanced, with its +X facing the item's bearing; the key is absent when no kind has a model. A furniture model is limited to 5000 triangles, 1024 px textures and 4 MiB (`furniture-models.js`). Lamps are placed points, `decorationDesign.lamps = [{ coordinate, bearing }]`, that glow in the 3D view while the sun layer shows night.
 
@@ -622,6 +622,10 @@ A building design with one connected authored footprint, including any courtyard
 ### Imported model footprint
 
 The connected horizontal projection of a GLB model's visible mesh triangles, including concavities and courtyard holes. It is the model's silhouette, which can include overhangs and canopies; it does not infer a foundation boundary. It is one integer union of the triangles at millimetre precision (`projectedFootprint`, Clipper); a part or hole under 1 m² (or 1 % of the largest part, for a small model) is mesh noise and ignored, any larger separate part refuses the import.
+
+### Device-only model
+
+An imported 3D model (building, park, square or lake model, or a furniture model) kept in the browser's IndexedDB instead of on the server, referenced as `device-model:sha256-<hex>` where a model URL would stand (`frontend/js/device-models.js`). It is the default for the site's imports; Upload model offers a public upload instead. Only the browser that holds it draws it; any other viewer, and the author on another device, sees the plain block. Publishing a design, plan or agreement that holds one asks once to upload such models (public: anyone with the design's link can download them, and the references become their URLs before the CID is taken) or to publish without them (the published design keeps the reference). A plan file embeds it from the browser. MCP imports have no device: they are public uploads that need `confirmAssetUpload`.
 
 ### Model file placement
 

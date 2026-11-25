@@ -103,6 +103,7 @@ test.describe('Editor button effects @features', () => {
     await dialog.locator('#building-upload-file').setInputFiles('../test-assets/test-building.glb');
     await expect(dialog.locator('#building-upload-confirm')).toBeEnabled({ timeout: 20_000 });
     await expect(dialog.locator('#building-upload-status')).toContainText('test-building.glb');
+    await dialog.locator('input[name="building-upload-storage"][value="public"]').check();
     await dialog.locator('#building-upload-confirm').click();
     await expect(dialog).toHaveCount(0);
     await expect(page.locator('#single-building-editor').locator('.on-map-editor__panel')).toBeVisible();

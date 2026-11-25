@@ -64,11 +64,12 @@ test('Upload model takes a CityGML building as a GLB that stands where the file 
   await page.locator('#parcel-info-panel .parcel-build-btn--single').click();
   await answerBlockScope(page);
   await placeFreeformBuilding(page);
-  await expect(page.locator('#single-building-glb-upload')).toHaveAttribute('title', 'glTF, CityGML or CityJSON');
+  await expect(page.locator('#single-building-glb-upload')).toHaveAttribute('title', 'glTF, CityGML, CityJSON or IFC');
   await page.locator('#single-building-glb-upload').click();
   const upload = page.locator('#building-upload-modal');
   await upload.locator('#building-upload-file').setInputFiles({ name: 'building.gml', mimeType: 'application/gml+xml', buffer: Buffer.from(cityGml('EPSG:3765')) });
   await expect(upload.locator('#building-upload-confirm')).toBeEnabled({ timeout: 45_000 });
+  await upload.locator('input[name="building-upload-storage"][value="public"]').check();
   await upload.locator('#building-upload-confirm').click();
   await expect(upload).toHaveCount(0);
   // The uploaded asset is a GLB ("glTF" magic), not the CityGML text.

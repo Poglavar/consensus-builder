@@ -259,6 +259,7 @@ function fakeWindow({ blocked = null, applied = true, records = [layout(), road(
         },
         i18n: { getLanguage: () => 'hr' },
         ProposalPublishTerms: PublishTerms,
+        DeviceModels: require('../../frontend/js/device-models.js'),
         AgreementRecord,
         DesignRecord,
         guestPolicyBlocks: action => (action === 'publish' ? blocked : null),

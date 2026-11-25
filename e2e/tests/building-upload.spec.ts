@@ -18,6 +18,7 @@ async function openImporter(page: any, failure = 'none') {
   // tool loader that fetches js/model-upload.js for the upload itself.
   await page.addScriptTag({ url: '/js/ui/busy-control.js' });
   await page.addScriptTag({ url: '/js/optional-tools-loader.js' });
+  await page.addScriptTag({ url: '/js/device-models.js' });
   await page.addScriptTag({ url: '/js/building-model-geometry.js' });
   await page.addScriptTag({ url: '/js/building-upload.js' });
   await page.evaluate(async (mode: string) => {
@@ -60,6 +61,7 @@ for (const failure of ['none', 'constructor', 'render', 'context loss']) {
     } else {
       await expect(page.locator('#building-upload-3d canvas')).toBeVisible();
     }
+    await page.locator('input[name="building-upload-storage"][value="public"]').check();
     await page.locator('#building-upload-confirm').click();
     await expect(page.locator('#building-upload-modal')).toHaveCount(0);
     expect(uploaded.fileName).toBe('test-building.glb');
@@ -96,6 +98,7 @@ test('a failed GLB upload keeps the selected file and retries without reopening 
   const input = page.locator('#building-upload-file');
   await input.setInputFiles('../test-assets/test-building.glb');
   const confirm = page.locator('#building-upload-confirm');
+  await page.locator('input[name="building-upload-storage"][value="public"]').check();
   const status = page.locator('#building-upload-status');
   await expect(confirm).toBeEnabled({ timeout: 20_000 });
   await confirm.click();
@@ -131,6 +134,7 @@ test('a refused GLB upload reports 403 and retains the file for retry', async ({
   const input = page.locator('#building-upload-file');
   await input.setInputFiles('../test-assets/test-building.glb');
   const confirm = page.locator('#building-upload-confirm');
+  await page.locator('input[name="building-upload-storage"][value="public"]').check();
   await expect(confirm).toBeEnabled({ timeout: 20_000 });
   await confirm.click();
   await expect(page.locator('#building-upload-status')).toHaveText('The server refused this upload (403). Your file is still selected.');
@@ -181,6 +185,7 @@ test('worker derives a concave L footprint and preserves a courtyard ring', asyn
   await openImporter(page, 'constructor');
   await page.locator('#building-upload-file').setInputFiles({ name: 'l.glb', mimeType: 'model/gltf-binary', buffer: lBuilding });
   await expect(page.locator('#building-upload-confirm')).toBeEnabled({ timeout: 20_000 });
+  await page.locator('input[name="building-upload-storage"][value="public"]').check();
   await page.locator('#building-upload-confirm').click();
   await expect(page.locator('#building-upload-modal')).toHaveCount(0);
   imported = await page.evaluate(() => (window as any).importedBuilding.footprint);
@@ -197,6 +202,7 @@ test('worker derives a concave L footprint and preserves a courtyard ring', asyn
   await page.evaluate(() => (window as any).BuildingUpload.open({ parcelIds: ['test-parcel'] }));
   await page.locator('#building-upload-file').setInputFiles({ name: 'courtyard.glb', mimeType: 'model/gltf-binary', buffer: courtyardBuilding });
   await expect(page.locator('#building-upload-confirm')).toBeEnabled({ timeout: 20_000 });
+  await page.locator('input[name="building-upload-storage"][value="public"]').check();
   await page.locator('#building-upload-confirm').click();
   await expect(page.locator('#building-upload-modal')).toHaveCount(0);
   const courtyard = await page.evaluate(() => (window as any).importedBuilding.footprint);
@@ -227,6 +233,7 @@ test('an IFC building converts to a GLB that stands where its georeference puts 
   await page.locator('#building-upload-file').setInputFiles('../test-assets/test-building.ifc');
   await expect(page.locator('#building-upload-confirm')).toBeEnabled({ timeout: 45_000 });
   await expect(page.locator('#building-upload-status')).toContainText('Footprint 12m × 8m, height 6.6m');
+  await page.locator('input[name="building-upload-storage"][value="public"]').check();
   await page.locator('#building-upload-confirm').click();
   await expect(page.locator('#building-upload-modal')).toHaveCount(0);
   expect(uploaded.fileName).toBe('test-building.glb');
@@ -236,4 +243,26 @@ test('an IFC building converts to a GLB that stands where its georeference puts 
   expect(imported.placement.source).toBe('map-conversion');
   expect(imported.placement.center.lng).toBeCloseTo(77.02224, 4);
   expect(imported.placement.center.lat).toBeCloseTo(43.61216, 4);
+});
+
+test('keeps the model on this device by default and uploads nothing', async ({ page }) => {
+  let uploads = 0;
+  await page.route('**/models', route => { uploads++; return route.fulfill({ json: { modelUrl: '/uploads/models/never.glb' } }); });
+  await openImporter(page);
+  const device = page.getByRole('radio', { name: /Only on this device/ });
+  await expect(device).toBeChecked();
+  await expect(page.getByRole('radio', { name: /Upload it now/ })).not.toBeChecked();
+  await page.locator('#building-upload-file').setInputFiles('../test-assets/test-building.glb');
+  await expect(page.locator('#building-upload-confirm')).toBeEnabled({ timeout: 20_000 });
+  await page.locator('#building-upload-confirm').click();
+  await expect(page.locator('#building-upload-modal')).toHaveCount(0);
+  expect(uploads).toBe(0);
+  const imported = await page.evaluate(() => (window as any).importedBuilding);
+  expect(imported.modelUrl).toMatch(/^device-model:sha256-[0-9a-f]{64}$/);
+  // The bytes are in this browser's IndexedDB, under their hash.
+  const kept = await page.evaluate(async ref => {
+    const row = await (window as any).DeviceModels.load(ref);
+    return row && Array.from(new Uint8Array(await row.blob.arrayBuffer()));
+  }, imported.modelUrl);
+  expect(Buffer.from(kept)).toEqual(building);
 });

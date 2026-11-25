@@ -169,7 +169,7 @@ describe('every outgoing path stamps the current author', () => {
         });
         const win = {
             fetch, btoa: text => Buffer.from(text, 'binary').toString('base64'), resolveBackendBaseUrl: () => API,
-            ProposalPublishTerms: PublishTerms, guestPolicyBlocks: () => null, stampCurrentAuthor, proposalStorage: store
+            ProposalPublishTerms: PublishTerms, DeviceModels: require('../../frontend/js/device-models.js'), guestPolicyBlocks: () => null, stampCurrentAuthor, proposalStorage: store
         };
         return { api: DesignSync.browser(win).api, sent, fetch };
     }

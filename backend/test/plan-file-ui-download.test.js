@@ -83,6 +83,23 @@ describe('PlanFileUI downloads from any surface', () => {
         expect(JSON.parse(await downloads.blob.text())).toEqual({ type: 'CityJSON', version: '2.0', title: 'Riverside Blocks č' });
     });
 
+    // A device-only model (device-models.js) is embedded from this browser's storage, not fetched.
+    it('embeds a model kept on this device, and refuses one kept on another', async () => {
+        const { win, modals } = browser();
+        const DeviceModels = require('../../frontend/js/device-models.js');
+        const glb = new Uint8Array([0x67, 0x6c, 0x54, 0x46, 2, 0, 0, 0]);
+        win.btoa = text => Buffer.from(text, 'binary').toString('base64');
+        win.fetch = vi.fn();
+        win.DeviceModels = { ...DeviceModels, load: vi.fn(async ref => (ref === 'device-model:sha256-aa' ? { blob: new Blob([glb]), bytes: glb.length } : null)) };
+        win.PlanFile.MAX_BYTES = 1024;
+        FileUI.browser(win).design({ proposalId: 'p1', title: 'Model' });
+        await buttonOf(modals[0], 'json').click();
+        const { fetchModel } = win.PlanFile.create.mock.calls[0][1];
+        expect(await fetchModel('device-model:sha256-aa')).toBe(`data:model/gltf-binary;base64,${Buffer.from(glb).toString('base64')}`);
+        await expect(fetchModel('device-model:sha256-bb')).rejects.toThrow('kept on another device');
+        expect(win.fetch).not.toHaveBeenCalled();
+    });
+
     it('downloads a plan revision with its members, view and schedule', async () => {
         const { win, modals, downloads } = browser();
         const ui = FileUI.browser(win);

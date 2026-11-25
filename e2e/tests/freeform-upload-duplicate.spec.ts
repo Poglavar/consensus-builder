@@ -65,6 +65,7 @@ test('Upload .glb imports into the current Freeform session and Done saves its m
   await expect(upload).toBeVisible();
   await upload.locator('#building-upload-file').setInputFiles({ name: 'direct.glb', mimeType: 'model/gltf-binary', buffer: model });
   await expect(upload.locator('#building-upload-confirm')).toBeEnabled({ timeout: 45000 });
+  await upload.locator('input[name="building-upload-storage"][value="public"]').check();
   await upload.locator('#building-upload-confirm').click();
   await expect(upload).toHaveCount(0);
   await expect(page.locator(`${editor} .on-map-editor__panel`)).toBeVisible();
@@ -78,6 +79,7 @@ test('Upload .glb imports into the current Freeform session and Done saves its m
   await page.locator('#single-building-glb-upload').click();
   await upload.locator('#building-upload-file').setInputFiles({ name: 'direct.glb', mimeType: 'model/gltf-binary', buffer: model });
   await expect(upload.locator('#building-upload-confirm')).toBeEnabled({ timeout: 45000 });
+  await upload.locator('input[name="building-upload-storage"][value="public"]').check();
   await upload.locator('#building-upload-confirm').click();
   await expect(upload).toHaveCount(0);
   after = await features(page);

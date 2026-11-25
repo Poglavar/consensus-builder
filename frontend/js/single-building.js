@@ -1391,7 +1391,7 @@
             uploadGeojsonLabel: translateSingleBuildingText('modal.singleBuilding.uploadGeojsonLabel', 'Upload footprints'),
             footprintFormats: translateSingleBuildingText('common.footprintFileFormats', 'GeoJSON, CityGML or CityJSON'),
             uploadGlbLabel: translateSingleBuildingText('modal.singleBuilding.uploadGlbLabel', 'Upload model'),
-            modelFormats: translateSingleBuildingText('common.modelFileFormats', 'glTF, CityGML or CityJSON'),
+            modelFormats: translateSingleBuildingText('common.modelFileFormats', 'glTF, CityGML, CityJSON or IFC'),
             surroundingsLabel: translateSingleBuildingText('modal.singleBuilding.surroundingsLabel', 'Surroundings'),
             surroundingsPaved: translateSingleBuildingText('modal.singleBuilding.surroundingsPaved', 'Paving'),
             surroundingsGreen: translateSingleBuildingText('modal.singleBuilding.surroundingsGreen', 'Green'),

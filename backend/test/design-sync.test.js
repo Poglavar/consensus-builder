@@ -250,6 +250,7 @@ function fakeWindow({ records = [], server = fakeServer(), blocked = null, confi
         resolveBackendBaseUrl: () => API,
         resolveFrontendBaseUrl: () => 'https://app.example.test',
         ProposalPublishTerms: PublishTerms,
+        DeviceModels: require('../../frontend/js/device-models.js'),
         guestPolicyBlocks: action => (action === 'publish' ? blocked : null),
         stampCurrentAuthor: record => { record.author = record.author || 'Guest Ana'; return record; },
         isProposalCurrentlyApplied: record => record.applied === true,
@@ -397,6 +398,35 @@ describe('publishDesign', () => {
         expect(sync.publishedCid(record)).toBeNull();
         const again = await sync.publishDesign(record);
         expect(again.cid).not.toBe(result.cid);
+        expect(server.calls).toHaveLength(2);
+    });
+
+    // An imported model kept on this device (device-models.js) is uploaded, or not, as the person
+    // chooses when publishing; an upload rewrites the record and its stored copy before the CID.
+    it('publishes the public URL of a device-only model the person chose to upload', async () => {
+        const model = 'device-model:sha256-aa', url = 'https://api.example.test/uploads/models/park.glb';
+        const park = road({ proposalId: 'park-2', goal: 'park', title: 'Park with a model', roadProposal: undefined,
+            structureProposal: { kind: 'park', geometry: square(15.96, 45.8), modelUrl: model, modelName: 'park.glb', source: 'upload', rotation: 0 } });
+        const copy = JSON.parse(JSON.stringify(park));
+        const { sync, win, server, stored } = fakeWindow({ records: [copy] });
+        win.DeviceModels = { ...win.DeviceModels, chooseForPublish: vi.fn(async () => new Map([[model, url]])) };
+        const result = await sync.publishDesign(park);
+        expect(win.DeviceModels.chooseForPublish).toHaveBeenCalledExactlyOnceWith([park]);
+        expect(server.calls[0].body.content.structureProposal.modelUrl).toBe(url);
+        expect(park.structureProposal.modelUrl).toBe(url);
+        expect(stored.get('park-2').structureProposal.modelUrl).toBe(url);
+        expect(result.cid).toBe(Cid.cidOfObject(DesignRecord.published(park)));
+
+        // Kept on the device: published as it is. Cancelled: nothing leaves the device.
+        const kept = road({ proposalId: 'park-3', goal: 'park', title: 'Kept', roadProposal: undefined,
+            structureProposal: { kind: 'park', geometry: square(15.96, 45.8), modelUrl: model, source: 'upload' } });
+        win.DeviceModels.chooseForPublish = vi.fn(async () => new Map());
+        await sync.publishDesign(kept);
+        expect(server.calls[1].body.content.structureProposal.modelUrl).toBe(model);
+        const cancelled = road({ proposalId: 'park-4', goal: 'park', title: 'Cancelled', roadProposal: undefined,
+            structureProposal: { kind: 'park', geometry: square(15.96, 45.8), modelUrl: model, source: 'upload' } });
+        win.DeviceModels.chooseForPublish = vi.fn(async () => { throw Object.assign(new Error('Nothing was published.'), { code: 'cancelled', cancelled: true }); });
+        await expect(sync.publishDesign(cancelled)).rejects.toMatchObject({ cancelled: true });
         expect(server.calls).toHaveLength(2);
     });
 

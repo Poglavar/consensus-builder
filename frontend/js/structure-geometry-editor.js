@@ -1648,7 +1648,8 @@
         if (!check.ok) { reportImport(furnitureModelError(check.code, check.detail)); return false; }
         let url;
         try {
-            url = await modelUpload.uploadModel(file);
+            // Kept on this device; publishing the design offers to upload it (DeviceModels).
+            url = await modelUpload.storeModel(file);
         } catch (error) {
             console.warn('[structure-geometry-editor] furniture model upload failed', error);
             reportImport(furnitureModelError('upload'));

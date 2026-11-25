@@ -1,8 +1,19 @@
 {
+    "deviceModels": {
+        "publishTitle": "Modeli samo na ovom uređaju",
+        "publishMessage": "Uvezeni 3D modeli u onome što objavljujete čuvaju se samo na ovom uređaju. Učitajte ih da ih drugi vide ili objavite bez njih, pa drugi vide jednostavan blok. Učitani model je javan: svatko s poveznicom na projekt može ga preuzeti.",
+        "upload": "Učitaj modele i objavi",
+        "keep": "Objavi bez modela",
+        "cancel": "Odustani",
+        "cancelled": "Ništa nije objavljeno.",
+        "missing": "Model više nije spremljen na ovom uređaju. Uvezite ga ponovno ili objavite bez njega.",
+        "uploadFailed": "Model se nije mogao učitati pa ništa nije objavljeno. Pokušajte ponovno ili objavite bez modela."
+    },
     "planFile": {
         "modelUrl": "URL modela ne može se sigurno preuzeti.",
         "modelFailed": "Model se nije mogao preuzeti. Datoteka plana nije izrađena.",
         "modelLarge": "Model je prevelik za prijenosnu datoteku plana.",
+        "modelElsewhere": "Model se čuva na drugom uređaju. Datoteka plana nije izrađena.",
         "missingMembers": "Neki uvezeni dizajni uklonjeni su s ovog uređaja. Ponovno uvezite datoteku da biste ih vratili.",
         "tooLarge": "Datoteke plana ograničene su na 32 MiB.",
         "json": "Preuzmi plan za uređivanje",
@@ -1071,7 +1082,7 @@
         "accessCorridor": "Hodnik (stanovi s obje strane)"
     },
     "common": {
-        "modelFileFormats": "glTF, CityGML ili CityJSON",
+        "modelFileFormats": "glTF, CityGML, CityJSON ili IFC",
         "cityModelCrsUnsupported": "Koordinatni sustav datoteke ({{crs}}) još ne možemo čitati.",
         "cityModelCrsMissing": "Datoteka ne navodi koji koordinatni sustav koristi.",
         "footprintFileFormats": "GeoJSON, CityGML ili CityJSON",
@@ -2557,6 +2568,11 @@
             "errorIfc": "Ova se datoteka ne može pročitati kao IFC model zgrade.",
             "errorIfcComplex": "Ovaj IFC model prelazi ograničenje veličine i bez vrata, stubišta i ograda. Izvezite ga s manje detalja i pokušajte ponovno.",
             "ifcLeftOut": "Izostavljeno radi ograničenja veličine: {{classes}}.",
+            "storageLegend": "Gdje čuvati model",
+            "storageDevice": "Samo na ovom uređaju: drugi vide jednostavan blok dok ga ne objavite s modelom",
+            "storagePublic": "Učitaj ga sada: svatko s poveznicom na projekt može preuzeti model",
+            "saving": "Spremanje modela na ovaj uređaj…",
+            "saveFailed": "Model se nije mogao spremiti na ovaj uređaj. Datoteka je i dalje odabrana; pokušajte ponovno ili je učitajte.",
             "errorManyBuildings": "Datoteka sadrži {{count}} zgrada. Upotrijebite Učitaj tlocrte da uvezete sve ili odaberite datoteku s jednom zgradom.",
             "errorCityModel": "Datoteku nije moguće pročitati kao zgradu CityGML ili CityJSON.",
             "noFile": "Model još nije učitan.",

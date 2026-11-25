@@ -2,6 +2,9 @@ import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { parse } from '@babel/parser';
+import { createRequire } from 'node:module';
+
+const DeviceModels = createRequire(import.meta.url)('../../frontend/js/device-models.js');
 
 const source = readFileSync(new URL('../../frontend/js/three-mode.js', import.meta.url), 'utf8');
 const ast = parse(source, { sourceType: 'script', plugins: ['optionalChaining', 'nullishCoalescingOperator'] });
@@ -29,7 +32,7 @@ it('counts a shared proposed model download once and releases it after success o
         return entries.get(key);
     } };
     const load = vm.runInNewContext(`(${declarations.get('loadGltfScene')})`, {
-        gltfModelCache, THREE: { GLTFLoader: Loader }, window: { PlanningLoading: { beginTransfer } }
+        gltfModelCache, THREE: { GLTFLoader: Loader }, window: { PlanningLoading: { beginTransfer }, DeviceModels }
     });
     const model = load('/block.glb', 'proposed');
     expect(load('/block.glb', 'proposed')).toBe(model);
@@ -45,6 +48,21 @@ it('counts a shared proposed model download once and releases it after success o
     await Promise.all([local, furniture]);
     expect(beginTransfer.mock.calls).toEqual([['proposed'], ['proposed']]);
     expect(end).toHaveBeenCalledTimes(2);
+});
+
+it('draws a device-only model from this browser and fails, for the plain block, on another device', async () => {
+    const beginTransfer = vi.fn(), loads = [];
+    class Loader { load(url, resolve) { loads.push(url); resolve({ scene: url }); } }
+    const objectUrl = vi.fn(async ref => (ref === 'device-model:sha256-ab' ? 'blob:http://app/1' : null));
+    const load = vm.runInNewContext(`(${declarations.get('loadGltfScene')})`, {
+        gltfModelCache: { load: (key, factory) => factory() }, THREE: { GLTFLoader: Loader },
+        window: { PlanningLoading: { beginTransfer }, DeviceModels: { ...DeviceModels, objectUrl } }
+    });
+    await expect(load('device-model:sha256-ab', 'proposed')).resolves.toBe('blob:http://app/1');
+    await expect(load('device-model:sha256-cd', 'proposed')).rejects.toThrow('another device');
+    expect(loads).toEqual(['blob:http://app/1']);
+    // Read from this browser, not downloaded.
+    expect(beginTransfer).not.toHaveBeenCalled();
 });
 
 function geometryHarness() {

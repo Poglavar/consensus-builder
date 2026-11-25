@@ -344,11 +344,30 @@
             return stored || localDesign;
         }
 
+        // Device-only models in records about to be published (device-models.js): the person uploads
+        // them or publishes without them. Uploaded ones replace the references in each record and its
+        // stored copy, so the published content names the public URL. Resolves true when records
+        // changed; rejects with code 'cancelled' (cancelled: true) when the person cancels.
+        async function settleDeviceModels(records) {
+            const list = (Array.isArray(records) ? records : []).filter(isObject);
+            const uploaded = await win.DeviceModels.chooseForPublish(list);
+            if (!uploaded.size) return false;
+            const store = storage();
+            for (const record of list) {
+                const stored = record.proposalId ? store.getProposal(record.proposalId) : null;
+                new Set([record, stored].filter(Boolean)).forEach(item => win.DeviceModels.replaceDeviceModels(item, uploaded));
+                if (stored) store._indexProposal(stored);
+            }
+            store.save();
+            return true;
+        }
+
         /**
          * Publishes one local design: addresses its design/v1 object, indexes it and marks the record.
          * A design already published here (it still hashes to its published CID) is not sent again.
          * Throws an Error with `code` and a translated `message`: a local refusal
-         * (ProposalPublishTerms.publishRefusal's code), a guest without a name ('name-needed', `cancelled: true`), and the
+         * (ProposalPublishTerms.publishRefusal's code), a guest without a name ('name-needed', `cancelled: true`), a person
+         * who cancels the device-model choice ('cancelled', `cancelled: true`; settleDeviceModels), and the
          * index's refusals ('cid-mismatch', 'too-large', 'network-failed', …).
          * @returns {Promise<{ cid: string, row: object | null, alreadyPublished: boolean }>}
          */
@@ -363,6 +382,7 @@
             // Publishing leaves the device and the design carries its author (GuestPolicy 'publish').
             const nameNeeded = win.guestPolicyBlocks('publish');
             if (nameNeeded) throw failure('name-needed', nameNeeded, { cancelled: true });
+            await settleDeviceModels([localDesign]);
             // The author is content: it is stamped before the CID is taken.
             win.stampCurrentAuthor(localDesign);
             const content = designRecord().published(localDesign);
@@ -738,7 +758,7 @@
         return {
             api: {
                 publishDesign: record => observe('publish', 'design-publish-failed', () => publishDesign(record)),
-                addressObject, markPublished, fetchDesign, fetchDesigns, importDesign, importDraft, localCopyOf, localDesignIndex, listPage,
+                addressObject, markPublished, settleDeviceModels, fetchDesign, fetchDesigns, importDesign, importDraft, localCopyOf, localDesignIndex, listPage,
                 designLink, copyLink, prepareMapPreview, parcelSourceIdOf, parcelSourceForDesign, refusalMessage, clearPublicationProblem,
                 // A local record's exact CID at the current index, or an index summary's own.
                 publishedCid: record => (isObject(record) && record.indexed === true && cidApi().isCid(record.cid)

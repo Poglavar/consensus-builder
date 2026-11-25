@@ -23,7 +23,7 @@ test.beforeEach(async ({ page }) => {
   await page.evaluate(() => { (window as any).MapHighlight = { color: '#469973' }; });
   for (const file of ['js/app-diagnostics.js', 'vendor/noble-hashes-1.8.0/sha256.js', 'vendor/ipfs-file-cid/ipfs-file-cid.js', 'js/cid.js',
     'js/proposals/authored-record.js', 'js/proposals/formation-depth.js', 'js/design-record.js', 'js/plan-record.js', 'js/plan-composition.js',
-    'js/plan-file.js', 'js/optional-tools-loader.js', 'js/data-source.js', 'js/ui/busy-control.js', 'js/ui/file-download.js', 'js/ui/modal-escape.js', 'js/ui/dialogs.js', 'js/ui/record-label.js', 'js/proposals/dialog-share.js']) {
+    'js/plan-file.js', 'js/optional-tools-loader.js', 'js/data-source.js', 'js/device-models.js', 'js/ui/busy-control.js', 'js/ui/file-download.js', 'js/ui/modal-escape.js', 'js/ui/dialogs.js', 'js/ui/record-label.js', 'js/proposals/dialog-share.js']) {
     await page.addScriptTag({ url: `/${file}` });
   }
   await page.evaluate(() => {

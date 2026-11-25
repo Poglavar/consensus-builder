@@ -146,7 +146,13 @@
         // have moved on. Recompose only through ordinary revision/rebind lineage; snapshot
         // members that are absent here stay exactly as saved, and copies are not successors.
         const carried=win.PlanComposition.localRecords(exact,{apiBase:win.DesignSync.apiBase()});
-        const current=win.SharedPlanSession.currentMembers(exact,win.proposalStorage.getAllProposals(),{fallbackMembers:carried});
+        const currentMembers=()=>win.SharedPlanSession.currentMembers(exact,win.proposalStorage.getAllProposals(),{fallbackMembers:carried});
+        let current=currentMembers();
+        // Device-only models in this device's unpublished members are uploaded or kept first: an
+        // upload changes the member and so the plan revision (DesignSync.settleDeviceModels).
+        const unpublished=current.filter(member=>member.proposalId&&win.proposalStorage.getProposal(member.proposalId)&&!win.DesignSync.publishedCid(member));
+        try{if(await win.DesignSync.settleDeviceModels(unpublished))current=currentMembers();}
+        catch(error){if(error?.cancelled)return null;throw error;}
         const changed=current.filter((member,index)=>win.DesignRecord.cidOf(member)!==exact.designs[index].cid).length;
         // Do not reserialize an unchanged immutable snapshot: old view fields and its CID stay exact.
         const membersWithSources=current.map((member,index)=>member.planFileSource ? member : {

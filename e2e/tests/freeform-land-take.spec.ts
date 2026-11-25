@@ -231,6 +231,7 @@ test('Done saves the imported GLB without separate acceptance', async ({ mockApi
   await page.locator('#single-building-glb-upload').click();
   await page.locator('#building-upload-file').setInputFiles('../test-assets/test-building.glb');
   await expect(page.locator('#building-upload-confirm')).toBeEnabled({ timeout: 20000 });
+  await page.locator('input[name="building-upload-storage"][value="public"]').check();
   await page.locator('#building-upload-confirm').click();
   await expect(page.locator('#building-upload-modal')).toHaveCount(0);
   await expect(page.locator('[data-land-status]')).toContainText('m²');

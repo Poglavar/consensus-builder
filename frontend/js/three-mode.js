@@ -8815,9 +8815,16 @@
     let buildingsRenderGeneration = 0;
 
     function loadGltfScene(url, role) {
-        return gltfModelCache.load(url, () => {
+        return gltfModelCache.load(url, async () => {
             const LoaderCtor = (typeof THREE !== 'undefined' && THREE.GLTFLoader) ? THREE.GLTFLoader : null;
             if (!LoaderCtor) throw new Error('GLTFLoader unavailable');
+            // A device-only model (device-models.js) loads from this browser's storage. Another device
+            // does not hold it, and the caller draws the plain block instead.
+            if (window.DeviceModels.isDeviceModel(url)) {
+                const local = await window.DeviceModels.objectUrl(url);
+                if (!local) throw new Error('This model is kept on another device');
+                url = local;
+            }
             // Multiple placements share this read. Scene decoration and browser-local models
             // have no layer download to report.
             const transfer = role && !/^(?:data|blob|file):/i.test(url) ? window.PlanningLoading.beginTransfer(role) : null;

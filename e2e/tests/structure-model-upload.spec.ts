@@ -46,6 +46,7 @@ test('uploads a GLB for a park and builds its structure record from the model fo
   await expect(page.locator('#building-upload-confirm')).toHaveText('Use this model');
   await page.locator('#building-upload-file').setInputFiles('../test-assets/test-building.glb');
   await expect(page.locator('#building-upload-confirm')).toBeEnabled({ timeout: 20_000 });
+  await page.locator('input[name="building-upload-storage"][value="public"]').check();
   await page.locator('#building-upload-confirm').click();
   await expect(page.locator('#building-upload-modal')).toHaveCount(0);
 
@@ -85,6 +86,7 @@ test('the structure editor uploads a model and saves its footprint', async ({ mo
   await modal.locator('label.building-upload-file').click();
   await (await chooser).setFiles('../test-assets/test-building.glb');
   await expect(page.locator('#building-upload-confirm')).toBeEnabled({ timeout: 20_000 });
+  await page.locator('input[name="building-upload-storage"][value="public"]').check();
   await page.locator('#building-upload-confirm').click();
   await expect(modal).toHaveCount(0);
   await editor.locator('[data-action="save"]').click();

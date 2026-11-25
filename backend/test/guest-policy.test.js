@@ -70,6 +70,7 @@ function designPublisher(profile) {
         btoa: text => Buffer.from(text, 'binary').toString('base64'),
         resolveBackendBaseUrl: () => 'https://api.example.test',
         ProposalPublishTerms: PublishTerms,
+        DeviceModels: require('../../frontend/js/device-models.js'),
         guestPolicyBlocks: vi.fn(action => (policy.check(action, profile).allowed ? null : 'Choose a profile name to publish.')),
         stampCurrentAuthor: vi.fn(record => record),
         proposalStorage: { getProposal: () => null, _indexProposal: vi.fn(), save: vi.fn() }

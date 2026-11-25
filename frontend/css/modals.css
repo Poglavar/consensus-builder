@@ -1588,6 +1588,22 @@ body.site-intro-open { overflow: hidden; }
     color: var(--cb-danger);
 }
 
+/* Where the model is kept: this device (default) or a public upload. */
+.building-upload-storage {
+    display: grid;
+    gap: var(--cb-space-1);
+    min-width: 0;
+    margin: 0 0 var(--cb-space-3);
+    padding: 0;
+    border: 0;
+}
+
+.building-upload-storage legend {
+    margin-bottom: var(--cb-space-1);
+    font-size: var(--cb-text-md);
+    font-weight: 600;
+}
+
 /* Share proposals modal */
 
 .share-modal-body {

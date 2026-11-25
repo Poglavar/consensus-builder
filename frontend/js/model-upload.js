@@ -1,5 +1,6 @@
 // Shared glTF upload helpers: read a .glb/.gltf File with THREE.GLTFLoader, summarize what it costs to
-// draw (triangles, texture sizes, bytes) and POST its bytes to the backend's /models endpoint.
+// draw (triangles, texture sizes, bytes), and keep its bytes: on this device (device-models.js, the
+// default) or on the backend's public /models endpoint.
 // UMD: window.ModelUpload in the browser (loaded on demand by optional-tools-loader.js), require()-able in node.
 (function (root, factory) {
     const api = factory(root);
@@ -120,5 +121,11 @@
         return json.modelUrl;
     }
 
-    return { modelSummary, parseModelFile, disposeScene, uploadModel };
+    // Keeps a model file → the reference a design stores: on this device unless publicUpload, which
+    // uploads it publicly. Publishing a design asks again for device-only models (DeviceModels).
+    function storeModel(file, { publicUpload = false } = {}) {
+        return publicUpload ? uploadModel(file) : root.DeviceModels.save(file);
+    }
+
+    return { modelSummary, parseModelFile, disposeScene, uploadModel, storeModel };
 });

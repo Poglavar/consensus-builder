@@ -5,20 +5,38 @@ import vm from 'node:vm';
 const source = readFileSync(new URL('../../frontend/js/building-upload.js', import.meta.url), 'utf8');
 const confirm = source.slice(source.indexOf('async function confirmUpload()'), source.indexOf('function disposeScene()'));
 
-function pendingUpload() {
+// storage: the dialog's "where to keep the model" choice, 'device' (its default) or 'public'.
+function pendingUpload(storage = 'public') {
     let finish;
     const response = new Promise(resolve => { finish = resolve; });
     const custom = vi.fn(() => true), fallback = vi.fn(() => true);
-    const env = { console, modalEl: {}, loadVersion: 1, loadedFile: { name: 'model.glb' }, loadedPlacement: null,
+    const modalEl = { querySelector: selector => (selector === 'input[name="building-upload-storage"]:checked' ? { value: storage } : null) };
+    const env = { console, modalEl, loadVersion: 1, loadedFile: { name: 'model.glb' }, loadedPlacement: null,
         loadedDims: { width: 16, length: 20, height: 16 }, loadedName: 'model.glb',
         currentContext: { parcelIds: ['source-ground'] }, onConfirmCb: null, onUseCb: custom,
         window: { createSingleBuildingFromUpload: fallback }, setStatus: vi.fn(), t: (_key, value) => value,
-        setConfirmEnabled: vi.fn(), uploadModel: () => response, close: vi.fn(),
+        setConfirmEnabled: vi.fn(), storeModel: vi.fn(() => response), close: vi.fn(),
         isStructureUpload: () => ['park', 'square', 'lake'].includes(env.currentContext?.kind) };
     vm.runInNewContext(confirm, env);
     return { env, custom, fallback, finish };
 }
 describe('model import consumers', () => {
+    it('keeps the model on this device unless the person chose to upload it', async () => {
+        const kept = pendingUpload('device');
+        const done = kept.env.confirmUpload();
+        expect(kept.env.storeModel).toHaveBeenCalledExactlyOnceWith(kept.env.loadedFile, false);
+        expect(kept.env.setStatus).toHaveBeenCalledWith('Saving the model on this device…');
+        kept.finish('device-model:sha256-ab'); await done;
+        expect(kept.custom).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ modelUrl: 'device-model:sha256-ab' }));
+        const failed = pendingUpload('device');
+        failed.env.storeModel = vi.fn().mockRejectedValue(new Error('quota exceeded'));
+        await failed.env.confirmUpload();
+        expect(failed.custom).not.toHaveBeenCalled();
+        expect(failed.env.setStatus).toHaveBeenLastCalledWith(
+            'The model could not be saved on this device. Your file is still selected; try again, or upload it.', true);
+        expect(failed.env.setConfirmEnabled).toHaveBeenLastCalledWith(true);
+    });
+
     it('delivers a parsed uploaded model to the current editor consumer instead of opening another editor', async () => {
         const r = pendingUpload();
         const done = r.env.confirmUpload();
@@ -48,9 +66,9 @@ describe('model import consumers', () => {
 
     it('aborts editor creation after an upload failure and keeps the selected model retryable', async () => {
         const r = pendingUpload();
-        r.env.uploadModel = vi.fn().mockRejectedValue(new Error('connection refused'));
+        r.env.storeModel = vi.fn().mockRejectedValue(new Error('connection refused'));
         await r.env.confirmUpload();
-        expect(r.env.uploadModel).toHaveBeenCalledOnce();
+        expect(r.env.storeModel).toHaveBeenCalledExactlyOnceWith(r.env.loadedFile, true);
         expect(r.custom).not.toHaveBeenCalled();
         expect(r.fallback).not.toHaveBeenCalled();
         expect(r.env.close).not.toHaveBeenCalled();

@@ -1,8 +1,9 @@
 // Building upload modal: lets a proposer upload a glTF 2.0 (.glb/.gltf) building model, a
 // CityGML/CityJSON building (city-model-reader.js turns it into a GLB placed where the file puts it),
 // or an IFC building model (ifc-model-reader.js: the same, placed by the file's georeference when it has one),
-// preview it in a three.js scene, and turn its footprint + height into a single-building
-// placement (via window.createSingleBuildingFromUpload). Review the asset here, then place
+// preview it in a three.js scene, keep it on this device (device-models.js, the default) or upload it
+// publicly, and turn its footprint + height into a single-building placement (via
+// window.createSingleBuildingFromUpload). Review the asset here, then place
 // its editable footprint on the main map; the saved model reference supplies its 3D mesh.
 // A park, square or lake uses the same pipeline (context.kind) with model wording, through onUse.
 
@@ -94,7 +95,10 @@
             cancel: t('modal.buildingUpload.cancel', 'Cancel'),
             confirm: structure
                 ? t('modal.buildingUpload.structureConfirm', 'Use this model')
-                : t('modal.buildingUpload.confirm', 'Use this building')
+                : t('modal.buildingUpload.confirm', 'Use this building'),
+            storageLegend: t('modal.buildingUpload.storageLegend', 'Where to keep the model'),
+            storageDevice: t('modal.buildingUpload.storageDevice', 'Only on this device: others see a plain block until you publish it with the model'),
+            storagePublic: t('modal.buildingUpload.storagePublic', 'Upload it now: anyone with a link to the design can download the model')
         };
 
         const modal = document.createElement('div');
@@ -114,6 +118,11 @@
                         <input id="building-upload-file" type="file" accept="${structure ? '.glb,.gltf,model/gltf-binary,model/gltf+json' : '.glb,.gltf,.gml,.xml,.json,.ifc,model/gltf-binary,model/gltf+json,application/gml+xml,application/json,application/x-step'}" hidden>
                     </label>
                     <p class="building-upload-hint">${text.hint}</p>
+                    <fieldset class="building-upload-storage">
+                        <legend>${text.storageLegend}</legend>
+                        <label class="proposal-editor-check"><input type="radio" name="building-upload-storage" value="device" checked> ${text.storageDevice}</label>
+                        <label class="proposal-editor-check"><input type="radio" name="building-upload-storage" value="public"> ${text.storagePublic}</label>
+                    </fieldset>
                     <div class="cb-kicker">${text.previewLabel}</div>
                     <div id="building-upload-3d" class="building-upload-preview" role="status" aria-live="polite"></div>
                     <div id="building-upload-status" class="building-upload-status" role="status" aria-live="polite">${text.noFile}</div>
@@ -438,7 +447,7 @@
                 if (!isCurrent()) { disposeModel(root); return; }
                 const dims = measurement.dimensions;
                 loadedDims = { ...dims, footprint };
-                setStatus(t('modal.buildingUpload.loaded', 'Loaded: {{name}}', { name: file.name })
+                setStatus(t('modal.buildingUpload.loaded', 'Loaded: {{name}}', { name: loadedName })
                     + ' — ' + t('modal.buildingUpload.dimensions',
                         'Footprint {{width}}m × {{length}}m, height {{height}}m',
                         { width: dims.width, length: dims.length, height: dims.height })
@@ -473,11 +482,11 @@
         else reader.readAsArrayBuffer(file);
     }
 
-    // Uploads the raw model bytes to the backend; returns the served modelUrl (model-upload.js,
-    // shared with the structure editor's furniture models).
-    async function uploadModel(file) {
+    // Keeps the model bytes on this device (the default) or uploads them publicly, as the dialog's
+    // choice says; returns the model reference the design stores (model-upload.js storeModel).
+    async function storeModel(file, publicUpload) {
         await window.ensureOptionalTool('modelUpload');
-        return window.ModelUpload.uploadModel(file);
+        return window.ModelUpload.storeModel(file, { publicUpload });
     }
 
     // Named so it does not shadow the browser's own confirm().
@@ -488,21 +497,24 @@
             return;
         }
         setConfirmEnabled(false);
-        setStatus(t('modal.buildingUpload.uploading', 'Uploading model…'));
+        const publicUpload = modalEl.querySelector('input[name="building-upload-storage"]:checked')?.value === 'public';
+        setStatus(publicUpload ? t('modal.buildingUpload.uploading', 'Uploading model…') : t('modal.buildingUpload.saving', 'Saving the model on this device…'));
         const version = loadVersion;
         const use = onUseCb || window.createSingleBuildingFromUpload;
         const input = {
             ...currentContext, ...loadedDims, modelName: loadedName, placement: loadedPlacement, onConfirm: onConfirmCb
         };
 
-        // The imported building needs its mesh. A failed upload stays here for a retry.
+        // The imported building needs its mesh. A failed upload or save stays here for a retry.
         let modelUrl;
         try {
-            modelUrl = await uploadModel(loadedFile);
+            modelUrl = await storeModel(loadedFile, publicUpload);
         } catch (e) {
             if (version !== loadVersion || !modalEl) return;
             console.warn('Building model upload failed', e);
-            setStatus(e.status === 403
+            setStatus(!publicUpload
+                ? t('modal.buildingUpload.saveFailed', 'The model could not be saved on this device. Your file is still selected; try again, or upload it.')
+                : e.status === 403
                 ? t('modal.buildingUpload.uploadRefused', 'The server refused this upload (403). Your file is still selected.')
                 : t('modal.buildingUpload.uploadFailed',
                     'The model could not be uploaded. Check the connection and try again; your file is still selected.'), true);

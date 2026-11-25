@@ -230,6 +230,12 @@
             const sponsor = sponsorKey();
             if (crowdfunding && !sponsor) throw failure('wallet-required', t('agreement.funding.wallet', 'Connect the developer wallet to publish this agreement.'));
 
+            // Device-only models in the agreement's unpublished designs are uploaded or kept first, once
+            // for all of them (DesignSync.settleDeviceModels). An upload changes a design, so a crowdfunded
+            // agreement then asks for its plan's new revision (plan-changed below).
+            await win.DesignSync.settleDeviceModels(agreement.designs.map(design => designOf(design.proposalId))
+                .filter(record => record && !win.DesignSync.publishedCid(record)));
+
             // Each design as it is published (an own draft carries the current profile's name first).
             const cids = new Map();
             const designs = [];

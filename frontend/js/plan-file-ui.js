@@ -26,7 +26,19 @@
         // A download is named after its plan or design: "Riverside blocks" -> riverside-blocks.ugt.json.
         const fileStem = title => win.FileDownload.fileStem(title, 'plan');
         const download = (text, name, type) => win.FileDownload.save(win, text, name, type);
+        const dataUrlOf = data => {
+            let binary = '';
+            for (let i = 0; i < data.byteLength; i += 8192) binary += String.fromCharCode(...data.subarray(i, i + 8192));
+            return 'data:model/gltf-binary;base64,' + win.btoa(binary);
+        };
         async function fetchModel(raw) {
+            // A device-only model is embedded from this browser's storage (DeviceModels).
+            if (win.DeviceModels.isDeviceModel(raw)) {
+                const row = await win.DeviceModels.load(raw);
+                if (!row) throw new Error(t('modelElsewhere', 'A model is kept on another device. The plan file was not created.'));
+                if (row.bytes > win.PlanFile.MAX_BYTES / 2) throw new Error(t('modelLarge', 'The model is too large for a portable plan file.'));
+                return dataUrlOf(new Uint8Array(await row.blob.arrayBuffer()));
+            }
             const url = new URL(win.resolveBackendAssetUrl(raw), win.location.href);
             if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) throw new Error(t('modelUrl', 'The model URL cannot be downloaded safely.'));
             const response = await win.fetch(url.href, { credentials: 'omit', referrerPolicy: 'no-referrer', signal: AbortSignal.timeout(30000) });
@@ -46,9 +58,7 @@
             const data = new Uint8Array(size);
             let offset = 0;
             for (const chunk of chunks) { data.set(chunk, offset); offset += chunk.byteLength; }
-            let binary = '';
-            for (let i = 0; i < size; i += 8192) binary += String.fromCharCode(...data.subarray(i, i + 8192));
-            return 'data:model/gltf-binary;base64,' + win.btoa(binary);
+            return dataUrlOf(data);
         }
         // `designsOnly`: a design file (or a plan file read on the Designs tab) adds its designs and
         // keeps no imported plan. `edited`: a CityJSON file whose city objects were changed elsewhere.
