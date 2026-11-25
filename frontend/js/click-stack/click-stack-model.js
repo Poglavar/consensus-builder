@@ -52,7 +52,9 @@
     function permittedTitle(section, translate) {
         const massing = section.kind === 'permitted';
         const plot = !massing && section.instances.every(instance => instance.item?.landBasis === 'zone');
-        const label = massing ? translate('planningViews.sourceProposal', 'Permitted massing')
+        const designation = section.instances.every(instance => instance.item?.assessment?.meaning === 'restriction');
+        const label = designation ? translate('planningViews.designation', 'Planning designation')
+            : massing ? translate('planningViews.sourceProposal', 'Permitted massing')
             : plot ? translate('planningViews.governmentPlanPlot', 'Government-plan plot') : translate('planningViews.zoningArea', 'Source zoning area');
         return section.multi ? `${label} (${section.count})` : label;
     }
@@ -157,8 +159,12 @@
     // Keep the complete hit inventory while showing only the selected level and its neighbours.
     function visibleSections(stack) {
         if (!stack?.sections?.length) return [];
-        // Observed buildings are baseline objects, not members of the surrounding authored plan.
-        if (stack.selectedKind === 'built') return stack.sections.filter(section => section.kind === 'built' || section.kind === 'parcels');
+        // Observed buildings are baseline objects, not members of the surrounding authored plan. A
+        // planning designation at the spot (planning/restrictions.js: a listed building, a monument)
+        // is a fact about what stands there, so its Permitted section stays beside the building.
+        const designation = section => ['permittedArea', 'permitted'].includes(section.kind)
+            && (section.instances || []).some(instance => instance.item?.assessment?.meaning === 'restriction');
+        if (stack.selectedKind === 'built') return stack.sections.filter(section => section.kind === 'built' || section.kind === 'parcels' || designation(section));
         const selected = Math.max(0, stack.sections.findIndex(section => section.kind === stack.selectedKind));
         // Observed buildings and permitted massing are not the authored chain, so when they sit
         // directly above the selected level the design above them shows too (the design that

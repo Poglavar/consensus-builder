@@ -41,6 +41,18 @@ it('shows one neighbouring level on either side without dropping the rest of the
     expect(sections).toHaveLength(5);
 });
 
+it('keeps a planning designation at the spot beside an observed building, in 2D and 3D alike', () => {
+    // A listed building's designation (planning/restrictions.js unknownBaseItems) is a fact about the building.
+    const listed = { id: 'restriction:gb:1', item: { role: 'permitted', assessment: { status: 'prohibited', meaning: 'restriction' } } };
+    const zone = { id: 'zone', item: { role: 'permitted', assessment: { status: 'allowed', meaning: 'zoning-area' } } };
+    const sections = [{ kind: 'designs', instances: [] }, { kind: 'built', instances: [] }, { kind: 'permittedArea', instances: [listed] }, { kind: 'parcels', instances: [] }];
+    expect(model.visibleSections({ sections, selectedKind: 'built' }).map(row => row.kind)).toEqual(['built', 'permittedArea', 'parcels']);
+    // An ordinary zoning area under a building stays out of the building's context, as before.
+    const zoned = sections.map(section => section.kind === 'permittedArea' ? { ...section, instances: [zone] } : section);
+    expect(model.visibleSections({ sections: zoned, selectedKind: 'built' }).map(row => row.kind)).toEqual(['built', 'parcels']);
+    expect(model.permittedTitle({ kind: 'permittedArea', instances: [listed], multi: false }, (key, fallback) => fallback)).toBe('Planning designation');
+});
+
 it('shows an observed building with its parcel instead of an authored-plan chain', () => {
     const sections = ['plans', 'designs', 'built', 'permitted', 'formed', 'parcels'].map(kind => ({ kind }));
     expect(model.visibleSections({ sections, selectedKind: 'built' }).map(row => row.kind)).toEqual(['built', 'parcels']);
