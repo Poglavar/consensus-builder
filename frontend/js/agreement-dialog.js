@@ -1123,6 +1123,15 @@
         body.addEventListener('pointerout', event => hoverInspection(event, false), { signal });
         body.addEventListener('focusin', event => hoverInspection(event, true), { signal });
         body.addEventListener('focusout', event => hoverInspection(event, false), { signal });
+        // Enter saves from a text field only. Chrome also submits a form on Enter in a select, a
+        // checkbox, a radio and the other non-text inputs (implicit submission), which saved
+        // half-finished agreements; there Enter does nothing. Buttons keep their own Enter.
+        form.addEventListener('keydown', event => {
+            const target = event.target;
+            if (event.key !== 'Enter' || event.isComposing) return;
+            if (target.tagName === 'SELECT'
+                || (target.tagName === 'INPUT' && ['checkbox', 'radio', 'range', 'color', 'file'].includes(String(target.type).toLowerCase()))) event.preventDefault();
+        }, { signal });
         form.addEventListener('submit', event => {
             event.preventDefault(); if (state.loading || (state.values.electorate === 'community' && rosterPending)) return;
             state.attempted = true;

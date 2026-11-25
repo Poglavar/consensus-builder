@@ -187,9 +187,21 @@ test('an agreement whose design is taken off the map warns that it does not matc
   test.setTimeout(150_000);
   const { layoutId } = await applyLayout(page);
   const editor = await createFromPlan(page, layoutId);
-  // Enter in a text field saves, as the form's submit.
+  // Enter in a select or a checkbox does not submit a half-finished agreement; Enter in a text
+  // field saves, as the form's submit.
   await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  const form = editor.locator('form.agreement-editor__form');
+  await form.evaluate((element: HTMLFormElement) => {
+    element.dataset.submits = '0';
+    element.addEventListener('submit', () => { element.dataset.submits = String(Number(element.dataset.submits) + 1); });
+  });
+  await editor.locator('[data-agreement-rule-form] select[data-approval-regime]').press('Enter');
+  await expect(form).toHaveAttribute('data-submits', '0');
+  await editor.locator('[data-agreement-binding]').press('Enter');
+  await expect(form).toHaveAttribute('data-submits', '0');
+  await expect(editor).toBeVisible();
   await editor.locator('[data-agreement-title]').press('Enter');
+  await expect(form).toHaveAttribute('data-submits', '1');
   await editorClosed(page);
   await openStackAgreement(page);
   // Untitled, the agreement is named by its date.
