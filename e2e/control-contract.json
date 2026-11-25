@@ -542,16 +542,16 @@
       "controlType": "button"
     },
     {
-      "id": "control-4dc9a07e8c99ea-1",
+      "id": "control-98ee5a45da4c0a-1",
       "source": "how-to-use.html",
-      "markup": "<a class=\"btn btn-quiet\" href=\"#videos\">",
+      "markup": "<a class=\"btn btn-quiet\" href=\"#workflow\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-98ee5a45da4c0a-1",
+      "id": "control-4dc9a07e8c99ea-1",
       "source": "how-to-use.html",
-      "markup": "<a class=\"btn btn-quiet\" href=\"#workflow\">",
+      "markup": "<a class=\"btn btn-quiet\" href=\"#videos\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -684,6 +684,13 @@
       "controlType": "button"
     },
     {
+      "id": "control-49bddd70ec77c7-1",
+      "source": "index.html",
+      "markup": "<select id=\"schelling-plan-type\">",
+      "interaction": "change",
+      "controlType": "select"
+    },
+    {
       "id": "control-654b92f0c0686e-1",
       "source": "index.html",
       "markup": "<input type=\"range\" id=\"schelling-plan-block\" min=\"60\" max=\"240\" step=\"10\" value=\"120\">",
@@ -696,13 +703,6 @@
       "markup": "<input type=\"range\" id=\"schelling-plan-street\" min=\"8\" max=\"20\" step=\"1\" value=\"12\">",
       "interaction": "change",
       "controlType": "range"
-    },
-    {
-      "id": "control-49bddd70ec77c7-1",
-      "source": "index.html",
-      "markup": "<select id=\"schelling-plan-type\">",
-      "interaction": "change",
-      "controlType": "select"
     },
     {
       "id": "control-6f0ac40305bdc7-1",
@@ -780,6 +780,13 @@
       "markup": "<button type=\"button\" id=\"planning-views-button\" class=\"map-shell-button\" data-sheet-target=\"planning-views\" aria-controls=\"planning-views\" aria-expanded=\"false\" title=\"Buildings and massing\" aria-label=\"Buildings and massing\" data-i18n-key=\"planningViews.title\" data-i18n-attr=\"title,aria-label\" hidden>"
     },
     {
+      "id": "control-4d10efc84282f4-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"layers-button\" class=\"map-shell-button\" data-sheet-target=\"layers-sheet\" aria-controls=\"layers-sheet\" aria-expanded=\"false\" title=\"Layers\" aria-label=\"Layers\" aria-describedby=\"layers-button-zoom-text\" data-i18n-key=\"mapShell.layers\" data-i18n-attr=\"title,aria-label\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-be9391a55967f2-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"username-display\" class=\"map-shell-button username-display\" aria-haspopup=\"dialog\">",
@@ -790,13 +797,6 @@
       "id": "control-aa19345c4d5b57-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"chat-button\" class=\"map-shell-button\" data-sheet-target=\"chat-sheet\" aria-controls=\"chat-sheet\" aria-expanded=\"false\" data-i18n-key=\"chat.title\" data-i18n-attr=\"title,aria-label\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-4d10efc84282f4-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"layers-button\" class=\"map-shell-button\" data-sheet-target=\"layers-sheet\" aria-controls=\"layers-sheet\" aria-expanded=\"false\" title=\"Layers\" aria-label=\"Layers\" aria-describedby=\"layers-button-zoom-text\" data-i18n-key=\"mapShell.layers\" data-i18n-attr=\"title,aria-label\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -841,6 +841,71 @@
       "id": "control-958a8a715b1c35-1",
       "source": "index.html",
       "markup": "<input type=\"range\" id=\"buildout-clock-slider\" class=\"buildout-clock__slider\" min=\"0\" max=\"0\" step=\"1\" value=\"0\" aria-label=\"Month\" data-i18n-key=\"buildout.month\" data-i18n-attr=\"aria-label\">"
+    },
+    {
+      "id": "control-89c92ffb795b14-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"simulation-bar-play\" class=\"btn btn-icon\" aria-pressed=\"false\" aria-label=\"Play\" title=\"Play\">"
+    },
+    {
+      "id": "control-d1d7190ad620c2-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"simulation-bar-step\" class=\"btn btn-icon\" aria-label=\"Next turn\" title=\"Next turn\" data-i18n-key=\"mapShell.simulation.nextTurn\" data-i18n-attr=\"aria-label,title\">"
+    },
+    {
+      "id": "control-d4d7285156d444-1",
+      "source": "index.html",
+      "markup": "<select id=\"simulation-bar-speed\">"
+    },
+    {
+      "id": "control-322ffea261b7b7-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"simulation-bar-city\" class=\"btn btn-icon\" data-agent-city-open=\"simulation\" aria-label=\"Agent city of this simulation\" title=\"Agent city of this simulation\" data-i18n-key=\"agentCity.openSimulation\" data-i18n-attr=\"aria-label,title\">"
+    },
+    {
+      "id": "control-7587c583c34590-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"simulation-bar-new\" class=\"btn btn-icon\" aria-label=\"New game\" title=\"New game\" data-i18n-key=\"sidebar.game.newGame\" data-i18n-attr=\"aria-label,title\">"
+    },
+    {
+      "id": "control-d80784931a9087-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"simulation-bar-stop\" class=\"btn btn-icon\" aria-label=\"Stop simulation\" title=\"Stop simulation\" data-i18n-key=\"mapShell.simulation.stop\" data-i18n-attr=\"aria-label,title\">"
+    },
+    {
+      "id": "control-36441130f55680-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"agent-city-close\" class=\"close-circle-btn\" aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">"
+    },
+    {
+      "id": "control-aa9cb09d2377e3-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"cb-segmented__option\" data-agent-city-source=\"server\" aria-pressed=\"true\" data-i18n-key=\"agentCity.sourceServer\">"
+    },
+    {
+      "id": "control-e78fbcdbad5c94-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"cb-segmented__option\" data-agent-city-source=\"simulation\" aria-pressed=\"false\" data-i18n-key=\"agentCity.sourceSimulation\">"
+    },
+    {
+      "id": "control-087e0f668ca337-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"agent-city-back\" class=\"btn btn-icon\" aria-label=\"Previous execution day\" title=\"Previous execution day\" data-i18n-key=\"agentCity.back\" data-i18n-attr=\"aria-label,title\">"
+    },
+    {
+      "id": "control-6cc354968eca85-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"agent-city-play\" class=\"btn btn-icon\" aria-pressed=\"false\" aria-label=\"Play\" title=\"Play\">"
+    },
+    {
+      "id": "control-52b16766b1627b-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"agent-city-forward\" class=\"btn btn-icon\" aria-label=\"Next execution day\" title=\"Next execution day\" data-i18n-key=\"agentCity.forward\" data-i18n-attr=\"aria-label,title\">"
+    },
+    {
+      "id": "control-60e2074c068880-1",
+      "source": "index.html",
+      "markup": "<input type=\"range\" id=\"agent-city-slider\" class=\"buildout-clock__slider\" min=\"0\" max=\"0\" step=\"1\" value=\"0\" aria-label=\"Execution day\" data-i18n-key=\"agentCity.day\" data-i18n-attr=\"aria-label\">"
     },
     {
       "id": "control-da506e99b14eb0-1",
@@ -907,6 +972,26 @@
       "markup": "<button type=\"button\" id=\"planning-tab-compare\" class=\"cb-tab\" role=\"tab\" aria-selected=\"false\" aria-controls=\"planning-views-compare\" data-planning-tab=\"compare\" data-i18n-key=\"planningViews.tabs.compare\">"
     },
     {
+      "id": "control-c063ad8e7817e9-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"cb-link sheet-mode-action\" data-map-modes=\"photo\" data-open-mode=\"model\" data-reveal-control=\"highlight-use-residential\" data-i18n-key=\"planningViews.openModel\" hidden>"
+    },
+    {
+      "id": "control-23179e76d14a52-1",
+      "source": "index.html",
+      "markup": "<select id=\"planning-existing-appearance\" class=\"planning-layer-select\">"
+    },
+    {
+      "id": "control-dfe9a0f1d1d060-1",
+      "source": "index.html",
+      "markup": "<select id=\"planning-permitted-appearance\" class=\"planning-layer-select\">"
+    },
+    {
+      "id": "control-b6ad4dbd467e86-1",
+      "source": "index.html",
+      "markup": "<select id=\"planning-proposed-appearance\" class=\"planning-layer-select\">"
+    },
+    {
       "id": "control-bd7f2ed239ad8b-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"planning-reroll-permitted\" class=\"btn btn-icon planning-reroll\" data-planning-reroll=\"permitted\">"
@@ -915,6 +1000,46 @@
       "id": "control-49b2905ce0a369-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"planning-reroll\" class=\"btn btn-icon planning-reroll\" data-planning-reroll=\"proposed\">"
+    },
+    {
+      "id": "control-fa58f2969837a4-1",
+      "source": "index.html",
+      "markup": "<input type=\"checkbox\" id=\"showProposedBuildings\" hidden onchange=\"toggleLayer('proposedBuildings')\">",
+      "interaction": "change",
+      "controlType": "checkbox",
+      "exempt": "Hidden checkbox mirrors proposed-building visibility owned by the shared planning-view selector; users cannot operate this input directly.",
+      "mustRemainInactive": true,
+      "guards": [
+        {
+          "source": "index.html",
+          "pattern": "<input\\s+type=\"checkbox\"\\s+id=\"showProposedBuildings\"\\s+hidden\\s+onchange=\"toggleLayer\\('proposedBuildings'\\)\">",
+          "occurrences": 1
+        }
+      ]
+    },
+    {
+      "id": "control-933329efc67fcd-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"building-source-settings-button\" class=\"btn\" onclick=\"openBuildingSourceSettings()\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-0e935e9ae177f6-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"cb-link\" data-map-modes=\"2d\" data-open-mode=\"model\" data-reveal-control=\"three-mode-facades\" data-i18n-key=\"planningViews.openModel\">"
+    },
+    {
+      "id": "control-f7e2b1924333ef-1",
+      "source": "index.html",
+      "markup": "<input id=\"showSuggestedLayouts\" type=\"checkbox\">",
+      "interaction": "change",
+      "controlType": "checkbox"
+    },
+    {
+      "id": "control-2f96bd0ebdc677-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"cb-link\" data-map-modes=\"2d\" data-open-mode=\"model\" data-reveal-control=\"three-mode-xray\" data-i18n-key=\"mapShell.layerActions.floorsIn3d\">"
     },
     {
       "id": "control-e3c4389c7e1336-1",
@@ -945,6 +1070,11 @@
       "id": "control-1eaf9d477f10c9-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"planning-compare-enable\" class=\"btn btn-primary planning-compare-toggle\" aria-pressed=\"false\">"
+    },
+    {
+      "id": "control-b7ab3c70803111-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"planning-compare-copy-link\" class=\"btn planning-compare-copy-link\" aria-describedby=\"planning-compare-link-note\">"
     },
     {
       "id": "control-bd61597e374f24-1",
@@ -999,6 +1129,11 @@
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-3fad3a44960087-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"view-coordinates-copy\" class=\"btn btn-sm view-coordinates\" hidden>"
     },
     {
       "id": "control-0debdec749fb22-1",
@@ -1069,6 +1204,11 @@
       "controlType": "button"
     },
     {
+      "id": "control-2a02a4664b8b1a-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"cb-link\" data-map-modes=\"3d photo\" data-open-mode=\"2d\" data-reveal-control=\"parcel-ownership-title\" data-section-independent=\"true\" data-i18n-key=\"mapShell.layerActions.ownershipIn2d\" hidden>"
+    },
+    {
       "id": "control-c7779f0a5ef29d-1",
       "source": "index.html",
       "markup": "<input type=\"checkbox\" id=\"highlightOwnershipGovernment\" class=\"ownership-type-checkbox\" data-ownership-type=\"government\">",
@@ -1116,6 +1256,11 @@
       "markup": "<button type=\"button\" id=\"cadastre-view-toggle\" class=\"btn\" data-map-modes=\"2d\" title=\"Cadastre view: original parcels only\" data-i18n-key=\"claims.cadastreViewToggle\" data-i18n-attr=\"title\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-87ac9cb4bb293b-1",
+      "source": "index.html",
+      "markup": "<input id=\"photo-parcels-visible\" type=\"checkbox\" data-section-independent=\"true\" checked>"
     },
     {
       "id": "control-17f67f48dca5b1-1",
@@ -1186,38 +1331,14 @@
       "controlType": "button"
     },
     {
-      "id": "control-501df78a9d2d19-1",
+      "id": "control-ac1d62fbbc4752-1",
       "source": "index.html",
-      "markup": "<input type=\"checkbox\" id=\"showBuildings\" onchange=\"toggleLayer('buildings')\">",
-      "interaction": "change",
-      "controlType": "checkbox"
+      "markup": "<button type=\"button\" id=\"layers-open-buildings\" class=\"sheet-section-title\" data-sheet-target=\"planning-views\" data-reveal-control=\"planning-existing-scope\" aria-controls=\"planning-views\" aria-expanded=\"false\" hidden>"
     },
     {
-      "id": "control-8d206b675af296-1",
+      "id": "control-951c55000e3a5e-1",
       "source": "index.html",
-      "markup": "<input type=\"checkbox\" id=\"showProposedBuildings\" onchange=\"toggleLayer('proposedBuildings')\">",
-      "interaction": "change",
-      "controlType": "checkbox",
-      "exempt": "Hidden checkbox mirrors proposed-building visibility owned by the shared planning-view selector; users cannot operate this input directly.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "index.html",
-          "includes": "<!-- The shared view selector owns proposed-building visibility. -->"
-        },
-        {
-          "source": "index.html",
-          "pattern": "<label hidden>\\s*<input type=\"checkbox\" id=\"showProposedBuildings\"\\s+onchange=\"toggleLayer\\('proposedBuildings'\\)\">",
-          "occurrences": 1
-        }
-      ]
-    },
-    {
-      "id": "control-f181cd7b327aa2-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"building-source-settings-button\" class=\"btn\" data-section-independent=\"true\" onclick=\"openBuildingSourceSettings()\">",
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "<button type=\"button\" class=\"cb-link sheet-mode-action\" data-map-modes=\"photo\" data-open-mode=\"model\" data-reveal-control=\"planning-zoning-areas\" data-i18n-key=\"planningViews.openModel\" hidden>"
     },
     {
       "id": "control-0d6c7eceef8e35-1",
@@ -1455,9 +1576,9 @@
       "controlType": "checkbox"
     },
     {
-      "id": "control-9098061ffd8078-1",
+      "id": "control-00acd242fd48f0-1",
       "source": "index.html",
-      "markup": "<input id=\"photo-parcels-visible\" type=\"checkbox\" checked>"
+      "markup": "<button type=\"button\" class=\"cb-link\" data-map-modes=\"2d\" data-open-mode=\"model\" data-i18n-key=\"planningViews.openModel\">"
     },
     {
       "id": "control-dc7af30c67cb8d-4",
@@ -1569,6 +1690,11 @@
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-5ac77f5969ca8c-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"activity-agent-city\" class=\"btn btn-icon\" data-agent-city-open=\"server\" aria-label=\"Agent city\" title=\"Agent city\" data-i18n-key=\"agentCity.title\" data-i18n-attr=\"aria-label,title\">"
     },
     {
       "id": "control-de3a9269ba4928-1",
@@ -1718,6 +1844,11 @@
       "markup": "<button type=\"button\" class=\"btn btn-danger debug-only-control\" onclick=\"clearDetectedRoads()\" data-i18n-key=\"sidebar.roads.clearTooltip\" data-i18n-attr=\"title\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-f3cc9297c7e714-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"run-simulation-button\" class=\"btn\" onclick=\"runSimulation()\">"
     },
     {
       "id": "control-c5282f3e2066e1-1",
@@ -2331,6 +2462,11 @@
       "controlType": "button"
     },
     {
+      "id": "control-03fb2f2cc1ebb9-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"welcome-wallet-connect-btn\" class=\"btn btn-secondary btn-block\" onclick=\"handleWalletButtonClick()\">"
+    },
+    {
       "id": "control-bb3c5cb10971d4-1",
       "source": "index.html",
       "markup": "<button type=\"submit\" form=\"welcome-form\" class=\"btn btn-primary btn-block cb-shimmer\" id=\"welcome-submit-btn\" data-i18n-key=\"modal.welcome.submit\">",
@@ -2647,6 +2783,11 @@
       "controlType": "button"
     },
     {
+      "id": "control-b94b9815e63ce5-1",
+      "source": "js/agreement-boost.js",
+      "markup": "doc.createElement(tag)"
+    },
+    {
       "id": "control-5e79f4bc9789f7-1",
       "source": "js/agreement-dialog.js",
       "markup": "<button type=\"button\" class=\"cb-option agreement-object-row\" data-agreement-inspect=\"${kind}\" data-agreement-object-id=\"${esc(item.id)}\" aria-pressed=\"false\">"
@@ -2672,9 +2813,9 @@
       "markup": "<input type=\"number\" min=\"0\" step=\"0.01\" data-agreement-value-all=\"${kind}\">"
     },
     {
-      "id": "control-d7f25321d05961-1",
+      "id": "control-91cebd58b39ffb-1",
       "source": "js/agreement-dialog.js",
-      "markup": "<input type=\"radio\" name=\"agreement-electorate\" value=\"${value}\" data-agreement-electorate${(value === 'owners') === owners ? ' checked' : ''}>",
+      "markup": "<input type=\"radio\" name=\"agreement-electorate\" value=\"${value}\" data-agreement-electorate${value === electorate ? ' checked' : ''}>",
       "interaction": "change",
       "controlType": "radio"
     },
@@ -2693,9 +2834,9 @@
       "controlType": "text"
     },
     {
-      "id": "control-10565f8f2f7864-1",
+      "id": "control-4208479991f2ac-1",
       "source": "js/agreement-dialog.js",
-      "markup": "<input type=\"date\" data-agreement-deadline value=\"${esc(deadline)}\"${today ? ` min=\"${esc(today)}\"` : ''}>",
+      "markup": "<input type=\"date\" data-agreement-deadline value=\"${esc(deadline)}\"${deadlineRequired ? ' required' : ''}${today ? ` min=\"${esc(today)}\"` : ''}>",
       "interaction": "change",
       "controlType": "date"
     },
@@ -2719,9 +2860,26 @@
       "markup": "<select data-agreement-plan>"
     },
     {
-      "id": "control-21646ea3437496-1",
+      "id": "control-48f41a284ec65d-1",
       "source": "js/agreement-dialog.js",
-      "markup": "<button type=\"button\" class=\"btn btn-icon btn-sm lens-pattern-button\" data-lens-pattern data-agreement-action=\"lens\" title=\"' + esc(t('modal.lens.triggerDescription', 'Lens for viewing the world')) + '\" aria-label=\"' + esc(t('modal.lens.triggerDescription', 'Lens for viewing the world')) + '\">"
+      "markup": "<button type=\"button\" class=\"btn btn-icon btn-sm lens-pattern-button\" data-lens-pattern data-agreement-action=\"lens\" title=\"${esc(choose)}\" aria-label=\"${esc(choose)}\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-b14bed69d6878a-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<select data-agreement-lens-threshold>"
+    },
+    {
+      "id": "control-2b4361daa1fc6b-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"text\" inputmode=\"decimal\" data-agreement-funding-target value=\"${esc(funding.targetInput || '')}\">"
+    },
+    {
+      "id": "control-cebf0a53ee96e1-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"file\" accept=\"application/pdf,text/plain,.txt\" data-agreement-funding-file>"
     },
     {
       "id": "control-bf8d7b03464e13-1",
@@ -2761,6 +2919,66 @@
           }
         }
       ]
+    },
+    {
+      "id": "control-f7a80fbcf7e94a-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input data-apartment=\"unitId\" value=\"${esc(unit.unitId || '')}\">"
+    },
+    {
+      "id": "control-cdf5e488f1bd84-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input data-apartment=\"label\" value=\"${esc(unit.label || '')}\">"
+    },
+    {
+      "id": "control-62e7167f80d0c9-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input data-apartment=\"xrayBuilding\" value=\"${esc(unit.xrayBuilding || '')}\">"
+    },
+    {
+      "id": "control-2ad78436b4bea1-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input data-apartment=\"unit\" value=\"${esc(unit.unit || '')}\">"
+    },
+    {
+      "id": "control-03e132c35e2387-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input data-apartment=\"at\" placeholder=\"45.80,15.97,18\" value=\"${esc(unit.at || '')}\">"
+    },
+    {
+      "id": "control-32f6244f2fca68-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input inputmode=\"decimal\" data-apartment=\"priceInput\" value=\"${esc(unit.priceInput || (unit.priceUsdcAtomic ? recordApi().formatUsdc(unit.priceUsdcAtomic) : ''))}\">"
+    },
+    {
+      "id": "control-48ba164b0aa92a-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input inputmode=\"decimal\" data-apartment=\"depositInput\" value=\"${esc(unit.depositInput || (unit.depositUsdcAtomic ? recordApi().formatUsdc(unit.depositUsdcAtomic) : ''))}\">"
+    },
+    {
+      "id": "control-c4dfd92889a9f2-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"file\" accept=\"application/pdf,.pdf\" data-apartment-drawing>"
+    },
+    {
+      "id": "control-57881c8efe8280-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input data-apartment=\"access\" value=\"${esc(unit.access || '')}\">"
+    },
+    {
+      "id": "control-7bc645b016993c-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-apartment-remove>"
+    },
+    {
+      "id": "control-9eb9c7f12b190f-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input data-apartments-project value=\"${esc(apartments.projectId)}\">"
+    },
+    {
+      "id": "control-094f294ceebcd0-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-apartment-add>"
     },
     {
       "id": "control-cd7e81d4355a78-1",
@@ -3092,6 +3310,16 @@
       ]
     },
     {
+      "id": "control-6a0ac8c8f5bd9d-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-agreement-action=\"contract\">"
+    },
+    {
+      "id": "control-20cc1b34c56999-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-agreement-action=\"refresh-funding\">"
+    },
+    {
       "id": "control-b2deafc1d3315d-1",
       "source": "js/agreement-panel.js",
       "markup": "<button type=\"button\" class=\"cb-tab\" role=\"tab\" id=\"agreement-properties-tab-${kind}\" aria-controls=\"agreement-properties-panel-${kind}\" aria-selected=\"${kind === selected}\" tabindex=\"${kind === selected ? 0 : -1}\" data-agreement-properties-tab=\"${kind}\">",
@@ -3191,6 +3419,16 @@
       "id": "control-dd37aae8f19585-1",
       "source": "js/agreement-panel.js",
       "markup": "<input type=\"text\" autocomplete=\"off\" spellcheck=\"false\" data-agreement-mint-payout value=\"${esc(sponsor)}\">"
+    },
+    {
+      "id": "control-8853e48b9dc104-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<input type=\"password\" autocomplete=\"off\" spellcheck=\"false\" data-agreement-own-key value=\"${esc(remembered || '')}\">"
+    },
+    {
+      "id": "control-6f23d6d97acf0d-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<input type=\"checkbox\" data-agreement-own-key-remember${remembered ? ' checked' : ''}>"
     },
     {
       "id": "control-e6bb0c762ea941-1",
@@ -3297,6 +3535,16 @@
       "id": "control-2c36d031b18489-1",
       "source": "js/app-diagnostics.js",
       "markup": "win.document.createElement('button')"
+    },
+    {
+      "id": "control-1a63f661f0b392-1",
+      "source": "js/app-funnel.js",
+      "markup": "doc.createElement('button')"
+    },
+    {
+      "id": "control-fc4d6be8adec1e-1",
+      "source": "js/app-funnel.js",
+      "markup": "doc.createElement('input')"
     },
     {
       "id": "control-75e7420b75e40b-1",
@@ -3820,199 +4068,199 @@
       "markup": "doc.createElement(tag)"
     },
     {
-      "id": "control-b6522655f01dc6-1",
-      "source": "js/building-blocks.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-8774871e2f85c6-1",
-      "source": "js/building-blocks.js",
+      "id": "control-6cf00fd046bc4f-1",
+      "source": "js/building-block-editor.js",
       "markup": "<select id=\"algorithm-select\" disabled>",
-      "interaction": "change",
-      "controlType": "select",
       "exempt": "The building algorithm selector displays the fixed algorithm and stays disabled.",
       "mustRemainInactive": true,
       "guards": [
         {
-          "source": "js/building-blocks.js",
+          "source": "js/building-block-editor.js",
           "includes": "<select id=\"algorithm-select\" disabled>"
         }
-      ]
+      ],
+      "interaction": "change",
+      "controlType": "select"
     },
     {
-      "id": "control-60635fcda1e57e-1",
-      "source": "js/building-blocks.js",
+      "id": "control-5d31d4b3811b18-1",
+      "source": "js/building-block-editor.js",
       "markup": "<input type=\"checkbox\" id=\"blockify-existing-toggle\">",
       "interaction": "change",
       "controlType": "checkbox"
     },
     {
-      "id": "control-f910b67439c621-1",
-      "source": "js/building-blocks.js",
+      "id": "control-22fba8cccbce84-1",
+      "source": "js/building-block-editor.js",
       "markup": "<input type=\"radio\" id=\"blockify-rule-exact\" name=\"blockify-existing-rule\" value=\"exact\" checked>",
       "interaction": "change",
       "controlType": "radio"
     },
     {
-      "id": "control-88b012e5b4c336-1",
-      "source": "js/building-blocks.js",
+      "id": "control-fffb1d610f429f-1",
+      "source": "js/building-block-editor.js",
       "markup": "<input type=\"range\" id=\"proposed-height-slider\" min=\"1\" max=\"20\" value=\"${DEFAULT_PROPOSED_HEIGHT_FLOORS}\" step=\"1\">",
       "interaction": "change",
       "controlType": "range"
     },
     {
-      "id": "control-40075ef7234579-1",
-      "source": "js/building-blocks.js",
+      "id": "control-af50650eb53210-1",
+      "source": "js/building-block-editor.js",
       "markup": "<input type=\"radio\" id=\"blockify-rule-additional\" name=\"blockify-existing-rule\" value=\"additional\">",
       "interaction": "change",
       "controlType": "radio"
     },
     {
-      "id": "control-e8bec14fa2cced-1",
-      "source": "js/building-blocks.js",
+      "id": "control-54d47088324735-1",
+      "source": "js/building-block-editor.js",
       "markup": "<input type=\"range\" id=\"additional-floors-slider\" min=\"1\" max=\"20\" value=\"${DEFAULT_ADDITIONAL_FLOORS}\" step=\"1\" disabled>",
       "interaction": "change",
       "controlType": "range"
     },
     {
-      "id": "control-15ef282749ce40-1",
-      "source": "js/building-blocks.js",
+      "id": "control-af83ab94ee4f26-1",
+      "source": "js/building-block-editor.js",
       "markup": "<input type=\"range\" id=\"floor-height-slider\" min=\"2.5\" max=\"5\" value=\"${DEFAULT_FLOOR_HEIGHT_M}\" step=\"0.1\">",
       "interaction": "change",
       "controlType": "range"
     },
     {
-      "id": "control-9b4c3666f4b5c8-1",
-      "source": "js/building-blocks.js",
+      "id": "control-d0fb3d3f42a727-1",
+      "source": "js/building-block-editor.js",
       "markup": "<input type=\"range\" id=\"setback-slider\" min=\"0\" max=\"50\" value=\"${DEFAULT_SETBACK}\" step=\"0.5\">",
       "interaction": "change",
       "controlType": "range"
     },
     {
-      "id": "control-ea90165e93d3d7-1",
-      "source": "js/building-blocks.js",
+      "id": "control-9cc07d56690629-1",
+      "source": "js/building-block-editor.js",
       "markup": "<input type=\"range\" id=\"chamfer-slider\" min=\"0\" max=\"10\" value=\"${DEFAULT_CHAMFER_M}\" step=\"0.5\">",
       "interaction": "change",
       "controlType": "range"
     },
     {
-      "id": "control-5b456c9b37ed80-1",
-      "source": "js/building-blocks.js",
+      "id": "control-2403910e8c3385-1",
+      "source": "js/building-block-editor.js",
       "markup": "<input type=\"range\" id=\"simplify-slider\" min=\"0\" max=\"20\" value=\"${DEFAULT_SIMPLIFY_M}\" step=\"0.5\">",
       "interaction": "change",
       "controlType": "range"
     },
     {
-      "id": "control-b31e3b19158e52-1",
-      "source": "js/building-blocks.js",
+      "id": "control-5562be31a71416-1",
+      "source": "js/building-block-editor.js",
       "markup": "<input type=\"range\" id=\"width-slider\" min=\"1\" max=\"100\" value=\"${DEFAULT_BUILDING_WIDTH}\" step=\"0.5\">",
       "interaction": "change",
       "controlType": "range"
     },
     {
-      "id": "control-d5f546f8ab6c3b-1",
-      "source": "js/building-blocks.js",
+      "id": "control-5c76488512e045-1",
+      "source": "js/building-block-editor.js",
       "markup": "<input type=\"range\" id=\"height-slider\" min=\"1\" max=\"${BLOCK_MAX_FLOORS}\" value=\"${blockFloors(DEFAULT_BUILDING_HEIGHT)}\" step=\"1\">",
       "interaction": "change",
       "controlType": "range"
     },
     {
-      "id": "control-c2984efe77a73c-1",
-      "source": "js/building-blocks.js",
+      "id": "control-3bb0f99bd4b53c-1",
+      "source": "js/building-block-editor.js",
       "markup": "<select id=\"blockify-ruletype-select\">",
       "interaction": "change",
       "controlType": "select"
     },
     {
-      "id": "control-28b2cffed4a94b-1",
-      "source": "js/building-blocks.js",
+      "id": "control-c0b29c67ef012e-1",
+      "source": "js/building-block-editor.js",
       "markup": "<input type=\"range\" id=\"blockify-minheight-slider\" min=\"0\" max=\"${BLOCK_MAX_FLOORS}\" value=\"0\" step=\"1\">",
       "interaction": "change",
       "controlType": "range"
     },
     {
-      "id": "control-a4b326535cb3ca-1",
-      "source": "js/building-blocks.js",
+      "id": "control-1a803dcdbf49a4-1",
+      "source": "js/building-block-editor.js",
       "markup": "<input type=\"range\" id=\"blockify-mindepth-slider\" min=\"0\" max=\"100\" value=\"0\" step=\"0.5\">",
       "interaction": "change",
       "controlType": "range"
     },
     {
-      "id": "control-978f6cb06578d9-1",
-      "source": "js/building-blocks.js",
+      "id": "control-5a122d2f8fb18f-1",
+      "source": "js/building-block-editor.js",
       "markup": "<input type=\"range\" id=\"blockify-minplot-slider\" min=\"0\" max=\"10000\" value=\"${DEFAULT_BLOCK_MIN_PLOT_AREA_M2}\" step=\"10\">",
       "interaction": "change",
       "controlType": "range"
     },
     {
-      "id": "control-dfce4e55d0b62d-1",
-      "source": "js/building-blocks.js",
+      "id": "control-7d8839e64947c3-1",
+      "source": "js/building-block-editor.js",
       "markup": "<input type=\"range\" id=\"gaps-slider\" min=\"0\" max=\"10\" value=\"0\" step=\"1\" disabled>",
       "interaction": "change",
       "controlType": "range"
     },
     {
-      "id": "control-fe4e56ed26e959-1",
-      "source": "js/building-blocks.js",
+      "id": "control-ec5911e1df5944-1",
+      "source": "js/building-block-editor.js",
       "markup": "<input type=\"range\" id=\"gap-width-slider\" min=\"1\" max=\"20\" value=\"5\" step=\"1\" disabled>",
       "interaction": "change",
       "controlType": "range"
     },
     {
-      "id": "control-302fcf9ea579f1-1",
-      "source": "js/building-blocks.js",
+      "id": "control-dcc4dacdda3eba-1",
+      "source": "js/building-block-editor.js",
       "markup": "<input type=\"range\" id=\"wings-slider\" min=\"0\" max=\"10\" value=\"0\" step=\"1\" disabled>",
       "interaction": "change",
       "controlType": "range"
     },
     {
-      "id": "control-9332c17db9a61b-1",
-      "source": "js/building-blocks.js",
+      "id": "control-1fb726a81de9de-1",
+      "source": "js/building-block-editor.js",
       "markup": "<input type=\"range\" id=\"wing-length-slider\" min=\"10\" max=\"200\" value=\"10\" step=\"1\" disabled>",
       "interaction": "change",
       "controlType": "range"
     },
     {
-      "id": "control-eb6552b8152e00-1",
-      "source": "js/building-blocks.js",
+      "id": "control-4e8bd9530d0a5b-1",
+      "source": "js/building-block-editor.js",
       "markup": "<button type=\"button\" id=\"blockify-manual-toggle\" class=\"btn btn-block\" aria-pressed=\"false\" data-i18n-key=\"blockify.modal.manual.edit\" data-i18n-attr=\"text\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-c008ec638b63f1-1",
-      "source": "js/building-blocks.js",
+      "id": "control-fbf545ebef4090-1",
+      "source": "js/building-block-editor.js",
       "markup": "<button type=\"button\" id=\"blockify-geojson-upload\" class=\"btn btn-block\" title=\"${translateBuildingText('common.footprintFileFormats', 'GeoJSON, CityGML or CityJSON')}\" data-i18n-key=\"blockify.modal.manual.uploadGeojson\" data-i18n-attr=\"text\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-b8e0cc68c44d09-1",
-      "source": "js/building-blocks.js",
+      "id": "control-d85947a4736cd1-1",
+      "source": "js/building-block-editor.js",
       "markup": "<input type=\"file\" id=\"blockify-geojson-input\" accept=\".geojson,.json,.gml,.xml,application/geo+json,application/json,application/gml+xml\" hidden>",
       "interaction": "change",
       "controlType": "file"
     },
     {
-      "id": "control-553d785a73a743-1",
-      "source": "js/building-blocks.js",
+      "id": "control-c8b89c77c9880e-1",
+      "source": "js/building-block-editor.js",
       "markup": "<button type=\"button\" class=\"btn\" id=\"btn-blockify-regenerate\" hidden data-i18n-key=\"blockify.modal.regenerate\" data-i18n-attr=\"text\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-76f0845e4b4e42-1",
-      "source": "js/building-blocks.js",
+      "id": "control-f5df0df207b603-1",
+      "source": "js/building-block-editor.js",
       "markup": "<button type=\"button\" class=\"btn\" id=\"btn-blockify-freeform\" data-i18n-key=\"proposalDrafts.freeform.title\" data-i18n-attr=\"text\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-ea963f7e132cad-1",
-      "source": "js/building-blocks.js",
+      "id": "control-4bcfdc18e26166-1",
+      "source": "js/building-block-editor.js",
       "markup": "<button type=\"button\" class=\"btn btn-primary\" id=\"btn-blockify-done\" data-i18n-key=\"blockify.modal.done\" data-i18n-attr=\"text\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-b6522655f01dc6-1",
+      "source": "js/building-blocks.js",
+      "markup": "document.createElement('button')",
       "interaction": "click",
       "controlType": "button"
     },
@@ -4052,11 +4300,21 @@
       "controlType": "button"
     },
     {
-      "id": "control-9686409eb14d9d-1",
+      "id": "control-4e96f972e1b5f3-1",
       "source": "js/building-upload.js",
-      "markup": "<input id=\"building-upload-file\" type=\"file\" accept=\"${structure ? '.glb,.gltf,model/gltf-binary,model/gltf+json' : '.glb,.gltf,.gml,.xml,.json,model/gltf-binary,model/gltf+json,application/gml+xml,application/json'}\" hidden>",
+      "markup": "<input id=\"building-upload-file\" type=\"file\" accept=\"${structure ? '.glb,.gltf,model/gltf-binary,model/gltf+json' : '.glb,.gltf,.gml,.xml,.json,.ifc,model/gltf-binary,model/gltf+json,application/gml+xml,application/json,application/x-step'}\" hidden>",
       "interaction": "change",
       "controlType": "file"
+    },
+    {
+      "id": "control-a089cf2590dee2-1",
+      "source": "js/building-upload.js",
+      "markup": "<input type=\"radio\" name=\"building-upload-storage\" value=\"device\" checked>"
+    },
+    {
+      "id": "control-befe60bb1873a0-1",
+      "source": "js/building-upload.js",
+      "markup": "<input type=\"radio\" name=\"building-upload-storage\" value=\"public\">"
     },
     {
       "id": "control-947337e1b08a57-1",
@@ -4306,6 +4564,13 @@
       "controlType": "textarea"
     },
     {
+      "id": "control-5fc055732b4105-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<input type=\"text\" data-roster-household-batch value=\"${esc(local.household)}\" autocomplete=\"off\" spellcheck=\"false\">",
+      "interaction": "change",
+      "controlType": "text"
+    },
+    {
       "id": "control-10b105cd4afd98-1",
       "source": "js/community/voting-roster.js",
       "markup": "<input type=\"number\" data-roster-count min=\"1\" max=\"100\" value=\"${local.count}\">",
@@ -4334,16 +4599,16 @@
       "controlType": "button"
     },
     {
-      "id": "control-75d7b12c6257d2-1",
-      "source": "js/community/voting-roster.js",
-      "markup": "<input type=\"file\" accept=\"application/json,.json\" data-roster-import hidden>"
-    },
-    {
       "id": "control-a80a24a709c5a4-1",
       "source": "js/community/voting-roster.js",
       "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-roster-pick=\"json\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-75d7b12c6257d2-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<input type=\"file\" accept=\"application/json,.json\" data-roster-import hidden>"
     },
     {
       "id": "control-2142a7d96ab66f-1",
@@ -4353,23 +4618,16 @@
       "controlType": "button"
     },
     {
+      "id": "control-3fa6a6a71c7972-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<input type=\"file\" accept=\"text/csv,.csv,text/plain\" data-roster-import-csv hidden>"
+    },
+    {
       "id": "control-aea91cac9f1cd2-1",
       "source": "js/community/voting-roster.js",
       "markup": "<button type=\"button\" class=\"btn btn-quiet\" data-roster-action=\"remove\">",
       "interaction": "click",
       "controlType": "button"
-    },
-    {
-      "id": "control-5fc055732b4105-1",
-      "source": "js/community/voting-roster.js",
-      "markup": "<input type=\"text\" data-roster-household-batch value=\"${esc(local.household)}\" autocomplete=\"off\" spellcheck=\"false\">",
-      "interaction": "change",
-      "controlType": "text"
-    },
-    {
-      "id": "control-3fa6a6a71c7972-1",
-      "source": "js/community/voting-roster.js",
-      "markup": "<input type=\"file\" accept=\"text/csv,.csv,text/plain\" data-roster-import-csv hidden>"
     },
     {
       "id": "control-bacc2b7fcedb1c-1",
@@ -4386,16 +4644,16 @@
       "controlType": "select"
     },
     {
-      "id": "control-47679ba6d5af66-1",
+      "id": "control-7cab48c88021a0-1",
       "source": "js/community/voting-ui.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm btn-secondary\" data-voting-action=\"open-owner\" data-voting-owner=\"${esc(row.cid)}\">",
+      "markup": "<button type=\"button\" class=\"btn btn-sm btn-secondary\" data-voting-action=\"${action}\"${disabled?' disabled':''}>",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-7cab48c88021a0-1",
+      "id": "control-47679ba6d5af66-1",
       "source": "js/community/voting-ui.js",
-      "markup": "<button type=\"button\" class=\"btn btn-sm btn-secondary\" data-voting-action=\"${action}\"${disabled?' disabled':''}>",
+      "markup": "<button type=\"button\" class=\"btn btn-sm btn-secondary\" data-voting-action=\"open-owner\" data-voting-owner=\"${esc(row.cid)}\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -4867,11 +5125,11 @@
       "controlType": "dynamic"
     },
     {
-      "id": "control-728535dde576a6-1",
+      "id": "control-caf8916acf52f0-1",
       "source": "js/lens-picker.js",
-      "markup": "<input type=\"checkbox\" data-lens-member=\"${escapeText(member.key)}\" ${chosen.has(member.key) ? 'checked' : ''} />",
+      "markup": "<input ${single ? 'type=\"radio\" name=\"offer-lens-member\"' : 'type=\"checkbox\"'} data-lens-member=\"${escapeText(member.key)}\" ${chosen.has(member.key) ? 'checked' : ''} />",
       "interaction": "change",
-      "controlType": "checkbox"
+      "controlType": "radio"
     },
     {
       "id": "control-2375afebbcc643-1",
@@ -4900,6 +5158,11 @@
       "markup": "<button type=\"button\" class=\"btn lens-add-btn\" data-lens-paste-add>",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-0aa9496dc8b17d-1",
+      "source": "js/lens-walkthrough.js",
+      "markup": "doc.createElement(tag)"
     },
     {
       "id": "control-a5dfd2f2fd0973-1",
@@ -5212,6 +5475,11 @@
       "exhaustiveVariants": true
     },
     {
+      "id": "control-85b731d1b6d7a2-1",
+      "source": "js/optional-tools-loader.js",
+      "markup": "doc.createElement(css ? 'link' : 'script')"
+    },
+    {
       "id": "control-7c1b90117029a0-1",
       "source": "js/parcel-based.js",
       "markup": "<input type=\"number\" class=\"parameter-number\" id=\"${id}\" inputmode=\"decimal\" min=\"${field.min}\" max=\"${field.max}\" step=\"${field.step}\"${placeholder}>"
@@ -5508,9 +5776,9 @@
       "controlType": "radio"
     },
     {
-      "id": "control-3dfe21455c2a8d-1",
+      "id": "control-5b458b111909e2-1",
       "source": "js/parcel-layout.js",
-      "markup": "<input type=\"number\" class=\"reparcel-count-input\" data-parcel-layout-count min=\"${PLOT_COUNT.min}\" max=\"${PLOT_COUNT.max}\" step=\"1\" inputmode=\"numeric\" value=\"${state.plotCount}\">",
+      "markup": "<input type=\"number\" class=\"reparcel-count-input\" data-parcel-layout-count min=\"${plotCountLimits().min}\" max=\"${plotCountLimits().max}\" step=\"1\" inputmode=\"numeric\" value=\"${state.plotCount}\">",
       "interaction": "change",
       "controlType": "number"
     },
@@ -5924,6 +6192,26 @@
       "markup": "<button type=\"button\" class=\"btn btn-icon btn-sm object-list__open proposal-item-open\" data-proposal-open title=\"${label}\" aria-label=\"${label}\">"
     },
     {
+      "id": "control-b899bd1e065174-1",
+      "source": "js/parcels/parcel-set-proposals.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-parcel-set-more>"
+    },
+    {
+      "id": "control-710e4f6dd89af2-1",
+      "source": "js/parcels/parcel-set-proposals.js",
+      "markup": "<input type=\"search\" class=\"parcel-set-proposals-search\" data-parcel-set-search value=\"${escapeText(q)}\" placeholder=\"${escapeText(searchLabel)}\" aria-label=\"${escapeText(searchLabel)}\">"
+    },
+    {
+      "id": "control-dd4e2087e1ae64-1",
+      "source": "js/parcels/parcel-set-proposals.js",
+      "markup": "<select data-parcel-set-type>"
+    },
+    {
+      "id": "control-9dd30250f291bb-1",
+      "source": "js/parcels/parcel-set-proposals.js",
+      "markup": "<select data-parcel-set-order>"
+    },
+    {
       "id": "control-ec00f19db4edfd-1",
       "source": "js/parcels/ui/claim.js",
       "markup": "global.document.createElement('button')",
@@ -6171,9 +6459,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-4e67ba91fcce1e-1",
+      "id": "control-100ef20080f4a1-1",
       "source": "js/parcels/ui/proposal-actions.js",
-      "markup": "<button type=\"button\" class=\"cb-tile parcel-build-btn parcel-transport-btn parcel-transport-btn--${tool.key}\" onclick=\"${options.transportHandler || 'startParcelTransportTool'}('${tool.key}')\"${stationAttribute} title=\"${title}\" aria-label=\"${title}\">",
+      "markup": "<button type=\"button\" class=\"cb-tile parcel-build-btn parcel-transport-btn parcel-transport-btn--${tool.key}\" onclick=\"BusyControl.track(this, () =>",
       "exhaustiveVariants": true,
       "variants": [
         {
@@ -6182,7 +6470,7 @@
             "parcel-transport-btn--roadInParcel"
           ],
           "attrs": {
-            "onclick": "startParcelTransportTool('roadInParcel')"
+            "onclick": "BusyControl.track(this, () => startParcelTransportTool('roadInParcel'))"
           },
           "interaction": "click"
         },
@@ -6192,7 +6480,7 @@
             "parcel-transport-btn--roadInParcel"
           ],
           "attrs": {
-            "onclick": "SiteTool.transport('roadInParcel')"
+            "onclick": "BusyControl.track(this, () => SiteTool.transport('roadInParcel'))"
           },
           "interaction": "click"
         },
@@ -6203,7 +6491,7 @@
           ],
           "attrs": {
             "data-station-type": "bus",
-            "onclick": "startParcelTransportTool('roadStation')"
+            "onclick": "BusyControl.track(this, () => startParcelTransportTool('roadStation'))"
           },
           "interaction": "click"
         },
@@ -6214,7 +6502,7 @@
           ],
           "attrs": {
             "data-station-type": "bus",
-            "onclick": "SiteTool.transport('roadStation')"
+            "onclick": "BusyControl.track(this, () => SiteTool.transport('roadStation'))"
           },
           "interaction": "click"
         },
@@ -6225,7 +6513,7 @@
           ],
           "attrs": {
             "data-station-type": "track",
-            "onclick": "startParcelTransportTool('trackStation')"
+            "onclick": "BusyControl.track(this, () => startParcelTransportTool('trackStation'))"
           },
           "interaction": "click"
         },
@@ -6236,7 +6524,7 @@
           ],
           "attrs": {
             "data-station-type": "track",
-            "onclick": "SiteTool.transport('trackStation')"
+            "onclick": "BusyControl.track(this, () => SiteTool.transport('trackStation'))"
           },
           "interaction": "click"
         },
@@ -6246,7 +6534,7 @@
             "parcel-transport-btn--road"
           ],
           "attrs": {
-            "onclick": "startParcelTransportTool('road')"
+            "onclick": "BusyControl.track(this, () => startParcelTransportTool('road'))"
           },
           "interaction": "click"
         },
@@ -6256,7 +6544,7 @@
             "parcel-transport-btn--road"
           ],
           "attrs": {
-            "onclick": "SiteTool.transport('road')"
+            "onclick": "BusyControl.track(this, () => SiteTool.transport('road'))"
           },
           "interaction": "click"
         },
@@ -6266,7 +6554,7 @@
             "parcel-transport-btn--track"
           ],
           "attrs": {
-            "onclick": "startParcelTransportTool('track')"
+            "onclick": "BusyControl.track(this, () => startParcelTransportTool('track'))"
           },
           "interaction": "click"
         },
@@ -6276,7 +6564,7 @@
             "parcel-transport-btn--track"
           ],
           "attrs": {
-            "onclick": "SiteTool.transport('track')"
+            "onclick": "BusyControl.track(this, () => SiteTool.transport('track'))"
           },
           "interaction": "click"
         }
@@ -6284,6 +6572,11 @@
       "dispatchEvidence": "buildPaletteHtml reuses this source for the parcel palette and SiteTool palette. Each tool key and handler context has a separate assertion-backed click requirement; the SiteTool palette omits Ownership.",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-dbc85f52ca947f-1",
+      "source": "js/parcels/ui/proposal-actions.js",
+      "markup": "<button type=\"button\" class=\"cb-tile parcel-build-btn parcel-ownership-btn parcel-ownership-btn--${tool.key}\" onclick=\"BusyControl.track(this, () =>"
     },
     {
       "id": "control-d1208daa7a9022-1",
@@ -6439,6 +6732,16 @@
       "markup": "doc.createElement('button')",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-1bac66d2f61ebc-1",
+      "source": "js/plan-workspace.js",
+      "markup": "doc.createElement('button')"
+    },
+    {
+      "id": "control-40854bf491d33e-1",
+      "source": "js/planning/permitted-advisor.js",
+      "markup": "document.createElement(tag)"
     },
     {
       "id": "control-017d0ecb7cbc08-1",
@@ -6664,6 +6967,36 @@
       "interaction": "click",
       "controlType": "button",
       "dispatchEvidence": "Each polygon geometry vertex is a button that selects the vertex for coordinate editing."
+    },
+    {
+      "id": "control-df471b1e52b55c-1",
+      "source": "js/property-offer-dialog.js",
+      "markup": "document.createElement(tag)"
+    },
+    {
+      "id": "control-5bba08698a63c0-1",
+      "source": "js/property-offer-panel.js",
+      "markup": "<button type=\"button\" class=\"cb-link property-offer-panel__locate\" data-parcel-id=\"${escape(parcel.id)}\"${disabled} aria-label=\"${escape(t('locateParcel', 'Locate parcel {{id}}', { id: parcel.id }))}\">"
+    },
+    {
+      "id": "control-04f146fbd87e5d-1",
+      "source": "js/property-offer-panel.js",
+      "markup": "document.createElement(cluster === 'devnet' ? 'a' : 'code')"
+    },
+    {
+      "id": "control-7526599822a005-1",
+      "source": "js/property-offer-panel.js",
+      "markup": "document.createElement('button')"
+    },
+    {
+      "id": "control-7526599822a005-2",
+      "source": "js/property-offer-panel.js",
+      "markup": "document.createElement('button')"
+    },
+    {
+      "id": "control-7526599822a005-3",
+      "source": "js/property-offer-panel.js",
+      "markup": "document.createElement('button')"
     },
     {
       "id": "control-b17c6d262d1b8f-1",
@@ -7115,6 +7448,66 @@
       "controlType": "select"
     },
     {
+      "id": "control-6cdcf95bff7ec7-1",
+      "source": "js/proposals/beaver-critic.js",
+      "markup": "doc.createElement(tag)"
+    },
+    {
+      "id": "control-a7e9a9e2a1575a-1",
+      "source": "js/proposals/beaver-critic.js",
+      "markup": "<button type=\"button\" class=\"close-circle-btn\" data-beaver=\"close\">"
+    },
+    {
+      "id": "control-26d839e1c19e57-1",
+      "source": "js/proposals/beaver-critic.js",
+      "markup": "<input type=\"month\" data-beaver=\"month\" required>"
+    },
+    {
+      "id": "control-b04fc89736bd12-1",
+      "source": "js/proposals/beaver-critic.js",
+      "markup": "<input type=\"checkbox\" data-beaver=\"delay\">"
+    },
+    {
+      "id": "control-abf1bba0fbae51-1",
+      "source": "js/proposals/beaver-critic.js",
+      "markup": "<input type=\"search\" data-beaver=\"search\">"
+    },
+    {
+      "id": "control-ff2cf9360f91d0-1",
+      "source": "js/proposals/beaver-critic.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-beaver=\"selectVisible\">"
+    },
+    {
+      "id": "control-45f5701d59f5b7-1",
+      "source": "js/proposals/beaver-critic.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-beaver=\"clearSelection\">"
+    },
+    {
+      "id": "control-9df6aa37e7928a-1",
+      "source": "js/proposals/beaver-critic.js",
+      "markup": "<select data-beaver=\"access\">"
+    },
+    {
+      "id": "control-4167219f8bfbdd-1",
+      "source": "js/proposals/beaver-critic.js",
+      "markup": "<select data-beaver=\"servicing\">"
+    },
+    {
+      "id": "control-d79f2046fc776d-1",
+      "source": "js/proposals/beaver-critic.js",
+      "markup": "<select data-beaver=\"dateChoice\">"
+    },
+    {
+      "id": "control-0b9fcd26d61689-1",
+      "source": "js/proposals/beaver-critic.js",
+      "markup": "<input type=\"month\" data-beaver=\"completion\">"
+    },
+    {
+      "id": "control-26bcee17792eb1-1",
+      "source": "js/proposals/beaver-critic.js",
+      "markup": "<button type=\"button\" class=\"btn btn-primary\" data-beaver=\"apply\">"
+    },
+    {
       "id": "control-bf79701bd9dee2-1",
       "source": "js/proposals/claims-ui.js",
       "markup": "document.createElement('button')",
@@ -7146,6 +7539,11 @@
       "markup": "<button type=\"button\" data-agent-id=\"${userAgent.id}\" class=\"cb-link agent-link-clickable\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-177d51a7a080e9-1",
+      "source": "js/proposals/critic-tour.js",
+      "markup": "doc.createElement('button')"
     },
     {
       "id": "control-02fc99c475593a-1",
@@ -7835,6 +8233,36 @@
       "controlType": "button"
     },
     {
+      "id": "control-7933014bd72296-1",
+      "source": "js/proposals/dog-critic.js",
+      "markup": "doc.createElement(tag)"
+    },
+    {
+      "id": "control-2736bfa12159c2-1",
+      "source": "js/proposals/dog-critic.js",
+      "markup": "<button type=\"button\" class=\"close-circle-btn\" data-dog=\"close\">"
+    },
+    {
+      "id": "control-715acab09044b6-1",
+      "source": "js/proposals/dog-critic.js",
+      "markup": "<input type=\"search\" data-dog=\"filter\">"
+    },
+    {
+      "id": "control-7031d945d34566-1",
+      "source": "js/proposals/dog-critic.js",
+      "markup": "<select id=\"dog-critic-home\" data-dog=\"home\">"
+    },
+    {
+      "id": "control-17ae666699aa8e-1",
+      "source": "js/proposals/dog-critic.js",
+      "markup": "<select id=\"dog-critic-category\" data-dog=\"category\">"
+    },
+    {
+      "id": "control-bd938e863a690e-1",
+      "source": "js/proposals/dog-critic.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-dog=\"show\">"
+    },
+    {
       "id": "control-713b7c73aacfcc-1",
       "source": "js/proposals/geometry.js",
       "markup": "document.createElement('button')",
@@ -7881,6 +8309,41 @@
       "id": "control-05c04129edbc15-1",
       "source": "js/proposals/ground-rebase.js",
       "markup": "<button type=\"button\" class=\"btn btn-ground-rebase\" data-ground-rebase=\"${escape(proposalId)}\" title=\"${escape(hint)}\">"
+    },
+    {
+      "id": "control-26b642937e20cc-1",
+      "source": "js/proposals/hare-critic.js",
+      "markup": "doc.createElement(tag)"
+    },
+    {
+      "id": "control-a88144805d745f-1",
+      "source": "js/proposals/hare-critic.js",
+      "markup": "<button type=\"button\" class=\"close-circle-btn\" data-hare=\"close\">"
+    },
+    {
+      "id": "control-b18d3eec6463f0-1",
+      "source": "js/proposals/hare-critic.js",
+      "markup": "<input type=\"search\" data-hare=\"filter\">"
+    },
+    {
+      "id": "control-b99c44b0f37df5-1",
+      "source": "js/proposals/hare-critic.js",
+      "markup": "<select id=\"hare-home\" data-hare=\"home\">"
+    },
+    {
+      "id": "control-4bf94d6c56a40e-1",
+      "source": "js/proposals/hare-critic.js",
+      "markup": "<select id=\"hare-category\" data-hare=\"category\">"
+    },
+    {
+      "id": "control-de0c7606d0437b-1",
+      "source": "js/proposals/hare-critic.js",
+      "markup": "<select id=\"hare-target\" data-hare=\"target\">"
+    },
+    {
+      "id": "control-a12f7570c30524-1",
+      "source": "js/proposals/hare-critic.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-hare=\"show\">"
     },
     {
       "id": "control-048a1a427dd791-1",
@@ -8114,6 +8577,26 @@
       "exhaustiveVariants": true,
       "interaction": "auto",
       "controlType": "dynamic"
+    },
+    {
+      "id": "control-00a9b165d47947-1",
+      "source": "js/proposals/square-critic.js",
+      "markup": "doc.createElement(tag)"
+    },
+    {
+      "id": "control-3c96f5a9fcea68-1",
+      "source": "js/proposals/square-critic.js",
+      "markup": "<button type=\"button\" class=\"close-circle-btn\" data-cat=\"close\">"
+    },
+    {
+      "id": "control-6ca24edd60ffbd-1",
+      "source": "js/proposals/square-critic.js",
+      "markup": "<select id=\"square-critic-square\" data-cat=\"square\">"
+    },
+    {
+      "id": "control-2e64409c00ba01-1",
+      "source": "js/proposals/square-critic.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm critic-tour-skip\" data-cat=\"skip\" hidden>"
     },
     {
       "id": "control-64e2e66db84232-1",
@@ -8362,6 +8845,11 @@
       "markup": "<select id=\"single-building-use\">"
     },
     {
+      "id": "control-de0f70f0c9878e-1",
+      "source": "js/single-building.js",
+      "markup": "<select id=\"single-building-access\">"
+    },
+    {
       "id": "control-899ec4d6210e9f-1",
       "source": "js/single-building.js",
       "markup": "<button class=\"btn btn-sm\" type=\"button\" data-land-footprint disabled>"
@@ -8422,34 +8910,6 @@
       "id": "control-8817c441824830-1",
       "source": "js/single-building.js",
       "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-ba650d16f0861a-1",
-      "source": "js/site-drawing.js",
-      "markup": "<button type=\"button\" class=\"btn\" data-site-action=\"import\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-d182c94d7ed218-1",
-      "source": "js/site-drawing.js",
-      "markup": "<input class=\"form-control\" name=\"latitude\" type=\"number\" step=\"any\" min=\"-90\" max=\"90\" required>",
-      "interaction": "change",
-      "controlType": "number"
-    },
-    {
-      "id": "control-bb034f178fa685-1",
-      "source": "js/site-drawing.js",
-      "markup": "<input class=\"form-control\" name=\"longitude\" type=\"number\" step=\"any\" min=\"-180\" max=\"180\" required>",
-      "interaction": "change",
-      "controlType": "number"
-    },
-    {
-      "id": "control-8caf61406b764d-1",
-      "source": "js/site-drawing.js",
-      "markup": "<button type=\"submit\" class=\"btn\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -8515,6 +8975,13 @@
       "controlType": "button"
     },
     {
+      "id": "control-ba650d16f0861a-1",
+      "source": "js/site-drawing.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-site-action=\"import\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-f6259041fdf632-1",
       "source": "js/site-drawing.js",
       "markup": "<input type=\"file\" data-site-import-file accept=\".geojson,.json,application/geo+json,application/json\" hidden>"
@@ -8573,6 +9040,27 @@
       "id": "control-6c9a25d1364de5-1",
       "source": "js/site-drawing.js",
       "markup": "<button type=\"button\" class=\"close-circle-btn site-panel__close\" data-site-action=\"cancel\" aria-label=\"${escapeHtml(closeLabel)}\" title=\"${escapeHtml(closeLabel)}\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-d182c94d7ed218-1",
+      "source": "js/site-drawing.js",
+      "markup": "<input class=\"form-control\" name=\"latitude\" type=\"number\" step=\"any\" min=\"-90\" max=\"90\" required>",
+      "interaction": "change",
+      "controlType": "number"
+    },
+    {
+      "id": "control-bb034f178fa685-1",
+      "source": "js/site-drawing.js",
+      "markup": "<input class=\"form-control\" name=\"longitude\" type=\"number\" step=\"any\" min=\"-180\" max=\"180\" required>",
+      "interaction": "change",
+      "controlType": "number"
+    },
+    {
+      "id": "control-8caf61406b764d-1",
+      "source": "js/site-drawing.js",
+      "markup": "<button type=\"submit\" class=\"btn\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -8877,11 +9365,29 @@
       "controlType": "button"
     },
     {
-      "id": "control-e351f304fe8b3c-1",
-      "source": "js/suggested-layouts-2d.js",
-      "markup": "doc.createElement('input')",
-      "interaction": "change",
-      "controlType": "input"
+      "id": "control-028e4927ff1203-1",
+      "source": "js/three-apartment-panel.js",
+      "markup": "doc.createElement('select')"
+    },
+    {
+      "id": "control-3502bf70ff0055-1",
+      "source": "js/three-apartment-panel.js",
+      "markup": "doc.createElement('button')"
+    },
+    {
+      "id": "control-3502bf70ff0055-2",
+      "source": "js/three-apartment-panel.js",
+      "markup": "doc.createElement('button')"
+    },
+    {
+      "id": "control-3502bf70ff0055-3",
+      "source": "js/three-apartment-panel.js",
+      "markup": "doc.createElement('button')"
+    },
+    {
+      "id": "control-3502bf70ff0055-4",
+      "source": "js/three-apartment-panel.js",
+      "markup": "doc.createElement('button')"
     },
     {
       "id": "control-6c4be3813e11eb-1",
@@ -8894,9 +9400,9 @@
       "markup": "doc.createElement('button')"
     },
     {
-      "id": "control-f6339260a755a6-1",
+      "id": "control-33d052f4cfec20-1",
       "source": "js/three-mode.js",
-      "markup": "<input id=\"${id}\" type=\"range\" class=\"parcel-panel-price-slider\" data-role=\"${role}\" min=\"${price.min}\" max=\"${price.max}\" step=\"${price.step}\" value=\"${price.perSqm ?? price.min}\"${price.perSqm === null ? ' disabled' : ''}>",
+      "markup": "<input id=\"${id}\" type=\"range\" class=\"parcel-panel-price-slider\" data-role=\"${role}\" aria-describedby=\"${id}-source\" min=\"${price.min}\" max=\"${price.max}\" step=\"${price.step}\" value=\"${price.perSqm ?? price.min}\"${price.perSqm === null && !settable ? ' disabled' : ''}>",
       "interaction": "change",
       "controlType": "range"
     },
@@ -8958,11 +9464,14 @@
       "markup": "document.createElement('button')"
     },
     {
-      "id": "control-46b5da01d9d0cc-3",
+      "id": "control-0f72c2ba2aa79f-5",
       "source": "js/three-mode.js",
-      "markup": "document.createElement('input')",
-      "interaction": "change",
-      "controlType": "input"
+      "markup": "document.createElement('button')"
+    },
+    {
+      "id": "control-0f72c2ba2aa79f-6",
+      "source": "js/three-mode.js",
+      "markup": "document.createElement('button')"
     },
     {
       "id": "control-6a112c1395ce50-2",
@@ -8972,9 +9481,16 @@
       "controlType": "select"
     },
     {
-      "id": "control-0f72c2ba2aa79f-5",
+      "id": "control-6a112c1395ce50-3",
       "source": "js/three-mode.js",
-      "markup": "document.createElement('button')"
+      "markup": "document.createElement('select')"
+    },
+    {
+      "id": "control-46b5da01d9d0cc-3",
+      "source": "js/three-mode.js",
+      "markup": "document.createElement('input')",
+      "interaction": "change",
+      "controlType": "input"
     },
     {
       "id": "control-46b5da01d9d0cc-4",
@@ -8999,11 +9515,6 @@
     },
     {
       "id": "control-46b5da01d9d0cc-7",
-      "source": "js/three-mode.js",
-      "markup": "document.createElement('input')"
-    },
-    {
-      "id": "control-46b5da01d9d0cc-8",
       "source": "js/three-mode.js",
       "markup": "document.createElement('input')"
     },
@@ -9311,6 +9822,11 @@
       "markup": "doc.createElement('button')"
     },
     {
+      "id": "control-ad1409caf61997-2",
+      "source": "js/ui/map-before-after.js",
+      "markup": "doc.createElement('button')"
+    },
+    {
       "id": "control-238f8889bfb66b-1",
       "source": "js/ui/map-compare-control.js",
       "markup": "handle.setAttribute('role', 'slider')",
@@ -9366,8 +9882,18 @@
       "controlType": "dynamic"
     },
     {
+      "id": "control-cf24edaac195c1-1",
+      "source": "js/ui/map-shell.js",
+      "markup": "doc.createElement('button')"
+    },
+    {
       "id": "control-66575a114a315a-1",
       "source": "js/ui/object-list.js",
+      "markup": "doc.createElement('button')"
+    },
+    {
+      "id": "control-00c4bcb9ff1020-1",
+      "source": "js/ui/plan-analysis-controls.js",
       "markup": "doc.createElement('button')"
     },
     {
@@ -9524,6 +10050,11 @@
       "id": "control-d3e0df24c40705-1",
       "source": "js/urban-rule-variation.js",
       "markup": "<select id=\"${prefix}-use\">"
+    },
+    {
+      "id": "control-402e10dd802196-1",
+      "source": "js/urban-rule-variation.js",
+      "markup": "<select id=\"${prefix}-access\">"
     },
     {
       "id": "control-faf0aab894c7af-1",
@@ -10222,16 +10753,16 @@
       "controlType": "button"
     },
     {
-      "id": "control-1c7dd8b0b46296-1",
+      "id": "control-a48593f7151eb4-1",
       "source": "kako-koristiti.html",
-      "markup": "<a class=\"btn btn-quiet\" href=\"#videozapisi\">",
+      "markup": "<a class=\"btn btn-quiet\" href=\"#tijek\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-a48593f7151eb4-1",
+      "id": "control-1c7dd8b0b46296-1",
       "source": "kako-koristiti.html",
-      "markup": "<a class=\"btn btn-quiet\" href=\"#tijek\">",
+      "markup": "<a class=\"btn btn-quiet\" href=\"#videozapisi\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -10278,32 +10809,26 @@
       "controlType": "select"
     },
     {
+      "id": "control-2deaee09310daf-1",
+      "source": "lens.html",
+      "markup": "<input id=\"lc-search\" class=\"lc-field\" type=\"search\" autocomplete=\"off\">"
+    },
+    {
+      "id": "control-3a642804a4abba-1",
+      "source": "lens.html",
+      "markup": "<select id=\"lc-agreement\" class=\"lc-field\">"
+    },
+    {
+      "id": "control-0b9475f03073f6-1",
+      "source": "lens.html",
+      "markup": "<button type=\"button\" id=\"lc-retry\" class=\"btn\" hidden data-i18n-key=\"lensWalk.retry\">"
+    },
+    {
       "id": "control-7c8c529ca3c65f-1",
       "source": "lens.html",
       "markup": "<select id=\"lc-directory\" class=\"lc-field\">",
       "interaction": "change",
       "controlType": "select"
-    },
-    {
-      "id": "control-7b72f5de075a88-1",
-      "source": "lens.html",
-      "markup": "<input id=\"lc-service-url\" class=\"lc-field\" type=\"url\" inputmode=\"url\" autocomplete=\"off\" spellcheck=\"false\" placeholder=\"http://localhost:3095\" />",
-      "interaction": "change",
-      "controlType": "url"
-    },
-    {
-      "id": "control-9a1c48164edb32-1",
-      "source": "lens.html",
-      "markup": "<button id=\"lc-service-load\" class=\"btn\" type=\"button\" data-i18n-key=\"lensConsole.service.load\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-e02f5a95ee7912-1",
-      "source": "lens.html",
-      "markup": "<button id=\"lc-wallet-connect\" class=\"btn\" type=\"button\" data-i18n-key=\"lensConsole.wallet.connect\">",
-      "interaction": "click",
-      "controlType": "button"
     },
     {
       "id": "control-460c76182dc24b-1",
@@ -10323,6 +10848,27 @@
       "id": "control-b21dfda57cf74e-1",
       "source": "lens.html",
       "markup": "<button id=\"lc-attestations-load\" class=\"btn\" type=\"button\" data-i18n-key=\"lensConsole.attestations.load\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-fb17c7663b242c-1",
+      "source": "lens.html",
+      "markup": "<input id=\"lc-service-url\" class=\"lc-field\" type=\"url\" inputmode=\"url\" autocomplete=\"off\" spellcheck=\"false\" placeholder=\"https://\" />",
+      "interaction": "change",
+      "controlType": "url"
+    },
+    {
+      "id": "control-9a1c48164edb32-1",
+      "source": "lens.html",
+      "markup": "<button id=\"lc-service-load\" class=\"btn\" type=\"button\" data-i18n-key=\"lensConsole.service.load\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-e02f5a95ee7912-1",
+      "source": "lens.html",
+      "markup": "<button id=\"lc-wallet-connect\" class=\"btn\" type=\"button\" data-i18n-key=\"lensConsole.wallet.connect\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -10422,6 +10968,11 @@
       "markup": "<button id=\"integration-close\" class=\"close-circle-btn\" type=\"button\" aria-label=\"Close\" data-aria-t=\"close\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-d4b87425b8adf1-1",
+      "source": "plan-entry.html",
+      "markup": "<button type=\"button\" class=\"btn\" id=\"plan-arrival-retry\" hidden>"
     },
     {
       "id": "control-4cbc0edf4bc53d-1",
@@ -10591,81 +11142,6 @@
       "markup": "<a class=\"btn btn-primary\" href=\"/\">",
       "interaction": "click",
       "controlType": "button"
-    },
-    {
-      "id": "control-89c92ffb795b14-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"simulation-bar-play\" class=\"btn btn-icon\" aria-pressed=\"false\" aria-label=\"Play\" title=\"Play\">"
-    },
-    {
-      "id": "control-d1d7190ad620c2-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"simulation-bar-step\" class=\"btn btn-icon\" aria-label=\"Next turn\" title=\"Next turn\" data-i18n-key=\"mapShell.simulation.nextTurn\" data-i18n-attr=\"aria-label,title\">"
-    },
-    {
-      "id": "control-d4d7285156d444-1",
-      "source": "index.html",
-      "markup": "<select id=\"simulation-bar-speed\">"
-    },
-    {
-      "id": "control-322ffea261b7b7-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"simulation-bar-city\" class=\"btn btn-icon\" data-agent-city-open=\"simulation\" aria-label=\"Agent city of this simulation\" title=\"Agent city of this simulation\" data-i18n-key=\"agentCity.openSimulation\" data-i18n-attr=\"aria-label,title\">"
-    },
-    {
-      "id": "control-d80784931a9087-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"simulation-bar-stop\" class=\"btn btn-icon\" aria-label=\"Stop simulation\" title=\"Stop simulation\" data-i18n-key=\"mapShell.simulation.stop\" data-i18n-attr=\"aria-label,title\">"
-    },
-    {
-      "id": "control-36441130f55680-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"agent-city-close\" class=\"close-circle-btn\" aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">"
-    },
-    {
-      "id": "control-aa9cb09d2377e3-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" class=\"cb-segmented__option\" data-agent-city-source=\"server\" aria-pressed=\"true\" data-i18n-key=\"agentCity.sourceServer\">"
-    },
-    {
-      "id": "control-e78fbcdbad5c94-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" class=\"cb-segmented__option\" data-agent-city-source=\"simulation\" aria-pressed=\"false\" data-i18n-key=\"agentCity.sourceSimulation\">"
-    },
-    {
-      "id": "control-087e0f668ca337-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"agent-city-back\" class=\"btn btn-icon\" aria-label=\"Previous execution day\" title=\"Previous execution day\" data-i18n-key=\"agentCity.back\" data-i18n-attr=\"aria-label,title\">"
-    },
-    {
-      "id": "control-6cc354968eca85-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"agent-city-play\" class=\"btn btn-icon\" aria-pressed=\"false\" aria-label=\"Play\" title=\"Play\">"
-    },
-    {
-      "id": "control-52b16766b1627b-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"agent-city-forward\" class=\"btn btn-icon\" aria-label=\"Next execution day\" title=\"Next execution day\" data-i18n-key=\"agentCity.forward\" data-i18n-attr=\"aria-label,title\">"
-    },
-    {
-      "id": "control-60e2074c068880-1",
-      "source": "index.html",
-      "markup": "<input type=\"range\" id=\"agent-city-slider\" class=\"buildout-clock__slider\" min=\"0\" max=\"0\" step=\"1\" value=\"0\" aria-label=\"Execution day\" data-i18n-key=\"agentCity.day\" data-i18n-attr=\"aria-label\">"
-    },
-    {
-      "id": "control-5ac77f5969ca8c-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"activity-agent-city\" class=\"btn btn-icon\" data-agent-city-open=\"server\" aria-label=\"Agent city\" title=\"Agent city\" data-i18n-key=\"agentCity.title\" data-i18n-attr=\"aria-label,title\">"
-    },
-    {
-      "id": "control-7587c583c34590-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"simulation-bar-new\" class=\"btn btn-icon\" aria-label=\"New game\" title=\"New game\" data-i18n-key=\"sidebar.game.newGame\" data-i18n-attr=\"aria-label,title\">"
-    },
-    {
-      "id": "control-f3cc9297c7e714-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"run-simulation-button\" class=\"btn\" onclick=\"runSimulation()\">"
     }
   ],
   "variantExclusions": [
