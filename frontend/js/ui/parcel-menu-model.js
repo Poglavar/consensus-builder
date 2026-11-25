@@ -100,6 +100,16 @@
         return finitePositive(geometryArea);
     }
 
+    // A parcel feature's area by that rule, measuring its geometry (turf.area, geodesic m², as the app
+    // measures land elsewhere) only when the record states none: a provider without an area field
+    // (HMLR's INSPIRE polygons, most vector-tile parcels) still has one. Null without either.
+    function featureArea(feature, turfApi) {
+        const props = (feature && feature.properties) || {};
+        const stated = parcelArea(props, null);
+        if (stated !== null || !feature || !feature.geometry || !turfApi || typeof turfApi.area !== 'function') return stated;
+        try { return parcelArea(props, turfApi.area(feature)); } catch (_) { return null; }
+    }
+
     const OWNERSHIP_TYPES = ['government', 'institution', 'company', 'individual', 'mixed'];
 
     function normalizeOwnershipType(value) {
@@ -190,6 +200,7 @@
         isActionAvailable,
         availableActions,
         parcelArea,
+        featureArea,
         ownershipFacts,
         parcelIdentityKind,
         parcelIdentityTitle,

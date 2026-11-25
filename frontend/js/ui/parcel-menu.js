@@ -28,11 +28,6 @@
         return Array.isArray(cached) && cached.length ? cached : null;
     }
 
-    function geometryArea(feature) {
-        if (!feature || !feature.geometry || !win.turf || typeof win.turf.area !== 'function') return null;
-        try { return win.turf.area(feature); } catch (_) { return null; }
-    }
-
     function blocksEnabled() {
         const config = win.CityConfigManager;
         const enabled = config && typeof config.isFeatureEnabled === 'function' ? config.isFeatureEnabled('parcelBlocks') : true;
@@ -71,7 +66,7 @@
             siteToolAvailable: !!(win.SiteTool && typeof win.SiteTool.isActive === 'function' && !win.SiteTool.isActive()),
             // Proposals touching this parcel, for "Compare proposals here" (null when not loaded).
             compareCount: !isGround && win.ParcelCompare ? win.ParcelCompare.countFor(id) : null,
-            area: model.parcelArea(props, geometryArea(feature)),
+            area: model.featureArea(feature, win.turf),
             ownershipType: ownership.ownershipType,
             ownerCount: ownership.ownerCount
         };

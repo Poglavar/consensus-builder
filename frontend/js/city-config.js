@@ -70,9 +70,16 @@
         if (document.readyState !== 'loading' || typeof document.write !== 'function') {
             throw new Error(`[city-config] cannot load data/cities/${currentCityId}.js: city-config.js must run as a synchronous script while the page is parsing`);
         }
-        const path = `data/cities/${encodeURIComponent(currentCityId)}.js`;
-        const src = typeof root.appendBuildToken === 'function' ? root.appendBuildToken(path) : path;
-        document.write(`<script src="${src.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"><\/script>`
+        const script = path => {
+            const src = typeof root.appendBuildToken === 'function' ? root.appendBuildToken(path) : path;
+            return `<script src="${src.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"><\/script>`;
+        };
+        // A city an area rate table names (an English city: js/uk-land-rates.js) takes its rates from the
+        // area a plan or parcel lies in (the local authority, in London also the value band): those areas
+        // (data/uk-economic-areas.js, ~560 KB) load with the city.
+        const named = Object.values(root.EconomicAreaRates || {}).some(table => table.cities?.[currentCityId]);
+        const ukAreas = named ? script('data/uk-economic-areas.js') : '';
+        document.write(script(`data/cities/${encodeURIComponent(currentCityId)}.js`) + ukAreas
             + '<script>window.CityConfigManager.markCityConfigLoaded();<\/script>');
     }
 

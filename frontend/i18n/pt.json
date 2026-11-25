@@ -311,6 +311,8 @@
             "mintedAgreementsButton": "Acordos na cadeia",
             "clearButton": "Repor projetos (neste navegador)",
             "planStats": {
+                "devChargeSuffix": "{{currency}} por m² taxa de construção",
+                "costDevCharge": "Taxa de construção (nova área × taxa por m²)",
                 "calculating": "A calcular…",
                 "modalTitle": "Estatísticas do plano",
                 "planArea": "Área do plano (m²)",
@@ -348,7 +350,7 @@
                 "noteNoLandPrice": "Não há preço do terreno para este local: indique um para ver o custo total e o lucro.",
                 "rentSuffix": "{{currency}} por m² de renda por mês",
                 "annualRent": "Renda anual da nova área",
-                "rentYield": "Rendimento da renda sobre o custo (renda anual ÷ construção, terreno e valor demolido)",
+                "rentYield": "Rendimento da renda sobre o custo (renda anual ÷ construção, taxa de construção, terreno e valor demolido)",
                 "assumptionsLabel": "Pressupostos",
                 "efficiencySuffix": "% de área útil face à área bruta",
                 "apartmentSizeSuffix": "m² por apartamento",
@@ -4882,6 +4884,8 @@
     },
     "threeMode": {
         "parcelPanel": {
+            "devCharge": "Taxa de construção {{price}}/m²",
+            "devChargeUnset": "Taxa de construção não definida: mova o controlo",
             "proposalLabel": "Projeto",
             "title": "Parcela",
             "built": "Edificado",
@@ -4894,7 +4898,7 @@
             "value": "Valor",
             "constructionCost": "Custo de construção",
             "profit": "Lucro",
-            "profitNote": "Lucro = valor − custo total: construção, terreno, imposto de venda menos o recuperado na construção, e valor construído substituído",
+            "profitNote": "Lucro = valor − custo total: construção, taxa de construção, terreno, imposto de venda menos o recuperado na construção, e valor construído substituído",
             "allInCost": "Custo total",
             "costDetails": "Detalhe do custo",
             "landCost": "Terreno",
@@ -5967,12 +5971,14 @@
         "dismiss": "Dispensar aviso da fonte"
     },
     "economicSources": {
+        "devCharge": "Taxa de construção",
+        "sourceLabel": "Fonte:",
         "close": "Fechar",
         "construction": "Custo de construção",
         "market": "Evidência de mercado",
         "land": "Terrenos",
         "title": "Avaliação e custos",
-        "intro": "As fontes fornecem valores unitários distintos para o terreno, os preços de venda por área de pavimento, a construção, a renda e o imposto de venda. Quando faltam elementos locais, os valores permanecem indisponíveis; os pressupostos editáveis do cenário não são dados de mercado.",
+        "intro": "As fontes fornecem valores unitários distintos para o terreno, os preços de venda por área de pavimento, a construção, as taxas de construção, a renda e o imposto de venda. Quando faltam elementos locais, os valores permanecem indisponíveis; os pressupostos editáveis do cenário não são dados de mercado.",
         "roadLand": "Terreno para vias",
         "sale": "Preço de venda",
         "landUnit": "{{currency}} por m² de terreno",

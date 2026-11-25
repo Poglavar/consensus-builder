@@ -2012,3 +2012,8 @@ body.three-scene-drawn #three-container.active {
     margin: 0; padding: var(--cb-space-3); border: 1px solid var(--cb-line);
     border-radius: var(--cb-radius-md); background: var(--cb-surface-2);
 }
+
+/* A price's source under its slider in the 3D panel, spaced from the next price's label. */
+.three-mode-parcel-panel .economic-source-note {
+    margin-bottom: var(--cb-space-2);
+}

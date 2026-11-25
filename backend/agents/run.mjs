@@ -93,6 +93,7 @@ import { isEntrypoint } from './entrypoint.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const actionEngineApi = require('../../frontend/js/agent-action-engine.js');
+const { locationOf } = require('../../frontend/js/economic-sources.js');
 
 export const STAGES = ['planned', 'chosen', 'designed', 'proposed', 'minted', 'recorded', 'staked'];
 const CONTROLLERS = ['algorithm', 'llm'];
@@ -670,8 +671,9 @@ async function main() {
                 const source = await parcelsForArea({ pool, apiBase, index, area, persona, runKey, day, runs: allRuns, limit: args.candidates * 6 });
                 const { parcels, city } = source;
                 // Gains are in the money of the place (London in GBP, Zagreb in EUR), at the app's own
-                // floor-area sale price for that city (frontend-owned money settings).
-                const prices = cityMoney(city).currentFloorAreaPrices();
+                // floor-area sale price for that city where the area's parcels are (frontend-owned money
+                // settings; a London value band, say).
+                const prices = cityMoney(city).currentFloorAreaPrices(locationOf(parcels));
                 const money = { currency: prices.currency, salePricePerM2: prices.sale.perSqm };
                 const planned = (persona.housingResearch ? planHousingCandidates : planCandidates)(parcels, persona, { turf, money, limit: args.candidates * 2, seed: seedFor(runKey) });
                 // Rule-backed previews come first. Automatic uplift selection additionally requires a

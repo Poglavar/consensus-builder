@@ -311,6 +311,8 @@
             "mintedAgreementsButton": "Accords sur la blockchain",
             "clearButton": "Réinitialiser les projets (ce navigateur)",
             "planStats": {
+                "devChargeSuffix": "{{currency}} par m² taxe de construction",
+                "costDevCharge": "Taxe de construction (nouvelle surface × taxe par m²)",
                 "calculating": "Calcul…",
                 "modalTitle": "Statistiques du plan",
                 "planArea": "Surface du plan (m²)",
@@ -348,7 +350,7 @@
                 "noteNoLandPrice": "Pas de prix du terrain pour ce lieu : indiquez-en un pour voir le coût complet et le bénéfice.",
                 "rentSuffix": "{{currency}} par m² de loyer par mois",
                 "annualRent": "Loyer annuel de la nouvelle surface",
-                "rentYield": "Rendement locatif sur le coût (loyer annuel ÷ construction, terrain et valeur démolie)",
+                "rentYield": "Rendement locatif sur le coût (loyer annuel ÷ construction, taxe de construction, terrain et valeur démolie)",
                 "assumptionsLabel": "Hypothèses",
                 "efficiencySuffix": "% de surface nette par rapport à la surface brute",
                 "apartmentSizeSuffix": "m² par logement",
@@ -4882,6 +4884,8 @@
     },
     "threeMode": {
         "parcelPanel": {
+            "devCharge": "Taxe de construction {{price}}/m²",
+            "devChargeUnset": "Taxe de construction non définie : déplacez le curseur",
             "proposalLabel": "Projet",
             "title": "Parcelle",
             "built": "Bâti existant",
@@ -4894,7 +4898,7 @@
             "value": "Valeur",
             "constructionCost": "Coût de construction",
             "profit": "Bénéfice",
-            "profitNote": "Bénéfice = valeur − coût complet : construction, terrain, taxe de vente moins celle récupérée sur la construction, et valeur bâtie remplacée",
+            "profitNote": "Bénéfice = valeur − coût complet : construction, taxe de construction, terrain, taxe de vente moins celle récupérée sur la construction, et valeur bâtie remplacée",
             "allInCost": "Coût complet",
             "costDetails": "Détail du coût",
             "landCost": "Terrain",
@@ -5967,12 +5971,14 @@
         "dismiss": "Masquer l’avertissement sur la source"
     },
     "economicSources": {
+        "devCharge": "Taxe de construction",
+        "sourceLabel": "Source :",
         "close": "Fermer",
         "construction": "Coût de construction",
         "market": "Éléments probants du marché",
         "land": "Foncier",
         "title": "Évaluation et coûts",
-        "intro": "Les sources fournissent des valeurs unitaires distinctes pour le foncier, les prix de vente de surface de plancher, la construction, les loyers et la taxe de vente. Les données locales manquantes restent indisponibles ; les hypothèses modifiables des scénarios ne sont pas des données de marché.",
+        "intro": "Les sources fournissent des valeurs unitaires distinctes pour le foncier, les prix de vente de surface de plancher, la construction, les taxes de construction, les loyers et la taxe de vente. Les données locales manquantes restent indisponibles ; les hypothèses modifiables des scénarios ne sont pas des données de marché.",
         "roadLand": "Foncier routier",
         "sale": "Prix de vente",
         "landUnit": "{{currency}} par m² de terrain",

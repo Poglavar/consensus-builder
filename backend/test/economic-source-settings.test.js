@@ -91,3 +91,38 @@ describe('a local rent', () => {
         expect(EconomicSourceSettings.choiceForCity('astana', global).rates[0]).toMatchObject({ amount: 320000, taxIncluded: true });
     });
 });
+
+// A minimal DOM: elements with children, text and attributes, enough for renderSource.
+function fakeElement(document, tag = 'p') {
+    const node = { tagName: tag.toUpperCase(), ownerDocument: document, children: [], attributes: {},
+        replaceChildren(...items) { this.children = []; this.append(...items); },
+        append(...items) { this.children.push(...items.map(item => (typeof item === 'string' ? document.createTextNode(item) : item))); },
+        get textContent() { return this.children.map(child => child.textContent).join(''); },
+        set textContent(value) { this.children = [document.createTextNode(value)]; } };
+    return node;
+}
+function fakeDocument() {
+    const document = { createElement: tag => fakeElement(document, tag), createTextNode: text => ({ textContent: String(text) }) };
+    return document;
+}
+
+describe('a rate\'s visible source', () => {
+    const global = { i18n: { t: (key, params = {}) => ({ 'economicSources.sourceLabel': 'Source:', 'economicSources.assumption': 'Scenario assumption',
+        'economicSources.policy-appraisal': 'Policy appraisal', 'economicSources.date': ` · as of ${params.date}` })[key] || key } };
+    const row = { metric: 'land', amount: 5018, currency: 'GBP', basis: 'policy-appraisal', asOf: '2023-10-01', sourceId: 'uk-mhclg-land-2023',
+        sourceName: 'MHCLG residential policy appraisal 2023', sourceUrl: 'https://example.org/land.xlsx', scope: 'E09000019 · Islington' };
+
+    it('names the source, links its document and says where the rate is for, as text', () => {
+        const note = EconomicSourceSettings.renderSource(fakeElement(fakeDocument()), row, global);
+        expect(note.textContent).toBe('Source: MHCLG residential policy appraisal 2023 · Policy appraisal · as of 2023-10-01 · E09000019 · Islington');
+        const link = note.children.find(child => child.tagName === 'A');
+        expect(link).toMatchObject({ href: 'https://example.org/land.xlsx', target: '_blank', rel: 'noopener', textContent: row.sourceName });
+    });
+
+    it('says a price the visitor set is their assumption, and an assumption has no link', () => {
+        expect(EconomicSourceSettings.renderSource(fakeElement(fakeDocument()), row, global, { set: true }).textContent).toBe('Source: Scenario assumption');
+        const assumed = EconomicSourceSettings.renderSource(fakeElement(fakeDocument()), { ...row, sourceId: 'scenario-assumptions', sourceUrl: null }, global);
+        expect(assumed.textContent).toBe('Source: Scenario assumption');
+        expect(assumed.children.some(child => child.tagName === 'A')).toBe(false);
+    });
+});

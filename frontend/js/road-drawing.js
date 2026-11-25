@@ -1904,8 +1904,14 @@ function roadOwnershipSummary(parcels) {
         typeof getOwnershipType === 'function' ? getOwnershipType : undefined);
 }
 
-// The city's road-land rate (city-money.js); a city without one has no modeled price, only source ones.
-function roadPriceEstimate(parcel, options = window.CityMoney.currentLandPriceOptions('road')) {
+// The road-land rate (city-money.js) where the parcels are (EconomicSources.locationOf, the centre of
+// their extent): a rate published per area (an English authority's land value) is that place's, one
+// for the whole road. A city without a rate has no modeled price, only source ones.
+function roadLandRate(parcels = roadAffectedParcels) {
+    const features = (parcels || []).map(parcel => getRoadDrawingLiveFeature(getParcelIdFromAny(parcel))).filter(Boolean);
+    return window.CityMoney.currentLandPriceOptions('road', window.EconomicSources.locationOf(features));
+}
+function roadPriceEstimate(parcel, options = roadLandRate([parcel])) {
     return window.ParcelPriceModel.buildEstimate(getRoadDrawingParcelProperties(parcel), Number(parcel?.area), options);
 }
 
@@ -1916,7 +1922,7 @@ function getMarketPrice(parcelId, currency) {
     return estimate && (!currency || estimate.currency === currency) ? estimate.amount : null;
 }
 
-function roadAcquisitionModel(parcels, fallback = window.CityMoney.currentLandPriceOptions('road')) {
+function roadAcquisitionModel(parcels, fallback = roadLandRate(parcels)) {
     const list = Array.isArray(parcels) ? parcels : [];
     const ownership = roadOwnershipSummary(list);
     const estimates = list.map(parcel => roadPriceEstimate(parcel, fallback));
@@ -1962,7 +1968,7 @@ function updateRoadAcquiringDifficulty(parcels, stats = roadAcquisitionModel(par
 let previousRoadAcquisition = null;
 function updateRoadAcquisitionDisplays(parcels, measured) {
     const fabric = getRoadDrawingFabric(), revision = fabric?.revision?.();
-    const rate = window.CityMoney.currentLandPriceOptions('road');
+    const rate = roadLandRate(parcels);
     const key = JSON.stringify([revision, rate, parcels.map(parcel => [parcel.id, parcel.area])]);
     const cached = Number.isFinite(revision) && previousRoadAcquisition?.fabric === fabric && previousRoadAcquisition.key === key;
     const stats = measured || (cached ? previousRoadAcquisition.stats : roadAcquisitionModel(parcels, rate));
