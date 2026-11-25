@@ -91,6 +91,12 @@ describe('proposalStorage authored-log persistence', () => {
         const { storage, persisted } = bootStore();
         install('ProposalManager', { runParcelMutation: (kind, proposalId, work) => ParcelMutation.run({ kind, proposalId }, context => work({ _parcelMutation: context }),
             { runtime: globalThis, proposalStore: storage, storage: PersistentStorage, agentStore: null, fabric: null }) });
+        // Import binds each design's site through the index first (5063b4f5e), outside the mutation.
+        const binding = { coverage: 'complete', unknownM2: 0, unsurveyedM2: 0, parcels: [{ parcelId: 'P-1' }] };
+        const fetch = vi.fn(async () => ({ ok: true, status: 200, json: async () => ({ binding }) }));
+        install('getBackendBase', () => 'http://api');
+        install('CityConfigManager', { getParcelContext: () => ({ city: 'zagreb' }) });
+        install('fetch', fetch);
         const site = { type: 'Polygon', coordinates: [[[15,45],[15.001,45],[15.001,45.001],[15,45.001],[15,45]]] };
         const file = await File.create([{ goal: 'park', title: 'Atomic park', site, structureProposal: { kind: 'park', geometry: site } }], { title: 'Atomic plan', view: { at: '45,15,17', mode: '2d' } });
         const write = PersistentStorage.atomicWrite;
@@ -100,6 +106,8 @@ describe('proposalStorage authored-log persistence', () => {
         PersistentStorage.atomicWrite = write;
         const plan = await UI.browser(globalThis).commitImport(file);
         expect(storage.getAllProposals()).toHaveLength(1);
+        expect(fetch).toHaveBeenLastCalledWith('http://api/designs/binding', expect.objectContaining({ method: 'POST' }));
+        expect(storage.getAllProposals()[0].cadastreParcelIds).toEqual(['P-1']);
         expect(JSON.parse(persisted.get(UI.PREFIX + plan.cid))).toEqual(plan);
         const snapshot = JSON.parse(persisted.get(`plan:${plan.cid}`));
         expect(snapshot).toMatchObject({ cid: plan.cid, content: plan.content, memberIds: plan.memberIds });

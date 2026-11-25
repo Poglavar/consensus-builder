@@ -139,7 +139,11 @@ describe('the existing-buildings fetch', () => {
         expect(mapCore).toContain('async function fetchBuildings(boundsOverride = null, options = {}) {');
         expect(mapCore).toContain('const announce = options && options.announce === true;');
         expect(mapCore).toContain("if (announce && typeof updateStatus === 'function') updateStatus('Fetching existing buildings...');");
-        expect(read('../../frontend/js/map-controls.js')).toContain('fetchBuildings(null, { announce: true })');
+        // Showing Built is the request: the Built display (planning/views.js) syncs the layer, which
+        // fetches announcing (fe088cad9 moved the building toggle out of map-controls.js).
+        const sync = mapCore.slice(mapCore.indexOf('function syncBuiltLayerVisibility() {'), mapCore.indexOf('window.syncBuiltLayerVisibility = syncBuiltLayerVisibility;'));
+        expect(sync).toContain('fetchBuildings(null, { announce: true });');
+        expect(read('../../frontend/js/planning/views.js')).toContain('root.syncBuiltLayerVisibility?.();');
     });
 
     it('names them as existing, and does not report a zero as a load', () => {

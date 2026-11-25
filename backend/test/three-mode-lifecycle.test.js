@@ -114,6 +114,7 @@ it('resolves a caller waiting on scene readiness as false when the pending scene
         apartmentHover: null,
         apartmentPanel: null,
         xrayToolbar: null,
+        xrayZoomNote: null,
         apartmentHoverNote: null,
         suggestedStreetLoader: null,
         suggestedPlanner: null,
