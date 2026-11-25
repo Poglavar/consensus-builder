@@ -9736,7 +9736,7 @@
         "householdBatch": "Domaćinstvo ovih osoba (neobavezno)",
         "householdHint": "Osobe koje žive zajedno dele oznaku domaćinstva. Kod bez oznake računa se kao zasebno domaćinstvo. Oznake domaćinstava ostaju lokalno; sporazum beleži samo koji kodovi dele domaćinstvo.",
         "importCsv": "Generiši kodove iz CSV-a stanovnika",
-        "csvHint": "CSV treba kolone Person i Household, jedan stanovnik po redu.",
+        "csvHint": "CSV treba kolone Person i Household, jedan stanovnik po redu. Datoteka se čita u ovom pregledaču i nikad se ne šalje.",
         "household": "Domaćinstvo (samo lokalno)",
         "householdOf": "Domaćinstvo osobe {{person}}",
         "batch": "Generišite od 1 do 100 kodova odjednom.",

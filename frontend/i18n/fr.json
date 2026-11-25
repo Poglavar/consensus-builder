@@ -9691,7 +9691,7 @@
         "householdBatch": "Foyer de ces personnes (facultatif)",
         "householdHint": "Les personnes qui vivent ensemble partagent une étiquette de foyer. Un code sans étiquette compte comme un foyer à lui seul. Les étiquettes restent sur cet appareil ; l’accord n’enregistre que les codes qui partagent un foyer.",
         "importCsv": "Générer des codes depuis un CSV d’habitants",
-        "csvHint": "Le CSV doit avoir les colonnes Person et Household, un habitant par ligne.",
+        "csvHint": "Le CSV doit avoir les colonnes Person et Household, un habitant par ligne. Le fichier est lu dans ce navigateur et n’est jamais envoyé.",
         "household": "Foyer (local uniquement)",
         "householdOf": "Foyer de {{person}}",
         "batch": "Générez entre 1 et 100 codes à la fois.",

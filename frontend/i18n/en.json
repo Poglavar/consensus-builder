@@ -9684,7 +9684,7 @@
         "householdBatch": "Household for these people (optional)",
         "householdHint": "People who live together share a household label. A code without one counts as a household of its own. Household labels stay local; the agreement records only which codes share a household.",
         "importCsv": "Generate codes from a resident CSV",
-        "csvHint": "The CSV needs Person and Household columns, one resident per row.",
+        "csvHint": "The CSV needs Person and Household columns, one resident per row. The file is read in this browser and never uploaded.",
         "household": "Household (local only)",
         "householdOf": "Household of {{person}}",
         "batch": "Generate between 1 and 100 codes at a time.",

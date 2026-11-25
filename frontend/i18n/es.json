@@ -9712,7 +9712,7 @@
         "householdBatch": "Hogar de estas personas (opcional)",
         "householdHint": "Las personas que viven juntas comparten una etiqueta de hogar. Un código sin etiqueta cuenta como un hogar propio. Las etiquetas de hogar quedan en este equipo; el acuerdo solo registra qué códigos comparten hogar.",
         "importCsv": "Generar códigos desde un CSV de residentes",
-        "csvHint": "El CSV necesita las columnas Person y Household, un residente por fila.",
+        "csvHint": "El CSV necesita las columnas Person y Household, un residente por fila. El archivo se lee en este navegador y nunca se sube.",
         "household": "Hogar (solo local)",
         "householdOf": "Hogar de {{person}}",
         "batch": "Genere entre 1 y 100 códigos a la vez.",

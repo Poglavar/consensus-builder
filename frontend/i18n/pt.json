@@ -9691,7 +9691,7 @@
         "householdBatch": "Agregado familiar destas pessoas (opcional)",
         "householdHint": "Pessoas que vivem juntas partilham uma etiqueta de agregado. Um código sem etiqueta conta como um agregado próprio. As etiquetas ficam neste dispositivo; o acordo regista apenas que códigos partilham um agregado.",
         "importCsv": "Gerar códigos a partir de um CSV de residentes",
-        "csvHint": "O CSV precisa das colunas Person e Household, um residente por linha.",
+        "csvHint": "O CSV precisa das colunas Person e Household, um residente por linha. O arquivo é lido neste navegador e nunca é enviado.",
         "household": "Agregado (só local)",
         "householdOf": "Agregado de {{person}}",
         "batch": "Gere entre 1 e 100 códigos de cada vez.",
