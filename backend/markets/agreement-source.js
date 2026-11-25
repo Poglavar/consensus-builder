@@ -26,7 +26,10 @@ export function validateAgreementSource(row, observed, { allowUndated = false } 
         account: observed.address, cid: row.cid, city: row.city, sponsor,
         closesAt: account.deadline, graceSeconds: MARKET_GRACE_SECONDS,
         chainStatus, executedAt: account.executedAt || null,
-        insiders: [account.authority, account.lens].filter(isPublicKey),
+        // The sponsor and every lens member: none of them may trade, and an external market's verifier
+        // must be one of the lens members.
+        lenses: account.lenses,
+        insiders: [account.authority, ...account.lenses].filter(isPublicKey),
         observedSlot: observed.slot, chainTime: observed.chainTime
     };
 }

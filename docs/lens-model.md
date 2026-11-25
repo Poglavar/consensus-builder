@@ -1,6 +1,6 @@
 # Lens model: soulbound parcels, a list of trusted attesters, attested execution
 
-> **2026-10-22 (M3 of the plan/design/agreement rework):** the per-proposal verdict (`ProposalVerdict`, `POST /lens/verdict`, `settle_with_verdict`) is replaced by the agreement decision: the lens counts the relayed owner decisions of a binding agreement and attests `AgreementDecision` (`satisfied` only); the agreement program records it and executes. Where this document says "verdict", read "agreement decision"; the mechanics below are otherwise current.
+> **M3 of the plan/design/agreement rework:** the per-proposal verdict (`ProposalVerdict`, `POST /lens/verdict`, `settle_with_verdict`) is replaced by the agreement decision: a lens member counts the relayed owner decisions of a binding agreement and attests `AgreementDecision` (`satisfied` only); the agreement program records each member's confirmation and settles once `lens_threshold` members confirmed (and any contribution target is met), then executes. Where this document says "verdict", read "agreement decision"; the mechanics below are otherwise current.
 
 **Ownership abstraction clarification (2026-10-11):** LR and other proposal tools are to work with
 stable abstract owner entities. Lens-trusted providers separately establish each entity's parcel
@@ -27,10 +27,13 @@ journey. Earlier V1 proofs remain evidence only for the V1 flows they exercised.
 
 ## Vocabulary
 
-- **Lens.** A list of public keys attached to one proposal at mint. It is passive: it only says whose
-  attestations this proposal's contract will accept. One key or many. Three proposers can use three
-  different lenses; one proposer can use a different lens per proposal. It is the `lens` field the
-  proposal account already carries (`proposal_nft/src/lib.rs:383`).
+- **Lens.** A set of zero to eight public keys frozen into one agreement at mint, with a threshold:
+  how many distinct members must confirm (1 to the number of members; 1, "any one of the listed
+  keys", by default). It is passive: it only says whose attestations this agreement's contract will
+  accept. Three proposers can use three different lenses; one proposer can use a different lens per
+  agreement. The agreement account stores the members, the threshold and which members have
+  confirmed (`programs/agreement/README.md`). Only an agreement with a contribution target may have
+  no lens: the program confirms the target from the escrow itself.
 - **Lens member.** One key in that list: a notary, a court, a cadastre office, a permit register, an
   imagery service. Members state facts about parcels and proposals as attestations. They do not
   accept proposals.
@@ -60,8 +63,9 @@ used (`backend/oracle/court-parcel-operation.js:17`).
 1. **Parcels are identities.** Anchors exist so proposals, attestations and events have a stable
    subject. Nothing on chain owns a parcel.
 2. **The lens is the proposer's choice of authority.** Chosen at mint, immutable afterwards (fork to
-   change it). The contract trusts nobody outside the list. The proposer may name itself; readers
-   and bettors judge the lens, and the attester directory only informs that judgment.
+   change it). The contract trusts nobody outside the list. Any key may be a member, the proposer's
+   own included: the people who enter an agreement judge its lens, the interface says plainly when
+   the developer is one of the verifiers, and the attester directory only informs that judgment.
 3. **Member facts enter only as attestations; owners act by signing.** Programs verify bytes and
    signers, never trust a wallet on its own say-so.
 4. **No person on chain.** Attestations carry wallets, hashes and opaque references. Identity proof
@@ -362,8 +366,9 @@ executed } }] }`), and the three new event types.
 
 - **Owner compensation.** Escrowed SOL or USDC goes to the `payout` an owner passes when it signs
   its acceptance. Needs a privacy review, since a payout key is linkable to the owner wallet.
-- **Threshold semantics.** This design accepts one ownership attestation from any lens member.
-  k-of-n members per parcel belongs in the evaluator and a later program version.
+- **Threshold semantics.** An agreement's decision needs `lens_threshold` of its members (k of n, at
+  most 8). Ownership evidence still accepts one ownership attestation from any lens member; k-of-n
+  per parcel belongs in the evaluator.
 - **Lens mutability.** This document says immutable; forking is the way to change authorities.
 - **Fees.** Lens members charge over x402; whether the protocol takes a cut is a product decision.
 - **Legacy EVM lens entries.** The `0x` defaults in `frontend/js/lens.js` disappear from the Solana

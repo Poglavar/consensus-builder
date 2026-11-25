@@ -49,5 +49,5 @@ export function buildSfDemoAgreement({ item, sponsor, lens, rights, binding, gro
     return agreementObject({ title: item.title, author: 'devnet-demonstration', sponsor, city: 'san_francisco',
         createdAt: authoredAt, deadline: item.deadline, designs: [{ cid: item.design.cid, goal: 'buildings', title: item.title }],
         plan, parcels: contentParcels, outputs: ground.outputs, openGroundM2: ground.openGroundM2, money: noMoney('USD'),
-        rule: ownersRule({ lens, rights }) });
+        rule: ownersRule({ lenses: [lens], rights }) });
 }

@@ -1,13 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { Keypair } from '@solana/web3.js';
 import { createRequire } from 'node:module';
+// The lens member's view of a crowdfunding round (lens/agreement-decision.js observeInvestorFunding),
+// which it reads to qualify apartment buyers; the funding target itself is the program's confirm_funding.
 import request from 'supertest';
 import agreementRecord from '../../frontend/js/agreement-record.js';
 import { createLensMember } from '../lens/member.js';
 import { createLensMemberApp, OPERATOR_TOKEN_HEADER } from '../lens/server.js';
 import { createFakeIssuer } from '../lens/issuers.js';
 import { createMemoryStore } from '../lens/store.js';
-import { planInvestorFundingDecision } from '../lens/agreement-decision.js';
+import { observeInvestorFunding } from '../lens/agreement-decision.js';
 import { cidOfObject } from '../cid.js';
 
 const require = createRequire(import.meta.url);
@@ -24,85 +26,51 @@ const fundingContent = { schema: 'agreement/v1', sponsor, inputs: { parcels: [],
         rule: { electorate: 'investors', binding: true, approvalConfig: null, settlement: null, lens: [lens] }, deadline: new Date((now + 3600) * 1000).toISOString() };
 const base = {
     cid: cidOfObject(fundingContent), content: fundingContent,
-    onchain: { chain: 'solana', cluster: 'devnet', account, sponsor, lens, decision: 'pending' }, status: 'active',
+    onchain: { chain: 'solana', cluster: 'devnet', account, sponsor, lenses: [lens], lensThreshold: 1, decision: 'pending' }, status: 'active',
     deadline: fundingContent.deadline
 };
 const observed = (overrides = {}) => ({
     slot: 42, blockTime: now - 3, escrow, vault, vaultUsdcAtomic: 1000000n,
-    agreement: { address: account, cid: base.cid, authority: sponsor, payout: sponsor, openGround: false, lens, status: 'Active', decision: 'Pending', requiredLamports: 0n, deadline: now + 3600 },
+    agreement: { address: account, cid: base.cid, authority: sponsor, payout: sponsor, openGround: false, lenses: [lens], status: 'Active', decision: 'Pending', requiredLamports: 0n, deadline: now + 3600,
+        fundingMint: mint, requiredFunding: 1000000n },
     donation: { proposal: account, beneficiary: sponsor, mint, vault, totalDonated: 1250000n, totalRefunded: 250000n, totalReleased: 0n, released: false },
     ...overrides
 });
-const chain = (row = observed()) => ({ agreementProgramId: 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ', pledgeProgramId: '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g', observe: async () => row });
+const chain = (row = observed()) => ({ agreementProgramId: 'ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH', pledgeProgramId: '5RvXB53atCdCkDEydpvgUDz4Ph6uFUVyMgpjdSzNwXAq', observe: async () => row });
 
-describe('investor funding AgreementDecision-v1', () => {
-    it('attests an active Agreement only from finalized paid USDC held in its canonical donation vault', async () => {
-        const result = await planInvestorFundingDecision({ agreement: base, lensKey: lens, nowSeconds: now, chain: chain() });
-        expect(result.fields).toMatchObject({ agreementCid: base.cid, sponsor, decision: 'satisfied', sourceObservedAt: now - 3 });
-        expect(result.evidence).toMatchObject({ agreement: account, escrow, vault, mint, activeUsdcAtomic: '1000000', vaultUsdcAtomic: '1000000', slot: 42 });
-        expect(result.tally).toBeNull();
-        expect(result.counted).toBe(0);
+describe('investor funding observation', () => {
+    const observe = (agreement = base, row = observed(), lensKey = lens) => observeInvestorFunding({ agreement, lensKey, nowSeconds: now, chain: chain(row) });
+
+    it('reads an active round that names this member among its lens members and carries the published target', async () => {
+        await expect(observe()).resolves.toMatchObject({ netDeposits: 1000000n, onchain: base.onchain });
+        const other = Keypair.generate().publicKey.toBase58();
+        const content = { ...fundingContent, rule: { ...fundingContent.rule, lens: [other, lens], lensThreshold: 2 } };
+        const agreement = { ...base, cid: cidOfObject(content), content, onchain: { ...base.onchain, lenses: [other, lens], lensThreshold: 2 } };
+        await expect(observe(agreement, observed({ agreement: { ...observed().agreement, cid: agreement.cid, lenses: [other, lens] } })))
+            .resolves.toMatchObject({ netDeposits: 1000000n });
     });
 
-    it('refuses a finalized vault below its target', async () => {
-        await expect(planInvestorFundingDecision({ agreement: base, lensKey: lens, nowSeconds: now,
-            chain: chain(observed({ donation: { ...observed().donation, totalDonated: 999999n, totalRefunded: 0n }, vaultUsdcAtomic: 999999n }))
-        })).rejects.toMatchObject({ code: 'funding_target_not_met' });
-        // An unsolicited direct transfer can raise the vault, but never the recorded contribution total.
-        await expect(planInvestorFundingDecision({ agreement: base, lensKey: lens, nowSeconds: now,
-            chain: chain(observed({ donation: { ...observed().donation, totalDonated: 999999n, totalRefunded: 0n }, vaultUsdcAtomic: 2000000n }))
-        })).rejects.toMatchObject({ code: 'funding_target_not_met' });
+    it('refuses a member outside the lens, and an account without the published devnet USDC target', async () => {
+        const stranger = Keypair.generate().publicKey.toBase58();
+        await expect(observe(base, observed(), stranger)).rejects.toMatchObject({ code: 'invalid_funding_rule' });
+        await expect(observe({ ...base, onchain: { ...base.onchain, lenses: [stranger] } })).rejects.toMatchObject({ code: 'not_agreement_lens' });
+        await expect(observe(base, observed({ agreement: { ...observed().agreement, lenses: [stranger] } }))).rejects.toMatchObject({ code: 'invalid_agreement_account' });
+        await expect(observe(base, observed({ agreement: { ...observed().agreement, requiredFunding: 999999n } }))).rejects.toMatchObject({ code: 'invalid_agreement_account' });
+        await expect(observe(base, observed({ agreement: { ...observed().agreement, fundingMint: stranger } }))).rejects.toMatchObject({ code: 'invalid_agreement_account' });
     });
 
     it('allows surplus USDC but fails closed on a shortfall or released escrow', async () => {
-        await expect(planInvestorFundingDecision({ agreement: base, lensKey: lens, nowSeconds: now,
-            chain: chain(observed({ vaultUsdcAtomic: 1000001n }))
-        })).resolves.toMatchObject({ evidence: { activeUsdcAtomic: '1000000', vaultUsdcAtomic: '1000001' } });
-        await expect(planInvestorFundingDecision({ agreement: base, lensKey: lens, nowSeconds: now,
-            chain: chain(observed({ vaultUsdcAtomic: 999999n }))
-        })).rejects.toMatchObject({ code: 'invalid_donation_vault' });
-        await expect(planInvestorFundingDecision({ agreement: base, lensKey: lens, nowSeconds: now,
-            chain: chain(observed({ donation: { ...observed().donation, released: true } }))
-        })).rejects.toMatchObject({ code: 'invalid_donation_vault' });
+        await expect(observe(base, observed({ vaultUsdcAtomic: 1000001n }))).resolves.toMatchObject({ netDeposits: 1000000n });
+        await expect(observe(base, observed({ vaultUsdcAtomic: 999999n }))).rejects.toMatchObject({ code: 'invalid_donation_vault' });
+        await expect(observe(base, observed({ donation: { ...observed().donation, released: true } }))).rejects.toMatchObject({ code: 'invalid_donation_vault' });
     });
 
-    it('never lets an owner vote or an observation after its time decide funding', async () => {
-        await expect(planInvestorFundingDecision({ agreement: { ...base, content: { ...base.content, rule: { ...base.content.rule, electorate: 'owners' } } }, lensKey: lens, nowSeconds: now, chain: chain() }))
+    it('refuses an owner rule, an observation after its time, and content that no longer hashes to its CID', async () => {
+        await expect(observe({ ...base, content: { ...base.content, rule: { ...base.content.rule, electorate: 'owners' } } })).rejects.toMatchObject({ code: 'invalid_funding_content' });
+        await expect(observe(base, observed({ blockTime: now + 1 }))).rejects.toMatchObject({ code: 'funding_observation_after_deadline' });
+        await expect(observe({ ...base, content: { ...base.content, funding: { ...base.content.funding, targetUsdcAtomic: '2' } } })).rejects.toMatchObject({ code: 'invalid_funding_content' });
+        await expect(observe({ ...base, content: { ...base.content, funding: { ...base.content.funding, contract: { ...base.content.funding.contract, data: 'QW1lbmRlZA==' } } } }))
             .rejects.toMatchObject({ code: 'invalid_funding_content' });
-        await expect(planInvestorFundingDecision({ agreement: base, lensKey: lens, nowSeconds: now,
-            chain: chain(observed({ blockTime: now + 1 }))
-        })).rejects.toMatchObject({ code: 'funding_observation_after_deadline' });
-    });
-
-    it('refuses an index row whose target or attached contract no longer hashes to its CID', async () => {
-        await expect(planInvestorFundingDecision({ agreement: { ...base, content: { ...base.content, funding: { ...base.content.funding, targetUsdcAtomic: '2' } } }, lensKey: lens, nowSeconds: now, chain: chain() }))
-            .rejects.toMatchObject({ code: 'invalid_funding_content' });
-        await expect(planInvestorFundingDecision({ agreement: { ...base, content: { ...base.content, funding: { ...base.content.funding, contract: { ...base.content.funding.contract, data: 'QW1lbmRlZA==' } } } }, lensKey: lens, nowSeconds: now, chain: chain() }))
-            .rejects.toMatchObject({ code: 'invalid_funding_content' });
-    });
-
-    it('counts only finalized reservations whose two unit ids, terms and deposits match the funding schedule', async () => {
-        const drawing = { name: 'unit.pdf', mediaType: 'application/pdf', data: 'JVBERi0xLjQK' };
-        const unitA = { unitId: 'unit-a', label: 'Unit A', xrayBuilding: 'zagreb::gdi-3d::building-1', unit: '3::a::000000000000000000000000', at: '45.8,15.96,18', priceUsdcAtomic: '600000', depositUsdcAtomic: '600000', drawing };
-        const unitB = { unitId: 'unit-b', label: 'Unit B', xrayBuilding: 'zagreb::gdi-3d::building-1', unit: '4::a::000000000000000000000001', at: '45.8,15.96,18', priceUsdcAtomic: '400000', depositUsdcAtomic: '400000', drawing };
-        const apartments = { projectId: 'preview-1', units: [unitA, unitB] };
-        const content = { ...base.content, funding: { ...base.content.funding, targetUsdcAtomic: '1000000', apartments } };
-        const agreement = { ...base, cid: cidOfObject(content), content };
-        const reservations = [
-            { unitId: 'unit-a', status: 'reserved', deposit: '600000', unitKey: 'a'.repeat(64), termsHash: 'b'.repeat(64), position: 'pos-a', qualification: Keypair.generate().publicKey.toBase58() },
-            { unitId: 'unit-b', status: 'reserved', deposit: '400000', unitKey: 'c'.repeat(64), termsHash: 'd'.repeat(64), position: 'pos-b', qualification: Keypair.generate().publicKey.toBase58() }
-        ];
-        const valid = await planInvestorFundingDecision({ agreement, lensKey: lens, nowSeconds: now,
-            chain: chain(observed({ reservations, agreement: { ...observed().agreement, cid: agreement.cid } })) });
-        expect(valid.evidence.kind).toBe('apartment_reservations');
-        expect(valid.evidence.reservations).toHaveLength(2);
-        await expect(planInvestorFundingDecision({ agreement, lensKey: lens, nowSeconds: now,
-            chain: chain(observed({ reservations: reservations.map(row => ({ ...row, qualification: null })), agreement: { ...observed().agreement, cid: agreement.cid } })) }))
-            .rejects.toMatchObject({ code: 'apartment_qualification_missing' });
-        await expect(planInvestorFundingDecision({ agreement, lensKey: lens, nowSeconds: now,
-            chain: chain(observed({ reservations: [reservations[0]], agreement: { ...observed().agreement, cid: agreement.cid } })) })).rejects.toMatchObject({ code: 'apartment_observation_missing' });
-        await expect(planInvestorFundingDecision({ agreement, lensKey: lens, nowSeconds: now,
-            chain: chain(observed({ reservations: reservations.map((row, i) => i ? { ...row, status: 'available' } : row), agreement: { ...observed().agreement, cid: agreement.cid } })) })).rejects.toMatchObject({ code: 'funding_target_not_met' });
     });
 
     it('lets the named operator qualify one buyer for a listed apartment before any deposit', async () => {

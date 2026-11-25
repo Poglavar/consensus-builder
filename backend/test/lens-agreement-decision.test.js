@@ -40,7 +40,7 @@ const CID = cidOfObject(content());
 const indexed = (body = content(), overrides = {}) => serializeAgreementRow(agreementRow(body, overrides));
 // The minted account as the index records it (agreements/onchain.js onchainFromAccount).
 const onchain = (overrides = {}) => ({ chain: 'solana', cluster: 'devnet', account: Keypair.generate().publicKey.toBase58(), sponsor: SPONSOR,
-    lens: MEMBER, status: 'active', decision: 'pending', ...overrides });
+    lenses: [MEMBER], lensThreshold: 1, status: 'active', decision: 'pending', ...overrides });
 // An owner decision signed on `cid`'s agreement, `offset` seconds after NOW.
 const signed = (who, ownerId, { cid = CID, config = approvalConfig, ...options } = {}) =>
     decision(who, ownerId, { item: agreement({ agreementCid: cid, approvalConfig: config }), ...options });
@@ -124,10 +124,11 @@ describe('planAgreementDecision', () => {
             expect(refusal(() => plan(indexed(body), receipts))).toMatchObject({ status: 422, code: 'no_sponsor' });
         }
         expect(refusal(() => plan(indexed(), receipts, { lensKey: OTHER_LENS }))).toMatchObject({ status: 409, code: 'not_in_lens' });
-        expect(refusal(() => plan(indexed(content(), { onchain: onchain({ lens: OTHER_LENS }) }), receipts)))
+        expect(refusal(() => plan(indexed(content(), { onchain: onchain({ lenses: [OTHER_LENS] }) }), receipts)))
             .toMatchObject({ status: 409, code: 'not_agreement_lens' });
-        // Minted with this member as its lens and still pending: the decision is issued.
+        // Minted with this member among its lens members and still pending: the decision is issued.
         expect(plan(indexed(content(), { onchain: onchain() }), receipts).fields.decision).toBe('satisfied');
+        expect(plan(indexed(content(), { onchain: onchain({ lenses: [OTHER_LENS, MEMBER], lensThreshold: 2 }) }), receipts).fields.decision).toBe('satisfied');
     });
 
     it('refuses a closed agreement, a decision already recorded on its account, and a passed deadline', async () => {
@@ -273,30 +274,19 @@ describe('POST /lens/agreements/:cid/decision', () => {
         expect(listed.body.attestations[0]).not.toHaveProperty('reused');
     });
 
-    it('issues a funding decision through the registered operator from finalized donation-vault evidence, without owner receipts', async () => {
+    it('issues no automatic decision for a crowdfunding agreement: the program confirms its target', async () => {
         const funding = { ...content(), inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: 'EUR', lines: [] }, valuation: null, consultation: null,
             rule: { electorate: 'investors', binding: true, approvalConfig: null, settlement: null, lens: [MEMBER] },
             funding: { targetUsdcAtomic: '1000000', contract: { name: 'investors.txt', mediaType: 'text/plain', data: 'VGVybXM=' } } };
         const fundingCid = cidOfObject(funding);
-        const fundingAccount = Keypair.generate().publicKey.toBase58();
-        const fundingEscrow = Keypair.generate().publicKey.toBase58();
-        const fundingVault = Keypair.generate().publicKey.toBase58();
-        const row = indexed(funding, { cid: fundingCid, onchain: onchain({ account: fundingAccount }) });
-        row.onchain.account = fundingAccount;
-        const fundingChain = {
-            agreementProgramId: 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ', pledgeProgramId: '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g',
-            observe: vi.fn(async () => ({ slot: 400, blockTime: NOW + 5, escrow: fundingEscrow, vault: fundingVault, vaultUsdcAtomic: 1000000n,
-                agreement: { address: fundingAccount, cid: fundingCid, authority: SPONSOR, payout: SPONSOR, openGround: false, lens: MEMBER, status: 'Active', decision: 'Pending', requiredLamports: 0n, deadline: NOW + 7 * 86400 },
-                donation: { proposal: fundingAccount, beneficiary: SPONSOR, mint: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU', vault: fundingVault, totalDonated: 1000000n, totalRefunded: 0n, totalReleased: 0n, released: false }
-            }))
-        };
-        const { app, issuer, agreements } = memberApp({ rows: [row], fundingChain });
+        const fundingChain = { observe: vi.fn() };
+        const { app, issuer, agreements } = memberApp({ rows: [indexed(funding, { cid: fundingCid, onchain: onchain() })], fundingChain });
         const res = await ask(app, fundingCid);
-        expect(res.status).toBe(201);
-        expect(res.body).toMatchObject({ counted: 0, tally: null, payload: { agreementCid: fundingCid, sponsor: SPONSOR, decision: 'satisfied', sourceObservedAt: NOW + 5 } });
-        expect(fundingChain.observe).toHaveBeenCalledWith({ cid: fundingCid, sponsor: SPONSOR, account: fundingAccount });
+        expect([res.status, res.body.error]).toEqual([409, 'funding_checked_on_chain']);
+        expect(res.body.message).toMatch(/confirm_funding/);
+        expect(fundingChain.observe).not.toHaveBeenCalled();
         expect(agreements.decisions).not.toHaveBeenCalled();
-        expect(decodeLensAttestation('decision', issuer.accounts.get(res.body.address)).fields).toEqual(res.body.payload);
+        expect(issuer.accounts.size).toBe(0);
     });
 
     it('answers the decision it issued, once, whatever the index says later', async () => {
@@ -318,7 +308,7 @@ describe('POST /lens/agreements/:cid/decision', () => {
         const cases = [
             [{ receipts: receipts.slice(0, 3) }, 409, 'rule_not_met'],
             [{ receipts, rows: [indexed(content({ sponsor: null }))] }, 422, 'no_sponsor'],
-            [{ receipts, rows: [indexed(content(), { onchain: onchain({ lens: OTHER_LENS }) })] }, 409, 'not_agreement_lens'],
+            [{ receipts, rows: [indexed(content(), { onchain: onchain({ lenses: [OTHER_LENS] }) })] }, 409, 'not_agreement_lens'],
             [{ receipts, rows: [indexed(content(), { status: 'cancelled', onchain: onchain({ status: 'cancelled' }) })] }, 409, 'agreement_closed'],
             [{ receipts, rows: [indexed(content(), { onchain: onchain({ decision: 'satisfied' }) })] }, 409, 'decision_recorded'],
             [{ receipts, rows: [indexed(content({ deadline: at(20) }), { status: 'expired' })] }, 409, 'deadline_passed']

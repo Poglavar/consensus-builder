@@ -160,8 +160,9 @@ async function main() {
 
     const rpcUrl = values.rpc || process.env.SOLANA_RPC_URL || CLUSTERS[values.cluster];
     const offerConnection = new Connection(rpcUrl, 'confirmed');
-    // Investor crowdfunding is decided from finalized Agreement + donation-vault state, never from
-    // index projections or caller-provided totals.  The adapter is read-only and shared by the member.
+    // Apartment buyers are qualified from finalized Agreement + donation-vault state, never from index
+    // projections or caller-provided totals (the funding target itself is the program's confirm_funding).
+    // The adapter is read-only and shared by the member.
     const fundingChain = createInvestorFundingChain({ connection: new Connection(rpcUrl, 'finalized') });
     const loadOffer = cid => loadPropertyOffer(pool, cid);
     const transfers = !dryRun && pool && values.identity === 'devnet-registry'

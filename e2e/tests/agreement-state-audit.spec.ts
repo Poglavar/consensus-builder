@@ -17,7 +17,7 @@ test('agreement summary follows terminal index and account states without offeri
   await page.evaluate(({ id, onchain }) => (window as any).AgreementSync.adoptOnchain(id, onchain), { id, onchain: row.onchain });
   for (const status of ['active', 'executed', 'cancelled', 'expired'] as const) {
     row.onchain.status = status;
-    accounts.set(account, encodeAgreementAccount({ cid, authority: MINTED_SPONSOR, payout: MINTED_SPONSOR, lens: E2E_LENS_MEMBER_KEY,
+    accounts.set(account, encodeAgreementAccount({ cid, authority: MINTED_SPONSOR, payout: MINTED_SPONSOR, lenses: [E2E_LENS_MEMBER_KEY],
       status: STATUS[status], decision: status === 'executed' ? DECISION.satisfied : DECISION.pending }));
     await page.evaluate(id => (window as any).AgreementPanel.open(id), id);
     await openAgreementDecision(page);
@@ -29,7 +29,7 @@ test('agreement summary follows terminal index and account states without offeri
   }
   // The account is newer than the index: Active in the cached row cannot mask Executed.
   row.onchain.status = 'active';
-  accounts.set(account, encodeAgreementAccount({ cid, authority: MINTED_SPONSOR, payout: MINTED_SPONSOR, lens: E2E_LENS_MEMBER_KEY,
+  accounts.set(account, encodeAgreementAccount({ cid, authority: MINTED_SPONSOR, payout: MINTED_SPONSOR, lenses: [E2E_LENS_MEMBER_KEY],
     status: STATUS.executed, decision: DECISION.satisfied }));
   await page.evaluate(id => (window as any).AgreementPanel.open(id), id);
   await openAgreementDecision(page);

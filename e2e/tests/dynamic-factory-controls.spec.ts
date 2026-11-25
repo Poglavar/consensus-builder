@@ -121,7 +121,7 @@ async function prepareWinningsPage(page: import('@playwright/test').Page, side: 
 // (getVerifiedConnection checks the genesis).
 async function installAgreementAccount(page: import('@playwright/test').Page, options: { account: string; sponsor: string; status: number }): Promise<void> {
   const bytes = encodeAgreementAccount({
-    cid: `bafkrei${'c'.repeat(52)}`, authority: options.sponsor, lens: options.sponsor, payout: options.sponsor,
+    cid: `bafkrei${'c'.repeat(52)}`, authority: options.sponsor, lenses: [options.sponsor], payout: options.sponsor,
     deadline: Math.floor(Date.parse('2026-12-31T00:00:00.000Z') / 1000),
     status: options.status, decision: options.status === 1 ? 1 : 0,
   });

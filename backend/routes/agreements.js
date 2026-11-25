@@ -232,6 +232,9 @@ export function validateAgreementContent(content, { now = Date.now(), designCids
         return invalid('rule', 'The rule names who decides (owners or community) and whether the decision binds.');
     }
     if (!Array.isArray(rule.lens)) return invalid('rule', 'The rule lists its lens (an empty list for none).');
+    // 0-8 distinct member keys and an optional lensThreshold of 1..members (agreement-record.js).
+    const lensIssue = agreementRecord.lensRuleError(rule);
+    if (lensIssue) return invalid('rule', lensIssue);
     try {
         approval.lensKeys({ lens: rule.lens });
     } catch (error) {
@@ -635,9 +638,15 @@ export function setupAgreementsRoute(app, deps) {
                 if (read.account.payout !== sponsor) {
                     return send(res, 409, { error: `Account ${expected} pays ${read.account.payout}, not the agreement sponsor.`, code: 'onchain-payout-mismatch' });
                 }
-                const lens = row.content.rule.lens?.[0];
-                if (read.account.lens !== lens) {
-                    return send(res, 409, { error: `Account ${expected} names lens ${read.account.lens}, not the agreement lens ${lens}.`, code: 'onchain-lens-mismatch' });
+                const lenses = row.content.rule.lens;
+                const threshold = agreementRecord.lensThresholdOf(row.content.rule);
+                if (read.account.lenses.join() !== lenses.join() || read.account.lensThreshold !== threshold) {
+                    return send(res, 409, { error: `Account ${expected} names lens ${read.account.lenses.join(', ') || '(none)'} with threshold ${read.account.lensThreshold}, not the agreement lens ${lenses.join(', ') || '(none)'} with threshold ${threshold}.`, code: 'onchain-lens-mismatch' });
+                }
+                // The program checks the contribution target itself (confirm_funding): it must be the
+                // agreement's, in devnet USDC.
+                if (read.account.fundingMint !== apartmentClient.constants.USDC_DEVNET_MINT || read.account.requiredFunding !== BigInt(row.content.funding.targetUsdcAtomic)) {
+                    return send(res, 409, { error: `Account ${expected} has a different funding target from the agreement.`, code: 'onchain-funding-target-mismatch' });
                 }
                 // Decoded agreement deadlines are safe-integer Unix seconds and requiredLamports is a
                 // u64 BigInt. Investor funding is USDC-only: no native execution escrow or open ground.

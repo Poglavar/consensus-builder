@@ -41,7 +41,7 @@
         // proposal_market::EXTERNAL_RESOLUTION_TIMEOUT_SECONDS: an ExternalMarket unresolved this long
         // after its close can only be voided.
         EXTERNAL_RESOLUTION_TIMEOUT_SECONDS: 90 * 86_400,
-        PROGRAM_ID: 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB',
+        PROGRAM_ID: '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71',
         SAS_PROGRAM_ID: '22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG',
         TOKEN_PROGRAM_ID: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
         ASSOCIATED_TOKEN_PROGRAM_ID: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',

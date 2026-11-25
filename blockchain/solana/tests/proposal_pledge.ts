@@ -24,8 +24,11 @@ import { LensMember, attestPropertyOfferDecision, chainNow, createLensMember, wa
 import {
     CreatedAgreement,
     STATUS,
+    attestSatisfied,
     cancelAgreement,
+    confirmFunding,
     createAgreement,
+    executeAgreement,
     expireAgreement,
     settleExecuted,
     statusByte,
@@ -589,6 +592,69 @@ describe("proposal_pledge", () => {
             await createEscrow(griefed.proposal);
             expect((await program.account.donationEscrow.fetch(escrowOf(griefed.proposal))).beneficiary.toBase58())
                 .to.equal(creator.publicKey.toBase58());
+        });
+    });
+
+    // ========================
+    // Contribution target, confirmed by the agreement program from this escrow (no lens needed)
+    // ========================
+
+    describe("contribution target", () => {
+        const TARGET = 5_000_000;
+        const agreementOf = async (tag: string, lenses: PublicKey[] = []) => {
+            const created = await createAgreement(agreementProgram, {
+                sponsor: creator, cid: testCid(`plg-target-${tag}`), lenses, fundingMint: USDC, requiredFunding: TARGET,
+            });
+            await createEscrow(created.agreement);
+            return { proposal: created.agreement, created } as Subject;
+        };
+        const confirm = (s: Subject, escrow = escrowOf(s.proposal), vault = vaultOf(escrowOf(s.proposal))) =>
+            confirmFunding(agreementProgram, s.proposal, escrow, vault);
+        const decisionOf = async (s: Subject) => (await agreementProgram.account.agreement.fetch(s.proposal) as any);
+
+        it("settles a lens-free round once credited contributions reach the target, and pays the sponsor", async () => {
+            const round = await agreementOf("alone");
+            await donate(donorA, round.proposal, "target-a", 3_000_000);
+            await expectFailure(() => confirm(round), "FundingTargetNotMet");
+            await donate(donorB, round.proposal, "target-b", 2_500_000);
+            await confirm(round);
+            const account = await decisionOf(round);
+            expect(account.decision).to.deep.equal({ satisfied: {} });
+            expect(account.fundingMet).to.be.true;
+            expect(n(account.fundingObserved)).to.equal(5_500_000);
+            await expectFailure(() => confirm(round), "AlreadyAttested");
+            await executeAgreement(agreementProgram, round.proposal, creator.publicKey);
+            const before = Number((await getAccount(connection, beneficiaryUsdc).catch(() => ({ amount: 0n }))).amount);
+            await release(round.proposal, donorA);
+            expect(Number((await getAccount(connection, beneficiaryUsdc)).amount) - before).to.equal(5_500_000);
+        });
+
+        it("reads only this agreement's escrow and its own vault", async () => {
+            const round = await agreementOf("substitute");
+            const rival = await agreementOf("rival");
+            await donate(donorA, rival.proposal, "target-rival", TARGET);
+            await expectFailure(() => confirm(round, escrowOf(rival.proposal), vaultOf(escrowOf(rival.proposal))), "InvalidEscrow");
+            await donate(donorA, round.proposal, "target-own", TARGET);
+            await expectFailure(() => confirm(round, escrowOf(round.proposal), vaultOf(escrowOf(rival.proposal))), "InvalidVault");
+            await confirm(round);
+            expect((await decisionOf(round)).decision).to.deep.equal({ satisfied: {} });
+        });
+
+        it("needs both the target and the lens when the round names one, in either order", async () => {
+            const round = await agreementOf("with-lens", [lens.publicKey]);
+            await donate(donorB, round.proposal, "target-lens", TARGET);
+            await confirm(round);
+            let account = await decisionOf(round);
+            expect([account.fundingMet, account.decision]).to.deep.equal([true, { pending: {} }]);
+            await attestSatisfied(agreementProgram, lens, { agreement: round.proposal, cid: round.created.cid, sponsor: creator.publicKey });
+            account = await decisionOf(round);
+            expect(account.decision).to.deep.equal({ satisfied: {} });
+        });
+
+        it("refuses a target check on an agreement without a target", async () => {
+            const plain = await newAgreement("no-target");
+            await createEscrow(plain.proposal);
+            await expectFailure(() => confirm(plain), "NoFundingTarget");
         });
     });
 

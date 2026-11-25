@@ -57,7 +57,7 @@ function ownersAgreement(overrides = {}, registryOwners = [{ owner, ownerCount: 
         plan: { content: namedPlan, cid: cidOfObject(namedPlan) },
         parcels: [{ parcelId: 'HR-335550-1234/1', areaM2: 612.4 }],
         outputs: parcelOutputs([{ parcelId: 'HR-335550-1234/1', geometry: PARCEL, areaM2: 612.4 }]),
-        rule: ownersRule({ lens: LENS, rights }),
+        rule: ownersRule({ lenses: [LENS], rights }),
         deadline: deadlineAfterDays(NOW_MS, 7),
         money: noMoney('EUR'),
         ...overrides
@@ -111,12 +111,16 @@ describe('rights from the devnet owner registry', () => {
 });
 
 describe('decision rules', () => {
-    it('makes a binding owners\' agreement decided unanimously through one lens member', () => {
+    it('makes a binding owners\' agreement decided unanimously through its lens members', () => {
         const rights = registryRights([{ parcelId: 'HR-1', owners: [{ owner, ownerCount: 1 }] }]);
-        const rule = ownersRule({ lens: ` ${LENS} `, rights });
+        const rule = ownersRule({ lenses: [` ${LENS} `], rights });
         expect(rule).toMatchObject({ electorate: 'owners', binding: true, lens: [LENS],
             approvalConfig: { schema: 'proposal-approval/v1', policy: { type: 'unanimous' }, rights: { source: { provider: REGISTRY_RIGHTS_PROVIDER } } } });
-        expect(() => ownersRule({ lens: '', rights })).toThrow(/names the lens member that decides it/);
+        expect(() => ownersRule({ lenses: [], rights })).toThrow(/names the lens members that decide it/);
+        const other = 'So1endDq2YkqhipRh3WViPa8hdiSpxWy6z3Z6tMCpAo';
+        expect(ownersRule({ lenses: [LENS, other], lensThreshold: 2, rights })).toMatchObject({ lens: [LENS, other], lensThreshold: 2 });
+        expect(() => ownersRule({ lenses: [LENS, other], lensThreshold: 3, rights })).toThrow(/from 1 to the number of members/);
+        expect(() => ownersRule({ lenses: [LENS, LENS], rights })).toThrow(/listed once/);
     });
 
     it('makes a community vote a poll with no owner approval and a deduplicated lens', () => {

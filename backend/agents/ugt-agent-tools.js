@@ -29,20 +29,21 @@ import { ensurePledgeBookAndSet } from './pledger.js';
 import { createRpcConnection } from '../solana/rpc.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { createPaidClient } from './x402-client.js';
-import { fetchLensMembers, parseLensList } from './lens-directory-client.js';
+import { fetchLensMembers } from './lens-directory-client.js';
 import { requestOwnershipAttestation } from './lens-ownership-client.js';
 import { createIndexClient } from './publication-client.js';
 import { AGREEMENT_SCHEMA, DESIGN_SCHEMA, agreementObject, cidOfObject, designObject, isCid } from './agreement-objects.js';
 import {
-    AGREEMENT_PROGRAM_ID, AGREEMENT_STATUS, agreementAccountOf, fundAgreement, mintAgreement, readAgreementAccount
+    AGREEMENT_PROGRAM_ID, AGREEMENT_STATUS, agreementAccountOf, fundAgreement, mintAgreement, mintTermsOf, readAgreementAccount
 } from './agreement-minter.js';
 import {
-    claimAgreementMarket, claimExternalMarket, fulfillPledge, refundDonation, releaseDonations, resolveAgreementMarket,
+    claimAgreementMarket, claimExternalMarket, confirmFunding, fulfillPledge, refundDonation, releaseDonations, resolveAgreementMarket,
     resolveExternalMarket, revokePledge, voidPledge
 } from './lifecycle-actions.js';
 
 const require = createRequire(import.meta.url);
 const agreementClient = require('../../frontend/js/solana/agreement-client.js');
+const agreementRecord = require('../../frontend/js/agreement-record.js');
 agreementClient.configure({ web3: require('@solana/web3.js') });
 
 const DEFAULT_API_BASE = 'https://api.urbangametheory.xyz';
@@ -125,6 +126,10 @@ function assertChallengeUnderCap(challenge, maximum, label) {
         }
     }
 }
+
+// The account carries the lens set, threshold and contribution target the published agreement mints with.
+const sameMintTerms = (account, terms) => account.lenses.join() === terms.lenses.join() && account.lensThreshold === terms.lensThreshold
+    && account.fundingMint === terms.fundingMint && account.requiredFunding === terms.requiredFunding;
 
 // A whole number of lamports as a decimal string (agreement-minter.js reads it as u64).
 function wholeLamports(value, label) {
@@ -243,6 +248,7 @@ export function createUrbanGameTheoryTools({
         revokePledge,
         voidPledge,
         releaseDonations,
+        confirmFunding,
         fulfillPledge,
         resolveAgreementMarket,
         claimAgreementMarket,
@@ -402,7 +408,7 @@ export function createUrbanGameTheoryTools({
             }), count: accounts.length, truncated: accounts.length > limit };
         },
         getChainAgreement: ({ agreementAccount }) => impl.readAgreementAccount(chain(), { account: agreementAccount }),
-        async openMarket({ agreementAccount, liquidityUsdc, closesAt, external, confirm }) {
+        async openMarket({ agreementAccount, liquidityUsdc, closesAt, external, trustedAttester, confirm }) {
             requireLive(confirm);
             const { keypair, connection } = signer();
             const publishRecipe = async (data, expectedCid) => {
@@ -411,7 +417,7 @@ export function createUrbanGameTheoryTools({
                 if (!response.ok || (await response.json()).cid !== expectedCid) throw new Error('Could not publish the exact market recipe.');
             };
             return impl.openAgreementMarket({ connection, creatorKeypair: keypair, subject: agreementAccount, b: usdcToAtomic(liquidityUsdc),
-                closesAt, external, publishRecipe, maxSeedAtomic: usdcToAtomic(maxUsdcPerAction), sendAndConfirm: impl.sendAndConfirmPolling });
+                closesAt, external, trustedAttester, publishRecipe, maxSeedAtomic: usdcToAtomic(maxUsdcPerAction), sendAndConfirm: impl.sendAndConfirmPolling });
         },
         async betOnAccount({ agreementAccount, marketAddress, side, amountUsdc, confirm }) {
             requireLive(confirm);
@@ -578,11 +584,13 @@ export function createUrbanGameTheoryTools({
             if (content.sponsor !== self) {
                 throw new Error(`agreement ${agreementCid} names sponsor ${content.sponsor ?? 'none'}, not this agent's wallet ${self}: only its sponsor can create its account`);
             }
-            const lens = parseLensList(content.rule?.lens || []);
-            if (lens.length !== 1) throw new Error(`the agreement program takes one lens key, but rule.lens holds ${lens.length}`);
-            if (lens[0] === self) throw new Error(`rule.lens names only this agent's own key ${self}: a sponsor cannot attest its own agreement`);
+            // The lens set and threshold are frozen at mint; any key may be a member, this agent's own included
+            // (the people who enter the agreement judge its lens). Crowdfunding also commits its devnet USDC
+            // target, which the program confirms itself (confirm_funding).
+            const lensIssue = agreementRecord.lensRuleError(content.rule);
+            if (lensIssue) throw new Error(`agreement ${agreementCid}: ${lensIssue}`);
             const minted = await impl.mintAgreement({
-                connection, sponsorKeypair: keypair, cid: agreementCid, lens: lens[0], deadline: content.deadline ?? null,
+                connection, sponsorKeypair: keypair, cid: agreementCid, ...mintTermsOf(content), deadline: content.deadline ?? null,
                 lamports: required, openGround: Number(content.inputs?.openGroundM2) > 0,
                 sendAndConfirm: impl.sendAndConfirmPolling
             });
@@ -686,7 +694,8 @@ export function createUrbanGameTheoryTools({
                         throw new Error(`Crowdfunding agreement ${account.cid} is closed or past its deadline.`);
                     }
                     if (agreementAccount !== agreementAccountOf(account.cid, content.sponsor) || account.authority !== content.sponsor
-                        || account.payout !== content.sponsor || account.lens !== content.rule?.lens?.[0] || account.deadline !== expectedDeadline
+                        || account.payout !== content.sponsor || account.deadline !== expectedDeadline
+                        || !sameMintTerms(account, mintTermsOf(content))
                         || account.openGround !== false || account.requiredLamports !== 0n) {
                         throw new Error(`Crowdfunding agreement ${account.cid} account terms differ from its published terms.`);
                     }
@@ -721,6 +730,16 @@ export function createUrbanGameTheoryTools({
             const { keypair, connection } = signer();
             return impl.revokePledge({
                 connection, pledgerKeypair: keypair, subject: agreementAccount,
+                sendAndConfirm: impl.sendAndConfirmPolling
+            });
+        },
+
+        // Record that a crowdfunding target is met (confirm_funding). Permissionless: this wallet pays the fee.
+        async confirmFunding({ agreementAccount, confirm } = {}) {
+            requireLive(confirm);
+            const { keypair, connection } = signer();
+            return impl.confirmFunding({
+                connection, payerKeypair: keypair, subject: agreementAccount,
                 sendAndConfirm: impl.sendAndConfirmPolling
             });
         },

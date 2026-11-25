@@ -33,7 +33,7 @@ const agreement = (overrides = {}) => ({
     account: null, chainStatus: null, ...overrides
 });
 const minted = (cid, account, overrides = {}) => agreement({ cid, account, chainStatus: 'active', ...overrides });
-const market = (address, qYes, qNo, resolved = false, outcome = 0, chainStatus = 'active', deadline = LATER, b = 100_000_000n) => ({ sponsor: SPONSOR, lens: STRANGER, chainStatus, deadline, markets: [{ address, market: { kind: 0, b, qYes, qNo, seed: 69_314_720n, closesAt: Math.floor(Date.parse(deadline || LATER) / 1000),
+const market = (address, qYes, qNo, resolved = false, outcome = 0, chainStatus = 'active', deadline = LATER, b = 100_000_000n) => ({ sponsor: SPONSOR, lenses: [STRANGER], chainStatus, deadline, markets: [{ address, market: { kind: 0, b, qYes, qNo, seed: 69_314_720n, closesAt: Math.floor(Date.parse(deadline || LATER) / 1000),
     graceSeconds: 0, maxPosition: 0n, paidOut: 0n, creator: SPONSOR, resolved, outcome } }] });
 const cidsOf = contest => contest.agreements.map(entry => entry.cid);
 // Designs whose ground overlaps, for tests about something else than the grouping.

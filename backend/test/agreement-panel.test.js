@@ -29,7 +29,7 @@ describe('agreement panel tabs', () => {
         expect(html).toContain('data-agreement-properties-tab="decision">Decision</button>');
     });
 
-    it('shows truthful crowdfunding verifier, payout and unrestricted contributor terms', () => {
+    it('shows the crowdfunding lens, payout and unrestricted contributor terms', () => {
         const verifier = '9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt';
         const payout = 'So11111111111111111111111111111111111111112';
         const funding = {
@@ -46,13 +46,14 @@ describe('agreement panel tabs', () => {
             const row = $('[data-agreement-funding-disclosure] > div').filter((_, element) => $(element).find('dt').text() === label);
             return { href: row.find('a').attr('href'), text: row.find('a').text() };
         };
-        expect(disclosureLink(html, 'Funding verifier')).toEqual({
-            href: `https://explorer.solana.com/address/${verifier}?cluster=devnet`, text: verifier
-        });
+        const $html = load(html);
+        expect($html('[data-agreement-funding-disclosure] [data-agreement-lens-member]').map((_, el) => $html(el).attr('data-agreement-lens-member')).get()).toEqual([verifier]);
+        expect($html('[data-agreement-funding-disclosure] [data-agreement-lens-rule]').text()).toBe('The lens member must confirm.');
         expect(disclosureLink(html, 'Developer payout wallet')).toEqual({
             href: `https://explorer.solana.com/address/${payout}?cluster=devnet`, text: payout
         });
-        expect(html).toContain('The program accepts the named lens’s funding decision.');
+        expect(html).toContain('The program checks the funding target. The lens checks investor eligibility and any other conditions.');
+        expect(html).not.toContain('data-agreement-lens-developer');
         expect(html).toContain('Any wallet can contribute');
         expect(html).toContain('The protocol does not perform a KYC check.');
 
@@ -61,9 +62,6 @@ describe('agreement panel tabs', () => {
             rule: { electorate: 'investors', lens: [verifier] }, funding,
             sponsor: payout, published: { sponsor: null }, deadline: '2099-01-01T00:00:00.000Z'
         }, (_key, fallback) => fallback);
-        expect(disclosureLink(unminted, 'Funding verifier')).toEqual({
-            href: `https://explorer.solana.com/address/${verifier}?cluster=devnet`, text: verifier
-        });
         expect(disclosureLink(unminted, 'Developer payout wallet')).toEqual({
             href: `https://explorer.solana.com/address/${payout}?cluster=devnet`, text: payout
         });
@@ -74,6 +72,15 @@ describe('agreement panel tabs', () => {
         }, (_key, fallback) => fallback);
         const $missing = load(missing);
         expect($missing('[data-agreement-funding-disclosure] a')).toHaveLength(0);
+        expect($missing('[data-agreement-lens-rule]').text()).toBe('No lens: the round settles on its funding target alone.');
+
+        // The developer listing its own key as a verifier is allowed, and said plainly.
+        const own = load(panel.fundingTermsHtml({
+            rule: { electorate: 'investors', lens: [verifier, payout], lensThreshold: 2 }, funding,
+            published: { sponsor: payout }, deadline: '2099-01-01T00:00:00.000Z'
+        }));
+        expect(own('[data-agreement-lens-rule]').text()).toBe('2 of 2 must confirm.');
+        expect(own('[data-agreement-lens-developer]').text()).toBe('The developer is one of the verifiers.');
     });
 });
 
@@ -585,7 +592,7 @@ describe('Agreements list rows', () => {
 
 const SPONSOR = '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin';
 const OTHER_WALLET = 'HrcX5vC2ws2sKiLwpTyYG6Dnc3dmHT6zvuUp2xDs2pEx';
-const LENS = 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB';
+const LENS = '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71';
 const ACCOUNT = 'Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W';
 const CID = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
 const PUBLISHED = { cid: CID, publishedAt: '2026-10-21T12:00:00.000Z', apiBase: 'https://api.example.test', sponsor: SPONSOR };
@@ -593,23 +600,24 @@ const NOW = 1_790_000_000;
 const SOL = 1_000_000_000n;
 // An agreement account as AgreementClient.readAgreement decodes it.
 const account = (overrides = {}) => ({
-    address: ACCOUNT, cid: CID, authority: SPONSOR, lens: LENS, payout: SPONSOR, deadline: 0, createdAt: NOW - 100,
+    address: ACCOUNT, cid: CID, authority: SPONSOR, lens: LENS, lenses: [LENS], lensThreshold: 1, lensConfirmed: [],
+    fundingMint: null, requiredFunding: 0n, fundingMet: false, fundingObserved: 0n, fundingMetAt: 0, payout: SPONSOR, deadline: 0, createdAt: NOW - 100,
     requiredLamports: SOL, escrowLamports: 0n, statusCode: 0, status: 'Active', openGround: false, decisionCode: 0, decision: 'Pending',
     decisionAttestedAt: 0, decisionObservedAt: 0, decisionAttestation: null, decisionHash: null, executedAt: 0, bump: 254, ...overrides
 });
 // The section's view as the panel builds it (chainView), unminted unless a ref is given.
 const view = (overrides = {}) => ({
-    published: PUBLISHED, sponsor: SPONSOR, ref: null, wallet: SPONSOR, lens: LENS, electorate: 'owners', deadlinePassed: false,
+    published: PUBLISHED, sponsor: SPONSOR, ref: null, wallet: SPONSOR, lenses: [LENS], electorate: 'owners', deadlinePassed: false,
     chain: null, actions: null, attestation: null, busy: null, ...overrides
 });
-const minted = (value, { wallet = SPONSOR, attestation = null, ...overrides } = {}) => view({
+const minted = (value, { wallet = SPONSOR, attestation = null, escrow = null, ...overrides } = {}) => view({
     ref: { cluster: 'devnet', account: ACCOUNT }, wallet, attestation,
     chain: { loading: false, value, error: null },
-    actions: value ? bridge.chainActions(value, { wallet, attestation, nowSeconds: NOW }) : null,
+    actions: value ? bridge.chainActions(value, { wallet, attestation, escrow, nowSeconds: NOW }) : null,
     ...overrides
 });
 // The data-agreement-action of every button, with whether it is disabled.
-const buttons = html => [...html.matchAll(/<button type="button" class="[^"]*" data-agreement-action="([a-z]+)"( disabled)?>/g)]
+const buttons = html => [...html.matchAll(/<button type="button" class="[^"]*" data-agreement-action="([a-z-]+)"( disabled)?>/g)]
     .map(match => `${match[1]}${match[2] ? ':disabled' : ''}`);
 
 describe('On chain: who has a chain section', () => {
@@ -634,24 +642,25 @@ describe('On chain: who has a chain section', () => {
 });
 
 describe('On chain: minting', () => {
-    it('is ready only for the sponsor\'s wallet, a lens and a deadline still ahead', () => {
-        expect(panel.mintReadiness({ sponsor: SPONSOR, wallet: SPONSOR, lens: LENS })).toEqual({ canMint: true, repropose: false, canRepropose: false, hints: [] });
-        const hints = options => panel.mintReadiness({ sponsor: SPONSOR, wallet: SPONSOR, lens: LENS, ...options }, keys).hints;
+    it('is ready only for the sponsor\'s wallet, a lens (or a crowdfunding target) and a deadline still ahead', () => {
+        expect(panel.mintReadiness({ sponsor: SPONSOR, wallet: SPONSOR, lenses: [LENS] })).toEqual({ canMint: true, repropose: false, canRepropose: false, hints: [] });
+        expect(panel.mintReadiness({ sponsor: SPONSOR, wallet: SPONSOR, lenses: [], electorate: 'investors' }).canMint).toBe(true);
+        const hints = options => panel.mintReadiness({ sponsor: SPONSOR, wallet: SPONSOR, lenses: [LENS], ...options }, keys).hints;
         expect(hints({ wallet: null })).toEqual(['agreement.chain.hints.connectSponsor']);
         expect(hints({ wallet: OTHER_WALLET })).toEqual(['agreement.chain.hints.notSponsor']);
-        expect(hints({ lens: null })).toEqual(['agreement.chain.hints.noRuleLens']);
-        expect(hints({ lens: null, electorate: 'community' })).toEqual(['agreement.chain.hints.noConfiguredLens']);
+        expect(hints({ lenses: [] })).toEqual(['agreement.chain.hints.noRuleLens']);
+        expect(hints({ lenses: [], electorate: 'community' })).toEqual(['agreement.chain.hints.noConfiguredLens']);
         expect(hints({ deadlinePassed: true })).toEqual(['agreement.chain.hints.deadlinePassed']);
-        expect(hints({ wallet: OTHER_WALLET, lens: null, deadlinePassed: true }))
+        expect(hints({ wallet: OTHER_WALLET, lenses: [], deadlinePassed: true }))
             .toEqual(['agreement.chain.hints.notSponsor', 'agreement.chain.hints.noRuleLens', 'agreement.chain.hints.deadlinePassed']);
-        expect(panel.mintReadiness({ sponsor: SPONSOR, wallet: OTHER_WALLET, lens: LENS }).hints[0])
+        expect(panel.mintReadiness({ sponsor: SPONSOR, wallet: OTHER_WALLET, lenses: [LENS] }).hints[0])
             .toBe(`Only the sponsor’s wallet (${panel.shortKey(SPONSOR)}) can mint it; the connected wallet is ${panel.shortKey(OTHER_WALLET)}.`);
     });
 
     it('an agreement proposed without a sponsor can only be proposed again, which needs a wallet', () => {
-        expect(panel.mintReadiness({ sponsor: null, wallet: SPONSOR, lens: LENS }, keys))
+        expect(panel.mintReadiness({ sponsor: null, wallet: SPONSOR, lenses: [LENS] }, keys))
             .toEqual({ canMint: false, repropose: true, canRepropose: true, hints: ['agreement.chain.hints.noSponsor'] });
-        expect(panel.mintReadiness({ sponsor: null, wallet: null, lens: LENS }).canRepropose).toBe(false);
+        expect(panel.mintReadiness({ sponsor: null, wallet: null, lenses: [LENS] }).canRepropose).toBe(false);
     });
 
     it('offers Mint while unminted, disabled until it is ready, or Propose again without a sponsor', () => {
@@ -697,7 +706,8 @@ describe('On chain: a minted agreement', () => {
         expect(html).toContain('data-agreement-chain-decision="Pending"');
         const sol = value => format.formatMoney(value, 'SOL', { maxFractionDigits: 9, minFractionDigits: 0 });
         expect(html).toContain(`${sol(0.5)} of ${sol(1)}`);
-        expect(html).toContain(`<code title="${LENS}">${panel.shortKey(LENS)}</code>`);
+        expect(html).toContain(`<code dir="ltr" title="${LENS}">${panel.shortKey(LENS)}</code>`);
+        expect(html).toContain('The lens member must confirm.');
         expect(html).toContain('<dt>Deadline</dt><dd>None</dd>');
         expect(panel.chainHtml(minted(account({ requiredLamports: 0n })))).toContain(`${sol(0)} (none required)`);
         const executed = panel.chainHtml(minted(account({ statusCode: 1, status: 'Executed', decisionCode: 1, decision: 'Satisfied', escrowLamports: SOL, executedAt: NOW })));
@@ -722,7 +732,8 @@ describe('On chain: a minted agreement', () => {
     it('offers Record decision once the lens has attested, and Execute once it is recorded and funded', () => {
         const attested = panel.chainHtml(minted(account(), { attestation: LENS }));
         expect(buttons(attested)).toEqual(['attest', 'execute:disabled', 'fund', 'cancel']);
-        expect(attested).toContain('Its lens has attested the decision: record it on chain.');
+        expect(attested).toContain('A lens member has attested the decision: record it on chain.');
+        expect(attested).toContain('0 of 1 lens confirmations recorded.');
         const satisfied = account({ decisionCode: 1, decision: 'Satisfied' });
         // Recorded but unfunded: Execute waits for the escrow; the sponsor can no longer cancel.
         const unfunded = panel.chainHtml(minted(satisfied));
@@ -739,6 +750,37 @@ describe('On chain: a minted agreement', () => {
         expect(buttons(html)).toEqual(['execute:disabled', 'expire']);
         expect(html).toContain('Its deadline has passed: anyone can expire it');
         expect(buttons(panel.chainHtml(minted(passed)))).toEqual(['execute:disabled', 'fund:disabled', 'cancel:disabled', 'expire']);
+    });
+
+    it('counts lens confirmations against the threshold, marks confirmed members and flags the sponsor', () => {
+        const members = [LENS, OTHER_WALLET, SPONSOR];
+        const value = account({ lens: LENS, lenses: members, lensThreshold: 2, lensConfirmed: [OTHER_WALLET] });
+        const $ = load(panel.chainHtml(minted(value, { attestation: LENS })));
+        expect($('[data-agreement-lens-rule]').text()).toBe('2 of 3 must confirm.');
+        expect($('[data-agreement-lens-member]').map((_, el) => $(el).attr('data-agreement-lens-member')).get()).toEqual(members);
+        expect($(`[data-agreement-lens-member="${OTHER_WALLET}"] [data-agreement-lens-confirmed]`)).toHaveLength(1);
+        expect($(`[data-agreement-lens-member="${LENS}"] [data-agreement-lens-confirmed]`)).toHaveLength(0);
+        expect($('[data-agreement-lens-developer]').text()).toBe('The sponsor is one of the verifiers.');
+        expect($.html()).toContain('1 of 2 lens confirmations recorded.');
+        // Once the threshold is met, no lens step is left to take.
+        const met = panel.chainHtml(minted({ ...value, lensConfirmed: [OTHER_WALLET, LENS] }, { attestation: SPONSOR }));
+        expect(buttons(met)).not.toContain('attest');
+        expect(met).not.toContain('lens confirmations recorded');
+    });
+
+    it('offers Confirm funding while a contribution target is unconfirmed, enabled once contributions reach it', () => {
+        const target = account({ lens: '11111111111111111111111111111111', lenses: [], lensThreshold: 0, requiredLamports: 0n,
+            fundingMint: client.constants.USDC_DEVNET_MINT, requiredFunding: 5_000_000n });
+        const short = panel.chainHtml(minted(target, { wallet: OTHER_WALLET, electorate: 'investors', escrow: { totalDonated: 4_000_000n, totalRefunded: 0n } }));
+        expect(buttons(short)).toEqual(['confirm-funding:disabled', 'execute:disabled']);
+        expect(short).toContain('Contributions have not reached the funding target yet.');
+        expect(short).toContain('5 USDC, not yet confirmed');
+        expect(short).toContain('No lens: the round settles on its funding target alone.');
+        const reached = panel.chainHtml(minted(target, { wallet: OTHER_WALLET, electorate: 'investors', escrow: { totalDonated: 6_000_000n, totalRefunded: 1_000_000n } }));
+        expect(buttons(reached)).toEqual(['confirm-funding', 'execute:disabled']);
+        const confirmed = panel.chainHtml(minted({ ...target, fundingMet: true, decisionCode: 1, decision: 'Satisfied' }, { wallet: OTHER_WALLET, electorate: 'investors' }));
+        expect(buttons(confirmed)).toEqual(['execute']);
+        expect(confirmed).toContain('5 USDC, confirmed on chain');
     });
 
     it('words a chain status however it is spelled', () => {
@@ -832,5 +874,35 @@ describe('compareTerms', () => {
         const compared = rows([agreement(), agreement({ id: 'ag-2', plan: { cid: Cid.cidOfObject(other), content: other } })]);
         expect(compared.plan.values).toEqual(['Courtyard plan', 'Courtyard plan']);
         expect(compared.plan.differs).toBe(true);
+    });
+});
+
+// The agreement editor's lens: up to 8 members and how many must confirm (agreement-dialog.js).
+describe('agreement editor lens', () => {
+    const dialog = require('../../frontend/js/agreement-dialog.js');
+    it('stores lensThreshold only when more than one member must confirm', () => {
+        expect(dialog.lensRule({ lens: [LENS] })).toEqual({ lens: [LENS] });
+        expect(dialog.lensRule({ lens: [LENS, SPONSOR], lensThreshold: 1 })).toEqual({ lens: [LENS, SPONSOR] });
+        expect(dialog.lensRule({ lens: [LENS, SPONSOR], lensThreshold: 2 })).toEqual({ lens: [LENS, SPONSOR], lensThreshold: 2 });
+        expect(dialog.lensRule({ lens: [LENS], lensThreshold: 2 })).toEqual({ lens: [LENS] });
+        expect(dialog.lensRule({})).toEqual({ lens: [] });
+        // A crowdfunding round keeps every member and the threshold.
+        const raw = dialog.recordFromForm({ id: 'cf', lens: [LENS, SPONSOR, OTHER_WALLET], lensThreshold: 2, currency: 'EUR' }, { electorate: 'investors', funding: {} });
+        expect(raw.rule).toMatchObject({ electorate: 'investors', lens: [LENS, SPONSOR, OTHER_WALLET], lensThreshold: 2 });
+    });
+
+    it('offers "Any 1 of N" first, then each larger count', () => {
+        const $ = load(`<select>${dialog.lensThresholdOptionsHtml(3, 2)}</select>`);
+        expect($('option').map((_, el) => $(el).text()).get()).toEqual(['Any 1 of 3', '2 of 3', '3 of 3']);
+        expect($('option[selected]').attr('value')).toBe('2');
+    });
+
+    it('words the lens in one line', () => {
+        const rule = options => load(dialog.lensSummaryHtml(options))('[data-agreement-lens-rule]').text();
+        expect(rule({ members: [LENS, SPONSOR, OTHER_WALLET], threshold: 1 })).toBe('Any 1 of 3 must confirm.');
+        expect(rule({ members: [LENS, SPONSOR, OTHER_WALLET], threshold: 2 })).toBe('2 of 3 must confirm.');
+        expect(rule({ members: [LENS] })).toBe('The lens member must confirm.');
+        expect(rule({ members: [] })).toBe('No lens member is named.');
+        expect(rule({ members: [], crowdfunding: true })).toBe('No lens: the round settles on its funding target alone.');
     });
 });

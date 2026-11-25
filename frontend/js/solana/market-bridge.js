@@ -99,7 +99,7 @@
 
     async function readAgreement(connection, proposal) {
         const agreement = await root.AgreementClient.fetchAgreement(connection, { address: proposal });
-        if (!agreement || !agreement.authority || !agreement.lens || !Number.isSafeInteger(agreement.deadline)) {
+        if (!agreement || !agreement.authority || !Array.isArray(agreement.lenses) || !Number.isSafeInteger(agreement.deadline)) {
             throw new Error('Agreement account identity, status, or deadline is unavailable.');
         }
         if (!['Active', 'Executed', 'Cancelled', 'Expired'].includes(agreement.status)) {
@@ -149,7 +149,7 @@
         const raw = await client.readMarket(connection, address, programId);
         // The codec verifies the account owner, its term-derived address and its token vault.
         if (raw && (raw.proposal !== publicKey(proposal) || raw.stakeMint !== DEVNET_USDC_MINT
-            || raw.seed !== root.Lmsr.maxLoss(raw.b) || (raw.kind === 1 && raw.trustedAttester !== agreement.lens))) {
+            || raw.seed !== root.Lmsr.maxLoss(raw.b) || (raw.kind === 1 && !agreement.lenses.includes(raw.trustedAttester)))) {
             throw new Error('Selected market does not match the agreement, verifier or funded USDC terms.');
         }
         return { address, raw, sponsor: agreement.authority };
@@ -184,14 +184,14 @@
         const agreement = await readAgreement(connection, proposal);
         const sponsor = agreement.authority;
         const summary = { market: null, marketAddress: marketAddress ? publicKey(marketAddress) : null,
-            sponsor, lens: agreement.lens, chainStatus: chainStatus(agreement),
+            sponsor, lenses: agreement.lenses, chainStatus: chainStatus(agreement),
             deadline: agreement.deadline === 0 ? null : new Date(agreement.deadline * 1000).toISOString(),
             wallet: wallet ? publicKey(wallet) : null, yes: null, no: null };
         if (!marketAddress) return summary;
         const { raw } = await liveMarket(connection, client, proposal, agreement, marketAddress, programId);
         if (!raw) throw new Error('Selected market was not found.');
         const market = normalizedMarket(client, marketAddress, raw);
-        market.creatorRole = raw.creator === sponsor ? 'sponsor' : raw.creator === agreement.lens ? 'verifier' : null;
+        market.creatorRole = raw.creator === sponsor ? 'sponsor' : agreement.lenses.includes(raw.creator) ? 'verifier' : null;
         if (raw.kind === 1) {
             const cid = root.Cid.rawCidOfDigest(raw.recipeHash);
             market.recipeCid = cid;
@@ -219,7 +219,7 @@
         const agreement = await readAgreement(connection, proposal);
         return {
             sponsor: agreement.authority,
-            lens: agreement.lens,
+            lenses: agreement.lenses,
             chainStatus: chainStatus(agreement),
             deadline: agreement.deadline === 0 ? null : new Date(agreement.deadline * 1000).toISOString(),
             cid: agreement.cid,
@@ -281,8 +281,8 @@
             throw error;
         }
         if (raw.resolved) throw new Error('This market is already resolved.');
-        if (publicKey(wallet) === sponsor || publicKey(wallet) === agreement.lens) {
-            const error = new Error('The agreement sponsor and lens cannot trade this market.');
+        if (publicKey(wallet) === sponsor || agreement.lenses.includes(publicKey(wallet))) {
+            const error = new Error('The agreement sponsor and its lens members cannot trade this market.');
             error.code = 'INSIDER_TRADE';
             throw error;
         }
@@ -295,7 +295,10 @@
         if (!options.proposal) throw new Error('proposal account is required');
         const connection = await verifiedConnection();
         const agreement = await readAgreement(connection, options.proposal);
-        const publication = options.external ? { proposal: publicKey(options.proposal), trustedAttester: agreement.lens, external: options.external } : null;
+        // A public-record market's verifier is one of the agreement's lens members: the chosen one, or the first.
+        const attester = options.trustedAttester ? publicKey(options.trustedAttester) : agreement.lenses[0];
+        if (options.external && !agreement.lenses.includes(attester)) throw new Error('The verifier must be one of the agreement\'s lens members.');
+        const publication = options.external ? { proposal: publicKey(options.proposal), trustedAttester: attester, external: options.external } : null;
         const recipe = publication ? root.ExternalMarketRecipe.build(publication) : null;
         const b = toPositiveBigInt(options.b ?? DEFAULT_B, 'b');
         const closesAt = options.closesAt ?? recipe?.closesAt ?? agreement.deadline;

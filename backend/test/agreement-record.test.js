@@ -16,7 +16,8 @@ const sha256 = text => createHash('sha256').update(text).digest('hex');
 // The designs' CIDs as a published agreement links them, and the lens member that verifies owners.
 const LAYOUT_CID = Cid.cidOfObject({ schema: 'design/v1', goal: 'parcel-layout', title: 'Lay out block seven' });
 const ROAD_CID = Cid.cidOfObject({ schema: 'design/v1', goal: 'road', title: 'Draw road' });
-const MEMBER = 'lens-member-1';
+const MEMBER = '7Np41oeYqPefeNQEHSv1UDhYrehxin3NStELsSKCT4K2';
+const MEMBER_2 = 'HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH';
 const PLAN_CONTENT = PlanRecord.create('Block seven', [LAYOUT_CID, ROAD_CID], { at: '45.8,15.96,16', mode: '2d' });
 const PLAN = { cid: Cid.cidOfObject(PLAN_CONTENT), content: PLAN_CONTENT };
 // Rectangles in units of 1e-3 degree from the test origin.
@@ -442,6 +443,29 @@ describe('the lens of an owners rule', () => {
         vote.rule = { electorate: 'community', binding: false, approvalConfig: null, lens: [] };
         expect(record.validate(vote).warnings).toEqual([]);
     });
+
+    it('takes 0-8 distinct member keys and a threshold of 1 to the number of members, any one by default', () => {
+        const lensErrors = rule => record.validate({ ...fixture(), rule: { ...fixture().rule, ...rule } }).errors.filter(error => error.code === 'rule-lens-invalid');
+        expect(lensErrors({ lens: [MEMBER, MEMBER_2] })).toEqual([]);
+        expect(lensErrors({ lens: [MEMBER, MEMBER_2], lensThreshold: 2 })).toEqual([]);
+        expect(record.lensThresholdOf({ lens: [MEMBER, MEMBER_2] })).toBe(1);
+        expect(record.lensThresholdOf({ lens: [MEMBER, MEMBER_2], lensThreshold: 2 })).toBe(2);
+        expect(record.lensThresholdOf({ lens: [] })).toBe(0);
+        expect(record.normalize({ ...fixture(), rule: { ...fixture().rule, lensThreshold: 1 } }).rule.lensThreshold).toBe(1);
+        expect(record.normalize(fixture()).rule).not.toHaveProperty('lensThreshold');
+        for (const [rule, message] of [
+            [{ lens: ['lens-member-1'] }, /must be a Solana key/],
+            [{ lens: ['11111111111111111111111111111111'] }, /must be a Solana key/],
+            [{ lens: [MEMBER, MEMBER] }, /listed once/],
+            [{ lens: Array.from({ length: 9 }, () => MEMBER) }, /up to 8/],
+            [{ lens: [MEMBER, MEMBER_2], lensThreshold: 3 }, /from 1 to the number of members/],
+            [{ lens: [MEMBER], lensThreshold: 0 }, /from 1 to the number of members/],
+            [{ lens: [MEMBER], lensThreshold: 1.5 }, /from 1 to the number of members/],
+            [{ lens: [], lensThreshold: 1 }, /no confirmation threshold/]
+        ]) {
+            expect(lensErrors(rule).map(error => error.message).join(), JSON.stringify(rule)).toMatch(message);
+        }
+    });
 });
 
 describe('normalize (published records)', () => {
@@ -607,7 +631,8 @@ describe('publishedCid', () => {
             raw => { raw.allocations.pop(); },
             raw => { raw.money.lines[0].amountCents += 1; },
             raw => { raw.rule.binding = false; },
-            raw => { raw.rule.lens = ['lens-member-2']; },
+            raw => { raw.rule.lens = [MEMBER_2]; },
+            raw => { raw.rule.lens = [MEMBER, MEMBER_2]; raw.rule.lensThreshold = 2; },
             raw => { raw.deadline = '2026-12-31T00:00:00.000Z'; },
             raw => { raw.sponsor = '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin'; },
             raw => { raw.title = 'Block eight'; }

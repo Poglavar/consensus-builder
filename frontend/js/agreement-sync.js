@@ -263,7 +263,8 @@
                     cids.set(design.proposalId, cid);
                 } else {
                     if (!record) throw failure('design-missing', t('agreement.publish.errors.designMissing', 'A design of this agreement is no longer on this device.'));
-                    cids.set(design.proposalId, (await win.DesignSync.publishDesign(record)).cid);
+                    // Its device-only models were settled above, with the agreement's other designs.
+                    cids.set(design.proposalId, (await win.DesignSync.publishDesign(record, { modelsSettled: true })).cid);
                 }
             }
             // Stamping an author changes a design's CID: the record follows what was published.

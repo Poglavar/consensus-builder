@@ -118,7 +118,7 @@
             developer: agreement.sponsor, projectId: agreement.funding.apartments.projectId, unit,
             targetUsdcAtomic: agreement.funding.targetUsdcAtomic, contract: agreement.funding.contract,
             termsHash: offer.termsHash, apartmentAccount: offer.account, buyer, position: offer.position,
-            qualification: offer.qualification, lens: agreement.rule.lens[0],
+            qualification: offer.qualification, lenses: agreement.rule.lens,
             depositPaidUsdcAtomic: unit.depositUsdcAtomic, ...(signature ? { signature } : {})
         };
         root.FileDownload.save(root, JSON.stringify(schedule, null, 2), `apartment-${unit.unitId}-contract-schedule.json`, 'application/json');
@@ -308,7 +308,7 @@
                 const buyer = root.AgreementBridge.connectedWallet();
                 if (!buyer) { feedback(t('agreement.chain.errors.connectWallet', 'Connect a Solana wallet first.')); return; }
                 const data = { agreement: agreement.published.cid, unitId: unit.unitId, apartment: unit.label,
-                    xrayBuilding: unit.xrayBuilding, unit: unit.unit, buyer, developer: agreement.sponsor, lens: agreement.rule.lens[0] };
+                    xrayBuilding: unit.xrayBuilding, unit: unit.unit, buyer, developer: agreement.sponsor, lenses: agreement.rule.lens };
                 const copied = await root.copyTextWithFeedback(JSON.stringify(data, null, 2));
                 feedback(copied ? t('common.copied', 'Copied') : t('chat.copyFailed', 'Could not copy the text.'), copied ? undefined : 'danger');
             }).catch(error => feedback(error.message, 'danger')));

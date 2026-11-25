@@ -105,7 +105,7 @@ describe('headless app formation host', () => {
         const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {} });
         const plan = await tools.draftPlan({ designs: [design.content], title: 'Funded park plan' });
         const terms = { rulePreset: 'crowdfunding', plan: plan.draftArtifact, sponsor: 'So11111111111111111111111111111111111111112',
-            lens: '9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt', deadline: '2099-01-01T00:00:00.000Z', targetUsdcAtomic: '1000000',
+            lenses: ['9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt'], deadline: '2099-01-01T00:00:00.000Z', targetUsdcAtomic: '1000000',
             contract: { name: 'investor-terms.txt', mediaType: 'text/plain', data: 'dGVybXM=' } };
         const draft = await tools.draftAgreement(terms);
         expect(draft.agreement).toMatchObject({ rule: { electorate: 'investors', binding: true, approvalConfig: null, settlement: null },
@@ -113,12 +113,21 @@ describe('headless app formation host', () => {
         const inspected = await tools.inspectAgreement({ plan: draft.draftArtifact });
         expect(inspected).toMatchObject({ funding: draft.agreement.funding, investorReview: {
             contract: 'investor-terms.txt', payout: terms.sponsor,
-            decisionVerifierWallets: [terms.lens], decisionMethod: 'lens-attestation',
+            decisionVerifierWallets: terms.lenses, lensThreshold: 1, developerIsVerifier: false, decisionMethod: 'program-checks-funding-target',
+            fundingTargetUsdcAtomic: '1000000',
             contributorEligibility: 'any-wallet', kycEnforcedOnChain: false
         }, parties: null, cashSchedule: null });
         const revised = await tools.editAgreement({ plan: draft.draftArtifact, expectedCid: draft.cid, terms: { targetUsdcAtomic: '2000000' } });
         expect(revised.agreement.funding.targetUsdcAtomic).toBe('2000000');
         expect(revised.cid).not.toBe(draft.cid);
+        // Two verifiers, the developer one of them, both required; then no lens at all: the target alone settles it.
+        const both = await tools.editAgreement({ plan: draft.draftArtifact, expectedCid: draft.cid, terms: { lenses: [...terms.lenses, terms.sponsor], lensThreshold: 2 } });
+        expect(both.agreement.rule).toMatchObject({ lens: [...terms.lenses, terms.sponsor], lensThreshold: 2 });
+        expect((await tools.inspectAgreement({ plan: both.draftArtifact })).investorReview).toMatchObject({ lensThreshold: 2, developerIsVerifier: true });
+        const none = await tools.editAgreement({ plan: draft.draftArtifact, expectedCid: draft.cid, terms: { lenses: [] } });
+        expect(none.agreement.rule.lens).toEqual([]);
+        expect(none.agreement.rule).not.toHaveProperty('lensThreshold');
+        await expect(tools.editAgreement({ plan: draft.draftArtifact, expectedCid: draft.cid, terms: { lensThreshold: 2 } })).rejects.toThrow(/from 1 to the number of members/);
     });
 
     it('authors, inspects and revises the same apartment schedule a buyer reviews in the browser', async () => {
@@ -130,7 +139,7 @@ describe('headless app formation host', () => {
             at: '45.7665,15.9722,19', priceUsdcAtomic: '100000000', depositUsdcAtomic: '10000000', drawing });
         const apartments = { projectId: 'podbrezje', units: [apartment('a4-c-23'), apartment('a4-c-21')] };
         const draft = await tools.draftAgreement({ rulePreset: 'crowdfunding', plan: plan.draftArtifact,
-            sponsor: 'So11111111111111111111111111111111111111112', lens: '9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt',
+            sponsor: 'So11111111111111111111111111111111111111112', lenses: ['9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt'],
             deadline: '2099-01-01T00:00:00.000Z', targetUsdcAtomic: '20000000',
             contract: { name: 'terms.txt', mediaType: 'text/plain', data: 'dGVybXM=' }, apartments });
         const preview = await tools.inspectAgreement({ plan: draft.draftArtifact, includeAvailability: true });
@@ -151,7 +160,7 @@ describe('headless app formation host', () => {
         const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {} });
         const plan = await tools.draftPlan({ designs: [design.content], title: 'Alatau plan' });
         const agreement = await tools.draftAgreement({ plan: plan.draftArtifact, rulePreset: 'crowdfunding', sponsor: 'So11111111111111111111111111111111111111112',
-            lens: '9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt', deadline: '2099-01-01T00:00:00.000Z', targetUsdcAtomic: '1000000',
+            lenses: ['9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt'], deadline: '2099-01-01T00:00:00.000Z', targetUsdcAtomic: '1000000',
             contract: { name: 'terms.txt', mediaType: 'text/plain', data: 'dGVybXM=' } });
         expect(agreement.agreement).toMatchObject({ city: 'alatau', money: { currency: 'KZT', lines: [] } });
     });
@@ -160,7 +169,7 @@ describe('headless app formation host', () => {
         const design = make('space', { spaceKind: 'park' });
         const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {} });
         const plan = await tools.draftPlan({ designs: [design.content], title: 'Private funding plan' });
-        const draft = await tools.draftAgreement({ plan: plan.draftArtifact, rulePreset: 'crowdfunding', lens: '9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt',
+        const draft = await tools.draftAgreement({ plan: plan.draftArtifact, rulePreset: 'crowdfunding', lenses: ['9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt'],
             deadline: '2099-01-01T00:00:00.000Z', targetUsdcAtomic: '1000000', contract: { name: 'terms.txt', mediaType: 'text/plain', data: 'dGVybXM=' } });
         expect(draft.agreement.sponsor).toBeNull();
         const revised = await tools.editAgreement({ plan: draft.draftArtifact, expectedCid: draft.cid,

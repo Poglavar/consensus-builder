@@ -7,7 +7,7 @@
 })(typeof window !== 'undefined' ? window : globalThis, function solanaLmsrClientFactory() {
     'use strict';
 
-    const PROGRAM_ID = 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB';
+    const PROGRAM_ID = '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71';
     const TOKEN_PROGRAM_ID = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
     const ASSOCIATED_TOKEN_PROGRAM_ID = 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL';
     const SYSTEM_PROGRAM_ID = '11111111111111111111111111111111';

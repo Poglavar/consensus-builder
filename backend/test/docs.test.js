@@ -364,7 +364,7 @@ describe('agent quickstart docs', () => {
         expect(res.text.includes('pending its devnet deployment')).toBe(/^Agreement1+$/.test(PROGRAM_IDS.agreement));
         // create's documented signature is the checked-in IDL's.
         const create = AGREEMENT_IDL.instructions.find(ix => ix.name === 'create');
-        expect(res.text).toContain(`create(${create.args.map(arg => `${arg.name}: ${typeName(arg.type)}`).join(', ')})`);
+        expect(res.text).toContain(`create(${create.args.map(arg => `${arg.name}: ${typeName(arg.type)}`).join(', ')})`.replace(/</g, '&lt;').replace(/>/g, '&gt;'));
         expect(res.text).toContain('/agreements/&lt;cid&gt;/onchain');
         expect(res.text).toContain('AgreementDecision-v1');
         expect(res.text).toContain('agreement-execution-v1');
@@ -500,7 +500,8 @@ describe('agent quickstart docs', () => {
         for (const file of [program.idl, program.client, program.readme]) expect(fs.existsSync(repoFile(file)), file).toBe(true);
         expect(program.deployed).toBe(!/^Agreement1+$/.test(program.programId));
         expect(program.status).toMatch(program.deployed ? /^deployed on devnet$/ : /placeholder/);
-        expect(program.account).toMatchObject({ space: 296, offsets: { authority: 8, lens: 40, payout: 72, deadline: 104, status: 136, decision: 138, cid: 228 } });
+        expect(program.account).toMatchObject({ space: 580, offsets: { authority: 8, lens: 40, payout: 72, deadline: 104, status: 136, decision: 138,
+            lensCount: 228, lensThreshold: 229, lensConfirmed: 230, moreLenses: 231, fundingMint: 455, requiredFunding: 487, cid: 512 } });
         // Every instruction is documented with the IDL's own argument list and account order.
         expect(Object.keys(program.instructions).sort()).toEqual(AGREEMENT_IDL.instructions.map(ix => ix.name).sort());
         for (const ix of AGREEMENT_IDL.instructions) {

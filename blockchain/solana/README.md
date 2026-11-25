@@ -17,7 +17,7 @@ Solana equivalents of the EVM ParcelNFT and ProposalNFT contracts.
   discriminator, status at byte 136, through `agreement::read_agreement_view`. They keep their names,
   ids and the `proposal` account and field names (the IDL interfaces are unchanged); that word now
   names the agreement account. Renaming them is a deploy-time matter.
-- **agreement** (M3 of `../../plan-design-agreement.md`; devnet `GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ`): one account
+- **agreement** (M3 of `../../plan-design-agreement.md`; devnet `ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH`): one account
   per agreement (PDA of its sponsor and CID) with a SOL escrow, settled by its lens's
   AgreementDecision-v1 attestation;
   replaces the per-proposal consent machinery. See [`programs/agreement/README.md`](programs/agreement/README.md)
@@ -235,15 +235,15 @@ so the programs there can still be fixed and redeployed.
 |---|---|---|
 | `parcel_nft` | `4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1` | [`idl/parcel_nft.json`](idl/parcel_nft.json) |
 | `proposal_nft` | `3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg` | [`idl/proposal_nft.json`](idl/proposal_nft.json) |
-| `proposal_market` | `GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB` | [`idl/proposal_market.json`](idl/proposal_market.json) |
-| `proposal_pledge` | `1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g` | [`idl/proposal_pledge.json`](idl/proposal_pledge.json) |
+| `proposal_market` | `9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71` | [`idl/proposal_market.json`](idl/proposal_market.json) |
+| `proposal_pledge` | `5RvXB53atCdCkDEydpvgUDz4Ph6uFUVyMgpjdSzNwXAq` | [`idl/proposal_pledge.json`](idl/proposal_pledge.json) |
 | `property_offer` | `BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp` | [`idl/property_offer.json`](idl/property_offer.json) |
 
 The same IDs are pinned in `Anchor.toml`, each program's `declare_id!()`, the generated IDLs, and
 `frontend/contracts/addresses.json`. Backend contract tests fail when those copies diverge. See
 [`docs/protocol.md`](../../docs/protocol.md) for roles, Explorer links, recipe schemas, and trust assumptions.
 
-Current devnet versions are ParcelNFT v2, ProposalMarket v2 and ProposalNFT v3. Earlier transaction
+Current devnet versions are ParcelNFT v2 and ProposalNFT v3; agreement, proposal_pledge and proposal_market were redeployed at new addresses on 2026-11-25 for the lens-set agreement layout. Earlier transaction
 proofs describe the prior v1 behavior and must not be read as proof of lens-based owner consent.
 
 ## Program ids and `anchor keys sync` — do NOT run it here
@@ -257,7 +257,7 @@ happened on 2026-09-16 and was caught by `backend/test/proposal-market-layout.te
 the ids. Set a new program's id by hand from `anchor keys list` instead, and deploy one program at a
 time: `anchor deploy --program-name proposal_market --provider.cluster devnet`.
 
-`proposal_market` (`GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB`) read `proposal_nft` accounts by a
+`proposal_market` (`9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71`) read `proposal_nft` accounts by a
 mirrored prefix struct until 2026-10-22; its source now reads `agreement` accounts (see Programs);
 `idl/proposal_market.json` is the checked-in copy of `target/idl/` after a build, like the others. The same program source now also defines `ExternalMarket`, which leaves
 the legacy account layout untouched and verifies court-oracle SAS accounts owned by

@@ -31,6 +31,7 @@ const YES = marketClient.constants.SIDE_YES;
 const NO = marketClient.constants.SIDE_NO;
 const market = (agreement, { qYes = 0n, qNo = 0n, resolved = false, outcome = 0 } = {}) => ({ model: 'lmsr', b: 100_000_000n, qYes, qNo, closesAt: agreement.deadline, resolved, outcome });
 const STATUS = { Active: 0, Executed: 1, Cancelled: 2, Expired: 3 };
+const USDC = require('../../frontend/js/solana/agreement-client.js').constants.USDC_DEVNET_MINT;
 
 let chain;
 let owner;
@@ -47,12 +48,14 @@ beforeEach(() => {
 });
 
 // An agreement account of the owner placed on the emulated chain with the state a test needs.
-function placeAgreement(seed, { status = 'Active', decision = 0, deadline = NOW + 7 * 86400, required = 1000n, escrow = 1000n, authority, lensKey } = {}) {
+function placeAgreement(seed, { status = 'Active', decision = 0, deadline = NOW + 7 * 86400, required = 1000n, escrow = 1000n, authority, lensKey,
+    lenses = [lensKey ?? LENS], lensThreshold, lensConfirmed = [], requiredFunding = 0n, fundingMet = false } = {}) {
     const cid = Cid.cidOfObject({ schema: 'agreement/v1', title: seed });
     const sponsor = authority ?? OWNER;
     const account = agreementAccountOf(cid, sponsor);
     chain.putAgreement(account, {
-        cid, authority: sponsor, lens: lensKey ?? LENS, payout: sponsor, deadline, requiredLamports: required, escrowLamports: escrow,
+        cid, authority: sponsor, lenses, lensThreshold: lensThreshold ?? (lenses.length ? 1 : 0), lensConfirmed, payout: sponsor,
+        fundingMint: requiredFunding > 0n ? USDC : null, requiredFunding, fundingMet, deadline, requiredLamports: required, escrowLamports: escrow,
         status: STATUS[status], decision, decisionAttestation: decision ? Keypair.generate().publicKey.toBase58() : undefined
     });
     return { cid, account, pickId: `pick-${seed}`, sourceRunId: 'run-earlier', sourceDay: '2026-10-20' };
@@ -88,7 +91,7 @@ describe('inspecting an agreement', () => {
         expect(await inspect({ ...placeAgreement('rival'), soleOwner: false })).toMatchObject({ state: 'awaiting-owners', steps: [] });
         const foreignLens = Keypair.generate().publicKey.toBase58();
         expect(await inspect({ ...placeAgreement('other lens', { lensKey: foreignLens }), soleOwner: true }))
-            .toMatchObject({ state: 'lens-not-operated', steps: [], lens: foreignLens });
+            .toMatchObject({ state: 'lens-not-operated', steps: [], lenses: [foreignLens], lensThreshold: 1 });
         expect(await inspect({ ...placeAgreement('no lens'), soleOwner: true }, { lensKey: null })).toMatchObject({ state: 'lens-not-operated' });
         // Pending and short of escrow: it can still be decided now, executed later.
         expect(await inspect({ ...placeAgreement('short', { escrow: 10n }), soleOwner: true }))
@@ -97,13 +100,33 @@ describe('inspecting an agreement', () => {
             .toMatchObject({ state: 'awaiting-funds', steps: [] });
     });
 
-    it('settles investor funding through the operated lens without an owner vote and releases its donation vault', async () => {
+    it('confirms a reached funding target without any lens, executes and releases the donation vault', async () => {
         const book = marketBook();
-        const item = { ...placeAgreement('funded investors', { required: 0n, escrow: 0n }),
-            content: { rule: { electorate: 'investors', binding: true } } };
-        const inspected = await inspect(item, { readers: { ...book.readers, readDonation: async () => ({ released: false }) } });
-        expect(inspected).toMatchObject({ state: 'decidable', outcome: 'YES', steps: ['lens', 'attest', 'execute', 'release-donations'] });
+        const investors = { content: { rule: { electorate: 'investors', binding: true } } };
+        const escrow = (totalDonated, totalRefunded = 0n) => ({ readers: { ...book.readers, readDonation: async () => ({ released: false, totalDonated, totalRefunded }) } });
+        const item = { ...placeAgreement('funded investors', { required: 0n, escrow: 0n, lenses: [], requiredFunding: 1000n }), ...investors };
+        const inspected = await inspect(item, escrow(1500n, 500n));
+        expect(inspected).toMatchObject({ state: 'decidable', outcome: 'YES', steps: ['confirm-funding', 'execute', 'release-donations'] });
         expect(inspected.steps).not.toContain('decide');
+        // Short of the target: nothing to sign yet.
+        expect(await inspect(item, escrow(1500n, 501n))).toMatchObject({ state: 'awaiting-contributions', outcome: null, steps: [], note: expect.stringMatching(/999 of the 1000/) });
+        // A crowdfunding lens attests only conditions it is asked to: the runner never asks it on its own.
+        const withLens = { ...placeAgreement('investors with a lens', { required: 0n, escrow: 0n, requiredFunding: 1000n }), ...investors };
+        expect(await inspect(withLens, escrow(1000n))).toMatchObject({ state: 'awaiting-lens', steps: ['confirm-funding'] });
+        const confirmedLens = { ...placeAgreement('investors confirmed', { required: 0n, escrow: 0n, requiredFunding: 1000n, lensConfirmed: [LENS] }), ...investors };
+        expect(await inspect(confirmedLens, escrow(1000n))).toMatchObject({ state: 'decidable', steps: ['confirm-funding', 'execute', 'release-donations'] });
+    });
+
+    it('adds its own lens member\'s confirmation and waits for the rest of the threshold', async () => {
+        const other = Keypair.generate().publicKey.toBase58();
+        const pair = { lenses: [other, LENS], lensThreshold: 2 };
+        expect(await inspect({ ...placeAgreement('two of two', pair), soleOwner: true }))
+            .toMatchObject({ state: 'awaiting-lens', outcome: null, steps: ['decide', 'lens', 'attest'], lensConfirmed: [] });
+        expect(await inspect({ ...placeAgreement('last of two', { ...pair, lensConfirmed: [other] }), soleOwner: true }))
+            .toMatchObject({ state: 'decidable', outcome: 'YES', steps: ['decide', 'lens', 'attest', 'execute'] });
+        // Its own member already counted: another member's turn.
+        expect(await inspect({ ...placeAgreement('mine counted', { ...pair, lensConfirmed: [LENS] }), soleOwner: true }))
+            .toMatchObject({ state: 'lens-not-operated', steps: [] });
     });
 
     it('expires one past its deadline and gives YES shares no payout', async () => {
@@ -297,9 +320,9 @@ describe('the settlement phase of a run (run.mjs settleStage)', () => {
             designs: [{ cid: design.cid, goal: design.content.goal, title: design.content.title }],
             parcels: [{ parcelId: PARCEL_ID, areaM2: 612.4 }],
             outputs: parcelOutputs([{ parcelId: PARCEL_ID, geometry: PARCEL, areaM2: 612.4 }]),
-            rule: ownersRule({ lens: LENS, rights }), deadline: deadlineAfterDays(Date.now(), deadlineDays), money: noMoney('EUR')
+            rule: ownersRule({ lenses: [LENS], rights }), deadline: deadlineAfterDays(Date.now(), deadlineDays), money: noMoney('EUR')
         });
-        const minted = await mintAgreement({ connection: chain.connection, sponsorKeypair: owner, cid, lens: LENS, deadline: content.deadline, lamports: '1000', sendAndConfirm: chain.sendAndConfirm });
+        const minted = await mintAgreement({ connection: chain.connection, sponsorKeypair: owner, cid, lenses: [LENS], deadline: content.deadline, lamports: '1000', sendAndConfirm: chain.sendAndConfirm });
         world.rows.set(cid, { cid, content, status: 'active', deadline: content.deadline, onchain: null });
         return { cid, content, account: minted.account };
     }

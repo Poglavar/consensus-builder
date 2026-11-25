@@ -428,6 +428,14 @@ describe('publishDesign', () => {
         win.DeviceModels.chooseForPublish = vi.fn(async () => { throw Object.assign(new Error('Nothing was published.'), { code: 'cancelled', cancelled: true }); });
         await expect(sync.publishDesign(cancelled)).rejects.toMatchObject({ cancelled: true });
         expect(server.calls).toHaveLength(2);
+
+        // Already asked by its caller in the same publish (an agreement asks once for all its designs).
+        const settled = road({ proposalId: 'park-5', goal: 'park', title: 'Settled', roadProposal: undefined,
+            structureProposal: { kind: 'park', geometry: square(15.96, 45.8), modelUrl: model, source: 'upload' } });
+        win.DeviceModels.chooseForPublish = vi.fn(async () => new Map());
+        await sync.publishDesign(settled, { modelsSettled: true });
+        expect(win.DeviceModels.chooseForPublish).not.toHaveBeenCalled();
+        expect(server.calls[2].body.content.structureProposal.modelUrl).toBe(model);
     });
 
     it('publishes a parcel layout on its own, and refuses a guest without a name before anything leaves the device', async () => {

@@ -211,8 +211,9 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
 
     // AgreementDecision-v1 `satisfied` for an indexed agreement (programs/agreement/README.md).
     // Operator-only, and the operator supplies nothing but the CID: whether the rule is met comes from
-    // the published rule and its owner receipts or finalized USDC deposits. A decision already issued
-    // for the agreement is final here as on chain: asked again it is answered as stored.
+    // the published rule and its owner receipts. A decision already issued for the agreement is final
+    // here as on chain: asked again it is answered as stored. A crowdfunding agreement is refused
+    // (409 funding_checked_on_chain): the program confirms its target with confirm_funding.
     // → 201 issued, 200 already issued (`reused`), each with the tally.
     app.post('/lens/agreements/:cid/decision', wrap(async (req, res) => {
         requireOperator(req, operatorToken, 'agreement decisions require the operator token');
@@ -224,9 +225,9 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
         const count = agreement.content?.rule?.electorate === 'investors' ? null
             : countAgreementDecisions(agreement, await agreements.decisions(cid));
         const sponsor = agreement.content?.sponsor;
-        const existing = typeof sponsor === 'string' ? await member.findDecision({ agreementCid: cid, sponsor }) : null;
-        if (existing) return res.status(200).json({ ...publicRecord(existing), reused: true, tally: count?.tally ?? null, counted: count?.counted.length ?? 0 });
-        const plan = await planAgreementDecision({ agreement, count, lensKey: member.authority, nowSeconds: clock.nowSeconds(), chain: fundingChain });
+        const existing = count && typeof sponsor === 'string' ? await member.findDecision({ agreementCid: cid, sponsor }) : null;
+        if (existing) return res.status(200).json({ ...publicRecord(existing), reused: true, tally: count.tally, counted: count.counted.length });
+        const plan = planAgreementDecision({ agreement, count, lensKey: member.authority, nowSeconds: clock.nowSeconds() });
         const record = await member.attestDecision(plan.fields);
         res.status(record.reused ? 200 : 201).json({ ...publicRecord(record), reused: record.reused, tally: plan.tally, counted: plan.counted });
     }));

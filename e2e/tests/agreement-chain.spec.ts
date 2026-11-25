@@ -128,7 +128,8 @@ test.describe('Agreements on chain @core', () => {
       rule: { electorate: 'investors', binding: true, approvalConfig: null, settlement: null, lens: [E2E_LENS_MEMBER_KEY] },
       funding: { targetUsdcAtomic: '12500000', contract: { name: 'return-terms.txt', mediaType: 'text/plain', data: Buffer.from('Quarterly investor reports.').toString('base64') } } });
     const account = agreementAccountAddress(cid, SPONSOR);
-    const accounts = new Map([[account, encodeAgreementAccount({ cid, authority: SPONSOR, lens: E2E_LENS_MEMBER_KEY, payout: SPONSOR, deadline: Date.parse(deadline) / 1000, requiredLamports: 0n })]]);
+    const accounts = new Map([[account, encodeAgreementAccount({ cid, authority: SPONSOR, lenses: [E2E_LENS_MEMBER_KEY], payout: SPONSOR, deadline: Date.parse(deadline) / 1000, requiredLamports: 0n,
+      fundingMint: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU', requiredFunding: 12_500_000n })]]);
     await serveAgreementAccounts(page, accounts);
     index.agreements.get(cid)!.onchain = { chain: 'solana', cluster: 'devnet', account, sponsor: SPONSOR, status: 'active', decision: 'pending' };
     await page.goto(`/agreements/${cid}?city=${city}&at=${view.at}&act=donate&amount=1.25&lang=en`, { waitUntil: 'domcontentloaded' });
@@ -279,7 +280,8 @@ test.describe('Agreements on chain @core', () => {
       inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: 'USD', lines: [] }, valuation: null, consultation: null,
       rule: { electorate: 'investors', binding: true, approvalConfig: null, settlement: null, lens: [E2E_LENS_MEMBER_KEY] }, funding });
     const account = agreementAccountAddress(cid, SPONSOR);
-    await serveAgreementAccounts(page, new Map([[account, encodeAgreementAccount({ cid, authority: SPONSOR, lens: E2E_LENS_MEMBER_KEY, payout: SPONSOR, deadline: Date.parse(deadline) / 1000, requiredLamports: 0n })]]));
+    await serveAgreementAccounts(page, new Map([[account, encodeAgreementAccount({ cid, authority: SPONSOR, lenses: [E2E_LENS_MEMBER_KEY], payout: SPONSOR, deadline: Date.parse(deadline) / 1000, requiredLamports: 0n,
+      fundingMint: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU', requiredFunding: 12_500_000n })]]));
     index.agreements.get(cid)!.onchain = { chain: 'solana', cluster: 'devnet', account, sponsor: SPONSOR, status: 'active', decision: 'pending' };
     await page.goto(`/agreements/${cid}?city=${city}&at=${view.at}&act=reserve&unitId=a-101&lang=en`, { waitUntil: 'domcontentloaded' });
     const panel = agreementPanel(page), row = panel.locator('[data-agreement-apartment-unit="a-101"]');
@@ -315,7 +317,7 @@ test.describe('Agreements on chain @core', () => {
     await page.evaluate(() => { const w = window as any; w.copyTextWithFeedback = async (value: string) => { w.__qualificationText = value; return true; }; });
     await review.getByRole('button', { name: 'Copy qualification request' }).press('Enter');
     expect(await page.evaluate(() => JSON.parse((window as any).__qualificationText))).toMatchObject({
-      agreement: cid, unitId: unit.unitId, unit: unit.unit, xrayBuilding: unit.xrayBuilding, buyer, developer: SPONSOR, lens: E2E_LENS_MEMBER_KEY
+      agreement: cid, unitId: unit.unitId, unit: unit.unit, xrayBuilding: unit.xrayBuilding, buyer, developer: SPONSOR, lenses: [E2E_LENS_MEMBER_KEY]
     });
     await review.getByRole('button', { name: 'Reserve apartment', exact: true }).press('Enter');
     await expect(review).toContainText('Your wallet is awaiting qualification');
@@ -459,7 +461,7 @@ test.describe('Agreements on chain @core', () => {
 
     // Minted (by the sponsor, elsewhere): the account is on devnet and the index records it.
     const account = agreementAccountAddress(cid, SPONSOR);
-    const base: AgreementAccount = { cid, authority: SPONSOR, lens: E2E_LENS_MEMBER_KEY, payout: SPONSOR, requiredLamports: SOL / 2n };
+    const base: AgreementAccount = { cid, authority: SPONSOR, lenses: [E2E_LENS_MEMBER_KEY], payout: SPONSOR, requiredLamports: SOL / 2n };
     accounts.set(account, encodeAgreementAccount(base));
     index.agreements.get(cid)!.onchain = { chain: 'solana', cluster: 'devnet', account, sponsor: SPONSOR, status: 'active', decision: 'pending' };
     await reopen(page, id);
@@ -508,7 +510,7 @@ test.describe('Agreements on chain @core', () => {
     });
     await reopen(page, id);
     await expect(minted.locator('[data-agreement-action="attest"]')).toBeEnabled({ timeout: 30_000 });
-    await expect(minted).toContainText('Its lens has attested the decision: record it on chain.');
+    await expect(minted).toContainText('A lens member has attested the decision: record it on chain.');
 
     // Recorded and funded: Execute is the way on, and the sponsor can no longer cancel.
     accounts.set(account, encodeAgreementAccount({ ...base, decision: DECISION.satisfied, escrowLamports: SOL / 2n }));

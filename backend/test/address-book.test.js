@@ -55,10 +55,10 @@ describe('buildAddressBook', () => {
         });
         // The app no longer uses proposal_nft (M3): the book neither names nor watches it.
         expect(book.entryFor('3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg')).toBeNull();
-        expect(book.labelFor('GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB').label).toBe('proposal_market program');
-        expect(book.labelFor('1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g').label).toBe('proposal_pledge program');
+        expect(book.labelFor('9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71').label).toBe('proposal_market program');
+        expect(book.labelFor('5RvXB53atCdCkDEydpvgUDz4Ph6uFUVyMgpjdSzNwXAq').label).toBe('proposal_pledge program');
         expect(book.labelFor('BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp').label).toBe('property_offer program');
-        expect(AGREEMENT_PROGRAM_ID).toBe('GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ');
+        expect(AGREEMENT_PROGRAM_ID).toBe('ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH');
         expect(book.labelFor(AGREEMENT_PROGRAM_ID)).toMatchObject({ label: 'agreement program', kind: 'program' });
     });
 
@@ -174,8 +174,8 @@ describe('watchedAddresses', () => {
         // strangers' payments into our history. It stays a label (see legendAddresses).
         expect(watchedAddresses(book)).toEqual([
             '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1',
-            'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB',
-            '1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g',
+            '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71',
+            '5RvXB53atCdCkDEydpvgUDz4Ph6uFUVyMgpjdSzNwXAq',
             'BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp',
             AGREEMENT_PROGRAM_ID,
             TREASURY,

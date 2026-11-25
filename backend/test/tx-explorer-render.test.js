@@ -83,7 +83,7 @@ function stakeTx() {
         instructions: [
             {
                 index: 0, inner: false, parentIndex: null,
-                program: { address: 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB', label: 'proposal market program', name: 'proposal-market' },
+                program: { address: '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71', label: 'proposal market program', name: 'proposal-market' },
                 action: 'stake',
                 args: { side: 1, amount: '300000' },
                 accounts: [{ role: 'staker', address: 'AGENTwallet11111111111111111111111111111111', label: 'agent densifier-01', signer: true, writable: true }]

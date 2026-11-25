@@ -286,7 +286,15 @@
             "lens": {
               "type": "array",
               "items": { "type": "string", "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$" },
-              "description": "Lens member keys (GET /lenses/members). The agreement program names exactly one, whose AgreementDecision-v1 attestation records the decision; it must not be the sponsor."
+              "maxItems": 8,
+              "uniqueItems": true,
+              "description": "Lens member keys (GET /lenses/members), 0-8 distinct, frozen at mint. Each member's AgreementDecision-v1 attestation counts once; any key may be a member, the sponsor's own included."
+            },
+            "lensThreshold": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 8,
+              "description": "How many listed lens members must attest (1 to the number of members). Absent means any one; absent when the lens is empty."
             },
             "settlement": {
               "oneOf": [

@@ -51,7 +51,7 @@ function proposerAgreement({ lens = LENS, owners = [{ owner: OWNER, ownerCount: 
         designs: [{ cid: design.cid, goal: design.content.goal, title: design.content.title }],
         parcels: [{ parcelId: PARCEL_ID, areaM2: 612.4 }],
         outputs: parcelOutputs([{ parcelId: PARCEL_ID, geometry: PARCEL, areaM2: 612.4 }]),
-        rule: ownersRule({ lens, rights }), deadline: deadlineAfterDays(Date.now(), 7), money: noMoney('EUR')
+        rule: ownersRule({ lenses: [lens], rights }), deadline: deadlineAfterDays(Date.now(), 7), money: noMoney('EUR')
     });
 }
 
@@ -160,7 +160,7 @@ describe('the lens decision', () => {
     it('settles the minted agreement on chain: the program records it and executes', async () => {
         const chain = createAgreementChain();
         const minted = await mintAgreement({
-            connection: chain.connection, sponsorKeypair: owner, cid: agreement.cid, lens: LENS, deadline: agreement.content.deadline,
+            connection: chain.connection, sponsorKeypair: owner, cid: agreement.cid, lenses: [LENS], lensThreshold: 1, deadline: agreement.content.deadline,
             lamports: '1000', sendAndConfirm: chain.sendAndConfirm
         });
         await ensureOwnerApproval({ index, serviceUrl: SERVICE, lensKey: LENS, cid: agreement.cid, content: agreement.content, keypair: owner, fetchImpl: lensFetch });

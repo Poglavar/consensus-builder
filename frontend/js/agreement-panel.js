@@ -246,7 +246,7 @@
     function ruleSummary(rule, tr = t, summaryText = null) {
         if (rule?.electorate === 'investors') return {
             electorate: tr('agreement.funding.title', 'Developer crowdfunding'),
-            binding: tr('agreement.funding.rule', 'The selected lens verifies that contributions reach the target.'),
+            binding: tr('agreement.lens.crowdfunding', 'The program checks the funding target. The lens checks investor eligibility and any other conditions.'),
             detail: ''
         };
         const owners = !!rule && rule.electorate === 'owners';
@@ -395,11 +395,12 @@
 
     /**
      * Whether a proposed, unminted agreement can be minted from here and, when not, why. `sponsor` is
-     * the wallet it was proposed with (published.sponsor), `wallet` the connected Solana wallet, `lens`
-     * the member its mint would name (AgreementBridge.mintLens). An agreement proposed without a
+     * the wallet it was proposed with (published.sponsor), `wallet` the connected Solana wallet, `lenses`
+     * the members its mint would name (AgreementBridge.mintLenses). A crowdfunding round may name none:
+     * the program checks its funding target. An agreement proposed without a
      * sponsor can only be proposed again (`repropose`), which needs a connected wallet.
      */
-    function mintReadiness({ sponsor = null, wallet = null, lens = null, electorate = 'owners', deadlinePassed = false } = {}, tr = t) {
+    function mintReadiness({ sponsor = null, wallet = null, lenses = [], electorate = 'owners', deadlinePassed = false } = {}, tr = t) {
         if (!sponsor) {
             return {
                 canMint: false, repropose: true, canRepropose: !!wallet,
@@ -409,7 +410,7 @@
         const hints = [];
         if (!wallet) hints.push(tr('agreement.chain.hints.connectSponsor', 'Connect the sponsor’s Solana wallet ({{sponsor}}) to mint it.', { sponsor: shortKey(sponsor) }));
         else if (wallet !== sponsor) hints.push(tr('agreement.chain.hints.notSponsor', 'Only the sponsor’s wallet ({{sponsor}}) can mint it; the connected wallet is {{wallet}}.', { sponsor: shortKey(sponsor), wallet: shortKey(wallet) }));
-        if (!lens) {
+        if (!(lenses || []).length && electorate !== 'investors') {
             hints.push(electorate !== 'community'
                 ? tr('agreement.chain.hints.noRuleLens', 'Its decision rule names no lens member, so no lens can attest its decision.')
                 : tr('agreement.chain.hints.noConfiguredLens', 'Choose a lens member in the lens settings: it attests the vote count.'));
@@ -431,9 +432,10 @@
 
     /**
      * The "On chain" section of a proposed agreement. view: { published, ref ({ cluster, account } or
-     * null), wallet, lens, electorate, deadlinePassed, chain ({ loading, error, value, lensError } of
-     * the account read back), actions (AgreementBridge.chainActions), attestation (the address of the
-     * lens's decision its member lists, or null), busy ({ action, phase } of a running action, or null) }.
+     * null), wallet, lenses, electorate, deadlinePassed, chain ({ loading, error, value, lensError } of
+     * the account read back), actions (AgreementBridge.chainActions), attestation (the address of a
+     * lens member's decision the account can still record, or null), busy ({ action, phase } of a
+     * running action, or null) }.
      */
     function chainHtml(view, tr = t) {
         if (!view || !view.published) return '';
@@ -474,6 +476,8 @@
         const status = CHAIN_STATUS[value.status];
         const decision = CHAIN_DECISION[value.decision];
         const required = value.requiredLamports > 0n;
+        const fundingTarget = typeof value.requiredFunding === 'bigint' && value.requiredFunding > 0n;
+        const lensOpen = (value.lensConfirmed || []).length < (value.lensThreshold || 0);
         const escrow = required
             ? tr('agreement.chain.escrowOf', '{{escrow}} of {{required}}', { escrow: solText(value.escrowLamports), required: solText(value.requiredLamports) })
             : tr('agreement.chain.escrowNoneRequired', '{{escrow}} (none required)', { escrow: solText(value.escrowLamports) });
@@ -482,7 +486,11 @@
             [tr('agreement.chain.facts.decision', 'Decision'), badgeHtml(decision, decision ? decision.text(tr) : value.decision, `data-agreement-chain-decision="${esc(value.decision)}"`)],
             ...(crowdfunding ? [] : [[tr('agreement.chain.facts.escrow', 'Escrow'), esc(escrow)]]),
             [tr('agreement.chain.facts.deadline', 'Deadline'), esc(value.deadline ? format().formatDateTime(value.deadline) : tr('agreement.chain.noDeadline', 'None'))],
-            [tr('agreement.chain.facts.lens', 'Lens'), `<code title="${esc(value.lens)}">${esc(shortKey(value.lens))}</code>`],
+            [tr('agreement.chain.facts.lens', 'Lens'), dialogApi().lensSummaryHtml({ members: value.lenses || [], threshold: value.lensThreshold,
+                sponsor: value.authority, confirmed: value.lensConfirmed || [], crowdfunding }, tr)],
+            ...(fundingTarget ? [[tr('agreement.chain.facts.fundingTarget', 'Funding target'), esc(value.fundingMet
+                ? tr('agreement.chain.fundingTargetMet', '{{target}} USDC, confirmed on chain', { target: recordApi().formatUsdc(value.requiredFunding) })
+                : tr('agreement.chain.fundingTargetOpen', '{{target}} USDC, not yet confirmed', { target: recordApi().formatUsdc(value.requiredFunding) }))]] : []),
             [tr('agreement.chain.facts.payout', 'Payout'), `<code title="${esc(value.payout)}">${esc(shortKey(value.payout))}</code>`]
         ];
         if (value.executedAt) facts.push([tr('agreement.chain.facts.executedAt', 'Executed'), esc(format().formatDateTime(value.executedAt))]);
@@ -493,7 +501,10 @@
         const buttons = [];
         const hints = [];
         if (active && (!view.readOnly || crowdfunding)) {
-            if (view.attestation && value.decision === 'Pending') {
+            if (fundingTarget && !value.fundingMet && value.decision === 'Pending') {
+                buttons.push(chainButton('confirm-funding', 'fas fa-circle-check', tr('agreement.chain.actions.confirmFunding', 'Confirm funding'), { tone: 'primary', disabled: locked || !actions.confirmFunding }));
+            }
+            if (view.attestation && value.decision === 'Pending' && lensOpen) {
                 buttons.push(chainButton('attest', 'fas fa-stamp', tr('agreement.chain.actions.attest', 'Record decision'), { tone: 'primary', disabled: locked || !actions.attest }));
             }
             buttons.push(chainButton('execute', 'fas fa-play', tr('agreement.chain.actions.execute', 'Execute'), { tone: value.decision === 'Satisfied' ? 'primary' : '', disabled: locked || !actions.execute }));
@@ -503,9 +514,15 @@
             }
             if (actions.deadlinePassed) buttons.push(chainButton('expire', 'fas fa-hourglass-end', tr('agreement.chain.actions.expire', 'Expire'), { disabled: locked || !actions.expire }));
             if (!view.wallet) hints.push(tr('agreement.chain.hints.connectWallet', 'Connect a Solana wallet to act on it.'));
-            if (value.decision === 'Pending' && chain.lensError) hints.push(chain.lensError);
-            else if (value.decision === 'Pending' && !view.attestation && !actions.deadlinePassed) hints.push(tr('agreement.chain.hints.awaitingLens', 'Waiting for its lens to attest the decision.'));
-            if (value.decision === 'Pending' && view.attestation) hints.push(tr('agreement.chain.hints.attested', 'Its lens has attested the decision: record it on chain.'));
+            if (value.decision === 'Pending' && lensOpen) {
+                hints.push(tr('agreement.chain.hints.lensProgress', '{{done}} of {{needed}} lens confirmations recorded.', { done: (value.lensConfirmed || []).length, needed: value.lensThreshold }));
+                if (chain.lensError) hints.push(chain.lensError);
+                else if (!view.attestation && !actions.deadlinePassed) hints.push(tr('agreement.chain.hints.awaitingLens', 'Waiting for its lens to attest the decision.'));
+                if (view.attestation) hints.push(tr('agreement.chain.hints.attested', 'A lens member has attested the decision: record it on chain.'));
+            }
+            if (value.decision === 'Pending' && fundingTarget && !value.fundingMet && !actions.confirmFunding && !actions.deadlinePassed) {
+                hints.push(tr('agreement.chain.errors.fundingShort', 'Contributions have not reached the funding target yet.'));
+            }
             if (value.decision === 'Satisfied' && !actions.funded) hints.push(tr('agreement.chain.hints.awaitingFunds', 'Execution waits until the escrow holds {{required}}.', { required: solText(value.requiredLamports) }));
             if (actions.deadlinePassed) hints.push(crowdfunding ? tr('agreement.funding.expire', 'The deadline has passed. Expire the agreement to enable refunds.')
                 : tr('agreement.chain.hints.expired', 'Its deadline has passed: anyone can expire it, which returns the escrow to the sponsor.'));
@@ -707,8 +724,8 @@
             ? tr('agreement.funding.apartments.qualificationHint', 'The developer’s lens must qualify your wallet for this apartment before your deposit can reserve it.')
             : tr('agreement.funding.contributorEligibilityValue', 'Any wallet can contribute') + '. ' + tr('agreement.funding.noKyc', 'The protocol does not perform a KYC check.');
         const investorDisclosure = `<dl class="agreement-panel-facts agreement-funding-disclosure" data-agreement-funding-disclosure>`
-            + walletRow('verifier', tr('agreement.funding.verifierWallet', 'Funding verifier'), agreement.rule.lens?.[0])
-            + `<div><dt>${esc(tr('agreement.funding.verifierMethod', 'Decision method'))}</dt><dd>${esc(tr('agreement.funding.verifierMethodValue', 'The program accepts the named lens’s funding decision.'))}</dd></div>`
+            + `<div><dt>${esc(tr('agreement.chain.facts.lens', 'Lens'))}</dt><dd>${dialogApi().lensSummaryHtml({ members: agreement.rule.lens || [],
+                threshold: recordApi().lensThresholdOf(agreement.rule), sponsor: agreement.published?.sponsor || agreement.sponsor || null, crowdfunding: true }, tr)}</dd></div>`
             + walletRow('payout', tr('agreement.funding.payoutWallet', 'Developer payout wallet'), agreement.published?.sponsor || agreement.sponsor)
             + `<div><dt>${esc(tr('agreement.funding.contributorEligibility', 'Contributor eligibility'))}</dt><dd>${esc(eligibility)}</dd></div></dl>`;
         return sectionHtml(tr('agreement.funding.title', 'Developer crowdfunding'),
@@ -1093,11 +1110,11 @@
             }
         }
 
-        // The lens member a mint of this agreement names (AgreementBridge.mintLens): the rule's, or for
-        // a community rule the first one configured in the lens settings (LensPicker).
-        function mintLensOf(agreement) {
+        // The lens a mint of this agreement names (AgreementBridge.mintLenses): the rule's members and
+        // threshold, or for a community rule the first member configured in the lens settings (LensPicker).
+        function mintLensesOf(agreement) {
             const configured = win.LensPicker && typeof win.LensPicker.getEntries === 'function' ? win.LensPicker.getEntries() : [];
-            return win.AgreementBridge.mintLens(agreement, configured);
+            return win.AgreementBridge.mintLenses(agreement, configured);
         }
 
         // Everything the "On chain" section shows (chainHtml), from the record, the connected wallet,
@@ -1113,7 +1130,7 @@
             let actions = null;
             if (chain && chain.value) {
                 try {
-                    actions = bridge.chainActions(chain.value, { wallet, attestation });
+                    actions = bridge.chainActions(chain.value, { wallet, attestation, escrow: chain.escrow || null });
                 } catch (error) {
                     console.error(`[${new Date().toISOString()}] [AgreementPanel] the chain actions of ${agreement.id} could not be worked out`, error);
                 }
@@ -1123,7 +1140,7 @@
                 sponsor: agreement.published.sponsor || null,
                 ref,
                 wallet,
-                lens: ref ? null : mintLensOf(agreement),
+                lenses: ref ? [] : mintLensesOf(agreement).lenses,
                 electorate: agreement.rule && agreement.rule.electorate,
                 deadlinePassed: Number.isFinite(deadlineMs) && deadlineMs <= Date.now(),
                 chain,
@@ -1134,7 +1151,8 @@
         }
 
         // Reads the minted account again (the chain is the truth), and while its decision is pending
-        // asks its lens member for the decision (AgreementBridge.findAttestation); a newer read wins.
+        // reads the contribution escrow (an unconfirmed funding target) and asks the lens members that
+        // have not confirmed yet for their decision (AgreementBridge.findAttestation); a newer read wins.
         async function readChain(agreement) {
             const ref = agreement && win.AgreementBridge ? win.AgreementBridge.onchainRef(agreement) : null;
             if (!ref) {
@@ -1162,6 +1180,21 @@
             }
             if (isOpen() && state.id === id) renderPanel();
             if (!value || value.status !== 'Active' || value.decision !== 'Pending') return;
+            if (value.requiredFunding > 0n && !value.fundingMet) {
+                try {
+                    await ensureBoostScripts();
+                    const { escrow } = await win.AgreementBridge.donations(agreement);
+                    if (!current()) return;
+                    state.chain = { ...state.chain, escrow };
+                } catch (error) {
+                    if (!current()) return;
+                    console.warn(`[${new Date().toISOString()}] [AgreementPanel] the contribution escrow of ${id} could not be read`, error);
+                }
+            }
+            if ((value.lensConfirmed || []).length >= value.lensThreshold) {
+                if (isOpen() && state.id === id) renderPanel();
+                return;
+            }
             try {
                 const found = await win.AgreementBridge.findAttestation(agreement, value);
                 if (!current()) return;
@@ -1436,13 +1469,14 @@
         // the account the escrow is released to (the sponsor's wallet unless another is given).
         // Resolves { requiredLamports, payout } or null when cancelled.
         function askMintTerms(agreement, lens) {
+            const members = lens.lenses;
             return new Promise(resolve => {
                 const sponsor = agreement.published.sponsor;
                 const body = doc.createElement('div');
                 body.className = 'agreement-mint';
                 body.innerHTML = `<p class="agreement-panel-meta">${esc(t('agreement.chain.mint.intro', 'Minting commits this agreement’s CID to Solana at its sponsor’s address. Its lens attests the decision; executing it then releases the escrow to the payout account.'))}</p>`
                     + '<dl class="agreement-panel-facts">'
-                    + `<div><dt>${esc(t('agreement.chain.facts.lens', 'Lens'))}</dt><dd><code title="${esc(lens)}">${esc(shortKey(lens))}</code></dd></div>`
+                    + `<div><dt>${esc(t('agreement.chain.facts.lens', 'Lens'))}</dt><dd>${dialogApi().lensSummaryHtml({ members, threshold: lens.lensThreshold, sponsor })}</dd></div>`
                     + `<div><dt>${esc(t('agreement.chain.facts.deadline', 'Deadline'))}</dt><dd>${esc(agreement.deadline ? format().formatDateTime(agreement.deadline) : t('agreement.chain.noDeadline', 'None'))}</dd></div>`
                     + '</dl>'
                     + `<label class="agreement-mint__field"><span>${esc(t('agreement.chain.mint.required', 'Escrow needed to execute (SOL)'))}</span>`
@@ -1496,12 +1530,12 @@
             const id = state.id;
             const agreement = state.agreement;
             if (!agreement || !agreement.published) return;
-            const lens = mintLensOf(agreement);
+            const lens = mintLensesOf(agreement);
             const terms = agreement.rule?.electorate === 'investors' ? { requiredLamports: 0n, payout: agreement.published.sponsor } : await askMintTerms(agreement, lens);
             if (!terms || state.id !== id) return;
             const subject = state.readOnlyAgreement || id;
             await runChain('mint', async (onStatus, phase) => {
-                const minted = await win.AgreementBridge.mint({ agreement, lens, requiredLamports: terms.requiredLamports, payout: terms.payout, onStatus });
+                const minted = await win.AgreementBridge.mint({ agreement, lenses: lens.lenses, lensThreshold: lens.lensThreshold, requiredLamports: terms.requiredLamports, payout: terms.payout, onStatus });
                 phase('indexing');
                 try {
                     await win.AgreementSync.recordOnchain(subject, { chain: 'solana', cluster: minted.cluster, account: minted.account, signature: minted.signature });
@@ -1553,6 +1587,17 @@
             await runChain('fund', async onStatus => {
                 await win.AgreementBridge.fund({ agreement, lamports, onStatus });
                 notice(t('agreement.chain.funded', 'The escrow received {{amount}}.', { amount: solText(lamports) }));
+            });
+        }
+
+        // Confirm funding (anyone): the program checks the contribution escrow against the target.
+        async function confirmFunding() {
+            const agreement = state.agreement;
+            if (!agreement) return;
+            await runChain('confirm-funding', async onStatus => {
+                await ensureBoostScripts();
+                await win.AgreementBridge.confirmFunding({ agreement, onStatus });
+                notice(t('agreement.chain.fundingConfirmed', 'Funding target confirmed on chain.'));
             });
         }
 
@@ -1690,7 +1735,7 @@
             const action = event.target.closest('[data-agreement-action]');
             if (!action || action.disabled) return;
             const actionName = action.getAttribute('data-agreement-action');
-            const fundingAction = state.agreement?.rule?.electorate === 'investors' && ['contract', 'refresh-funding', 'mint', 'attest', 'execute', 'cancel', 'expire'].includes(actionName);
+            const fundingAction = state.agreement?.rule?.electorate === 'investors' && ['contract', 'refresh-funding', 'mint', 'confirm-funding', 'attest', 'execute', 'cancel', 'expire'].includes(actionName);
             if (state.readOnlyAgreement && !fundingAction && !['close', 'link', 'plan', 'scheme-guide', 'counter', 'download', 'apply-agreement'].includes(actionName)) return;
             switch (actionName) {
                 case 'close': close(); break;
@@ -1726,6 +1771,7 @@
                 case 'mint': mint(); break;
                 case 'repropose': win.BusyControl.track(action, () => repropose()); break;
                 case 'fund': fund(); break;
+                case 'confirm-funding': confirmFunding(); break;
                 case 'attest': attest(); break;
                 case 'execute': execute(); break;
                 case 'cancel': cancel(); break;

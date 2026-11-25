@@ -3,7 +3,8 @@ import { createRequire } from 'node:module';
 import { Keypair, PublicKey } from '@solana/web3.js';
 import { buyAgreementShares, sellAgreementShares, readAgreementMarket, usdcToAtomic, DEFAULT_B, openAgreementMarket, MARKET_SEED_ATOMIC } from '../agents/bettor.js';
 import { agreementAccountOf, AGREEMENT_PROGRAM_ID, DEVNET_GENESIS_HASH } from '../agreements/onchain.js';
-import { encodeAgreementAccount, lmsrPositionAccount } from './helpers/agent-chain-fakes.js';
+import { lmsrPositionAccount } from './helpers/agent-chain-fakes.js';
+import { agreementAccountBytes as encodeAgreementAccount } from './fixtures/agreement-account.js';
 
 const require = createRequire(import.meta.url);
 const market = require('../../frontend/js/solana/lmsr-client.js');
@@ -32,12 +33,12 @@ function encodeMarket({ account, sponsor, deadline, qYes = 0n, qNo = 0n, b = DEF
     return { address, data: new Uint8Array(data), owner: market.constants.PROGRAM_ID };
 }
 
-function setup({ signer = Keypair.generate(), sponsor = Keypair.generate(), lens = Keypair.generate(), withMarket = true, wrongNetwork = false, qYes = 0n, b = DEFAULT_B } = {}) {
+function setup({ signer = Keypair.generate(), sponsor = Keypair.generate(), lens = Keypair.generate(), lenses = [lens], withMarket = true, wrongNetwork = false, qYes = 0n, b = DEFAULT_B } = {}) {
     const deadline = NOW + 3600;
     const cid = `bafybeigdyrzt5sfp7udm7hu76uhy26nf3nqg4o3x2kpcew7saf4r5x4sfu`;
     const subject = agreementAccountOf(cid, sponsor.publicKey.toBase58());
     const records = new Map();
-    records.set(subject, { data: encodeAgreementAccount({ cid, authority: sponsor.publicKey.toBase58(), lens: lens.publicKey.toBase58(), payout: sponsor.publicKey.toBase58(), deadline, status: 0 }), owner: AGREEMENT_PROGRAM_ID });
+    records.set(subject, { data: encodeAgreementAccount({ cid, authority: sponsor.publicKey.toBase58(), lenses: lenses.map(member => member.publicKey.toBase58()), payout: sponsor.publicKey.toBase58(), deadline, status: 0 }), owner: AGREEMENT_PROGRAM_ID });
     if (withMarket) {
         const entry = encodeMarket({ account: subject, sponsor: sponsor.publicKey.toBase58(), deadline, qYes, b });
         records.set(entry.address.toBase58(), entry);
@@ -110,7 +111,7 @@ describe('agent LMSR buy path', () => {
         expect(Buffer.from(ix.data).readBigUInt64LE(17)).toBe(quote.minReturn);
     });
 
-    it('bars both sponsor and lens and refuses a non-devnet RPC', async () => {
+    it('bars the sponsor and every lens member and refuses a non-devnet RPC', async () => {
         const sponsor = Keypair.generate();
         const h = setup({ sponsor, signer: sponsor });
         await expect(buyAgreementShares({ connection: h.connection, ownerKeypair: h.signer, subject: h.subject, side: 1, amountAtomic: 1n, sendAndConfirm: h.sendAndConfirm }))
@@ -119,6 +120,12 @@ describe('agent LMSR buy path', () => {
         const h2 = setup({ lens, signer: lens });
         await expect(buyAgreementShares({ connection: h2.connection, ownerKeypair: lens, subject: h2.subject, side: 1, amountAtomic: 1n, sendAndConfirm: h2.sendAndConfirm }))
             .rejects.toMatchObject({ code: 'INSIDER_TRADE' });
+        // The last of three lens members is an insider too.
+        const member = Keypair.generate();
+        const h4 = setup({ lenses: [Keypair.generate(), Keypair.generate(), member], signer: member });
+        await expect(buyAgreementShares({ connection: h4.connection, ownerKeypair: member, subject: h4.subject, side: 1, amountAtomic: 1n, sendAndConfirm: h4.sendAndConfirm }))
+            .rejects.toMatchObject({ code: 'INSIDER_TRADE' });
+        expect(h4.sends).toHaveLength(0);
         const h3 = setup({ wrongNetwork: true });
         await expect(readAgreementMarket(h3.connection, h3.subject)).rejects.toMatchObject({ code: 'rpc-wrong-cluster' });
         expect(h.sends).toHaveLength(0);

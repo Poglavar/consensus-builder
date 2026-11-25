@@ -16,7 +16,7 @@ its devnet owner registry (or a `--rights` file).
 | Attestation | Kind | Layout | Who can get it |
 |---|---|---|---|
 | `ParcelOwnership-v1` | `ownership` | `string parcelUid, string owner, uint8 ownerCount, string evidenceRef, int64 sourceObservedAt` | an owner wallet that passes the identity check; x402-priced |
-| `AgreementDecision-v1` | `decision` | `string agreementCid, string sponsor, string decision, string evidenceRef, int64 sourceObservedAt` | the member's operator only; always `satisfied`, issued after owner approvals or, for investor crowdfunding, finalized donation-vault evidence |
+| `AgreementDecision-v1` | `decision` | `string agreementCid, string sponsor, string decision, string evidenceRef, int64 sourceObservedAt` | the member's operator only; always `satisfied`, issued after owner approvals (never for a crowdfunding agreement, whose target the program confirms) |
 | `MarketEvidence-v1` | `evidence` | `string recipeHash, string subject, string value, int64 eventTime, int64 sourceObservedAt, string sourceRef` | the member's operator only, with a fact from a source adapter |
 
 ## Files
@@ -69,9 +69,13 @@ curl -s -H "x-lens-operator-token: $LENS_OPERATOR_TOKEN" -H 'content-type: appli
 
 ## Agreement decision rules
 
-`AgreementDecision-v1` settles an agreement's account on chain (`../../blockchain/solana/programs/agreement/README.md`):
-the program's `attest` takes the first one the account's lens issues, before the deadline, and execution
-then needs only the escrow. So the member takes nothing from the caller but the agreement's CID:
+`AgreementDecision-v1` is one lens member's confirmation on an agreement's account
+(`../../blockchain/solana/programs/agreement/README.md`). The account's lens is a set of up to 8 member
+keys frozen at mint, and `lens_threshold` of them must confirm: the program's `attest` counts each
+member's attestation once, before the deadline, and the decision becomes `Satisfied` when the
+threshold is reached and any contribution target is confirmed. Execution then needs only the escrow.
+Any key may be a member, the sponsor's own included. So the member takes nothing from the caller but
+the agreement's CID:
 
 - It reads the agreement from the index and the owner decisions its relay admitted
   (`/agreements/:cid/decisions`), folds them with every signature re-verified (`approval-relay.js`) and
@@ -80,20 +84,27 @@ then needs only the escrow. So the member takes nothing from the caller but the 
   signing time of the last decision the count applied. There is no refusal: an agreement whose rule is
   not met by its deadline expires on chain (`expire`), which says everything a refusal would.
 - `sponsor` is the agreement object's `sponsor`; the member must be in the agreement's lens, and once the
-  account is minted (`onchain`) it must be the account's lens.
+  account is minted (`onchain`) it must be one of the account's lens members (`onchain.lenses`).
 - `evidenceRef` is `sha256:` over `approval.stableStringify` of the counted receipts (each party's current
   approval, in signing order), so anyone can recompute it from the relay.
 - One decision per agreement: asked again, the member answers the one it issued (200).
 
-For a binding `investors` agreement the member reads the agreement account derived from its sponsor
-and CID, the `proposal_pledge` donation escrow and its devnet USDC vault in one finalized slot.
-The agreement must be active with a pending decision, the published lens and developer payout, and
-a zero native execution requirement. The escrow must remain open. Recorded contributions
-(`totalDonated - totalRefunded`) must reach the target and be fully covered by the vault.
-A direct transfer to the vault counts for zero towards the target. The evidence hash commits the
-accounts, programs, mint, target, amounts, slot and block time. The block time supplies
-`sourceObservedAt`. Anyone can record the resulting decision, execute the agreement and release
-the escrow to the developer.
+A binding `investors` (developer crowdfunding) agreement gets no automatic decision: `POST
+/lens/agreements/:cid/decision` answers 409 `funding_checked_on_chain`. Its contribution target is
+on the account (`funding_mint`, `required_funding`), and anyone confirms it with the program's
+permissionless `confirm_funding` once credited contributions (`totalDonated - totalRefunded` in the
+`proposal_pledge` donation escrow, backed by its vault) reach it. The rule names no other condition
+this member could count. With no lens the round settles on its target alone; when the agreement
+names lens members and a threshold, their confirmations are conditions they attest by hand, outside
+this reference member.
+
+The member's crowdfunding role is investor eligibility: it qualifies apartment buyers
+(`/lens/agreements/:cid/apartments/:unitId/qualify` and `/qualification`). For that it reads the
+agreement account derived from its sponsor and CID, the donation escrow, its devnet USDC vault and the
+apartment listings in one finalized slot. The agreement must be active with a pending decision, name
+this member among its lens members, carry the published devnet USDC target, developer payout and a
+zero native execution requirement; the escrow must remain open and its vault must cover recorded
+contributions.
 
 ## Ownership rules
 
@@ -114,7 +125,7 @@ the escrow to the developer.
 | `GET /lens/status` | key, kind, credential, schema PDAs, identity adapter, counts, pricing |
 | `POST /lens/challenge {parcelUid, owner}` | `{challenge, message, expiresAt}`; the wallet signs `message` (UTF-8). 404 unknown parcel, 403 wallet not recorded. Valid 5 minutes. |
 | `POST /lens/ownership {parcelUid, owner, signature, challenge}` | signature base58 or base64. Signature, registry and source-time checks run before the x402 gate, so refusals are free. 201 with `address`, `payload`, `accountHash` (sha256 over the account bytes), `issuedAt` (chain time), `payment`. |
-| `POST /lens/agreements/:cid/decision` | Send the operator token in the `x-lens-operator-token` header with an empty body. The member reads relayed decisions for owners or finalized USDC deposits for investors. HTTP 201 means issued and 200 means already issued. Funding decisions return `tally: null` and `counted: 0`. A missing agreement returns 404. An unconfigured service returns 503. |
+| `POST /lens/agreements/:cid/decision` | Send the operator token in the `x-lens-operator-token` header with an empty body. The member reads the relayed owner decisions. HTTP 201 means issued and 200 means already issued. A crowdfunding (`investors`) agreement returns 409 `funding_checked_on_chain`: the program confirms its target with `confirm_funding`. A missing agreement returns 404. An unconfigured service returns 503. |
 | `POST /lens/market-evidence {recipeHash, subject, value, eventTime, sourceObservedAt, sourceRef}` | same operator header as agreement decisions. Times are Unix seconds (integers only). 201 issued, 200 already issued (`reused`), 409 same key with another subject, 422 invalid or too large. |
 | `GET /lens/attestations?address=&parcelUid=&agreementCid=&owner=&recipeHash=&kind=` | Statements issued by this member. Filters apply before the result limit. Kinds are `ownership`, `decision`, `propertyOffer` and `evidence`. |
 | `POST /lens/approval/rights {cadastreParcelIds, approvalConfig, lens}` | 503 only for an identity adapter without an owner registry and no `--rights`. The member recomputes the approval context hash, requires its own key in `lens`, and compares every in-scope parcel with its registry (complete owner list, exact shares, area). 201 `{rights}`: a signed `lens-rights-attestation/v1`. Free; names no wallet. 409 `rights_mismatch` / `area_mismatch` / `not_in_lens`, 404 `unknown_parcel`, 422 `rights_incomplete`. |

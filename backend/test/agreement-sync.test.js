@@ -69,7 +69,7 @@ function agreement(extra = {}) {
             { output: outputs[2].hash, to: { kind: 'public' } }
         ],
         money: { currency: 'EUR', lines: [] },
-        rule: { electorate: 'owners', binding: true, lens: ['lens-member-1'],
+        rule: { electorate: 'owners', binding: true, lens: ['7Np41oeYqPefeNQEHSv1UDhYrehxin3NStELsSKCT4K2'],
             approvalConfig: { schema: 'proposal-approval/v1', rights: AgreementRecord.rightsFromInputs(inputs, id => LOCAL_OWNERS[id] || []), policy: { type: 'unanimous' } } },
         deadline: null, published: null, ...extra
     };
@@ -177,7 +177,7 @@ describe('recordFromPublished', () => {
     });
 
     it('keeps the sponsor it was proposed with, and the index\'s chain account once minted', () => {
-        const onchain = { chain: 'solana', cluster: 'devnet', programId: 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ', account: ACCOUNT,
+        const onchain = { chain: 'solana', cluster: 'devnet', programId: 'ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH', account: ACCOUNT,
             sponsor: SPONSOR, status: 'active', decision: 'pending', observedAt: '2026-10-22T08:00:00.000Z' };
         const minted = AgreementSync.recordFromPublished({ ...row, onchain }, { id: 'ag-imported', apiBase: API, localIdOf });
         expect(minted.published).toEqual({ cid: row.cid, publishedAt: row.createdAt, apiBase: API, sponsor: SPONSOR });
@@ -355,7 +355,7 @@ describe('publishAgreement', () => {
         expect(changed.server.calls).toEqual([]);
     });
 
-    it('checks the attachment, precise positive target, committed developer and lens, and excludes settlement terms', () => {
+    it('checks the attachment, precise positive target, committed developer and lens set, and excludes settlement terms', () => {
         const draft = round();
         expect(AgreementRecord.validate(draft).valid).toBe(true);
         expect(AgreementRecord.parseUsdc('18446744073709.551615')).toBe(18446744073709551615n);
@@ -367,8 +367,15 @@ describe('publishAgreement', () => {
             expect(AgreementRecord.fundingError({ ...funding, ...change })).toBeTruthy();
         }
         expect(AgreementRecord.fundingError({ ...funding, contract: { name: 'Résumé.PDF', mediaType: 'application/pdf', data: Buffer.from('%PDF-1.7\n').toString('base64') } })).toBeNull();
-        for (const change of [{ sponsor: 'nobody' }, { deadline: null }, { deadline: '2030-10-22T12:00:00.999Z' }, { rule: { ...draft.rule, lens: [] } },
-            { rule: { ...draft.rule, lens: [ACCOUNT, SPONSOR] } }, { rule: { ...draft.rule, binding: false } }, { inputs: agreement().inputs },
+        // Any lens of up to 8 members, the developer's own key included, or none: the program checks the target.
+        for (const change of [{ rule: { ...draft.rule, lens: [] } }, { rule: { ...draft.rule, lens: [ACCOUNT, SPONSOR], lensThreshold: 2 } }]) {
+            expect(AgreementRecord.validate({ ...draft, ...change }).valid, JSON.stringify(change.rule)).toBe(true);
+        }
+        // Apartment buyers are qualified by a lens member, so an apartment round names one.
+        expect(AgreementRecord.crowdfundingError({ ...draft, rule: { ...draft.rule, lens: [] }, funding: { ...draft.funding, apartments: { projectId: 'p', units: [] } } }))
+            .toMatch(/apartment round needs at least one lens member/);
+        for (const change of [{ sponsor: 'nobody' }, { deadline: null }, { deadline: '2030-10-22T12:00:00.999Z' }, { rule: { ...draft.rule, lens: [ACCOUNT, ACCOUNT] } },
+            { rule: { ...draft.rule, lens: [ACCOUNT, SPONSOR], lensThreshold: 3 } }, { rule: { ...draft.rule, binding: false } }, { inputs: agreement().inputs },
             { allocations: agreement().allocations }, { rule: agreement().rule }]) {
             expect(AgreementRecord.validate({ ...draft, ...change }).valid).toBe(false);
         }
@@ -409,6 +416,17 @@ describe('publishAgreement', () => {
         // Proposed once: proposing again sends nothing and answers the same CID.
         expect(await sync.publishAgreement('ag-1')).toEqual({ cid: result.cid, row: null, link: result.link });
         expect(server.calls).toHaveLength(3);
+    });
+
+    it('asks about device-only models once for all its designs, not again as each design is published', async () => {
+        const model = 'device-model:sha256-aa';
+        const withModel = { ...layout(), parcelLayout: { ...layout().parcelLayout, modelUrl: model } };
+        const { sync, server, win } = fakeWindow({ records: [withModel, road()] });
+        win.DeviceModels = { ...win.DeviceModels, chooseForPublish: vi.fn(async () => new Map()) };
+        await sync.publishAgreement('ag-1');
+        expect(win.DeviceModels.chooseForPublish).toHaveBeenCalledOnce();
+        expect(win.DeviceModels.chooseForPublish.mock.calls[0][0].map(record => record.proposalId)).toEqual(['layout-1', 'road-1']);
+        expect(server.calls.map(call => `${call.method} ${call.pathname}`)).toEqual(['POST /designs', 'POST /designs', 'POST /agreements']);
     });
 
     it('proposes without a sponsor when no wallet is connected', async () => {
@@ -475,7 +493,8 @@ describe('fetchAgreement and refusals', () => {
 const PROPOSED_CID = AgreementRecord.publishedCid({ ...agreement(), sponsor: SPONSOR });
 const proposed = (extra = {}) => agreement({ published: { cid: PROPOSED_CID, publishedAt: '2026-10-21T12:00:05.000Z', apiBase: API, sponsor: SPONSOR }, ...extra });
 const indexed = ({ cluster, account }) => ({
-    chain: 'solana', cluster, programId: 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ', account, sponsor: SPONSOR, lens: SPONSOR,
+    chain: 'solana', cluster, programId: 'ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH', account, sponsor: SPONSOR,
+    lenses: [SPONSOR], lensThreshold: 1, lensConfirmed: [], fundingMint: null, requiredFunding: '0', fundingMet: false,
     status: 'active', decision: 'pending', deadline: null, requiredLamports: '0', escrowLamports: '0',
     executedAt: null, observedAt: '2026-10-22T08:00:00.000Z', observedSlot: 4321
 });

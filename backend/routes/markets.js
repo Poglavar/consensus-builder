@@ -105,7 +105,7 @@ export async function agreementByAccount(db, account) {
 /** The codec authenticates the address and vault. These checks bind the funded USDC book to its agreement. */
 export function hasAgreementMarketTerms(market, account, subject) {
     return !!market && market.proposal === account && market.stakeMint === DEVNET_USDC_MINT
-        && (market.kind === 0 || (market.kind === 1 && market.trustedAttester === subject.lens))
+        && (market.kind === 0 || (market.kind === 1 && subject.lenses.includes(market.trustedAttester)))
         && Number.isFinite(new Date(Number(market.closesAt) * 1000).getTime())
         && typeof market.b === 'bigint' && market.b > 0n && market.seed === lmsr.maxLoss(market.b);
 }
@@ -130,7 +130,7 @@ export function defaultMarketReader(env = process.env) {
             if (!subject || subject.cid !== row?.cid || subject.authority !== row.sponsor || !ONCHAIN_STATUSES[subject.statusCode]) {
                 throw new Error('Agreement account identity or status differs.');
             }
-            return [account, { sponsor: subject.authority, lens: subject.lens, chainStatus: ONCHAIN_STATUSES[subject.statusCode],
+            return [account, { sponsor: subject.authority, lenses: subject.lenses, chainStatus: ONCHAIN_STATUSES[subject.statusCode],
                 deadline: subject.deadline > 0 ? new Date(subject.deadline * 1000).toISOString() : null,
                 markets: found.get(account).filter(item => hasAgreementMarketTerms(item.market, account, subject)) }];
         }));

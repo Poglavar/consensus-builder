@@ -284,8 +284,37 @@
             binding: raw.binding === true,
             approvalConfig: raw.approvalConfig == null ? null : clone(raw.approvalConfig),
             lens: raw.lens == null ? [] : clone(raw.lens),
+            ...(raw.lensThreshold == null ? {} : { lensThreshold: raw.lensThreshold }),
             settlement: raw.electorate === 'owners' ? { ...(raw.settlement || DEFAULT_SETTLEMENT) } : null
         };
+    }
+
+    // The lens is a set of 0-8 distinct member keys, frozen when the agreement is minted, and
+    // `lensThreshold` of them must confirm (1..members; absent means 1). Only a crowdfunding agreement,
+    // whose contribution target the program checks itself, may name no lens.
+    const MAX_LENSES = 8;
+    const DEFAULT_KEY = '11111111111111111111111111111111';
+    // How many members must confirm: the stored threshold, 1 when absent, 0 with no members.
+    function lensThresholdOf(rule) {
+        const members = Array.isArray(rule?.lens) ? rule.lens.length : 0;
+        return members ? (rule.lensThreshold ?? 1) : 0;
+    }
+
+    function lensRuleError(rule, translate = originalMessage) {
+        const lensCore = root.LensCore || (typeof require === 'function' ? require('./lens-core.js') : null);
+        const lens = rule?.lens;
+        if (!Array.isArray(lens) || lens.length > MAX_LENSES) return translate('agreement.lens.errors.list', 'The lens is a list of up to 8 Solana keys.');
+        if (lens.some(value => typeof value !== 'string' || value !== value.trim() || value === DEFAULT_KEY || !lensCore?.isBase58Pubkey(value))) {
+            return translate('agreement.lens.errors.key', 'Each lens member must be a Solana key.');
+        }
+        if (new Set(lens).size !== lens.length) return translate('agreement.lens.errors.duplicate', 'Each lens member can be listed once.');
+        const threshold = rule.lensThreshold;
+        if (!lens.length) {
+            if (threshold != null && threshold !== 0) return translate('agreement.lens.errors.noLensThreshold', 'An agreement without a lens has no confirmation threshold.');
+        } else if (threshold != null && !(Number.isInteger(threshold) && threshold >= 1 && threshold <= lens.length)) {
+            return translate('agreement.lens.errors.threshold', 'Choose how many lens members must confirm: from 1 to the number of members.');
+        }
+        return null;
     }
 
     // A target is committed as decimal atomic units, so it round-trips through JSON without
@@ -399,7 +428,12 @@
         const key = value => typeof value === 'string' && value === value.trim() && value !== '11111111111111111111111111111111'
             && lensCore?.isBase58Pubkey(value);
         if (rule.binding !== true || rule.approvalConfig != null || rule.settlement != null) return 'Crowdfunding uses a binding funding target.';
-        if (!Array.isArray(rule.lens) || rule.lens.length !== 1 || !key(rule.lens[0])) return translate('agreement.funding.chooseKey', 'Choose one lens member to verify the funding target.');
+        const lensIssue = lensRuleError(rule, translate);
+        if (lensIssue) return lensIssue;
+        // A lens member qualifies each apartment buyer (pledge program, any member's qualification).
+        if (content.funding?.apartments != null && !rule.lens.length) {
+            return translate('agreement.lens.errors.apartmentsNeedLens', 'An apartment round needs at least one lens member to qualify buyers.');
+        }
         if ((requireSponsor || content.sponsor != null) && !key(content.sponsor)) return translate('agreement.funding.wallet', 'A crowdfunding agreement needs the developer’s Solana wallet.');
         if (typeof content.deadline !== 'string' || !Number.isFinite(Date.parse(content.deadline)) || Date.parse(content.deadline) % 1000 !== 0) return translate('agreement.errors.deadlineInvalid', 'Set a funding deadline to the nearest second.');
         if (!Array.isArray(content.inputs?.parcels) || content.inputs.parcels.length || content.inputs.openGroundM2 !== 0
@@ -782,6 +816,8 @@
         const { electorate, binding, approvalConfig } = agreement.rule;
         const fundingIssue = crowdfundingError(raw, { translate });
         if (fundingIssue) add(errors, 'funding', 'funding-invalid', fundingIssue);
+        const lensIssue = agreement.rule.electorate === 'investors' ? null : lensRuleError(agreement.rule, translate || originalMessage);
+        if (lensIssue) add(errors, 'rule', 'rule-lens-invalid', lensIssue);
         if (!ELECTORATES.includes(electorate)) {
             add(errors, 'rule', 'rule-invalid', 'Choose who decides: the owners or the community.');
         } else if (electorate === 'community') {
@@ -996,6 +1032,7 @@
         rightsFromInputs, approvalSubject, stableStringify, published, publishedCid, consultationOf, participationUrl,
         planReference, matchesPlan, PARTY_PREFIX, partyKey, parcelOfParty, partyName, landParties, defaultAllocations, settle, landBalance, contributionLimit, settlementValid, DEFAULT_SETTLEMENT,
         METHODS, schemeOf, schemeCheck, settlementIssues, valueGainOf,
+        MAX_LENSES, lensThresholdOf, lensRuleError,
         MAX_CONTRACT_BYTES, parseUsdc, formatUsdc, fundingError, crowdfundingError, apartmentUnitKey, apartmentTermsHash, apartmentLocator, apartmentUnitLocator
     };
 });

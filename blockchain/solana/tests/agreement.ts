@@ -132,10 +132,15 @@ describe("agreement", () => {
     }
 
     /** create() sent directly, for the argument checks: `agreement` defaults to PDA(signer, cid). */
-    function sendCreate(a: { cid: string; signer?: Keypair; agreement?: PublicKey; lens?: PublicKey; deadline?: number; payout?: PublicKey }) {
+    function sendCreate(a: {
+        cid: string; signer?: Keypair; agreement?: PublicKey; lens?: PublicKey; lenses?: PublicKey[]; threshold?: number;
+        deadline?: number; payout?: PublicKey; fundingMint?: PublicKey; requiredFunding?: number;
+    }) {
         const signer = a.signer ?? sponsor;
+        const lenses = a.lenses ?? [a.lens ?? lens.publicKey];
         return program.methods
-            .create(a.cid, a.lens ?? lens.publicKey, new anchor.BN(a.deadline ?? farDeadline), false, new anchor.BN(0), a.payout ?? signer.publicKey)
+            .create(a.cid, lenses, a.threshold ?? (lenses.length ? 1 : 0), new anchor.BN(a.deadline ?? farDeadline), false,
+                new anchor.BN(0), a.payout ?? signer.publicKey, a.fundingMint ?? PublicKey.default, new anchor.BN(a.requiredFunding ?? 0))
             .accountsStrict({
                 agreement: a.agreement ?? findAgreementPda(program.programId, signer.publicKey, a.cid),
                 authority: signer.publicKey,
@@ -186,6 +191,11 @@ describe("agreement", () => {
             expect(account.decisionAttestation.toBase58()).to.equal(ZERO_KEY);
             expect(Buffer.from(account.decisionHash).equals(Buffer.alloc(32))).to.be.true;
             expect(account.bump).to.equal(bump);
+            expect([account.lensCount, account.lensThreshold, account.lensConfirmed]).to.deep.equal([1, 1, 0]);
+            expect(account.moreLenses.every((key: PublicKey) => key.equals(PublicKey.default))).to.be.true;
+            expect(account.fundingMint.toBase58()).to.equal(ZERO_KEY);
+            expect([num(account.requiredFunding), num(account.fundingObserved), num(account.fundingMetAt)]).to.deep.equal([0, 0, 0]);
+            expect(account.fundingMet).to.be.false;
             expect(account.cid).to.equal(created.cid);
 
             // The byte layout the market and pledge programs and the backend reader rely on.
@@ -200,6 +210,7 @@ describe("agreement", () => {
             expect(data[OFFSET.openGround]).to.equal(1);
             expect(data[OFFSET.decision]).to.equal(0);
             expect(data[OFFSET.bump]).to.equal(bump);
+            expect([data[OFFSET.lensCount], data[OFFSET.lensThreshold], data[OFFSET.lensConfirmed]]).to.deep.equal([1, 1, 0]);
             expect(data.readUInt32LE(OFFSET.cid)).to.equal(created.cid.length);
             expect(data.subarray(OFFSET.cid + 4, OFFSET.cid + 4 + created.cid.length).toString("utf8")).to.equal(created.cid);
 
@@ -207,7 +218,8 @@ describe("agreement", () => {
             expect(event.agreement.toBase58()).to.equal(created.agreement.toBase58());
             expect(event.cid).to.equal(created.cid);
             expect(event.authority.toBase58()).to.equal(sponsor.publicKey.toBase58());
-            expect(event.lens.toBase58()).to.equal(lens.publicKey.toBase58());
+            expect(event.lenses.map((key: PublicKey) => key.toBase58())).to.deep.equal([lens.publicKey.toBase58()]);
+            expect(event.lensThreshold).to.equal(1);
             expect(event.payout.toBase58()).to.equal(payout.toBase58());
             expect([num(event.deadline), num(event.requiredLamports), num(event.createdAt)])
                 .to.deep.equal([createdDeadline, SOL / 2, num(account.createdAt)]);
@@ -257,7 +269,7 @@ describe("agreement", () => {
         it("refuses the default lens key, a default or self payout, and a deadline that is not in the future", async () => {
             const cid = testCid("arguments");
             const self = findAgreementPda(program.programId, sponsor.publicKey, cid);
-            await expectFailure(() => sendCreate({ cid, lens: PublicKey.default }), "NoLens");
+            await expectFailure(() => sendCreate({ cid, lens: PublicKey.default }), "InvalidLens");
             await expectFailure(() => sendCreate({ cid, payout: PublicKey.default }), "InvalidPayout");
             await expectFailure(() => sendCreate({ cid, payout: self }), "InvalidPayout");
             const past = (await chainNow(connection)) - 5;
@@ -268,6 +280,79 @@ describe("agreement", () => {
             expect(await connection.getAccountInfo(self)).to.be.null;
             await sendCreate({ cid });
             expect(num((await fetchAgreement(self)).deadline)).to.equal(farDeadline);
+        });
+    });
+
+    // ========================
+    // lens set: up to eight members, a threshold, each member counted once
+    // ========================
+
+    describe("lens set", () => {
+        let members: LensMember[];
+        before(async () => {
+            members = [lens, otherLens, await createLensMember(provider)];
+        });
+
+        it("refuses duplicate members, more than eight, an unreachable threshold, and no lens without a target", async () => {
+            const cid = testCid("lens-rules");
+            const keys = members.map(member => member.publicKey);
+            await expectFailure(() => sendCreate({ cid, lenses: [keys[0], keys[0]] }), "InvalidLens");
+            const nine = Array.from({ length: 9 }, () => Keypair.generate().publicKey);
+            await expectFailure(() => sendCreate({ cid, lenses: nine }), "InvalidLens");
+            await expectFailure(() => sendCreate({ cid, lenses: keys, threshold: 0 }), "InvalidLens");
+            await expectFailure(() => sendCreate({ cid, lenses: keys, threshold: 4 }), "InvalidLens");
+            await expectFailure(() => sendCreate({ cid, lenses: [] }), "NoLens");
+            await expectFailure(() => sendCreate({ cid, requiredFunding: 5 }), "InvalidFundingTarget");
+            await expectFailure(() => sendCreate({ cid, fundingMint: Keypair.generate().publicKey }), "InvalidFundingTarget");
+            expect(await connection.getAccountInfo(findAgreementPda(program.programId, sponsor.publicKey, cid))).to.be.null;
+        });
+
+        it("settles a 2-of-3 lens on the second distinct member, never on one member twice or an outsider", async () => {
+            const created = await createAgreement(program, { sponsor, lenses: members.map(m => m.publicKey), lensThreshold: 2 });
+            const issue = async (member: LensMember) =>
+                (await attestDecision(provider, member, { agreementCid: created.cid, sponsor: sponsor.publicKey })).address;
+
+            const first = await issue(members[1]);
+            const signature = await recordDecision(program, created.agreement, first, members[1].credential);
+            let account = await fetchAgreement(created.agreement);
+            expect(account.decision).to.deep.equal({ pending: {} });
+            expect(account.lensConfirmed).to.equal(0b010);
+            expect(account.decisionAttestation.toBase58()).to.equal(ZERO_KEY);
+            const event = await eventOf(signature, "AgreementAttested");
+            expect([event.confirmations, event.lensThreshold, event.satisfied]).to.deep.equal([1, 2, false]);
+            expect(event.lens.toBase58()).to.equal(members[1].publicKey.toBase58());
+
+            const again = await issue(members[1]);
+            await expectFailure(() => recordDecision(program, created.agreement, again, members[1].credential), "MemberAlreadyConfirmed");
+            const outsider = await createLensMember(provider);
+            const foreign = await issue(outsider);
+            await expectFailure(() => recordDecision(program, created.agreement, foreign, outsider.credential), "WrongLens");
+            // Still cancellable while Pending.
+            expect((await fetchAgreement(created.agreement)).decision).to.deep.equal({ pending: {} });
+
+            const second = await issue(members[2]);
+            await recordDecision(program, created.agreement, second, members[2].credential);
+            account = await fetchAgreement(created.agreement);
+            expect(account.decision).to.deep.equal({ satisfied: {} });
+            expect(account.lensConfirmed).to.equal(0b110);
+            expect(account.decisionAttestation.toBase58()).to.equal(second.toBase58());
+            const third = await issue(members[0]);
+            await expectFailure(() => recordDecision(program, created.agreement, third, members[0].credential), "AlreadyAttested");
+            await executeAgreement(program, created.agreement, sponsor.publicKey);
+            expect((await rawAgreement(created.agreement))[OFFSET.status]).to.equal(STATUS.executed);
+        });
+
+        it("settles an any-1-of-3 lens on whichever member confirms first, the sponsor's own key included", async () => {
+            const own = await createLensMember(provider, sponsor);
+            const created = await createAgreement(program, { sponsor, lenses: [members[0].publicKey, own.publicKey, members[2].publicKey] });
+            const { address } = await attestDecision(provider, own, { agreementCid: created.cid, sponsor: sponsor.publicKey });
+            await recordDecision(program, created.agreement, address, own.credential);
+            const account = await fetchAgreement(created.agreement);
+            expect(account.decision).to.deep.equal({ satisfied: {} });
+            expect(account.lensConfirmed).to.equal(0b010);
+            const data = await rawAgreement(created.agreement);
+            expect(new PublicKey(data.subarray(OFFSET.moreLenses, OFFSET.moreLenses + 32)).toBase58()).to.equal(own.publicKey.toBase58());
+            expect(data[OFFSET.lensCount]).to.equal(3);
         });
     });
 
@@ -385,6 +470,8 @@ describe("agreement", () => {
             expect(Buffer.from(event.attestationHash).equals(hash)).to.be.true;
             expect(event.evidenceRef).to.equal(evidenceRef);
             expect(num(event.sourceObservedAt)).to.equal(sourceObservedAt);
+            expect([event.confirmations, event.lensThreshold, event.satisfied]).to.deep.equal([1, 1, true]);
+            expect(account.lensConfirmed).to.equal(1);
         });
 
         it("keeps the first decision: another valid attestation is AlreadyAttested", async () => {

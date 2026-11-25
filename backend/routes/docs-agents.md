@@ -120,7 +120,8 @@ SOLANA_RPC_URL=https://api.devnet.solana.com
 | `ugt_inspect_verified_fact` | read | The x402 challenge of an agreement's verified fact, without paying. |
 | `ugt_publish_design` | write | Index a `design/v1` object. |
 | `ugt_propose_agreement` | write | Index an `agreement/v1` object, with any linked designs the index does not hold yet. |
-| `ugt_mint_agreement` | signed | As the sponsor of a binding owners' agreement: create the account and fund its escrow, then record it in the index. |
+| `ugt_mint_agreement` | signed | As the sponsor of a binding owners' or crowdfunding agreement: create the account with its lens members, threshold and any funding target, fund its escrow, then record it in the index. |
+| `ugt_confirm_funding` | signed | Anyone: record on chain that a crowdfunding agreement's credited contributions reached its funding target (no lens involved). |
 | `ugt_fund_agreement` | signed | As the sponsor: top the escrow up to a target. |
 | `ugt_bet_on_agreement` | signed, USDC | Open the agreement's market if needed and stake YES or NO. |
 | `ugt_pledge`, `ugt_donate` | signed, USDC | Back an agreement account with a revocable pledge or a funded donation. |
@@ -135,7 +136,8 @@ The USDC cap is enforced before anything is signed, including against each x402 
 `ugt_donate` needs a stable `operationId`. `ugt_publish_design` and `ugt_propose_agreement` compute the
 CIDs locally and refuse an object that is not exactly its published form, naming the fields that
 differ. `ugt_mint_agreement` refuses a vote (a poll is never minted), and refuses unless the agent's
-wallet is the agreement's `sponsor` and `rule.lens` holds exactly one key that is not the agent's own. Leave `UGT_MCP_LIVE` unset for a
+wallet is the agreement's `sponsor` and its lens (`rule.lens`, 0-8 distinct keys, any of them the agent's own; none only for
+crowdfunding) and `rule.lensThreshold` (1 to the number of members; absent means 1) are valid. Leave `UGT_MCP_LIVE` unset for a
 session without signing.
 
 ## 1. What you need
@@ -394,17 +396,26 @@ from the deadline before. Read it back at `GET $(base)/agreements/<cid>`; list w
 Only a binding owners' agreement is minted; a vote stays a poll in the index and ends with §5.
 
 - **Program:** `agreement`, `$(agreementProgram)` on Solana devnet ($(agreementProgramStatus)).
-- **Account:** PDA `["agreement", sponsor, sha256(cid as UTF-8)]`, 296 bytes: authority (the sponsor),
-  lens, payout, deadline (unix seconds; 0, none, only on accounts created before one was required), required and escrowed lamports, status (0 Active,
+- **Account:** PDA `["agreement", sponsor, sha256(cid as UTF-8)]`, 580 bytes: authority (the sponsor),
+  the first lens member, payout, deadline (unix seconds), required and escrowed lamports, status (0 Active,
   1 Executed, 2 Cancelled, 3 Expired), open ground, decision (0 Pending, 1 Satisfied), the recorded
-  attestation, executed_at and the CID.
-- **`create(cid: string, lens: pubkey, deadline: i64, open_ground: bool, required_lamports: u64,
-  payout: pubkey)`**, accounts `agreement` (writable, the PDA), `authority` (signer, writable: the
-  sponsor; pays the rent), System Program. `lens` is the agreement's one `rule.lens` key, `deadline` its
+  attestation, executed_at, then the lens set (member count, threshold, a confirmation bit per member, the
+  other 7 member slots), the contribution target (mint, required base units, met, observed, met at) and
+  the CID at byte 512.
+- **`create(cid: string, lenses: vec<pubkey>, lens_threshold: u8, deadline: i64, open_ground: bool, required_lamports: u64, payout: pubkey, funding_mint: pubkey, required_funding: u64)`**, accounts
+  `agreement` (writable, the PDA), `authority` (signer, writable: the sponsor; pays the rent), System
+  Program. `lenses` is `rule.lens` (0-8 distinct keys, frozen here), `lens_threshold` how many of them must
+  each attest (`rule.lensThreshold`, default 1; 0 with no members, allowed only with a target),
+  `funding_mint`/`required_funding` the crowdfunding target (devnet USDC, `funding.targetUsdcAtomic`;
+  the default key and 0 otherwise), `deadline` its
   deadline in unix seconds, required and in the future (an agreement without one: 90 days from now), `open_ground` whether `inputs.openGroundM2 > 0`, `required_lamports` the
   escrow execution needs (0 for none), `payout` who receives the escrow when it executes.
 - **`fund(lamports: u64)`**, accounts `agreement`, `authority` (signer), System Program: only the
   sponsor, while Active and before the deadline.
+- **`attest()`** records one lens member's AgreementDecision once; **`confirm_funding()`**, accounts
+  `agreement` (writable), `escrow` (the `proposal_pledge` donation escrow `["donation_escrow", agreement]`)
+  and `vault` (the escrow's USDC account), lets anyone record that credited contributions (donated less
+  refunded) reached the target. The decision becomes Satisfied when both conditions hold.
 - IDL `blockchain/solana/idl/agreement.json`; codec `frontend/js/solana/agreement-client.js` (UMD; in
   Node, `require` it and `configure({ web3 })`); reference minter `backend/agents/agreement-minter.js`
   (`mintAgreement`: create and fund in one transaction, reading the chain first so a retry signs nothing
@@ -416,7 +427,8 @@ Then tell the index which account it is: `POST $(base)/agreements/<cid>/onchain`
 the transaction on its own RPC: 404 `onchain-account-missing` or 409 `onchain-signature-not-found` mean it
 has not seen them yet, so ask again shortly. 422 `no-sponsor`: the agreement names no sponsor wallet.
 
-With the MCP: `ugt_mint_agreement { agreementCid, lamports }` and `ugt_fund_agreement { agreementCid, targetLamports }`.
+With the MCP: `ugt_mint_agreement { agreementCid, lamports }`, `ugt_fund_agreement { agreementCid, targetLamports }` and
+`ugt_confirm_funding { agreementAccount }`.
 
 ## 7. Bet, pledge and donate on it
 
@@ -565,7 +577,8 @@ Coinbase's hosted CDP facilitator on `$(network)`; buyers never need its credent
   `court`, `permit`, `imagery`, `osm` or `lifecycle`; `name`; `description`; `serviceUrl`, where it takes
   requests, or null; `coverage`: ownership attestations issued, parcels covered, agreements executed), and
   read the exact payload layouts at `$(base)/lenses/schemas` (`ParcelOwnership-v1`,
-  `AgreementDecision-v1`, `MarketEvidence-v1`). Put its key in `rule.lens`; the account fixes it at mint.
+  `AgreementDecision-v1`, `MarketEvidence-v1`). Put its key in `rule.lens` (up to 8 members, and
+  `rule.lensThreshold` of them must confirm); the account fixes the set at mint.
 - **Ownership:** an owner can ask a member to attest its wallet as a parcel's owner
   (`ParcelOwnership-v1`): `POST <serviceUrl>/lens/challenge`, sign the message, `POST <serviceUrl>/lens/ownership`
   (`ugt_request_ownership`). A priced member is paid over x402.

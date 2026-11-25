@@ -49,7 +49,7 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
             const result = await groundFor(await resolveDesigns(designs, parcelSourceId));
             return result.land;
         },
-        async draftAgreement({ plan: value, rulePreset = 'owner-vote', rule: ruleOverride, rights, lens, allocations, settlement, valuation = null, currency = null, deadline = null, sponsor = null, title = null, author = null, createdAt = null, consultation = null, includeGround = false, targetUsdcAtomic = null, contract = null, apartments = null }) {
+        async draftAgreement({ plan: value, rulePreset = 'owner-vote', rule: ruleOverride, rights, lenses = [], lensThreshold = null, allocations, settlement, valuation = null, currency = null, deadline = null, sponsor = null, title = null, author = null, createdAt = null, consultation = null, includeGround = false, targetUsdcAtomic = null, contract = null, apartments = null }) {
             if (!resolvePlan) throw fail('plan-resolver-unavailable', 'Named plan resolution is unavailable.');
             // Funding refers to the published member CIDs. Only newly carried designs need authoring checks.
             const selected = await resolvePlan(value, { referenceMembers: rulePreset === 'crowdfunding' });
@@ -63,7 +63,9 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
                 const designs = selected.designs || [];
                 const city = selected.plan.view?.city || designs[0]?.content?.city || null;
                 if (!city) throw fail('agreement-city-missing', 'The selected plan needs a city in its saved view or member designs.');
-                const rule = { electorate: 'investors', binding: true, lens: lens ? [lens] : [], approvalConfig: null, settlement: null };
+                // The program checks the funding target itself; lens members (0-8) attest investor eligibility
+                // and any other condition, `lensThreshold` of them (absent: any one).
+                const rule = { electorate: 'investors', binding: true, lens: lenses, ...(lensThreshold == null ? {} : { lensThreshold }), approvalConfig: null, settlement: null };
                 const published = agreementObject({ title, author, sponsor, city, createdAt: createdAt || new Date().toISOString(), plan: { cid: selected.cid, content: selected.plan },
                     designs: designs.map(d => ({ cid: d.cid, goal: d.content?.goal, title: d.content?.title })), parcels: [], openGroundM2: 0, outputs: [], allocations: [],
                     money: { currency: currency || cityMoney(city).currentCurrency(), lines: [] }, valuation: null, rule, deadline, funding: { targetUsdcAtomic, contract, ...(apartments ? { apartments } : {}) }, requireSponsor: false });
@@ -81,7 +83,7 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
             const effectiveRights = rights ?? ruleOverride?.approvalConfig?.rights;
             const presetRule = ruleOverride ? null : rulePreset === 'community-vote' ? communityRule()
                 : rulePreset === 'owner-vote' ? { ...communityRule(), electorate: 'owners', approvalConfig: effectiveRights ? { schema: 'proposal-approval/v1', rights: effectiveRights, policy: { type: 'unanimous' } } : null, lens: [] }
-                    : ownersRule({ lens, rights: effectiveRights });
+                    : ownersRule({ lenses, lensThreshold, rights: effectiveRights });
             const rule = ruleOverride ? structuredClone(ruleOverride) : presetRule;
             // Ownership rights live only in the rule: the parties stay one per input parcel.
             if (rights && rule.electorate === 'owners') rule.approvalConfig = { ...(rule.approvalConfig || { schema: 'proposal-approval/v1', policy: { type: 'unanimous' } }), rights };

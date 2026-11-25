@@ -80,7 +80,11 @@ An agreement whose owners' decision rule is binding. It is eligible for a chain 
 
 ### Developer crowdfunding agreement
 
-A binding agreement to raise devnet USDC for one exact plan revision. The sponsor is the developer and payout recipient. The agreement commits a minimum funding target, a deadline, one lens member and the investor contract. The chosen lens verifies the recorded USDC deposits against the target. Execution permits release to the developer. Cancellation or expiry permits each contributor to reclaim their deposits.
+A binding agreement to raise devnet USDC for one exact plan revision. The sponsor is the developer and payout recipient. The agreement commits a minimum funding target, a deadline, a lens of zero to eight members with its threshold, and the investor contract. The agreement program confirms the target itself from the recorded USDC deposits (see Contribution target); the lens, when named, checks investor eligibility and any other conditions. Execution permits release to the developer. Cancellation or expiry permits each contributor to reclaim their deposits.
+
+### Contribution target
+
+The minimum credited contributions, in base units of one token mint, an agreement needs before it can settle: `funding.targetUsdcAtomic` in devnet USDC for a crowdfunding agreement, frozen at mint as `required_funding` and `funding_mint`. Credited means donated less refunded in the agreement's `proposal_pledge` donation escrow. Anyone records the target as met with `confirm_funding`; the program reads the escrow and its vault itself, so no lens is involved.
 
 ### Investor contract
 
@@ -88,7 +92,7 @@ The developer’s attached PDF or UTF-8 text specifying what a contributor recei
 
 ### Apartment reservation
 
-A crowdfunding offer for one whole apartment at a fixed price and deposit. The developer wallet, permanent project ID and permanent unit ID identify it across rounds. The unit’s X-ray address and attached drawing identify the layout the buyer reviewed. The developer’s chosen lens qualifies the buyer wallet for this round, unit and deposit before one funded reservation can be recorded for it. Execution retains its allocation. A refunded position permits the unit to be released and listed again.
+A crowdfunding offer for one whole apartment at a fixed price and deposit. The developer wallet, permanent project ID and permanent unit ID identify it across rounds. The unit’s X-ray address and attached drawing identify the layout the buyer reviewed. A member of the round’s lens qualifies the buyer wallet for this round, unit and deposit before one funded reservation can be recorded for it; an apartment round names at least one member. Execution retains its allocation. A refunded position permits the unit to be released and listed again.
 
 The **reservation deposit** is the fixed USDC amount the buyer pays into the agreement’s escrow to reserve the unit. Only deposits attached to reserved units count toward an apartment round’s funding target.
 
@@ -930,7 +934,11 @@ The area-weighted support defined by an approval rule and rights shares. A parce
 
 ### Lens
 
-The selected verification trust set for an agreement or assertion. A lens identifies whose attestations the relevant rule accepts, independently of the owners' own decisions.
+The selected verification trust set for an agreement or assertion. A lens identifies whose attestations the relevant rule accepts, independently of the owners' own decisions. An agreement's lens (`rule.lens`) is a list of zero to eight distinct Solana keys, frozen at mint. Any key may be a member, the sponsor's own included: the people who enter an agreement judge its lens. Only an agreement with a contribution target may name no lens.
+
+### Lens threshold
+
+How many distinct members of an agreement's lens must confirm its decision: `rule.lensThreshold`, from 1 to the number of members, 1 ("any one of the listed keys") when absent, and 0 for an agreement without a lens. Each member's confirmation counts once; the account records which members have confirmed.
 
 ### Lens preference
 
@@ -946,7 +954,7 @@ An attributed statement under a defined schema, with its issuer and evidence ref
 
 ### Agreement decision
 
-The lens's attested statement that an agreement's approval rule is satisfied. `AgreementDecision-v1` commits to the counted evidence; it is separate from the owner receipts and the chain transaction recording the decision.
+A lens member's attested statement that an agreement's approval rule is satisfied. `AgreementDecision-v1` commits to the counted evidence; it is separate from the owner receipts and the chain transaction recording it. The agreement's recorded decision becomes satisfied once the lens threshold of members have confirmed and any contribution target is met.
 
 ### Devnet owner registry
 
@@ -984,7 +992,7 @@ The creation of a binding agreement's chain account. Publishing a design, creati
 
 ### Settlement
 
-The agreement process combining qualifying decisions, a lens decision, recorded chain state and sufficient escrow to execute, or closure by cancellation or expiry. Each step has its own evidence.
+The agreement process combining qualifying decisions, the lens threshold of members' decisions, any confirmed contribution target, recorded chain state and sufficient escrow to execute, or closure by cancellation or expiry. Each step has its own evidence.
 
 ### Execution
 

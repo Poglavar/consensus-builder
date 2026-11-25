@@ -18,6 +18,7 @@
         create: Object.freeze([24, 30, 200, 40, 5, 28, 7, 119]),
         fund: Object.freeze([218, 188, 111, 221, 152, 113, 174, 7]),
         attest: Object.freeze([83, 148, 120, 119, 144, 139, 117, 160]),
+        confirm_funding: Object.freeze([30, 31, 203, 65, 164, 189, 67, 48]),
         execute: Object.freeze([130, 221, 242, 154, 13, 193, 189, 29]),
         cancel: Object.freeze([232, 219, 223, 41, 219, 236, 220, 190]),
         expire: Object.freeze([243, 83, 205, 58, 57, 201, 247, 146])
@@ -29,7 +30,7 @@
 
     const constants = Object.freeze({
         // Placeholder, not deployed: replace with the deployed id (programs/agreement/README.md, "Program id").
-        AGREEMENT_PROGRAM_ID: 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ',
+        AGREEMENT_PROGRAM_ID: 'ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH',
         SAS_PROGRAM_ID: '22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG',
         SYSTEM_PROGRAM_ID: '11111111111111111111111111111111',
         DEFAULT_PUBKEY: '11111111111111111111111111111111',
@@ -43,8 +44,14 @@
         DECISION_SCHEMA_NAME: 'AgreementDecision',
         DECISION_SCHEMA_VERSION: 1,
         SAS_ATTESTATION_DISCRIMINATOR: 2,
-        // 8-byte discriminator + Agreement::INIT_SPACE (288).
-        AGREEMENT_ACCOUNT_SPACE: 296,
+        // 8-byte discriminator + Agreement::INIT_SPACE (572).
+        AGREEMENT_ACCOUNT_SPACE: 580,
+        // Most lens members an agreement names; its threshold is 1..members (0 with none).
+        MAX_LENSES: 8,
+        // The devnet USDC mint a crowdfunding agreement's contribution target is counted in; the same
+        // key as pledge-client.js USDC_DEVNET_MINT (agreement-client.test.js asserts it), restated so
+        // reading an agreement does not need the lazily loaded pledge client.
+        USDC_DEVNET_MINT: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
         STATUS_ACTIVE: 0,
         STATUS_EXECUTED: 1,
         STATUS_CANCELLED: 2,
@@ -66,7 +73,13 @@
         deadline: 104,
         status: 136,
         decision: 138,
-        cid: 228
+        lensCount: 228,
+        lensThreshold: 229,
+        lensConfirmed: 230,
+        moreLenses: 231,
+        fundingMint: 455,
+        requiredFunding: 487,
+        cid: 512
     });
 
     let injectedWeb3 = null;
@@ -224,14 +237,39 @@
 
     // ---- instruction data -----------------------------------------------------------------------------
 
-    // create(cid: String, lens: Pubkey, deadline: i64, open_ground: bool, required_lamports: u64, payout: Pubkey).
+    // The program's lens rule: 0-8 distinct real member keys and a threshold of 1..members, or no
+    // members (threshold 0) only with a contribution target. Returns the keys in order, else throws.
+    function requireLensSet(lenses, threshold, requiredFunding = 0n) {
+        if (!Array.isArray(lenses)) throw new Error('lenses must be a list of base58 keys');
+        const keys = lenses.map((key, index) => toKey(key, `lenses[${index}]`).toBase58());
+        if (keys.length > constants.MAX_LENSES) throw new Error(`a lens has at most ${constants.MAX_LENSES} members`);
+        if (keys.some(key => key === constants.DEFAULT_PUBKEY)) throw new Error('a lens member must not be the default key');
+        if (new Set(keys).size !== keys.length) throw new Error('a lens names each member once');
+        if (!Number.isInteger(threshold)) throw new Error('lensThreshold must be a whole number');
+        if (!keys.length) {
+            if (!(BigInt(requiredFunding) > 0n)) throw new Error('an agreement without a lens needs a contribution target');
+            if (threshold !== 0) throw new Error('an agreement without a lens has threshold 0');
+        } else if (threshold < 1 || threshold > keys.length) {
+            throw new Error(`lensThreshold must be between 1 and ${keys.length}`);
+        }
+        return keys;
+    }
+
+    // create(cid: String, lenses: Vec<Pubkey>, lens_threshold: u8, deadline: i64, open_ground: bool,
+    // required_lamports: u64, payout: Pubkey, funding_mint: Pubkey, required_funding: u64).
     // Mirrors the program's argument checks that need no clock, so a wallet never signs a create the
     // program refuses for its arguments. The deadline is required and positive (NO_DEADLINE is refused);
     // whether it is still in the future is checked by the callers against their clock and finally by the
-    // program against the chain's.
-    function encodeCreateData({ cid, lens, deadline, openGround = false, requiredLamports = 0n, payout } = {}) {
+    // program against the chain's. A contribution target (requiredFunding > 0) needs its fundingMint,
+    // and a mint needs a target.
+    function encodeCreateData({ cid, lenses, lensThreshold, deadline, openGround = false, requiredLamports = 0n, payout,
+        fundingMint = null, requiredFunding = 0n } = {}) {
         requireCid(cid);
-        if (toKey(lens, 'lens').toBase58() === constants.DEFAULT_PUBKEY) throw new Error('lens must not be the default key');
+        const funding = BigInt(requiredFunding);
+        const keys = requireLensSet(lenses, lensThreshold ?? (Array.isArray(lenses) && lenses.length ? 1 : 0), funding);
+        const threshold = lensThreshold ?? (keys.length ? 1 : 0);
+        const mint = fundingMint ? toKey(fundingMint, 'fundingMint').toBase58() : constants.DEFAULT_PUBKEY;
+        if ((funding > 0n) !== (mint !== constants.DEFAULT_PUBKEY)) throw new Error('a contribution target needs its mint, and a mint needs a target');
         if (toKey(payout, 'payout').toBase58() === constants.DEFAULT_PUBKEY) throw new Error('payout must not be the default key');
         if (!(typeof deadline === 'bigint' ? deadline > 0n : Number.isSafeInteger(deadline) && deadline > 0)) {
             throw new Error('deadline must be unix seconds in the future');
@@ -239,11 +277,15 @@
         return concat([
             disc('create'),
             encodeString(cid),
-            encodePubkey(lens, 'lens'),
+            u32(keys.length),
+            ...keys.map((key, index) => encodePubkey(key, `lenses[${index}]`)),
+            Uint8Array.of(threshold),
             i64(deadline, 'deadline'),
             encodeBool(openGround, 'openGround'),
             u64(requiredLamports, 'requiredLamports'),
-            encodePubkey(payout, 'payout')
+            encodePubkey(payout, 'payout'),
+            encodePubkey(mint, 'fundingMint'),
+            u64(funding, 'requiredFunding')
         ]);
     }
 
@@ -256,6 +298,7 @@
 
     // attest(), execute(), cancel() and expire() take no arguments.
     const encodeAttestData = () => disc('attest');
+    const encodeConfirmFundingData = () => disc('confirm_funding');
     const encodeExecuteData = () => disc('execute');
     const encodeCancelData = () => disc('cancel');
     const encodeExpireData = () => disc('expire');
@@ -318,6 +361,16 @@
             meta(toKey(attestation, 'attestation'), false, false),
             meta(toKey(credential, 'credential'), false, false)
         ], encodeAttestData());
+    }
+
+    // Accounts: agreement (mut), escrow (its proposal_pledge donation escrow), vault (the escrow's token
+    // vault). Anyone may send it: the program checks credited contributions against the target itself.
+    function buildConfirmFundingIx({ agreement, cid, authority, escrow, vault, programId = constants.AGREEMENT_PROGRAM_ID } = {}) {
+        return instruction(programId, [
+            meta(agreementKey({ agreement, cid, authority, programId }), false, true),
+            meta(toKey(escrow, 'escrow'), false, false),
+            meta(toKey(vault, 'vault'), false, false)
+        ], encodeConfirmFundingData());
     }
 
     // Accounts: agreement (mut), payout (mut: must be the agreement's payout). `authority` only derives
@@ -408,6 +461,11 @@
     function readAgreement(data, address = null) {
         const bytes = data instanceof Uint8Array ? data : Uint8Array.from(data || []);
         if (!hasDiscriminator(bytes, ACCOUNT_DISCRIMINATORS.Agreement)) return null;
+        // An account minted under the single-lens layout (296 bytes) ends before the lens set and the
+        // CID's new offset: it is not readable as one, and its agreement must be recreated.
+        if (bytes.length < AGREEMENT_OFFSETS.cid + 4) {
+            throw new RangeError(`agreement account${address ? ` ${address}` : ''} is ${bytes.length} bytes, shorter than the lens-set layout: recreate the agreement`);
+        }
         const r = reader(bytes, 8);
         const authority = r.pubkey('authority');
         const lens = r.pubkey('lens');
@@ -425,13 +483,32 @@
         const decisionHash = r.bytes(32, 'decision_hash');
         const executedAt = r.i64('executed_at');
         const bump = r.u8('bump');
+        const lensCount = r.u8('lens_count');
+        const lensThreshold = r.u8('lens_threshold');
+        const lensConfirmedBits = r.u8('lens_confirmed');
+        const moreLenses = Array.from({ length: constants.MAX_LENSES - 1 }, (_, index) => r.pubkey(`more_lenses[${index}]`));
+        const fundingMint = r.pubkey('funding_mint');
+        const requiredFunding = r.u64('required_funding');
+        const fundingMet = r.bool('funding_met');
+        const fundingObserved = r.u64('funding_observed');
+        const fundingMetAt = r.i64('funding_met_at');
         const cid = r.string('cid');
+        if (lensCount > constants.MAX_LENSES) throw new RangeError(`lens_count ${lensCount} exceeds ${constants.MAX_LENSES}`);
+        const lenses = [lens, ...moreLenses].slice(0, lensCount);
         const pending = decisionCode === constants.DECISION_PENDING;
         return {
             address,
             cid,
             authority,
             lens,
+            lenses,
+            lensThreshold,
+            lensConfirmed: lenses.filter((_, index) => lensConfirmedBits & (1 << index)),
+            fundingMint: requiredFunding > 0n ? fundingMint : null,
+            requiredFunding,
+            fundingMet,
+            fundingObserved,
+            fundingMetAt,
             payout,
             deadline,
             createdAt,
@@ -507,7 +584,9 @@
         if (!attestation) return 'attestation-missing';
         if (!(attestation.expiry > now)) return 'attestation-expired';
         if (attestation.schema !== getDecisionSchemaPda(attestation.credential)[0].toBase58()) return 'wrong-schema';
-        if (attestation.signer !== agreement.lens) return 'wrong-lens';
+        if (!agreement.lenses.includes(attestation.signer)) return 'wrong-lens';
+        if (agreement.lensConfirmed.includes(attestation.signer)) return 'member-confirmed';
+        if (agreement.lensConfirmed.length >= agreement.lensThreshold) return 'lens-confirmed';
         if (attestation.fields.agreementCid !== agreement.cid) return 'wrong-cid';
         if (attestation.fields.sponsor !== agreement.authority) return 'wrong-sponsor';
         if (attestation.fields.decision !== 'satisfied') return 'unknown-decision';
@@ -563,12 +642,15 @@
         encodeCreateData,
         encodeFundData,
         encodeAttestData,
+        encodeConfirmFundingData,
+        requireLensSet,
         encodeExecuteData,
         encodeCancelData,
         encodeExpireData,
         buildCreateIx,
         buildFundIx,
         buildAttestIx,
+        buildConfirmFundingIx,
         buildExecuteIx,
         buildCancelIx,
         buildExpireIx,

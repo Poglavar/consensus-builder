@@ -4,7 +4,7 @@ import { Keypair } from '@solana/web3.js';
 import { cidOfObject } from '../cid.js';
 import { createInvestorFundingChain } from '../lens/investor-funding-chain.js';
 import { DEVNET_GENESIS_HASH } from '../agreements/onchain.js';
-import { encodeAgreementAccount } from './helpers/agent-chain-fakes.js';
+import { agreementAccountBytes } from './fixtures/agreement-account.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
@@ -26,7 +26,8 @@ function fixture({ vaultAmount = 1_000_000n, state = 1 } = {}) {
         key(pledgeClient.constants.USDC_DEVNET_MINT), key(vault), u64(1_000_000n), u64(0n), u64(0n), u64(1n), u64(1n), Buffer.from([0, 255])]);
     const vaultData = Buffer.alloc(165); key(pledgeClient.constants.USDC_DEVNET_MINT).copy(vaultData, 0); key(escrow).copy(vaultData, 32);
     vaultData.writeBigUInt64LE(vaultAmount, 64); vaultData[108] = state;
-    return { sponsor, lens, cid, account, escrow, vault, agreementData: encodeAgreementAccount({ authority: sponsor, lens, payout: sponsor, deadline, cid }), escrowData, vaultData };
+    return { sponsor, lens, cid, account, escrow, vault, agreementData: agreementAccountBytes({ authority: sponsor, lenses: [lens], payout: sponsor, deadline, cid,
+        fundingMint: pledgeClient.constants.USDC_DEVNET_MINT, requiredFunding: 1_000_000n }), escrowData, vaultData };
 }
 
 function adapter(row, unitAccounts = []) {
@@ -48,7 +49,7 @@ describe('finalized investor funding chain adapter', () => {
         const row = fixture(); const { rpc, chain } = adapter(row);
         const found = await chain.observe({ cid: row.cid, sponsor: row.sponsor, account: row.account });
         expect(found).toMatchObject({ slot: 12345, blockTime: 1_900_000_000, escrow: row.escrow, vault: row.vault, vaultUsdcAtomic: 1_000_000n,
-            agreement: { cid: row.cid, authority: row.sponsor, payout: row.sponsor }, donation: { proposal: row.account, beneficiary: row.sponsor, vault: row.vault } });
+            agreement: { cid: row.cid, authority: row.sponsor, payout: row.sponsor, lenses: [row.lens], requiredFunding: 1_000_000n }, donation: { proposal: row.account, beneficiary: row.sponsor, vault: row.vault } });
         expect(rpc.getMultipleAccountsInfoAndContext).toHaveBeenCalledWith(expect.any(Array), 'finalized');
     });
 

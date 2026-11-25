@@ -38,13 +38,13 @@ describe('publishing device-only models', () => {
         expect(await DeviceModels.chooseForPublish([{ geometry: { buildings: [] } }])).toEqual(new Map());
     });
 
-    it('keeps the models on the device when asked to, and does not ask again for them', async () => {
+    it('publishes without the models when asked to, for that publish only: the next publish asks again', async () => {
         globalThis.window = { CbDialog: { choice: vi.fn(async () => 'keep') } };
         try {
             const DeviceModels = load();
             expect(await DeviceModels.chooseForPublish([record()])).toEqual(new Map());
             expect(await DeviceModels.chooseForPublish([record()])).toEqual(new Map());
-            expect(window.CbDialog.choice).toHaveBeenCalledOnce();
+            expect(window.CbDialog.choice).toHaveBeenCalledTimes(2);
             const [, options] = window.CbDialog.choice.mock.calls[0];
             expect(options.map(option => option.value)).toEqual(['upload', 'keep', 'cancel']);
             // Cancel is the safe default.

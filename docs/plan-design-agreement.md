@@ -4,7 +4,7 @@
 
 ## Current agreement authoring contract
 
-A developer can also select **Developer crowdfunding** on a named plan. This binding agreement records a funding target, deadline, one lens and the attached investor contract. Its developer is the sponsor and receives the USDC on successful settlement. It carries no input parcels, allocations or owner decisions. [Developer crowdfunding](developer-crowdfunding.md)
+A developer can also select **Developer crowdfunding** on a named plan. This binding agreement records a funding target, deadline, a lens of zero to eight members with its threshold, and the attached investor contract; the program confirms the target itself. Its developer is the sponsor and receives the USDC on successful settlement. It carries no input parcels, allocations or owner decisions. [Developer crowdfunding](developer-crowdfunding.md)
 
 Create a named plan independently before creating an agreement. Agreement creation belongs to the plan’s actions. The Input parcels tab selects an existing exact plan revision; its designs are read-only. Neither the editor nor MCP agreement editing creates or edits a plan.
 
@@ -67,8 +67,9 @@ through `POST /pins` and indexed in `consensus.design` / `consensus.agreement`; 
 `/designs/<cid,…>` and `/agreements/<cid>`; design dialogs have no terms or kind; the decide-later
 type, Walrus, prepare, the proposal write path, edit tokens, effect hashes, lineage by row id and
 named plans are gone. M3 (the "M3 notes" below) puts the agreement on chain: the Solana `agreement`
-program (create, fund, attest, execute, cancel, expire; the lens attests `AgreementDecision`
-`satisfied` only; non-binding agreements are never minted and have no markets), the agreement panel's
+program (create, fund, attest, confirm_funding, execute, cancel, expire; each lens member attests
+`AgreementDecision` `satisfied` only, and the decision settles at the lens threshold and any
+contribution target; non-binding agreements are never minted and have no markets), the agreement panel's
 Mint / Propose again / Fund / Record decision / Execute / Cancel / Expire and the Minted agreements
 list, `POST /agreements/:cid/onchain` and `GET /agreements?minted=1`, markets, bets and pledges on
 agreement accounts (the original `agreement-execution-v1` contract; LMSR cancelled settles void, parimutuel NO), the
@@ -140,8 +141,9 @@ above supersedes historical statements where indicated.
   **IPFS**, never a server URL and not Walrus (deprecated, possibly dead). Reading stays independent
   of our server, as `chain-proposal-loader.js` already is.
 - **Who counts:** the approval engine counts off-chain from published signed decisions, anyone can
-  re-run it, and the agreement's named lens attests "decision satisfied" on chain; the program
-  checks that attestation plus escrow (option b). Chain order stays Solana first, EVM later.
+  re-run it, and the agreement's lens members attest "decision satisfied" on chain; the program
+  checks that its lens threshold of member attestations, any contribution target and the escrow are
+  met (option b). Chain order stays Solana first, EVM later.
 - **Terms are a separate step for every design.** Drawing and publishing a design never asks for
   terms; "Create agreement" is its own dialog over chosen designs, usable immediately after drawing.
   Nothing is auto-coupled, not even a single road with cash.
@@ -363,7 +365,8 @@ the `proposal:<id>` rows. It never takes part in `ParcelMutation`: an agreement 
                                                            // sponsor line is computed, never stored
   rule: { electorate: 'owners' | 'community', binding: boolean,
           approvalConfig: { schema: 'proposal-approval/v1', rights, policy, regime? } | null,
-          lens: [] },                                      // community: non-binding, no config
+          lens: [],                                        // 0-8 member keys; community: none
+          lensThreshold?: 1..lens.length },                 // absent: any one member
   deadline: ISO | null
 }
 ```
@@ -548,12 +551,13 @@ had to be made are marked **(call)**.
 
 ## M3 notes (2026-10-21, program built, not deployed)
 
-- The Solana `agreement` program (`blockchain/solana/programs/agreement`) has `create(cid, lens,
-  deadline, open_ground, required_lamports, payout)`, `fund`, `attest`, `execute`, `cancel`,
-  `expire`; one account per agreement holding the escrow; the lens attests `AgreementDecision`
+- The Solana `agreement` program (`blockchain/solana/programs/agreement`) has `create(cid, lenses,
+  lens_threshold, deadline, open_ground, required_lamports, payout, funding_mint, required_funding)`,
+  `fund`, `attest`, `confirm_funding`, `execute`, `cancel`, `expire`; one account per agreement
+  holding the escrow; each lens member attests `AgreementDecision`
   (`string agreementCid, string sponsor, string decision, string evidenceRef, int64 sourceObservedAt`;
-  the sponsor must equal the account's authority, so an attestation fits one account only), one
-  final decision per agreement; `execute` is permissionless and releases the escrow to `payout`.
+  the sponsor must equal the account's authority, so an attestation fits one account only), each
+  member counted once until the lens threshold, one final decision per agreement; `execute` is permissionless and releases the escrow to `payout`.
 - **Decision:** the account address is `["agreement", sponsor, sha256(cid)]`, so a published CID
   cannot be squatted by a stranger creating its account first; the agreement object carries the
   sponsor wallet, and the index's `onchain` column records the account once minted.

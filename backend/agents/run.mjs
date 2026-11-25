@@ -85,7 +85,7 @@ import {
     agreementObject, deadlineAfterDays, designObject, mapViewFromGeometry, noMoney, ownersRule, parcelOutputs, registryRights, planForDesigns
 } from './agreement-objects.js';
 import { createIndexClient } from './publication-client.js';
-import { mintAgreement } from './agreement-minter.js';
+import { mintAgreement, mintTermsOf } from './agreement-minter.js';
 import { agentRegistrationNote, isSoleOwner, readParcelOwners, registerSoleOwners } from './lens-owner-registry.js';
 import { ensureOwnerApproval, requestAgreementDecision } from './lens-approval-client.js';
 import { isEntrypoint } from './entrypoint.js';
@@ -242,6 +242,7 @@ export function settlementMessage(persona, lens, item, type) {
     const cid = item.cid;
     switch (type) {
     case 'decide': return `${persona.name} approved its agreement ${cid} as the sole owner of its land.`;
+    case 'confirm-funding': return `${persona.name} confirmed on chain that contributions to agreement ${cid} reached its funding target.`;
     case 'lens-decision': return `${persona.name} asked lens member ${lens?.name ?? item.lens} for its decision on agreement ${cid}: satisfied.`;
     case 'attest': return `${persona.name} recorded the lens decision on agreement ${cid} on chain.`;
     case 'execute': return `${persona.name} executed its agreement ${cid}; the escrow went to its payout.`;
@@ -519,7 +520,7 @@ export async function advancePick({
             designs: [{ cid: design.cid, goal: design.goal, title: design.title }],
             parcels: land.parcels, openGroundM2: 0, outputs: land.outputs,
             money: noMoney(cityMoney(design.city ?? city).currentCurrency()),
-            rule: ownersRule({ lens: lens.key, rights }), deadline
+            rule: ownersRule({ lenses: [lens.key], rights }), deadline
         });
         agreements[key] = { cid, content, plan, title: terms.title, deadline, lamports: terms.lamports, soleOwner: owners[key].soleOwner };
         await save(null, { agreements, lens: lens.key });
@@ -543,7 +544,7 @@ export async function advancePick({
         const agreement = agreements[key];
         const minted = await run({ type: 'mint', agreementCid: agreement.cid, lamports: agreement.lamports, lens: agreement.content.rule.lens, pickId: pick.pickId },
             () => mintImpl({
-                connection, sponsorKeypair: keypair, cid: agreement.cid, lens: agreement.content.rule.lens[0],
+                connection, sponsorKeypair: keypair, cid: agreement.cid, ...mintTermsOf(agreement.content),
                 deadline: agreement.deadline, lamports: agreement.lamports, openGround: false,
                 sendAndConfirm
             }),

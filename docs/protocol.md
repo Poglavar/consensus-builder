@@ -10,8 +10,8 @@ and which parties or systems must be trusted.
 |---|---|---|---|
 | ParcelNFT | [`4zad…kV1`](https://explorer.solana.com/address/4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1?cluster=devnet) | v2 deployed 2026-10-01 UTC: ownerless parcel anchors | [`parcel_nft.json`](../blockchain/solana/idl/parcel_nft.json) |
 | ProposalNFT | [`3WsV…xbg`](https://explorer.solana.com/address/3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg?cluster=devnet) | v3 deployed 2026-10-01 UTC: attested owner acceptance, verdict settlement, and parcel-optional site proposals | [`proposal_nft.json`](../blockchain/solana/idl/proposal_nft.json) |
-| ProposalMarket | [`GDYn…YDRB`](https://explorer.solana.com/address/GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB?cluster=devnet) | v2 deployed 2026-10-01 UTC: Expired resolves NO; proposal-scoped lens check for external markets | [`proposal_market.json`](../blockchain/solana/idl/proposal_market.json) |
-| ProposalPledge | [`1jES…rp6g`](https://explorer.solana.com/address/1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g?cluster=devnet) | Escrowed donations and revocable soft pledges | [`proposal_pledge.json`](../blockchain/solana/idl/proposal_pledge.json) |
+| ProposalMarket | [`9S7j…gJ71`](https://explorer.solana.com/address/9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71?cluster=devnet) | Redeployed 2026-11-25 UTC at a new address for the lens-set agreement layout: any lens member resolves; every member is an insider | [`proposal_market.json`](../blockchain/solana/idl/proposal_market.json) |
+| ProposalPledge | [`5RvX…wXAq`](https://explorer.solana.com/address/5RvXB53atCdCkDEydpvgUDz4Ph6uFUVyMgpjdSzNwXAq?cluster=devnet) | Escrowed donations and revocable soft pledges; redeployed 2026-11-25 UTC at a new address with the agreement program | [`proposal_pledge.json`](../blockchain/solana/idl/proposal_pledge.json) |
 
 The canonical address book is [`frontend/contracts/addresses.json`](../frontend/contracts/addresses.json),
 mirrored in [`blockchain/solana/Anchor.toml`](../blockchain/solana/Anchor.toml), each program's
@@ -78,7 +78,7 @@ encoding is unchanged.
   "outcomes": { "executed": "YES", "cancelled": "NO" },
   "verification": {
     "kind": "program_account_state",
-    "marketProgram": "GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB",
+    "marketProgram": "9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71",
     "proposalOwnerProgram": "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg",
     "statusBytes": { "executed": 1, "cancelled": 2 },
     "permissionless": true

@@ -214,7 +214,7 @@ function marketEntry({ market, address }, source, now) {
     const canSettle = !market.resolved && (external || terminalStatus(source.chainStatus) || afterGrace);
     return {
         address, kind: external ? 'recipe' : 'agreement', model: 'lmsr', asset: 'devnet-usdc', creator: market.creator,
-        creatorRole: market.creator === source.sponsor ? 'sponsor' : market.creator === source.lens ? 'verifier' : null,
+        creatorRole: market.creator === source.sponsor ? 'sponsor' : source.lenses.includes(market.creator) ? 'verifier' : null,
         b: String(market.b), qYes: String(market.qYes), qNo: String(market.qNo), seed: String(market.seed),
         closesAt, graceSeconds: market.graceSeconds, maxPosition: String(market.maxPosition), paidOut: String(market.paidOut),
         resolved: Boolean(market.resolved), outcome: market.resolved ? ['no', 'yes', 'void'][Number(market.outcome)] : null,
@@ -261,7 +261,7 @@ function agreementEntry(agreement, markets, nowMs) {
 
 /**
  * Build the public contests payload for one city.
- * @param {{ city: string, agreements: Array<object>, markets?: Map<string, { sponsor: string, lens: string, chainStatus: string, deadline: string|null, markets: Array<{ address: string, market: object }> }>, overlaps?: Function, now?: Date }} input
+ * @param {{ city: string, agreements: Array<object>, markets?: Map<string, { sponsor: string, lenses: string[], chainStatus: string, deadline: string|null, markets: Array<{ address: string, market: object }> }>, overlaps?: Function, now?: Date }} input
  *   agreements: { cid, title, author, city, designCids, inputParcelIds, parcelSourceId, deadline,
  *   createdAt, designTitles, screenshotUrl, screenshotBeforeUrl, screenshotPairUrl, account,
  *   chainStatus } (routes/markets.js rowToAgreement); markets: agreement account → its decoded market

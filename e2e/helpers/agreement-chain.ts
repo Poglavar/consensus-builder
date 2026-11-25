@@ -14,7 +14,7 @@ const { PublicKey } = backendRequire('@solana/web3.js');
 
 // sha256("account:Agreement")[..8] and the account's size (8 + Agreement::INIT_SPACE), as the client copies them.
 const AGREEMENT_DISCRIMINATOR = [83, 212, 5, 110, 225, 249, 197, 84];
-const AGREEMENT_ACCOUNT_SPACE = 296;
+const AGREEMENT_ACCOUNT_SPACE = 580;
 const DEFAULT_PUBKEY = '11111111111111111111111111111111';
 
 export const STATUS = { active: 0, executed: 1, cancelled: 2, expired: 3 } as const;
@@ -27,7 +27,11 @@ export function agreementAccountAddress(cid: string, sponsor: string): string {
 }
 
 export interface AgreementAccount {
-  cid: string; authority: string; lens: string; payout: string;
+  cid: string; authority: string; payout: string;
+  /** The lens members (0-8) and how many must confirm (default 1, 0 with none). */
+  lenses: string[]; lensThreshold?: number;
+  /** The contribution target in devnet USDC base units (0: none) and its mint. */
+  requiredFunding?: bigint; fundingMint?: string;
   /** Unix seconds; 0 = no deadline. */
   deadline?: number;
   requiredLamports?: bigint; escrowLamports?: bigint;
@@ -46,14 +50,20 @@ export function encodeAgreementAccount(account: AgreementAccount): Buffer {
   const satisfied = account.decision === DECISION.satisfied;
   const bytes = Buffer.concat([
     Buffer.from(AGREEMENT_DISCRIMINATOR),
-    key(account.authority), key(account.lens), key(account.payout),
+    key(account.authority), key(account.lenses[0] ?? DEFAULT_PUBKEY), key(account.payout),
     i64(account.deadline ?? 0), i64(Math.floor(Date.now() / 1000) - 3600),
     u64(account.requiredLamports ?? 0n), u64(account.escrowLamports ?? 0n),
     u8(account.status ?? STATUS.active), u8(0), u8(account.decision ?? DECISION.pending),
     // decision_attested_at, decision_observed_at, decision_attestation, decision_hash
     i64(satisfied ? Math.floor(Date.now() / 1000) - 60 : 0), i64(satisfied ? Math.floor(Date.now() / 1000) - 120 : 0),
     key(DEFAULT_PUBKEY), Buffer.alloc(32, satisfied ? 7 : 0),
-    i64(0), u8(254), length, cid,
+    i64(0), u8(254),
+    // lens_count, lens_threshold, lens_confirmed, more_lenses[7]
+    u8(account.lenses.length), u8(account.lensThreshold ?? (account.lenses.length ? 1 : 0)), u8(0),
+    ...Array.from({ length: 7 }, (_, index) => key(account.lenses[index + 1] ?? DEFAULT_PUBKEY)),
+    // funding_mint, required_funding, funding_met, funding_observed, funding_met_at
+    key(account.fundingMint ?? DEFAULT_PUBKEY), u64(account.requiredFunding ?? 0n), u8(0), u64(0n), i64(0),
+    length, cid,
   ]);
   return Buffer.concat([bytes, Buffer.alloc(Math.max(0, AGREEMENT_ACCOUNT_SPACE - bytes.length))]);
 }

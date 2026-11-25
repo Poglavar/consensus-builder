@@ -6,7 +6,7 @@ import { Keypair, PublicKey, SYSVAR_CLOCK_PUBKEY } from '@solana/web3.js';
 import { createAgreementMarketSource } from '../markets/agreement-source.js';
 import { AGREEMENT_PROGRAM_ID, agreementAccountOf } from '../agreements/onchain.js';
 import { cidOfObject } from '../cid.js';
-import { encodeAgreementAccount } from './helpers/agent-chain-fakes.js';
+import { agreementAccountBytes as encodeAgreementAccount } from './fixtures/agreement-account.js';
 
 const SPONSOR = Keypair.generate().publicKey.toBase58();
 const LENS = Keypair.generate().publicKey.toBase58();

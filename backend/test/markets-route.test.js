@@ -57,7 +57,7 @@ const poolFor = (agreementRows = rows(), sites = OVERLAPPING) => ({
 });
 // The agreement reads a pool saw (the design reads beside them are not what the cache saves).
 const agreementReads = pool => pool.query.mock.calls.filter(([sql]) => sql !== DESIGN_LAND_SQL);
-const openPool = () => new Map([[ACCOUNT, { sponsor: SPONSOR, lens: STRANGER, chainStatus: 'active', deadline: '2026-12-31T00:00:00.000Z', markets: [{ address: MARKET, market: {
+const openPool = () => new Map([[ACCOUNT, { sponsor: SPONSOR, lenses: [STRANGER], chainStatus: 'active', deadline: '2026-12-31T00:00:00.000Z', markets: [{ address: MARKET, market: {
     b: 100_000_000n, qYes: 250000n, qNo: 0n, seed: 69_314_720n, closesAt: Math.floor(Date.parse('2026-12-31T00:00:00Z') / 1000),
     graceSeconds: 0, maxPosition: 0n, paidOut: 0n, creator: SPONSOR, resolved: false, outcome: 0
 } }] }]]);
@@ -89,7 +89,7 @@ describe('GET /markets', () => {
         expect(readMarkets).toHaveBeenCalledWith([ACCOUNT], expect.arrayContaining([expect.objectContaining({ account: ACCOUNT, sponsor: SPONSOR })]));
         expect(res.body).toMatchObject({
             city: 'zg', cluster: 'devnet', agreementProgram: AGREEMENT_PROGRAM_ID,
-            marketProgram: 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB', stakeMint: DEVNET_USDC_MINT, stakeDecimals: 6,
+            marketProgram: '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71', stakeMint: DEVNET_USDC_MINT, stakeDecimals: 6,
             summary: { contests: 1, agreements: 2, markets: 1, openMarkets: 1, sharesAtomic: '250000' }
         });
         const [contest] = res.body.contests;
@@ -302,7 +302,7 @@ describe('GET /oracle/recipes/agreement-execution-v1', () => {
 
     it('answers 400 for an account that is not canonical base58, or a market that is not the agreement\'s pool', async () => {
         const { app, pool } = recipeApp();
-        for (const query of ['', '?agreement=not-an-account', `?agreement=${ACCOUNT.toLowerCase()}`]) {
+        for (const query of ['', '?agreement=not-an-account', `?agreement=${ACCOUNT}0`]) {
             const res = await request(app).get(`/oracle/recipes/agreement-execution-v1${query}`);
             expect(res.status, query).toBe(400);
             expect(res.body.error).toBe('agreement must be a Solana address');

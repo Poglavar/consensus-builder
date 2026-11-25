@@ -10,7 +10,7 @@ const lmsr = require('../../frontend/js/bets/lmsr.js');
 const codec = require('../../frontend/js/solana/lmsr-client.js').configure({ web3 });
 const bridgeSource = fs.readFileSync(new URL('../../frontend/js/solana/market-bridge.js', import.meta.url), 'utf8');
 const USDC = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
-const programId = new web3.PublicKey('GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB');
+const programId = new web3.PublicKey('9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71');
 const associatedTokenProgram = new web3.PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
 const tokenProgram = new web3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
 
@@ -27,7 +27,7 @@ function setup(options = {}) {
     const marketAddress = codec.getMarketPda(proposal, sponsor, { stakeMint: mint, b: 100_000_000n, closesAt: options.deadline ?? 1_900_000_000 })[0];
     const traderAta = web3.PublicKey.findProgramAddressSync([wallet.toBuffer(), tokenProgram.toBuffer(), mint.toBuffer()], associatedTokenProgram)[0];
     const sponsorAta = web3.PublicKey.findProgramAddressSync([sponsor.toBuffer(), tokenProgram.toBuffer(), mint.toBuffer()], associatedTokenProgram)[0];
-    const agreement = { authority: sponsor.toBase58(), lens: lens.toBase58(), cid: 'bafkreiabc', status: options.status || 'Active',
+    const agreement = { authority: sponsor.toBase58(), lens: lens.toBase58(), lenses: options.lenses || [lens.toBase58()], cid: 'bafkreiabc', status: options.status || 'Active',
         deadline: options.deadline ?? 1_900_000_000, executedAt: options.executedAt ?? 0 };
     const rawMarket = options.market === null ? null : {
         kind: 0, proposal: proposal.toBase58(), creator: sponsor.toBase58(), stakeMint: options.stakeMint || USDC,
@@ -94,6 +94,7 @@ describe('Solana LMSR market bridge', () => {
         const ctx = setup();
         const summary = await ctx.bridge.readSummary(ctx.proposal, { marketAddress: ctx.marketAddress });
         expect(summary.market).toMatchObject({ address: ctx.marketAddress.toBase58(), b: '100000000', creatorRole: 'sponsor' });
+        expect(summary.lenses).toEqual([ctx.lens.toBase58()]);
         expect(ctx.client.readPosition).toHaveBeenCalledTimes(2);
         expect((await ctx.bridge.readSummary(ctx.proposal)).marketAddress).toBeNull();
         await expect(ctx.bridge.readSummary(ctx.proposal, { marketAddress: ctx.wallet })).rejects.toThrow(/not found/);
@@ -144,6 +145,11 @@ describe('Solana LMSR market bridge', () => {
         const cutoff = setup({ now: 1_900_000_000 });
         await expect(cutoff.bridge.buy({ proposal: cutoff.proposal, marketAddress: cutoff.marketAddress, side: 1, shares: 1n, maxCost: 1n })).rejects.toMatchObject({ code: 'MARKET_CLOSED' });
         expect(cutoff.client.buildBuyIx).not.toHaveBeenCalled();
+        // Any lens member is an insider, not only the first.
+        const member = web3.Keypair.generate().publicKey;
+        const insider = setup({ wallet: member, lenses: [web3.Keypair.generate().publicKey.toBase58(), member.toBase58()] });
+        await expect(insider.bridge.buy({ proposal: insider.proposal, marketAddress: insider.marketAddress, side: 1, shares: 1n, maxCost: 1n })).rejects.toMatchObject({ code: 'INSIDER_TRADE' });
+        expect(insider.client.buildBuyIx).not.toHaveBeenCalled();
         await expect(setup({ cluster: 'mainnet-beta' }).bridge.buy({ proposal: ctx.proposal, marketAddress: ctx.marketAddress, side: 1, shares: 1n, maxCost: 1n })).rejects.toMatchObject({ code: 'WRONG_NETWORK' });
     });
 

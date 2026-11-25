@@ -20,7 +20,7 @@ const CID = cidOf({ schema: 'agreement/v1', title: 'Densify the corner' });
 const COUNTER_CID = cidOf({ schema: 'agreement/v1', title: 'Keep the corner' });
 const ACCOUNT = 'Gsvt6nMhsvfrEDgvcqZDzPKZhhqACFEi3mueMxQNQ6UT';
 const NOTARY = 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ';
-const OWNER = 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB';
+const OWNER = '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71';
 const ATTESTATION = '12VxrWBkHfabA1jdV9HfniPNSj95Tp16uhXprpXzPgWk';
 const DECISION = '9C6hybhQ6Aycep9jaUnP6uL9ZYvDjUp1aSkFWPUFJtpj';
 

@@ -31,7 +31,7 @@ export function courtAttesterFromEnv(env = process.env) {
 }
 
 export const COURT_ATTESTER = courtAttesterFromEnv();
-export const MARKET_PROGRAM_ID = 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB';
+export const MARKET_PROGRAM_ID = '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71';
 
 function hashText(value) {
     return createHash('sha256').update(value, 'utf8').digest('hex');

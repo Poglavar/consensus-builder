@@ -16,7 +16,7 @@ const AgreementClient = require('../../frontend/js/solana/agreement-client.js');
 const AgreementBridge = require('../../frontend/js/solana/agreement-bridge.js');
 
 const WALLET = new web3.PublicKey('Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W');
-const PROGRAM = new web3.PublicKey('GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB');
+const PROGRAM = new web3.PublicKey('9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71');
 const USDC = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 const BLOCKHASH = 'EkSnNWid2cvwEVnVx9aBqpiCpY1QoUW63D2Hp31e4gwJ';
 const BRIDGES = ['market-bridge.js', 'agreement-bridge.js', 'parcel-mint.js'];
@@ -86,14 +86,14 @@ describe('wallet bridges preflight through real web3 simulateTransaction', () =>
         const window = {
             solanaWeb3: web3,
             SolanaLmsrClient: lmsr,
-            AgreementClient: { fetchAgreement: vi.fn(async () => ({ authority: sponsor, lens: LENS, deadline, status: 'Active' })) },
+            AgreementClient: { fetchAgreement: vi.fn(async () => ({ authority: sponsor, lenses: [LENS], deadline, status: 'Active' })) },
             Lmsr: { maxLoss: () => SEED },
             SolanaChainDataLoader: { getVerifiedConnection: async () => connection },
             solanaWalletManager: { getCluster: () => 'devnet', getProvider: () => signer }
         };
         vm.runInNewContext(source('market-bridge.js'), { window });
         const statuses = [];
-        const result = await window.SolanaMarketBridge.buy({ proposal, side: 0, shares: 50_000n, maxCost: 60_000n, onStatus: s => statuses.push(s.state) });
+        const result = await window.SolanaMarketBridge.buy({ proposal, marketAddress: PROGRAM.toBase58(), side: 0, shares: 50_000n, maxCost: 60_000n, onStatus: s => statuses.push(s.state) });
         expect(calls).toEqual(['simulateTransaction', 'sendRawTransaction', 'confirmTransaction']);
         expect(lmsr.buildBuyIx).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ proposal, side: 0, shares: 50_000n, maxCost: 60_000n, stakeMint: USDC }));
         expect(signer.signTransaction).toHaveBeenCalledTimes(1);
@@ -121,7 +121,7 @@ describe('wallet bridges preflight through real web3 simulateTransaction', () =>
                 published: { cid: CID, publishedAt: '2026-10-22T08:00:00.000Z', apiBase: 'https://api.example.test', sponsor: WALLET.toBase58() }
             };
             const statuses = [];
-            const result = await bridge.mint({ agreement, lens: LENS, payout: WALLET.toBase58(), onStatus: s => statuses.push(s.state) });
+            const result = await bridge.mint({ agreement, lenses: [LENS], payout: WALLET.toBase58(), onStatus: s => statuses.push(s.state) });
             expect(calls).toEqual(['simulateTransaction', 'sendRawTransaction', 'confirmTransaction']);
             expect(signer.signTransaction).toHaveBeenCalledTimes(1);
             expect(statuses).toEqual(['preparing', 'awaiting_signature', 'submitted', 'confirmed']);

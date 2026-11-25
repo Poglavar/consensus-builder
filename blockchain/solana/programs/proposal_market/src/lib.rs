@@ -26,7 +26,7 @@ pub mod lmsr;
 pub mod lmsr_market;
 pub use lmsr_market::*;
 
-declare_id!("GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB");
+declare_id!("9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71");
 
 /// Solana Attestation Service program used by the court oracle on devnet. External markets do not
 /// trust an API response: they parse an account owned by this program and pin its credential,
@@ -205,7 +205,7 @@ pub mod proposal_market {
         validate_sas_schema(&ctx.accounts.credential, &ctx.accounts.schema)?;
         if let Some(subject) = ctx.remaining_accounts.first() {
             let view = read_subject(subject, None)?;
-            require_keys_eq!(view.lens, trusted_attester, MarketError::AttesterNotInProposalLens);
+            require!(view.is_lens(&trusted_attester), MarketError::AttesterNotInProposalLens);
         }
 
         let market = &mut ctx.accounts.market;
