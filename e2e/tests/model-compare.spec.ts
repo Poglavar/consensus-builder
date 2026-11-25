@@ -26,8 +26,9 @@ async function openCompareTab(page: Page) {
 // Records the next scissored draws: where each half was cut, and whether the design's own meshes were
 // drawn in it (visible through every ancestor). A mesh is the design's when it is picked by it
 // (userData.proposalId) or drawn for it (userData.designIds: a road's surfaces, a park's trees).
-async function recordPasses(page: Page, designId: string, { lawn = false } = {}) {
-  await page.evaluate(([id, lawnOnly]) => {
+// `lawn` or `ground` narrows it to the design's park lawn or its building ground.
+async function recordPasses(page: Page, designId: string, { lawn = false, ground = false } = {}) {
+  await page.evaluate(([id, flag]) => {
     const w = window as any;
     const { renderer, scene } = w.getThreeModeInternals();
     const passes: any[] = [];
@@ -44,7 +45,7 @@ async function recordPasses(page: Page, designId: string, { lawn = false } = {})
             }
             return false;
           };
-          scene.traverse((object: any) => { if (!mesh && object.isMesh && owns(object) && (!w.__compareLawn || object.userData?.isParkGround)) mesh = object; });
+          scene.traverse((object: any) => { if (!mesh && object.isMesh && owns(object) && (!w.__compareFlag || object.userData?.[w.__compareFlag])) mesh = object; });
           let visible = !!mesh;
           for (let object = mesh; object; object = object.parent) visible &&= object.visible !== false;
           const rect = renderer.getScissor(new w.THREE.Vector4());
@@ -54,9 +55,9 @@ async function recordPasses(page: Page, designId: string, { lawn = false } = {})
       };
     }
     w.__compareDesign = id;
-    w.__compareLawn = lawnOnly;
+    w.__compareFlag = flag;
     w.invalidateThreeView();
-  }, [designId, lawn] as const);
+  }, [designId, lawn ? 'isParkGround' : ground ? 'isProposalGround' : null] as const);
   await expect.poll(() => page.evaluate(() => (window as any).__comparePasses.length), { timeout: 15_000 }).toBeGreaterThanOrEqual(2);
   return page.evaluate(() => {
     const w = window as any;
@@ -372,6 +373,44 @@ test('a saved design that is not applied is a side of its own, read without appl
   expect(await page.evaluate(id => (window as any).proposalStorage.getProposal(id).applied === true, designId)).toBe(false);
   await enable.click();
   await expect(page.locator('#map .map-compare__handle')).toHaveCount(0);
+});
+
+test('an applied design\'s ground draws on its own side alone, on the map and in the model view', async ({ mockApi: page }) => {
+  test.setTimeout(120_000);
+  await mockBuildingScene(page);
+  await openCity(page);
+  const designId = await createBuilding(page);
+  await expect.poll(() => page.evaluate(() => (window as any).buildingGroundsDrawn().map((ground: any) => ground.designId))).toEqual([designId]);
+  await page.keyboard.press('Escape');
+  await openCompareTab(page);
+  const enable = page.locator('#planning-compare-enable');
+  await selectNativeOption(page.locator('#planning-compare-left'), 'built');
+  await selectNativeOption(page.locator('#planning-compare-right'), `design:${designId}`);
+  await enable.click();
+  await expect(page.locator('#map')).toHaveClass(/\bmap-comparing\b/);
+  // The shared ground is hidden and drawn again in the design's (right) half alone.
+  const ground = () => page.evaluate(() => {
+    const leaves: any[] = [];
+    const walk = (layer: any) => (layer.eachLayer ? layer.eachLayer(walk) : leaves.push(layer));
+    (window as any).buildingGroundsDrawn().forEach((drawn: any) => walk(drawn.layer));
+    return { shared: leaves.length, hidden: leaves.filter(leaf => leaf.getElement?.()?.classList.contains('map-compare-hidden')).length };
+  });
+  await expect.poll(async () => (await ground()).shared).toBeGreaterThan(0);
+  await expect.poll(async () => { const { shared, hidden } = await ground(); return shared === hidden; }).toBe(true);
+  await expect.poll(() => page.locator('.leaflet-compareRight-pane path:not(.map-compare-shape)').count()).toBeGreaterThan(0);
+  await expect(page.locator('.leaflet-compareLeft-pane path:not(.map-compare-shape)')).toHaveCount(0);
+
+  await page.locator('#planning-compare-open-model').click();
+  await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 20_000 });
+  await expect.poll(() => page.evaluate(id => {
+    let found = false;
+    (window as any).getThreeModeInternals?.()?.scene.traverse((object: any) => {
+      if (object.isMesh && object.userData?.isProposalGround && object.userData?.designIds?.includes(id)) found = true;
+    });
+    return found;
+  }, designId), { timeout: 20_000 }).toBe(true);
+  const split = await recordPasses(page, designId, { ground: true });
+  expect(split.passes.map((pass: any) => pass.designDrawn)).toEqual([false, true]);
 });
 
 test('a comparison in the address opens with its two sides, and the address follows the comparison', async ({ mockApi: page }) => {

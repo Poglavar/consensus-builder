@@ -4342,7 +4342,9 @@
 
         const pavingMat = buildingSidewalkMaterial();
         const grassMat = lawnMaterial();
-        surfaces.forEach(surface => {
+        // Each surface's objects are marked with its design, so Compare shows a ground only on the
+        // sides that show that design (compareDescriptors reads them one by one).
+        surfaces.forEach(surface => ownedByDesigns([flatTarget], [surface.proposalId], () => {
             try {
                 const site = buildoutSiteOf(surface.proposalId);
                 if (site) {
@@ -4375,7 +4377,7 @@
             } catch (error) {
                 console.error('[three-mode] failed to build a proposal ground surface', surface.proposalId, error);
             }
-        });
+        }));
     }
 
     // The existing buildings this scene draws, as flat context and for the vacant-plot rule: the
@@ -10054,6 +10056,8 @@
                 volumes.forEach(([volume, volumeHeight]) => polygonFeatureToMeshes(volume, buildingMaterials.flagged, 0, volumeHeight).forEach(mesh => {
                     if (slice.parcelId != null) mesh.userData.parcelId = String(slice.parcelId);
                     mesh.userData.cbSuggestedLayoutWarnings = result.warnings;
+                    // Compare shows the red volume on the sides that show its design.
+                    if (feature.properties?.proposalId != null) mesh.userData.designIds = [String(feature.properties.proposalId)];
                     targetGroup.add(mesh);
                 }));
             } catch (_) { }
@@ -10659,8 +10663,10 @@
         for (const group of [proposedBuildingsGroup, ineligibleBuildingsGroup, floorPlanGroup, parkGroundGroup,
             squareGroundGroup, lakeGroundGroup, proposalGroundGroup, parcelLayoutGroup, parkGroup, squareGroup, lakeGroup,
             stationGroup, corridorGroup, terrainCorridorGroup]) {
-            each(group, child => ({ role: 'proposed', designIds: compareDesignIdsOf(child) }));
+            // The designs' grounds share one 'DesignGrounds' group: read each ground on its own.
+            each(group, child => (child.name === 'DesignGrounds' ? null : { role: 'proposed', designIds: compareDesignIdsOf(child) }));
         }
+        each(proposalGroundGroup?.getObjectByName('DesignGrounds'), child => ({ role: 'proposed', designIds: compareDesignIdsOf(child) }));
         // What the plan sides draw of their unapplied members: hidden outside the passes, so read anyway.
         // Their parks and squares are each a group of every space's objects (refreshCompareUnapplied3D).
         const unappliedOf = child => ({ role: 'proposed', designIds: compareDesignIdsOf(child), unapplied: true });

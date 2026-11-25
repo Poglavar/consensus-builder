@@ -4,8 +4,9 @@
 // design demolishes or a plan's unapplied member clears, and every applied design's buildings, are
 // drawn again per side into two clipped panes. A plan side draws its unapplied members itself, as
 // footprints: buildings, road corridors and park, square and lake ground (compare-unapplied.js).
-// Permitted massing keeps its own pane, clipped to the side(s) that show it. Parcels and applied
-// roads and parks are not split: both halves show them.
+// Permitted massing keeps its own pane, clipped to the side(s) that show it. An applied design's
+// ground (the paved or green surroundings of its buildings) is hidden and drawn again on the sides
+// that show that design. Parcels and applied roads and parks are not split: both halves show them.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -125,6 +126,12 @@
         else if (typeof layer.toGeoJSON === 'function') visit(layer);
     }
 
+    // Every drawn leaf of a group: paths and markers (a ground's furniture) alike.
+    function eachLeaf(layer, visit) {
+        if (typeof layer.eachLayer === 'function') layer.eachLayer(child => eachLeaf(child, visit));
+        else visit(layer);
+    }
+
     function clearDrawing() {
         state.hidden.forEach(layer => layer.getElement?.()?.classList.remove('map-compare-hidden'));
         state.hidden = [];
@@ -156,6 +163,9 @@
         const unapplied = global.CompareUnapplied;
         const parts = { left: unapplied?.partOf(left) || null, right: unapplied?.partOf(right) || null };
         const { affected, layers } = affectedBuildings(Object.values(parts));
+        // structures.js draws each applied design's ground in its own group.
+        const grounds = global.buildingGroundsDrawn?.() || [];
+        grounds.forEach(ground => eachLeaf(ground.layer, leaf => layers.push(leaf)));
         layers.forEach(layer => layer.getElement?.()?.classList.add('map-compare-hidden'));
         state.hidden = layers;
         const designs = designBuildingGroups();
@@ -166,6 +176,10 @@
             for (const piece of demolishedOn(side, affected)) {
                 global.L.geoJSON(piece.geometry, { pane, interactive: false,
                     style: { ...(outcomeStyle?.(piece.outcome) || {}), className: 'map-compare-shape map-compare-shape--existing' } }).addTo(group);
+            }
+            const groundsShown = new Set(designsOn(side, grounds.map(ground => ground.designId)));
+            for (const ground of grounds) {
+                if (groundsShown.has(ground.designId)) global.drawBuildingGround(group, ground.surface, pane);
             }
             const shown = new Set(designsOn(side, designs.map(([id]) => id)));
             for (const [id, designGroup] of designs) {
@@ -215,7 +229,7 @@
         if (!m || !global.ThreeCompare?.attachMap) return;
         state.scene = { container: m.getContainer(), invalidate: update };
         m.on('move zoomend viewreset resize', update);
-        for (const event of ['buildingsLayerUpdated', 'proposedBuildingsUpdated', 'parcelFabricCommitted', 'compareunappliedchange']) global.addEventListener(event, redraw);
+        for (const event of ['buildingsLayerUpdated', 'proposedBuildingsUpdated', 'parcelFabricCommitted', 'compareunappliedchange', 'buildingGroundLayerDrawn']) global.addEventListener(event, redraw);
         global.ThreeCompare.attachMap(state.scene);
     }
 
