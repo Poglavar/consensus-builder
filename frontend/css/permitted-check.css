@@ -21,6 +21,8 @@
 .permitted-check__rule--fail { font-weight: 600; }
 .permitted-check__reason, .permitted-check__source { display: block; opacity: 0.8; font-size: var(--cb-text-xs); }
 .permitted-check__source { margin: var(--cb-space-1) 0 0; }
+/* A planning designation's line links to the publisher's record of it (js/planning/permitted-advisor.js restrictionItem). */
+.permitted-check__source-link { color: inherit; font-size: var(--cb-text-xs); overflow-wrap: anywhere; }
 
 /* Footprints in the Freeform editor: red over a limit, amber where only a condition allows it. */
 .single-building-fill--breach { stroke: var(--cb-danger); fill: var(--cb-danger); }

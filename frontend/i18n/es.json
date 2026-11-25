@@ -8751,6 +8751,51 @@
         }
     },
     "permittedCheck": {
+        "heightUnknown": "Altura {{measured}}: el límite depende de la altura existente, que no consta",
+        "footprintAreaPass": "Planta baja {{measured}}: dentro de {{limit}}",
+        "footprintAreaFail": "Planta baja {{measured}}: permitido hasta {{limit}}",
+        "footprintAreaConditional": "Planta baja {{measured}}: supera {{limit}}; solo se admite {{condition}}",
+        "footprintAreaUnknown": "Planta baja {{measured}}: el límite depende de edificios existentes que no constan",
+        "naturalGroundPass": "Suelo libre {{measured}}: al menos {{limit}}",
+        "naturalGroundFail": "Suelo libre {{measured}}: deben quedar libres al menos {{limit}}",
+        "naturalGroundConditional": "Suelo libre {{measured}}: menos de {{limit}}; solo se admite {{condition}}",
+        "naturalGroundUnknown": "Suelo libre {{measured}}: el mínimo depende de edificios existentes que no constan",
+        "baseUnknown": "Aquí no constan límites de edificación; solo se han comprobado las protecciones urbanísticas",
+        "restrictionsPartial": "No se han podido leer todas las protecciones de aquí; la lista puede estar incompleta",
+        "place": "{{designation}} «{{name}}»",
+        "placeOf": "{{designation}} «{{name}}» ({{organisation}})",
+        "placeUnnamed": "{{designation}}",
+        "placeBuilding": "{{designation}} «{{name}}»",
+        "sourceLink": "fuente: {{source}}",
+        "restriction": {
+            "prohibit": "En {{place}}: aquí no se permite nueva edificación",
+            "keep": "{{place}} debe conservarse: un edificio nuevo no puede sustituirlo",
+            "restrict": "En {{place}}: {{requirement}}",
+            "note": "En {{place}}: {{note}}"
+        },
+        "designation": {
+            "scheduledMonument": "el monumento catalogado",
+            "listedBuilding": "El edificio protegido",
+            "article4Direction": "el área con directiva del artículo 4",
+            "conservationArea": "el conjunto protegido",
+            "greenBelt": "el cinturón verde",
+            "floodZone3": "la zona inundable 3",
+            "worldHeritageSite": "el sitio Patrimonio Mundial",
+            "treePreservation": "la zona de protección de árboles"
+        },
+        "requirement": {
+            "planningPermission": "se retiran los derechos de obra sin licencia, así que construir requiere licencia",
+            "designScrutiny": "el diseño, las ampliaciones y los derribos se examinan con más rigor"
+        },
+        "note": {
+            "greenBelt": "la nueva edificación no procede salvo circunstancias muy especiales",
+            "floodZone3": "alta probabilidad de inundación; se aplican las pruebas de riesgo de inundación",
+            "worldHeritageSite": "el valor patrimonial del sitio pesa en toda decisión",
+            "treePreservation": "los árboles protegidos requieren autorización antes de cualquier trabajo"
+        },
+        "condition": {
+            "noHarmToCharacter": "si no daña el carácter general de la zona"
+        },
         "title": "Permitido",
         "heightFail": "Altura {{measured}}: permitido hasta {{limit}}",
         "storeyCount": "{{limit}} ({{storeys}} plantas)",
@@ -8769,6 +8814,7 @@
         "useUnknown": "{{use}}: {{status}}",
         "source": "Fuente: {{source}}",
         "status": {
+            "note": "Dentro de los límites registrados; se aplican protecciones urbanísticas",
             "fail": "Supera un límite permitido",
             "conditional": "Permitido solo con condición",
             "unknown": "No todas las reglas están registradas",
@@ -8777,6 +8823,13 @@
         }
     },
     "planningViews": {
+        "inspectDesignation": "Inspeccionar la protección urbanística {{parcel}}",
+        "designation": "Protección urbanística",
+        "restrictionNote": "Una protección urbanística mantiene este suelo sin nueva edificación.",
+        "restrictionsTitle": "Protecciones urbanísticas",
+        "designationsLoaded": "{{count}} lugares protegidos",
+        "designationsPartial": "no se han podido leer todas las protecciones",
+        "designationsFailed": "no se han podido leer las protecciones urbanísticas",
         "receivedData": "{{size}} recibidos",
         "permittedScope": "Cobertura de la volumetría permitida",
         "survivingCoverageHelp": "Cuando Propuesto está visible, sus diseños tienen prioridad en sus emplazamientos.",

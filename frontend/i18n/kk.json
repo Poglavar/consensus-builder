@@ -8723,6 +8723,51 @@
         }
     },
     "permittedCheck": {
+        "heightUnknown": "Биіктігі {{measured}}: шек бар биіктікке байланысты, ол белгісіз",
+        "footprintAreaPass": "Құрылыс ауданы {{measured}}: {{limit}} шегінде",
+        "footprintAreaFail": "Құрылыс ауданы {{measured}}: {{limit}} дейін рұқсат етілген",
+        "footprintAreaConditional": "Құрылыс ауданы {{measured}}: {{limit}}-ден көп; тек {{condition}} рұқсат",
+        "footprintAreaUnknown": "Құрылыс ауданы {{measured}}: шек бар ғимараттарға байланысты, олар белгісіз",
+        "naturalGroundPass": "Бос жер {{measured}}: кемінде {{limit}}",
+        "naturalGroundFail": "Бос жер {{measured}}: кемінде {{limit}} бос қалуы керек",
+        "naturalGroundConditional": "Бос жер {{measured}}: {{limit}}-ден аз; тек {{condition}} рұқсат",
+        "naturalGroundUnknown": "Бос жер {{measured}}: ең аз шама бар ғимараттарға байланысты, олар белгісіз",
+        "baseUnknown": "Мұнда құрылыс ережелері жазылмаған; тек қорғау режимдері тексерілді",
+        "restrictionsPartial": "Мұндағы барлық қорғау режимдерін оқу мүмкін болмады; тізім толық болмауы мүмкін",
+        "place": "{{designation}} «{{name}}»",
+        "placeOf": "{{designation}} «{{name}}» ({{organisation}})",
+        "placeUnnamed": "{{designation}}",
+        "placeBuilding": "{{designation}} «{{name}}»",
+        "sourceLink": "дереккөз: {{source}}",
+        "restriction": {
+            "prohibit": "{{place}}: мұнда жаңа құрылысқа рұқсат жоқ",
+            "keep": "{{place}}: сақталуы керек, жаңа ғимарат оны алмастыра алмайды",
+            "restrict": "{{place}}: {{requirement}}",
+            "note": "{{place}}: {{note}}"
+        },
+        "designation": {
+            "scheduledMonument": "Қорғалатын ескерткіш",
+            "listedBuilding": "Қорғалатын ғимарат",
+            "article4Direction": "4-бап директивасы аймағы",
+            "conservationArea": "Қорғалатын орта",
+            "greenBelt": "Жасыл белдеу",
+            "floodZone3": "Су басу аймағы 3",
+            "worldHeritageSite": "Дүниежүзілік мұра нысаны",
+            "treePreservation": "Ағаштарды қорғау аймағы"
+        },
+        "requirement": {
+            "planningPermission": "рұқсатсыз салу құқықтары алынған, сондықтан рұқсат қажет",
+            "designScrutiny": "жоба, жапсаржайлар мен бұзу қатаңырақ тексеріледі"
+        },
+        "note": {
+            "greenBelt": "ерекше жағдайлардан басқа кезде жаңа құрылыс орынсыз",
+            "floodZone3": "су басу ықтималдығы жоғары; су басу қаупі тексерістері қолданылады",
+            "worldHeritageSite": "мұраның маңызы кез келген шешімде ескеріледі",
+            "treePreservation": "қорғалатын ағаштармен жұмысқа келісім қажет"
+        },
+        "condition": {
+            "noHarmToCharacter": "аудандың жалпы келбетіне зиян келтірмесе"
+        },
         "title": "Рұқсат етілген",
         "heightFail": "Биіктігі {{measured}}: {{limit}} дейін рұқсат етілген",
         "storeyCount": "{{limit}} (қабаттылығы {{storeys}})",
@@ -8741,6 +8786,7 @@
         "useUnknown": "{{use}}: {{status}}",
         "source": "Дереккөз: {{source}}",
         "status": {
+            "note": "Жазылған шектерде; қорғау режимдері қолданылады",
             "fail": "Рұқсат етілген шекті бұзады",
             "conditional": "Тек шартта рұқсат етіледі",
             "unknown": "Мұндағы барлық ережелер жазылмаған.",
@@ -8749,6 +8795,13 @@
         }
     },
     "planningViews": {
+        "inspectDesignation": "Қорғау режимін ашу {{parcel}}",
+        "designation": "Қорғау режимі",
+        "restrictionNote": "Қорғау режимі бұл жерді жаңа құрылыссыз сақтайды.",
+        "restrictionsTitle": "Қорғау режимдері",
+        "designationsLoaded": "Қорғалатын орындар: {{count}}",
+        "designationsPartial": "барлық режимдерді оқу мүмкін болмады",
+        "designationsFailed": "қорғау режимдерін оқу мүмкін болмады",
         "receivedData": "{{size}} алынды",
         "permittedScope": "Рұқсат етілген құрылыс көлемінің қамту аймағы",
         "survivingCoverageHelp": "«Ұсынылған» көрінгенде, оның жобалары өз учаскелерінде басымдыққа ие.",

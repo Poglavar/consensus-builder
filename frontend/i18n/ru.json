@@ -8827,6 +8827,51 @@
         }
     },
     "permittedCheck": {
+        "heightUnknown": "Высота {{measured}}: предел зависит от существующей высоты, которая не известна",
+        "footprintAreaPass": "Площадь застройки {{measured}}: в пределах {{limit}}",
+        "footprintAreaFail": "Площадь застройки {{measured}}: разрешено до {{limit}}",
+        "footprintAreaConditional": "Площадь застройки {{measured}}: больше {{limit}}; допускается только {{condition}}",
+        "footprintAreaUnknown": "Площадь застройки {{measured}}: предел зависит от существующих зданий, которые не известны",
+        "naturalGroundPass": "Незастроенная земля {{measured}}: не менее {{limit}}",
+        "naturalGroundFail": "Незастроенная земля {{measured}}: не менее {{limit}} должно остаться свободным",
+        "naturalGroundConditional": "Незастроенная земля {{measured}}: меньше {{limit}}; допускается только {{condition}}",
+        "naturalGroundUnknown": "Незастроенная земля {{measured}}: минимум зависит от существующих зданий, которые не известны",
+        "baseUnknown": "Здесь не записаны правила застройки; проверены только охранные режимы",
+        "restrictionsPartial": "Не все охранные режимы здесь удалось прочитать; список может быть неполным",
+        "place": "{{designation}} «{{name}}»",
+        "placeOf": "{{designation}} «{{name}}» ({{organisation}})",
+        "placeUnnamed": "{{designation}}",
+        "placeBuilding": "{{designation}} «{{name}}»",
+        "sourceLink": "источник: {{source}}",
+        "restriction": {
+            "prohibit": "{{place}}: новое строительство здесь не разрешено",
+            "keep": "{{place}}: нужно сохранить, новое здание не может его заменить",
+            "restrict": "{{place}}: {{requirement}}",
+            "note": "{{place}}: {{note}}"
+        },
+        "designation": {
+            "scheduledMonument": "Охраняемый памятник",
+            "listedBuilding": "Охраняемое здание",
+            "article4Direction": "Зона директивы по статье 4",
+            "conservationArea": "Охраняемая среда",
+            "greenBelt": "Зелёный пояс",
+            "floodZone3": "Зона затопления 3",
+            "worldHeritageSite": "Объект Всемирного наследия",
+            "treePreservation": "Зона охраны деревьев"
+        },
+        "requirement": {
+            "planningPermission": "права строить без разрешения отменены, поэтому нужно разрешение",
+            "designScrutiny": "проект, пристройки и снос проверяются строже"
+        },
+        "note": {
+            "greenBelt": "новое строительство недопустимо, кроме особых обстоятельств",
+            "floodZone3": "высокая вероятность затопления; применяются проверки риска затопления",
+            "worldHeritageSite": "ценность наследия учитывается в любом решении",
+            "treePreservation": "работы с охраняемыми деревьями требуют согласия"
+        },
+        "condition": {
+            "noHarmToCharacter": "если не вредит общему облику района"
+        },
         "title": "Разрешено",
         "heightFail": "Высота {{measured}}: разрешено до {{limit}}",
         "storeyCount": "{{limit}} (этажность {{storeys}})",
@@ -8845,6 +8890,7 @@
         "useUnknown": "{{use}}: {{status}}",
         "source": "Источник: {{source}}",
         "status": {
+            "note": "В записанных пределах; действуют охранные режимы",
             "fail": "Нарушает разрешённый предел",
             "conditional": "Допустимо только при условии",
             "unknown": "Не все правила здесь записаны",
@@ -8853,6 +8899,13 @@
         }
     },
     "planningViews": {
+        "inspectDesignation": "Открыть охранный режим {{parcel}}",
+        "designation": "Охранный режим",
+        "restrictionNote": "Охранный режим сохраняет эту землю без нового строительства.",
+        "restrictionsTitle": "Охранные режимы",
+        "designationsLoaded": "Охраняемых мест: {{count}}",
+        "designationsPartial": "не все режимы удалось прочитать",
+        "designationsFailed": "охранные режимы не удалось прочитать",
         "receivedData": "{{size}} получено",
         "permittedScope": "Охват разрешённой застройки",
         "survivingCoverageHelp": "Если видны «Предлагаемые», их проекты имеют приоритет на своих участках.",

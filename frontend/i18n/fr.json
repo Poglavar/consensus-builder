@@ -8902,6 +8902,51 @@
         "whyLocal": "Les rues locales divisent chaque super-îlot de manière régulière ; vous choisissez leur espacement, leur largeur et la taille des lots."
     },
     "permittedCheck": {
+        "heightUnknown": "Hauteur {{measured}} : la limite dépend de la hauteur existante, qui n’est pas connue",
+        "footprintAreaPass": "Emprise au sol {{measured}} : dans les {{limit}}",
+        "footprintAreaFail": "Emprise au sol {{measured}} : autorisé jusqu’à {{limit}}",
+        "footprintAreaConditional": "Emprise au sol {{measured}} : au-delà de {{limit}} ; admis seulement {{condition}}",
+        "footprintAreaUnknown": "Emprise au sol {{measured}} : la limite dépend de bâtiments existants qui ne sont pas connus",
+        "naturalGroundPass": "Sol laissé libre {{measured}} : au moins {{limit}}",
+        "naturalGroundFail": "Sol laissé libre {{measured}} : au moins {{limit}} doit rester libre",
+        "naturalGroundConditional": "Sol laissé libre {{measured}} : moins de {{limit}} ; admis seulement {{condition}}",
+        "naturalGroundUnknown": "Sol laissé libre {{measured}} : le minimum dépend de bâtiments existants qui ne sont pas connus",
+        "baseUnknown": "Aucune règle de construction n’est connue ici ; seules les protections d’urbanisme ont été vérifiées",
+        "restrictionsPartial": "Toutes les protections d’ici n’ont pas pu être lues ; la liste peut être incomplète",
+        "place": "{{designation}} « {{name}} »",
+        "placeOf": "{{designation}} « {{name}} » ({{organisation}})",
+        "placeUnnamed": "{{designation}}",
+        "placeBuilding": "{{designation}} « {{name}} »",
+        "sourceLink": "source : {{source}}",
+        "restriction": {
+            "prohibit": "Dans {{place}} : aucune construction nouvelle n’est autorisée ici",
+            "keep": "{{place}} doit être conservé : un bâtiment neuf ne peut pas le remplacer",
+            "restrict": "Dans {{place}} : {{requirement}}",
+            "note": "Dans {{place}} : {{note}}"
+        },
+        "designation": {
+            "scheduledMonument": "le monument classé",
+            "listedBuilding": "Le bâtiment protégé",
+            "article4Direction": "la zone de directive article 4",
+            "conservationArea": "le secteur protégé",
+            "greenBelt": "la ceinture verte",
+            "floodZone3": "la zone inondable 3",
+            "worldHeritageSite": "le site du patrimoine mondial",
+            "treePreservation": "la zone de protection des arbres"
+        },
+        "requirement": {
+            "planningPermission": "les droits de construire sans permis sont retirés, il faut donc un permis",
+            "designScrutiny": "la conception, les extensions et les démolitions sont examinées de plus près"
+        },
+        "note": {
+            "greenBelt": "toute construction nouvelle y est inappropriée sauf circonstances très particulières",
+            "floodZone3": "forte probabilité d’inondation ; les tests de risque d’inondation s’appliquent",
+            "worldHeritageSite": "la valeur patrimoniale du site pèse dans toute décision",
+            "treePreservation": "les arbres protégés exigent une autorisation avant tout travail"
+        },
+        "condition": {
+            "noHarmToCharacter": "s’il ne nuit pas au caractère général du quartier"
+        },
         "title": "Autorisé",
         "heightFail": "Hauteur {{measured}} : autorisé jusqu’à {{limit}}",
         "storeyCount": "{{limit}} ({{storeys}} étages)",
@@ -8920,6 +8965,7 @@
         "useUnknown": "{{use}} : {{status}}",
         "source": "Source : {{source}}",
         "status": {
+            "note": "Dans les limites connues ; des protections d’urbanisme s’appliquent",
             "fail": "Dépasse une limite autorisée",
             "conditional": "Autorisé seulement sous condition",
             "unknown": "Toutes les règles ne sont pas enregistrées",
@@ -8928,6 +8974,13 @@
         }
     },
     "planningViews": {
+        "inspectDesignation": "Inspecter la protection d’urbanisme {{parcel}}",
+        "designation": "Protection d’urbanisme",
+        "restrictionNote": "Une protection d’urbanisme garde ce terrain libre de construction nouvelle.",
+        "restrictionsTitle": "Protections d’urbanisme",
+        "designationsLoaded": "{{count}} lieux protégés",
+        "designationsPartial": "toutes les protections n’ont pas pu être lues",
+        "designationsFailed": "les protections d’urbanisme n’ont pas pu être lues",
         "receivedData": "{{size}} reçus",
         "permittedScope": "Couverture de la volumétrie autorisée",
         "survivingCoverageHelp": "Lorsque Proposé est visible, ses projets sont prioritaires sur leurs sites.",

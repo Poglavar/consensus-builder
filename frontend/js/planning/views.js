@@ -450,7 +450,7 @@
                 const node = part.getElement?.();
                 if (!node) return;
                 node.setAttribute('tabindex', '0'); node.setAttribute('role', 'button');
-                node.setAttribute('aria-label', t(item.areas?.length ? 'inspectArea' : 'inspectMassing', { parcel: label }));
+                node.setAttribute('aria-label', t(item.assessment?.meaning === 'restriction' ? 'inspectDesignation' : item.areas?.length ? 'inspectArea' : 'inspectMassing', { parcel: label }));
                 node.addEventListener('keydown', event => {
                     if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); event.stopPropagation(); inspect(); }
                 });
@@ -467,8 +467,9 @@
             const count = t('areasLoaded', { count: overview.items.length });
             return overview.detailZoom == null ? count : `${count} · ${t('zoomInForMore')}`;
         }
+        if (!payload?.sources?.length && payload?.restrictions) return t('designationsLoaded', { count: items.length }) + restrictionNote();
         if (!payload?.sources?.length) return t('unavailable');
-        const failedNote = (failedCells ? ` · ${t('cellsFailed')}` : '') + (frozen || massingWaits ? ` · ${t('zoomInForMore')}` : '');
+        const failedNote = (failedCells ? ` · ${t('cellsFailed')}` : '') + (frozen || massingWaits ? ` · ${t('zoomInForMore')}` : '') + restrictionNote();
         if (payload.envelopes) return t('envelopesLoaded', { count: items.filter(item => item.parcelEnvelope).length,
             missing: payload.unavailable.length }) + failedNote;
         if (!items.length) return t('empty');
@@ -494,7 +495,7 @@
         const header = element('header', 'planning-inspector__header');
         const heading = element('div');
         const sourceResult = item.role === 'permitted';
-        heading.append(element('p', 'planning-eyebrow', item.parcelEnvelope ? t('envelopeTitle')
+        heading.append(element('p', 'planning-eyebrow', item.assessment?.meaning === 'restriction' ? t('designation') : item.parcelEnvelope ? t('envelopeTitle')
             : t(item.areas?.length ? (item.landBasis === 'zone' ? 'governmentPlanPlot' : 'zoningArea') : sourceResult ? (item.volumes.length ? 'sourceProposal' : 'savedResult') : 'builtRecord')));
         // The hosted stack already supplies the object's title and parcel reference.
         if (!hosted && item.title) heading.append(element('h2', 'click-stack__title', itemTitle(item)));
@@ -541,6 +542,7 @@
         info.append(element('p', 'planning-inspector__description',
             t(item.assessment.meaning === 'existing-stock-estimate' ? 'stockEstimate'
                 : item.assessment.meaning === 'public-screen' ? 'evidenceOnly'
+                    : item.assessment.meaning === 'restriction' ? 'restrictionNote'
                     : item.assessment.meaning === 'zoning-area' ? 'zoningAreaNote'
                         : heightOnly ? 'heightOnlyPlot' : item.parcelEnvelope ? 'envelopeNote'
                         : sourceResult ? (item.volumes.length ? 'oneOption' : 'savedNoShape')
@@ -560,6 +562,12 @@
         if (reason) {
             const line = element('p', 'planning-cache-reason');
             line.append(reason.source ? sourceText(reason.text, item) : reason.text); info.append(line);
+        }
+        // The planning designations over the item (restrictions.js), each with its source record.
+        if (item.restrictions?.length && root.PermittedAdvisor) {
+            const list = element('ul', 'planning-restrictions');
+            for (const entry of item.restrictions) list.append(root.PermittedAdvisor.restrictionItem(entry, 'planning-restrictions__item'));
+            info.append(element('h3', 'cb-kicker', t('restrictionsTitle')), list);
         }
         // What the colours this item is drawn in mean, and the whole map's key below it.
         const key = labels.colourKey(item, fullT);
@@ -1071,6 +1079,9 @@
         // Bounds-registered sources come and go with the viewport; re-list them when it moves.
         const wholePlanZoning = currentSource?.viewportZoning && overviewSource(currentSource);
         if (!wholePlanZoning && !(await ensureSources(city, bbox))) return;
+        // The city's planning designations (restrictions.js) are read for the view beside the source
+        // cells; the map reads only those that cut the envelope. They land on their own and redraw.
+        loadRestrictions(city, bbox);
         const descriptor = sourceOptions.find(source => source.id === sourceId);
         const canLoadEnvelopes = Boolean(descriptor?.parcelStudy || descriptor?.planPlotCalculation === true);
         const envelopeScope = canLoadEnvelopes && policy().permitted !== 'off' && !zoningOnly ? `envelopes:${city}:${sourceId}` : '';
@@ -1124,11 +1135,12 @@
             markFailed([...failedKeys]);
             // Envelopes lead: their answer says how the status line counts.
             const merged = core.mergeAnswers([...ordered.filter(answer => answer.envelopes), ...ordered.filter(answer => !answer.envelopes)], { joinAreas });
-            payload = merged || { sources: descriptor ? [descriptor] : [], summaries: [], unavailable: [], omitted: 0, items: [] };
+            payload = withRestrictions(merged || { sources: descriptor ? [descriptor] : [], summaries: [], unavailable: [], omitted: 0, items: [] }, descriptor, city);
             items = payload.items; assembled = composition; failedCells = failed;
             if (!selected()) store.select(null);
             drawMap(); render(); notifyGeometry();
         };
+        reassemble = assemble;
         if (!pending.length) {
             if (assembled !== composition || status !== 'ready') { status = 'ready'; assemble(); }
             // The same cells under a moved view, all of them loaded: none is failed.
@@ -1199,6 +1211,62 @@
         }
         status = 'ready'; assemble();
         restoreSelection();
+    }
+    // ---- planning designations (restrictions stage) --------------------------------------------
+    // The latest designation read for the view, by city; `reassemble` redraws the current view with it.
+    let restrictionView = null, restrictionRequest = 0, reassemble = null;
+    function loadRestrictions(city, bbox) {
+        const feed = root.PlanningRestrictionFeed;
+        if (!feed?.ruleSetIds(city).length) { restrictionView = null; return; }
+        const id = ++restrictionRequest;
+        feed.load(city, bbox, { effects: ['prohibit'] }).then(reads => {
+            if (id !== restrictionRequest || !reads) return;
+            restrictionView = { city, reads, error: null };
+            reassemble?.();
+        }).catch(error => {
+            if (id !== restrictionRequest) return;
+            console.error(`[${new Date().toISOString()}] [planning] Planning designations could not be read`, error);
+            restrictionView = { city, reads: [], error };
+            reassemble?.();
+        });
+    }
+    // The answer with the restrictions stage applied: prohibited areas cut from the source's items,
+    // or, with no source here, the prohibited areas themselves ("unknown base").
+    // Results are kept while the read and the map's buildings stay the same, so a redraw finds the
+    // same item objects and draws nothing again (drawMap compares items by identity).
+    let restrictionMemo = null;
+    const cutItems = new WeakMap();
+    function withRestrictions(answer, descriptor, city) {
+        const view = restrictionView?.city === city ? restrictionView : null;
+        if (!view) return answer;
+        const pool = root.buildingFeaturePool;
+        if (restrictionMemo?.reads !== view.reads || restrictionMemo.pool !== pool) {
+            const box = view.reads[0]?.bbox;
+            restrictionMemo = { reads: view.reads, pool, base: null,
+                resolved: box ? root.PlanningRestrictionFeed.resolve(view.reads, box) : { restrictions: [], partial: false } };
+        }
+        const { restrictions, partial } = restrictionMemo.resolved;
+        const ruleSets = view.reads.map(read => read.ruleSet);
+        const items = descriptor ? answer.items.map(item => {
+            const known = cutItems.get(item);
+            if (known?.restrictions === restrictions) return known.item;
+            const [result] = root.PlanningRestrictions.applyToItems([item], restrictions, { geometryOps: root.turf });
+            cutItems.set(item, { restrictions, item: result });
+            return result;
+        }) : (restrictionMemo.base ??= root.PlanningRestrictions.unknownBaseItems(restrictions, ruleSets));
+        return { ...answer, items, restrictions: { partial, failed: Boolean(view.error), baseRule: descriptor ? null : 'unknown', ruleSets } };
+    }
+    // A listed building given as a point takes its footprint from the buildings the map holds: when
+    // they arrive, the designations are placed again.
+    let buildingRedraw = 0;
+    root.addEventListener('buildingPoolUpdated', () => {
+        if (!restrictionView || buildingRedraw) return;
+        buildingRedraw = requestAnimationFrame(() => { buildingRedraw = 0; reassemble?.(); });
+    });
+    function restrictionNote() {
+        const state = payload?.restrictions;
+        if (!state) return '';
+        return (state.partial ? ` · ${t('designationsPartial')}` : '') + (state.failed ? ` · ${t('designationsFailed')}` : '');
     }
     async function restoreSelection() {
         if (!restoreId || restoring) return;

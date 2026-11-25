@@ -104,6 +104,9 @@ body:is([data-planning-proposed="solid"], [data-planning-proposed="ghost"]) .pla
 .planning-inspector__parcel { margin: var(--cb-space-1) 0 0; font-size: var(--cb-text-sm); color: var(--cb-text-muted); overflow-wrap: anywhere; }
 .planning-parcel-evidence h3 { font-size: var(--cb-text-base); margin: 0; }
 .planning-cache-reason { white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--cb-text-sm); color: var(--cb-text-muted); }
+/* The planning designations over an inspected Permitted item, each with its source record. */
+.planning-restrictions { margin: var(--cb-space-1) 0 0; padding-left: var(--cb-space-3); font-size: var(--cb-text-sm); }
+.planning-restrictions__item { margin: 0; overflow-wrap: anywhere; }
 /* Words quoted from a source (a plan's zone name, its reasons), never the app's own text: quoted and italic. */
 .planning-source-text { font-style: italic; }
 .planning-inspector__name { margin: var(--cb-space-1) 0 0; font-weight: var(--cb-weight-semibold); overflow-wrap: anywhere; }

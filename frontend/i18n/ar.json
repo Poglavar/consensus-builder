@@ -9153,6 +9153,51 @@
         "whyLocal": "تقسم الشوارع المحلية كل كتلة كبرى بالتساوي؛ ويمكنك اختيار تباعدها وعرضها وحجم المقاسم."
     },
     "permittedCheck": {
+        "heightUnknown": "الارتفاع {{measured}}: الحد يعتمد على الارتفاع القائم، وهو غير مسجّل",
+        "footprintAreaPass": "مساحة الطابق الأرضي {{measured}}: ضمن {{limit}}",
+        "footprintAreaFail": "مساحة الطابق الأرضي {{measured}}: المسموح حتى {{limit}}",
+        "footprintAreaConditional": "مساحة الطابق الأرضي {{measured}}: أكثر من {{limit}}؛ مسموح فقط {{condition}}",
+        "footprintAreaUnknown": "مساحة الطابق الأرضي {{measured}}: الحد يعتمد على مبانٍ قائمة غير مسجّلة",
+        "naturalGroundPass": "الأرض المتروكة حرة {{measured}}: لا تقل عن {{limit}}",
+        "naturalGroundFail": "الأرض المتروكة حرة {{measured}}: يجب أن تبقى {{limit}} على الأقل حرة",
+        "naturalGroundConditional": "الأرض المتروكة حرة {{measured}}: أقل من {{limit}}؛ مسموح فقط {{condition}}",
+        "naturalGroundUnknown": "الأرض المتروكة حرة {{measured}}: الحد الأدنى يعتمد على مبانٍ قائمة غير مسجّلة",
+        "baseUnknown": "لا توجد هنا قواعد بناء مسجّلة؛ فُحصت التصنيفات التخطيطية فقط",
+        "restrictionsPartial": "تعذّرت قراءة كل التصنيفات التخطيطية هنا؛ قد تكون القائمة ناقصة",
+        "place": "{{designation}} «{{name}}»",
+        "placeOf": "{{designation}} «{{name}}» ({{organisation}})",
+        "placeUnnamed": "{{designation}}",
+        "placeBuilding": "{{designation}} «{{name}}»",
+        "sourceLink": "المصدر: {{source}}",
+        "restriction": {
+            "prohibit": "داخل {{place}}: لا يُسمح ببناء جديد هنا",
+            "keep": "{{place}} يجب الإبقاء عليه: لا يجوز أن يحل محله مبنى جديد",
+            "restrict": "داخل {{place}}: {{requirement}}",
+            "note": "داخل {{place}}: {{note}}"
+        },
+        "designation": {
+            "scheduledMonument": "أثر مسجّل",
+            "listedBuilding": "المبنى المحمي",
+            "article4Direction": "منطقة توجيه المادة 4",
+            "conservationArea": "منطقة محمية",
+            "greenBelt": "الحزام الأخضر",
+            "floodZone3": "منطقة الفيضان 3",
+            "worldHeritageSite": "موقع تراث عالمي",
+            "treePreservation": "منطقة حماية الأشجار"
+        },
+        "requirement": {
+            "planningPermission": "سُحبت حقوق البناء دون ترخيص، لذا يحتاج البناء إلى ترخيص",
+            "designScrutiny": "التصميم والتوسعات والهدم تخضع لتدقيق أشد"
+        },
+        "note": {
+            "greenBelt": "البناء الجديد غير مناسب إلا في ظروف خاصة جدًا",
+            "floodZone3": "احتمال فيضان مرتفع؛ تُطبّق اختبارات خطر الفيضان",
+            "worldHeritageSite": "قيمة الموقع التراثية تؤثر في أي قرار",
+            "treePreservation": "الأشجار المحمية تحتاج إلى موافقة قبل أي عمل عليها"
+        },
+        "condition": {
+            "noHarmToCharacter": "إذا لم يضر بالطابع العام للمنطقة"
+        },
         "title": "المسموح",
         "heightFail": "الارتفاع {{measured}}: المسموح حتى {{limit}}",
         "storeyCount": "{{limit}} ({{storeys}} طوابق)",
@@ -9171,6 +9216,7 @@
         "useUnknown": "{{use}}: {{status}}",
         "source": "المصدر: {{source}}",
         "status": {
+            "note": "ضمن الحدود المسجّلة؛ تنطبق تصنيفات تخطيطية",
             "fail": "يتجاوز حدًا مسموحًا",
             "conditional": "مسموح بشرط فقط",
             "unknown": "ليست كل القواعد هنا مسجلة",
@@ -9179,6 +9225,13 @@
         }
     },
     "planningViews": {
+        "inspectDesignation": "فحص التصنيف التخطيطي {{parcel}}",
+        "designation": "تصنيف تخطيطي",
+        "restrictionNote": "يُبقي تصنيف تخطيطي هذه الأرض خالية من البناء الجديد.",
+        "restrictionsTitle": "التصنيفات التخطيطية",
+        "designationsLoaded": "أماكن محمية: {{count}}",
+        "designationsPartial": "تعذّرت قراءة كل التصنيفات",
+        "designationsFailed": "تعذّرت قراءة التصنيفات التخطيطية",
         "receivedData": "{{size}} مُستلم",
         "permittedScope": "نطاق الكتلة البنائية المسموح بها",
         "survivingCoverageHelp": "عند ظهور «المقترح»، تكون تصميماته ذات الأولوية على مواقعها.",

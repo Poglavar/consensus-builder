@@ -8769,6 +8769,51 @@
         }
     },
     "permittedCheck": {
+        "heightUnknown": "Visina {{measured}}: granica ovisi o postojećoj visini, koja nije zabilježena",
+        "footprintAreaPass": "Tlocrt prizemlja {{measured}}: unutar {{limit}}",
+        "footprintAreaFail": "Tlocrt prizemlja {{measured}}: dopušteno do {{limit}}",
+        "footprintAreaConditional": "Tlocrt prizemlja {{measured}}: iznad {{limit}}; dopušteno samo {{condition}}",
+        "footprintAreaUnknown": "Tlocrt prizemlja {{measured}}: granica ovisi o postojećim zgradama, koje nisu zabilježene",
+        "naturalGroundPass": "Neizgrađeno tlo {{measured}}: najmanje {{limit}}",
+        "naturalGroundFail": "Neizgrađeno tlo {{measured}}: najmanje {{limit}} mora ostati neizgrađeno",
+        "naturalGroundConditional": "Neizgrađeno tlo {{measured}}: manje od {{limit}}; dopušteno samo {{condition}}",
+        "naturalGroundUnknown": "Neizgrađeno tlo {{measured}}: najmanja površina ovisi o postojećim zgradama, koje nisu zabilježene",
+        "baseUnknown": "Ovdje nisu zabilježena pravila gradnje; provjerena su samo planska ograničenja",
+        "restrictionsPartial": "Nisu se mogla pročitati sva planska ograničenja ovdje; popis možda nije potpun",
+        "place": "{{designation}} „{{name}}”",
+        "placeOf": "{{designation}} „{{name}}” ({{organisation}})",
+        "placeUnnamed": "{{designation}}",
+        "placeBuilding": "{{designation}} „{{name}}”",
+        "sourceLink": "izvor: {{source}}",
+        "restriction": {
+            "prohibit": "{{place}}: nova gradnja ovdje nije dopuštena",
+            "keep": "{{place}} mora se zadržati: nova zgrada ne smije je zamijeniti",
+            "restrict": "{{place}}: {{requirement}}",
+            "note": "{{place}}: {{note}}"
+        },
+        "designation": {
+            "scheduledMonument": "Registrirani spomenik",
+            "listedBuilding": "Zaštićena zgrada",
+            "article4Direction": "Područje odluke po članku 4.",
+            "conservationArea": "Zaštićena cjelina",
+            "greenBelt": "Zeleni pojas",
+            "floodZone3": "Poplavna zona 3",
+            "worldHeritageSite": "Lokalitet svjetske baštine",
+            "treePreservation": "Područje zaštite stabala"
+        },
+        "requirement": {
+            "planningPermission": "ukinuta su prava gradnje bez dozvole, pa gradnja traži dozvolu",
+            "designScrutiny": "oblikovanje, dogradnje i rušenja strože se provjeravaju"
+        },
+        "note": {
+            "greenBelt": "nova gradnja nije primjerena osim u vrlo posebnim okolnostima",
+            "floodZone3": "velika vjerojatnost poplave; primjenjuju se provjere poplavnog rizika",
+            "worldHeritageSite": "značaj baštine teži u svakoj odluci",
+            "treePreservation": "za zahvate na zaštićenim stablima treba suglasnost"
+        },
+        "condition": {
+            "noHarmToCharacter": "ako ne šteti ukupnom karakteru područja"
+        },
         "title": "Dopušteno",
         "heightFail": "Visina {{measured}}: dopušteno do {{limit}}",
         "storeyCount": "{{limit}} (katnost {{storeys}})",
@@ -8787,6 +8832,7 @@
         "useUnknown": "{{use}}: {{status}}",
         "source": "Izvor: {{source}}",
         "status": {
+            "note": "Unutar zabilježenih granica; vrijede planska ograničenja",
             "fail": "Krši dopušteno ograničenje",
             "conditional": "Dopušteno samo uz uvjet",
             "unknown": "Nisu zabilježena sva pravila",
@@ -8795,6 +8841,13 @@
         }
     },
     "planningViews": {
+        "inspectDesignation": "Pregledaj plansko ograničenje {{parcel}}",
+        "designation": "Plansko ograničenje",
+        "restrictionNote": "Plansko ograničenje drži ovo zemljište bez nove gradnje.",
+        "restrictionsTitle": "Planska ograničenja",
+        "designationsLoaded": "Zaštićenih mjesta: {{count}}",
+        "designationsPartial": "nisu se mogla pročitati sva ograničenja",
+        "designationsFailed": "planska ograničenja nisu se mogla pročitati",
         "receivedData": "{{size}} primljeno",
         "permittedScope": "Obuhvat dopuštene izgrađenosti",
         "survivingCoverageHelp": "Kad je Predloženo vidljivo, njegovi dizajni imaju prednost na svojim područjima.",

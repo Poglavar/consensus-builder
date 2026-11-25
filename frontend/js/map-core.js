@@ -337,6 +337,8 @@ function poolFeatureOf(item, source) {
 
 function publishBuildingPool() {
     window.buildingFeaturePool = Array.from(buildingPoolByKey.values());
+    // Readers that place things on existing buildings (planning designations given as points) redo it.
+    window.dispatchEvent(new CustomEvent('buildingPoolUpdated'));
 }
 
 // One cell's answer into the pool. A stand-in's building that duplicates, over a cell line, one an

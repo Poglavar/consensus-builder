@@ -8723,6 +8723,51 @@
         }
     },
     "permittedCheck": {
+        "heightUnknown": "Height {{measured}}: the limit depends on the existing height, which is not recorded",
+        "footprintAreaPass": "Ground floor {{measured}}: within {{limit}}",
+        "footprintAreaFail": "Ground floor {{measured}}: permitted up to {{limit}}",
+        "footprintAreaConditional": "Ground floor {{measured}}: above {{limit}}; allowed only {{condition}}",
+        "footprintAreaUnknown": "Ground floor {{measured}}: the limit depends on existing buildings that are not recorded",
+        "naturalGroundPass": "Ground left free {{measured}}: at least {{limit}}",
+        "naturalGroundFail": "Ground left free {{measured}}: at least {{limit}} must stay free",
+        "naturalGroundConditional": "Ground left free {{measured}}: under {{limit}}; allowed only {{condition}}",
+        "naturalGroundUnknown": "Ground left free {{measured}}: the minimum depends on existing buildings that are not recorded",
+        "baseUnknown": "No building limits are recorded here; only planning designations were checked",
+        "restrictionsPartial": "Not every planning designation here could be read; this list may be incomplete",
+        "place": "the {{name}} {{designation}}",
+        "placeOf": "{{organisation}}'s {{name}} {{designation}}",
+        "placeUnnamed": "a {{designation}}",
+        "placeBuilding": "The {{designation}} {{name}}",
+        "sourceLink": "source: {{source}}",
+        "restriction": {
+            "prohibit": "Inside {{place}}: no new building is permitted here",
+            "keep": "{{place}} must be kept: a new building may not replace it",
+            "restrict": "Inside {{place}}: {{requirement}}",
+            "note": "Inside {{place}}: {{note}}"
+        },
+        "designation": {
+            "scheduledMonument": "scheduled monument",
+            "listedBuilding": "listed building",
+            "article4Direction": "Article 4 direction area",
+            "conservationArea": "conservation area",
+            "greenBelt": "Green Belt",
+            "floodZone3": "flood zone 3",
+            "worldHeritageSite": "World Heritage Site",
+            "treePreservation": "tree preservation zone"
+        },
+        "requirement": {
+            "planningPermission": "permitted development rights are withdrawn, so building needs planning permission",
+            "designScrutiny": "design, extensions and demolition face extra scrutiny"
+        },
+        "note": {
+            "greenBelt": "new building is inappropriate unless very special circumstances are shown",
+            "floodZone3": "high probability of flooding; flood risk tests apply",
+            "worldHeritageSite": "the site's heritage significance weighs in any decision",
+            "treePreservation": "protected trees need consent before any work on them"
+        },
+        "condition": {
+            "noHarmToCharacter": "if it does no harm to the overall character of the area"
+        },
         "title": "Permitted",
         "heightFail": "Height {{measured}}: permitted up to {{limit}}",
         "storeyCount": "{{limit}} ({{storeys}} floors)",
@@ -8741,6 +8786,7 @@
         "useUnknown": "{{use}}: {{status}}",
         "source": "Source: {{source}}",
         "status": {
+            "note": "Within the recorded limits; planning designations apply",
             "fail": "Breaks a permitted limit",
             "conditional": "Allowed only on a condition",
             "unknown": "Not every rule here is recorded",
@@ -8749,6 +8795,13 @@
         }
     },
     "planningViews": {
+        "inspectDesignation": "Inspect planning designation {{parcel}}",
+        "designation": "Planning designation",
+        "restrictionNote": "A planning designation keeps this land free of new building.",
+        "restrictionsTitle": "Planning designations",
+        "designationsLoaded": "{{count}} protected places",
+        "designationsPartial": "not every designation could be read",
+        "designationsFailed": "planning designations could not be read",
         "receivedData": "{{size}} received",
         "permittedScope": "Permitted massing coverage",
         "survivingCoverageHelp": "When Proposed is visible, its designs take precedence across their sites.",
