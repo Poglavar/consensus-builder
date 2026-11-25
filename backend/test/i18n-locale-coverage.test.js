@@ -48,6 +48,7 @@ const DYNAMIC_KEY_PREFIXES = [
     'gameDialogs.log.actors.countTransaction.',
     'gameDialogs.log.actors.entity.',
     'activityPanel.',             // Activity controls and notices share a runtime prefix
+    'agreement.funding.apartments.', // agreement-boost.js apartmentText(key) names the apartment round's labels
     'landTake.',                   // freeform land-take review labels
     'imagerySources.',             // parcel-source-settings.js selects labels by source kind and preset
     'planningViews.constraint.',   // the source inspector names recorded numeric constraints

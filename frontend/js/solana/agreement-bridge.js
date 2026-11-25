@@ -611,7 +611,7 @@
             if (!offer) throw codedError(t('agreement.funding.apartments.unknown', 'Choose an apartment offered by this round.'), 'unknown-unit');
             const developer = agreement.sponsor;
             const payer = wallet.toBase58();
-            if (expectedBuyer && expectedBuyer !== payer) throw codedError(t('agreement.chain.errors.connectWallet', 'Connect the wallet shown in the reservation.'), 'wallet-changed');
+            if (expectedBuyer && expectedBuyer !== payer) throw codedError(t('agreement.chain.errors.walletChanged', 'Connect the wallet shown in the reservation.'), 'wallet-changed');
             const receipt = { account: ref.account, cluster: ref.cluster, signature: null, explorerUrl: explorerUrl(ref),
                 position: offer.position, qualification: offer.qualification };
             if (listing && payer !== developer) throw codedError(t('agreement.funding.apartments.developerOnly', 'Only the developer can list this apartment.'), 'developer-required');
