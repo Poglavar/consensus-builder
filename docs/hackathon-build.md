@@ -166,15 +166,17 @@ duplicate pointers fail the public audit.
 
 | Case | Agreement | Outcome |
 | --- | --- | --- |
-| Devnet cancellation demonstration — London | [Current agreement](https://urbangametheory.xyz/agreements/bafkreigu5t77k6pkgh6gsyezdwrcrygolvkkwzytuoyzszckpuh5wwe47u?city=london) | Cancelled; market resolved NO; winning claim confirmed |
-| 5-storey infill on parcel 48963306, London | [Current agreement](https://urbangametheory.xyz/agreements/bafkreidyb4h3ryq5ughtib3zrqkpuzy7mtr6abtzl7mo74ebjkpuxshpka?city=london) | Executed; market resolved YES; winning claim confirmed |
+| 5-storey design on parcel 53749337, London | [Current agreement](https://urbangametheory.xyz/agreements/bafkreihmfw3l5jy35nv2gdeqyc6mqoph4chttgafmfx62sb5fzwucth5iu?city=london) | Cancelled; market resolved NO; winning claim confirmed |
+| 5-storey design on parcel 0044402VK4704C, Madrid | [Current agreement](https://urbangametheory.xyz/agreements/bafkreibxaobb24k43t2zpea6ikolna5o5qm2xkbansnxysqyurns2dxs5y?city=madrid) | Executed; market resolved YES; winning claim confirmed |
 
-The cancellation record was created on 2026-10-25 as a labelled devnet demonstration, using the
-existing London design and a new agreement CID. One agent wallet placed 0.01 test USDC on each side,
-cancelled its own new agreement, resolved NO and claimed the winning position. The executed record
-comes from the existing agent workflow and has a one-sided YES pool. These examples demonstrate
-protocol integration. They establish no legal registration, physical construction or independent
-market demand.
+Both agreements come from the scheduled agent workflow on the current agreement and LMSR market
+programs. In each, the proposing agent minted the agreement and opened its
+market; two other agents bet NO and one bet YES. The London agreement was then cancelled
+by its sponsor (a one-off operator transaction for this demonstration), an agent resolved the market
+NO and claimed its winning NO shares. The Madrid agreement was decided by its sole owner, confirmed
+by its lens member and executed; the market resolved YES and the YES bettor claimed. These examples
+demonstrate protocol integration. They establish no legal registration, physical construction or
+independent market demand.
 
 The card's visible transaction path links the decision, resolution and winning claim directly.
 Additional mint, support and stake transactions remain available in its transaction fold. Outcome

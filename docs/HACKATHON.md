@@ -207,22 +207,12 @@ git diff 3ee1855...colosseum-worlds-fair
     each mutable devnet program is identified by ProgramData address, last deployment slot and the
     SHA-256 of the binary read back from Solana. This avoids presenting one branch SHA as if it
     described three independently deployed artifacts.
-34. **Executed YES case** — [`hackathon-executed-borovje-2026`](https://urbangametheory.xyz/proposals/hackathon-executed-borovje-2026)
-    ([aggregate JSON](https://api.urbangametheory.xyz/hackathon/cases/hackathon-executed-borovje-2026))
-    is the YES counterpart of the cancelled canonical case on a second two-parcel Borovje set,
-    anchored by proposal account [`2Jcy…EAZB`](https://explorer.solana.com/address/2JcywzEzFg1n8eJh5cBHBPy4XaRig2jD3VbcZco9EAZB?cluster=devnet).
-    Ownership certificates [`3wBS…Ybvd`](https://explorer.solana.com/tx/3wBSmzUNkoV19nJhEgZMcMhf921vgJ2S4obd8pDMVL4P8btg4mJuXSmghcs4h6wt2uymHTjedFUjo6Ygm4FYbvd?cluster=devnet)
-    and [`Hoqu…yVWa`](https://explorer.solana.com/tx/Hoquuys8vtZfFxjWiGkSnQVyAEe7Ystio2wqFCTv8AYYefFTUvBdiMN52vWQfChQGhm7ooFQT4z1UCZBdbPyVWa?cluster=devnet),
-    acceptances [`vGKC…1YKa`](https://explorer.solana.com/tx/vGKCNhwVsFBNMhBULK8DRXRESxVqSCiBFP7WgT2s2VBQ7s986tbHWqBCwZKhbK57m2qDsrCsWFGbCLStH7c1YKa?cluster=devnet)
-    and [`5Us4…sE4p`](https://explorer.solana.com/tx/5Us4w5dnNWEsn8dZwjE27iEdKQvGpT8BXhyY4vf2iyJnhdvoDu3Vs5kXGbEdboqmMVCtMDDTnayV9UiNM4fqsE4p?cluster=devnet)
-    (the second makes the proposal `Executed`), YES resolution [`5TGY…BWjQ`](https://explorer.solana.com/tx/5TGYK3gWc8p83CcMivMiBD3dPVosVXdUWyh8yo3GLqa2D2Frgp2Y7udThVoSNxesPgHFttVGJjDqWtUkFvCCBWjQ?cluster=devnet),
-    donation release [`4yrJ…Z6BW`](https://explorer.solana.com/tx/4yrJioA47DGAiouEm3qyFrZ1RENNeX2YnFvJTztG1sD8RQhnaGDiagXr7PgQUNhjYCH1HAe3f2nfaYfm1jDGZ6BW?cluster=devnet),
-    pledge fulfilment [`5MYa…WBUc`](https://explorer.solana.com/tx/5MYaie9TLWbcVevxQPPVJXWurBqoM2ACWYohGvkheCbLzpjh6kGqi3XnBsi1KE8B6drfGbksaQMvAA5L2SaQWBUc?cluster=devnet)
-    and YES claim [`WZwf…m4WW`](https://explorer.solana.com/tx/WZwfmV9uzKRvqKzsctCuG4HzYuhoZAJNobonyc5mi5hj89jgmNnwDHffVhmNW2RAiCCr2pcSNG64Zaak3Z2m4WW?cluster=devnet)
-    complete all seven stages; the Demo Center renders it with the same card as the cancelled case.
-    The supporter persona holds the devnet ownership certificates of both parcels, so this proves the
+34. **Executed YES case** — [aggregate JSON](https://api.urbangametheory.xyz/hackathon/cases/bafkreibxaobb24k43t2zpea6ikolna5o5qm2xkbansnxysqyurns2dxs5y)
+    of a Madrid agreement on the current programs: minted on its proposer's own devnet-registered
+    parcel, bet on both sides by other agents, decided by its sole owner, confirmed by its lens
+    member, executed, resolved YES and claimed by the YES bettor. The Demo Center renders it beside
+    the cancelled case. Because the owner is an agent holding devnet registry rights, it proves the
     executed mechanics and YES payout, not real-owner consent.
-    Item 35 replaces that certificate caveat with an attested consent chain.
 35. **Lens model: attested execution** — *programs upgraded on devnet; live attested human journey still to verify.* Design of record
     [`lens-model.md`](lens-model.md); trust boundary in [`docs/protocol.md`](protocol.md#lens-model-and-the-trust-boundary).
     Parcels become ownerless anchors, the lens becomes a passive list of trusted attesters stored on
@@ -303,22 +293,19 @@ parcel-set identity, actors, support, forecast pools, lifecycle decision, oracle
 resolution and settlement. The graph keeps parallel actions parallel and leaves absent stages
 explicitly pending, blocked or unavailable.
 
-The canonical Borovje case anchors three real cadastral parcels. The two existing deterministic
-personas minted and paid for the proposal, funded its donation escrow, recorded a revocable pledge,
-and staked both YES and NO. Its owner then cancelled it, the lifecycle materializer published a
-source-hashed event, another actor resolved the market NO, the donation was refunded, the pledge
-was voided and the winning NO position was claimed. The aggregate therefore derives all seven
-stages from public data rather than presenting a scripted success state.
+The cancelled case ([aggregate JSON](https://api.urbangametheory.xyz/hackathon/cases/bafkreihmfw3l5jy35nv2gdeqyc6mqoph4chttgafmfx62sb5fzwucth5iu))
+is a London agreement on one cadastral parcel. Its proposing agent minted it and opened its market,
+two agents bet NO and one YES, and one pledged support. Its sponsor then cancelled it, the lifecycle
+materializer published a source-hashed event, an agent resolved the market NO and claimed its
+winning NO shares.
 
-`/hackathon/cases/hackathon-executed-borovje-2026` is the executed counterpart on a second
-two-parcel set: the wallet holding the devnet ownership certificate of every listed parcel accepts,
-the proposal reaches `Executed` on-chain, the market resolves YES, the donation escrow is released,
-the pledge is fulfilled and the YES position is claimed. The public audit's `executed_case_yes`
-check requires all of that to be complete. The run has happened: all seven stages are complete and
-the Demo Center shows the case beside the cancelled one, reading it from the manifest's
-`publicProof.executedCase` and falling back to an explicit pending state if that record is absent.
-Because the accepting wallet is the supporter persona holding the devnet certificates, the case
-proves the executed mechanics and payout, not real-owner consent.
+The executed case ([aggregate JSON](https://api.urbangametheory.xyz/hackathon/cases/bafkreibxaobb24k43t2zpea6ikolna5o5qm2xkbansnxysqyurns2dxs5y)) is a
+Madrid agreement: its sole owner decided it, its lens member confirmed it, it reached `Executed`
+on-chain, the market resolved YES and the YES bettor claimed. The public audit's
+`canonical_case_no` and `executed_case_yes` checks require each of those steps to be backed by a
+confirmed transaction. The Demo Center reads both from the manifest's `publicProof` and shows an
+explicit pending state if a record is absent. Because the owner is an agent holding devnet registry
+rights, the executed case proves the mechanics and payout, not real-owner consent.
 
 1. Discover the paid proposal capability through the x402/Bazaar metadata.
 2. Run an agent proposal through payment, persistence, and its on-chain transaction link.
