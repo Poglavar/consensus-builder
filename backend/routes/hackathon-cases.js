@@ -13,13 +13,15 @@ import { buildAddressBook } from '../solana/address-book.js';
 import { loadAgreement } from './agreements.js';
 import { agreementAccountOf } from '../agreements/onchain.js';
 import { isCid } from '../cid.js';
+import { discoverAgreementMarkets } from '../markets/market-discovery.js';
+import { hasAgreementMarketTerms } from './markets.js';
+import { createRpcConnection } from '../solana/rpc.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
 const pledgeClient = require('../../frontend/js/solana/pledge-client.js');
-const marketClient = require('../../frontend/js/solana/market-client.js');
+const lmsr = require('../../frontend/js/bets/lmsr.js');
 pledgeClient.configure({ web3 });
-marketClient.configure({ web3 });
 
 const USDC_DECIMALS = 6;
 
@@ -135,24 +137,40 @@ async function readSupport(connection, agreementAccount) {
     };
 }
 
-async function readMarket(connection, agreementAccount) {
-    const subject = new web3.PublicKey(agreementAccount);
-    const [account] = marketClient.getMarketPda(subject);
-    const market = await marketClient.readMarket(connection, subject);
-    if (!market) return { state: 'available', exists: false, account: account.toBase58() };
-    const probability = marketClient.impliedProbability(market.yesPool, market.noPool);
+function usdc(atomic) {
+    const whole = atomic / 10n ** BigInt(USDC_DECIMALS);
+    const fraction = (atomic % 10n ** BigInt(USDC_DECIMALS)).toString().padStart(USDC_DECIMALS, '0').replace(/0+$/, '');
+    return fraction ? `${whole}.${fraction}` : String(whole);
+}
+
+/**
+ * The case's forecast: the agreement's own LMSR market (kind 0, the same terms the Bets sheet
+ * accepts), the deepest one first when several wallets opened one. YES and NO are the shares sold
+ * on each side; each winning share pays one devnet USDC.
+ * @param found [{ address, market }] from discoverAgreementMarkets for this agreement account
+ */
+export function caseMarket(agreementAccount, found = []) {
+    const own = found.filter(item => item.market.kind === 0 && hasAgreementMarketTerms(item.market, agreementAccount, { lenses: [] }));
+    if (!own.length) return { state: 'available', exists: false, account: null };
+    const { address, market } = own[0];
     return {
         state: 'available',
         exists: true,
-        account: account.toBase58(),
-        yesAtomic: market.yesPool.toString(),
-        noAtomic: market.noPool.toString(),
-        yesUsdc: marketClient.formatAtomic(market.yesPool, USDC_DECIMALS),
-        noUsdc: marketClient.formatAtomic(market.noPool, USDC_DECIMALS),
-        impliedProbability: probability,
-        resolved: market.resolved,
-        outcome: market.resolved ? (market.outcome === marketClient.constants.SIDE_YES ? 'YES' : 'NO') : null
+        account: address,
+        model: 'lmsr',
+        yesAtomic: market.qYes.toString(),
+        noAtomic: market.qNo.toString(),
+        yesUsdc: usdc(market.qYes),
+        noUsdc: usdc(market.qNo),
+        impliedProbability: lmsr.chance(market.b, market.qYes, market.qNo, 'yes') / 100,
+        resolved: Boolean(market.resolved),
+        outcome: market.resolved ? ['NO', 'YES', 'VOID'][Number(market.outcome)] : null
     };
+}
+
+async function readMarket(connection, agreementAccount) {
+    const found = await discoverAgreementMarkets(connection, [agreementAccount]);
+    return caseMarket(agreementAccount, found.get(agreementAccount) || []);
 }
 
 function unavailable(error) {
@@ -170,7 +188,10 @@ export function setupHackathonCasesRoute(app, pool, {
 } = {}) {
     let rpcConnection = connection;
     const getConnection = () => {
-        if (!rpcConnection) rpcConnection = new web3.Connection(env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
+        if (!rpcConnection) {
+            rpcConnection = createRpcConnection(env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed',
+                { programAccountsEndpoint: env.SOLANA_PROGRAM_ACCOUNTS_RPC_URL || null });
+        }
         return rpcConnection;
     };
     app.get('/hackathon/cases/:cid', async (req, res) => {

@@ -6,7 +6,8 @@ import { createRequire } from 'node:module';
 import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
 import { buildHackathonCase, parcelSetIdentity } from '../hackathon/case-model.js';
-import { loadActivity, loadCaseAgreement, loadOracleEvents, setupHackathonCasesRoute } from '../routes/hackathon-cases.js';
+import { caseMarket, loadActivity, loadCaseAgreement, loadOracleEvents, setupHackathonCasesRoute } from '../routes/hackathon-cases.js';
+import { DEVNET_USDC_MINT } from '../solana/address-book.js';
 import { agreementAccountOf } from '../agreements/onchain.js';
 import { cidOfObject } from '../cid.js';
 import { AgreementClient, AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
@@ -347,5 +348,26 @@ describe('hackathon case readers', () => {
         expect(events.filter(event => event.transaction === 'claim-tx')).toEqual([
             expect.objectContaining({ agreementAccount: ACCOUNT, action: expect.objectContaining({ type: 'claim' }) })
         ]);
+    });
+});
+
+describe('the case forecast market', () => {
+    const AGREEMENT = 'BtctG2sKxoqEtXo2QahRKWCRAi6kui7W2nxqaCJNdeco';
+    const lmsr = require('../../frontend/js/bets/lmsr.js');
+    const b = 5_000_000n;
+    const lmsrMarket = (overrides = {}) => ({ kind: 0, proposal: AGREEMENT, stakeMint: DEVNET_USDC_MINT, closesAt: 1_900_000_000n, b, seed: lmsr.maxLoss(b),
+        qYes: 20_000n, qNo: 30_000n, resolved: true, outcome: 1, ...overrides });
+
+    it('reads the agreement\'s own LMSR market: shares per side, resolution and outcome', () => {
+        expect(caseMarket(AGREEMENT, [{ address: 'MarketA', market: lmsrMarket() }])).toMatchObject({
+            state: 'available', exists: true, account: 'MarketA', model: 'lmsr', yesUsdc: '0.02', noUsdc: '0.03', resolved: true, outcome: 'YES'
+        });
+        expect(caseMarket(AGREEMENT, [{ address: 'MarketA', market: lmsrMarket({ resolved: false }) }])).toMatchObject({ resolved: false, outcome: null });
+    });
+
+    it('has no market when none, or only another subject\'s or a recipe market, is found', () => {
+        expect(caseMarket(AGREEMENT, [])).toEqual({ state: 'available', exists: false, account: null });
+        expect(caseMarket(AGREEMENT, [{ address: 'Other', market: lmsrMarket({ proposal: 'Elsewhere' }) }]).exists).toBe(false);
+        expect(caseMarket(AGREEMENT, [{ address: 'Recipe', market: lmsrMarket({ kind: 1 }) }]).exists).toBe(false);
     });
 });

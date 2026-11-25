@@ -67,7 +67,7 @@ function forecastStage(market) {
     if (!market.exists) return stage('forecast', 'Forecast', 'pending', 'No market exists for this agreement yet.');
     const yes = number(market.yesUsdc);
     const no = number(market.noUsdc);
-    const detail = `${yes} devnet USDC YES; ${no} devnet USDC NO.`;
+    const detail = `${yes} YES and ${no} NO shares sold; each winning share pays 1 devnet USDC.`;
     return stage('forecast', 'Forecast', yes > 0 && no > 0 ? 'complete' : yes > 0 || no > 0 ? 'partial' : 'pending', detail, [accountLink(market.account)]);
 }
 
