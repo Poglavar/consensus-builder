@@ -143,7 +143,7 @@
         } else if (directory.status === 'error') {
             directoryHtml = `<p class="lens-picker-error">${escapeText(t('modal.lens.picker.loadFailed', 'Could not load the lens member directory: {{error}}', { error: directory.error }))}</p>`;
         } else if (!members.length) {
-            directoryHtml = `<p class="lens-picker-note">${escapeText(t('modal.lens.picker.emptyDirectory', 'No lens members are known yet. Paste a member key below.'))}</p>`;
+            directoryHtml = `<p class="lens-picker-note">${escapeText(t('modal.lens.picker.emptyDirectory', 'No lens members are known yet. Paste a lens member key below.'))}</p>`;
         } else {
             directoryHtml = `<ul class="lens-picker-members">${members.map(member => `
                 <li class="lens-picker-member">
@@ -266,7 +266,7 @@
         } };
         const subtitle = document.createElement('p');
         subtitle.className = 'lens-modal-subtitle';
-        subtitle.textContent = single ? '' : t('modal.lens.picker.subtitle', 'Choose the trusted members of your lens. Changes become your default; saved agreements keep their own lens.');
+        subtitle.textContent = single ? '' : t('modal.lens.picker.subtitle', 'Choose the lens members you trust. Changes become your default; saved agreements keep their own lens.');
         const body = document.createElement('div');
         body.className = 'lens-picker-body';
         body.setAttribute('data-lens-picker-body', '');

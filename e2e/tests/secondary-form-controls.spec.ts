@@ -33,9 +33,10 @@ test.describe('Supporting page form controls @core', () => {
         tally: { passed: false, ready: true, reason: null, acceptedOwners: 1, totalOwners: 2, acceptedAreaM2: 400, totalAreaM2: 812.5 },
       }) });
     });
-    await page.goto('/lens.html');
+    await page.goto('/lens.html?view=members');
     await expect(page.locator('#lc-language')).toBeVisible();
-    await expect(page.locator('#lc-service-title')).toHaveText('Member service');
+    await page.locator('#lc-operator > summary').click();
+    await expect(page.locator('#lc-service-title')).toHaveText('Lens member service');
 
     await selectNativeOption(page.locator('#lc-directory'), 'https://south-lens.example');
     await expect(page.locator('#lc-service-url')).toHaveValue('https://south-lens.example');

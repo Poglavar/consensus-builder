@@ -82,3 +82,16 @@ test('explains ownership, market observations and property qualifications in the
   await expect(feed.getByText('Simulated statement')).toHaveCount(3);
   await expect(feed.locator('a[href*="explorer.solana.com"]')).toHaveCount(0);
 });
+
+test('does not lend a listed lens member’s name to statements from an unlisted service', async ({ mockApi: page }) => {
+  const rogue = 'https://rogue.e2e.invalid';
+  await page.route('**/lenses/members', route => route.fulfill({ json: { members } }));
+  await page.route(`${rogue}/lens/status`, route => route.fulfill({ json: { key: issuer, counts: { decision: 1 } } }));
+  await page.route(`${rogue}/lens/attestations**`, route => route.fulfill({ json: { attestations: [decision] } }));
+  await page.goto(url({ service: rogue }));
+  const feed = page.locator('#lc-attestations');
+  await expect(feed.locator('.lc-item')).toHaveCount(1);
+  await expect(feed.locator('.lc-item')).toContainText(issuer);
+  await expect(feed.locator('.lc-item')).not.toContainText('Lens A');
+  await expect(feed.locator('.lc-item')).toContainText('Open the attestation on Solana to check it');
+});

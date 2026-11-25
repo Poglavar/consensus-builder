@@ -15,6 +15,7 @@ import { createMcpDiscoveryTools } from './mcp-discovery.js';
 import { createMcpObserver } from '../operations/planning-diagnostics.js';
 import { createSharedPlanMcpTools } from './mcp-shared-plan-tools.js';
 import { registerPropertyOfferTools } from './mcp-property-offers.js';
+import { createAgreementEvidenceTool } from './mcp-agreement-evidence.js';
 
 const BASE58_KEY = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 // CIDv1, raw codec, sha2-256, base32 lower case (backend/cid.js).
@@ -101,6 +102,7 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
     if (mode === 'hosted' && env.UGT_AGENT_KEYPAIR) throw new Error('Hosted MCP must have no UGT_AGENT_KEYPAIR');
     const actions = tools || createUrbanGameTheoryTools({ mode, env, fetchImpl, resolveDraftReference });
     Object.assign(actions, createSharedPlanMcpTools({ actions, sharedPlans }));
+    actions.agreementEvidence ??= createAgreementEvidenceTool({ env, fetchImpl }).agreementEvidence;
     const handler = fn => toolHandler(async args => decorateResult(await fn(args)));
     const server = new UrbanGameTheoryMcpServer(
         { name: 'xyz.urbangametheory/urban-game-theory', version: '0.4.0' },
@@ -143,6 +145,11 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
         description: 'Read an agreement from the index (GET /agreements/:cid) plus, when its content names a sponsor, its chain account (PDA of sponsor and CID) and that account as the chain holds it now (accountState: status, lenses (the member keys), lensThreshold (how many must confirm), lensConfirmed (members whose confirmation is recorded), contribution target (fundingMint, requiredFunding, fundingMet, fundingObserved), deadline, required and escrowed lamports, decision); minted is false until the sponsor creates it.',
         inputSchema: z.object({ agreementCid }), annotations: READ_ONLY
     }, handler(args => actions.getAgreement(args)));
+    server.registerTool('ugt_agreement_evidence', {
+        title: 'Read who attested what for one agreement',
+        description: 'The lens walkthrough of an agreement (the same checks as urbangametheory.xyz/lens.html): checks (approvals, funding, lens, cited, execution) each met | waiting | failed | unknown | none; every relayed owner approval with whether its signatures verify and which lens member vouched for the owner and for the signer; every lens member with its state (confirmed on Solana, statement issued but not recorded, no statement, no statement service listed) and its statements, marked checkedOnSolana or reported by its service; the execution state. An agreement minted under a retired agreement program is read as not on Solana (retiredProgram). Proves who signed what and when, not that a statement is true.',
+        inputSchema: z.object({ agreementCid }), annotations: READ_ONLY
+    }, handler(args => actions.agreementEvidence(args)));
     registerPropertyOfferTools(server, { handler, env, fetchImpl });
 
     server.registerTool('ugt_list_attesters', {

@@ -114,6 +114,7 @@ SOLANA_RPC_URL=https://api.devnet.solana.com
 | `ugt_activity` | read | The activity stream shared by humans, algorithmic agents and LLM agents. |
 | `ugt_list_agreements` | read | Published agreements by `city`, `design` CID or input `parcel`. |
 | `ugt_get_agreement` | read | One agreement, the chain account its sponsor and CID derive, and that account's state. |
+| `ugt_agreement_evidence` | read | Who attested what for one agreement: the lens walkthrough's checklist, each owner approval with the lens members who vouched for it, and each lens member's statements, checked on Solana or as its service reports them. |
 | `ugt_list_attesters` | read | The lens member directory, to pick an agreement's lens from. |
 | `ugt_support_status` | read | Donation and pledge totals of an agreement account. |
 | `ugt_oracle_events` | read | The agreement account's terminal `agreement_lifecycle` events. |

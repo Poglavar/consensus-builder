@@ -297,12 +297,20 @@ receives an equal share of its parcel's share.
 - **Details, Acceptance section.** Per parcel: ownership attested by which member, how many of the
   attested owners have signed, a Say yes button for an attested owner's wallet, evidence links. The old "mint missing certificates and accept" flow is
   removed.
-- **Lens activity** (`/lens.html`). Open a published agreement from its Decision tab to follow its
-  rule, signed owner decisions, lens statement and execution. Each stage reads its own source. The
-  walkthrough verifies owner signatures, checks whether the lens cited the current owner approvals,
-  and compares the signed statement with the decision recorded by the agreement on Solana. A member link opens the issuer’s statements, and a decision statement
-  links back to its agreement. These views are public. The member view also contains the service,
-  wallet and operator controls used to issue a decision.
+- **Lens activity** (`/lens.html`). Open a published agreement from its Decision tab for its lens
+  walkthrough: three role cards (owners or contributors, lens members with the required number, the
+  agreement on Solana) and a checklist (owners approve, funding target, lens members confirm, the
+  lens counted these approvals, the agreement executes), built by `lens-walkthrough-model.js`.
+  Each source answers on its own: owner approvals are verified by signature in the browser; the
+  agreement account is read from Solana whatever the index says (an agreement minted under a
+  retired program is read as not on Solana); each lens member of an N-of-M lens is listed as
+  confirmed on Solana, statement issued but not recorded, no statement, or no statement service; the
+  recorded statement is checked against the account, and its evidence reference against the
+  approvals signed up to its source time, with a warning when they differ. A lens member link
+  opens its statements, shown as its service reports them; a directory name is shown only for the
+  service the directory lists for that key. `ugt_agreement_evidence` answers the same checklist
+  for agents. The lens member view also contains the service, wallet and operator controls used to
+  issue a decision.
 - **Timeline and Activity.** New action types `attestOwnership`, `acceptance`, `verdict` with
   messages; the Actors explorer shows attesters as actors of kind `attester`.
 

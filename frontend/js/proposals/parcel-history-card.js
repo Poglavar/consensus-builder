@@ -61,7 +61,7 @@
         const details = [];
         if (event.title) details.push(event.title);
         if (event.agreementCid) details.push(t('panel.proposal.parcelHistory.agreement', 'Agreement {{cid}}', { cid: shortKey(event.agreementCid) }));
-        if (event.member) details.push(t('panel.proposal.parcelHistory.member', 'Member {{key}}', { key: shortKey(event.member) }));
+        if (event.member) details.push(t('panel.proposal.parcelHistory.member', 'Lens member {{key}}', { key: shortKey(event.member) }));
         if (event.owner) details.push(t('panel.proposal.parcelHistory.owner', 'Owner {{key}}', { key: shortKey(event.owner) }));
         if (typeof event.ownerCount === 'number') details.push(t('panel.proposal.parcelHistory.ownerCount', '{{count}} attested owner(s)', { count: event.ownerCount }));
         // An executed agreement names the one lens key that attested its decision; ownership events none.

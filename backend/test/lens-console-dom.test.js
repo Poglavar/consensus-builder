@@ -168,7 +168,7 @@ describe('lens console: the decision of an agreement', () => {
         await page.load();
         await page.submit();
         expect(page.result.dataset).toEqual({ outcome: 'refused', code: 'wrong_agreement' });
-        expect(page.result.textContent).toContain('The member answered something other than the decision of this agreement.');
+        expect(page.result.textContent).toContain('The lens member answered something other than the decision of this agreement.');
         expect(page.reads()).toEqual({ statusReads: 1, attestationReads: 1 });
     });
 

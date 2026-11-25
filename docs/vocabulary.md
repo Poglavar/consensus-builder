@@ -984,6 +984,14 @@ An attester belonging to a lens, identified by its chain-qualified authority key
 
 An attributed statement under a defined schema, with its issuer and evidence references. Its meaning depends on that schema and issuer; a signature alone does not extend the assertion's scope.
 
+### Lens member statement
+
+What a lens member signs: a fact about a parcel, an owner or an agreement (such as an agreement decision). Recorded on chain it is an attestation; until Solana records it for the agreement, a lens member's service may still list it, and it is shown as reported, not checked. The interface calls the signer a **lens member**, never a bare "member", and keeps three words apart: an owner's **approval** (the owner's own wallet signature), a lens member's **statement**, and its on-chain **attestation**.
+
+### Lens walkthrough
+
+The public view of one agreement (`/lens.html?agreement=<cid>`, `ugt_agreement_evidence` for agents): who takes part (owners or contributors, lens members, the agreement on Solana) and a checklist of what the agreement needs, each check met, waiting, not met or not checked, with who stated each fact. Owner approvals are verified by signature; a recorded statement is checked against the agreement's account; an agreement minted under a retired agreement program is read as not on Solana. It proves who signed what and when, not that a statement is true.
+
 ### Agreement decision
 
 A lens member's attested statement that an agreement's approval rule is satisfied. `AgreementDecision-v1` commits to the counted evidence; it is separate from the owner receipts and the chain transaction recording it. The agreement's recorded decision becomes satisfied once the lens threshold of members have confirmed and any contribution target is met.
