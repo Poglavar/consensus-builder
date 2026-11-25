@@ -731,7 +731,39 @@ Text a source record carries in the source's own words (a zone's title, a reason
 
 ### Permitted check
 
-The comparison of a design's buildings with the Permitted items under them, rule by rule: height, storeys, site coverage, floor area ratio, minimum lot, and whether the item's land allows building. Each check passes, fails, is conditional (over the limit the rules grant but within a taller one only a condition allows, `metrics.conditional`) or is unknown (the rule is not recorded or another instrument sets it). A building is checked against every item covering at least 0.5 m² of its footprint. The check is advice: it never refuses a design. It tests a given design; finding the largest allowed one is the Permitted envelope's job.
+The comparison of a design's buildings with the Permitted items under them, rule by rule: height, storeys, site coverage, floor area ratio, minimum lot, ground-floor area (`footprintArea`), ground left free (`naturalGround`), and whether the item's land allows building. Each check passes, fails, is conditional (over the limit the rules grant but within a taller one only a condition allows, `metrics.conditional`, or beyond a limit the source grants only on a condition, `beyond: "condition"`) or is unknown (the rule is not recorded, another instrument sets it, or a relative rule term's input is unknown). A building is checked against every item covering at least 0.5 m² of its footprint. Every planning designation under a building adds a line by its effect: `prohibit` fails, `restrict` is conditional on its requirement, `note` is a `note` (read, limits nothing); each line links the publisher's record. Where no base rule is recorded the check says that only designations were checked. The check is advice: it never refuses a design. It tests a given design; finding the largest allowed one is the Permitted envelope's job.
+
+### Planning designation
+
+An area a publisher designates for protection or control, such as a conservation area, a listed building, a scheduled monument, a flood zone or green belt, read from a constraint source. A designation is evidence; what it does to Permitted is its rule set's effect, not the dataset's. A designation that has ended (`end-date` passed) no longer applies.
+
+### Constraint source
+
+A publisher of planning designations read for a box through one adapter (`frontend/js/planning/constraint-sources.js`), configured in `planning-sources.json` `constraintSources` with its endpoint, coverage, licence, attribution, page size and page cap. A read stopped at its page cap is `partial`, and the layer and the check say so. The first is `gb-eng-planning-data`, planning.data.gov.uk's entity API, England only. The browser asks it directly; the server reads it only for its own MCP answers.
+
+### Rule set
+
+The planning regime of a place for designations: which datasets of a constraint source matter and the effect each has (`effects`, optionally narrowed by a source field, `where`), plus the regime's policies stated as rule terms (`policies`). A city names its rule sets in `planning.ruleSetIds`. `baseRule: null` says the regime has no base Permitted rule here (England is discretionary).
+
+### Restriction effect
+
+What a designation does to Permitted, assigned by the rule set:
+
+- `prohibit`: its area is removed from the Permitted envelope (zone areas, volumes and configurations are cut; a cut configuration's floor area becomes unknown). A designation of an existing building (`subject: "existing-building"`, a listed building) means that building must be kept: it is cut out and a design over it fails. A building designated only by a point takes the footprint of the building standing on it in the view's building source; with none it stays a point (footprint unknown), and only a design covering the point fails.
+- `restrict`: the envelope is kept and a requirement is attached (`requirement`, such as `planning-permission` where an Article 4 direction withdraws permitted-development rights, or `design-scrutiny` in a conservation area).
+- `note`: a reason the Permitted check lists; it changes no limit.
+
+### Unknown base
+
+Permitted where a rule set applies but no base rule source is recorded: "unknown base, known designations". Nothing is drawn as permitted massing; each prohibited area is a Permitted item whose land does not allow building (`assessment.meaning: "restriction"`, dashed), and the Permitted check reads every designation and says the base is unknown. England is the first such place.
+
+### Existing context
+
+What stands on a parcel, which relative rule terms read (`frontend/js/planning/rule-terms.js`): the existing buildings on it with their footprints and heights, each height with its basis and whether it is known; the parcel's built footprint and its natural ground (the parcel area no building stands on); the street width in front (the street-width measure); and the heights of its neighbours along the street. A height is known when measured or stated as storeys; a display height a building source estimates is unknown, never its number. No building source answer leaves every building term unknown; a parcel with no buildings has a known footprint and height of zero.
+
+### Relative rule term
+
+A limit stated against the existing context rather than as a number, carried on a constraint as `term: { of, add, addUnit, times }` with value `(input + add) × times` (`addUnit: "storeys"` counts `add` at the source's storey height). Inputs (`of`): `existingHeight`, `existingFootprint`, `existingNaturalGround`, `parcelArea`, `streetWidth`, and precedent over the street's neighbours, `neighbourHeight` with `aggregate` `max`, `min`, `median` or `share-above` (`aboveM`). A constraint may apply only `when` a term meets `atLeast`/`atMost`. An unknown input makes the constraint's value unknown (`evidence: "unknown"`, `unknownReason`). Bogotá's street wall reads its height through the same `streetWidth` term.
 
 ### Configuration
 
