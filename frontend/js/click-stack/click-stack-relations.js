@@ -325,12 +325,43 @@
         return wrap;
     }
 
-    // The design card's actions, above its panel: Add to plan (PlanDialog.addDesign) and Download. A published
-    // design this browser holds no copy of is imported first, as opening it does.
-    function renderDesignActions(instance, doc, win) {
+    // Share publishes a design this browser holds (sharing-routes.js shareSingleProposal) and opens
+    // its link; a published one held elsewhere only has its link shared. A design that cannot be
+    // published yet keeps Share disabled, with the reason as its title.
+    function renderDesignShare(instance, doc, win) {
+        const share = doc.createElement('button');
+        share.type = 'button';
+        share.className = 'btn btn-share-proposal';
+        share.dataset.designAction = 'share';
+        const shareIcon = doc.createElement('i');
+        shareIcon.className = 'fas fa-share-alt';
+        shareIcon.setAttribute('aria-hidden', 'true');
+        const shareLabel = doc.createElement('span');
+        shareLabel.textContent = win?.i18n?.t?.('panel.proposal.actions.share') || 'Share';
+        share.append(shareIcon, shareLabel);
+        const held = win.proposalStorage?.getProposal?.(instance.id) || null;
+        const refusal = held && !win.DesignSync.publishedCid(held) ? win.ProposalPublishTerms.publishRefusal(held) : null;
+        if (refusal) {
+            share.disabled = true;
+            share.title = refusal.message;
+        }
+        share.addEventListener('click', () => win.BusyControl.track(share, async () => {
+            if (held) return win.shareSingleProposal(held);
+            if (!instance.serverId) return null;
+            const link = win.DesignSync.designLink([instance.serverId], { city: instance.proposal?.city || null });
+            return win.ShareDialog.open({ kind: 'design', title: instance.proposal?.title || instance.label || '', link, published: false });
+        }).catch(error => win.showStyledAlert(error.message)));
+        return share;
+    }
+
+    // The design card's actions, above its panel: Add to plan (PlanDialog.addDesign) and Download, and
+    // Share where the panel under it has none (`share`: the 3D views; the map's design panel carries
+    // its own). A published design this browser holds no copy of is imported first, as opening it does.
+    function renderDesignActions(instance, doc, win, { share: withShare = false } = {}) {
         if (!instance || !doc) return null;
         const actions = doc.createElement('div');
         actions.className = 'cb-actions click-stack__actions click-stack__actions--design';
+        if (withShare) actions.appendChild(renderDesignShare(instance, doc, win));
         const add = doc.createElement('button');
         add.type = 'button';
         add.className = 'btn btn-add-to-plan';
