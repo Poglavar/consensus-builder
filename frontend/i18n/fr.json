@@ -1930,8 +1930,9 @@
             "choose": "Choisir les membres de l’instance de vérification",
             "thresholdLabel": "Confirmations nécessaires",
             "errors": {
-                "list": "L’instance de vérification est une liste de 8 clés Solana au plus.",
+                "list": "L’instance de vérification est une liste de 8 adresses au plus.",
                 "key": "Chaque membre de l’instance de vérification doit être une clé Solana.",
+                "entry": "Chaque membre de l’instance de vérification doit être une adresse.",
                 "duplicate": "Chaque membre de l’instance de vérification ne peut figurer qu’une fois.",
                 "noLensThreshold": "Un accord sans instance de vérification n’a pas de seuil de confirmation.",
                 "apartmentsNeedLens": "Une levée de fonds avec appartements nécessite au moins un membre de l’instance de vérification pour qualifier les acheteurs.",

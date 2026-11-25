@@ -444,7 +444,7 @@ describe('the lens of an owners rule', () => {
         expect(record.validate(vote).warnings).toEqual([]);
     });
 
-    it('takes 0-8 distinct member keys and a threshold of 1 to the number of members, any one by default', () => {
+    it('takes 0-8 distinct members and a threshold of 1 to the number of members, any one by default', () => {
         const lensErrors = rule => record.validate({ ...fixture(), rule: { ...fixture().rule, ...rule } }).errors.filter(error => error.code === 'rule-lens-invalid');
         expect(lensErrors({ lens: [MEMBER, MEMBER_2] })).toEqual([]);
         expect(lensErrors({ lens: [MEMBER, MEMBER_2], lensThreshold: 2 })).toEqual([]);
@@ -453,9 +453,14 @@ describe('the lens of an owners rule', () => {
         expect(record.lensThresholdOf({ lens: [] })).toBe(0);
         expect(record.normalize({ ...fixture(), rule: { ...fixture().rule, lensThreshold: 1 } }).rule.lensThreshold).toBe(1);
         expect(record.normalize(fixture()).rule).not.toHaveProperty('lensThreshold');
+        // Members are any addresses: the default lens holds Ethereum ones. Only crowdfunding needs Solana keys.
+        expect(lensErrors({ lens: ['0xfCF94DD41B2B5d6C887a30273F995d01bacA1A45', MEMBER] })).toEqual([]);
+        expect(record.lensRuleError({ electorate: 'investors', lens: ['0xfCF94DD41B2B5d6C887a30273F995d01bacA1A45'] })).toMatch(/must be a Solana key/);
+        expect(record.lensRuleError({ electorate: 'investors', lens: ['11111111111111111111111111111111'] })).toMatch(/must be a Solana key/);
+        expect(record.lensRuleError({ electorate: 'investors', lens: [MEMBER] })).toBeNull();
         for (const [rule, message] of [
-            [{ lens: ['lens-member-1'] }, /must be a Solana key/],
-            [{ lens: ['11111111111111111111111111111111'] }, /must be a Solana key/],
+            [{ lens: [''] }, /must be an address/],
+            [{ lens: [' lens-member-1'] }, /must be an address/],
             [{ lens: [MEMBER, MEMBER] }, /listed once/],
             [{ lens: Array.from({ length: 9 }, () => MEMBER) }, /up to 8/],
             [{ lens: [MEMBER, MEMBER_2], lensThreshold: 3 }, /from 1 to the number of members/],

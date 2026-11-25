@@ -8532,8 +8532,9 @@
             "choose": "Choose lens members",
             "thresholdLabel": "Confirmations needed",
             "errors": {
-                "list": "The lens is a list of up to 8 Solana keys.",
+                "list": "The lens is a list of up to 8 addresses.",
                 "key": "Each lens member must be a Solana key.",
+                "entry": "Each lens member must be an address.",
                 "duplicate": "Each lens member can be listed once.",
                 "noLensThreshold": "An agreement without a lens has no confirmation threshold.",
                 "apartmentsNeedLens": "An apartment round needs at least one lens member to qualify buyers.",

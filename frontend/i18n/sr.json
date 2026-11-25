@@ -8578,8 +8578,9 @@
             "choose": "Izaberi članove sočiva",
             "thresholdLabel": "Potrebne potvrde",
             "errors": {
-                "list": "Sočivo je spisak od najviše 8 Solana ključeva.",
+                "list": "Sočivo je spisak od najviše 8 adresa.",
                 "key": "Svaki član sočiva mora biti Solana ključ.",
+                "entry": "Svaki član sočiva mora biti adresa.",
                 "duplicate": "Svaki član sočiva može se navesti samo jednom.",
                 "noLensThreshold": "Sporazum bez sočiva nema prag potvrda.",
                 "apartmentsNeedLens": "Krug sa stanovima treba bar jednog člana sočiva koji odobrava kupce.",

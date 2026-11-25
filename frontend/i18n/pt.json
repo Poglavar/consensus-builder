@@ -1930,8 +1930,9 @@
             "choose": "Escolher membros da lente",
             "thresholdLabel": "Confirmações necessárias",
             "errors": {
-                "list": "A lente é uma lista de até 8 chaves Solana.",
+                "list": "A lente é uma lista de até 8 endereços.",
                 "key": "Cada membro da lente tem de ser uma chave Solana.",
+                "entry": "Cada membro da lente tem de ser um endereço.",
                 "duplicate": "Cada membro da lente só pode ser indicado uma vez.",
                 "noLensThreshold": "Um acordo sem lente não tem limiar de confirmação.",
                 "apartmentsNeedLens": "Uma ronda de apartamentos precisa de pelo menos um membro da lente para qualificar os compradores.",

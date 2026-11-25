@@ -300,11 +300,17 @@
         return members ? (rule.lensThreshold ?? 1) : 0;
     }
 
+    // Members are any addresses the reader trusts (the default lens holds Ethereum ones). Only a
+    // crowdfunding round is always minted, so only its members must be Solana keys here; minting an
+    // owners' agreement refuses other keys itself (agreement-client.js requireLensSet).
     function lensRuleError(rule, translate = originalMessage) {
         const lensCore = root.LensCore || (typeof require === 'function' ? require('./lens-core.js') : null);
         const lens = rule?.lens;
-        if (!Array.isArray(lens) || lens.length > MAX_LENSES) return translate('agreement.lens.errors.list', 'The lens is a list of up to 8 Solana keys.');
-        if (lens.some(value => typeof value !== 'string' || value !== value.trim() || value === DEFAULT_KEY || !lensCore?.isBase58Pubkey(value))) {
+        if (!Array.isArray(lens) || lens.length > MAX_LENSES) return translate('agreement.lens.errors.list', 'The lens is a list of up to 8 addresses.');
+        if (lens.some(value => typeof value !== 'string' || !value || value !== value.trim())) {
+            return translate('agreement.lens.errors.entry', 'Each lens member must be an address.');
+        }
+        if (rule.electorate === 'investors' && lens.some(value => value === DEFAULT_KEY || !lensCore?.isBase58Pubkey(value))) {
             return translate('agreement.lens.errors.key', 'Each lens member must be a Solana key.');
         }
         if (new Set(lens).size !== lens.length) return translate('agreement.lens.errors.duplicate', 'Each lens member can be listed once.');
