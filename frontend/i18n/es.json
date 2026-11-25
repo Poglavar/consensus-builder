@@ -1530,6 +1530,8 @@
             "mintedAgreementsButton": "Acuerdos en cadena",
             "clearButton": "Restablecer diseños (este navegador)",
             "planStats": {
+                "devChargeSuffix": "{{currency}} por m² cargo por edificación",
+                "costDevCharge": "Cargo por edificación (nueva superficie × cargo por m²)",
                 "calculating": "Calculando…",
                 "modalTitle": "Estadísticas del plan",
                 "planArea": "Superficie del plan (m²)",
@@ -1567,7 +1569,7 @@
                 "noteNoLandPrice": "No hay precio del suelo para este lugar: indique uno para ver el coste total y el beneficio.",
                 "rentSuffix": "{{currency}} por m² de alquiler al mes",
                 "annualRent": "Alquiler anual de la nueva superficie",
-                "rentYield": "Rentabilidad del alquiler sobre el coste (alquiler anual ÷ construcción, suelo y valor derribado)",
+                "rentYield": "Rentabilidad del alquiler sobre el coste (alquiler anual ÷ construcción, cargo por edificación, suelo y valor derribado)",
                 "assumptionsLabel": "Supuestos",
                 "efficiencySuffix": "% neto sobre bruto",
                 "apartmentSizeSuffix": "m² por vivienda",
@@ -6605,6 +6607,8 @@
             "overlap": "Contornos de origen superpuestos: {{index}} / {{count}}. Haz clic de nuevo para alternar."
         },
         "parcelPanel": {
+            "devCharge": "Cargo por edificación {{price}}/m²",
+            "devChargeUnset": "Cargo por edificación sin fijar: mueva el control",
             "title": "Parcela",
             "built": "Construido",
             "proposed": "Propuesto",
@@ -6616,7 +6620,7 @@
             "value": "Valor",
             "constructionCost": "Coste de construcción",
             "profit": "Beneficio",
-            "profitNote": "Beneficio = valor − coste total: construcción, suelo, impuesto de venta menos el recuperado de la construcción, y valor construido sustituido",
+            "profitNote": "Beneficio = valor − coste total: construcción, cargo por edificación, suelo, impuesto de venta menos el recuperado de la construcción, y valor construido sustituido",
             "allInCost": "Coste total",
             "costDetails": "Detalle del coste",
             "landCost": "Suelo",
@@ -9003,9 +9007,10 @@
         "resize": "Cambia el tamaño del panel. Arrastra arriba o abajo; arrastra hasta abajo para cerrarlo."
     },
     "economicSources": {
+        "devCharge": "Cargo por edificación",
         "sourceLabel": "Fuente:",
         "title": "Valoración y costes",
-        "intro": "Las fuentes aportan tarifas distintas para el suelo, los precios de venta por superficie construida, la construcción, el alquiler y el impuesto de venta. Si faltan datos locales, el valor queda como no disponible; los supuestos editables del escenario no son datos de mercado.",
+        "intro": "Las fuentes aportan tarifas distintas para el suelo, los precios de venta por superficie construida, la construcción, los cargos por edificación, el alquiler y el impuesto de venta. Si faltan datos locales, el valor queda como no disponible; los supuestos editables del escenario no son datos de mercado.",
         "land": "Suelo",
         "roadLand": "Suelo para vías",
         "sale": "Precio de venta",

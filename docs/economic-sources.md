@@ -15,7 +15,12 @@ metrics are independent: `land` and `roadLand` use `m2-land`; `sale` and `constr
 `rent` uses `m2-floor-month`, per m² of floor area per month, the way rents are quoted. A rent's basis
 is `assumption` or `market`, as a sale price's is. `saleTax` uses `share-of-sale`: the share of a sale
 price that is tax (VAT on new housing, 0.16 for 16 %), below 1, on a `statutory` or `assumption`
-basis. Sale prices are as quoted, the tax included where the place charges it. A `construction` row
+basis. `devCharge` uses `m2-floor`: a charge per m² of new floor area that a place levies on building
+it (England's Building Safety Levy and CIL, Croatia's komunalni doprinos, US impact fees), on a
+`statutory` or `assumption` basis; where its rate depends on the class of land, `landCategory` names the
+class the rate is for (`previously-developed`). A charge per m³ of building volume (Zagreb's komunalni
+doprinos) needs the volume, which this rate contract does not carry yet. Sale prices are as quoted, the
+tax included where the place charges it. A `construction` row
 may say `taxIncluded: true`: its amount includes that tax on the building's inputs, as a statistics
 office's cost per m² does when it reports what developers paid. A developer selling the floor area
 reclaims that tax from the tax on the sale. A construction cost slid, typed in Settings or passed to
@@ -23,7 +28,8 @@ reclaims that tax from the tax on the sale. A construction cost slid, typed in S
 A residential land appraisal is not a floor-area sale price or a construction cost. A road-land rate
 is a modeling input for affected land, not a statement about compensation or the cost of a road.
 
-Bases are `assumption`, `policy-appraisal`, `market`, `construction-cost` and `statutory` (sale tax only). Evidence requires its
+Bases are `assumption`, `policy-appraisal`, `market`, `construction-cost` and `statutory` (sale tax and
+development charge only). Evidence requires its
 own `asOf` date; a fetch date must not stand in for it. Assumptions may have no date. Assessed property
 totals are deliberately outside this rate contract: they need source-qualified property identities,
 assessment dates, and a distinction between land-only and whole-property value. They must not be
@@ -76,6 +82,14 @@ explicit rate and differs from missing evidence.
     (Islington 26.25, Birmingham 12.33); other English cities keep it per m² of dwelling and the scope
     says so. The ONS publishes no rent for the City of London or the Isles of Scilly; Barnsley's and
     Sheffield's 2024 codes are filed under their May 2023 codes.
+  - `uk-building-safety-levy` (`frontend/js/uk-building-safety-levy.js`, `scripts/build-uk-area-rates.py
+    levy`): planning.data.gov.uk's `building-safety-levy-rate` dataset (OGL v3), The Building Safety Levy
+    (England) Regulations 2025 (SI 2025/1236) Schedule 3, in force from 1 October 2026: each English
+    authority's levy per m² of new residential floorspace (GIA) as `devCharge`. The model does not know
+    whether a site is previously developed land, so it takes that rate, half the other (Islington 39.52
+    against 79.04, Birmingham 14.62 against 29.23), with `landCategory: 'previously-developed'`, and the
+    scope gives the other. It charges all new floor area: the levy's exemptions (affordable housing and
+    others) and non-residential floor area are not modelled.
 - `gla-lpvs-2026` gives London's sale price and construction cost from the GLA London Plan Viability
   Study, Phase 1 (July 2026), by its value band A–F (the GLA's value band map, a postcode-district
   layer). Sale: the band's indicative average blended market value at the mid-point (Tables A.2–F.2,
@@ -107,7 +121,8 @@ explicit rate and differs from missing evidence.
   London grid against the source polygons).
 - `scenario-assumptions` exposes the existing editable floor-area starting points: 4,000 sale,
   2,000 construction and 15 rent a month in local currency (a 4.5 % gross yield on the sale price),
-  and no sale tax (0) until a source states one.
+  and no sale tax or development charge (0) until a source states one. Astana and Alatau list it last
+  for that development charge only.
   Existing EUR land/road assumptions remain 133/100. These values are model assumptions, not a
   worldwide price dataset.
 - `rate-table` accepts a validated local snapshot of independent rates. It is usable worldwide,
@@ -173,9 +188,9 @@ and sale-tax sliders can set a price no source gives.
 
 The 3D panel, Plan stats (with Compare plans) and the MCP comparison count new floor area with one
 function, `CityMoney.newBuildMoney` (the vocabulary's "Profit on the new floor area"): value, the
-all-in cost (construction, land, the sale tax inside the value less the tax reclaimed on a
+all-in cost (construction, the development charge, land, the sale tax inside the value less the tax reclaimed on a
 tax-inclusive construction cost, the value of the floor area it replaces), profit, annual rent and the
-rent's yield on the construction, land and replaced value: a landlord who charges no tax on the rent
+rent's yield on the construction, development charge, land and replaced value: a landlord who charges no tax on the rent
 and reclaims none. The land is the
 plan's land in Plan stats, the parcel or the design's parcels or site in the 3D panel, and the union of
 the designs' sites in `ugt_compare`; each takes its rates at that land's location. Compare plans uses
@@ -184,7 +199,7 @@ kept when another plan's place changes the others. Plan stats and the 3D panel s
 details disclosure of its parts, and a slider for each price; Plan stats also takes the exact number.
 An empty input is no price, and what depends on it reads "—"; without a land price the all-in cost
 and profit are unknown, and Plan stats says how to set one. `ugt_compare` gives each alternative's
-`money` with the prices and their sources under `prices`, or the caller's `prices` as assumptions;
+`money` with the prices and their sources under `prices` (`devCharge` among them), or the caller's `prices` as assumptions (`devChargePerM2` among them);
 `ugt_parcel_context` gives the city's rates at the parcel. The 3D panel does not show rent.
 
 The shared sale starting assumption is now 4,000 in both 3D and plan statistics (previously the EUR

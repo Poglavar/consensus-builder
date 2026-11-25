@@ -234,12 +234,13 @@
         { key: 'total-cost', i18nKey: 'sidebar.proposals.planStats.allInCost', label: 'All-in cost of the new floor area' },
         { key: 'profit', i18nKey: 'sidebar.proposals.planStats.profit', label: 'Profit on the new floor area' },
         { key: 'annual-rent', i18nKey: 'sidebar.proposals.planStats.annualRent', label: 'Annual rent of the new floor area' },
-        { key: 'rent-yield', i18nKey: 'sidebar.proposals.planStats.rentYield', label: 'Rent yield on cost (annual rent ÷ construction, land and cleared value)' }
+        { key: 'rent-yield', i18nKey: 'sidebar.proposals.planStats.rentYield', label: 'Rent yield on cost (annual rent ÷ construction, development charge, land and cleared value)' }
     ];
 
     // The parts of the all-in cost (CityMoney.newBuildMoney), listed under Cost details.
     const COST_PARTS = [
         { key: 'cost-construction', i18nKey: 'sidebar.proposals.planStats.costConstruction', label: 'Construction' },
+        { key: 'cost-dev-charge', i18nKey: 'sidebar.proposals.planStats.costDevCharge', label: 'Development charge (new floor area × the charge per m²)' },
         { key: 'cost-land', i18nKey: 'sidebar.proposals.planStats.costLand', label: 'Land (the plan\'s land × the land price)' },
         { key: 'cost-tax', i18nKey: 'sidebar.proposals.planStats.costTax', label: 'Sale tax inside the sales value of the new floor area' },
         // Listed only where the construction cost includes the tax on its inputs (the rate's taxIncluded).
@@ -252,6 +253,7 @@
         // as well as the exact number; the sale tax is typed as a percentage of the sale price.
         { id: 'plan-stats-price', slider: 'sale', i18nKey: 'sidebar.proposals.planStats.salesSuffix', label: '{{currency}} per m² sale price', min: 0, step: 100, value: (d, price = salesPrice()) => price.salesPerSqm, params: () => ({ currency: salesPrice().currency }) },
         { id: 'plan-stats-construction', slider: 'construction', i18nKey: 'sidebar.proposals.planStats.constructionSuffix', label: '{{currency}} per m² construction cost', min: 0, step: 100, value: (d, price = salesPrice()) => price.constructionPerSqm, params: () => ({ currency: salesPrice().currency }) },
+        { id: 'plan-stats-dev-charge', slider: 'devCharge', i18nKey: 'sidebar.proposals.planStats.devChargeSuffix', label: '{{currency}} per m² development charge', min: 0, step: 1, value: (d, price = salesPrice()) => price.devChargePerSqm, params: () => ({ currency: salesPrice().currency }) },
         { id: 'plan-stats-land', slider: 'land', i18nKey: 'sidebar.proposals.planStats.landSuffix', label: '{{currency}} per m² of land', min: 0, step: 10, value: (d, price = salesPrice()) => price.landPerSqm, params: () => ({ currency: salesPrice().currency }) },
         { id: 'plan-stats-sale-tax', slider: 'saleTax', percent: true, i18nKey: 'sidebar.proposals.planStats.saleTaxSuffix', label: '% sale tax in the price', min: 0, max: 99, step: 0.5, value: (d, price = salesPrice()) => (finiteNumber(price.saleTaxShare) ? Math.round(price.saleTaxShare * 1000) / 10 : null) },
         { id: 'plan-stats-rent', slider: 'rent', i18nKey: 'sidebar.proposals.planStats.rentSuffix', label: '{{currency}} per m² rent a month', min: 0, step: 1, value: (d, price = salesPrice()) => price.rentPerSqmMonth, params: () => ({ currency: salesPrice().currency }) },
@@ -383,10 +385,10 @@
         };
         const tax = read('sale-tax');
         return { sale: read('price'), construction: read('construction'), land: read('land'),
-            saleTax: tax === null ? null : tax / 100, rent: read('rent') };
+            saleTax: tax === null ? null : tax / 100, rent: read('rent'), devCharge: read('dev-charge') };
     }
     // The price inputs, by input key; leaving one keeps it at zero or above, and an empty one empty.
-    const PRICE_KEYS = new Set(['price', 'construction', 'land', 'sale-tax', 'rent']);
+    const PRICE_KEYS = new Set(['price', 'construction', 'dev-charge', 'land', 'sale-tax', 'rent']);
     function normalizePrice(input) {
         if (input.value.trim() !== '') input.value = String(Math.max(0, Number(input.value) || 0));
     }
@@ -593,18 +595,18 @@
     }
 
     // The summary figures of one plan's stats as text, by SUMMARY_ROWS key: the dialog and the plan
-    // comparison show the same words. price: { sale, construction, land, saleTax, rent } in the city's
+    // comparison show the same words. price: { sale, construction, land, saleTax, rent, devCharge } in the city's
     // currency (priceIn), each null when not given.
     function summaryTexts(stats, price) {
         // The new floor area at these prices, by the 3D panel's rule (CityMoney.newBuildMoney): its
-        // all-in cost (construction, land, sale tax, the existing floor area it clears), profit and rent.
+        // all-in cost (construction, development charge, land, sale tax, the existing floor area it clears), profit and rent.
         // The land is the plan's land (planAreaM2): the ground its designs take, streets and parks too.
         // Whether the construction cost includes the tax on its inputs is the city's rate's, not typed.
         const money = window.CityMoney.newBuildMoney({ floorAreaM2: stats.yield.total.grossFloorAreaM2,
             replacedFloorAreaM2: stats.cleared ? stats.cleared.floorAreaM2 : null, landAreaM2: stats.planAreaM2,
             salePerM2: price.sale, constructionPerM2: price.construction, landPerM2: price.land,
             saleTaxShare: price.saleTax, constructionTaxIncluded: salesPrice().constructionTaxIncluded === true,
-            rentPerM2Month: price.rent });
+            rentPerM2Month: price.rent, devChargePerM2: price.devCharge });
         // A figure that was not measured reads "—", never a 0 (formatNumber(null) would print 0).
         const measured = value => (finiteNumber(value) ? formatNumber(value) : '—');
         const total = standingTotal(stats);
@@ -633,6 +635,7 @@
             'total-cost': formatSalesValue(money.totalCost),
             // The all-in cost's parts (Cost details in Plan stats).
             'cost-construction': formatSalesValue(money.constructionCost),
+            'cost-dev-charge': formatSalesValue(money.devCharge),
             'cost-land': formatSalesValue(money.landCost),
             'cost-tax': formatSalesValue(money.saleTax),
             // Taken off the all-in cost, so written as a deduction.
@@ -687,6 +690,7 @@
         set('sales-value', figures['sales-value']);
         set('total-cost', figures['total-cost']);
         set('cost-construction', figures['cost-construction']);
+        set('cost-dev-charge', figures['cost-dev-charge']);
         set('cost-land', figures['cost-land']);
         set('cost-tax', figures['cost-tax']);
         set('cost-reclaimed', figures['cost-reclaimed']);

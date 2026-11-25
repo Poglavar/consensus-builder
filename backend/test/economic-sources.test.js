@@ -216,6 +216,30 @@ describe('sale tax', () => {
     });
 });
 
+describe('development charge', () => {
+    const charge = overrides => rate('devCharge', 39.52, { basis: 'statutory', asOf: '2026-10-01', ...overrides });
+
+    it('is a statutory or assumed charge per m² of new floor area, optionally for a class of land', () => {
+        expect(EconomicSources.METRICS.devCharge).toBe('m2-floor');
+        const table = EconomicSources.rateTable(rateSource('levy', [charge({ landCategory: 'previously-developed' })]));
+        expect(table.rates[0]).toMatchObject({ metric: 'devCharge', unit: 'm2-floor', amount: 39.52, basis: 'statutory', landCategory: 'previously-developed' });
+        expect(() => EconomicSources.rateTable(rateSource('market-charge', [charge({ basis: 'market' })]))).toThrow(/rate, unit or basis/);
+        expect(() => EconomicSources.rateTable(rateSource('per-land', [charge({ unit: 'm2-land' })]))).toThrow(/rate, unit or basis/);
+        expect(() => EconomicSources.rateTable(rateSource('land-class', [rate('sale', 4000, { landCategory: 'previously-developed' })]))).toThrow(/rate, unit or basis/);
+    });
+
+    it("is England's Building Safety Levy of the authority the land lies in, on previously developed land, said so", async () => {
+        const { cityMoney } = await import('../scripts/lib/frontend-city-money.mjs');
+        expect(cityMoney('london').currentEconomicRates(PLACES.islington).devCharge).toMatchObject({ amount: 39.52, basis: 'statutory',
+            asOf: '2026-10-01', sourceId: 'uk-building-safety-levy', landCategory: 'previously-developed',
+            scope: 'E09000019 · Islington: previously developed land; 79.04 on other land (Schedule 3), new residential floor area' });
+        expect(cityMoney('birmingham').currentEconomicRates(PLACES.birminghamCentre).devCharge).toMatchObject({ amount: 14.62 });
+        expect(cityMoney('london').currentEconomicRates(PLACES.croydon).devCharge.scope).toMatch(/^E09000008 · Croydon: /);
+        // Elsewhere no source states one: the editable 0 assumption.
+        expect(cityMoney('cardiff').currentEconomicRates(PLACES.cardiff).devCharge).toMatchObject({ amount: 0, sourceId: 'scenario-assumptions' });
+    });
+});
+
 describe('UK rates follow the location', () => {
     const london = { id: 'london', currency: { code: 'GBP' }, map: { defaultCenter: [51.5097885891913, -0.126303973484058] },
         economics: { sources: ['uk-mhclg-land-2023', 'gla-lpvs-2026', 'scenario-assumptions'] } };

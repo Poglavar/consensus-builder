@@ -50,7 +50,7 @@ export function existingFloorArea(geometry, building) {
 
 // What an alternative's new floor area is worth and costs in its city's currency
 // (CityMoney.newBuildMoney, the rule of Plan stats and the 3D panel): value, the all-in cost
-// (construction, land, the sale tax inside the value less the tax reclaimed on a tax-inclusive
+// (construction, the development charge, land, the sale tax inside the value less the tax reclaimed on a tax-inclusive
 // construction cost, the floor area it removes), profit and rent, at the city's rates where its land is
 // (`at`, [lng, lat], EconomicSources.locationOf of its designs' sites, as the 3D panel and Plan stats
 // locate theirs) or at the prices the caller gives, which are scenario assumptions. Each price keeps its source under `prices`; a given
@@ -63,12 +63,14 @@ export function moneyOf({ city, floorAreaM2, replacedFloorAreaM2, landAreaM2, at
             ...(metric === 'construction' && rates.construction?.taxIncluded ? { taxIncluded: true } : {}) }
         : rates[metric] || null);
     const used = { sale: price('sale', prices.salePerM2), construction: price('construction', prices.constructionPerM2),
-        land: price('land', prices.landPerM2), saleTax: price('saleTax', prices.saleTaxShare), rent: price('rent', prices.rentPerM2Month) };
+        land: price('land', prices.landPerM2), saleTax: price('saleTax', prices.saleTaxShare), rent: price('rent', prices.rentPerM2Month),
+        devCharge: price('devCharge', prices.devChargePerM2) };
     const amountOf = metric => (used[metric] ? used[metric].amount : null);
     return { currency, unit: 'm2-floor', prices: used, floorAreaM2, replacedFloorAreaM2, landAreaM2,
         ...cityMoney(city).newBuildMoney({ floorAreaM2, replacedFloorAreaM2, landAreaM2, salePerM2: amountOf('sale'),
             constructionPerM2: amountOf('construction'), landPerM2: amountOf('land'), saleTaxShare: amountOf('saleTax'),
-            constructionTaxIncluded: used.construction?.taxIncluded === true, rentPerM2Month: amountOf('rent') }) };
+            constructionTaxIncluded: used.construction?.taxIncluded === true, rentPerM2Month: amountOf('rent'),
+            devChargePerM2: amountOf('devCharge') }) };
 }
 
 // The land an alternative takes, as Plan stats prices it: the ground its designs' sites cover.
@@ -255,7 +257,7 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
                 measurementErrors, ...(isPlan ? { designSources } : {}), ...preview });
         }
         warnings.push('Areas describe authored geometry; they are not a prediction of construction. The party ledger is the app’s modeled allocation, not proof of ownership or compensation.');
-        warnings.push('Money is a model at prices each with its source: value of the new floor area, its all-in cost (construction, land at the land price, the sale tax inside the value, the value of the floor area it removes), profit, annual rent and its yield on the cost without the sale tax. It is not an appraisal; fees and finance are not in it.');
+        warnings.push('Money is a model at prices each with its source: value of the new floor area, its all-in cost (construction, the development charge on new floor area, land at the land price, the sale tax inside the value, the value of the floor area it removes), profit, annual rent and its yield on the cost without the sale tax. It is not an appraisal; fees and finance are not in it.');
         return { alternatives, warnings };
     };
 }

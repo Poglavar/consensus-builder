@@ -155,6 +155,16 @@ describe('new floor area: value, all-in cost, profit and rent', () => {
         expect(newBuildMoney({ ...base, saleTaxShare: 1 }).saleTax).toBeNull();
     });
 
+    it('charges the development charge on the new floor area, in the cost and the rent yield; unknown when it is', () => {
+        const money = newBuildMoney({ ...base, devChargePerM2: 40 });
+        expect(money.devCharge).toBe(40000);
+        expect(money.totalCost).toBeCloseTo(newBuildMoney(base).totalCost + 40000);
+        expect(money.rentYieldOnCost).toBeCloseTo(180000 / (2000000 + 40000 + 150000 + 800000));
+        expect(newBuildMoney({ ...base, devChargePerM2: null })).toMatchObject({ devCharge: null, totalCost: null, profit: null });
+        // Not given at all is no charge.
+        expect(newBuildMoney(base).devCharge).toBe(0);
+    });
+
     it('is on every city view, which is what the dialogs and the MCP hold', () => {
         expect(CityMoney.forCity(() => birmingham).newBuildMoney).toBe(newBuildMoney);
     });

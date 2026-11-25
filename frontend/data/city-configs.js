@@ -17197,7 +17197,7 @@
                 // Rents per m² of dwelling take the viability assessment's net to gross, as its sale price does.
                 { id: 'ons-pipr-rent', adapter: 'area-rates', table: 'ons-pipr-rent',
                     scale: { factor: 0.85, note: '× 0.85 net to gross (Whole Plan Viability Assessment Table 5.4)' } },
-                'scenario-assumptions'] },
+                'uk-building-safety-levy', 'scenario-assumptions'] },
             map: {
                 initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
                 defaultCenter: [52.5053948519651, -1.95888767064615], defaultZoom: SHARED_DEFAULT_ZOOM,
@@ -17352,7 +17352,7 @@
             economics: { sources: ['uk-mhclg-land-2023', 'gla-lpvs-2026',
                 { id: 'ons-pipr-rent', adapter: 'area-rates', table: 'ons-pipr-rent',
                     scale: { factor: 0.675, note: '× 0.675 net to gross (GLA viability study, Annex 3)' } },
-                'scenario-assumptions'] },
+                'uk-building-safety-levy', 'scenario-assumptions'] },
             map: {
                 initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
                 defaultCenter: [51.5097885891913, -0.126303973484058], defaultZoom: SHARED_DEFAULT_ZOOM,
@@ -18744,7 +18744,9 @@
                 { version: 1, id: 'kz-tax-code-vat-2026', name: 'Tax Code of Kazakhstan: VAT on new housing',
                     adapter: 'rate-table', url: 'https://adilet.zan.kz/rus/docs/K2500000214',
                     rates: [{ metric: 'saleTax', unit: 'share-of-sale', amount: 0.16, currency: 'KZT', basis: 'statutory', asOf: '2026-01-01',
-                        scope: 'Art. 503(1), 16 %; a developer\'s sale of housing whose construction starts from 1 Jan 2026 (Art. 476(1)(1))' }] }
+                        scope: 'Art. 503(1), 16 %; a developer\'s sale of housing whose construction starts from 1 Jan 2026 (Art. 476(1)(1))' }] },
+                // No source states a development charge here: the editable 0 assumption fills that metric only.
+                'scenario-assumptions'
             ] },
             buildings: { sources: [{ id: 'kz-nsdi-buildings', name: 'Kazakhstan NSDI buildings', attribution: 'Kazakhstan National Spatial Data Infrastructure' }, { id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
@@ -18796,7 +18798,9 @@
                 { version: 1, id: 'kz-tax-code-vat-2026', name: 'Tax Code of Kazakhstan: VAT on new housing',
                     adapter: 'rate-table', url: 'https://adilet.zan.kz/rus/docs/K2500000214',
                     rates: [{ metric: 'saleTax', unit: 'share-of-sale', amount: 0.16, currency: 'KZT', basis: 'statutory', asOf: '2026-01-01',
-                        scope: 'Art. 503(1), 16 %; a developer\'s sale of housing whose construction starts from 1 Jan 2026 (Art. 476(1)(1))' }] }
+                        scope: 'Art. 503(1), 16 %; a developer\'s sale of housing whose construction starts from 1 Jan 2026 (Art. 476(1)(1))' }] },
+                // No source states a development charge here: the editable 0 assumption fills that metric only.
+                'scenario-assumptions'
             ] },
             buildings: { sources: [{ id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },

@@ -11,8 +11,12 @@
     // quoted: sale prices include the tax where the place charges it. A construction rate with
     // `taxIncluded: true` includes that tax on the building's inputs (a statistics office's cost as
     // the developers paid it), which a developer selling the floor area reclaims from the tax it owes.
+    // devCharge is a charge per m² of new floor area that a place levies on building it (England's
+    // Building Safety Levy and CIL, Croatia's komunalni doprinos, US impact fees), statutory where a law
+    // or council sets it; `landCategory` names the class of land its rate is for where the rate depends
+    // on it (the levy's previously developed land).
     const METRICS = Object.freeze({ land: 'm2-land', roadLand: 'm2-land', sale: 'm2-floor', construction: 'm2-floor', rent: 'm2-floor-month',
-        saleTax: 'share-of-sale' });
+        saleTax: 'share-of-sale', devCharge: 'm2-floor' });
     const BASES = Object.freeze(['assumption', 'policy-appraisal', 'market', 'construction-cost', 'statutory']);
     // The editable starting assumptions in a city's own currency. Rent 15 a month is a 4.5 % gross
     // yield on the 4,000 sale price.
@@ -55,7 +59,10 @@
                 || ['sale', 'rent'].includes(row.metric) && !['assumption', 'market'].includes(row.basis)
                 || row.metric !== 'construction' && row.basis === 'construction-cost'
                 || row.metric === 'saleTax' && (!['assumption', 'statutory'].includes(row.basis) || row.amount >= 1)
-                || row.metric !== 'saleTax' && row.basis === 'statutory'
+                || row.metric === 'devCharge' && !['assumption', 'statutory'].includes(row.basis)
+                || !['saleTax', 'devCharge'].includes(row.metric) && row.basis === 'statutory'
+                || row.landCategory !== undefined && (row.metric !== 'devCharge' || typeof row.landCategory !== 'string'
+                    || !/^[a-z][a-z-]{0,59}$/.test(row.landCategory))
                 || row.taxIncluded !== undefined && (row.metric !== 'construction' || typeof row.taxIncluded !== 'boolean')) {
                 throw new Error('Invalid economic rate, unit or basis.');
             }
@@ -65,7 +72,7 @@
             return { metric: row.metric, unit: row.unit, amount: row.amount, currency: row.currency,
                 basis: row.basis, asOf, sourceId: source.id, sourceName: source.name.trim(),
                 sourceUrl: sourceUrl(source.url), scope: row.scope == null ? null : String(row.scope).slice(0, 300),
-                ...(row.taxIncluded ? { taxIncluded: true } : {}) };
+                ...(row.taxIncluded ? { taxIncluded: true } : {}), ...(row.landCategory ? { landCategory: row.landCategory } : {}) };
         });
         return { version: 1, id: source.id, name: source.name.trim(), adapter: 'rate-table', url: sourceUrl(source.url),
             rates: rates.map(({ sourceId, sourceName, sourceUrl, ...row }) => row) };
@@ -235,17 +242,19 @@
             if (!fiat(currency)) return [];
             const rates = ['sale', 'construction', 'rent'].map(metric => ({ metric, unit: METRICS[metric],
                 amount: FLOOR_PRICES[metric].perSqm, currency, basis: 'assumption' }));
-            // No sale tax until a source states one; the slider and Settings can set it.
-            rates.push({ metric: 'saleTax', unit: METRICS.saleTax, amount: 0, currency, basis: 'assumption' });
+            // No sale tax or development charge until a source states one; the sliders and Settings can set them.
+            rates.push({ metric: 'saleTax', unit: METRICS.saleTax, amount: 0, currency, basis: 'assumption' },
+                { metric: 'devCharge', unit: METRICS.devCharge, amount: 0, currency, basis: 'assumption' });
             if (currency === 'EUR') rates.push(...[['land', 133], ['roadLand', 100]].map(([metric, amount]) =>
                 ({ metric, unit: METRICS[metric], amount, currency, basis: 'assumption' })));
             return adapters['rate-table']({ version: 1, id: source.id, name: 'Editable scenario assumptions', adapter: 'rate-table', rates });
         }
     });
     const BUILT_INS = Object.freeze({
-        // Area rate tables (js/uk-land-rates.js, js/uk-private-rents.js), each a source of its own id.
+        // Area rate tables (js/uk-land-rates.js, js/uk-private-rents.js, js/uk-building-safety-levy.js), each a source of its own id.
         'uk-mhclg-land-2023': Object.freeze({ id: 'uk-mhclg-land-2023', adapter: 'area-rates', table: 'uk-mhclg-land-2023' }),
         'ons-pipr-rent': Object.freeze({ id: 'ons-pipr-rent', adapter: 'area-rates', table: 'ons-pipr-rent' }),
+        'uk-building-safety-levy': Object.freeze({ id: 'uk-building-safety-levy', adapter: 'area-rates', table: 'uk-building-safety-levy' }),
         'gla-lpvs-2026': Object.freeze({ id: 'gla-lpvs-2026', adapter: 'gla-lpvs-2026' }),
         'scenario-assumptions': Object.freeze({ id: 'scenario-assumptions', adapter: 'scenario-assumptions' })
     });
@@ -279,10 +288,12 @@
         }
         return result;
     }
-    // Land per m² of land and the sale tax as a share have ranges but no starting amount: a place
-    // without a source has no land price, and its sale tax starts as the 0 assumption.
+    // Land per m² of land, the development charge per m² of floor area and the sale tax as a share have
+    // ranges but no starting amount: a place without a source has no land price, and its development
+    // charge and sale tax start as the 0 assumption.
     const SLIDER_RANGES = Object.freeze({ ...FLOOR_PRICES,
         land: Object.freeze({ perSqm: null, min: 0, max: 2000, step: 10 }),
+        devCharge: Object.freeze({ perSqm: null, min: 0, max: 200, step: 1 }),
         saleTax: Object.freeze({ perSqm: null, min: 0, max: 0.3, step: 0.01 }) });
     // The standard range is in EUR-sized units; an observation widens it to half and twice its own
     // amount where those fall outside, so a price in a currency of other magnitude (KZT) can still

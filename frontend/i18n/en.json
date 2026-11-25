@@ -1330,6 +1330,8 @@
             "mintedAgreementsButton": "On-chain agreements",
             "clearButton": "Reset designs (this browser)",
             "planStats": {
+                "devChargeSuffix": "{{currency}} per m² development charge",
+                "costDevCharge": "Development charge (new floor area × the charge per m²)",
                 "calculating": "Calculating…",
                 "modalTitle": "Plan stats",
                 "planArea": "Plan area (m²)",
@@ -1367,7 +1369,7 @@
                 "noteNoLandPrice": "No land price for this place: set one to see the all-in cost and the profit.",
                 "rentSuffix": "{{currency}} per m² rent a month",
                 "annualRent": "Annual rent of the new floor area",
-                "rentYield": "Rent yield on cost (annual rent ÷ construction, land and cleared value)",
+                "rentYield": "Rent yield on cost (annual rent ÷ construction, development charge, land and cleared value)",
                 "assumptionsLabel": "Assumptions",
                 "efficiencySuffix": "% net of gross",
                 "apartmentSizeSuffix": "m² per apartment",
@@ -6578,6 +6580,8 @@
             "overlap": "Overlapping source outlines: {{index}} / {{count}}. Click again to cycle."
         },
         "parcelPanel": {
+            "devCharge": "Development charge {{price}}/m²",
+            "devChargeUnset": "Development charge not set: move to set it",
             "title": "Parcel",
             "built": "Built",
             "proposed": "Proposed",
@@ -6589,7 +6593,7 @@
             "value": "Value",
             "constructionCost": "Construction cost",
             "profit": "Profit",
-            "profitNote": "Profit = value − all-in cost: construction, land, sale tax less any reclaimed on construction, and the built value replaced",
+            "profitNote": "Profit = value − all-in cost: construction, development charge, land, sale tax less any reclaimed on construction, and the built value replaced",
             "allInCost": "All-in cost",
             "costDetails": "Cost details",
             "landCost": "Land",
@@ -8975,9 +8979,10 @@
         "resize": "Resize panel. Drag up or down; drag to the bottom to close."
     },
     "economicSources": {
+        "devCharge": "Development charge",
         "sourceLabel": "Source:",
         "title": "Valuation & costs",
-        "intro": "Sources supply separate rates for land, floor-area sale prices, construction, rent and the sale tax. Missing local evidence stays unavailable; editable scenario assumptions are not market data.",
+        "intro": "Sources supply separate rates for land, floor-area sale prices, construction, development charges, rent and the sale tax. Missing local evidence stays unavailable; editable scenario assumptions are not market data.",
         "land": "Land",
         "roadLand": "Road land",
         "sale": "Sale price",

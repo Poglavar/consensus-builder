@@ -1317,6 +1317,8 @@
             "mintedAgreementsButton": "Sporazumi na lancu",
             "clearButton": "Resetiraj dizajne (ovaj preglednik)",
             "planStats": {
+                "devChargeSuffix": "{{currency}} po m² doprinos za gradnju",
+                "costDevCharge": "Doprinos za gradnju (nova površina × doprinos po m²)",
                 "calculating": "Izračunavanje…",
                 "modalTitle": "Statistika plana",
                 "floorArea": "Bruto razvijena površina (m²)",
@@ -1354,7 +1356,7 @@
                 "noteNoLandPrice": "Za ovo mjesto nema cijene zemljišta: postavite je da biste vidjeli ukupni trošak i dobit.",
                 "rentSuffix": "{{currency}} po m² najamnina mjesečno",
                 "annualRent": "Godišnja najamnina nove površine",
-                "rentYield": "Prinos najma na trošak (godišnja najamnina ÷ gradnja, zemljište i vrijednost uklonjenog)",
+                "rentYield": "Prinos najma na trošak (godišnja najamnina ÷ gradnja, doprinos za gradnju, zemljište i vrijednost uklonjenog)",
                 "assumptionsLabel": "Pretpostavke",
                 "efficiencySuffix": "% neto od bruto",
                 "apartmentSizeSuffix": "m² po stanu",
@@ -6612,6 +6614,8 @@
             "overlap": "Izvorni obrisi se preklapaju: {{index}} / {{count}}. Ponovno klikni za sljedeći."
         },
         "parcelPanel": {
+            "devCharge": "Doprinos za gradnju {{price}}/m²",
+            "devChargeUnset": "Doprinos za gradnju nije postavljen: pomaknite klizač",
             "title": "Čestica",
             "built": "Izgrađeno",
             "proposed": "Predloženo",
@@ -6623,7 +6627,7 @@
             "value": "Vrijednost",
             "constructionCost": "Trošak gradnje",
             "profit": "Dobit",
-            "profitNote": "Dobit = vrijednost − ukupni trošak: gradnja, zemljište, porez na prodaju umanjen za pretporez na gradnju i zamijenjena izgrađena vrijednost",
+            "profitNote": "Dobit = vrijednost − ukupni trošak: gradnja, doprinos za gradnju, zemljište, porez na prodaju umanjen za pretporez na gradnju i zamijenjena izgrađena vrijednost",
             "allInCost": "Ukupni trošak",
             "costDetails": "Pojedinosti troška",
             "landCost": "Zemljište",
@@ -9027,9 +9031,10 @@
         "resize": "Promijeni veličinu panela. Povuci gore ili dolje; povuci do dna za zatvaranje."
     },
     "economicSources": {
+        "devCharge": "Doprinos za gradnju",
         "sourceLabel": "Izvor:",
         "title": "Procjene vrijednosti i troškovi",
-        "intro": "Izvori daju zasebne stope za zemljište, prodajne cijene po površini zgrade, gradnju, najamninu i porez na prodaju. Kad lokalni podaci nedostaju, vrijednost ostaje nedostupna; promjenjive pretpostavke scenarija nisu tržišni podaci.",
+        "intro": "Izvori daju zasebne stope za zemljište, prodajne cijene po površini zgrade, gradnju, doprinose za gradnju, najamninu i porez na prodaju. Kad lokalni podaci nedostaju, vrijednost ostaje nedostupna; promjenjive pretpostavke scenarija nisu tržišni podaci.",
         "land": "Zemljište",
         "roadLand": "Zemljište za cestu",
         "sale": "Prodajna cijena",

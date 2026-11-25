@@ -182,6 +182,15 @@ describe('computeValueComparison', () => {
         expect(computeValueComparison({ floorAreas: { built: 0, proposed: 400 }, ...prices, parcelCount: null }).avgProfitPerParcel).toBeNull();
     });
 
+    it('charges the development charge on the new floor area of Planned and Proposed, never on Built', () => {
+        const c = computeValueComparison({ floorAreas: { built: 100, planned: 200, proposed: 300 }, ...prices, devChargePerM2: 40 });
+        const without = computeValueComparison({ floorAreas: { built: 100, planned: 200, proposed: 300 }, ...prices });
+        expect(c.columns.proposed.devCharge).toBe(300 * 40);
+        expect(c.columns.planned.devCharge).toBe(200 * 40);
+        expect(c.columns.built.devCharge).toBeNull();
+        expect(c.columns.proposed.totalCost).toBe(without.columns.proposed.totalCost + 300 * 40);
+    });
+
     it('refuses prices without a currency', () => {
         expect(() => computeValueComparison({ floorAreas: { built: 1 }, salePerM2: 4000, constructionPerM2: 2000 })).toThrow(/currency/);
     });

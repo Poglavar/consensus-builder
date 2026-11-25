@@ -248,7 +248,7 @@
     // - value = floor area × sale price;
     // - Planned and Proposed are new construction, counted by CityMoney.newBuildMoney (the rule of
     //   Plan stats and the MCP comparison): the all-in cost is construction (floor area × construction
-    //   cost), the land (`landAreaM2` × land price), the sale tax inside the value, less the tax reclaimed
+    //   cost), the development charge (floor area × `devChargePerM2`), the land (`landAreaM2` × land price), the sale tax inside the value, less the tax reclaimed
     //   on a tax-inclusive construction cost (`constructionTaxIncluded`), and the built value they
     //   replace; profit = value − all-in cost. Unknown while any of those is. Proposed with no
     //   massing is not available.
@@ -257,11 +257,11 @@
     const finite = value => typeof value === 'number' && Number.isFinite(value);
     const cityMoney = () => (typeof window !== 'undefined' && window.CityMoney)
         || (typeof require === 'function' ? require('../city-money.js') : null);
-    const UNAVAILABLE = Object.freeze({ available: false, floorArea: null, value: null, constructionCost: null, landCost: null,
+    const UNAVAILABLE = Object.freeze({ available: false, floorArea: null, value: null, constructionCost: null, devCharge: null, landCost: null,
         saleTax: null, taxReclaimed: null, replacedValue: null, totalCost: null, profit: null });
 
     function computeValueComparison({ floorAreas = {}, landAreaM2 = null, salePerM2, constructionPerM2, landPerM2 = null, saleTaxShare = null,
-        constructionTaxIncluded = false, currency, parcelCount = null, parcelFloorAreas = null } = {}) {
+        constructionTaxIncluded = false, devChargePerM2 = 0, currency, parcelCount = null, parcelFloorAreas = null } = {}) {
         if (typeof currency !== 'string' || !currency) throw new Error('computeValueComparison needs the currency its prices are in.');
         // A source may have no usable rate for one metric. Missing prices keep their dependent
         // amounts unknown; they do not prevent the geometry or the other metric from being shown.
@@ -271,11 +271,11 @@
         const builtArea = area(floorAreas.built);
         const builtValue = builtArea === null || sale === null ? null : builtArea * sale;
         const money = (floorArea, replaced, land) => cityMoney().newBuildMoney({ floorAreaM2: floorArea, replacedFloorAreaM2: replaced,
-            landAreaM2: land, salePerM2: sale, constructionPerM2: cost, landPerM2, saleTaxShare, constructionTaxIncluded });
+            landAreaM2: land, salePerM2: sale, constructionPerM2: cost, landPerM2, saleTaxShare, constructionTaxIncluded, devChargePerM2 });
         const newBuild = (floorArea, available) => {
             if (!available) return UNAVAILABLE;
-            const { value, constructionCost, landCost, saleTax, taxReclaimed, replacedValue, totalCost, profit } = money(floorArea, builtArea, area(landAreaM2));
-            return { available: true, floorArea, value, constructionCost, landCost, saleTax, taxReclaimed, replacedValue, totalCost, profit };
+            const { value, constructionCost, devCharge, landCost, saleTax, taxReclaimed, replacedValue, totalCost, profit } = money(floorArea, builtArea, area(landAreaM2));
+            return { available: true, floorArea, value, constructionCost, devCharge, landCost, saleTax, taxReclaimed, replacedValue, totalCost, profit };
         };
         const plannedArea = area(floorAreas.planned);
         const proposedArea = area(floorAreas.proposed);

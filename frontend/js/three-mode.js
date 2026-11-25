@@ -1018,6 +1018,7 @@
             landPerM2: prices.land.perSqm,
             saleTaxShare: prices.saleTax.perSqm,
             constructionTaxIncluded: prices.construction.taxIncluded === true,
+            devChargePerM2: prices.devCharge.perSqm,
             currency: prices.currency,
             parcelCount: lastParcelCount,
             parcelFloorAreas: lastParcelFloorAreas
@@ -1027,7 +1028,7 @@
         const signedClass = value => (value > 0 ? 'gain-positive' : (value < 0 ? 'gain-negative' : ''));
         ['built', 'planned', 'proposed'].forEach(column => {
             const figures = comparison.columns[column];
-            ['value', 'totalCost', 'profit', 'constructionCost', 'landCost', 'saleTax', 'taxReclaimed', 'replacedValue'].forEach(row => {
+            ['value', 'totalCost', 'profit', 'constructionCost', 'devCharge', 'landCost', 'saleTax', 'taxReclaimed', 'replacedValue'].forEach(row => {
                 const cell = panel.querySelector(`[data-cell="${row}:${column}"]`);
                 if (!cell) return;
                 const amount = figures[row];
@@ -1049,6 +1050,11 @@
         if (landLabel) landLabel.textContent = prices.land.perSqm === null
             ? threeI18n('threeMode.parcelPanel.landPriceUnset', 'Land price not set: move to set it')
             : threeI18n('threeMode.parcelPanel.landPrice', 'Land {{price}}/m² of land', { price: money(prices.land.perSqm) });
+        const chargeLabel = panel.querySelector('[data-role="charge-label"]');
+        if (chargeLabel) chargeLabel.textContent = prices.devCharge.perSqm === null
+            ? threeI18n('threeMode.parcelPanel.devChargeUnset', 'Development charge not set: move to set it')
+            : threeI18n('threeMode.parcelPanel.devCharge', 'Development charge {{price}}/m²',
+                { price: CbFormat.formatMoney(prices.devCharge.perSqm, prices.currency, { maxFractionDigits: 2 }) });
         const taxLabel = panel.querySelector('[data-role="tax-label"]');
         if (taxLabel) taxLabel.textContent = prices.saleTax.perSqm === null
             ? threeI18n('threeMode.parcelPanel.saleTaxUnset', 'Sale tax not set: move to set it')
@@ -1074,7 +1080,7 @@
     // Shared by the parcel and proposal panels: wire the price sliders and render the comparison
     // from the current prices and lastFloorAreas.
     function wireSliderAndGain(panel) {
-        [['sale-slider', 'sale'], ['construction-slider', 'construction'], ['land-slider', 'land'], ['tax-slider', 'saleTax']].forEach(([role, key]) => {
+        [['sale-slider', 'sale'], ['construction-slider', 'construction'], ['charge-slider', 'devCharge'], ['land-slider', 'land'], ['tax-slider', 'saleTax']].forEach(([role, key]) => {
             const slider = panel.querySelector(`[data-role="${role}"]`);
             if (!slider) return;
             slider.addEventListener('input', () => {
@@ -1124,6 +1130,7 @@
                 <table class="parcel-panel-table">
                     <tbody>
                         ${moneyRow(L.constructionCost, 'constructionCost')}
+                        ${moneyRow(L.devCharge, 'devCharge')}
                         ${moneyRow(L.landCost, 'landCost')}
                         ${moneyRow(L.saleTax, 'saleTax')}
                         ${prices.construction.taxIncluded ? moneyRow(L.taxReclaimed, 'taxReclaimed') : ''}
@@ -1137,6 +1144,7 @@
             <p class="parcel-panel-note">${L.floorNote} · ${escapeHtml(threeI18n('threeMode.parcelPanel.amountsIn', 'amounts in {{currency}}', { currency: prices.currency }))}</p>
             ${slider('sale-slider', 'sale-label', prices.sale, false, 'sale')}
             ${slider('construction-slider', 'construction-label', prices.construction, false, 'construction')}
+            ${slider('charge-slider', 'charge-label', prices.devCharge, true, 'devCharge')}
             ${slider('land-slider', 'land-label', prices.land, true, 'land')}
             ${slider('tax-slider', 'tax-label', prices.saleTax, true, 'saleTax')}`;
     }
@@ -1181,6 +1189,7 @@
             volume: threeI18n('threeMode.parcelPanel.volume', 'Volume'),
             value: threeI18n('threeMode.parcelPanel.value', 'Value'),
             constructionCost: threeI18n('threeMode.parcelPanel.constructionCost', 'Construction cost'),
+            devCharge: threeI18n('economicSources.devCharge', 'Development charge'),
             allInCost: threeI18n('threeMode.parcelPanel.allInCost', 'All-in cost'),
             costDetails: threeI18n('threeMode.parcelPanel.costDetails', 'Cost details'),
             landCost: threeI18n('threeMode.parcelPanel.landCost', 'Land'),
@@ -1188,7 +1197,7 @@
             taxReclaimed: threeI18n('threeMode.parcelPanel.taxReclaimed', 'Tax reclaimed on construction'),
             replacedValue: threeI18n('threeMode.parcelPanel.replacedValue', 'Built value replaced'),
             profit: threeI18n('threeMode.parcelPanel.profit', 'Profit'),
-            profitNote: threeI18n('threeMode.parcelPanel.profitNote', 'Profit = value − all-in cost: construction, land, sale tax less any reclaimed on construction, and the built value replaced'),
+            profitNote: threeI18n('threeMode.parcelPanel.profitNote', 'Profit = value − all-in cost: construction, development charge, land, sale tax less any reclaimed on construction, and the built value replaced'),
             floorArea: threeI18n('threeMode.parcelPanel.floorArea', 'Floor area'),
             floorNote: threeI18n('threeMode.parcelPanel.floorNote', '@ {{h}} m/storey', { h: FLOOR_HEIGHT_M }),
             parcelsLabel: threeI18n('threeMode.proposalPanel.parcelsLabel', 'Parcels')
