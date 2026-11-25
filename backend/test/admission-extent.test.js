@@ -2,7 +2,7 @@
 // districts) is written with its administrative extent (scripts/admit-qualified-cities.mjs).
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { admissionExtent, cityConfigEntry } from '../../scripts/admit-qualified-cities.mjs';
+import { admissionCityId, admissionExtent, cityConfigEntry, collectLiveCityCodes } from '../../scripts/admit-qualified-cities.mjs';
 import { extentAreaFor, extentRings, loadBoundaries, parseCityConfigs } from '../../scripts/build-world-coverage.mjs';
 
 const catalog = JSON.parse(readFileSync(new URL('../../frontend/data/source-catalog.json', import.meta.url), 'utf8')).sources;
@@ -25,6 +25,22 @@ describe('admission extent', () => {
     it('else the district holding its centre', () => {
         expect(extentOf('Kidderminster', 52.3867, -2.2504)).toEqual({ dataset: 'ons-lad-2023', areas: ['E07000239'] }); // Wyre Forest
         expect(extentOf('Nowhere', 55.95, -3.19)).toBeNull(); // Edinburgh: no English or Welsh district
+    });
+
+    it('admits a district WUP does not list by its own GSS code: that district is its extent, with no WUP code', () => {
+        const wirral = { ...item('Wirral', 53.39337, -3.01479), code: 'E08000015' };
+        expect(admissionExtent(wirral, { boundaries, extentAreaFor })).toEqual({ dataset: 'ons-lad-2023', areas: ['E08000015'] });
+        expect(() => admissionExtent({ ...wirral, code: 'E08999999' }, { boundaries, extentAreaFor })).toThrow(/no area E08999999/);
+        expect(admissionCityId('E08000015', hmlr)).toBe('ons-lad-2023:E08000015');
+        expect(admissionCityId('2236', hmlr)).toBe('wup2025:2236');
+        const entry = cityConfigEntry({ ...wirral, appCityId: 'wirral_test', label: 'Wirral, United Kingdom', currency: { locale: 'en-GB', code: 'GBP' },
+            descriptor: hmlr, extent: admissionExtent(wirral, { boundaries, extentAreaFor }) });
+        expect(entry).not.toMatch(/wupCityCode/);
+        const [parsed] = parseCityConfigs(`const CITY_CONFIGS = {\n${entry}\n    };`);
+        expect(parsed).toMatchObject({ id: 'wirral_test', extent: { dataset: 'ons-lad-2023', areas: ['E08000015'] } });
+        expect(parsed.wupCityCode).toBeUndefined();
+        // A district in a live city's extent is live, so it is not admitted twice.
+        expect(collectLiveCityCodes([parsed], new Set(['wirral_test']), null).has('E08000015')).toBe(true);
     });
 
     it('leaves a source without an extent dataset on its circle', () => {

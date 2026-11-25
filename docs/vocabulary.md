@@ -1208,7 +1208,7 @@ The geographic or institutional scope within which a source, rule or authority a
 
 ### City extent
 
-The administrative area a configured city stands for, named in its configuration as areas of a boundary dataset (`extent`; London is the 33 London boroughs, an English or Welsh town its local authority district). A point inside it belongs to that city; a city without an extent claims a circle round its centre instead. Where extents overlap, the smaller one applies, then the nearer centre. An extent decides which city a place is filed and opened under, not which parcels exist.
+The administrative area a configured city stands for, named in its configuration as areas of a boundary dataset (`extent`; London is the 33 London boroughs, an English or Welsh town its local authority district). A point inside it belongs to that city; a city without an extent claims a circle round its centre instead. Where extents overlap, the smaller one applies, then the nearer centre. An extent decides which city a place is filed and opened under, not which parcels exist. A city is identified in the parcel pipeline by its UN WUP 2025 city code; a district WUP does not list (one inside a larger WUP urban centre, such as Wirral in Liverpool's) is identified by its own area code instead (GSS `E08000015`, registry `ons-lad-2023:E08000015`), and that area is its extent.
 
 ### Declared source coverage
 

@@ -43,13 +43,14 @@ def collect(state_dirs):
    kind=outcome(entry)
    if not kind:continue
    rec=records[code]
-   row={'cityCode':int(code),'cityName':rec['cityName'],'countryCode':rec['countryCode'],'point':rec['point'],
+   # WUP codes stay numbers; a GSS area code (a district WUP does not list) stays a string.
+   row={'cityCode':int(code) if code.isdigit() else code,'cityName':rec['cityName'],'countryCode':rec['countryCode'],'point':rec['point'],
     'sourceIds':(rec.get('sourceAnnotations') or {}).get('sourceIds') or [],'outcome':kind,'summary':summary(entry.get('summary')),'finishedAt':entry.get('finishedAt')}
    if entry.get('initialQualification'):
     row['initialQualification']=entry['initialQualification']
    key=(row['finishedAt'] or '',order)
    if code not in latest or key>=latest[code][0]:latest[code]=(key,row)
- return sorted((row for _,row in latest.values()),key=lambda r:r['cityCode'])
+ return sorted((row for _,row in latest.values()),key=lambda r:(isinstance(r['cityCode'],str),str(r['cityCode']).zfill(12)))
 
 def main():
  p=argparse.ArgumentParser(description=__doc__,formatter_class=argparse.RawDescriptionHelpFormatter)

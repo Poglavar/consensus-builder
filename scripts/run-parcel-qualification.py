@@ -34,6 +34,7 @@ from parcel_qualification_policy import POLICY, REQUIRED_CHECKS, initial_qualifi
 ALL_CHECKS = (*REQUIRED_CHECKS, *POLICY['followUpChecks'])
 BLOCKER_FIELDS = ("invalidCount", "duplicateIdCount", "conflictingSameIdGeometryCount",
                   "exactGeometryDuplicateCount", "overlapPairCount", "operationErrorCount")
+CITY_CODE = re.compile(r"\d+|[A-Z]\d{8}")
 MAX_CITY_BYTES = 250 * 1024 * 1024
 MIN_FREE_BYTES = 3 * 1024 * 1024 * 1024
 POLL_SECONDS = 1
@@ -94,8 +95,10 @@ def load_queue(path: Path, expected_records: int | None = None) -> tuple[list[di
         if not isinstance(city, dict) or any(field not in city for field in required):
             raise ValueError(f"queue record {index} is missing a required frozen field")
         code = str(city["cityCode"])
-        if not code.isdigit() or code in codes:
-            raise ValueError(f"queue cityCode must be unique and numeric: {code}")
+        # A WUP 2025 city code, or for a place WUP does not list (an English district inside a
+        # larger WUP urban centre) the GSS code of the area its city stands for, e.g. E08000015.
+        if not CITY_CODE.fullmatch(code) or code in codes:
+            raise ValueError(f"queue cityCode must be unique and a WUP or GSS area code: {code}")
         codes.add(code)
         if not isinstance(city["rank"], int) or not isinstance(city["cityName"], str) or not city["cityName"]:
             raise ValueError(f"invalid rank or city name for {code}")

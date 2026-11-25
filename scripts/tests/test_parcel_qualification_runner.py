@@ -150,6 +150,20 @@ def worker_qualification_item(root: Path, *, omit_native=False):
 
 
 class QualificationRunnerTests(unittest.TestCase):
+    def test_queue_takes_wup_and_gss_area_codes_only(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "queue.json"
+            records = queue_records(2)
+            records[1]["cityCode"] = "E08000015"
+            path.write_text(json.dumps({"records": records}))
+            loaded, _ = runner.load_queue(path)
+            self.assertEqual([city["cityCode"] for city in loaded], ["10000", "E08000015"])
+            for bad in ("../E08000015", "Wirral", "E0800001"):
+                records[1]["cityCode"] = bad
+                path.write_text(json.dumps({"records": records}))
+                with self.assertRaisesRegex(ValueError, "WUP or GSS area code"):
+                    runner.load_queue(path)
+
     def test_direct_worker_does_not_invoke_llm(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)

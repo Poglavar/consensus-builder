@@ -30,4 +30,8 @@ class ExportTests(unittest.TestCase):
   self.assertEqual(rows[5]['summary'],'Held: see <local> for rows.')
   self.assertEqual(x.summary('word '*200)[-1],'…')
   self.assertEqual(x.summary('Peticion denegada for X 4 - 203.0.113.7 at /root/x/y'),'Peticion denegada for X 4 - <ip> at <local>')
+ def test_keeps_a_district_code_as_text_after_the_wup_codes(self):
+  done={'status':'technical-qualified','summary':'Passed.','finishedAt':'2026-11-25T10:00:00Z'}
+  rows=x.collect([self.wave('w',{'E08000015':done,'2236':done,'919':done})])
+  self.assertEqual([r['cityCode'] for r in rows],[919,2236,'E08000015'])
 if __name__=='__main__':unittest.main()

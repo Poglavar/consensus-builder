@@ -48,7 +48,10 @@ const CURRENCY = {
     LT: ['lt-LT', 'EUR'], EE: ['et-EE', 'EUR'], BR: ['pt-BR', 'BRL'], AU: ['en-AU', 'AUD'], ZM: ['en-ZM', 'ZMW'],
     ES: ['es-ES', 'EUR'], UA: ['uk-UA', 'UAH'], SI: ['sl-SI', 'EUR'], IT: ['it-IT', 'EUR'], GB: ['en-GB', 'GBP'], IN: ['en-IN', 'INR']
 };
-const LOCALES = ['en', 'es', 'hr', 'sr'];
+// Every dictionary the app ships gets the new city's label: the city's name with the country in that
+// language (Arabic labels separate them with the Arabic comma).
+const LOCALES = fs.readdirSync(path.join(REPO, 'frontend/i18n')).filter(name => name.endsWith('.json')).map(name => name.slice(0, -5)).sort();
+const labelSeparator = locale => (locale === 'ar' ? '، ' : ', ');
 const TWIN_KM = 5;
 const haversineKm = (lat1, lon1, lat2, lon2) => {
     const r = Math.PI / 180, a = Math.sin((lat2 - lat1) * r / 2) ** 2 + Math.cos(lat1 * r) * Math.cos(lat2 * r) * Math.sin((lon2 - lon1) * r / 2) ** 2;
@@ -178,8 +181,24 @@ export function currencyFor(countryCode, explicit) {
     return known ? { locale: known[0], code: known[1] } : null;
 }
 
+// A qualification city code is a WUP 2025 city code, or, for a place WUP does not list (an English
+// district inside a larger WUP urban centre), the GSS code of the extent area the city stands for.
+export const isWupCode = code => /^\d+$/.test(String(code));
+const byCityCode = ([a], [b]) => (isWupCode(a) && isWupCode(b) ? Number(a) - Number(b)
+    : isWupCode(a) !== isWupCode(b) ? (isWupCode(a) ? -1 : 1) : String(a).localeCompare(String(b)));
+// The registry identity of a newly admitted city: its WUP code, else its area in the boundary dataset
+// its source's coverage names (`ons-lad-2023:E08000015`).
+export function admissionCityId(code, catalogSource) {
+    if (isWupCode(code)) return `wup2025:${code}`;
+    const dataset = catalogSource?.coverage?.extents;
+    if (!dataset) throw new Error(`city code ${code} is no WUP code, and ${catalogSource?.id} names no extent dataset for it`);
+    return `${dataset}:${code}`;
+}
+
 export function collectLiveCityCodes(configs, configIds, report) {
     const live = new Set(configs.map(c => String(c.wupCityCode)).filter(c => c !== 'undefined'));
+    // An area already in a city's extent is live under that city.
+    for (const config of configs) for (const area of config.extent?.areas || []) live.add(area);
     for (const city of report?.cities || []) {
         if (city.wupCityCode && (city.appCityIds || []).some(id => configIds.has(id))) live.add(String(city.wupCityCode));
     }
@@ -405,6 +424,11 @@ export function admissionExtent(item, { boundaries, extentAreaFor }) {
     const dataset = item.catalogSource?.coverage?.extents;
     if (!dataset) return null;
     if (!boundaries[dataset]) throw new Error(`${item.appCityId}: ${item.catalogSource.id} names extent dataset ${dataset}, which BOUNDARY_DATASETS lacks`);
+    // A city identified by its area (no WUP code) is that area.
+    if (item.code !== undefined && !isWupCode(item.code)) {
+        if (!boundaries[dataset].features.some(feature => feature.id === item.code)) throw new Error(`${item.appCityId}: ${dataset} has no area ${item.code}`);
+        return { dataset, areas: [item.code] };
+    }
     const area = extentAreaFor(boundaries[dataset], { name: item.name, lat: item.center[0], lon: item.center[1] });
     return area ? { dataset, areas: [area] } : null;
 }
@@ -415,7 +439,7 @@ export function cityConfigEntry(item) {
     const q = quote;
     return [
         `        ${appCityId}: {`,
-        `            id: ${q(appCityId)}, wupCityCode: ${q(code)},`,
+        `            id: ${q(appCityId)},${isWupCode(code) ? ` wupCityCode: ${q(code)},` : ''}`,
         `            label: translateCityText(${q(`city.labels.${appCityId}`)}, ${q(label)}),`,
         `            currency: { locale: ${q(locale)}, code: ${q(currency)} },`,
         `            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [${center[0]}, ${center[1]}], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },`,
@@ -447,7 +471,8 @@ async function main() {
         if (!row.appCityId || !row.countryCode) continue;
         for (const l of LOCALES) {
             const label = i18n[l].city?.labels?.[row.appCityId];
-            if (label?.includes(', ') && !countryNames[l][row.countryCode]) countryNames[l][row.countryCode] = label.slice(label.lastIndexOf(', ') + 2);
+            const separator = labelSeparator(l);
+            if (label?.includes(separator) && !countryNames[l][row.countryCode]) countryNames[l][row.countryCode] = label.slice(label.lastIndexOf(separator) + separator.length);
         }
     }
     for (const [cc, names] of Object.entries(COUNTRY_NAMES)) for (const l of LOCALES) countryNames[l][cc] ??= names[l];
@@ -459,7 +484,7 @@ async function main() {
     const explicitCountry = args.countryConfig ? validateCountryConfig(readJson(args.countryConfig)) : null;
     const plan = [], refused = [];
     const taken = new Set(configIds);
-    for (const [code, outcome] of [...outcomes].sort((a, b) => Number(a[0]) - Number(b[0]))) {
+    for (const [code, outcome] of [...outcomes].sort(byCityCode)) {
         if (outcome.outcome !== 'qualified' || live.has(code) || (args.codes && !args.codes.has(code))) continue;
         if (args.exclude.has(code)) { refused.push({ code, name: outcome.cityName, reason: args.exclude.get(code) }); continue; }
         const ev = evidence.get(code);
@@ -497,8 +522,10 @@ async function main() {
             selectedSource.countryCode ||= countryCode;
         }
         // A live city configured without a WUP code is the same place when its centre is this close.
+        // A city identified by its area is a twin only by extent (the live check above): Salford's
+        // centre is 3 km from Manchester's.
         const pointLatLon = [checked.candidate.city.point[1], checked.candidate.city.point[0]];
-        const twin = configs.find(c => Number.isFinite(c.lat) && haversineKm(c.lat, c.lon, ...pointLatLon) < TWIN_KM
+        const twin = isWupCode(code) && configs.find(c => Number.isFinite(c.lat) && haversineKm(c.lat, c.lon, ...pointLatLon) < TWIN_KM
             && (catalogDoc.sources.find(s => s.id === c.sourceId)?.countryCode ?? countryCode) === countryCode);
         if (twin) { refused.push({ code, name: outcome.cityName, reason: `already live as ${twin.id} (${haversineKm(twin.lat, twin.lon, ...pointLatLon).toFixed(1)} km away)` }); continue; }
         let appCityId = slug(outcome.cityName);
@@ -520,7 +547,7 @@ async function main() {
 
     // Switches: a live city whose newest technical-qualified evidence names another catalog source.
     if (args.switch) {
-        for (const [code, ev] of [...evidence].sort((a, b) => Number(a[0]) - Number(b[0]))) {
+        for (const [code, ev] of [...evidence].sort(byCityCode)) {
             const config = configs.find(c => String(c.wupCityCode) === code);
             if (!config || (args.codes && !args.codes.has(code))) continue;
             const candidate = readJson(ev.candidate);
@@ -610,7 +637,7 @@ async function main() {
             ...Object.fromEntries(Object.entries(alignmentFiles).map(([key, file]) => [key, file.rel])) };
         manifestCities.push({
             cityCode: item.code, appCityId: item.appCityId, cityName: item.name, qualificationCityName: item.candidate.city.name,
-            cityId: (registry.cities.find(r => String(r.wupCityCode) === item.code)?.cityId) || `wup2025:${item.code}`,
+            cityId: (isWupCode(item.code) && registry.cities.find(r => String(r.wupCityCode) === item.code)?.cityId) || admissionCityId(item.code, item.descriptor),
             countryCode: item.countryCode, country: item.countryName, sourceId: item.descriptor.id,
             ...(item.switchedFrom ? { switchedFrom: item.switchedFrom } : {}),
             appCenterLatLon: item.center, wupPointLatLon: item.wupPoint || item.center,
@@ -649,8 +676,14 @@ async function main() {
         const metricFile = `${evidenceRoot}/${item.code}/metric-report.json`;
         const cityId = manifestCities.find(c => c.cityCode === item.code).cityId;
         let row = registry.cities.find(r => r.cityId === cityId);
-        if (!row) { row = { cityId, citySource: 'https://population.un.org/wup/', researchOrder: null, historicalSourceIds: [] }; registry.cities.push(row); }
-        Object.assign(row, { wupCityCode: Number(item.code), name: row.name || item.name, country: row.country || item.countryName, countryCode: item.countryCode,
+        if (!row) {
+            row = { cityId, citySource: isWupCode(item.code) ? 'https://population.un.org/wup/' : `${cityId.split(':')[0]} boundary dataset area ${item.code}`,
+                researchOrder: null, historicalSourceIds: [] };
+            registry.cities.push(row);
+        }
+        // A city that failed an earlier check keeps none of that failure's verdict fields.
+        for (const stale of ['runtimeReadiness', 'dataFindings']) delete row[stale];
+        Object.assign(row, { ...(isWupCode(item.code) ? { wupCityCode: Number(item.code) } : {}), name: row.name || item.name, country: row.country || item.countryName, countryCode: item.countryCode,
             centerLatLon: row.centerLatLon || item.center, parcelStatus: 'verified_sample_partial_coverage',
             sourceIds: [...new Set([...(row.sourceIds || []), item.descriptor.id])], researchFile: qualificationFile,
             qualificationEvidenceFile: qualificationFile, metricReportFile: metricFile,
@@ -687,8 +720,9 @@ async function main() {
             }
         }
 
-        let demo = demographics.cities.find(r => String(r.wupCityCode) === item.code);
-        if (!demo) {
+        // Demographics are the WUP roster; a city identified by its area has no row there.
+        let demo = isWupCode(item.code) ? demographics.cities.find(r => String(r.wupCityCode) === item.code) : null;
+        if (!demo && isWupCode(item.code)) {
             const w15 = item.population2015, w25 = item.population2025;
             demo = { id: cityId, cohorts: [], name: item.name, countryCode: item.countryCode, latitude: item.center[0], longitude: item.center[1],
                 wupLatitude: item.center[0], wupLongitude: item.center[1], wupName: item.name, wupCityCode: Number(item.code), appCityIds: [],
@@ -697,15 +731,17 @@ async function main() {
                 populationMatch: { basis: 'explicit_wup2025_city_code', sourceName: 'UN DESA WUP 2025', confidence: 'high', distanceKm: 0 } };
             demographics.cities.push(demo);
         }
-        demo.cohorts = [...new Set([...(demo.cohorts || []), 'app'])];
-        demo.appCityIds = [...new Set([...(demo.appCityIds || []), item.appCityId])];
-        Object.assign(demo, { parcelSourceId: item.descriptor.id, parcelQualification: 'initial-qualification-bounded',
-            qualificationEvidence: qualificationFile,
-            initialQualificationReview: manifestCities.find(c => c.cityCode === item.code).qualification.initialQualificationReview,
-            qualificationWarnings: manifestCities.find(c => c.cityCode === item.code).qualification.warnings });
+        if (demo) {
+            demo.cohorts = [...new Set([...(demo.cohorts || []), 'app'])];
+            demo.appCityIds = [...new Set([...(demo.appCityIds || []), item.appCityId])];
+            Object.assign(demo, { parcelSourceId: item.descriptor.id, parcelQualification: 'initial-qualification-bounded',
+                qualificationEvidence: qualificationFile,
+                initialQualificationReview: manifestCities.find(c => c.cityCode === item.code).qualification.initialQualificationReview,
+                qualificationWarnings: manifestCities.find(c => c.cityCode === item.code).qualification.warnings });
+        }
         for (const l of LOCALES) {
             i18n[l].city ??= {}; i18n[l].city.labels ??= {};
-            i18n[l].city.labels[item.appCityId] = `${item.name}${item.qualifier}, ${countryNames[l][item.countryCode]}`;
+            i18n[l].city.labels[item.appCityId] = `${item.name}${item.qualifier}${labelSeparator(l)}${countryNames[l][item.countryCode]}`;
         }
     }
     writeJson('world-parcels/registry.json', registry);
