@@ -292,6 +292,24 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     backdrop-filter: blur(12px);
 }
 #three-xray-toolbar[hidden] { display: none; }
+/* Under the toolbar while the camera is too far for apartments, with Zoom in (three-mode.js). */
+.three-xray-zoom-note {
+    position: fixed;
+    z-index: var(--cb-z-editor-popup);
+    inset-block-start: calc(max(12px, env(safe-area-inset-top)) + var(--cb-control-height) + 24px);
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: calc(100vw - 32px);
+    margin: 0;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--cb-surface) 92%, transparent);
+    color: var(--cb-text);
+    font-size: var(--cb-text-sm);
+    box-shadow: var(--cb-shadow-sm);
+    text-align: center;
+}
+.three-xray-zoom-note[hidden] { display: none; }
 .three-xray-label {
     padding-inline: 8px 2px;
     font-size: var(--cb-text-sm);
@@ -317,6 +335,11 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     }
     .three-xray-label { padding-inline-start: 6px; }
     #three-xray-toolbar .btn { padding-inline: 8px; }
+    /* Below the toolbar, which sits under the top buttons here. */
+    .three-xray-zoom-note {
+        inset-block-start: calc(max(8px, env(safe-area-inset-top)) + 58px + var(--cb-control-height) + 16px);
+        max-width: calc(100vw - 16px);
+    }
 }
 
 .three-apartment-panel {

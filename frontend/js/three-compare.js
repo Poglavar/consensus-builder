@@ -37,7 +37,8 @@
         for (const plan of plans) {
             if (plan?.id == null) continue;
             options.push({ value: `plan:${plan.id}`, kind: 'plan', id: String(plan.id), title: plan.title || String(plan.id), ...atOf(plan),
-                members: (plan.members || []).map(String), unapplied: (plan.unapplied || []).map(String), readId: String(plan.id) });
+                members: (plan.members || []).map(String), unapplied: (plan.unapplied || []).map(String), readId: String(plan.id),
+                published: plan.published === true });
         }
         for (const agreement of agreements) {
             if (agreement?.id == null || agreement.readId == null) continue;
@@ -190,8 +191,23 @@
         return left && right ? { left, right } : null;
     }
 
+    // Whether another browser can open a side from a link: today's states, and a plan once it is
+    // published (on the server). A plan only in this browser, a design and an agreement cannot.
+    const linkable = side => !!side && (BASE.includes(side.kind) || (side.kind === 'plan' && side.published === true));
+
+    // The link Copy link gives: the page's address with the two chosen sides (options) as `compare=`,
+    // so it opens that comparison whether or not it is on. Null when a side cannot be opened elsewhere.
+    function comparisonLink(href, left, right) {
+        if (!linkable(left) || !linkable(right)) return null;
+        const value = compareParam(left.value, right.value);
+        if (!value) return null;
+        const url = new URL(href);
+        url.searchParams.set('compare', value);
+        return url.href;
+    }
+
     const pure = { BASE, sideOptions, optionGroups, planRowsOf, parseSide, statsOf, appliesDesign, showsOn, splitDescriptors, scissorRects, readiness,
-        compareParam, parseCompareParam };
+        compareParam, parseCompareParam, comparisonLink };
     if (!global || !global.document) return Object.freeze(pure);
 
     // ── the Compare tab and the divider ──────────────────────────────────────────────────────
@@ -327,7 +343,8 @@
         const localPlans = (global.PlanWorkspace?.list?.() || []).filter(row => inCity(row.content?.view?.city));
         const plans = pure.planRowsOf(localPlans, publishedPlansOf(city)).map(row => {
             planRows.set(String(row.cid), row);
-            return { id: String(row.cid), title: row.content?.title || String(row.cid), at: row.publishedAt || null, ...global.CompareUnapplied.membersOf(row, copies) };
+            return { id: String(row.cid), title: row.content?.title || String(row.cid), at: row.publishedAt || null,
+                published: row.published === true || !!row.publishedAt, ...global.CompareUnapplied.membersOf(row, copies) };
         });
         // An agreement draws its plan; one without a plan yet is no side.
         const agreements = (global.AgreementStore?.list?.() || []).filter(row => row?.plan?.cid && inCity(row.city)).map(row => {
@@ -452,6 +469,27 @@
             : t('planningViews.tabs.compare', 'Compare');
     }
 
+    // Copy link: available while both chosen sides have a shareable name; otherwise the note under it
+    // says which sides can be shared.
+    function renderCopyLink() {
+        const button = el('planning-compare-copy-link');
+        if (!button) return;
+        const { left, right } = sides();
+        const shareable = !!pure.comparisonLink(global.location.href, left, right);
+        button.disabled = !scene() || !shareable;
+        const note = el('planning-compare-link-note');
+        if (note) note.hidden = shareable;
+    }
+
+    async function copyLink() {
+        const { left, right } = sides();
+        const href = pure.comparisonLink(global.location.href, left, right);
+        if (!href) return;
+        if (!(await global.copyTextWithFeedback(href))) {
+            global.updateStatus?.(t('planningViews.compare.copyLinkFailed', 'The link could not be copied.'));
+        }
+    }
+
     // Turns the comparison on or off: the action under the sides, and the X on the divider (the way
     // out when the sheet is closed).
     function setEnabled(enabled) {
@@ -464,6 +502,7 @@
     // sides. It moves to the other view when the model view opens or closes.
     function syncDivider() {
         writeAddress();
+        renderCopyLink();
         if (state.enabled && scene()) {
             const chosen = sides();
             readUnapplied(chosen.left);
@@ -586,6 +625,7 @@
             if (tab.dataset.planningTab === 'compare') { publishedWanted = true; refresh(); }
         });
         el('planning-compare-enable')?.addEventListener('click', () => setEnabled(!state.enabled));
+        el('planning-compare-copy-link')?.addEventListener('click', copyLink);
         el('planning-compare-left')?.addEventListener('change', event => { state.left = event.target.value; syncDivider(); });
         el('planning-compare-right')?.addEventListener('change', event => { state.right = event.target.value; syncDivider(); });
         el('planning-compare-swap')?.addEventListener('click', () => {

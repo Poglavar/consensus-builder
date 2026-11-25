@@ -121,3 +121,47 @@ test('a private proposed residential building selects apartments in X-ray withou
   await expect(page.locator('#three-xray-proposed')).toHaveAttribute('aria-pressed', 'true');
   await expect.poll(() => page.evaluate(id => !!(window as any).proposalStorage?.getProposal(id), designId)).toBe(true);
 });
+
+test('X-ray hides the apartments panel while the camera is too far for apartments, says so, and Zoom in brings them back; 2D never shows it', async ({ mockApi: page }) => {
+  test.setTimeout(90_000);
+  await mockBuildingScene(page);
+  await openCity(page);
+  await createBuilding(page);
+  await enter3D(page);
+  await openXray(page);
+  await closeSheets(page);
+  const lookAt = (range: number) => page.evaluate(r => {
+    const w = window as any;
+    const group = w.getThreeModeInternals().scene.getObjectByName('FloorPlans').children.find((g: any) => g.userData.proposalId);
+    const [targetLng, targetLat] = group.userData.footprintLatLng;
+    w.applyThree3DGeoView({ targetLat, targetLng, headingDeg: 0, pitchRad: -1.52, range: r });
+    w.invalidateThreeView();
+  }, range);
+  const note = page.locator('#three-xray-zoom-note');
+  const panel = page.locator('.three-apartment-panel');
+
+  // Up close: apartments show, a click chooses one, and there is no zoom note.
+  await lookAt(75);
+  await expect.poll(() => page.evaluate(() => (window as any).getThreeModeInternals().scene.getObjectByName('FloorPlans').children
+    .some((g: any) => g.children.some((f: any) => f.visible && f.userData.apartmentRegions?.length)))).toBe(true);
+  const point = await apartmentPoint(page);
+  await page.mouse.click(point.x, point.y);
+  await expect(panel).toBeVisible();
+  await expect(note).toBeHidden();
+
+  // Too far for any storey: the panel goes and the note under the X-ray toolbar says why.
+  await lookAt(2500);
+  await expect(note).toBeVisible();
+  await expect(note).toContainText('Apartments are not visible at this zoom.');
+  await expect(panel).toBeHidden();
+
+  // Zoom in brings the camera close enough: the note goes and the chosen building's panel is back.
+  await note.getByRole('button', { name: 'Zoom in' }).click();
+  await expect(note).toBeHidden();
+  await expect(panel).toBeVisible();
+
+  // Leaving the model view takes the panel with it, though X-ray stays on for the next visit.
+  await page.locator('#mode-2d-toggle').click();
+  await expect(panel).toBeHidden();
+  await expect(note).toBeHidden();
+});
