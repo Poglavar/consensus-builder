@@ -96,15 +96,32 @@ describe('GET /agent/discovery', () => {
 
 describe('findBazaarListing', () => {
     const bazaarClient = bazaar => ({ extensions: { bazaar } });
+    const noMerchantCatalog = vi.fn().mockResolvedValue({ ok: false, status: 404, json: async () => ({}) });
+    const merchantCatalog = resources => vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({ pagination: { total: resources.length }, resources }) });
 
-    it('searches for the exact resource URL and keeps only an exact match', async () => {
+    it('reads the merchant catalog of the payTo address first, and does not search when it answers', async () => {
+        const search = vi.fn();
+        const fetchImpl = merchantCatalog([{ resource: `${FACTS}-old` }, { resource: FACTS, lastUpdated: '2026-11-25T19:39:43.994Z' }]);
+        const result = await findBazaarListing({
+            facilitatorUrl: 'https://facilitator.test/', resourceUrl: FACTS, payTo: 'Treasury111', network: 'solana:devnet',
+            bazaarClient: bazaarClient({ search }), fetchImpl
+        });
+        expect(result).toEqual({ state: 'listed', listing: { resource: FACTS, lastUpdated: '2026-11-25T19:39:43.994Z' }, total: 2 });
+        expect(fetchImpl).toHaveBeenCalledWith('https://facilitator.test/discovery/merchant?payTo=Treasury111', expect.anything());
+        expect(search).not.toHaveBeenCalled();
+        expect(await findBazaarListing({ facilitatorUrl: 'https://facilitator.test', resourceUrl: FACTS, payTo: 'Treasury111',
+            bazaarClient: bazaarClient({ search }), fetchImpl: merchantCatalog([{ resource: `${FACTS}-old` }]) }))
+            .toEqual({ state: 'not-listed', listing: null, total: 1 });
+    });
+
+    it('without a merchant catalog, searches for the exact resource URL and keeps only an exact match', async () => {
         const search = vi.fn().mockResolvedValue({
             resources: [{ resource: `${FACTS}-old` }, { resource: 'https://api.example.test/agent/other' }, { resource: `${FACTS}/` }],
             partialResults: true
         });
         const result = await findBazaarListing({
             facilitatorUrl: 'https://facilitator.test', resourceUrl: FACTS, payTo: 'Treasury111', network: 'solana:devnet',
-            bazaarClient: bazaarClient({ search })
+            bazaarClient: bazaarClient({ search }), fetchImpl: noMerchantCatalog
         });
         // A trailing slash is the same resource; a longer path is not.
         expect(result).toMatchObject({ state: 'listed', listing: { resource: `${FACTS}/` }, total: 3, partialResults: true });

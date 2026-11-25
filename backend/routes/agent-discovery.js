@@ -40,14 +40,27 @@ function bazaarClient(config, env) {
 }
 
 /** Query the facilitator-owned public Bazaar catalog for this exact resource URL. */
-export async function findBazaarListing({ facilitatorUrl, resourceUrl, payTo, network, bazaarClient: client = null } = {}) {
+export async function findBazaarListing({ facilitatorUrl, resourceUrl, payTo, network, bazaarClient: client = null, fetchImpl = globalThis.fetch } = {}) {
     if (!clean(facilitatorUrl)) return { state: 'unconfigured', listing: null };
     try {
-        const bazaar = (client ?? withBazaar(new HTTPFacilitatorClient({ url: facilitatorUrl }))).extensions.bazaar;
         const expected = normalizeBaseUrl(resourceUrl);
         const matches = item => {
             try { return normalizeBaseUrl(item.resource) === expected; } catch { return false; }
         };
+        // CDP's merchant catalog lists every resource paid to one address, testnet ones included,
+        // while its search leaves our Solana devnet resource out (seen 2026-11-25: listed by the
+        // merchant record, absent from every search). A facilitator without that catalog answers
+        // non-OK, and the search below is used instead.
+        if (clean(payTo)) {
+            const url = `${normalizeBaseUrl(facilitatorUrl)}/discovery/merchant?payTo=${encodeURIComponent(clean(payTo))}`;
+            const response = await fetchImpl(url, { headers: { accept: 'application/json' } });
+            if (response.ok) {
+                const body = await response.json();
+                const listing = (body?.resources || []).find(matches) ?? null;
+                return { state: listing ? 'listed' : 'not-listed', listing, total: body?.pagination?.total ?? body?.resources?.length ?? null };
+            }
+        }
+        const bazaar = (client ?? withBazaar(new HTTPFacilitatorClient({ url: facilitatorUrl }))).extensions.bazaar;
         // CDP's public catalog currently ignores list filters (including payTo/network) and caps
         // list pages at 20. Searching for the exact public URL avoids treating an unrelated first
         // page as the whole Bazaar. Older facilitators may not expose search, so keep the list call
