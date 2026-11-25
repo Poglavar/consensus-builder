@@ -17180,6 +17180,7 @@
         },
         birmingham: {
             id: 'birmingham', wupCityCode: '3979',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.birmingham', 'Birmingham, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             // Land at the MHCLG estimate of the authority a plan or parcel lies in. Sale price and
@@ -17345,6 +17346,7 @@
         },
         london: {
             id: 'london', wupCityCode: '5938',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.london', 'London, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             // Land at the MHCLG estimate of the borough a plan or parcel lies in; sale price and
@@ -17378,6 +17380,7 @@
         },
         manchester: {
             id: 'manchester', wupCityCode: '3388',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.manchester', 'Manchester, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: {
@@ -21023,6 +21026,7 @@
         },
         newcastle: {
             id: 'newcastle', wupCityCode: '4536',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.newcastle', 'Newcastle upon Tyne, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.9872907396255, -1.55381600364981], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -21033,6 +21037,7 @@
         },
         oxford: {
             id: 'oxford', wupCityCode: '5278',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.oxford', 'Oxford, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.7487806598031, -1.2342485885213], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -21053,6 +21058,7 @@
         },
         bristol: {
             id: 'bristol', wupCityCode: '3110',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.bristol', 'Bristol, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.4622070766796, -2.56948973765957], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -21063,6 +21069,7 @@
         },
         stoke_on_trent: {
             id: 'stoke_on_trent', wupCityCode: '3890',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.stoke_on_trent', 'Stoke-on-Trent, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.0159155643046, -2.17437344168429], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -21073,6 +21080,7 @@
         },
         bournemouth: {
             id: 'bournemouth', wupCityCode: '4108',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.bournemouth', 'Bournemouth, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.7377349576354, -1.90482883545276], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -21083,6 +21091,7 @@
         },
         leeds: {
             id: 'leeds', wupCityCode: '4425',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.leeds', 'Leeds, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.80098765836, -1.64273048308533], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -21093,6 +21102,7 @@
         },
         coventry: {
             id: 'coventry', wupCityCode: '4647',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.coventry', 'Coventry, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.4197855108422, -1.50597012431852], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -21103,6 +21113,7 @@
         },
         southampton: {
             id: 'southampton', wupCityCode: '4684',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.southampton', 'Southampton, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.9183161488384, -1.39571519357], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -21113,6 +21124,7 @@
         },
         sheffield: {
             id: 'sheffield', wupCityCode: '4792',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.sheffield', 'Sheffield, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.3706060761954, -1.45914222195097], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -21123,6 +21135,7 @@
         },
         nottingham: {
             id: 'nottingham', wupCityCode: '5220',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.nottingham', 'Nottingham, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.9581733581744, -1.18066491650301], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -21133,6 +21146,7 @@
         },
         middlesbrough: {
             id: 'middlesbrough', wupCityCode: '5250',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.middlesbrough', 'Middlesbrough, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.560753928282, -1.26260886474088], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -21143,6 +21157,7 @@
         },
         portsmouth: {
             id: 'portsmouth', wupCityCode: '5388',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.portsmouth', 'Portsmouth, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8299919480642, -1.08350256594045], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -21153,6 +21168,7 @@
         },
         leicester: {
             id: 'leicester', wupCityCode: '5469',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.leicester', 'Leicester, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.6309139939256, -1.125767851843], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -21163,6 +21179,7 @@
         },
         brighton: {
             id: 'brighton', wupCityCode: '6034',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.brighton', 'Brighton, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.82404, -0.14265], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -21173,6 +21190,7 @@
         },
         hull: {
             id: 'hull', wupCityCode: '6053',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.hull', 'Hull, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.7628896052307, -0.354103477578705], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -21183,6 +21201,7 @@
         },
         southend_on_sea: {
             id: 'southend_on_sea', wupCityCode: '6431',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.southend_on_sea', 'Southend-on-Sea, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.5551240047725, 0.668467014701583], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -23972,6 +23991,7 @@
         },
         plymouth: {
             id: 'plymouth', wupCityCode: '665',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.plymouth', 'Plymouth, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.3914167766278, -4.14532542981983], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -23982,6 +24002,7 @@
         },
         torquay: {
             id: 'torquay', wupCityCode: '1466',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.torquay', 'Torquay, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.4587985017225, -3.5516556955526], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24002,6 +24023,7 @@
         },
         exeter: {
             id: 'exeter', wupCityCode: '1656',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.exeter', 'Exeter, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.7234550099131, -3.51776110022917], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24032,6 +24054,7 @@
         },
         weston_super_mare: {
             id: 'weston_super_mare', wupCityCode: '2463',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.weston_super_mare', 'Weston-super-Mare, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3507970266061, -2.9464834096545], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24042,6 +24065,7 @@
         },
         blackpool: {
             id: 'blackpool', wupCityCode: '2537',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.blackpool', 'Blackpool, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.8313704516172, -3.02949278235616], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24052,6 +24076,7 @@
         },
         ellesmere_port: {
             id: 'ellesmere_port', wupCityCode: '2675',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.ellesmere_port', 'Ellesmere Port, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.2747857125448, -2.91838068661081], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24062,6 +24087,7 @@
         },
         chester: {
             id: 'chester', wupCityCode: '2742',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.chester', 'Chester, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.1954598782464, -2.89193995128185], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24072,6 +24098,7 @@
         },
         carleton: {
             id: 'carleton', wupCityCode: '2807',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.carleton', 'Carleton, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.883742702573, -2.93333918501296], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24082,6 +24109,7 @@
         },
         shrewsbury: {
             id: 'shrewsbury', wupCityCode: '2932',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.shrewsbury', 'Shrewsbury, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.7122564408785, -2.74867014769052], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24092,6 +24120,7 @@
         },
         hereford: {
             id: 'hereford', wupCityCode: '2992',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.hereford', 'Hereford, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.0535998200465, -2.71890579117852], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24102,6 +24131,7 @@
         },
         widnes: {
             id: 'widnes', wupCityCode: '3051',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.widnes', 'Widnes, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.3747855952066, -2.7440635225877], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24112,6 +24142,7 @@
         },
         runcorn: {
             id: 'runcorn', wupCityCode: '3225',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.runcorn', 'Runcorn, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.3301271868641, -2.70242569043187], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24122,6 +24153,7 @@
         },
         wigan: {
             id: 'wigan', wupCityCode: '3280',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.wigan', 'Wigan, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.5417585510263, -2.65327394019557], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24132,6 +24164,7 @@
         },
         warrington: {
             id: 'warrington', wupCityCode: '3335',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.warrington', 'Warrington, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.3936954315244, -2.59202812720475], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24142,6 +24175,7 @@
         },
         crewe: {
             id: 'crewe', wupCityCode: '3547',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.crewe', 'Crewe, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.0963889408865, -2.4518215137026], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24161,6 +24195,7 @@
         },
         bath: {
             id: 'bath', wupCityCode: '3600',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.bath', 'Bath, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3801038417596, -2.37338367551952], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24171,6 +24206,7 @@
         },
         oswaldtwistle: {
             id: 'oswaldtwistle', wupCityCode: '3651',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.oswaldtwistle', 'Oswaldtwistle, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.7594075036295, -2.38054449711054], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24181,6 +24217,7 @@
         },
         gloucester: {
             id: 'gloucester', wupCityCode: '3702',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.gloucester', 'Gloucester, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.8520315635127, -2.23219925625925], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24191,6 +24228,7 @@
         },
         kidderminster: {
             id: 'kidderminster', wupCityCode: '3751',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.kidderminster', 'Kidderminster, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.3867461409946, -2.25042165820862], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24201,6 +24239,7 @@
         },
         burnley: {
             id: 'burnley', wupCityCode: '3798',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.burnley', 'Burnley, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.8139176123745, -2.23025976658165], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24211,6 +24250,7 @@
         },
         worcester_gb: {
             id: 'worcester_gb', wupCityCode: '3844',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.worcester_gb', 'Worcester, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.1960687132947, -2.21346406655132], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24221,6 +24261,7 @@
         },
         cheltenham: {
             id: 'cheltenham', wupCityCode: '4022',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.cheltenham', 'Cheltenham, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.8979094381315, -2.08512231525744], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24231,6 +24272,7 @@
         },
         stafford: {
             id: 'stafford', wupCityCode: '4065',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.stafford', 'Stafford, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.801712438418, -2.11109989992426], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24241,6 +24283,7 @@
         },
         cannock: {
             id: 'cannock', wupCityCode: '4192',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.cannock', 'Cannock, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.6914955560703, -2.0142300384158], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24251,6 +24294,7 @@
         },
         redditch: {
             id: 'redditch', wupCityCode: '4233',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.redditch', 'Redditch, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.2990212189628, -1.92991161634122], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24261,6 +24305,7 @@
         },
         keighley: {
             id: 'keighley', wupCityCode: '4272',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.keighley', 'Keighley, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.8617709476448, -1.91969263455159], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24271,6 +24316,7 @@
         },
         elland: {
             id: 'elland', wupCityCode: '4311',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.elland', 'Elland, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.7189997906187, -1.87822448014627], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24281,6 +24327,7 @@
         },
         swindon: {
             id: 'swindon', wupCityCode: '4349',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.swindon', 'Swindon, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.5715356304086, -1.78574928165144], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24291,6 +24338,7 @@
         },
         huddersfield: {
             id: 'huddersfield', wupCityCode: '4387',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.huddersfield', 'Huddersfield, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.6468211209448, -1.79511408476927], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24301,6 +24349,7 @@
         },
         fazeley: {
             id: 'fazeley', wupCityCode: '4462',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.fazeley', 'Fazeley, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.61359, -1.69843], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24311,6 +24360,7 @@
         },
         wakefield: {
             id: 'wakefield', wupCityCode: '4499',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.wakefield', 'Wakefield, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.68297, -1.49768], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24321,6 +24371,7 @@
         },
         burton_on_trent: {
             id: 'burton_on_trent', wupCityCode: '4573',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.burton_on_trent', 'Burton-on-Trent, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.8086536431537, -1.63156178340561], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24331,6 +24382,7 @@
         },
         darlington: {
             id: 'darlington', wupCityCode: '4756',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.darlington', 'Darlington, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.5318246345243, -1.55313379122509], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24341,6 +24393,7 @@
         },
         nuneaton: {
             id: 'nuneaton', wupCityCode: '4898',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.nuneaton', 'Nuneaton, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.5219218988889, -1.47935643407184], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24351,6 +24404,7 @@
         },
         chesterfield: {
             id: 'chesterfield', wupCityCode: '4968',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.chesterfield', 'Chesterfield, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.2436280925355, -1.42625421800537], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24361,6 +24415,7 @@
         },
         hoyland: {
             id: 'hoyland', wupCityCode: '5001',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.hoyland', 'Hoyland, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.49771, -1.44277], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24371,6 +24426,7 @@
         },
         eastleigh: {
             id: 'eastleigh', wupCityCode: '5034',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.eastleigh', 'Eastleigh, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.9758518132651, -1.3592757641613], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24381,6 +24437,7 @@
         },
         sunderland: {
             id: 'sunderland', wupCityCode: '5067',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.sunderland', 'Sunderland, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.9022790588835, -1.40594484606918], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24391,6 +24448,7 @@
         },
         rotherham: {
             id: 'rotherham', wupCityCode: '5099',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.rotherham', 'Rotherham, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.4312322928264, -1.35646504706708], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24401,6 +24459,7 @@
         },
         hinckley: {
             id: 'hinckley', wupCityCode: '5130',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.hinckley', 'Hinckley, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.5506509604454, -1.35891622382662], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24411,6 +24470,7 @@
         },
         pontefract: {
             id: 'pontefract', wupCityCode: '5160',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.pontefract', 'Pontefract, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.7079757719577, -1.32512618328553], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24421,6 +24481,7 @@
         },
         newbury: {
             id: 'newbury', wupCityCode: '5190',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.newbury', 'Newbury, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.4023266072744, -1.29379113402928], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24431,6 +24492,7 @@
         },
         rugby: {
             id: 'rugby', wupCityCode: '5306',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.rugby', 'Rugby, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.3702259189988, -1.26205764474156], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24441,6 +24503,7 @@
         },
         kirkby_in_ashfield: {
             id: 'kirkby_in_ashfield', wupCityCode: '5334',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.kirkby_in_ashfield', 'Kirkby-in-Ashfield, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.1180669315152, -1.26079401938608], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24451,6 +24514,7 @@
         },
         loughborough: {
             id: 'loughborough', wupCityCode: '5361',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.loughborough', 'Loughborough, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.7678936724989, -1.22085539178469], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24461,6 +24525,7 @@
         },
         hartlepool: {
             id: 'hartlepool', wupCityCode: '5415',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.hartlepool', 'Hartlepool, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.681966323611, -1.22791742187889], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24471,6 +24536,7 @@
         },
         mansfield: {
             id: 'mansfield', wupCityCode: '5442',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.mansfield', 'Mansfield, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.1490057121034, -1.18975576355205], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24481,6 +24547,7 @@
         },
         doncaster: {
             id: 'doncaster', wupCityCode: '5496',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.doncaster', 'Doncaster, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.5213071332784, -1.14432972080085], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24491,6 +24558,7 @@
         },
         basingstoke: {
             id: 'basingstoke', wupCityCode: '5523',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.basingstoke', 'Basingstoke, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.2625457774723, -1.1016531677885], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24501,6 +24569,7 @@
         },
         york: {
             id: 'york', wupCityCode: '5548',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.york', 'York, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.9601179345087, -1.0890389306505], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24511,6 +24580,7 @@
         },
         reading: {
             id: 'reading', wupCityCode: '5573',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.reading', 'Reading, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.4499643731723, -0.96867039514757], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24521,6 +24591,7 @@
         },
         aylesbury: {
             id: 'aylesbury', wupCityCode: '5648',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.aylesbury', 'Aylesbury, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.8140265791372, -0.811422254973883], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24531,6 +24602,7 @@
         },
         farnham: {
             id: 'farnham', wupCityCode: '5673',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.farnham', 'Farnham, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.21474, -0.79882], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24541,6 +24613,7 @@
         },
         high_wycombe: {
             id: 'high_wycombe', wupCityCode: '5697',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.high_wycombe', 'High Wycombe, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.6304741781165, -0.739700268563005], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24551,6 +24624,7 @@
         },
         bracknell: {
             id: 'bracknell', wupCityCode: '5721',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.bracknell', 'Bracknell, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.408925681937, -0.750969136462783], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24561,6 +24635,7 @@
         },
         maidenhead: {
             id: 'maidenhead', wupCityCode: '5745',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.maidenhead', 'Maidenhead, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.5218423664382, -0.734950010276874], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24571,6 +24646,7 @@
         },
         bognor_regis: {
             id: 'bognor_regis', wupCityCode: '5768',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.bognor_regis', 'Bognor Regis, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.7887744955779, -0.679745003645796], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24581,6 +24657,7 @@
         },
         kettering: {
             id: 'kettering', wupCityCode: '5790',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.kettering', 'Kettering, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.3978738798855, -0.71643129398482], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24591,6 +24668,7 @@
         },
         corby: {
             id: 'corby', wupCityCode: '5812',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.corby', 'Corby, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.4862922660537, -0.711389253776066], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24601,6 +24679,7 @@
         },
         scunthorpe: {
             id: 'scunthorpe', wupCityCode: '5834',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.scunthorpe', 'Scunthorpe, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.5755538301194, -0.657437101400954], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24611,6 +24690,7 @@
         },
         walton_on_thames: {
             id: 'walton_on_thames', wupCityCode: '5877',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.walton_on_thames', 'Walton-on-Thames, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.38679, -0.41749], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24621,6 +24701,7 @@
         },
         guildford: {
             id: 'guildford', wupCityCode: '5898',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.guildford', 'Guildford, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.2482486181062, -0.575197746624339], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24631,6 +24712,7 @@
         },
         lincoln_gb: {
             id: 'lincoln_gb', wupCityCode: '5918',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.lincoln_gb', 'Lincoln, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.2185580409574, -0.558543721002124], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24641,6 +24723,7 @@
         },
         littlehampton: {
             id: 'littlehampton', wupCityCode: '5958',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.littlehampton', 'Littlehampton, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.814344177037, -0.515607897663478], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24651,6 +24734,7 @@
         },
         luton: {
             id: 'luton', wupCityCode: '5977',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.luton', 'Luton, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.8953504741231, -0.449799472542919], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24661,6 +24745,7 @@
         },
         bedford: {
             id: 'bedford', wupCityCode: '5996',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.bedford', 'Bedford, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.1354831387031, -0.462884517154221], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24671,6 +24756,7 @@
         },
         hemel_hempstead: {
             id: 'hemel_hempstead', wupCityCode: '6015',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.hemel_hempstead', 'Hemel Hempstead, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.7524993732628, -0.463705601238816], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24681,6 +24767,7 @@
         },
         st_albans: {
             id: 'st_albans', wupCityCode: '6072',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.st_albans', 'St Albans, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.7488083088858, -0.323125248526556], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24691,6 +24778,7 @@
         },
         horsham: {
             id: 'horsham', wupCityCode: '6091',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.horsham', 'Horsham, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.0709829452005, -0.317209349908432], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24701,6 +24789,7 @@
         },
         peterborough: {
             id: 'peterborough', wupCityCode: '6110',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.peterborough', 'Peterborough, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.5794745705663, -0.256348700851727], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24711,6 +24800,7 @@
         },
         crawley: {
             id: 'crawley', wupCityCode: '6129',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.crawley', 'Crawley, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.1118594336238, -0.188214829298302], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24721,6 +24811,7 @@
         },
         stevenage: {
             id: 'stevenage', wupCityCode: '6148',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.stevenage', 'Stevenage, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.9065830125027, -0.181798776752651], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24731,6 +24822,7 @@
         },
         reigate: {
             id: 'reigate', wupCityCode: '6167',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.reigate', 'Reigate, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.2368267379592, -0.178879466167143], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24741,6 +24833,7 @@
         },
         grimsby: {
             id: 'grimsby', wupCityCode: '6185',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.grimsby', 'Grimsby, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.5570359442078, -0.0781954663717782], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24751,6 +24844,7 @@
         },
         harlow: {
             id: 'harlow', wupCityCode: '6203',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.harlow', 'Harlow, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.7624189706355, 0.106309227869453], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24761,6 +24855,7 @@
         },
         cambridge: {
             id: 'cambridge', wupCityCode: '6221',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.cambridge', 'Cambridge, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.2067184129985, 0.137923301802117], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24771,6 +24866,7 @@
         },
         royal_tunbridge_wells: {
             id: 'royal_tunbridge_wells', wupCityCode: '6239',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.royal_tunbridge_wells', 'Royal Tunbridge Wells, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.1398971158576, 0.263050918212856], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24781,6 +24877,7 @@
         },
         polegate: {
             id: 'polegate', wupCityCode: '6257',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.polegate', 'Polegate, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.82137, 0.24489], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24791,6 +24888,7 @@
         },
         brentwood: {
             id: 'brentwood', wupCityCode: '6275',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.brentwood', 'Brentwood, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.6229723148614, 0.314280917568822], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24801,6 +24899,7 @@
         },
         grays: {
             id: 'grays', wupCityCode: '6293',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.grays', 'Grays, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.4876506699566, 0.3243422208394], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24811,6 +24910,7 @@
         },
         northfleet: {
             id: 'northfleet', wupCityCode: '6311',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.northfleet', 'Northfleet, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.4336111081076, 0.35735707385041], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24821,6 +24921,7 @@
         },
         basildon: {
             id: 'basildon', wupCityCode: '6329',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.basildon', 'Basildon, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.5720052656319, 0.462720741724047], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24831,6 +24932,7 @@
         },
         chelmsford: {
             id: 'chelmsford', wupCityCode: '6347',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.chelmsford', 'Chelmsford, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.7350617718334, 0.478458974284031], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24841,6 +24943,7 @@
         },
         maidstone: {
             id: 'maidstone', wupCityCode: '6383',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.maidstone', 'Maidstone, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.2676621180426, 0.527097058088819], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24851,6 +24954,7 @@
         },
         braintree: {
             id: 'braintree', wupCityCode: '6399',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.braintree', 'Braintree, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.8757236245079, 0.55408077080967], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24861,6 +24965,7 @@
         },
         hastings: {
             id: 'hastings', wupCityCode: '6415',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.hastings', 'Hastings, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.8665941451404, 0.567187428416308], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24871,6 +24976,7 @@
         },
         colchester: {
             id: 'colchester', wupCityCode: '6447',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.colchester', 'Colchester, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.8853930892249, 0.907088260783102], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24881,6 +24987,7 @@
         },
         ashford: {
             id: 'ashford', wupCityCode: '6463',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.ashford', 'Ashford, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.1424958025931, 0.868670273739869], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24891,6 +24998,7 @@
         },
         clacton_on_sea: {
             id: 'clacton_on_sea', wupCityCode: '6511',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.clacton_on_sea', 'Clacton-on-Sea, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.7980613983457, 1.14982351139602], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24901,6 +25009,7 @@
         },
         folkestone: {
             id: 'folkestone', wupCityCode: '6527',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.folkestone', 'Folkestone, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.0851032071685, 1.16519356955379], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24911,6 +25020,7 @@
         },
         norwich: {
             id: 'norwich', wupCityCode: '6543',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.norwich', 'Norwich, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.6380198067778, 1.28476267343452], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24921,6 +25031,7 @@
         },
         margate: {
             id: 'margate', wupCityCode: '6559',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.margate', 'Margate, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.3638977247902, 1.4019139233658], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24931,6 +25042,7 @@
         },
         great_yarmouth: {
             id: 'great_yarmouth', wupCityCode: '6575',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.great_yarmouth', 'Great Yarmouth, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.5900315294342, 1.72104326090961], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -24941,6 +25053,7 @@
         },
         lowestoft: {
             id: 'lowestoft', wupCityCode: '6591',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.lowestoft', 'Lowestoft, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.4730373280153, 1.72629201137263], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34099,6 +34212,7 @@
         },
         liverpool: {
             id: 'liverpool', wupCityCode: '2236',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.liverpool', 'Liverpool, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.41058, -2.97794], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34109,6 +34223,7 @@
         },
         preston: {
             id: 'preston', wupCityCode: '3168',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.preston', 'Preston, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.76282, -2.70452], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34119,6 +34234,7 @@
         },
         telford: {
             id: 'telford', wupCityCode: '3441',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.telford', 'Telford, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.67659, -2.44926], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34129,6 +34245,7 @@
         },
         blackburn: {
             id: 'blackburn', wupCityCode: '3494',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.blackburn', 'Blackburn, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.74933, -2.48406], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34139,6 +34256,7 @@
         },
         warwick: {
             id: 'warwick', wupCityCode: '4610',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.warwick', 'Warwick, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.28333, -1.58333], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34149,6 +34267,7 @@
         },
         derby: {
             id: 'derby', wupCityCode: '4828',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.derby', 'Derby, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.92277, -1.47663], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34159,6 +34278,7 @@
         },
         northampton: {
             id: 'northampton', wupCityCode: '5598',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.northampton', 'Northampton, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.25, -0.88333], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34169,6 +34289,7 @@
         },
         milton_keynes: {
             id: 'milton_keynes', wupCityCode: '5623',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.milton_keynes', 'Milton Keynes, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.04172, -0.75583], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34179,6 +34300,7 @@
         },
         slough: {
             id: 'slough', wupCityCode: '5856',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.slough', 'Slough, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.50949, -0.59541], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34189,6 +34311,7 @@
         },
         medway: {
             id: 'medway', wupCityCode: '6365',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.medway', 'Medway, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.37891, 0.52786], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34199,6 +34322,7 @@
         },
         canterbury: {
             id: 'canterbury', wupCityCode: '6479',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.canterbury', 'Canterbury, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.27904, 1.07992], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34209,6 +34333,7 @@
         },
         stockton_on_tees: {
             id: 'stockton_on_tees',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.stockton_on_tees', 'Stockton-on-Tees, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.56848, -1.3187], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34219,6 +34344,7 @@
         },
         east_riding_of_yorkshire: {
             id: 'east_riding_of_yorkshire',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.east_riding_of_yorkshire', 'East Riding of Yorkshire, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.84587, -0.42332], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34229,6 +34355,7 @@
         },
         south_gloucestershire: {
             id: 'south_gloucestershire',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.south_gloucestershire', 'South Gloucestershire, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.54074, -2.41839], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34239,6 +34366,7 @@
         },
         wokingham: {
             id: 'wokingham',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.wokingham', 'Wokingham, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.4112, -0.83565], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34249,6 +34377,7 @@
         },
         county_durham: {
             id: 'county_durham',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.county_durham', 'County Durham, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.77676, -1.57566], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34259,6 +34388,7 @@
         },
         cornwall: {
             id: 'cornwall',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.cornwall', 'Cornwall, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.26526, -5.05436], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34269,6 +34399,7 @@
         },
         wiltshire: {
             id: 'wiltshire',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.wiltshire', 'Wiltshire, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.31889, -2.20861], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34279,6 +34410,7 @@
         },
         central_bedfordshire: {
             id: 'central_bedfordshire',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.central_bedfordshire', 'Central Bedfordshire, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.91722, -0.65802], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34289,6 +34421,7 @@
         },
         northumberland: {
             id: 'northumberland',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.northumberland', 'Northumberland, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [55.16882, -1.68893], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34299,6 +34432,7 @@
         },
         dorset: {
             id: 'dorset',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.dorset', 'Dorset, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.71667, -2.43333], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34309,6 +34443,7 @@
         },
         westmorland_and_furness: {
             id: 'westmorland_and_furness',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.westmorland_and_furness', 'Westmorland and Furness, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.32681, -2.74757], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34319,6 +34454,7 @@
         },
         north_yorkshire: {
             id: 'north_yorkshire',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.north_yorkshire', 'North Yorkshire, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.33901, -1.43243], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34329,6 +34465,7 @@
         },
         somerset: {
             id: 'somerset',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.somerset', 'Somerset, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.01494, -3.10293], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34339,6 +34476,7 @@
         },
         huntingdonshire: {
             id: 'huntingdonshire',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.huntingdonshire', 'Huntingdonshire, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.33049, -0.18651], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34349,6 +34487,7 @@
         },
         south_cambridgeshire: {
             id: 'south_cambridgeshire',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.south_cambridgeshire', 'South Cambridgeshire, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.22115, -0.07025], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34359,6 +34498,7 @@
         },
         east_devon: {
             id: 'east_devon',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.east_devon', 'East Devon, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.7996, -3.18899], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34369,6 +34509,7 @@
         },
         new_forest: {
             id: 'new_forest',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.new_forest', 'New Forest, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.87259, -1.57662], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34379,6 +34520,7 @@
         },
         swale: {
             id: 'swale',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.swale', 'Swale, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.34128, 0.73282], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34389,6 +34531,7 @@
         },
         king_s_lynn_and_west_norfolk: {
             id: 'king_s_lynn_and_west_norfolk',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.king_s_lynn_and_west_norfolk', 'King\'s Lynn and West Norfolk, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.75172, 0.39516], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34399,6 +34542,7 @@
         },
         south_norfolk: {
             id: 'south_norfolk',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.south_norfolk', 'South Norfolk, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.57648, 1.11793], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34409,6 +34553,7 @@
         },
         cherwell: {
             id: 'cherwell',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.cherwell', 'Cherwell, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.0632, -1.34222], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34419,6 +34564,7 @@
         },
         south_oxfordshire: {
             id: 'south_oxfordshire',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.south_oxfordshire', 'South Oxfordshire, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.60928, -1.24214], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34429,6 +34575,7 @@
         },
         vale_of_white_horse: {
             id: 'vale_of_white_horse',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.vale_of_white_horse', 'Vale of White Horse, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.67109, -1.28278], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34439,6 +34586,7 @@
         },
         mid_sussex: {
             id: 'mid_sussex',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.mid_sussex', 'Mid Sussex, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.99769, -0.10313], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34449,6 +34597,7 @@
         },
         east_hertfordshire: {
             id: 'east_hertfordshire',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.east_hertfordshire', 'East Hertfordshire, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.79588, -0.07854], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34459,6 +34608,7 @@
         },
         west_suffolk: {
             id: 'west_suffolk',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.west_suffolk', 'West Suffolk, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.2463, 0.71111], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34469,6 +34619,7 @@
         },
         bolton: {
             id: 'bolton',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.bolton', 'Bolton, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.57829, -2.43004], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34479,6 +34630,7 @@
         },
         bury: {
             id: 'bury',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.bury', 'Bury, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.59275, -2.29728], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34489,6 +34641,7 @@
         },
         oldham: {
             id: 'oldham',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.oldham', 'Oldham, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.54051, -2.1183], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34499,6 +34652,7 @@
         },
         rochdale: {
             id: 'rochdale',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.rochdale', 'Rochdale, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.61766, -2.1552], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34509,6 +34663,7 @@
         },
         salford: {
             id: 'salford',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.salford', 'Salford, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.48771, -2.29042], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34519,6 +34674,7 @@
         },
         stockport: {
             id: 'stockport',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.stockport', 'Stockport, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.40979, -2.15761], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34529,6 +34685,7 @@
         },
         tameside: {
             id: 'tameside',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.tameside', 'Tameside, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.48876, -2.0989], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34539,6 +34696,7 @@
         },
         trafford: {
             id: 'trafford',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.trafford', 'Trafford, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.44771, -2.32344], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34549,6 +34707,7 @@
         },
         knowsley: {
             id: 'knowsley',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.knowsley', 'Knowsley, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.4115, -2.83935], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34559,6 +34718,7 @@
         },
         st_helens: {
             id: 'st_helens',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.st_helens', 'St Helens, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.45, -2.73333], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34569,6 +34729,7 @@
         },
         sefton: {
             id: 'sefton',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.sefton', 'Sefton, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.45069, -2.99488], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34579,6 +34740,7 @@
         },
         wirral: {
             id: 'wirral',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.wirral', 'Wirral, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.39337, -3.01479], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34589,6 +34751,7 @@
         },
         north_tyneside: {
             id: 'north_tyneside',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.north_tyneside', 'North Tyneside, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.99111, -1.53397], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34599,6 +34762,7 @@
         },
         south_tyneside: {
             id: 'south_tyneside',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.south_tyneside', 'South Tyneside, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.99859, -1.4323], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34609,6 +34773,7 @@
         },
         dudley: {
             id: 'dudley',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.dudley', 'Dudley, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.51108, -2.08168], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34619,6 +34784,7 @@
         },
         sandwell: {
             id: 'sandwell',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.sandwell', 'Sandwell, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.50391, -2.01639], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34629,6 +34795,7 @@
         },
         solihull: {
             id: 'solihull',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.solihull', 'Solihull, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.41426, -1.78094], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34639,6 +34806,7 @@
         },
         walsall: {
             id: 'walsall',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.walsall', 'Walsall, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.58528, -1.98396], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34649,6 +34817,7 @@
         },
         wolverhampton: {
             id: 'wolverhampton',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.wolverhampton', 'Wolverhampton, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.58547, -2.12296], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
@@ -34659,6 +34828,7 @@
         },
         gateshead: {
             id: 'gateshead',
+            planning: { ruleSetIds: ['gb-eng-planning'] },
             label: translateCityText('city.labels.gateshead', 'Gateshead, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.96209, -1.60168], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
