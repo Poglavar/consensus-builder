@@ -369,6 +369,9 @@
     };
     // What a running chain action is doing (the bridge's onStatus states, then the index mirror).
     const CHAIN_PHASE = {
+        pinning: tr => tr('agreement.chain.phase.pinning', 'Putting the agreement, its plan and designs on IPFS…'),
+        retrievable: (tr, detail) => tr('agreement.chain.phase.retrievable', 'Checking that public IPFS gateways serve them: {{confirmed}} of {{total}}…',
+            { confirmed: detail?.confirmed ?? 0, total: detail?.total ?? '…' }),
         preparing: tr => tr('agreement.chain.phase.preparing', 'Preparing the transaction…'),
         awaiting_signature: tr => tr('agreement.chain.phase.awaitingSignature', 'Waiting for the wallet’s signature…'),
         submitted: tr => tr('agreement.chain.phase.submitted', 'Sent; waiting for confirmation…'),
@@ -439,7 +442,7 @@
      */
     function chainHtml(view, tr = t) {
         if (!view || !view.published) return '';
-        const busy = view.busy ? `<p class="agreement-panel-hint" role="status" data-agreement-chain-busy="${esc(view.busy.action)}">${esc((CHAIN_PHASE[view.busy.phase] || CHAIN_PHASE.preparing)(tr))}</p>` : '';
+        const busy = view.busy ? `<p class="agreement-panel-hint" role="status" data-agreement-chain-busy="${esc(view.busy.action)}">${esc((CHAIN_PHASE[view.busy.phase] || CHAIN_PHASE.preparing)(tr, view.busy.detail))}</p>` : '';
         const locked = !!view.busy;
         const crowdfunding = view.electorate === 'investors';
         const title = tr('agreement.chain.heading', 'On chain');
@@ -1439,15 +1442,16 @@
             const done = new Promise(resolve => { finish = resolve; });
             state.chainBusy = { action, phase: 'preparing', done };
             renderPanel();
-            const onStatus = ({ state: phase }) => {
+            const onStatus = ({ state: phase, detail = null }) => {
                 if (state.id !== id || !state.chainBusy || !CHAIN_PHASE[phase]) return;
                 state.chainBusy.phase = phase;
+                state.chainBusy.detail = detail;
                 const line = state.panel && state.panel.querySelector('[data-agreement-chain-busy]');
-                if (line) line.textContent = CHAIN_PHASE[phase](t);
+                if (line) line.textContent = CHAIN_PHASE[phase](t, detail);
                 else renderPanel();
             };
             try {
-                await work(onStatus, phase => onStatus({ state: phase }));
+                await work(onStatus, (phase, detail = null) => onStatus({ state: phase, detail }));
             } catch (error) {
                 if (rejectedInWallet(error)) log(`${action} on ${id}: declined in the wallet`);
                 else report(`${action} on ${id} failed`, error);
@@ -1525,7 +1529,9 @@
             });
         }
 
-        // Mint (the sponsor): create the account, then mirror it into the index and keep it here.
+        // Mint (the sponsor): the content goes on IPFS and must be served by a public gateway first
+        // (AgreementSync.prepareMintContent; no wallet prompt until it is), then create the account,
+        // mirror it into the index and keep it here.
         async function mint() {
             const id = state.id;
             const agreement = state.agreement;
@@ -1535,6 +1541,9 @@
             if (!terms || state.id !== id) return;
             const subject = state.readOnlyAgreement || id;
             await runChain('mint', async (onStatus, phase) => {
+                phase('pinning');
+                await win.AgreementSync.prepareMintContent(subject, { onProgress: progress => phase('retrievable', progress) });
+                phase('preparing');
                 const minted = await win.AgreementBridge.mint({ agreement, lenses: lens.lenses, lensThreshold: lens.lensThreshold, requiredLamports: terms.requiredLamports, payout: terms.payout, onStatus });
                 phase('indexing');
                 try {

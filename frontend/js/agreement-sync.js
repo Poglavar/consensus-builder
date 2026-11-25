@@ -407,6 +407,37 @@
             return { onchain, row };
         }
 
+        // Content before the mint (docs/blockchain-flows.md Flow 2): the server pins the agreement, its
+        // plan and the plan's designs (POST /agreements/:cid/pin), then public gateways must serve each
+        // of them with bytes that hash to its CID (content-gate.js). It throws, and nothing is minted,
+        // until both hold. onProgress({ confirmed, total }) follows the gateway check.
+        async function prepareMintContent(subject, { onProgress = () => {} } = {}) {
+            const agreement = isObject(subject) ? subject : store().get(subject);
+            if (!agreement?.published) throw failure('not-proposed', t('agreement.chain.errors.notProposed', 'Propose the agreement before minting it.'));
+            const cid = agreement.published.cid;
+            const response = await request('POST', `/agreements/${encodeURIComponent(cid)}/pin`, {});
+            if (!response.ok || !Array.isArray(response.body?.objects)) {
+                const code = response.body?.code || `http-${response.status}`;
+                const message = code === 'content-missing'
+                    ? t('agreement.chain.errors.contentMissing', 'The server does not hold every design or plan this agreement names, so they cannot be put on IPFS and it cannot be minted.')
+                    : t('agreement.chain.errors.pinFailed', 'The agreement’s content could not be put on IPFS, so it cannot be minted yet: {{reason}}',
+                        { reason: response.body?.error || `HTTP ${response.status}` });
+                throw failure(code, message, { status: response.status, body: response.body });
+            }
+            const objects = response.body.objects;
+            log(`the server pinned ${response.body.pinned} of ${objects.length} object(s) of ${cid} (${response.body.alreadyPinned} already pinned); checking the gateways`);
+            try {
+                await (win.ContentGate || root.ContentGate || require('./content-gate.js')).waitRetrievable({ objects, cidOf: cidApi().cidOf, onProgress });
+            } catch (error) {
+                if (error?.code !== 'content-not-retrievable') throw error;
+                throw failure(error.code, t('agreement.chain.errors.notRetrievable',
+                    'No public IPFS gateway serves {{missing}} of the {{total}} objects yet, so the agreement was not minted. Try Mint again in a minute.',
+                    { missing: error.missing.length, total: objects.length }), { missing: error.missing });
+            }
+            log(`all ${objects.length} object(s) of ${cid} are served by a public gateway`);
+            return { objects };
+        }
+
         // The local agreement published as `cid`, or null.
         function localCopyOf(cid) {
             return store().list().find(agreement => agreement && agreement.published && agreement.published.cid === cid) || null;
@@ -524,7 +555,7 @@
 
         return {
             publishAgreement, proposeAgain, fetchAgreement, fetchMinted, handleAgreementRoute, agreementLink, localCopyOf,
-            refusalMessage, recordOnchain, adoptOnchain, openDetails, resolveDetails
+            refusalMessage, recordOnchain, adoptOnchain, openDetails, resolveDetails, prepareMintContent
         };
     }
 

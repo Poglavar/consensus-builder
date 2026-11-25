@@ -486,6 +486,24 @@ export async function attachSharedIndex(page: Page, index: SharedIndex): Promise
           && (minted !== '1' || row.onchain)).reverse();
         return json(route, 200, membershipPage('agreements', agreements, url.searchParams));
       }
+      // Content before the mint (backend routes/agreements.js POST /agreements/:cid/pin): the agreement,
+      // its plan and the plan's designs go into `pins` as canonical bytes, which the gateway route below
+      // serves, so the mint's retrievability check (content-gate.js) passes.
+      const pin = /^([^/]+)\/pin$/.exec(rest);
+      if (pin && method === 'POST') {
+        const row = index.agreements.get(pin[1]);
+        if (!row) return refuse(route, 404, 'agreement-not-found', 'Agreement not found');
+        if (row.content?.rule?.binding !== true) return refuse(route, 422, 'not-binding', 'Only a binding agreement is minted, so only its content is pinned.');
+        const plan = index.plans.get(row.content.planCid);
+        const tree = [{ kind: 'agreement', cid: row.cid, content: row.content },
+          ...(plan ? [{ kind: 'plan', cid: plan.cid, content: plan.content }] : []),
+          ...(plan ? plan.content.designCids.map((cid: string) => ({ kind: 'design', cid, content: index.designs.get(cid)?.content })) : [])];
+        const missing = [...(plan ? [] : [{ kind: 'plan', cid: row.content.planCid }]), ...tree.filter(item => !item.content).map(({ kind, cid }) => ({ kind, cid }))];
+        if (missing.length) return refuse(route, 409, 'content-missing', `${missing.length} object(s) the agreement references are not in the index.`, { missing });
+        const alreadyPinned = tree.filter(item => index.pins.has(item.cid)).length;
+        for (const item of tree) index.pins.set(item.cid, { kind: item.kind, bytes: Buffer.from(canonicalJson(item.content), 'utf8').toString('base64') });
+        return json(route, 200, { objects: tree.map(({ kind, cid }) => ({ kind, cid })), pinned: tree.length - alreadyPinned, alreadyPinned });
+      }
       // The index learns the chain account a sponsor minted (M3). It derives and reads nothing here: the
       // pointer is kept as sent, Active with its decision pending; 201 the first time, then 200.
       const onchain = /^([^/]+)\/onchain$/.exec(rest);
@@ -530,6 +548,15 @@ export async function attachSharedIndex(page: Page, index: SharedIndex): Promise
     }
 
     return refuse(route, 404, 'not-mocked', `The e2e index does not answer ${method} ${url.pathname}.`);
+  });
+
+  // Public IPFS gateways (content-gate.js IPFS_GATEWAYS) serve what this index pinned, and nothing else.
+  await page.route(/^https:\/\/(ipfs\.filebase\.io|gateway\.pinata\.cloud|ipfs\.io)\/ipfs\//, async route => {
+    const cid = new URL(route.request().url()).pathname.split('/')[2];
+    const pinned = index.pins.get(cid);
+    return pinned
+      ? route.fulfill({ status: 200, contentType: 'application/octet-stream', body: Buffer.from(pinned.bytes, 'base64'), headers: { 'access-control-allow-origin': '*' } })
+      : route.fulfill({ status: 404, body: 'not found', headers: { 'access-control-allow-origin': '*' } });
   });
 
   // The reads around minted agreements (M3), all GET: answered from the same index.

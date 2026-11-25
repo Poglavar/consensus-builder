@@ -1988,7 +1988,9 @@
                 "awaitingSignature": "En attente de la signature du portefeuille…",
                 "submitted": "Envoyée ; en attente de confirmation…",
                 "confirmed": "Confirmée.",
-                "indexing": "Enregistrement de l’inscription sur le serveur…"
+                "indexing": "Enregistrement de l’inscription sur le serveur…",
+                "pinning": "Publication de l’accord, de son plan et de ses projets sur IPFS…",
+                "retrievable": "Vérification que des passerelles IPFS publiques les servent : {{confirmed}} sur {{total}}…"
             },
             "hints": {
                 "noSponsor": "Cet accord a été proposé sans portefeuille de porteur ; il ne peut donc pas être inscrit sur la blockchain. Proposez-le à nouveau avec un portefeuille Solana connecté : ce sera un nouvel accord, avec son propre lien et ses propres décisions.",
@@ -2029,6 +2031,9 @@
                 "web3Unavailable": "La bibliothèque Solana n’a pas pu être chargée.",
                 "walletRequired": "Connectez d’abord un portefeuille Solana.",
                 "notDeployed": "Le programme d’accord n’est pas encore déployé sur Solana {{cluster}}.",
+                "pinFailed": "Le contenu de l’accord n’a pas pu être publié sur IPFS ; il ne peut donc pas encore être inscrit sur la blockchain : {{reason}}",
+                "contentMissing": "Le serveur ne détient pas tous les projets ou le plan que nomme cet accord ; ils ne peuvent donc pas être publiés sur IPFS et l’accord ne peut pas être inscrit sur la blockchain.",
+                "notRetrievable": "Aucune passerelle IPFS publique ne sert encore {{missing}} des {{total}} objets ; l’accord n’a donc pas été inscrit sur la blockchain. Réessayez dans une minute.",
                 "simulationFailed": "La transaction échouerait : {{reason}}",
                 "confirmationUnknown": "La transaction a été envoyée, mais le délai de confirmation a expiré. Vérifiez-la dans l’explorateur.",
                 "confirmationFailed": "La transaction a échoué sur la blockchain.",

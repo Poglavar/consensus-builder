@@ -575,6 +575,37 @@ export function setupAgreementsRoute(app, deps) {
             message: { code: 'try-later', error: 'Please wait before trying again.', retryAfter: 60 } })
     });
 
+    // Content before the mint (docs/blockchain-flows.md Flow 2): pins the agreement, its plan and the
+    // plan's designs from the index's own copies, each CID once (agreements/pin-minted.js), so the mint
+    // can wait for a public gateway to serve them. Only a binding agreement is minted, so only its
+    // content is pinned. → 200 { objects: [{ kind, cid }], pinned, alreadyPinned }; 409 when an object
+    // the agreement references is not in the index, 502 when one could not be pinned.
+    app.post('/agreements/:cid/pin', deps.uploadRateLimiter || createUploadRateLimiter(), async (req, res) => {
+        const cid = String(req.params.cid || '');
+        if (!isCid(cid)) return send(res, 400, { error: 'Not an agreement CID.', code: 'invalid-cid' });
+        try {
+            const store = createPinStore(pool);
+            const agreement = await store.agreement(cid);
+            if (!agreement) return send(res, 404, { error: 'Agreement not found', code: 'agreement-not-found' });
+            if (agreement.content?.rule?.binding !== true) {
+                return send(res, 422, { error: 'Only a binding agreement is minted, so only its content is pinned.', code: 'not-binding' });
+            }
+            const result = await pinAgreementTrees({ store, agreements: [agreement], apply: true, log,
+                ...(deps.pinBytes ? { pinBytes: deps.pinBytes } : {}) });
+            if (result.missing.length) {
+                return send(res, 409, { error: `${result.missing.length} object(s) the agreement references are not in the index.`, code: 'content-missing', missing: result.missing });
+            }
+            if (result.failed.length) {
+                return send(res, 502, { error: `${result.failed.length} object(s) could not be pinned: ${result.failed.map(item => `${item.kind} ${item.cid} (${item.error})`).join(', ')}`,
+                    code: 'pin-failed', failed: result.failed.map(({ kind, cid: objectCid }) => ({ kind, cid: objectCid })) });
+            }
+            return res.json({ objects: result.objects, pinned: result.pinned.length, alreadyPinned: result.alreadyPinned });
+        } catch (error) {
+            console.error(`[${new Date().toISOString()}] Error in POST /agreements/${cid}/pin:`, error);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
     // The index learns the chain: { chain: 'solana', cluster, account, signature? } after the sponsor
     // minted the agreement, which must be a binding owners' agreement (rule.binding: only those are
     // minted). The account must be the one the agreement's sponsor and CID derive; it is

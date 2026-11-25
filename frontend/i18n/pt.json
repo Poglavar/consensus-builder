@@ -1988,7 +1988,9 @@
                 "awaitingSignature": "A aguardar a assinatura da carteira…",
                 "submitted": "Enviada; a aguardar confirmação…",
                 "confirmed": "Confirmada.",
-                "indexing": "A registar a emissão no servidor…"
+                "indexing": "A registar a emissão no servidor…",
+                "pinning": "A colocar o acordo, o seu plano e projetos no IPFS…",
+                "retrievable": "A verificar se gateways IPFS públicos os servem: {{confirmed}} de {{total}}…"
             },
             "hints": {
                 "noSponsor": "Foi proposto sem uma carteira do promotor, pelo que não pode ser registado na blockchain. Volte a propô-lo com uma carteira Solana ligada: será um novo acordo, com ligação e decisões próprias.",
@@ -2029,6 +2031,9 @@
                 "web3Unavailable": "Não foi possível carregar a biblioteca Solana.",
                 "walletRequired": "Ligue primeiro uma carteira Solana.",
                 "notDeployed": "O programa de acordos ainda não está implementado na Solana {{cluster}}.",
+                "pinFailed": "Não foi possível colocar o conteúdo do acordo no IPFS, por isso ainda não pode ser registado na blockchain: {{reason}}",
+                "contentMissing": "O servidor não tem todos os projetos ou o plano que este acordo indica, por isso não podem ser colocados no IPFS e o acordo não pode ser registado na blockchain.",
+                "notRetrievable": "Nenhum gateway IPFS público serve ainda {{missing}} dos {{total}} objetos, por isso o acordo não foi registado na blockchain. Tente novamente dentro de um minuto.",
                 "simulationFailed": "A transação falharia: {{reason}}",
                 "confirmationUnknown": "A transação foi enviada, mas o tempo de espera pela confirmação terminou. Verifique-a no explorador.",
                 "confirmationFailed": "A transação falhou na blockchain.",

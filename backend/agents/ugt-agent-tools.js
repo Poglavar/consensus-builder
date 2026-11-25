@@ -32,6 +32,7 @@ import { createPaidClient } from './x402-client.js';
 import { fetchLensMembers } from './lens-directory-client.js';
 import { requestOwnershipAttestation } from './lens-ownership-client.js';
 import { createIndexClient } from './publication-client.js';
+import { cidOf } from '../cid.js';
 import { AGREEMENT_SCHEMA, DESIGN_SCHEMA, agreementObject, cidOfObject, designObject, isCid } from './agreement-objects.js';
 import {
     AGREEMENT_PROGRAM_ID, AGREEMENT_STATUS, agreementAccountOf, fundAgreement, mintAgreement, mintTermsOf, readAgreementAccount
@@ -261,6 +262,7 @@ export function createUrbanGameTheoryTools({
         mintAgreement,
         fundAgreement,
         readAgreementAccount,
+        waitRetrievable: options => require('../../frontend/js/content-gate.js').waitRetrievable(options),
         ...dependencies
     };
     let connection = null;
@@ -589,6 +591,10 @@ export function createUrbanGameTheoryTools({
             // target, which the program confirms itself (confirm_funding).
             const lensIssue = agreementRecord.lensRuleError(content.rule);
             if (lensIssue) throw new Error(`agreement ${agreementCid}: ${lensIssue}`);
+            // Content before the mint (docs/blockchain-flows.md Flow 2): pinned, and served by a public
+            // gateway with bytes that hash to each CID, or nothing is signed.
+            const { objects } = await index().pinForMint(agreementCid);
+            await impl.waitRetrievable({ objects, cidOf });
             const minted = await impl.mintAgreement({
                 connection, sponsorKeypair: keypair, cid: agreementCid, ...mintTermsOf(content), deadline: content.deadline ?? null,
                 lamports: required, openGround: Number(content.inputs?.openGroundM2) > 0,

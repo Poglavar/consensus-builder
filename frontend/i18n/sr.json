@@ -8552,7 +8552,9 @@
                 "awaitingSignature": "Čeka se potpis novčanika…",
                 "submitted": "Poslato; čeka se potvrda…",
                 "confirmed": "Potvrđeno.",
-                "indexing": "Beleženje kovanja na serveru…"
+                "indexing": "Beleženje kovanja na serveru…",
+                "pinning": "Sporazum, njegov plan i projekti stavljaju se na IPFS…",
+                "retrievable": "Provera da li ih javni IPFS pristupi služe: {{confirmed}} od {{total}}…"
             },
             "facts": {
                 "status": "Status",
@@ -8613,6 +8615,9 @@
                 "web3Unavailable": "Solana biblioteka nije mogla da se učita.",
                 "walletRequired": "Prvo povežite Solana novčanik.",
                 "notDeployed": "Program sporazuma još nije postavljen na mreži Solana {{cluster}}.",
+                "pinFailed": "Sadržaj sporazuma nije bilo moguće staviti na IPFS, pa još ne može da se iskuje: {{reason}}",
+                "contentMissing": "Server nema sve projekte ili plan koje sporazum navodi, pa ne mogu da se stave na IPFS i sporazum ne može da se iskuje.",
+                "notRetrievable": "Nijedan javni IPFS pristup još ne služi {{missing}} od {{total}} objekata, pa sporazum nije iskovan. Pokušajte ponovo za minut.",
                 "simulationFailed": "Transakcija ne bi uspela: {{reason}}",
                 "confirmationUnknown": "Transakcija je poslata, ali je isteklo vreme čekanja na potvrdu. Proverite je u exploreru.",
                 "confirmationFailed": "Transakcija nije uspela na lancu.",
