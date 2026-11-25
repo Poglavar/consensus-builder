@@ -460,7 +460,7 @@
         return { agreement: next, tally: result };
     }
     return { RIGHTS_SCHEMA, RIGHTS_SCHEMA_V2, CONFIG_SCHEMA, CONTEXT_SCHEMA, DECISION_SCHEMA, MEASURES, CLASSES, SCOPES, MAX_TESTS, MAX_AUTHORITIES,
-        normalizeRights, normalizeConfig, normalizePolicy, policyRules, testOf,
+        normalizeRights, normalizeConfig, normalizePolicy, policyRules, testOf, threshold, passes, needed,
         lensKeys, contextContent, contextHash, stableStringify, decisionEvidenceRef, inspect, ownerLabel, partyOf, partyLabel, letters, createTemplate,
         tally, participantTally, evidenceAllows, subjectOf, decisionContent, validOwnerIds, recordDecision };
 });

@@ -210,15 +210,13 @@
         bindParcelPanelControls();
         renderParcelHistory(feature);
         const props = feature?.properties || {};
-        const areaSource = props.calculatedArea
-            || props.area
-            || props.parcelArea
-            || props.informationTechnical?.superficie_total;
-        const area = Number.isFinite(Number(areaSource)) ? Number(areaSource) : 0;
+        // The record's area, else its geometry's (a provider with no area field, such as HMLR).
+        const area = global.ParcelMenuModel.featureArea(feature, global.turf) ?? 0;
         const formattedArea = area ? CbFormat.formatArea(area) : 'N/A';
 
         const estimate = global.ParcelPriceModel
-            ? global.ParcelPriceModel.buildEstimate(props, area, global.CityMoney.currentLandPriceOptions('land'))
+            ? global.ParcelPriceModel.buildEstimate(props, area,
+                global.CityMoney.currentLandPriceOptions('land', global.EconomicSources.locationOf(feature)))
             : { amount: null, currency: null, basis: 'unavailable' };
         const formattedPrice = estimate.amount === null
             ? 'N/A'
@@ -560,9 +558,10 @@
             </dl>
             <dl class="metric-group">
                 <dt class="metric-label">${marketPriceLabel}</dt>
-                <dd class="metric-value" title="${escapeHtml(economicEvidence)}">${formattedPrice}</dd>
+                <dd class="metric-value" title="${escapeHtml(economicEvidence)}" aria-describedby="parcel-price-source">${formattedPrice}</dd>
             </dl>
         </div>
+        ${estimate.economicSource ? '<p id="parcel-price-source" class="economic-source-note parcel-price-source"></p>' : ''}
         <div class="parcel-metric-row">
             <dl class="metric-group">
                 <dt class="metric-label" data-i18n-key="panel.parcel.metrics.block">${blockLabel}</dt>
@@ -687,6 +686,9 @@
         }
 
         global.document.getElementById('info-content').innerHTML = infoContent;
+        // The estimate's land rate source as visible text (the 3D panel and Plan stats show theirs alike).
+        const priceSource = global.document.getElementById('parcel-price-source');
+        if (priceSource) global.EconomicSourceSettings?.renderSource(priceSource, estimate.economicSource, global);
         global.document.getElementById('selected-parcels-content').innerHTML = '';
         setSelectedParcelsTabCount(0);
         global.PlanningViews?.showParcelEvidence(global.document.getElementById('info-content'), parcelId);

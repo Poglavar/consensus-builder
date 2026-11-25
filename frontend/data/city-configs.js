@@ -17182,6 +17182,22 @@
             id: 'birmingham', wupCityCode: '3979',
             label: translateCityText('city.labels.birmingham', 'Birmingham, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
+            // Land at the MHCLG estimate of the authority a plan or parcel lies in. Sale price and
+            // construction cost city-wide from the council's 2024 viability evidence (AspinallVerdi): its
+            // value zones are a ward map in a figure, not data, so the sale price is the city's median.
+            economics: { sources: ['uk-mhclg-land-2023',
+                { version: 1, id: 'bcc-residential-market-paper-2024', name: 'Birmingham Residential Market Paper 2024 (AspinallVerdi)',
+                    adapter: 'rate-table', url: 'https://www.birmingham.gov.uk/download/downloads/id/30611/viability_report_-_appendix_3_-_bcc_residential_market_paper.pdf',
+                    rates: [{ metric: 'sale', unit: 'm2-floor', amount: 2509, currency: 'GBP', basis: 'market', asOf: '2023-08-31',
+                        scope: 'Median new-build flat 2,952 per m² of dwelling, Aug 2021-Aug 2023 (Table 4.4) × 0.85 net to gross (viability report Table 5.4)' }] },
+                { version: 1, id: 'bcc-whole-plan-viability-2024', name: 'Birmingham Whole Plan Viability Assessment 2024 (AspinallVerdi)',
+                    adapter: 'rate-table', url: 'https://www.birmingham.gov.uk/download/downloads/id/30608/birmingham_whole_plan_viability_assessment_report.pdf',
+                    rates: [{ metric: 'construction', unit: 'm2-floor', amount: 1638, currency: 'GBP', basis: 'construction-cost', asOf: '2024-04-01',
+                        scope: 'Flats of 3-5 storeys, median BCIS rebased to Birmingham, per m² (Table 5.16); externals (15-20 %), fees and VAT excluded' }] },
+                // Rents per m² of dwelling take the viability assessment's net to gross, as its sale price does.
+                { id: 'ons-pipr-rent', adapter: 'area-rates', table: 'ons-pipr-rent',
+                    scale: { factor: 0.85, note: '× 0.85 net to gross (Whole Plan Viability Assessment Table 5.4)' } },
+                'uk-building-safety-levy', 'scenario-assumptions'] },
             map: {
                 initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
                 defaultCenter: [52.5053948519651, -1.95888767064615], defaultZoom: SHARED_DEFAULT_ZOOM,
@@ -17330,6 +17346,13 @@
             id: 'london', wupCityCode: '5938',
             label: translateCityText('city.labels.london', 'London, United Kingdom'),
             currency: { locale: 'en-GB', code: 'GBP' },
+            // Land at the MHCLG estimate of the borough a plan or parcel lies in; sale price and
+            // construction cost of its GLA London Plan Viability Study value band (js/economic-sources.js).
+            // Rents per m² of dwelling take the viability study's net to gross, as its sale prices do.
+            economics: { sources: ['uk-mhclg-land-2023', 'gla-lpvs-2026',
+                { id: 'ons-pipr-rent', adapter: 'area-rates', table: 'ons-pipr-rent',
+                    scale: { factor: 0.675, note: '× 0.675 net to gross (GLA viability study, Annex 3)' } },
+                'uk-building-safety-levy', 'scenario-assumptions'] },
             map: {
                 initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
                 defaultCenter: [51.5097885891913, -0.126303973484058], defaultZoom: SHARED_DEFAULT_ZOOM,
@@ -18721,7 +18744,9 @@
                 { version: 1, id: 'kz-tax-code-vat-2026', name: 'Tax Code of Kazakhstan: VAT on new housing',
                     adapter: 'rate-table', url: 'https://adilet.zan.kz/rus/docs/K2500000214',
                     rates: [{ metric: 'saleTax', unit: 'share-of-sale', amount: 0.16, currency: 'KZT', basis: 'statutory', asOf: '2026-01-01',
-                        scope: 'Art. 503(1), 16 %; a developer\'s sale of housing whose construction starts from 1 Jan 2026 (Art. 476(1)(1))' }] }
+                        scope: 'Art. 503(1), 16 %; a developer\'s sale of housing whose construction starts from 1 Jan 2026 (Art. 476(1)(1))' }] },
+                // No source states a development charge here: the editable 0 assumption fills that metric only.
+                'scenario-assumptions'
             ] },
             buildings: { sources: [{ id: 'kz-nsdi-buildings', name: 'Kazakhstan NSDI buildings', attribution: 'Kazakhstan National Spatial Data Infrastructure' }, { id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
@@ -18773,7 +18798,9 @@
                 { version: 1, id: 'kz-tax-code-vat-2026', name: 'Tax Code of Kazakhstan: VAT on new housing',
                     adapter: 'rate-table', url: 'https://adilet.zan.kz/rus/docs/K2500000214',
                     rates: [{ metric: 'saleTax', unit: 'share-of-sale', amount: 0.16, currency: 'KZT', basis: 'statutory', asOf: '2026-01-01',
-                        scope: 'Art. 503(1), 16 %; a developer\'s sale of housing whose construction starts from 1 Jan 2026 (Art. 476(1)(1))' }] }
+                        scope: 'Art. 503(1), 16 %; a developer\'s sale of housing whose construction starts from 1 Jan 2026 (Art. 476(1)(1))' }] },
+                // No source states a development charge here: the editable 0 assumption fills that metric only.
+                'scenario-assumptions'
             ] },
             buildings: { sources: [{ id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },

@@ -83,6 +83,26 @@ describe('agreement MCP editing surface', () => {
         expect(edit.safeParse({ plan, expectedCid, operations: [{ type: 'remove', ref: 'design:x' }] }).success).toBe(false);
     });
 
+    it('turns an owners’ draft into a street-vote community agreement on the same plan, clearing owner terms', async () => {
+        const { tools, namedPlan } = await runtime();
+        const owners = await tools.draftAgreement({ plan: namedPlan.draftArtifact, rulePreset: 'owner-vote' });
+        expect(owners.agreement.allocations.length).toBeGreaterThan(0);
+        const h = i => i.toString(16).padStart(64, '0');
+        const voting = { schema: 'community-voting/v2', id: '0b6f6a52-2f43-4c3e-9a51-0c0d6b1e2f11', codeHashes: [h(3), h(1), h(2)],
+            households: [[h(2), h(1)], [h(3)]], rule: { id: 'gb-street-vote-consultation-2023', version: '2026-11-25' } };
+        expect(schemas().get('ugt_edit_agreement').safeParse({ plan: owners.cid, expectedCid: owners.cid,
+            terms: { rulePreset: 'community-vote', consultation: { organiser: null, participationUrl: null, voting } } }).success).toBe(true);
+        const street = await tools.editAgreement({ plan: owners.draftArtifact, expectedCid: owners.cid,
+            terms: { rulePreset: 'community-vote', consultation: { organiser: null, participationUrl: null, voting } } });
+        expect(street.agreement.planCid).toBe(namedPlan.cid);
+        expect(street.agreement.rule).toMatchObject({ electorate: 'community', binding: false, approvalConfig: null });
+        expect(street.agreement.allocations).toEqual([]);
+        expect(street.agreement.money.lines).toEqual([]);
+        expect(street.agreement.consultation.voting).toEqual({ ...voting, codeHashes: [h(1), h(2), h(3)], households: [[h(1), h(2)], [h(3)]] });
+        // The owners' draft keeps its identity: owner sign-off stays a separate agreement on the plan.
+        expect(street.previousCid).toBe(owners.cid);
+    });
+
     it('revises recipient and EUR/m² settlement on the same existing plan, deriving new cash', async () => {
         const { tools, paths, namedPlan } = await runtime();
         const original = await tools.draftAgreement({ plan: namedPlan.draftArtifact, rulePreset: 'owner-deal',

@@ -1541,6 +1541,8 @@
             "mintedAgreementsButton": "Acuerdos en cadena",
             "clearButton": "Restablecer diseños (este navegador)",
             "planStats": {
+                "devChargeSuffix": "{{currency}} por m² cargo por edificación",
+                "costDevCharge": "Cargo por edificación (nueva superficie × cargo por m²)",
                 "calculating": "Calculando…",
                 "modalTitle": "Estadísticas del plan",
                 "planArea": "Superficie del plan (m²)",
@@ -1578,7 +1580,7 @@
                 "noteNoLandPrice": "No hay precio del suelo para este lugar: indique uno para ver el coste total y el beneficio.",
                 "rentSuffix": "{{currency}} por m² de alquiler al mes",
                 "annualRent": "Alquiler anual de la nueva superficie",
-                "rentYield": "Rentabilidad del alquiler sobre el coste (alquiler anual ÷ construcción, suelo y valor derribado)",
+                "rentYield": "Rentabilidad del alquiler sobre el coste (alquiler anual ÷ construcción, cargo por edificación, suelo y valor derribado)",
                 "assumptionsLabel": "Supuestos",
                 "efficiencySuffix": "% neto sobre bruto",
                 "apartmentSizeSuffix": "m² por vivienda",
@@ -6625,6 +6627,8 @@
             "overlap": "Contornos de origen superpuestos: {{index}} / {{count}}. Haz clic de nuevo para alternar."
         },
         "parcelPanel": {
+            "devCharge": "Cargo por edificación {{price}}/m²",
+            "devChargeUnset": "Cargo por edificación sin fijar: mueva el control",
             "title": "Parcela",
             "built": "Construido",
             "proposed": "Propuesto",
@@ -6636,7 +6640,7 @@
             "value": "Valor",
             "constructionCost": "Coste de construcción",
             "profit": "Beneficio",
-            "profitNote": "Beneficio = valor − coste total: construcción, suelo, impuesto de venta menos el recuperado de la construcción, y valor construido sustituido",
+            "profitNote": "Beneficio = valor − coste total: construcción, cargo por edificación, suelo, impuesto de venta menos el recuperado de la construcción, y valor construido sustituido",
             "allInCost": "Coste total",
             "costDetails": "Detalle del coste",
             "landCost": "Suelo",
@@ -9051,8 +9055,10 @@
         "resize": "Cambia el tamaño del panel. Arrastra arriba o abajo; arrastra hasta abajo para cerrarlo."
     },
     "economicSources": {
+        "devCharge": "Cargo por edificación",
+        "sourceLabel": "Fuente:",
         "title": "Valoración y costes",
-        "intro": "Las fuentes aportan tarifas distintas para el suelo, los precios de venta por superficie construida, la construcción, el alquiler y el impuesto de venta. Si faltan datos locales, el valor queda como no disponible; los supuestos editables del escenario no son datos de mercado.",
+        "intro": "Las fuentes aportan tarifas distintas para el suelo, los precios de venta por superficie construida, la construcción, los cargos por edificación, el alquiler y el impuesto de venta. Si faltan datos locales, el valor queda como no disponible; los supuestos editables del escenario no son datos de mercado.",
         "land": "Suelo",
         "roadLand": "Suelo para vías",
         "sale": "Precio de venta",
@@ -9620,7 +9626,47 @@
         "turnoutCount": "Han votado {{votes}} de {{eligible}} · {{percent}}",
         "remaining": "Aún no han votado: {{count}}",
         "castShare": "Proporción de los votos emitidos",
-        "refreshResults": "Actualizar resultados"
+        "refreshResults": "Actualizar resultados",
+        "rule": "Regla de votación",
+        "ruleNone": "Ninguna: mostrar solo los totales",
+        "householdBatch": "Hogar de estas personas (opcional)",
+        "householdHint": "Las personas que viven juntas comparten una etiqueta de hogar. Un código sin etiqueta cuenta como un hogar propio. Las etiquetas de hogar quedan en este equipo; el acuerdo solo registra qué códigos comparten hogar.",
+        "importCsv": "Generar códigos desde un CSV de residentes",
+        "csvHint": "El CSV necesita las columnas Person y Household, un residente por fila.",
+        "household": "Hogar (solo local)",
+        "householdOf": "Hogar de {{person}}",
+        "batch": "Genere entre 1 y 100 códigos a la vez.",
+        "householdsVoted": "Hogares que votaron: {{voted}} de {{eligible}}",
+        "measureCastSupport": "Apoyo entre los votos emitidos",
+        "measureEligibleSupport": "Apoyo entre todos los votantes habilitados",
+        "measureHouseholdTurnout": "Hogares que votaron",
+        "measureHouseholdSupport": "Hogares votantes con un voto de apoyo",
+        "testDetail": "{{count}} de {{total}} · necesita {{needed}} ({{rule}})",
+        "atLeast": "al menos {{share}}",
+        "moreThan": "más de {{share}}",
+        "met": "cumplido",
+        "notMet": "no cumplido",
+        "passing": "Aprobándose",
+        "notPassing": "Sin aprobar",
+        "passed": "Aprobado",
+        "failed": "Rechazado",
+        "ownerSignOff": "Conformidad de los propietarios",
+        "ownerNone": "Todavía no hay un acuerdo de propietarios sobre este plan. Los propietarios deciden en un acuerdo aparte sobre el mismo plan.",
+        "ownerAgreement": "Acuerdo de propietarios",
+        "ownerDeal": "Trato vinculante de propietarios",
+        "ownerVote": "Votación de propietarios",
+        "openOwner": "Abrir",
+        "ownerUnavailable": "No se pudieron leer los acuerdos de propietarios de este plan.",
+        "ballotRules": {
+            "gb-street-vote-strong-suburbs": {
+                "name": "Votación de calle — Strong Suburbs",
+                "source": "Propuesta en Strong Suburbs (2021) de Policy Exchange: al menos el 60% de los votos emitidos a favor, votan residentes de al menos la mitad de los hogares, y un sí de un residente en al menos la mitad de los hogares votantes."
+            },
+            "gb-street-vote-consultation-2023": {
+                "name": "Votación de calle — consulta del gobierno de 2023",
+                "source": "Propuesta en la consulta del gobierno británico de diciembre de 2023 sobre órdenes de desarrollo por votación de calle: al menos el 60% de los habilitados para votar a favor, y al menos un votante a favor en al menos la mitad de los hogares votantes."
+            }
+        }
     },
     "criticTour": {
         "skip": "Saltar animación",

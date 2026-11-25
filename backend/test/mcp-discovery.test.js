@@ -26,6 +26,8 @@ describe('tool-only MCP discovery', () => {
             trackPlacement: { ground: 'tram', elevated: 'elevated', underground: 'underground' }
         });
         expect(result.features.find(row => row.feature === 'review').validate).toBe('ugt_validate_plan');
+        expect(result.features.find(row => row.feature === 'community-code-voting').ballotRules.map(row => `${row.rule.id}@${row.rule.version}`))
+            .toEqual(['gb-street-vote-strong-suburbs@2026-11-25', 'gb-street-vote-consultation-2023@2026-11-25']);
         expect(result.features.find(row => row.feature === 'imports')).toMatchObject({ modelKinds: expect.arrayContaining(['furniture']),
             furnitureKinds: ['bench', 'statue', 'fountain', 'stall', 'tree', 'lamp', 'swing', 'seesaw', 'slide'], furnitureLimits: { maxTriangles: 5000, maxTextureSize: 1024, maxBytes: 4 * 1024 * 1024 } });
         expect(result.features.find(row => row.feature === 'public-spaces')).toMatchObject({ furnitureKinds: { park: ['bench', 'stall', 'tree', 'lamp', 'swing', 'seesaw', 'slide'] },

@@ -10,6 +10,9 @@ const require = createRequire(import.meta.url);
 const approvalLink = require('../../frontend/js/approval-link.js');
 const footprintParts = require('../../frontend/js/proposals/footprint-parts.js');
 const search = require('../../frontend/js/ui/search-model.js');
+const { locationOf } = require('../../frontend/js/economic-sources.js');
+const { featureArea } = require('../../frontend/js/ui/parcel-menu-model.js');
+const { buildParcelPriceEstimate } = require('../../frontend/js/financials.js');
 const { cadastralPartOf, cadastralParts } = require('../../frontend/js/parcels/live-fabric.js');
 const catalog = JSON.parse(readFileSync(new URL('../../frontend/data/source-catalog.json', import.meta.url), 'utf8'));
 const databaseSources = catalog.databaseSources;
@@ -20,14 +23,25 @@ export const ID_BATCH_SIZE = 40;
 
 // The city's selected rates per m², as Settings → Valuation & costs shows them: sale and construction
 // per m² of floor, land and road land per m² of land, each with its basis, date and source
-// (frontend/js/economic-sources.js). A city the app does not configure has none, and says why.
-export function cityEconomics(city) {
+// (frontend/js/economic-sources.js), at `at`, [lng, lat]: rates published per area (an English
+// authority's land value, a London value band) are that place's, as the app's panels take them. A
+// city the app does not configure has none, and says why.
+export function cityEconomics(city, at = null) {
     try {
         const money = cityMoney(city);
-        return { currency: money.currentCurrency(), rates: money.currentEconomicRates() };
+        return { currency: money.currentCurrency(), rates: money.currentEconomicRates(at) };
     } catch (error) {
         return { currency: null, rates: {}, unavailable: true, reason: error.message };
     }
+}
+// The parcel panel's estimate (Info tab): the parcel's area, the record's else its measured geometry's
+// (ParcelMenuModel.featureArea), × the city's land rate where it lies, with that rate's source; a
+// source's own price estimate where the record carries one. Null amount when either is missing.
+export function landEstimateOf(city, parcel) {
+    const areaM2 = featureArea(parcel, turf);
+    const { currency, rates } = cityEconomics(city, locationOf(parcel));
+    return { areaM2, ...buildParcelPriceEstimate(parcel?.properties || {}, areaM2 ?? 0,
+        { areaPricePerSqm: rates.land?.amount, currency, economicSource: rates.land || null }) };
 }
 const idBatchSizes = new Map(catalog.sources.filter(source => Number.isSafeInteger(source.idBatchSize) && source.idBatchSize > 0)
     .map(source => [source.id, Math.min(source.idBatchSize, ID_BATCH_SIZE)]));
@@ -223,7 +237,7 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
             const studies = await Promise.all((planning.sources || []).filter(s => s.parcelStudy && args.planningSourceIds?.includes(s.id)).map(async source => ({ source: source.id,
                 study: await request('/planning/study', { city: args.city, source: source.id, parcel: id }) })));
             return { parcel, parcelSourceId: result.parcelSourceId, areaM2: turf.area(parcel), designs, agreements, markets, buildings, history, planning, studies, urbanRules,
-                economics: cityEconomics(args.city), previewUrl: mapUrl(args.city, bbox) };
+                economics: cityEconomics(args.city, locationOf(parcel)), landEstimate: landEstimateOf(args.city, parcel), previewUrl: mapUrl(args.city, bbox) };
         },
         async planningAreas({ city, point, source }) {
             if (!source || !Array.isArray(point) || point.length !== 2) throw failure('planning-area-query-required', 'Provide a planning source and WGS84 point.');

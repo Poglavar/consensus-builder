@@ -505,6 +505,17 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 #parcel-info-panel dd.metric-value {
     margin-top: 0;
     margin-bottom: 0;
+    white-space: nowrap;
+}
+
+/* A long label (a modeled estimate's rate) puts its value on the next line rather than splitting it. */
+#parcel-info-panel .parcel-metric-row .metric-group {
+    flex-wrap: wrap;
+}
+
+/* The land rate's source under the estimate (EconomicSourceSettings.renderSource). */
+#parcel-info-panel .parcel-price-source {
+    margin: 0 0 var(--cb-space-2);
 }
 
 /* The parcel and block panels' tabs: the shared cb-tabs strip (css/primitives.css), inset like the

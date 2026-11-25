@@ -113,31 +113,39 @@ describe('MCP comparison money', () => {
         const removed = existingFloorArea(stock.geometry, standing);
         expect(removed).toBeCloseTo(turf.area(stock) * 3);
         expect(built.removedFloorAreaM2).toBeCloseTo(removed);
-        // London: the authority's land rate; the editable starting assumptions for the rest.
+        // London, at the site's place (its extent's centre is in Southwark, value band B): the borough's
+        // land rate and two-bed rent (2,409 a month ÷ 70 m² × 0.675 net to gross), the band's sale price and
+        // construction cost, the editable assumptions for the rest.
+        // Southwark's Building Safety Levy on previously developed land, 28.47 per m² of new floor area.
+        const sale = 11844, cost = 3730, land = 5385, rent = 23.23, levy = 28.47;
         expect(built.money).toMatchObject({ currency: 'GBP', unit: 'm2-floor', prices: {
-            sale: { amount: 4000, basis: 'assumption', sourceId: 'scenario-assumptions' }, construction: { amount: 2000 },
-            land: { amount: 8799, basis: 'policy-appraisal', sourceId: 'uk-mhclg-land-2023' }, saleTax: { amount: 0 },
-            rent: { amount: 15, unit: 'm2-floor-month' } } });
+            sale: { amount: sale, basis: 'market', sourceId: 'gla-lpvs-2026' }, construction: { amount: cost, basis: 'construction-cost' },
+            land: { amount: land, basis: 'policy-appraisal', sourceId: 'uk-mhclg-land-2023', scope: 'E09000028 · Southwark' }, saleTax: { amount: 0 },
+            rent: { amount: rent, unit: 'm2-floor-month', sourceId: 'ons-pipr-rent', scope: expect.stringMatching(/^E09000028 · Southwark: two-bed rent 2,409 a month/) },
+            devCharge: { amount: levy, unit: 'm2-floor', basis: 'statutory', sourceId: 'uk-building-safety-levy', landCategory: 'previously-developed',
+                scope: expect.stringMatching(/^E09000028 · Southwark: previously developed land; 56\.93 on other land/) } } });
+        expect(built.money.devCharge).toBeCloseTo(built.floorAreaM2 * levy);
         expect(built.money.landAreaM2).toBeCloseTo(siteM2);
-        expect(built.money.landCost).toBeCloseTo(siteM2 * 8799);
-        expect(built.money.totalCost).toBeCloseTo(built.floorAreaM2 * 2000 + siteM2 * 8799 + removed * 4000);
-        expect(built.money.profit).toBeCloseTo(built.floorAreaM2 * 4000 - built.money.totalCost);
-        expect(built.money.annualRent).toBeCloseTo(built.floorAreaM2 * 15 * 12);
+        expect(built.money.landCost).toBeCloseTo(siteM2 * land);
+        expect(built.money.totalCost).toBeCloseTo(built.floorAreaM2 * (cost + levy) + siteM2 * land + removed * sale);
+        expect(built.money.profit).toBeCloseTo(built.floorAreaM2 * sale - built.money.totalCost);
+        expect(built.money.annualRent).toBeCloseTo(built.floorAreaM2 * rent * 12);
         expect(built.money.rentYieldOnCost).toBeCloseTo(built.money.annualRent / built.money.totalCost);
         // The park builds nothing: it still pays for its land and what it clears.
-        expect(result.alternatives[0].money.profit).toBeCloseTo(-(siteM2 * 8799 + removed * 4000));
+        expect(result.alternatives[0].money.profit).toBeCloseTo(-(siteM2 * land + removed * sale));
         expect(result.warnings.some(text => text.startsWith('Money is a model'))).toBe(true);
     });
 
     it('uses the prices the caller gives instead, as assumptions, the sale tax as a share', async () => {
         const { tools } = toolsFor({ stockBuilding: standing });
         const result = await tools.compare({ buildingSources: ['osm'], targets: [park, { design: building }], parcelSourceId: 'test',
-            prices: { salePerM2: 5000, constructionPerM2: 3000, landPerM2: 100, saleTaxShare: 0.2, rentPerM2Month: 25 } });
+            prices: { salePerM2: 5000, constructionPerM2: 3000, landPerM2: 100, saleTaxShare: 0.2, rentPerM2Month: 25, devChargePerM2: 50 } });
         const { money, floorAreaM2, removedFloorAreaM2 } = result.alternatives[1];
         expect(money.prices.sale).toEqual({ amount: 5000, currency: 'GBP', basis: 'assumption', sourceId: 'caller' });
         expect(money.prices.land.amount).toBe(100);
         expect(money.saleTax).toBeCloseTo(floorAreaM2 * 5000 * 0.2 / 1.2);
-        expect(money.profit).toBeCloseTo(floorAreaM2 * 5000 - (floorAreaM2 * 3000 + siteM2 * 100 + money.saleTax + removedFloorAreaM2 * 5000));
+        expect(money.prices.devCharge).toEqual({ amount: 50, currency: 'GBP', basis: 'assumption', sourceId: 'caller' });
+        expect(money.profit).toBeCloseTo(floorAreaM2 * 5000 - (floorAreaM2 * 3050 + siteM2 * 100 + money.saleTax + removedFloorAreaM2 * 5000));
         expect(money.annualRent).toBeCloseTo(floorAreaM2 * 25 * 12);
     });
 
@@ -160,6 +168,7 @@ describe('MCP comparison money', () => {
         const built = result.alternatives[1];
         expect(built.removedFloorAreaM2).toBeNull();
         expect(built.money).toMatchObject({ profit: null, totalCost: null });
-        expect(built.money.constructionCost).toBeCloseTo(built.floorAreaM2 * 2000);
+        // Value band B's 4-6 storey construction cost at the site.
+        expect(built.money.constructionCost).toBeCloseTo(built.floorAreaM2 * 3730);
     });
 });

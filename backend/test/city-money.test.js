@@ -10,6 +10,10 @@ const { buildParcelPriceEstimate } = require('../../frontend/js/financials.js');
 
 const birmingham = { id: 'birmingham', currency: { locale: 'en-GB', code: 'GBP' } };
 const UkLandRates = require('../../frontend/js/uk-land-rates.js');
+const EconomicSources = require('../../frontend/js/economic-sources.js');
+const UkEconomicAreas = require('../../frontend/data/uk-economic-areas.js');
+// A point, [lng, lat], in Birmingham city centre (Birmingham City Council, E08000025).
+const BIRMINGHAM_CENTRE = [-1.8904, 52.4862];
 const cityConfigSource = require('node:fs').readFileSync(new URL('../../frontend/data/city-configs.js', import.meta.url), 'utf8');
 const croatian = { currency: { locale: 'hr-HR', code: 'EUR' } };
 const mumbai = { currency: { locale: 'en-IN', code: 'INR' } };
@@ -29,10 +33,10 @@ describe('fiat and tokens', () => {
 
 describe('price assumptions follow the city currency', () => {
     // MHCLG 2023 residential land, medium density at the median house price: Birmingham £6.88m/ha.
-    it('gives a UK city its own authority land rate in pounds', () => {
-        const a = CityMoney.assumptionsFor(birmingham);
+    it('gives a UK place its own authority land rate in pounds', () => {
+        const a = CityMoney.assumptionsFor(birmingham, null, BIRMINGHAM_CENTRE);
         expect(a).toMatchObject({ currency: 'GBP', landPerSqm: 688, roadLandPerSqm: 688, salesPerSqm: 4000 });
-        expect(UkLandRates.cities.birmingham).toMatchObject({ authority: 'E08000025', basis: 'authority' });
+        expect(UkLandRates.cities.birmingham).toBe('E08000025');
         expect(a.sources.land).toMatchObject({
             amount: 688, unit: 'm2-land', currency: 'GBP', basis: 'policy-appraisal', asOf: '2023-10-01',
             sourceId: 'uk-mhclg-land-2023', scope: 'E08000025 · Birmingham'
@@ -46,12 +50,17 @@ describe('price assumptions follow the city currency', () => {
         expect(assumptions.sources).not.toHaveProperty('land');
     });
 
-    // The table is generated from data/city-configs.js; rebuilding it keeps each configured authority's
-    // evidence available. Median placeholders are retained as input metadata, not local rates.
-    it('has a land rate for every UK city in the config', () => {
-        const ukCities = [...cityConfigSource.matchAll(/\n {12}id: '([^']+)'[^\n]*\n {12}label: [^\n]*\n {12}currency: \{ locale: '[^']+', code: 'GBP' \}/g)].map(m => m[1]);
+    // The table is generated from data/city-configs.js: every UK city whose centre lies in an English
+    // authority with an estimate has that authority for when a location gives none; the others none.
+    it('knows the authority of every English city in the config', () => {
+        const ukCities = [...cityConfigSource.matchAll(/\n {12}id: '([^']+)'[^\n]*\n {12}label: [^\n]*\n {12}currency: \{ locale: '[^']+', code: 'GBP' \},(?:\n {12}\/\/[^\n]*)*(?:\n {12}economics: [\s\S]*?)?\n {12}map: \{[^]*?defaultCenter: \[(-?[\d.]+), (-?[\d.]+)\]/g)]
+            .map(m => ({ id: m[1], centre: [Number(m[3]), Number(m[2])] }));
         expect(ukCities.length).toBeGreaterThan(100);
-        expect(ukCities.filter(id => !UkLandRates.cities[id])).toEqual([]);
+        const outside = ukCities.filter(city => !UkLandRates.cities[city.id]);
+        expect(outside.length).toBeLessThan(10);
+        // Outside England, or in an authority MHCLG gives no estimate for (Cumberland).
+        for (const city of outside) expect(UkLandRates.areas[EconomicSources.areaAt(UkEconomicAreas, 'lad', city.centre)?.id], city.id).toBeUndefined();
+        for (const city of ukCities.filter(row => UkLandRates.cities[row.id])) expect(UkLandRates.areas[UkLandRates.cities[city.id]], city.id).toBeTruthy();
     });
 
     // The 3D panel's two sliders start at the same figures in every city, in its own currency.
@@ -144,6 +153,16 @@ describe('new floor area: value, all-in cost, profit and rent', () => {
         expect(newBuildMoney({ ...base, salePerM2: -1 }).value).toBeNull();
         // A tax share of 1 or more is no tax share.
         expect(newBuildMoney({ ...base, saleTaxShare: 1 }).saleTax).toBeNull();
+    });
+
+    it('charges the development charge on the new floor area, in the cost and the rent yield; unknown when it is', () => {
+        const money = newBuildMoney({ ...base, devChargePerM2: 40 });
+        expect(money.devCharge).toBe(40000);
+        expect(money.totalCost).toBeCloseTo(newBuildMoney(base).totalCost + 40000);
+        expect(money.rentYieldOnCost).toBeCloseTo(180000 / (2000000 + 40000 + 150000 + 800000));
+        expect(newBuildMoney({ ...base, devChargePerM2: null })).toMatchObject({ devCharge: null, totalCost: null, profit: null });
+        // Not given at all is no charge.
+        expect(newBuildMoney(base).devCharge).toBe(0);
     });
 
     it('is on every city view, which is what the dialogs and the MCP hold', () => {

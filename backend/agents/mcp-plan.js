@@ -1,6 +1,6 @@
 // Inspect the exact named plan behind an agreement and revise its terms without changing membership.
 import { appTurf as turf } from './mcp-geometry.js';
-import { agreementObject, cidOfObject, isCid, personPositions } from './agreement-objects.js';
+import { agreementObject, cidOfObject, communityRule, isCid, personPositions } from './agreement-objects.js';
 import { previewArtifact } from './mcp-preview.js';
 import { trustedMetadata } from './mcp-results.js';
 import { createRequire } from 'node:module';
@@ -245,18 +245,23 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
         }
         const rule = withLens(terms.rule ? structuredClone(terms.rule) : structuredClone(previous.rule), terms);
         if (terms.settlement) rule.settlement = terms.settlement;
-        if (terms.rulePreset) {
+        // A community vote has no owner rule, land allocation or cash: the preset clears them, like a
+        // new draft with that preset. Owners keep deciding in their own agreement on the same plan.
+        if (terms.rulePreset === 'community-vote') Object.assign(rule, communityRule(rule.lens), { settlement: null });
+        else if (terms.rulePreset) {
             rule.electorate = 'owners'; rule.binding = terms.rulePreset === 'owner-deal';
             if (terms.rights) rule.approvalConfig = { schema: 'proposal-approval/v1', rights: terms.rights, policy: { type: 'unanimous' } };
         }
+        const community = rule.electorate === 'community';
         // Ownership rights live only in the rule: the parties stay one per input parcel.
         if (terms.rights && rule.electorate === 'owners') rule.approvalConfig = { ...(rule.approvalConfig || { schema: 'proposal-approval/v1', policy: { type: 'unanimous' } }), rights: terms.rights };
         const parcels = previous.inputs.parcels;
         const outputs = previous.outputs.map(output => ({ ...output, geometry: null }));
         const checked = agreementObject({ ...previous, plan: original.plan, designs: original.designs.map(row => ({ cid: row.cid, title: row.content.title, goal: row.content.goal })),
             parcels, openGroundM2: previous.inputs.openGroundM2, outputs,
-            allocations: terms.allocations ?? previous.allocations, money: previous.money, rule,
-            valuation: Object.hasOwn(terms, 'valuation') ? terms.valuation : previous.valuation ?? null,
+            allocations: community ? [] : terms.allocations ?? previous.allocations,
+            money: community ? { ...previous.money, lines: [] } : previous.money, rule,
+            valuation: community ? null : Object.hasOwn(terms, 'valuation') ? terms.valuation : previous.valuation ?? null,
             ...Object.fromEntries(['title', 'author', 'sponsor', 'deadline', 'consultation'].filter(key => Object.hasOwn(terms, key)).map(key => [key, terms[key]])),
             consultation: rule.electorate === 'community' ? terms.consultation ?? previous.consultation : null, createdAt: new Date().toISOString() });
         return { agreement: checked.content, cid: checked.cid, previousCid: original.cid, plan: original.plan,

@@ -1087,8 +1087,8 @@
             const defaults = Object.fromEntries(api.defaultAllocations(state.land.inputs, state.land.outputs).map(row => [row.output, allocationValue(row.to)]));
             state.values.allocations = state.allocationMode === 'individual' ? { ...defaults, ...kept.allocations }
                 : Object.fromEntries(state.land.outputs.map(output => [output.hash, state.allocationMode]));
-            // A parcel or piece without a land value takes the city's land price per m² (CityMoney),
-            // so a plan can be valued at once and corrected row by row.
+            // A parcel or piece without a land value takes the land price per m² (CityMoney) where the
+            // agreement's input parcels are, so a plan can be valued at once and corrected row by row.
             const fallback = defaultUnitValueCents();
             const inputs = { ...kept.valuation.inputs }, outputs = { ...kept.valuation.outputs };
             if (fallback !== null) {
@@ -1099,7 +1099,8 @@
         }
         function defaultUnitValueCents() {
             try {
-                const price = root.CityMoney?.currentLandPriceOptions?.('land')?.areaPricePerSqm;
+                const parcels = state.land.inputs.parcels.map(parcel => root.CadastralParcelRepository?.get?.(idOf(parcel.parcelId))).filter(Boolean);
+                const price = root.CityMoney?.currentLandPriceOptions?.('land', root.EconomicSources.locationOf(parcels))?.areaPricePerSqm;
                 return isNumber(price) && price >= 0 ? Math.round(price * 100) : null;
             } catch (_) { return null; }
         }

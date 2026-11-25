@@ -8,6 +8,7 @@ const FurnitureModels = createRequire(import.meta.url)('../../frontend/js/furnit
 const ParkEnclosures = createRequire(import.meta.url)('../../frontend/js/park-enclosures.js');
 const ApprovalRegimes = createRequire(import.meta.url)('../../frontend/js/proposals/approval-regimes.js');
 const ApprovalText = createRequire(import.meta.url)('../../frontend/js/proposals/approval-text.js');
+const BallotRules = createRequire(import.meta.url)('../../frontend/js/community/ballot-rules.js');
 const plainText = (_key, fallback, params = {}) => String(fallback).replace(/\{\{\s*(\w+)\s*\}\}/g, (_, name) => params[name] ?? '');
 
 // The agreement schemes a rule can pin (rule.approvalConfig.regime = { id, version }): the newest
@@ -50,7 +51,10 @@ export const MCP_FEATURES = Object.freeze([
     { feature: 'map-navigation', view: 'ugt_map_view', selection: 'ugt_select_parcels',
         contract: 'Stateless commands returning an absolute view or source-parcel selection. The chat applies them; other clients apply returned state. Show/hide parcel IDs with parcelIdsVisible and eligible Road/track borders with roadTracksVisible; select exact displayed parcelNumber within a complete live-label snapshot or bounded source area. Duplicate labels require clarification. Landmark near uses actual edge/end/corner/beside geometry and nearest parcel boundaries within 50 metres by default (200 maximum). Random selection offers one real starting parcel near a point, optionally on a compass side; it never substitutes for a failed landmark relation. Step accepts an adjacent direction or a distance in metres/feet. Manual selection separates the focused cursor from added parcels. Block selection requires complete road and parcel evidence.' },
     { feature: 'community-code-voting', prepare: 'ugt_draft_agreement', edit: 'ugt_edit_agreement', inspect: 'ugt_voting_status', vote: 'ugt_cast_community_vote',
-        eligibility: 'Fixed code hashes in consultation.voting; generate codes and retain contact assignments locally. Changing eligibility creates a new agreement without transferring votes.' },
+        eligibility: 'Fixed code hashes in consultation.voting (community-voting/v2); generate codes and retain contact assignments locally. Changing eligibility creates a new agreement without transferring votes.',
+        households: 'Optional consultation.voting.households: a partition of codeHashes, one code per resident grouped by household. Household labels stay local.',
+        ballotRules: BallotRules.list().map(rule => ({ rule: { id: rule.id, version: rule.version }, name: rule.text.name, tests: rule.tests, source: rule.text.source, links: rule.sources })),
+        ownerSignOff: 'A ballot rule counts residents only. Owners sign off in a separate owner-vote or owner-deal agreement on the same plan; ugt_list_agreements by one of the plan’s designs finds both, and ugt_get_agreement shows each one’s rule and planCid.' },
     { feature: 'named-plans', create: 'ugt_draft_plan', inspect: 'ugt_inspect_plan', edit: 'ugt_edit_plan', publish: 'ugt_publish_plan' },
     { feature: 'opening-assessment', inspect: 'ugt_inspect_plan', argument: 'openingScenario', contract: 'Assess scheduled building and public-space openings with explicit access and servicing assumptions and a delayed external road connection.' },
     { feature: 'walkability', inspect: 'ugt_inspect_plan', argument: 'walkability', contract: 'Measure walking routes to parks and squares, shops, and transit in the named plan. Read 5- and 10-minute coverage and inspect one building’s route.' },

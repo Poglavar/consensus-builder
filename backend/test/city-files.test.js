@@ -41,7 +41,7 @@ describe('generated city files', () => {
 });
 
 // A page while it is still parsing: scripts run in order, document.write queues the next one.
-function bootBrowser(search) {
+function bootBrowser(search, before = []) {
     const writes = [];
     const storage = { getItem: () => null, setItem() {}, setScope() {}, ready: Promise.resolve() };
     const window = {
@@ -53,6 +53,7 @@ function bootBrowser(search) {
     window.window = window;
     const context = vm.createContext(window);
     const run = rel => vm.runInContext(read(rel), context, { filename: rel });
+    before.forEach(run);
     run('frontend/js/city-light-config.js');
     run(CITY_FILE_PATHS.index);
     run('frontend/js/city-config.js');
@@ -75,6 +76,13 @@ describe('browser boot', () => {
         expect(current.planning).toBeTruthy();
         const source = parseCityConfigs(read(CITY_FILE_PATHS.source));
         expect(stable(current)).toBe(stable(source.zagreb));
+    });
+
+    it('loads the UK economic areas with an English city, and not with another', () => {
+        const ukTable = ['frontend/js/uk-land-rates.js'];
+        expect(bootBrowser('?city=london', ukTable).writes).toEqual(['<script src="data/cities/london.js"><\/script>'
+            + '<script src="data/uk-economic-areas.js"><\/script><script>window.CityConfigManager.markCityConfigLoaded();<\/script>']);
+        expect(bootBrowser('?city=zg', ukTable).writes.join('')).not.toContain('uk-economic-areas');
     });
 
     it('knows every other city from the index, without their per-city detail', () => {

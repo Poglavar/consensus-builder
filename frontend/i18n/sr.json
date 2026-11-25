@@ -1328,6 +1328,8 @@
             "mintedAgreementsButton": "Sporazumi na lancu",
             "clearButton": "Resetuj dizajne (ovaj pregledač)",
             "planStats": {
+                "devChargeSuffix": "{{currency}} po m² doprinos za gradnju",
+                "costDevCharge": "Doprinos za gradnju (nova površina × doprinos po m²)",
                 "calculating": "Računam…",
                 "modalTitle": "Statistika plana",
                 "floorArea": "Bruto razvijena površina (m²)",
@@ -1365,7 +1367,7 @@
                 "noteNoLandPrice": "Za ovo mesto nema cene zemljišta: postavite je da biste videli ukupni trošak i dobit.",
                 "rentSuffix": "{{currency}} po m² zakupnina mesečno",
                 "annualRent": "Godišnja zakupnina nove površine",
-                "rentYield": "Prinos od zakupa na trošak (godišnja zakupnina ÷ gradnja, zemljište i vrednost uklonjenog)",
+                "rentYield": "Prinos od zakupa na trošak (godišnja zakupnina ÷ gradnja, doprinos za gradnju, zemljište i vrednost uklonjenog)",
                 "assumptionsLabel": "Pretpostavke",
                 "efficiencySuffix": "% neto od bruto",
                 "apartmentSizeSuffix": "m² po stanu",
@@ -6632,6 +6634,8 @@
             "overlap": "Izvorni obrisi se preklapaju: {{index}} / {{count}}. Klikni ponovo za sledeći."
         },
         "parcelPanel": {
+            "devCharge": "Doprinos za gradnju {{price}}/m²",
+            "devChargeUnset": "Doprinos za gradnju nije postavljen: pomerite klizač",
             "title": "Parcela",
             "built": "Izgrađeno",
             "proposed": "Predloženo",
@@ -6643,7 +6647,7 @@
             "value": "Vrednost",
             "constructionCost": "Trošak gradnje",
             "profit": "Dobit",
-            "profitNote": "Dobit = vrednost − ukupni trošak: gradnja, zemljište, porez na prodaju umanjen za prethodni porez na gradnju i zamenjena izgrađena vrednost",
+            "profitNote": "Dobit = vrednost − ukupni trošak: gradnja, doprinos za gradnju, zemljište, porez na prodaju umanjen za prethodni porez na gradnju i zamenjena izgrađena vrednost",
             "allInCost": "Ukupni trošak",
             "costDetails": "Detalji troška",
             "landCost": "Zemljište",
@@ -9075,8 +9079,10 @@
         "resize": "Promeni veličinu panela. Povuci gore ili dole; povuci do dna za zatvaranje."
     },
     "economicSources": {
+        "devCharge": "Doprinos za gradnju",
+        "sourceLabel": "Izvor:",
         "title": "Procena vrednosti i troškovi",
-        "intro": "Izvori daju zasebne stope za zemljište, prodajne cene po površini zgrade, gradnju, zakupninu i porez na prodaju. Kada lokalni podaci nedostaju, vrednost ostaje nedostupna; promenljive pretpostavke scenarija nisu tržišni podaci.",
+        "intro": "Izvori daju zasebne stope za zemljište, prodajne cene po površini zgrade, gradnju, doprinose za gradnju, zakupninu i porez na prodaju. Kada lokalni podaci nedostaju, vrednost ostaje nedostupna; promenljive pretpostavke scenarija nisu tržišni podaci.",
         "land": "Zemljište",
         "roadLand": "Zemljište za put",
         "sale": "Prodajna cena",
@@ -9644,7 +9650,47 @@
         "turnoutCount": "Glasalo {{votes}} od {{eligible}} · {{percent}}",
         "remaining": "Još nisu glasali: {{count}}",
         "castShare": "Udeo predatih glasova",
-        "refreshResults": "Osveži rezultate"
+        "refreshResults": "Osveži rezultate",
+        "rule": "Pravilo glasanja",
+        "ruleNone": "Bez pravila — prikaži samo zbirove",
+        "householdBatch": "Domaćinstvo ovih osoba (neobavezno)",
+        "householdHint": "Osobe koje žive zajedno dele oznaku domaćinstva. Kod bez oznake računa se kao zasebno domaćinstvo. Oznake domaćinstava ostaju lokalno; sporazum beleži samo koji kodovi dele domaćinstvo.",
+        "importCsv": "Generiši kodove iz CSV-a stanovnika",
+        "csvHint": "CSV treba kolone Person i Household, jedan stanovnik po redu.",
+        "household": "Domaćinstvo (samo lokalno)",
+        "householdOf": "Domaćinstvo osobe {{person}}",
+        "batch": "Generišite od 1 do 100 kodova odjednom.",
+        "householdsVoted": "Glasala domaćinstva: {{voted}} od {{eligible}}",
+        "measureCastSupport": "Podrška među datim glasovima",
+        "measureEligibleSupport": "Podrška među svim biračima sa pravom glasa",
+        "measureHouseholdTurnout": "Domaćinstva koja su glasala",
+        "measureHouseholdSupport": "Domaćinstva koja su glasala sa bar jednim glasom podrške",
+        "testDetail": "{{count}} od {{total}} · potrebno {{needed}} ({{rule}})",
+        "atLeast": "najmanje {{share}}",
+        "moreThan": "više od {{share}}",
+        "met": "ispunjeno",
+        "notMet": "nije ispunjeno",
+        "passing": "Prolazi",
+        "notPassing": "Ne prolazi",
+        "passed": "Prihvaćeno",
+        "failed": "Odbijeno",
+        "ownerSignOff": "Saglasnost vlasnika",
+        "ownerNone": "Na ovom planu još nema sporazuma vlasnika. Vlasnici odlučuju u zasebnom sporazumu o istom planu.",
+        "ownerAgreement": "Sporazum vlasnika",
+        "ownerDeal": "Obavezujući dogovor vlasnika",
+        "ownerVote": "Glasanje vlasnika",
+        "openOwner": "Otvori",
+        "ownerUnavailable": "Sporazume vlasnika o ovom planu nije moguće učitati.",
+        "ballotRules": {
+            "gb-street-vote-strong-suburbs": {
+                "name": "Glasanje ulice — Strong Suburbs",
+                "source": "Predloženo u izveštaju Policy Exchangea Strong Suburbs (2021): najmanje 60% datih glasova za, glasaju stanovnici bar polovine domaćinstava, i glas za od stanovnika u bar polovini domaćinstava koja su glasala."
+            },
+            "gb-street-vote-consultation-2023": {
+                "name": "Glasanje ulice — konsultacije vlade 2023.",
+                "source": "Predloženo u konsultacijama britanske vlade o naredbama za razvoj glasanjem ulice iz decembra 2023: najmanje 60% birača sa pravom glasa za, i bar jedan birač za u najmanje polovini domaćinstava koja su glasala."
+            }
+        }
     },
     "criticTour": {
         "skip": "Прескочи анимацију",

@@ -4,6 +4,7 @@ import {createRequire} from 'node:module';
 import {isCid} from '../cid.js';
 const require=createRequire(import.meta.url);
 const V=require('../../frontend/js/community/voting.js');
+const Rules=require('../../frontend/js/community/ballot-rules.js');
 const digest=value=>createHash('sha256').update(value).digest('hex');
 const error=(status,code,message,extra={})=>({status,body:{code,error:message,...extra}});
 const success=body=>({status:200,body});
@@ -20,8 +21,15 @@ export function createVotingService({store,loadAgreement,now=()=>Date.now()}) {
         const config=V.configuration(agreement.content.consultation?.voting);
         const counts={support:0,oppose:0,abstain:0};
         for(const row of await tx.counts()) counts[row.choice]=row.count;
-        return {agreementCid:agreement.cid,enabled:Boolean(config),eligible:config?.codeHashes.length || 0,
-            votes:Object.values(counts).reduce((a,b)=>a+b,0),counts,deadline:agreement.content.deadline,closed:closed(agreement,now())};
+        const isClosed=closed(agreement,now());
+        const base={agreementCid:agreement.cid,enabled:Boolean(config),eligible:config?.codeHashes.length || 0,
+            votes:Object.values(counts).reduce((a,b)=>a+b,0),counts,deadline:agreement.content.deadline,closed:isClosed};
+        if(!config?.households && !config?.rule)return base;
+        // Household and rule results need each code's latest choice; only these aggregates leave the server.
+        const rule=config.rule?Rules.get(config.rule.id,config.rule.version):null;
+        const result=Rules.evaluate(rule,config,await tx.choices());
+        return {...base,households:result.households,
+            ...(rule?{rule:{id:rule.id,version:rule.version,tests:result.tests,passed:result.passed,final:isClosed}}:{})};
     }
     async function view(tx,agreement,hash) {
         return {...await summary(tx,agreement),entry:{...await tx.ballot(hash),history:await tx.history(hash)}};

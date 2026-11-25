@@ -88,6 +88,7 @@ function makeWindow(proposals, { city = null } = {}) {
         __planScope: planScope,
         CbFormat,
         CityMoney: CityMoney.forCity(() => city),
+        EconomicSources: require('../../frontend/js/economic-sources.js'),
         PlanAnalysis: { prepare: async plan => {
             if (!plan) throw new Error('Choose a plan.');
             if (plan.failure) throw new Error(plan.failure);
@@ -656,6 +657,16 @@ describe('the all-in cost and profit in Plan stats', () => {
         expect(slot(window, 'profit')).toBe(eur(gfa() * 4000 - (gfa() * 3000 + landM2 * 133 + tax)));
     });
 
+    it('adds the development charge on the new floor area, starting at the 0 assumption', async () => {
+        const window = await openOn();
+        expect(window.document.getElementById('plan-stats-dev-charge').value).toBe('0');
+        expect(slot(window, 'cost-dev-charge')).toBe(eur(0));
+        slide(window, 'plan-stats-dev-charge', 40);
+        expect(slot(window, 'cost-dev-charge')).toBe(eur(gfa() * 40));
+        expect(slot(window, 'total-cost')).toBe(eur(gfa() * 2040 + landM2 * 133));
+        expect(slot(window, 'profit')).toBe(eur(gfa() * 4000 - (gfa() * 2040 + landM2 * 133)));
+    });
+
     it('charges the value of the existing buildings the plan clears', async () => {
         const window = await openOn({ cleared: [{ before: existing(), after: null }] });
         const replaced = gfaOf([existing()]) * 4000;
@@ -681,7 +692,7 @@ describe('the all-in cost and profit in Plan stats', () => {
         const city = { id: 'kz-test', currency: { code: 'KZT' }, economics: { sources: [{ version: 1, id: 'kz-test', name: 'Test rates',
             adapter: 'rate-table', rates: [rate('sale', 'm2-floor', 600000), rate('land', 'm2-land', 10000),
                 rate('construction', 'm2-floor', 300000, { basis: 'construction-cost', asOf: '2026-10-31', taxIncluded: true }),
-                rate('saleTax', 'share-of-sale', 0.16, { basis: 'statutory', asOf: '2026-01-01' })] }] } };
+                rate('saleTax', 'share-of-sale', 0.16, { basis: 'statutory', asOf: '2026-01-01' })] }, 'scenario-assumptions'] } };
         const window = openDialog([block('d-1')], { city });
         await window.showPlanStatsModal({ content: { title: 'Plan' }, cleared: [], landFeature: land });
         const saleTax = gfa() * 600000 * 0.16 / 1.16, reclaimed = gfa() * 300000 * 0.16 / 1.16;
