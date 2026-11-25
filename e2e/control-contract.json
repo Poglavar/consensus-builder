@@ -4339,9 +4339,56 @@
       "markup": "<input type=\"file\" accept=\"application/json,.json\" data-roster-import hidden>"
     },
     {
+      "id": "control-a80a24a709c5a4-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-roster-pick=\"json\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-2142a7d96ab66f-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-roster-pick=\"csv\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-aea91cac9f1cd2-1",
       "source": "js/community/voting-roster.js",
       "markup": "<button type=\"button\" class=\"btn btn-quiet\" data-roster-action=\"remove\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-5fc055732b4105-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<input type=\"text\" data-roster-household-batch value=\"${esc(local.household)}\" autocomplete=\"off\" spellcheck=\"false\">",
+      "interaction": "change",
+      "controlType": "text"
+    },
+    {
+      "id": "control-3fa6a6a71c7972-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<input type=\"file\" accept=\"text/csv,.csv,text/plain\" data-roster-import-csv hidden>"
+    },
+    {
+      "id": "control-bacc2b7fcedb1c-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<input type=\"text\" data-roster-household=\"${index}\" value=\"${esc(row.household || '')}\" aria-label=\"${esc(t('householdOf','Household of {{person}}',{person:row.label || row.code}))}\" autocomplete=\"off\" spellcheck=\"false\">",
+      "interaction": "change",
+      "controlType": "text"
+    },
+    {
+      "id": "control-f465374c8f0cbd-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<select data-roster-rule>",
+      "interaction": "change",
+      "controlType": "select"
+    },
+    {
+      "id": "control-47679ba6d5af66-1",
+      "source": "js/community/voting-ui.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm btn-secondary\" data-voting-action=\"open-owner\" data-voting-owner=\"${esc(row.cid)}\">",
       "interaction": "click",
       "controlType": "button"
     },

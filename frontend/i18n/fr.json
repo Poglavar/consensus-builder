@@ -9571,7 +9571,47 @@
         "turnoutCount": "{{votes}} sur {{eligible}} ont voté · {{percent}}",
         "remaining": "N’ont pas encore voté : {{count}}",
         "castShare": "Répartition des votes exprimés",
-        "refreshResults": "Actualiser les résultats"
+        "refreshResults": "Actualiser les résultats",
+        "rule": "Règle de vote",
+        "ruleNone": "Aucune — afficher seulement les totaux",
+        "householdBatch": "Foyer de ces personnes (facultatif)",
+        "householdHint": "Les personnes qui vivent ensemble partagent une étiquette de foyer. Un code sans étiquette compte comme un foyer à lui seul. Les étiquettes restent sur cet appareil ; l’accord n’enregistre que les codes qui partagent un foyer.",
+        "importCsv": "Générer des codes depuis un CSV d’habitants",
+        "csvHint": "Le CSV doit avoir les colonnes Person et Household, un habitant par ligne.",
+        "household": "Foyer (local uniquement)",
+        "householdOf": "Foyer de {{person}}",
+        "batch": "Générez entre 1 et 100 codes à la fois.",
+        "householdsVoted": "Foyers ayant voté : {{voted}} sur {{eligible}}",
+        "measureCastSupport": "Soutien parmi les votes exprimés",
+        "measureEligibleSupport": "Soutien parmi tous les électeurs inscrits",
+        "measureHouseholdTurnout": "Foyers ayant voté",
+        "measureHouseholdSupport": "Foyers votants avec un vote de soutien",
+        "testDetail": "{{count}} sur {{total}} · il faut {{needed}} ({{rule}})",
+        "atLeast": "au moins {{share}}",
+        "moreThan": "plus de {{share}}",
+        "met": "atteint",
+        "notMet": "non atteint",
+        "passing": "En voie d’adoption",
+        "notPassing": "Non adopté pour l’instant",
+        "passed": "Adopté",
+        "failed": "Rejeté",
+        "ownerSignOff": "Accord des propriétaires",
+        "ownerNone": "Aucun accord des propriétaires sur ce plan pour l’instant. Les propriétaires décident dans un accord distinct sur le même plan.",
+        "ownerAgreement": "Accord des propriétaires",
+        "ownerDeal": "Accord contraignant des propriétaires",
+        "ownerVote": "Vote des propriétaires",
+        "openOwner": "Ouvrir",
+        "ownerUnavailable": "Impossible de lire les accords des propriétaires sur ce plan.",
+        "ballotRules": {
+            "gb-street-vote-strong-suburbs": {
+                "name": "Vote de rue — Strong Suburbs",
+                "source": "Proposé dans Strong Suburbs (2021) de Policy Exchange : au moins 60 % des votes exprimés pour, des habitants d’au moins la moitié des foyers votent, et un oui d’un habitant dans au moins la moitié des foyers votants."
+            },
+            "gb-street-vote-consultation-2023": {
+                "name": "Vote de rue — consultation du gouvernement de 2023",
+                "source": "Proposé dans la consultation du gouvernement britannique de décembre 2023 sur les ordonnances d’aménagement par vote de rue : au moins 60 % des électeurs inscrits pour, et au moins un électeur pour dans au moins la moitié des foyers votants."
+            }
+        }
     },
     "criticTour": {
         "skip": "Passer l’animation",

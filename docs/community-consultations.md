@@ -99,7 +99,8 @@ restore and distribution CSV exports run in the browser; names and contact detai
 to the API. Save the voter-list JSON before saving the draft. The organiser distributes codes using
 its own channels and retains that file for recovery. There is no email or SMS delivery service.
 
-Only `consultation.voting = { schema: 'community-voting/v1', id, codeHashes }` enters the agreement.
+Only `consultation.voting = { schema: 'community-voting/v2', id, codeHashes, households?, rule? }` enters the agreement.
+Published `community-voting/v1` lists (without households or rule) remain valid; new lists are written as v2.
 The identifier is a random UUIDv4; hashes are sorted, unique PBKDF2-HMAC-SHA256 verifiers with
 600,000 iterations and salt `ugt-voting-code/v1\n<id>`. The raw credential has 15 uniformly sampled
 letters from `ABCDEFGHJKMNPQRSTUVWXYZ` (about 66.9 bits), grouped by three. Spaces, dashes and
@@ -164,12 +165,47 @@ version, and a retry-stable request ID. Neither tool accepts names, email addres
   MCP parity is verified through the actual agreement-edit and ballot schemas and the shared API
   adapters; personal assignment management intentionally runs locally, outside hosted MCP.
 
+## Street votes: households and ballot rules
+
+The Voting codes section also takes a household for each generated batch ("Household for these
+people"), a Household column in the local code table, and a resident CSV with Person and Household
+columns (comma, semicolon or tab separated) that generates one code per row in batches of 100. Household labels stay in the
+browser, the voter-list file and the distribution CSV (`Person,Household,Code`); the agreement
+commits only which codes share a household (`households`, a sorted partition of `codeHashes`). A code
+without a household counts as a household of one.
+
+The Ballot rule select pins one dated rule from `frontend/js/community/ballot-rules.js`:
+
+| Rule | Tests | Source |
+| --- | --- | --- |
+| Street vote — Strong Suburbs (`gb-street-vote-strong-suburbs@2026-11-25`) | ≥ 3/5 of votes cast support; residents of ≥ 1/2 of households vote; ≥ 1/2 of voting households have a Support vote | [Policy Exchange, Strong Suburbs (2021), p. 39](https://policyexchange.org.uk/wp-content/uploads/2022/10/Strong-Suburbs.pdf) |
+| Street vote — 2023 government consultation (`gb-street-vote-consultation-2023@2026-11-25`) | ≥ 3/5 of eligible voters support; ≥ 1/2 of voting households have a Support vote | [Street vote development orders consultation, para. 69](https://www.gov.uk/government/consultations/street-vote-development-orders-consultation/street-vote-development-orders) |
+
+Both are proposals: the street vote provisions of the Levelling-up and Regeneration Act 2023 have
+not been commenced. Abstain counts as a vote cast. A test with an empty total (no household has
+voted) is not met. `GET /agreements/:cid/voting` adds `households { eligible, voted, supporting }`
+when the list has households or a rule, and `rule { id, version, tests[{ measure, count, total,
+numerator, denominator, strict, needed, met }], passed, final }` when it pins one; `final` is true
+after the deadline. These are aggregates computed server-side from each code's latest choice; no
+per-code choice leaves the server. The progress card shows each test with its needed count and a
+Passing / Not passing badge while voting is open, Passed / Failed once it has closed.
+
+Owner sign-off stays separate. Owners decide in their own owner-vote or owner-deal agreement on the
+same plan; the voting card's Owner sign-off list reads the public index (`GET /agreements?plan=`)
+and opens each owners' agreement in its own panel. The owners' record format is unchanged.
+
+MCP: `ugt_draft_agreement` and `ugt_edit_agreement` accept the v2 voting record, and
+`ugt_edit_agreement` accepts `rulePreset: 'community-vote'`, which clears owner allocations, cash and
+valuation. `ugt_voting_status` returns the richer summary. `ugt_capabilities` lists the shipped
+ballot rules under `community-code-voting`.
+
 The public Voting progress card shows turnout against the fixed eligible-code count, remaining
 unvoted codes, and Support / Oppose / Abstain counts with percentages of votes cast. Abstentions
 count toward turnout. It updates after code checks, saved votes and history refreshes; Refresh
 results reads the public totals without requiring a code. These are current totals, not a time
 series. MCP parity needs no new operation: `ugt_voting_status` already returns the same totals,
-eligibility and choice counts. No decision threshold or quorum is inferred from these bars.
+eligibility and choice counts. No decision threshold or quorum is inferred from these bars unless
+the list pins a ballot rule.
 
 Progress-card verification: 22 targeted headless locale unit checks passed. One targeted headless
 Playwright voting scenario initially failed because the concurrent agreement-navigation change

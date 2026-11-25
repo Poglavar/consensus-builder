@@ -42,38 +42,109 @@
             salt: new TextEncoder().encode(`ugt-voting-code/v1\n${votingId}`) }, key, 256);
         return [...new Uint8Array(bytes)].map(byte => byte.toString(16).padStart(2, '0')).join('');
     }
+    // v2 adds the optional household partition and ballot rule. v1 records are published on the
+    // production index and immutable, so they keep validating; new voting lists are written as v2.
+    const SCHEMA = 'community-voting/v2';
+    const rules = () => root.CommunityBallotRules || (typeof require === 'function' ? require('./ballot-rules.js') : null);
     function configuration(raw) {
         if (raw == null) return null;
-        if (!exact(raw, ['schema', 'id', 'codeHashes']) || raw.schema !== 'community-voting/v1' || !UUID.test(raw.id)
+        const v1 = raw?.schema === 'community-voting/v1';
+        const keys = raw && typeof raw === 'object' ? Object.keys(raw) : [];
+        if (!(v1 ? exact(raw, ['schema', 'id', 'codeHashes']) : raw?.schema === SCHEMA
+            && ['schema', 'id', 'codeHashes'].every(key => keys.includes(key)) && keys.every(key => ['schema', 'id', 'codeHashes', 'households', 'rule'].includes(key)))
+            || !UUID.test(raw.id)
             || !Array.isArray(raw.codeHashes) || !raw.codeHashes.length || raw.codeHashes.length > MAX_ENTRIES
             || raw.codeHashes.some(hash => typeof hash !== 'string' || !HASH.test(hash))
             || new Set(raw.codeHashes).size !== raw.codeHashes.length) fail('A voting list needs its ID and 1–10,000 unique code hashes.');
-        return { schema: raw.schema, id: raw.id, codeHashes: [...raw.codeHashes].sort() };
+        const codeHashes = [...raw.codeHashes].sort();
+        if (v1) return { schema: raw.schema, id: raw.id, codeHashes };
+        const result = { schema: SCHEMA, id: raw.id, codeHashes };
+        if (raw.households != null) {
+            // A partition of the eligible codes. Canonical: each household sorted, households by their
+            // first code; all households of one code is the same as no list, so it is dropped.
+            const eligible = new Set(codeHashes), seen = new Set();
+            if (!Array.isArray(raw.households) || raw.households.some(group => !Array.isArray(group) || !group.length
+                || group.some(hash => !eligible.has(hash) || seen.has(hash) || !seen.add(hash))) || seen.size !== codeHashes.length) {
+                fail('Households must group every eligible code exactly once.');
+            }
+            const households = raw.households.map(group => [...group].sort()).sort((a, b) => (a[0] < b[0] ? -1 : 1));
+            if (households.some(group => group.length > 1)) result.households = households;
+        }
+        if (raw.rule != null) {
+            if (!exact(raw.rule, ['id', 'version']) || !rules().get(raw.rule.id, raw.rule.version)) fail('Choose a ballot rule from the list.');
+            result.rule = { id: raw.rule.id, version: raw.rule.version };
+        }
+        return result;
     }
+    // The household partition of local entries: codes sharing a household label are one household;
+    // a code without one is a household of its own.
+    function householdsOf(entries) {
+        const groups = new Map();
+        entries.forEach((row, index) => {
+            const key = String(row.household || '').trim();
+            const name = key ? `h:${key}` : `c:${index}`;
+            groups.set(name, [...(groups.get(name) || []), row.codeHash]);
+        });
+        return [...groups.values()];
+    }
+    // Resident rows from a CSV with Person and Household columns (header names are case-insensitive).
+    function residentsCsv(text) {
+        if (typeof text !== 'string') fail('The CSV needs Person and Household columns.');
+        // The separator is the header's: a comma, or the semicolon or tab some spreadsheets export.
+        const header = text.split(/\r?\n/, 1)[0];
+        const separator = header.includes('\t') ? '\t' : header.includes(';') && !header.includes(',') ? ';' : ',';
+        const rows = [];
+        let row = [], cell = '', quoted = false;
+        for (let i = 0; i < text.length; i++) {
+            const char = text[i];
+            if (quoted) {
+                if (char === '"' && text[i + 1] === '"') { cell += '"'; i++; } else if (char === '"') quoted = false; else cell += char;
+            } else if (char === '"') quoted = true;
+            else if (char === separator) { row.push(cell); cell = ''; }
+            else if (char === '\n' || char === '\r') {
+                if (char === '\r' && text[i + 1] === '\n') i++;
+                row.push(cell); rows.push(row); row = []; cell = '';
+            } else cell += char;
+        }
+        if (cell || row.length) { row.push(cell); rows.push(row); }
+        const [head = [], ...body] = rows.filter(r => r.some(value => value.trim()));
+        const names = head.map(value => value.trim().replace(/^﻿/, '').toLowerCase());
+        const person = names.indexOf('person'), household = names.indexOf('household');
+        if (person < 0 || household < 0) fail('The CSV needs Person and Household columns.');
+        if (!body.length || body.length > MAX_ENTRIES) fail('The CSV needs between 1 and 10,000 residents.');
+        return body.map(r => ({ label: (r[person] || '').trim().replace(/^'(?=[=+@\-\t\r])/, ''),
+            household: (r[household] || '').trim().replace(/^'(?=[=+@\-\t\r])/, '') }))
+            .map(r => { if (r.label.length > 500 || r.household.length > 500) fail('Invalid resident row.'); return r; });
+    }
+    // labels: strings, or { label, household } resident rows. household is a local grouping label.
     async function generateEntries(votingId, labels, crypto = root.crypto, progress = () => {}) {
-        if (!Array.isArray(labels) || !labels.length || labels.length > MAX_BATCH || labels.some(label => typeof label !== 'string' || label.length > 500)) fail('Generate between 1 and 100 codes at a time.');
+        const rows = Array.isArray(labels) ? labels.map(row => typeof row === 'string' ? { label: row, household: '' } : row) : [];
+        if (!rows.length || rows.length > MAX_BATCH || rows.some(row => !row || typeof row.label !== 'string' || row.label.length > 500
+            || typeof (row.household ?? '') !== 'string' || (row.household || '').length > 500)) fail('Generate between 1 and 100 codes at a time.');
         const used = new Set(), entries = [];
-        for (const label of labels) {
+        for (const { label, household } of rows) {
             let code;
             do { code = generateCode(crypto); } while (used.has(code));
             used.add(code);
-            entries.push({ label, code, codeHash: await codeHash(votingId, code, crypto) });
-            progress(entries.length, labels.length);
+            entries.push({ label, household: household || '', code, codeHash: await codeHash(votingId, code, crypto) });
+            progress(entries.length, rows.length);
         }
         return entries;
     }
     function localFile(votingId, entries) {
-        return { schema: 'ugt-local-voter-list/v1', votingId, entries: entries.map(({ label, code }) => ({ label, code })) };
+        return { schema: 'ugt-local-voter-list/v1', votingId, entries: entries.map(({ label, household, code }) => ({ label, ...(household ? { household } : {}), code })) };
     }
     async function importLocalFile(raw, progress = () => {}) {
         if (!exact(raw, ['schema', 'votingId', 'entries']) || raw.schema !== 'ugt-local-voter-list/v1' || !UUID.test(raw.votingId)
             || !Array.isArray(raw.entries) || !raw.entries.length || raw.entries.length > MAX_ENTRIES) fail('Not a local voter-list file.');
         const hashes = new Set(), entries = [];
         for (const row of raw.entries) {
-            if (!exact(row, ['label', 'code']) || typeof row.label !== 'string' || row.label.length > 500) fail('Invalid local voter entry.');
+            // household is optional: files saved before households existed have none.
+            if (!(exact(row, ['label', 'code']) || exact(row, ['label', 'household', 'code'])) || typeof row.label !== 'string' || row.label.length > 500
+                || typeof (row.household ?? '') !== 'string' || (row.household || '').length > 500) fail('Invalid local voter entry.');
             const code = formatCode(row.code), hash = await codeHash(raw.votingId, code);
             if (hashes.has(hash)) fail('Duplicate voting code.');
-            hashes.add(hash); entries.push({ label: row.label, code, codeHash: hash });
+            hashes.add(hash); entries.push({ label: row.label, household: row.household || '', code, codeHash: hash });
             progress(entries.length, raw.entries.length);
         }
         return { votingId: raw.votingId, entries };
@@ -81,8 +152,8 @@
     function distributionCsv(entries) {
         // Text cells cannot become executable spreadsheet formulas when the organiser opens the CSV.
         const cell = text => '"' + (/^[=+@\-\t\r]/.test(text) ? "'" + text : text).replace(/"/g, '""') + '"';
-        return 'Person,Code\r\n' + entries.map(row => `${cell(row.label)},${cell(row.code)}`).join('\r\n');
+        return 'Person,Household,Code\r\n' + entries.map(row => `${cell(row.label)},${cell(row.household || '')},${cell(row.code)}`).join('\r\n');
     }
-    return { ALPHABET, CODE_LENGTH, MAX_ENTRIES, MAX_BATCH, ITERATIONS, CHOICES, HASH, UUID, exact, normalizeCode, formatCode,
-        generateCode, codeHash, configuration, generateEntries, localFile, importLocalFile, distributionCsv };
+    return { ALPHABET, CODE_LENGTH, MAX_ENTRIES, MAX_BATCH, ITERATIONS, CHOICES, HASH, UUID, SCHEMA, exact, normalizeCode, formatCode,
+        generateCode, codeHash, configuration, householdsOf, residentsCsv, generateEntries, localFile, importLocalFile, distributionCsv };
 });

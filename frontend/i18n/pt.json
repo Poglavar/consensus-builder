@@ -9571,7 +9571,47 @@
         "turnoutCount": "{{votes}} de {{eligible}} votaram · {{percent}}",
         "remaining": "Ainda não votaram: {{count}}",
         "castShare": "Proporção dos votos registrados",
-        "refreshResults": "Atualizar resultados"
+        "refreshResults": "Atualizar resultados",
+        "rule": "Regra de votação",
+        "ruleNone": "Nenhuma — mostrar apenas os totais",
+        "householdBatch": "Agregado familiar destas pessoas (opcional)",
+        "householdHint": "Pessoas que vivem juntas partilham uma etiqueta de agregado. Um código sem etiqueta conta como um agregado próprio. As etiquetas ficam neste dispositivo; o acordo regista apenas que códigos partilham um agregado.",
+        "importCsv": "Gerar códigos a partir de um CSV de residentes",
+        "csvHint": "O CSV precisa das colunas Person e Household, um residente por linha.",
+        "household": "Agregado (só local)",
+        "householdOf": "Agregado de {{person}}",
+        "batch": "Gere entre 1 e 100 códigos de cada vez.",
+        "householdsVoted": "Agregados que votaram: {{voted}} de {{eligible}}",
+        "measureCastSupport": "Apoio entre os votos expressos",
+        "measureEligibleSupport": "Apoio entre todos os eleitores habilitados",
+        "measureHouseholdTurnout": "Agregados que votaram",
+        "measureHouseholdSupport": "Agregados votantes com um voto de apoio",
+        "testDetail": "{{count}} de {{total}} · precisa de {{needed}} ({{rule}})",
+        "atLeast": "pelo menos {{share}}",
+        "moreThan": "mais de {{share}}",
+        "met": "cumprido",
+        "notMet": "não cumprido",
+        "passing": "A ser aprovado",
+        "notPassing": "Sem aprovação",
+        "passed": "Aprovado",
+        "failed": "Rejeitado",
+        "ownerSignOff": "Consentimento dos proprietários",
+        "ownerNone": "Ainda não há acordo de proprietários sobre este plano. Os proprietários decidem num acordo separado sobre o mesmo plano.",
+        "ownerAgreement": "Acordo de proprietários",
+        "ownerDeal": "Negócio vinculativo de proprietários",
+        "ownerVote": "Votação de proprietários",
+        "openOwner": "Abrir",
+        "ownerUnavailable": "Não foi possível ler os acordos de proprietários deste plano.",
+        "ballotRules": {
+            "gb-street-vote-strong-suburbs": {
+                "name": "Votação de rua — Strong Suburbs",
+                "source": "Proposta em Strong Suburbs (2021), da Policy Exchange: pelo menos 60% dos votos expressos a favor, residentes de pelo menos metade dos agregados a votar, e um sim de um residente em pelo menos metade dos agregados votantes."
+            },
+            "gb-street-vote-consultation-2023": {
+                "name": "Votação de rua — consulta do governo de 2023",
+                "source": "Proposta na consulta do governo britânico de dezembro de 2023 sobre ordens de desenvolvimento por votação de rua: pelo menos 60% dos eleitores habilitados a favor, e pelo menos um eleitor a favor em pelo menos metade dos agregados votantes."
+            }
+        }
     },
     "criticTour": {
         "skip": "Saltar animação",

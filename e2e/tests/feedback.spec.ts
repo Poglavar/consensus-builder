@@ -15,6 +15,14 @@ test('feedback form sends the reviewed report and shows its private receipt', as
   await selectNativeOption(page.getByLabel('Report type'), 'feedback');
   await page.getByLabel('Page or plan link (optional)').fill('https://urbangametheory.xyz/?city=new_york');
   await page.getByLabel('Your report', { exact: true }).fill('Please make full-plan sharing clearer.');
+  // Enter on the report type does not send the report; only Send report does (js/ui/form-enter.js).
+  const form = page.locator('#feedback-form');
+  await form.evaluate((element: HTMLFormElement) => {
+    element.dataset.submits = '0';
+    element.addEventListener('submit', () => { element.dataset.submits = String(Number(element.dataset.submits) + 1); });
+  });
+  await page.getByLabel('Report type').press('Enter');
+  await expect(form).toHaveAttribute('data-submits', '0');
   await page.getByRole('button', { name: 'Send report', exact: true }).click();
   await expect(page.getByRole('status')).toContainText('Your report was received');
   expect(sent).toMatchObject({ kind: 'feedback', source: 'web', message: 'Please make full-plan sharing clearer.' });
