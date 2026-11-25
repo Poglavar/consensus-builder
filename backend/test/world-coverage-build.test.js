@@ -580,8 +580,9 @@ describe('buildCoverage', () => {
         expect(bytes(built.liveCities.map(({ extent, ...city }) => city)) + bytes(built.cities))
             .toBeLessThan(256 * (built.liveCities.length + built.cities.length) + 4);
         // Administrative extents and declared areas ship in the boot coverage too (about 72 KB of
-        // extents for 117 English and Welsh cities and 12 KB of declared areas on 2026-11-25).
-        expect(bytes(built.liveCities.map(city => city.extent || 0))).toBeLessThan(100 * 1024);
+        // extents for 117 English and Welsh cities and 12 KB of declared areas on 2026-11-25; about
+        // 129 KB once the 62 districts of 150,000+ people were admitted the same day, acf1d62a9).
+        expect(bytes(built.liveCities.map(city => city.extent || 0))).toBeLessThan(144 * 1024);
         expect(bytes(built.liveAreas)).toBeLessThan(24 * 1024);
     });
 });
