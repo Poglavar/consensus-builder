@@ -2,7 +2,7 @@ import { openPlanCritics } from '../helpers/plan-actions';
 // Exercise proposal action buttons and assert the resulting UI and stored state:
 // the grain-score Repeat control and Share publishing a design (POST /designs).
 import { test, expect } from '../helpers/fixtures';
-import { closeShareBox, openCity, createSpace, showProposal } from '../helpers/runtime';
+import { closeShareBox, openCity, createSpace, showProposal, confirmPublish } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
 
 async function showExpandedProposal(page: import('@playwright/test').Page, proposalId: string): Promise<void> {
@@ -47,6 +47,7 @@ test.describe('proposal detail button controls @features', () => {
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(page.url()).origin });
     await showExpandedProposal(page, proposalId);
     await page.locator('#proposal-details-footer .btn-share-proposal').click();
+    await confirmPublish(page);
 
     // Share publishes one design and copies its /designs link.
     const index = pageIndex(page);

@@ -3480,6 +3480,8 @@
                 "includedInRoad": "Incluído na estrada combinada",
                 "includedInRoadHint": "Remova {{name}} do mapa para repor esta estrada.",
                 "share": "Partilhar",
+                "publish": "Publicar…",
+                "publishHint": "Publique este projeto no servidor e partilhe o seu link",
                 "copy": "Editar",
                 "edit": "Editar",
                 "resumeDraft": "Retomar rascunho",
@@ -4457,6 +4459,11 @@
                 "failed": "Não foi possível publicar o projeto.",
                 "notACid": "Esta não é uma ligação para um projeto.",
                 "applyFailed": "Não foi possível aplicar o projeto ao terreno neste local."
+            },
+            "confirmPublish": {
+                "body": "Publicar {{names}}? O trabalho publicado fica no servidor, onde qualquer pessoa com o link o pode abrir. Essa versão não pode ser alterada: editá-la depois cria uma nova versão.",
+                "planDesigns": "Os projetos de um plano ainda não publicados são publicados com ele.",
+                "ok": "Publicar"
             },
             "route": {
                 "fetching": "A obter os projetos partilhados…",
@@ -9080,8 +9087,11 @@
             "stats": "Comparar estatísticas",
             "statsFailed": "Não foi possível abrir as estatísticas: {{reason}}",
             "copyLink": "Copiar link",
+            "publishAndCopyLink": "Publicar e copiar link",
             "copyLinkFailed": "Não foi possível copiar o link.",
-            "linkUnavailable": "Só é possível partilhar num link Construído hoje, a volumetria permitida, o proposto e os planos publicados. Publique um plano para o partilhar.",
+            "linkUnavailable": "Um acordo, ou um projeto que ainda não pode ser publicado, não pode ser incluído num link. Escolha outro lado para partilhar esta comparação.",
+            "linkMissingPlan": "Este link de comparação indica um plano que não foi publicado, por isso não pode abrir aqui.",
+            "linkMissingDesign": "Este link de comparação indica um projeto que não está no servidor, por isso não pode abrir aqui.",
             "reading": "{{label}} (a ler…)",
             "unreadable": "{{label}} (não foi possível ler: {{reason}})",
             "mapNote": "No mapa, cada lado desenha os seus próprios edifícios e a volumetria permitida como implantações; um projeto ou plano não aplicado desenha também as suas ruas e espaços como implantações. As parcelas e as ruas e parques aplicados aparecem nos dois lados.",

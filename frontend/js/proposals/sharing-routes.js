@@ -131,6 +131,22 @@ function resolveDesignToShare(proposalIdOrProposal) {
     return requested && typeof proposalStorage !== 'undefined' ? proposalStorage.getProposal(requested) : null;
 }
 
+// Before anything is published: says what publishing means and asks once. items: [{ kind: 'design'
+// | 'plan', title }]. Resolves true to go on. Share on a design and Compare's Publish and copy link use it.
+async function confirmPublication(items) {
+    const t = getProposalI18nHelper();
+    const names = (items || []).map(item => `“${item.title || t('planDialog.untitledDesign', 'Untitled')}”`).join(', ');
+    const parts = [t('proposals.share.confirmPublish.body',
+        'Publish {{names}}? Published work is on the server, where anyone with its link can open it. That version cannot be changed: editing it later makes a new version.', { names })];
+    if ((items || []).some(item => item.kind === 'plan')) {
+        parts.push(t('proposals.share.confirmPublish.planDesigns', 'A plan’s designs that are not published yet are published with it.'));
+    }
+    return window.CbDialog.confirm(parts.join('\n\n'), {
+        okText: t('proposals.share.confirmPublish.ok', 'Publish'),
+        cancelText: t('common.cancel', 'Cancel')
+    });
+}
+
 // Share on a design: publish it (indexed once; DesignSync.publishDesign), copy its /designs/<cid>
 // link and open the Share box (js/ui/share-dialog.js: Post on X, the device's Share…). A design that
 // cannot be published (ProposalPublishTerms.publishRefusal: invalid or too large) is refused.
@@ -149,6 +165,8 @@ async function shareSingleProposal(proposalIdOrProposal) {
     }
     try {
         const wasPublished = !!window.DesignSync.publishedCid(proposal);
+        // Not published yet: the button reads Publish…, and publishing is confirmed first.
+        if (!wasPublished && !(await confirmPublication([{ kind: 'design', title: proposal.title }]))) return null;
         const { cid } = await window.DesignSync.publishDesign(proposal);
         const link = window.DesignSync.designLink([cid], { city: proposal.city });
         console.info(`[${new Date().toISOString()}] [share] ${proposal.proposalId} → ${link}`);

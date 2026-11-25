@@ -338,6 +338,14 @@ export async function chooseProfileName(page: Page, name: string): Promise<void>
 
 // Share on a design (and on a plan or agreement) ends in the Share box (js/ui/share-dialog.js): the
 // link with Copy link, Post on X and the device's Share…. Close dismisses it; resolves the link shown.
+// Publishing asks once what it means (sharing-routes.js confirmPublication): this answers Publish.
+export async function confirmPublish(page: Page): Promise<void> {
+  const prompt = page.getByRole('alertdialog').filter({ hasText: 'Published work is on the server' });
+  await expect(prompt).toBeVisible({ timeout: 15_000 });
+  await prompt.getByRole('button', { name: 'Publish', exact: true }).click();
+  await expect(prompt).toBeHidden();
+}
+
 export async function closeShareBox(page: Page): Promise<string> {
   const box = page.locator('.share-dialog-box');
   await expect(box).toBeVisible({ timeout: 30_000 });

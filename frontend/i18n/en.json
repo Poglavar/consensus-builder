@@ -1194,6 +1194,11 @@
                 "notACid": "This is not a design link.",
                 "applyFailed": "The design could not be applied to the ground here."
             },
+            "confirmPublish": {
+                "body": "Publish {{names}}? Published work is on the server, where anyone with its link can open it. That version cannot be changed: editing it later makes a new version.",
+                "planDesigns": "A plan’s designs that are not published yet are published with it.",
+                "ok": "Publish"
+            },
             "panel": {
                 "title": "Share applied designs",
                 "filterPublished": "Published",
@@ -1992,6 +1997,8 @@
                 "includedInRoad": "Included in combined road",
                 "includedInRoadHint": "Remove {{name}} from the map to restore this road.",
                 "share": "Share",
+                "publish": "Publish…",
+                "publishHint": "Publish this design on the server and share its link",
                 "copy": "Edit",
                 "edit": "Edit",
                 "resumeDraft": "Resume draft",
@@ -8901,8 +8908,11 @@
             "stats": "Compare stats",
             "statsFailed": "The stats could not open: {{reason}}",
             "copyLink": "Copy link",
+            "publishAndCopyLink": "Publish and copy link",
             "copyLinkFailed": "The link could not be copied.",
-            "linkUnavailable": "Only Built today, Permitted massing, Proposed and published plans can be shared in a link. Publish a plan to share it.",
+            "linkUnavailable": "An agreement, or a design that cannot be published yet, cannot be named in a link. Choose another side to share this comparison.",
+            "linkMissingPlan": "This comparison link names a plan that has not been published, so it cannot open here.",
+            "linkMissingDesign": "This comparison link names a design that is not on the server, so it cannot open here.",
             "reading": "{{label}} (reading…)",
             "unreadable": "{{label}} (could not be read: {{reason}})",
             "mapNote": "On the map, each side draws its own buildings and permitted massing as footprints; a design or plan that is not applied also draws its roads and spaces as footprints. Parcels and applied roads and parks show on both sides.",

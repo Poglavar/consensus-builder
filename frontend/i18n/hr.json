@@ -1196,6 +1196,11 @@
                 "notACid": "Ovo nije link dizajna.",
                 "applyFailed": "Dizajn nije bilo moguće primijeniti na ovdašnje tlo."
             },
+            "confirmPublish": {
+                "body": "Objaviti {{names}}? Objavljeni rad je na poslužitelju, gdje ga svatko s poveznicom može otvoriti. Ta se verzija ne može mijenjati: kasnija izmjena stvara novu verziju.",
+                "planDesigns": "Dizajni plana koji još nisu objavljeni objavljuju se s njim.",
+                "ok": "Objavi"
+            },
             "panel": {
                 "title": "Podijeli primijenjene dizajne",
                 "filterPublished": "Objavljeno",
@@ -2005,6 +2010,8 @@
                 "includedInRoad": "Uključeno u spojenu cestu",
                 "includedInRoadHint": "Uklonite {{name}} s karte kako biste vratili ovu cestu.",
                 "share": "Podijeli",
+                "publish": "Objavi…",
+                "publishHint": "Objavi ovaj dizajn na poslužitelju i podijeli njegovu poveznicu",
                 "copy": "Uredi",
                 "edit": "Uredi",
                 "resumeDraft": "Nastavi skicu",
@@ -8947,8 +8954,11 @@
             "stats": "Usporedi statistiku",
             "statsFailed": "Statistika se nije mogla otvoriti: {{reason}}",
             "copyLink": "Kopiraj poveznicu",
+            "publishAndCopyLink": "Objavi i kopiraj poveznicu",
             "copyLinkFailed": "Poveznica se nije mogla kopirati.",
-            "linkUnavailable": "U poveznici se mogu dijeliti samo Izgrađeno danas, dopuštena građevna masa, predloženo i objavljeni planovi. Objavite plan da biste ga podijelili.",
+            "linkUnavailable": "Sporazum ili dizajn koji se još ne može objaviti ne može se navesti u poveznici. Odaberite drugu stranu da biste podijelili ovu usporedbu.",
+            "linkMissingPlan": "Ova poveznica usporedbe navodi plan koji nije objavljen, pa se ovdje ne može otvoriti.",
+            "linkMissingDesign": "Ova poveznica usporedbe navodi dizajn koji nije na poslužitelju, pa se ovdje ne može otvoriti.",
             "reading": "{{label}} (čita se…)",
             "unreadable": "{{label}} (nije se mogao pročitati: {{reason}})",
             "mapNote": "Na karti svaka strana crta svoje zgrade i dopuštenu građevnu masu kao tlocrte; dizajn ili plan koji nije primijenjen crta kao tlocrte i svoje ceste i prostore. Čestice te primijenjene ceste i parkovi vide se na obje strane.",

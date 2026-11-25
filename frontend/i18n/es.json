@@ -1194,6 +1194,11 @@
                 "notACid": "Este no es un enlace de diseño.",
                 "applyFailed": "No se pudo aplicar aquí el diseño sobre el terreno."
             },
+            "confirmPublish": {
+                "body": "¿Publicar {{names}}? Lo publicado está en el servidor, donde cualquiera con su enlace puede abrirlo. Esa versión no se puede cambiar: editarla después crea una versión nueva.",
+                "planDesigns": "Los diseños de un plan que aún no están publicados se publican con él.",
+                "ok": "Publicar"
+            },
             "panel": {
                 "title": "Compartir diseños aplicados",
                 "filterPublished": "Publicados",
@@ -2015,6 +2020,8 @@
                 "includedInRoad": "Incluida en la vía combinada",
                 "includedInRoadHint": "Quita {{name}} del mapa para restaurar esta vía.",
                 "share": "Compartir",
+                "publish": "Publicar…",
+                "publishHint": "Publica este diseño en el servidor y comparte su enlace",
                 "copy": "Editar",
                 "edit": "Editar",
                 "resumeDraft": "Continuar borrador",
@@ -8929,8 +8936,11 @@
             "stats": "Comparar estadísticas",
             "statsFailed": "No se pudieron abrir las estadísticas: {{reason}}",
             "copyLink": "Copiar enlace",
+            "publishAndCopyLink": "Publicar y copiar enlace",
             "copyLinkFailed": "No se pudo copiar el enlace.",
-            "linkUnavailable": "Solo se pueden compartir en un enlace Construido hoy, el volumen permitido, lo propuesto y los planes publicados. Publica un plan para compartirlo.",
+            "linkUnavailable": "Un acuerdo, o un diseño que aún no se puede publicar, no se puede incluir en un enlace. Elige otro lado para compartir esta comparación.",
+            "linkMissingPlan": "Este enlace de comparación nombra un plan que no se ha publicado, así que no se puede abrir aquí.",
+            "linkMissingDesign": "Este enlace de comparación nombra un diseño que no está en el servidor, así que no se puede abrir aquí.",
             "reading": "{{label}} (leyendo…)",
             "unreadable": "{{label}} (no se pudo leer: {{reason}})",
             "mapNote": "En el mapa, cada lado dibuja sus propios edificios y el volumen permitido como huellas; un diseño o plan no aplicado dibuja también sus calles y espacios como huellas. Las parcelas y las calles y parques aplicados se ven en ambos lados.",

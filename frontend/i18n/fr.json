@@ -3480,6 +3480,8 @@
                 "includedInRoad": "Inclus dans une route combinée",
                 "includedInRoadHint": "Retirez {{name}} de la carte pour restaurer cette route.",
                 "share": "Partager",
+                "publish": "Publier…",
+                "publishHint": "Publier ce projet sur le serveur et partager son lien",
                 "copy": "Modifier",
                 "edit": "Modifier",
                 "resumeDraft": "Reprendre le brouillon",
@@ -4457,6 +4459,11 @@
                 "failed": "Le projet n’a pas pu être publié.",
                 "notACid": "Ce lien ne correspond pas à un projet.",
                 "applyFailed": "Le projet n’a pas pu être appliqué au terrain ici."
+            },
+            "confirmPublish": {
+                "body": "Publier {{names}} ? Ce qui est publié se trouve sur le serveur, où toute personne ayant le lien peut l'ouvrir. Cette version ne peut plus être modifiée : la modifier ensuite crée une nouvelle version.",
+                "planDesigns": "Les projets d'un plan qui ne sont pas encore publiés sont publiés avec lui.",
+                "ok": "Publier"
             },
             "route": {
                 "fetching": "Récupération des projets partagés…",
@@ -9080,8 +9087,11 @@
             "stats": "Comparer les statistiques",
             "statsFailed": "Les statistiques n’ont pas pu s’ouvrir : {{reason}}",
             "copyLink": "Copier le lien",
+            "publishAndCopyLink": "Publier et copier le lien",
             "copyLinkFailed": "Le lien n'a pas pu être copié.",
-            "linkUnavailable": "Seuls le bâti actuel, le gabarit autorisé, le proposé et les plans publiés peuvent être partagés par un lien. Publiez un plan pour le partager.",
+            "linkUnavailable": "Un accord, ou un projet qui ne peut pas encore être publié, ne peut pas figurer dans un lien. Choisissez un autre côté pour partager cette comparaison.",
+            "linkMissingPlan": "Ce lien de comparaison désigne un plan qui n'a pas été publié ; il ne peut pas s'ouvrir ici.",
+            "linkMissingDesign": "Ce lien de comparaison désigne un projet absent du serveur ; il ne peut pas s'ouvrir ici.",
             "reading": "{{label}} (lecture…)",
             "unreadable": "{{label}} (illisible : {{reason}})",
             "mapNote": "Sur la carte, chaque côté dessine ses propres bâtiments et la volumétrie autorisée en emprise au sol ; un projet ou un plan non appliqué dessine aussi ses rues et ses espaces en emprise au sol. Les parcelles ainsi que les rues et les parcs appliqués apparaissent des deux côtés.",
