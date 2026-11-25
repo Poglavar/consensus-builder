@@ -347,3 +347,44 @@ describe('shared building and proposal representations', () => {
         expect(representations.proposed({ proposalId: 'unknown' }, { key: 'unknown' }).assessment.status).toBe('Unknown');
     });
 });
+
+// An observed building without a known height is measured from a height survey; the answer reaches
+// the card even when the inspector shows another record of the same building by then.
+describe('observed building height from a height survey', () => {
+    const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');
+    const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
+    const slice = node => source.slice(node.start, node.end);
+    const pieces = body.filter(node => (node.type === 'FunctionDeclaration' && ['applyHeightSurvey', 'measureHeight', 'heightSurveyLine'].includes(node.id.name))
+        || (node.type === 'VariableDeclaration' && ['heightSurveys', 'HEIGHT_SURVEY_NONE'].includes(node.declarations[0].id.name))).map(slice).join('\n');
+    const t = (key, params = {}) => `${key}(${Object.values(params).join('|')})`;
+    const record = () => ({ id: 'built:london:osm:w1', source: { recordId: 'osm:w1' }, metrics: { heightM: null } });
+    const setup = ({ result, shown }) => {
+        const renderInspector = vi.fn();
+        let answer; const pending = new Promise(resolve => { answer = resolve; });
+        const client = { surveyFor: () => ({ id: 'gb-ea', name: 'EA LiDAR' }), known: () => false, measureOne: vi.fn(() => pending) };
+        const context = vm.createContext({ root: { HeightSurveyClient: client, CbFormat: { formatDate: d => d.toISOString().slice(0, 10), formatLength: v => `${v} m` } },
+            selected: () => shown.current, renderInspector, t, console, Map, Number, Date });
+        vm.runInContext(`${pieces}\nthis.api = { measureHeight, heightSurveyLine };`, context);
+        return { ...context.api, renderInspector, answer: () => { answer(result); return pending.then(() => new Promise(resolve => setImmediate(resolve))); } };
+    };
+    it('shows measuring, then the measured height on the record now shown, with survey, flight date and eave', async () => {
+        const first = record(), shown = { current: first };
+        const card = setup({ shown, result: { heightM: 9.16, eaveM: 8.46, confidence: 'high', surveyedFrom: '2017-12-07' } });
+        card.measureHeight(first, { geometry: {} });
+        expect(card.heightSurveyLine(first)).toBe('heightSurveyMeasuring(EA LiDAR)');
+        // The stack rebuilt the card meanwhile: a new record object for the same building is shown.
+        const again = record(); shown.current = again;
+        await card.answer();
+        expect(again.metrics.heightM).toBe(9.16);
+        expect(card.heightSurveyLine(again)).toBe('heightSurveyMeasured(EA LiDAR) · heightSurveyFlown(2017-12-07) · heightSurveyEave(8.46 m)');
+        expect(card.renderInspector).toHaveBeenCalledTimes(2);
+    });
+    it('says why a building has no measured height, and leaves its height unknown', async () => {
+        const first = record(), shown = { current: first };
+        const card = setup({ shown, result: { rejection: 'no-building-seen' } });
+        card.measureHeight(first, { geometry: {} });
+        await card.answer();
+        expect(first.metrics.heightM).toBeNull();
+        expect(card.heightSurveyLine(first)).toBe('heightSurveyNoBuilding(EA LiDAR)');
+    });
+});

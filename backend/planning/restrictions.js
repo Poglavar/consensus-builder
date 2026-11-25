@@ -5,8 +5,11 @@
 import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
 import config from '../../frontend/data/planning-sources.json' with { type: 'json' };
+import heightSurveys from '../../frontend/data/height-surveys.json' with { type: 'json' };
+import proj4 from 'proj4';
 import { cityPlanningRuleSetIds } from '../scripts/lib/frontend-city-money.mjs';
 const require = createRequire(import.meta.url);
+const HeightSurvey = require('../../frontend/js/buildings/height-survey.js');
 const ConstraintSources = require('../../frontend/js/planning/constraint-sources.js');
 const Restrictions = require('../../frontend/js/planning/restrictions.js');
 const RuleTerms = require('../../frontend/js/planning/rule-terms.js');
@@ -19,6 +22,22 @@ const loaderFor = fetchImpl => {
     return loaders.get(fetchImpl);
 };
 const asFeatures = records => (records || []).map(record => ({ type: 'Feature', id: record.id, properties: { source: 'building-source' }, geometry: record.geometry }));
+// One height measurer (its per-building cache) per fetch implementation.
+const measurers = new WeakMap();
+const measurerFor = fetchImpl => {
+    if (!measurers.has(fetchImpl)) measurers.set(fetchImpl, HeightSurvey.createMeasurer({ surveys: heightSurveys.surveys, proj4, fetchImpl,
+        log: message => console.warn(`[${new Date().toISOString()}] [height-survey] ${message}`) }));
+    return measurers.get(fetchImpl);
+};
+const statesTerms = pairs => pairs.some(({ ruleSet }) => (ruleSet.policies || []).some(policy => (policy.constraints || []).some(constraint => constraint.term || constraint.when)));
+// The parcel's buildings and its neighbours with heights a height survey measured where their source
+// has none (frontend/js/buildings/height-survey.js), as the browser's Permitted check fills them.
+// A survey that does not answer leaves those heights unknown.
+async function measuredHeights(buildings, neighbours, fetchImpl) {
+    const own = buildings?.length ?? 0, all = [...(buildings || []), ...(neighbours || [])];
+    const filled = await HeightSurvey.fillMissingHeights(measurerFor(fetchImpl), all, { known: record => RuleTerms.buildingHeight(record).known });
+    return [buildings ? filled.slice(0, own) : buildings, neighbours ? filled.slice(own) : neighbours];
+}
 
 // Permitted items (envelopes) with the city's prohibited designations cut out, as the map draws
 // them, and the same cut applied to `geometry` (an envelope's site a draft builds on). Items pass
@@ -37,8 +56,9 @@ export async function restrictedEnvelopes({ city, items, bbox, buildings = null,
 // `setting`: the street it faces and the buildings along it (street-width.js streetSetting), or null.
 export async function parcelRestrictions({ city, parcel, buildings = null, setting = null, fetchImpl = fetch, ruleSetIds = cityPlanningRuleSetIds(city) }) {
     if (!ruleSetIds.length) return null;
-    const existing = RuleTerms.existingContext({ parcel, buildings, street: setting?.street ?? null, neighbours: setting?.neighbours ?? null, geometryOps: turf });
     const pairs = ConstraintSources.ruleSetsFor(config, ruleSetIds);
+    const [measured, neighbours] = statesTerms(pairs) ? await measuredHeights(buildings, setting?.neighbours ?? null, fetchImpl) : [buildings, setting?.neighbours ?? null];
+    const existing = RuleTerms.existingContext({ parcel, buildings: measured, street: setting?.street ?? null, neighbours, geometryOps: turf });
     const ruleSets = pairs.map(({ ruleSet, source }) => ({ id: ruleSet.id, label: ruleSet.label, baseRule: ruleSet.baseRule ?? null, evidence: ruleSet.evidence,
         source: { id: source.id, label: source.label, coverage: source.coverage, licence: source.licence, attribution: source.attribution },
         policies: (ruleSet.policies || []).map(policy => ({ ...policy, constraints: RuleTerms.resolve(policy.constraints, existing) })) }));

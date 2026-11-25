@@ -216,8 +216,54 @@
             city: root.CityConfigManager.getCurrentCityId(), footprintM2: feature.geometry ? root.turf.area(feature) : null,
             title: root.ClickStackHits?.buildingLabel?.(feature) || null,
             sourceName: root.CityConfigManager.getBuildingSources?.().find(source => source.id === feature.properties?.source)?.name || null });
-        if (record) { selectRecord(record); return true; }
+        if (record) { selectRecord(record); measureHeight(record, feature); return true; }
         return false;
+    }
+    // A built record whose source has no known height (rule-terms buildingHeight) is measured from
+    // the height survey covering it (buildings/height-survey-client.js): the card says so meanwhile,
+    // and the result replaces the record's height and names its survey, or says why there is none.
+    // The state is kept per building (record id) and copied onto whichever record of it the
+    // inspector shows when the answer arrives.
+    const heightSurveys = new Map();
+    function applyHeightSurvey(record, state) {
+        record.heightSurvey = state;
+        if (state.status === 'measured') record.metrics.heightM = state.heightM;
+    }
+    function measureHeight(record, feature) {
+        const client = root.HeightSurveyClient, survey = client?.surveyFor(feature);
+        if (!survey || client.known(feature)) return;
+        const named = { id: survey.id, name: survey.name };
+        applyHeightSurvey(record, heightSurveys.get(record.id)?.status === 'measured' ? heightSurveys.get(record.id) : { status: 'measuring', survey: named });
+        if (selected()?.id === record.id) renderInspector();
+        client.measureOne(feature, record.source.recordId).then(result => {
+            const measured = typeof result?.heightM === 'number' && Number.isFinite(result.heightM);
+            const state = { status: measured ? 'measured' : 'none', survey: named, ...result };
+            heightSurveys.set(record.id, state);
+            applyHeightSurvey(record, state);
+            const shown = selected();
+            if (shown?.id !== record.id) return;
+            applyHeightSurvey(shown, state);
+            renderInspector();
+        }).catch(error => console.error(`[${new Date().toISOString()}] [planning] Building height could not be measured`, error));
+    }
+    // Why a survey gave no height, literal keys so the locale coverage test sees each one.
+    const HEIGHT_SURVEY_NONE = {
+        'no-building-seen': 'heightSurveyNoBuilding', 'too-few-cells': 'heightSurveyTooSmall', 'smaller-than-a-cell': 'heightSurveyTooSmall',
+        'low-confidence': 'heightSurveyUnclear', 'no-survey-data': 'heightSurveyNoData', 'implausibly-tall': 'heightSurveyImplausible',
+        'survey-unavailable': 'heightSurveyUnavailable'
+    };
+    function heightSurveyLine(item) {
+        const state = item.heightSurvey, survey = state?.survey?.name || '';
+        if (!state) return null;
+        if (state.status === 'measuring') return t('heightSurveyMeasuring', { survey });
+        if (state.status === 'measured') {
+            const parts = [t('heightSurveyMeasured', { survey })];
+            if (state.surveyedFrom) parts.push(t('heightSurveyFlown', { date: root.CbFormat.formatDate(new Date(`${state.surveyedFrom}T00:00:00Z`), { timeZone: 'UTC' }) }));
+            if (typeof state.eaveM === 'number') parts.push(t('heightSurveyEave', { eave: root.CbFormat.formatLength(state.eaveM, { maxFractionDigits: 1 }) }));
+            return parts.join(' · ');
+        }
+        const key = HEIGHT_SURVEY_NONE[state.rejection];
+        return key ? t(key, { survey }) : null;
     }
     function inspectProposal(proposal) {
         const key = root.getProposalKey(proposal);
@@ -609,6 +655,12 @@
             entry.append(element('dt', '', label), cell); metrics.append(entry);
         }
         if (displayedMetrics.length) info.append(metrics);
+        const surveyLine = item.heightSurvey ? heightSurveyLine(item) : null;
+        if (surveyLine) {
+            const line = element('p', 'planning-inspector__description', surveyLine);
+            line.setAttribute('role', 'status');
+            info.append(line);
+        }
         const heights = [...new Set(item.volumes.map(volume => volume.topM))].sort((a, b) => a - b);
         if (heights.length > 1) info.append(element('p', 'planning-inspector__description', t('heightParts', { heights: heights.map(height => root.CbFormat.formatLength(height)).join(' · ') })));
         const realization = permittedFeatures(item), shown = realization.configuration;

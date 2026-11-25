@@ -759,7 +759,7 @@ Permitted where a rule set applies but no base rule source is recorded: "unknown
 
 ### Existing context
 
-What stands on a parcel, which relative rule terms read (`frontend/js/planning/rule-terms.js`): the existing buildings on it with their footprints and heights, each height with its basis and whether it is known; the parcel's built footprint and its natural ground (the parcel area no building stands on); the street width in front (the street-width measure: from the edge facing the street across to the next lot); and the heights of its neighbours along the street (the existing buildings of the lots within 60 m that face the same street, by name, else by line). A height is known when measured or stated as storeys; a display height a building source estimates is unknown, never its number. No building source answer leaves every building term unknown; a parcel with no buildings has a known footprint and height of zero.
+What stands on a parcel, which relative rule terms read (`frontend/js/planning/rule-terms.js`): the existing buildings on it with their footprints and heights, each height with its basis and whether it is known; the parcel's built footprint and its natural ground (the parcel area no building stands on); the street width in front (the street-width measure: from the edge facing the street across to the next lot); and the heights of its neighbours along the street (the existing buildings of the lots within 60 m that face the same street, by name, else by line). A height is known when measured or stated as storeys; a display height a building source estimates is unknown, never its number. Where a policy states a relative term, a building whose source states no height is measured from the [height survey](#height-survey) covering it, if any. No building source answer leaves every building term unknown; a parcel with no buildings has a known footprint and height of zero.
 
 ### Relative rule term
 
@@ -1167,6 +1167,10 @@ A vertical size in metres with an identified basis, such as measured roof height
 An estimated context height shapes an existing building in Model view. It carries `height_source: estimated` and may name a prediction dataset in `height_estimate_source`. Its building footprint and recorded storeys retain their original source. The estimate supplies no measured building or floor-area evidence.
 
 A height calculated from recorded storeys carries `height_source: levels`. For Astana's NSDI buildings, the recorded value is the `levels` field on the official footprint and the shared extrusion assumes three metres per storey.
+
+### Height survey
+
+A public pair of elevation maps on one metric grid, a surface (roofs, trees) and a terrain (bare ground), that an existing building's height is measured from on demand where its own source states none (`frontend/data/height-surveys.json`, `frontend/js/buildings/height-survey.js`). The measurement reads one window of both maps around the buildings asked about and takes, over the cells inside each footprint and at least 1 m from its edge, the 90th percentile of surface minus terrain as the height and the 25th as the eave (cadastre-data's raster tier). Fewer than 9 cells, a height under 1.5 m or over 80 m, or low confidence give no height and a reason, never a number. A measured height is a known height with `height_source: measured` and `height_survey` naming the survey, the eave, the confidence and the dates the patch holding the building was flown. Results are kept in memory for the session; nothing is stored. A survey declares where it may answer (`coverage.bbox`); inside it the service's no-data cells say where it has none. A request that does not answer within 6 s is asked again, up to 6 times, before the survey counts as unavailable. The first survey is the Environment Agency's 1 m LiDAR composite for England.
 
 ### Elevation
 

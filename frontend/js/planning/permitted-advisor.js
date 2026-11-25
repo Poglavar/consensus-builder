@@ -103,7 +103,23 @@
         try { streets = await streetsByParcel.get(parcel.id); }
         catch (error) { console.error(`[${new Date().toISOString()}] [permitted-check] Streets could not be read; street terms stay unknown`, error); }
         const setting = root.PlanningStreetWidth.streetSetting({ parcel, streets, parcels: lots, buildings: pool, turf });
-        return root.PlanningRuleTerms.existingContext({ parcel, buildings: pool.filter(inside), street: setting.street, neighbours: setting.neighbours, geometryOps: turf });
+        const [buildings, neighbours] = await measuredHeights(pool.filter(inside), setting.neighbours);
+        return root.PlanningRuleTerms.existingContext({ parcel, buildings, street: setting.street, neighbours, geometryOps: turf });
+    }
+    // The parcel's buildings and its neighbours with heights a height survey measured where their
+    // source has none (buildings/height-survey-client.js), in one request window. A survey that does
+    // not answer leaves those heights unknown, as before.
+    async function measuredHeights(buildings, neighbours) {
+        const client = root.HeightSurveyClient, idOf = record => root.buildingPoolFeatureKey?.(record) || record.id;
+        if (!client) return [buildings, neighbours];
+        const own = buildings.length, all = [...buildings, ...(neighbours || [])];
+        try {
+            const filled = await client.fillHeights(all, { idOf });
+            return [filled.slice(0, own), neighbours ? filled.slice(own) : neighbours];
+        } catch (error) {
+            console.error(`[${new Date().toISOString()}] [permitted-check] Building heights could not be measured; they stay unknown`, error);
+            return [buildings, neighbours];
+        }
     }
     const statesTerms = items => items.some(item => (item.constraints || []).some(constraint => constraint.term || constraint.when));
     let generation = 0;

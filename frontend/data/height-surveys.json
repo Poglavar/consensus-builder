@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "description": "Height surveys: public surface and terrain elevation maps a building's height is measured from on demand (js/buildings/height-survey.js). Nothing is stored: the browser, or the MCP server for an agent, cuts the window around the buildings it needs, subtracts terrain from surface inside each footprint and keeps the numbers in memory. Adapter 'wcs-surface-terrain': two OGC WCS 2.0.1 coverages in one metric CRS (`crs`, `proj4`), read as uncompressed float GeoTIFF. `coverage.bbox` [w,s,e,n] in WGS84 is where a survey may answer; inside it the service's own no-data cells say where it has none. `dates` is an OGC API Features collection of the patches the surface was assembled from, each with its flight dates.",
+  "surveys": [
+    {
+      "id": "gb-ea-lidar-composite-1m",
+      "name": "Environment Agency LiDAR composite, 1 m",
+      "adapter": "wcs-surface-terrain",
+      "crs": "EPSG:27700",
+      "proj4": "+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs",
+      "pixelM": 1,
+      "surface": {
+        "endpoint": "https://environment.data.gov.uk/spatialdata/lidar-composite-digital-surface-model-last-return-dsm-1m/wcs",
+        "coverageId": "9ba4d5ac-d596-445a-9056-dae3ddec0178__Lidar_Composite_Elevation_LZ_DSM_1m"
+      },
+      "terrain": {
+        "endpoint": "https://environment.data.gov.uk/spatialdata/lidar-composite-digital-terrain-model-dtm-1m/wcs",
+        "coverageId": "13787b9a-26a4-4775-8523-806d13af58fc__Lidar_Composite_Elevation_DTM_1m"
+      },
+      "dates": {
+        "endpoint": "https://environment.data.gov.uk/spatialdata/survey-index-files/ogc/features/v1/collections/LIDAR_Composite_1m_Last_Return_DSM_2022_extents/items",
+        "from": "sd_flown",
+        "to": "ed_flown"
+      },
+      "coverage": {
+        "regions": ["GB-ENG"],
+        "bbox": [-7.11, 49.85, 2.09, 55.88],
+        "note": "England. The composite is assembled from the National LIDAR Programme (2016-2022) and earlier surveys; a building built after its patch was flown is missing or shows what stood before."
+      },
+      "licence": {
+        "name": "Open Government Licence v3.0",
+        "url": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+      },
+      "attribution": "© Environment Agency copyright and/or database right. All rights reserved.",
+      "url": "https://environment.data.gov.uk/dataset/9ba4d5ac-d596-445a-9056-dae3ddec0178"
+    }
+  ]
+}
