@@ -6,10 +6,12 @@ const require = createRequire(import.meta.url);
 const EconomicSources = require('../../frontend/js/economic-sources.js');
 const CityMoney = require('../../frontend/js/city-money.js');
 const UkLandRates = require('../../frontend/js/uk-land-rates.js');
+const UkPrivateRents = require('../../frontend/js/uk-private-rents.js');
 const UkEconomicAreas = require('../../frontend/data/uk-economic-areas.js');
 
 const birmingham = { id: 'birmingham', currency: { code: 'GBP' } };
-const cityContext = (city, at = null) => ({ city, ukLandRates: UkLandRates, ukAreas: UkEconomicAreas, at });
+const AREA_RATES = { [UkLandRates.id]: UkLandRates, [UkPrivateRents.id]: UkPrivateRents };
+const cityContext = (city, at = null) => ({ city, areaRates: AREA_RATES, areas: UkEconomicAreas, at });
 // Points, [lng, lat], in named places: their authorities are the land rate's areas.
 const PLACES = { islington: [-0.1030, 51.5380], croydon: [-0.0982, 51.3727], barking: [0.0810, 51.5390],
     trafalgarSquare: [-0.1281, 51.5080], salford: [-2.2900, 53.4875], birminghamCentre: [-1.8904, 52.4862],
@@ -23,13 +25,13 @@ const rate = (metric, amount, overrides = {}) => ({
 
 describe('economic source adapters', () => {
     it('returns UK authority land evidence with provenance, units, basis, and valuation date', () => {
-        const source = EconomicSources.defaults(birmingham, UkLandRates);
+        const source = EconomicSources.defaults(birmingham, AREA_RATES, UkEconomicAreas);
         const rates = EconomicSources.resolve(source, cityContext(birmingham, PLACES.birminghamCentre));
         expect(rates.land).toMatchObject({
             metric: 'land', unit: 'm2-land', amount: 688, currency: 'GBP', basis: 'policy-appraisal',
             asOf: '2023-10-01', sourceId: 'uk-mhclg-land-2023',
             sourceName: 'MHCLG residential policy appraisal 2023',
-            sourceUrl: UkLandRates.source, scope: 'E08000025 · Birmingham'
+            sourceUrl: UkLandRates.url, scope: 'E08000025 · Birmingham'
         });
         expect(rates.roadLand).toMatchObject({ metric: 'roadLand', unit: 'm2-land', amount: 688, asOf: '2023-10-01' });
     });
@@ -37,7 +39,7 @@ describe('economic source adapters', () => {
     it('has no UK land evidence for a city outside England', () => {
         const cardiff = { id: 'cardiff', currency: { code: 'GBP' } };
         expect(UkLandRates.cities).not.toHaveProperty('cardiff');
-        const rates = EconomicSources.resolve(EconomicSources.defaults(cardiff, UkLandRates), cityContext(cardiff, PLACES.cardiff));
+        const rates = EconomicSources.resolve(EconomicSources.defaults(cardiff, AREA_RATES, UkEconomicAreas), cityContext(cardiff, PLACES.cardiff));
         expect(rates).not.toHaveProperty('land');
         expect(rates).not.toHaveProperty('roadLand');
     });
@@ -171,7 +173,7 @@ describe('rent', () => {
     });
 
     it('starts every city with money at an editable 15 a month', () => {
-        const rates = EconomicSources.resolve(EconomicSources.defaults(birmingham, UkLandRates), cityContext(birmingham));
+        const rates = EconomicSources.resolve(EconomicSources.defaults(birmingham, AREA_RATES, UkEconomicAreas), cityContext(birmingham));
         expect(rates.rent).toMatchObject({ amount: 15, unit: 'm2-floor-month', currency: 'GBP', basis: 'assumption', sourceId: 'scenario-assumptions' });
         expect(CityMoney.assumptionsFor(birmingham).rentPerSqmMonth).toBe(15);
     });
@@ -202,7 +204,7 @@ describe('sale tax', () => {
     });
 
     it('starts as an editable 0 where no source states one, and slides as a share up to 30 % or twice the rate', () => {
-        const rates = EconomicSources.resolve(EconomicSources.defaults(birmingham, UkLandRates), cityContext(birmingham));
+        const rates = EconomicSources.resolve(EconomicSources.defaults(birmingham, AREA_RATES, UkEconomicAreas), cityContext(birmingham));
         expect(rates.saleTax).toMatchObject({ amount: 0, unit: 'share-of-sale', basis: 'assumption', sourceId: 'scenario-assumptions' });
         expect(EconomicSources.slider('saleTax', rates.saleTax)).toMatchObject({ perSqm: 0, min: 0, max: 0.3 });
         expect(EconomicSources.slider('saleTax', { amount: 0.25, sourceId: 'hr' })).toMatchObject({ min: 0, max: 0.5, step: 'any' });
@@ -243,9 +245,9 @@ describe('UK rates follow the location', () => {
     });
 
     it("falls back to the city's authority only without a place, and says so", () => {
-        expect(at(london, null).land).toMatchObject({ amount: 8799, scope: "E09000033 · Westminster (the city's authority: no location given)" });
+        expect(at(london, null).land).toMatchObject({ amount: 8799, scope: "E09000033 · Westminster (the city's area: no location given)" });
         expect(at(manchester, PLACES.cardiff).land).toMatchObject({ amount: 1048,
-            scope: "E08000003 · Manchester (the city's authority: the location is outside the mapped areas)" });
+            scope: "E08000003 · Manchester (the city's area: the location is outside the mapped areas)" });
     });
 
     it("prices London's sale and construction at the GLA value band of the place", () => {
@@ -284,8 +286,21 @@ describe('configured UK cities', () => {
         expect(birmingham.land).toMatchObject({ amount: 688, scope: 'E08000025 · Birmingham' });
         expect(birmingham.sale).toMatchObject({ amount: 2509, basis: 'market', asOf: '2023-08-31', sourceId: 'bcc-residential-market-paper-2024' });
         expect(birmingham.construction).toMatchObject({ amount: 1638, basis: 'construction-cost', asOf: '2024-04-01', sourceId: 'bcc-whole-plan-viability-2024' });
-        expect(birmingham.rent).toMatchObject({ amount: 15, sourceId: 'scenario-assumptions' });
+        // Rent: the ONS two-bed rent per m² of the space standard's flat, × 0.85 net to gross like the sale price.
+        expect(birmingham.rent).toMatchObject({ amount: Math.round(1015 / 70 * 0.85 * 100) / 100, unit: 'm2-floor-month', basis: 'market',
+            asOf: '2026-10-01', sourceId: 'ons-pipr-rent', scope: expect.stringMatching(/^E08000025 · Birmingham: two-bed rent 1,015 a month, October 2026 ÷ 70 m².*× 0\.85 net to gross/) });
+        expect(cityMoney('london').currentEconomicRates(PLACES.islington).rent).toMatchObject({ amount: Math.round(2722 / 70 * 0.675 * 100) / 100 });
         // Other English cities keep the editable sale and construction assumptions.
         expect(cityMoney('manchester').currentEconomicRates()).toMatchObject({ sale: { amount: 4000, sourceId: 'scenario-assumptions' } });
+    });
+
+    it('gives every English city the rent of the authority its land lies in, per m² of dwelling without a configured net to gross', async () => {
+        const { cityMoney } = await import('../scripts/lib/frontend-city-money.mjs');
+        // Salford's parcels of Manchester take Salford's rent; without a location, Manchester's own, and the scope says so.
+        expect(cityMoney('manchester').currentEconomicRates(PLACES.salford).rent).toMatchObject({ sourceId: 'ons-pipr-rent',
+            amount: UkPrivateRents.areas.E08000006.perM2, scope: expect.stringMatching(/^E08000006 · Salford: .*per m² of dwelling$/) });
+        expect(cityMoney('manchester').currentEconomicRates().rent.scope).toMatch(/^E08000003 · Manchester \(the city's area: no location given\)/);
+        // Outside England (Cardiff) the table has no area: the editable assumption.
+        expect(cityMoney('cardiff').currentEconomicRates(PLACES.cardiff).rent).toMatchObject({ amount: 15, sourceId: 'scenario-assumptions' });
     });
 });

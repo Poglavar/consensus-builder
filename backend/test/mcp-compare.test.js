@@ -114,17 +114,18 @@ describe('MCP comparison money', () => {
         expect(removed).toBeCloseTo(turf.area(stock) * 3);
         expect(built.removedFloorAreaM2).toBeCloseTo(removed);
         // London, at the site's place (its extent's centre is in Southwark, value band B): the borough's
-        // land rate, the band's sale price and construction cost, the editable assumptions for the rest.
-        const sale = 11844, cost = 3730, land = 5385;
+        // land rate and two-bed rent (2,409 a month ÷ 70 m² × 0.675 net to gross), the band's sale price and
+        // construction cost, the editable assumptions for the rest.
+        const sale = 11844, cost = 3730, land = 5385, rent = 23.23;
         expect(built.money).toMatchObject({ currency: 'GBP', unit: 'm2-floor', prices: {
             sale: { amount: sale, basis: 'market', sourceId: 'gla-lpvs-2026' }, construction: { amount: cost, basis: 'construction-cost' },
             land: { amount: land, basis: 'policy-appraisal', sourceId: 'uk-mhclg-land-2023', scope: 'E09000028 · Southwark' }, saleTax: { amount: 0 },
-            rent: { amount: 15, unit: 'm2-floor-month' } } });
+            rent: { amount: rent, unit: 'm2-floor-month', sourceId: 'ons-pipr-rent', scope: expect.stringMatching(/^E09000028 · Southwark: two-bed rent 2,409 a month/) } } });
         expect(built.money.landAreaM2).toBeCloseTo(siteM2);
         expect(built.money.landCost).toBeCloseTo(siteM2 * land);
         expect(built.money.totalCost).toBeCloseTo(built.floorAreaM2 * cost + siteM2 * land + removed * sale);
         expect(built.money.profit).toBeCloseTo(built.floorAreaM2 * sale - built.money.totalCost);
-        expect(built.money.annualRent).toBeCloseTo(built.floorAreaM2 * 15 * 12);
+        expect(built.money.annualRent).toBeCloseTo(built.floorAreaM2 * rent * 12);
         expect(built.money.rentYieldOnCost).toBeCloseTo(built.money.annualRent / built.money.totalCost);
         // The park builds nothing: it still pays for its land and what it clears.
         expect(result.alternatives[0].money.profit).toBeCloseTo(-(siteM2 * land + removed * sale));

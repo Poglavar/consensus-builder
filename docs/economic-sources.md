@@ -43,18 +43,39 @@ explicit rate and differs from missing evidence.
 
 ## Adapters and frontend selection
 
-- `uk-mhclg-2023` reads the generated table `frontend/js/uk-land-rates.js`
-  (`scripts/build-uk-land-rates.py`): MHCLG "Land value estimates for policy appraisal 2023", sheet
-  Residential, medium site density at the median house price, for every English local authority,
-  dated 1 October 2023. It gives the rate of the authority the location lies in (scope
-  `E09000019 · Islington`). The city's own authority (named like the city, else under its map centre)
-  stands in only without a location, outside the mapped authorities (Wales, Scotland, the sea) or in an
-  authority without an estimate (Cumberland, Isles of Scilly), and the scope says which, e.g.
-  `E09000033 · Westminster (the city's authority: no location given)`. It is a policy-appraisal
-  figure, not a site valuation. `roadLand` uses the same residential proxy and retains that
-  provenance. Hammersmith and Fulham's estimate (£19,390/m²) is about twice Kensington and Chelsea's
-  (£9,215): the workbook assumes 400 dwellings/ha as its medium density there against 140; it is the
-  published figure and is used as published.
+- `area-rates` reads an area rate table: a dataset's rates per published area of an area layer (an
+  English local authority, `lad`), written by a dataset reader through `scripts/lib/area_rate_table.py`
+  (`id`, `name`, `url`, `layer`, `currency`, the dataset's own `asOf`, `rates` naming each metric's unit,
+  basis, area-row field and scope note, `areas` by code, optional `cities`). The file registers itself
+  as `window.EconomicAreaRates[id]` (node: `CityMoney`'s table list). It gives the rates of the area
+  the location lies in (scope `E09000019 · Islington`, then the rate's note). The city's own area (a
+  table of the layer naming the city in `cities`, else the area under its map centre) stands in only
+  without a location, outside the mapped areas (Wales, Scotland, the sea) or in an area without a rate,
+  and the scope says which, e.g. `E09000033 · Westminster (the city's area: no location given)`. A
+  configured source may add `scale: { factor, note }` to convert the table's unit to the contract's
+  (net to gross); the note is appended to the scope. Any country's per-area statistics (land values,
+  rents, development charges) fit this shape; only the dataset reader is specific.
+  - `uk-mhclg-land-2023` (`frontend/js/uk-land-rates.js`, `scripts/build-uk-land-rates.py`): MHCLG
+    "Land value estimates for policy appraisal 2023", sheet Residential, medium site density at the
+    median house price, for every English local authority, dated 1 October 2023, as `land` and
+    `roadLand`. Its `cities` name the authority each English city stands for (named like the city,
+    else under its map centre). It is a policy-appraisal figure, not a site valuation; `roadLand` uses
+    the same residential proxy and retains that provenance. Hammersmith and Fulham's estimate
+    (£19,390/m²) is about twice Kensington and Chelsea's (£9,215): the workbook assumes 400
+    dwellings/ha as its medium density there against 140; it is the published figure and is used as
+    published. Cumberland and the Isles of Scilly have no estimate.
+  - `ons-pipr-rent` (`frontend/js/uk-private-rents.js`, `scripts/build-uk-area-rates.py rents`): the
+    ONS "Price Index of Private Rents, UK: monthly price statistics" (OGL v3; the 18 November 2026
+    edition, October 2026), each English authority's two-bedroom private rent, a weighted geometric
+    mean of new and existing tenancies in £ a month per dwelling, ÷ 70 m², the minimum gross internal
+    area of a two-bedroom four-person one-storey dwelling in the Nationally Described Space Standard
+    (March 2015, Table 1): a `market` rent per m² of dwelling a month (Islington 2,722 → 38.89,
+    Birmingham 1,015 → 14.50). A dwelling at the standard's minimum lets for more per m² than a larger
+    one, so this leans high. London and Birmingham scale it by their viability studies' net to gross
+    (× 0.675, × 0.85), as their sale prices are, to a rent per m² of the building's floor area
+    (Islington 26.25, Birmingham 12.33); other English cities keep it per m² of dwelling and the scope
+    says so. The ONS publishes no rent for the City of London or the Isles of Scilly; Barnsley's and
+    Sheffield's 2024 codes are filed under their May 2023 codes.
 - `gla-lpvs-2026` gives London's sale price and construction cost from the GLA London Plan Viability
   Study, Phase 1 (July 2026), by its value band A–F (the GLA's value band map, a postcode-district
   layer). Sale: the band's indicative average blended market value at the mid-point (Tables A.2–F.2,
@@ -79,8 +100,9 @@ explicit rate and differs from missing evidence.
   (`scripts/build-uk-economic-areas.mjs`): the 296 English districts (ONS May 2023 BFE, to the extent of
   the realm) and the six value bands, simplified to 30 m on shared borders (250 m on districts' sea and
   Welsh/Scottish edges), shared borders stored once so neighbours leave no gaps. About 560 KB
-  (230 KB compressed), loaded by `city-config.js` only for a city in the UK land table (the 112
-  English cities) and read in node on first use. `EconomicSources.areaAt` finds the area of a point
+  (230 KB compressed), loaded by `city-config.js` only for a city an area rate table names (the 112
+  English cities) and read in node on first use. A second country's areas need that loader to take
+  more than this one file. `EconomicSources.areaAt` finds the area of a point
   synchronously; a point within about 30 m of a border can fall in the neighbour (0.2–0.4 % of a
   London grid against the source polygons).
 - `scenario-assumptions` exposes the existing editable floor-area starting points: 4,000 sale,
@@ -103,9 +125,9 @@ explicit rate and differs from missing evidence.
   districts. Both take the Tax Code's 16 % VAT on new housing whose construction starts from 2026.
 
 City configuration can supply `economics.sources`, an ordered array of registered IDs and/or
-`rate-table` descriptors. The standard frontend policy selects the UK adapter for a city the table
-names an authority for, followed by scenario assumptions; London and Birmingham configure their
-sources explicitly. Explicit source lists replace
+`rate-table` or `area-rates` descriptors. The standard frontend policy selects every built-in area
+table that covers the city (names it in `cities`, or has a rate for the area under its centre, in its
+currency), followed by scenario assumptions; London and Birmingham configure their sources explicitly. Explicit source lists replace
 that policy; include `scenario-assumptions` explicitly if wanted. No backend city routing is added.
 
 Settings → **Valuation & costs** displays effective rates and provenance. Visitors can enter local
@@ -189,7 +211,7 @@ Authored cash offers and agreement allocations are not rewritten by a source pre
 | Planning rules and permitted envelopes | Provider registry and source selector | Adding an arbitrary service requires configuration/adapter work |
 | Parcel ownership/rights | Registry tied to declared parcel-provider identity | No independent visitor source chooser |
 | Basemaps/imagery | Standard maps, custom XYZ/WMS, local suggestions | No general elevation-source contract |
-| Economic unit rates | UK appraisal, assumptions, local imported rates | No general live market or assessment feed yet |
+| Economic unit rates | Per-area tables (UK land appraisal, ONS rents), London viability study, assumptions, local imported rates | No general live market or assessment feed yet |
 | Roads/paths | Shared OSM reader and backend transport | No general road-dataset registry/visitor override |
 | Terrain/elevation | Specific terrain/profile providers | Fixed provider/datum contracts, no general selector |
 | Trees, water and green areas | Overture trees, OpenFreeMap water and landcover | Provider choices fixed |

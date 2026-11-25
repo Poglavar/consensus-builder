@@ -64,7 +64,7 @@
             if (row.basis !== 'assumption' && !asOf) throw new Error('Economic evidence requires a valuation date.');
             return { metric: row.metric, unit: row.unit, amount: row.amount, currency: row.currency,
                 basis: row.basis, asOf, sourceId: source.id, sourceName: source.name.trim(),
-                sourceUrl: sourceUrl(source.url), scope: row.scope == null ? null : String(row.scope).slice(0, 160),
+                sourceUrl: sourceUrl(source.url), scope: row.scope == null ? null : String(row.scope).slice(0, 300),
                 ...(row.taxIncluded ? { taxIncluded: true } : {}) };
         });
         return { version: 1, id: source.id, name: source.name.trim(), adapter: 'rate-table', url: sourceUrl(source.url),
@@ -149,6 +149,8 @@
         const centre = city?.map?.defaultCenter;
         return Array.isArray(centre) ? lngLat([centre[1], centre[0]]) : null;
     };
+    // A whole number with thousands separators for a source's scope text (12666 → "12,666").
+    const thousands = value => String(value).replace(/^(\d+)/, digits => digits.replace(/\B(?=(\d{3})+(?!\d))/g, ','));
     // Why a location-dependent rate is the city's rather than the location's.
     const standIn = (at, found, missing) => (at === null ? 'no location given' : found ? missing : 'the location is outside the mapped areas');
 
@@ -176,20 +178,33 @@
             const table = rateTable(source);
             return table.rates.map(row => ({ ...row, sourceId: table.id, sourceName: table.name, sourceUrl: table.url }));
         },
-        // The residential policy-appraisal rate of the English local authority the location lies in; the
-        // city's own authority only where the location gives none, and its scope says why.
-        'uk-mhclg-2023': (source, context) => {
-            const table = context.ukLandRates, at = lngLat(context.at);
-            const found = at && areaAt(context.ukAreas, 'lad', at);
-            const located = found && table?.authorities?.[found.id] ? found.id : null;
-            const code = located || table?.cities?.[context.city?.id];
-            const row = code && table.authorities?.[code];
+        // An area rate table (scripts/lib/area_rate_table.py, `source.table` in context.areaRates): a
+        // dataset's rates per published area, such as an English local authority's land value, private
+        // rent or building safety levy; any country's per-area statistics take the same shape. It gives
+        // the rates of the area the location lies in; the city's own area (named in a table's `cities`
+        // for the same layer, else the area under the city's centre) only where the location is not given, lies outside every area, or
+        // in an area the table has no rate for, and the scope says which and why. A source's `scale`,
+        // { factor, note }, converts the table's unit to the contract's (a rent per m² of dwelling to one
+        // per m² of the building's floor area, by the place's net to gross) and is stated in the scope.
+        'area-rates': (source, context) => {
+            const table = context.areaRates?.[source.table], at = lngLat(context.at);
+            if (!table || table.currency !== context.city?.currency?.code) return [];
+            const found = at && areaAt(context.areas, table.layer, at);
+            const located = found && table.areas[found.id] ? found.id : null;
+            // The city's area in this layer: as this or another table of the layer names it, else under its centre.
+            const centre = cityCentre(context.city), id = context.city?.id;
+            const named = [table, ...Object.values(context.areaRates)].find(other => other.layer === table.layer && other.cities?.[id]);
+            const code = located || named?.cities[id] || (centre && areaAt(context.areas, table.layer, centre)?.id);
+            const row = code && table.areas[code];
             if (!row) return [];
-            const scope = `${code} · ${row.name}` + (located ? '' : ` (the city's authority: ${standIn(at, found, `${found?.name} has no estimate`)})`);
-            return adapters['rate-table']({ version: 1, id: source.id, name: 'MHCLG residential policy appraisal 2023',
-                adapter: 'rate-table', url: table.source,
-                rates: ['land', 'roadLand'].map(metric => ({ metric, unit: METRICS[metric], amount: row.perSqm,
-                    currency: 'GBP', basis: 'policy-appraisal', asOf: table.asOf, scope })) });
+            const where = `${code} · ${row.name}` + (located ? '' : ` (the city's area: ${standIn(at, found, `${found?.name} has no rate`)})`);
+            const fill = note => note.replace(/\{(\w+)\}/g, (match, key) => (typeof row[key] === 'number' ? thousands(row[key]) : match));
+            const scale = source.scale && Number.isFinite(source.scale.factor) && source.scale.factor > 0 ? source.scale : null;
+            return adapters['rate-table']({ version: 1, id: source.id, name: table.name, adapter: 'rate-table', url: table.url,
+                rates: table.rates.map(rate => ({ metric: rate.metric, unit: rate.unit, currency: table.currency, basis: rate.basis,
+                    asOf: table.asOf, amount: scale ? Math.round(row[rate.field] * scale.factor * 100) / 100 : row[rate.field],
+                    ...(rate.landCategory ? { landCategory: rate.landCategory } : {}),
+                    scope: where + (rate.note ? ': ' + fill(rate.note) : '') + (scale ? (rate.note ? ', ' : ': ') + scale.note : '') })) });
         },
         // London's sale price and construction cost of the value band the location lies in. The map
         // leaves postcode districts without enough new-build sales unbanded (much of the centre among
@@ -197,7 +212,7 @@
         // London, or none, takes the band of the city's centre. The scope says which.
         'gla-lpvs-2026': (source, context) => {
             if (context.city?.currency?.code !== 'GBP') return [];
-            const areas = context.ukAreas;
+            const areas = context.areas;
             const inLondon = point => /^E09/.test(areaAt(areas, 'lad', point)?.id || '');
             const bandOf = point => areaAt(areas, 'lpvsBand', point) || (inLondon(point) ? nearestArea(areas, 'lpvsBand', point) : null);
             const given = lngLat(context.at), at = given && inLondon(given) ? given : null;
@@ -206,7 +221,6 @@
             const row = GLA_LPVS_2026.bands[band.id];
             const nearest = !areaAt(areas, 'lpvsBand', at || cityCentre(context.city)) ? ', nearest' : '';
             const where = `Value band ${band.id}${nearest}` + (at ? '' : ` (city centre's: ${given ? 'outside Greater London' : 'no location given'})`);
-            const thousands = value => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
             return adapters['rate-table']({ version: 1, id: source.id, name: 'GLA London Plan Viability Study 2026',
                 adapter: 'rate-table', url: GLA_LPVS_2026.url,
                 rates: [{ metric: 'sale', unit: METRICS.sale, amount: Math.round(row.dwellingSale * GLA_LPVS_2026.netToGross),
@@ -229,27 +243,35 @@
         }
     });
     const BUILT_INS = Object.freeze({
-        'uk-mhclg-land-2023': Object.freeze({ id: 'uk-mhclg-land-2023', adapter: 'uk-mhclg-2023' }),
+        // Area rate tables (js/uk-land-rates.js, js/uk-private-rents.js), each a source of its own id.
+        'uk-mhclg-land-2023': Object.freeze({ id: 'uk-mhclg-land-2023', adapter: 'area-rates', table: 'uk-mhclg-land-2023' }),
+        'ons-pipr-rent': Object.freeze({ id: 'ons-pipr-rent', adapter: 'area-rates', table: 'ons-pipr-rent' }),
         'gla-lpvs-2026': Object.freeze({ id: 'gla-lpvs-2026', adapter: 'gla-lpvs-2026' }),
         'scenario-assumptions': Object.freeze({ id: 'scenario-assumptions', adapter: 'scenario-assumptions' })
     });
     const runtime = typeof window !== 'undefined' ? window.SourceRuntime : require('./source-runtime.js');
     const registry = runtime.createRegistry({ abstraction: 'economics', runtime: 'shared', required: ['rates'],
         adapters: Object.fromEntries(Object.entries(adapters).map(([id, read]) => [id, {
-            custom: id === 'rate-table', create: (config, context) => ({ rates: () => read(config, context) })
+            // A configured area table may add its own `scale`; a rate table is any local snapshot.
+            custom: ['rate-table', 'area-rates'].includes(id), create: (config, context) => ({ rates: () => read(config, context) })
         }])), sources: Object.values(BUILT_INS).map(source => runtime.source('economics', source.adapter, source)) });
-    // Source ordering belongs to the frontend. A local source may override just one metric.
-    function defaults(city, ukLandRates) {
-        return [ukLandRates?.cities?.[city?.id] ? BUILT_INS['uk-mhclg-land-2023'] : null,
-            BUILT_INS['scenario-assumptions']].filter(Boolean);
+    // Source ordering belongs to the frontend. A local source may override just one metric. A city
+    // takes every built-in area table that covers it (names it in `cities`, or has an area under its
+    // centre in its currency), then the scenario assumptions. `areaRates` are the loaded tables by id.
+    function defaults(city, areaRates, areas) {
+        const covers = table => Boolean(table && (table.cities?.[city?.id] || table.currency === city?.currency?.code
+            && cityCentre(city) && table.areas[areaAt(areas, table.layer, cityCentre(city))?.id]));
+        return [...Object.values(BUILT_INS).filter(source => source.adapter === 'area-rates' && covers(areaRates?.[source.table])),
+            BUILT_INS['scenario-assumptions']];
     }
     function resolve(sources, context) {
         const result = {};
         for (const definition of sources) {
             const source = typeof definition === 'string' ? BUILT_INS[definition] : definition;
             if (!source || !Object.hasOwn(adapters, source.adapter)) throw new Error('Unknown economic source adapter.');
-            const canonical = source.abstraction ? source : source.adapter === 'rate-table'
-                ? runtime.source('economics', source.adapter, source, { kind: 'custom' }) : source.id;
+            // A built-in opens by its id; any other descriptor (a rate table, an area table with a scale) is custom.
+            const canonical = source.abstraction ? source : BUILT_INS[source.id] === source ? source.id
+                : runtime.source('economics', source.adapter, source, { kind: 'custom' });
             for (const row of registry.open(canonical, context).rates()) {
                 // A source in another currency remains evidence, but is not an implicit conversion.
                 if (row.currency === context.city?.currency?.code && !Object.hasOwn(result, row.metric)) result[row.metric] = row;

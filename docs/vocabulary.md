@@ -1052,7 +1052,7 @@ A modeled amount with its currency, source and basis. A source price without a u
 
 A source-attributed amount per stated unit, with an explicit currency, basis and, for evidence, valuation date. Land and road-land rates use land area; building sale and construction rates use floor area. Market evidence, policy appraisal and editable scenario assumptions retain separate meanings. An assessed property total is not a unit rate or a market price. Source selection changes model inputs without rewriting authored cash amounts.
 
-A source published per area (an English local authority, a London value band) gives the observation of the area containing the location the rates are for: one point, the centre of the extent of the land being priced (the plan's land, the parcel, the design's site, the designs' sites). Without a location, or where the location lies in no covered area, it gives the city's own area's, and its scope says which and why.
+A source published per area (an English local authority's land value or rent in an area rate table, a London value band) gives the observation of the area containing the location the rates are for: one point, the centre of the extent of the land being priced (the plan's land, the parcel, the design's site, the designs' sites). Without a location, or where the location lies in no covered area, it gives the city's own area's, and its scope says which and why.
 
 ### Modeled gain
 

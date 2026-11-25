@@ -59,8 +59,8 @@ describe('price assumptions follow the city currency', () => {
         const outside = ukCities.filter(city => !UkLandRates.cities[city.id]);
         expect(outside.length).toBeLessThan(10);
         // Outside England, or in an authority MHCLG gives no estimate for (Cumberland).
-        for (const city of outside) expect(UkLandRates.authorities[EconomicSources.areaAt(UkEconomicAreas, 'lad', city.centre)?.id], city.id).toBeUndefined();
-        for (const city of ukCities.filter(row => UkLandRates.cities[row.id])) expect(UkLandRates.authorities[UkLandRates.cities[city.id]], city.id).toBeTruthy();
+        for (const city of outside) expect(UkLandRates.areas[EconomicSources.areaAt(UkEconomicAreas, 'lad', city.centre)?.id], city.id).toBeUndefined();
+        for (const city of ukCities.filter(row => UkLandRates.cities[row.id])) expect(UkLandRates.areas[UkLandRates.cities[city.id]], city.id).toBeTruthy();
     });
 
     // The 3D panel's two sliders start at the same figures in every city, in its own currency.

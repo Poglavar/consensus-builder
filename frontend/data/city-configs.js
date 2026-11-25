@@ -17194,6 +17194,9 @@
                     adapter: 'rate-table', url: 'https://www.birmingham.gov.uk/download/downloads/id/30608/birmingham_whole_plan_viability_assessment_report.pdf',
                     rates: [{ metric: 'construction', unit: 'm2-floor', amount: 1638, currency: 'GBP', basis: 'construction-cost', asOf: '2024-04-01',
                         scope: 'Flats of 3-5 storeys, median BCIS rebased to Birmingham, per m² (Table 5.16); externals (15-20 %), fees and VAT excluded' }] },
+                // Rents per m² of dwelling take the viability assessment's net to gross, as its sale price does.
+                { id: 'ons-pipr-rent', adapter: 'area-rates', table: 'ons-pipr-rent',
+                    scale: { factor: 0.85, note: '× 0.85 net to gross (Whole Plan Viability Assessment Table 5.4)' } },
                 'scenario-assumptions'] },
             map: {
                 initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
@@ -17345,7 +17348,11 @@
             currency: { locale: 'en-GB', code: 'GBP' },
             // Land at the MHCLG estimate of the borough a plan or parcel lies in; sale price and
             // construction cost of its GLA London Plan Viability Study value band (js/economic-sources.js).
-            economics: { sources: ['uk-mhclg-land-2023', 'gla-lpvs-2026', 'scenario-assumptions'] },
+            // Rents per m² of dwelling take the viability study's net to gross, as its sale prices do.
+            economics: { sources: ['uk-mhclg-land-2023', 'gla-lpvs-2026',
+                { id: 'ons-pipr-rent', adapter: 'area-rates', table: 'ons-pipr-rent',
+                    scale: { factor: 0.675, note: '× 0.675 net to gross (GLA viability study, Annex 3)' } },
+                'scenario-assumptions'] },
             map: {
                 initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
                 defaultCenter: [51.5097885891913, -0.126303973484058], defaultZoom: SHARED_DEFAULT_ZOOM,

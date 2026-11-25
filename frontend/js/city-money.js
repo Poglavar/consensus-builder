@@ -39,20 +39,24 @@
     }
 
     // The frontend owns selection. No backend infers a rate provider from a currency or city.
-    const ukLandRates = () => (root && root.UkLandRates)
-        || (typeof require === 'function' ? require('./uk-land-rates.js') : null);
-    // The areas UK rates are published for: in the browser data/uk-economic-areas.js, which
-    // city-config.js loads for a city in the UK land rate table; under node read on first use.
-    const ukAreas = () => (root ? root.UkEconomicAreas || null
+    // The area rate tables by id (scripts/lib/area_rate_table.py): in the browser each registers itself
+    // in window.EconomicAreaRates (index.html loads them); under node they are required here.
+    const AREA_RATE_FILES = ['./uk-land-rates.js', './uk-private-rents.js'];
+    let nodeAreaRates = null;
+    const areaRates = () => (root ? root.EconomicAreaRates || {}
+        : nodeAreaRates || (nodeAreaRates = Object.fromEntries(AREA_RATE_FILES.map(file => require(file)).map(table => [table.id, table]))));
+    // The areas those tables are published for: in the browser data/uk-economic-areas.js, which
+    // city-config.js loads for a city a table names; under node read on first use.
+    const areas = () => (root ? root.UkEconomicAreas || null
         : typeof require === 'function' ? require('../data/uk-economic-areas.js') : null);
     // `at` is the location the rates are for, [lng, lat]: a plan's land, a parcel, a design's site.
-    // Rates published per area (UK local authority land values, London value bands) follow it; without
-    // it they are the city's own, and their scope says so.
+    // Rates published per area (UK local authority land values and rents, London value bands) follow
+    // it; without it they are the city's own, and their scope says so.
     function ratesFor(cityConfig, override = null, at = null) {
         const api = economicSources();
-        const table = ukLandRates();
-        const sources = cityConfig?.economics?.sources || api.defaults(cityConfig, table);
-        const context = { city: cityConfig, ukLandRates: table, at, get ukAreas() { return ukAreas(); } };
+        const tables = areaRates();
+        const sources = cityConfig?.economics?.sources || api.defaults(cityConfig, tables, areas());
+        const context = { city: cityConfig, areaRates: tables, at, get areas() { return areas(); } };
         return api.resolve(override ? [override, ...sources] : sources, context);
     }
     function assumptionsFor(cityConfig, override = null, at = null) {

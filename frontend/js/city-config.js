@@ -74,9 +74,11 @@
             const src = typeof root.appendBuildToken === 'function' ? root.appendBuildToken(path) : path;
             return `<script src="${src.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"><\/script>`;
         };
-        // An English city's economic rates follow the local authority (and in London the value band) a
-        // plan or parcel lies in: those areas (data/uk-economic-areas.js, ~650 KB) load with the city.
-        const ukAreas = root.UkLandRates?.cities?.[currentCityId] ? script('data/uk-economic-areas.js') : '';
+        // A city an area rate table names (an English city: js/uk-land-rates.js) takes its rates from the
+        // area a plan or parcel lies in (the local authority, in London also the value band): those areas
+        // (data/uk-economic-areas.js, ~560 KB) load with the city.
+        const named = Object.values(root.EconomicAreaRates || {}).some(table => table.cities?.[currentCityId]);
+        const ukAreas = named ? script('data/uk-economic-areas.js') : '';
         document.write(script(`data/cities/${encodeURIComponent(currentCityId)}.js`) + ukAreas
             + '<script>window.CityConfigManager.markCityConfigLoaded();<\/script>');
     }
