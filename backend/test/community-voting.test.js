@@ -11,14 +11,15 @@ beforeAll(async()=>{hash=await V.codeHash(ID,CODE);config=V.configuration({schem
 function memoryStore(){const polls=new Map();let queue=Promise.resolve();return {transaction(cid,work){const task=queue.then(async()=>{
  if(!polls.has(cid))polls.set(cid,{ballots:new Map(),history:new Map(),limits:new Map()});const s=polls.get(cid);
  return work({counts:async()=>V.CHOICES.map(choice=>({choice,count:[...s.ballots.values()].filter(b=>b.choice===choice).length})),
- ballot:async h=>structuredClone(s.ballots.get(h)||{version:0,choice:null}),update:async(h,b)=>s.ballots.set(h,structuredClone(b)),
+ ballot:async h=>structuredClone(s.ballots.get(h)||{version:0,choice:null}),
+ choices:async()=>[...s.ballots].filter(([,b])=>b.choice).map(([codeHash,b])=>({codeHash,choice:b.choice})),update:async(h,b)=>s.ballots.set(h,structuredClone(b)),
  history:async h=>structuredClone(s.history.get(h)||[]),append:async(h,e)=>s.history.set(h,[...(s.history.get(h)||[]),structuredClone(e)]),
  throttle:async(scope,now,limit,delayed,consume=true)=>{let r=s.limits.get(scope);if(!r||now-r.at>=300000)r={at:now,attempts:0,until:0};
  if(r.until>now)return Math.ceil((r.until-now)/1000);if(!consume)return 0;r.attempts++;
  const delay=r.attempts>=limit?Math.max(1000,300000-(now-r.at)):delayed?Math.min(60000,1000*2**Math.min(6,r.attempts-1)):0;
  r.until=now+delay;s.limits.set(scope,r);return Math.ceil(delay/1000);}});
  });queue=task.catch(()=>{});return task;}};}
-function fixture({deadline=null}={}){let time=Date.parse('2026-10-27T12:00:00Z');const content={rule:{electorate:'community',binding:false},consultation:{organiser:null,participationUrl:null,voting:config},deadline};
+function fixture({deadline=null,voting=config}={}){let time=Date.parse('2026-10-27T12:00:00Z');const content={rule:{electorate:'community',binding:false},consultation:{organiser:null,participationUrl:null,voting},deadline};
  const cid=cidOfObject(content),agreement={cid,content},store=memoryStore(),deps={store,loadAgreement:async key=>key===cid?agreement:null,now:()=>time};
  return {cid,agreement,store,service:createVotingService(deps),second:createVotingService(deps),advance:ms=>time+=ms};}
 const ballot=(choice,version,requestId=randomUUID())=>({code:CODE,choice,expectedVersion:version,requestId});
@@ -67,4 +68,44 @@ it('caps a parallel guessing burst across workers before deriving further codes'
  expect(attempts.filter(result=>result.status===429).length).toBeGreaterThanOrEqual(21);
  expect((await f.second.access(f.cid,{code:CODE},'shared-client')).status).toBe(429);
  expect((await f.second.access(f.cid,{code:CODE},'another-client')).status).toBe(200);
+});
+
+describe('street-vote ballot rule on the public summary',()=>{
+ const h=i=>i.toString(16).padStart(64,'0');
+ // The real code is one resident of a two-person household; four more households of one.
+ const streetVote=()=>V.configuration({schema:'community-voting/v2',id:ID,codeHashes:[hash,h(1),h(2),h(3),h(4),h(5)],
+  households:[[hash,h(1)],[h(2)],[h(3)],[h(4)],[h(5)]],rule:{id:'gb-street-vote-strong-suburbs',version:'2026-11-25'}});
+ const seed=(f,rows)=>f.store.transaction(f.cid,async tx=>{for(const [code,choice] of rows)await tx.update(code,{version:1,choice});});
+ it('reports households and each threshold test as aggregates only, provisional until the deadline',async()=>{
+  const f=fixture({deadline:'2026-10-27T12:00:10.000Z',voting:streetVote()});
+  await seed(f,[[h(1),'support'],[h(2),'support'],[h(3),'oppose']]);
+  const open=(await f.service.summary(f.cid)).body;
+  expect(open).toMatchObject({eligible:6,votes:3,households:{eligible:5,voted:3,supporting:2},
+   rule:{id:'gb-street-vote-strong-suburbs',version:'2026-11-25',passed:true,final:false}});
+  expect(open.rule.tests.map(test=>[test.measure,test.count,test.total,test.needed,test.met])).toEqual([
+   ['cast-support',2,3,2,true],['household-turnout',3,5,3,true],['household-support',2,3,2,true]]);
+  // Ballot privacy: no code hash or per-code choice reaches the public summary.
+  for(const code of [hash,h(1),h(2),h(3)])expect(JSON.stringify(open)).not.toContain(code);
+  // The code holder's vote is counted by household: a second yes in the same household adds no household.
+  f.advance(1000);await f.service.access(f.cid,ballot('oppose',0),'a',true);
+  const after=(await f.service.summary(f.cid)).body;
+  expect(after.households).toEqual({eligible:5,voted:3,supporting:2});
+  expect(after.rule.tests[0]).toMatchObject({count:2,total:4,needed:3,met:false});
+  f.advance(10000);
+  expect((await f.service.summary(f.cid)).body.rule).toMatchObject({passed:false,final:true});
+ });
+ it('keeps the plain totals for a list without households or rule, including published v1 lists',async()=>{
+  const f=fixture();expect(Object.keys((await f.service.summary(f.cid)).body).sort()).toEqual(['agreementCid','closed','counts','deadline','eligible','enabled','votes']);
+ });
+ it('MCP accepts a v2 voting list with households and rule, and community-vote when editing an agreement',async()=>{
+  const {registerMcpCompanion}=await import('../agents/mcp-companion.mjs');
+  const tools=new Map();registerMcpCompanion({registerTool:(name,definition)=>tools.set(name,definition),registerResource(){},registerPrompt(){}},
+    {actions:{},handler:fn=>fn,readOnly:{readOnlyHint:true},discovery:{}});
+  const edit=tools.get('ugt_edit_agreement').inputSchema,cid=fixture().cid;
+  const terms=voting=>({plan:cid,expectedCid:cid,terms:{rulePreset:'community-vote',consultation:{organiser:null,participationUrl:null,voting}}});
+  expect(edit.safeParse(terms(streetVote())).success).toBe(true);
+  expect(edit.safeParse(terms({...streetVote(),rule:{id:'made-up',version:'2026-11-25'}})).success).toBe(false);
+  expect(edit.safeParse(terms({...streetVote(),names:['Resident']})).success).toBe(false);
+  expect(tools.get('ugt_draft_agreement').inputSchema.safeParse({plan:cid,rulePreset:'community-vote',consultation:{organiser:null,participationUrl:null,voting:streetVote()}}).success).toBe(true);
+ });
 });

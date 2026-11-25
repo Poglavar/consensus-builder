@@ -112,7 +112,7 @@ An immutable `community-result/v1` record containing the agreement CID, organise
 
 ### Code electorate
 
-A community agreement's optional `consultation.voting` record (`community-voting/v1`) commits a random list identifier and a sorted, unique set of voting-code verifiers. Eligibility is fixed by that agreement's CID. Changing the list creates a new agreement with separate ballots; votes never transfer automatically. An organiser assigns and distributes the codes and is trusted to determine eligibility. Names, contact details and their code assignments stay in the organiser's browser or local voter-list file.
+A community agreement's optional `consultation.voting` record commits a random list identifier and a sorted, unique set of voting-code verifiers. New lists are `community-voting/v2`, which can also commit a household partition and a ballot rule; published `community-voting/v1` lists (identifier and verifiers only) stay valid because published agreements are immutable. Eligibility is fixed by that agreement's CID. Changing the list creates a new agreement with separate ballots; votes never transfer automatically. An organiser assigns and distributes the codes and is trusted to determine eligibility. Names, contact details and their code assignments stay in the organiser's browser or local voter-list file.
 
 ### Voting code
 
@@ -121,6 +121,18 @@ A reusable, randomly generated credential authorizing one ballot on each agreeme
 ### Community ballot
 
 The latest Support, Oppose or Abstain choice for one eligible code and one exact agreement CID. Every changed choice is appended to a server-timestamped history with a monotonically increasing version. An update must name the version the voter reviewed. The latest choice counts once; repeating a request does not count twice. The deadline closes changes while code holders can continue reading history. An organiser's signed result statement remains separate from these server-counted ballots.
+
+### Household
+
+A group of voting codes whose holders live at one address, committed as `consultation.voting.households`: a partition of the code verifiers in which every code appears exactly once. The organiser assigns one code per resident and groups them locally by a household label; the label stays in the browser and the local voter-list file, and only the grouping enters the agreement, so household sizes are public. A code in no group is a household of its own, and a list in which every household has one code is stored without `households`.
+
+### Ballot rule
+
+A dated threshold set a code electorate can pin as `consultation.voting.rule = { id, version }` (`frontend/js/community/ballot-rules.js`). Each test is an exact fraction, at least or more than, of one measure: Support among votes cast (Abstain counts as a vote cast), Support among all eligible codes, households where any code voted among all households, or households with a Support vote among households that voted. A shipped version is never edited; a re-check adds a new version. The API evaluates the rule over the latest ballots and returns only aggregates: each test's count, total, needed count and whether it is met, and whether the rule passes. The result is provisional until the deadline and final after it. A rule counts the resident ballots only and does not make the community agreement binding.
+
+### Street vote
+
+A community code vote of the residents of one street on a plan for it, decided by a street-vote ballot rule. Two rules ship, both proposals for England that are not in force: Policy Exchange's Strong Suburbs (2021) and the government's December 2023 street vote development orders consultation. Owner sign-off is not part of the street vote: owners decide in a separate owners' agreement on the same plan, and the community agreement's voting panel lists those agreements beside the resident result without reading or changing their records.
 
 ### Agreement input
 

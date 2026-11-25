@@ -29,3 +29,16 @@
 [data-community-voting] .voting-result { display: grid; gap: var(--cb-space-1); }
 [data-community-voting] .voting-tally-note { margin: 0; font-size: var(--cb-text-sm); color: var(--cb-text-muted); }
 [data-community-voting] .voting-tally > button { justify-self: start; margin-top: var(--cb-space-2); }
+[data-community-voting] .voting-rule { display: grid; gap: var(--cb-space-2); margin-top: var(--cb-space-3); }
+[data-community-voting] .voting-rule h4 { margin: 0; }
+[data-community-voting] .voting-tests { display: grid; gap: var(--cb-space-2); margin: 0; padding: 0; list-style: none; font-size: var(--cb-text-sm); }
+[data-community-voting] .voting-tests li { display: flex; gap: var(--cb-space-2); align-items: baseline; }
+[data-community-voting] .voting-tests [data-met="true"] .voting-test-mark { color: var(--cb-success); }
+[data-community-voting] .voting-tests [data-met="false"] .voting-test-mark { color: var(--cb-danger); }
+[data-community-voting] .voting-test-state { color: var(--cb-text-muted); }
+[data-community-voting] .voting-owners { display: grid; gap: var(--cb-space-2); margin-block: var(--cb-space-3); }
+[data-community-voting] .voting-owners h4 { margin: 0; }
+[data-community-voting] .voting-owner-list { display: grid; gap: var(--cb-space-2); margin: 0; padding: 0; list-style: none; }
+[data-community-voting] .voting-owner-list li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--cb-space-2); }
+[data-voting-roster] .voting-table input { width: 100%; min-width: 8rem; box-sizing: border-box; }
+[data-voting-roster] select { width: 100%; }

@@ -9596,7 +9596,47 @@
         "turnoutCount": "Glasalo {{votes}} od {{eligible}} · {{percent}}",
         "remaining": "Još nisu glasali: {{count}}",
         "castShare": "Udio predanih glasova",
-        "refreshResults": "Osvježi rezultate"
+        "refreshResults": "Osvježi rezultate",
+        "rule": "Pravilo glasanja",
+        "ruleNone": "Bez pravila — prikaži samo zbrojeve",
+        "householdBatch": "Kućanstvo ovih osoba (neobavezno)",
+        "householdHint": "Osobe koje žive zajedno dijele oznaku kućanstva. Kod bez oznake računa se kao zasebno kućanstvo. Oznake kućanstava ostaju lokalno; sporazum bilježi samo koji kodovi dijele kućanstvo.",
+        "importCsv": "Generiraj kodove iz CSV-a stanovnika",
+        "csvHint": "CSV treba stupce Person i Household, jedan stanovnik po retku.",
+        "household": "Kućanstvo (samo lokalno)",
+        "householdOf": "Kućanstvo osobe {{person}}",
+        "batch": "Generirajte od 1 do 100 kodova odjednom.",
+        "householdsVoted": "Glasala kućanstva: {{voted}} od {{eligible}}",
+        "measureCastSupport": "Podrška među danim glasovima",
+        "measureEligibleSupport": "Podrška među svim biračima s pravom glasa",
+        "measureHouseholdTurnout": "Kućanstva koja su glasala",
+        "measureHouseholdSupport": "Kućanstva koja su glasala s barem jednim glasom podrške",
+        "testDetail": "{{count}} od {{total}} · potrebno {{needed}} ({{rule}})",
+        "atLeast": "najmanje {{share}}",
+        "moreThan": "više od {{share}}",
+        "met": "ispunjeno",
+        "notMet": "nije ispunjeno",
+        "passing": "Prolazi",
+        "notPassing": "Ne prolazi",
+        "passed": "Prihvaćeno",
+        "failed": "Odbijeno",
+        "ownerSignOff": "Suglasnost vlasnika",
+        "ownerNone": "Na ovom planu još nema sporazuma vlasnika. Vlasnici odlučuju u zasebnom sporazumu o istom planu.",
+        "ownerAgreement": "Sporazum vlasnika",
+        "ownerDeal": "Obvezujući dogovor vlasnika",
+        "ownerVote": "Glasanje vlasnika",
+        "openOwner": "Otvori",
+        "ownerUnavailable": "Sporazume vlasnika o ovom planu nije moguće učitati.",
+        "ballotRules": {
+            "gb-street-vote-strong-suburbs": {
+                "name": "Glasanje ulice — Strong Suburbs",
+                "source": "Predloženo u izvješću Policy Exchangea Strong Suburbs (2021): najmanje 60% danih glasova za, glasaju stanovnici barem polovine kućanstava, i glas za od stanovnika u barem polovini kućanstava koja su glasala."
+            },
+            "gb-street-vote-consultation-2023": {
+                "name": "Glasanje ulice — savjetovanje vlade 2023.",
+                "source": "Predloženo u savjetovanju britanske vlade o naredbama za razvoj glasanjem ulice iz prosinca 2023.: najmanje 60% birača s pravom glasa za, i barem jedan birač za u najmanje polovini kućanstava koja su glasala."
+            }
+        }
     },
     "criticTour": {
         "skip": "Preskoči animaciju",

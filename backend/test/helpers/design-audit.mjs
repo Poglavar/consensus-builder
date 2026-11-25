@@ -226,7 +226,9 @@ const PROTECTED_WORDS = new Set(['OSM', 'DGU', 'GUP', 'GDI', 'NFT', 'AI', '2D', 
     // The Burning Man plan's proper names: the festival, its Man and its Esplanade.
     'Burning', 'Man', 'Esplanade',
     // The plan critics' names ("How the Dog measures").
-    'Beaver', 'Dog', 'Hare', 'Cat']);
+    'Beaver', 'Dog', 'Hare', 'Cat',
+    // The report title a street-vote ballot rule is named after (community/ballot-rules.js).
+    'Strong', 'Suburbs']);
 
 function isCapitalised(word) {
     return /^[A-Z][a-z]/.test(word);

@@ -9,6 +9,8 @@ export function createVotingStore(pool) {
                 await db.query('SELECT pg_advisory_xact_lock(480405,hashtext($1))',[cid]);
                 const result=await work({
                     async counts() { return (await db.query(`SELECT choice,count(*)::integer AS count FROM ${prefix}ballot WHERE agreement_cid=$1 AND choice IS NOT NULL GROUP BY choice`,[cid])).rows; },
+                    // Every code's latest choice, for household and ballot-rule aggregates (never returned per code).
+                    async choices() { return (await db.query(`SELECT code_hash AS "codeHash",choice FROM ${prefix}ballot WHERE agreement_cid=$1 AND choice IS NOT NULL`,[cid])).rows; },
                     async ballot(hash) { return (await db.query(`SELECT version,choice FROM ${prefix}ballot WHERE agreement_cid=$1 AND code_hash=$2`,[cid,hash])).rows[0] || {version:0,choice:null}; },
                     async update(hash,ballot) { await db.query(`INSERT INTO ${prefix}ballot(agreement_cid,code_hash,version,choice) VALUES($1,$2,$3,$4)
                         ON CONFLICT(agreement_cid,code_hash) DO UPDATE SET version=$3,choice=$4,updated_at=now()`,[cid,hash,ballot.version,ballot.choice]); },
