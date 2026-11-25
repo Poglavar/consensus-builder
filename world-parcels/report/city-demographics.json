@@ -16696,10 +16696,13 @@
       "registryCityIds": [
         "wup2025:2236"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "liverpool"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wikipediaLookupStatus": "not_attempted",
       "wupCityCode": 2236,
@@ -16712,7 +16715,64 @@
         "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
         "confidence": "high",
         "sourceName": "UN DESA WUP 2025"
-      }
+      },
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-11-25-hmlr-districts/2236/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
     },
     {
       "id": "wup2025:2239",
@@ -172686,6 +172746,952 @@
       "parcelSourceId": "ru-kemerovo-reestr54-cadastral",
       "parcelQualification": "initial-qualification-bounded",
       "qualificationEvidence": "world-parcels/cities/7534/settings.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:919",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Swansea",
+      "countryCode": "GB",
+      "latitude": 51.62079,
+      "longitude": -3.94323,
+      "wupLatitude": 51.62079,
+      "wupLongitude": -3.94323,
+      "wupName": "Swansea",
+      "wupCityCode": 919,
+      "appCityIds": [
+        "swansea"
+      ],
+      "population2025": 141420,
+      "population2015": 134415,
+      "annualGrowthPct2015To2025": 0.508022,
+      "registryCityIds": [
+        "wup2025:919"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-11-25-hmlr-districts/919/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:3168",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Preston",
+      "countryCode": "GB",
+      "latitude": 53.76282,
+      "longitude": -2.70452,
+      "wupLatitude": 53.76282,
+      "wupLongitude": -2.70452,
+      "wupName": "Preston",
+      "wupCityCode": 3168,
+      "appCityIds": [
+        "preston"
+      ],
+      "population2025": 183362,
+      "population2015": 175550,
+      "annualGrowthPct2015To2025": 0.435384,
+      "registryCityIds": [
+        "wup2025:3168"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-11-25-hmlr-districts/3168/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:3441",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Telford",
+      "countryCode": "GB",
+      "latitude": 52.67659,
+      "longitude": -2.44926,
+      "wupLatitude": 52.67659,
+      "wupLongitude": -2.44926,
+      "wupName": "Telford",
+      "wupCityCode": 3441,
+      "appCityIds": [
+        "telford"
+      ],
+      "population2025": 137637,
+      "population2015": 130841.00000000001,
+      "annualGrowthPct2015To2025": 0.506369,
+      "registryCityIds": [
+        "wup2025:3441"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-11-25-hmlr-districts/3441/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:3494",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Blackburn",
+      "countryCode": "GB",
+      "latitude": 53.74933,
+      "longitude": -2.48406,
+      "wupLatitude": 53.74933,
+      "wupLongitude": -2.48406,
+      "wupName": "Blackburn",
+      "wupCityCode": 3494,
+      "appCityIds": [
+        "blackburn"
+      ],
+      "population2025": 145401,
+      "population2015": 142340,
+      "annualGrowthPct2015To2025": 0.212769,
+      "registryCityIds": [
+        "wup2025:3494"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-11-25-hmlr-districts/3494/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:4610",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Warwick",
+      "countryCode": "GB",
+      "latitude": 52.28333,
+      "longitude": -1.58333,
+      "wupLatitude": 52.28333,
+      "wupLongitude": -1.58333,
+      "wupName": "Warwick",
+      "wupCityCode": 4610,
+      "appCityIds": [
+        "warwick"
+      ],
+      "population2025": 96218,
+      "population2015": 92418,
+      "annualGrowthPct2015To2025": 0.402947,
+      "registryCityIds": [
+        "wup2025:4610"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-11-25-hmlr-districts/4610/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:4828",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Derby",
+      "countryCode": "GB",
+      "latitude": 52.92277,
+      "longitude": -1.47663,
+      "wupLatitude": 52.92277,
+      "wupLongitude": -1.47663,
+      "wupName": "Derby",
+      "wupCityCode": 4828,
+      "appCityIds": [
+        "derby"
+      ],
+      "population2025": 271170,
+      "population2015": 255984,
+      "annualGrowthPct2015To2025": 0.57631,
+      "registryCityIds": [
+        "wup2025:4828"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-11-25-hmlr-districts/4828/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:5598",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Northampton",
+      "countryCode": "GB",
+      "latitude": 52.25,
+      "longitude": -0.88333,
+      "wupLatitude": 52.25,
+      "wupLongitude": -0.88333,
+      "wupName": "Northampton",
+      "wupCityCode": 5598,
+      "appCityIds": [
+        "northampton"
+      ],
+      "population2025": 222991,
+      "population2015": 212559,
+      "annualGrowthPct2015To2025": 0.479118,
+      "registryCityIds": [
+        "wup2025:5598"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-11-25-hmlr-districts/5598/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:5623",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Milton Keynes",
+      "countryCode": "GB",
+      "latitude": 52.04172,
+      "longitude": -0.75583,
+      "wupLatitude": 52.04172,
+      "wupLongitude": -0.75583,
+      "wupName": "Milton Keynes",
+      "wupCityCode": 5623,
+      "appCityIds": [
+        "milton_keynes"
+      ],
+      "population2025": 211234,
+      "population2015": 198105,
+      "annualGrowthPct2015To2025": 0.641693,
+      "registryCityIds": [
+        "wup2025:5623"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-11-25-hmlr-districts/5623/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:5856",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Slough",
+      "countryCode": "GB",
+      "latitude": 51.50949,
+      "longitude": -0.59541,
+      "wupLatitude": 51.50949,
+      "wupLongitude": -0.59541,
+      "wupName": "Slough",
+      "wupCityCode": 5856,
+      "appCityIds": [
+        "slough"
+      ],
+      "population2025": 167492,
+      "population2015": 152975,
+      "annualGrowthPct2015To2025": 0.906611,
+      "registryCityIds": [
+        "wup2025:5856"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-11-25-hmlr-districts/5856/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:6365",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Medway",
+      "countryCode": "GB",
+      "latitude": 51.37891,
+      "longitude": 0.52786,
+      "wupLatitude": 51.37891,
+      "wupLongitude": 0.52786,
+      "wupName": "Medway",
+      "wupCityCode": 6365,
+      "appCityIds": [
+        "medway"
+      ],
+      "population2025": 258422.00000000003,
+      "population2015": 243063,
+      "annualGrowthPct2015To2025": 0.612732,
+      "registryCityIds": [
+        "wup2025:6365"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-11-25-hmlr-districts/6365/qualification.json",
+      "initialQualificationReview": {
+        "policy": "parcel-availability-v1",
+        "passed": true,
+        "requiredChecks": [
+          "classification",
+          "exactIds",
+          "stableGeometry"
+        ],
+        "status": "follow-up-required",
+        "followUp": [
+          {
+            "check": "explicitAbsence",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "sampling",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "completeness",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "binding",
+            "reason": "Deferred to second-pass review."
+          },
+          {
+            "check": "alignment",
+            "reason": "Deferred to second-pass review."
+          }
+        ]
+      },
+      "qualificationWarnings": [
+        {
+          "check": "explicitAbsence",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "sampling",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "completeness",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "binding",
+          "reason": "Deferred to second-pass review."
+        },
+        {
+          "check": "alignment",
+          "reason": "Deferred to second-pass review."
+        }
+      ]
+    },
+    {
+      "id": "wup2025:6479",
+      "cohorts": [
+        "app"
+      ],
+      "name": "Canterbury",
+      "countryCode": "GB",
+      "latitude": 51.27904,
+      "longitude": 1.07992,
+      "wupLatitude": 51.27904,
+      "wupLongitude": 1.07992,
+      "wupName": "Canterbury",
+      "wupCityCode": 6479,
+      "appCityIds": [
+        "canterbury"
+      ],
+      "population2025": 54203,
+      "population2015": 50449,
+      "annualGrowthPct2015To2025": 0.717733,
+      "registryCityIds": [
+        "wup2025:6479"
+      ],
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "parcelSourceId": "gb-hmlr-browser-v1",
+      "parcelQualification": "initial-qualification-bounded",
+      "qualificationEvidence": "world-parcels/research/qualification-2026-11-25-hmlr-districts/6479/qualification.json",
       "initialQualificationReview": {
         "policy": "parcel-availability-v1",
         "passed": true,

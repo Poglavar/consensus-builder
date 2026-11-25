@@ -115,7 +115,7 @@ export function declaredCoverage(catalog = []) {
 export const BOUNDARY_DATASETS = {
     'ons-lad-2023': { file: 'frontend/data/uk-economic-areas.js', layer: 'lad' }
 };
-// Extents ship in the boot coverage (~70 KB for 117 English and Welsh cities), so they are coarser
+// Extents ship in the boot coverage (~130 KB for 179 English and Welsh cities), so they are coarser
 // than the boundaries: a border between two districts keeps 0.005° (~350-550 m), and an edge with no
 // neighbouring district (the coast, the border with Scotland) 0.01° (~1 km), as the declared region
 // outlines do. Simplifying each arc once keeps neighbouring extents on one common border, with no gap

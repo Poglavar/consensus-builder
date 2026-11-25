@@ -183,8 +183,9 @@ Built (2026-11-25), in `scripts/build-world-coverage.mjs` (data) and `world-cove
 - **Extents**: a city config declares `extent: { dataset, areas }` (one line, placed before
   `projection`); `BOUNDARY_DATASETS` maps `ons-lad-2023` to the `lad` layer of
   `data/uk-economic-areas.js` (English and Welsh districts, the one copy also used for prices). The
-  117 HM Land Registry cities declare their district (London the 33 boroughs; a town whose locator
-  lies in a neighbouring district its own by name). The build dissolves the areas into one outline per
+  179 HM Land Registry cities declare their district (London the 33 boroughs; a town whose locator
+  lies in a neighbouring district its own by name; a district with no WUP city, admitted by its GSS
+  code, itself). The build dissolves the areas into one outline per
   city, simplified per shared arc (0.005° between districts, 0.01° on the coast and the Scottish
   border), so neighbouring extents meet without gaps.
 - **Declared areas**: a catalogue source declares `coverage: { type: 'regions', regions: [ISO
@@ -192,7 +193,9 @@ Built (2026-11-25), in `scripts/build-world-coverage.mjs` (data) and `world-cove
   in `NATIVE_COVERAGE` (`oss-wfs`: HR, which replaced the hard-coded countrywide country). The output's
   `liveAreas` carry each source's cities and outline: countries at their display rings, regions from the
   Natural Earth 10 m extraction (0.01°, ~1 km), not the 0.1° display rings.
-- Boot coverage carries extents and declared areas: 177 KB → 254 KB (53 → 84 KB gzip).
+- Boot coverage carries extents and declared areas: 313 KB (103 KB gzip) for the 179 cities.
+- 205 of the 318 districts are in a city's extent: every district of 150,000 people or more (ONS
+  mid-2025) has one. The other 113 go to the nearest city reading HM Land Registry.
 
 Open:
 

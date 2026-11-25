@@ -34087,6 +34087,626 @@
                 url: 'https://urbangametheory.xyz/codechecker/'
             }
         },
+        swansea: {
+            id: 'swansea', wupCityCode: '919',
+            label: translateCityText('city.labels.swansea', 'Swansea, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.62079, -3.94323], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['W06000011'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.62079, -3.94323], fallbackDataset: [-3.94323, 51.62079] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        liverpool: {
+            id: 'liverpool', wupCityCode: '2236',
+            label: translateCityText('city.labels.liverpool', 'Liverpool, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.41058, -2.97794], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000012'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.41058, -2.97794], fallbackDataset: [-2.97794, 53.41058] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        preston: {
+            id: 'preston', wupCityCode: '3168',
+            label: translateCityText('city.labels.preston', 'Preston, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.76282, -2.70452], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E07000123'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.76282, -2.70452], fallbackDataset: [-2.70452, 53.76282] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        telford: {
+            id: 'telford', wupCityCode: '3441',
+            label: translateCityText('city.labels.telford', 'Telford, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.67659, -2.44926], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E06000020'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.67659, -2.44926], fallbackDataset: [-2.44926, 52.67659] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        blackburn: {
+            id: 'blackburn', wupCityCode: '3494',
+            label: translateCityText('city.labels.blackburn', 'Blackburn, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.74933, -2.48406], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E06000008'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.74933, -2.48406], fallbackDataset: [-2.48406, 53.74933] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        warwick: {
+            id: 'warwick', wupCityCode: '4610',
+            label: translateCityText('city.labels.warwick', 'Warwick, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.28333, -1.58333], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E07000222'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.28333, -1.58333], fallbackDataset: [-1.58333, 52.28333] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        derby: {
+            id: 'derby', wupCityCode: '4828',
+            label: translateCityText('city.labels.derby', 'Derby, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.92277, -1.47663], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E06000015'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.92277, -1.47663], fallbackDataset: [-1.47663, 52.92277] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        northampton: {
+            id: 'northampton', wupCityCode: '5598',
+            label: translateCityText('city.labels.northampton', 'Northampton, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.25, -0.88333], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E06000062'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.25, -0.88333], fallbackDataset: [-0.88333, 52.25] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        milton_keynes: {
+            id: 'milton_keynes', wupCityCode: '5623',
+            label: translateCityText('city.labels.milton_keynes', 'Milton Keynes, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.04172, -0.75583], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E06000042'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.04172, -0.75583], fallbackDataset: [-0.75583, 52.04172] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        slough: {
+            id: 'slough', wupCityCode: '5856',
+            label: translateCityText('city.labels.slough', 'Slough, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.50949, -0.59541], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E06000039'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.50949, -0.59541], fallbackDataset: [-0.59541, 51.50949] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        medway: {
+            id: 'medway', wupCityCode: '6365',
+            label: translateCityText('city.labels.medway', 'Medway, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.37891, 0.52786], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E06000035'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.37891, 0.52786], fallbackDataset: [0.52786, 51.37891] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        canterbury: {
+            id: 'canterbury', wupCityCode: '6479',
+            label: translateCityText('city.labels.canterbury', 'Canterbury, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.27904, 1.07992], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E07000106'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.27904, 1.07992], fallbackDataset: [1.07992, 51.27904] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        stockton_on_tees: {
+            id: 'stockton_on_tees',
+            label: translateCityText('city.labels.stockton_on_tees', 'Stockton-on-Tees, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.56848, -1.3187], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E06000004'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.56848, -1.3187], fallbackDataset: [-1.3187, 54.56848] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        east_riding_of_yorkshire: {
+            id: 'east_riding_of_yorkshire',
+            label: translateCityText('city.labels.east_riding_of_yorkshire', 'East Riding of Yorkshire, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.84587, -0.42332], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E06000011'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.84587, -0.42332], fallbackDataset: [-0.42332, 53.84587] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        south_gloucestershire: {
+            id: 'south_gloucestershire',
+            label: translateCityText('city.labels.south_gloucestershire', 'South Gloucestershire, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.54074, -2.41839], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E06000025'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.54074, -2.41839], fallbackDataset: [-2.41839, 51.54074] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        wokingham: {
+            id: 'wokingham',
+            label: translateCityText('city.labels.wokingham', 'Wokingham, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.4112, -0.83565], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E06000041'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.4112, -0.83565], fallbackDataset: [-0.83565, 51.4112] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        county_durham: {
+            id: 'county_durham',
+            label: translateCityText('city.labels.county_durham', 'County Durham, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.77676, -1.57566], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E06000047'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.77676, -1.57566], fallbackDataset: [-1.57566, 54.77676] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        cornwall: {
+            id: 'cornwall',
+            label: translateCityText('city.labels.cornwall', 'Cornwall, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.26526, -5.05436], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E06000052'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.26526, -5.05436], fallbackDataset: [-5.05436, 50.26526] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        wiltshire: {
+            id: 'wiltshire',
+            label: translateCityText('city.labels.wiltshire', 'Wiltshire, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.31889, -2.20861], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E06000054'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.31889, -2.20861], fallbackDataset: [-2.20861, 51.31889] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        central_bedfordshire: {
+            id: 'central_bedfordshire',
+            label: translateCityText('city.labels.central_bedfordshire', 'Central Bedfordshire, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.91722, -0.65802], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E06000056'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.91722, -0.65802], fallbackDataset: [-0.65802, 51.91722] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        northumberland: {
+            id: 'northumberland',
+            label: translateCityText('city.labels.northumberland', 'Northumberland, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [55.16882, -1.68893], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E06000057'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [55.16882, -1.68893], fallbackDataset: [-1.68893, 55.16882] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        dorset: {
+            id: 'dorset',
+            label: translateCityText('city.labels.dorset', 'Dorset, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.71667, -2.43333], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E06000059'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.71667, -2.43333], fallbackDataset: [-2.43333, 50.71667] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        westmorland_and_furness: {
+            id: 'westmorland_and_furness',
+            label: translateCityText('city.labels.westmorland_and_furness', 'Westmorland and Furness, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.32681, -2.74757], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E06000064'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.32681, -2.74757], fallbackDataset: [-2.74757, 54.32681] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        north_yorkshire: {
+            id: 'north_yorkshire',
+            label: translateCityText('city.labels.north_yorkshire', 'North Yorkshire, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.33901, -1.43243], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E06000065'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.33901, -1.43243], fallbackDataset: [-1.43243, 54.33901] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        somerset: {
+            id: 'somerset',
+            label: translateCityText('city.labels.somerset', 'Somerset, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.01494, -3.10293], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E06000066'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.01494, -3.10293], fallbackDataset: [-3.10293, 51.01494] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        huntingdonshire: {
+            id: 'huntingdonshire',
+            label: translateCityText('city.labels.huntingdonshire', 'Huntingdonshire, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.33049, -0.18651], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E07000011'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.33049, -0.18651], fallbackDataset: [-0.18651, 52.33049] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        south_cambridgeshire: {
+            id: 'south_cambridgeshire',
+            label: translateCityText('city.labels.south_cambridgeshire', 'South Cambridgeshire, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.22115, -0.07025], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E07000012'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.22115, -0.07025], fallbackDataset: [-0.07025, 52.22115] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        east_devon: {
+            id: 'east_devon',
+            label: translateCityText('city.labels.east_devon', 'East Devon, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.7996, -3.18899], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E07000040'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.7996, -3.18899], fallbackDataset: [-3.18899, 50.7996] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        new_forest: {
+            id: 'new_forest',
+            label: translateCityText('city.labels.new_forest', 'New Forest, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.87259, -1.57662], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E07000091'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.87259, -1.57662], fallbackDataset: [-1.57662, 50.87259] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        swale: {
+            id: 'swale',
+            label: translateCityText('city.labels.swale', 'Swale, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.34128, 0.73282], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E07000113'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.34128, 0.73282], fallbackDataset: [0.73282, 51.34128] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        king_s_lynn_and_west_norfolk: {
+            id: 'king_s_lynn_and_west_norfolk',
+            label: translateCityText('city.labels.king_s_lynn_and_west_norfolk', 'King\'s Lynn and West Norfolk, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.75172, 0.39516], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E07000146'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.75172, 0.39516], fallbackDataset: [0.39516, 52.75172] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        south_norfolk: {
+            id: 'south_norfolk',
+            label: translateCityText('city.labels.south_norfolk', 'South Norfolk, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.57648, 1.11793], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E07000149'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.57648, 1.11793], fallbackDataset: [1.11793, 52.57648] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        cherwell: {
+            id: 'cherwell',
+            label: translateCityText('city.labels.cherwell', 'Cherwell, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.0632, -1.34222], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E07000177'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.0632, -1.34222], fallbackDataset: [-1.34222, 52.0632] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        south_oxfordshire: {
+            id: 'south_oxfordshire',
+            label: translateCityText('city.labels.south_oxfordshire', 'South Oxfordshire, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.60928, -1.24214], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E07000179'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.60928, -1.24214], fallbackDataset: [-1.24214, 51.60928] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        vale_of_white_horse: {
+            id: 'vale_of_white_horse',
+            label: translateCityText('city.labels.vale_of_white_horse', 'Vale of White Horse, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.67109, -1.28278], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E07000180'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.67109, -1.28278], fallbackDataset: [-1.28278, 51.67109] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        mid_sussex: {
+            id: 'mid_sussex',
+            label: translateCityText('city.labels.mid_sussex', 'Mid Sussex, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [50.99769, -0.10313], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E07000228'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [50.99769, -0.10313], fallbackDataset: [-0.10313, 50.99769] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        east_hertfordshire: {
+            id: 'east_hertfordshire',
+            label: translateCityText('city.labels.east_hertfordshire', 'East Hertfordshire, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.79588, -0.07854], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E07000242'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.79588, -0.07854], fallbackDataset: [-0.07854, 51.79588] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        west_suffolk: {
+            id: 'west_suffolk',
+            label: translateCityText('city.labels.west_suffolk', 'West Suffolk, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.2463, 0.71111], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E07000245'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.2463, 0.71111], fallbackDataset: [0.71111, 52.2463] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bolton: {
+            id: 'bolton',
+            label: translateCityText('city.labels.bolton', 'Bolton, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.57829, -2.43004], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000001'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.57829, -2.43004], fallbackDataset: [-2.43004, 53.57829] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bury: {
+            id: 'bury',
+            label: translateCityText('city.labels.bury', 'Bury, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.59275, -2.29728], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000002'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.59275, -2.29728], fallbackDataset: [-2.29728, 53.59275] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        oldham: {
+            id: 'oldham',
+            label: translateCityText('city.labels.oldham', 'Oldham, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.54051, -2.1183], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000004'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.54051, -2.1183], fallbackDataset: [-2.1183, 53.54051] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        rochdale: {
+            id: 'rochdale',
+            label: translateCityText('city.labels.rochdale', 'Rochdale, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.61766, -2.1552], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000005'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.61766, -2.1552], fallbackDataset: [-2.1552, 53.61766] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        salford: {
+            id: 'salford',
+            label: translateCityText('city.labels.salford', 'Salford, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.48771, -2.29042], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000006'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.48771, -2.29042], fallbackDataset: [-2.29042, 53.48771] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        stockport: {
+            id: 'stockport',
+            label: translateCityText('city.labels.stockport', 'Stockport, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.40979, -2.15761], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000007'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.40979, -2.15761], fallbackDataset: [-2.15761, 53.40979] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        tameside: {
+            id: 'tameside',
+            label: translateCityText('city.labels.tameside', 'Tameside, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.48876, -2.0989], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000008'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.48876, -2.0989], fallbackDataset: [-2.0989, 53.48876] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        trafford: {
+            id: 'trafford',
+            label: translateCityText('city.labels.trafford', 'Trafford, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.44771, -2.32344], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000009'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.44771, -2.32344], fallbackDataset: [-2.32344, 53.44771] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        knowsley: {
+            id: 'knowsley',
+            label: translateCityText('city.labels.knowsley', 'Knowsley, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.4115, -2.83935], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000011'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.4115, -2.83935], fallbackDataset: [-2.83935, 53.4115] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        st_helens: {
+            id: 'st_helens',
+            label: translateCityText('city.labels.st_helens', 'St Helens, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.45, -2.73333], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000013'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.45, -2.73333], fallbackDataset: [-2.73333, 53.45] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        sefton: {
+            id: 'sefton',
+            label: translateCityText('city.labels.sefton', 'Sefton, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.45069, -2.99488], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000014'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.45069, -2.99488], fallbackDataset: [-2.99488, 53.45069] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        wirral: {
+            id: 'wirral',
+            label: translateCityText('city.labels.wirral', 'Wirral, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.39337, -3.01479], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000015'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.39337, -3.01479], fallbackDataset: [-3.01479, 53.39337] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        north_tyneside: {
+            id: 'north_tyneside',
+            label: translateCityText('city.labels.north_tyneside', 'North Tyneside, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.99111, -1.53397], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000022'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.99111, -1.53397], fallbackDataset: [-1.53397, 54.99111] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        south_tyneside: {
+            id: 'south_tyneside',
+            label: translateCityText('city.labels.south_tyneside', 'South Tyneside, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.99859, -1.4323], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000023'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.99859, -1.4323], fallbackDataset: [-1.4323, 54.99859] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        dudley: {
+            id: 'dudley',
+            label: translateCityText('city.labels.dudley', 'Dudley, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.51108, -2.08168], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000027'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.51108, -2.08168], fallbackDataset: [-2.08168, 52.51108] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        sandwell: {
+            id: 'sandwell',
+            label: translateCityText('city.labels.sandwell', 'Sandwell, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.50391, -2.01639], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000028'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.50391, -2.01639], fallbackDataset: [-2.01639, 52.50391] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        solihull: {
+            id: 'solihull',
+            label: translateCityText('city.labels.solihull', 'Solihull, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.41426, -1.78094], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000029'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.41426, -1.78094], fallbackDataset: [-1.78094, 52.41426] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        walsall: {
+            id: 'walsall',
+            label: translateCityText('city.labels.walsall', 'Walsall, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.58528, -1.98396], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000030'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.58528, -1.98396], fallbackDataset: [-1.98396, 52.58528] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        wolverhampton: {
+            id: 'wolverhampton',
+            label: translateCityText('city.labels.wolverhampton', 'Wolverhampton, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [52.58547, -2.12296], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000031'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [52.58547, -2.12296], fallbackDataset: [-2.12296, 52.58547] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        gateshead: {
+            id: 'gateshead',
+            label: translateCityText('city.labels.gateshead', 'Gateshead, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [54.96209, -1.60168], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000037'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [54.96209, -1.60168], fallbackDataset: [-1.60168, 54.96209] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        flintshire: {
+            id: 'flintshire',
+            label: translateCityText('city.labels.flintshire', 'Flintshire, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.16674, -3.14143], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['W06000005'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.16674, -3.14143], fallbackDataset: [-3.14143, 53.16674] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        carmarthenshire: {
+            id: 'carmarthenshire',
+            label: translateCityText('city.labels.carmarthenshire', 'Carmarthenshire, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.85552, -4.30535], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['W06000010'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.85552, -4.30535], fallbackDataset: [-4.30535, 51.85552] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        rhondda_cynon_taf: {
+            id: 'rhondda_cynon_taf',
+            label: translateCityText('city.labels.rhondda_cynon_taf', 'Rhondda Cynon Taf, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.6021, -3.34211], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['W06000016'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.6021, -3.34211], fallbackDataset: [-3.34211, 51.6021] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        caerphilly: {
+            id: 'caerphilly',
+            label: translateCityText('city.labels.caerphilly', 'Caerphilly, United Kingdom'),
+            currency: { locale: 'en-GB', code: 'GBP' },
+            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.57452, -3.218], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },
+            extent: { dataset: 'ons-lad-2023', areas: ['W06000018'] },
+            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.57452, -3.218], fallbackDataset: [-3.218, 51.57452] },
+            parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.' },
+            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
     };
     root.__cityConfigs = Object.assign(root.__cityConfigs || {}, CITY_CONFIGS);
 })(typeof window !== "undefined" ? window : globalThis);

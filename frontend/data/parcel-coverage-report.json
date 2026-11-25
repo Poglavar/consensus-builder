@@ -5,20 +5,20 @@
     "asOf": "2026-10-08",
     "demographicSnapshotDate": "2026-10-12",
     "statisticsYear": 2025,
-    "cityCount": 3258,
+    "cityCount": 3319,
     "countryCount": 255,
     "statisticalJurisdictions": 237,
-    "checkedCityCount": 2616,
-    "uncheckedCityCount": 642,
-    "cityRegistryFoundCount": 2029,
-    "verifiedCitySampleCount": 1983,
+    "checkedCityCount": 2627,
+    "uncheckedCityCount": 692,
+    "cityRegistryFoundCount": 2091,
+    "verifiedCitySampleCount": 1995,
     "nationalCadastreCount": 72,
     "countryTwoRegionCount": 50,
-    "populationMatchedCount": 2749,
-    "growthMatchedCount": 1619,
-    "checkedCitiesMissingDate": 2616,
+    "populationMatchedCount": 2760,
+    "growthMatchedCount": 1630,
+    "checkedCitiesMissingDate": 2627,
     "wikiCityCount": 275,
-    "configuredAppCityCount": 2030,
+    "configuredAppCityCount": 2092,
     "unmatchedStatisticalAmounts": {
       "landAreaKm2": 0,
       "builtUpAreaKm2": 0.003000000026077032,
@@ -23218,6 +23218,60 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:3494",
+      "name": "Blackburn",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 53.74933,
+      "longitude": -2.48406,
+      "registryCityIds": [
+        "wup2025:3494"
+      ],
+      "appCityIds": [
+        "blackburn"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 3494,
+      "wupName": "Blackburn",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 142340,
+      "population2025": 145401,
+      "annualGrowthPct2015To2025": 0.212769,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [
+        "cities/3494/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=53.74933&mlon=-2.48406#map=12/53.74933/-2.48406",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.74933%2C-2.48406",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:2537",
       "name": "Blackpool",
       "country": "United Kingdom of Great Britain and Northern Ireland",
@@ -24392,6 +24446,53 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=44.49425&mlon=11.33835#map=12/44.49425/11.33835",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=44.49425%2C11.33835",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E08000001",
+      "name": "Bolton",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 53.57829,
+      "longitude": -2.43004,
+      "registryCityIds": [
+        "ons-lad-2023:E08000001"
+      ],
+      "appCityIds": [
+        "bolton"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=53.57829&mlon=-2.43004#map=12/53.57829/-2.43004",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.57829%2C-2.43004",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -27759,6 +27860,53 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:E08000002",
+      "name": "Bury",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 53.59275,
+      "longitude": -2.29728,
+      "registryCityIds": [
+        "ons-lad-2023:E08000002"
+      ],
+      "appCityIds": [
+        "bury"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=53.59275&mlon=-2.29728#map=12/53.59275/-2.29728",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.59275%2C-2.29728",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:3878",
       "name": "Busan",
       "country": "Republic of Korea",
@@ -28120,6 +28268,53 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=49.18173&mlon=-0.35958#map=12/49.18173/-0.35958",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=49.18173%2C-0.35958",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:W06000018",
+      "name": "Caerphilly",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 51.57452,
+      "longitude": -3.218,
+      "registryCityIds": [
+        "ons-lad-2023:W06000018"
+      ],
+      "appCityIds": [
+        "caerphilly"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.57452&mlon=-3.21800#map=12/51.57452/-3.21800",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.57452%2C-3.21800",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -29162,6 +29357,60 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:6479",
+      "name": "Canterbury",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 51.27904,
+      "longitude": 1.07992,
+      "registryCityIds": [
+        "wup2025:6479"
+      ],
+      "appCityIds": [
+        "canterbury"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 6479,
+      "wupName": "Canterbury",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 50449,
+      "population2025": 54203,
+      "annualGrowthPct2015To2025": 0.717733,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [
+        "cities/6479/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.27904&mlon=1.07992#map=12/51.27904/1.07992",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.27904%2C1.07992",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:11569",
       "name": "Cape Town",
       "country": "India",
@@ -29472,6 +29721,53 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=54.88374&mlon=-2.93334#map=12/54.88374/-2.93334",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=54.88374%2C-2.93334",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:W06000010",
+      "name": "Carmarthenshire",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 51.85552,
+      "longitude": -4.30535,
+      "registryCityIds": [
+        "ons-lad-2023:W06000010"
+      ],
+      "appCityIds": [
+        "carmarthenshire"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.85552&mlon=-4.30535#map=12/51.85552/-4.30535",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.85552%2C-4.30535",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -29882,6 +30178,53 @@
         "distanceKm": 16.766,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "ons-lad-2023:E06000056",
+      "name": "Central Bedfordshire",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 51.91722,
+      "longitude": -0.65802,
+      "registryCityIds": [
+        "ons-lad-2023:E06000056"
+      ],
+      "appCityIds": [
+        "central_bedfordshire"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.91722&mlon=-0.65802#map=12/51.91722/-0.65802",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.91722%2C-0.65802",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:4359",
@@ -32996,6 +33339,53 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=49.64418&mlon=-1.63397#map=12/49.64418/-1.63397",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=49.64418%2C-1.63397",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E07000177",
+      "name": "Cherwell",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 52.0632,
+      "longitude": -1.34222,
+      "registryCityIds": [
+        "ons-lad-2023:E07000177"
+      ],
+      "appCityIds": [
+        "cherwell"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=52.06320&mlon=-1.34222#map=12/52.06320/-1.34222",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.06320%2C-1.34222",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -37824,6 +38214,53 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:E06000052",
+      "name": "Cornwall",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 50.26526,
+      "longitude": -5.05436,
+      "registryCityIds": [
+        "ons-lad-2023:E06000052"
+      ],
+      "appCityIds": [
+        "cornwall"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=50.26526&mlon=-5.05436#map=12/50.26526/-5.05436",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.26526%2C-5.05436",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:3436",
       "name": "Corrientes",
       "country": "Argentina",
@@ -38005,6 +38442,53 @@
         "distanceKm": 5.319,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "ons-lad-2023:E06000047",
+      "name": "County Durham",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 54.77676,
+      "longitude": -1.57566,
+      "registryCityIds": [
+        "ons-lad-2023:E06000047"
+      ],
+      "appCityIds": [
+        "county_durham"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=54.77676&mlon=-1.57566#map=12/54.77676/-1.57566",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=54.77676%2C-1.57566",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:4647",
@@ -42056,6 +42540,60 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:4828",
+      "name": "Derby",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 52.92277,
+      "longitude": -1.47663,
+      "registryCityIds": [
+        "wup2025:4828"
+      ],
+      "appCityIds": [
+        "derby"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 4828,
+      "wupName": "Derby",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 255984,
+      "population2025": 271170,
+      "annualGrowthPct2015To2025": 0.57631,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [
+        "cities/4828/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=52.92277&mlon=-1.47663#map=12/52.92277/-1.47663",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.92277%2C-1.47663",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "app:des_moines",
       "name": "Des Moines",
       "country": "United States of America",
@@ -45415,6 +45953,53 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:E06000059",
+      "name": "Dorset",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 50.71667,
+      "longitude": -2.43333,
+      "registryCityIds": [
+        "ons-lad-2023:E06000059"
+      ],
+      "appCityIds": [
+        "dorset"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=50.71667&mlon=-2.43333#map=12/50.71667/-2.43333",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.71667%2C-2.43333",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:1845",
       "name": "Dortmund",
       "country": "Germany",
@@ -45865,6 +46450,53 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=53.33024&mlon=-6.27333#map=12/53.33024/-6.27333",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.33024%2C-6.27333",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E08000027",
+      "name": "Dudley",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 52.51108,
+      "longitude": -2.08168,
+      "registryCityIds": [
+        "ons-lad-2023:E08000027"
+      ],
+      "appCityIds": [
+        "dudley"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=52.51108&mlon=-2.08168#map=12/52.51108/-2.08168",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.51108%2C-2.08168",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -46516,6 +47148,100 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:E07000040",
+      "name": "East Devon",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 50.7996,
+      "longitude": -3.18899,
+      "registryCityIds": [
+        "ons-lad-2023:E07000040"
+      ],
+      "appCityIds": [
+        "east_devon"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=50.79960&mlon=-3.18899#map=12/50.79960/-3.18899",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.79960%2C-3.18899",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E07000242",
+      "name": "East Hertfordshire",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 51.79588,
+      "longitude": -0.07854,
+      "registryCityIds": [
+        "ons-lad-2023:E07000242"
+      ],
+      "appCityIds": [
+        "east_hertfordshire"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.79588&mlon=-0.07854#map=12/51.79588/-0.07854",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.79588%2C-0.07854",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "capital:PS:east-jerusalem",
       "name": "East Jerusalem",
       "country": "State of Palestine",
@@ -46559,6 +47285,53 @@
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=31.78330&mlon=35.23330#map=12/31.78330/35.23330",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=31.78330%2C35.23330",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E06000011",
+      "name": "East Riding of Yorkshire",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 53.84587,
+      "longitude": -0.42332,
+      "registryCityIds": [
+        "ons-lad-2023:E06000011"
+      ],
+      "appCityIds": [
+        "east_riding_of_yorkshire"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=53.84587&mlon=-0.42332#map=12/53.84587/-0.42332",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.84587%2C-0.42332",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -50244,6 +51017,53 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:W06000005",
+      "name": "Flintshire",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 53.16674,
+      "longitude": -3.14143,
+      "registryCityIds": [
+        "ons-lad-2023:W06000005"
+      ],
+      "appCityIds": [
+        "flintshire"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=53.16674&mlon=-3.14143#map=12/53.16674/-3.14143",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.16674%2C-3.14143",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:3287",
       "name": "Florence",
       "country": "Italy",
@@ -52755,6 +53575,53 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=9.32375&mlon=13.39223#map=12/9.32375/13.39223",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=9.32375%2C13.39223",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E08000037",
+      "name": "Gateshead",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 54.96209,
+      "longitude": -1.60168,
+      "registryCityIds": [
+        "ons-lad-2023:E08000037"
+      ],
+      "appCityIds": [
+        "gateshead"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=54.96209&mlon=-1.60168#map=12/54.96209/-1.60168",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=54.96209%2C-1.60168",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -64654,6 +65521,53 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=12.30703&mlon=76.29587#map=12/12.30703/76.29587",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=12.30703%2C76.29587",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E07000011",
+      "name": "Huntingdonshire",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 52.33049,
+      "longitude": -0.18651,
+      "registryCityIds": [
+        "ons-lad-2023:E07000011"
+      ],
+      "appCityIds": [
+        "huntingdonshire"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=52.33049&mlon=-0.18651#map=12/52.33049/-0.18651",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.33049%2C-0.18651",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -81063,6 +81977,53 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:E07000146",
+      "name": "King's Lynn and West Norfolk",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 52.75172,
+      "longitude": 0.39516,
+      "registryCityIds": [
+        "ons-lad-2023:E07000146"
+      ],
+      "appCityIds": [
+        "king_s_lynn_and_west_norfolk"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=52.75172&mlon=0.39516#map=12/52.75172/0.39516",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.75172%2C0.39516",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "capital:VC:kingstown",
       "name": "Kingstown",
       "country": "Saint Vincent and the Grenadines",
@@ -81756,6 +82717,53 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.47860&mlon=28.11502#map=12/-25.47860/28.11502",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-25.47860%2C28.11502",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E08000011",
+      "name": "Knowsley",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 53.4115,
+      "longitude": -2.83935,
+      "registryCityIds": [
+        "ons-lad-2023:E08000011"
+      ],
+      "appCityIds": [
+        "knowsley"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=53.41150&mlon=-2.83935#map=12/53.41150/-2.83935",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.41150%2C-2.83935",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -90248,10 +91256,13 @@
       "registryCityIds": [
         "wup2025:2236"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "liverpool"
+      ],
       "cohorts": [
         "registry",
-        "overnight-top1000"
+        "overnight-top1000",
+        "app"
       ],
       "wupCityCode": 2236,
       "wupName": "Liverpool",
@@ -90270,18 +91281,21 @@
       "checked": true,
       "checkedDate": null,
       "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
       "integrationAttempts": [],
-      "sourceIds": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
       "evidenceUrls": [
         "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
         "https://use-land-property-data.service.gov.uk/datasets/inspire"
       ],
       "evidenceFiles": [
+        "cities/2236/settings.json",
         "cities/2236/failed-urls.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=53.42036&mlon=-2.92868#map=12/53.42036/-2.92868",
@@ -101731,6 +102745,62 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:6365",
+      "name": "Medway",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 51.37891,
+      "longitude": 0.52786,
+      "registryCityIds": [
+        "wup2025:6365"
+      ],
+      "appCityIds": [
+        "medway"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 6365,
+      "wupName": "Medway",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 243063,
+      "population2025": 258422.00000000003,
+      "annualGrowthPct2015To2025": 0.612732,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+        "https://use-land-property-data.service.gov.uk/datasets/inspire"
+      ],
+      "evidenceFiles": [
+        "cities/6365/settings.json",
+        "cities/6365/failed-urls.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.37891&mlon=0.52786#map=12/51.37891/0.52786",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.37891%2C0.52786",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:8652",
       "name": "Meerut",
       "country": "India",
@@ -103340,6 +104410,53 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:E07000228",
+      "name": "Mid Sussex",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 50.99769,
+      "longitude": -0.10313,
+      "registryCityIds": [
+        "ons-lad-2023:E07000228"
+      ],
+      "appCityIds": [
+        "mid_sussex"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=50.99769&mlon=-0.10313#map=12/50.99769/-0.10313",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.99769%2C-0.10313",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:4940",
       "name": "Middelburg",
       "country": "South Africa",
@@ -103553,6 +104670,62 @@
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=21.45992&mlon=-158.00756#map=12/21.45992/-158.00756",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=21.45992%2C-158.00756",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:5623",
+      "name": "Milton Keynes",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 52.04172,
+      "longitude": -0.75583,
+      "registryCityIds": [
+        "wup2025:5623"
+      ],
+      "appCityIds": [
+        "milton_keynes"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 5623,
+      "wupName": "Milton Keynes",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 198105,
+      "population2025": 211234,
+      "annualGrowthPct2015To2025": 0.641693,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+        "https://mapping.milton-keynes.gov.uk/mymiltonkeynes.aspx"
+      ],
+      "evidenceFiles": [
+        "cities/5623/settings.json",
+        "cities/5623/failed-urls.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=52.04172&mlon=-0.75583#map=12/52.04172/-0.75583",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.04172%2C-0.75583",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -112357,6 +113530,53 @@
       }
     },
     {
+      "id": "ons-lad-2023:E07000091",
+      "name": "New Forest",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 50.87259,
+      "longitude": -1.57662,
+      "registryCityIds": [
+        "ons-lad-2023:E07000091"
+      ],
+      "appCityIds": [
+        "new_forest"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=50.87259&mlon=-1.57662#map=12/50.87259/-1.57662",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.87259%2C-1.57662",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:8018",
       "name": "New Hope",
       "country": "United States of America",
@@ -113873,6 +115093,158 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:E08000022",
+      "name": "North Tyneside",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 54.99111,
+      "longitude": -1.53397,
+      "registryCityIds": [
+        "ons-lad-2023:E08000022"
+      ],
+      "appCityIds": [
+        "north_tyneside"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=54.99111&mlon=-1.53397#map=12/54.99111/-1.53397",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=54.99111%2C-1.53397",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E06000065",
+      "name": "North Yorkshire",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 54.33901,
+      "longitude": -1.43243,
+      "registryCityIds": [
+        "ons-lad-2023:E06000065"
+      ],
+      "appCityIds": [
+        "north_yorkshire"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=54.33901&mlon=-1.43243#map=12/54.33901/-1.43243",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=54.33901%2C-1.43243",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:5598",
+      "name": "Northampton",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 52.25,
+      "longitude": -0.88333,
+      "registryCityIds": [
+        "wup2025:5598"
+      ],
+      "appCityIds": [
+        "northampton"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 5598,
+      "wupName": "Northampton",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 212559,
+      "population2025": 222991,
+      "annualGrowthPct2015To2025": 0.479118,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+        "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+        "https://use-land-property-data.service.gov.uk/datasets/inspire",
+        "https://inspire.landregistry.gov.uk/inspire/ows?service=WMS&request=GetCapabilities"
+      ],
+      "evidenceFiles": [
+        "cities/5598/settings.json",
+        "cities/5598/failed-urls.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=52.25000&mlon=-0.88333#map=12/52.25000/-0.88333",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.25000%2C-0.88333",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:6311",
       "name": "Northfleet",
       "country": "United Kingdom of Great Britain and Northern Ireland",
@@ -113923,6 +115295,53 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=51.43361&mlon=0.35736#map=12/51.43361/0.35736",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.43361%2C0.35736",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E06000057",
+      "name": "Northumberland",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 55.16882,
+      "longitude": -1.68893,
+      "registryCityIds": [
+        "ons-lad-2023:E06000057"
+      ],
+      "appCityIds": [
+        "northumberland"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=55.16882&mlon=-1.68893#map=12/55.16882/-1.68893",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=55.16882%2C-1.68893",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -115717,6 +117136,53 @@
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=35.46760&mlon=-97.51640#map=12/35.46760/-97.51640",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=35.46760%2C-97.51640",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E08000004",
+      "name": "Oldham",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 53.54051,
+      "longitude": -2.1183,
+      "registryCityIds": [
+        "ons-lad-2023:E08000004"
+      ],
+      "appCityIds": [
+        "oldham"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=53.54051&mlon=-2.11830#map=12/53.54051/-2.11830",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.54051%2C-2.11830",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -126520,6 +127986,66 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:3168",
+      "name": "Preston",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 53.76282,
+      "longitude": -2.70452,
+      "registryCityIds": [
+        "wup2025:3168"
+      ],
+      "appCityIds": [
+        "preston"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 3168,
+      "wupName": "Preston",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 175550,
+      "population2025": 183362,
+      "annualGrowthPct2015To2025": 0.435384,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+        "https://www.preston.gov.uk/article/1065/Planning-public-maps?ccp=true",
+        "https://www.preston.gov.uk/article/2023/Local-land-charges-Official-search",
+        "https://www.gov.uk/get-information-about-property-and-land",
+        "https://www.gov.uk/guidance/mapsearch",
+        "https://eservices.landregistry.gov.uk/"
+      ],
+      "evidenceFiles": [
+        "cities/3168/settings.json",
+        "cities/3168/failed-urls.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=53.76282&mlon=-2.70452#map=12/53.76282/-2.70452",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.76282%2C-2.70452",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "capital:ZA:pretoria",
       "name": "Pretoria",
       "country": "South Africa",
@@ -133712,6 +135238,53 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:W06000016",
+      "name": "Rhondda Cynon Taf",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 51.6021,
+      "longitude": -3.34211,
+      "registryCityIds": [
+        "ons-lad-2023:W06000016"
+      ],
+      "appCityIds": [
+        "rhondda_cynon_taf"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.60210&mlon=-3.34211#map=12/51.60210/-3.34211",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.60210%2C-3.34211",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:6636",
       "name": "Ribeirao Preto",
       "country": "Brazil",
@@ -134274,6 +135847,53 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=35.42033&mlon=119.51631#map=12/35.42033/119.51631",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=35.42033%2C119.51631",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E08000005",
+      "name": "Rochdale",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 53.61766,
+      "longitude": -2.1552,
+      "registryCityIds": [
+        "ons-lad-2023:E08000005"
+      ],
+      "appCityIds": [
+        "rochdale"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=53.61766&mlon=-2.15520#map=12/53.61766/-2.15520",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.61766%2C-2.15520",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -137746,6 +139366,53 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:E08000006",
+      "name": "Salford",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 53.48771,
+      "longitude": -2.29042,
+      "registryCityIds": [
+        "ons-lad-2023:E08000006"
+      ],
+      "appCityIds": [
+        "salford"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=53.48771&mlon=-2.29042#map=12/53.48771/-2.29042",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.48771%2C-2.29042",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:764",
       "name": "Salinas",
       "country": "United States of America",
@@ -139586,6 +141253,53 @@
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-31.91702&mlon=26.86049#map=12/-31.91702/26.86049",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-31.91702%2C26.86049",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E08000028",
+      "name": "Sandwell",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 52.50391,
+      "longitude": -2.01639,
+      "registryCityIds": [
+        "ons-lad-2023:E08000028"
+      ],
+      "appCityIds": [
+        "sandwell"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=52.50391&mlon=-2.01639#map=12/52.50391/-2.01639",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.50391%2C-2.01639",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -142224,6 +143938,53 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=23.63560&mlon=58.19094#map=12/23.63560/58.19094",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=23.63560%2C58.19094",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E08000014",
+      "name": "Sefton",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 53.45069,
+      "longitude": -2.99488,
+      "registryCityIds": [
+        "ons-lad-2023:E08000014"
+      ],
+      "appCityIds": [
+        "sefton"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=53.45069&mlon=-2.99488#map=12/53.45069/-2.99488",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.45069%2C-2.99488",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -148977,6 +150738,60 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:5856",
+      "name": "Slough",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 51.50949,
+      "longitude": -0.59541,
+      "registryCityIds": [
+        "wup2025:5856"
+      ],
+      "appCityIds": [
+        "slough"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 5856,
+      "wupName": "Slough",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 152975,
+      "population2025": 167492,
+      "annualGrowthPct2015To2025": 0.906611,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [
+        "cities/5856/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.50949&mlon=-0.59541#map=12/51.50949/-0.59541",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.50949%2C-0.59541",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:1053",
       "name": "Słupsk",
       "country": "Poland",
@@ -149192,6 +151007,53 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:E08000029",
+      "name": "Solihull",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 52.41426,
+      "longitude": -1.78094,
+      "registryCityIds": [
+        "ons-lad-2023:E08000029"
+      ],
+      "appCityIds": [
+        "solihull"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=52.41426&mlon=-1.78094#map=12/52.41426/-1.78094",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.41426%2C-1.78094",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:573",
       "name": "Solwezi",
       "country": "Zambia",
@@ -149238,6 +151100,53 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-12.17987&mlon=26.39462#map=12/-12.17987/26.39462",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-12.17987%2C26.39462",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E06000066",
+      "name": "Somerset",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 51.01494,
+      "longitude": -3.10293,
+      "registryCityIds": [
+        "ons-lad-2023:E06000066"
+      ],
+      "appCityIds": [
+        "somerset"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.01494&mlon=-3.10293#map=12/51.01494/-3.10293",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.01494%2C-3.10293",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -149648,6 +151557,53 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:E07000012",
+      "name": "South Cambridgeshire",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 52.22115,
+      "longitude": -0.07025,
+      "registryCityIds": [
+        "ons-lad-2023:E07000012"
+      ],
+      "appCityIds": [
+        "south_cambridgeshire"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=52.22115&mlon=-0.07025#map=12/52.22115/-0.07025",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.22115%2C-0.07025",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:6665",
       "name": "South Central",
       "country": "United States of America",
@@ -149702,6 +151658,147 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:E06000025",
+      "name": "South Gloucestershire",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 51.54074,
+      "longitude": -2.41839,
+      "registryCityIds": [
+        "ons-lad-2023:E06000025"
+      ],
+      "appCityIds": [
+        "south_gloucestershire"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.54074&mlon=-2.41839#map=12/51.54074/-2.41839",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.54074%2C-2.41839",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E07000149",
+      "name": "South Norfolk",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 52.57648,
+      "longitude": 1.11793,
+      "registryCityIds": [
+        "ons-lad-2023:E07000149"
+      ],
+      "appCityIds": [
+        "south_norfolk"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=52.57648&mlon=1.11793#map=12/52.57648/1.11793",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.57648%2C1.11793",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E07000179",
+      "name": "South Oxfordshire",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 51.60928,
+      "longitude": -1.24214,
+      "registryCityIds": [
+        "ons-lad-2023:E07000179"
+      ],
+      "appCityIds": [
+        "south_oxfordshire"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.60928&mlon=-1.24214#map=12/51.60928/-1.24214",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.60928%2C-1.24214",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "capital:KI:south-tarawa",
       "name": "South Tarawa",
       "country": "Kiribati",
@@ -149739,6 +151836,53 @@
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-0.88333&mlon=169.53333#map=12/-0.88333/169.53333",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-0.88333%2C169.53333",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E08000023",
+      "name": "South Tyneside",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 54.99859,
+      "longitude": -1.4323,
+      "registryCityIds": [
+        "ons-lad-2023:E08000023"
+      ],
+      "appCityIds": [
+        "south_tyneside"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=54.99859&mlon=-1.43230#map=12/54.99859/-1.43230",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=54.99859%2C-1.43230",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -150501,6 +152645,53 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:E08000013",
+      "name": "St Helens",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 53.45,
+      "longitude": -2.73333,
+      "registryCityIds": [
+        "ons-lad-2023:E08000013"
+      ],
+      "appCityIds": [
+        "st_helens"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=53.45000&mlon=-2.73333#map=12/53.45000/-2.73333",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.45000%2C-2.73333",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:7051",
       "name": "St. Louis",
       "country": "United States of America",
@@ -150954,6 +153145,53 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:E08000007",
+      "name": "Stockport",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 53.40979,
+      "longitude": -2.15761,
+      "registryCityIds": [
+        "ons-lad-2023:E08000007"
+      ],
+      "appCityIds": [
+        "stockport"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=53.40979&mlon=-2.15761#map=12/53.40979/-2.15761",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.40979%2C-2.15761",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:3536",
       "name": "Stockton",
       "country": "United States of America",
@@ -150999,6 +153237,53 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=37.98383&mlon=-121.30363#map=12/37.98383/-121.30363",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.98383%2C-121.30363",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E06000004",
+      "name": "Stockton-on-Tees",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 54.56848,
+      "longitude": -1.3187,
+      "registryCityIds": [
+        "ons-lad-2023:E06000004"
+      ],
+      "appCityIds": [
+        "stockton_on_tees"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=54.56848&mlon=-1.31870#map=12/54.56848/-1.31870",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=54.56848%2C-1.31870",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -152824,6 +155109,107 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:E07000113",
+      "name": "Swale",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 51.34128,
+      "longitude": 0.73282,
+      "registryCityIds": [
+        "ons-lad-2023:E07000113"
+      ],
+      "appCityIds": [
+        "swale"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.34128&mlon=0.73282#map=12/51.34128/0.73282",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.34128%2C0.73282",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:919",
+      "name": "Swansea",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 51.62079,
+      "longitude": -3.94323,
+      "registryCityIds": [
+        "wup2025:919"
+      ],
+      "appCityIds": [
+        "swansea"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 919,
+      "wupName": "Swansea",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 134415,
+      "population2025": 141420,
+      "annualGrowthPct2015To2025": 0.508022,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [
+        "cities/919/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.62079&mlon=-3.94323#map=12/51.62079/-3.94323",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.62079%2C-3.94323",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:4349",
       "name": "Swindon",
       "country": "United Kingdom of Great Britain and Northern Ireland",
@@ -154612,6 +156998,53 @@
       }
     },
     {
+      "id": "ons-lad-2023:E08000008",
+      "name": "Tameside",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 53.48876,
+      "longitude": -2.0989,
+      "registryCityIds": [
+        "ons-lad-2023:E08000008"
+      ],
+      "appCityIds": [
+        "tameside"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=53.48876&mlon=-2.09890#map=12/53.48876/-2.09890",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.48876%2C-2.09890",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:11755",
       "name": "Tamluk",
       "country": "India",
@@ -155942,6 +158375,60 @@
         "distanceKm": 4.203,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "wup2025:3441",
+      "name": "Telford",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 52.67659,
+      "longitude": -2.44926,
+      "registryCityIds": [
+        "wup2025:3441"
+      ],
+      "appCityIds": [
+        "telford"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 3441,
+      "wupName": "Telford",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 130841.00000000001,
+      "population2025": 137637,
+      "annualGrowthPct2015To2025": 0.506369,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [
+        "cities/3441/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=52.67659&mlon=-2.44926#map=12/52.67659/-2.44926",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.67659%2C-2.44926",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:4433",
@@ -160534,6 +163021,53 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:E08000009",
+      "name": "Trafford",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 53.44771,
+      "longitude": -2.32344,
+      "registryCityIds": [
+        "ons-lad-2023:E08000009"
+      ],
+      "appCityIds": [
+        "trafford"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=53.44771&mlon=-2.32344#map=12/53.44771/-2.32344",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.44771%2C-2.32344",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:4505",
       "name": "Trapani",
       "country": "Italy",
@@ -164083,6 +166617,53 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:E07000180",
+      "name": "Vale of White Horse",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 51.67109,
+      "longitude": -1.28278,
+      "registryCityIds": [
+        "ons-lad-2023:E07000180"
+      ],
+      "appCityIds": [
+        "vale_of_white_horse"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.67109&mlon=-1.28278#map=12/51.67109/-1.28278",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.67109%2C-1.28278",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:4195",
       "name": "Valence",
       "country": "France",
@@ -167382,6 +169963,53 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:E08000030",
+      "name": "Walsall",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 52.58528,
+      "longitude": -1.98396,
+      "registryCityIds": [
+        "ons-lad-2023:E08000030"
+      ],
+      "appCityIds": [
+        "walsall"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=52.58528&mlon=-1.98396#map=12/52.58528/-1.98396",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.58528%2C-1.98396",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:5877",
       "name": "Walton-on-Thames",
       "country": "United Kingdom of Great Britain and Northern Ireland",
@@ -168099,6 +170727,60 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:4610",
+      "name": "Warwick",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 52.28333,
+      "longitude": -1.58333,
+      "registryCityIds": [
+        "wup2025:4610"
+      ],
+      "appCityIds": [
+        "warwick"
+      ],
+      "cohorts": [
+        "app"
+      ],
+      "wupCityCode": 4610,
+      "wupName": "Warwick",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 92418,
+      "population2025": 96218,
+      "annualGrowthPct2015To2025": 0.402947,
+      "populationPlausibility2025": null,
+      "populationMatch": {
+        "basis": "explicit_wup2025_city_code",
+        "sourceName": "UN DESA WUP 2025",
+        "confidence": "high",
+        "distanceKm": 0
+      },
+      "checked": true,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A validated parcel source is configured for this city; citywide completeness remains unverified.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [
+        "cities/4610/settings.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=52.28333&mlon=-1.58333#map=12/52.28333/-1.58333",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.28333%2C-1.58333",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:9413",
       "name": "Washim",
       "country": "India",
@@ -168701,6 +171383,53 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:E07000245",
+      "name": "West Suffolk",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 52.2463,
+      "longitude": 0.71111,
+      "registryCityIds": [
+        "ons-lad-2023:E07000245"
+      ],
+      "appCityIds": [
+        "west_suffolk"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=52.24630&mlon=0.71111#map=12/52.24630/0.71111",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.24630%2C0.71111",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:5646",
       "name": "West Valley City",
       "country": "United States of America",
@@ -168783,6 +171512,53 @@
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=43.03833&mlon=-89.49624#map=12/43.03833/-89.49624",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=43.03833%2C-89.49624",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E06000064",
+      "name": "Westmorland and Furness",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 54.32681,
+      "longitude": -2.74757,
+      "registryCityIds": [
+        "ons-lad-2023:E06000064"
+      ],
+      "appCityIds": [
+        "westmorland_and_furness"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=54.32681&mlon=-2.74757#map=12/54.32681/-2.74757",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=54.32681%2C-2.74757",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -169142,6 +171918,53 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:E06000054",
+      "name": "Wiltshire",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 51.31889,
+      "longitude": -2.20861,
+      "registryCityIds": [
+        "ons-lad-2023:E06000054"
+      ],
+      "appCityIds": [
+        "wiltshire"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.31889&mlon=-2.20861#map=12/51.31889/-2.20861",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.31889%2C-2.20861",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "capital:NA:windhoek",
       "name": "Windhoek",
       "country": "Namibia",
@@ -169291,6 +172114,53 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "ons-lad-2023:E08000015",
+      "name": "Wirral",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 53.39337,
+      "longitude": -3.01479,
+      "registryCityIds": [
+        "ons-lad-2023:E08000015"
+      ],
+      "appCityIds": [
+        "wirral"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=53.39337&mlon=-3.01479#map=12/53.39337/-3.01479",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.39337%2C-3.01479",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:2687",
       "name": "Włocławek",
       "country": "Poland",
@@ -169341,6 +172211,53 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=52.65059&mlon=19.06267#map=12/52.65059/19.06267",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.65059%2C19.06267",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E06000041",
+      "name": "Wokingham",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 51.4112,
+      "longitude": -0.83565,
+      "registryCityIds": [
+        "ons-lad-2023:E06000041"
+      ],
+      "appCityIds": [
+        "wokingham"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.41120&mlon=-0.83565#map=12/51.41120/-0.83565",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.41120%2C-0.83565",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -169451,6 +172368,53 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=52.34270&mlon=21.23373#map=12/52.34270/21.23373",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.34270%2C21.23373",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "ons-lad-2023:E08000031",
+      "name": "Wolverhampton",
+      "country": "United Kingdom of Great Britain and Northern Ireland",
+      "countryCode": "GB",
+      "latitude": 52.58547,
+      "longitude": -2.12296,
+      "registryCityIds": [
+        "ons-lad-2023:E08000031"
+      ],
+      "appCityIds": [
+        "wolverhampton"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": false,
+      "checkedDate": null,
+      "checkedDateEvidence": null,
+      "registryFound": true,
+      "registryFindingBasis": "configured_source",
+      "registryBasis": null,
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "integrationAttempts": [],
+      "sourceIds": [
+        "gb-hmlr-browser-v1"
+      ],
+      "evidenceUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+      ],
+      "evidenceFiles": [],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=52.58547&mlon=-2.12296#map=12/52.58547/-2.12296",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=52.58547%2C-2.12296",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -183377,8 +186341,8 @@
       "population": 69551332,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 119,
-      "citiesWithRegistry": 117,
+      "citiesChecked": 130,
+      "citiesWithRegistry": 179,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,

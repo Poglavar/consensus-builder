@@ -65,7 +65,7 @@ describe('price assumptions follow the city currency', () => {
             else expect(city.extent.areas, city.id).toContain(code);
         }
         expect(ukCities.filter(city => authority(city) === null).map(city => city.id).sort())
-            .toEqual(['barry', 'bridgend', 'cardiff', 'carleton', 'newport']);
+            .toEqual(['barry', 'bridgend', 'caerphilly', 'cardiff', 'carleton', 'carmarthenshire', 'flintshire', 'newport', 'rhondda_cynon_taf', 'swansea']);
         const byId = id => authority(globalThis.__cityConfigs[id]);
         expect(byId('london')).toBe('E09000033'); // Westminster, the borough holding London's centre
         expect({ brighton: byId('brighton'), farnham: byId('farnham'), walton_on_thames: byId('walton_on_thames'),

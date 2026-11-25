@@ -240,14 +240,15 @@ describe('tierAt', () => {
         expect(siberia).toMatchObject({ kind: 'country', cc: 'RU' });
     });
 
-    it('shows England as mostly covered after its failed city check, with Wales fully covered inside a partial United Kingdom', () => {
-        // HM Land Registry declares England and Wales, so a point far from every city opens the
-        // nearest city reading it (Carleton, by Carlisle), while the coverage axis stays as reviewed.
-        const lakeDistrict = coverage.tierAt(54.45, -3.05);
-        expect(lakeDistrict).toMatchObject({ kind: 'region', regionId: 'GB-ENG', coverage: 'mostly', tier: 'live', cityId: 'carleton', country: 'United Kingdom' });
-        expect(lakeDistrict.note).toMatch(/failed in .*Liverpool.*; \d+ of \d+ checked cities work/);
-        expect(lakeDistrict.note).toMatch(/registered freehold/);
-        expect(lakeDistrict.coverageSources.length).toBeGreaterThan(0);
+    it('shows England and Wales fully covered inside a partial United Kingdom', () => {
+        // HM Land Registry declares England and Wales, so a point in no city's district (Ribble Valley)
+        // opens the nearest city reading it (Burnley), while the coverage axis stays as reviewed. England
+        // was "mostly" while Liverpool's parcel check had failed (temperFull); no checked city fails now.
+        const ribbleValley = coverage.tierAt(53.9026, -2.4177);
+        expect(ribbleValley).toMatchObject({ kind: 'region', regionId: 'GB-ENG', coverage: 'full', tier: 'live', cityId: 'burnley', country: 'United Kingdom' });
+        expect(ribbleValley.note).not.toMatch(/failed in/);
+        expect(ribbleValley.note).toMatch(/registered freehold/);
+        expect(ribbleValley.coverageSources.length).toBeGreaterThan(0);
         expect(coverage.tierAt(52.3, -3.6)).toMatchObject({ kind: 'region', regionId: 'GB-WLS', coverage: 'full', tier: 'live' });
         const highlands = coverage.tierAt(57.3, -4.9);
         expect(highlands).toMatchObject({ kind: 'region', regionId: 'GB-SCT', coverage: 'partial', tier: 'source' });
@@ -291,18 +292,27 @@ describe('administrative extents and declared areas', () => {
     });
 
     it('gives a point in no city\'s district the nearest city reading the declared source', () => {
-        // Solihull (its own district) and Wallingford (South Oxfordshire, between Oxford and Reading).
-        expect(at(52.4130, -1.7780)).toMatchObject({ cityId: 'birmingham', via: 'area' });
-        const wallingford = { lat: 51.6000, lon: -1.1250 };
+        // Stratford-upon-Avon (Stratford-on-Avon, a district of 149,000 people with no city of its own).
+        const stratford = { lat: 52.1917, lon: -1.7083 };
         const hmlr = coverage.liveAreas.find(area => area.id === 'gb-hmlr-browser-v1');
         const nearest = hmlr.cityIds.map(id => coverage.liveCities.find(city => city.id === id))
-            .sort((a, b) => WorldCoverage.haversineKm(wallingford.lat, wallingford.lon, a.lat, a.lon)
-                - WorldCoverage.haversineKm(wallingford.lat, wallingford.lon, b.lat, b.lon))[0].id;
-        expect(nearest).toBe('oxford');
-        expect(at(wallingford.lat, wallingford.lon)).toMatchObject({ cityId: 'oxford', via: 'area' });
-        expect(coverage.tierAt(wallingford.lat, wallingford.lon)).toMatchObject({ tier: 'live', cityId: 'oxford' });
-        // Liverpool failed its own parcel check; the source still covers it, under the nearest city.
-        expect(at(53.4084, -2.9916)).toMatchObject({ cityId: 'ellesmere_port', via: 'area' });
+            .sort((a, b) => WorldCoverage.haversineKm(stratford.lat, stratford.lon, a.lat, a.lon)
+                - WorldCoverage.haversineKm(stratford.lat, stratford.lon, b.lat, b.lon))[0].id;
+        expect(nearest).toBe('warwick');
+        expect(at(stratford.lat, stratford.lon)).toMatchObject({ cityId: 'warwick', via: 'area' });
+        expect(coverage.tierAt(stratford.lat, stratford.lon)).toMatchObject({ tier: 'live', cityId: 'warwick' });
+    });
+
+    // Liverpool and the districts of 150,000 people or more that had no city of their own were admitted
+    // on the HM Land Registry tiles (2026-11-25); before, the nearest city reading the source took them.
+    it.each([
+        ['Liverpool city centre', 53.4084, -2.9916, 'liverpool'], ['Anfield', 53.4308, -2.9608, 'liverpool'],
+        ['Birkenhead', 53.3934, -3.0148, 'wirral'], ['Wallasey', 53.4232, -3.0650, 'wirral'],
+        ['Stockport', 53.4083, -2.1494, 'stockport'], ['Solihull', 52.4130, -1.7780, 'solihull'],
+        ['Wallingford', 51.6000, -1.1250, 'south_oxfordshire']
+    ])('gives %s to its own district\'s city', (_name, lat, lon, cityId) => {
+        expect(at(lat, lon)).toMatchObject({ cityId, via: 'extent' });
+        expect(coverage.tierAt(lat, lon)).toMatchObject({ tier: 'live', cityId, sourceId: 'gb-hmlr-browser-v1' });
     });
 
     it('splits a district two towns share by distance', () => {
@@ -315,7 +325,7 @@ describe('administrative extents and declared areas', () => {
         expect(at(54.9946, -3.0650)).toBeNull(); // Gretna, 1.5 km over the border from Carlisle's district
         expect(coverage.tierAt(55.9533, -3.1883).tier).not.toBe('live');
         expect(at(50.5, -1.0)).toBeNull(); // the Channel
-        expect(at(55.7700, -2.0050)).toMatchObject({ cityId: 'newcastle', via: 'area' }); // Berwick-upon-Tweed is English
+        expect(at(55.7700, -2.0050)).toMatchObject({ cityId: 'northumberland', via: 'extent' }); // Berwick-upon-Tweed is English
     });
 
     it('keeps Croatia countrywide through the same declared-area rule', () => {

@@ -16,7 +16,9 @@ describe('publication city from the site', () => {
     const square = (lon, lat) => ({ type: 'Polygon', coordinates: [[[lon, lat], [lon + 0.001, lat], [lon + 0.001, lat + 0.001], [lon, lat + 0.001], [lon, lat]]] });
     it.each([
         ['Croydon', 'london', square(-0.0982, 51.3762)], ['Kingston upon Thames', 'london', square(-0.3064, 51.4085)],
-        ['Sutton Coldfield', 'birmingham', square(-1.8226, 52.5636)], ['Solihull', 'birmingham', square(-1.7780, 52.4130)]
+        ['Sutton Coldfield', 'birmingham', square(-1.8226, 52.5636)], ['Solihull', 'solihull', square(-1.7780, 52.4130)],
+        ['Liverpool city centre', 'liverpool', square(-2.9916, 53.4084)], ['Anfield', 'liverpool', square(-2.9608, 53.4308)],
+        ['Birkenhead', 'wirral', square(-3.0148, 53.3934)], ['Stockport', 'stockport', square(-2.1494, 53.4083)]
     ])('files a design drawn at %s, from any session, under %s with the HM Land Registry source', (_name, city, site) => {
         for (const session of ['birmingham', 'zagreb', null]) {
             const parcelContext = context.CityConfigManager.getParcelContext(site, session);
