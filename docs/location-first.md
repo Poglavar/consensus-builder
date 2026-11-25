@@ -33,13 +33,15 @@ and cannot be selected as destinations. Coverage still determines which data sou
 |---|---|
 | **View** | `{lat, lon, zoom}`. The only location a URL needs (`?at=`). |
 | **Jurisdiction** | The city config whose parcel data applies at a point, or none (explore). Derived, never typed. |
-| **Coverage** | The area a jurisdiction claims. Today a circle (`parcels.liveRadiusKm`, capped at 60 km) or a countrywide country (HR); later declared areas per parcel source (phase 3). |
+| **Coverage** | The area a jurisdiction claims: a city's administrative extent (`extent` in its config), else a circle (`parcels.liveRadiusKm`, at least 10 km, capped at 60 km); and the areas a parcel source declares it covers (Croatia, England and Wales), which belong to the nearest city reading the source (phase 3). |
+| **Extent** | A city's administrative area: areas of a boundary dataset named in its config, `extent: { dataset: 'ons-lad-2023', areas: [...] }` (London = the 33 London boroughs). |
 | **Geography source** | A source that answers by coordinates alone: buildings, trees, water, roads, terrain, tiles. |
 
-There is **one** resolver, `world/world-coverage.js` (`tierAt` / `liveCitiesAt`). It already runs in
-the browser (globe, search) and on the server (`backend/proposals/publication-city.js`, the M8
-publication-city rule in `projections.md`). Boot uses the same function, so the city a view opens in
-and the city a publication is filed in can never disagree.
+There is **one** resolver, `world/world-coverage.js` (`tierAt` / `liveCitiesAt`). It runs in the
+browser for the globe, search and boot, and for the city and source a publication is filed under
+(`CityConfigManager.getParcelContext`, which the server keeps as given: `proposals/binding.js`
+`publicationCityOf`). So the city a view opens in and the city a publication is filed in can never
+disagree.
 
 ## URL rules
 
@@ -116,7 +118,7 @@ El Paso / Juárez is configured today.
 | 1 | URL and boot: jurisdiction from the location, `at` wins, `city` is an alias | done 2026-10-17 |
 | 2 | Geography sources by coordinates only (backend + 3D + 2D buildings) | done 2026-10-17 |
 | 2b | Coverage at least 10 km, not 3–8 km sample circles | done 2026-10-17 |
-| 3 | Declared coverage per parcel source; border precision | planned |
+| 3 | Declared coverage per parcel source; city extents | England and Wales done 2026-11-25; other sources open |
 | 4 | Proposals by geography: binding, lists, counts, markets, plans by site; city a derived label | done 2026-10-17 |
 
 ### Phase 1: URL and boot
@@ -170,6 +172,36 @@ Frontend:
   out-of-coverage cases).
 
 ### Phase 3: declared coverage per parcel source
+
+Built (2026-11-25), in `scripts/build-world-coverage.mjs` (data) and `world-coverage.js`
+`liveCitiesAt` (rule):
+
+- **Precedence**: inside a city's administrative extent → that city (smallest extent first, then the
+  nearest centre: Widnes and Runcorn share Halton); else inside a city's circle (cities without an
+  extent) → that city; else inside an area a parcel source declares → the nearest city reading that
+  source; else explore. `via` is `extent`, `radius` or `area`.
+- **Extents**: a city config declares `extent: { dataset, areas }` (one line, placed before
+  `projection`); `BOUNDARY_DATASETS` maps `ons-lad-2023` to the `lad` layer of
+  `data/uk-economic-areas.js` (English and Welsh districts, the one copy also used for prices). The
+  117 HM Land Registry cities declare their district (London the 33 boroughs; a town whose locator
+  lies in a neighbouring district its own by name). The build dissolves the areas into one outline per
+  city, simplified per shared arc (0.005° between districts, 0.01° on the coast and the Scottish
+  border), so neighbouring extents meet without gaps.
+- **Declared areas**: a catalogue source declares `coverage: { type: 'regions', regions: [ISO
+  3166-1 or 3166-2] }` (HM Land Registry: GB-ENG, GB-WLS); native sources without a catalogue entry are
+  in `NATIVE_COVERAGE` (`oss-wfs`: HR, which replaced the hard-coded countrywide country). The output's
+  `liveAreas` carry each source's cities and outline: countries at their display rings, regions from the
+  Natural Earth 10 m extraction (0.01°, ~1 km), not the 0.1° display rings.
+- Boot coverage carries extents and declared areas: 177 KB → 254 KB (53 → 84 KB gzip).
+
+Open:
+
+- Other catalogue sources' areas (46 state `discovery.jurisdiction`), bbox capture from services,
+  finer country outlines for the border clip below; extents for cities outside Great Britain.
+- Coastal points within ~1 km of a simplified headland fall outside the declared England outline
+  (St Ives): explore, as before. The district union would be exact (+25 KB at 0.005°).
+
+Plan of record:
 
 - Catalogue schema: `coverage` on a source, one of `{ bbox }`, `{ admin1: [ISO 3166-2] }` (46 sources
   already state `discovery.jurisdiction`), `{ country }`, or a polygon reference (HMLR already has

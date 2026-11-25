@@ -130,7 +130,7 @@ describe('jurisdictionAt over the configured cities', () => {
     it('answers Croatia countrywide, the open sea with nothing', () => {
         expect(full.jurisdictionAt(ZAGREB.lat, ZAGREB.lon)).toBe('zagreb');
         expect(full.jurisdictionAt(MANHATTAN.lat, MANHATTAN.lon)).toBe('new_york');
-        expect(full.liveCitiesAt(OSIJEK.lat, OSIJEK.lon)[0]).toMatchObject({ via: 'country' });
+        expect(full.liveCitiesAt(OSIJEK.lat, OSIJEK.lon)[0]).toMatchObject({ via: 'area' }); // Croatia, declared by the oss-wfs cadastre
         expect(full.jurisdictionAt(MID_ATLANTIC.lat, MID_ATLANTIC.lon)).toBeNull();
     });
 
@@ -204,6 +204,13 @@ describe('city-config boot', () => {
         expect(manager.getCurrentCityId()).toBe('explore');
         expect(manager.getCurrentCityConfig().map.defaultCenter).toEqual([30, -40]);
         expect(storage.get('cb_current_city')).toBe('split');
+    });
+
+    // location-first.md phase 3: the shared links that opened "Explore · United Kingdom" before.
+    it('boots a shared Croydon link in London and a Sutton Coldfield one in Birmingham', () => {
+        expect(boot('?city=london&at=51.37620,-0.09820,19').manager.getCurrentCityId()).toBe('london');
+        expect(boot('?at=52.56360,-1.82260,19', { stored: 'london' }).manager.getCurrentCityId()).toBe('birmingham');
+        expect(boot('?at=55.95330,-3.18830,19', { stored: 'london' }).manager.getCurrentCityId()).toBe('explore'); // Edinburgh
     });
 
     it('keeps a record link in its ?city=', () => {

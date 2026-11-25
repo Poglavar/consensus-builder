@@ -15,8 +15,9 @@
 //   unknown  Unchecked or inconclusive. A configured app city alone is not open-source evidence.
 // A country or city takes the STRONGEST operational tier any of its records earns.
 //
-//   live     A configured app city (CITY_CONFIGS: id, label, map.defaultCenter). Croatia is live as a
-//            whole country because the app's parcel table is countrywide there (any HR city opens).
+//   live     A configured app city (CITY_CONFIGS: id, label, map.defaultCenter), and every point of an
+//            area a parcel source declares it covers (DECLARED_COVERAGE below): Croatia, whose parcel
+//            table is countrywide, and England and Wales, which HM Land Registry covers.
 //   source   Open parcel data was verified but is not loaded in the app:
 //              city     parcelStatus verified_*                 (verified_sample_city_scope, ..._partial_coverage, ...)
 //              country  countryCoverage status verified_countrywide
@@ -40,8 +41,17 @@
 //            (or one of its admin-1 members), or a verified registry city inside the outline.
 //   none     subnationalCoverage bucket none | credentialed | viewerOnly, nothing positive.
 //   unknown  Everything else (unavailable, ruralRegistryOnly, not researched at region level).
-// A region's tier follows its coverage (source/none/unknown). No region is `live`: a configured
-// city covers its own radius, and `live` means parcels open anywhere in the area (Croatia).
+// A region's tier follows its coverage (source/none/unknown); a declared country is `live` as a whole
+// (its outline is the declared area), while a declared region's points are live by the declared area
+// (liveAreas below), not by the coarse display outline, whose edge can lie kilometres off.
+//
+// Where a city's parcels apply (location-first.md phase 3; WorldCoverage.liveCitiesAt applies it):
+//   extent   the administrative area a city declares (`extent: { dataset, areas }` in its config:
+//            areas of a boundary dataset in BOUNDARY_DATASETS, e.g. London = the 33 London boroughs),
+//            dissolved into one outline per city (liveCities[].extent);
+//   radius   else a circle round its centre (coverageRadiusKm);
+//   area     and, outside both, an area a parcel source declares it covers (liveAreas: the source's
+//            ISO 3166-1 countries or 3166-2 regions), which belongs to its nearest city reading it.
 //
 // Per-city parcel checks (world-parcels/research/qualification-outcomes/*.json, written by
 // scripts/export-qualification-outcomes.py) temper a reviewed `full` country or region once a
@@ -57,6 +67,7 @@
 // Usage: node scripts/build-world-coverage.mjs --run [--tolerance 0.06] [--region-tolerance 0.1] [--out path]
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { writeBootCoverage } from './build-boot-coverage.mjs';
 import { readCityChecks } from './lib/parcel-city-coverage.mjs';
 import path from 'node:path';
@@ -82,8 +93,95 @@ const DEFAULTS = {
 export const TIER_RANK = { live: 3, source: 2, none: 1, unknown: 0 };
 export const strongest = (...tiers) => tiers.filter(Boolean).reduce((best, t) => (TIER_RANK[t] > TIER_RANK[best] ? t : best), 'unknown');
 
-// Countries whose parcels are loaded countrywide in the app (so every point inside is `live`).
-export const LIVE_COUNTRIES = { HR: 'Parcels are countrywide in the app' };
+// The areas a parcel source covers, keyed by cadastre (a city's parcels.sourceId, else its native
+// parcels.source, as CityConfigManager.getCadastreKey): ISO 3166-1 country or ISO 3166-2 region codes.
+// A catalogue source declares its own (`coverage: { type: 'regions', regions }` in
+// frontend/data/source-catalog.json); native sources, which have no catalogue entry, are listed here.
+export const NATIVE_COVERAGE = { 'oss-wfs': { type: 'regions', regions: ['HR'], basis: 'Parcels are countrywide in the app' } };
+export function declaredCoverage(catalog = []) {
+    const declared = new Map(Object.entries(NATIVE_COVERAGE));
+    for (const source of catalog) if (source.coverage?.type === 'regions') declared.set(source.id, source.coverage);
+    for (const [key, coverage] of declared) {
+        if (!Array.isArray(coverage.regions) || !coverage.regions.length || coverage.regions.some(code => !/^[A-Z]{2}(-[A-Z0-9]{1,3})?$/.test(code))) {
+            throw new Error(`${key}: coverage.regions must list ISO 3166-1 or 3166-2 codes`);
+        }
+    }
+    return declared;
+}
+
+// Boundary datasets a city's `extent` can name: administrative areas by id, in the arc layers that
+// scripts/build-uk-economic-areas.mjs writes (one copy of the boundaries for prices and extents).
+export const BOUNDARY_DATASETS = {
+    'ons-lad-2023': { file: 'frontend/data/uk-economic-areas.js', layer: 'lad' }
+};
+// Extents ship in the boot coverage (~70 KB for 117 English and Welsh cities), so they are coarser
+// than the boundaries: a border between two districts keeps 0.005° (~350-550 m), and an edge with no
+// neighbouring district (the coast, the border with Scotland) 0.01° (~1 km), as the declared region
+// outlines do. Simplifying each arc once keeps neighbouring extents on one common border, with no gap
+// or overlap between them; near a border a point can fall to the neighbour, which only changes the
+// city label where both cities read the same source.
+export const EXTENT_TOLERANCE = { border: 0.005, outer: 0.01 };
+// Declared region outlines: Natural Earth 10 m admin-1, already pre-simplified to 0.01° (~1 km) by
+// scripts/extract-world-regions.mjs, rather than the 0.1° display rings.
+export const LIVE_AREA_TOLERANCE = 0.01;
+
+export function loadBoundaries(repo = REPO) {
+    const require = createRequire(import.meta.url);
+    return Object.fromEntries(Object.entries(BOUNDARY_DATASETS).map(([id, { file, layer }]) => {
+        const data = require(path.join(repo, file));
+        if (!data.layers?.[layer]) throw new Error(`boundary dataset ${id}: ${file} has no layer ${layer}`);
+        return [id, { scale: data.scale, ...data.layers[layer] }];
+    }));
+}
+
+// The outline of the union of a dataset's areas `ids`, as flat [lon, lat, ...] rings: the arcs the
+// areas do not share among themselves, each simplified (EXTENT_TOLERANCE), chained into closed rings and
+// rounded to 0.001°. Membership is even-odd over the rings (pointInRings), so how loops pair up at a
+// pinch does not matter.
+export function extentRings(boundary, ids, tolerance = EXTENT_TOLERANCE) {
+    const byId = new Map(boundary.features.map(feature => [feature.id, feature]));
+    const owners = new Map();
+    for (const feature of boundary.features) for (const arc of feature.arcs) owners.set(arc, (owners.get(arc) || 0) + 1);
+    const uses = new Map();
+    for (const id of ids) {
+        const feature = byId.get(id);
+        if (!feature) throw new Error(`extent area ${id} is not in the boundary dataset`);
+        for (const arc of feature.arcs) uses.set(arc, (uses.get(arc) || 0) + 1);
+    }
+    const arcs = [...uses].filter(([, n]) => n % 2 === 1).map(([index]) => {
+        const points = [];
+        for (let i = 0, x = 0, y = 0; i < boundary.arcs[index].length; i += 2) {
+            x += boundary.arcs[index][i]; y += boundary.arcs[index][i + 1]; points.push([x / boundary.scale, y / boundary.scale]);
+        }
+        return simplifyRing(points, owners.get(index) > 1 ? tolerance.border : tolerance.outer);
+    });
+    const key = point => point[0] + ',' + point[1];
+    const ends = new Map();
+    arcs.forEach((arc, i) => { for (const end of [arc[0], arc[arc.length - 1]]) { if (!ends.has(key(end))) ends.set(key(end), []); ends.get(key(end)).push(i); } });
+    const used = new Uint8Array(arcs.length);
+    const rings = [];
+    for (let start = 0; start < arcs.length; start++) {
+        if (used[start]) continue;
+        used[start] = 1;
+        const ring = arcs[start].slice();
+        while (key(ring[ring.length - 1]) !== key(ring[0])) {
+            const next = ends.get(key(ring[ring.length - 1])).find(i => !used[i]);
+            if (next === undefined) throw new Error(`extent ${ids.join('+')}: an open boundary at ${key(ring[ring.length - 1])}`);
+            used[next] = 1;
+            const arc = key(arcs[next][0]) === key(ring[ring.length - 1]) ? arcs[next] : arcs[next].slice().reverse();
+            ring.push(...arc.slice(1));
+        }
+        const flat = [];
+        for (const [lon, lat] of ring) {
+            const x = round3(lon), y = round3(lat);
+            if (flat.length && flat[flat.length - 2] === x && flat[flat.length - 1] === y) continue;
+            flat.push(x, y);
+        }
+        if (flat.length >= 8) rings.push(flat); // an islet below the tolerance collapses
+    }
+    if (!rings.length) throw new Error(`extent ${ids.join('+')} has no outline`);
+    return rings;
+}
 
 export function cityStatusTier(status) {
     if (!status) return 'unknown';
@@ -249,6 +347,12 @@ export function parseCityConfigs(source) {
         const sourceId = /\bsourceId:\s*'([^']+)'/.exec(defaultText)?.[1];
         const queryMode = /\bstrategy:\s*'point'/.test(defaultText) ? 'point' : undefined;
         const dataVersion = /\bdataVersion:\s*'([^']+)'/.exec(text)?.[1];
+        // The cadastre key (CityConfigManager.getCadastreKey): the catalogue source, else the native one.
+        const cadastre = sourceId || /\bsource:\s*'([^']+)'/.exec(defaultText)?.[1];
+        // `extent: { dataset: '<BOUNDARY_DATASETS id>', areas: ['<area id>', ...] }`, written on one line.
+        const extentMatch = /\bextent:\s*\{\s*dataset:\s*'([^']+)',\s*areas:\s*\[([^\]]*)\]\s*\}/.exec(text);
+        if (!extentMatch && /\bextent:\s*\{/.test(text)) throw new Error(`${id}: extent must read { dataset: '<id>', areas: ['<area>', ...] } on one line`);
+        const extent = extentMatch ? { dataset: extentMatch[1], areas: [...extentMatch[2].matchAll(/'([^']+)'/g)].map(m => m[1]) } : null;
         const radius = /\bliveRadiusKm:\s*(\d+(?:\.\d+)?)/.exec(text)?.[1];
         const wupCityCodeField = /\bwupCityCode\s*:\s*([^,}\n]+)/.exec(text);
         const rawWupCityCode = wupCityCodeField?.[1]?.trim();
@@ -260,7 +364,7 @@ export function parseCityConfigs(source) {
             ? parsedWupCityCode : null;
         return { id, name: label.split(',')[0].trim(), label, lat: Number(center[1]), lon: Number(center[2]),
             ...(sourceId ? { sourceId } : {}), ...(queryMode ? { queryMode } : {}), ...(dataVersion ? { dataVersion } : {}), ...(radius ? { radiusKm: Number(radius) } : {}),
-            ...(wupCityCodeField ? { wupCityCode } : {}) };
+            ...(wupCityCodeField ? { wupCityCode } : {}), ...(cadastre && cadastre !== 'none' ? { cadastre } : {}), ...(extent ? { extent } : {}) };
     });
 }
 
@@ -289,9 +393,10 @@ export function simplifyRing(points, tolerance) {
 }
 
 const round2 = v => Math.round(v * 100) / 100;
+const round3 = v => Math.round(v * 1000) / 1000;
 
 // Flat [lon, lat, lon, lat, ...] rings; rings that collapse below a triangle are dropped.
-export function compileRings(geometry, tolerance) {
+export function compileRings(geometry, tolerance, round = round2) {
     const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.type === 'MultiPolygon' ? geometry.coordinates : [];
     const rings = [];
     for (const polygon of polygons) {
@@ -301,7 +406,7 @@ export function compileRings(geometry, tolerance) {
             const flat = [];
             let prev = null;
             for (const [lon, lat] of simplified) {
-                const p = [round2(lon), round2(lat)];
+                const p = [round(lon), round(lat)];
                 if (prev && prev[0] === p[0] && prev[1] === p[1]) continue;
                 flat.push(p[0], p[1]); prev = p;
             }
@@ -501,7 +606,11 @@ export function coverageRadiusKm(declaredKm) {
 }
 
 export function buildCoverage({ registry, countries, cityConfigSource, countryReviews = [], demographics = null, tolerance = DEFAULTS.tolerance,
-    regions = null, regionReviews = [], catalog = [], regionTolerance = DEFAULTS.regionTolerance, outcomes = [] }) {
+    regions = null, regionReviews = [], catalog = [], regionTolerance = DEFAULTS.regionTolerance, outcomes = [], boundaries = loadBoundaries() }) {
+    const cityConfigs = parseCityConfigs(cityConfigSource);
+    // The declared areas some configured city reads: its countries are live, and so are its regions.
+    const declared = [...declaredCoverage(catalog)].filter(([cadastre]) => cityConfigs.some(city => city.cadastre === cadastre));
+    const liveCodes = new Set(declared.flatMap(([, coverage]) => coverage.regions));
     const sourcesById = new Map(registry.sources.map(s => [s.sourceId, s]));
     const probes = new Map(registry.countryProbes.map(p => [p.countryCode, p]));
     const coverage = new Map(registry.countryCoverage.map(c => [c.countryCode, c]));
@@ -561,7 +670,7 @@ export function buildCoverage({ registry, countries, cityConfigSource, countryRe
             entry.note = review.note;
             entry.coverageSources = review.evidence.map(({ title, url }) => ({ title, url }));
         }
-        if (LIVE_COUNTRIES[entry.cc]) entry.tier = 'live';
+        if (liveCodes.has(entry.cc)) entry.tier = 'live';
     }
 
     const cities = registry.cities
@@ -589,7 +698,11 @@ export function buildCoverage({ registry, countries, cityConfigSource, countryRe
         }
     }
 
-    const cityConfigs = parseCityConfigs(cityConfigSource);
+    const extentOf = city => {
+        const boundary = boundaries[city.extent.dataset];
+        if (!boundary) throw new Error(`${city.id}: extent dataset ${city.extent.dataset} is not in BOUNDARY_DATASETS`);
+        return extentRings(boundary, city.extent.areas);
+    };
     const radiusOf = city => {
         const km = coverageRadiusKm(city.radiusKm);
         return km === null ? {} : { radiusKm: km };
@@ -608,8 +721,26 @@ export function buildCoverage({ registry, countries, cityConfigSource, countryRe
             population2025: liveCityPopulation(demographics, city, cc),
             ...(city.sourceId ? { sourceId: city.sourceId } : {}), ...(city.dataVersion ? { dataVersion: city.dataVersion } : {}),
             ...(city.queryMode ? { queryMode: city.queryMode } : {}),
-            ...radiusOf(city) };
+            ...(city.extent ? { extent: extentOf(city) } : radiusOf(city)) };
     }).sort((a, b) => a.id.localeCompare(b.id));
+
+    // One record per declared source coverage: its outline (countries at their display tolerance,
+    // which Croatia has always used; regions from the finer extraction outline) and its cities.
+    const regionOutline = new Map((regions?.features || []).map(feature => [feature.properties.id, feature]));
+    const liveAreas = declared.map(([cadastre, coverage]) => ({
+        id: cadastre, regions: coverage.regions.slice(),
+        cityIds: cityConfigs.filter(city => city.cadastre === cadastre).map(city => city.id).sort(),
+        rings: coverage.regions.flatMap(code => {
+            if (code.length === 2) {
+                const country = byCode.get(code);
+                if (!country?.rings.length) throw new Error(`${cadastre} declares ${code}, which has no country outline`);
+                return country.rings;
+            }
+            const outline = regionOutline.get(code);
+            if (!outline) throw new Error(`${cadastre} declares ${code}, which has no region outline (world-parcels/regions.geojson)`);
+            return compileRings(outline.geometry, LIVE_AREA_TOLERANCE, round3);
+        })
+    })).sort((a, b) => a.id.localeCompare(b.id));
 
     for (const entry of byCode.values()) {
         const checks = cityChecks(liveCities.filter(city => city.cc === entry.cc), outcomes.filter(city => city.countryCode === entry.cc), liveWupCodes);
@@ -631,6 +762,7 @@ export function buildCoverage({ registry, countries, cityConfigSource, countryRe
         tiers: ['live', 'source', 'none', 'unknown'],
         coverageLevels: ['full', 'mostly', 'partial', 'none', 'unknown'],
         liveCities,
+        liveAreas,
         cities,
         territories: territories.sort((a, b) => a.id.localeCompare(b.id)),
         countries: countryList,
@@ -645,8 +777,8 @@ function usage() {
 Builds frontend/data/world-coverage.json from world-parcels/registry.json,
 world-parcels/country-coverage-reviews.json, world-parcels/countries.geojson,
 world-parcels/regions.geojson, world-parcels/region-coverage-reviews.json,
-world-parcels/research/qualification-outcomes/*.json, frontend/data/source-catalog.json, world-parcels/report/city-demographics.json
-and frontend/data/city-configs.js.
+world-parcels/research/qualification-outcomes/*.json, frontend/data/source-catalog.json, world-parcels/report/city-demographics.json,
+frontend/data/city-configs.js and the boundary datasets city extents name (frontend/data/uk-economic-areas.js).
 
 Options:
   --run               actually build (without it, this help is printed)

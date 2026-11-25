@@ -1206,6 +1206,14 @@ The application's geographic context for filing records, selecting sources and e
 
 The geographic or institutional scope within which a source, rule or authority applies. Jurisdiction is source metadata, independently of a provider's ID and a displayed city name.
 
+### City extent
+
+The administrative area a configured city stands for, named in its configuration as areas of a boundary dataset (`extent`; London is the 33 London boroughs, an English or Welsh town its local authority district). A point inside it belongs to that city; a city without an extent claims a circle round its centre instead. Where extents overlap, the smaller one applies, then the nearer centre. An extent decides which city a place is filed and opened under, not which parcels exist.
+
+### Declared source coverage
+
+The countries or regions (ISO 3166-1 or 3166-2) a parcel source states it covers: a catalogue source's `coverage: { type: 'regions' }` (HM Land Registry: England and Wales), or a native source's entry in the coverage build (Croatia's cadastre). Every point inside it is covered; outside every city extent and circle it belongs to the nearest city reading that source.
+
 ### Source availability
 
 Whether an identified source or record can be obtained in the current context. Availability, freshness, completeness, evidence quality and legal applicability are independent qualifications.

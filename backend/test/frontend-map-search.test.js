@@ -273,6 +273,19 @@ describe('geocoded places', () => {
         expect(Model.classifyPlaceLocation(rijeka, CITIES, 'new_york', { liveCityId: 'zagreb' })).toMatchObject({ kind: 'other-city', city: { id: 'zagreb' } });
     });
 
+    it('gives a place to the city whose parcels apply there, not the nearer centre', () => {
+        // Sutton Coldfield lies in Birmingham's district, about as far from Fazeley's centre as from Birmingham's.
+        const cities = [
+            { id: 'birmingham', center: [52.47965, -1.90297], parcelSource: 'gb-hmlr-browser-v1|osm' },
+            { id: 'fazeley', center: [52.5700, -1.8000], parcelSource: 'gb-hmlr-browser-v1|osm' },
+            { id: 'zagreb', center: [45.81, 15.97], parcelSource: 'oss-wfs|gdi-3d' }
+        ];
+        const suttonColdfield = { lat: 52.5636, lon: -1.8226 };
+        expect(Model.classifyPlaceLocation(suttonColdfield, cities, 'zagreb')).toMatchObject({ kind: 'other-city', city: { id: 'fazeley' } });
+        expect(Model.classifyPlaceLocation(suttonColdfield, cities, 'zagreb', { liveCityId: 'birmingham' })).toMatchObject({ kind: 'other-city', city: { id: 'birmingham' } });
+        expect(Model.classifyPlaceLocation(suttonColdfield, cities, 'fazeley', { liveCityId: 'birmingham' })).toMatchObject({ kind: 'here', city: { id: 'birmingham' } });
+    });
+
     it('keeps catalogue order when city centres are tied', () => {
         const point = { lat: 45, lon: 15 };
         const cities = [

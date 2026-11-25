@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 // Builds frontend/data/uk-economic-areas.js: the areas the UK economic sources are published for, so
 // a plan's or parcel's rates follow the place it is in (js/economic-sources.js `areaAt`):
-//   lad        English local authority districts (ONS "Local Authority Districts (May 2023) Boundaries
-//              UK BFE": full resolution, to the extent of the realm, so a district runs to the middle of
-//              the Thames rather than stopping at its banks), the areas of MHCLG's land value estimates
-//              (js/uk-land-rates.js);
+//   lad        English and Welsh local authority districts (ONS "Local Authority Districts (May 2023)
+//              Boundaries UK BFE": full resolution, to the extent of the realm, so a district runs to the
+//              middle of the Thames rather than stopping at its banks), the areas of MHCLG's land value
+//              estimates (js/uk-land-rates.js, England only) and the administrative extents English and
+//              Welsh cities declare (`extent` in data/city-configs.js, scripts/build-world-coverage.mjs);
 //   lpvsBand   the London Plan Viability Study's value bands A-F (GLA, Value Band Map, 2026), the
 //              areas of its sales values and build costs.
 // Both are simplified (Douglas-Peucker, TOLERANCE_M, on the borders shared between neighbouring areas,
@@ -28,8 +29,8 @@ const proj4 = createRequire(path.join(ROOT, 'backend', 'package.json'))('proj4')
 const BNG = '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy '
     + '+towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs';
 const toWgs84 = proj4(BNG, 'EPSG:4326');
-// Borders keep 30 m. A district's edge with no English neighbour (the sea, the border with Wales or
-// Scotland) matters only to points at sea or outside England and keeps 250 m. Value bands keep 30 m
+// Borders keep 30 m. A district's edge with no neighbour (the sea, the border with Scotland) matters
+// only to points at sea or outside England and Wales and keeps 250 m. Value bands keep 30 m
 // everywhere: their edges without a neighbour border the postcode districts the map leaves unbanded.
 export const TOLERANCE_M = 30;
 const OUTER_TOLERANCE_M = 250;
@@ -56,18 +57,20 @@ async function cached(cacheDir, name, url) {
     return bytes;
 }
 
-// English districts (codes E06-E09) in British National Grid metres, page by page.
-async function englishDistricts(cacheDir) {
-    const count = JSON.parse(await cached(cacheDir, 'lad-bfe-count.json', `${LAD_SERVICE}/query?where=LAD23CD+LIKE+%27E%25%27&returnCountOnly=true&f=json`)).count;
+// The districts of one nation by its code letter (E England: E06-E09; W Wales: W06) in British
+// National Grid metres, page by page.
+async function districts(cacheDir, nation) {
+    const where = `LAD23CD LIKE '${nation}%'`;
+    const count = JSON.parse(await cached(cacheDir, `lad-bfe-${nation}-count.json`, `${LAD_SERVICE}/query?${new URLSearchParams({ where, returnCountOnly: 'true', f: 'json' })}`)).count;
     const features = [];
     for (let offset = 0; offset < count; offset += LAD_PAGE) {
-        const query = new URLSearchParams({ where: "LAD23CD LIKE 'E%'", outFields: 'LAD23CD,LAD23NM', outSR: '27700',
+        const query = new URLSearchParams({ where, outFields: 'LAD23CD,LAD23NM', outSR: '27700',
             geometryPrecision: '0', orderByFields: 'LAD23CD', resultOffset: String(offset), resultRecordCount: String(LAD_PAGE), f: 'geojson' });
-        const page = JSON.parse(await cached(cacheDir, `lad-bfe-${offset}.geojson`, `${LAD_SERVICE}/query?${query}`));
+        const page = JSON.parse(await cached(cacheDir, `lad-bfe-${nation}-${offset}.geojson`, `${LAD_SERVICE}/query?${query}`));
         features.push(...page.features);
-        log(`districts ${features.length}/${count}`);
+        log(`${nation} districts ${features.length}/${count}`);
     }
-    if (features.length !== count) throw new Error(`Read ${features.length} of ${count} districts.`);
+    if (features.length !== count) throw new Error(`Read ${features.length} of ${count} ${nation} districts.`);
     return features.map(feature => ({ id: feature.properties.LAD23CD, name: feature.properties.LAD23NM,
         rings: (feature.geometry.type === 'Polygon' ? [feature.geometry.coordinates] : feature.geometry.coordinates).flat() }));
 }
@@ -216,7 +219,7 @@ async function main() {
     const cacheIndex = args.indexOf('--cache');
     const cacheDir = cacheIndex >= 0 ? args[cacheIndex + 1] : path.join(os.homedir(), '.cache', 'consensus-builder', 'uk-economic-areas');
     mkdirSync(cacheDir, { recursive: true });
-    const lad = layerOf(await englishDistricts(cacheDir), OUTER_TOLERANCE_M);
+    const lad = layerOf([...await districts(cacheDir, 'E'), ...await districts(cacheDir, 'W')], OUTER_TOLERANCE_M);
     const lpvsBand = layerOf(await valueBands(cacheDir), TOLERANCE_M);
     const data = {
         scale: SCALE, toleranceM: TOLERANCE_M, outerToleranceM: OUTER_TOLERANCE_M,
@@ -233,7 +236,7 @@ async function main() {
     log(`${Math.round(body.length / 1024)} KB at ${TOLERANCE_M} m (${OUTER_TOLERANCE_M} m on districts' outer edges)`);
     if (!write) return;
     writeFileSync(OUTPUT, '// GENERATED by scripts/build-uk-economic-areas.mjs; do not edit. The areas UK economic sources are\n'
-        + '// published for (English local authority districts; the London Plan Viability Study value bands),\n'
+        + '// published for (English and Welsh local authority districts; the London Plan Viability Study value bands),\n'
         + '// read by js/economic-sources.js areaAt. Contains public sector information licensed under the OGL.\n'
         + '(function (root, data) {\n'
         + "    if (typeof module === 'object' && module.exports) module.exports = data;\n"

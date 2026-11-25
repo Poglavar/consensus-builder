@@ -7,8 +7,8 @@
 //   WorldCoverage.load(url?) -> Promise<coverage>       fetches the JSON (default 'data/world-coverage.json')
 //   WorldCoverage.create(data) -> coverage              wraps already-parsed JSON
 //   coverage.tierAt(lat, lon) -> Place                  see below
-//   coverage.liveCitiesAt(lat, lon) -> [{ cityId, km, via: 'radius'|'country' }]  every configured city
-//                                                       whose parcels cover the point (see below)
+//   coverage.liveCitiesAt(lat, lon) -> [{ cityId, km, via: 'extent'|'radius'|'area' }]  every configured
+//                                                       city whose parcels cover the point (see below)
 //   coverage.jurisdictionAt(lat, lon) -> cityId | null  the ONE city whose parcels apply there (boot,
 //                                                       publication with no city); null = explore
 //   coverage.nameAt(lat, lon, zoom) -> { kind: 'city'|'country'|'territory'|'ocean'|'world', name, cc }  the chip name
@@ -26,7 +26,8 @@
 //   except inside a countrywide-live country, whose routing the country place carries.
 //   Only city and point places are navigation destinations; area places are coverage context.
 //   WorldCoverage.statusKey(place) selects the matching localized label/description prefix.
-//   cityId is set when tier is 'live' (the configured app city to open). placeKey is a stable id for
+//   cityId is set when tier is 'live' (the configured app city to open: inside an area a parcel source
+//   declares, Croatia or England, also on a country, region or registry-city place). placeKey is a stable id for
 //   city requests: registry city id, 'region:<ISO 3166-2>', 'country:<ISO2>', 'territory:<source-id>'
 //   or 'point:<lat>,<lon>'.
 (function (root, factory) {
@@ -44,6 +45,7 @@
     const RINGLESS_COUNTRY_RADIUS_KM = 30;
     const NAME_CITY_RADIUS_KM = 25;
     const NAME_MIN_ZOOM = 5;
+    const EXTENT_TWIN_KM = 10;
     const EARTH_RADIUS_KM = 6371.0088;
 
     function statusKey(place) {
@@ -70,6 +72,22 @@
             }
         }
         return inside;
+    }
+
+    // Planar area of even-odd rings in km² (equirectangular at each edge's latitude): enough to rank
+    // nested administrative extents, smallest first.
+    function ringsAreaKm2(rings) {
+        const k = (Math.PI / 180) * EARTH_RADIUS_KM;
+        let total = 0;
+        for (const ring of rings) {
+            let sum = 0;
+            for (let i = 0, j = ring.length - 2; i < ring.length; j = i, i += 2) {
+                const cos = Math.cos(((ring[i + 1] + ring[j + 1]) / 2) * Math.PI / 180);
+                sum += (ring[j] * cos * k) * (ring[i + 1] * k) - (ring[i] * cos * k) * (ring[j + 1] * k);
+            }
+            total += Math.abs(sum) / 2;
+        }
+        return total;
     }
 
     function ringsBbox(rings) {
@@ -113,6 +131,17 @@
     function filterCoveredRegistryCities(liveCities, registryCities) {
         if (!liveCities.length || !registryCities.length) return registryCities.slice();
 
+        // A city with an administrative extent covers the registry cities inside it, and its registry
+        // twin (the settlement locator its centre came from, which can lie in a neighbouring district)
+        // within EXTENT_TWIN_KM of its centre.
+        const extents = liveCities.filter(city => Array.isArray(city.extent));
+        if (extents.length) {
+            const boxed = extents.map(city => ({ rings: city.extent, bbox: ringsBbox(city.extent) }));
+            registryCities = registryCities.filter(city => !boxed.some(({ rings, bbox }) =>
+                city.lat >= bbox.minLat && city.lat <= bbox.maxLat && city.lon >= bbox.minLon && city.lon <= bbox.maxLon
+                && pointInRings(city.lat, city.lon, rings)));
+            liveCities = liveCities.map(city => (Array.isArray(city.extent) ? { lat: city.lat, lon: city.lon, radiusKm: EXTENT_TWIN_KM } : city));
+        }
         const indexed = [];
         let maxRadiusKm = 0;
         liveCities.forEach(function (city) {
@@ -169,8 +198,8 @@
         });
     }
 
-    // `data` is world-coverage.json, or the boot subset frontend/data/boot-coverage.js (live cities and
-    // the outlines liveCitiesAt can need, no registry cities), which answers liveCitiesAt identically.
+    // `data` is world-coverage.json, or the boot subset frontend/data/boot-coverage.js (live cities, their
+    // extents and the declared areas liveCitiesAt needs, no registry cities), which answers liveCitiesAt identically.
     function create(data) {
         if (!data || !Array.isArray(data.countries) || !Array.isArray(data.cities) || !Array.isArray(data.liveCities)) {
             throw new Error('world-coverage: malformed data');
@@ -181,6 +210,12 @@
         const countryByCc = new Map(countries.map(c => [c.cc, c]));
         const liveCities = data.liveCities;
         const liveById = new Map(liveCities.map(city => [city.id, city]));
+        // Cities with an administrative extent (build-world-coverage.mjs), smallest first, and the rest
+        // with their circles; the areas parcel sources declare (Croatia, England, Wales).
+        const extentCities = liveCities.filter(city => Array.isArray(city.extent))
+            .map(city => ({ city, rings: city.extent, bbox: ringsBbox(city.extent), areaKm2: ringsAreaKm2(city.extent) }));
+        const circleCities = liveCities.filter(city => !Array.isArray(city.extent));
+        const liveAreas = (data.liveAreas || []).map(area => Object.assign({}, area, { bbox: area.rings.length ? ringsBbox(area.rings) : null }));
         const liveSummary = Object.freeze({
             cityCount: new Set(liveCities.map(city => typeof city.id === 'string' ? city.id.trim() : '').filter(Boolean)).size,
             countryCount: new Set(liveCities.map(city => typeof city.cc === 'string' ? city.cc.trim() : '').filter(Boolean)).size
@@ -242,8 +277,14 @@
 
         function tierAt(lat, lon) {
             if (!Number.isFinite(lat) || !Number.isFinite(lon)) throw new Error('tierAt: lat/lon must be finite numbers');
-            const area = liveCitiesAt(lat, lon).find(hit => hit.via === 'radius');
-            if (area) return livePlace(liveById.get(area.cityId), lat, lon);
+            const hit = liveCitiesAt(lat, lon)[0];
+            if (hit && hit.via !== 'area') return livePlace(liveById.get(hit.cityId), lat, lon);
+            // Inside an area a parcel source declares, whatever place answers opens the city it belongs to.
+            const place = placeAt(lat, lon);
+            return hit ? Object.assign(place, { tier: 'live', cityId: hit.cityId }) : place;
+        }
+
+        function placeAt(lat, lon) {
             const city = nearest(cities, lat, lon, CITY_RADIUS_KM);
             if (city) {
                 return {
@@ -255,46 +296,53 @@
             const region = country && country.tier === 'live' ? null : regionAt(lat, lon);
             if (region) return regionPlace(region, lat, lon);
             if (country) {
-                const place = {
+                return {
                     kind: 'country', tier: country.tier, coverage: country.coverage, coverageSources: country.coverageSources,
                     name: country.name, country: country.name, cc: country.cc,
                     note: country.note, lat, lon, placeKey: 'country:' + country.cc
                 };
-                if (country.tier === 'live') {
-                    // A countrywide live country: open the configured city of that country nearest the point.
-                    const own = liveCities.filter(l => l.cc === country.cc);
-                    const near = nearest(own, lat, lon, Infinity);
-                    if (near) place.cityId = near.id;
-                }
-                return place;
             }
             const territory = outlineAt(territories, lat, lon);
             if (territory) return territoryPlace(territory, lat, lon);
             return { kind: 'ocean', tier: 'unknown', name: '', country: '', cc: null, note: '', lat, lon, placeKey: 'point:' + roundKey(lat) + ',' + roundKey(lon) };
         }
 
-        // Every configured city whose parcels cover a point: those whose own area holds it (within
-        // the city's liveRadiusKm, at most LIVE_RADIUS_KM; via 'radius'), then, inside a countrywide
-        // live country (Croatia), each of that country's cities (via 'country'). Nearest first within
-        // each group, ties by id. [] = no app cadastre covers the point. A publication's city is
-        // resolved by the frontend consumer from this, never from the view it was
-        // drawn in, and so is the city a view boots in (jurisdictionAt). The circles ignore borders:
-        // the country outlines here are too coarse to clip them (Geneva's centre falls in France),
-        // see location-first.md phase 3.
+        // Every configured city whose parcels cover a point, in the order they apply (location-first.md
+        // phase 3): those whose administrative extent holds it (via 'extent'; the smallest extent first,
+        // then the nearest centre, so towns sharing a district split it by distance), then those whose
+        // circle holds it (cities without an extent: within liveRadiusKm, at most LIVE_RADIUS_KM; via
+        // 'radius'; nearest first), then, inside an area a parcel source declares it covers (Croatia,
+        // England and Wales), every city reading that source (via 'area', nearest first). Ties by id.
+        // [] = no app cadastre covers the point. The city a view boots in and a publication is filed
+        // in are both the first (jurisdictionAt). Circles still ignore borders (Geneva's centre falls
+        // in France in the coarse country outlines); extents and declared areas follow them.
         function liveCitiesAt(lat, lon) {
             if (!Number.isFinite(lat) || !Number.isFinite(lon)) throw new Error('liveCitiesAt: lat/lon must be finite numbers');
-            const byDistance = (a, b) => a.km - b.km || (a.cityId < b.cityId ? -1 : a.cityId > b.cityId ? 1 : 0);
+            const byId = (a, b) => (a.cityId < b.cityId ? -1 : a.cityId > b.cityId ? 1 : 0);
+            const byDistance = (a, b) => a.km - b.km || byId(a, b);
+            const inside = (item) => item.bbox && lat >= item.bbox.minLat && lat <= item.bbox.maxLat
+                && lon >= item.bbox.minLon && lon <= item.bbox.maxLon && pointInRings(lat, lon, item.rings);
+            const extent = extentCities.filter(inside)
+                .map(({ city, areaKm2 }) => ({ cityId: city.id, km: haversineKm(lat, lon, city.lat, city.lon), via: 'extent', areaKm2 }))
+                .sort((a, b) => a.areaKm2 - b.areaKm2 || byDistance(a, b))
+                .map(({ areaKm2, ...hit }) => hit);
             const radius = [];
-            for (const live of liveCities) {
+            for (const live of circleCities) {
                 const km = haversineKm(lat, lon, live.lat, live.lon);
                 if (km <= Math.min(LIVE_RADIUS_KM, live.radiusKm ?? Infinity)) radius.push({ cityId: live.id, km, via: 'radius' });
             }
-            const country = countryAt(lat, lon);
-            const countrywide = country && country.tier === 'live'
-                ? liveCities.filter(live => live.cc === country.cc && !radius.some(hit => hit.cityId === live.id))
-                    .map(live => ({ cityId: live.id, km: haversineKm(lat, lon, live.lat, live.lon), via: 'country' }))
-                : [];
-            return radius.sort(byDistance).concat(countrywide.sort(byDistance));
+            const hits = extent.concat(radius.sort(byDistance));
+            const area = [];
+            for (const declared of liveAreas) {
+                if (!inside(declared)) continue;
+                for (const cityId of declared.cityIds) {
+                    const live = liveById.get(cityId);
+                    if (live && !hits.some(hit => hit.cityId === cityId) && !area.some(hit => hit.cityId === cityId)) {
+                        area.push({ cityId, km: haversineKm(lat, lon, live.lat, live.lon), via: 'area' });
+                    }
+                }
+            }
+            return hits.concat(area.sort(byDistance));
         }
 
         // The city whose parcels apply at a point: the nearest covering one (liveCitiesAt), null where
@@ -377,7 +425,7 @@
         }
 
         return { data, tierAt, liveCitiesAt, jurisdictionAt, nameAt, regionAt, pointAt, cityPlace,
-            searchPlaces, countries, regions, territories, cities, liveCities, liveSummary };
+            searchPlaces, countries, regions, territories, cities, liveCities, liveAreas, liveSummary };
     }
 
     function load(url) {

@@ -111,10 +111,11 @@ explicit rate and differs from missing evidence.
   2,045). The study's value zones are a ward map in a figure, not published data, so the sale price is
   city-wide.
 - The areas of those sources are `frontend/data/uk-economic-areas.js`
-  (`scripts/build-uk-economic-areas.mjs`): the 296 English districts (ONS May 2023 BFE, to the extent of
-  the realm) and the six value bands, simplified to 30 m on shared borders (250 m on districts' sea and
-  Welsh/Scottish edges), shared borders stored once so neighbours leave no gaps. About 560 KB
-  (230 KB compressed), loaded by `city-config.js` only for a city an area rate table names (the 112
+  (`scripts/build-uk-economic-areas.mjs`): the 318 English and Welsh districts (ONS May 2023 BFE, to the
+  extent of the realm; the Welsh ones have no MHCLG rate and serve the cities' administrative extents,
+  [location-first.md](location-first.md) phase 3) and the six value bands, simplified to 30 m on shared
+  borders (250 m on districts' sea and Scottish edges), shared borders stored once so neighbours leave no
+  gaps. About 620 KB, loaded by `city-config.js` only for a city an area rate table names (the 112
   English cities) and read in node on first use. A second country's areas need that loader to take
   more than this one file. `EconomicSources.areaAt` finds the area of a point
   synchronously; a point within about 30 m of a border can fall in the neighbour (0.2–0.4 % of a

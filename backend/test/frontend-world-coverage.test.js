@@ -241,13 +241,17 @@ describe('tierAt', () => {
     });
 
     it('shows England as mostly covered after its failed city check, with Wales fully covered inside a partial United Kingdom', () => {
+        // HM Land Registry declares England and Wales, so a point far from every city opens the
+        // nearest city reading it (Carleton, by Carlisle), while the coverage axis stays as reviewed.
         const lakeDistrict = coverage.tierAt(54.45, -3.05);
-        expect(lakeDistrict).toMatchObject({ kind: 'region', regionId: 'GB-ENG', coverage: 'mostly', tier: 'source', country: 'United Kingdom' });
+        expect(lakeDistrict).toMatchObject({ kind: 'region', regionId: 'GB-ENG', coverage: 'mostly', tier: 'live', cityId: 'carleton', country: 'United Kingdom' });
         expect(lakeDistrict.note).toMatch(/failed in .*Liverpool.*; \d+ of \d+ checked cities work/);
         expect(lakeDistrict.note).toMatch(/registered freehold/);
         expect(lakeDistrict.coverageSources.length).toBeGreaterThan(0);
-        expect(coverage.tierAt(52.3, -3.6)).toMatchObject({ kind: 'region', regionId: 'GB-WLS', coverage: 'full' });
-        expect(coverage.tierAt(57.3, -4.9)).toMatchObject({ kind: 'region', regionId: 'GB-SCT', coverage: 'partial' });
+        expect(coverage.tierAt(52.3, -3.6)).toMatchObject({ kind: 'region', regionId: 'GB-WLS', coverage: 'full', tier: 'live' });
+        const highlands = coverage.tierAt(57.3, -4.9);
+        expect(highlands).toMatchObject({ kind: 'region', regionId: 'GB-SCT', coverage: 'partial', tier: 'source' });
+        expect(highlands.cityId).toBeUndefined();
         expect(coverage.countries.find(country => country.cc === 'GB')).toMatchObject({ coverage: 'partial' });
         expect(coverage.searchPlaces('England').every(place => ['city', 'live-city'].includes(place.kind))).toBe(true);
     });
@@ -259,6 +263,69 @@ describe('tierAt', () => {
     it('rejects non-numeric input rather than returning a real-looking place', () => {
         expect(() => coverage.tierAt(null, 10)).toThrow();
         expect(() => coverage.tierAt(Number.NaN, 10)).toThrow();
+    });
+});
+
+// location-first.md phase 3: a city's administrative extent, then its circle, then the area its parcel
+// source declares (England and Wales for HM Land Registry), nearest city first.
+describe('administrative extents and declared areas', () => {
+    const at = (lat, lon) => coverage.liveCitiesAt(lat, lon)[0] || null;
+    it.each([
+        ['Croydon', 51.3762, -0.0982], ['Kingston upon Thames', 51.4085, -0.3064], ['Bromley', 51.4060, 0.0140],
+        ['Harrow', 51.5806, -0.3420], ['Enfield', 51.6538, -0.0799], ['Ealing', 51.5130, -0.3089],
+        ['Heathrow', 51.4700, -0.4543], ['Sutton', 51.3618, -0.1945], ['Romford', 51.5768, 0.1801]
+    ])('gives %s, a London borough beyond the old 10 km circle, to London', (_name, lat, lon) => {
+        expect(at(lat, lon)).toMatchObject({ cityId: 'london', via: 'extent' });
+        expect(coverage.tierAt(lat, lon)).toMatchObject({ kind: 'live-city', cityId: 'london', sourceId: 'gb-hmlr-browser-v1' });
+    });
+
+    it.each([
+        ['Sutton Coldfield', 52.5636, -1.8226], ['Kings Norton', 52.4072, -1.9286], ['Northfield', 52.4155, -1.9707]
+    ])("gives %s to Birmingham, whose district it is (Fazeley's centre is about as near)", (_name, lat, lon) => {
+        expect(at(lat, lon)).toMatchObject({ cityId: 'birmingham', via: 'extent' });
+    });
+
+    it("centres Birmingham in its city centre, not 5 km north-west at the settlement locator", () => {
+        const birmingham = coverage.liveCities.find(city => city.id === 'birmingham');
+        expect(WorldCoverage.haversineKm(birmingham.lat, birmingham.lon, 52.4797, -1.9026)).toBeLessThan(0.5);
+    });
+
+    it('gives a point in no city\'s district the nearest city reading the declared source', () => {
+        // Solihull (its own district) and Wallingford (South Oxfordshire, between Oxford and Reading).
+        expect(at(52.4130, -1.7780)).toMatchObject({ cityId: 'birmingham', via: 'area' });
+        const wallingford = { lat: 51.6000, lon: -1.1250 };
+        const hmlr = coverage.liveAreas.find(area => area.id === 'gb-hmlr-browser-v1');
+        const nearest = hmlr.cityIds.map(id => coverage.liveCities.find(city => city.id === id))
+            .sort((a, b) => WorldCoverage.haversineKm(wallingford.lat, wallingford.lon, a.lat, a.lon)
+                - WorldCoverage.haversineKm(wallingford.lat, wallingford.lon, b.lat, b.lon))[0].id;
+        expect(nearest).toBe('oxford');
+        expect(at(wallingford.lat, wallingford.lon)).toMatchObject({ cityId: 'oxford', via: 'area' });
+        expect(coverage.tierAt(wallingford.lat, wallingford.lon)).toMatchObject({ tier: 'live', cityId: 'oxford' });
+        // Liverpool failed its own parcel check; the source still covers it, under the nearest city.
+        expect(at(53.4084, -2.9916)).toMatchObject({ cityId: 'ellesmere_port', via: 'area' });
+    });
+
+    it('splits a district two towns share by distance', () => {
+        expect(at(53.3420, -2.7300)).toMatchObject({ cityId: 'runcorn', via: 'extent' }); // Halton, south of the Mersey
+        expect(at(53.3700, -2.7400)).toMatchObject({ cityId: 'widnes', via: 'extent' });
+    });
+
+    it('leaves Scotland and the sea as they were', () => {
+        expect(at(55.9533, -3.1883)).toBeNull(); // Edinburgh
+        expect(at(54.9946, -3.0650)).toBeNull(); // Gretna, 1.5 km over the border from Carlisle's district
+        expect(coverage.tierAt(55.9533, -3.1883).tier).not.toBe('live');
+        expect(at(50.5, -1.0)).toBeNull(); // the Channel
+        expect(at(55.7700, -2.0050)).toMatchObject({ cityId: 'newcastle', via: 'area' }); // Berwick-upon-Tweed is English
+    });
+
+    it('keeps Croatia countrywide through the same declared-area rule', () => {
+        expect(at(45.5550, 18.6955)).toMatchObject({ cityId: 'zagreb', via: 'area' });
+        expect(coverage.liveAreas.find(area => area.id === 'oss-wfs')).toMatchObject({ regions: ['HR'], cityIds: ['sibenik', 'split', 'zagreb'] });
+    });
+
+    it("keeps a city's registry twin out of the registry places, whatever district its locator is in", () => {
+        expect(coverage.searchPlaces('Fazeley').map(place => place.kind)).toEqual(['live-city']);
+        expect(coverage.searchPlaces('Birmingham').filter(place => place.cc === 'GB').map(place => place.kind)).toEqual(['live-city']);
     });
 });
 
@@ -299,7 +366,9 @@ describe('region coverage axis', () => {
             { id: 'AA-ONE', cc: 'AA', name: 'Uplands', tier: 'source', coverage: 'full', note: 'Reviewed regional scope',
                 coverageSources: [{ title: 'Scope', url: 'https://scope.example.test/one' }], center: [0.5, 0.5], rings: [square(0, 0, 1, 1)] }
         ],
-        cities: [], liveCities: live ? [{ id: 'capital', name: 'Capital', label: 'Capital', cc: 'AA', lat: 0.5, lon: 1.9 }] : []
+        cities: [], liveCities: live ? [{ id: 'capital', name: 'Capital', label: 'Capital', cc: 'AA', lat: 0.5, lon: 1.9 }] : [],
+        // A countrywide source declares the country (build-world-coverage.mjs liveAreas).
+        liveAreas: live ? [{ id: 'aa-cadastre', regions: ['AA'], cityIds: ['capital'], rings: [square(0, 0, 2, 1)] }] : []
     });
 
     it('answers a point inside a region with the region and its coverage, and the rest of the country with the country', () => {

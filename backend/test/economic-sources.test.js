@@ -252,7 +252,9 @@ describe('UK rates follow the location', () => {
         expect(lad(PLACES.croydon)).toBe('E09000008');
         expect(lad(PLACES.barking)).toBe('E09000002');
         expect(lad(PLACES.salford)).toBe('E08000006');
-        expect(lad(PLACES.cardiff)).toBeUndefined();
+        // Welsh districts are in the layer for the cities' administrative extents; MHCLG rates none.
+        expect(lad(PLACES.cardiff)).toBe('W06000015');
+        expect(lad([-3.2, 55.95])).toBeUndefined(); // Edinburgh: Scotland is not mapped
         const band = point => EconomicSources.areaAt(UkEconomicAreas, 'lpvsBand', point)?.id;
         expect(band(PLACES.islington)).toBe('C');
         expect(band(PLACES.croydon)).toBe('F');
@@ -271,6 +273,8 @@ describe('UK rates follow the location', () => {
     it("falls back to the city's authority only without a place, and says so", () => {
         expect(at(london, null).land).toMatchObject({ amount: 8799, scope: "E09000033 · Westminster (the city's area: no location given)" });
         expect(at(manchester, PLACES.cardiff).land).toMatchObject({ amount: 1048,
+            scope: "E08000003 · Manchester (the city's area: Cardiff has no rate)" });
+        expect(at(manchester, [-3.2, 55.95]).land).toMatchObject({ amount: 1048,
             scope: "E08000003 · Manchester (the city's area: the location is outside the mapped areas)" });
     });
 

@@ -577,7 +577,11 @@ describe('buildCoverage', () => {
         expect(bytes({ ...built, liveCities: [], cities: [], regions: [] })).toBeLessThan(200 * 1024);
         // Regions have their own geography budget (about 215 KB with 253 regions on 2026-10-12).
         expect(bytes(built.regions)).toBeLessThan(240 * 1024);
-        expect(bytes(built.liveCities) + bytes(built.cities))
+        expect(bytes(built.liveCities.map(({ extent, ...city }) => city)) + bytes(built.cities))
             .toBeLessThan(256 * (built.liveCities.length + built.cities.length) + 4);
+        // Administrative extents and declared areas ship in the boot coverage too (about 72 KB of
+        // extents for 117 English and Welsh cities and 12 KB of declared areas on 2026-11-25).
+        expect(bytes(built.liveCities.map(city => city.extent || 0))).toBeLessThan(100 * 1024);
+        expect(bytes(built.liveAreas)).toBeLessThan(24 * 1024);
     });
 });

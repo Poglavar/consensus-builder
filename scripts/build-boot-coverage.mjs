@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // Derives frontend/data/boot-coverage.js from frontend/data/world-coverage.json: the part of the
 // coverage the app needs before anything else runs, to decide which city a view boots in
-// (WorldCoverage.jurisdictionAt, location-first.md). That is every live city's centre and radius and
-// the outlines of the countrywide-live countries (Croatia), ~1/20 of the full JSON, loaded as a
+// (WorldCoverage.jurisdictionAt, location-first.md). That is every live city's centre and its radius
+// or administrative extent, and the areas parcel sources declare (Croatia; England and Wales), loaded as a
 // classic script so city-config.js can read it synchronously. Its liveCitiesAt answers equal the
 // full JSON's (backend/test/boot-coverage.test.js). build-world-coverage.mjs runs this after it
 // writes the JSON; run it by hand only after editing the JSON some other way.
@@ -25,10 +25,11 @@ export function bootCoverage(coverage) {
         schemaVersion: coverage.schemaVersion,
         liveCities: coverage.liveCities.map(city => ({
             id: city.id, cc: city.cc, lat: city.lat, lon: city.lon,
-            ...(city.radiusKm != null ? { radiusKm: city.radiusKm } : {})
+            ...(city.radiusKm != null ? { radiusKm: city.radiusKm } : {}),
+            ...(city.extent ? { extent: city.extent } : {})
         })),
-        countries: coverage.countries.filter(country => country.tier === 'live')
-            .map(country => ({ cc: country.cc, name: country.name, tier: country.tier, center: country.center, rings: country.rings })),
+        liveAreas: coverage.liveAreas,
+        countries: [],
         cities: []
     };
 }

@@ -102,8 +102,8 @@ every city without a parcel provider (explore, Ljubljana, Belgrade, Buenos Aires
   and validates it; a client-supplied projection string is never accepted as-is. Published polygons
   stay authoritative for replay (`proposals/apply/road.js` already prefers them).
 - **Publication city** (M8): a new publication belongs to the city its site lies in — the cities
-  whose parcels cover the site's anchor (each city's declared live area, and a countrywide-live
-  country) — never to the view it was drawn from. A site in another city on the same cadastre is
+  whose parcels cover the site's anchor (each city's administrative extent or circle, then the areas
+  parcel sources declare, [location-first.md](location-first.md) phase 3) — never to the view it was drawn from. A site in another city on the same cadastre is
   filed there; a site only another city's cadastre covers is refused; outside every live area the
   requested city's own source decides. Stored records keep their city.
 - **Ordinary publication cut-over** is enforced structurally only: supported protocol/algorithm

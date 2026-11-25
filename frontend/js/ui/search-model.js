@@ -297,9 +297,10 @@
     // shares its cadastre (Croatia's countrywide one: its parcels load without switching), else
     // 'other-city' — Oakland, 21 km from San Francisco, is not San Francisco's because it is near it
     // (an in-place move there would draw on parcels San Francisco's source does not have).
-    // `options.liveCityId` is the configured city the world coverage assigns to a point in a
-    // countrywide-live country (WorldCoverage tierAt(...).cityId): a point far from every city
-    // centre but inside such a country belongs to that city, not to the world.
+    // `options.liveCityId` is the configured city whose parcels apply at the point (WorldCoverage
+    // tierAt(...).cityId: its administrative extent, circle or declared area holds it). It owns the
+    // point whatever centre is nearer: Sutton Coldfield is Birmingham's though Fazeley's centre is
+    // about as near, and a point far from every centre in Croatia or England is still a city's.
     function classifyPlaceLocation(point, cities, currentCityId, options = {}) {
         const nearbyKm = options.nearbyKm || NEARBY_CITY_KM;
         const list = (Array.isArray(cities) ? cities : []).filter(c => Array.isArray(c.center));
@@ -312,15 +313,16 @@
             if (!nearest || km < nearest.km) nearest = { city, km };
             if (city.id === currentCityId) current = { city, km };
         }
+        const live = options.liveCityId ? list.find(city => city.id === options.liveCityId) : null;
+        if (live) {
+            const sameCadastre = current && current.city.parcelSource && current.city.parcelSource === live.parcelSource;
+            return { kind: live.id === currentCityId || sameCadastre ? 'here' : 'other-city', city: live,
+                distanceKm: haversineKm(point.lat, point.lon, live.center[0], live.center[1]) };
+        }
         if (nearest.km <= nearbyKm) {
             const sameCadastre = current && current.city.parcelSource && current.city.parcelSource === nearest.city.parcelSource;
             if (nearest.city.id === currentCityId || sameCadastre) return { kind: 'here', city: nearest.city, distanceKm: nearest.km };
             return { kind: 'other-city', city: nearest.city, distanceKm: nearest.km };
-        }
-        const live = options.liveCityId ? list.find(city => city.id === options.liveCityId) : null;
-        if (live) {
-            const sameCadastre = current && current.city.parcelSource && current.city.parcelSource === live.parcelSource;
-            return { kind: live.id === currentCityId || sameCadastre ? 'here' : 'other-city', city: live, distanceKm: nearest.km };
         }
         return { kind: 'world', distanceKm: nearest.km };
     }
