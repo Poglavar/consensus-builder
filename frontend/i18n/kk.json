@@ -8795,7 +8795,7 @@
         "placeOf": "{{designation}} «{{name}}» ({{organisation}})",
         "placeUnnamed": "{{designation}}",
         "placeBuilding": "{{designation}} «{{name}}»",
-        "sourceLink": "дереккөз: {{source}}",
+        "sourceLink": "(дереккөз: {{source}})",
         "restriction": {
             "prohibit": "{{place}}: мұнда жаңа құрылысқа рұқсат жоқ",
             "keep": "{{place}}: сақталуы керек, жаңа ғимарат оны алмастыра алмайды",

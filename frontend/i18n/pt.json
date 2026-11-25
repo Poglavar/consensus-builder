@@ -8974,7 +8974,7 @@
         "placeOf": "{{designation}} «{{name}}» ({{organisation}})",
         "placeUnnamed": "{{designation}}",
         "placeBuilding": "{{designation}} «{{name}}»",
-        "sourceLink": "fonte: {{source}}",
+        "sourceLink": "(fonte: {{source}})",
         "restriction": {
             "prohibit": "Em {{place}}: aqui não é permitida nova construção",
             "keep": "{{place}} tem de ser mantido: um edifício novo não o pode substituir",

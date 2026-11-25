@@ -1861,7 +1861,8 @@
             });
         }
 
-        // Prints the record alone from a same-origin frame that carries only the record and its stylesheet.
+        // Prints the record alone from a same-origin frame that carries only the record, the theme tokens
+        // (light: the frame's <html> has no data-theme) and the record's stylesheet.
         function printRecord(html, title) {
             const frame = doc.createElement('iframe');
             frame.className = 'agreement-record-print-frame';
@@ -1869,17 +1870,18 @@
             frame.tabIndex = -1;
             doc.body.appendChild(frame);
             const page = frame.contentDocument;
-            const sheet = new URL(typeof win.appendBuildToken === 'function' ? win.appendBuildToken('css/agreement-record.css') : 'css/agreement-record.css', doc.baseURI).href;
+            const sheets = ['css/tokens.css', 'css/agreement-record.css']
+                .map(file => new URL(typeof win.appendBuildToken === 'function' ? win.appendBuildToken(file) : file, doc.baseURI).href);
             page.open();
-            page.write(`<!doctype html><html lang="${esc(doc.documentElement.lang || 'en')}"><head><meta charset="utf-8"><title>${esc(title)}</title><link rel="stylesheet" href="${esc(sheet)}"></head><body class="agreement-record-page">${html}</body></html>`);
+            page.write(`<!doctype html><html lang="${esc(doc.documentElement.lang || 'en')}"><head><meta charset="utf-8"><title>${esc(title)}</title>${sheets.map(sheet => `<link rel="stylesheet" href="${esc(sheet)}">`).join('')}</head><body class="agreement-record-page">${html}</body></html>`);
             page.close();
-            const link = page.querySelector('link');
-            const run = () => {
+            const loaded = [...page.querySelectorAll('link')]
+                .map(link => link.sheet ? null : new Promise(resolve => link.addEventListener('load', resolve, { once: true })));
+            Promise.all(loaded).then(() => {
                 frame.contentWindow.addEventListener('afterprint', () => frame.remove(), { once: true });
                 frame.contentWindow.focus();
                 frame.contentWindow.print();
-            };
-            if (link.sheet) run(); else link.addEventListener('load', run, { once: true });
+            });
         }
 
         // Confirm as lens member (the connected wallet is one): states this member's decision and, when it

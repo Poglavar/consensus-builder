@@ -92,6 +92,7 @@ const NOT_COMMANDS = {
     'planning-compare-right': 'comparison view setting, handled by three-compare.js',
     'planning-compare-swap': 'comparison view setting, handled by three-compare.js',
     'planning-compare-open-model': 'Compare tab link to the model view, handled by three-compare.js',
+    'planning-compare-copy-link': 'Compare tab Copy link for the two chosen sides, handled by three-compare.js',
     'planning-open-model': 'same model navigation as mode-3d-toggle',
     areaMonitorUploadButton: 'permanently disabled (upload not built)',
     showClaimsCounts: 'permanently disabled (claims counts not built)',

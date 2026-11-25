@@ -9225,7 +9225,7 @@
         "placeOf": "{{designation}} «{{name}}» ({{organisation}})",
         "placeUnnamed": "{{designation}}",
         "placeBuilding": "{{designation}} «{{name}}»",
-        "sourceLink": "المصدر: {{source}}",
+        "sourceLink": "(المصدر: {{source}})",
         "restriction": {
             "prohibit": "داخل {{place}}: لا يُسمح ببناء جديد هنا",
             "keep": "{{place}} يجب الإبقاء عليه: لا يجوز أن يحل محله مبنى جديد",

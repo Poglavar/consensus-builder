@@ -115,7 +115,8 @@ describe('opening', () => {
             .toEqual(['Equal plots', 'Schelling plots', 'Keep existing borders', 'Draw freely']);
         expect(radios.filter(radio => radio.disabled)).toEqual([]);
         const count = w.$('[data-parcel-layout-count]');
-        expect([count.value, count.min, count.max]).toEqual(['2', '2', '64']);
+        // Opens split in two; one plot (the lots merged) is allowed (65b95b608).
+        expect([count.value, count.min, count.max]).toEqual(['2', '1', '64']);
         expect(w.$('[data-parcel-layout-count-field]').hidden).toBe(false);
     });
 
@@ -147,13 +148,14 @@ describe('equal plots', () => {
         expect([w.state.slices.length, count.value]).toEqual([5, '5']);
     });
 
-    it('the count stays within 2 and 64', async () => {
+    it('the count stays within 1 and 64; one plot merges the pool', async () => {
         const w = world();
         await w.editor.openParcelLayoutEditor();
         const count = w.$('[data-parcel-layout-count]');
-        change(count, 1);
-        expect([count.value, w.state.slices.length]).toEqual(['2', 2]);
-        expect([w.editor.clampPlotCount(999), w.editor.clampPlotCount('3.4'), w.editor.clampPlotCount('x')]).toEqual([64, 3, 2]);
+        change(count, 0);
+        expect([count.value, w.state.slices.length]).toEqual(['1', 1]);
+        expect(area(w.state.slices[0].geometry) / w.state.totalArea).toBeCloseTo(1, 2);
+        expect([w.editor.clampPlotCount(999), w.editor.clampPlotCount('3.4'), w.editor.clampPlotCount('x')]).toEqual([64, 3, 1]);
     });
 
     it('the first hand edit adopts the layout as drawn; undo gives the equal plots and the handle back', async () => {

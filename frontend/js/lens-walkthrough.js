@@ -119,7 +119,7 @@
     }
     const usdc = value => win.AgreementRecord.formatUsdc(value);
     const STATE_LABELS = () => ({
-        met: w('stateMet', 'Done'), waiting: w('stateWaiting', 'Waiting'), failed: w('stateFailed', 'Not met'),
+        met: w('stateMet', 'Done'), waiting: w('stateWaiting', 'Waiting'), failed: w('stateFailed', 'Unmet'),
         unknown: w('stateUnknown', 'Not checked'), loading: w('stateLoading', 'Loading'), none: w('stateNone', 'Not needed')
     });
     const STATE_ICONS = { met: 'fa-circle-check', waiting: 'fa-clock', failed: 'fa-circle-xmark', unknown: 'fa-circle-question', loading: 'fa-spinner', none: 'fa-circle-minus' };

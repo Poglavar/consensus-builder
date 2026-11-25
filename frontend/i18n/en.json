@@ -8795,7 +8795,7 @@
         "placeOf": "{{organisation}}'s {{name}} {{designation}}",
         "placeUnnamed": "a {{designation}}",
         "placeBuilding": "The {{designation}} {{name}}",
-        "sourceLink": "source: {{source}}",
+        "sourceLink": "(source: {{source}})",
         "restriction": {
             "prohibit": "Inside {{place}}: no new building is permitted here",
             "keep": "{{place}} must be kept: a new building may not replace it",
@@ -8807,9 +8807,9 @@
             "listedBuilding": "listed building",
             "article4Direction": "Article 4 direction area",
             "conservationArea": "conservation area",
-            "greenBelt": "Green Belt",
+            "greenBelt": "green belt",
             "floodZone3": "flood zone 3",
-            "worldHeritageSite": "World Heritage Site",
+            "worldHeritageSite": "world heritage site",
             "treePreservation": "tree preservation zone"
         },
         "requirement": {
@@ -10294,7 +10294,7 @@
     "checks": "What the agreement needs",
     "stateMet": "Done",
     "stateWaiting": "Waiting",
-    "stateFailed": "Not met",
+    "stateFailed": "Unmet",
     "stateUnknown": "Not checked",
     "stateLoading": "Loading",
     "stateNone": "Not needed",

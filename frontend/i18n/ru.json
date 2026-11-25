@@ -8899,7 +8899,7 @@
         "placeOf": "{{designation}} «{{name}}» ({{organisation}})",
         "placeUnnamed": "{{designation}}",
         "placeBuilding": "{{designation}} «{{name}}»",
-        "sourceLink": "источник: {{source}}",
+        "sourceLink": "(источник: {{source}})",
         "restriction": {
             "prohibit": "{{place}}: новое строительство здесь не разрешено",
             "keep": "{{place}}: нужно сохранить, новое здание не может его заменить",

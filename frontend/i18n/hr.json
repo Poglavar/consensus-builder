@@ -8841,7 +8841,7 @@
         "placeOf": "{{designation}} „{{name}}” ({{organisation}})",
         "placeUnnamed": "{{designation}}",
         "placeBuilding": "{{designation}} „{{name}}”",
-        "sourceLink": "izvor: {{source}}",
+        "sourceLink": "(izvor: {{source}})",
         "restriction": {
             "prohibit": "{{place}}: nova gradnja ovdje nije dopuštena",
             "keep": "{{place}} mora se zadržati: nova zgrada ne smije je zamijeniti",
