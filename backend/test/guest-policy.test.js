@@ -130,7 +130,14 @@ describe('browser gates follow the policy', () => {
         const dialog = read('plan-dialog.js'), workspace = read('plan-workspace.js');
         expect(dialog).toContain('async function share(plan, members=[])');
         expect(dialog).toContain('win.PlanWorkspace.resolve(plan,members)');
-        expect(dialog).not.toContain("guestPolicyBlocks('publish')");
+        // Share plan asks for a name only on "Publish and copy link" (before any device-only model is
+        // uploaded), never when it opens and never for a plan that is already published.
+        const share = dialog.slice(dialog.indexOf('async function share('), dialog.indexOf('function scheduleStrip('));
+        const dialogGate = share.indexOf("guestPolicyBlocks('publish')");
+        expect(dialogGate).toBeGreaterThan(share.indexOf('if(published){'));
+        expect(dialogGate).toBeGreaterThan(share.indexOf("button(t('publishAndCopy')"));
+        expect(dialogGate).toBeLessThan(share.indexOf('settleDeviceModels('));
+        expect(dialog.split("guestPolicyBlocks('publish')")).toHaveLength(2);
         // An already-published canonical plan returns before the publication gate; guests can share it.
         const existing = workspace.indexOf('if(existing)return existing;');
         const gate = workspace.indexOf("win.guestPolicyBlocks('publish')");

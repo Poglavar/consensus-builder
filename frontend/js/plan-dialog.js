@@ -146,20 +146,18 @@
         // have moved on. Recompose only through ordinary revision/rebind lineage; snapshot
         // members that are absent here stay exactly as saved, and copies are not successors.
         const carried=win.PlanComposition.localRecords(exact,{apiBase:win.DesignSync.apiBase()});
-        const currentMembers=()=>win.SharedPlanSession.currentMembers(exact,win.proposalStorage.getAllProposals(),{fallbackMembers:carried});
-        let current=currentMembers();
-        // Device-only models in this device's unpublished members are uploaded or kept first: an
-        // upload changes the member and so the plan revision (DesignSync.settleDeviceModels).
-        const unpublished=current.filter(member=>member.proposalId&&win.proposalStorage.getProposal(member.proposalId)&&!win.DesignSync.publishedCid(member));
-        try{if(await win.DesignSync.settleDeviceModels(unpublished))current=currentMembers();}
-        catch(error){if(error?.cancelled)return null;throw error;}
-        const changed=current.filter((member,index)=>win.DesignRecord.cidOf(member)!==exact.designs[index].cid).length;
-        // Do not reserialize an unchanged immutable snapshot: old view fields and its CID stay exact.
-        const membersWithSources=current.map((member,index)=>member.planFileSource ? member : {
-            ...member,...(exact.designSources?.[exact.designs[index].cid] ? {planFileSource:exact.designSources[exact.designs[index].cid]} : {})
-        });
-        const row=changed?win.SharedPlanSession.composeCurrentPlan(exact,membersWithSources):exact;
-        if(changed)win.PlanWorkspace.save(row);
+        const compose=()=>{
+            const current=win.SharedPlanSession.currentMembers(exact,win.proposalStorage.getAllProposals(),{fallbackMembers:carried});
+            const changed=current.filter((member,index)=>win.DesignRecord.cidOf(member)!==exact.designs[index].cid).length;
+            // Do not reserialize an unchanged immutable snapshot: old view fields and its CID stay exact.
+            const membersWithSources=current.map((member,index)=>member.planFileSource ? member : {
+                ...member,...(exact.designSources?.[exact.designs[index].cid] ? {planFileSource:exact.designSources[exact.designs[index].cid]} : {})
+            });
+            const row=changed?win.SharedPlanSession.composeCurrentPlan(exact,membersWithSources):exact;
+            if(changed)win.PlanWorkspace.save(row);
+            return {current,changed,row};
+        };
+        let {current,changed,row}=compose();
         const published=await win.PlanWorkspace.publication(row);
         const body=node('div','plan-share');
         const heading=node('h3','',row.content.title);heading.id=`plan-share-members-${Date.now()}`;
@@ -173,6 +171,13 @@
         const publish=button(t('publishAndCopy'),async()=>{
             status.textContent=t('publishing');
             try {
+                // Device-only models in this device's unpublished members are uploaded or kept now,
+                // when the person publishes, not when the box opens: an upload changes the member and
+                // so the plan revision (DesignSync.settleDeviceModels). Cancel publishes nothing. A guest
+                // names themselves first, so no model goes public for a plan that is then refused.
+                const blocked=win.guestPolicyBlocks('publish');if(blocked)throw new Error(blocked);
+                const unpublished=current.filter(member=>member.proposalId&&win.proposalStorage.getProposal(member.proposalId)&&!win.DesignSync.publishedCid(member));
+                if(await win.DesignSync.settleDeviceModels(unpublished))({current,row}=compose());
                 const result=await win.PlanWorkspace.publish(row);
                 status.remove();publish.remove();await showLink(result.link);
             }catch(error){status.textContent=error.message;}
