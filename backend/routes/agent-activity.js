@@ -166,6 +166,25 @@ function agreementStep(instruction) {
 }
 
 /**
+ * The account index extended with every market opened on one of its agreements: any wallet may open
+ * one, so a market is known only from a successful market instruction naming both it and the agreement
+ * (create, buy, sell, resolve). Claims and finalizes name only the market.
+ */
+export function marketAccountIndex(decodedTransactions = [], agreementsByAccount = new Map()) {
+    const index = new Map(agreementsByAccount);
+    for (const decoded of decodedTransactions) {
+        if (decoded?.status !== 'success') continue;
+        for (const ix of decoded.instructions || []) {
+            if (ix.inner || ix.program?.address !== MARKET_PROGRAM_ID) continue;
+            const address = accountFor(ix, 'market');
+            const entry = agreementsByAccount.get(accountFor(ix, 'proposal') || ix.args?.proposal);
+            if (entry && address) index.set(address, entry);
+        }
+    }
+    return index;
+}
+
+/**
  * Project confirmed program instructions on indexed agreements into the same actor/action envelope as
  * agent runs. An instruction on an account the index does not map (another wallet's account for a
  * published CID, a market on something else) is not an agreement's activity and is left out.
@@ -178,16 +197,7 @@ export function chainEvents(rows = [], {
 } = {}) {
     const events = [];
     const projected = rows.map(row => ({ row, decoded: decode(row.raw, { book, idls }) }));
-    const index = new Map(agreementsByAccount);
-    for (const { decoded } of projected) {
-        if (decoded?.status !== 'success') continue;
-        for (const ix of decoded.instructions || []) {
-            if (ix.inner || ix.program?.address !== MARKET_PROGRAM_ID) continue;
-            const address = accountFor(ix, 'market');
-            const entry = agreementsByAccount.get(accountFor(ix, 'proposal') || ix.args?.proposal);
-            if (entry && address) index.set(address, entry);
-        }
-    }
+    const index = marketAccountIndex(projected.map(({ decoded }) => decoded), agreementsByAccount);
     for (const { row, decoded } of projected) {
         if (!decoded?.signature) continue;
         (decoded.instructions || []).forEach((instruction, position) => {

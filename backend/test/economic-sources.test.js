@@ -298,6 +298,35 @@ describe('UK rates follow the location', () => {
         expect(islington.rent).toMatchObject({ amount: 15, sourceId: 'scenario-assumptions' });
     });
 
+    it("reads London's value bands as a generic area rate table, with the rates and source lines it had under its own adapter", () => {
+        // No city has an adapter of its own: the bands are an area table (js/uk-gla-value-bands.js).
+        expect(Object.keys(EconomicSources.adapters)).not.toContain('gla-lpvs-2026');
+        expect(EconomicSources.BUILT_INS['gla-lpvs-2026']).toMatchObject({ adapter: 'area-rates', table: 'gla-lpvs-2026' });
+        const SourceContracts = require('../../frontend/js/source-contracts.js');
+        const economics = SourceContracts.all().find(abstraction => abstraction.id === 'economics').adapters.map(adapter => adapter.id);
+        expect(economics).toContain('area-rates');
+        expect(economics).not.toContain('gla-lpvs-2026');
+        const name = 'GLA London Plan Viability Study 2026';
+        const url = 'https://data.london.gov.uk/download/e6j99/7n9/LONDON%20PLAN%20VIABILITY%20STUDY%20-%20PHASE%201%20REPORT%20-%20JULY%202026.pdf';
+        const band = (letter, dwelling, saleTable, sale, costTable, cost, where = `Value band ${letter}`) => ({
+            sale: { metric: 'sale', unit: 'm2-floor', amount: sale, currency: 'GBP', basis: 'market', asOf: '2025-06-30',
+                scope: `${where}: new builds ${dwelling} per m² of dwelling (Table ${saleTable}) × 0.675 net to gross`,
+                sourceId: 'gla-lpvs-2026', sourceName: name, sourceUrl: url },
+            construction: { metric: 'construction', unit: 'm2-floor', amount: cost, currency: 'GBP', basis: 'construction-cost', asOf: '2026-06-08',
+                scope: `${where}: 4-6 storey flats for sale, per m² GIA, Q2 2026 (Table ${costTable}); no externals, fees or VAT`,
+                sourceId: 'gla-lpvs-2026', sourceName: name, sourceUrl: url }
+        });
+        const prices = point => { const { sale, construction } = at(london, point); return { sale, construction }; };
+        expect(prices([-0.1058, 51.5322])).toEqual(band('C', '12,666', 'C.2', 8550, 'C.9', 3560)); // Angel
+        expect(prices([-0.0990, 51.5495])).toEqual(band('D', '9,415', 'D.2', 6355, 'D.10', 3380)); // Highbury
+        expect(prices(PLACES.croydon)).toEqual(band('F', '5,511', 'F.2', 3720, 'F.10', 3200));
+        // The stand-ins read as before: the nearest band in a gap of the map, the centre's outside Greater London.
+        expect(prices(PLACES.trafalgarSquare)).toEqual(band('A', '27,746', 'A.2', 18729, 'A.6', 3910, 'Value band A, nearest'));
+        expect(prices(PLACES.guildford)).toEqual(band('A', '27,746', 'A.2', 18729, 'A.6', 3910,
+            "Value band A, nearest (city centre's: outside Greater London)"));
+        expect(prices(null)).toEqual(band('A', '27,746', 'A.2', 18729, 'A.6', 3910, "Value band A, nearest (city centre's: no location given)"));
+    });
+
     it('locates land at the centre of its extent', () => {
         const square = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [[[0, 0], [2, 0], [2, 4], [0, 4], [0, 0]]] } };
         expect(EconomicSources.locationOf(square)).toEqual([1, 2]);

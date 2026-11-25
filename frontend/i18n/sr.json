@@ -8686,6 +8686,7 @@
                 "payout": "Račun za isplatu mora da bude Solana adresa.",
                 "web3Unavailable": "Solana biblioteka nije mogla da se učita.",
                 "walletRequired": "Prvo povežite Solana novčanik.",
+                "walletChanged": "Povežite novčanik naveden u rezervaciji.",
                 "notDeployed": "Program sporazuma još nije postavljen na mreži Solana {{cluster}}.",
                 "pinFailed": "Naš server nije mogao da stavi sadržaj sporazuma na IPFS: {{reason}}",
                 "contentNotOnDevice": "Ovaj uređaj nema sporazum kakav je predložen. Otvorite ga sa njegovog linka dok naš server odgovara, pa pokušajte ponovo.",

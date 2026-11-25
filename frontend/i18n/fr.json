@@ -2038,6 +2038,7 @@
                 "payout": "Le compte de versement doit être une adresse Solana.",
                 "web3Unavailable": "La bibliothèque Solana n’a pas pu être chargée.",
                 "walletRequired": "Connectez d’abord un portefeuille Solana.",
+                "walletChanged": "Connectez le portefeuille indiqué dans la réservation.",
                 "notDeployed": "Le programme d’accord n’est pas encore déployé sur Solana {{cluster}}.",
                 "pinFailed": "Notre serveur n’a pas pu publier le contenu de l’accord sur IPFS : {{reason}}",
                 "contentNotOnDevice": "Cet appareil ne détient pas l’accord tel qu’il a été proposé. Ouvrez-le depuis son lien pendant que notre serveur répond, puis réessayez.",

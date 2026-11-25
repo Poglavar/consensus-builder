@@ -2,6 +2,7 @@
 // (routes/hackathon-cases.js): the parcel set identity, the stages from minting to settlement without
 // inventing completion, the agreement's chain account as the subject of its readers, and the readers
 // over the index (a mock pool).
+import { createRequire } from 'node:module';
 import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
 import { buildHackathonCase, parcelSetIdentity } from '../hackathon/case-model.js';
@@ -12,6 +13,7 @@ import { AgreementClient, AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js'
 import { encodeBase58 } from '../solana/tx-decoder.js';
 import { createRouteApp } from './helpers/create-route-app.js';
 
+const require = createRequire(import.meta.url);
 const SPONSOR = 'G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg';
 const CID = cidOfObject({ schema: 'agreement/v1', title: 'Three-parcel courtyard' });
 const DESIGN_CID = cidOfObject({ schema: 'design/v1', title: 'Case fixture design' });
@@ -306,7 +308,7 @@ describe('hackathon case readers', () => {
                 action: { type: 'cancel', agreementCid: CID }, entity: { type: 'agreement', id: CID }, transaction: 'cancel-tx', ok: true
             }] } }] };
             if (sql.includes('FROM consensus.solana_transaction')) return { rows: [
-                { raw: decoded('cancel-tx', 'success') }, { raw: decoded('failed-tx', 'failed') }
+                { signature: 'cancel-tx', raw: decoded('cancel-tx', 'success') }, { signature: 'failed-tx', raw: decoded('failed-tx', 'failed') }
             ] };
             return { rows: [{ cid: CID, title: 'Case', sponsor: SPONSOR, onchain: { account: ACCOUNT } }] };
         }) };
@@ -317,8 +319,33 @@ describe('hackathon case readers', () => {
             provenance: { source: 'solana_transaction' }, actor: { kind: 'agent', name: 'densifier-01' } });
         const [sql, [addresses]] = pool.query.mock.calls.find(([query]) => query.includes('FROM consensus.solana_transaction'));
         expect(sql).toMatch(/touched_addresses && \$1::text\[\]/);
-        expect(addresses).toHaveLength(2);
-        expect(addresses).toContain(ACCOUNT);
+        // Any wallet may open a market (ae6ac4142), so no market address is derived up front.
+        expect(addresses).toEqual([ACCOUNT]);
         expect(pool.query.mock.calls[0][1]).toEqual([CID]);
+    });
+
+    it('reads the transactions of markets opened on the agreement, so claims that name only the market count', async () => {
+        const MARKET = 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ';
+        const CLAIMER = '4EXtquCoNRBXvfVgDRfBSXSWzrBctcqLwwUau96Umeqk';
+        const market = { name: 'proposal_market', address: require('../../frontend/js/solana/market-client.js').constants.PROGRAM_ID };
+        const tx = (signature, instruction) => ({ signature, raw: { signature, status: 'success', time: '2026-10-25T10:00:00Z', slot: 42, instructions: [{ index: 0, ...instruction }] } });
+        const opened = tx('open-tx', { program: market, action: 'create_lmsr_market', args: {},
+            accounts: [{ role: 'market', address: MARKET }, { role: 'proposal', address: ACCOUNT }, { role: 'creator', address: SPONSOR, signer: true }] });
+        const claimed = tx('claim-tx', { program: market, action: 'claim_lmsr', args: {},
+            accounts: [{ role: 'market', address: MARKET }, { role: 'claimer', address: CLAIMER, signer: true }] });
+        const scopes = [];
+        const pool = { query: vi.fn(async (sql, params) => {
+            if (sql.includes('FROM consensus.agent_run')) return { rows: [] };
+            if (sql.includes('FROM consensus.solana_transaction')) {
+                scopes.push(params[0]);
+                return { rows: params[0].includes(MARKET) ? [claimed] : [opened] };
+            }
+            return { rows: [{ cid: CID, title: 'Case', sponsor: SPONSOR, onchain: { account: ACCOUNT } }] };
+        }) };
+        const events = await loadActivity(pool, CID, { decode: raw => raw });
+        expect(scopes).toEqual([[ACCOUNT], [MARKET]]);
+        expect(events.filter(event => event.transaction === 'claim-tx')).toEqual([
+            expect.objectContaining({ agreementAccount: ACCOUNT, action: expect.objectContaining({ type: 'claim' }) })
+        ]);
     });
 });

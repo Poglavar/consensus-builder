@@ -8640,6 +8640,7 @@
                 "payout": "The payout account must be a Solana address.",
                 "web3Unavailable": "The Solana library could not be loaded.",
                 "walletRequired": "Connect a Solana wallet first.",
+                "walletChanged": "Connect the wallet shown in the reservation.",
                 "notDeployed": "The agreement program is not deployed on Solana {{cluster}} yet.",
                 "pinFailed": "Our server could not put the agreement’s content on IPFS: {{reason}}",
                 "contentNotOnDevice": "This device does not hold the agreement as it was proposed. Open it from its link while our server answers, then try again.",

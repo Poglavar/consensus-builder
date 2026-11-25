@@ -337,7 +337,7 @@ function yesPayout(market, position, outcome) {
  * @param lensKey the lens member this runner operates (asks for decisions), or null
  * @returns {Promise<object>} the agreement with `state` (decidable | decided | awaiting-owners |
  *   lens-not-operated | awaiting-lens | awaiting-contributions | awaiting-funds | due | executed |
- *   cancelled | expired | closed | missing | foreign), `outcome` (YES | NO | null) and `steps`
+ *   cancelled | expired | closed | missing | foreign | retired), `outcome` (YES | NO | null) and `steps`
  */
 export async function inspectSettlement({ connection, owner, agreement, lensKey = null, nowSeconds = Math.floor(Date.now() / 1000), readers = {} } = {}) {
     if (!connection?.getAccountInfo) throw new Error('a solana connection is required');
@@ -347,7 +347,16 @@ export async function inspectSettlement({ connection, owner, agreement, lensKey 
     if (agreement.retired) return { ...agreement, state: 'retired', outcome: null, steps: [] };
     const read = { ...SETTLEMENT_READERS, ...readers };
     const ownerKey = new web3.PublicKey(owner);
-    const state = await read.readAgreement(connection, agreement.account);
+    let state;
+    try {
+        state = await read.readAgreement(connection, agreement.account);
+    } catch (err) {
+        // Minted under an agreement program the app no longer reads (the 2026-11-25 redeploy moved it
+        // to new addresses): the current contract treats it as unminted, so automation records it as
+        // retired and stops reading it, instead of failing every run on it.
+        if (err?.code === 'agreement-wrong-program') return { ...agreement, state: 'retired', outcome: null, steps: [] };
+        throw err;
+    }
     if (!state) return { ...agreement, state: 'missing', outcome: null, steps: [] };
     if (state.authority !== ownerKey.toBase58()) return { ...agreement, state: 'foreign', outcome: null, steps: [] };
     const active = state.status === AGREEMENT_STATUS.active;

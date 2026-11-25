@@ -109,3 +109,27 @@ test('Share on an applied park publishes its design object under the CID the bro
     await receiver.context.close();
   }
 });
+
+test('the 3D design card offers Share, which publishes the design and opens its link, as the map does', async ({ mockApi: page }) => {
+  test.setTimeout(180_000);
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  await openCity(page);
+  await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+  const proposalId = await createSpace(page, 'park');
+  const index = pageIndex(page);
+  await page.locator('#mode-3d-toggle').click();
+  await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 60_000 });
+  await expect.poll(() => page.evaluate(() => !!(window as any).getThreeModeInternals?.())).toBe(true);
+  await page.evaluate(id => (window as any).showThreeModeDesign(id), proposalId);
+  const share = page.locator('#three-click-stack .click-stack__actions--design [data-design-action="share"]');
+  await expect(share).toBeVisible();
+  await expect(share).toHaveCount(1);
+  // A guest names a profile first; nothing has left the device.
+  await share.click();
+  await chooseProfileName(page, 'Share author');
+  expect(postsOf(index)).toEqual([]);
+  await share.click();
+  const link = await closeShareBox(page);
+  expect(link).toMatch(/\/designs\/bafkrei[a-z2-7]{52}/);
+  expect(postsOf(index).map(request => request.path)).toEqual(['/designs']);
+});

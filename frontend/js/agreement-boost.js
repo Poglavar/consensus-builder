@@ -306,7 +306,7 @@
             review.push(el('p', 'sheet-note', apartmentText('qualificationHint', 'The developer’s lens must qualify your wallet for this apartment before your deposit can reserve it.')));
             const request = actionButton(apartmentText('copyQualification', 'Copy qualification request'), button => root.BusyControl.track(button, async () => {
                 const buyer = root.AgreementBridge.connectedWallet();
-                if (!buyer) { feedback(t('agreement.chain.errors.connectWallet', 'Connect a Solana wallet first.')); return; }
+                if (!buyer) { feedback(t('agreement.chain.errors.walletRequired', 'Connect a Solana wallet first.')); return; }
                 const data = { agreement: agreement.published.cid, unitId: unit.unitId, apartment: unit.label,
                     xrayBuilding: unit.xrayBuilding, unit: unit.unit, buyer, developer: agreement.sponsor, lenses: agreement.rule.lens };
                 const copied = await root.copyTextWithFeedback(JSON.stringify(data, null, 2));

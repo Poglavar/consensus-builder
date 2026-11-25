@@ -2126,6 +2126,7 @@
                 "payout": "يجب أن يكون حساب الاستلام عنوان Solana.",
                 "web3Unavailable": "تعذر تحميل مكتبة Solana.",
                 "walletRequired": "صل محفظة Solana أولا.",
+                "walletChanged": "صل المحفظة المذكورة في الحجز.",
                 "notDeployed": "لم ينشر برنامج الاتفاق على Solana {{cluster}} بعد.",
                 "pinFailed": "تعذّر على خادمنا رفع محتوى الاتفاق إلى IPFS: {{reason}}",
                 "contentNotOnDevice": "لا يحمل هذا الجهاز الاتفاق كما اقتُرح. افتحه من رابطه بينما يستجيب خادمنا، ثم أعد المحاولة.",

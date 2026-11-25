@@ -313,7 +313,7 @@
                     body.appendChild(global.ClickStackRelations.renderGroup(group, doc, global));
                 }
             }
-            if (kind === 'designs') body.insertBefore(global.ClickStackRelations.renderDesignActions(instance, doc, global), body.firstChild);
+            if (kind === 'designs') body.insertBefore(global.ClickStackRelations.renderDesignActions(instance, doc, global, { share: true }), body.firstChild);
             const section = state.stack.sections.find(item => item.kind === kind);
             const selector = global.ClickStackRelations?.renderSelector(section, doc, global, state.input?.plans);
             if (selector) body.insertBefore(selector, body.firstChild);

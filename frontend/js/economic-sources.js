@@ -77,7 +77,7 @@
         return { version: 1, id: source.id, name: source.name.trim(), adapter: 'rate-table', url: sourceUrl(source.url),
             rates: rates.map(({ sourceId, sourceName, sourceUrl, ...row }) => row) };
     }
-    // The area of `layer` (data/uk-economic-areas.js: 'lad' districts, 'lpvsBand' value bands) that
+    // The area of `layer` (data/uk-economic-areas.js: 'lad' districts, 'lpvsBand' London value bands) that
     // contains `point`, [lng, lat]; null outside every area or without the data. Arcs are decoded once
     // per data object; a point is inside an area when a ray from it crosses the area's arcs an odd number
     // of times (an area lists its arcs, so rings, holes and parts need no assembly).
@@ -158,42 +158,36 @@
     };
     // A whole number with thousands separators for a source's scope text (12666 → "12,666").
     const thousands = value => String(value).replace(/^(\d+)/, digits => digits.replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+    // The area of an area rate table at `point`: the area containing it, else, for a table whose map
+    // leaves gaps inside the region it covers (`nearestWithin`: the areas of another layer, London's
+    // boroughs for the GLA value bands), the nearest area when the point lies in that region. `nearest`
+    // says which; null elsewhere.
+    function tableAreaAt(table, areas, point) {
+        const found = areaAt(areas, table.layer, point);
+        if (found) return { area: found, nearest: false };
+        const region = table.nearestWithin;
+        if (!region || !region.areas.includes(areaAt(areas, region.layer, point)?.id)) return null;
+        const near = nearestArea(areas, table.layer, point);
+        return near ? { area: near, nearest: true } : null;
+    }
     // The area of a rate table a city stands for where a location gives none: of its administrative
     // extent's areas (`extent.areas` in data/city-configs.js) those the table rates, the one holding the
-    // city's centre (Westminster of London's 33 boroughs), else the first; without an extent, the area
-    // under its centre. One source of truth for "the city's district": the extent.
-    function cityArea(city, table, areas) {
-        const centre = cityCentre(city);
-        const rated = (city?.extent?.areas || []).filter(id => table.areas[id]);
+    // city's centre (Westminster of London's 33 boroughs), else the first. An extent of the table's own
+    // layer that it rates none of (a Welsh city in an English table) has none. Otherwise (a table of
+    // other areas than the extent's, such as value bands; a city without an extent) the table's area at
+    // the city's centre, `viaCentre`. One source of truth for "the city's district": the extent.
+    function cityStandIn(city, table, areas) {
+        const centre = cityCentre(city), extent = city?.extent?.areas || [];
+        const rated = extent.filter(id => table.areas[id]);
         if (rated.length) {
             const holding = centre && rated.length > 1 ? areaAt(areas, table.layer, centre)?.id : null;
-            return rated.includes(holding) ? holding : rated[0];
+            return { code: rated.includes(holding) ? holding : rated[0] };
         }
-        if (city?.extent) return null;
-        const under = centre && areaAt(areas, table.layer, centre)?.id;
-        return under && table.areas[under] ? under : null;
+        if (extent.some(id => areas?.layers?.[table.layer]?.features.some(feature => feature.id === id))) return null;
+        const under = centre && tableAreaAt(table, areas, centre);
+        return under && table.areas[under.area.id] ? { code: under.area.id, nearest: under.nearest, viaCentre: true } : null;
     }
-    // Why a location-dependent rate is the city's rather than the location's.
-    const standIn = (at, found, missing) => (at === null ? 'no location given' : found ? missing : 'the location is outside the mapped areas');
-
-    // GLA London Plan Viability Study, Phase 1 (July 2026), per value band A-F: the indicative average
-    // blended market sales value at the mid-point (£ per m² of dwelling floor area, new-build sales June
-    // 2022 - June 2025, Annex 2) and Mace's build-for-sale cost of 4-6 storey flats (£ per m² GIA at Q2
-    // 2026 prices, Appendix 1; it excludes demolition, externals, fees, finance, CIL/S106 and VAT). A sale
-    // price per m² of the building's floor area is the dwelling price × 0.675, the midpoint of the 65-70 %
-    // net-to-gross the study found for schemes under 6 storeys counting the ground floor (Annex 3 ¶7).
-    const GLA_LPVS_2026 = Object.freeze({
-        url: 'https://data.london.gov.uk/download/e6j99/7n9/LONDON%20PLAN%20VIABILITY%20STUDY%20-%20PHASE%201%20REPORT%20-%20JULY%202026.pdf',
-        netToGross: 0.675,
-        bands: Object.freeze({
-            A: Object.freeze({ dwellingSale: 27746, construction: 3910, saleTable: 'A.2', costTable: 'A.6' }),
-            B: Object.freeze({ dwellingSale: 17546, construction: 3730, saleTable: 'B.2', costTable: 'B.9' }),
-            C: Object.freeze({ dwellingSale: 12666, construction: 3560, saleTable: 'C.2', costTable: 'C.9' }),
-            D: Object.freeze({ dwellingSale: 9415, construction: 3380, saleTable: 'D.2', costTable: 'D.10' }),
-            E: Object.freeze({ dwellingSale: 7428, construction: 3200, saleTable: 'E.2', costTable: 'E.10' }),
-            F: Object.freeze({ dwellingSale: 5511, construction: 3200, saleTable: 'F.2', costTable: 'F.10' })
-        })
-    });
+    const cityArea = (city, table, areas) => cityStandIn(city, table, areas)?.code ?? null;
 
     const adapters = Object.freeze({
         'rate-table': (source) => {
@@ -202,52 +196,35 @@
         },
         // An area rate table (scripts/lib/area_rate_table.py, `source.table` in context.areaRates): a
         // dataset's rates per published area, such as an English local authority's land value, private
-        // rent or building safety levy; any country's per-area statistics take the same shape. It gives
-        // the rates of the area the location lies in; the city's own area (cityArea: its extent's) only
-        // where the location is not given, lies outside every area, or
-        // in an area the table has no rate for, and the scope says which and why. A source's `scale`,
+        // rent or building safety levy, or London's viability value bands; any country's per-area
+        // statistics take the same shape. It gives the rates of the area the location lies in (the
+        // nearest within a table's `nearestWithin` region, said so); the city's own area (cityStandIn)
+        // only where the location is not given, lies outside every area, or in an area the table has no
+        // rate for, and the scope says which and why. A source's `scale`,
         // { factor, note }, converts the table's unit to the contract's (a rent per m² of dwelling to one
         // per m² of the building's floor area, by the place's net to gross) and is stated in the scope.
         'area-rates': (source, context) => {
             const table = context.areaRates?.[source.table], at = lngLat(context.at);
             if (!table || table.currency !== context.city?.currency?.code) return [];
-            const found = at && areaAt(context.areas, table.layer, at);
-            const located = found && table.areas[found.id] ? found.id : null;
-            const code = located || cityArea(context.city, table, context.areas);
+            const hit = at && tableAreaAt(table, context.areas, at);
+            const located = hit && table.areas[hit.area.id] ? hit : null;
+            const standIn = located ? null : cityStandIn(context.city, table, context.areas);
+            const code = located ? located.area.id : standIn?.code;
             const row = code && table.areas[code];
             if (!row) return [];
-            const where = `${code} · ${row.name}` + (located ? '' : ` (the city's area: ${standIn(at, found, `${found?.name} has no rate`)})`);
-            const fill = note => note.replace(/\{(\w+)\}/g, (match, key) => (typeof row[key] === 'number' ? thousands(row[key]) : match));
+            const named = (table.label || '{code} · {name}').replace(/\{(code|name)\}/g, (match, key) => (key === 'code' ? code : row.name))
+                + ((located || standIn).nearest ? ', nearest' : '');
+            const why = at === null ? 'no location given' : hit ? `${hit.area.name} has no rate`
+                : table.nearestWithin ? `outside ${table.nearestWithin.name}` : 'the location is outside the mapped areas';
+            const where = named + (located ? '' : ` (${standIn.viaCentre ? "city centre's" : "the city's area"}: ${why})`);
+            const fill = note => note.replace(/\{(\w+)\}/g, (match, key) => (typeof row[key] === 'number' ? thousands(row[key])
+                : typeof row[key] === 'string' ? row[key] : match));
             const scale = source.scale && Number.isFinite(source.scale.factor) && source.scale.factor > 0 ? source.scale : null;
             return adapters['rate-table']({ version: 1, id: source.id, name: table.name, adapter: 'rate-table', url: table.url,
                 rates: table.rates.map(rate => ({ metric: rate.metric, unit: rate.unit, currency: table.currency, basis: rate.basis,
-                    asOf: table.asOf, amount: scale ? Math.round(row[rate.field] * scale.factor * 100) / 100 : row[rate.field],
+                    asOf: rate.asOf || table.asOf, amount: scale ? Math.round(row[rate.field] * scale.factor * 100) / 100 : row[rate.field],
                     ...(rate.landCategory ? { landCategory: rate.landCategory } : {}),
                     scope: where + (rate.note ? ': ' + fill(rate.note) : '') + (scale ? (rate.note ? ', ' : ': ') + scale.note : '') })) });
-        },
-        // London's sale price and construction cost of the value band the location lies in. The map
-        // leaves postcode districts without enough new-build sales unbanded (much of the centre among
-        // them): a location in Greater London there takes the nearest band. A location outside Greater
-        // London, or none, takes the band of the city's centre. The scope says which.
-        'gla-lpvs-2026': (source, context) => {
-            if (context.city?.currency?.code !== 'GBP') return [];
-            const areas = context.areas;
-            const inLondon = point => /^E09/.test(areaAt(areas, 'lad', point)?.id || '');
-            const bandOf = point => areaAt(areas, 'lpvsBand', point) || (inLondon(point) ? nearestArea(areas, 'lpvsBand', point) : null);
-            const given = lngLat(context.at), at = given && inLondon(given) ? given : null;
-            const band = bandOf(at || cityCentre(context.city));
-            if (!band) return [];
-            const row = GLA_LPVS_2026.bands[band.id];
-            const nearest = !areaAt(areas, 'lpvsBand', at || cityCentre(context.city)) ? ', nearest' : '';
-            const where = `Value band ${band.id}${nearest}` + (at ? '' : ` (city centre's: ${given ? 'outside Greater London' : 'no location given'})`);
-            return adapters['rate-table']({ version: 1, id: source.id, name: 'GLA London Plan Viability Study 2026',
-                adapter: 'rate-table', url: GLA_LPVS_2026.url,
-                rates: [{ metric: 'sale', unit: METRICS.sale, amount: Math.round(row.dwellingSale * GLA_LPVS_2026.netToGross),
-                    currency: 'GBP', basis: 'market', asOf: '2025-06-30',
-                    scope: `${where}: new builds ${thousands(row.dwellingSale)} per m² of dwelling (Table ${row.saleTable}) × ${GLA_LPVS_2026.netToGross} net to gross` },
-                { metric: 'construction', unit: METRICS.construction, amount: row.construction,
-                    currency: 'GBP', basis: 'construction-cost', asOf: '2026-06-08',
-                    scope: `${where}: 4-6 storey flats for sale, per m² GIA, Q2 2026 (Table ${row.costTable}); no externals, fees or VAT` }] });
         },
         'scenario-assumptions': (source, context) => {
             const currency = context.city?.currency?.code;
@@ -263,11 +240,12 @@
         }
     });
     const BUILT_INS = Object.freeze({
-        // Area rate tables (js/uk-land-rates.js, js/uk-private-rents.js, js/uk-building-safety-levy.js), each a source of its own id.
+        // Area rate tables (js/uk-land-rates.js, js/uk-private-rents.js, js/uk-building-safety-levy.js,
+        // js/uk-gla-value-bands.js), each a source of its own id.
         'uk-mhclg-land-2023': Object.freeze({ id: 'uk-mhclg-land-2023', adapter: 'area-rates', table: 'uk-mhclg-land-2023' }),
         'ons-pipr-rent': Object.freeze({ id: 'ons-pipr-rent', adapter: 'area-rates', table: 'ons-pipr-rent' }),
         'uk-building-safety-levy': Object.freeze({ id: 'uk-building-safety-levy', adapter: 'area-rates', table: 'uk-building-safety-levy' }),
-        'gla-lpvs-2026': Object.freeze({ id: 'gla-lpvs-2026', adapter: 'gla-lpvs-2026' }),
+        'gla-lpvs-2026': Object.freeze({ id: 'gla-lpvs-2026', adapter: 'area-rates', table: 'gla-lpvs-2026' }),
         'scenario-assumptions': Object.freeze({ id: 'scenario-assumptions', adapter: 'scenario-assumptions' })
     });
     const runtime = typeof window !== 'undefined' ? window.SourceRuntime : require('./source-runtime.js');
@@ -321,5 +299,5 @@
             min: amount === null ? standard.min : Math.min(standard.min, amount / 2),
             max: amount === null ? standard.max : Math.max(standard.max, amount * 2) };
     }
-    return Object.freeze({ METRICS, BASES, FLOOR_PRICES, BUILT_INS, GLA_LPVS_2026, adapters, registry, rateTable, areaAt, cityArea, locationOf, defaults, resolve, slider });
+    return Object.freeze({ METRICS, BASES, FLOOR_PRICES, BUILT_INS, adapters, registry, rateTable, areaAt, cityArea, locationOf, defaults, resolve, slider });
 });
