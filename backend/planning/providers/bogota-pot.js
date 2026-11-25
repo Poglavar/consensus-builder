@@ -1,5 +1,5 @@
-// Bogotá POT (Decreto 555/2021) treatment and front-yard polygons, read live from the official
-// cartography's public ArcGIS Online copy (IDE Cundinamarca, CC BY 4.0). Records are treatment
+// Bogotá POT (Decreto 555/2021) treatment and front-yard polygons, read live from a public ArcGIS
+// Online copy of the official cartography's geodatabase (docs/bogota-pot-source.md). Records are treatment
 // areas carrying metric constraints; a parcel's front yard is read under the lot (parcelRecords).
 import * as turf from '@turf/turf';
 import { clipToBounds } from '../display-clip.js';
@@ -8,7 +8,10 @@ import { validateGeometry } from '../../parcels/source-contract.js';
 import { withSourceProposal, sourceRevision } from '../source-proposal.js';
 import { interpretTreatment, antejardinConstraint, parcelReading, incentiveCandidacy, BOGOTA_RULES } from './bogota-pot-rules.js';
 
-export const BOGOTA_POT_SERVICE = 'https://services7.arcgis.com/lsxbLWF2l19Rmhqj/arcgis/rest/services/POT_Bogota_Decreto_555_2021/FeatureServer';
+export const BOGOTA_POT_SERVICE = 'https://services5.arcgis.com/l23kE3b7uPnZIuaB/arcgis/rest/services/Decreto_555_2021_POT_2_2022_05036_gdb/FeatureServer';
+// The copy's geodatabase also holds 356 working polygons the published map leaves out (protected land
+// and the airport, some overlapping published treatments); this keeps the published 5,630.
+const PUBLISHED_TREATMENTS = "TRATAMIENTO NOT IN ('SUELO PROTEGIDO','AEROPUERTO')";
 export const BOGOTA_POT_LAYERS = Object.freeze({ treatment: 15, antejardin: 22, activity: 14 });
 // `general` is the treatment map as it stands; `sustainable` adds the Decreto 676/2025 storeys a
 // project earns by adopting every ecourbanismo measure, decided per lot.
@@ -16,10 +19,10 @@ export const BOGOTA_POT_SCENARIOS = Object.freeze(['general', 'sustainable']);
 export const bogotaPotSource = Object.freeze({
     id: 'bogota-pot-555', city: 'bogota', label: 'POT Bogotá · Decreto 555/2021', edition: '2021-12-29', default: true,
     kind: 'regulation', coverage: 'zoning-areas', scope: 'city',
-    url: 'https://www.arcgis.com/home/item.html?id=ee7fed3b93dd4d52b8d00bcc81ce0ea0',
+    url: 'https://www.arcgis.com/home/item.html?id=88e7cfb1cbd24dabba9cf2df7587903b',
     storage: 'arcgis-online-feature-service', service: BOGOTA_POT_SERVICE, layers: BOGOTA_POT_LAYERS,
     issuer: 'Secretaría Distrital de Planeación de Bogotá',
-    attribution: 'SDP Bogotá, POT Decreto 555/2021 · copy published by IDE Cundinamarca (IDEC) · CC BY 4.0',
+    attribution: 'SDP Bogotá, POT Decreto 555/2021 · public ArcGIS Online copy of its geodatabase',
     capabilities: { volumes: false, areas: true, parcelEvidence: false, constraintEvaluation: false },
     parcelSourceId: 'co-bogota-uaecd-lote', parcelStudy: 'direct-dimensions.v1', parcelStanding: true,
     scenarios: BOGOTA_POT_SCENARIOS, scenario: 'general'
@@ -75,7 +78,8 @@ export function createBogotaPotProvider(descriptor = bogotaPotSource, { fetchImp
         if (cached && now() - cached.at < TTL_MS) return cached.promise;
         const promise = fetchLayer(layer, { geometry: bbox.join(','), geometryType: 'esriGeometryEnvelope', inSR: '4326',
             spatialRel: 'esriSpatialRelIntersects', orderByFields: 'OBJECTID', resultRecordCount: count,
-            where: after === null ? '1=1' : `OBJECTID > ${after}` }).catch(error => { reads.delete(key); throw error; });
+            where: [layer === layers.treatment ? PUBLISHED_TREATMENTS : null, after === null ? null : `OBJECTID > ${after}`]
+                .filter(Boolean).map(clause => `(${clause})`).join(' AND ') || '1=1' }).catch(error => { reads.delete(key); throw error; });
         if (reads.size >= READ_CAP) reads.delete(reads.keys().next().value);
         reads.set(key, { at: now(), promise });
         return promise;

@@ -34,10 +34,22 @@
             || properties.isRoad === true || properties.isTrack === true || properties.isCorridor === true);
     }
 
+    // Ways that run across ordinary lots without taking them: a sidewalk mapped beside the street,
+    // a driveway or parking aisle, a footpath through a courtyard. They still bound blocks, but a lot
+    // they touch is not street ground.
+    // Pedestrian ways do not bound a block either: a separately mapped sidewalk often runs through the
+    // front of the lots the cadastre records, and would cut them out of their own block.
+    const PEDESTRIAN_WAYS = new Set(['footway', 'path', 'steps', 'cycleway', 'bridleway', 'corridor',
+        'platform', 'elevator', 'sidewalk', 'crossing']);
+    const MINOR_WAYS = new Set([...PEDESTRIAN_WAYS, 'track', 'service', 'proposed']);
+
+    // A lot an OSM street or track line touches is street ground and stays out of a block.
     function parcelTouchesRoadTrack(parcel, boundaries, turf) {
         const a = turf.bbox(parcel);
         return boundaries.some(feature => {
             if (!isRoadTrackBoundary(feature.properties)) return false;
+            const highway = feature.properties.highway || feature.properties.highway_type;
+            if (MINOR_WAYS.has(highway)) return false;
             const b = feature.bbox || turf.bbox(feature);
             return a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1]
                 && turf.booleanIntersects(parcel, feature);
@@ -196,10 +208,75 @@
 
     // Noding is necessary before polygonize: a crossing inside either segment must become a
     // shared endpoint. Also split collinear overlaps, then deduplicate the undirected edges.
-    function nodeRoads(roads, bbox, turf) {
+    // A street that stops this close to another way is mapped short of a crossing it cannot make (a
+    // busway, a fence, a pedestrian link), not a cul-de-sac inside a block. Its ground still divides
+    // the blocks on either side, so for block enclosures (detectBlocks) its end is carried on to that
+    // way. Subdivision candidates keep the mapped network as it is.
+    const DEAD_END_REACH_M = 10;
+    const TIP_TOUCH_M = 0.05;
+
+    // Segments carrying each dead-end street tip along its last segment to the first way within reach.
+    function deadEndLinks(segments, tips, bbox) {
+        if (!tips.length) return [];
+        const CELL = 0.0002;
+        const cell = v => Math.floor(v / CELL);
+        const grid = new Map();
+        segments.forEach((s, index) => {
+            for (let x = cell(Math.min(s.a[0], s.b[0])); x <= cell(Math.max(s.a[0], s.b[0])); x++) {
+                for (let y = cell(Math.min(s.a[1], s.b[1])); y <= cell(Math.max(s.a[1], s.b[1])); y++) {
+                    const id = `${x},${y}`;
+                    if (!grid.has(id)) grid.set(id, []);
+                    grid.get(id).push(index);
+                }
+            }
+        });
+        const near = (box) => {
+            const found = new Set();
+            for (let x = cell(box[0]); x <= cell(box[2]); x++) for (let y = cell(box[1]); y <= cell(box[3]); y++) {
+                (grid.get(`${x},${y}`) || []).forEach(index => found.add(index));
+            }
+            return [...found].map(index => segments[index]);
+        };
+        const onEdge = p => p[0] <= bbox[0] + 1e-8 || p[1] <= bbox[1] + 1e-8 || p[0] >= bbox[2] - 1e-8 || p[1] >= bbox[3] - 1e-8;
+        const links = [];
+        for (const { tip, from, own } of tips) {
+            if (onEdge(tip)) continue;
+            const mx = 111320 * Math.cos(tip[1] * Math.PI / 180), my = 110540;
+            const metric = p => [(p[0] - tip[0]) * mx, (p[1] - tip[1]) * my];
+            const reach = DEAD_END_REACH_M / Math.min(mx, my);
+            const candidates = near([tip[0] - reach, tip[1] - reach, tip[0] + reach, tip[1] + reach]).filter(s => s !== own);
+            const touched = candidates.some(s => {
+                const a = metric(s.a), ab = sub(metric(s.b), a);
+                const t = Math.max(0, Math.min(1, -dot(a, ab) / dot(ab, ab)));
+                return Math.hypot(a[0] + ab[0] * t, a[1] + ab[1] * t) <= TIP_TOUCH_M;
+            });
+            if (touched) continue;
+            const back = metric(from), length = Math.hypot(...back);
+            if (!(length > 0)) continue;
+            const r = [-back[0] / length * DEAD_END_REACH_M, -back[1] / length * DEAD_END_REACH_M];
+            let best = null;
+            for (const s of candidates) {
+                const a = metric(s.a), v = sub(metric(s.b), a);
+                const denominator = cross(r, v);
+                if (Math.abs(denominator) < 1e-12) continue;
+                const u = cross(a, v) / denominator, w = cross(a, r) / denominator;
+                if (u > 0 && u <= 1 && w >= 0 && w <= 1 && (!best || u < best)) best = u;
+            }
+            if (best !== null) {
+                links.push({ a: tip, b: coord([tip[0] + r[0] * best / mx, tip[1] + r[1] * best / my]), name: null, proposed: false, cuts: [0, 1] });
+            }
+        }
+        return links;
+    }
+
+    // enclosure: the network that bounds blocks (detectBlocks): no pedestrian ways, dead ends closed.
+    function nodeRoads(roads, bbox, turf, { enclosure = false } = {}) {
         const segments = [];
+        const tips = [];
         for (const road of roads.features) {
             if (!isGroundBoundary(road.properties)) continue;
+            const highway = road.properties?.highway || road.properties?.highway_type;
+            if (enclosure && PEDESTRIAN_WAYS.has(highway)) continue;
             const type = road.geometry?.type;
             if (!['LineString', 'MultiLineString', 'Polygon', 'MultiPolygon'].includes(type)) continue;
             const clipped = turf.bboxClip(road, bbox);
@@ -207,13 +284,22 @@
                 : clipped.geometry.type === 'MultiLineString' ? clipped.geometry.coordinates
                     : clipped.geometry.type === 'Polygon' ? clipped.geometry.coordinates
                         : clipped.geometry.type === 'MultiPolygon' ? clipped.geometry.coordinates.flat() : [];
-            for (const line of lines) for (let i = 1; i < line.length; i++) {
-                const a = coord(line[i - 1]), b = coord(line[i]);
-                if (key(a) === key(b)) continue;
-                segments.push({ a, b, name: road.properties?.name, proposed: road.properties?.proposed === true, cuts: [0, 1] });
+            const street = type.endsWith('LineString') && isGroundRoad(road.properties) && !MINOR_WAYS.has(highway);
+            for (const line of lines) {
+                const first = segments.length;
+                for (let i = 1; i < line.length; i++) {
+                    const a = coord(line[i - 1]), b = coord(line[i]);
+                    if (key(a) === key(b)) continue;
+                    segments.push({ a, b, name: road.properties?.name, proposed: road.properties?.proposed === true, cuts: [0, 1] });
+                }
+                if (street && segments.length > first) {
+                    const head = segments[first], tail = segments[segments.length - 1];
+                    tips.push({ tip: head.a, from: head.b, own: head }, { tip: tail.b, from: tail.a, own: tail });
+                }
             }
         }
         if (segments.length > 50000) throw new Error('Too many road segments. Zoom in and try again.');
+        if (enclosure) segments.push(...deadEndLinks(segments, tips, bbox));
         const sweep = segments.map(s => ({ ...s, minX: Math.min(s.a[0], s.b[0]), maxX: Math.max(s.a[0], s.b[0]),
             minY: Math.min(s.a[1], s.b[1]), maxY: Math.max(s.a[1], s.b[1]) })).sort((a, b) => a.minX - b.minX);
         let active = [], comparisons = 0;
@@ -291,7 +377,7 @@
     function detectBlocks(roads, bbox, turf) {
         if (roads?.partial || roads?.truncated) throw new Error('OSM road data is incomplete. Retry or zoom in before detecting blocks.');
         if (!Array.isArray(roads?.features)) throw new Error('Invalid OSM road data.');
-        const edges = nodeRoads(roads, bbox, turf);
+        const edges = nodeRoads(roads, bbox, turf, { enclosure: true });
         if (!edges.size) return turf.featureCollection([]);
         const water = waterBodies(roads, turf);
         const junctions = new Set((roads.junctions || []).map(p => key(coord(p))));

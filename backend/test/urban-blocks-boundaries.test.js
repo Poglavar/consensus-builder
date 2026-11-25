@@ -16,6 +16,13 @@ describe('urban block ground boundaries', () => {
     it.each([
         ['unnamed footway', { highway: 'footway' }],
         ['unnamed cycleway', { highway: 'cycleway' }],
+        ['steps', { highway: 'steps' }]
+    ])('does not bound blocks with %s ways: a sidewalk runs through the lots it borders', (_name, properties) => {
+        expect(model.detectBlocks(roadsFor(properties), bbox, turf).features).toHaveLength(0);
+    });
+
+    it.each([
+        ['service', { highway: 'service' }],
         ['track', { highway: 'track' }],
         ['railway', { railway: 'rail' }],
         ['tram', { railway: 'tram' }],
