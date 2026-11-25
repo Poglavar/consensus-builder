@@ -9003,6 +9003,7 @@
         "resize": "Cambia el tamaño del panel. Arrastra arriba o abajo; arrastra hasta abajo para cerrarlo."
     },
     "economicSources": {
+        "sourceLabel": "Fuente:",
         "title": "Valoración y costes",
         "intro": "Las fuentes aportan tarifas distintas para el suelo, los precios de venta por superficie construida, la construcción, el alquiler y el impuesto de venta. Si faltan datos locales, el valor queda como no disponible; los supuestos editables del escenario no son datos de mercado.",
         "land": "Suelo",

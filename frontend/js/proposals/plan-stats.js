@@ -317,15 +317,28 @@
             slider.step = range.step === 'any' ? 'any' : String(range.step * scale);
             slider.value = input.value === '' ? slider.min : input.value;
             slider.setAttribute('aria-label', labelText);
-            slider.addEventListener('input', () => { typedPrices.add(inputKey(spec)); input.value = slider.value; onSlide(input); });
-            input.addEventListener('input', () => { typedPrices.add(inputKey(spec)); if (input.value.trim() !== '') slider.value = input.value; });
+            // The price's source as text under it; a price the reader set is their assumption.
+            const note = el('p', 'economic-source-note plan-stats-source');
+            note.id = `${input.id}-source`;
+            note.dataset.priceSource = spec.slider;
+            slider.setAttribute('aria-describedby', note.id);
+            input.setAttribute('aria-describedby', note.id);
+            const readerSet = () => { typedPrices.add(inputKey(spec)); renderPriceSource(note, salesPrice().sources, true); };
+            slider.addEventListener('input', () => { readerSet(); input.value = slider.value; onSlide(input); });
+            input.addEventListener('input', () => { readerSet(); if (input.value.trim() !== '') slider.value = input.value; });
+            renderPriceSource(note, salesPrice().sources, typedPrices.has(inputKey(spec)));
             prices.appendChild(suffix);
             prices.appendChild(slider);
             prices.appendChild(input);
+            prices.appendChild(note);
         });
         groups.appendChild(prices);
         groups.appendChild(grid);
         return groups;
+    }
+    // A price's source (EconomicSourceSettings.renderSource) from the rates in use, `sources` by metric.
+    function renderPriceSource(note, sources, set) {
+        window.EconomicSourceSettings?.renderSource(note, sources?.[note.dataset.priceSource], window, { set });
     }
     function rememberAssumptions(container) {
         container.querySelectorAll('[data-assumption]').forEach(input => {
@@ -342,6 +355,8 @@
             const input = container.querySelector(`#${prefix}-${key}`);
             const slider = container.querySelector(`#${prefix}-${key}-slider`);
             if (!spec.slider || !input || typedPrices.has(key)) return;
+            const note = container.querySelector(`#${prefix}-${key}-source`);
+            if (note) renderPriceSource(note, price.sources, false);
             const start = spec.value({}, price);
             input.value = start === null || start === undefined ? '' : String(start);
             if (!slider) return;

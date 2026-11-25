@@ -9027,6 +9027,7 @@
         "resize": "Promijeni veličinu panela. Povuci gore ili dolje; povuci do dna za zatvaranje."
     },
     "economicSources": {
+        "sourceLabel": "Izvor:",
         "title": "Procjene vrijednosti i troškovi",
         "intro": "Izvori daju zasebne stope za zemljište, prodajne cijene po površini zgrade, gradnju, najamninu i porez na prodaju. Kad lokalni podaci nedostaju, vrijednost ostaje nedostupna; promjenjive pretpostavke scenarija nisu tržišni podaci.",
         "land": "Zemljište",

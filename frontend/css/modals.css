@@ -389,6 +389,11 @@ body.site-intro-open { overflow: hidden; }
     cursor: pointer;
 }
 
+/* A price's source, on its own line under the price's row. */
+.plan-stats-prices .plan-stats-source {
+    grid-column: 1 / -1;
+}
+
 /* The all-in cost's parts, under the figures. */
 .plan-stats-cost-details {
     margin: var(--cb-space-2) 0;

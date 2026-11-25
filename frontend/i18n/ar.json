@@ -6140,6 +6140,7 @@
         "dismiss": "إغلاق تحذير المصدر"
     },
     "economicSources": {
+        "sourceLabel": "المصدر:",
         "close": "إغلاق",
         "construction": "تكلفة البناء",
         "market": "أدلة السوق",

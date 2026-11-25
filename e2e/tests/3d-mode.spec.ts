@@ -352,10 +352,15 @@ test.describe('3D rendering and controls @features', () => {
     const valueReadout = parcelPanel.locator('[data-cell="value:built"]');
     const initialPrice = Number(await priceSlider.inputValue());
     const initialValueReadout = await valueReadout.textContent();
+    // Each price shows its source as text under its slider, and the slider is described by it.
+    const saleSource = parcelPanel.locator('#parcel-panel-sale-slider-source');
+    await expect(saleSource).toContainText('Source:');
+    await expect(priceSlider).toHaveAttribute('aria-describedby', 'parcel-panel-sale-slider-source');
     await priceSlider.focus();
     await page.keyboard.press(initialPrice < Number(await priceSlider.getAttribute('max')) ? 'End' : 'Home');
     await expect.poll(async () => Number(await priceSlider.inputValue())).not.toBe(initialPrice);
     await expect.poll(async () => await valueReadout.textContent()).not.toBe(initialValueReadout);
+    await expect(saleSource).toHaveText('Source: Scenario assumption');
     expect(await camera()).toEqual(before);
     // Built is opened through its row; a repeat pick of the parcel then opens the parcel's own
     // section again, keeping the camera steady.

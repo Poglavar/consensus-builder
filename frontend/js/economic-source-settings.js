@@ -40,6 +40,27 @@
             basis: text(global, row.basis), date: row.asOf ? text(global, 'date', { date: row.asOf }) : ''
         }) + (row.scope ? ' · ' + row.scope : '');
     }
+    // A rate's source as visible text in `element` (the 3D panel, Plan stats, Settings): "Source:", the
+    // source's name linked to its document, its basis and date, and the place the rate is for (its
+    // scope). `set` is a price the visitor slid or typed: that price is their assumption, not the source's.
+    function renderSource(element, row, global, { set = false } = {}) {
+        const document = element.ownerDocument;
+        element.replaceChildren(text(global, 'sourceLabel') + ' ');
+        if (set || !row || row.sourceId === 'scenario-assumptions') {
+            element.append(text(global, set || row ? 'assumption' : 'unavailable'));
+            return element;
+        }
+        let name = document.createTextNode(row.sourceName);
+        if (row.sourceUrl) {
+            name = document.createElement('a');
+            name.className = 'cb-link cb-link--quiet cb-link--external';
+            name.href = row.sourceUrl; name.target = '_blank'; name.rel = 'noopener';
+            name.textContent = row.sourceName;
+        }
+        element.append(name, ' · ' + text(global, row.basis) + (row.asOf ? text(global, 'date', { date: row.asOf }) : '')
+            + (row.scope ? ' · ' + row.scope : ''));
+        return element;
+    }
     function open(global) {
         global.document.getElementById('economic-source-settings')?.remove();
         const city = global.CityConfigManager.getCurrentCityConfig(), currency = city.currency.code;
@@ -72,8 +93,8 @@
             const amount = !row ? '' : row.unit === 'share-of-sale'
                 ? global.CbFormat.formatPercent(row.amount, { maxFractionDigits: 1 })
                 : global.CbFormat.formatMoney(row.amount, row.currency, { maxFractionDigits: 2 }) + (row.unit === 'm2-floor-month' ? t('perMonth') : ' / m²');
-            const content = row ? amount + ' · ' + describe(row, global) + (row.taxIncluded ? ' · ' + t('taxIncluded') : '') : t('unavailable');
-            append('dd', content, list);
+            const dd = append('dd', row ? amount + (row.taxIncluded ? ' · ' + t('taxIncluded') : '') : t('unavailable'), list);
+            if (row) renderSource(append('span', '', dd, 'economic-source-note'), row, global);
         }
         append('h3', t('manual'), body);
         append('p', t('manualNote', { currency }), body);
@@ -124,5 +145,5 @@
         global.document.body.append(dialog); dialog.showModal();
         return dialog;
     }
-    return Object.freeze({ choiceForCity, saveChoice, resetChoice, describe, open });
+    return Object.freeze({ choiceForCity, saveChoice, resetChoice, describe, renderSource, open });
 });

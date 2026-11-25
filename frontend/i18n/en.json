@@ -8975,6 +8975,7 @@
         "resize": "Resize panel. Drag up or down; drag to the bottom to close."
     },
     "economicSources": {
+        "sourceLabel": "Source:",
         "title": "Valuation & costs",
         "intro": "Sources supply separate rates for land, floor-area sale prices, construction, rent and the sale tax. Missing local evidence stays unavailable; editable scenario assumptions are not market data.",
         "land": "Land",

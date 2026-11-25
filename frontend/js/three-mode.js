@@ -1054,6 +1054,11 @@
             ? threeI18n('threeMode.parcelPanel.saleTaxUnset', 'Sale tax not set: move to set it')
             : threeI18n('threeMode.parcelPanel.saleTax', 'Sale tax {{share}} of the price',
                 { share: CbFormat.formatPercent(prices.saleTax.perSqm, { maxFractionDigits: 1 }) });
+        // Each price's source, as text under its slider; a slid price is the visitor's assumption.
+        panel.querySelectorAll('[data-price-source]').forEach(note => {
+            const key = note.dataset.priceSource;
+            window.EconomicSourceSettings?.renderSource(note, prices.sources[key], window, { set: prices[key]?.set === true });
+        });
 
         // Proposal panel only: the proposed profit per bound parcel.
         const avgEl = panel.querySelector('[data-role="avg-gain"]');
@@ -1072,11 +1077,9 @@
         [['sale-slider', 'sale'], ['construction-slider', 'construction'], ['land-slider', 'land'], ['tax-slider', 'saleTax']].forEach(([role, key]) => {
             const slider = panel.querySelector(`[data-role="${role}"]`);
             if (!slider) return;
-            slider.title = window.EconomicSourceSettings?.describe(currentPanelPrices().sources[key], window) || '';
             slider.addEventListener('input', () => {
                 const v = Number(slider.value);
-                if (Number.isFinite(v)) currentPanelPrices()[key].perSqm = v;
-                slider.title = threeI18n('economicSources.assumption', 'Scenario assumption');
+                if (Number.isFinite(v)) Object.assign(currentPanelPrices()[key], { perSqm: v, set: true });
                 renderValueComparison(panel);
             });
         });
@@ -1096,12 +1099,14 @@
         const row = (label, render) => `<tr><th scope="row">${label}</th>${columns.map(c => `<td${off(c)}>${cells(render, c)}</td>`).join('')}</tr>`;
         const moneyRow = (label, key, hint = '') => `<tr><th scope="row"${hint ? ` title="${escapeHtml(hint)}"` : ''}>${label}</th>${columns.map(c => `<td data-cell="${key}:${c}"${off(c)}>—</td>`).join('')}</tr>`;
         // settable: a price with no source (land, sale tax) can still be set by moving its slider.
-        const slider = (role, labelRole, price, settable = false) => {
+        // Each slider is followed by its price's source as text (renderValueComparison fills it).
+        const slider = (role, labelRole, price, settable = false, metric = null) => {
             const id = `parcel-panel-${role}`;
             return `
             <label for="${id}" class="parcel-panel-slider-label" data-role="${labelRole}"></label>
-            <input id="${id}" type="range" class="parcel-panel-price-slider" data-role="${role}"
-                min="${price.min}" max="${price.max}" step="${price.step}" value="${price.perSqm ?? price.min}"${price.perSqm === null && !settable ? ' disabled' : ''}>`;
+            <input id="${id}" type="range" class="parcel-panel-price-slider" data-role="${role}" aria-describedby="${id}-source"
+                min="${price.min}" max="${price.max}" step="${price.step}" value="${price.perSqm ?? price.min}"${price.perSqm === null && !settable ? ' disabled' : ''}>
+            <p id="${id}-source" class="economic-source-note" data-price-source="${metric}"></p>`;
         };
         return `
             <table class="parcel-panel-table">
@@ -1130,10 +1135,10 @@
                 'Planned is what the rules grant; {{floorArea}} more needs: {{condition}}',
                 { floorArea: CbFormat.formatArea(m.planned.conditional.floorArea), condition: m.planned.conditional.condition }))}</p>` : ''}
             <p class="parcel-panel-note">${L.floorNote} · ${escapeHtml(threeI18n('threeMode.parcelPanel.amountsIn', 'amounts in {{currency}}', { currency: prices.currency }))}</p>
-            ${slider('sale-slider', 'sale-label', prices.sale)}
-            ${slider('construction-slider', 'construction-label', prices.construction)}
-            ${slider('land-slider', 'land-label', prices.land, true)}
-            ${slider('tax-slider', 'tax-label', prices.saleTax, true)}`;
+            ${slider('sale-slider', 'sale-label', prices.sale, false, 'sale')}
+            ${slider('construction-slider', 'construction-label', prices.construction, false, 'construction')}
+            ${slider('land-slider', 'land-label', prices.land, true, 'land')}
+            ${slider('tax-slider', 'tax-label', prices.saleTax, true, 'saleTax')}`;
     }
 
     function panelPage(key, label, content) {

@@ -76,3 +76,6 @@ body.ground-fallback-open #parcel-source-status {
 .economic-source-list { margin: var(--cb-space-3) 0; }
 .economic-source-list dt { font-weight: 600; }
 .economic-source-list dd { margin: 0 0 var(--cb-space-3); line-height: var(--cb-leading); overflow-wrap: anywhere; }
+/* A rate's source under its amount or slider (EconomicSourceSettings.renderSource): Settings, the 3D
+   panel and Plan stats. */
+.economic-source-note { display: block; margin: 0; font-size: var(--cb-text-sm); color: var(--cb-text-muted); line-height: var(--cb-leading); overflow-wrap: anywhere; }

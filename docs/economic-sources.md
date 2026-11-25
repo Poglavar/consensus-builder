@@ -138,7 +138,10 @@ value: at its input parcels).
 Modeled parcel estimates retain their economic observation. The road model retains it in
 `priceBasis`. Parcel and road amount tooltips expose the source and basis. The 3D comparison and
 plan statistics use selected sale/construction rates; slider changes remain temporary scenario
-assumptions. Switching sources resets the slider inputs even when the currency stays the same. A
+assumptions. Every price in the 3D panel, Plan stats (and Compare plans) and Settings → Valuation &
+costs shows its source as text under it (`EconomicSourceSettings.renderSource`): the source's name
+linked to its document (the observation's `sourceUrl`), its basis and date, and its scope, the place
+the rate is for; a price the visitor slides or types reads "Scenario assumption". Switching sources resets the slider inputs even when the currency stays the same. A
 slider's standard range is sized for euro-like amounts; an observation widens it to half and twice
 its amount where those fall outside, so a tenge price can be slid both ways. A land price with no
 source has a range sized by the city's sale price over the 4,000 standard and starts unset; the land
