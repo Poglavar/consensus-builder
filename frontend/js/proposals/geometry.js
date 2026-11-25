@@ -10,6 +10,13 @@ function proposalGeometryClipApi() {
     return api;
 }
 
+function proposalGeometryTolerances() {
+    const api = (typeof window !== 'undefined' && window.GeometryTolerances)
+        || (typeof require === 'function' ? require('../geometry-tolerances.js') : null);
+    if (!api || typeof api.isGround !== 'function') throw new Error('geometry-tolerances.js is not loaded');
+    return api;
+}
+
 function getFeatureCentroid(feature) {
     if (!feature || !feature.geometry) return null;
     try {
@@ -767,9 +774,17 @@ function buildGeometryFromParcels(parcelInputs = []) {
                         }
                     };
                     collectRings(gapGeom);
+                    // Only a gap that is ground is a hole. Neighbouring lots whose shared edges do not
+                    // quite meet leave zero-area debris along them; carved as holes, that debris made a
+                    // layout plot an unsupported shape for the Permitted envelope.
+                    const tolerances = proposalGeometryTolerances();
+                    const groundHoles = holeRings.filter(ring => tolerances.isGround(turf, turf.polygon([ring])));
+                    holeRings.length = 0;
+                    holeRings.push(...groundHoles);
 
-                    // Add the gap rings as holes to the merged geometry
-                    if (holeRings.length > 0) {
+                    // The outline is the shell with the ground gaps as its holes: the union's own
+                    // holes are among the gaps, so its debris rings go with the gaps' debris.
+                    {
                         const addHolesToGeometry = (geom, holes) => {
                             if (geom.type === 'Polygon') {
                                 return {
