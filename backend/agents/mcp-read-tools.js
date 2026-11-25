@@ -5,6 +5,7 @@ import { appTurf as turf } from './mcp-geometry.js';
 import { trustedMetadata } from './mcp-results.js';
 import { cidOfObject, isCid } from '../cid.js';
 import { cityMoney } from '../scripts/lib/frontend-city-money.mjs';
+import { parcelRestrictions } from '../planning/restrictions.js';
 
 const require = createRequire(import.meta.url);
 const approvalLink = require('../../frontend/js/approval-link.js');
@@ -236,7 +237,11 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
                 ? await request('/urban-rules', { coordinates: turf.pointOnFeature(parcel).geometry.coordinates.join(',') }) : null;
             const studies = await Promise.all((planning.sources || []).filter(s => s.parcelStudy && args.planningSourceIds?.includes(s.id)).map(async source => ({ source: source.id,
                 study: await request('/planning/study', { city: args.city, source: source.id, parcel: id }) })));
-            return { parcel, parcelSourceId: result.parcelSourceId, areaM2: turf.area(parcel), designs, agreements, markets, buildings, history, planning, studies, urbanRules,
+            // The Permitted restrictions stage, as the map and the Permitted check apply it: the
+            // designations over the parcel, their effects, and the existing context relative limits read.
+            const standing = buildings?.supported && !buildings.truncated && !buildings.unavailable ? buildings.regions?.[id] || [] : null;
+            const restrictions = await parcelRestrictions({ city: args.city, parcel, buildings: standing, fetchImpl });
+            return { parcel, parcelSourceId: result.parcelSourceId, areaM2: turf.area(parcel), designs, agreements, markets, buildings, history, planning, studies, restrictions, urbanRules,
                 economics: cityEconomics(args.city, locationOf(parcel)), landEstimate: landEstimateOf(args.city, parcel), previewUrl: mapUrl(args.city, bbox) };
         },
         async planningAreas({ city, point, source }) {

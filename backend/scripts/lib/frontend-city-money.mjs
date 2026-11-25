@@ -38,6 +38,12 @@ export function cityDrivingSide(cityId) {
     return cityConfigs().getDrivingSide(cityId);
 }
 
+// The planning rule sets a city's Permitted applies (planning-sources.json `ruleSets`), by id.
+export function cityPlanningRuleSetIds(cityId) {
+    const config = cityConfigs().getCityConfig(cityId);
+    return config?.id === cityId ? config.planning?.ruleSetIds || [] : [];
+}
+
 export function cityBuildingSources(cityId) {
     const config = cityConfigs().getCityConfig(cityId);
     return config?.id === cityId ? SourceList.inUse(SourceList.cityList(config)) : [];

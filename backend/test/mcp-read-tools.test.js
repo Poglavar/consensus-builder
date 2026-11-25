@@ -1,6 +1,7 @@
 // MCP source reads use current catalogue identities, including database-backed cities, and fail
 // incomplete coverage explicitly rather than turning unknown ground into an empty parcel set.
 import { describe, expect, it, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { createMcpReadTools, parcelSourceIdOf, cityEconomics, landEstimateOf } from '../agents/mcp-read-tools.js';
 import { markUntrusted } from '../agents/mcp-results.js';
 const geometry = { type: 'Polygon', coordinates: [[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]] };
@@ -92,6 +93,39 @@ describe('MCP public source reads', () => {
         expect(result.economics.currency).toBe('EUR');
         expect(result.economics.rates.sale).toMatchObject({ amount: 4000, unit: 'm2-floor', basis: 'assumption', sourceId: 'scenario-assumptions' });
         expect(result.economics.rates.construction).toMatchObject({ amount: 2000, unit: 'm2-floor' });
+    });
+
+    // MCP parity with the Permitted layer and check: the same restrictions stage, read for the parcel.
+    it('gives an English parcel its planning designations, their effects and the existing context, an unknown height staying unknown', async () => {
+        const recorded = JSON.parse(readFileSync(new URL('./fixtures/gb-planning-data-islington.json', import.meta.url), 'utf8'));
+        const [geojson, organisations] = [Object.entries(recorded.responses).find(([url]) => url.includes('entity.geojson'))[1].body,
+            Object.entries(recorded.responses).find(([url]) => url.includes('entity.json'))[1].body];
+        // A 20 m × 25 m HMLR-like parcel at Highbury Fields with one house of unknown height on it.
+        const ring = (w, s, dx, dy) => [[[w, s], [w + dx, s], [w + dx, s + dy], [w, s + dy], [w, s]]];
+        const parcel = { type: 'Feature', id: 'GB-HMLR-BROWSER-v1-9', properties: { parcelId: 'GB-HMLR-BROWSER-v1-9' }, geometry: { type: 'Polygon', coordinates: ring(-0.10315, 51.5464, 0.00029, 0.000225) } };
+        const house = { id: 'way/1', geometry: { type: 'Polygon', coordinates: ring(-0.10310, 51.54645, 0.00012, 0.00008) }, height_m: null, floors: null };
+        const asked = [];
+        const fetchImpl = vi.fn(async url => {
+            const parsed = new URL(url), path = parsed.pathname;
+            if (parsed.host === 'www.planning.data.gov.uk') { asked.push(parsed); return json(path === '/entity.json' ? organisations : geojson); }
+            return json(path.startsWith('/parcel-sources/') || path === '/parcels' ? { complete: true, features: [parcel] } : path === '/buildings/under' ? { supported: true, truncated: false, regions: { [parcel.id]: [house] } }
+                : path === '/designs' ? { designs: [] } : path === '/planning/sources' ? { sources: [] } : { source: path });
+        });
+        const reads = createMcpReadTools({ apiBase: 'https://api.example', appOrigin: 'https://app.example', fetchImpl });
+        const result = await reads.parcelContext({ city: 'london', parcelSourceId: 'gb-hmlr-browser-v1', parcelId: parcel.id, buildingSourceId: 'osm' });
+        const read = asked.find(url => url.pathname === '/entity.geojson');
+        expect(read.searchParams.getAll('dataset')).toContain('conservation-area');
+        expect(result.restrictions).toMatchObject({ unavailable: false, partial: false, ruleSets: [expect.objectContaining({ id: 'gb-eng-planning', baseRule: null })] });
+        expect(result.restrictions.designations.map(entry => [entry.name, entry.effect, entry.requirement])).toEqual([['Highbury Fields', 'restrict', 'design-scrutiny']]);
+        expect(result.restrictions.designations[0].organisation.name).toBe('London Borough of Islington');
+        // The OSM house has no height or levels: its footprint counts, its height is unknown, not a default.
+        expect(result.restrictions.existing.footprintM2).toBeGreaterThan(50);
+        expect(result.restrictions.existing.heightM).toBeNull();
+        const policy = result.restrictions.ruleSets[0].policies.find(entry => entry.id === 'nppf-2026-l2-1-d-iii');
+        expect(policy.constraints[0]).toMatchObject({ quantity: 'footprintArea', evidence: 'derived' });
+        expect(policy.constraints[0].value).toBeCloseTo(2 * result.restrictions.existing.footprintM2, 6);
+        // A city without a rule set reads no designations.
+        expect(await reads.parcelContext({ city: 'zagreb', parcelSourceId: 'oss-wfs', parcelId: parcel.id }).then(r => r.restrictions)).toBeNull();
     });
 
     it("prices a parcel as the parcel panel does: the stated area, else the measured one, at the land rate where it lies", () => {
