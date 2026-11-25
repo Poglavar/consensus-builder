@@ -531,7 +531,7 @@ test.describe('Bets sheet @features', () => {
     await expect(dialog.getByLabel('Permit number (optional)')).toBeHidden();
     await dialog.getByLabel('Credential public key').fill(OPEN_POOL.address);
     await dialog.getByLabel('Schema public key').fill(SOLANA_WALLET);
-    // Enter on the select does not submit the form before Open market (every form, js/ui/dialogs.js).
+    // Enter on the select does not submit the form before Open market (every form, js/ui/form-enter.js).
     const form = dialog.locator('form');
     await form.evaluate((element: HTMLFormElement) => {
       element.dataset.submits = '0';

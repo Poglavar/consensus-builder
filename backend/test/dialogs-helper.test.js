@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { confirmActions, linkedMessageParts, blocksImplicitSubmit } = require('../../frontend/js/ui/dialogs.js');
+const { confirmActions, linkedMessageParts } = require('../../frontend/js/ui/dialogs.js');
 const t = (key, fallback) => fallback;
 
 describe('confirm answers', () => {
@@ -41,21 +41,5 @@ describe('alert message with a transaction link', () => {
     it('keeps a message without the placeholder as plain lines', () => {
         expect(linkedMessageParts('one\ntwo')).toEqual([{ text: 'one' }, { br: true }, { text: 'two' }]);
         expect(linkedMessageParts(null)).toEqual([]);
-    });
-});
-
-describe('Enter submits a form from text fields only', () => {
-    const form = {};
-    it('blocks implicit submission from selects and non-text inputs in a form', () => {
-        expect(blocksImplicitSubmit({ tagName: 'SELECT', form })).toBe(true);
-        for (const type of ['checkbox', 'radio', 'range', 'color', 'file']) expect(blocksImplicitSubmit({ tagName: 'INPUT', type, form })).toBe(true);
-    });
-
-    it('leaves text fields, buttons, textareas and controls outside a form alone', () => {
-        for (const type of ['text', 'date', 'datetime-local', 'number', 'submit', 'button']) expect(blocksImplicitSubmit({ tagName: 'INPUT', type, form })).toBe(false);
-        expect(blocksImplicitSubmit({ tagName: 'BUTTON', form })).toBe(false);
-        expect(blocksImplicitSubmit({ tagName: 'TEXTAREA', form })).toBe(false);
-        expect(blocksImplicitSubmit({ tagName: 'SELECT', form: null })).toBe(false);
-        expect(blocksImplicitSubmit(null)).toBe(false);
     });
 });
