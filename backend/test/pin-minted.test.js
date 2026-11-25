@@ -2,7 +2,10 @@
 // from the index's own copies, a CID already pinned is never pinned again (a design two agreements
 // share is pinned once), a copy that does not hash to its CID is refused, one failure does not stop
 // the rest, and a dry run pins nothing.
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { createMockPool } from './helpers/mock-pool.js';
+import { createContentApp } from './helpers/create-app.js';
 import { cidOfObject } from '../cid.js';
 import { mintedTree, pinAgreementTrees, pinMintedContent, pinProblem } from '../agreements/pin-minted.js';
 
@@ -104,5 +107,49 @@ describe('pin on mint', () => {
         expect(result.wouldPin).toHaveLength(6);
         expect(lines.at(-1)).toBe('pin pass: 2 minted agreement(s) reference 7 object(s) · already pinned 1 · would pin 6 (dry run) · failed 0 · missing from index 0');
         expect(pinProblem(result)).toBeNull();
+    });
+});
+
+describe('POST /agreements/:cid/pin', () => {
+    const binding = record({ schema: 'agreement/v1', title: 'Binding', planCid: plan1.cid, rule: { binding: true } });
+    const poll = record({ schema: 'agreement/v1', title: 'Poll', planCid: plan1.cid, rule: { binding: false } });
+
+    function appWith({ designs = [designA, designB], pinned = [], failOn = [] } = {}) {
+        const pool = createMockPool();
+        const tables = { agreement: [binding, poll], plan: [plan1], design: designs };
+        const pins = new Set(pinned);
+        pool.answer(/FROM consensus\.(agreement|plan|design) WHERE cid = ANY/, (sql, params) => {
+            const table = /consensus\.(agreement|plan|design)/.exec(sql)[1];
+            return { rows: tables[table].filter(row => params[0].includes(row.cid)) };
+        });
+        pool.answer(/FROM consensus\.ipfs_pin/, (sql, params) => ({ rows: params[0].filter(cid => pins.has(cid)).map(cid => ({ cid })) }));
+        pool.answer(/INSERT INTO consensus\.ipfs_pin/, (sql, params) => { pins.add(params[0]); return { rows: [], rowCount: 1 }; });
+        const p = provider({ failOn });
+        const app = createContentApp(pool, { thumbnailQueue: { enqueue: vi.fn() }, baseUrl: 'https://api.example', pinBytes: p.pinBytes });
+        return { app, pins, calls: p.calls };
+    }
+    const post = (app, cid) => request(app).post(`/agreements/${cid}/pin`).send({});
+
+    beforeEach(() => { vi.spyOn(console, 'log').mockImplementation(() => {}); vi.spyOn(console, 'error').mockImplementation(() => {}); });
+
+    it('pins the agreement, its plan and designs, and answers the objects a mint must find on a gateway', async () => {
+        const { app, pins } = appWith({ pinned: [designA.cid] });
+        const res = await post(app, binding.cid);
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ objects: [
+            { kind: 'agreement', cid: binding.cid }, { kind: 'plan', cid: plan1.cid }, { kind: 'design', cid: designA.cid }, { kind: 'design', cid: designB.cid }
+        ], pinned: 3, alreadyPinned: 1 });
+        expect([...pins].sort()).toEqual([binding.cid, plan1.cid, designA.cid, designB.cid].sort());
+    });
+
+    it('refuses a poll, an unknown agreement, missing content and a failed pin', async () => {
+        expect((await post(appWith().app, poll.cid)).body.code).toBe('not-binding');
+        expect((await post(appWith().app, designC.cid)).status).toBe(404);
+        const missing = await post(appWith({ designs: [designA] }).app, binding.cid);
+        expect(missing.status).toBe(409);
+        expect(missing.body).toMatchObject({ code: 'content-missing', missing: [{ kind: 'design', cid: designB.cid }] });
+        const failed = await post(appWith({ failOn: [plan1.cid] }).app, binding.cid);
+        expect(failed.status).toBe(502);
+        expect(failed.body).toMatchObject({ code: 'pin-failed', failed: [{ kind: 'plan', cid: plan1.cid }] });
     });
 });

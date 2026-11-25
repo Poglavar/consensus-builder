@@ -387,7 +387,8 @@ test.describe('Agreements on chain @core', () => {
     await expect(panel.locator('[data-agreement-chain="unminted"] .agreement-panel-hint')).toHaveCount(0);
     await expect(panel.locator('[data-agreement-action="bet"]')).toHaveCount(0);
 
-    // Mint asks the escrow execution needs and the payout account and checks them; the program (a
+    // Mint asks the escrow execution needs and the payout account and checks them; then the content goes
+    // on IPFS and a public gateway must serve it (content-gate.js) before any transaction; the program (a
     // placeholder until deployed) is not on devnet, so nothing is minted or recorded.
     await mint.click();
     const terms = page.locator('.agreement-mint-dialog');
@@ -404,6 +405,10 @@ test.describe('Agreements on chain @core', () => {
     await expect(terms).toHaveCount(0);
     await expect(page.locator('#ephemeral-message-container')).toContainText('The agreement program is not deployed on Solana devnet yet.', { timeout: 30_000 });
     await expect(mint).toBeEnabled({ timeout: 30_000 });
+    const pinned = index.requests.filter(request => request.method === 'POST' && request.path.endsWith('/pin'));
+    expect(pinned.map(request => request.path)).toEqual([`/agreements/${secondCid}/pin`]);
+    const agreementRow = index.agreements.get(secondCid)!;
+    expect([...index.pins.keys()].sort()).toEqual([secondCid, agreementRow.content.planCid, ...index.plans.get(agreementRow.content.planCid)!.content.designCids].sort());
     expect(index.requests.filter(request => request.method === 'POST' && request.path.endsWith('/onchain'))).toEqual([]);
     expect((await storedAgreements(page)).map((agreement: any) => agreement.onchain || null)).toEqual([null, null]);
     // Cancel in the terms mints nothing either.

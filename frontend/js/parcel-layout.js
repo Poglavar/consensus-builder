@@ -56,13 +56,13 @@
     const AUTOMATIC_ALGORITHMS = ['equal', 'schelling'];
     // How a plot was made, as the record names it (plan-design-agreement.md, "M1 (a) build contract").
     const PLOT_SOURCES = new Set(['equal', 'schelling', 'schelling-remainder', 'amend', 'manual', 'base', 'geojson', 'form']);
-    // Equal plots: how many the count field allows.
-    const PLOT_COUNT = Object.freeze({ min: 2, max: 64 });
+    // Equal plots: how many the count field allows is the layouts module's COUNT (one merges the
+    // selected land into a single plot). A new layout still opens split in two.
+    const DEFAULT_PLOT_COUNT = 2;
+    const plotCountLimits = () => window.ParcelLayoutLayouts.COUNT;
 
     function clampPlotCount(value) {
-        const count = Math.round(Number(value));
-        if (!Number.isFinite(count)) return PLOT_COUNT.min;
-        return Math.min(PLOT_COUNT.max, Math.max(PLOT_COUNT.min, count));
+        return window.ParcelLayoutLayouts.clampCount(value);
     }
 
     const state = {
@@ -73,8 +73,8 @@
         boundaryLayer: null,
         statusEl: null,
         algorithm: 'equal',
-        // Equal plots: how many (PLOT_COUNT); the sweep handle sets the direction they run in.
-        plotCount: PLOT_COUNT.min,
+        // Equal plots: how many (plotCountLimits); the sweep handle sets the direction they run in.
+        plotCount: DEFAULT_PLOT_COUNT,
         countEl: null,
         // Schelling plots: the code of the Schelling plan they were taken from (schelling-grid.js).
         schellingCode: null,
@@ -257,7 +257,7 @@
         return `
                         <label class="reparcel-count-field" data-parcel-layout-count-field>
                             <span>${t('parcelLayout.editor.plotCount', 'Number of plots')}</span>
-                            <input type="number" class="reparcel-count-input" data-parcel-layout-count min="${PLOT_COUNT.min}" max="${PLOT_COUNT.max}" step="1" inputmode="numeric" value="${state.plotCount}">
+                            <input type="number" class="reparcel-count-input" data-parcel-layout-count min="${plotCountLimits().min}" max="${plotCountLimits().max}" step="1" inputmode="numeric" value="${state.plotCount}">
                         </label>`;
     }
 
@@ -3768,7 +3768,7 @@
             state.algorithm = fallback;
         }
         const inputCount = Array.isArray(selection?.ids) ? selection.ids.length : 0;
-        state.plotCount = clampPlotCount(options.plotCount ?? seed.plotCount ?? Math.max(PLOT_COUNT.min, inputCount));
+        state.plotCount = clampPlotCount(options.plotCount ?? seed.plotCount ?? Math.max(DEFAULT_PLOT_COUNT, inputCount));
         state.schellingCode = state.initialPlots && seed.schelling?.code ? String(seed.schelling.code) : null;
         state.totalArea = computeFeatureArea(superParcel);
         const session = buildModalStructure();

@@ -67,6 +67,11 @@ function fakeApi({ agreements = [], plans = [] } = {}) {
         const body = init.body ? JSON.parse(init.body) : undefined;
         calls.push({ method, path: `${target.pathname}${target.search}`, body, origin: init.headers?.origin ?? null });
         const onchain = target.pathname.match(/^\/agreements\/([^/]+)\/onchain$/);
+        const pin = target.pathname.match(/^\/agreements\/([^/]+)\/pin$/);
+        if (method === 'POST' && pin) {
+            const cid = decodeURIComponent(pin[1]);
+            return rows.has(cid) ? json({ objects: [{ kind: 'agreement', cid }], pinned: 1, alreadyPinned: 0 }) : json({ error: 'not found', code: 'agreement-not-found' }, 404);
+        }
         if (method === 'POST' && target.pathname === '/designs') {
             designRows.set(body.cid, { cid: body.cid, content: body.content, binding: { parcels: [{ parcelId: PARCEL }] } });
             return json(designRows.get(body.cid), 201);
@@ -259,6 +264,8 @@ describe('publishing designs and agreements', () => {
 });
 
 describe('minting and funding', () => {
+    // The pre-mint gate (content-gate.js) opens at once here; 'waits for the content' tests it.
+    const gateOpen = async () => ({ confirmed: [], rounds: 1 });
     const mintResult = cid => ({ account: agreementAccountOf(cid, AGENT), signature: 'mint-tx', createSignature: 'create-tx', created: true, escrowLamports: '5000', status: 'Active' });
 
     it('mints a binding owners\' agreement as its sponsor and records the account in the index', async () => {
@@ -266,7 +273,7 @@ describe('minting and funding', () => {
         const api = fakeApi({ agreements: [agreement] });
         const mintAgreement = vi.fn(async ({ cid }) => mintResult(cid));
         const sendAndConfirmPolling = vi.fn();
-        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl, createConnection: () => ({ name: 'rpc' }), dependencies: { mintAgreement, sendAndConfirmPolling } });
+        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl, createConnection: () => ({ name: 'rpc' }), dependencies: { mintAgreement, sendAndConfirmPolling, waitRetrievable: gateOpen } });
 
         const result = await tools.mintAgreement({ agreementCid: agreement.cid, lamports: '5000', confirm: true });
 
@@ -278,17 +285,32 @@ describe('minting and funding', () => {
         });
         expect(options.sponsorKeypair.publicKey.toBase58()).toBe(AGENT);
         expect(api.posts()).toEqual([{
+            method: 'POST', path: `/agreements/${agreement.cid}/pin`, origin: 'https://urbangametheory.xyz', body: {}
+        }, {
             method: 'POST', path: `/agreements/${agreement.cid}/onchain`, origin: 'https://urbangametheory.xyz',
             body: { chain: 'solana', cluster: 'devnet', account: agreementAccountOf(agreement.cid, AGENT), signature: 'create-tx' }
         }]);
         expect(result).toMatchObject({ account: agreementAccountOf(agreement.cid, AGENT), created: true, onchain: { account: agreementAccountOf(agreement.cid, AGENT) } });
     });
 
+    it('waits for the content: pinned by the server and served by a public gateway, or nothing is signed', async () => {
+        const agreement = agreementOf();
+        const api = fakeApi({ agreements: [agreement] });
+        const mintAgreement = vi.fn(async ({ cid }) => mintResult(cid));
+        const waitRetrievable = vi.fn(async () => { throw Object.assign(new Error('1 of 1 object(s) are not yet served'), { code: 'content-not-retrievable' }); });
+        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl, createConnection: () => ({}), dependencies: { mintAgreement, sendAndConfirmPolling: vi.fn(), waitRetrievable } });
+        await expect(tools.mintAgreement({ agreementCid: agreement.cid, lamports: '0', confirm: true })).rejects.toMatchObject({ code: 'content-not-retrievable' });
+        expect(waitRetrievable.mock.calls[0][0].objects).toEqual([{ kind: 'agreement', cid: agreement.cid }]);
+        expect(waitRetrievable.mock.calls[0][0].cidOf(new TextEncoder().encode('{}'))).toMatch(/^bafkrei/);
+        expect(mintAgreement).not.toHaveBeenCalled();
+        expect(api.posts().map(call => call.path)).toEqual([`/agreements/${agreement.cid}/pin`]);
+    });
+
     it('passes an agreement without a deadline on as null, for the minter to default to 90 days', async () => {
         const agreement = agreementOf({ deadline: null });
         const api = fakeApi({ agreements: [agreement] });
         const mintAgreement = vi.fn(async ({ cid }) => mintResult(cid));
-        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl, createConnection: () => ({}), dependencies: { mintAgreement, sendAndConfirmPolling: vi.fn() } });
+        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl, createConnection: () => ({}), dependencies: { mintAgreement, sendAndConfirmPolling: vi.fn(), waitRetrievable: gateOpen } });
         await tools.mintAgreement({ agreementCid: agreement.cid, lamports: '0', confirm: true });
         expect(mintAgreement.mock.calls[0][0].deadline).toBeNull();
     });
@@ -298,7 +320,7 @@ describe('minting and funding', () => {
         const agreement = agreementOf({ rule: ownersRule({ lenses: [LENS, AGENT], lensThreshold: 2, rights }) });
         const api = fakeApi({ agreements: [agreement] });
         const mintAgreement = vi.fn(async ({ cid }) => mintResult(cid));
-        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl, createConnection: () => ({}), dependencies: { mintAgreement, sendAndConfirmPolling: vi.fn() } });
+        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl, createConnection: () => ({}), dependencies: { mintAgreement, sendAndConfirmPolling: vi.fn(), waitRetrievable: gateOpen } });
         await tools.mintAgreement({ agreementCid: agreement.cid, lamports: '0', confirm: true });
         expect(mintAgreement.mock.calls[0][0]).toMatchObject({ lenses: [LENS, AGENT], lensThreshold: 2 });
     });

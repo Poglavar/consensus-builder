@@ -8506,7 +8506,9 @@
                 "awaitingSignature": "Waiting for the wallet’s signature…",
                 "submitted": "Sent; waiting for confirmation…",
                 "confirmed": "Confirmed.",
-                "indexing": "Recording the mint on the server…"
+                "indexing": "Recording the mint on the server…",
+                "pinning": "Putting the agreement, its plan and designs on IPFS…",
+                "retrievable": "Checking that public IPFS gateways serve them: {{confirmed}} of {{total}}…"
             },
             "facts": {
                 "status": "Status",
@@ -8567,6 +8569,9 @@
                 "web3Unavailable": "The Solana library could not be loaded.",
                 "walletRequired": "Connect a Solana wallet first.",
                 "notDeployed": "The agreement program is not deployed on Solana {{cluster}} yet.",
+                "pinFailed": "The agreement’s content could not be put on IPFS, so it cannot be minted yet: {{reason}}",
+                "contentMissing": "The server does not hold every design or plan this agreement names, so they cannot be put on IPFS and it cannot be minted.",
+                "notRetrievable": "No public IPFS gateway serves {{missing}} of the {{total}} objects yet, so the agreement was not minted. Try Mint again in a minute.",
                 "simulationFailed": "The transaction would fail: {{reason}}",
                 "confirmationUnknown": "The transaction was sent, but its confirmation timed out. Check it on the explorer.",
                 "confirmationFailed": "The transaction failed on chain.",

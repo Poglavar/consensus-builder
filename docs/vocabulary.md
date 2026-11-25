@@ -988,7 +988,7 @@ The agreement program account identified by network, program, sponsor and agreem
 
 ### Minting
 
-The creation of a binding agreement's chain account. Publishing a design, creating a local fabric piece and computing a CID are separate operations. The account commits to an agreement CID and, through the CIDs inside each record, to its plan and the plan's designs. Once the index records the mint, the server pins all of them on IPFS ([ipfs-storage.md](ipfs-storage.md)); each CID is pinned once and never unpinned.
+The creation of a binding agreement's chain account. Publishing a design, creating a local fabric piece and computing a CID are separate operations. The account commits to an agreement CID and, through the CIDs inside each record, to its plan and the plan's designs. Before the wallet signs, all of them are pinned on IPFS and a public gateway must serve each with bytes matching its CID ([ipfs-storage.md](ipfs-storage.md)); each CID is pinned once and never unpinned.
 
 ### Settlement
 

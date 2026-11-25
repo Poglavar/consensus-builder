@@ -125,8 +125,8 @@
         return { decisions, transactions, bundles: transactions.length, rejected };
     }
 
-    // Public gateways for an ipfs:// URI, tried in order; content is checked against the memo hash.
-    const IPFS_GATEWAYS = ['https://ipfs.filebase.io/ipfs/', 'https://gateway.pinata.cloud/ipfs/', 'https://ipfs.io/ipfs/'];
+    // Public gateways for an ipfs:// URI, tried in order (content-gate.js); content is checked against the memo hash.
+    const IPFS_GATEWAYS = (root.ContentGate || (typeof require === 'function' ? require('../content-gate.js') : null)).IPFS_GATEWAYS;
     const gatewayUrls = uri => (/^ipfs:\/\//.test(uri) ? IPFS_GATEWAYS.map(base => base + uri.slice('ipfs://'.length)) : []);
 
     // Signatures of decisions anchored by these reads, for "N of M anchored".

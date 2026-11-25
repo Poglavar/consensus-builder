@@ -214,13 +214,18 @@ const json = (status, body) => ({ ok: status >= 200 && status < 300, status, jso
 // The index: /designs and /agreements file content under its CID, GET /agreements/:cid serves a row.
 // POST /agreements/:cid/onchain answers onchain(body, cid) ({ status, body }); GET /agreements (the
 // minted listing) answers minted(searchParams).
-function fakeServer({ rows = new Map(), designs = new Map(), onchain = null, minted = null } = {}) {
+function fakeServer({ rows = new Map(), designs = new Map(), onchain = null, minted = null, pin = null } = {}) {
     const calls = [];
     async function fetch(url, init = {}) {
         const { pathname, searchParams } = new URL(url);
         const method = init.method || 'GET';
         const body = init.body ? JSON.parse(init.body) : undefined;
         calls.push({ method, pathname, body, search: Object.fromEntries(searchParams) });
+        const pinPath = /^\/agreements\/([^/]+)\/pin$/.exec(pathname);
+        if (method === 'POST' && pinPath && pin) {
+            const answer = await pin(decodeURIComponent(pinPath[1]));
+            return json(answer.status, answer.body);
+        }
         const onchainPath = /^\/agreements\/([^/]+)\/onchain$/.exec(pathname);
         if (method === 'POST' && onchainPath && onchain) {
             const answer = await onchain(body, decodeURIComponent(onchainPath[1]));
@@ -245,11 +250,12 @@ function fakeServer({ rows = new Map(), designs = new Map(), onchain = null, min
     return { fetch, calls };
 }
 
-function fakeWindow({ blocked = null, applied = true, records = [layout(), road()], saved = [agreement()], server = fakeServer(), wallet = SPONSOR, plans = null } = {}) {
+function fakeWindow({ blocked = null, applied = true, records = [layout(), road()], saved = [agreement()], server = fakeServer(), wallet = SPONSOR, plans = null, gate = null } = {}) {
     const proposals = new Map(records.map(record => [record.proposalId, record]));
     const agreements = new Map(saved.map(row => [row.id, clone(row)]));
     const win = {
         fetch: server.fetch,
+        ...(gate ? { ContentGate: gate } : {}),
         btoa: text => Buffer.from(text, 'binary').toString('base64'),
         resolveBackendBaseUrl: () => API,
         resolveFrontendBaseUrl: () => 'https://app.example.test',
@@ -499,6 +505,41 @@ const indexed = ({ cluster, account }) => ({
     executedAt: null, observedAt: '2026-10-22T08:00:00.000Z', observedSlot: 4321
 });
 const MINT = { chain: 'solana', cluster: 'devnet', account: ACCOUNT, signature: 'sig-1' };
+
+describe('prepareMintContent', () => {
+    const objects = [{ kind: 'agreement', cid: PROPOSED_CID }, { kind: 'plan', cid: 'bafkreiplan' }];
+    const pinned = () => ({ status: 200, body: { objects, pinned: 2, alreadyPinned: 0 } });
+
+    it('has the server pin the content, then waits for a public gateway to serve every object', async () => {
+        const server = fakeServer({ pin: pinned });
+        const gate = { waitRetrievable: vi.fn(async ({ onProgress }) => { onProgress({ confirmed: 2, total: 2 }); return { confirmed: objects, rounds: 1 }; }) };
+        const { sync } = fakeWindow({ saved: [proposed()], server, gate });
+        const progress = [];
+        expect(await sync.prepareMintContent('ag-1', { onProgress: step => progress.push(step) })).toEqual({ objects });
+        expect(server.calls.map(call => [call.method, call.pathname])).toEqual([['POST', `/agreements/${PROPOSED_CID}/pin`]]);
+        expect(gate.waitRetrievable.mock.calls[0][0].objects).toEqual(objects);
+        expect(gate.waitRetrievable.mock.calls[0][0].cidOf).toBe(Cid.cidOf);
+        expect(progress).toEqual([{ confirmed: 2, total: 2 }]);
+    });
+
+    it('throws, so nothing is minted, when the server cannot pin or a gateway does not serve the content', async () => {
+        const gate = { waitRetrievable: vi.fn() };
+        const missing = fakeWindow({ saved: [proposed()], gate, server: fakeServer({ pin: () => ({ status: 409, body: { code: 'content-missing', error: 'x' } }) }) });
+        expect(await thrown(() => missing.sync.prepareMintContent('ag-1'))).toMatchObject({ code: 'content-missing', message: expect.stringMatching(/does not hold every design or plan/) });
+        const failed = fakeWindow({ saved: [proposed()], gate, server: fakeServer({ pin: () => ({ status: 502, body: { code: 'pin-failed', error: 'quota' } }) }) });
+        expect(await thrown(() => failed.sync.prepareMintContent('ag-1'))).toMatchObject({ code: 'pin-failed', message: expect.stringMatching(/could not be put on IPFS.*quota/) });
+        expect(gate.waitRetrievable).not.toHaveBeenCalled();
+        const slow = { waitRetrievable: vi.fn(async () => { throw Object.assign(new Error('x'), { code: 'content-not-retrievable', missing: [objects[1]] }); }) };
+        const unserved = fakeWindow({ saved: [proposed()], gate: slow, server: fakeServer({ pin: pinned }) });
+        expect(await thrown(() => unserved.sync.prepareMintContent('ag-1'))).toMatchObject({ code: 'content-not-retrievable', missing: [objects[1]],
+            message: 'No public IPFS gateway serves 1 of the 2 objects yet, so the agreement was not minted. Try Mint again in a minute.' });
+    });
+
+    it('refuses an agreement that was not proposed', async () => {
+        const { sync } = fakeWindow({ saved: [agreement()], gate: { waitRetrievable: vi.fn() } });
+        expect(await thrown(() => sync.prepareMintContent('ag-1'))).toMatchObject({ code: 'not-proposed' });
+    });
+});
 
 describe('recordOnchain', () => {
     it('indexes a sponsor mint from a shared view without storing or applying its plan on the device', async () => {

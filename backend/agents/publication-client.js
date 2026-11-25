@@ -240,8 +240,19 @@ export function createIndexClient({
         return result.body;
     }
 
+    /**
+     * POST /agreements/:cid/pin: the server pins the agreement, its plan and the plan's designs before
+     * a mint (docs/blockchain-flows.md Flow 2). → { objects: [{ kind, cid }], pinned, alreadyPinned }.
+     */
+    async function pinForMint(cid) {
+        requireCid(cid);
+        const result = await call('POST', `/agreements/${encodeURIComponent(cid)}/pin`, {});
+        if (!result.ok || !Array.isArray(result.body?.objects)) throw refusal(`pin the content of ${cid}`, result);
+        return result.body;
+    }
+
     return {
         apiBase: base, indexDesign, publishDesign, designBinding, getDesign, getDesigns,
-        indexAgreement, publishAgreement, listDecisions, relayDecision, recordOnchain, getAgreement, listAgreements
+        indexAgreement, publishAgreement, listDecisions, relayDecision, recordOnchain, pinForMint, getAgreement, listAgreements
     };
 }

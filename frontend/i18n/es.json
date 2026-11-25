@@ -8534,7 +8534,9 @@
                 "awaitingSignature": "Esperando la firma de la billetera…",
                 "submitted": "Enviada; esperando la confirmación…",
                 "confirmed": "Confirmada.",
-                "indexing": "Registrando la acuñación en el servidor…"
+                "indexing": "Registrando la acuñación en el servidor…",
+                "pinning": "Subiendo el acuerdo, su plan y sus diseños a IPFS…",
+                "retrievable": "Comprobando que las pasarelas públicas de IPFS los sirven: {{confirmed}} de {{total}}…"
             },
             "facts": {
                 "status": "Estado",
@@ -8595,6 +8597,9 @@
                 "web3Unavailable": "No se pudo cargar la biblioteca de Solana.",
                 "walletRequired": "Conecta primero una billetera Solana.",
                 "notDeployed": "El programa de acuerdos aún no está desplegado en Solana {{cluster}}.",
+                "pinFailed": "El contenido del acuerdo no se pudo subir a IPFS, así que aún no se puede acuñar: {{reason}}",
+                "contentMissing": "El servidor no tiene todos los diseños o el plan que nombra este acuerdo, así que no se pueden subir a IPFS y no se puede acuñar.",
+                "notRetrievable": "Ninguna pasarela pública de IPFS sirve aún {{missing}} de los {{total}} objetos, así que el acuerdo no se acuñó. Vuelve a intentar Acuñar en un minuto.",
                 "simulationFailed": "La transacción fallaría: {{reason}}",
                 "confirmationUnknown": "La transacción se envió, pero se agotó el tiempo de espera de su confirmación. Compruébala en el explorador.",
                 "confirmationFailed": "La transacción falló en la cadena.",

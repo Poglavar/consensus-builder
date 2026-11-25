@@ -65,14 +65,15 @@ export async function mintedTree(store, agreements) {
 /**
  * Pins whatever the agreements reference that is not pinned yet.
  * @param {{ store, agreements: {cid, content}[], apply?: boolean, pinBytes?: Function, log?: Function }} options
- * @returns {Promise<{ referenced: number, alreadyPinned: number, pinned: object[], wouldPin: object[],
- *   failed: object[], missing: object[] }>}
+ * @returns {Promise<{ objects: {kind, cid}[], referenced: number, alreadyPinned: number, pinned: object[],
+ *   wouldPin: object[], failed: object[], missing: object[] }>}
  */
 export async function pinAgreementTrees({ store, agreements, apply = false, pinBytes = defaultPinBytes, log = () => {} }) {
     const { objects, missing } = await mintedTree(store, agreements);
     const pinnedBefore = await store.pinnedCids(objects.map(object => object.cid));
     const todo = objects.filter(object => !pinnedBefore.has(object.cid));
-    const result = { referenced: objects.length, alreadyPinned: objects.length - todo.length, pinned: [], wouldPin: [], failed: [], missing };
+    const result = { objects: objects.map(({ kind, cid }) => ({ kind, cid })), referenced: objects.length,
+        alreadyPinned: objects.length - todo.length, pinned: [], wouldPin: [], failed: [], missing };
     for (const item of missing) log(`pin: ${item.kind} ${item.cid ?? `(none named by ${item.referencedBy})`} is referenced but not in the index`);
     for (const [index, object] of todo.entries()) {
         const step = `pin ${index + 1}/${todo.length} ${object.kind} ${object.cid}`;

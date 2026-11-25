@@ -17,18 +17,22 @@ Pinned on IPFS:
   `approval-anchor.js`);
 - signed community reports, which the UI links on `ipfs.io`;
 - parcel NFT images and metadata (`/ipfs/upload`);
-- every agreement minted on Solana, its plan and the plan's designs, once the index records the mint.
+- every binding agreement about to be minted on Solana, its plan and the plan's designs.
 
 Publishing a design, named plan or agreement is server-only and pins nothing: the client
 computes the CID from the canonical bytes, and `POST /designs`, `POST /plans` or
 `POST /agreements` indexes the object after checking that CID. The index and IPFS are
 separate stores, and content reaches IPFS only when something minted references it.
 
-Pin on mint (`agreements/pin-minted.js`): when `POST /agreements/:cid/onchain` first records a
-mint, the server pins the agreement, its plan and every member design from the index's own
-copies, in the background, after answering. The lifecycle job (`oracle/agreement-lifecycle-job.mjs`)
-repeats this every pass for every minted agreement, so it retries failures and covers agreements
-minted before. Each object is pinned only when its canonical bytes hash to its CID.
+Content before the mint (`agreements/pin-minted.js`, `frontend/js/content-gate.js`): before the
+wallet is asked to mint, the browser's Mint and the agents' `ugt_mint_agreement` call
+`POST /agreements/:cid/pin`, which pins the agreement, its plan and every member design from the
+index's own copies, and then wait until a public gateway (`ContentGate.IPFS_GATEWAYS`, not our
+backend) serves each of them with bytes that hash to its CID. Until both hold nothing is signed;
+there is no "mint anyway". As a safety net, when `POST /agreements/:cid/onchain` first records a
+mint the server pins the same tree in the background, and the lifecycle job
+(`oracle/agreement-lifecycle-job.mjs`) repeats it every pass for every minted agreement, which also
+covers agreements minted before the gate. Each object is pinned only when its canonical bytes hash to its CID.
 `consensus.ipfs_pin` (`db/ipfs-pin-ddl.sql`) has one row per pinned CID; a CID with a row is
 never pinned again, so a design that several minted agreements share is pinned once, and nothing
 is ever unpinned. Pin failures and referenced objects missing from the index fail the job's run.

@@ -40,8 +40,8 @@ eligible binding Agreements, so agreements concerning the same plan retain indep
 Publishing a design, plan or agreement is server-only and pins nothing on IPFS: the client computes
 the CID from the canonical bytes, and `POST /designs`, `POST /plans` or `POST /agreements` checks it
 and indexes the object ([ipfs-storage.md](ipfs-storage.md) lists what is pinned). An agreement
-minted on Solana points at agreement, plan and design CIDs the server pins once it records the mint
-([ipfs-storage.md](ipfs-storage.md); the pre-mint gate is in [blockchain-flows.md](blockchain-flows.md)).
+is minted only once its agreement, plan and design CIDs are pinned and served by a public IPFS
+gateway ([ipfs-storage.md](ipfs-storage.md), [blockchain-flows.md](blockchain-flows.md) Flow 2).
 Publication verifies the Plan CID and its exact member set. A local agreement's `designs` field is
 an editing/replay projection; it is not published. `POST /agreements` accepts a carried
 `plan: {cid, content}` and missing designs, indexing all three atomically. The index's `design_cids`
