@@ -23,7 +23,7 @@ Open **Lay out parcels** from the parcel's **Actions**. The right-side panel ope
 
 The **Editing** tab contains four starting layouts:
 
-- **Equal plots** divides the pooled ground into equal-area plots. Set the count from 2 to 64; drag the sweep handle to rotate the direction of the dividing lines.
+- **Equal plots** divides the pooled ground into equal-area plots. Set the count from 1 to 64 (1 merges the pooled ground into one plot); drag the sweep handle to rotate the direction of the dividing lines.
 - **Schelling plots** uses the current settings and plot level from the Schelling layer, even when that layer is hidden.
 - **Keep existing borders** makes one plot from each input parcel, retaining its source borders. It is unavailable when subdividing a drawn site.
 - **Draw freely** keeps the current plots and makes them a manually editable layout.

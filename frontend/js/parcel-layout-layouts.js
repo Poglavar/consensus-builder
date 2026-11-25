@@ -6,7 +6,8 @@
     if (root) root.ParcelLayoutLayouts = api;
 })(typeof window !== 'undefined' ? window : globalThis, function (root) {
     'use strict';
-    const COUNT = Object.freeze({ min: 2, max: 64 });
+    // One plot merges the whole pool into a single plot (a block assembled into one lot).
+    const COUNT = Object.freeze({ min: 1, max: 64 });
     const load = (name, file) => root[name] || (typeof require === 'function' ? require(file) : null);
     const asFeature = value => (value && value.type === 'Feature') ? value : { type: 'Feature', properties: {}, geometry: value };
 

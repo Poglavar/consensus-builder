@@ -41,10 +41,16 @@ describe('equal plots', () => {
         expect(tiles(pool, turned).valid).toBe(true);
     });
 
-    it('keeps the count between 2 and 64', () => {
-        expect(layouts.equalPlots(pool, 1, 0, null, deps)).toHaveLength(2);
-        expect([layouts.clampCount(0), layouts.clampCount(7.4), layouts.clampCount(500), layouts.clampCount('x')]).toEqual([2, 7, 64, 2]);
-        expect(layouts.COUNT).toEqual({ min: 2, max: 64 });
+    it('keeps the count between 1 and 64', () => {
+        expect([layouts.clampCount(0), layouts.clampCount(7.4), layouts.clampCount(500), layouts.clampCount('x')]).toEqual([1, 7, 64, 1]);
+        expect(layouts.COUNT).toEqual({ min: 1, max: 64 });
+    });
+
+    it('merges the whole pool into one plot at a count of 1', () => {
+        const [plot, ...rest] = layouts.equalPlots(pool, 1, 0, null, deps);
+        expect(rest).toHaveLength(0);
+        expect(area(plot.geometry)).toBeCloseTo(area(pool.geometry || pool), 0);
+        expect(tiles(pool, [plot]).valid).toBe(true);
     });
 });
 
