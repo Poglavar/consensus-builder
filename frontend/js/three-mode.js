@@ -81,6 +81,11 @@
     let xrayScopeButtons = null;
     let xrayButton = null;
     let xrayNote = null;
+    // Under the X-ray toolbar while no building shows its storeys up close (camera too far):
+    // apartments cannot be seen or chosen, and Zoom in brings the camera close enough.
+    let xrayZoomNote = null;
+    // Whether any building shows its storeys in detail (updateXrayDetailVisibility).
+    let xrayDetailShown = false;
     // The radius the footprint pool was last asked to cover for typical layouts (one request each).
     let suggestedExistingPoolKey = null;
     let floorCutawayControl = null;
@@ -2417,6 +2422,21 @@
         });
         xrayToolbar.appendChild(closeXray);
         threeContainer.appendChild(xrayToolbar);
+        xrayZoomNote = document.createElement('p');
+        xrayZoomNote.id = 'three-xray-zoom-note';
+        xrayZoomNote.className = 'three-xray-zoom-note';
+        xrayZoomNote.setAttribute('role', 'status');
+        xrayZoomNote.hidden = true;
+        const xrayZoomText = document.createElement('span');
+        xrayZoomText.textContent = threeI18n('threeMode.controls.xrayZoomNote', 'Apartments are not visible at this zoom.');
+        const xrayZoomIn = document.createElement('button');
+        xrayZoomIn.type = 'button';
+        xrayZoomIn.id = 'three-xray-zoom-in';
+        xrayZoomIn.className = 'cb-link';
+        xrayZoomIn.textContent = threeI18n('threeMode.controls.xrayZoomIn', 'Zoom in');
+        xrayZoomIn.addEventListener('click', zoomToApartments);
+        xrayZoomNote.append(xrayZoomText, ' ', xrayZoomIn);
+        threeContainer.appendChild(xrayZoomNote);
         xrayButton.addEventListener('click', () => {
             const fromPhoto = window.__mapModeState?.desired === 'photo';
             if (xrayScope && !(fromPhoto && xrayScope === 'built')) {
@@ -10130,7 +10150,10 @@
             const building = design !== dismissedApartmentDesign && apartmentBuildingForDesign(design);
             if (building) apartmentAddress = { building, unit: null, openFloor: false };
         }
-        if (!apartmentPanel || !floorPlanGroup || !xrayScope || (realisticLayerActive && xrayScope === 'built') || !apartmentAddress) {
+        // Off outside the model view, and while no building is close enough to show its apartments
+        // (the zoom note says so); the chosen building is kept for when they show again.
+        if (!apartmentPanel || !isActive || !floorPlanGroup || !xrayScope || (realisticLayerActive && xrayScope === 'built') || !apartmentAddress
+            || !xrayDetailShown) {
             apartmentHover?.select(null);
             apartmentPanel?.hide();
             return;
@@ -10539,6 +10562,42 @@
             const changed = floorPlanRenderer.setVisibleStoreys(THREE, item.group, levels);
             if (floorPlanRenderer.setDetailVisibility(item.group, levels.size > 0) || changed) { apartmentHover?.invalidate(); sceneVisualRevision++; }
         }
+        const detailShown = candidates.some(item => item.group.visible && item.group.userData.detailVisible);
+        if (detailShown !== xrayDetailShown) {
+            xrayDetailShown = detailShown;
+            syncXrayZoomNote();
+            refreshApartmentSelection();
+        }
+    }
+
+    // The zoom note shows while X-ray has buildings with floor plans but none of them up close.
+    function syncXrayZoomNote() {
+        if (!xrayZoomNote) return;
+        const xrayOn = isActive && !!xrayScope && !(realisticLayerActive && xrayScope === 'built');
+        const planned = (floorPlanGroup?.children || []).some(group => group.visible && group.userData.detailBounds);
+        xrayZoomNote.hidden = !(xrayOn && planned && !xrayDetailShown);
+    }
+
+    // Zoom in: keeps the heading and pitch and brings the camera to the building whose apartments are
+    // being chosen, else the floor-plan building nearest the view's centre, close enough for its storeys.
+    const XRAY_ZOOM_RANGE_M = Math.round(floorPlanProximity.DETAIL_DEFAULTS.radiusM * 0.6);
+    function zoomToApartments() {
+        const view = getGeoCameraView();
+        if (!view || !floorPlanGroup || !controls) return;
+        const groups = floorPlanGroup.children.filter(group => group.visible && Array.isArray(group.userData.footprintLatLng));
+        const chosen = apartmentAddress && groups.find(group => group.userData.apartmentBuilding === apartmentAddress.building
+            || group.userData.floorPlanKey === apartmentAddress.building);
+        const nearest = groups.map(group => {
+            const [lng, lat] = group.userData.footprintLatLng;
+            return { group, distance: Math.hypot((lng - view.targetLng) * Math.cos(view.targetLat * Math.PI / 180), lat - view.targetLat) };
+        }).sort((a, b) => a.distance - b.distance)[0]?.group;
+        const target = chosen || nearest;
+        if (!target) return;
+        const [targetLng, targetLat] = target.userData.footprintLatLng;
+        stopIntroAutoRotate();
+        applyGeoCameraView({ ...view, targetLng, targetLat, range: Math.min(view.range, XRAY_ZOOM_RANGE_M) });
+        xrayVisibilityDirty = true;
+        invalidateThreeView();
     }
 
     function replacedXrayShells() {
@@ -10832,6 +10891,7 @@
             if (suggestedAccessSelect) suggestedAccessSelect.value = suggestedAccess;
         }
         if (floorCutawayControl) floorCutawayControl.hidden = !visible;
+        syncXrayZoomNote();
         if (visible && floorCutawaySelect) {
             const levels = [...new Set([...(floorPlanGroup?.children || []).filter(group => group.visible !== false)
                 .flatMap(group => group.userData.availableLevels || []),
@@ -12178,6 +12238,9 @@
         facadeNote = null;
         xrayToolbar?.remove();
         xrayToolbar = null;
+        xrayZoomNote?.remove();
+        xrayZoomNote = null;
+        xrayDetailShown = false;
         xrayScopeButtons = null;
         xrayButton = null;
         xrayNote = null;
@@ -12487,6 +12550,13 @@
             parcelsShown: window.ParcelPresenter?.isVisible?.() === true
         });
         isActive = false;
+        // A scene kept warm keeps its apartment choice, but the panel (on the page, not in the 3D
+        // view) and the zoom note leave with the view; the next frame in 3D measures detail again.
+        xrayDetailShown = false;
+        xrayVisibilityDirty = true;
+        apartmentHover?.select(null);
+        apartmentPanel?.hide();
+        syncXrayZoomNote();
         suggestedPlanner?.dispose();
         suggestedPlanner = null;
         suggestedStreetLoader?.cancel();

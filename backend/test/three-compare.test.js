@@ -231,4 +231,19 @@ describe('a comparison in the address', () => {
             expect(compare.parseCompareParam(value), String(value)).toBeNull();
         }
     });
+    it('gives Copy link the page address with the chosen sides, keeping the view and replacing an old comparison', () => {
+        const options = compare.sideOptions({
+            designs: [{ id: 'local-1', title: 'Block' }],
+            plans: [{ id: cidA, title: 'Published', published: true }, { id: cidB, title: 'Only here' }]
+        });
+        const on = value => compare.parseSide(value, options);
+        const page = `https://example.test/?at=1%2C2%2C18&compare=built%2Cpermitted&xray=proposed`;
+        const link = new URL(compare.comparisonLink(page, on('proposed'), on(`plan:${cidA}`)));
+        expect(link.searchParams.get('compare')).toBe(`proposed,${cidA}`);
+        expect(link.searchParams.get('at')).toBe('1,2,18');
+        expect(link.searchParams.get('xray')).toBe('proposed');
+        // Another browser could not open a design, or a plan that is only in this browser.
+        expect(compare.comparisonLink(page, on('design:local-1'), on('built'))).toBeNull();
+        expect(compare.comparisonLink(page, on('built'), on(`plan:${cidB}`))).toBeNull();
+    });
 });

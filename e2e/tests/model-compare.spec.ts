@@ -413,6 +413,29 @@ test('an applied design\'s ground draws on its own side alone, on the map and in
   expect(split.passes.map((pass: any) => pass.designDrawn)).toEqual([false, true]);
 });
 
+test('Copy link copies the comparison for sides another browser can open, and says why a design side cannot be', async ({ mockApi: page }) => {
+  test.setTimeout(120_000);
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  await mockBuildingScene(page);
+  await openCity(page);
+  const designId = await createBuilding(page);
+  await page.keyboard.press('Escape');
+  await openCompareTab(page);
+  const copy = page.locator('#planning-compare-copy-link');
+  const note = page.locator('#planning-compare-link-note');
+  await selectNativeOption(page.locator('#planning-compare-left'), 'built');
+  await selectNativeOption(page.locator('#planning-compare-right'), 'permitted');
+  await expect(copy).toBeEnabled();
+  await expect(note).toBeHidden();
+  await copy.click();
+  await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toContain('compare=built%2Cpermitted');
+  // A design is only in this browser: nothing to copy, and the note says what can be shared.
+  await selectNativeOption(page.locator('#planning-compare-right'), `design:${designId}`);
+  await expect(copy).toBeDisabled();
+  await expect(note).toBeVisible();
+  await expect(note).toContainText('published plans');
+});
+
 test('a comparison in the address opens with its two sides, and the address follows the comparison', async ({ mockApi: page }) => {
   test.setTimeout(120_000);
   await mockBuildingScene(page);
