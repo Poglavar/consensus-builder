@@ -8091,6 +8091,8 @@
             "land": "Участок земли {{parcel}}",
             "landMore": "Наземный участок {{parcel}} и {{count}}",
             "openGround": "Открытая земля",
+            "planPlot": "Участок плана {{plot}}",
+            "planPlotMore": "Участок плана {{plot}} и ещё {{count}}",
             "withoutPool": "Без бассейна: {{count}}",
             "agreementCount": {
                 "one": "{{count}} соглашение",

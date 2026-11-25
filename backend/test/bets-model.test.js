@@ -104,6 +104,15 @@ describe('claims, filters and sorting', () => {
         expect(BetsModel.filterRows(rows, 'mine', { c: { no: { amount: 2n } } }).map(row => row.account)).toEqual(['c']);
     });
 
+    it('names the plan plots of a contest that stands on no cadastral parcel', () => {
+        const plots = [{ source: 'alatau-genplan-727', recordId: 'alatau-genplan-727:4411' }, { source: 'alatau-genplan-727', recordId: 'alatau-genplan-727:4412' }];
+        const sheet = BetsModel.contest({ id: 'c', parcelIds: [], planPlots: plots, agreements: [] });
+        expect(sheet.land).toEqual({ first: null, more: 0 });
+        expect(sheet.plot).toEqual({ first: 'alatau-genplan-727:4411', more: 1 });
+        expect(sheet.planPlotIds).toEqual(['alatau-genplan-727:4411', 'alatau-genplan-727:4412']);
+        expect(BetsModel.contest({ id: 'd', parcelIds: ['P1'], agreements: [] }).plot).toEqual({ first: null, more: 0 });
+    });
+
     it('orders a dated actionable market first, then larger shares, with resolved markets after', () => {
         const makeContest = (id, agreements) => BetsModel.contest({ id, parcelIds: [], agreements });
         const entries = [
@@ -124,7 +133,7 @@ describe('server and sheet market ordering agree', () => {
         ];
         // overlaps: the two agreements' designs take overlapping ground, so they are one contest.
         const api = buildContests({ city: 'zagreb', agreements, overlaps: () => true, now: new Date('2026-10-25T00:00:00Z'),
-            markets: new Map(agreements.map(entry => [entry.account, { chainStatus: 'active', deadline: entry.deadline, markets: [{ address: entry.account, market: {
+            markets: new Map(agreements.map(entry => [entry.account, { chainStatus: 'active', deadline: entry.deadline, lenses: [], markets: [{ address: entry.account, market: {
                 b: entry.cid === 'soon' ? 200000000n : 100000000n, qYes: BigInt(entry.market.qYes), qNo: 0n, seed: 69314720n, closesAt: entry.market.closesAt, graceSeconds: 0,
                 maxPosition: 0n, paidOut: 0n, creator: 'creator', resolved: false, outcome: 0
             } }] }])) });

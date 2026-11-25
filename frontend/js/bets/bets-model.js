@@ -289,6 +289,9 @@
             city: entry.city || null,                 // set on GET /markets?scope=other contests
             parcelIds: entry.parcelIds || [],
             land: landLabel(entry.parcelIds),
+            // Government plan plots the contest stands on where no cadastral parcel lies.
+            planPlotIds: (entry.planPlots || []).map(plot => plot.recordId).filter(Boolean),
+            plot: landLabel((entry.planPlots || []).map(plot => plot.recordId)),
             agreementCount: agreements.length,
             openCount: rows.filter(item => item.state === 'open').length,
             sharesAtomic: atomic(entry.sharesAtomic),

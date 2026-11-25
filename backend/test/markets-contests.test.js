@@ -11,6 +11,7 @@ import {
     groupByLand,
     landOverlap,
     normalizeParcelIds,
+    normalizePlanPlots,
     parcelRefsOf,
     parcelSourceOf,
     subjectAccountOf
@@ -149,6 +150,23 @@ describe('groupByLand', () => {
         expect(groupByLand(rows, everywhere).map(group => group.map(row => row.cid).sort()))
             .toEqual([['hr', 'hr-named'], ['sf'], ['unknown'], ['unknown-too']]);
     });
+
+    it('compares agreements on one government plan plot with no parcel, such as two crowdfunding rounds', () => {
+        const plot = { source: 'alatau-genplan-727', recordId: 'alatau-genplan-727:4411' };
+        const round = (cid, designCids, planPlots = [plot]) => agreement({ cid, inputParcelIds: [], designCids, planPlots });
+        const overlaps = landOverlap(land({ 'D-a': box(0, 0, 20, 20), 'D-b': box(10, 10, 30, 30), 'D-far': box(0, 120, 20, 140) }));
+        expect(groupCids(groupByLand([round('a', ['D-a']), round('b', ['D-b']), round('far', ['D-far'])], overlaps)))
+            .toEqual([['a', 'b'], ['far']]);
+        // Another plot, or a plot id equal to a parcel id, never pairs them.
+        expect(groupCids(groupByLand([round('a', ['D-a']), round('b', ['D-b'], [{ ...plot, recordId: 'alatau-genplan-727:9' }])], overlaps)))
+            .toEqual([['a'], ['b']]);
+        expect(groupCids(groupByLand([round('a', ['D-a']), agreement({ cid: 'p', inputParcelIds: [plot.recordId], designCids: ['D-b'] })], overlaps)))
+            .toEqual([['a'], ['p']]);
+        expect(designCidsToCompare([round('a', ['D-a']), round('b', ['D-b'])])).toEqual(['D-a', 'D-b']);
+        const contest = buildContests({ city: 'alatau', agreements: [round('a', ['D-a']), minted('b', 'acc-b', { inputParcelIds: [], designCids: ['D-b'], planPlots: [plot, plot] })], overlaps, now: NOW }).contests[0];
+        expect(contest).toMatchObject({ parcelIds: [], planPlots: [plot], agreementCount: 2 });
+        expect(normalizePlanPlots([plot, { source: '', recordId: 'x' }, null, plot])).toEqual([plot]);
+    });
 });
 
 describe('designCidsToCompare', () => {
@@ -214,7 +232,7 @@ describe('buildContests', () => {
             kind: 'agreement', cid: 'minted', account: 'ACCT-A', title: 'One', author: 'a', city: 'zagreb',
             status: 'active', chainStatus: 'active', deadline: LATER, createdAt: '2026-10-03T00:00:00.000Z',
             designTitles: ['Six storeys'], screenshotUrl: null, screenshotBeforeUrl: null, screenshotPairUrl: null,
-            parcelIds: ['L1'], parcelRefs: [{ ...HR_CADASTRE, parcelId: 'L1' }],
+            parcelIds: ['L1'], parcelRefs: [{ ...HR_CADASTRE, parcelId: 'L1' }], planPlots: [],
             markets: [{ address: 'MKT-A', kind: 'agreement', creatorRole: 'sponsor', bettable: true, canSettle: false, model: 'lmsr', asset: 'devnet-usdc', creator: SPONSOR, b: '100000000', qYes: '250000', qNo: '50000', seed: '69314720', closesAt: Math.floor(Date.parse(LATER) / 1000), graceSeconds: 0, maxPosition: '0', paidOut: '0', resolved: false, outcome: null }],
             bettable: true, canOpenMarket: true, canSettle: false, sponsor: null, contest: contest.id
         });

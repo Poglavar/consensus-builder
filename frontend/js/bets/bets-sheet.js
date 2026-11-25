@@ -560,6 +560,11 @@
 
     // Where the contest's land is: the first input parcel and how many more, or open ground.
     function landText(contest) {
+        if (!contest.land.first && contest.plot?.first) {
+            return contest.plot.more
+                ? t('bets.contest.planPlotMore', 'Plan plot {{plot}} and {{count}} more', { plot: contest.plot.first, count: contest.plot.more })
+                : t('bets.contest.planPlot', 'Plan plot {{plot}}', { plot: contest.plot.first });
+        }
         if (!contest.land.first) return t('bets.contest.openGround', 'Open ground');
         const parcel = parcelText(contest.land.first);
         return contest.land.more
@@ -593,7 +598,7 @@
         const head = el('header', 'bets-contest__head');
         head.append(el('h3', 'bets-contest__title', contestQuestionText(contest)));
         const land = el('p', 'bets-contest__land');
-        land.title = contest.parcelIds.join(', ');
+        land.title = [...contest.parcelIds, ...(contest.planPlotIds || [])].join(', ');
         land.textContent = [
             ...(world && contest.city ? [cityName(contest.city)] : []),
             landText(contest),

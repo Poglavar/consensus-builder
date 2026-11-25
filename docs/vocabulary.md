@@ -1128,7 +1128,7 @@ A funded YES/NO forecast attached to an agreement. Any wallet can create a devne
 
 ### Contest
 
-A group of published agreements connected transitively by overlapping ground. Two agreements are joined when they share a source-qualified input parcel and their designs take overlapping ground: they share a design, or a design's site reaches into a design's site of the other (their overlap is ground, wider than the larger of the two designs' tolerances). Sharing a parcel alone does not establish membership: agreements whose designs stand apart on one large parcel are separate contests. Overlapping designs on different parcels, or equal unqualified parcel labels, do not join agreements either. Each agreement in a contest can have several independently funded markets.
+A group of published agreements connected transitively by overlapping ground. Two agreements are joined when they share a source-qualified input parcel or a government plan plot and their designs take overlapping ground: they share a design, or a design's site reaches into a design's site of the other (their overlap is ground, wider than the larger of the two designs' tolerances). Sharing a parcel alone does not establish membership: agreements whose designs stand apart on one large parcel are separate contests. Overlapping designs on different parcels, or equal unqualified parcel labels, do not join agreements either. An agreement's plan plots are the government plan records its designs were drawn on (the designs' source references, a planning source and record); they are its land where no cadastral parcel lies, such as state land in a general plan, and a crowdfunding round's only land. Each agreement in a contest can have several independently funded markets.
 
 ### Market deadline
 

@@ -10,7 +10,7 @@
 
 import { createRequire } from 'node:module';
 import { createRpcConnection } from '../solana/rpc.js';
-import { buildContests, buildOtherCityContests, designCidsToCompare, landOverlap, subjectAccountOf } from '../markets/contests.js';
+import { buildContests, buildOtherCityContests, designCidsToCompare, landOverlap, normalizePlanPlots, subjectAccountOf } from '../markets/contests.js';
 import { AGREEMENT_PROGRAM_ID, AgreementClient, DEVNET_GENESIS_HASH, ONCHAIN_STATUSES } from '../agreements/onchain.js';
 import { AGREEMENT_EXECUTION_RECIPE_ID, buildAgreementExecutionRecipe, chainStatusOf } from '../oracle/market-recipe.js';
 import { normalizeCityCode } from '../utils/city-code.js';
@@ -85,6 +85,7 @@ export function rowToAgreement(row) {
         designTitles: (Array.isArray(row.design_titles) ? row.design_titles : []).map(text).filter(Boolean),
         inputParcelIds: Array.isArray(row.input_parcel_ids) ? row.input_parcel_ids : [],
         parcelSourceId: row.parcel_source_id || null,
+        planPlots: normalizePlanPlots(row.plan_plots),
         deadline: iso(row.deadline),
         createdAt: iso(row.created_at),
         screenshotUrl: row.screenshot_url || null,

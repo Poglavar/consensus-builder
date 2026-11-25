@@ -8024,6 +8024,8 @@
             "land": "Parcela {{parcel}}",
             "landMore": "Parcela {{parcel}} y {{count}} más",
             "openGround": "Terreno abierto",
+            "planPlot": "Lote del plan {{plot}}",
+            "planPlotMore": "Lote del plan {{plot}} y {{count}} más",
             "withoutPool": "Sin fondo: {{count}}",
             "agreementCount": {
                 "one": "{{count}} acuerdo",

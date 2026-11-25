@@ -7997,6 +7997,8 @@
             "land": "Жер учаскесі {{parcel}}",
             "landMore": "{{parcel}} және {{count}} жерүсті учаскесі",
             "openGround": "Ашық жер",
+            "planPlot": "Жоспар учаскесі {{plot}}",
+            "planPlotMore": "Жоспар учаскесі {{plot}} және тағы {{count}}",
             "withoutPool": "Бассейнсіз: {{count}}",
             "agreementCount": {
                 "one": "{{count}} келісім",

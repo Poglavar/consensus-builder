@@ -6,6 +6,13 @@ export const currentPlanAgreementSelect = ({ predicate, orderBy, limit }) => `
         ARRAY(SELECT d.content->>'title' FROM jsonb_array_elements_text(
             CASE WHEN jsonb_typeof(p.content->'designCids') = 'array' THEN p.content->'designCids' ELSE '[]'::jsonb END
         ) AS linked(cid) JOIN consensus.design d ON d.cid = linked.cid) AS design_titles,
+        -- The government plan plots the designs were drawn on (design content sourceReferences): land
+        -- that has no cadastral parcel, which rival agreements share as they share a parcel.
+        COALESCE((SELECT jsonb_agg(DISTINCT jsonb_build_object('source', ref->>'providerId', 'recordId', ref->>'recordId'))
+            FROM consensus.design d
+            CROSS JOIN LATERAL jsonb_array_elements(CASE WHEN jsonb_typeof(d.content->'sourceReferences') = 'array'
+                THEN d.content->'sourceReferences' ELSE '[]'::jsonb END) AS ref
+            WHERE d.cid = ANY(a.design_cids) AND ref->>'providerId' <> '' AND ref->>'recordId' <> ''), '[]'::jsonb) AS plan_plots,
         a.onchain, a.screenshot_url, a.screenshot_before_url, a.screenshot_pair_url, a.created_at
     FROM consensus.agreement a
     JOIN consensus.plan p ON p.cid = a.content->>'planCid'

@@ -5602,6 +5602,8 @@
         "copyLink": "نسخ الرابط",
         "contest": {
             "openGround": "أرض مفتوحة",
+            "planPlot": "قطعة المخطط {{plot}}",
+            "planPlotMore": "قطعة المخطط {{plot}} و{{count}} أخرى",
             "land": "قطعة الأرض {{parcel}}",
             "landMore": "قطعة الأرض {{parcel}} و{{count}} أخرى",
             "withoutPool": "دون مجمع أموال: {{count}}",

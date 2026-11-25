@@ -205,6 +205,13 @@ function agreementRow(index: SharedIndex, cid: string, content: Record<string, a
 // overlapping ground.
 
 const sortedIds = (ids: unknown): string[] => [...new Set((Array.isArray(ids) ? ids : []).map(id => String(id ?? '').trim()).filter(Boolean))].sort();
+// Government plan plots an agreement row stands on ({ source, recordId }), distinct and sorted.
+const planPlotsOf = (rows: Record<string, any>[]): Array<{ source: string; recordId: string }> =>
+  [...new Map(rows.flatMap(row => Array.isArray(row.planPlots) ? row.planPlots : [])
+    .map((plot: any) => [JSON.stringify([plot.source, plot.recordId]), { source: plot.source, recordId: plot.recordId }])).entries()]
+    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)).map(([, plot]) => plot);
+const landKeys = (row: Record<string, any>): string[] =>
+  [...sortedIds(row.inputParcelIds), ...planPlotsOf([row]).map(plot => JSON.stringify(['plan-plot', plot.source, plot.recordId]))];
 
 // One agreement as GET /markets lists it: its chain status as the index recorded it, and its market.
 function contestEntry(index: SharedIndex, row: Record<string, any>, contest: string): Record<string, any> {
@@ -225,7 +232,7 @@ function contestEntry(index: SharedIndex, row: Record<string, any>, contest: str
     designTitles: row.designCids.map((cid: string) => index.designs.get(cid)?.title ?? null).filter(Boolean),
     screenshotUrl: row.screenshotUrl, screenshotBeforeUrl: row.screenshotBeforeUrl, screenshotPairUrl: row.screenshotPairUrl,
     sponsor: row.onchain?.sponsor ?? null,
-    parcelIds: sortedIds(row.inputParcelIds), parcelRefs: [], markets,
+    parcelIds: sortedIds(row.inputParcelIds), parcelRefs: [], planPlots: planPlotsOf([row]), markets,
     bettable: markets.some(m => m.bettable), canSettle: markets.some(m => m.canSettle), canOpenMarket: Boolean(account && chainStatus), contest,
   };
 }
@@ -233,11 +240,11 @@ function contestEntry(index: SharedIndex, row: Record<string, any>, contest: str
 /** GET /markets?city=: the city's agreements in contests (see above), those with a minted one. */
 export function marketsPayload(index: SharedIndex, city: string): Record<string, any> {
   const rows = [...index.agreements.values()].filter(row => row.city === city);
-  // Union-find over shared input parcel ids.
+  // Union-find over shared input parcel ids and plan plots.
   const parent = rows.map((_, i) => i);
   const find = (i: number): number => (parent[i] === i ? i : (parent[i] = find(parent[i])));
   const firstByParcel = new Map<string, number>();
-  rows.forEach((row, i) => sortedIds(row.inputParcelIds).forEach(id => {
+  rows.forEach((row, i) => landKeys(row).forEach(id => {
     if (firstByParcel.has(id)) parent[find(i)] = find(firstByParcel.get(id)!);
     else firstByParcel.set(id, i);
   }));
@@ -245,11 +252,11 @@ export function marketsPayload(index: SharedIndex, city: string): Record<string,
   rows.forEach((row, i) => groups.set(find(i), [...(groups.get(find(i)) || []), row]));
   const contests = [...groups.values()].map(group => {
     const parcelIds = sortedIds(group.flatMap(row => row.inputParcelIds));
-    const id = `c-${createHash('sha256').update(`land:${JSON.stringify(parcelIds)}`).digest('hex').slice(0, 12)}`;
+    const id = `c-${createHash('sha256').update(`land:${JSON.stringify([parcelIds, planPlotsOf(group)])}`).digest('hex').slice(0, 12)}`;
     const agreements = group.map(row => contestEntry(index, row, id)).sort(compareRows);
     const withMarket = agreements.flatMap(entry => entry.markets);
     return {
-      id, parcelIds, parcelRefs: [], agreementCount: agreements.length,
+      id, parcelIds, parcelRefs: [], planPlots: planPlotsOf(group), agreementCount: agreements.length,
       mintedCount: agreements.filter(entry => entry.account).length,
       marketCount: withMarket.length, openMarketCount: withMarket.filter(pool => pool.bettable).length,
       sharesAtomic: withMarket.reduce((sum, pool) => sum + BigInt(pool.qYes) + BigInt(pool.qNo), 0n).toString(),

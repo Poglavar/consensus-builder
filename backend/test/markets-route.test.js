@@ -248,7 +248,7 @@ describe('rowToAgreement and agreementByAccount', () => {
         const [row, rival] = rows();
         expect(rowToAgreement(row)).toEqual({
             cid: CID, city: 'zagreb', title: 'Plan-led infill', author: 'densifier-01', designCids: ['design-tower'], designTitles: ['Six storeys'],
-            inputParcelIds: ['HR-335614-2311'], parcelSourceId: null, deadline: '2026-12-31T00:00:00.000Z',
+            inputParcelIds: ['HR-335614-2311'], parcelSourceId: null, planPlots: [], deadline: '2026-12-31T00:00:00.000Z',
             createdAt: '2026-10-01T10:00:00.000Z', screenshotUrl: null, screenshotBeforeUrl: null, screenshotPairUrl: null, sponsor: SPONSOR,
             account: ACCOUNT, chainStatus: 'active'
         });

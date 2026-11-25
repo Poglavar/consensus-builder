@@ -7997,6 +7997,8 @@
             "land": "Parcel {{parcel}}",
             "landMore": "Parcel {{parcel}} and {{count}} more",
             "openGround": "Open ground",
+            "planPlot": "Plan plot {{plot}}",
+            "planPlotMore": "Plan plot {{plot}} and {{count}} more",
             "withoutPool": "Without a pool: {{count}}",
             "agreementCount": {
                 "one": "{{count}} agreement",

@@ -5425,6 +5425,8 @@
         "copyLink": "Copiar ligação",
         "contest": {
             "openGround": "Terreno livre",
+            "planPlot": "Lote do plano {{plot}}",
+            "planPlotMore": "Lote do plano {{plot}} e mais {{count}}",
             "land": "Parcela {{parcel}}",
             "landMore": "Parcela {{parcel}} e mais {{count}}",
             "withoutPool": "Sem fundo: {{count}}",

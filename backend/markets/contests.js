@@ -70,6 +70,28 @@ export function parcelRefsOf(agreement) {
 
 const refKey = ref => JSON.stringify([ref.sourceId, ref.snapshotId, ref.parcelId]);
 
+/**
+ * Government plan plots ({ source, recordId }: a planning source and its record), sorted and distinct.
+ * A design drawn on a plan plot cites it (design sourceReferences); the plot is that agreement's land
+ * where no cadastral parcel lies, e.g. state land in a general plan.
+ */
+export function normalizePlanPlots(value) {
+    const byKey = new Map();
+    for (const plot of Array.isArray(value) ? value : []) {
+        const source = typeof plot?.source === 'string' ? plot.source.trim() : '';
+        const recordId = typeof plot?.recordId === 'string' ? plot.recordId.trim() : '';
+        if (source && recordId) byKey.set(JSON.stringify([source, recordId]), { source, recordId });
+    }
+    return [...byKey.entries()].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)).map(([, plot]) => plot);
+}
+
+// The keys of all the land an agreement stands on: its qualified input parcels and its plan plots. Two
+// agreements sharing a key are compared on the ground; a plot key never equals a parcel key.
+const landKeysOf = agreement => [
+    ...parcelRefsOf(agreement).map(refKey),
+    ...normalizePlanPlots(agreement?.planPlots).map(plot => JSON.stringify(['plan-plot', plot.source, plot.recordId]))
+];
+
 export function normalizeParcelRefs(value) {
     const byKey = new Map();
     for (const ref of Array.isArray(value) ? value : []) {
@@ -99,13 +121,12 @@ export function contestId(designCids, fallback = '') {
     return `c-${createHash('sha256').update(seed).digest('hex').slice(0, 12)}`;
 }
 
-// Pairs of agreements (indices into `list`) that share a qualified input parcel: the only pairs whose
-// ground is compared, so agreements on parcels of different sources, or none, never meet.
+// Pairs of agreements (indices into `list`) that share a qualified input parcel or a plan plot: the only
+// pairs whose ground is compared, so agreements on parcels of different sources, or no land, never meet.
 function sharingPairs(list) {
     const byParcel = new Map();
     list.forEach((agreement, index) => {
-        for (const ref of parcelRefsOf(agreement)) {
-            const key = refKey(ref);
+        for (const key of new Set(landKeysOf(agreement))) {
             if (!byParcel.has(key)) byParcel.set(key, []);
             byParcel.get(key).push(index);
         }
@@ -119,7 +140,7 @@ function sharingPairs(list) {
     return Array.from(pairs.values());
 }
 
-/** The designs whose sites decide the contests: those of agreements sharing a qualified input parcel. */
+/** The designs whose sites decide the contests: those of agreements sharing a qualified input parcel or a plan plot. */
 export function designCidsToCompare(agreements) {
     const list = Array.isArray(agreements) ? agreements : [];
     const cids = new Set();
@@ -252,6 +273,7 @@ function agreementEntry(agreement, markets, nowMs) {
         screenshotPairUrl: agreement.screenshotPairUrl || null,
         parcelIds: normalizeParcelIds(agreement.inputParcelIds),
         parcelRefs: parcelRefsOf(agreement),
+        planPlots: normalizePlanPlots(agreement.planPlots),
         markets: marketEntries,
         bettable: marketEntries.some(item => item.bettable),
         canSettle: marketEntries.some(item => item.canSettle),
@@ -262,7 +284,7 @@ function agreementEntry(agreement, markets, nowMs) {
 /**
  * Build the public contests payload for one city.
  * @param {{ city: string, agreements: Array<object>, markets?: Map<string, { sponsor: string, lenses: string[], chainStatus: string, deadline: string|null, markets: Array<{ address: string, market: object }> }>, overlaps?: Function, now?: Date }} input
- *   agreements: { cid, title, author, city, designCids, inputParcelIds, parcelSourceId, deadline,
+ *   agreements: { cid, title, author, city, designCids, inputParcelIds, parcelSourceId, planPlots, deadline,
  *   createdAt, designTitles, screenshotUrl, screenshotBeforeUrl, screenshotPairUrl, account,
  *   chainStatus } (routes/markets.js rowToAgreement); markets: agreement account → its decoded market
  *   account; overlaps: whether two agreements' designs take overlapping ground (landOverlap over the
@@ -283,6 +305,7 @@ export function buildContests({ city, agreements, markets = new Map(), overlaps 
             id,
             parcelIds: normalizeParcelIds(group.flatMap(agreement => normalizeParcelIds(agreement.inputParcelIds))),
             parcelRefs,
+            planPlots: normalizePlanPlots(group.flatMap(agreement => normalizePlanPlots(agreement.planPlots))),
             agreementCount: entries.length,
             mintedCount: entries.filter(entry => entry.account).length,
             marketCount: withMarket.length,
