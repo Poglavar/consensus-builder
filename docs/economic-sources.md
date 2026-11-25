@@ -134,7 +134,9 @@ reset restores configured sources. Importing a table is not a subscription to a 
 
 Parcel panels, selection estimates and browser road-acquisition models use `CityMoney` land rates at
 each parcel (a road: one rate at the centre of its affected parcels; an agreement's default unit
-value: at its input parcels).
+value: at its input parcels). A parcel's area is the one its record states, else its geometry's
+measured area (`ParcelMenuModel.featureArea`, `turf.area`), so a provider without an area field
+(HMLR) still has an area and an estimate; `ugt_parcel_context` measures the parcel the same way.
 Modeled parcel estimates retain their economic observation. The road model retains it in
 `priceBasis`. Parcel and road amount tooltips expose the source and basis. The 3D comparison and
 plan statistics use selected sale/construction rates; slider changes remain temporary scenario

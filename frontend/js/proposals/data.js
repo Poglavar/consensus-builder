@@ -1424,11 +1424,8 @@ const multiParcelSelection = {
             const parcelId = window.ParcelPresenter?.getIdForLayer?.(parcel) || null;
             const feature = parcelId ? window.LiveParcelFabric?.get?.(String(parcelId)) : null;
             const props = feature?.properties || {};
-            const areaSource = props.calculatedArea
-                || props.area
-                || props.parcelArea
-                || props.informationTechnical?.superficie_total;
-            const area = Number.isFinite(Number(areaSource)) ? Number(areaSource) : 0;
+            // The record's area, else its geometry's (a provider with no area field, such as HMLR).
+            const area = window.ParcelMenuModel.featureArea(feature, window.turf) ?? 0;
             const estimate = priceModel
                 ? priceModel.buildEstimate(props, area, window.CityMoney.currentLandPriceOptions('land', window.EconomicSources.locationOf(feature)))
                 : { amount: null, currency: null, basis: 'unavailable' };

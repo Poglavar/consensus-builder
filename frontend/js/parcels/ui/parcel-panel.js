@@ -210,11 +210,8 @@
         bindParcelPanelControls();
         renderParcelHistory(feature);
         const props = feature?.properties || {};
-        const areaSource = props.calculatedArea
-            || props.area
-            || props.parcelArea
-            || props.informationTechnical?.superficie_total;
-        const area = Number.isFinite(Number(areaSource)) ? Number(areaSource) : 0;
+        // The record's area, else its geometry's (a provider with no area field, such as HMLR).
+        const area = global.ParcelMenuModel.featureArea(feature, global.turf) ?? 0;
         const formattedArea = area ? CbFormat.formatArea(area) : 'N/A';
 
         const estimate = global.ParcelPriceModel
