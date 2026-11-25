@@ -99,8 +99,7 @@ These stay evidence (status, reason text, `sourceEvidence`) rather than geometry
 - Desarrollo ranges 1–3, 4C, 4D: resulting heights bounded by construction indices over the net
   developable area of an urbanisation, which single lots do not have.
 - Desarrollo 4A/4B storey counts: their 0.10/0.15 occupancy indices cannot be drawn as setbacks.
-- Renovación's block-scale indices (6.0 with a corner and cession, 7.0 for a whole block), MI
-  uplifts by lot area and road width (art. 338), range uplifts, whole-block doubling (art. 310
+- MI uplifts by lot area and road width (art. 338), range uplifts, whole-block doubling (art. 310
   par. 2–3), height matching with neighbours, basements, the Nivel Multifuncional, Aerocivil
   limits, TA lots under 11 m of frontage (2 storeys without side yards), and the Decreto 582/2023
   side-yard relaxations.

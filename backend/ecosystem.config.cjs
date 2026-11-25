@@ -33,6 +33,10 @@ module.exports = {
       // Planning funnel: browsers upload fixed-vocabulary step/error observations to the private
       // consensus.planning_diagnostic store (docs/planning-usage-and-diagnostics.md).
       UGT_DIAGNOSTICS_INGEST: 'true',
+      // Zagreb plan plots: Permitted massing for a plot a plan made is solved by the shared API's
+      // GUP engine (cadastre-data zagreb-api on this host; docs/permitted-plan-parcels.md).
+      ZAGREB_PLOT_SOLVER: 'true',
+      ZAGREB_PLOT_SOLVER_URL: 'http://127.0.0.1:3001/api/build-envelope/solve-geometry',
       // Upload provider and read gateway are independent. Retain Pinata credentials in .env
       // and select it explicitly when needed; failed uploads do not silently switch providers.
       IPFS_PINNING_PROVIDER: process.env.IPFS_PINNING_PROVIDER || 'filebase',
