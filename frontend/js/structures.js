@@ -1575,6 +1575,23 @@
     }
     window.buildingGroundFences = buildingGroundFences;
 
+    // One applied design's ground: its surface (with any furniture) and its fences. `pane` defaults
+    // to the paved or green ground pane; Compare draws a side's grounds into that side's pane.
+    function drawBuildingGround(group, surface, pane = surface.treatment === 'paved' ? SQUARES_PANE : PARKS_PANE) {
+        // Ground is an overlay on top of parcels; keep parcel clicks working.
+        drawBuildingSurroundings(group, { ...surface, polygon: surface.geometry }, pane);
+        const fences = buildingGroundFences(surface);
+        if (fences.length) L.geoJSON({ type: 'MultiLineString', coordinates: fences }, {
+            pane, interactive: false,
+            style: { color: '#4b4f3f', weight: 1.5, dashArray: '1,3', className: 'building-ground-fence' }
+        }).addTo(group);
+    }
+    window.drawBuildingGround = drawBuildingGround;
+
+    // The applied designs' grounds as last drawn: [{ designId, surface, layer }] (compare-on-map.js).
+    let buildingGroundsDrawn = [];
+    window.buildingGroundsDrawn = () => buildingGroundsDrawn.slice();
+
     function updateBuildingGroundLayer() {
         if (typeof map === 'undefined') return;
         const group = ensureBuildingGroundLayer();
@@ -1590,21 +1607,19 @@
             pane: PARKS_PANE, interactive: false,
             style: { color: '#6d705b', weight: 1.5, dashArray: '4,3', fillColor: '#adae75', fillOpacity: 0.9, className: 'vacant-layout-plot' }
         }).addTo(group));
+        buildingGroundsDrawn = [];
         surfaces.forEach(surface => {
             try {
-                const paved = surface.treatment === 'paved';
-                const pane = paved ? SQUARES_PANE : PARKS_PANE;
-                // Ground is an overlay on top of parcels; keep parcel clicks working.
-                drawBuildingSurroundings(group, { ...surface, polygon: surface.geometry }, pane);
-                const fences = buildingGroundFences(surface);
-                if (fences.length) L.geoJSON({ type: 'MultiLineString', coordinates: fences }, {
-                    pane, interactive: false,
-                    style: { color: '#4b4f3f', weight: 1.5, dashArray: '1,3', className: 'building-ground-fence' }
-                }).addTo(group);
+                // Each design's ground in its own group, so Compare can show it on that design's sides only.
+                const layer = L.layerGroup().addTo(group);
+                drawBuildingGround(layer, surface);
+                buildingGroundsDrawn.push({ designId: String(surface.proposalId), surface, layer });
             } catch (error) {
                 console.error('[structures] failed to render a building ground surface', surface.proposalId, error);
             }
         });
+        // The map's own redraw, every time: a 2D comparison hides these new layers again.
+        window.dispatchEvent(new Event('buildingGroundLayerDrawn'));
         // The signature includes the effective surfaces, so a changed road cut also refreshes 3D.
         if (signature !== buildingGroundSignature) {
             buildingGroundSignature = signature;
