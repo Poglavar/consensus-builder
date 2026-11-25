@@ -2038,6 +2038,7 @@
                 "payout": "A conta de pagamento tem de ser um endereço Solana.",
                 "web3Unavailable": "Não foi possível carregar a biblioteca Solana.",
                 "walletRequired": "Ligue primeiro uma carteira Solana.",
+                "walletChanged": "Ligue a carteira indicada na reserva.",
                 "notDeployed": "O programa de acordos ainda não está implementado na Solana {{cluster}}.",
                 "pinFailed": "O nosso servidor não conseguiu colocar o conteúdo do acordo no IPFS: {{reason}}",
                 "contentNotOnDevice": "Este dispositivo não tem o acordo tal como foi proposto. Abra-o a partir da sua ligação enquanto o nosso servidor responde e tente novamente.",

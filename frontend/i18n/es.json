@@ -8668,6 +8668,7 @@
                 "payout": "La cuenta beneficiaria debe ser una dirección de Solana.",
                 "web3Unavailable": "No se pudo cargar la biblioteca de Solana.",
                 "walletRequired": "Conecta primero una billetera Solana.",
+                "walletChanged": "Conecta la billetera indicada en la reserva.",
                 "notDeployed": "El programa de acuerdos aún no está desplegado en Solana {{cluster}}.",
                 "pinFailed": "Nuestro servidor no pudo subir el contenido del acuerdo a IPFS: {{reason}}",
                 "contentNotOnDevice": "Este dispositivo no tiene el acuerdo tal como se propuso. Ábrelo desde su enlace mientras nuestro servidor responda y vuelve a intentarlo.",
