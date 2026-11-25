@@ -32,14 +32,17 @@
         }
         return new Map(ids.map(id => [id, organisationNames.get(id) ?? null]));
     }
-    async function planningDataAreas(source, { bbox, datasets, fetch, signal, asOf = today() }) {
-        const [w, s, e, n] = bbox;
-        const url = new URL('/entity.geojson', source.endpoint);
-        for (const dataset of datasets) url.searchParams.append('dataset', dataset);
-        url.searchParams.set('geometry', `POLYGON((${w} ${s},${e} ${s},${e} ${n},${w} ${n},${w} ${s}))`);
-        url.searchParams.set('geometry_relation', 'intersects');
-        url.searchParams.set('limit', String(source.pageSize));
-        const origin = url.origin, features = [];
+    // A ring list as WKT, coordinates to 7 decimals (about 1 cm).
+    const wktPoint = ([x, y]) => `${Number(x.toFixed(7))} ${Number(y.toFixed(7))}`;
+    const wktPolygon = rings => `(${rings.map(ring => `(${ring.map(wktPoint).join(',')})`).join(',')})`;
+    function wkt(geometry) {
+        if (geometry?.type === 'Polygon') return `POLYGON${wktPolygon(geometry.coordinates)}`;
+        if (geometry?.type === 'MultiPolygon') return `MULTIPOLYGON(${geometry.coordinates.map(wktPolygon).join(',')})`;
+        throw fail('constraint-source-geometry', 'A constraint read needs a Polygon or MultiPolygon.');
+    }
+    // Every page of one query, following `links.next` up to the source's page cap.
+    async function planningDataPages(source, url, { fetch, signal, rows }) {
+        const origin = url.origin, found = [];
         let next = url.toString(), pages = 0, partial = false;
         while (next) {
             if (pages >= source.maxPages) { partial = true; break; }
@@ -47,32 +50,62 @@
             const response = await fetch(next, { signal });
             if (!response.ok) throw fail('constraint-source-http', `Constraint source HTTP ${response.status}`);
             const page = await response.json();
-            if (page?.type !== 'FeatureCollection' || !Array.isArray(page.features)) throw fail('constraint-source-invalid', 'Invalid constraint source page');
+            const list = rows(page);
+            if (!Array.isArray(list)) throw fail('constraint-source-invalid', 'Invalid constraint source page');
             pages++;
-            features.push(...page.features);
+            found.push(...list);
             const link = page.links?.next || null;
             // Only the publisher's own next page is followed.
             if (link && new URL(link).origin !== origin) throw fail('constraint-source-invalid', 'Constraint source paged elsewhere');
             next = link;
         }
-        const current = features.filter(feature => feature?.geometry && feature.properties
-            && !(feature.properties['end-date'] && feature.properties['end-date'] <= asOf));
+        return { found, partial, pages };
+    }
+    // Source records as areas; `geometry` is null for a read that asked for no geometry.
+    async function planningDataRecords(source, records, { fetch, signal, asOf }) {
+        const current = records.filter(entry => entry?.properties && !(entry.properties['end-date'] && entry.properties['end-date'] <= asOf));
         const organisations = await planningDataOrganisations(source,
-            [...new Set(current.map(feature => Number(feature.properties['organisation-entity'])).filter(Number.isFinite))], { fetch, signal });
-        const areas = current.map(feature => {
-            const p = feature.properties;
+            [...new Set(current.map(entry => entry.properties['organisation-entity']).filter(value => value !== '' && value != null)
+                .map(Number).filter(Number.isFinite))], { fetch, signal });
+        return current.map(entry => {
+            const p = entry.properties;
             return {
                 id: `${source.id}:${p.entity}`, sourceId: source.id, dataset: p.dataset, entity: p.entity,
-                reference: p.reference || null, name: p.name || null, geometry: feature.geometry,
+                reference: p.reference || null, name: p.name || null, geometry: entry.geometry || null,
                 organisation: { id: p['organisation-entity'] ?? null, name: organisations.get(Number(p['organisation-entity'])) ?? null },
                 // Source fields kept as the publisher states them, for rule-set matching and display.
                 fields: Object.fromEntries(Object.entries(p).filter(([, value]) => value !== '' && value !== null)),
                 links: { record: new URL(`/entity/${p.entity}`, source.endpoint).toString(), documentation: p['documentation-url'] || null }
             };
         });
+    }
+    const queryUrl = (source, path, datasets, geometry) => {
+        const url = new URL(path, source.endpoint);
+        for (const dataset of datasets) url.searchParams.append('dataset', dataset);
+        url.searchParams.set('geometry', wkt(geometry));
+        url.searchParams.set('geometry_relation', 'intersects');
+        url.searchParams.set('limit', String(source.pageSize));
+        return url;
+    };
+    // The designations over a box, with their geometry (the map cuts envelopes with it).
+    async function planningDataAreas(source, { bbox, datasets, fetch, signal, asOf = today() }) {
+        const [w, s, e, n] = bbox;
+        const url = queryUrl(source, '/entity.geojson', datasets, { type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] });
+        const { found, partial, pages } = await planningDataPages(source, url, { fetch, signal, rows: page => page?.type === 'FeatureCollection' ? page.features : null });
+        const areas = await planningDataRecords(source, found.filter(feature => feature?.geometry), { fetch, signal, asOf });
         return { areas, partial, pages };
     }
-    const adapters = Object.freeze({ 'planning-data-entity': planningDataAreas });
+    // The designations a geometry (a building footprint, a parcel) lies in, without their
+    // geometry: the publisher tests the intersection, so a flood zone of megabytes costs a line.
+    // (`field=` lists lose organisation-entity there, so the geometry fields are excluded instead.)
+    async function planningDataMembership(source, { geometry, datasets, fetch, signal, asOf = today() }) {
+        const url = queryUrl(source, '/entity.json', datasets, geometry);
+        for (const field of ['geometry', 'point']) url.searchParams.append('exclude_field', field);
+        const { found, partial, pages } = await planningDataPages(source, url, { fetch, signal, rows: page => page?.entities });
+        const areas = await planningDataRecords(source, found.map(properties => ({ properties, geometry: null })), { fetch, signal, asOf });
+        return { areas, partial, pages };
+    }
+    const adapters = Object.freeze({ 'planning-data-entity': Object.freeze({ areas: planningDataAreas, membership: planningDataMembership }) });
 
     // One read of a constraint source for a box. Returns { areas, partial, pages }: `partial` means
     // the page cap stopped the read and more areas exist than were read.
@@ -83,7 +116,16 @@
         if (!Array.isArray(datasets) || !datasets.length) return { areas: [], partial: false, pages: 0 };
         if (typeof fetchPage !== 'function') throw fail('constraint-source-fetch', 'A constraint read needs fetch.');
         if (!(source.pageSize > 0) || !(source.maxPages > 0)) throw fail('constraint-source-config', 'A constraint source needs pageSize and maxPages.');
-        return adapter(source, { bbox, datasets, fetch: fetchPage, signal, asOf });
+        return adapter.areas(source, { bbox, datasets, fetch: fetchPage, signal, asOf });
+    }
+    // Which designations of `datasets` a polygon lies in (no geometry returned).
+    // Returns { areas (geometry null), partial, pages }.
+    async function readMembership(source, { geometry, datasets, fetch: fetchPage = typeof fetch === 'function' ? fetch : null, signal, asOf } = {}) {
+        const adapter = adapters[source?.adapter];
+        if (!adapter) throw fail('constraint-source-unknown', `Unknown constraint source adapter: ${source?.adapter}`);
+        if (!Array.isArray(datasets) || !datasets.length) return { areas: [], partial: false, pages: 0 };
+        if (typeof fetchPage !== 'function') throw fail('constraint-source-fetch', 'A constraint read needs fetch.');
+        return adapter.membership(source, { geometry, datasets, fetch: fetchPage, signal, asOf });
     }
 
     // The rule sets and constraint sources a place uses, from planning-sources.json and the city's
@@ -120,7 +162,24 @@
             }));
             return reads;
         }
-        return { load, clear: () => cache.clear() };
+        // Which designations one polygon lies in, per rule set, without geometry; kept per polygon.
+        const memberships = new Map();
+        async function membership(ruleSetIds, geometry, { effects = null } = {}) {
+            const pairs = ruleSetsFor(config, ruleSetIds);
+            if (!pairs.length) return null;
+            return Promise.all(pairs.map(async ({ ruleSet, source }) => {
+                const datasets = datasetsOf(ruleSet, effects);
+                const key = `${ruleSet.id}:${datasets.join(',')}:${JSON.stringify(geometry.coordinates)}`;
+                if (!memberships.has(key)) {
+                    const pending = readMembership(source, { geometry, datasets, fetch: fetchPage });
+                    memberships.set(key, pending);
+                    pending.catch(() => memberships.delete(key));
+                    while (memberships.size > 256) memberships.delete(memberships.keys().next().value);
+                }
+                return { ruleSet, source, ...(await memberships.get(key)) };
+            }));
+        }
+        return { load, membership, clear: () => { cache.clear(); memberships.clear(); } };
     }
-    return { adapters, readAreas, ruleSetsFor, datasetsOf, effectsOf, createLoader };
+    return { adapters, readAreas, readMembership, wkt, ruleSetsFor, datasetsOf, effectsOf, createLoader };
 });

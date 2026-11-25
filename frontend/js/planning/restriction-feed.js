@@ -25,6 +25,19 @@
         loader ??= root.PlanningConstraintSources.createLoader({ config: settings, scene: root.PlanningScene, fetch: (url, init) => root.fetch(url, init) });
         return loader.load(ids, bbox, { effects });
     }
+    // Which designations one footprint lies in, without their geometry (the publisher tests the
+    // intersection). The footprint is set in by 0.25 m so a designation it only touches along an
+    // edge does not count, as the check's 0.5 m² overlap rule does for read geometry.
+    async function membership(city, footprint, { effects = null } = {}) {
+        const ids = ruleSetIds(city);
+        if (!ids.length) return null;
+        const settings = await config();
+        loader ??= root.PlanningConstraintSources.createLoader({ config: settings, scene: root.PlanningScene, fetch: (url, init) => root.fetch(url, init) });
+        let inset = null;
+        try { inset = root.turf.buffer(footprint, -0.25, { units: 'meters' }); } catch (_) { inset = null; }
+        const geometry = ['Polygon', 'MultiPolygon'].includes(inset?.geometry?.type) ? inset.geometry : footprint.geometry;
+        return loader.membership(ids, geometry, { effects });
+    }
     // Restrictions from the reads, placed on the existing buildings the map holds for `bbox`.
     function resolve(reads, bbox) {
         const turf = root.turf;
@@ -35,5 +48,5 @@
         });
         return root.PlanningRestrictions.restrictionsFor(reads, { buildings: near, geometryOps: turf });
     }
-    root.PlanningRestrictionFeed = { load, resolve, ruleSetIds };
+    root.PlanningRestrictionFeed = { load, membership, resolve, ruleSetIds };
 })(window);

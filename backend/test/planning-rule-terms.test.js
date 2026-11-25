@@ -7,6 +7,7 @@ import * as turf from '@turf/turf';
 
 const require = createRequire(import.meta.url);
 const terms = require('../../frontend/js/planning/rule-terms.js');
+const streetWidth = require('../../frontend/js/planning/street-width.js');
 const checker = require('../../frontend/js/planning/permitted-check.js');
 const config = require('../../frontend/data/planning-sources.json');
 
@@ -96,6 +97,33 @@ describe('Relative terms', () => {
         expect(unknown.checks.find(entry => entry.rule === 'height')).toMatchObject({ status: 'unknown', limit: null, unknownReason: 'existing-height-unknown' });
         const known7 = checker.check({ items: [item], buildings: [design], context: context([house('measured', 7.5)]), storeyHeightM: 3, geometryOps: turf });
         expect(known7.checks.find(entry => entry.rule === 'height')).toMatchObject({ status: 'fail', limit: 10.5, measured: 12 });
+    });
+});
+
+describe('Street setting: width in front and neighbours along the same street', () => {
+    const street = (name, y, id) => ({ type: 'Feature', properties: { name, osm_id: id, highway: 'residential' },
+        geometry: { type: 'LineString', coordinates: [[-60 * M / COS, LAT + y * M], [80 * M / COS, LAT + y * M]] } });
+    // Parcel A faces Test Road (y = 0) from y = 5; a lot across the road starts at y = -5: 10 m wide.
+    const A = { ...rect(0, 5, 20, 30), id: 'A' }, across = { ...rect(0, -35, 20, 30), id: 'X' };
+    const B = { ...rect(20, 5, 20, 30), id: 'B' }, C = { ...rect(-20, 5, 20, 30), id: 'C' }, D = { ...rect(0, 40, 20, 30), id: 'D' };
+    const streets = [street('Test Road', 0, 1), street('Back Lane', 75, 2)];
+    const building = (lot, heightM, source) => ({ id: `in-${lot.id}`, geometry: rect(lot.id === 'B' ? 24 : lot.id === 'C' ? -16 : 4, lot.id === 'D' ? 50 : 15, 10, 10).geometry, height_m: source === 'measured' ? heightM : null, floors: null });
+    it('measures the street width and keeps only the buildings facing the same street', () => {
+        const buildings = [building(B, 12, 'measured'), building(C, null, 'none'), building(D, 30, 'measured')];
+        const setting = streetWidth.streetSetting({ parcel: A, streets, parcels: [A, across, B, C, D], buildings, turf });
+        expect(setting.street).toMatchObject({ name: 'Test Road', source: 'street-width' });
+        expect(setting.street.widthM).toBeCloseTo(10, 0);
+        expect(setting.neighbours.map(record => record.id).sort()).toEqual(['in-B', 'in-C']);
+        // C's house has no height: the street's precedent is unknown, not the default.
+        const known = context([], setting);
+        expect(terms.evaluate({ of: 'neighbourHeight', aggregate: 'max' }, known)).toMatchObject({ known: false, reason: 'neighbour-height-unknown' });
+        expect(terms.evaluate({ of: 'streetWidth', times: 2 }, known).value).toBeCloseTo(20, 0);
+        const surveyed = streetWidth.streetSetting({ parcel: A, streets, parcels: [A, across, B, C, D], buildings: [building(B, 12, 'measured'), { ...building(C), height_m: 9 }], turf });
+        expect(terms.evaluate({ of: 'neighbourHeight', aggregate: 'max' }, context([], surveyed)).value).toBe(12);
+    });
+    it('no facing street or no building source leaves the inputs unknown', () => {
+        expect(streetWidth.streetSetting({ parcel: A, streets: [], parcels: [A, B], buildings: [], turf })).toMatchObject({ street: null, neighbours: null });
+        expect(streetWidth.streetSetting({ parcel: A, streets, parcels: [A, B], buildings: null, turf }).neighbours).toBeNull();
     });
 });
 

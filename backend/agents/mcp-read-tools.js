@@ -6,6 +6,8 @@ import { trustedMetadata } from './mcp-results.js';
 import { cidOfObject, isCid } from '../cid.js';
 import { cityMoney } from '../scripts/lib/frontend-city-money.mjs';
 import { parcelRestrictions } from '../planning/restrictions.js';
+import { streetSetting } from '../planning/street-width.js';
+import { cityPlanningRuleSetIds } from '../scripts/lib/frontend-city-money.mjs';
 
 const require = createRequire(import.meta.url);
 const approvalLink = require('../../frontend/js/approval-link.js');
@@ -94,6 +96,27 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
         if (point[0] < -180 || point[0] > 180 || point[1] < -90 || point[1] > 90) throw failure('invalid-place-coordinate', 'Coordinate search must be longitude, latitude in WGS84.', { action: 'Supply longitude,latitude within the WGS84 range.' });
         return point;
     }
+    // The street a parcel faces and the existing buildings of the lots along it (street-width.js
+    // streetSetting), for relative rule terms: streets, lots and buildings within 60 m, read from the
+    // same sources the app reads. Any read failing leaves the setting unknown and says why.
+    async function settingOf(parcel, id, parcelSourceId, args) {
+        const [w, s, e, n] = turf.bbox(parcel), dLat = 60 / 110540, dLng = 60 / (111320 * Math.cos((s + n) / 2 * Math.PI / 180));
+        const reach = [w - dLng, s - dLat, e + dLng, n + dLat];
+        try {
+            const [streets, around] = await Promise.all([request('/streets/near', { bbox: reach.join(',') }),
+                parcels({ city: args.city, parcelSourceId, geometry: turf.bboxPolygon(reach).geometry })]);
+            const lots = (around.features || []).filter(feature => String(feature.id ?? feature.properties?.parcelId) !== id).slice(0, 400);
+            const standing = lots.length ? await request('/buildings/under', {}, { source: args.buildingSourceId,
+                regions: lots.map(feature => ({ key: String(feature.id ?? feature.properties?.parcelId), geometry: feature.geometry })) }) : { supported: true, regions: {} };
+            const complete = standing.supported && !standing.truncated && !standing.unavailable;
+            const seen = new Set(), records = complete ? Object.values(standing.regions || {}).flat().filter(record => !seen.has(record.id) && seen.add(record.id)) : null;
+            return streetSetting({ parcel, streets: streets.features || [], parcels: [parcel, ...lots], buildings: records });
+        } catch (error) {
+            console.error(`[${new Date().toISOString()}] [mcp] Street setting unavailable for ${id}`, error);
+            return { street: null, neighbours: null, reason: 'street-setting-unavailable' };
+        }
+    }
+
     async function parcels({ city, parcelSourceId, parcelIds, point, geometry }) {
         if (!geometry && (Boolean(parcelIds) === Boolean(point))) throw Object.assign(failure('invalid-parcel-query', 'Provide exactly one of parcel ids or point.', { action: 'Supply parcelId or point.' }), { field: ['parcelIds', 'point'], constraints: { exactlyOne: ['parcelIds', 'point'] } });
         let source = parcelSourceId;
@@ -240,7 +263,8 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
             // The Permitted restrictions stage, as the map and the Permitted check apply it: the
             // designations over the parcel, their effects, and the existing context relative limits read.
             const standing = buildings?.supported && !buildings.truncated && !buildings.unavailable ? buildings.regions?.[id] || [] : null;
-            const restrictions = await parcelRestrictions({ city: args.city, parcel, buildings: standing, fetchImpl });
+            const setting = args.buildingSourceId && cityPlanningRuleSetIds(args.city).length ? await settingOf(parcel, id, result.parcelSourceId, args) : null;
+            const restrictions = await parcelRestrictions({ city: args.city, parcel, buildings: standing, setting, fetchImpl });
             return { parcel, parcelSourceId: result.parcelSourceId, areaM2: turf.area(parcel), designs, agreements, markets, buildings, history, planning, studies, restrictions, urbanRules,
                 economics: cityEconomics(args.city, locationOf(parcel)), landEstimate: landEstimateOf(args.city, parcel), previewUrl: mapUrl(args.city, bbox) };
         },

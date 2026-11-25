@@ -213,6 +213,17 @@ describe('England end to end (recorded planning.data.gov.uk answer)', () => {
         // The prohibited item gives no second, generic "not for building" line.
         expect(result.checks.some(entry => entry.rule === 'use')).toBe(false);
     });
+    it('a building is checked against the designations it lies in without downloading their geometry', async () => {
+        const loader = sources.createLoader({ config, scene, fetch: replay });
+        const reads = await loader.membership(['gb-eng-planning'], recorded.membershipFootprint, { effects: ['restrict', 'note'] });
+        expect(reads[0].areas.every(area => area.geometry === null)).toBe(true);
+        const { restrictions: named } = restrictions.membershipRestrictions([{ buildingId: 'new', reads }], { geometryOps: turf });
+        expect(named).toEqual([expect.objectContaining({ dataset: 'conservation-area', name: 'Highbury Fields', footprint: 'not-read', buildingIds: ['new'],
+            organisation: { id: 181, name: 'London Borough of Islington' } })]);
+        const building = { id: 'new', heightM: 9, footprint: turf.feature(recorded.membershipFootprint) };
+        const result = checker.check({ items: [], restrictions: named, baseRule: 'unknown', buildings: [building, { id: 'other', heightM: 9, footprint: square(-0.1031, 51.5464, 0.0001) }], geometryOps: turf });
+        expect(result.checks.filter(entry => entry.rule === 'restriction')).toEqual([expect.objectContaining({ buildingId: 'new', status: 'conditional', requirement: 'design-scrutiny' })]);
+    });
     it('a read stopped at its page cap is reported as partial', async () => {
         const capped = { ...config, constraintSources: config.constraintSources.map(entry => ({ ...entry, maxPages: 1 })) };
         // Ten pages in all, so a read that ignored its cap would end, and end complete.

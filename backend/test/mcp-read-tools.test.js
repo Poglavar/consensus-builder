@@ -2,6 +2,7 @@
 // incomplete coverage explicitly rather than turning unknown ground into an empty parcel set.
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
+import * as turf from '@turf/turf';
 import { createMcpReadTools, parcelSourceIdOf, cityEconomics, landEstimateOf } from '../agents/mcp-read-tools.js';
 import { markUntrusted } from '../agents/mcp-results.js';
 const geometry = { type: 'Polygon', coordinates: [[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]] };
@@ -104,17 +105,34 @@ describe('MCP public source reads', () => {
         const ring = (w, s, dx, dy) => [[[w, s], [w + dx, s], [w + dx, s + dy], [w, s + dy], [w, s]]];
         const parcel = { type: 'Feature', id: 'GB-HMLR-BROWSER-v1-9', properties: { parcelId: 'GB-HMLR-BROWSER-v1-9' }, geometry: { type: 'Polygon', coordinates: ring(-0.10315, 51.5464, 0.00029, 0.000225) } };
         const house = { id: 'way/1', geometry: { type: 'Polygon', coordinates: ring(-0.10310, 51.54645, 0.00012, 0.00008) }, height_m: null, floors: null };
+        // Its street runs along the south edge; the neighbour east faces it too, a lot lies across it.
+        const road = { type: 'Feature', properties: { name: 'Test Road', osm_id: 7, highway: 'residential' }, geometry: { type: 'LineString', coordinates: [[-0.1036, 51.54635], [-0.1022, 51.54635]] } };
+        const east = { type: 'Feature', id: 'GB-HMLR-BROWSER-v1-10', properties: {}, geometry: { type: 'Polygon', coordinates: ring(-0.10286, 51.5464, 0.00029, 0.000225) } };
+        const across = { type: 'Feature', id: 'GB-HMLR-BROWSER-v1-11', properties: {}, geometry: { type: 'Polygon', coordinates: ring(-0.10315, 51.54612, 0.00029, 0.00018) } };
+        const eastHouse = { id: 'way/2', geometry: { type: 'Polygon', coordinates: ring(-0.10280, 51.54645, 0.00012, 0.00008) }, height_m: 12, floors: null };
         const asked = [];
         const fetchImpl = vi.fn(async url => {
             const parsed = new URL(url), path = parsed.pathname;
-            if (parsed.host === 'www.planning.data.gov.uk') { asked.push(parsed); return json(path === '/entity.json' ? organisations : geojson); }
-            return json(path.startsWith('/parcel-sources/') || path === '/parcels' ? { complete: true, features: [parcel] } : path === '/buildings/under' ? { supported: true, truncated: false, regions: { [parcel.id]: [house] } }
+            if (parsed.host === 'www.planning.data.gov.uk') {
+                asked.push(parsed);
+                if (path === '/entity.geojson') return json({ ...geojson, features: geojson.features.filter(feature => parsed.searchParams.getAll('dataset').includes(feature.properties.dataset)) });
+                if (!parsed.searchParams.has('dataset')) return json(organisations);
+                // A geometry-free read: the publisher answers which recorded designations the parcel lies in.
+                const datasets = parsed.searchParams.getAll('dataset');
+                return json({ links: {}, entities: geojson.features.filter(feature => datasets.includes(feature.properties.dataset)
+                    && turf.booleanIntersects(feature, parcel)).map(feature => feature.properties) });
+            }
+            return json(path.endsWith('/under') && path.startsWith('/parcel-sources/') ? { complete: true, features: [parcel, east, across] }
+                : path.startsWith('/parcel-sources/') || path === '/parcels' ? { complete: true, features: [parcel] }
+                : path === '/streets/near' ? { type: 'FeatureCollection', features: [road] }
+                : path === '/buildings/under' ? { supported: true, truncated: false, regions: { [parcel.id]: [house], [east.id]: [eastHouse], [across.id]: [] } }
                 : path === '/designs' ? { designs: [] } : path === '/planning/sources' ? { sources: [] } : { source: path });
         });
         const reads = createMcpReadTools({ apiBase: 'https://api.example', appOrigin: 'https://app.example', fetchImpl });
         const result = await reads.parcelContext({ city: 'london', parcelSourceId: 'gb-hmlr-browser-v1', parcelId: parcel.id, buildingSourceId: 'osm' });
-        const read = asked.find(url => url.pathname === '/entity.geojson');
-        expect(read.searchParams.getAll('dataset')).toContain('conservation-area');
+        // Designations that cut are read with geometry; the rest only as membership, without geometry.
+        expect(asked.find(url => url.pathname === '/entity.geojson').searchParams.getAll('dataset')).not.toContain('conservation-area');
+        expect(asked.find(url => url.pathname === '/entity.json' && url.searchParams.has('dataset')).searchParams.getAll('exclude_field')).toEqual(['geometry', 'point']);
         expect(result.restrictions).toMatchObject({ unavailable: false, partial: false, ruleSets: [expect.objectContaining({ id: 'gb-eng-planning', baseRule: null })] });
         expect(result.restrictions.designations.map(entry => [entry.name, entry.effect, entry.requirement])).toEqual([['Highbury Fields', 'restrict', 'design-scrutiny']]);
         expect(result.restrictions.designations[0].organisation.name).toBe('London Borough of Islington');
@@ -124,6 +142,9 @@ describe('MCP public source reads', () => {
         const policy = result.restrictions.ruleSets[0].policies.find(entry => entry.id === 'nppf-2026-l2-1-d-iii');
         expect(policy.constraints[0]).toMatchObject({ quantity: 'footprintArea', evidence: 'derived' });
         expect(policy.constraints[0].value).toBeCloseTo(2 * result.restrictions.existing.footprintM2, 6);
+        // The street in front and its neighbours, for precedent terms: the house east is 12 m tall.
+        expect(result.restrictions.existing.street.widthM).toBeGreaterThan(8);
+        expect(result.restrictions.existing.neighbours).toEqual([expect.objectContaining({ id: 'way/2', heightM: 12, known: true })]);
         // A city without a rule set reads no designations.
         expect(await reads.parcelContext({ city: 'zagreb', parcelSourceId: 'oss-wfs', parcelId: parcel.id }).then(r => r.restrictions)).toBeNull();
     });

@@ -144,8 +144,11 @@
         return checks;
     }
     // One building against the designations over it: one line each.
+    // A designation read without geometry names the buildings the publisher found inside it.
     function restrictionChecks(restrictions, building, ops) {
-        return restrictionsApi().restrictionsUnder(restrictions, building.footprint, ops).map(({ restriction, share, failed }) => ({
+        const named = (restrictions || []).filter(restriction => !restriction.geometry && restriction.buildingIds?.includes(building.id))
+            .map(restriction => ({ restriction, share: null }));
+        return [...restrictionsApi().restrictionsUnder(restrictions, building.footprint, ops), ...named].map(({ restriction, share, failed }) => ({
             itemId: restriction.id, rule: 'restriction', status: failed ? 'unknown' : EFFECT_STATUS[restriction.effect] || 'unknown',
             effect: restriction.effect, reasonCode: restriction.reasonCode, requirement: restriction.requirement, subject: restriction.subject,
             dataset: restriction.dataset, name: restriction.name, organisation: restriction.organisation?.name || null,

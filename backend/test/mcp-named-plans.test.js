@@ -33,10 +33,17 @@ function fixture() {
             throw new Error(`Unexpected ground/agreement request: ${path}`);
         })};
     const resolveDraftReference=async ref=>structuredClone(refs.get(ref));
-    const drafts=createMcpDraftTools({read,appOrigin:'https://app.example',resolveDraftReference});
+    // London's planning designations (planning.data.gov.uk), served here, never from the network.
+    const designations={features:[]};
+    const fetchImpl=vi.fn(async url=>{
+        const {pathname}=new URL(url);
+        const body=pathname==='/entity.json'?{entities:[]}:{type:'FeatureCollection',links:{},features:designations.features};
+        return {ok:true,status:200,json:async()=>body};
+    });
+    const drafts=createMcpDraftTools({read,appOrigin:'https://app.example',resolveDraftReference,fetchImpl});
     const publishDesign=vi.fn(async({design,parcelSourceId,confirm})=>{expect(confirm).toBe(true);const cid=cidOfObject(design);store.set(cid,{cid,content:design,parcelSourceId});return {cid};});
     const tools=createMcpNamedPlanTools({read,drafts,appOrigin:'https://app.example',resolveDraftReference,publishDesign});
-    return {tools,drafts,read,store,plans,refs,calls,publishDesign,tower,park,other,layout};
+    return {tools,drafts,read,store,plans,refs,calls,publishDesign,tower,park,other,layout,designations,fetchImpl};
 }
 describe('first-class named plans',()=>{
     it('fits a building to its applied layout plot and fits the standalone design to its cadastral parcel', async () => {
@@ -71,6 +78,30 @@ describe('first-class named plans',()=>{
         const standalone = await drafts.modifyDesign({ design:home, changes });
         expect(reads.at(-1).body).toBeUndefined();
         expect(standalone.design.geometry.buildings[0].properties.height).toBe(12);
+    });
+    it('fits to the Permitted envelope with the prohibited designations cut out, as the map draws it', async () => {
+        const { drafts, read, layout, designations } = fixture();
+        const parcel = turf.feature(layout.content.site, { parcelId:'A' }, { id:'A' });
+        const footprint = turf.transformScale(parcel, 0.3).geometry;
+        const building = intentDesign.build({ kind:'building', site:footprint, footprint, city:'london', title:'Home', height:9, authoredAt:'2026-10-25T10:00:00.000Z' }, { turf });
+        const home = { ...designObject({ ...building, createdAt:building.authoredAt }), parcelSourceId:layout.parcelSourceId };
+        read.parcels = vi.fn(async () => ({ parcelSourceId: layout.parcelSourceId, features:[parcel] }));
+        read.request.mockImplementation(async (path) => {
+            if (path === '/designs/binding') return { parcelSourceId:layout.parcelSourceId, binding:{ coverage:'complete', parcels:[{parcelId:'A'}] } };
+            if (path !== '/planning/envelopes') throw new Error(path);
+            return { items:[{ id:'envelope:test:A', source:{ parcel:'A' }, site:parcel.geometry, metrics:{ heightM:12 }, sourceEvidence:{ parcelReference:{ sourceId:'cadastre', parcelId:'A' } } }] };
+        });
+        // A scheduled monument over the parcel's western quarter.
+        const [w, s, e, n] = turf.bbox(parcel), quarter = turf.bboxPolygon([w - 0.0001, s - 0.0001, w + (e - w) / 4, n + 0.0001]);
+        designations.features = [{ type:'Feature', geometry:quarter.geometry, properties:{ entity:13901973, dataset:'scheduled-monument', name:'Test monument', 'organisation-entity':16, 'end-date':'' } }];
+        const fitted = (await drafts.modifyDesign({ design:home, changes:[{ type:'fit_to_permitted', planningSource:'test' }] })).design.geometry.buildings[0];
+        expect(turf.area(fitted)).toBeCloseTo(turf.area(parcel) * 0.75, -1);
+        expect(fitted.properties.permittedEvidence.restrictions).toEqual(['gb-eng-planning-data:13901973']);
+        // A designation over all of it leaves nothing to build on (a new session: reads are kept per view).
+        const covered = fixture();
+        covered.read.parcels = read.parcels; covered.read.request.mockImplementation(read.request.getMockImplementation());
+        covered.designations.features = [{ ...designations.features[0], geometry:turf.bboxPolygon([w - 0.001, s - 0.001, e + 0.001, n + 0.001]).geometry }];
+        await expect(covered.drafts.modifyDesign({ design:home, changes:[{ type:'fit_to_permitted', planningSource:'test' }] })).rejects.toMatchObject({ code:'envelope-prohibited' });
     });
     it('returns walking and cycling coverage and individual routes through MCP', async () => {
         const { tools, calls } = fixture();

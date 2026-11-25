@@ -1,8 +1,10 @@
 // Loads the Permitted items under a design being edited and runs the rule check on them
 // (planning/permitted-check.js), whether or not the Permitted layer is shown. Items come from the
 // same /planning/representations feed as the layer, by the same cells, kept per source and cell.
-// The planning designations of the city's rule sets (planning/restriction-feed.js) are read for
-// the design's box, every effect, and act on the items as they do on the layer.
+// The planning designations of the city's rule sets (planning/restriction-feed.js) act on the items
+// as they do on the layer: those that cut the envelope are read with geometry for the design's box
+// (the layer's read), the others per building footprint without geometry, so a design in a flood
+// zone of megabytes downloads a line of text.
 (function (root) {
     'use strict';
     const scene = root.PlanningScene;
@@ -25,16 +27,36 @@
     }
     // Items under the box with the restrictions stage applied. Without a base source the city's
     // rule sets still give the designations ("unknown base", restrictions.js unknownBaseItems).
-    async function itemsFor(city, bbox) {
+    // Geometry-free reads run one design at a time, newest last: a drag asks again only once the
+    // previous answer is in, and a superseded design asks nothing (generation).
+    let memberships = Promise.resolve();
+    async function membershipsFor(city, buildings, id) {
         const feed = root.PlanningRestrictionFeed;
-        const [base, reads] = await Promise.all([sourceItemsFor(city, bbox), feed ? feed.load(city, bbox) : null]);
+        const previous = memberships;
+        let release;
+        memberships = new Promise(resolve => { release = resolve; });
+        try {
+            await previous;
+            if (id !== generation) return null;
+            const reads = await Promise.all(buildings.map(async building => ({ buildingId: building.id,
+                reads: await feed.membership(city, building.footprint, { effects: ['restrict', 'note'] }) || [] })));
+            return root.PlanningRestrictions.membershipRestrictions(reads, { geometryOps: root.turf });
+        } finally { release(); }
+    }
+    async function itemsFor(city, bbox, buildings, id) {
+        const feed = root.PlanningRestrictionFeed;
+        const ruleSets = feed?.ruleSetIds(city).length ? true : false;
+        const [base, reads, named] = await Promise.all([sourceItemsFor(city, bbox), ruleSets ? feed.load(city, bbox, { effects: ['prohibit'] }) : null,
+            ruleSets ? membershipsFor(city, buildings, id) : null]);
+        if (ruleSets && !named) return null;
         if (!reads) return { ...base, restrictions: [], partial: false, baseRule: null };
-        const { restrictions, partial } = feed.resolve(reads, bbox);
-        const ruleSets = reads.map(entry => entry.ruleSet);
+        const located = feed.resolve(reads, bbox);
+        const restrictions = [...located.restrictions, ...named.restrictions], partial = located.partial || named.partial;
+        const ruleSetList = reads.map(entry => entry.ruleSet);
         if (base.source) return { ...base, items: root.PlanningRestrictions.applyToItems(base.items, restrictions, { geometryOps: root.turf }),
             restrictions, partial, baseRule: null };
-        return { source: { id: ruleSets[0].id, label: ruleSets.map(ruleSet => ruleSet.label).join(' · ') },
-            items: root.PlanningRestrictions.unknownBaseItems(restrictions, ruleSets), restrictions, partial, baseRule: 'unknown' };
+        return { source: { id: ruleSetList[0].id, label: ruleSetList.map(ruleSet => ruleSet.label).join(' · ') },
+            items: root.PlanningRestrictions.unknownBaseItems(located.restrictions, ruleSetList), restrictions, partial, baseRule: 'unknown' };
     }
     async function sourceItemsFor(city, bbox) {
         const source = await sourceFor(city, bbox);
@@ -53,6 +75,37 @@
         // A zone over a cell line arrives as each cell's piece; the check sums its overlap over them.
         return { source, items: scene.mergeAnswers(answers)?.items || [] };
     }
+    // The existing context relative rule terms read (planning/rule-terms.js), for the parcel the
+    // design's first building stands on: its existing buildings, the street it faces and the
+    // buildings of the lots along that street (planning/street-width.js streetSetting), from the
+    // map's parcels and buildings and the street centrelines the Detached editor reads. Built only
+    // when an item under the design states a relative term. Heights a source estimates stay unknown.
+    const streetsByParcel = new Map();
+    async function existingContextFor(design) {
+        const turf = root.turf, fabric = root.LiveParcelFabric, footprint = design.buildings?.find(building => building.footprint)?.footprint;
+        if (!footprint || !fabric?.peekBounds) return null;
+        const [w, s, e, n] = turf.bbox(footprint), dLat = 80 / 110540, dLng = 80 / (111320 * Math.cos((s + n) / 2 * Math.PI / 180));
+        const reach = [w - dLng, s - dLat, e + dLng, n + dLat];
+        const lots = fabric.peekBounds(reach, { includeCorridors: false }).filter(piece => ['Polygon', 'MultiPolygon'].includes(piece?.geometry?.type))
+            .map(piece => ({ type: 'Feature', id: piece.properties.parcelId, properties: {}, geometry: piece.geometry }));
+        const overlap = lot => { try { const part = turf.intersect(lot, footprint); return part ? turf.area(part) : 0; } catch (_) { return 0; } };
+        const parcel = lots.map(lot => ({ lot, m2: overlap(lot) })).filter(entry => entry.m2 > 0).sort((a, b) => b.m2 - a.m2)[0]?.lot;
+        if (!parcel) return null;
+        const pool = (root.buildingFeaturePool || []).filter(feature => {
+            if (!feature?.geometry) return false;
+            const box = turf.bbox(feature);
+            return box[0] <= reach[2] && box[2] >= reach[0] && box[1] <= reach[3] && box[3] >= reach[1];
+        });
+        const inside = record => { try { return turf.booleanPointInPolygon(turf.pointOnFeature(record), parcel); } catch (_) { return false; } };
+        if (!streetsByParcel.has(parcel.id)) streetsByParcel.set(parcel.id, root.StreetFrontage.streetsNear(parcel).then(answer => answer.streets)
+            .catch(error => { streetsByParcel.delete(parcel.id); throw error; }));
+        let streets = [];
+        try { streets = await streetsByParcel.get(parcel.id); }
+        catch (error) { console.error(`[${new Date().toISOString()}] [permitted-check] Streets could not be read; street terms stay unknown`, error); }
+        const setting = root.PlanningStreetWidth.streetSetting({ parcel, streets, parcels: lots, buildings: pool, turf });
+        return root.PlanningRuleTerms.existingContext({ parcel, buildings: pool.filter(inside), street: setting.street, neighbours: setting.neighbours, geometryOps: turf });
+    }
+    const statesTerms = items => items.some(item => (item.constraints || []).some(constraint => constraint.term || constraint.when));
     let generation = 0;
     // `design` as PermittedCheck.check takes it, without items. Resolves to the result, or null when
     // a later call superseded this one. A source that cannot be read gives status 'unavailable'.
@@ -63,15 +116,19 @@
         const bbox = root.turf.bbox(root.turf.featureCollection(footprints));
         const city = root.CityConfigManager.getCurrentCityId();
         let loaded;
-        try { loaded = await itemsFor(city, bbox); }
+        let context = null;
+        try {
+            loaded = await itemsFor(city, bbox, design.buildings.filter(building => building.footprint), id);
+            if (loaded && statesTerms(loaded.items)) context = await existingContextFor(design);
+        }
         catch (error) {
             if (id !== generation) return null;
             console.error(`[${new Date().toISOString()}] [permitted-check] Permitted items could not be read`, error);
             return { status: 'unavailable', checks: [], buildings: {} };
         }
-        if (id !== generation) return null;
+        if (!loaded || id !== generation) return null;
         const result = root.PermittedCheck.check({ ...design, items: loaded.items, restrictions: loaded.restrictions,
-            restrictionsPartial: loaded.partial, baseRule: loaded.baseRule, geometryOps: root.turf });
+            restrictionsPartial: loaded.partial, baseRule: loaded.baseRule, context, geometryOps: root.turf });
         return { ...result, source: loaded.source };
     }
     // The person-readable lines, literal keys so the locale coverage test sees each one.
@@ -190,5 +247,5 @@
         if (list.children.length) container.append(list);
         if (result.source?.label) container.append(element('p', 'permitted-check__source', root.i18n.t('permittedCheck.source', { source: result.source.label })));
     }
-    root.PermittedAdvisor = { check, render, restrictionText, restrictionItem };
+    root.PermittedAdvisor = { check, render, restrictionText, restrictionItem, existingContextFor };
 })(window);

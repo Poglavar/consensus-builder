@@ -209,5 +209,33 @@
         }
         return found;
     }
-    return { EFFECTS, MIN_M2, classify, restrictionsFor, applyToItems, unknownBaseItems, restrictionsUnder };
+    // One geometry (an envelope's site a design is built on) without the prohibited areas over it:
+    // { geometry (null when nothing is left), cut: [{ id, m2 }] }.
+    function cutGeometry(geometry, restrictions, { geometryOps: ops } = {}) {
+        if (!ops) throw new TypeError('Restrictions need geometry operations.');
+        const prohibits = (restrictions || []).filter(restriction => restriction.effect === 'prohibit' && polygonal(restriction.geometry))
+            .map(restriction => ({ ...restriction, box: ops.bbox(restriction.geometry) }));
+        if (!polygonal(geometry) || !prohibits.length) return { geometry, cut: [] };
+        const result = cut(geometry, prohibits, ops);
+        return { geometry: result.geometry, cut: [...result.removed].map(([id, m2]) => ({ id, m2 })) };
+    }
+    // Restrictions from geometry-free reads (constraint-sources.js membership), one per building
+    // footprint: [{ buildingId, reads }] → { restrictions, partial }. Each restriction has no
+    // geometry (`footprint: "not-read"`) and lists the buildings the publisher found inside it
+    // (`buildingIds`); the Permitted check reads that instead of an overlap.
+    function membershipRestrictions(perBuilding, { geometryOps } = {}) {
+        const byId = new Map();
+        let partial = false;
+        for (const { buildingId, reads } of perBuilding || []) {
+            const found = restrictionsFor(reads, { geometryOps });
+            partial = partial || found.partial;
+            for (const restriction of found.restrictions) {
+                const known = byId.get(restriction.id);
+                if (known) { if (!known.buildingIds.includes(buildingId)) known.buildingIds.push(buildingId); }
+                else byId.set(restriction.id, { ...restriction, geometry: null, footprint: 'not-read', buildingIds: [buildingId] });
+            }
+        }
+        return { restrictions: [...byId.values()], partial };
+    }
+    return { EFFECTS, MIN_M2, classify, restrictionsFor, applyToItems, unknownBaseItems, restrictionsUnder, cutGeometry, membershipRestrictions };
 });

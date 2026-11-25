@@ -10,6 +10,7 @@ import { trustedMetadata } from './mcp-results.js';
 import { cityDrivingSide } from '../scripts/lib/frontend-city-money.mjs';
 import { MAX_SOURCE_BINDING_PARCELS } from '../parcels/source-binding.js';
 import { materializeWithApp } from './mcp-ground-runtime.js';
+import { restrictedEnvelopes } from '../planning/restrictions.js';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const DesignRecord = require('../../frontend/js/design-record.js');
@@ -40,7 +41,15 @@ function urbanRuleIntent(args) {
     return { ...args, ...parameters, kind: 'building', typology, ...(ruleKind == null ? {} : { ruleKind }), rule: undefined };
 }
 
-export function createMcpDraftTools({ read, appOrigin, resolveDraftReference, resolvePlan }) {
+export function createMcpDraftTools({ read, appOrigin, resolveDraftReference, resolvePlan, fetchImpl = fetch }) {
+    // The Permitted envelope a draft builds on, as the map draws it: the city's prohibited
+    // designations (planning/restrictions.js) are cut out of it. Fails when nothing is left.
+    async function permittedFootprint(city, envelope, items, box) {
+        const restricted = await restrictedEnvelopes({ city, items, bbox: box, fetchImpl });
+        const { geometry, cut } = restricted.cut(envelope.site);
+        if (!geometry) throw fail('envelope-prohibited', 'Planning designations prohibit building on all of this envelope.', { action: 'Read ugt_parcel_context restrictions; choose another site.' });
+        return { footprint: geometry, restrictions: cut.map(entry => entry.id) };
+    }
     // The server binds a draft as it binds a design drawn on the map (proposals/binding.js), so a site
     // too large for one design is refused here under the server's own codes, with how to recover.
     async function bindingOf(design, parcelSourceId) {
@@ -174,7 +183,8 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference, re
                     ? item.sourceEvidence?.planningArea?.source === args.planningArea.source && item.sourceEvidence.planningArea.recordId === args.planningArea.recordId
                     : args.parcelIds?.includes(item.source?.parcel));
                 if (items.length !== 1) throw fail('envelope-ambiguous', 'Choose one parcel with a supported permitted envelope.', { action: 'Read ugt_parcel_context; choose one supported parcel and planningSource.' });
-                intent.footprint = items[0].site;
+                const permitted = await permittedFootprint(args.city, items[0], items, turf.bbox(turf.feature(intent.site)));
+                intent.footprint = permitted.footprint;
                 intent.height = items[0].metrics.heightM;
             }
         }
@@ -276,7 +286,8 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference, re
                         throw fail(reason || 'envelope-ambiguous', 'There is no single supported building envelope on the selected parcel.');
                     }
                     const envelope = matches[0];
-                    const fitted = buildTypedDesign({ kind: 'building', city, site: envelope.site, footprint: envelope.site, height: envelope.metrics.heightM,
+                    const permitted = await permittedFootprint(city, envelope, matches, turf.bbox(turf.feature(envelope.site)));
+                    const fitted = buildTypedDesign({ kind: 'building', city, site: envelope.site, footprint: permitted.footprint, height: envelope.metrics.heightM,
                         title: modified.title, description: modified.description, author: modified.author, authoredAt: modified.authoredAt });
                     if (buildings.length === 1) modified = { ...modified, ...fitted };
                     else {
@@ -290,6 +301,7 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference, re
                     }
                     modified.geometry.buildings[index].properties.permittedEvidence = { source: change.planningSource, envelopeId: envelope.id,
                         parcelReference: envelope.sourceEvidence?.parcelReference || null,
+                        ...(permitted.restrictions.length ? { restrictions: permitted.restrictions } : {}),
                         ...(envelope.sourceEvidence?.planningArea ? { planningArea: envelope.sourceEvidence.planningArea } : {}) };
 
                 } else modified = builder.modify(modified, [change], { turf });
