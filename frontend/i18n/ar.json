@@ -5071,7 +5071,9 @@
                 "refundMyDonations": "تم رد التبرع",
                 "releaseDonations": "تم صرف التبرعات",
                 "cancel": "تم الإلغاء",
-                "run_status": "حالة التشغيل"
+                "run_status": "حالة التشغيل",
+                "confirm-funding": "تم تأكيد التمويل",
+                "release-donations": "تم صرف التبرعات"
             },
             "refresh": "تحديث",
             "viewsAria": "عرض النشاط",

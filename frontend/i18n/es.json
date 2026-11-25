@@ -6489,7 +6489,9 @@
                 "cancel": "Cancelada",
                 "expire": "Expiró",
                 "run_status": "Estado de la ejecución",
-                "execute": "Ejecutada"
+                "execute": "Ejecutada",
+                "confirm-funding": "Confirmó la financiación",
+                "release-donations": "Liberó donaciones"
             }
         },
         "agents": {

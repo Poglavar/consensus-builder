@@ -4898,7 +4898,9 @@
                 "refundMyDonations": "Remboursement d’un don",
                 "releaseDonations": "Déblocage des dons",
                 "cancel": "Annulation",
-                "run_status": "État de l’exécution"
+                "run_status": "État de l’exécution",
+                "confirm-funding": "Confirmation du financement",
+                "release-donations": "Déblocage des dons"
             },
             "refresh": "Actualiser",
             "viewsAria": "Vue de l’activité",

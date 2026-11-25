@@ -6496,7 +6496,9 @@
                 "cancel": "Otkazan",
                 "expire": "Istekao",
                 "run_status": "Stanje pokretanja",
-                "execute": "Izvršen"
+                "execute": "Izvršen",
+                "confirm-funding": "Potvrđeno finansiranje",
+                "release-donations": "Isplaćene donacije"
             }
         },
         "agents": {

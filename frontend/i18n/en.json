@@ -6462,7 +6462,9 @@
                 "cancel": "Cancelled",
                 "expire": "Expired",
                 "run_status": "Run status",
-                "execute": "Executed"
+                "execute": "Executed",
+                "confirm-funding": "Confirmed funding",
+                "release-donations": "Released donations"
             }
         },
         "agents": {

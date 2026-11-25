@@ -4898,7 +4898,9 @@
                 "refundMyDonations": "Donativo reembolsado",
                 "releaseDonations": "Donativos libertados",
                 "cancel": "Cancelado",
-                "run_status": "Estado da execução"
+                "run_status": "Estado da execução",
+                "confirm-funding": "Financiamento confirmado",
+                "release-donations": "Donativos libertados"
             },
             "refresh": "Atualizar",
             "viewsAria": "Vista de atividade",
