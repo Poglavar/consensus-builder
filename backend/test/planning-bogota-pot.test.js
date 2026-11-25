@@ -196,7 +196,9 @@ describe('Bogotá POT provider', () => {
         const second = await planningRepresentations({}, { city: 'bogota', source: 'bogota-pot-555', bbox, limit: 1, cursor: first.nextCursor }, [provider]);
         expect(second.items[0]).toMatchObject({ title: 'Renovación urbana · altura resultante', assessment: { status: 'unsupported_calculation' }, constraints: [] });
         expect(second.truncated).toBe(false);
-        expect(calls.filter(url => url.pathname.endsWith('/15/query')).map(url => url.searchParams.get('where'))).toEqual(['1=1', 'OBJECTID > 1']);
+        expect(calls.filter(url => url.pathname.endsWith('/15/query')).map(url => url.searchParams.get('where'))).toEqual([
+            "(TRATAMIENTO NOT IN ('SUELO PROTEGIDO','AEROPUERTO'))",
+            "(TRATAMIENTO NOT IN ('SUELO PROTEGIDO','AEROPUERTO')) AND (OBJECTID > 1)"]);
         expect(calls.every(url => url.searchParams.get('outSR') === '4326' && url.searchParams.get('f') === 'geojson')).toBe(true);
         await expect(provider.query({}, { bbox, limit: 1, after: 'x' })).rejects.toMatchObject({ status: 400 });
     });

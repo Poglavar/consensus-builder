@@ -12,20 +12,21 @@ The city configuration pins it (`planning.sourceIds: ['bogota-pot-555']`) with t
 
 | Item | Value |
 | --- | --- |
-| Service | `https://services7.arcgis.com/lsxbLWF2l19Rmhqj/arcgis/rest/services/POT_Bogota_Decreto_555_2021/FeatureServer` |
-| Item | [arcgis.com item `ee7fed3b93dd4d52b8d00bcc81ce0ea0`](https://www.arcgis.com/home/item.html?id=ee7fed3b93dd4d52b8d00bcc81ce0ea0), "Cartografía oficial del POT de Bogotá, Decreto 555 de 2021" |
-| Publisher of the copy | Infraestructura de Datos Espaciales de Cundinamarca (IDEC), ArcGIS Online org `lsxbLWF2l19Rmhqj`; licence CC BY 4.0 (item `licenseInfo`) |
+| Service | `https://services5.arcgis.com/l23kE3b7uPnZIuaB/arcgis/rest/services/Decreto_555_2021_POT_2_2022_05036_gdb/FeatureServer` |
+| Item | [arcgis.com item `88e7cfb1cbd24dabba9cf2df7587903b`](https://www.arcgis.com/home/item.html?id=88e7cfb1cbd24dabba9cf2df7587903b), "Decreto_555_2021_POT_2_2022_05036_gdb" |
+| Publisher of the copy | A Universidad de Manizales account on ArcGIS Online (org `l23kE3b7uPnZIuaB`), uploaded 2024-06-30 and not maintained since; the item states no licence. The IDEC copy used before (item `ee7fed3b93dd4d52b8d00bcc81ce0ea0`, CC BY 4.0) went private in November 2026 |
 | Issuer | Secretaría Distrital de Planeación de Bogotá (SDP); `ACTO_ADMINISTRATIVO` "Decreto 555 de 29 de diciembre de 2021", `FECHA_CAPTURA` 2021-12-29 |
-| Layers read | 15 "Tratamiento urbanístico" (5,630 polygons; `TRATAMIENTO`, `TIPOLOGIA`, `ALTURA_MAXIMA`), 22 "Antejardín" (4,191 polygons; `DIMENSION`, `NOTA`), 14 "Área de actividad" (1,143 polygons; `CODIGO_AREA_ACTIVIDAD`), read under a lot for the sustainability configuration |
+| Layers read | 15 "Tratamiento urbanístico" (5,630 published polygons, read with `TRATAMIENTO NOT IN ('SUELO PROTEGIDO','AEROPUERTO')`: the geodatabase also holds 356 working polygons the published map leaves out; `TRATAMIENTO`, `TIPOLOGIA`, `ALTURA_MAXIMA`), 22 "Antejardín" (4,191 polygons; `DIMENSION`, `NOTA`), 14 "Área de actividad" (1,143 polygons; `CODIGO_AREA_ACTIVIDAD`), read under a lot for the sustainability configuration |
 | Spatial reference | Web Mercator on the service; requested as `outSR=4326`, GeoJSON |
 | Limits | 2,000 features per page; `resultOffset`/`OBJECTID` ordering; `CODIGO_ID` is empty, so `OBJECTID` is the record identity and the record `version` is a hash of geometry and attributes |
 | Equipamiento storeys | [`bogota-pot-equipamientos.json`](../backend/planning/providers/bogota-pot-equipamientos.json): Decreto 253/2026 Anexo 36.1 (596 rows, 559 with storeys) keyed by the treatment layer's `OBJECTID`. The annex numbers its polygons 1–596 in the order of the layer's blank-height Consolidación polygons by `OBJECTID`; the annex's lot codes (sector, barrio, two-digit manzana and lot) widen to the UAECD lot numbers under those polygons, which is how the order was verified. Rebuild with `scripts/build-bogota-equipamientos.mjs` from the annex PDF's `pdftotext -layout` output |
 
 SDP's own servers (`sinu.sdp.gov.co`, `serviciosgis.catastrobogota.gov.co`, `datosabiertos.bogota.gov.co`)
 do not answer from outside Colombia (TCP timeouts from Europe and the United States, 2026-10-29). The
-IDEC copy carries the same layer schema as SINUPOT's "Edificabilidad → Tratamiento urbanístico" and
-"Dimensionamiento de antejardines" layers. Two university copies of the same geodatabase exist on
-ArcGIS Online; they are not used.
+copy carries the same layer schema and `OBJECTID`s as SINUPOT's "Edificabilidad → Tratamiento urbanístico"
+and "Dimensionamiento de antejardines" layers; the published treatments' geometry matches SDP's own
+ArcGIS Online `Tratamiento_Urbanistico` service, which shortens field names and has no front-yard layer.
+Empty attributes are null in this copy where the IDEC copy had a space, which the rules read alike.
 
 The provider reads live per viewport: one treatment query and one front-yard query for the requested
 bounds (15 min in-memory cache, bounded), then `record` by `OBJECTID`. A viewport listing clips areas
