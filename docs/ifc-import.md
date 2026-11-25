@@ -1,9 +1,40 @@
-<!-- Open plan, not started: importing IFC building models so X-ray and Plan stats read real storeys, units and uses. -->
-# IFC building import (plan)
+<!-- IFC building import: the built geometry import, and the open plan for storeys, units and uses. -->
+# IFC building import
 
-Status: not started. Kept here until someone asks for it.
+Status: the geometry import is built (below). Storeys, units and uses (the plan after it) are not
+started.
 
-## Why
+## Built: an IFC file as a building model
+
+Upload model (`building-upload.js`) and MCP `ugt_import_model` take an `.ifc` file (IFC2X3, IFC4,
+IFC4X3) and turn it into the same self-contained GLB an uploaded glTF model is
+(`frontend/js/ifc-model-reader.js`, which both use). From there it is an ordinary uploaded model:
+preview, projected footprint, placement editor and the mesh in the model view.
+
+- **Reader:** web-ifc (That Open Company, MPL-2.0), pinned to one version in
+  `IfcModelReader.WEB_IFC_VERSION` and `backend/package.json` (a test keeps them equal). The browser
+  loads it from jsDelivr on the first IFC file (about 0.25 MB of script and 0.5 MB of WebAssembly,
+  compressed); 0.0.78's browser build is broken. Lengths come out in metres whatever the file's unit.
+- **What is kept:** the building elements (`IfcBuildingElement`, `IfcBuiltElement` in IFC4X3). The
+  envelope (walls, curtain walls, slabs, roofs, windows, plates, members, columns, beams, coverings,
+  chimneys, shading devices) is always kept; other elements (doors, stairs, railings, generic objects)
+  only inside the envelope's plan, so trees, cars and site furniture around the building are left
+  out. Spaces, zones, openings, furniture, building services and the site's terrain are never read.
+- **Limits:** the GLB stays within the footprint's 250 000 triangles and the 10 MiB upload. When the
+  whole building is over them, whole IFC classes of detail are left out, cheapest first kept, and the
+  dialog names them (`leftOut`); when the envelope alone is over them, the import is refused with a
+  request to export at a coarser level of detail.
+- **Colours:** one material per IFC style colour, blended where it is transparent (glass).
+- **Placement:** `IfcMapConversion` to a projected CRS the city-model reader knows (UTM zones and the
+  listed national grids), else the site's `RefLatitude`/`RefLongitude` with the model context's
+  `TrueNorth`, each subject to the [model file placement](vocabulary.md#model-file-placement) range.
+  Revit's site location is usually its template's (Chicago, Boston), which the 1 km range discards.
+- **Known limits:** the GLB's lowest point stands on the ground, so a basement lifts the building by
+  its depth; one connected building per file.
+
+## Plan: storeys, units and uses
+
+### Why
 
 An uploaded GLB is a mesh. It draws the building, but says nothing about storeys, rooms,
 apartments or use, so X-ray has no interior to show and Plan stats counts it by the per-m² rule
@@ -23,7 +54,7 @@ semantics a mesh lacks:
 - `IfcWall`, `IfcSlab`, `IfcDoor`, `IfcWindow`, `IfcStair`: the elements X-ray draws.
 - `IfcSite` / `IfcMapConversion` (IFC4): the georeference, when the author set one.
 
-## What the import would do
+### What the import would do
 
 1. **Read** the file in the browser with web-ifc (That Open Company, MPL-2.0, a WASM module of a
    few MB), loaded only when someone imports an IFC file, the way the floor-plan modules load on
@@ -47,7 +78,7 @@ The import produces an ordinary Freeform building: footprint, height and storeys
 `floorPlans` and `use` on its properties, and the mesh as its model. Nothing downstream needs to
 know the source was IFC.
 
-## How IFC maps onto our records
+### How IFC maps onto our records
 
 IFC describes one built object as designed; our records describe changes to an existing city and
 who agrees to them. The mapping therefore holds inside a building and stops above it. Our names
@@ -68,7 +99,7 @@ stay; IFC names are used only at the import (and any later export) boundary.
 
 A whole Plan at city scale maps onto CityGML / CityJSON instead; see [CityGML and CityJSON](citygml.md).
 
-## Open questions
+### Open questions
 
 - **Where the floor model is stored.** Floor plans are stored only as shared published documents
   (cadastre-data `buildings.floor_plan`, [building floor models](building-floor-models.md#where-floor-plans-are-stored)),
@@ -81,10 +112,8 @@ A whole Plan at city scale maps onto CityGML / CityJSON instead; see [CityGML an
   must say so (as the generator's notes do).
 - **Fidelity limits.** Curved walls, sloped slabs and split-level storeys need simplification to
   the v3 model's flat polygons; the import should report what it simplified.
-- **MCP parity.** `ugt_import_model` accepts GLB/glTF today; it would take IFC the same way,
-  through the same conversion module.
 
-## Not in this plan
+### Not in this plan
 
 - Detecting storeys and walls from a bare GLB by slicing the mesh. That gives a real storey count
   and floor area, but not apartments; it is a separate, smaller step if wanted.

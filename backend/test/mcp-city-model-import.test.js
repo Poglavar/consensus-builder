@@ -90,3 +90,33 @@ describe('ugt_import_model with a CityGML building', () => {
         expect(uploads).toHaveLength(0);
     });
 });
+
+describe('ugt_import_model with an IFC building', () => {
+    const ifc = readFileSync(new URL('../../test-assets/test-building.ifc', import.meta.url));
+    const ifcData = `data:application/x-step;base64,${ifc.toString('base64')}`;
+
+    it('converts it to a GLB standing where its map conversion puts it, without a center', async () => {
+        const { tools, uploads } = setup();
+        const result = await tools.importModel({ city: 'alatau', parcelSourceId: 'ground', confirmAssetUpload: true, fileName: 'building.ifc', modelData: ifcData });
+        expect(uploads).toHaveLength(1);
+        expect(Buffer.from(uploads[0].modelData.split(',')[1], 'base64').subarray(0, 4).toString()).toBe('glTF');
+        expect(result.asset).toMatchObject({ convertedFrom: 'ifc', placement: 'map-conversion' });
+        expect(result.asset.center[0]).toBeCloseTo(77.02224, 4);
+        expect(result.asset.center[1]).toBeCloseTo(43.61216, 4);
+        expect(result.asset.rotation).toBeCloseTo(28.6, 1);
+        // The 12 m by 8 m box, about 96 m², turned with the file.
+        const building = result.design.geometry.buildings[0];
+        expect(turf.area(building.geometry)).toBeCloseTo(96, 0);
+        expect(building.properties).toMatchObject({ source: 'upload', height: 6.6 });
+    });
+
+    it('uses a supplied center more than 1 km from the file’s location, and the file’s within it', async () => {
+        const { tools } = setup();
+        const args = { city: 'alatau', parcelSourceId: 'ground', confirmAssetUpload: true, modelData: ifcData };
+        const far = await tools.importModel({ ...args, center: [77.05, 43.62], rotation: 10 });
+        expect(far.asset).toMatchObject({ convertedFrom: 'ifc', placement: 'supplied', center: [77.05, 43.62], rotation: 10 });
+        const near = await tools.importModel({ ...args, center: [77.023, 43.6125] });
+        expect(near.asset.placement).toBe('map-conversion');
+        expect(near.asset.center[0]).toBeCloseTo(77.02224, 4);
+    });
+});

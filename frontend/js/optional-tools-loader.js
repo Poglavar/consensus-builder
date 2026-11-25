@@ -17,6 +17,8 @@
         modelUpload: ['js/model-upload.js'],
         // CityGML and CityJSON: footprint import, Upload model, and plan and design import in Lists.
         cityModel: ['js/city-model-reader.js'],
+        // IFC building models for Upload model; web-ifc itself loads from the CDN on the first IFC file.
+        ifcModel: ['js/city-model-reader.js', 'js/ifc-model-reader.js'],
         // CityJSON plan and design download, and reading such a file back.
         cityJson: ['js/city-model-reader.js', 'js/city-json-export.js'],
         chat: ['js/chat/chat-transcript.js', 'js/chat/chat-context.js', 'js/chat/chat-navigation.js', 'js/chat/chat-client.js', 'js/chat/chat-panel.js'],

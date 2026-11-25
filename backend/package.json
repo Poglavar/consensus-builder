@@ -70,6 +70,7 @@
         "sas-lib": "^1.0.10",
         "saxes": "^6.0.0",
         "three": "0.184.0",
+        "web-ifc": "0.0.77",
         "zod": "^4.6.7"
     },
     "devDependencies": {

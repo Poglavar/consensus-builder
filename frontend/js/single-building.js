@@ -801,11 +801,14 @@
     }
 
     // Import into the selected footprint without ending the current design or dropping its siblings.
-    // A city-model building brings its placement ({ center, rotationDeg }): it stands where its file puts it.
-    function useUploadedBuildingModel({ width, length, height, footprint, modelName, modelUrl, placement = null }) {
+    // A city-model or IFC building brings its placement ({ center, rotationDeg }): it stands where its file
+    // puts it, unless that is more than 1 km from the selected footprint (SingleBuildingGeometry.filePlacementNear).
+    function useUploadedBuildingModel({ width, length, height, footprint, modelName, modelUrl, placement: filePlacement = null }) {
         const active = getActiveBuilding();
         if (!singleEditor || !active || ![width, length, height].every(value => typeof value === 'number' && Number.isFinite(value) && value > 0)) return false;
-        const center = placement ? L.latLng(placement.center.lat, placement.center.lng) : featureCenterLatLng(active.feature);
+        const activeCenter = featureCenterLatLng(active.feature);
+        const placement = window.SingleBuildingGeometry.filePlacementNear(filePlacement, activeCenter && { lng: activeCenter.lng, lat: activeCenter.lat });
+        const center = placement ? L.latLng(placement.center.lat, placement.center.lng) : activeCenter;
         const rotation = placement ? placement.rotationDeg : active.rotation;
         const feature = window.SingleBuildingGeometry.placeModelFootprint(footprint, center, rotation);
         if (feature) markAsEditablePolygon(feature, height, rotation);
@@ -1735,10 +1738,13 @@
         activeBuildingId = null;
         nextBuildingId = 1;
 
-        // A city-model building stands where its file puts it; a glTF model starts in the block.
-        const placement = modelPlacement
-            ? { center: L.latLng(modelPlacement.center.lat, modelPlacement.center.lng), rotation: modelPlacement.rotationDeg }
-            : { center: computeInitialPlacement(singleBlockFeature).center, rotation: 0 };
+        // A city-model or IFC building stands where its file puts it, unless that is more than 1 km from
+        // the site; a glTF model starts in the block.
+        const siteCenter = computeInitialPlacement(singleBlockFeature).center;
+        const filePlacement = window.SingleBuildingGeometry.filePlacementNear(modelPlacement, { lng: siteCenter.lng, lat: siteCenter.lat });
+        const placement = filePlacement
+            ? { center: L.latLng(filePlacement.center.lat, filePlacement.center.lng), rotation: filePlacement.rotationDeg }
+            : { center: siteCenter, rotation: 0 };
         const safeHeight = Math.max(3, Math.round(Number(height) || DEFAULT_HEIGHT_M));
         const feature = window.SingleBuildingGeometry.placeModelFootprint(footprint, placement.center, placement.rotation);
         if (!feature) {

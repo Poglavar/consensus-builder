@@ -396,33 +396,58 @@
     // groups: { roof|wall|other: [position, normal, position, normal, …] } → GLB bytes, one primitive per
     // non-empty group with its own material.
     function writeGlb(groups) {
-        const json = { asset: { version: '2.0', generator: 'Urban Game Theory city-model-reader' }, scene: 0, scenes: [{ nodes: [0] }],
-            nodes: [{ mesh: 0 }], meshes: [{ primitives: [] }], materials: [], accessors: [], bufferViews: [], buffers: [] };
-        const chunks = [];
-        let offset = 0;
+        const primitives = [];
         for (const [kind, entries] of Object.entries(groups)) {
             if (!entries.length) continue;
             const count = entries.length / 2;
             const positions = new Float32Array(count * 3), normals = new Float32Array(count * 3);
-            const min = [Infinity, Infinity, Infinity], max = [-Infinity, -Infinity, -Infinity];
             for (let i = 0; i < count; i++) {
                 const p = entries[i * 2], n = entries[i * 2 + 1];
-                for (let k = 0; k < 3; k++) {
-                    positions[i * 3 + k] = p[k]; normals[i * 3 + k] = n[k];
-                    min[k] = Math.min(min[k], Math.fround(p[k])); max[k] = Math.max(max[k], Math.fround(p[k]));
-                }
+                for (let k = 0; k < 3; k++) { positions[i * 3 + k] = p[k]; normals[i * 3 + k] = n[k]; }
+            }
+            primitives.push({ name: kind, color: MODEL_COLOURS[kind], positions, normals });
+        }
+        return glbFromPrimitives(primitives);
+    }
+
+    // primitives: [{ name, color: [r, g, b, a], positions, normals: Float32Array (xyz per vertex),
+    // indices?: Uint32Array }] → a self-contained GLB with one mesh, one material per primitive (blended
+    // when its alpha is below 1). The model readers (city models here, IFC in ifc-model-reader.js) share it.
+    function glbFromPrimitives(primitives, generator = 'Urban Game Theory city-model-reader') {
+        const json = { asset: { version: '2.0', generator }, scene: 0, scenes: [{ nodes: [0] }],
+            nodes: [{ mesh: 0 }], meshes: [{ primitives: [] }], materials: [], accessors: [], bufferViews: [], buffers: [] };
+        const chunks = [];
+        let offset = 0;
+        const addView = (array, target) => {
+            json.bufferViews.push({ buffer: 0, byteOffset: offset, byteLength: array.byteLength, target });
+            chunks.push(new Uint8Array(array.buffer, array.byteOffset, array.byteLength));
+            offset += array.byteLength;
+            return json.bufferViews.length - 1;
+        };
+        for (const { name, color, positions, normals, indices } of primitives) {
+            const count = positions.length / 3;
+            if (!count) continue;
+            const min = [Infinity, Infinity, Infinity], max = [-Infinity, -Infinity, -Infinity];
+            for (let i = 0; i < positions.length; i++) {
+                const k = i % 3;
+                if (positions[i] < min[k]) min[k] = positions[i];
+                if (positions[i] > max[k]) max[k] = positions[i];
             }
             const attributes = {};
-            for (const [name, array, extra] of [['POSITION', positions, { min, max }], ['NORMAL', normals, {}]]) {
-                json.bufferViews.push({ buffer: 0, byteOffset: offset, byteLength: array.byteLength, target: 34962 });
-                json.accessors.push({ bufferView: json.bufferViews.length - 1, componentType: 5126, count, type: 'VEC3', ...extra });
-                attributes[name] = json.accessors.length - 1;
-                chunks.push(new Uint8Array(array.buffer));
-                offset += array.byteLength;
+            for (const [attribute, array, extra] of [['POSITION', positions, { min, max }], ['NORMAL', normals, {}]]) {
+                json.accessors.push({ bufferView: addView(array, 34962), componentType: 5126, count, type: 'VEC3', ...extra });
+                attributes[attribute] = json.accessors.length - 1;
             }
-            json.materials.push({ name: kind, pbrMetallicRoughness: { baseColorFactor: MODEL_COLOURS[kind], metallicFactor: 0, roughnessFactor: 0.9 },
-                doubleSided: true });
-            json.meshes[0].primitives.push({ attributes, material: json.materials.length - 1, mode: 4 });
+            const primitive = { attributes, mode: 4 };
+            if (indices) {
+                json.accessors.push({ bufferView: addView(indices, 34963), componentType: 5125, count: indices.length, type: 'SCALAR' });
+                primitive.indices = json.accessors.length - 1;
+            }
+            const opaque = !(color[3] < 1);
+            json.materials.push({ name, pbrMetallicRoughness: { baseColorFactor: color, metallicFactor: 0, roughnessFactor: 0.9 },
+                doubleSided: true, ...(opaque ? {} : { alphaMode: 'BLEND' }) });
+            primitive.material = json.materials.length - 1;
+            json.meshes[0].primitives.push(primitive);
         }
         if (!json.meshes[0].primitives.length) throw Object.assign(new Error('The building has no faces.'), { code: 'empty' });
         json.buffers.push({ byteLength: offset });
@@ -465,7 +490,7 @@
     }
 
     const api = { createCityGmlCollector, parseCityGmlDom, parseCityJson, crsDefinition, crsOf, epsgCodes,
-        readCityModel, buildingRecord, footprintFeatures, geoJsonFromFileText, crsErrorMessage, buildingGlb };
+        readCityModel, buildingRecord, footprintFeatures, geoJsonFromFileText, crsErrorMessage, buildingGlb, glbFromPrimitives };
     if (global) global.CityModelReader = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : null);

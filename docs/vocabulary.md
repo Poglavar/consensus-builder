@@ -621,7 +621,11 @@ A building design with one connected authored footprint, including any courtyard
 
 ### Imported model footprint
 
-The connected horizontal projection of a GLB model's visible mesh triangles, including concavities and courtyard holes. It is the model's silhouette, which can include overhangs and canopies; it does not infer a foundation boundary.
+The connected horizontal projection of a GLB model's visible mesh triangles, including concavities and courtyard holes. It is the model's silhouette, which can include overhangs and canopies; it does not infer a foundation boundary. It is one integer union of the triangles at millimetre precision (`projectedFootprint`, Clipper); a part or hole under 1 m² (or 1 % of the largest part, for a small model) is mesh noise and ignored, any larger separate part refuses the import.
+
+### Model file placement
+
+Where a CityGML, CityJSON or IFC building file says the building stands: its centre and rotation from the file's coordinate system, an IFC `IfcMapConversion`, or an IFC site's reference latitude and longitude with its true north. It is used when it lies within 1 km of where the building is being placed (the selected site, the selected footprint, or MCP's `center`); further away the model starts there instead, since IFC exports often carry their design tool's template location (`SingleBuildingGeometry.filePlacementNear`).
 
 ### Georeferenced building model
 

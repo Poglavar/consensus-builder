@@ -281,7 +281,7 @@ describe('MCP imports and ephemeral visual previews', () => {
         const scene = new THREE.Scene(), mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(2, 3, 4), new THREE.MeshBasicMaterial(), 1);
         mesh.setMatrixAt(0, new THREE.Matrix4().makeTranslation(10, 0, 20)); scene.add(mesh);
         const box = new THREE.Box3().setFromObject(scene), triangles = modelGeometry.modelTriangles(scene, box.getCenter(new THREE.Vector3()), THREE);
-        const footprint = modelGeometry.projectedFootprint(triangles, turf.union);
+        const footprint = modelGeometry.projectedFootprint(triangles);
         const area = Math.abs(footprint.geometry.coordinates[0].slice(1).reduce((sum, point, index) => { const previous = footprint.geometry.coordinates[0][index]; return sum + previous[0] * point[1] - point[0] * previous[1]; }, 0)) / 2;
         expect(area).toBeCloseTo(8, 6);
     });

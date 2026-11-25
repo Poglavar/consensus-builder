@@ -1,5 +1,6 @@
-// Building upload modal: lets a proposer upload a glTF 2.0 (.glb/.gltf) building model, or a
+// Building upload modal: lets a proposer upload a glTF 2.0 (.glb/.gltf) building model, a
 // CityGML/CityJSON building (city-model-reader.js turns it into a GLB placed where the file puts it),
+// or an IFC building model (ifc-model-reader.js: the same, placed by the file's georeference when it has one),
 // preview it in a three.js scene, and turn its footprint + height into a single-building
 // placement (via window.createSingleBuildingFromUpload). Review the asset here, then place
 // its editable footprint on the main map; the saved model reference supplies its 3D mesh.
@@ -87,7 +88,8 @@
             previewLabel: t('modal.buildingUpload.previewLabel', '3D Preview'),
             chooseFile: t('modal.buildingUpload.chooseFile', 'Choose a model file'),
             hint: t('modal.buildingUpload.hint', 'Supported: glTF 2.0 (.glb or .gltf).')
-                + (structure ? '' : ' ' + t('modal.buildingUpload.cityModelHint', 'A CityGML or CityJSON file with one building also works: it stands where the file puts it.')),
+                + (structure ? '' : ' ' + t('modal.buildingUpload.cityModelHint', 'A CityGML or CityJSON file with one building also works: it stands where the file puts it.')
+                    + ' ' + t('modal.buildingUpload.ifcHint', 'So does an IFC building model (.ifc from Revit, ArchiCAD, Allplan or Vectorworks): it stands where the file’s georeference puts it, when it has one near the site.')),
             noFile: t('modal.buildingUpload.noFile', 'No model loaded yet.'),
             cancel: t('modal.buildingUpload.cancel', 'Cancel'),
             confirm: structure
@@ -109,7 +111,7 @@
                 <div class="cb-dialog__body">
                     <label class="building-upload-file">
                         <span class="btn">${text.chooseFile}</span>
-                        <input id="building-upload-file" type="file" accept="${structure ? '.glb,.gltf,model/gltf-binary,model/gltf+json' : '.glb,.gltf,.gml,.xml,.json,model/gltf-binary,model/gltf+json,application/gml+xml,application/json'}" hidden>
+                        <input id="building-upload-file" type="file" accept="${structure ? '.glb,.gltf,model/gltf-binary,model/gltf+json' : '.glb,.gltf,.gml,.xml,.json,.ifc,model/gltf-binary,model/gltf+json,application/gml+xml,application/json,application/x-step'}" hidden>
                     </label>
                     <p class="building-upload-hint">${text.hint}</p>
                     <div class="cb-kicker">${text.previewLabel}</div>
@@ -308,6 +310,28 @@
         return { file: new File([out.glb], name, { type: 'model/gltf-binary' }), placement: { center: out.center, rotationDeg: out.rotationDeg } };
     }
 
+    // An IFC building → a GLB File, where the file says it stands (or null), and the IFC classes left
+    // out to stay within the model limits. Throws with a user message.
+    async function ifcModelGlb(file) {
+        await window.ensureOptionalTool('ifcModel');
+        let webIfc;
+        try { webIfc = await window.IfcModelReader.loadBrowserWebIfc(); }
+        catch (error) { throw Object.assign(error, { userMessage: t('modal.buildingUpload.errorEngine', 'Could not load the model parser.') }); }
+        let out;
+        try {
+            out = await window.IfcModelReader.ifcBuildingGlb(new Uint8Array(await file.arrayBuffer()), { webIfc, proj4 });
+        } catch (error) {
+            const messages = {
+                complex: ['modal.buildingUpload.errorIfcComplex', 'This IFC model is over the size limit even without its doors, stairs and railings. Export it at a coarser level of detail and try again.'],
+                empty: ['modal.buildingUpload.errorEmpty', 'The model contains no visible geometry.']
+            };
+            const [key, message] = messages[error.code] || ['modal.buildingUpload.errorIfc', 'Could not read this file as an IFC building model.'];
+            throw Object.assign(error, { userMessage: t(key, message) });
+        }
+        const name = file.name.replace(/\.ifc$/i, '') + '.glb';
+        return { file: new File([out.glb], name, { type: 'model/gltf-binary' }), placement: out.placement, leftOut: out.leftOut };
+    }
+
     async function onFileChosen(event) {
         let file = event.target && event.target.files && event.target.files[0];
         if (!file) return;
@@ -321,6 +345,7 @@
         loadedName = file.name;
         loadedFile = file;
         loadedPlacement = null;
+        let leftOut = [];
         setConfirmEnabled(false);
         setStatus(t('modal.buildingUpload.loading', 'Loading model…'));
 
@@ -348,6 +373,22 @@
                 console.warn('City model upload failed', error);
                 setStatus(error.userMessage || window.CityModelReader?.crsErrorMessage(error, window.i18n)
                     || t('modal.buildingUpload.errorCityModel', 'Could not read this file as a CityGML or CityJSON building.'), true);
+                return;
+            }
+        }
+
+        if (!isStructureUpload() && /\.ifc$/i.test(file.name)) {
+            try {
+                const converted = await ifcModelGlb(file);
+                if (!isCurrent()) return;
+                file = converted.file;
+                loadedFile = file;
+                loadedPlacement = converted.placement;
+                leftOut = converted.leftOut;
+            } catch (error) {
+                if (!isCurrent()) return;
+                console.warn('IFC model upload failed', error);
+                setStatus(error.userMessage || t('modal.buildingUpload.errorIfc', 'Could not read this file as an IFC building model.'), true);
                 return;
             }
         }
@@ -400,7 +441,9 @@
                 setStatus(t('modal.buildingUpload.loaded', 'Loaded: {{name}}', { name: file.name })
                     + ' — ' + t('modal.buildingUpload.dimensions',
                         'Footprint {{width}}m × {{length}}m, height {{height}}m',
-                        { width: dims.width, length: dims.length, height: dims.height }));
+                        { width: dims.width, length: dims.length, height: dims.height })
+                    + (leftOut.length ? ' ' + t('modal.buildingUpload.ifcLeftOut', 'Left out to stay within the size limit: {{classes}}.',
+                        { classes: leftOut.map(entry => entry.category).join(', ') }) : ''));
                 setConfirmEnabled(true);
                 try {
                     initScene();

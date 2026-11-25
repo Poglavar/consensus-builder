@@ -20,6 +20,8 @@ const modelGeometry = require('../../frontend/js/building-model-geometry.js');
 const singleGeometry = require('../../frontend/js/single-building-geometry.js');
 const FurnitureModels = require('../../frontend/js/furniture-models.js');
 const CityModelReader = require('../../frontend/js/city-model-reader.js');
+const IfcModelReader = require('../../frontend/js/ifc-model-reader.js');
+const webIfc = require('web-ifc');
 const MAX_BYTES = 10 * 1024 * 1024;
 const fail = (code, message) => { throw Object.assign(new Error(message), { code }); };
 const SPACE_KINDS = ['park', 'square', 'lake'];
@@ -141,7 +143,7 @@ async function parseModelBytes(bytes, args) {
         const dimensions = modelGeometry.dimensionsFromBounds(box);
         if (box.isEmpty() || !dimensions) fail('model-geometry-unavailable', 'The model contains no measurable mesh.');
         const triangles = modelGeometry.modelTriangles(parsed.scene, box.getCenter(new THREE.Vector3()), THREE);
-        const footprint = modelGeometry.projectedFootprint(triangles, turf.union).geometry;
+        const footprint = modelGeometry.projectedFootprint(triangles).geometry;
         const placed = singleGeometry.placeModelFootprint(footprint, center, args.rotation ?? 0);
         if (!placed) fail('model-placement-invalid', 'The model footprint could not be placed.');
         return { footprint: placed.geometry, ...dimensions };
@@ -274,21 +276,39 @@ export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftRefer
             return Buffer.from(match[1], 'base64');
         })() : await dataOf(args);
         if (!bytes.length || bytes.length > MAX_BYTES) fail('model-size-invalid', 'A model must contain 1 byte to 10 MiB.');
-        // A CityGML or CityJSON building becomes the same GLB the site's upload makes, standing where its
-        // file puts it (its center and rotation replace any supplied).
-        let city = null;
+        // A CityGML, CityJSON or IFC building becomes the same GLB the site's upload makes. It stands where
+        // its file puts it unless a supplied center is more than 1 km away (filePlacementNear).
+        let city = null, converted = null;
         const cityModel = kind === 'building' ? cityModelOf(bytes) : null;
         if (cityModel) {
             if (cityModel.buildings.length !== 1) fail('model-buildings-count', `The file holds ${cityModel.buildings.length} buildings; import one, or use ugt_import_design with format ${cityModel.format} for their footprints.`);
             const transform = proj4(cityModel.crs.definition, 'EPSG:4326');
             const out = CityModelReader.buildingGlb(cityModel.buildings[0], { toLngLat: (x, y) => transform.forward([x, y]), unitToMetres: cityModel.crs.zToMetres, triangulate });
             bytes = Buffer.from(out.glb);
-            city = { center: [out.center.lng, out.center.lat], rotation: out.rotationDeg, format: cityModel.format };
+            converted = { format: cityModel.format, placement: { center: out.center, rotationDeg: out.rotationDeg } };
+        } else if (kind === 'building' && IfcModelReader.looksLikeIfc(bytes.subarray(0, 8000).toString('latin1'))) {
+            let out;
+            try { out = await IfcModelReader.ifcBuildingGlb(new Uint8Array(bytes), { webIfc, proj4 }); }
+            catch (error) {
+                if (error?.code === 'complex') fail('model-complexity-limit', `The IFC building's walls, slabs, roofs and windows alone have ${error.detail.triangles} triangles and ${(error.detail.bytes / 1048576).toFixed(1)} MiB; the limit is ${error.detail.maxTriangles} triangles and ${(error.detail.maxBytes / 1048576).toFixed(1)} MiB. Export it at a coarser level of detail.`);
+                if (error?.code === 'empty') fail('model-geometry-unavailable', 'The IFC file holds no building element with geometry.');
+                if (error?.code === 'ifc-unreadable') fail('model-data-invalid', 'The IFC file could not be read.');
+                throw error;
+            }
+            bytes = Buffer.from(out.glb);
+            converted = { format: 'ifc', placement: out.placement, leftOut: out.leftOut, unsupportedCrs: out.unsupportedCrs };
         }
-        const parsed = await parseModel(bytes, { ...args, kind, ...(city ? { center: city.center, rotation: city.rotation } : {}) });
+        if (converted) {
+            const reference = Array.isArray(args.center) ? { lng: args.center[0], lat: args.center[1] } : null;
+            const placement = singleGeometry.filePlacementNear(converted.placement, reference);
+            if (placement) city = { center: [placement.center.lng, placement.center.lat], rotation: placement.rotationDeg };
+            city = { ...city, format: converted.format, placement: placement ? (placement.source || 'file') : 'supplied',
+                ...(converted.leftOut?.length ? { leftOut: converted.leftOut } : {}), ...(converted.unsupportedCrs ? { unsupportedCrs: converted.unsupportedCrs } : {}) };
+        }
+        const parsed = await parseModel(bytes, { ...args, kind, ...(city?.center ? { center: city.center, rotation: city.rotation } : {}) });
         if (kind === 'furniture') return furnitureAsset(bytes, parsed, args);
         const { footprint, height } = parsed;
-        if (city) args = { ...args, center: city.center, rotation: city.rotation };
+        if (city?.center) args = { ...args, center: city.center, rotation: city.rotation };
         if (!footprint || !Number.isFinite(height) || height <= 0) fail('model-geometry-unavailable', 'The model has no measurable building footprint and height.');
         const authoredAt = args.authoredAt || new Date().toISOString();
         // A park, square or lake takes the same placed footprint as its structure polygon; the model is
@@ -308,7 +328,8 @@ export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftRefer
         }
         return { ...result, design: content, cid: cidOfObject(content), publication: 'private',
             ...await previewArtifact({ design: content, parcelSourceId: result.parcelSourceId }), asset: { modelUrl: url.href, public: true, durable: true, footprint: 'projected-model-triangles', kind,
-                ...(city ? { convertedFrom: city.format, center: city.center, rotation: city.rotation } : {}) } };
+                ...(city ? { convertedFrom: city.format, center: args.center, rotation: args.rotation ?? 0, placement: city.placement,
+                    ...(city.leftOut ? { leftOut: city.leftOut } : {}), ...(city.unsupportedCrs ? { unsupportedCrs: city.unsupportedCrs } : {}) } : {}) } };
     }
     async function renderDefault(rows) {
         let rendered;

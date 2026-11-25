@@ -327,6 +327,20 @@
         return ensureClosedRing(ring);
     }
 
+    // A model file's own placement ({ center: { lng, lat }, rotationDeg }: a CityGML, CityJSON or IFC
+    // building) is used when it lies within 1 km of where the building is being placed (reference
+    // { lng, lat }, or none). Further away it is not where the author means: IFC exports often carry
+    // their design tool's template location. null when it is not used.
+    const FILE_PLACEMENT_RANGE_M = 1000;
+    function filePlacementNear(placement, reference) {
+        if (!placement?.center) return null;
+        if (!reference) return placement;
+        const lat = (placement.center.lat + reference.lat) / 2 * Math.PI / 180;
+        const east = (placement.center.lng - reference.lng) * 111320 * Math.cos(lat);
+        const north = (placement.center.lat - reference.lat) * 110574;
+        return Math.hypot(east, north) <= FILE_PLACEMENT_RANGE_M ? placement : null;
+    }
+
     // Place a model's local metre-space Polygon at a geographic centre. Model coordinates use
     // east/north axes; positive rotations follow the editor's counterclockwise convention.
     function placeModelFootprint(footprint, center, rotationDeg = 0) {
@@ -366,6 +380,8 @@
     const api = {
         buildRectangleRing,
         placeModelFootprint,
+        filePlacementNear,
+        FILE_PLACEMENT_RANGE_M,
         clipFootprintToBoundary,
         ensureClosedRing,
         footprintWithinBoundary,

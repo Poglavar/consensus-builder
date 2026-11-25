@@ -18,63 +18,77 @@
         return { width, length, height };
     }
 
-    // Convert projected triangle soup into one actual outline. Coordinates are metres east/north;
-    // quantization gives stable deduplication across triangle order and winding.
-    function projectedFootprint(triangles, union) {
-        if (!(triangles instanceof Float64Array) || triangles.length % 6 !== 0
-            || typeof union !== 'function') throw footprintError('empty');
+    // Clipper (vendor/clipper-lib-6.4.2) unions on integers: millimetres here.
+    const CLIPPER_SCALE = 1000;
+    // A part or hole of the outline below 1 m² (or 1 % of the largest part, for a small model) is mesh
+    // noise, such as a post beside the building or a gap between two slabs: not a separate building
+    // part or a courtyard.
+    const NOISE_M2 = 1;
+    const NOISE_SHARE = 0.01;
+    const clipperLib = () => (global && global.ClipperLib) || require('../vendor/clipper-lib-6.4.2/clipper.js');
+
+    // Convert projected triangle soup into one actual outline. Coordinates are metres east/north. One
+    // integer union of every triangle (non-zero fill) cannot fail on the slivers and nearly coincident
+    // edges of exported buildings, as a pairwise floating-point union did.
+    function projectedFootprint(triangles) {
+        if (!(triangles instanceof Float64Array) || triangles.length % 6 !== 0) throw footprintError('empty');
         const count = triangles.length / 6;
         if (count > MAX_FOOTPRINT_TRIANGLES) throw footprintError('complex');
-        const unique = new Map();
+        const ClipperLib = clipperLib();
+        // A slab's top and bottom project onto the same triangles: each distinct one is added once.
+        const paths = [], seen = new Set();
         for (let offset = 0; offset < triangles.length; offset += 6) {
-            const vertices = [];
+            const points = [];
             for (let index = 0; index < 6; index += 2) {
                 const x = triangles[offset + index];
                 const y = triangles[offset + index + 1];
                 if (!Number.isFinite(x) || !Number.isFinite(y)) throw footprintError('empty');
-                vertices.push([Math.round(x * 1e6) / 1e6, Math.round(y * 1e6) / 1e6]);
+                points.push({ X: Math.round(x * CLIPPER_SCALE), Y: Math.round(y * CLIPPER_SCALE) });
             }
-            const [a, b, c] = vertices;
-            const area2 = (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
-            if (!Number.isFinite(area2)) throw footprintError('empty');
+            const [a, b, c] = points;
+            const area2 = (b.X - a.X) * (c.Y - a.Y) - (b.Y - a.Y) * (c.X - a.X);
             if (area2 === 0) continue;
-            const vertexKeys = vertices.map(([x, y]) => `${Math.round(x * 1e6)},${Math.round(y * 1e6)}`).sort();
-            const key = vertexKeys.join(';');
-            if (!unique.has(key)) unique.set(key, {
-                type: 'Feature', properties: {},
-                geometry: { type: 'Polygon', coordinates: [[a, b, c, a]] }
-            });
+            const key = points.map(point => `${point.X},${point.Y}`).sort().join(';');
+            if (seen.has(key)) continue;
+            seen.add(key);
+            paths.push(area2 > 0 ? points : [a, c, b]);
         }
-        let level = [...unique.values()];
-        if (!level.length) throw footprintError('empty');
-        while (level.length > 1) {
-            const next = [];
-            for (let index = 0; index < level.length; index += 2) {
-                if (index + 1 === level.length) {
-                    next.push(level[index]);
-                    continue;
-                }
-                let merged;
-                try { merged = union(level[index], level[index + 1]); }
-                catch (_) { throw footprintError('outline'); }
-                if (!merged?.geometry) throw footprintError('outline');
-                next.push(merged);
-            }
-            level = next;
-        }
-        let geometry = level[0].geometry;
-        if (geometry.type === 'MultiPolygon') {
-            if (!Array.isArray(geometry.coordinates) || !geometry.coordinates.length) throw footprintError('empty');
-            if (geometry.coordinates.length > 1) throw footprintError('disconnected');
-            geometry = { type: 'Polygon', coordinates: geometry.coordinates[0] };
-        }
-        if (geometry.type !== 'Polygon' || !Array.isArray(geometry.coordinates) || !geometry.coordinates.length
-            || geometry.coordinates.some(ring => !Array.isArray(ring) || ring.length < 4
-                || ring.some(point => !Array.isArray(point) || !Number.isFinite(point[0]) || !Number.isFinite(point[1]))
-                || ring[0][0] !== ring[ring.length - 1][0] || ring[0][1] !== ring[ring.length - 1][1])) {
-            throw footprintError('empty');
-        }
-        return { type: 'Feature', properties: {}, geometry };
+        if (!paths.length) throw footprintError('empty');
+        const { Clipper, ClipType, PolyType, PolyFillType } = ClipperLib;
+        const union = (input, output, strictlySimple) => {
+            const clipper = new Clipper();
+            clipper.StrictlySimple = strictlySimple;
+            clipper.AddPaths(input, PolyType.ptSubject, true);
+            if (!clipper.Execute(ClipType.ctUnion, output, PolyFillType.pftNonZero, PolyFillType.pftNonZero)) throw footprintError('outline');
+            return output;
+        };
+        // The union of the triangles, then a strictly simple pass over its few rings, which splits a
+        // courtyard touching the outline at a vertex into its own ring (strictly simple over every
+        // triangle at once takes minutes on a large building).
+        const tree = union(union(paths, new ClipperLib.Paths(), false), new ClipperLib.PolyTree(), true);
+        // Outer rings at any depth (an island inside a courtyard is a part too), each with its holes.
+        const area = node => Math.abs(Clipper.Area(node.Contour())) / CLIPPER_SCALE / CLIPPER_SCALE;
+        const parts = [];
+        const collect = outers => outers.forEach(outer => {
+            parts.push(outer);
+            outer.Childs().forEach(hole => collect(hole.Childs()));
+        });
+        collect(tree.Childs());
+        const largest = Math.max(0, ...parts.map(area));
+        const noise = Math.min(NOISE_M2, largest * NOISE_SHARE);
+        const kept = parts.filter(part => area(part) >= noise);
+        if (!kept.length || !(largest > 0)) throw footprintError('empty');
+        if (kept.length > 1) throw footprintError('disconnected');
+        // Cleaning drops the collinear vertices and zero-width spikes that T-junctions between
+        // triangles leave in the union (within 2 mm).
+        const ring = node => {
+            const points = Clipper.CleanPolygon(node.Contour(), 2).map(point => [point.X / CLIPPER_SCALE, point.Y / CLIPPER_SCALE]);
+            return points.length >= 3 ? [...points, points[0]] : null;
+        };
+        const outline = ring(kept[0]);
+        if (!outline) throw footprintError('empty');
+        const holes = kept[0].Childs().filter(hole => area(hole) >= noise).map(ring).filter(Boolean);
+        return { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [outline, ...holes] } };
     }
 
     // Visible scene triangles, shared by the upload dialog and CPU model importer.

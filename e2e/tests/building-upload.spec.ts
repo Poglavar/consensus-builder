@@ -214,3 +214,26 @@ test('disconnected projected model explains the failure and blocks confirmation'
   await expect(page.locator('#building-upload-confirm')).toBeDisabled();
   await expect(page.locator('#building-upload-modal')).toBeVisible();
 });
+
+test('an IFC building converts to a GLB that stands where its georeference puts it', async ({ page }) => {
+  let uploaded: any;
+  await page.route('**/models', async route => {
+    uploaded = route.request().postDataJSON();
+    await route.fulfill({ json: { modelUrl: '/uploads/models/ifc-building.glb' } });
+  });
+  await openImporter(page);
+  await page.addScriptTag({ url: '/vendor/proj4-2.22.0/proj4.js' });
+  // web-ifc loads from the CDN on the first IFC file.
+  await page.locator('#building-upload-file').setInputFiles('../test-assets/test-building.ifc');
+  await expect(page.locator('#building-upload-confirm')).toBeEnabled({ timeout: 45_000 });
+  await expect(page.locator('#building-upload-status')).toContainText('Footprint 12m × 8m, height 6.6m');
+  await page.locator('#building-upload-confirm').click();
+  await expect(page.locator('#building-upload-modal')).toHaveCount(0);
+  expect(uploaded.fileName).toBe('test-building.glb');
+  expect(Buffer.from(uploaded.modelData.split(',')[1], 'base64').subarray(0, 4).toString()).toBe('glTF');
+  const imported = await page.evaluate(() => (window as any).importedBuilding);
+  expect(imported).toMatchObject({ width: 12, length: 8, height: 6.6, modelName: 'test-building.ifc', modelUrl: '/uploads/models/ifc-building.glb' });
+  expect(imported.placement.source).toBe('map-conversion');
+  expect(imported.placement.center.lng).toBeCloseTo(77.02224, 4);
+  expect(imported.placement.center.lat).toBeCloseTo(43.61216, 4);
+});

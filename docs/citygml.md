@@ -54,8 +54,10 @@ One reader, `frontend/js/city-model-reader.js`, loaded by the page and required 
   glTF. `buildingGlb` writes it as a GLB (roof, wall and other faces as materials, x east, −z north,
   centred on its box) and returns where it stands: its centre and the grid's convergence as the
   rotation. The GLB then takes the glTF path (preview, outline, upload), and the building stands
-  where the file puts it instead of in the selected block. MCP `ugt_import_model` converts the same
-  way and needs no `center` for such a file (`asset.convertedFrom`).
+  where the file puts it instead of in the selected block, when that is within 1 km of the block
+  ([model file placement](vocabulary.md#model-file-placement)). MCP `ugt_import_model` converts the
+  same way and needs no `center` for such a file (`asset.convertedFrom`). IFC building models take
+  the same path ([IFC import](ifc-import.md)).
 - **Coordinate systems:** the file states its system (`srsName`, `metadata.referenceSystem`; compound
   names read their horizontal part). The reader knows Austria GK (31254–31256), RD New (28992,
   7415), HTRS96/TM (3765), Helsinki GK25 (3879), Swiss LV95 (2056), Lambert 93 (2154), Belgian
