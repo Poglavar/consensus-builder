@@ -32,7 +32,7 @@ import { createPaidClient } from './x402-client.js';
 import { fetchLensMembers } from './lens-directory-client.js';
 import { requestOwnershipAttestation } from './lens-ownership-client.js';
 import { createIndexClient } from './publication-client.js';
-import { cidOf } from '../cid.js';
+import { canonicalBytes } from '../cid.js';
 import { AGREEMENT_SCHEMA, DESIGN_SCHEMA, agreementObject, cidOfObject, designObject, isCid } from './agreement-objects.js';
 import {
     AGREEMENT_PROGRAM_ID, AGREEMENT_STATUS, agreementAccountOf, fundAgreement, mintAgreement, mintTermsOf, readAgreementAccount
@@ -262,7 +262,7 @@ export function createUrbanGameTheoryTools({
         mintAgreement,
         fundAgreement,
         readAgreementAccount,
-        waitRetrievable: options => require('../../frontend/js/content-gate.js').waitRetrievable(options),
+        pinWithPinata: options => require('../../frontend/js/ipfs-own-key.js').pinWithPinata(options),
         ...dependencies
     };
     let connection = null;
@@ -293,6 +293,20 @@ export function createUrbanGameTheoryTools({
     function index() {
         indexClient ??= impl.createIndexClient({ apiBase, origin: appOrigin, fetchImpl, log });
         return indexClient;
+    }
+
+    // The exact canonical bytes a mint references: the agreement, its plan and the plan's designs, each
+    // checked against its CID (for pinning with the agent's own key).
+    async function mintContentObjects(agreementCid, content) {
+        const plan = await companion.request(`/plans/${content.planCid}`);
+        if (plan?.cid !== content.planCid || cidOfObject(plan.content) !== content.planCid) throw new Error(`plan ${content.planCid} of agreement ${agreementCid} could not be read as published`);
+        const designs = await index().getDesigns(plan.content.designCids);
+        const objects = [{ kind: 'agreement', cid: agreementCid, content }, { kind: 'plan', cid: plan.cid, content: plan.content },
+            ...plan.content.designCids.map(cid => ({ kind: 'design', cid, content: designs.get(cid)?.content }))];
+        return objects.map(object => {
+            if (!object.content || cidOfObject(object.content) !== object.cid) throw new Error(`${object.kind} ${object.cid} of agreement ${agreementCid} could not be read as published`);
+            return { kind: object.kind, cid: object.cid, bytes: canonicalBytes(object.content) };
+        });
     }
 
     async function indexedAgreement(agreementCid) {
@@ -591,10 +605,16 @@ export function createUrbanGameTheoryTools({
             // target, which the program confirms itself (confirm_funding).
             const lensIssue = agreementRecord.lensRuleError(content.rule);
             if (lensIssue) throw new Error(`agreement ${agreementCid}: ${lensIssue}`);
-            // Content before the mint (docs/blockchain-flows.md Flow 2): pinned, and served by a public
-            // gateway with bytes that hash to each CID, or nothing is signed.
-            const { objects } = await index().pinForMint(agreementCid);
-            await impl.waitRetrievable({ objects, cidOf });
+            // Content before the mint (docs/blockchain-flows.md Flow 2): our server pins it, or, when it
+            // cannot and UGT_PINATA_JWT is set, this agent pins it with that own key. A provider confirms
+            // each CID, or nothing is signed.
+            try {
+                await index().pinForMint(agreementCid);
+            } catch (error) {
+                if (!env.UGT_PINATA_JWT) throw error;
+                const objects = await mintContentObjects(agreementCid, content);
+                await impl.pinWithPinata({ objects, jwt: env.UGT_PINATA_JWT, fetchImpl });
+            }
             const minted = await impl.mintAgreement({
                 connection, sponsorKeypair: keypair, cid: agreementCid, ...mintTermsOf(content), deadline: content.deadline ?? null,
                 lamports: required, openGround: Number(content.inputs?.openGroundM2) > 0,

@@ -1990,7 +1990,15 @@
                 "confirmed": "Confirmada.",
                 "indexing": "A registar a emissão no servidor…",
                 "pinning": "A colocar o acordo, o seu plano e projetos no IPFS…",
-                "retrievable": "A verificar se gateways IPFS públicos os servem: {{confirmed}} de {{total}}…"
+                "pinningOwnKey": "A fixar com a sua chave Pinata: {{pinned}} de {{total}}…"
+            },
+            "ownKey": {
+                "title": "Fixar com a sua própria chave",
+                "intro": "Pode fixá-lo com a sua própria chave Pinata. Crie na Pinata uma chave limitada à fixação de ficheiros. A chave só é enviada à Pinata, a partir deste navegador.",
+                "key": "JWT da Pinata",
+                "remember": "Lembrar a chave neste navegador",
+                "pin": "Fixar e registar",
+                "missing": "Cole um JWT da Pinata."
             },
             "hints": {
                 "noSponsor": "Foi proposto sem uma carteira do promotor, pelo que não pode ser registado na blockchain. Volte a propô-lo com uma carteira Solana ligada: será um novo acordo, com ligação e decisões próprias.",
@@ -2031,9 +2039,9 @@
                 "web3Unavailable": "Não foi possível carregar a biblioteca Solana.",
                 "walletRequired": "Ligue primeiro uma carteira Solana.",
                 "notDeployed": "O programa de acordos ainda não está implementado na Solana {{cluster}}.",
-                "pinFailed": "Não foi possível colocar o conteúdo do acordo no IPFS, por isso ainda não pode ser registado na blockchain: {{reason}}",
-                "contentMissing": "O servidor não tem todos os projetos ou o plano que este acordo indica, por isso não podem ser colocados no IPFS e o acordo não pode ser registado na blockchain.",
-                "notRetrievable": "Nenhum gateway IPFS público serve ainda {{missing}} dos {{total}} objetos, por isso o acordo não foi registado na blockchain. Tente novamente dentro de um minuto.",
+                "pinFailed": "O nosso servidor não conseguiu colocar o conteúdo do acordo no IPFS: {{reason}}",
+                "contentNotOnDevice": "Este dispositivo não tem o acordo tal como foi proposto. Abra-o a partir da sua ligação enquanto o nosso servidor responde e tente novamente.",
+                "ownKeyFailed": "A Pinata não fixou o conteúdo, por isso o acordo não foi registado na blockchain: {{reason}}",
                 "simulationFailed": "A transação falharia: {{reason}}",
                 "confirmationUnknown": "A transação foi enviada, mas o tempo de espera pela confirmação terminou. Verifique-a no explorador.",
                 "confirmationFailed": "A transação falhou na blockchain.",

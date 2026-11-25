@@ -8554,7 +8554,15 @@
                 "confirmed": "Potvrđeno.",
                 "indexing": "Beleženje kovanja na serveru…",
                 "pinning": "Sporazum, njegov plan i projekti stavljaju se na IPFS…",
-                "retrievable": "Provera da li ih javni IPFS pristupi služe: {{confirmed}} od {{total}}…"
+                "pinningOwnKey": "Pinovanje vašim Pinata ključem: {{pinned}} od {{total}}…"
+            },
+            "ownKey": {
+                "title": "Pinujte sopstvenim ključem",
+                "intro": "Umesto toga možete ga pinovati sopstvenim Pinata ključem. U Pinati napravite ključ ograničen na pinovanje fajlova. Ključ se šalje samo Pinati, iz ovog pregledača.",
+                "key": "Pinata JWT",
+                "remember": "Zapamti ključ u ovom pregledaču",
+                "pin": "Pinuj i iskuj",
+                "missing": "Nalepite Pinata JWT."
             },
             "facts": {
                 "status": "Status",
@@ -8615,9 +8623,9 @@
                 "web3Unavailable": "Solana biblioteka nije mogla da se učita.",
                 "walletRequired": "Prvo povežite Solana novčanik.",
                 "notDeployed": "Program sporazuma još nije postavljen na mreži Solana {{cluster}}.",
-                "pinFailed": "Sadržaj sporazuma nije bilo moguće staviti na IPFS, pa još ne može da se iskuje: {{reason}}",
-                "contentMissing": "Server nema sve projekte ili plan koje sporazum navodi, pa ne mogu da se stave na IPFS i sporazum ne može da se iskuje.",
-                "notRetrievable": "Nijedan javni IPFS pristup još ne služi {{missing}} od {{total}} objekata, pa sporazum nije iskovan. Pokušajte ponovo za minut.",
+                "pinFailed": "Naš server nije mogao da stavi sadržaj sporazuma na IPFS: {{reason}}",
+                "contentNotOnDevice": "Ovaj uređaj nema sporazum kakav je predložen. Otvorite ga sa njegovog linka dok naš server odgovara, pa pokušajte ponovo.",
+                "ownKeyFailed": "Pinata nije pinovala sadržaj, pa sporazum nije iskovan: {{reason}}",
                 "simulationFailed": "Transakcija ne bi uspela: {{reason}}",
                 "confirmationUnknown": "Transakcija je poslata, ali je isteklo vreme čekanja na potvrdu. Proverite je u exploreru.",
                 "confirmationFailed": "Transakcija nije uspela na lancu.",

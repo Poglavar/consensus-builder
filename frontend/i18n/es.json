@@ -8536,7 +8536,15 @@
                 "confirmed": "Confirmada.",
                 "indexing": "Registrando la acuñación en el servidor…",
                 "pinning": "Subiendo el acuerdo, su plan y sus diseños a IPFS…",
-                "retrievable": "Comprobando que las pasarelas públicas de IPFS los sirven: {{confirmed}} de {{total}}…"
+                "pinningOwnKey": "Fijando con tu clave de Pinata: {{pinned}} de {{total}}…"
+            },
+            "ownKey": {
+                "title": "Fijar con tu propia clave",
+                "intro": "Puedes fijarlo con tu propia clave de Pinata. Crea en Pinata una clave limitada a fijar archivos. La clave solo se envía a Pinata, desde este navegador.",
+                "key": "JWT de Pinata",
+                "remember": "Recordar la clave en este navegador",
+                "pin": "Fijar y acuñar",
+                "missing": "Pega un JWT de Pinata."
             },
             "facts": {
                 "status": "Estado",
@@ -8597,9 +8605,9 @@
                 "web3Unavailable": "No se pudo cargar la biblioteca de Solana.",
                 "walletRequired": "Conecta primero una billetera Solana.",
                 "notDeployed": "El programa de acuerdos aún no está desplegado en Solana {{cluster}}.",
-                "pinFailed": "El contenido del acuerdo no se pudo subir a IPFS, así que aún no se puede acuñar: {{reason}}",
-                "contentMissing": "El servidor no tiene todos los diseños o el plan que nombra este acuerdo, así que no se pueden subir a IPFS y no se puede acuñar.",
-                "notRetrievable": "Ninguna pasarela pública de IPFS sirve aún {{missing}} de los {{total}} objetos, así que el acuerdo no se acuñó. Vuelve a intentar Acuñar en un minuto.",
+                "pinFailed": "Nuestro servidor no pudo subir el contenido del acuerdo a IPFS: {{reason}}",
+                "contentNotOnDevice": "Este dispositivo no tiene el acuerdo tal como se propuso. Ábrelo desde su enlace mientras nuestro servidor responda y vuelve a intentarlo.",
+                "ownKeyFailed": "Pinata no fijó el contenido, así que el acuerdo no se acuñó: {{reason}}",
                 "simulationFailed": "La transacción fallaría: {{reason}}",
                 "confirmationUnknown": "La transacción se envió, pero se agotó el tiempo de espera de su confirmación. Compruébala en el explorador.",
                 "confirmationFailed": "La transacción falló en la cadena.",

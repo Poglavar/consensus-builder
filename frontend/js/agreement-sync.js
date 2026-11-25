@@ -104,7 +104,7 @@
             ...(content.funding == null ? {} : { funding: content.funding }),
             consultation: content.consultation,
             deadline: content.deadline,
-            published: { cid: row.cid, publishedAt: row.createdAt || null, apiBase, sponsor: content.sponsor || null },
+            published: { cid: row.cid, publishedAt: row.createdAt || null, apiBase, sponsor: content.sponsor || null, content },
             // The index's record of the agreement's chain account, when it is minted (M3).
             onchain: isObject(row.onchain) ? row.onchain : null
         };
@@ -304,7 +304,7 @@
             const apiBase = win.DesignSync.apiBase();
             const publishedAt = row.createdAt || new Date().toISOString();
             store().save({ ...agreement, ...(crowdfunding ? { author: content.author, sponsor: content.sponsor } : {}),
-                published: { cid, publishedAt, apiBase, sponsor: content.sponsor } });
+                published: { cid, publishedAt, apiBase, sponsor: content.sponsor, content } });
             log(`proposed ${agreementId} as ${cid} (${agreement.designs.length} design(s), sponsor ${content.sponsor || 'none'})`);
             return { cid, row, link: agreementLink(cid, { city: agreement.city }) };
         }
@@ -407,35 +407,68 @@
             return { onchain, row };
         }
 
-        // Content before the mint (docs/blockchain-flows.md Flow 2): the server pins the agreement, its
-        // plan and the plan's designs (POST /agreements/:cid/pin), then public gateways must serve each
-        // of them with bytes that hash to its CID (content-gate.js). It throws, and nothing is minted,
-        // until both hold. onProgress({ confirmed, total }) follows the gateway check.
-        async function prepareMintContent(subject, { onProgress = () => {} } = {}) {
+        // Content before the mint (docs/blockchain-flows.md Flow 2): our server pins the agreement, its
+        // plan and the plan's designs (POST /agreements/:cid/pin) and answers once the provider confirmed
+        // each CID. It throws, and nothing is minted, until it has; a refusal from the server carries
+        // `ownKey: true`, so the sponsor can pin with their own key instead (pinWithOwnKey).
+        async function prepareMintContent(subject) {
             const agreement = isObject(subject) ? subject : store().get(subject);
             if (!agreement?.published) throw failure('not-proposed', t('agreement.chain.errors.notProposed', 'Propose the agreement before minting it.'));
             const cid = agreement.published.cid;
-            const response = await request('POST', `/agreements/${encodeURIComponent(cid)}/pin`, {});
+            let response;
+            try {
+                response = await request('POST', `/agreements/${encodeURIComponent(cid)}/pin`, {});
+            } catch (error) {
+                throw failure('server-unreachable', t('agreement.chain.errors.pinFailed', 'Our server could not put the agreement’s content on IPFS: {{reason}}',
+                    { reason: error.message }), { ownKey: true });
+            }
             if (!response.ok || !Array.isArray(response.body?.objects)) {
                 const code = response.body?.code || `http-${response.status}`;
-                const message = code === 'content-missing'
-                    ? t('agreement.chain.errors.contentMissing', 'The server does not hold every design or plan this agreement names, so they cannot be put on IPFS and it cannot be minted.')
-                    : t('agreement.chain.errors.pinFailed', 'The agreement’s content could not be put on IPFS, so it cannot be minted yet: {{reason}}',
-                        { reason: response.body?.error || `HTTP ${response.status}` });
-                throw failure(code, message, { status: response.status, body: response.body });
+                throw failure(code, t('agreement.chain.errors.pinFailed', 'Our server could not put the agreement’s content on IPFS: {{reason}}',
+                    { reason: response.body?.error || `HTTP ${response.status}` }), { status: response.status, body: response.body, ownKey: true });
             }
-            const objects = response.body.objects;
-            log(`the server pinned ${response.body.pinned} of ${objects.length} object(s) of ${cid} (${response.body.alreadyPinned} already pinned); checking the gateways`);
+            log(`the server pinned ${response.body.pinned} of ${response.body.objects.length} object(s) of ${cid} (${response.body.alreadyPinned} already pinned)`);
+            return { objects: response.body.objects, courier: 'server' };
+        }
+
+        // The exact canonical bytes a mint of this agreement references: the agreement as published,
+        // its plan and the plan's designs, from this device first (PlanWorkspace.resolve fetches only
+        // members it lacks). Each must hash to its CID.
+        async function mintContentObjects(agreement) {
+            const content = agreement.published?.content;
+            if (!isObject(content) || cidApi().cidOfObject(content) !== agreement.published.cid) {
+                throw failure('content-not-on-device', t('agreement.chain.errors.contentNotOnDevice', 'This device does not hold the agreement as it was proposed. Open it from its link while our server answers, then try again.'));
+            }
+            const plan = agreement.plan;
+            if (!plan || plan.cid !== content.planCid || cidApi().cidOfObject(plan.content) !== plan.cid) {
+                throw failure('content-not-on-device', t('agreement.chain.errors.contentNotOnDevice', 'This device does not hold the agreement as it was proposed. Open it from its link while our server answers, then try again.'));
+            }
+            const snapshot = await win.PlanWorkspace.resolve(plan);
+            const designs = new Map((snapshot.designs || []).map(member => [member.cid, member.content]));
+            const objects = [{ kind: 'agreement', cid: agreement.published.cid, content }, { kind: 'plan', cid: plan.cid, content: plan.content },
+                ...plan.content.designCids.map(cid => ({ kind: 'design', cid, content: designs.get(cid) }))];
+            return objects.map(object => {
+                if (!isObject(object.content) || cidApi().cidOfObject(object.content) !== object.cid) {
+                    throw failure('content-not-on-device', t('agreement.chain.errors.contentNotOnDevice', 'This device does not hold the agreement as it was proposed. Open it from its link while our server answers, then try again.'));
+                }
+                return { kind: object.kind, cid: object.cid, bytes: cidApi().canonicalBytes(object.content) };
+            });
+        }
+
+        // Pins the mint's content with the sponsor's own Pinata key (ipfs-own-key.js), from this device.
+        async function pinWithOwnKey(subject, jwt, { onProgress = () => {} } = {}) {
+            const agreement = isObject(subject) ? subject : store().get(subject);
+            if (!agreement?.published) throw failure('not-proposed', t('agreement.chain.errors.notProposed', 'Propose the agreement before minting it.'));
+            const objects = await mintContentObjects(agreement);
+            const ownKey = win.IpfsOwnKey || root.IpfsOwnKey || require('./ipfs-own-key.js');
             try {
-                await (win.ContentGate || root.ContentGate || require('./content-gate.js')).waitRetrievable({ objects, cidOf: cidApi().cidOf, onProgress });
+                await ownKey.pinWithPinata({ objects, jwt, fetchImpl: (...args) => win.fetch(...args), onProgress });
             } catch (error) {
-                if (error?.code !== 'content-not-retrievable') throw error;
-                throw failure(error.code, t('agreement.chain.errors.notRetrievable',
-                    'No public IPFS gateway serves {{missing}} of the {{total}} objects yet, so the agreement was not minted. Try Mint again in a minute.',
-                    { missing: error.missing.length, total: objects.length }), { missing: error.missing });
+                throw failure(error.code || 'own-key-pin-failed', t('agreement.chain.errors.ownKeyFailed', 'Pinata did not pin the content, so the agreement was not minted: {{reason}}',
+                    { reason: error.message }), { cause: error });
             }
-            log(`all ${objects.length} object(s) of ${cid} are served by a public gateway`);
-            return { objects };
+            log(`pinned ${objects.length} object(s) of ${agreement.published.cid} with the sponsor's own key`);
+            return { objects: objects.map(({ kind, cid }) => ({ kind, cid })), courier: 'own-key' };
         }
 
         // The local agreement published as `cid`, or null.
@@ -555,7 +588,7 @@
 
         return {
             publishAgreement, proposeAgain, fetchAgreement, fetchMinted, handleAgreementRoute, agreementLink, localCopyOf,
-            refusalMessage, recordOnchain, adoptOnchain, openDetails, resolveDetails, prepareMintContent
+            refusalMessage, recordOnchain, adoptOnchain, openDetails, resolveDetails, prepareMintContent, pinWithOwnKey
         };
     }
 

@@ -254,13 +254,13 @@ function indexPool(rows) {
     return { pool, byCid };
 }
 
-function appFor(rows, connection, { pinMinted = vi.fn(async () => null) } = {}) {
+function appFor(rows, connection) {
     const { pool, byCid } = indexPool(rows);
     const app = createContentApp(pool, {
         thumbnailQueue: { enqueue: vi.fn() }, baseUrl: 'https://api.example', now: () => NOW,
-        agreementChain: cluster => createAgreementChain({ cluster, connection }), pinMinted
+        agreementChain: cluster => createAgreementChain({ cluster, connection })
     });
-    return { app, pool, byCid, pinMinted };
+    return { app, pool, byCid };
 }
 const postOnchain = (app, body, cid = CID) => request(app).post(`/agreements/${cid}/onchain`).send(body);
 const pointer = (extra = {}) => ({ chain: 'solana', cluster: 'devnet', account: ACCOUNT, ...extra });
@@ -298,21 +298,6 @@ describe('POST /agreements/:cid/onchain', () => {
             executedAt: '2026-10-22T07:30:00.000Z', observedSlot: 600 });
         expect(connection.calls.transactions).toHaveLength(1);
         expect(updates(pool).map(call => call.params[2])).toEqual([500, 600]);
-    });
-
-    it('pins what the agreement references once, when the mint is first recorded, and a pinning failure does not fail it', async () => {
-        const connection = fakeConnection({ accounts: new Map([[ACCOUNT, agreementAccountInfo(accountFields())]]) });
-        const pinned = [];
-        let settle;
-        const done = new Promise(resolve => { settle = resolve; });
-        const pinMinted = vi.fn(async cid => { pinned.push(cid); settle(); throw new Error('quota'); });
-        const { app } = appFor([agreementRow(content)], connection, { pinMinted });
-        expect((await postOnchain(app, pointer())).status).toBe(201);
-        await done;
-        expect(pinned).toEqual([CID]);
-        connection.slot = 600;
-        expect((await postOnchain(app, pointer())).status).toBe(200);
-        expect(pinMinted).toHaveBeenCalledTimes(1);
     });
 
     it('never moves an agreement back: a read older than the stored one writes nothing', async () => {

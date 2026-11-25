@@ -56,10 +56,10 @@ const rowOf = ({ cid, content }) => ({ cid, city: 'zagreb', title: content.title
 
 // The public API over a fake fetch: the index's designs and agreements, and plain JSON reads. There is
 // no /pins: publication pins nothing, and the tests assert every POST.
-function fakeApi({ agreements = [], plans = [] } = {}) {
+function fakeApi({ agreements = [], plans = [], designs = [], pinRefused = false } = {}) {
     const rows = new Map(agreements.map(item => [item.cid, rowOf(item)]));
     const planRows = new Map(plans.map(plan => [plan.cid, plan]));
-    const designRows = new Map();
+    const designRows = new Map(designs.map(item => [item.cid, { cid: item.cid, content: item.content }]));
     const calls = [];
     const fetchImpl = vi.fn(async (url, init = {}) => {
         const target = new URL(String(url));
@@ -70,7 +70,11 @@ function fakeApi({ agreements = [], plans = [] } = {}) {
         const pin = target.pathname.match(/^\/agreements\/([^/]+)\/pin$/);
         if (method === 'POST' && pin) {
             const cid = decodeURIComponent(pin[1]);
+            if (pinRefused) return json({ error: '1 object(s) the agreement references are not in the index.', code: 'content-missing' }, 409);
             return rows.has(cid) ? json({ objects: [{ kind: 'agreement', cid }], pinned: 1, alreadyPinned: 0 }) : json({ error: 'not found', code: 'agreement-not-found' }, 404);
+        }
+        if (method === 'POST' && target.pathname === '/designs/batch') {
+            return json({ items: body.cids.map(cid => ({ cid, design: designRows.get(cid) ?? null })) });
         }
         if (method === 'POST' && target.pathname === '/designs') {
             designRows.set(body.cid, { cid: body.cid, content: body.content, binding: { parcels: [{ parcelId: PARCEL }] } });
@@ -264,8 +268,6 @@ describe('publishing designs and agreements', () => {
 });
 
 describe('minting and funding', () => {
-    // The pre-mint gate (content-gate.js) opens at once here; 'waits for the content' tests it.
-    const gateOpen = async () => ({ confirmed: [], rounds: 1 });
     const mintResult = cid => ({ account: agreementAccountOf(cid, AGENT), signature: 'mint-tx', createSignature: 'create-tx', created: true, escrowLamports: '5000', status: 'Active' });
 
     it('mints a binding owners\' agreement as its sponsor and records the account in the index', async () => {
@@ -273,7 +275,7 @@ describe('minting and funding', () => {
         const api = fakeApi({ agreements: [agreement] });
         const mintAgreement = vi.fn(async ({ cid }) => mintResult(cid));
         const sendAndConfirmPolling = vi.fn();
-        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl, createConnection: () => ({ name: 'rpc' }), dependencies: { mintAgreement, sendAndConfirmPolling, waitRetrievable: gateOpen } });
+        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl, createConnection: () => ({ name: 'rpc' }), dependencies: { mintAgreement, sendAndConfirmPolling } });
 
         const result = await tools.mintAgreement({ agreementCid: agreement.cid, lamports: '5000', confirm: true });
 
@@ -293,24 +295,37 @@ describe('minting and funding', () => {
         expect(result).toMatchObject({ account: agreementAccountOf(agreement.cid, AGENT), created: true, onchain: { account: agreementAccountOf(agreement.cid, AGENT) } });
     });
 
-    it('waits for the content: pinned by the server and served by a public gateway, or nothing is signed', async () => {
+    it('signs nothing when our server cannot pin the content and no own key is set', async () => {
         const agreement = agreementOf();
-        const api = fakeApi({ agreements: [agreement] });
+        const api = fakeApi({ agreements: [agreement], pinRefused: true });
         const mintAgreement = vi.fn(async ({ cid }) => mintResult(cid));
-        const waitRetrievable = vi.fn(async () => { throw Object.assign(new Error('1 of 1 object(s) are not yet served'), { code: 'content-not-retrievable' }); });
-        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl, createConnection: () => ({}), dependencies: { mintAgreement, sendAndConfirmPolling: vi.fn(), waitRetrievable } });
-        await expect(tools.mintAgreement({ agreementCid: agreement.cid, lamports: '0', confirm: true })).rejects.toMatchObject({ code: 'content-not-retrievable' });
-        expect(waitRetrievable.mock.calls[0][0].objects).toEqual([{ kind: 'agreement', cid: agreement.cid }]);
-        expect(waitRetrievable.mock.calls[0][0].cidOf(new TextEncoder().encode('{}'))).toMatch(/^bafkrei/);
+        const pinWithPinata = vi.fn();
+        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl, createConnection: () => ({}), dependencies: { mintAgreement, sendAndConfirmPolling: vi.fn(), pinWithPinata } });
+        await expect(tools.mintAgreement({ agreementCid: agreement.cid, lamports: '0', confirm: true })).rejects.toThrow(/pin the content of/);
+        expect(pinWithPinata).not.toHaveBeenCalled();
         expect(mintAgreement).not.toHaveBeenCalled();
         expect(api.posts().map(call => call.path)).toEqual([`/agreements/${agreement.cid}/pin`]);
+    });
+
+    it('pins with its own Pinata key (UGT_PINATA_JWT) when our server cannot, then mints', async () => {
+        const agreement = agreementOf();
+        const api = fakeApi({ agreements: [agreement], plans: [agreement.plan], designs: [design], pinRefused: true });
+        const mintAgreement = vi.fn(async ({ cid }) => mintResult(cid));
+        const pinWithPinata = vi.fn(async ({ objects }) => ({ pinned: objects.map(({ kind, cid }) => ({ kind, cid })) }));
+        const tools = createUrbanGameTheoryTools({ env: { ...LIVE, UGT_PINATA_JWT: 'own-jwt' }, fetchImpl: api.fetchImpl, createConnection: () => ({}), dependencies: { mintAgreement, sendAndConfirmPolling: vi.fn(), pinWithPinata } });
+        await tools.mintAgreement({ agreementCid: agreement.cid, lamports: '0', confirm: true });
+        const [{ objects, jwt }] = pinWithPinata.mock.calls[0];
+        expect(jwt).toBe('own-jwt');
+        expect(objects.map(({ kind, cid }) => [kind, cid])).toEqual([['agreement', agreement.cid], ['plan', agreement.plan.cid], ['design', design.cid]]);
+        expect(objects.every(object => cidOfObject(JSON.parse(new TextDecoder().decode(object.bytes))) === object.cid)).toBe(true);
+        expect(mintAgreement).toHaveBeenCalledTimes(1);
     });
 
     it('passes an agreement without a deadline on as null, for the minter to default to 90 days', async () => {
         const agreement = agreementOf({ deadline: null });
         const api = fakeApi({ agreements: [agreement] });
         const mintAgreement = vi.fn(async ({ cid }) => mintResult(cid));
-        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl, createConnection: () => ({}), dependencies: { mintAgreement, sendAndConfirmPolling: vi.fn(), waitRetrievable: gateOpen } });
+        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl, createConnection: () => ({}), dependencies: { mintAgreement, sendAndConfirmPolling: vi.fn() } });
         await tools.mintAgreement({ agreementCid: agreement.cid, lamports: '0', confirm: true });
         expect(mintAgreement.mock.calls[0][0].deadline).toBeNull();
     });
@@ -320,7 +335,7 @@ describe('minting and funding', () => {
         const agreement = agreementOf({ rule: ownersRule({ lenses: [LENS, AGENT], lensThreshold: 2, rights }) });
         const api = fakeApi({ agreements: [agreement] });
         const mintAgreement = vi.fn(async ({ cid }) => mintResult(cid));
-        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl, createConnection: () => ({}), dependencies: { mintAgreement, sendAndConfirmPolling: vi.fn(), waitRetrievable: gateOpen } });
+        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl, createConnection: () => ({}), dependencies: { mintAgreement, sendAndConfirmPolling: vi.fn() } });
         await tools.mintAgreement({ agreementCid: agreement.cid, lamports: '0', confirm: true });
         expect(mintAgreement.mock.calls[0][0]).toMatchObject({ lenses: [LENS, AGENT], lensThreshold: 2 });
     });

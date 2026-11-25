@@ -216,6 +216,13 @@
     font-weight: var(--cb-weight-normal);
 }
 
+.agreement-mint__check {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+    font-size: var(--cb-text-sm);
+}
+
 .agreement-mint__field input[data-agreement-mint-payout] {
     font-family: var(--cb-font-mono);
     font-size: var(--cb-text-sm);

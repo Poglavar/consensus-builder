@@ -180,7 +180,7 @@ describe('recordFromPublished', () => {
         const onchain = { chain: 'solana', cluster: 'devnet', programId: 'ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH', account: ACCOUNT,
             sponsor: SPONSOR, status: 'active', decision: 'pending', observedAt: '2026-10-22T08:00:00.000Z' };
         const minted = AgreementSync.recordFromPublished({ ...row, onchain }, { id: 'ag-imported', apiBase: API, localIdOf });
-        expect(minted.published).toEqual({ cid: row.cid, publishedAt: row.createdAt, apiBase: API, sponsor: SPONSOR });
+        expect(minted.published).toEqual({ cid: row.cid, publishedAt: row.createdAt, apiBase: API, sponsor: SPONSOR, content: row.content });
         expect(minted.onchain).toEqual(onchain);
         expect(AgreementRecord.normalize(minted).onchain).toEqual(onchain);
         // Not minted: no chain account, whatever else the row carries there.
@@ -250,12 +250,11 @@ function fakeServer({ rows = new Map(), designs = new Map(), onchain = null, min
     return { fetch, calls };
 }
 
-function fakeWindow({ blocked = null, applied = true, records = [layout(), road()], saved = [agreement()], server = fakeServer(), wallet = SPONSOR, plans = null, gate = null } = {}) {
+function fakeWindow({ blocked = null, applied = true, records = [layout(), road()], saved = [agreement()], server = fakeServer(), wallet = SPONSOR, plans = null } = {}) {
     const proposals = new Map(records.map(record => [record.proposalId, record]));
     const agreements = new Map(saved.map(row => [row.id, clone(row)]));
     const win = {
         fetch: server.fetch,
-        ...(gate ? { ContentGate: gate } : {}),
         btoa: text => Buffer.from(text, 'binary').toString('base64'),
         resolveBackendBaseUrl: () => API,
         resolveFrontendBaseUrl: () => 'https://app.example.test',
@@ -412,7 +411,8 @@ describe('publishAgreement', () => {
         expect(body.content.outputs.map(piece => piece.producedBy)).toEqual([layoutCid, layoutCid, roadCid]);
 
         const stored = agreements.get('ag-1');
-        expect(stored.published).toEqual({ cid: result.cid, publishedAt: '2026-10-21T12:00:05.000Z', apiBase: API, sponsor: SPONSOR });
+        // The exact published object stays with the record, for pinning it with an own key before a mint.
+        expect(stored.published).toEqual({ cid: result.cid, publishedAt: '2026-10-21T12:00:05.000Z', apiBase: API, sponsor: SPONSOR, content: body.content });
         expect(stored.designs.map(design => design.cid)).toEqual([layoutCid, roadCid]);
         expect(stored.plan.cid).toBe(body.content.planCid);
         expect(proposals.get('layout-1').published).toMatchObject({ cid: layoutCid, apiBase: API });
@@ -506,38 +506,59 @@ const indexed = ({ cluster, account }) => ({
 });
 const MINT = { chain: 'solana', cluster: 'devnet', account: ACCOUNT, signature: 'sig-1' };
 
-describe('prepareMintContent', () => {
+describe('content before the mint', () => {
     const objects = [{ kind: 'agreement', cid: PROPOSED_CID }, { kind: 'plan', cid: 'bafkreiplan' }];
-    const pinned = () => ({ status: 200, body: { objects, pinned: 2, alreadyPinned: 0 } });
+    const proposedContent = () => AgreementRecord.published({ ...agreement(), sponsor: SPONSOR });
+    const onDevice = () => proposed({ published: { cid: PROPOSED_CID, publishedAt: '2026-10-21T12:00:05.000Z', apiBase: API, sponsor: SPONSOR, content: proposedContent() } });
+    const members = () => [layout(), road()].map(record => ({ cid: DesignRecord.cidOf(record), content: DesignRecord.published(record) }));
 
-    it('has the server pin the content, then waits for a public gateway to serve every object', async () => {
-        const server = fakeServer({ pin: pinned });
-        const gate = { waitRetrievable: vi.fn(async ({ onProgress }) => { onProgress({ confirmed: 2, total: 2 }); return { confirmed: objects, rounds: 1 }; }) };
-        const { sync } = fakeWindow({ saved: [proposed()], server, gate });
-        const progress = [];
-        expect(await sync.prepareMintContent('ag-1', { onProgress: step => progress.push(step) })).toEqual({ objects });
+    it('has our server pin the agreement, its plan and designs', async () => {
+        const server = fakeServer({ pin: () => ({ status: 200, body: { objects, pinned: 2, alreadyPinned: 0 } }) });
+        const { sync } = fakeWindow({ saved: [proposed()], server });
+        expect(await sync.prepareMintContent('ag-1')).toEqual({ objects, courier: 'server' });
         expect(server.calls.map(call => [call.method, call.pathname])).toEqual([['POST', `/agreements/${PROPOSED_CID}/pin`]]);
-        expect(gate.waitRetrievable.mock.calls[0][0].objects).toEqual(objects);
-        expect(gate.waitRetrievable.mock.calls[0][0].cidOf).toBe(Cid.cidOf);
-        expect(progress).toEqual([{ confirmed: 2, total: 2 }]);
     });
 
-    it('throws, so nothing is minted, when the server cannot pin or a gateway does not serve the content', async () => {
-        const gate = { waitRetrievable: vi.fn() };
-        const missing = fakeWindow({ saved: [proposed()], gate, server: fakeServer({ pin: () => ({ status: 409, body: { code: 'content-missing', error: 'x' } }) }) });
-        expect(await thrown(() => missing.sync.prepareMintContent('ag-1'))).toMatchObject({ code: 'content-missing', message: expect.stringMatching(/does not hold every design or plan/) });
-        const failed = fakeWindow({ saved: [proposed()], gate, server: fakeServer({ pin: () => ({ status: 502, body: { code: 'pin-failed', error: 'quota' } }) }) });
-        expect(await thrown(() => failed.sync.prepareMintContent('ag-1'))).toMatchObject({ code: 'pin-failed', message: expect.stringMatching(/could not be put on IPFS.*quota/) });
-        expect(gate.waitRetrievable).not.toHaveBeenCalled();
-        const slow = { waitRetrievable: vi.fn(async () => { throw Object.assign(new Error('x'), { code: 'content-not-retrievable', missing: [objects[1]] }); }) };
-        const unserved = fakeWindow({ saved: [proposed()], gate: slow, server: fakeServer({ pin: pinned }) });
-        expect(await thrown(() => unserved.sync.prepareMintContent('ag-1'))).toMatchObject({ code: 'content-not-retrievable', missing: [objects[1]],
-            message: 'No public IPFS gateway serves 1 of the 2 objects yet, so the agreement was not minted. Try Mint again in a minute.' });
+    it('offers the own key when our server refuses or cannot be reached, and not before an agreement is proposed', async () => {
+        const refused = fakeWindow({ saved: [proposed()], server: fakeServer({ pin: () => ({ status: 502, body: { code: 'pin-failed', error: 'quota' } }) }) });
+        expect(await thrown(() => refused.sync.prepareMintContent('ag-1'))).toMatchObject({ code: 'pin-failed', ownKey: true, message: 'Our server could not put the agreement’s content on IPFS: quota' });
+        const down = fakeWindow({ saved: [proposed()] });
+        down.win.fetch = async () => { throw new Error('Failed to fetch'); };
+        expect(await thrown(() => down.sync.prepareMintContent('ag-1'))).toMatchObject({ code: 'server-unreachable', ownKey: true });
+        const unproposed = fakeWindow({ saved: [agreement()] });
+        expect(await thrown(() => unproposed.sync.prepareMintContent('ag-1'))).toMatchObject({ code: 'not-proposed' });
+        expect((await thrown(() => unproposed.sync.prepareMintContent('ag-1'))).ownKey).toBeUndefined();
     });
 
-    it('refuses an agreement that was not proposed', async () => {
-        const { sync } = fakeWindow({ saved: [agreement()], gate: { waitRetrievable: vi.fn() } });
-        expect(await thrown(() => sync.prepareMintContent('ag-1'))).toMatchObject({ code: 'not-proposed' });
+    it('pins with the own key from this device: the agreement as proposed, its plan and designs, each checked against its CID', async () => {
+        expect(Cid.cidOfObject(proposedContent())).toBe(PROPOSED_CID);
+        const { sync, win, server } = fakeWindow({ saved: [onDevice()] });
+        win.PlanWorkspace = { resolve: async plan => ({ designs: plan.cid === agreement().plan.cid ? members() : [] }) };
+        const pinWithPinata = vi.fn(async ({ objects: pinned }) => ({ pinned }));
+        win.IpfsOwnKey = { pinWithPinata };
+        const result = await sync.pinWithOwnKey('ag-1', 'own-jwt');
+        const [{ objects: sent, jwt }] = pinWithPinata.mock.calls[0];
+        expect(jwt).toBe('own-jwt');
+        expect(sent.map(({ kind, cid }) => [kind, cid])).toEqual([['agreement', PROPOSED_CID], ['plan', agreement().plan.cid], ...members().map(member => ['design', member.cid])]);
+        expect(sent.every(object => Cid.cidOf(object.bytes) === object.cid)).toBe(true);
+        expect(result.courier).toBe('own-key');
+        expect(server.calls).toEqual([]);
+    });
+
+    it('refuses to pin with the own key what this device does not hold as proposed, and words Pinata\'s refusal', async () => {
+        const bare = fakeWindow({ saved: [proposed()] });
+        bare.win.IpfsOwnKey = { pinWithPinata: vi.fn() };
+        expect(await thrown(() => bare.sync.pinWithOwnKey('ag-1', 'jwt'))).toMatchObject({ code: 'content-not-on-device' });
+        const partial = fakeWindow({ saved: [onDevice()] });
+        partial.win.PlanWorkspace = { resolve: async () => ({ designs: members().slice(0, 1) }) };
+        partial.win.IpfsOwnKey = { pinWithPinata: vi.fn() };
+        expect(await thrown(() => partial.sync.pinWithOwnKey('ag-1', 'jwt'))).toMatchObject({ code: 'content-not-on-device' });
+        expect(partial.win.IpfsOwnKey.pinWithPinata).not.toHaveBeenCalled();
+        const refused = fakeWindow({ saved: [onDevice()] });
+        refused.win.PlanWorkspace = { resolve: async () => ({ designs: members() }) };
+        refused.win.IpfsOwnKey = { pinWithPinata: async () => { throw Object.assign(new Error('Pinata refused the key (HTTP 401).'), { code: 'own-key-refused' }); } };
+        expect(await thrown(() => refused.sync.pinWithOwnKey('ag-1', 'jwt'))).toMatchObject({ code: 'own-key-refused',
+            message: 'Pinata did not pin the content, so the agreement was not minted: Pinata refused the key (HTTP 401).' });
     });
 });
 
@@ -667,7 +688,8 @@ describe('proposeAgain', () => {
         expect(again.cid).not.toBe(first.cid);
         expect(agreements.get('ag-1')).toEqual(before);
         const copy = agreements.get(again.id);
-        expect(copy.published).toEqual({ cid: again.cid, publishedAt: '2026-10-21T12:00:05.000Z', apiBase: API, sponsor: SPONSOR });
+        expect(copy.published).toEqual({ cid: again.cid, publishedAt: '2026-10-21T12:00:05.000Z', apiBase: API, sponsor: SPONSOR, content: expect.any(Object) });
+        expect(Cid.cidOfObject(copy.published.content)).toBe(again.cid);
         expect(copy.onchain).toBeNull();
         expect(copy.designs).toEqual(before.designs);
         expect(copy.plan).toEqual(before.plan);
@@ -759,7 +781,7 @@ describe('opening an /agreements link', () => {
         expect(messages).toEqual([]);
         expect(opened).toEqual(['ag-1']);
         expect(agreements.get('ag-1').onchain).toEqual(local);
-        expect(agreements.get('ag-1').published).toEqual({ cid, publishedAt: row.createdAt, apiBase: API, sponsor: SPONSOR });
+        expect(agreements.get('ag-1').published).toMatchObject({ cid, publishedAt: row.createdAt, apiBase: API, sponsor: SPONSOR });
 
         row.onchain = indexed(local);
         await sync.handleAgreementRoute(cid);

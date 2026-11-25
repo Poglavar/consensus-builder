@@ -8508,7 +8508,15 @@
                 "confirmed": "Confirmed.",
                 "indexing": "Recording the mint on the server…",
                 "pinning": "Putting the agreement, its plan and designs on IPFS…",
-                "retrievable": "Checking that public IPFS gateways serve them: {{confirmed}} of {{total}}…"
+                "pinningOwnKey": "Pinning with your Pinata key: {{pinned}} of {{total}}…"
+            },
+            "ownKey": {
+                "title": "Pin with your own key",
+                "intro": "You can pin it with your own Pinata key instead. Create a key in Pinata limited to pinning files. The key is sent only to Pinata, from this browser.",
+                "key": "Pinata JWT",
+                "remember": "Remember the key in this browser",
+                "pin": "Pin and mint",
+                "missing": "Paste the JWT of your Pinata key."
             },
             "facts": {
                 "status": "Status",
@@ -8569,9 +8577,9 @@
                 "web3Unavailable": "The Solana library could not be loaded.",
                 "walletRequired": "Connect a Solana wallet first.",
                 "notDeployed": "The agreement program is not deployed on Solana {{cluster}} yet.",
-                "pinFailed": "The agreement’s content could not be put on IPFS, so it cannot be minted yet: {{reason}}",
-                "contentMissing": "The server does not hold every design or plan this agreement names, so they cannot be put on IPFS and it cannot be minted.",
-                "notRetrievable": "No public IPFS gateway serves {{missing}} of the {{total}} objects yet, so the agreement was not minted. Try Mint again in a minute.",
+                "pinFailed": "Our server could not put the agreement’s content on IPFS: {{reason}}",
+                "contentNotOnDevice": "This device does not hold the agreement as it was proposed. Open it from its link while our server answers, then try again.",
+                "ownKeyFailed": "Pinata did not pin the content, so the agreement was not minted: {{reason}}",
                 "simulationFailed": "The transaction would fail: {{reason}}",
                 "confirmationUnknown": "The transaction was sent, but its confirmation timed out. Check it on the explorer.",
                 "confirmationFailed": "The transaction failed on chain.",

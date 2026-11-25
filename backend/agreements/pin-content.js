@@ -1,9 +1,10 @@
-// Pin on mint (docs/ipfs-storage.md): the index and IPFS are separate stores. Publishing writes only
-// to the index; once an agreement is minted, the chain commits to its CID and, through the CIDs inside
-// each record, to its plan and the plan's designs, so all of them are pinned then. A CID already in
-// consensus.ipfs_pin is skipped (a design shared by several agreements is pinned once) and nothing is
-// ever unpinned. Every object is pinned from the index's own copy only when its canonical bytes hash
-// to its CID. One object's failure is recorded and the rest carry on.
+// Content before the mint (docs/ipfs-storage.md): the index and IPFS are separate stores. Publishing
+// writes only to the index; a mint commits to the agreement's CID and, through the CIDs inside each
+// record, to its plan and the plan's designs, so all of them are pinned before it (POST
+// /agreements/:cid/pin). A CID already in consensus.ipfs_pin is skipped (a design shared by several
+// agreements is pinned once) and nothing is ever unpinned. Every object is pinned from the index's own
+// copy only when its canonical bytes hash to its CID, and recorded only once the provider confirmed that
+// CID. One object's failure is recorded and the rest carry on.
 
 import { canonicalBytes, cidOf, isCid } from '../cid.js';
 import { pinBytes as defaultPinBytes } from '../storage/pinning.js';
@@ -14,13 +15,6 @@ export function createPinStore(pool) {
         ? (await pool.query(`SELECT cid, content FROM consensus.${table} WHERE cid = ANY($1)`, [cids])).rows
         : [];
     return {
-        async mintedAgreements(cluster) {
-            const { rows } = await pool.query(`
-                SELECT cid, content FROM consensus.agreement
-                WHERE onchain->>'chain' = 'solana' AND onchain->>'cluster' = $1
-                ORDER BY created_at, cid`, [cluster]);
-            return rows;
-        },
         agreement: async cid => (await byCid('agreement', [cid]))[0] || null,
         plans: cids => byCid('plan', cids),
         designs: cids => byCid('design', cids),
@@ -36,7 +30,7 @@ export function createPinStore(pool) {
     };
 }
 
-/** Every object the given minted agreements reference, agreement first, each CID once, plus the CIDs
+/** Every object the given agreements reference, agreement first, each CID once, plus the CIDs
  * referenced but missing from the index (they cannot be pinned from here). */
 export async function mintedTree(store, agreements) {
     const objects = new Map();
@@ -64,16 +58,16 @@ export async function mintedTree(store, agreements) {
 
 /**
  * Pins whatever the agreements reference that is not pinned yet.
- * @param {{ store, agreements: {cid, content}[], apply?: boolean, pinBytes?: Function, log?: Function }} options
+ * @param {{ store, agreements: {cid, content}[], pinBytes?: Function, log?: Function }} options
  * @returns {Promise<{ objects: {kind, cid}[], referenced: number, alreadyPinned: number, pinned: object[],
- *   wouldPin: object[], failed: object[], missing: object[] }>}
+ *   failed: object[], missing: object[] }>}
  */
-export async function pinAgreementTrees({ store, agreements, apply = false, pinBytes = defaultPinBytes, log = () => {} }) {
+export async function pinAgreementTrees({ store, agreements, pinBytes = defaultPinBytes, log = () => {} }) {
     const { objects, missing } = await mintedTree(store, agreements);
     const pinnedBefore = await store.pinnedCids(objects.map(object => object.cid));
     const todo = objects.filter(object => !pinnedBefore.has(object.cid));
     const result = { objects: objects.map(({ kind, cid }) => ({ kind, cid })), referenced: objects.length,
-        alreadyPinned: objects.length - todo.length, pinned: [], wouldPin: [], failed: [], missing };
+        alreadyPinned: objects.length - todo.length, pinned: [], failed: [], missing };
     for (const item of missing) log(`pin: ${item.kind} ${item.cid ?? `(none named by ${item.referencedBy})`} is referenced but not in the index`);
     for (const [index, object] of todo.entries()) {
         const step = `pin ${index + 1}/${todo.length} ${object.kind} ${object.cid}`;
@@ -81,10 +75,6 @@ export async function pinAgreementTrees({ store, agreements, apply = false, pinB
             const bytes = canonicalBytes(object.content);
             const computed = cidOf(bytes);
             if (computed !== object.cid) throw new Error(`the index copy hashes to ${computed}`);
-            if (!apply) {
-                result.wouldPin.push({ kind: object.kind, cid: object.cid, bytes: bytes.length });
-                continue;
-            }
             const pinned = await pinBytes({ bytes, name: `${object.kind}-${object.cid}`, cid: object.cid });
             await store.recordPin({ cid: object.cid, kind: object.kind, pinnedAt: pinned.pinnedAt });
             result.pinned.push({ kind: object.kind, cid: object.cid, bytes: bytes.length });
@@ -95,20 +85,4 @@ export async function pinAgreementTrees({ store, agreements, apply = false, pinB
         }
     }
     return result;
-}
-
-/** One pass over every agreement minted on a cluster (the lifecycle job's pin step). */
-export async function pinMintedContent({ store, cluster, apply = false, pinBytes, log = () => {} }) {
-    const agreements = await store.mintedAgreements(cluster);
-    const result = await pinAgreementTrees({ store, agreements, apply, pinBytes, log });
-    log(`pin pass: ${agreements.length} minted agreement(s) reference ${result.referenced} object(s) · already pinned ${result.alreadyPinned} · ${apply ? `pinned ${result.pinned.length}` : `would pin ${result.wouldPin.length} (dry run)`} · failed ${result.failed.length} · missing from index ${result.missing.length}`);
-    return { agreements: agreements.length, ...result };
-}
-
-/** Why a pin pass must fail the run, or null. */
-export function pinProblem(result) {
-    const problems = [];
-    if (result.failed.length) problems.push(`${result.failed.length} object(s) could not be pinned: ${result.failed.slice(0, 3).map(item => `${item.kind} ${item.cid} (${item.error})`).join(', ')}`);
-    if (result.missing.length) problems.push(`${result.missing.length} referenced object(s) are not in the index`);
-    return problems.length ? problems.join('; ') : null;
 }

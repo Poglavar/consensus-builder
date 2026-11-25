@@ -50,6 +50,8 @@ export interface SharedIndex {
   requests: IndexRequest[];
   /** The cadastre a design's site is bound against (backend checkProposalBinding, here by turf). */
   cadastre: any[];
+  /** When set, POST /agreements/:cid/pin answers 502 as a server whose pinning provider fails. */
+  refusePins?: boolean;
 }
 
 // The directory's one member and the service it answers at (an origin no request leaves the browser for).
@@ -487,13 +489,13 @@ export async function attachSharedIndex(page: Page, index: SharedIndex): Promise
         return json(route, 200, membershipPage('agreements', agreements, url.searchParams));
       }
       // Content before the mint (backend routes/agreements.js POST /agreements/:cid/pin): the agreement,
-      // its plan and the plan's designs go into `pins` as canonical bytes, which the gateway route below
-      // serves, so the mint's retrievability check (content-gate.js) passes.
+      // its plan and the plan's designs go into `pins` as canonical bytes.
       const pin = /^([^/]+)\/pin$/.exec(rest);
       if (pin && method === 'POST') {
         const row = index.agreements.get(pin[1]);
         if (!row) return refuse(route, 404, 'agreement-not-found', 'Agreement not found');
         if (row.content?.rule?.binding !== true) return refuse(route, 422, 'not-binding', 'Only a binding agreement is minted, so only its content is pinned.');
+        if (index.refusePins) return refuse(route, 502, 'pin-failed', '1 object(s) could not be pinned: the provider is over quota');
         const plan = index.plans.get(row.content.planCid);
         const tree = [{ kind: 'agreement', cid: row.cid, content: row.content },
           ...(plan ? [{ kind: 'plan', cid: plan.cid, content: plan.content }] : []),
@@ -548,15 +550,6 @@ export async function attachSharedIndex(page: Page, index: SharedIndex): Promise
     }
 
     return refuse(route, 404, 'not-mocked', `The e2e index does not answer ${method} ${url.pathname}.`);
-  });
-
-  // Public IPFS gateways (content-gate.js IPFS_GATEWAYS) serve what this index pinned, and nothing else.
-  await page.route(/^https:\/\/(ipfs\.filebase\.io|gateway\.pinata\.cloud|ipfs\.io)\/ipfs\//, async route => {
-    const cid = new URL(route.request().url()).pathname.split('/')[2];
-    const pinned = index.pins.get(cid);
-    return pinned
-      ? route.fulfill({ status: 200, contentType: 'application/octet-stream', body: Buffer.from(pinned.bytes, 'base64'), headers: { 'access-control-allow-origin': '*' } })
-      : route.fulfill({ status: 404, body: 'not found', headers: { 'access-control-allow-origin': '*' } });
   });
 
   // The reads around minted agreements (M3), all GET: answered from the same index.

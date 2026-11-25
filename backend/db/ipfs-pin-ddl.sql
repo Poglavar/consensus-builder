@@ -1,8 +1,8 @@
 -- Content pinned on IPFS (docs/ipfs-storage.md): one row per CID, written once the pinning provider
 -- confirmed it holds exactly those bytes. Publishing writes only to the index; a design, plan or
--- agreement is pinned when something minted references it (agreements/pin-minted.js), and a CID that
--- has a row is never pinned again nor unpinned, so a design shared by several minted agreements is
--- stored and recorded once.
+-- agreement is pinned before a mint that references it (agreements/pin-content.js), and a CID that has
+-- a row is never pinned again nor unpinned, so a design shared by several agreements is stored and
+-- recorded once. Pins a sponsor makes with their own provider key are not recorded here.
 --
 -- Applied by deploy-backend.sh (DDL_FILES) as geo_user; locally:
 --   psql "$DATABASE_URL" -f backend/db/ipfs-pin-ddl.sql   (DATABASE_URL from backend/.env)

@@ -487,14 +487,19 @@
     // Where the agreement went when it was proposed (M2): its CID, when, the index it was sent to and
     // the wallet that sponsors it (the published object's `sponsor`, null when proposed without one;
     // M3 mints at PDA(sponsor, cid), so only that wallet can mint it). Absent until then; a published
-    // agreement is immutable, its CID is what decisions sign.
+    // agreement is immutable, its CID is what decisions sign. `content`, when this device holds it, is
+    // the exact published object, so a mint can pin it without our server (agreement-sync.js).
     function publishedOf(raw) {
         if (raw === undefined || raw === null) return null;
         if (!isObject(raw)) fail('published must be an object.');
         if (!cid().isCid(raw.cid)) fail('published.cid must be a CID.');
         const apiBase = textOf(raw.apiBase);
         if (!apiBase) fail('published.apiBase is required.');
-        return { cid: raw.cid, publishedAt: timestampOf(raw.publishedAt, 'published.publishedAt'), apiBase, sponsor: textOf(raw.sponsor) };
+        if (raw.content !== undefined && (!isObject(raw.content) || cid().cidOfObject(raw.content) !== raw.cid)) {
+            fail('published.content does not match published.cid.');
+        }
+        return { cid: raw.cid, publishedAt: timestampOf(raw.publishedAt, 'published.publishedAt'), apiBase, sponsor: textOf(raw.sponsor),
+            ...(raw.content === undefined ? {} : { content: raw.content }) };
     }
 
     // Where the agreement is minted (M3): the chain account the index mirrors, kept as given

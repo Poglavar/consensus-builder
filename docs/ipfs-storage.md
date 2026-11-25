@@ -17,26 +17,28 @@ Pinned on IPFS:
   `approval-anchor.js`);
 - signed community reports, which the UI links on `ipfs.io`;
 - parcel NFT images and metadata (`/ipfs/upload`);
-- every binding agreement about to be minted on Solana, its plan and the plan's designs.
+- every binding agreement about to be minted on Solana, its plan and the plan's designs, by our server
+  or with the sponsor's own Pinata key.
 
 Publishing a design, named plan or agreement is server-only and pins nothing: the client
 computes the CID from the canonical bytes, and `POST /designs`, `POST /plans` or
 `POST /agreements` indexes the object after checking that CID. The index and IPFS are
 separate stores, and content reaches IPFS only when something minted references it.
 
-Content before the mint (`agreements/pin-minted.js`, `frontend/js/content-gate.js`): before the
-wallet is asked to mint, the browser's Mint and the agents' `ugt_mint_agreement` call
-`POST /agreements/:cid/pin`, which pins the agreement, its plan and every member design from the
-index's own copies, and then wait until a public gateway (`ContentGate.IPFS_GATEWAYS`, not our
-backend) serves each of them with bytes that hash to its CID. Until both hold nothing is signed;
-there is no "mint anyway". As a safety net, when `POST /agreements/:cid/onchain` first records a
-mint the server pins the same tree in the background, and the lifecycle job
-(`oracle/agreement-lifecycle-job.mjs`) repeats it every pass for every minted agreement, which also
-covers agreements minted before the gate. Each object is pinned only when its canonical bytes hash to its CID.
+Content before the mint (`agreements/pin-content.js`): before the wallet is asked to mint, the
+browser's Mint and the agents' `ugt_mint_agreement` call `POST /agreements/:cid/pin`, which pins the
+agreement, its plan and every member design from the index's own copies and answers once the
+provider confirmed each CID. When our server cannot, the sponsor pins the same objects with their
+own Pinata key (`frontend/js/ipfs-own-key.js`): the browser sends the exact bytes it holds (the
+published agreement is kept with the local record) straight to Pinata, and an agent uses
+`UGT_PINATA_JWT`. Each object counts only when the provider answers exactly its CID; until every one
+has, nothing is signed. No public gateway is polled: a pinned object is served by its provider's
+gateway within seconds, while other public gateways can take minutes to find it (measured
+2026-11-25). `scripts/pin-minted-agreements.mjs` is the one-off that pins the content of agreements
+minted before this rule. Each object is pinned only when its canonical bytes hash to its CID.
 `consensus.ipfs_pin` (`db/ipfs-pin-ddl.sql`) has one row per pinned CID; a CID with a row is
 never pinned again, so a design that several minted agreements share is pinned once, and nothing
-is ever unpinned. Pin failures and referenced objects missing from the index fail the job's run.
-
+is ever unpinned. 
 `POST /pins` stays available, but no publication path calls it.
 
 ## Configuration

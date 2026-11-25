@@ -12,7 +12,7 @@ import { waitForMapReady } from '../helpers/app';
 import { chooseProfileName, openOnAnotherDevice, PARCEL_GEOMETRY, stubBasemapTiles } from '../helpers/runtime';
 import { connectWalletByConnectorId, injectMockSolanaWallet } from '../helpers/blockchain';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
-import { attachSharedIndex, E2E_LENS_MEMBER_KEY, fileAgreement, fileDesign, filePlan, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
+import { attachSharedIndex, cidOfBytes, E2E_LENS_MEMBER_KEY, fileAgreement, fileDesign, filePlan, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
 import { agreementAccountAddress, encodeAgreementAccount, serveAgreementAccounts, DECISION, AgreementAccount } from '../helpers/agreement-chain';
 import {
   applyLayout, agreementPanel, storedAgreements, createFromPlan, openStackAgreement, openAgreementsList, agreementListItem, openListedAgreement, closeAgreementPanel,
@@ -387,9 +387,9 @@ test.describe('Agreements on chain @core', () => {
     await expect(panel.locator('[data-agreement-chain="unminted"] .agreement-panel-hint')).toHaveCount(0);
     await expect(panel.locator('[data-agreement-action="bet"]')).toHaveCount(0);
 
-    // Mint asks the escrow execution needs and the payout account and checks them; then the content goes
-    // on IPFS and a public gateway must serve it (content-gate.js) before any transaction; the program (a
-    // placeholder until deployed) is not on devnet, so nothing is minted or recorded.
+    // Mint asks the escrow execution needs and the payout account and checks them; then our server pins
+    // the content before any transaction; the program (a placeholder until deployed) is not on devnet,
+    // so nothing is minted or recorded.
     await mint.click();
     const terms = page.locator('.agreement-mint-dialog');
     await expect(terms).toBeVisible();
@@ -416,6 +416,39 @@ test.describe('Agreements on chain @core', () => {
     await expect(terms).toBeVisible();
     await terms.locator('[data-action-id="cancel"]').click();
     await expect(terms).toHaveCount(0);
+
+    // When our server cannot pin, Mint offers the sponsor's own Pinata key: the content is pinned from
+    // this device straight to Pinata, each CID as Pinata confirms it, and only then is a transaction tried.
+    index.refusePins = true;
+    const pinata: string[] = [];
+    await page.route('https://api.pinata.cloud/pinning/pinFileToIPFS', async route => {
+      const request = route.request();
+      const raw = request.postDataBuffer()!;
+      const text = raw.toString('latin1');
+      const part = text.split(/--[^\r\n]+\r\n/).find(chunk => chunk.includes('name="file"'))!;
+      const bytes = Buffer.from(part.slice(part.indexOf('\r\n\r\n') + 4).replace(/\r\n$/, ''), 'latin1');
+      pinata.push(`${request.headers()['authorization']} ${cidOfBytes(bytes)}`);
+      await route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' },
+        body: JSON.stringify({ IpfsHash: cidOfBytes(bytes), Timestamp: new Date().toISOString() }) });
+    });
+    const pinsBefore = index.pins.size;
+    await mint.click();
+    await expect(terms).toBeVisible();
+    await terms.locator('[data-action-id="mint"]').click();
+    const ownKey = page.locator('.agreement-own-key-dialog');
+    await expect(ownKey).toBeVisible({ timeout: 30_000 });
+    await expect(ownKey).toContainText('Our server could not put the agreement’s content on IPFS: 1 object(s) could not be pinned');
+    await ownKey.locator('[data-action-id="pin"]').click();
+    await expect(ownKey.locator('[data-agreement-own-key-error]')).toHaveText('Paste the JWT of your Pinata key.');
+    await ownKey.locator('[data-agreement-own-key]').fill('own-pinata-jwt');
+    await ownKey.locator('[data-action-id="pin"]').click();
+    await expect(ownKey).toHaveCount(0);
+    await expect(page.locator('#ephemeral-message-container')).toContainText('The agreement program is not deployed on Solana devnet yet.', { timeout: 30_000 });
+    const tree = [secondCid, agreementRow.content.planCid, ...index.plans.get(agreementRow.content.planCid)!.content.designCids];
+    expect(pinata).toEqual(tree.map(cid => `Bearer own-pinata-jwt ${cid}`));
+    expect(index.pins.size).toBe(pinsBefore);
+    expect(await page.evaluate(() => window.localStorage.getItem('cb_own_pinata_jwt'))).toBeNull();
+    expect(index.requests.filter(request => request.method === 'POST' && request.path.endsWith('/onchain'))).toEqual([]);
 
     // On a device without the sponsor's wallet, Mint waits for that wallet.
     const receiver = await openOnAnotherDevice(browser, `/agreements/${secondCid}?city=zg&reduceMotion=1`, index, baseURL);

@@ -1,13 +1,13 @@
-// Pin on mint (agreements/pin-minted.js): a minted agreement's record, plan and designs are pinned
-// from the index's own copies, a CID already pinned is never pinned again (a design two agreements
-// share is pinned once), a copy that does not hash to its CID is refused, one failure does not stop
-// the rest, and a dry run pins nothing.
+// Content before the mint (agreements/pin-content.js, POST /agreements/:cid/pin): an agreement's
+// record, plan and designs are pinned from the index's own copies, a CID already pinned is never pinned
+// again (a design two agreements share is pinned once), a copy that does not hash to its CID is
+// refused, and one failure does not stop the rest.
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createMockPool } from './helpers/mock-pool.js';
 import { createContentApp } from './helpers/create-app.js';
 import { cidOfObject } from '../cid.js';
-import { mintedTree, pinAgreementTrees, pinMintedContent, pinProblem } from '../agreements/pin-minted.js';
+import { mintedTree, pinAgreementTrees } from '../agreements/pin-content.js';
 
 const record = content => ({ cid: cidOfObject(content), content });
 const designA = record({ schema: 'design/v1', title: 'Courtyard A' });
@@ -44,7 +44,7 @@ function provider({ failOn = [] } = {}) {
     };
 }
 
-describe('pin on mint', () => {
+describe('pinning an agreement\'s content', () => {
     it('collects an agreement, its plan and the plan\'s designs, each CID once across agreements', async () => {
         const { objects, missing } = await mintedTree(memoryStore(), [agreement1, agreement2]);
         expect(objects.map(object => [object.kind, object.cid])).toEqual([
@@ -58,7 +58,7 @@ describe('pin on mint', () => {
     it('pins the whole tree once, the shared design once, and records each pin', async () => {
         const store = memoryStore();
         const p = provider();
-        const result = await pinAgreementTrees({ store, agreements: [agreement1, agreement2], apply: true, pinBytes: p.pinBytes });
+        const result = await pinAgreementTrees({ store, agreements: [agreement1, agreement2], pinBytes: p.pinBytes });
         expect(p.calls.map(call => call.cid).sort()).toEqual([agreement1, agreement2, plan1, plan2, designA, designB, designC].map(r => r.cid).sort());
         expect(p.calls.filter(call => call.cid === designB.cid)).toHaveLength(1);
         expect(p.calls.find(call => call.cid === designA.cid).name).toBe(`design-${designA.cid}`);
@@ -70,9 +70,9 @@ describe('pin on mint', () => {
     it('a second agreement on already pinned content pins only what is new', async () => {
         const store = memoryStore();
         const p = provider();
-        await pinAgreementTrees({ store, agreements: [agreement1], apply: true, pinBytes: p.pinBytes });
+        await pinAgreementTrees({ store, agreements: [agreement1], pinBytes: p.pinBytes });
         p.calls.length = 0;
-        const result = await pinAgreementTrees({ store, agreements: [agreement2], apply: true, pinBytes: p.pinBytes });
+        const result = await pinAgreementTrees({ store, agreements: [agreement2], pinBytes: p.pinBytes });
         expect(p.calls.map(call => call.cid).sort()).toEqual([agreement2.cid, plan2.cid, designC.cid].sort());
         expect(result.alreadyPinned).toBe(1);
     });
@@ -81,32 +81,17 @@ describe('pin on mint', () => {
         const tampered = { cid: designA.cid, content: { ...designA.content, title: 'Changed' } };
         const store = memoryStore({ designs: [tampered, designB, designC] });
         const p = provider({ failOn: [plan1.cid] });
-        const result = await pinAgreementTrees({ store, agreements: [agreement1], apply: true, pinBytes: p.pinBytes });
+        const result = await pinAgreementTrees({ store, agreements: [agreement1], pinBytes: p.pinBytes });
         expect(p.calls.map(call => call.cid)).not.toContain(designA.cid);
         expect(result.failed.map(item => [item.kind, item.cid])).toEqual([['plan', plan1.cid], ['design', designA.cid]]);
         expect(result.failed[1].error).toMatch(/hashes to/);
         expect(result.pinned.map(item => item.cid).sort()).toEqual([agreement1.cid, designB.cid].sort());
         expect(store.pins.has(plan1.cid)).toBe(false);
-        expect(pinProblem(result)).toMatch(/^2 object\(s\) could not be pinned/);
     });
 
     it('reports referenced objects the index does not hold', async () => {
-        const result = await pinAgreementTrees({ store: memoryStore({ designs: [designA] }), agreements: [agreement1], apply: true, pinBytes: provider().pinBytes });
+        const result = await pinAgreementTrees({ store: memoryStore({ designs: [designA] }), agreements: [agreement1], pinBytes: provider().pinBytes });
         expect(result.missing).toEqual([{ kind: 'design', cid: designB.cid }]);
-        expect(pinProblem(result)).toBe('1 referenced object(s) are not in the index');
-    });
-
-    it('a dry run pins and records nothing', async () => {
-        const store = memoryStore({ pinned: [designA.cid] });
-        const p = provider();
-        const lines = [];
-        const result = await pinMintedContent({ store, cluster: 'devnet', pinBytes: p.pinBytes, log: line => lines.push(line) });
-        expect(p.calls).toEqual([]);
-        expect(store.pins.size).toBe(1);
-        expect(result).toMatchObject({ agreements: 2, referenced: 7, alreadyPinned: 1, pinned: [] });
-        expect(result.wouldPin).toHaveLength(6);
-        expect(lines.at(-1)).toBe('pin pass: 2 minted agreement(s) reference 7 object(s) · already pinned 1 · would pin 6 (dry run) · failed 0 · missing from index 0');
-        expect(pinProblem(result)).toBeNull();
     });
 });
 

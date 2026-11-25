@@ -370,8 +370,8 @@
     // What a running chain action is doing (the bridge's onStatus states, then the index mirror).
     const CHAIN_PHASE = {
         pinning: tr => tr('agreement.chain.phase.pinning', 'Putting the agreement, its plan and designs on IPFS…'),
-        retrievable: (tr, detail) => tr('agreement.chain.phase.retrievable', 'Checking that public IPFS gateways serve them: {{confirmed}} of {{total}}…',
-            { confirmed: detail?.confirmed ?? 0, total: detail?.total ?? '…' }),
+        pinningOwnKey: (tr, detail) => tr('agreement.chain.phase.pinningOwnKey', 'Pinning with your Pinata key: {{pinned}} of {{total}}…',
+            { pinned: detail?.pinned ?? 0, total: detail?.total ?? '…' }),
         preparing: tr => tr('agreement.chain.phase.preparing', 'Preparing the transaction…'),
         awaiting_signature: tr => tr('agreement.chain.phase.awaitingSignature', 'Waiting for the wallet’s signature…'),
         submitted: tr => tr('agreement.chain.phase.submitted', 'Sent; waiting for confirmation…'),
@@ -1454,6 +1454,7 @@
                 await work(onStatus, (phase, detail = null) => onStatus({ state: phase, detail }));
             } catch (error) {
                 if (rejectedInWallet(error)) log(`${action} on ${id}: declined in the wallet`);
+                else if (error?.cancelled) log(`${action} on ${id}: cancelled`);
                 else report(`${action} on ${id} failed`, error);
             } finally {
                 try {
@@ -1529,9 +1530,56 @@
             });
         }
 
-        // Mint (the sponsor): the content goes on IPFS and must be served by a public gateway first
-        // (AgreementSync.prepareMintContent; no wallet prompt until it is), then create the account,
-        // mirror it into the index and keep it here.
+        // When our server cannot pin the mint's content (Flow 2, courier 2): the sponsor's own Pinata key,
+        // remembered in this browser only if they choose. Resolves { jwt, remember } or null when cancelled.
+        function askOwnKey(reason) {
+            return new Promise(resolve => {
+                const remembered = win.IpfsOwnKey.rememberedKey();
+                const body = doc.createElement('div');
+                body.className = 'agreement-mint';
+                body.innerHTML = `<p class="agreement-panel-meta">${esc(reason)}</p>`
+                    + `<p class="agreement-panel-meta">${esc(t('agreement.chain.ownKey.intro', 'You can pin it with your own Pinata key instead. Create a key in Pinata limited to pinning files. The key is sent only to Pinata, from this browser.'))}</p>`
+                    + `<label class="agreement-mint__field"><span>${esc(t('agreement.chain.ownKey.key', 'Pinata JWT'))}</span>`
+                    + `<input type="password" autocomplete="off" spellcheck="false" data-agreement-own-key value="${esc(remembered || '')}"></label>`
+                    + `<label class="agreement-mint__check"><input type="checkbox" data-agreement-own-key-remember${remembered ? ' checked' : ''}> <span>${esc(t('agreement.chain.ownKey.remember', 'Remember the key in this browser'))}</span></label>`
+                    + '<p class="agreement-panel-note agreement-panel-note--danger" role="alert" data-agreement-own-key-error hidden></p>';
+                let settled = false;
+                const finish = value => {
+                    if (settled) return;
+                    settled = true;
+                    resolve(value);
+                };
+                const dialog = win.CbDialog.open({
+                    title: t('agreement.chain.ownKey.title', 'Pin with your own key'),
+                    size: 'sm',
+                    className: 'agreement-own-key-dialog',
+                    body,
+                    onClose: () => finish(null),
+                    actions: [
+                        { id: 'cancel', label: t('common.cancel', 'Cancel'), role: 'secondary' },
+                        {
+                            id: 'pin', label: t('agreement.chain.ownKey.pin', 'Pin and mint'), role: 'primary', keepOpen: true,
+                            onClick: api => {
+                                const jwt = body.querySelector('[data-agreement-own-key]').value.trim();
+                                if (!jwt) {
+                                    const error = body.querySelector('[data-agreement-own-key-error]');
+                                    error.textContent = t('agreement.chain.ownKey.missing', 'Paste the JWT of your Pinata key.');
+                                    error.hidden = false;
+                                    return;
+                                }
+                                finish({ jwt, remember: body.querySelector('[data-agreement-own-key-remember]').checked });
+                                api.close('pin');
+                            }
+                        }
+                    ]
+                });
+                if (!dialog) finish(null);
+            });
+        }
+
+        // Mint (the sponsor): the content goes on IPFS first, pinned by our server or, when it cannot, with
+        // the sponsor's own Pinata key (askOwnKey); no wallet prompt until a provider confirmed every CID.
+        // Then create the account, mirror it into the index and keep it here.
         async function mint() {
             const id = state.id;
             const agreement = state.agreement;
@@ -1542,7 +1590,16 @@
             const subject = state.readOnlyAgreement || id;
             await runChain('mint', async (onStatus, phase) => {
                 phase('pinning');
-                await win.AgreementSync.prepareMintContent(subject, { onProgress: progress => phase('retrievable', progress) });
+                try {
+                    await win.AgreementSync.prepareMintContent(subject);
+                } catch (error) {
+                    if (!error?.ownKey) throw error;
+                    const key = await askOwnKey(error.message);
+                    if (!key) throw Object.assign(new Error('The sponsor did not pin with their own key.'), { cancelled: true });
+                    win.IpfsOwnKey.rememberKey(key.remember ? key.jwt : null);
+                    phase('pinningOwnKey');
+                    await win.AgreementSync.pinWithOwnKey(subject, key.jwt, { onProgress: progress => phase('pinningOwnKey', progress) });
+                }
                 phase('preparing');
                 const minted = await win.AgreementBridge.mint({ agreement, lenses: lens.lenses, lensThreshold: lens.lensThreshold, requiredLamports: terms.requiredLamports, payout: terms.payout, onStatus });
                 phase('indexing');

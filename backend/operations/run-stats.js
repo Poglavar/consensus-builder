@@ -5,7 +5,7 @@ export function landOracleStatsPath(env = process.env) {
     return env.LAND_ORACLE_RUN_STATS || path.resolve(process.cwd(), 'logs/land-oracle-stats.json');
 }
 
-export function buildLandOracleRunStats({ startedAt, endedAt, result = null, pins = null, error = null, dryRun = false } = {}) {
+export function buildLandOracleRunStats({ startedAt, endedAt, result = null, error = null, dryRun = false } = {}) {
     const missingEvidence = Array.isArray(result?.missingEvidence) ? result.missingEvidence.length : 0;
     const completed = !error && missingEvidence === 0;
     return {
@@ -23,10 +23,7 @@ export function buildLandOracleRunStats({ startedAt, endedAt, result = null, pin
             events: Array.isArray(result?.events) ? result.events.length : 0,
             inserted: Number(result?.inserted || 0),
             reconciled: Number(result?.reconciled || 0),
-            missingEvidence,
-            // Pin on mint (agreements/pin-minted.js): objects pinned this pass and those that failed.
-            pinned: Array.isArray(pins?.pinned) ? pins.pinned.length : 0,
-            pinFailed: (Array.isArray(pins?.failed) ? pins.failed.length : 0) + (Array.isArray(pins?.missing) ? pins.missing.length : 0)
+            missingEvidence
         },
         error: error ? String(error.message || error) : (missingEvidence ? `${missingEvidence} terminal agreement(s) lack source evidence` : null)
     };

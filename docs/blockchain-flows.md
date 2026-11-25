@@ -89,15 +89,14 @@ used only when the one before is unavailable:
 3. **Self-pinned**: the dialog offers the canonical bytes as a file download and names the CID; the
    person pins it wherever they like and continues when it is retrievable.
 
-Built for agreements (2026-11-25): courier 1 and the gate. The browser's Mint and the agents' mint
-call `POST /agreements/:cid/pin` and then wait for a public gateway (`frontend/js/content-gate.js`);
-the server also pins after a recorded mint and on every lifecycle pass
-([ipfs-storage.md](ipfs-storage.md)). Couriers 2 and 3 are not built, so minting needs our server.
+Whatever the courier, the **pinning gate** is the same: the pinning provider confirms that it holds
+each object under exactly the CID its bytes hash to (user decision, 2026-11-25). No public gateway is
+polled: the provider's own gateway serves a pin within seconds, while other gateways took over three
+minutes in a measurement ([ipfs-storage.md](ipfs-storage.md)). There is no "mint anyway", because a
+chain record pointing at content nobody pinned cannot be undone. For a self-pinned object (courier 3)
+there is no provider answer, so that step alone needs a gateway check.
 
-Whatever the courier, the **retrievability gate** is the same: at least one public gateway that is
-not our backend returns bytes hashing to the CID. The checklist retries with a visible count while
-propagation takes its time; it does not offer "mint anyway", because a chain record pointing at
-content nobody can fetch cannot be undone.
+Built for agreements (2026-11-25): couriers 1 and 2 with this gate. Courier 3 is not built.
 
 The wallet-facing token metadata (name, description, image URL) is a separate small object and goes
 through the same courier. It is cosmetic: nothing verifies it, and readers never take content from it.
