@@ -8316,6 +8316,7 @@
             }
         },
         "compare": {
+            "raised": "Recaudado · aportantes (leído de Solana)",
             "approval": "Aprobación",
             "settlement": "Liquidación",
             "toOwners": "Suelo para los propietarios",
@@ -8578,8 +8579,46 @@
                 "threshold": "Elige cuántos miembros de la lente deben confirmar: de 1 al número de miembros de la lente."
             }
         },
+        "record": {
+            "open": "Registro del acuerdo",
+            "print": "Imprimir o guardar como PDF",
+            "whatYouSign": "Lo que firma",
+            "terms": "Identidad y condiciones",
+            "agreement": "Acuerdo",
+            "cid": "Identidad (CID)",
+            "unpublished": "Aún no propuesto",
+            "sponsor": "Billetera del patrocinador",
+            "lensNeeded": "{{needed}} de {{count}} deben confirmar",
+            "yourTerms": "Lo que esta parte aporta, recibe y cobra",
+            "allTerms": "Lo que cada parte aporta, recibe y cobra",
+            "cashNote": "El efectivo de esta tabla es el calendario de liquidación del acuerdo; ejecutar el acuerdo en la cadena solo libera su depósito. El registro legal y la construcción son aparte.",
+            "parcel": "Parcela",
+            "piece": "Pieza",
+            "to": "Para",
+            "confirmations": "Confirmaciones de la lente",
+            "account": "Cuenta de Solana",
+            "contract": "Contrato del inversor",
+            "apartments": "Apartamentos ofrecidos",
+            "notMinted": "No acuñado.",
+            "chainUnread": "Acuñado, pero no se pudo leer su cuenta en la cadena.",
+            "decisions": "Decisiones firmadas",
+            "signer": "Firmado por",
+            "date": "Firmado el",
+            "noDecisions": "Aún no hay decisiones firmadas.",
+            "footer": "Generado el {{date}}. El CID fija todas las condiciones anteriores: cualquiera puede recalcularlo a partir del acuerdo publicado. Ejecutar el acuerdo en la cadena solo libera su depósito; el registro legal y la construcción son aparte."
+        },
         "chain": {
             "heading": "En la cadena",
+            "confirmMember": {
+                "intro": "¿Confirmar «{{title}}» como miembro de la lente? Su billetera firma una transacción de Solana que registra su decisión sobre el acuerdo {{cid}}.",
+                "completesRound": "La suya es la última confirmación necesaria: una vez confirmado el objetivo de financiación, la misma transacción ejecuta la ronda y libera las aportaciones a la billetera de cobro del promotor.",
+                "completes": "La suya es la última confirmación necesaria: la misma transacción ejecuta el acuerdo cuando su depósito está financiado.",
+                "partial": "Después de la suya se necesitan {{more}} confirmación(es) más de la lente para poder ejecutarlo.",
+                "cost": "La primera decisión de una billetera también registra su registro de decisiones en Solana; la billetera paga una pequeña comisión y renta en SOL de devnet."
+            },
+            "memberReleased": "Confirmado: la ronda se ejecutó y sus aportaciones pasaron al promotor.",
+            "memberExecuted": "Confirmado: el acuerdo se ejecutó.",
+            "memberConfirmed": "Su confirmación está registrada en la cadena.",
             "fundingConfirmed": "Objetivo de financiación confirmado en la cadena.",
             "fundingTargetMet": "{{target}} USDC, confirmado en la cadena",
             "fundingTargetOpen": "{{target}} USDC, aún sin confirmar",
@@ -8631,6 +8670,7 @@
                 "executedAt": "Ejecutado"
             },
             "actions": {
+                "confirmMember": "Confirmar como miembro de la lente",
                 "repropose": "Volver a proponer con esta billetera",
                 "mint": "Acuñar",
                 "attest": "Registrar la decisión",
@@ -8641,6 +8681,7 @@
                 "expire": "Marcar como expirado"
             },
             "hints": {
+                "youAreMember": "Su billetera es uno de los miembros de la lente de este acuerdo. Al confirmar se registra su decisión en Solana; si es la última confirmación necesaria, la misma transacción ejecuta el acuerdo.",
                 "noSponsor": "Se propuso sin billetera del promotor, así que no se puede acuñar. Vuelve a proponerlo con una billetera Solana conectada: será un acuerdo nuevo, con su propio enlace y sus propias decisiones.",
                 "connectSponsor": "Conecta la billetera Solana del promotor ({{sponsor}}) para acuñarlo.",
                 "notSponsor": "Solo la billetera del promotor ({{sponsor}}) puede acuñarlo; la billetera conectada es {{wallet}}.",
@@ -8674,6 +8715,11 @@
             "cancelled": "Acuerdo cancelado; el depósito volvió al promotor.",
             "expired": "Acuerdo expirado; el depósito volvió al promotor.",
             "errors": {
+                "notMember": "Esta billetera no es miembro de la lente del acuerdo.",
+                "memberCannotConfirm": "Este miembro de la lente no puede confirmar ahora: ya confirmó, la decisión está registrada o el plazo venció.",
+                "chainTime": "No se pudo leer la hora de la cadena; inténtelo de nuevo.",
+                "decisionsUnavailable": "No se pudieron leer las decisiones firmadas; inténtelo de nuevo.",
+                "memberRefused": "Todavía no puede confirmar este acuerdo: {{reason}}",
                 "amount": "Introduce una cantidad de SOL, por ejemplo 0,5.",
                 "payout": "La cuenta beneficiaria debe ser una dirección de Solana.",
                 "web3Unavailable": "No se pudo cargar la biblioteca de Solana.",
@@ -10096,7 +10142,60 @@
     "scopeAll": "Todo su suelo",
     "scopeParcel": "Parcela {{number}} ({{area}} m²)",
     "scopeParcelSome": "Parcela {{number}} ({{area}} m², en {{count}} de {{total}})",
-    "scopeNote": "En una parcela, cada columna cuenta solo lo que hay en esa parcela: un edificio que cruza su límite cuenta la parte que queda dentro."
+    "scopeNote": "En una parcela, cada columna cuenta solo lo que hay en esa parcela: un edificio que cruza su límite cuenta la parte que queda dentro.",
+    "retry": "Medir de nuevo",
+    "retryNamed": "Medir {{title}} de nuevo",
+    "downloadCsv": "Descargar CSV",
+    "print": "Imprimir",
+    "decisionNote": "La ocupación del suelo y el índice de edificabilidad se calculan sobre el suelo del plan, con todos los edificios que quedan en pie después de él. Los límites de Permitido comparan cada edificio nuevo con las zonas de la capa Permitido donde se sitúa. La financiación se lee de Solana, no de nuestro servidor.",
+    "demolishedValue": "{{whole}} enteros, {{cut}} en parte · {{footprint}} de huella · {{floorArea}} de superficie construida",
+    "noNewBuildings": "Sin edificios nuevos",
+    "heightValue": "{{height}} m · {{storeys}} plantas",
+    "noSchedule": "Sin calendario",
+    "periods": "{{first}}–{{last}} · {{count}} periodos",
+    "periodsUnscheduled": "{{first}}–{{last}} · {{count}} periodos · {{unscheduled}} diseños sin calendario",
+    "rows": {
+      "parcelsTaken": "Parcelas existentes ocupadas",
+      "demolished": "Edificios existentes demolidos (huella, superficie construida)",
+      "height": "Edificios nuevos: altura máxima · más plantas",
+      "far": "Índice de edificabilidad (superficie construida ÷ suelo)",
+      "coverage": "Ocupación del suelo (edificios ÷ suelo)",
+      "greenArea": "Zonas verdes — parques (m²)",
+      "roadArea": "Superficie viaria (m²)",
+      "buildOut": "Desarrollo por periodos",
+      "permitted": "Límites de Permitido",
+      "backing": "Acuerdos que respaldan el plan"
+    },
+    "permitted": {
+      "checking": "Comprobando…",
+      "within": "Dentro de los límites ({{count}} edificios)",
+      "breaks": "{{count}} de {{total}} edificios superan los límites ({{area}})",
+      "unclear": "Ninguno supera los límites; {{count}} condicionados o desconocidos",
+      "noBuildings": "No hay edificios nuevos que comprobar",
+      "notChecked": "Sin comprobar: {{reason}}",
+      "noChecker": "la comprobación de normas no está cargada",
+      "superseded": "la comprobación se detuvo"
+    },
+    "backing": {
+            "retryNamed": "Leer de nuevo los acuerdos de {{title}}",
+            "minted": "Acuñado",
+      "lead": "Promotor: {{wallet}}",
+      "lens": "Lente",
+      "targetBy": "Objetivo {{target}} USDC antes del {{deadline}}",
+      "target": "Objetivo {{target}} USDC",
+      "notRead": "Sin leer",
+      "notMinted": "Sin acuñar",
+      "chainFailed": "Cadena sin leer: {{reason}}",
+      "chainReading": "Leyendo la cadena…",
+      "raisedOf": "{{raised}} de {{target}} USDC recaudados",
+      "raised": "{{raised}} USDC recaudados",
+      "contributors": "{{count}} aportantes",
+      "apartments": "{{reserved}} de {{offered}} viviendas reservadas",
+      "unpublished": "Plan no publicado: sin acuerdos",
+      "loading": "Cargando…",
+      "failed": "Sin leer: {{reason}}",
+      "none": "No hay acuerdos sobre esta revisión del plan"
+    }
   },
   "buildingUseHighlight": {
     "title": "Uso de los edificios",

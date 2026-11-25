@@ -1,0 +1,118 @@
+/* The agreement record (agreement-panel.js recordHtml, signingSummaryHtml): an agreement's identity,
+   terms, land, ledger, on-chain state and signed decisions, shown in a dialog and printed alone from a
+   frame that loads only this sheet, so every value falls back when the app's tokens are absent. */
+
+.agreement-record {
+    display: grid;
+    gap: var(--cb-space-4, 16px);
+    color: var(--cb-text, #17212b);
+    font-size: var(--cb-text-sm, 0.875rem);
+    line-height: var(--cb-leading, 1.5);
+}
+
+.agreement-record--summary {
+    gap: var(--cb-space-2, 8px);
+}
+
+.agreement-record__head h2 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.agreement-record__kind {
+    margin: 0;
+    color: var(--cb-text-muted, #56636f);
+    font-size: var(--cb-text-xs, 0.75rem);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.agreement-record__section {
+    display: grid;
+    gap: var(--cb-space-2, 8px);
+    break-inside: avoid;
+}
+
+.agreement-record__section h3,
+.agreement-record__subheading {
+    margin: 0;
+    font-size: var(--cb-text-sm, 0.875rem);
+    font-weight: var(--cb-weight-semibold, 600);
+}
+
+.agreement-record__facts {
+    display: grid;
+    gap: var(--cb-space-1, 4px);
+    margin: 0;
+}
+
+.agreement-record__facts > div {
+    display: grid;
+    grid-template-columns: minmax(8rem, 30%) 1fr;
+    gap: var(--cb-space-2, 8px);
+}
+
+.agreement-record__facts dt {
+    color: var(--cb-text-muted, #56636f);
+}
+
+.agreement-record__facts dd {
+    margin: 0;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.agreement-record .agreement-panel-ledger {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+}
+
+.agreement-record .agreement-panel-ledger th,
+.agreement-record .agreement-panel-ledger td {
+    padding: var(--cb-space-1, 4px) var(--cb-space-2, 8px);
+    border-bottom: 1px solid var(--cb-line, #d8dee3);
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+}
+
+.agreement-record__foot {
+    color: var(--cb-text-muted, #56636f);
+    font-size: var(--cb-text-xs, 0.75rem);
+}
+
+.agreement-record__foot p {
+    margin: 0;
+}
+
+@media (max-width: 420px) {
+    .agreement-record__facts > div {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
+
+/* The frame the record prints from: out of view, never focusable. */
+.agreement-record-print-frame {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    width: 0;
+    height: 0;
+    border: 0;
+}
+
+/* The printed page itself. */
+.agreement-record-page {
+    margin: 0;
+    padding: 16mm;
+    background: #ffffff;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@media print {
+    .agreement-record-page {
+        padding: 0;
+    }
+}

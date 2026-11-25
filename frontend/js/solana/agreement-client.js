@@ -43,6 +43,20 @@
         DEFAULT_DEADLINE_SECONDS: 90 * 86_400,
         DECISION_SCHEMA_NAME: 'AgreementDecision',
         DECISION_SCHEMA_VERSION: 1,
+        // The SAS schema a member registers once under its own credential, as backend/oracle/lens-schemas.js
+        // defines AgreementDecision-v1 (agreement-client.test.js asserts the two agree): its description,
+        // field names and SAS layout bytes (String 12, I64 8).
+        DECISION_SCHEMA_DESCRIPTION: 'A lens member attests that the decision rule of an agreement is satisfied as of a source time.',
+        DECISION_SCHEMA_FIELDS: Object.freeze(['agreementCid', 'sponsor', 'decision', 'evidenceRef', 'sourceObservedAt']),
+        DECISION_SCHEMA_LAYOUT: Object.freeze([12, 12, 12, 12, 8]),
+        // The credential name every lens member issues under (backend/lens/member.js DEFAULT_CREDENTIAL_NAME).
+        LENS_CREDENTIAL_NAME: 'LensMember',
+        // How long a member's own decision stays recordable: a year, as the reference member issues them.
+        DECISION_EXPIRY_SECONDS: 365 * 24 * 3600,
+        // SAS instruction discriminators (sas-lib 1.0.10: createCredential 0, createSchema 1, createAttestation 6).
+        SAS_CREATE_CREDENTIAL: 0,
+        SAS_CREATE_SCHEMA: 1,
+        SAS_CREATE_ATTESTATION: 6,
         SAS_ATTESTATION_DISCRIMINATOR: 2,
         // 8-byte discriminator + Agreement::INIT_SPACE (572).
         AGREEMENT_ACCOUNT_SPACE: 580,
@@ -572,6 +586,94 @@
         );
     }
 
+    // ---- a member's own AgreementDecision-v1 (a lens key held in a person's wallet) ---------------------
+    // A lens member that is a wallet, such as a city authority's key, issues its decision itself: the
+    // same SAS credential, schema and attestation the reference member's service creates
+    // (backend/lens/member.js, register-lens-schemas.mjs), built here so the wallet signs them in the
+    // transaction that also records the decision. Byte-exact with sas-lib (agreement-client.test.js).
+
+    function sasPda(seeds) {
+        const { PublicKey } = resolveWeb3();
+        return PublicKey.findProgramAddressSync(seeds, toKey(constants.SAS_PROGRAM_ID, 'SAS program'))[0];
+    }
+    function nameSeed(name) {
+        const bytes = utf8(name);
+        if (!bytes.length || bytes.length > 32) throw new Error('SAS names must be 1-32 bytes');
+        return bytes;
+    }
+    // ["credential", authority, name] under SAS.
+    function getLensCredentialPda(authority, name = constants.LENS_CREDENTIAL_NAME) {
+        return sasPda([utf8('credential'), toKey(authority, 'authority').toBytes(), nameSeed(name)]);
+    }
+    // ["attestation", credential, schema, nonce] under SAS.
+    function getAttestationPda({ credential, schema, nonce }) {
+        return sasPda([utf8('attestation'), toKey(credential, 'credential').toBytes(), toKey(schema, 'schema').toBytes(), toKey(nonce, 'nonce').toBytes()]);
+    }
+    // The member's deterministic nonce for one decision (backend/lens/member.js factNonce): the key whose
+    // bytes are sha256 of the parts joined with "|", so a retry lands on the attestation already issued.
+    function decisionNonce({ agreementCid, sponsor, decision, sourceObservedAt }) {
+        const { PublicKey } = resolveWeb3();
+        const id = `${constants.DECISION_SCHEMA_NAME}-v${constants.DECISION_SCHEMA_VERSION}`;
+        return new PublicKey(hexToBytes(resolveSha256Hex()([id, agreementCid, sponsor, decision, sourceObservedAt].join('|'))));
+    }
+    // AgreementDecision-v1 payload: four borsh strings and an i64, as the program parses it.
+    function encodeDecisionPayload({ agreementCid, sponsor, decision, evidenceRef, sourceObservedAt }) {
+        requireCid(agreementCid);
+        toKey(sponsor, 'sponsor');
+        if (decision !== 'satisfied') throw new Error('decision must be "satisfied"');
+        if (typeof evidenceRef !== 'string' || !evidenceRef.trim()) throw new Error('evidenceRef must be text');
+        if (!Number.isSafeInteger(sourceObservedAt)) throw new Error('sourceObservedAt must be whole Unix seconds');
+        return concat([encodeString(agreementCid), encodeString(sponsor), encodeString(decision), encodeString(evidenceRef), i64(sourceObservedAt, 'sourceObservedAt')]);
+    }
+    const sasMeta = meta;
+    const systemKey = () => toKey(constants.SYSTEM_PROGRAM_ID, 'system program');
+    // createCredential(name, signers [authority]). Accounts: payer (signer, mut), credential (mut),
+    // authority (signer), system program.
+    function buildCreateLensCredentialIx({ payer, authority, name = constants.LENS_CREDENTIAL_NAME }) {
+        const credential = getLensCredentialPda(authority, name);
+        const data = concat([Uint8Array.of(constants.SAS_CREATE_CREDENTIAL), encodeString(name), u32(1), encodePubkey(authority, 'authority')]);
+        return instruction(constants.SAS_PROGRAM_ID, [
+            sasMeta(toKey(payer, 'payer'), true, true), sasMeta(credential, false, true),
+            sasMeta(toKey(authority, 'authority'), true, false), sasMeta(systemKey(), false, false)
+        ], data);
+    }
+    // createSchema(AgreementDecision v1). Accounts: payer (signer, mut), authority (signer), credential,
+    // schema (mut), system program.
+    function buildCreateDecisionSchemaIx({ payer, authority, credential }) {
+        const schema = getDecisionSchemaPda(credential)[0];
+        const data = concat([
+            Uint8Array.of(constants.SAS_CREATE_SCHEMA),
+            encodeString(constants.DECISION_SCHEMA_NAME),
+            encodeString(constants.DECISION_SCHEMA_DESCRIPTION),
+            u32(constants.DECISION_SCHEMA_LAYOUT.length), Uint8Array.from(constants.DECISION_SCHEMA_LAYOUT),
+            u32(constants.DECISION_SCHEMA_FIELDS.length), ...constants.DECISION_SCHEMA_FIELDS.map(encodeString)
+        ]);
+        return instruction(constants.SAS_PROGRAM_ID, [
+            sasMeta(toKey(payer, 'payer'), true, true), sasMeta(toKey(authority, 'authority'), true, false),
+            sasMeta(toKey(credential, 'credential'), false, false), sasMeta(schema, false, true), sasMeta(systemKey(), false, false)
+        ], data);
+    }
+    // createAttestation(nonce, data, expiry). Accounts: payer (signer, mut), authority (signer),
+    // credential, schema, attestation (mut), system program. Returns the instruction and the attestation.
+    function buildCreateDecisionAttestationIx({ payer, authority, fields, expiry }) {
+        const credential = getLensCredentialPda(authority);
+        const schema = getDecisionSchemaPda(credential)[0];
+        const nonce = decisionNonce(fields);
+        const attestation = getAttestationPda({ credential, schema, nonce });
+        if (!Number.isSafeInteger(expiry)) throw new Error('expiry must be whole Unix seconds');
+        const payload = encodeDecisionPayload(fields);
+        const data = concat([Uint8Array.of(constants.SAS_CREATE_ATTESTATION), encodePubkey(nonce, 'nonce'), u32(payload.length), payload, i64(expiry, 'expiry')]);
+        return {
+            instruction: instruction(constants.SAS_PROGRAM_ID, [
+                sasMeta(toKey(payer, 'payer'), true, true), sasMeta(toKey(authority, 'authority'), true, false),
+                sasMeta(credential, false, false), sasMeta(schema, false, false), sasMeta(attestation, false, true), sasMeta(systemKey(), false, false)
+            ], data),
+            attestation: attestation.toBase58(),
+            credential: credential.toBase58(),
+            schema: schema.toBase58()
+        };
+    }
+
     // The program's attest checks that the two accounts alone can answer (the credential's authority
     // is the chain's to check), so a wallet is never asked to sign an attest the program refuses for
     // them. `agreement` is readAgreement's value. null when it would pass, else the reason.
@@ -658,6 +760,13 @@
         readDecisionAttestation,
         deadlinePassed,
         getDecisionSchemaPda,
+        getLensCredentialPda,
+        getAttestationPda,
+        decisionNonce,
+        encodeDecisionPayload,
+        buildCreateLensCredentialIx,
+        buildCreateDecisionSchemaIx,
+        buildCreateDecisionAttestationIx,
         checkDecisionForAttest,
         fetchAgreement,
         fetchDecisionAttestation

@@ -1897,6 +1897,7 @@
             }
         },
         "compare": {
+            "raised": "Levé · contributeurs (lu sur Solana)",
             "approval": "Approbation",
             "settlement": "Règlement",
             "toOwners": "Terrain aux propriétaires",
@@ -1939,8 +1940,37 @@
                 "threshold": "Choisissez combien de membres du prisme doivent confirmer : de 1 au nombre de membres du prisme."
             }
         },
+        "record": {
+            "open": "Fiche de l’accord",
+            "print": "Imprimer ou enregistrer en PDF",
+            "whatYouSign": "Ce que vous signez",
+            "terms": "Identité et conditions",
+            "agreement": "Accord",
+            "cid": "Identité (CID)",
+            "unpublished": "Pas encore proposé",
+            "sponsor": "Portefeuille du promoteur",
+            "lensNeeded": "{{needed}} sur {{count}} doivent confirmer",
+            "yourTerms": "Ce que cette partie apporte, reçoit et perçoit",
+            "allTerms": "Ce que chaque partie apporte, reçoit et perçoit",
+            "cashNote": "Les montants de ce tableau sont l’échéancier de règlement de l’accord ; exécuter l’accord sur la chaîne ne libère que son séquestre. L’enregistrement légal et la construction sont distincts.",
+            "parcel": "Parcelle",
+            "piece": "Lot",
+            "to": "À",
+            "confirmations": "Confirmations de l’instance de vérification",
+            "account": "Compte Solana",
+            "contract": "Contrat des investisseurs",
+            "apartments": "Logements proposés",
+            "notMinted": "Non frappé.",
+            "chainUnread": "Frappé, mais son compte sur la chaîne n’a pas pu être lu.",
+            "decisions": "Décisions signées",
+            "signer": "Signé par",
+            "date": "Signé le",
+            "noDecisions": "Aucune décision signée pour l’instant.",
+            "footer": "Généré le {{date}}. Le CID fixe toutes les conditions ci-dessus : chacun peut le recalculer à partir de l’accord publié. Exécuter l’accord sur la chaîne ne libère que son séquestre ; l’enregistrement légal et la construction sont distincts."
+        },
         "chain": {
             "actions": {
+                "confirmMember": "Confirmer en tant que membre de l’instance de vérification",
                 "cancel": "Annuler",
                 "mint": "Créer le NFT",
                 "repropose": "Proposer à nouveau avec ce portefeuille",
@@ -1972,6 +2002,16 @@
                 "payout": "Versement"
             },
             "heading": "Sur la blockchain",
+            "confirmMember": {
+                "intro": "Confirmer « {{title}} » en tant que membre de l’instance de vérification ? Votre portefeuille signe une transaction Solana qui enregistre votre décision sur l’accord {{cid}}.",
+                "completesRound": "La vôtre est la dernière confirmation nécessaire : une fois l’objectif de financement confirmé, la même transaction exécute la levée et verse les contributions au portefeuille du promoteur.",
+                "completes": "La vôtre est la dernière confirmation nécessaire : la même transaction exécute l’accord lorsque son séquestre est alimenté.",
+                "partial": "Il faut encore {{more}} confirmation(s) après la vôtre avant de pouvoir l’exécuter.",
+                "cost": "La première décision d’un portefeuille enregistre aussi son registre de décisions sur Solana ; le portefeuille paie de petits frais et un loyer en SOL devnet."
+            },
+            "memberReleased": "Confirmé : la levée a été exécutée et les contributions ont été versées au promoteur.",
+            "memberExecuted": "Confirmé : l’accord a été exécuté.",
+            "memberConfirmed": "Votre confirmation est enregistrée sur la chaîne.",
             "fundingConfirmed": "Objectif de financement confirmé sur la blockchain.",
             "fundingTargetMet": "{{target}} USDC, confirmé sur la blockchain",
             "fundingTargetOpen": "{{target}} USDC, pas encore confirmé",
@@ -2002,6 +2042,7 @@
                 "missing": "Collez un JWT Pinata."
             },
             "hints": {
+                "youAreMember": "Votre portefeuille fait partie de l’instance de vérification de cet accord. La confirmation enregistre votre décision sur Solana ; si c’est la dernière confirmation nécessaire, la même transaction exécute l’accord.",
                 "noSponsor": "Cet accord a été proposé sans portefeuille de porteur ; il ne peut donc pas être inscrit sur la blockchain. Proposez-le à nouveau avec un portefeuille Solana connecté : ce sera un nouvel accord, avec son propre lien et ses propres décisions.",
                 "connectSponsor": "Connectez le portefeuille Solana du porteur ({{sponsor}}) pour l’inscrire sur la blockchain.",
                 "notSponsor": "Seul le portefeuille du porteur ({{sponsor}}) peut l’inscrire sur la blockchain ; le portefeuille connecté est {{wallet}}.",
@@ -2035,6 +2076,11 @@
             "cancelled": "Accord annulé ; les fonds séquestrés ont été restitués au porteur.",
             "expired": "Accord expiré ; les fonds séquestrés ont été restitués au porteur.",
             "errors": {
+                "notMember": "Ce portefeuille ne fait pas partie de l’instance de vérification de l’accord.",
+                "memberCannotConfirm": "Ce membre ne peut pas confirmer maintenant : il a déjà confirmé, la décision est enregistrée ou l’échéance est passée.",
+                "chainTime": "L’heure de la chaîne n’a pas pu être lue ; réessayez.",
+                "decisionsUnavailable": "Les décisions signées n’ont pas pu être lues ; réessayez.",
+                "memberRefused": "Vous ne pouvez pas encore confirmer cet accord : {{reason}}",
                 "amount": "Saisissez un montant en SOL, par exemple 0.5.",
                 "payout": "Le compte de versement doit être une adresse Solana.",
                 "web3Unavailable": "La bibliothèque Solana n’a pas pu être chargée.",
@@ -10075,7 +10121,60 @@
     "scopeAll": "Tout leur terrain",
     "scopeParcel": "Parcelle {{number}} ({{area}} m²)",
     "scopeParcelSome": "Parcelle {{number}} ({{area}} m², dans {{count}} sur {{total}})",
-    "scopeNote": "Sur une parcelle, chaque colonne ne compte que ce qui se trouve sur cette parcelle : un bâtiment qui en franchit la limite compte sa partie située dessus."
+    "scopeNote": "Sur une parcelle, chaque colonne ne compte que ce qui se trouve sur cette parcelle : un bâtiment qui en franchit la limite compte sa partie située dessus.",
+    "retry": "Mesurer à nouveau",
+    "retryNamed": "Mesurer {{title}} à nouveau",
+    "downloadCsv": "Télécharger le CSV",
+    "print": "Imprimer",
+    "decisionNote": "L’emprise au sol et le coefficient d’occupation sont calculés sur le terrain du plan, avec tous les bâtiments qui restent debout après lui. Les limites du Permis comparent chaque nouveau bâtiment aux zones de la couche Permis où il se trouve. Le financement est lu sur Solana, pas sur notre serveur.",
+    "demolishedValue": "{{whole}} entiers, {{cut}} en partie · {{footprint}} d’emprise · {{floorArea}} de surface de plancher",
+    "noNewBuildings": "Aucun nouveau bâtiment",
+    "heightValue": "{{height}} m · {{storeys}} niveaux",
+    "noSchedule": "Sans calendrier",
+    "periods": "{{first}}–{{last}} · {{count}} périodes",
+    "periodsUnscheduled": "{{first}}–{{last}} · {{count}} périodes · {{unscheduled}} projets sans calendrier",
+    "rows": {
+      "parcelsTaken": "Parcelles existantes prises",
+      "demolished": "Bâtiments existants démolis (emprise, surface de plancher)",
+      "height": "Nouveaux bâtiments : hauteur maximale · niveaux au plus",
+      "far": "Coefficient d’occupation (surface de plancher ÷ terrain)",
+      "coverage": "Emprise au sol (bâtiments ÷ terrain)",
+      "greenArea": "Espaces verts — parcs (m²)",
+      "roadArea": "Voirie (m²)",
+      "buildOut": "Réalisation par période",
+      "permitted": "Limites du Permis",
+      "backing": "Accords soutenant le plan"
+    },
+    "permitted": {
+      "checking": "Vérification…",
+      "within": "Dans les limites ({{count}} bâtiments)",
+      "breaks": "{{count}} bâtiments sur {{total}} dépassent les limites ({{area}})",
+      "unclear": "Aucun ne dépasse les limites ; {{count}} sous condition ou inconnus",
+      "noBuildings": "Aucun nouveau bâtiment à vérifier",
+      "notChecked": "Non vérifié : {{reason}}",
+      "noChecker": "la vérification des règles n’est pas chargée",
+      "superseded": "la vérification a été arrêtée"
+    },
+    "backing": {
+            "retryNamed": "Relire les accords sur {{title}}",
+            "minted": "Émis",
+      "lead": "Porteur : {{wallet}}",
+      "lens": "Lentille",
+      "targetBy": "Objectif {{target}} USDC avant le {{deadline}}",
+      "target": "Objectif {{target}} USDC",
+      "notRead": "Non lu",
+      "notMinted": "Non émis",
+      "chainFailed": "Chaîne non lue : {{reason}}",
+      "chainReading": "Lecture de la chaîne…",
+      "raisedOf": "{{raised}} sur {{target}} USDC levés",
+      "raised": "{{raised}} USDC levés",
+      "contributors": "{{count}} contributeurs",
+      "apartments": "{{reserved}} logements réservés sur {{offered}}",
+      "unpublished": "Plan non publié : aucun accord",
+      "loading": "Chargement…",
+      "failed": "Non lu : {{reason}}",
+      "none": "Aucun accord sur cette révision du plan"
+    }
   },
   "buildingUseHighlight": {
     "title": "Usage des bâtiments",

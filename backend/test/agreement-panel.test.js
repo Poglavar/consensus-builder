@@ -322,6 +322,31 @@ describe('ledgerRows', () => {
         expect(rows[2].receives).toBe(format.formatArea(400));
     });
 
+    it('writes the agreement record and the signing summary from the same terms, without inspect controls', () => {
+        const ledger = { rows: panel.ledgerRows(record.ledger(agreement())), sponsor: '', error: null };
+        const value = { ...agreement(), published: { cid: CID, sponsor: SPONSOR } };
+        const rule = panel.ruleSummary(value.rule);
+        const lens = [{ key: LENS, label: 'Alatau City Authority' }];
+        const html = panel.recordHtml({ agreement: value, ledger, rule, deadline: '', lens, threshold: 1,
+            chain: { status: 'Active', decision: 'Pending', lensConfirmed: [], lensThreshold: 1, address: ACCOUNT },
+            decisions: [{ party: 'authority-1', signer: OTHER_WALLET, decision: 'accept', decidedAt: '2026-11-25T10:00:00.000Z' }] });
+        const $ = load(html);
+        expect($('[data-agreement-record]')).toHaveLength(1);
+        expect($.text()).toContain(CID);
+        expect($.text()).toContain(SPONSOR);
+        expect($.text()).toContain(`Alatau City Authority (${LENS})`);
+        expect($.text()).toContain(ACCOUNT);
+        expect($('[data-agreement-record-ledger] tbody tr').map((_, row) => $(row).find('th').text()).get()).toEqual([K10_NAME, K9_NAME, 'Public']);
+        expect($('[data-agreement-record-decisions] tbody tr').first().text()).toContain(OTHER_WALLET);
+        expect($('button')).toHaveLength(0);
+        // An owner's summary shows their parties' rows; an authority's shows every row.
+        const own = load(panel.signingSummaryHtml({ agreement: value, ledger, rule, deadline: '', lens, threshold: 1, ownerKeys: [K9] }));
+        expect(own('[data-agreement-record-ledger] tbody tr').map((_, row) => own(row).find('th').text()).get()).toEqual([K9_NAME]);
+        const all = load(panel.signingSummaryHtml({ agreement: value, ledger, rule, deadline: '', lens, threshold: 1 }));
+        expect(all('[data-agreement-record-ledger] tbody tr')).toHaveLength(3);
+        expect(all.text()).toContain(CID);
+    });
+
     it('derives person rows only from ownership rights that name people', () => {
         const value = agreement();
         expect(panel.personRows(value, 'EUR')).toBeNull();
@@ -781,6 +806,16 @@ describe('On chain: a minted agreement', () => {
         const confirmed = panel.chainHtml(minted({ ...target, fundingMet: true, decisionCode: 1, decision: 'Satisfied' }, { wallet: OTHER_WALLET, electorate: 'investors' }));
         expect(buttons(confirmed)).toEqual(['execute']);
         expect(confirmed).toContain('5 USDC, confirmed on chain');
+    });
+
+    it('offers Confirm as lens member to the lens member\'s own wallet, also in a shared read-only view', () => {
+        const value = account({ lens: LENS, lenses: [LENS, OTHER_WALLET], lensThreshold: 2 });
+        const own = panel.chainHtml(minted(value, { wallet: LENS, readOnly: true }));
+        expect(buttons(own)).toContain('confirm-member');
+        expect(own).toContain('Your wallet is one of this agreement’s lens members.');
+        const confirmed = panel.chainHtml(minted({ ...value, lensConfirmed: [LENS] }, { wallet: LENS }));
+        expect(buttons(confirmed)).not.toContain('confirm-member');
+        expect(buttons(panel.chainHtml(minted(value, { wallet: SPONSOR })))).not.toContain('confirm-member');
     });
 
     it('words a chain status however it is spelled', () => {

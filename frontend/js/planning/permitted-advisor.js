@@ -30,24 +30,24 @@
     // Geometry-free reads run one design at a time, newest last: a drag asks again only once the
     // previous answer is in, and a superseded design asks nothing (generation).
     let memberships = Promise.resolve();
-    async function membershipsFor(city, buildings, id) {
+    async function membershipsFor(city, buildings, isCurrent) {
         const feed = root.PlanningRestrictionFeed;
         const previous = memberships;
         let release;
         memberships = new Promise(resolve => { release = resolve; });
         try {
             await previous;
-            if (id !== generation) return null;
+            if (!isCurrent()) return null;
             const reads = await Promise.all(buildings.map(async building => ({ buildingId: building.id,
                 reads: await feed.membership(city, building.footprint, { effects: ['restrict', 'note'] }) || [] })));
             return root.PlanningRestrictions.membershipRestrictions(reads, { geometryOps: root.turf });
         } finally { release(); }
     }
-    async function itemsFor(city, bbox, buildings, id) {
+    async function itemsFor(city, bbox, buildings, isCurrent) {
         const feed = root.PlanningRestrictionFeed;
         const ruleSets = feed?.ruleSetIds(city).length ? true : false;
         const [base, reads, named] = await Promise.all([sourceItemsFor(city, bbox), ruleSets ? feed.load(city, bbox, { effects: ['prohibit'] }) : null,
-            ruleSets ? membershipsFor(city, buildings, id) : null]);
+            ruleSets ? membershipsFor(city, buildings, isCurrent) : null]);
         if (ruleSets && !named) return null;
         if (!reads) return { ...base, restrictions: [], partial: false, baseRule: null };
         const located = feed.resolve(reads, bbox);
@@ -111,22 +111,30 @@
     // a later call superseded this one. A source that cannot be read gives status 'unavailable'.
     async function check(design) {
         const id = ++generation;
+        return run(design, { isCurrent: () => id === generation });
+    }
+    // A whole plan's buildings checked once, as Compare plans asks for each column: never superseded
+    // by another check. `city` defaults to the map's.
+    function checkPlan(design, { city = null } = {}) {
+        return run(design, { isCurrent: () => true, city });
+    }
+    async function run(design, { isCurrent, city = null }) {
         const footprints = (design.buildings || []).map(building => building.footprint).filter(Boolean);
         if (!footprints.length) return { status: 'none', checks: [], buildings: {} };
         const bbox = root.turf.bbox(root.turf.featureCollection(footprints));
-        const city = root.CityConfigManager.getCurrentCityId();
+        city ||= root.CityConfigManager.getCurrentCityId();
         let loaded;
         let context = null;
         try {
-            loaded = await itemsFor(city, bbox, design.buildings.filter(building => building.footprint), id);
+            loaded = await itemsFor(city, bbox, design.buildings.filter(building => building.footprint), isCurrent);
             if (loaded && statesTerms(loaded.items)) context = await existingContextFor(design);
         }
         catch (error) {
-            if (id !== generation) return null;
+            if (!isCurrent()) return null;
             console.error(`[${new Date().toISOString()}] [permitted-check] Permitted items could not be read`, error);
-            return { status: 'unavailable', checks: [], buildings: {} };
+            return { status: 'unavailable', checks: [], buildings: {}, reason: error && error.message ? error.message : String(error) };
         }
-        if (!loaded || id !== generation) return null;
+        if (!loaded || !isCurrent()) return null;
         const result = root.PermittedCheck.check({ ...design, items: loaded.items, restrictions: loaded.restrictions,
             restrictionsPartial: loaded.partial, baseRule: loaded.baseRule, context, geometryOps: root.turf });
         return { ...result, source: loaded.source };
@@ -247,5 +255,5 @@
         if (list.children.length) container.append(list);
         if (result.source?.label) container.append(element('p', 'permitted-check__source', root.i18n.t('permittedCheck.source', { source: result.source.label })));
     }
-    root.PermittedAdvisor = { check, render, restrictionText, restrictionItem, existingContextFor };
+    root.PermittedAdvisor = { check, checkPlan, render, restrictionText, restrictionItem, existingContextFor };
 })(window);

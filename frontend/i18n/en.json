@@ -8289,6 +8289,7 @@
             }
         },
         "compare": {
+            "raised": "Raised · contributors (read from Solana)",
             "approval": "Approval",
             "settlement": "Settlement",
             "toOwners": "Land to the owners",
@@ -8550,8 +8551,46 @@
                 "threshold": "Choose how many lens members must confirm: from 1 to the number of lens members."
             }
         },
+        "record": {
+            "open": "Agreement record",
+            "print": "Print or save as PDF",
+            "whatYouSign": "What you sign",
+            "terms": "Identity and terms",
+            "agreement": "Agreement",
+            "cid": "Identity (CID)",
+            "unpublished": "Not proposed yet",
+            "sponsor": "Sponsor wallet",
+            "lensNeeded": "{{needed}} of {{count}} must confirm",
+            "yourTerms": "What this party contributes, receives and is paid",
+            "allTerms": "What every party contributes, receives and is paid",
+            "cashNote": "Cash in this table is the agreement’s settlement schedule; executing the agreement on chain releases only its escrow. Legal registration and construction are separate.",
+            "parcel": "Parcel",
+            "piece": "Piece",
+            "to": "To",
+            "confirmations": "Lens confirmations",
+            "account": "Solana account",
+            "contract": "Investor contract",
+            "apartments": "Apartments offered",
+            "notMinted": "Not minted.",
+            "chainUnread": "Minted, but its chain account could not be read.",
+            "decisions": "Signed decisions",
+            "signer": "Signed by",
+            "date": "Signed on",
+            "noDecisions": "No signed decisions yet.",
+            "footer": "Generated {{date}}. The CID fixes every term above: anyone can recompute it from the published agreement. Executing the agreement on chain releases only its escrow; legal registration and construction are separate."
+        },
         "chain": {
             "heading": "On chain",
+            "confirmMember": {
+                "intro": "Confirm “{{title}}” as a lens member? Your wallet signs one Solana transaction that records your decision for agreement {{cid}}.",
+                "completesRound": "Yours is the last confirmation needed: once the funding target is confirmed, the same transaction executes the round and releases the contributions to the developer’s payout wallet.",
+                "completes": "Yours is the last confirmation needed: the same transaction executes the agreement when its escrow is funded.",
+                "partial": "{{more}} more lens confirmation(s) are needed after yours before it can execute.",
+                "cost": "The first decision of a wallet also registers its decision record on Solana; the wallet pays a small devnet SOL fee and rent."
+            },
+            "memberReleased": "Confirmed: the round executed and its contributions went to the developer.",
+            "memberExecuted": "Confirmed: the agreement executed.",
+            "memberConfirmed": "Your confirmation is recorded on chain.",
             "fundingConfirmed": "Funding target confirmed on chain.",
             "fundingTargetMet": "{{target}} USDC, confirmed on chain",
             "fundingTargetOpen": "{{target}} USDC, not yet confirmed",
@@ -8603,6 +8642,7 @@
                 "executedAt": "Executed"
             },
             "actions": {
+                "confirmMember": "Confirm as lens member",
                 "repropose": "Propose again with this wallet",
                 "mint": "Mint",
                 "attest": "Record decision",
@@ -8613,6 +8653,7 @@
                 "expire": "Expire"
             },
             "hints": {
+                "youAreMember": "Your wallet is one of this agreement’s lens members. Confirming records your decision on Solana; when it is the last confirmation needed, the same transaction executes the agreement.",
                 "noSponsor": "It was proposed without a sponsor wallet, so it cannot be minted. Propose it again with a Solana wallet connected: that is a new agreement, with its own link and decisions.",
                 "connectSponsor": "Connect the sponsor’s Solana wallet ({{sponsor}}) to mint it.",
                 "notSponsor": "Only the sponsor’s wallet ({{sponsor}}) can mint it; the connected wallet is {{wallet}}.",
@@ -8646,6 +8687,11 @@
             "cancelled": "Agreement cancelled; the escrow returned to the sponsor.",
             "expired": "Agreement expired; the escrow returned to the sponsor.",
             "errors": {
+                "notMember": "This wallet is not one of the agreement’s lens members.",
+                "memberCannotConfirm": "This lens member cannot confirm now: it has confirmed already, the decision is recorded, or the deadline has passed.",
+                "chainTime": "The chain’s time could not be read; try again.",
+                "decisionsUnavailable": "The signed decisions could not be read; try again.",
+                "memberRefused": "You cannot confirm this agreement yet: {{reason}}",
                 "amount": "Enter an amount of SOL, such as 0.5.",
                 "payout": "The payout account must be a Solana address.",
                 "web3Unavailable": "The Solana library could not be loaded.",
@@ -10068,7 +10114,60 @@
     "scopeAll": "All their land",
     "scopeParcel": "Parcel {{number}} ({{area}} m²)",
     "scopeParcelSome": "Parcel {{number}} ({{area}} m², in {{count}} of {{total}})",
-    "scopeNote": "On one parcel, every column counts only what stands on that parcel: a building across its edge counts its part there."
+    "scopeNote": "On one parcel, every column counts only what stands on that parcel: a building across its edge counts its part there.",
+    "retry": "Measure again",
+    "retryNamed": "Measure {{title}} again",
+    "downloadCsv": "Download CSV",
+    "print": "Print",
+    "decisionNote": "Site coverage and floor-area ratio are over the plan’s land, of every building standing after it. Permitted limits check each new building against the Permitted layer’s zones where it stands. Funding is read from Solana, not from our server.",
+    "demolishedValue": "{{whole}} whole, {{cut}} in part · {{footprint}} footprint · {{floorArea}} floor area",
+    "noNewBuildings": "No new buildings",
+    "heightValue": "{{height}} m · {{storeys}} storeys",
+    "noSchedule": "No schedule",
+    "periods": "{{first}}–{{last}} · {{count}} periods",
+    "periodsUnscheduled": "{{first}}–{{last}} · {{count}} periods · {{unscheduled}} designs unscheduled",
+    "rows": {
+      "parcelsTaken": "Existing parcels taken",
+      "demolished": "Existing buildings demolished (footprint, floor area)",
+      "height": "New buildings: maximum height · most storeys",
+      "far": "Floor-area ratio (gross floor area ÷ land)",
+      "coverage": "Site coverage (buildings ÷ land)",
+      "greenArea": "Green area — parks (m²)",
+      "roadArea": "Road area (m²)",
+      "buildOut": "Build-out by period",
+      "permitted": "Permitted limits",
+      "backing": "Agreements backing the plan"
+    },
+    "permitted": {
+      "checking": "Checking…",
+      "within": "Within limits ({{count}} buildings)",
+      "breaks": "{{count}} of {{total}} buildings break limits ({{area}})",
+      "unclear": "None break limits; {{count}} conditional or not known",
+      "noBuildings": "No new buildings to check",
+      "notChecked": "Not checked: {{reason}}",
+      "noChecker": "the rule check is not loaded",
+      "superseded": "the check was stopped"
+    },
+    "backing": {
+            "retryNamed": "Read the agreements on {{title}} again",
+            "minted": "Minted",
+      "lead": "Lead: {{wallet}}",
+      "lens": "Lens",
+      "targetBy": "Target {{target}} USDC by {{deadline}}",
+      "target": "Target {{target}} USDC",
+      "notRead": "Not read",
+      "notMinted": "Not minted",
+      "chainFailed": "Chain not read: {{reason}}",
+      "chainReading": "Reading the chain…",
+      "raisedOf": "{{raised}} of {{target}} USDC raised",
+      "raised": "{{raised}} USDC raised",
+      "contributors": "{{count}} contributors",
+      "apartments": "{{reserved}} of {{offered}} apartments reserved",
+      "unpublished": "Plan not published: no agreements",
+      "loading": "Loading…",
+      "failed": "Not read: {{reason}}",
+      "none": "No agreements on this plan revision"
+    }
   },
   "buildingUseHighlight": {
     "title": "Building use",

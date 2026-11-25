@@ -168,8 +168,12 @@ describe('pure helpers', () => {
         const value = (fields = {}) => client.readAgreement(agreementData(fields));
         const now = 1_790_000_000;
         const actions = (fields, options = {}) => Bridge.chainActions(value(fields), { wallet: SPONSOR, nowSeconds: now, ...options });
-        expect(actions()).toEqual({ fund: true, attest: false, confirmFunding: false, execute: false, cancel: true, expire: false, authority: true, funded: false,
+        expect(actions()).toEqual({ fund: true, attest: false, confirmAsMember: false, member: false, confirmFunding: false, execute: false, cancel: true, expire: false, authority: true, funded: false,
             lensMet: false, fundingMet: true, credited: null, deadlinePassed: false });
+        // The lens member's own wallet can confirm while its confirmation is open, not after.
+        expect(actions({}, { wallet: LENS })).toMatchObject({ confirmAsMember: true, member: true });
+        expect(actions({ lensConfirmed: [LENS] }, { wallet: LENS })).toMatchObject({ confirmAsMember: false, member: true });
+        expect(actions({ deadline: now - 1 }, { wallet: LENS })).toMatchObject({ confirmAsMember: false });
         expect(actions({}, { attestation: ATTESTATION })).toMatchObject({ attest: true });
         expect(actions({}, { wallet: STRANGER, attestation: ATTESTATION })).toMatchObject({ fund: false, cancel: false, attest: true, authority: false });
         expect(actions({}, { wallet: null, attestation: ATTESTATION })).toMatchObject({ fund: false, attest: false, cancel: false, execute: false, expire: false });
@@ -179,7 +183,7 @@ describe('pure helpers', () => {
         expect(actions({ decision: 1, required: 0n })).toMatchObject({ execute: true, funded: true });
         // Past the deadline only expiry is left (cancel stays the sponsor's while undecided).
         expect(actions({ deadline: now - 1, decision: 1, escrow: 1_000_000_000n }, { attestation: ATTESTATION }))
-            .toEqual({ fund: false, attest: false, confirmFunding: false, execute: false, cancel: false, expire: true, authority: true, funded: true,
+            .toEqual({ fund: false, attest: false, confirmAsMember: false, member: false, confirmFunding: false, execute: false, cancel: false, expire: true, authority: true, funded: true,
                 lensMet: false, fundingMet: true, credited: null, deadlinePassed: true });
         expect(actions({ deadline: now - 1 })).toMatchObject({ cancel: true, expire: true });
         // A closed agreement accepts nothing.
@@ -645,5 +649,86 @@ describe('after the mint', () => {
         provider.publicKey = null;
         expect(bridge.connectedWallet()).toBeNull();
         expect(fakeWindow({ wallet: null }).bridge.connectedWallet()).toBeNull();
+    });
+});
+
+// A lens member whose key is the connected wallet (a city authority) confirms the agreement itself:
+// its SAS credential and decision schema the first time, its AgreementDecision-v1, attest, and when that
+// completes the lens, execute and, for a crowdfunding round, the USDC release, in as few approvals as fit.
+describe('confirmAsMember', () => {
+    const records = require('../../frontend/js/agreement-record.js');
+    const pledge = require('../../frontend/js/solana/pledge-client.js').configure({ web3 });
+    const cids = require('../../frontend/js/cid.js');
+    const plan = require('../../frontend/js/agreement-decision-plan.js');
+    const relay = require('../../frontend/js/proposals/approval-relay.js');
+    const CHAIN_NOW = nowSeconds() - 5;
+    function round(deadline = nowSeconds() + 3600) {
+        const content = require('../../frontend/js/plan-record.js').create('District', [CID], { at: '43.797866,77.087621,16', mode: '2d' });
+        const local = { schema: 'agreement/v1', id: 'district-funding', title: 'Developer funding', city: 'alatau', sponsor: SPONSOR, plan: { cid: cids.cidOfObject(content), content },
+            designs: [{ proposalId: 'p', cid: CID }], inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: 'KZT', lines: [] },
+            rule: { electorate: 'investors', binding: true, lens: [LENS], settlement: null, approvalConfig: null },
+            funding: { targetUsdcAtomic: '20000000', contract: { name: 'terms.txt', mediaType: 'text/plain', data: 'VGVybXM=' } }, deadline: new Date(deadline * 1000).toISOString() };
+        const cid = records.publishedCid(local);
+        const address = client.getAgreementPda(cid, SPONSOR)[0].toBase58();
+        return { agreement: { ...local, published: { cid, sponsor: SPONSOR, apiBase: 'https://api.example.test' }, onchain: { chain: 'solana', cluster: 'devnet', account: address } }, address, cid, deadline };
+    }
+    function memberWindow({ wallet = LENS, accounts, escrow = null, receipts = [] }) {
+        const connection = fakeConnection({ accounts });
+        connection.getSlot = vi.fn(async () => 1234);
+        connection.getBlockTime = vi.fn(async () => CHAIN_NOW);
+        const window = fakeWindow({ wallet, connection });
+        Object.assign(window.win, {
+            AgreementRecord: records, AgreementDecisionPlan: plan, crypto: globalThis.crypto,
+            SolanaPledgeClient: { ...pledge, readDonationEscrow: vi.fn(async () => escrow) },
+            ProposalApprovalRelay: { ...relay, pull: vi.fn(async () => receipts) }
+        });
+        return window;
+    }
+    const sentPrograms = connection => connection.sent.flatMap(tx => tx.instructions.map(ix => [ix.programId.toBase58(), ix.data[0]]));
+
+    it('lets the city approve a funded round, executing it and releasing the contributions to the developer', async () => {
+        const { agreement, address, cid, deadline } = round();
+        const accounts = new Map([[address, { data: agreementData({ cid, ...CROWD_TERMS, lenses: [LENS], deadline }) }]]);
+        const vault = keyOf(23);
+        const { bridge, connection, provider } = memberWindow({ accounts, escrow: { vault, totalDonated: 20_000_000n, totalRefunded: 0n, beneficiary: SPONSOR, released: false, totalReleased: 0n, mint: C.USDC_DEVNET_MINT } });
+        const done = await bridge.confirmAsMember({ agreement });
+        expect(done).toMatchObject({ executed: true, released: true });
+        const sas = C.SAS_PROGRAM_ID, agreementProgram = C.AGREEMENT_PROGRAM_ID, pledgeProgram = pledge.constants.PROGRAM_ID;
+        const programs = sentPrograms(connection);
+        // credential, schema (SAS 0, 1), then confirm_funding, the attestation (SAS 6), attest, execute, release.
+        expect(programs.map(([program]) => program)).toEqual([sas, sas, agreementProgram, sas, agreementProgram, agreementProgram, pledgeProgram]);
+        expect(programs.filter(([program]) => program === sas).map(([, d]) => d)).toEqual([0, 1, 6]);
+        expect(provider.signTransaction.mock.calls.length).toBeLessThanOrEqual(2);
+        // The attestation states this member's own decision at the chain's time, for this CID and sponsor.
+        const attestation = connection.sent.flatMap(tx => tx.instructions).find(ix => ix.programId.toBase58() === sas && ix.data[0] === 6);
+        const payload = attestation.data.subarray(1 + 32 + 4, attestation.data.length - 8);
+        const decoded = client.readDecisionAttestation(Buffer.concat([Buffer.from([2]), Buffer.alloc(96), Buffer.from(attestation.data.subarray(33, 37)), payload, Buffer.alloc(32), Buffer.alloc(8), Buffer.alloc(32)])).fields;
+        expect(decoded).toEqual({ agreementCid: cid, sponsor: SPONSOR, decision: 'satisfied', evidenceRef: `decided-by:${LENS}`, sourceObservedAt: CHAIN_NOW });
+        expect(done.attestation).toBe(client.getAttestationPda({ credential: client.getLensCredentialPda(LENS), schema: client.getDecisionSchemaPda(client.getLensCredentialPda(LENS))[0], nonce: client.decisionNonce(decoded) }).toBase58());
+    });
+
+    it('records only the decision while the round is short of its target, and skips a registered member\'s setup', async () => {
+        const { agreement, address, cid, deadline } = round();
+        const credential = client.getLensCredentialPda(LENS).toBase58();
+        const schema = client.getDecisionSchemaPda(credential)[0].toBase58();
+        const sasOwned = { owner: new PublicKey(C.SAS_PROGRAM_ID), data: Buffer.alloc(8) };
+        const accounts = new Map([[address, { data: agreementData({ cid, ...CROWD_TERMS, lenses: [LENS], deadline }) }], [credential, sasOwned], [schema, sasOwned]]);
+        const { bridge, connection, provider } = memberWindow({ accounts, escrow: { vault: keyOf(23), totalDonated: 5_000_000n, totalRefunded: 0n, beneficiary: SPONSOR, released: false } });
+        await expect(bridge.confirmAsMember({ agreement })).resolves.toMatchObject({ executed: false, released: false });
+        expect(provider.signTransaction).toHaveBeenCalledTimes(1);
+        expect(sentPrograms(connection).map(([program, d]) => `${program === C.SAS_PROGRAM_ID ? 'sas' : 'agreement'}:${d}`))
+            .toEqual(['sas:6', `agreement:${client.IX_DISCRIMINATORS.attest[0]}`]);
+    });
+
+    it('refuses a wallet outside the lens, and an owners\' agreement whose signed decisions do not pass, before any signature', async () => {
+        const { agreement, address, cid, deadline } = round();
+        const accounts = new Map([[address, { data: agreementData({ cid, ...CROWD_TERMS, lenses: [LENS], deadline }) }]]);
+        const stranger = memberWindow({ wallet: STRANGER, accounts });
+        expect(await thrown(() => stranger.bridge.confirmAsMember({ agreement }))).toMatchObject({ code: 'not-lens-member' });
+        expect(stranger.provider.signTransaction).not.toHaveBeenCalled();
+        const owners = memberWindow({ accounts: new Map([[ACCOUNT, { data: agreementData({ required: 0n }) }]]) });
+        expect(await thrown(() => owners.bridge.confirmAsMember({ agreement: minted() }))).toMatchObject({ code: 'member-refused' });
+        expect(owners.win.ProposalApprovalRelay.pull).toHaveBeenCalled();
+        expect(owners.provider.signTransaction).not.toHaveBeenCalled();
     });
 });

@@ -8330,6 +8330,7 @@
             }
         },
         "compare": {
+            "raised": "Prikupljeno · uplatitelji (pročitano sa Solane)",
             "approval": "Odobrenje",
             "settlement": "Namirenje",
             "toOwners": "Zemljište vlasnicima",
@@ -8596,8 +8597,46 @@
                 "threshold": "Odaberite koliko članova leće mora potvrditi: od 1 do broja članova leće."
             }
         },
+        "record": {
+            "open": "Zapis sporazuma",
+            "print": "Ispiši ili spremi kao PDF",
+            "whatYouSign": "Što potpisujete",
+            "terms": "Identitet i uvjeti",
+            "agreement": "Sporazum",
+            "cid": "Identitet (CID)",
+            "unpublished": "Još nije predložen",
+            "sponsor": "Novčanik sponzora",
+            "lensNeeded": "Potrebno je {{needed}} od {{count}} potvrda",
+            "yourTerms": "Što ova strana unosi, dobiva i prima u novcu",
+            "allTerms": "Što svaka strana unosi, dobiva i prima u novcu",
+            "cashNote": "Novac u ovoj tablici je plan namirenja sporazuma; izvršenje sporazuma na lancu oslobađa samo njegov depozit. Upis u zemljišne knjige i gradnja su zasebni.",
+            "parcel": "Čestica",
+            "piece": "Dio",
+            "to": "Kome",
+            "confirmations": "Potvrde leće",
+            "account": "Solana račun",
+            "contract": "Ugovor za ulagače",
+            "apartments": "Ponuđeni stanovi",
+            "notMinted": "Nije kovan.",
+            "chainUnread": "Kovan, ali njegov račun na lancu nije se mogao pročitati.",
+            "decisions": "Potpisane odluke",
+            "signer": "Potpisao",
+            "date": "Potpisano",
+            "noDecisions": "Još nema potpisanih odluka.",
+            "footer": "Izrađeno {{date}}. CID utvrđuje sve gornje uvjete: svatko ga može ponovno izračunati iz objavljenog sporazuma. Izvršenje sporazuma na lancu oslobađa samo njegov depozit; upis u zemljišne knjige i gradnja su zasebni."
+        },
         "chain": {
             "heading": "Na lancu",
+            "confirmMember": {
+                "intro": "Potvrditi „{{title}}” kao član leće? Vaš novčanik potpisuje jednu Solana transakciju koja bilježi vašu odluku o sporazumu {{cid}}.",
+                "completesRound": "Vaša je posljednja potrebna potvrda: kad je cilj financiranja potvrđen, ista transakcija izvršava krug i isplaćuje uplate na novčanik investitora.",
+                "completes": "Vaša je posljednja potrebna potvrda: ista transakcija izvršava sporazum kad je njegov depozit uplaćen.",
+                "partial": "Nakon vaše potrebno je još {{more}} potvrda leće prije izvršenja.",
+                "cost": "Prva odluka novčanika ujedno registrira njegov zapis odluka na Solani; novčanik plaća malu naknadu i najam u devnet SOL-u."
+            },
+            "memberReleased": "Potvrđeno: krug je izvršen i uplate su otišle investitoru.",
+            "memberExecuted": "Potvrđeno: sporazum je izvršen.",
+            "memberConfirmed": "Vaša je potvrda zabilježena na lancu.",
             "fundingConfirmed": "Cilj financiranja potvrđen je na lancu.",
             "fundingTargetMet": "{{target}} USDC, potvrđeno na lancu",
             "fundingTargetOpen": "{{target}} USDC, još nije potvrđeno",
@@ -8649,6 +8688,7 @@
                 "executedAt": "Izvršen"
             },
             "actions": {
+                "confirmMember": "Potvrdi kao član leće",
                 "repropose": "Predloži ponovno s ovim novčanikom",
                 "mint": "Iskuj",
                 "attest": "Zabilježi odluku",
@@ -8659,6 +8699,7 @@
                 "expire": "Označi kao istekao"
             },
             "hints": {
+                "youAreMember": "Vaš novčanik je jedan od članova leće ovog sporazuma. Potvrda bilježi vašu odluku na Solani; ako je to posljednja potrebna potvrda, ista transakcija izvršava sporazum.",
                 "noSponsor": "Predložen je bez novčanika investitora pa se ne može iskovati. Predložite ga ponovno s povezanim Solana novčanikom: to je novi sporazum, s vlastitim linkom i odlukama.",
                 "connectSponsor": "Povežite Solana novčanik investitora ({{sponsor}}) da biste ga iskovali.",
                 "notSponsor": "Iskovati ga može samo novčanik investitora ({{sponsor}}); povezan je novčanik {{wallet}}.",
@@ -8692,6 +8733,11 @@
             "cancelled": "Sporazum je otkazan; polog je vraćen investitoru.",
             "expired": "Sporazum je istekao; polog je vraćen investitoru.",
             "errors": {
+                "notMember": "Ovaj novčanik nije član leće sporazuma.",
+                "memberCannotConfirm": "Ovaj član leće sada ne može potvrditi: već je potvrdio, odluka je zabilježena ili je rok istekao.",
+                "chainTime": "Vrijeme lanca nije se moglo pročitati; pokušajte ponovno.",
+                "decisionsUnavailable": "Potpisane odluke nisu se mogle pročitati; pokušajte ponovno.",
+                "memberRefused": "Ovaj sporazum još ne možete potvrditi: {{reason}}",
                 "amount": "Unesite iznos u SOL-u, npr. 0,5.",
                 "payout": "Račun za isplatu mora biti Solana adresa.",
                 "web3Unavailable": "Solana biblioteku nije bilo moguće učitati.",
@@ -10120,7 +10166,60 @@
     "scopeAll": "Sve njihovo zemljište",
     "scopeParcel": "Čestica {{number}} ({{area}} m²)",
     "scopeParcelSome": "Čestica {{number}} ({{area}} m², u {{count}} od {{total}})",
-    "scopeNote": "Na jednoj čestici svaki stupac broji samo ono što stoji na toj čestici: zgrada preko njezine granice broji svoj dio na njoj."
+    "scopeNote": "Na jednoj čestici svaki stupac broji samo ono što stoji na toj čestici: zgrada preko njezine granice broji svoj dio na njoj.",
+    "retry": "Izmjeri ponovno",
+    "retryNamed": "Izmjeri {{title}} ponovno",
+    "downloadCsv": "Preuzmi CSV",
+    "print": "Ispiši",
+    "decisionNote": "Izgrađenost i koeficijent iskoristivosti računaju se na zemljištu plana, sa svim zgradama koje nakon njega stoje. Ograničenja Dopuštenog provjeravaju svaku novu zgradu prema zonama sloja Dopušteno gdje stoji. Financiranje se čita sa Solane, ne s našeg poslužitelja.",
+    "demolishedValue": "{{whole}} cijelih, {{cut}} djelomično · {{footprint}} tlocrta · {{floorArea}} bruto površine",
+    "noNewBuildings": "Nema novih zgrada",
+    "heightValue": "{{height}} m · {{storeys}} etaža",
+    "noSchedule": "Bez rasporeda",
+    "periods": "{{first}}–{{last}} · {{count}} razdoblja",
+    "periodsUnscheduled": "{{first}}–{{last}} · {{count}} razdoblja · {{unscheduled}} nacrta bez rasporeda",
+    "rows": {
+      "parcelsTaken": "Zauzete postojeće čestice",
+      "demolished": "Srušene postojeće zgrade (tlocrt, bruto površina)",
+      "height": "Nove zgrade: najveća visina · najviše etaža",
+      "far": "Koeficijent iskoristivosti (bruto površina ÷ zemljište)",
+      "coverage": "Izgrađenost (zgrade ÷ zemljište)",
+      "greenArea": "Zelene površine — parkovi (m²)",
+      "roadArea": "Prometne površine (m²)",
+      "buildOut": "Izgradnja po razdobljima",
+      "permitted": "Ograničenja Dopuštenog",
+      "backing": "Sporazumi koji podupiru plan"
+    },
+    "permitted": {
+      "checking": "Provjeravam…",
+      "within": "Unutar ograničenja ({{count}} zgrada)",
+      "breaks": "{{count}} od {{total}} zgrada krši ograničenja ({{area}})",
+      "unclear": "Nijedna ne krši ograničenja; {{count}} uvjetno ili nepoznato",
+      "noBuildings": "Nema novih zgrada za provjeru",
+      "notChecked": "Nije provjereno: {{reason}}",
+      "noChecker": "provjera pravila nije učitana",
+      "superseded": "provjera je zaustavljena"
+    },
+    "backing": {
+            "retryNamed": "Ponovno pročitaj sporazume o planu {{title}}",
+            "minted": "Na lancu",
+      "lead": "Nositelj: {{wallet}}",
+      "lens": "Leća",
+      "targetBy": "Cilj {{target}} USDC do {{deadline}}",
+      "target": "Cilj {{target}} USDC",
+      "notRead": "Nije pročitano",
+      "notMinted": "Nije na lancu",
+      "chainFailed": "Lanac nije pročitan: {{reason}}",
+      "chainReading": "Čitam lanac…",
+      "raisedOf": "Prikupljeno {{raised}} od {{target}} USDC",
+      "raised": "Prikupljeno {{raised}} USDC",
+      "contributors": "{{count}} uplatitelja",
+      "apartments": "Rezervirano {{reserved}} od {{offered}} stanova",
+      "unpublished": "Plan nije objavljen: nema sporazuma",
+      "loading": "Učitavam…",
+      "failed": "Nije pročitano: {{reason}}",
+      "none": "Nema sporazuma o ovoj reviziji plana"
+    }
   },
   "buildingUseHighlight": {
     "title": "Namjena zgrada",

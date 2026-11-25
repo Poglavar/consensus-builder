@@ -3130,6 +3130,16 @@
       "markup": "<button type=\"button\" class=\"btn btn-primary\" data-agreement-action=\"apply-agreement\">"
     },
     {
+      "id": "control-231aef23bbfe9f-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-agreement-action=\"record\">"
+    },
+    {
+      "id": "control-4b47fddc79b6fb-1",
+      "source": "js/proposals/approval-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-approval-open-record>"
+    },
+    {
       "id": "control-c071f79cfa3db8-1",
       "source": "js/agreement-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-primary\" data-agreement-action=\"propose\">",
@@ -8572,6 +8582,34 @@
             "data-plan-compare-differing": ""
           },
           "interaction": "change"
+        },
+        {
+          "name": "Measure an unmeasured comparison column again",
+          "attrs": {
+            "data-plan-compare-retry": ""
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Download the comparison as CSV",
+          "attrs": {
+            "data-plan-compare-csv": ""
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Print the comparison",
+          "attrs": {
+            "data-plan-compare-print": ""
+          },
+          "interaction": "click"
+        },
+        {
+          "name": "Read a compared plan's agreements again",
+          "attrs": {
+            "data-plan-compare-backing-retry": ""
+          },
+          "interaction": "click"
         }
       ],
       "exhaustiveVariants": true,

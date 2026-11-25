@@ -98,9 +98,14 @@
         const target = !!value && value.requiredFunding > 0n;
         const fundingMet = !!value && (!target || value.fundingMet);
         const credited = target ? fundingCredited(escrow) : null;
+        const member = !!wallet && !!value && value.lenses.includes(wallet);
         return {
             fund: active && authority && !passed,
             attest: active && !!wallet && !!attestation && pending && !lensMet && !passed,
+            // The connected wallet is one of the account's lens members and has not confirmed yet: it can
+            // state its decision itself (confirmAsMember).
+            confirmAsMember: active && member && !value.lensConfirmed.includes(wallet) && pending && !lensMet && !passed,
+            member,
             confirmFunding: active && !!wallet && pending && !passed && target && !value.fundingMet && credited >= value.requiredFunding,
             execute: active && !!wallet && value.decisionCode === c.DECISION_SATISFIED && funded && !passed,
             cancel: active && authority && value.decisionCode !== c.DECISION_SATISFIED,
@@ -495,6 +500,98 @@
             return result(sent, ref);
         }
 
+        /**
+         * The connected wallet, one of the agreement's lens members (a city authority, a verifier), states
+         * its decision itself and the agreement settles as far as it can, in one transaction and one
+         * wallet approval: its SAS credential and decision schema when it has none yet, its
+         * AgreementDecision-v1 `satisfied` attestation, attest; for a crowdfunding round first
+         * confirm_funding when contributions reached the target; then execute and, for a round, the USDC
+         * release to the developer when this confirmation completes the lens. A counted agreement
+         * (owners) is confirmed only once its relayed signed decisions pass the rule
+         * (AgreementDecisionPlan.countedDecision, the rule the lens service applies). The first time a
+         * member decides, the transaction can be too large for its setup; the credential and schema are
+         * then sent first and the wallet asked twice. Resolves { signature, explorerUrl, executed, released }.
+         */
+        async function confirmAsMember({ agreement, onStatus } = {}) {
+            const api = await dependencies();
+            const { provider, wallet } = walletContext();
+            const { ref, connection, value } = await current(api, agreement);
+            const { cid, sponsor } = publishedOf(agreement);
+            const member = wallet.toBase58();
+            const actions = chainActions(value, { wallet: member });
+            if (!actions.member) throw codedError(t('agreement.chain.errors.notMember', 'This wallet is not one of the agreement’s lens members.'), 'not-lens-member');
+            if (!actions.confirmAsMember) throw codedError(t('agreement.chain.errors.memberCannotConfirm', 'This lens member cannot confirm now: it has confirmed already, the decision is recorded, or the deadline has passed.'), 'member-cannot-confirm');
+            const plan = win.AgreementDecisionPlan;
+            const investors = agreement.rule?.electorate === 'investors';
+            const status = value.status ? String(value.status).toLowerCase() : 'active';
+            const decided = {
+                cid, status, deadline: agreement.deadline || null,
+                content: { sponsor, rule: agreement.rule },
+                onchain: { lenses: value.lenses, decision: value.decisionCode === api.constants.DECISION_PENDING ? 'pending' : 'satisfied' }
+            };
+            // The chain's clock: the program refuses a decision observed after its own time.
+            const chainNow = await connection.getBlockTime(await connection.getSlot('confirmed'));
+            if (!Number.isSafeInteger(chainNow)) throw codedError(t('agreement.chain.errors.chainTime', 'The chain’s time could not be read; try again.'), 'chain-time');
+            let fields;
+            try {
+                if (investors) {
+                    fields = plan.ownDecision({ agreement: decided, lensKey: member, decidedAtSeconds: chainNow }).fields;
+                } else {
+                    const subject = { ...win.AgreementRecord.approvalSubject(agreement), agreementCid: cid, lifecycleStatus: value.status || 'Active', onchain: agreement.onchain || null };
+                    const receipts = await win.ProposalApprovalRelay.pull(subject);
+                    if (!receipts) throw codedError(t('agreement.chain.errors.decisionsUnavailable', 'The signed decisions could not be read; try again.'), 'decisions-unavailable');
+                    fields = plan.countedDecision({ agreement: decided, count: plan.countDecisions(subject, receipts), lensKey: member, nowSeconds: chainNow }).fields;
+                }
+            } catch (error) {
+                if (error && error.status && error.code) {
+                    throw codedError(t('agreement.chain.errors.memberRefused', 'You cannot confirm this agreement yet: {{reason}}', { reason: error.message }), 'member-refused', { reason: error.code });
+                }
+                throw error;
+            }
+
+            const setup = [];
+            const credential = api.getLensCredentialPda(member);
+            if (!(await connection.getAccountInfo(credential, 'confirmed'))) setup.push(api.buildCreateLensCredentialIx({ payer: wallet, authority: wallet }));
+            const schema = api.getDecisionSchemaPda(credential)[0];
+            if (!(await connection.getAccountInfo(schema, 'confirmed'))) setup.push(api.buildCreateDecisionSchemaIx({ payer: wallet, authority: wallet, credential }));
+            const issued = api.buildCreateDecisionAttestationIx({ payer: wallet, authority: wallet, fields, expiry: chainNow + api.constants.DECISION_EXPIRY_SECONDS });
+            const decisionIxs = [];
+            // A retry after an issued but unrecorded decision finds it at its deterministic address.
+            if (!(await connection.getAccountInfo(new win.solanaWeb3.PublicKey(issued.attestation), 'confirmed'))) decisionIxs.push(issued.instruction);
+
+            let fundingMet = !(value.requiredFunding > 0n) || value.fundingMet;
+            let escrow = null;
+            if (investors) {
+                escrow = await pledge().readDonationEscrow(connection, ref.account);
+                if (!fundingMet && escrow && fundingCredited(escrow) >= value.requiredFunding) {
+                    decisionIxs.unshift(api.buildConfirmFundingIx({ agreement: ref.account, escrow: pledge().getDonationEscrowPda(ref.account)[0], vault: escrow.vault, programId: programId() }));
+                    fundingMet = true;
+                }
+            }
+            decisionIxs.push(api.buildAttestIx({ agreement: ref.account, attestation: issued.attestation, credential: issued.credential, programId: programId() }));
+            const completes = value.lensConfirmed.length + 1 >= value.lensThreshold;
+            const executes = completes && fundingMet && value.escrowLamports >= value.requiredLamports;
+            if (executes) decisionIxs.push(api.buildExecuteIx({ agreement: ref.account, payout: value.payout, programId: programId() }));
+            const releases = executes && investors && !!escrow && !escrow.released;
+            if (releases) decisionIxs.push(pledge().buildReleaseDonationsIx({ proposal: ref.account, releaser: wallet, beneficiary: escrow.beneficiary }));
+
+            // One legacy transaction holds 1232 bytes; a first decision's setup may not fit beside the rest.
+            const fits = instructions => {
+                const probe = new win.solanaWeb3.Transaction({ feePayer: wallet, recentBlockhash: win.solanaWeb3.PublicKey.default.toBase58() });
+                instructions.forEach(instruction => probe.add(instruction));
+                try { return probe.serialize({ requireAllSignatures: false, verifySignatures: false }).length <= 1232; } catch (_) { return false; }
+            };
+            if (setup.length && !fits([...setup, ...decisionIxs])) {
+                const first = await send(connection, provider, wallet, ref.cluster, setup, { onStatus });
+                log(`registered lens member ${member}'s decision schema`, { signature: first.signature });
+            } else {
+                decisionIxs.unshift(...setup);
+            }
+            const sent = await send(connection, provider, wallet, ref.cluster, decisionIxs, { onStatus });
+            log(`lens member ${member} confirmed ${ref.account}${executes ? ' and executed it' : ''}${releases ? ', releasing the contributions to the developer' : ''}`, { signature: sent.signature, attestation: issued.attestation });
+            return { ...result(sent, ref), attestation: issued.attestation, executed: executes, released: releases };
+        }
+
         // Releases the whole escrow to the payout fixed at mint. Permissionless.
         async function execute({ agreement, onStatus } = {}) {
             const api = await dependencies();
@@ -727,7 +824,7 @@
             return result(sent, ref);
         }
 
-        return { mint, fund, attest, confirmFunding, execute, cancel, expire, read, findAttestation, connectedWallet, cluster, programId,
+        return { mint, fund, attest, confirmAsMember, confirmFunding, execute, cancel, expire, read, findAttestation, connectedWallet, cluster, programId,
             donations, donate, refundDonations, releaseDonations, apartmentInventory,
             listApartment: options => apartmentAction(options, true), reserveApartment: options => apartmentAction(options, false) };
     }

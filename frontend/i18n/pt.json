@@ -1897,6 +1897,7 @@
             }
         },
         "compare": {
+            "raised": "Angariado · contribuidores (lido da Solana)",
             "approval": "Aprovação",
             "settlement": "Liquidação",
             "toOwners": "Terreno para os proprietários",
@@ -1939,8 +1940,37 @@
                 "threshold": "Escolha quantos membros da lente têm de confirmar: de 1 ao número de membros da lente."
             }
         },
+        "record": {
+            "open": "Registo do acordo",
+            "print": "Imprimir ou guardar como PDF",
+            "whatYouSign": "O que assina",
+            "terms": "Identidade e condições",
+            "agreement": "Acordo",
+            "cid": "Identidade (CID)",
+            "unpublished": "Ainda não proposto",
+            "sponsor": "Carteira do patrocinador",
+            "lensNeeded": "{{needed}} de {{count}} têm de confirmar",
+            "yourTerms": "O que esta parte contribui, recebe e lhe é pago",
+            "allTerms": "O que cada parte contribui, recebe e lhe é pago",
+            "cashNote": "Os valores desta tabela são o calendário de liquidação do acordo; executar o acordo na cadeia apenas liberta o seu depósito. O registo legal e a construção são separados.",
+            "parcel": "Parcela",
+            "piece": "Peça",
+            "to": "Para",
+            "confirmations": "Confirmações da lente",
+            "account": "Conta Solana",
+            "contract": "Contrato do investidor",
+            "apartments": "Apartamentos oferecidos",
+            "notMinted": "Não cunhado.",
+            "chainUnread": "Cunhado, mas não foi possível ler a sua conta na cadeia.",
+            "decisions": "Decisões assinadas",
+            "signer": "Assinado por",
+            "date": "Assinado em",
+            "noDecisions": "Ainda não há decisões assinadas.",
+            "footer": "Gerado em {{date}}. O CID fixa todas as condições acima: qualquer pessoa pode recalculá-lo a partir do acordo publicado. Executar o acordo na cadeia apenas liberta o seu depósito; o registo legal e a construção são separados."
+        },
         "chain": {
             "actions": {
+                "confirmMember": "Confirmar como membro da lente",
                 "cancel": "Cancelar",
                 "mint": "Emitir NFT",
                 "repropose": "Voltar a propor com esta carteira",
@@ -1972,6 +2002,16 @@
                 "payout": "Pagamento"
             },
             "heading": "Na blockchain",
+            "confirmMember": {
+                "intro": "Confirmar «{{title}}» como membro da lente? A sua carteira assina uma transação Solana que regista a sua decisão sobre o acordo {{cid}}.",
+                "completesRound": "A sua é a última confirmação necessária: depois de confirmado o objetivo de financiamento, a mesma transação executa a ronda e liberta as contribuições para a carteira do promotor.",
+                "completes": "A sua é a última confirmação necessária: a mesma transação executa o acordo quando o depósito estiver financiado.",
+                "partial": "São necessárias mais {{more}} confirmação(ões) da lente depois da sua antes de poder ser executado.",
+                "cost": "A primeira decisão de uma carteira também regista o seu registo de decisões na Solana; a carteira paga uma pequena taxa e renda em SOL de devnet."
+            },
+            "memberReleased": "Confirmado: a ronda foi executada e as contribuições foram para o promotor.",
+            "memberExecuted": "Confirmado: o acordo foi executado.",
+            "memberConfirmed": "A sua confirmação está registada na cadeia.",
             "fundingConfirmed": "Objetivo de financiamento confirmado na blockchain.",
             "fundingTargetMet": "{{target}} USDC, confirmado na blockchain",
             "fundingTargetOpen": "{{target}} USDC, ainda não confirmado",
@@ -2002,6 +2042,7 @@
                 "missing": "Cole um JWT da Pinata."
             },
             "hints": {
+                "youAreMember": "A sua carteira é um dos membros da lente deste acordo. Confirmar regista a sua decisão na Solana; se for a última confirmação necessária, a mesma transação executa o acordo.",
                 "noSponsor": "Foi proposto sem uma carteira do promotor, pelo que não pode ser registado na blockchain. Volte a propô-lo com uma carteira Solana ligada: será um novo acordo, com ligação e decisões próprias.",
                 "connectSponsor": "Ligue a carteira Solana do promotor ({{sponsor}}) para o registar na blockchain.",
                 "notSponsor": "Só a carteira do promotor ({{sponsor}}) o pode registar na blockchain; a carteira ligada é {{wallet}}.",
@@ -2035,6 +2076,11 @@
             "cancelled": "Acordo cancelado; os fundos em garantia foram devolvidos ao promotor.",
             "expired": "Acordo caducado; os fundos em garantia foram devolvidos ao promotor.",
             "errors": {
+                "notMember": "Esta carteira não é membro da lente do acordo.",
+                "memberCannotConfirm": "Este membro da lente não pode confirmar agora: já confirmou, a decisão está registada ou o prazo terminou.",
+                "chainTime": "Não foi possível ler a hora da cadeia; tente novamente.",
+                "decisionsUnavailable": "Não foi possível ler as decisões assinadas; tente novamente.",
+                "memberRefused": "Ainda não pode confirmar este acordo: {{reason}}",
                 "amount": "Introduza um montante de SOL, como 0.5.",
                 "payout": "A conta de pagamento tem de ser um endereço Solana.",
                 "web3Unavailable": "Não foi possível carregar a biblioteca Solana.",
@@ -10075,7 +10121,60 @@
     "scopeAll": "Todo o seu terreno",
     "scopeParcel": "Parcela {{number}} ({{area}} m²)",
     "scopeParcelSome": "Parcela {{number}} ({{area}} m², em {{count}} de {{total}})",
-    "scopeNote": "Numa parcela, cada coluna conta apenas o que está nessa parcela: um edifício que atravessa o seu limite conta a parte que fica nela."
+    "scopeNote": "Numa parcela, cada coluna conta apenas o que está nessa parcela: um edifício que atravessa o seu limite conta a parte que fica nela.",
+    "retry": "Medir de novo",
+    "retryNamed": "Medir {{title}} de novo",
+    "downloadCsv": "Transferir CSV",
+    "print": "Imprimir",
+    "decisionNote": "A taxa de ocupação e o índice de construção são calculados sobre o terreno do plano, com todos os edifícios que ficam de pé depois dele. Os limites de Permitido comparam cada edifício novo com as zonas da camada Permitido onde se encontra. O financiamento é lido da Solana, não do nosso servidor.",
+    "demolishedValue": "{{whole}} inteiros, {{cut}} em parte · {{footprint}} de implantação · {{floorArea}} de área bruta",
+    "noNewBuildings": "Sem edifícios novos",
+    "heightValue": "{{height}} m · {{storeys}} pisos",
+    "noSchedule": "Sem calendário",
+    "periods": "{{first}}–{{last}} · {{count}} períodos",
+    "periodsUnscheduled": "{{first}}–{{last}} · {{count}} períodos · {{unscheduled}} projetos sem calendário",
+    "rows": {
+      "parcelsTaken": "Parcelas existentes ocupadas",
+      "demolished": "Edifícios existentes demolidos (implantação, área bruta)",
+      "height": "Edifícios novos: altura máxima · mais pisos",
+      "far": "Índice de construção (área bruta ÷ terreno)",
+      "coverage": "Taxa de ocupação (edifícios ÷ terreno)",
+      "greenArea": "Áreas verdes — parques (m²)",
+      "roadArea": "Área viária (m²)",
+      "buildOut": "Execução por período",
+      "permitted": "Limites de Permitido",
+      "backing": "Acordos que apoiam o plano"
+    },
+    "permitted": {
+      "checking": "A verificar…",
+      "within": "Dentro dos limites ({{count}} edifícios)",
+      "breaks": "{{count}} de {{total}} edifícios excedem os limites ({{area}})",
+      "unclear": "Nenhum excede os limites; {{count}} condicionados ou desconhecidos",
+      "noBuildings": "Não há edifícios novos para verificar",
+      "notChecked": "Não verificado: {{reason}}",
+      "noChecker": "a verificação de regras não está carregada",
+      "superseded": "a verificação foi interrompida"
+    },
+    "backing": {
+            "retryNamed": "Ler de novo os acordos sobre {{title}}",
+            "minted": "Emitido",
+      "lead": "Promotor: {{wallet}}",
+      "lens": "Lente",
+      "targetBy": "Meta {{target}} USDC até {{deadline}}",
+      "target": "Meta {{target}} USDC",
+      "notRead": "Não lido",
+      "notMinted": "Não emitido",
+      "chainFailed": "Cadeia não lida: {{reason}}",
+      "chainReading": "A ler a cadeia…",
+      "raisedOf": "{{raised}} de {{target}} USDC angariados",
+      "raised": "{{raised}} USDC angariados",
+      "contributors": "{{count}} contribuidores",
+      "apartments": "{{reserved}} de {{offered}} habitações reservadas",
+      "unpublished": "Plano não publicado: sem acordos",
+      "loading": "A carregar…",
+      "failed": "Não lido: {{reason}}",
+      "none": "Não há acordos sobre esta revisão do plano"
+    }
   },
   "buildingUseHighlight": {
     "title": "Uso dos edifícios",

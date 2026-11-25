@@ -605,13 +605,26 @@
         parts.dialog.setAttribute(inspect ? 'data-approval-deal' : 'data-approval-review', ownerId);
         const leaseNote = review.kind === 'leaseholder'
             ? `<p class="approval-card__note" data-approval-lease-note>${esc(t('proposalApproval.review.leaseNote', 'The plan reallocates ownership. A lease counts toward the approval rules but gets no plot from this plan’s ledger.'))}</p>` : '';
+        // What the signature commits to: the agreement's identity and terms, and what this party (an
+        // owner's parcels) or, for an authority, every party contributes, receives and is paid.
+        const agreement = root.AgreementStore.get(agreementId);
+        let signing = '';
+        if (agreement && root.AgreementPanel?.recordTerms) {
+            const terms = await root.AgreementPanel.recordTerms(agreement);
+            const ownerKeys = review.kind === 'authority' ? null : review.contributes.map(row => root.AgreementRecord.partyKey(row.parcelId));
+            signing = section(t('agreement.record.whatYouSign', 'What you sign'), root.AgreementPanel.signingSummaryHtml({ agreement, ...terms, ownerKeys }, t)
+                + `<p><button type="button" class="btn btn-sm" data-approval-open-record>${esc(t('agreement.record.open', 'Agreement record'))}</button></p>`);
+        }
         parts.body.innerHTML = (review.kind === 'authority'
             ? section(t('proposalApproval.review.planTitle', 'The plan to decide on'), planHtml(subject, review))
             : section(voice.contributes, contributesHtml(review, label, voice) + leaseNote))
+            + signing
             + section(t('proposalApproval.review.conditions', 'Conditions'), conditionsHtml(review, members, voice))
             + section(t('proposalApproval.review.progress', 'Progress'), reviewProgressHtml(review, voice))
             + '<p class="approval-dialog__status" role="status" aria-live="polite" data-approval-review-status></p>';
         const status = parts.body.querySelector('[data-approval-review-status]');
+        parts.body.querySelector('[data-approval-open-record]')?.addEventListener('click', event =>
+            root.BusyControl.track(event.currentTarget, () => root.AgreementPanel.openRecordOf(agreementId)).catch(error => root.showStyledAlert(error.message)));
         const cancel = button('btn', t('common.cancel', 'Cancel'), close);
         if (inspect) {
             // Read-only: the owner (or whoever acts for them) goes on to the signing review.

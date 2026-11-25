@@ -117,7 +117,7 @@ votes, signatures, funding or execution state. Publication remains a separate co
 | `ugt_edit_agreement` | Revise agreement terms against the same named plan. Use `ugt_edit_plan` to change membership or designs, then draft a new agreement. |
 | `ugt_draft_*` | Generate a new design, which can then be added or used as a replacement. Site-based tools accept a `planningArea` returned by `ugt_planning_areas` for a selected source and WGS84 point. The complete area supplies the site. |
 | `ugt_validate_plan` | Check authored geometry, retained constraints, building overlaps and station attachment presence; source coverage and statutory compliance remain explicit unknowns. |
-| `ugt_compare` | Compare revisions and expose absent source measurements as unknown. |
+| `ugt_compare` | Compare revisions and expose absent source measurements as unknown. Besides areas, demolition and money, each alternative gives Compare plans' decision rows: `maxHeightM`/`maxStoreys`, `buildOut`, `permitted` (new buildings against the city's Permitted source or `planningSource`; rule-set designations are not applied here) and `backing` (agreements on the exact plan revision, a crowdfunding round's `funding` read from Solana when the server has a connection, else `notRead` with the reason). |
 
 `ugt_draft_urban_rule` accepts `rule: { typology, floors|height, ... }` for `block`, `row` or
 `detached`, and maps those fields to the same shared generator used by `ugt_draft_building`. The
