@@ -147,7 +147,10 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
                 contract: plan.agreement.funding?.contract?.name ?? null,
                 payout: plan.agreement.sponsor ?? null,
                 decisionVerifierWallets: Array.isArray(plan.agreement.rule?.lens) ? plan.agreement.rule.lens : [],
-                decisionMethod: 'lens-attestation',
+                lensThreshold: AgreementRecord.lensThresholdOf(plan.agreement.rule),
+                developerIsVerifier: Array.isArray(plan.agreement.rule?.lens) && plan.agreement.rule.lens.includes(plan.agreement.sponsor),
+                decisionMethod: 'program-checks-funding-target',
+                fundingTargetUsdcAtomic: plan.agreement.funding?.targetUsdcAtomic ?? null,
                 ...(plan.agreement.funding?.apartments
                     ? { contributorEligibility: 'lens-qualified-buyer', qualificationBefore: 'reservation-deposit' }
                     : { contributorEligibility: 'any-wallet', kycEnforcedOnChain: false }),
@@ -184,6 +187,20 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
         return { id: result.template.id, version: result.template.version, name: result.template.text.name, ok: result.check.ok, rules: result.check.rules };
     }
 
+    // The lens set and threshold a revision carries: terms.lenses replaces the list (and drops the old
+    // threshold unless terms.lensThreshold is given); otherwise the previous rule's are kept.
+    function lensTerms(terms, previous) {
+        if (terms.lenses) return { lenses: terms.lenses, lensThreshold: terms.lensThreshold ?? null };
+        return { lenses: previous.lens || [], lensThreshold: terms.lensThreshold ?? previous.lensThreshold ?? null };
+    }
+    const lensRule = ({ lenses, lensThreshold }) => ({ lens: lenses, ...(lensThreshold == null ? {} : { lensThreshold }) });
+    // An owners or community rule with terms.lenses / terms.lensThreshold applied over its own.
+    function withLens(rule, terms) {
+        if (!terms.lenses && terms.lensThreshold == null) return rule;
+        const { lensThreshold: _dropped, ...rest } = rule;
+        return { ...rest, ...lensRule(lensTerms(terms, rule)) };
+    }
+
     async function editAgreement({ plan: value, expectedCid, operations = [], terms = {} }) {
         if (operations.length) fail('agreement-terms-only', 'Agreement revisions edit terms only. Revise the named plan with ugt_edit_plan, then draft a new agreement.');
         const original = await resolvePlan(value);
@@ -192,18 +209,18 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
         const crowdfunding = previous.rule.electorate === 'investors' || terms.rulePreset === 'crowdfunding';
         if (terms.plan) {
             if (crowdfunding) {
-                const revised = await agreements.draftAgreement({ plan: terms.plan, rulePreset: 'crowdfunding', lens: terms.lens ?? previous.rule.lens?.[0],
+                const revised = await agreements.draftAgreement({ plan: terms.plan, rulePreset: 'crowdfunding', ...lensTerms(terms, previous.rule),
                     currency: previous.money.currency, targetUsdcAtomic: terms.targetUsdcAtomic ?? previous.funding?.targetUsdcAtomic,
                     contract: terms.contract ?? previous.funding?.contract, apartments: terms.apartments ?? previous.funding?.apartments, title: terms.title ?? previous.title, author: terms.author ?? previous.author,
                     sponsor: terms.sponsor ?? previous.sponsor, deadline: terms.deadline ?? previous.deadline, createdAt: new Date().toISOString() });
                 return { ...revised, previousCid: original.cid, warnings: ['This private crowdfunding revision uses the explicitly selected plan. The original agreement and its investor terms retain their identity.'] };
             }
-            const rule = terms.rule ? structuredClone(terms.rule) : structuredClone(previous.rule);
+            const rule = withLens(terms.rule ? structuredClone(terms.rule) : structuredClone(previous.rule), terms);
             const rights = terms.rights ?? rule.approvalConfig?.rights ?? previous.rule.approvalConfig?.rights;
             if (terms.rights && rule.approvalConfig) rule.approvalConfig.rights = terms.rights;
             const revised = await agreements.draftAgreement({ plan: terms.plan, rulePreset: terms.rulePreset || 'owner-vote', rule,
                 rights, currency: previous.money.currency,
-                lens: previous.rule.lens?.[0], allocations: terms.allocations,
+                ...lensTerms(terms, previous.rule), allocations: terms.allocations,
                 settlement: terms.settlement ?? previous.rule.settlement, valuation: terms.valuation ?? null,
                 title: terms.title ?? previous.title, author: terms.author ?? previous.author,
                 sponsor: terms.sponsor ?? previous.sponsor, deadline: terms.deadline ?? previous.deadline,
@@ -217,7 +234,7 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
             }
             const checked = agreementObject({ ...previous, plan: original.plan, designs: original.designs.map(row => ({ cid: row.cid, title: row.content.title, goal: row.content.goal })),
                 parcels: [], openGroundM2: 0, outputs: [], allocations: [], money: previous.money, valuation: null,
-                rule: { electorate: 'investors', binding: true, approvalConfig: null, lens: terms.lens ? [terms.lens] : previous.rule.lens, settlement: null },
+                rule: { electorate: 'investors', binding: true, approvalConfig: null, ...lensRule(lensTerms(terms, previous.rule)), settlement: null },
                 funding: { targetUsdcAtomic: terms.targetUsdcAtomic ?? previous.funding?.targetUsdcAtomic, contract: terms.contract ?? previous.funding?.contract, ...(terms.apartments ?? previous.funding?.apartments ? { apartments: terms.apartments ?? previous.funding?.apartments } : {}) },
                 title: Object.hasOwn(terms, 'title') ? terms.title : previous.title, author: Object.hasOwn(terms, 'author') ? terms.author : previous.author,
                 sponsor: Object.hasOwn(terms, 'sponsor') ? terms.sponsor : previous.sponsor, deadline,
@@ -226,7 +243,7 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
                 warnings: ['This private crowdfunding revision keeps the same named plan. The original agreement and its investor terms retain their identity.'],
                 ...await previewArtifact({ origin: appOrigin, agreement: checked.content, plan: original.plan, designs: original.designs.map(row => row.content), parcelSourceId: null }) };
         }
-        const rule = terms.rule ? structuredClone(terms.rule) : structuredClone(previous.rule);
+        const rule = withLens(terms.rule ? structuredClone(terms.rule) : structuredClone(previous.rule), terms);
         if (terms.settlement) rule.settlement = terms.settlement;
         if (terms.rulePreset) {
             rule.electorate = 'owners'; rule.binding = terms.rulePreset === 'owner-deal';

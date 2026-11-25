@@ -78,6 +78,11 @@
 .agreement-editor [data-agreement-persons] { display: grid; gap: var(--cb-space-3); min-width: 0; }
 .agreement-lens__row { display: flex; justify-content: center; }
 .agreement-lens .agreement-object-heading { margin: 0; }
+/* The lens in words (editor, agreement panel, mint dialog): the confirmation rule, then every member key. */
+.agreement-lens-summary { display: grid; gap: var(--cb-space-2); min-width: 0; }
+.agreement-lens-summary__rule { margin: 0; }
+.agreement-lens-summary__members { display: grid; gap: var(--cb-space-1); margin: 0; padding: 0; list-style: none; }
+.agreement-lens-summary__member { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cb-space-2); overflow-wrap: anywhere; }
 
 .agreement-persons-table { width: 100%; border-collapse: collapse; font-size: var(--cb-text-md); }
 .agreement-persons-table th, .agreement-persons-table td {

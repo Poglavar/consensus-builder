@@ -1,7 +1,8 @@
 // Test helper: the bytes of an `agreement` program Agreement account, field by field in the order of
 // blockchain/solana/programs/agreement/README.md ("Agreement account": discriminator, authority, lens,
 // payout, deadline, created_at, required/escrow lamports, status, open_ground, decision, decision times,
-// attestation, hash, executed_at, bump, cid), padded to the 296-byte account, so tests decode exactly
+// attestation, hash, executed_at, bump, lens set, contribution target, cid), padded to the 580-byte
+// account, so tests decode exactly
 // what the program writes with frontend/js/solana/agreement-client.js readAgreement.
 import { createRequire } from 'node:module';
 import { PublicKey } from '@solana/web3.js';
@@ -20,13 +21,17 @@ const key = value => new PublicKey(value).toBuffer();
 const str = value => { const bytes = Buffer.from(value, 'utf8'); return Buffer.concat([u32(bytes.length), bytes]); };
 
 /**
- * @param fields status/decision as codes (0 Active, 1 Executed, 2 Cancelled, 3 Expired; 0 Pending,
+ * @param fields `lenses` the member keys (`lens` alone: a one-member set), `lensConfirmed` the
+ *   members whose confirmation is recorded; status/decision as codes (0 Active, 1 Executed, 2 Cancelled, 3 Expired; 0 Pending,
  *   1 Satisfied), lamports as anything BigInt takes, times as unix seconds
  */
 export function agreementAccountBytes({
     cid,
     authority,
-    lens = DEFAULT_KEY,
+    lens = null,
+    lenses = lens ? [lens] : [],
+    lensThreshold = lenses.length ? 1 : 0,
+    lensConfirmed = [],
     payout = authority,
     deadline = 0,
     createdAt = 1_760_000_000,
@@ -41,16 +46,25 @@ export function agreementAccountBytes({
     decisionHash = Buffer.alloc(32),
     executedAt = 0,
     bump = 255,
+    fundingMint = DEFAULT_KEY,
+    requiredFunding = 0,
+    fundingMet = false,
+    fundingObserved = 0,
+    fundingMetAt = 0,
     padTo = AGREEMENT_ACCOUNT_SPACE
 } = {}) {
     if (!cid || !authority) throw new Error('agreementAccountBytes: cid and authority are required');
+    const members = [...lenses, ...Array(8 - lenses.length).fill(DEFAULT_KEY)];
+    const confirmedBits = lensConfirmed.reduce((bits, member) => bits | (1 << lenses.indexOf(member)), 0);
     const content = Buffer.concat([
         Buffer.from(agreementClient.ACCOUNT_DISCRIMINATORS.Agreement),
-        key(authority), key(lens), key(payout),
+        key(authority), key(members[0]), key(payout),
         i64(deadline), i64(createdAt), u64(requiredLamports), u64(escrowLamports),
         Buffer.from([status, openGround ? 1 : 0, decision]),
         i64(decisionAttestedAt), i64(decisionObservedAt), key(decisionAttestation), Buffer.from(decisionHash),
-        i64(executedAt), Buffer.from([bump]), str(cid)
+        i64(executedAt), Buffer.from([bump, lenses.length, lensThreshold, confirmedBits]),
+        ...members.slice(1).map(key), key(fundingMint), u64(requiredFunding), Buffer.from([fundingMet ? 1 : 0]),
+        u64(fundingObserved), i64(fundingMetAt), str(cid)
     ]);
     return Buffer.concat([content, Buffer.alloc(Math.max(0, padTo - content.length))]);
 }

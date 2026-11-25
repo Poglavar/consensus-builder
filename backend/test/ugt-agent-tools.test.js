@@ -1,7 +1,7 @@
 // The shared tool surface for external agents (agents/ugt-agent-tools.js) on designs and agreements:
 // free reads through the index and the public API, the live gate (UGT_MCP_LIVE + confirm) on every
 // write, paid or signed tool, publishing only objects exactly in their published form, minting only a
-// binding owners' agreement as its own sponsor with one foreign lens key, and every market, pledge and
+// binding owners' agreement as its own sponsor with its lens set (any keys, its own included), and every market, pledge and
 // donation keyed by the agreement's chain account. The index is driven over a fake fetch, chain steps
 // through injected adapters; the agent key is a throwaway generated per test file.
 import fs from 'node:fs';
@@ -47,7 +47,7 @@ function agreementOf({ sponsor = AGENT, rule = null, title = 'Six storeys on the
         designs: [{ cid: design.cid, goal: design.content.goal, title: design.content.title }],
         parcels: [{ parcelId: PARCEL, areaM2: 612.4 }],
         outputs: parcelOutputs([{ parcelId: PARCEL, geometry: box(15.977, 45.813, 15.9775, 45.8133), areaM2: 612.4 }]),
-        rule: rule || ownersRule({ lens: LENS, rights }), deadline, money: noMoney('EUR')
+        rule: rule || ownersRule({ lenses: [LENS], rights }), deadline, money: noMoney('EUR')
     });
 }
 
@@ -272,7 +272,8 @@ describe('minting and funding', () => {
 
         const [options] = mintAgreement.mock.calls[0];
         expect(options).toMatchObject({
-            connection: { name: 'rpc' }, cid: agreement.cid, lens: LENS, deadline: '2099-01-01T00:00:00.000Z', lamports: '5000',
+            connection: { name: 'rpc' }, cid: agreement.cid, lenses: [LENS], lensThreshold: 1, fundingMint: null, requiredFunding: 0n,
+            deadline: '2099-01-01T00:00:00.000Z', lamports: '5000',
             openGround: false, sendAndConfirm: sendAndConfirmPolling
         });
         expect(options.sponsorKeypair.publicKey.toBase58()).toBe(AGENT);
@@ -292,13 +293,20 @@ describe('minting and funding', () => {
         expect(mintAgreement.mock.calls[0][0].deadline).toBeNull();
     });
 
-    it('refuses to mint a poll, another sponsor\'s agreement, an own or plural lens, and a fractional amount', async () => {
+    it('mints with its own key among several lens members and the threshold the rule names', async () => {
         const rights = registryRights([{ parcelId: PARCEL, owners: [{ owner: AGENT, ownerCount: 1 }] }]);
+        const agreement = agreementOf({ rule: ownersRule({ lenses: [LENS, AGENT], lensThreshold: 2, rights }) });
+        const api = fakeApi({ agreements: [agreement] });
+        const mintAgreement = vi.fn(async ({ cid }) => mintResult(cid));
+        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl, createConnection: () => ({}), dependencies: { mintAgreement, sendAndConfirmPolling: vi.fn() } });
+        await tools.mintAgreement({ agreementCid: agreement.cid, lamports: '0', confirm: true });
+        expect(mintAgreement.mock.calls[0][0]).toMatchObject({ lenses: [LENS, AGENT], lensThreshold: 2 });
+    });
+
+    it('refuses to mint a poll, another sponsor\'s agreement, and a fractional amount (an invalid lens set never becomes an agreement object)', async () => {
         const cases = [
             [agreementOf({ rule: communityRule([LENS]) }), /is a non-binding community vote: it is a poll in the index and is never minted/],
-            [agreementOf({ sponsor: OTHER }), new RegExp(`names sponsor ${OTHER}, not this agent's wallet ${AGENT}`)],
-            [agreementOf({ rule: { ...ownersRule({ lens: LENS, rights }), lens: [LENS, OTHER] } }), /takes one lens key, but rule.lens holds 2/],
-            [agreementOf({ rule: ownersRule({ lens: AGENT, rights }) }), /rule.lens names only this agent's own key/]
+            [agreementOf({ sponsor: OTHER }), new RegExp(`names sponsor ${OTHER}, not this agent's wallet ${AGENT}`)]
         ];
         const api = fakeApi({ agreements: cases.map(([agreement]) => agreement) });
         const mintAgreement = vi.fn();
@@ -376,7 +384,7 @@ describe('betting on an agreement', () => {
 });
 
 describe('support and settlement on the agreement account', () => {
-    it('checks a recognized crowdfunding account CID against the published sponsor, payout, lens and deadline before donating', async () => {
+    it('checks a recognized crowdfunding account CID against the published sponsor, payout, lens set, target and deadline before donating', async () => {
         const base = agreementOf();
         const content = { ...base.content, rule: { electorate: 'investors', binding: true, approvalConfig: null, lens: [LENS], settlement: null },
             inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: 'EUR', lines: [] }, valuation: null,
@@ -385,14 +393,16 @@ describe('support and settlement on the agreement account', () => {
         const agreementAccount = agreementAccountOf(agreement.cid, AGENT);
         const ensureDonationEscrowAndDonate = vi.fn(async () => ({ signature: 'donate-tx' }));
         const state = { cid: agreement.cid, status: 'Active', deadline: Math.floor(Date.parse(content.deadline) / 1000),
-            authority: AGENT, payout: AGENT, lens: LENS, openGround: false, requiredLamports: 0n };
+            authority: AGENT, payout: AGENT, lenses: [LENS], lensThreshold: 1, fundingMint: USDC_DEVNET, requiredFunding: 1000000n,
+            openGround: false, requiredLamports: 0n };
         const readAgreementAccount = vi.fn(async () => state);
         const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: fakeApi({ agreements: [agreement] }).fetchImpl,
             createConnection: () => ({ getAccountInfo() {} }), dependencies: { readAgreementAccount, ensureDonationEscrowAndDonate, sendAndConfirmPolling: vi.fn() } });
         const args = { agreementAccount, amountUsdc: '0.01', operationId: 'investor-1', confirm: true };
         await tools.donate(args);
         expect(ensureDonationEscrowAndDonate).toHaveBeenCalledTimes(1);
-        for (const change of [{ lens: OTHER }, { payout: OTHER }, { requiredLamports: 1n }, { openGround: true }]) {
+        for (const change of [{ lenses: [OTHER] }, { lenses: [LENS, OTHER] }, { lensThreshold: 0 }, { requiredFunding: 999999n }, { fundingMint: OTHER },
+            { payout: OTHER }, { requiredLamports: 1n }, { openGround: true }]) {
             readAgreementAccount.mockResolvedValueOnce({ ...state, ...change });
             await expect(tools.donate(args)).rejects.toThrow(/terms differ/);
         }

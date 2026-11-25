@@ -39,7 +39,8 @@
         const account = await client.fetchAgreement(connection, { cid, authority: sponsor, address: derived });
         if (!account) return { account: null, statement: null };
         const result = { account, statement: null };
-        if (account.decisionCode === client.constants.DECISION_PENDING || !account.decisionAttestation) return result;
+        // An agreement with no lens is satisfied by its contribution target alone and carries no statement.
+        if (account.decisionCode === client.constants.DECISION_PENDING || !account.lenses.length || !account.decisionAttestation) return result;
         try {
             const info = await connection.getAccountInfo(new web3.PublicKey(account.decisionAttestation), 'confirmed');
             if (!info?.data) throw new Error('decision attestation account is absent');
@@ -48,13 +49,13 @@
             const attestation = client.readDecisionAttestation(raw, account.decisionAttestation);
             if (!info.owner || !new web3.PublicKey(info.owner).equals(new web3.PublicKey(client.constants.SAS_PROGRAM_ID))) throw new Error('decision attestation is not owned by SAS');
             if (!equal(hash, account.decisionHash)) throw new Error('decision attestation bytes do not match decisionHash');
-            if (attestation.signer !== account.lens) throw new Error('attestation signer is not the agreement lens');
+            if (!account.lenses.includes(attestation.signer)) throw new Error('attestation signer is not one of the agreement lens members');
             if (attestation.fields.agreementCid !== cid || attestation.fields.sponsor !== account.authority) throw new Error('attestation subject does not match agreement');
             if (attestation.fields.decision !== 'satisfied') throw new Error('attestation decision is not satisfied');
             const schema = client.getDecisionSchemaPda(attestation.credential)[0].toBase58();
             if (attestation.schema !== schema) throw new Error('attestation uses the wrong decision schema');
             const credentialInfo = await connection.getAccountInfo(new web3.PublicKey(attestation.credential), 'confirmed');
-            if (credentialAuthority(credentialInfo, web3, client.constants.SAS_PROGRAM_ID) !== account.lens) throw new Error('credential authority is not the agreement lens');
+            if (credentialAuthority(credentialInfo, web3, client.constants.SAS_PROGRAM_ID) !== attestation.signer) throw new Error('credential authority is not the attestation signer');
             result.statement = { ...attestation, verified: true };
         } catch (error) {
             result.statementError = error.message;

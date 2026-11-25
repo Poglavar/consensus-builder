@@ -1,5 +1,6 @@
 // In-memory stand-ins for the agent pipeline tests: the agreement program as an emulator (accounts by
-// address; create, fund, attest, execute, cancel and expire applied with the program's checks, decoded
+// address; create, fund, attest, confirm_funding, execute, cancel and expire applied with the program's
+// checks, decoded
 // with the browser codec), a connection over it, the market and pledge accounts on an agreement, the
 // lens's AgreementDecision-v1 attestation account, a mock pool that keeps consensus.agent_run and
 // consensus.lens_devnet_owner rows in memory, and a fetch that dispatches to an Express app in-process.
@@ -10,6 +11,7 @@ import request from 'supertest';
 import { buildSasAttestationAccount, deriveLensSchemaPdas, encodeLensPayload, SAS_PROGRAM_ID } from '../../oracle/lens-schemas.js';
 import { deriveAttestationPda, factNonce } from '../../lens/member.js';
 import { createMockPool } from './mock-pool.js';
+import { agreementAccountBytes } from '../fixtures/agreement-account.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
@@ -35,23 +37,12 @@ const key = value => new web3.PublicKey(value).toBuffer();
 function str(text) { const bytes = Buffer.from(text, 'utf8'); const length = Buffer.alloc(4); length.writeUInt32LE(bytes.length); return Buffer.concat([length, bytes]); }
 
 /**
- * The Agreement account bytes (programs/agreement/README.md, "Agreement account"): 296 bytes, the CID
- * last and zero-padded to the account's fixed space. Read back with agreement-client readAgreement.
+ * The Agreement account bytes (programs/agreement/README.md, "Agreement account"): 580 bytes, the CID
+ * last and zero-padded to the account's fixed space (fixtures/agreement-account.js). `lens` alone is a
+ * one-member lens; `fundingMint` null means no target. Read back with agreement-client readAgreement.
  */
-export function encodeAgreementAccount({
-    authority, lens, payout, deadline = 0, createdAt = 0, requiredLamports = 0n, escrowLamports = 0n, status = 0,
-    openGround = false, decision = 0, decisionAttestedAt = 0, decisionObservedAt = 0,
-    decisionAttestation = web3.PublicKey.default.toBase58(), decisionHash = Buffer.alloc(32), executedAt = 0, bump = 255, cid
-}) {
-    const data = Buffer.concat([
-        Buffer.from(ACCOUNT_DISCRIMINATORS.Agreement), key(authority), key(lens), key(payout), i64(deadline), i64(createdAt),
-        u64(requiredLamports), u64(escrowLamports), Buffer.from([status, openGround ? 1 : 0, decision]),
-        i64(decisionAttestedAt), i64(decisionObservedAt), key(decisionAttestation), Buffer.from(decisionHash),
-        i64(executedAt), Buffer.from([bump]), str(cid)
-    ]);
-    const out = Buffer.alloc(constants.AGREEMENT_ACCOUNT_SPACE);
-    data.copy(out);
-    return new Uint8Array(out);
+export function encodeAgreementAccount({ fundingMint = null, ...fields }) {
+    return new Uint8Array(agreementAccountBytes({ ...fields, fundingMint: fundingMint ?? web3.PublicKey.default.toBase58() }));
 }
 
 // ---- market and support accounts on an agreement ----------------------------------------------------
@@ -103,11 +94,11 @@ export function lmsrPositionAccount({ market, owner, side = 1, amount = 0n, clai
 }
 
 /** proposal_pledge DonationEscrow at PDA ["donation_escrow", agreement]. */
-export function donationEscrowAccount({ agreement, beneficiary, totalDonated = 0n, released = false }) {
+export function donationEscrowAccount({ agreement, beneficiary, totalDonated = 0n, totalRefunded = 0n, released = false, vault = web3.PublicKey.default }) {
     const [address] = pledgeClient.getDonationEscrowPda(agreement);
     const mint = pledgeClient.constants.USDC_DEVNET_MINT;
     const data = Buffer.concat([Buffer.from(pledgeClient.ACCOUNT_DISCRIMINATORS.DonationEscrow), key(agreement), key(beneficiary), key(mint),
-        key(web3.PublicKey.default), u64(totalDonated), u64(0n), u64(0n), u64(1n), u64(1n), Buffer.from([released ? 1 : 0, 252])]);
+        key(vault), u64(totalDonated), u64(0n), u64(totalRefunded), u64(1n), u64(1n), Buffer.from([released ? 1 : 0, 252])]);
     return { address: address.toBase58(), owner: pledgeClient.constants.PROGRAM_ID, data: new Uint8Array(data) };
 }
 
@@ -204,11 +195,17 @@ export function createAgreementChain({ now = systemNow } = {}) {
             let offset = 8;
             const cidLength = data.readUInt32LE(offset); offset += 4;
             const cid = data.subarray(offset, offset + cidLength).toString('utf8'); offset += cidLength;
-            const lens = new web3.PublicKey(data.subarray(offset, offset + 32)).toBase58(); offset += 32;
+            const lensCount = data.readUInt32LE(offset); offset += 4;
+            const lenses = Array.from({ length: lensCount }, (_, index) => new web3.PublicKey(data.subarray(offset + index * 32, offset + (index + 1) * 32)).toBase58());
+            offset += lensCount * 32;
+            const lensThreshold = data[offset]; offset += 1;
             const deadline = Number(data.readBigInt64LE(offset)); offset += 8;
             const openGround = data[offset] === 1; offset += 1;
             const requiredLamports = data.readBigUInt64LE(offset); offset += 8;
-            const payout = new web3.PublicKey(data.subarray(offset, offset + 32)).toBase58();
+            const payout = new web3.PublicKey(data.subarray(offset, offset + 32)).toBase58(); offset += 32;
+            const fundingMint = new web3.PublicKey(data.subarray(offset, offset + 32)).toBase58(); offset += 32;
+            const requiredFunding = data.readBigUInt64LE(offset);
+            try { agreementClient.requireLensSet(lenses, lensThreshold, requiredFunding); } catch (error) { throw programError('InvalidLens', error.message); }
             const authority = keys[1];
             const [pda, bump] = agreementClient.getAgreementPda(cid, authority, AGREEMENT_PROGRAM_ID);
             if (pda.toBase58() !== address) throw programError('ConstraintSeeds', 'the agreement is not PDA(authority, cid)');
@@ -216,7 +213,8 @@ export function createAgreementChain({ now = systemNow } = {}) {
             // create requires a deadline in the future (0, the old "none", is refused too).
             if (deadline <= time) throw programError('DeadlinePassed');
             write(address, {
-                authority, lens, payout, deadline, createdAt: time, requiredLamports, escrowLamports: 0n, statusCode: 0, openGround,
+                authority, lenses, lensThreshold, lensConfirmed: [], payout, deadline, createdAt: time, requiredLamports, escrowLamports: 0n, statusCode: 0, openGround,
+                fundingMint: requiredFunding > 0n ? fundingMint : null, requiredFunding, fundingMet: false, fundingObserved: 0n, fundingMetAt: 0,
                 decisionCode: 0, decisionAttestedAt: 0, decisionObservedAt: 0, executedAt: 0, bump, cid
             });
             return { name, account: address };
@@ -244,10 +242,33 @@ export function createAgreementChain({ now = systemNow } = {}) {
             if (attestation.fields.sponsor !== state.authority) throw programError('WrongSponsor');
             const reason = agreementClient.checkDecisionForAttest({ agreement: state, attestation, nowSeconds: time });
             if (reason) throw programError('InvalidAttestation', reason);
+            const lensConfirmed = state.lenses.filter(member => member === attestation.signer || state.lensConfirmed.includes(member));
+            const lensMet = lensConfirmed.length >= state.lensThreshold;
+            const satisfied = lensMet && (state.requiredFunding === 0n || state.fundingMet);
             write(address, {
-                ...state, decisionCode: constants.DECISION_SATISFIED, decisionAttestedAt: time,
-                decisionObservedAt: attestation.fields.sourceObservedAt, decisionAttestation: attestationKey,
-                decisionHash: createHash('sha256').update(entry.data).digest('hex')
+                ...state, lensConfirmed,
+                ...(lensMet ? { decisionObservedAt: attestation.fields.sourceObservedAt, decisionAttestation: attestationKey,
+                    decisionHash: createHash('sha256').update(entry.data).digest('hex') } : {}),
+                ...(satisfied ? { decisionCode: constants.DECISION_SATISFIED, decisionAttestedAt: time } : {})
+            });
+        } else if (name === 'confirm_funding') {
+            const [, escrowKey, vaultKey] = keys;
+            if (!active) throw programError('NotActive');
+            if (state.decisionCode !== constants.DECISION_PENDING) throw programError('AlreadyAttested');
+            if (passed) throw programError('DeadlinePassed');
+            if (!(state.requiredFunding > 0n)) throw programError('NoFundingTarget');
+            if (state.fundingMet) throw programError('FundingAlreadyConfirmed');
+            const entry = accounts.get(escrowKey);
+            if (!entry || entry.owner !== pledgeClient.constants.PROGRAM_ID || escrowKey !== pledgeClient.getDonationEscrowPda(address)[0].toBase58()) throw programError('InvalidEscrow');
+            const escrow = pledgeClient.decodeDonationEscrow(entry.data);
+            if (escrow.proposal !== address || escrow.mint !== state.fundingMint || escrow.released) throw programError('InvalidEscrow');
+            if (escrow.vault !== vaultKey) throw programError('InvalidVault');
+            const credited = escrow.totalDonated - escrow.totalRefunded;
+            if (credited < state.requiredFunding) throw programError('FundingTargetNotMet');
+            const lensMet = state.lensConfirmed.length >= state.lensThreshold;
+            write(address, {
+                ...state, fundingMet: true, fundingObserved: credited, fundingMetAt: time,
+                ...(lensMet ? { decisionCode: constants.DECISION_SATISFIED, decisionAttestedAt: time, ...(state.lenses.length ? {} : { decisionObservedAt: time }) } : {})
             });
         } else if (name === 'execute') {
             if (!active) throw programError('NotActive');

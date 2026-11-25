@@ -11,7 +11,7 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { agreementRustLayout, readSolana, rustFnBody, rustUsizeConst } from './helpers/agreement-layout.js';
+import { agreementRustLayout, readSolana, rustFnBody } from './helpers/agreement-layout.js';
 import { AGREEMENT_PROGRAM_ID, agreementAccountBytes } from './fixtures/agreement-account.js';
 
 const require = createRequire(import.meta.url);
@@ -45,27 +45,34 @@ describe('the Agreement account the market and pledge programs read', () => {
     it('declares its fields in the order the IDL and the JS codec decode, status at byte 136', () => {
         const idlFields = agreementIdl.types.find(type => type.name === 'Agreement').type.fields.map(field => field.name);
         expect(layout.fields.map(field => field.name)).toEqual(idlFields);
-        const { authority, lens, payout, deadline, status, decision, cid } = layout.offsets;
-        expect({ authority, lens, payout, deadline, status, decision, cid }).toEqual(agreementClient.AGREEMENT_OFFSETS);
-        expect(status).toBe(136);
+        const o = layout.offsets;
+        expect({ authority: o.authority, lens: o.lens, payout: o.payout, deadline: o.deadline, status: o.status, decision: o.decision,
+            lensCount: o.lens_count, lensThreshold: o.lens_threshold, lensConfirmed: o.lens_confirmed, moreLenses: o.more_lenses,
+            fundingMint: o.funding_mint, requiredFunding: o.required_funding, cid: o.cid }).toEqual(agreementClient.AGREEMENT_OFFSETS);
+        expect(o.status).toBe(136);
+        // Every fixed field comes before the CID, which ends the 580-byte account (CID at most 64 bytes).
+        expect(o.cid + 4 + 64).toBe(agreementClient.constants.AGREEMENT_ACCOUNT_SPACE);
+        expect(layout.MAX_LENSES).toBe(agreementClient.constants.MAX_LENSES);
     });
 
-    it('reads authority, lens, status and execution time at offsets its own constants derive from the struct', () => {
+    it('reads authority, the lens set, status and execution time at offsets its own constants derive from the struct', () => {
         expect(layout.offsets.authority).toBe(8);
         expect(layout.LENS_OFFSET).toBe(layout.offsets.lens);
         expect(layout.STATUS_OFFSET).toBe(layout.offsets.status);
         // The LMSR market enforces its execution deadline with executed_at (4867e4c19).
-        // The constant is written as STATUS_OFFSET + …; substitute the value rustUsizeConst cannot resolve.
-        const EXECUTED_AT_OFFSET = rustUsizeConst(layout.source.replace('EXECUTED_AT_OFFSET: usize = STATUS_OFFSET +',
-            `EXECUTED_AT_OFFSET: usize = ${layout.STATUS_OFFSET} +`), 'EXECUTED_AT_OFFSET');
-        expect(EXECUTED_AT_OFFSET).toBe(layout.offsets.executed_at);
+        expect(layout.EXECUTED_AT_OFFSET).toBe(layout.offsets.executed_at);
+        expect(layout.LENS_COUNT_OFFSET).toBe(layout.offsets.lens_count);
+        expect(layout.MORE_LENSES_OFFSET).toBe(layout.offsets.more_lenses);
+        expect(layout.LENS_SET_END).toBe(layout.offsets.funding_mint);
         const reader = rustFnBody(layout.source, 'read_agreement_view');
         expect(reader).toContain('*account.owner != crate::ID');
-        expect(reader).toContain('data.len() < EXECUTED_AT_OFFSET + 8');
+        expect(reader).toContain('data.len() < LENS_SET_END');
         expect(reader).toContain('data.get(EXECUTED_AT_OFFSET..EXECUTED_AT_OFFSET + 8)');
         expect(reader).toContain('data[..8] != Agreement::DISCRIMINATOR');
         expect(reader).toContain('authority: key_at(8)?');
-        expect(reader).toContain('lens: key_at(LENS_OFFSET)?');
+        expect(reader).toContain('lenses[0] = key_at(LENS_OFFSET)?');
+        expect(reader).toContain('key_at(MORE_LENSES_OFFSET + (index - 1) * 32)');
+        expect(reader).toContain('data[LENS_COUNT_OFFSET]');
         expect(reader).toContain('status: data[STATUS_OFFSET]');
     });
 
@@ -81,9 +88,23 @@ describe('the Agreement account the market and pledge programs read', () => {
             expect(keyAt(bytes, layout.LENS_OFFSET)).toBe(LENS);
             expect(bytes[layout.STATUS_OFFSET], name).toBe(code);
             expect(agreementClient.readAgreement(bytes)).toMatchObject({
-                authority: SPONSOR, lens: LENS, payout: PAYOUT, statusCode: code, status: name, deadline: 1_795_000_000, cid: CID
+                authority: SPONSOR, lens: LENS, lenses: [LENS], payout: PAYOUT, statusCode: code, status: name, deadline: 1_795_000_000, cid: CID
             });
         }
+    });
+
+    it('stores every lens member, the threshold, confirmations and the contribution target where the codec reads them', () => {
+        const members = [LENS, keyOf(21), keyOf(22), keyOf(23), keyOf(24), keyOf(25), keyOf(26), keyOf(27)];
+        const bytes = agreementAccountBytes({ cid: CID, authority: SPONSOR, lenses: members, lensThreshold: 3, lensConfirmed: [keyOf(22), keyOf(27)],
+            payout: PAYOUT, deadline: 1_795_000_000, fundingMint: keyOf(31), requiredFunding: 5_000_000, fundingMet: true, fundingObserved: 6_000_000, fundingMetAt: 1_794_000_000 });
+        expect(bytes.length).toBe(agreementClient.constants.AGREEMENT_ACCOUNT_SPACE);
+        expect([bytes[layout.offsets.lens_count], bytes[layout.offsets.lens_threshold], bytes[layout.offsets.lens_confirmed]]).toEqual([8, 3, 0b10000100]);
+        expect(keyAt(bytes, layout.offsets.more_lenses + 6 * 32)).toBe(keyOf(27));
+        expect(keyAt(bytes, layout.offsets.funding_mint)).toBe(keyOf(31));
+        expect(agreementClient.readAgreement(bytes)).toMatchObject({
+            lenses: members, lensThreshold: 3, lensConfirmed: [keyOf(22), keyOf(27)], fundingMint: keyOf(31),
+            requiredFunding: 5_000_000n, fundingMet: true, fundingObserved: 6_000_000n, fundingMetAt: 1_794_000_000, cid: CID
+        });
     });
 
     it('codes its status as the codec and the markets name it', () => {
@@ -117,6 +138,11 @@ describe('proposal_market reads its subject only through agreement::read_agreeme
             expect(source).not.toMatch(/ProposalHead|ProposalLensView|PROPOSAL_NFT_PROGRAM_ID|PROPOSAL_DISCRIMINATOR|proposal_nft::/);
             expect(source).not.toMatch(/read_agreement_view\(.*\)\s*\.\s*data|STATUS_OFFSET|LENS_OFFSET/);
         }
+        // Any lens member may be an external market's verifier, and every member is an insider.
+        expect(marketRs).toContain('require!(view.is_lens(&trusted_attester), MarketError::AttesterNotInProposalLens);');
+        expect(lmsrRs).toContain('require!(view.is_lens(&trusted_attester), MarketError::AttesterNotInProposalLens);');
+        expect(lmsrRs).toContain('require!(!view.is_lens(trader), MarketError::InsiderTrade);');
+        expect(`${marketRs}${lmsrRs}`).not.toMatch(/view\.lens\b/);
         expect(marketCargo).toContain('agreement = { path = "../agreement", features = ["no-entrypoint"] }');
         expect(marketCargo).not.toMatch(/^proposal_nft\s*=/m);
         // The source says where the status byte is; it says the reader's offset.

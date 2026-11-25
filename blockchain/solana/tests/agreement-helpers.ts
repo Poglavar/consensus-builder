@@ -15,10 +15,14 @@ export const STATUS = { active: 0, executed: 1, cancelled: 2, expired: 3 } as co
 export const OFFSET = {
     authority: 8, lens: 40, payout: 72, deadline: 104, createdAt: 112, requiredLamports: 120, escrowLamports: 128,
     status: 136, openGround: 137, decision: 138, decisionAttestedAt: 139, decisionObservedAt: 147,
-    decisionAttestation: 155, decisionHash: 187, executedAt: 219, bump: 227, cid: 228,
+    decisionAttestation: 155, decisionHash: 187, executedAt: 219, bump: 227,
+    lensCount: 228, lensThreshold: 229, lensConfirmed: 230, moreLenses: 231, fundingMint: 455,
+    requiredFunding: 487, fundingMet: 495, fundingObserved: 496, fundingMetAt: 504, cid: 512,
 } as const;
-/** 8-byte discriminator + 288 bytes. */
-export const AGREEMENT_ACCOUNT_SIZE = 296;
+/** 8-byte discriminator + 572 bytes (the CID padded to its 64-byte maximum). */
+export const AGREEMENT_ACCOUNT_SIZE = 580;
+/** Most lens members an agreement names. */
+export const MAX_LENSES = 8;
 
 export const sha256 = (value: Buffer | string) => createHash("sha256").update(value).digest();
 
@@ -66,7 +70,15 @@ export type AgreementTerms = {
     /** The sponsor: signs create, pays the rent, funds, cancels, receives refunds. Default: the provider wallet. */
     sponsor?: Keypair;
     cid?: string;
-    lens: PublicKey;
+    /** One lens member (shorthand for lenses: [lens]). */
+    lens?: PublicKey;
+    /** The lens members (0-8); default [lens], or none. */
+    lenses?: PublicKey[];
+    /** How many members must confirm. Default: 1 with a lens, 0 without. */
+    lensThreshold?: number;
+    /** Contribution target in fundingMint base units (0: none) and its mint. */
+    requiredFunding?: number | bigint;
+    fundingMint?: PublicKey;
     /** Unix seconds (chain time), in the future: create refuses 0. Default: DEFAULT_DEADLINE_SECONDS ahead. */
     deadline?: number;
     openGround?: boolean;
@@ -87,19 +99,24 @@ async function deadlineAhead(program: Program, seconds: number): Promise<number>
     return (await chainNow((program.provider as anchor.AnchorProvider).connection)) + seconds;
 }
 
-/** create(cid, lens, deadline, open_ground, required_lamports, payout) from the sponsor, then an optional fund. */
+/** create(cid, lenses, lens_threshold, deadline, open_ground, required_lamports, payout, funding_mint,
+ *  required_funding) from the sponsor, then an optional fund. */
 export async function createAgreement(program: Program, terms: AgreementTerms): Promise<CreatedAgreement> {
     const sponsor = terms.sponsor ?? providerPayer(program);
     const cid = terms.cid ?? testCid();
     const agreement = findAgreementPda(program.programId, sponsor.publicKey, cid);
+    const lenses = terms.lenses ?? (terms.lens ? [terms.lens] : []);
     const signature = await program.methods
         .create(
             cid,
-            terms.lens,
+            lenses,
+            terms.lensThreshold ?? (lenses.length ? 1 : 0),
             new anchor.BN(terms.deadline ?? (await deadlineAhead(program, DEFAULT_DEADLINE_SECONDS))),
             terms.openGround ?? false,
             new anchor.BN((terms.requiredLamports ?? 0).toString()),
-            terms.payout ?? sponsor.publicKey
+            terms.payout ?? sponsor.publicKey,
+            terms.fundingMint ?? PublicKey.default,
+            new anchor.BN((terms.requiredFunding ?? 0).toString())
         )
         .accountsStrict({ agreement, authority: sponsor.publicKey, systemProgram: SystemProgram.programId })
         .signers(signersOf(program, [sponsor]))
@@ -114,6 +131,11 @@ export function fundAgreement(program: Program, agreement: PublicKey, authority:
         .accountsStrict({ agreement, authority: authority.publicKey, systemProgram: SystemProgram.programId })
         .signers(signersOf(program, [authority]))
         .rpc();
+}
+
+/** confirm_funding(): anyone checks the agreement's donation escrow against its contribution target. */
+export function confirmFunding(program: Program, agreement: PublicKey, escrow: PublicKey, vault: PublicKey): Promise<string> {
+    return program.methods.confirmFunding().accountsStrict({ agreement, escrow, vault }).rpc();
 }
 
 /** attest() with an attestation and the credential it names (permissionless: the provider sends it). */
@@ -184,6 +206,8 @@ export async function writeAgreementLookalike(
     sha256("account:Agreement").copy(bytes, 0, 0, 8);
     a.authority.toBuffer().copy(bytes, OFFSET.authority);
     a.lens.toBuffer().copy(bytes, OFFSET.lens);
+    bytes[OFFSET.lensCount] = 1;
+    bytes[OFFSET.lensThreshold] = 1;
     a.authority.toBuffer().copy(bytes, OFFSET.payout);
     bytes[OFFSET.status] = a.status ?? STATUS.active;
     bytes.writeUInt32LE(cid.length, OFFSET.cid);

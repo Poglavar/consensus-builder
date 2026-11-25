@@ -137,15 +137,22 @@ and cash ledgers. Community polls return `communityPosition` with allocations an
 Their input and output ground describes the plan's scope rather than a land transfer.
 
 `ugt_draft_agreement` also has `rulePreset: "crowdfunding"`. It creates a binding, land-free
-investor agreement attached to an existing named plan. Supply the developer `sponsor`, one selected
-`lens` member (which the agreement program trusts), an ISO `deadline`, `targetUsdcAtomic` (decimal devnet-USDC atomic units), and
+investor agreement attached to an existing named plan. Supply the developer `sponsor`, optional
+`lenses` (0-8 member keys, the developer's own allowed) and `lensThreshold` (how many must confirm;
+omit for any one), an ISO `deadline`, `targetUsdcAtomic` (decimal devnet-USDC atomic units), and
 `contract: { name, mediaType, data }`, where `data` is the original PDF or UTF-8 text contract in
 base64. The attachment is part of the agreement CID. `ugt_inspect_agreement` returns its target and
-contract name for explicit review. Changing the target, contract, sponsor, lens, deadline, or plan
-through `ugt_edit_agreement` creates a new agreement CID. After `ugt_propose_agreement` and
-`ugt_mint_agreement`, use `ugt_approval_link` with `action: "donate"` to open the investor’s review.
-The investor can download the contract and confirm the contribution in their own wallet. The existing
-devnet USDC escrow handles deposits and refunds.
+contract name for explicit review, with its lens members, threshold and whether the developer is one
+of the verifiers. The program checks the funding target itself; the lens checks investor eligibility
+and any other conditions, and with no lens the round settles on its target alone. Changing the target,
+contract, sponsor, lenses, threshold, deadline, or plan through `ugt_edit_agreement` creates a new
+agreement CID. After `ugt_propose_agreement` and `ugt_mint_agreement`, use `ugt_approval_link` with
+`action: "donate"` to open the investor’s review. The investor can download the contract and confirm
+the contribution in their own wallet. The existing devnet USDC escrow handles deposits and refunds.
+Once contributions reach the target, anyone records it on chain: `ugt_confirm_funding { agreementAccount }`
+(local signer) or `ugt_approval_link` with `action: "confirm-funding"` (browser wallet).
+`ugt_get_agreement` and `ugt_chain_agreement` report `lenses`, `lensThreshold`, `lensConfirmed`,
+`requiredFunding` and `fundingMet` of the minted account.
 
 For a round with apartment reservations, supply `apartments.projectId` and an entry in
 `apartments.units` for each apartment. Each entry carries its permanent unit ID, label, X-ray
@@ -278,7 +285,7 @@ composition or geometry, revise the named plan and draft a new agreement.
 | Design details | Title, description, author, city, tolerance and goal/payload | Exactly one supported authored payload; valid canonical identity and current parcel binding. |
 | Named plan selection and view | `title`, `view`, membership operations | Named plans require no allocations, decision rule, ownership snapshot or complete cadastral ground. Title/view/membership edits retain the selected designs exactly. |
 | Counter-agreement, scheme comparison | `ugt_inspect_agreement`, then `ugt_draft_agreement` on the same `planCid` with the inspected terms and the changed `rule` (another `approvalConfig.regime` from `ugt://schemes`) | The browser's Rules tab guide reads an agreement against any scheme and drafts a counter-agreement under it; through MCP the draft's reported `scheme` check is that reading. No link to the answered agreement is stored. |
-| Agreement terms | `ugt_edit_agreement` `terms.title`, `author`, `sponsor`, `deadline`, full `rule` (including policy/regime and lens), `rights`, `allocations`, `settlement`, `valuation` | Plan membership is fixed. Each owner output has one explicit recipient or public designation; joint recipients are unsupported. Balancing cash is derived from the settlement: by area from the per-m² rate and contribution, by value from `valuation` (a unit value per input parcel and output hash) and the pinned scheme's value-gain share. A pinned scheme's distribution rules (caps, basis, party count, no proposer under authority-led schemes; `ugt://schemes`) are enforced on draft, edit and publication and reported by `ugt_inspect_agreement` as `scheme`. Rights changes update the input holder snapshot. |
+| Agreement terms | `ugt_edit_agreement` `terms.title`, `author`, `sponsor`, `deadline`, `lenses` and `lensThreshold` (the lens set and how many must confirm), full `rule` (including policy/regime, `lens` and `lensThreshold`), `rights`, `allocations`, `settlement`, `valuation` | Plan membership is fixed. Each owner output has one explicit recipient or public designation; joint recipients are unsupported. Balancing cash is derived from the settlement: by area from the per-m² rate and contribution, by value from `valuation` (a unit value per input parcel and output hash) and the pinned scheme's value-gain share. A pinned scheme's distribution rules (caps, basis, party count, no proposer under authority-led schemes; `ugt://schemes`) are enforced on draft, edit and publication and reported by `ugt_inspect_agreement` as `scheme`. Rights changes update the input holder snapshot. |
 
 Existing holders and rights can be carried into a private revision over the same input parcels,
 but the result labels them `carried-unverified`: this does not refresh or verify ownership.

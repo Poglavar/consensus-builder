@@ -68,7 +68,7 @@ describe('agreement MCP editing surface', () => {
         expect(draft.parse({ plan, allocations: [{ output: 'piece', to: { kind: 'proposer' } }] }).allocations[0].to.kind).toBe('proposer');
         const rule = { electorate: 'owners', binding: true, approvalConfig: { schema: 'proposal-approval/v1', rights: null,
             policy: { type: 'rules', tests: [], authorities: [{ authorityId: 'authority:district' }] }, regime: { id: 'de-umlegung-new', version: '1' } },
-            lens: ['11111111111111111111111111111111'], settlement: { method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 1000 } };
+            lens: ['9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt'], settlement: { method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 1000 } };
         expect(draft.parse({ plan, rulePreset: 'owner-deal', rule }).rule).toEqual(rule);
         expect(draft.safeParse({ designs: [] }).success).toBe(false);
         expect(draft.safeParse({ plan, money: { currency: 'EUR', lines: [] } }).success).toBe(false);
@@ -125,7 +125,7 @@ describe('agreement MCP editing surface', () => {
             policy: ApprovalRegimes.policyOf(germanRegime, ['authority:district']),
             regime: { id: germanRegime.id, version: germanRegime.version } });
         const firstRule = { electorate: 'owners', binding: true, approvalConfig: germanConfig,
-            lens: ['11111111111111111111111111111111'], settlement: { method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 1000 } };
+            lens: ['9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt'], settlement: { method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 1000 } };
         // Giving all the land to public breaks the scheme's 30% cap: the edit is refused with the owner and the cap.
         await expect(tools.editAgreement({ plan: original.draftArtifact, expectedCid: original.cid,
             terms: { rule: firstRule, rights, allocations: original.agreement.outputs.map(output => ({ output: output.hash, to: { kind: 'public' } })) } }))
@@ -202,7 +202,7 @@ describe('agreement MCP editing surface', () => {
         const gujarat = ApprovalRegimes.latest('in-gj-tps');
         const rights = { schema: 'parcel-rights/v1', source: { provider: 'agent-test' }, parcels: [{ parcelId: 'A', complete: true, areaM2: null, owners: [{ ownerId: 'party-in', share: '1/1' }] }] };
         const config = Approval.normalizeConfig({ schema: 'proposal-approval/v1', rights, policy: ApprovalRegimes.policyOf(gujarat, ['authority:state']), regime: { id: gujarat.id, version: gujarat.version } });
-        const rule = { electorate: 'owners', binding: true, approvalConfig: config, lens: ['11111111111111111111111111111111'], settlement };
+        const rule = { electorate: 'owners', binding: true, approvalConfig: config, lens: ['9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt'], settlement };
         const edited = await tools.editAgreement({ plan: drafted.draftArtifact, expectedCid: drafted.cid, terms: { rule, rights,
             allocations } });
         const editedInspection = await tools.inspectAgreement({ plan: edited.draftArtifact });

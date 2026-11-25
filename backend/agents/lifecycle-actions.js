@@ -1,13 +1,13 @@
 // Shared Node signer adapters for what follows an agreement's mint: its market (resolve, claim),
 // donations and soft pledges (refund, revoke, release, fulfil, void), the recipe-bound external
-// markets, and the proposer's settlement of its own agreements (its owner approval, the lens decision,
-// attest and execute, or expire after the deadline; then resolve and claim). The subject of every
+// markets, and the proposer's settlement of its own agreements (a reached contribution target, its owner
+// approval, the lens decision, attest and execute, or expire after the deadline; then resolve and claim). The subject of every
 // market, pledge book and donation escrow is the agreement's chain account (PDA(sponsor, CID),
 // agreement-minter.js). Browser wallets, MCP agents and deterministic runners use the same instruction
 // codecs; these functions add only read-before-write idempotence and transaction submission.
 import { createRequire } from 'node:module';
 import { donationIdBytes } from './donor.js';
-import { AGREEMENT_STATUS, executeAgreement, expireAgreement, readAgreementAccount, recordAgreementDecision } from './agreement-minter.js';
+import { AGREEMENT_STATUS, confirmAgreementFunding, executeAgreement, expireAgreement, readAgreementAccount, recordAgreementDecision } from './agreement-minter.js';
 import { readAgreementMarket } from './bettor.js';
 
 const require = createRequire(import.meta.url);
@@ -95,6 +95,23 @@ export async function releaseDonations({
     }), releaserKeypair, sendAndConfirm);
     return { replayed: false, signature, released: true };
 }
+
+/**
+ * Record that the agreement's contribution target is met (`confirm_funding`, permissionless): the
+ * program reads the agreement's donation escrow and vault itself, so no lens is involved. An agreement
+ * without a target, or with it confirmed, is a replay.
+ */
+export async function confirmFunding({
+    connection, payerKeypair, subject,
+    sendAndConfirm = web3.sendAndConfirmTransaction
+} = {}) {
+    const escrowAddress = supportClient.getDonationEscrowPda(subject)[0].toBase58();
+    const escrow = await supportClient.readDonationEscrow(connection, subject);
+    return confirmAgreementFunding({ connection, payerKeypair, account: subject, escrowAddress, escrow, sendAndConfirm });
+}
+
+// Contributions a donation escrow credits toward a target: donated less refunded (0n without one).
+const creditedOf = escrow => (escrow ? BigInt(escrow.totalDonated) - BigInt(escrow.totalRefunded) : 0n);
 
 export async function fulfillPledge({
     connection, pledgerKeypair, subject,
@@ -280,15 +297,17 @@ export async function claimExternalMarket({
 // ---- settlement: the proposer finishing its own agreements ------------------------------------------
 // Chain-read half and signing half of the proposer's settlement phase (selection is pure, in
 // run-policy.js planSettlements). Every step is derived from the agreement, market and position accounts
-// as they are now, never from a checkpoint flag, so a rerun repeats nothing. A binding owners'
-// agreement whose sole owner is the proposer is decided by the proposer itself: its approval receipt
-// (decide), its lens member's AgreementDecision-v1 (lens), recorded on the account (attest), then
+// as they are now, never from a checkpoint flag, so a rerun repeats nothing. A contribution target its
+// donation escrow has reached is confirmed by anyone (confirm-funding). A binding owners' agreement whose
+// sole owner is the proposer is decided by the proposer itself: its approval receipt (decide), the
+// AgreementDecision-v1 of the lens member this runner operates (lens), recorded on the account (attest);
+// other members' confirmations are theirs to record. Once the lens threshold and any target are met,
 // `execute` releases the escrow to the payout and the market resolves YES. One that never got there
 // expires after its deadline (the escrow returns to the sponsor) and the market resolves NO.
 
 // Steps that sign a chain transaction; decide (a signed message, relayed) and lens (the member's own
 // transaction) cost the proposer none.
-export const SIGNED_SETTLEMENT_STEPS = Object.freeze(['attest', 'execute', 'release-donations', 'expire', 'resolve', 'claim', 'reclaim']);
+export const SIGNED_SETTLEMENT_STEPS = Object.freeze(['confirm-funding', 'attest', 'execute', 'release-donations', 'expire', 'resolve', 'claim', 'reclaim']);
 
 const SETTLEMENT_READERS = {
     readAgreement: (connection, account) => readAgreementAccount(connection, { account }),
@@ -314,11 +333,11 @@ function yesPayout(market, position, outcome) {
 /**
  * Read-only: which settlement steps one of the proposer's own minted agreements still needs, in order.
  * @param agreement { cid, account, deadline, soleOwner (the proposer is the only owner of every input
- *   parcel), lens, pickId?, sourceRunId?, sourceDay? }
+ *   parcel), content?, pickId?, sourceRunId?, sourceDay? }
  * @param lensKey the lens member this runner operates (asks for decisions), or null
  * @returns {Promise<object>} the agreement with `state` (decidable | decided | awaiting-owners |
- *   lens-not-operated | awaiting-funds | due | executed | cancelled | expired | closed | missing | foreign),
- *   `outcome` (YES | NO | null) and `steps`
+ *   lens-not-operated | awaiting-lens | awaiting-contributions | awaiting-funds | due | executed |
+ *   cancelled | expired | closed | missing | foreign), `outcome` (YES | NO | null) and `steps`
  */
 export async function inspectSettlement({ connection, owner, agreement, lensKey = null, nowSeconds = Math.floor(Date.now() / 1000), readers = {} } = {}) {
     if (!connection?.getAccountInfo) throw new Error('a solana connection is required');
@@ -340,11 +359,27 @@ export async function inspectSettlement({ connection, owner, agreement, lensKey 
     let outcome;
     const steps = [];
     const investorFunding = agreement.content?.rule?.electorate === 'investors';
+    if (active && !due && pending) {
+        const lensOpen = state.lensConfirmed.length < state.lensThreshold;
+        const fundingOpen = state.requiredFunding > 0n && !state.fundingMet;
+        const credited = fundingOpen ? creditedOf(await read.readDonation(connection, agreement.account)) : null;
+        const fundingReady = !fundingOpen || credited >= state.requiredFunding;
+        const lensState = { lenses: state.lenses, lensThreshold: state.lensThreshold, lensConfirmed: state.lensConfirmed };
+        // This runner can add its own lens member's confirmation; the lens decides an owners' agreement,
+        // and on a crowdfunding round the lens attests only conditions it is asked to, never on its own.
+        const operated = lensOpen && !investorFunding && !!lensKey && state.lenses.includes(lensKey) && !state.lensConfirmed.includes(lensKey);
+        if (lensOpen && !investorFunding && !agreement.soleOwner) return { ...base, ...lensState, state: 'awaiting-owners', outcome: null, steps: [] };
+        if (lensOpen && !investorFunding && !operated) return { ...base, ...lensState, state: 'lens-not-operated', outcome: null, steps: [] };
+        if (fundingOpen && fundingReady) steps.push('confirm-funding');
+        if (operated) steps.push('decide', 'lens', 'attest');
+        const lensWillMeet = !lensOpen || (operated && state.lensConfirmed.length + 1 >= state.lensThreshold);
+        if (!fundingReady) {
+            return { ...base, ...lensState, state: 'awaiting-contributions', outcome: null, steps,
+                note: `contributions credit ${credited} of the ${state.requiredFunding} target` };
+        }
+        if (!lensWillMeet) return { ...base, ...lensState, state: 'awaiting-lens', outcome: null, steps, note: 'other lens members have yet to confirm' };
+    }
     if (active && !due) {
-        if (pending && !investorFunding && !agreement.soleOwner) return { ...base, state: 'awaiting-owners', outcome: null, steps: [] };
-        if (pending && (!lensKey || state.lens !== lensKey)) return { ...base, state: 'lens-not-operated', outcome: null, steps: [], lens: state.lens };
-        if (pending && !investorFunding) steps.push('decide');
-        if (pending) steps.push('lens', 'attest');
         if (!funded) return { ...base, state: pending ? 'decidable' : 'awaiting-funds', outcome: null, steps, note: 'the escrow lacks what execution requires' };
         steps.push('execute');
         label = pending ? 'decidable' : 'decided';
@@ -388,7 +423,7 @@ export async function inspectSettlement({ connection, owner, agreement, lensKey 
 }
 
 /**
- * Take the outstanding steps in order — decide → lens → attest → execute, or expire — then resolve →
+ * Take the outstanding steps in order — confirm-funding → decide → lens → attest → execute, or expire — then resolve →
  * claim, each through `perform` (the action engine, so it lands in the activity feed) and each followed by
  * `checkpoint(record)`. `decide()` and `askLens()` are the off-chain steps the caller provides (the owner's
  * relayed approval, lens-approval-client.js); the claim is re-derived from the market after resolution.
@@ -400,10 +435,16 @@ export async function executeSettlement({
     if (!ownerKeypair?.publicKey) throw new Error('ownerKeypair is required');
     if (typeof perform !== 'function' || typeof checkpoint !== 'function') throw new Error('perform and checkpoint are required');
     const read = { ...SETTLEMENT_READERS, ...readers };
-    const act = { recordAgreementDecision, executeAgreement, expireAgreement, releaseDonations, resolveAgreementMarket, claimAgreementMarket, reclaimAgreementMarketSeed, ...adapters };
+    const act = { confirmFunding, recordAgreementDecision, executeAgreement, expireAgreement, releaseDonations, resolveAgreementMarket, claimAgreementMarket, reclaimAgreementMarketSeed, ...adapters };
     const subject = item.account;
     const current = { ...record, cid: item.cid, account: subject, pickId: item.pickId ?? null, sourceRunId: item.sourceRunId ?? null, sourceDay: item.sourceDay ?? null };
     const has = step => item.steps.includes(step);
+    if (has('confirm-funding')) {
+        current.fundingConfirmation = await perform({ type: 'confirm-funding', agreementCid: item.cid }, () => act.confirmFunding({
+            connection, payerKeypair: ownerKeypair, subject, sendAndConfirm
+        }));
+        await checkpoint({ ...current });
+    }
     if (has('decide')) {
         if (typeof decide !== 'function') throw new Error('a decide step needs decide()');
         current.approval = await perform({ type: 'decide', agreementCid: item.cid }, () => decide(item));

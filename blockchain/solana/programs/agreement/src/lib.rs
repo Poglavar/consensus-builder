@@ -1,15 +1,26 @@
 //! Urban Game Theory Agreement - Solana Program (plan-design-agreement.md, M3)
 //!
 //! One account per agreement: the chain's commitment to an `agreement/v1` object on IPFS (its CIDv1),
-//! naming the lens member whose attestation settles it, a deadline, an escrow and the account the
-//! escrow is released to. It replaces proposal_nft's per-proposal consent machinery
-//! (simplification 7): no parcels, owner lists, acceptance records, withdrawals or vote variants on
-//! chain. Owner decisions are signed documents the approval engine counts off-chain; the
-//! agreement's lens attests the outcome, and this program checks that attestation plus the escrow.
+//! naming its lens (1-8 member keys and how many of them must confirm), an optional contribution
+//! target, a deadline, an escrow and the account the escrow is released to. It replaces
+//! proposal_nft's per-proposal consent machinery (simplification 7): no parcels, owner lists,
+//! acceptance records, withdrawals or vote variants on chain. Owner decisions are signed documents
+//! the approval engine counts off-chain; the agreement's lens members attest the outcome, and this
+//! program checks those attestations plus the escrow.
 //!
-//! Lifecycle: create → fund* → attest → execute, or cancel (the authority, while no decision is
-//! recorded) or expire (anyone, after the deadline). The lens never refuses: it attests only a
-//! satisfied decision, and an agreement whose rule is not satisfied by its deadline expires.
+//! Settlement conditions, both frozen at create:
+//!   lens     `lens_threshold` distinct members of the lens each record an AgreementDecision
+//!            (`attest`, once per member). Threshold 1 is "any one of the listed keys".
+//!   funding  the agreement's proposal_pledge donation escrow holds credited contributions (donated
+//!            less refunded) of at least `required_funding` in `funding_mint`, and its vault backs
+//!            them (`confirm_funding`, permissionless: the program reads the escrow itself, so no
+//!            lens is needed for "the money arrived"). An agreement may have a target and no lens.
+//! The decision becomes Satisfied in the instruction that completes the last condition.
+//!
+//! Lifecycle: create → fund* → attest* / confirm_funding → execute, or cancel (the authority,
+//! while the decision is Pending) or expire (anyone, after the deadline). The lens never refuses:
+//! members attest only a satisfied decision, and an agreement whose conditions are not met by its
+//! deadline expires.
 //! Status codes are proposal_nft's ProposalStatus codes (0 Active, 1 Executed, 2 Cancelled,
 //! 3 Expired), so market readers keep them.
 //! Only the authority funds, and every refund returns to it. (A funder recorded at the first fund
@@ -42,10 +53,12 @@
 //!   sourceObservedAt  unix seconds at which the counted decisions gave this outcome
 //! Checked here: owned by SAS, discriminator 2, expiry after now, issued under the passed credential,
 //! whose authority is the attestation's signer, under that credential's AgreementDecision v1
-//! schema PDA; signer == agreement.lens; agreementCid == agreement.cid; sponsor ==
-//! agreement.authority; decision == "satisfied"; sourceObservedAt <= now; every payload byte
-//! consumed. The first accepted attestation is final. The lens takes `sponsor` from the agreement
-//! object, never from whoever asks for the attestation.
+//! schema PDA; signer is a lens member whose confirmation is not yet recorded; agreementCid ==
+//! agreement.cid; sponsor == agreement.authority; decision == "satisfied"; sourceObservedAt <= now;
+//! every payload byte consumed. Each member counts once, and a recorded confirmation is final. The
+//! lens takes `sponsor` from the agreement object, never from whoever asks for the attestation.
+//! Any key may be a member, the sponsor's own included: the people who enter an agreement judge its
+//! lens.
 
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::hash::hash;
@@ -70,29 +83,64 @@ pub const NO_DEADLINE: i64 = 0;
 pub const DECISION_SCHEMA_NAME: &[u8] = b"AgreementDecision";
 pub const DECISION_SCHEMA_VERSION: u8 = 1;
 
+/// Most lens members an agreement can name (one confirmation bit each in `lens_confirmed`).
+pub const MAX_LENSES: usize = 8;
+/// Lens members after the first (`more_lenses` slots).
+pub const MORE_LENSES: usize = MAX_LENSES - 1;
+
+/// proposal_pledge, whose donation escrow `confirm_funding` reads. That program depends on this
+/// crate, so its id and the escrow layout are restated here; proposal_pledge's tests assert they
+/// match its own (proposal_pledge::tests).
+pub const PLEDGE_PROGRAM_ID: Pubkey = pubkey!("1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g");
+pub const DONATION_ESCROW_SEED: &[u8] = b"donation_escrow";
+/// DonationEscrow: discriminator, then proposal, beneficiary, mint, vault (4 × 32), then
+/// total_donated, total_released, total_refunded, donation_count, donor_count (5 × u64), released.
+pub const ESCROW_PROPOSAL_OFFSET: usize = 8;
+pub const ESCROW_MINT_OFFSET: usize = 8 + 2 * 32;
+pub const ESCROW_VAULT_OFFSET: usize = 8 + 3 * 32;
+pub const ESCROW_TOTAL_DONATED_OFFSET: usize = 8 + 4 * 32;
+pub const ESCROW_TOTAL_REFUNDED_OFFSET: usize = ESCROW_TOTAL_DONATED_OFFSET + 2 * 8;
+pub const ESCROW_RELEASED_OFFSET: usize = ESCROW_TOTAL_DONATED_OFFSET + 5 * 8;
+/// The SPL Token program, owner of the escrow's vault (a 165-byte token account: mint, owner,
+/// amount at 0, 32, 64; state at 108, 1 = Initialized).
+pub const TOKEN_PROGRAM_ID: Pubkey = pubkey!("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+const TOKEN_ACCOUNT_LEN: usize = 165;
+
 #[program]
 pub mod agreement {
     use super::*;
 
     /// Commit an agreement to the chain at PDA ["agreement", authority, sha256(cid)], the signing
-    /// authority being its sponsor. `lens` is the lens member key whose AgreementDecision
-    /// attestation settles it; `deadline` is unix seconds in the future (mandatory: an agreement
-    /// that can never expire would lock its escrow and any market on it once a decision is recorded);
-    /// `open_ground` records that the agreement's land includes open ground (read by indexers, no
-    /// effect here); `required_lamports` is the escrow execution needs (0: none); `payout` receives
-    /// the whole escrow at execution (the agreement's settlement account).
+    /// authority being its sponsor. `lenses` are the 0-8 distinct member keys whose
+    /// AgreementDecision attestations settle it, and `lens_threshold` how many of them must confirm
+    /// (1..=members; 0 with no members). No members is allowed only with a contribution target.
+    /// `deadline` is unix seconds in the future (mandatory: an agreement that can never expire
+    /// would lock its escrow and any market on it once a decision is recorded); `open_ground`
+    /// records that the agreement's land includes open ground (read by indexers, no effect here);
+    /// `required_lamports` is the escrow execution needs (0: none); `payout` receives the whole
+    /// escrow at execution (the agreement's settlement account); `required_funding` is the credited
+    /// proposal_pledge contributions in `funding_mint` the agreement needs (0: none, and then the
+    /// mint is the default key).
+    #[allow(clippy::too_many_arguments)]
     pub fn create(
         ctx: Context<Create>,
         cid: String,
-        lens: Pubkey,
+        lenses: Vec<Pubkey>,
+        lens_threshold: u8,
         deadline: i64,
         open_ground: bool,
         required_lamports: u64,
         payout: Pubkey,
+        funding_mint: Pubkey,
+        required_funding: u64,
     ) -> Result<()> {
         let now = Clock::get()?.unix_timestamp;
         require_valid_cid(&cid)?;
-        require_keys_neq!(lens, Pubkey::default(), AgreementError::NoLens);
+        require_valid_lens(&lenses, lens_threshold, required_funding)?;
+        require!(
+            (required_funding == 0) == (funding_mint == Pubkey::default()),
+            AgreementError::InvalidFundingTarget
+        );
         let agreement_key = ctx.accounts.agreement.key();
         // The default key cannot be written to, and the agreement paying itself would lock the
         // escrow forever.
@@ -105,7 +153,19 @@ pub mod agreement {
         let authority = ctx.accounts.authority.key();
         let agreement = &mut ctx.accounts.agreement;
         agreement.authority = authority;
-        agreement.lens = lens;
+        agreement.lens = lenses.first().copied().unwrap_or_default();
+        agreement.lens_count = lenses.len() as u8;
+        agreement.lens_threshold = lens_threshold;
+        agreement.lens_confirmed = 0;
+        agreement.more_lenses = [Pubkey::default(); MORE_LENSES];
+        for (slot, member) in agreement.more_lenses.iter_mut().zip(lenses.iter().skip(1)) {
+            *slot = *member;
+        }
+        agreement.funding_mint = funding_mint;
+        agreement.required_funding = required_funding;
+        agreement.funding_met = false;
+        agreement.funding_observed = 0;
+        agreement.funding_met_at = 0;
         agreement.payout = payout;
         agreement.deadline = deadline;
         agreement.created_at = now;
@@ -126,10 +186,13 @@ pub mod agreement {
             agreement: agreement_key,
             cid: agreement.cid.clone(),
             authority,
-            lens,
+            lenses,
+            lens_threshold,
             payout,
             deadline,
             required_lamports,
+            funding_mint,
+            required_funding,
             open_ground,
             created_at: now,
         });
@@ -175,11 +238,12 @@ pub mod agreement {
         Ok(())
     }
 
-    /// Record the lens's satisfied decision from its AgreementDecision-v1 SAS attestation (checks in
-    /// the module docs). Permissionless: the outcome comes from the attestation, never from the
-    /// caller. Only one decision is ever recorded, while Active and before the deadline. Keeps the
-    /// attestation's key and the sha256 of its whole account bytes, so the evidence outlives the SAS
-    /// account.
+    /// Record one lens member's satisfied decision from its AgreementDecision-v1 SAS attestation
+    /// (checks in the module docs). Permissionless: the outcome comes from the attestation, never
+    /// from the caller. Each member is counted once, while Active, Pending and before the deadline.
+    /// The confirmation that reaches the threshold is kept as the decision's evidence (its key and
+    /// the sha256 of its whole account bytes, so the evidence outlives the SAS account); the
+    /// decision becomes Satisfied once any contribution target is also confirmed.
     pub fn attest(ctx: Context<Attest>) -> Result<()> {
         let now = Clock::get()?.unix_timestamp;
         let accounts = &mut *ctx.accounts;
@@ -192,7 +256,11 @@ pub mod agreement {
 
         let data = accounts.attestation.try_borrow_data()?;
         let attestation = verify_attestation(&accounts.attestation, &data, &accounts.credential, now)?;
-        require_keys_eq!(attestation.authority, agreement.lens, AgreementError::WrongLens);
+        let member = agreement.member_index(&attestation.authority).ok_or(AgreementError::WrongLens)?;
+        // The lens is already met and only the contribution target is outstanding.
+        require!(!agreement.lens_met(), AgreementError::LensAlreadyConfirmed);
+        let bit = 1u8 << member;
+        require!(agreement.lens_confirmed & bit == 0, AgreementError::MemberAlreadyConfirmed);
 
         let payload = parse_decision(attestation.payload)?;
         require!(payload.agreement_cid == agreement.cid.as_bytes(), AgreementError::WrongAgreement);
@@ -203,21 +271,70 @@ pub mod agreement {
             .map_err(|_| error!(AgreementError::InvalidAttestationPayload))?;
         let attestation_hash = hash(&data).to_bytes();
 
-        agreement.decision = Decision::Satisfied;
-        agreement.decision_attested_at = now;
-        agreement.decision_observed_at = payload.source_observed_at;
-        agreement.decision_attestation = attestation_key;
-        agreement.decision_hash = attestation_hash;
+        agreement.lens_confirmed |= bit;
+        if agreement.lens_met() {
+            agreement.decision_observed_at = payload.source_observed_at;
+            agreement.decision_attestation = attestation_key;
+            agreement.decision_hash = attestation_hash;
+        }
+        let satisfied = agreement.settle_if_ready(now);
 
         emit!(AgreementAttested {
             agreement: agreement_key,
             cid: agreement.cid.clone(),
-            lens: agreement.lens,
+            lens: attestation.authority,
             attestation: attestation_key,
             attestation_hash,
             evidence_ref,
             source_observed_at: payload.source_observed_at,
+            confirmations: agreement.lens_confirmed.count_ones() as u8,
+            lens_threshold: agreement.lens_threshold,
+            satisfied,
             attested_at: now,
+        });
+        Ok(())
+    }
+
+    /// Confirm the contribution target from the agreement's own proposal_pledge donation escrow:
+    /// credited contributions (donated less refunded) reach `required_funding` in `funding_mint`,
+    /// and the escrow's vault holds at least that much. Permissionless and read-only towards the
+    /// escrow; recorded once, while Active, Pending and before the deadline. Contributions cannot be
+    /// refunded while the agreement is Active, so a confirmed target stays met.
+    pub fn confirm_funding(ctx: Context<ConfirmFunding>) -> Result<()> {
+        let now = Clock::get()?.unix_timestamp;
+        let agreement_key = ctx.accounts.agreement.key();
+        let escrow_key = ctx.accounts.escrow.key();
+        let (credited, vault_amount) = {
+            let agreement = &ctx.accounts.agreement;
+            require!(agreement.status == AgreementStatus::Active, AgreementError::NotActive);
+            require!(agreement.decision == Decision::Pending, AgreementError::AlreadyAttested);
+            require!(!agreement.deadline_passed(now), AgreementError::DeadlinePassed);
+            require!(agreement.required_funding > 0, AgreementError::NoFundingTarget);
+            require!(!agreement.funding_met, AgreementError::FundingAlreadyConfirmed);
+            read_funding(
+                &agreement_key,
+                &agreement.funding_mint,
+                &ctx.accounts.escrow,
+                &ctx.accounts.vault,
+            )?
+        };
+        let agreement = &mut ctx.accounts.agreement;
+        require!(credited >= agreement.required_funding, AgreementError::FundingTargetNotMet);
+        agreement.funding_met = true;
+        agreement.funding_observed = credited;
+        agreement.funding_met_at = now;
+        let satisfied = agreement.settle_if_ready(now);
+
+        emit!(AgreementFundingConfirmed {
+            agreement: agreement_key,
+            cid: agreement.cid.clone(),
+            escrow: escrow_key,
+            funding_mint: agreement.funding_mint,
+            required_funding: agreement.required_funding,
+            credited,
+            vault_amount,
+            satisfied,
+            confirmed_at: now,
         });
         Ok(())
     }
@@ -379,6 +496,24 @@ pub struct Attest<'info> {
 }
 
 #[derive(Accounts)]
+pub struct ConfirmFunding<'info> {
+    #[account(
+        mut,
+        seeds = [AGREEMENT_SEED, agreement.authority.as_ref(), &cid_seed(&agreement.cid)],
+        bump = agreement.bump
+    )]
+    pub agreement: Account<'info, Agreement>,
+
+    /// CHECK: proposal_pledge DonationEscrow at PDA ["donation_escrow", agreement]; owner, address,
+    /// discriminator and fields are checked in read_funding.
+    pub escrow: UncheckedAccount<'info>,
+
+    /// CHECK: the escrow's token vault; owner, address, mint, owner field and state are checked in
+    /// read_funding.
+    pub vault: UncheckedAccount<'info>,
+}
+
+#[derive(Accounts)]
 pub struct Execute<'info> {
     #[account(
         mut,
@@ -424,14 +559,16 @@ pub struct Expire<'info> {
 
 /// One agreement: PDA ["agreement", authority, sha256(cid)]. Every fixed-size field comes before
 /// `cid`, so their offsets are the same in every account (README, "Agreement account") and memcmp
-/// filters on authority, lens or status work.
+/// filters on authority, the first lens member or status work. The header up to `bump` keeps the
+/// offsets proposal_market and proposal_pledge read.
 #[account]
 #[derive(InitSpace)]
 pub struct Agreement {
     /// The sponsor (part of the address): pays the rent, is the only key that may fund or cancel,
     /// receives refunds.
     pub authority: Pubkey,
-    /// The lens member key whose AgreementDecision attestation settles the agreement.
+    /// The first lens member (the default key when the agreement has no lens); the others are in
+    /// `more_lenses`.
     pub lens: Pubkey,
     /// Receives the whole escrow at execution.
     pub payout: Pubkey,
@@ -458,6 +595,25 @@ pub struct Agreement {
     /// Chain time of execution (0 unless Executed).
     pub executed_at: i64,
     pub bump: u8,
+    /// Lens members (0-8): `lens`, then the first `lens_count - 1` entries of `more_lenses`.
+    pub lens_count: u8,
+    /// How many distinct members must confirm (1..=lens_count; 0 with no lens).
+    pub lens_threshold: u8,
+    /// Bit i set once member i (0 = `lens`, i = `more_lenses[i - 1]`) has confirmed.
+    pub lens_confirmed: u8,
+    /// Lens members after the first; unused slots hold the default key.
+    pub more_lenses: [Pubkey; MORE_LENSES],
+    /// Token mint of the contribution target (the default key when there is none).
+    pub funding_mint: Pubkey,
+    /// Credited proposal_pledge contributions, in `funding_mint` base units, the agreement needs
+    /// (0: no target).
+    pub required_funding: u64,
+    /// `confirm_funding` found the target met.
+    pub funding_met: bool,
+    /// Credited contributions it observed (0 until confirmed).
+    pub funding_observed: u64,
+    /// Chain time of that confirmation (0 until confirmed).
+    pub funding_met_at: i64,
     /// The agreement's CIDv1 (`bafkrei…`), the IPFS object this account commits to.
     #[max_len(MAX_CID_LEN)]
     pub cid: String,
@@ -466,6 +622,37 @@ pub struct Agreement {
 impl Agreement {
     pub fn deadline_passed(&self, now: i64) -> bool {
         self.deadline != NO_DEADLINE && now > self.deadline
+    }
+
+    /// The member keys, in order.
+    pub fn lens_members(&self) -> impl Iterator<Item = &Pubkey> {
+        std::iter::once(&self.lens)
+            .chain(self.more_lenses.iter())
+            .take(self.lens_count as usize)
+    }
+
+    /// Index of `key` among the members.
+    pub fn member_index(&self, key: &Pubkey) -> Option<usize> {
+        self.lens_members().position(|member| member == key)
+    }
+
+    /// Enough distinct members have confirmed (always true with no lens).
+    pub fn lens_met(&self) -> bool {
+        self.lens_confirmed.count_ones() >= u32::from(self.lens_threshold)
+    }
+
+    /// Mark the decision Satisfied once the lens and any contribution target are both met.
+    /// Returns whether the decision is now Satisfied.
+    fn settle_if_ready(&mut self, now: i64) -> bool {
+        if self.lens_met() && (self.required_funding == 0 || self.funding_met) {
+            self.decision = Decision::Satisfied;
+            self.decision_attested_at = now;
+            if self.lens_count == 0 {
+                self.decision_observed_at = now;
+            }
+            return true;
+        }
+        false
     }
 }
 
@@ -476,18 +663,41 @@ pub const LENS_OFFSET: usize = 8 + 32;
 pub const STATUS_OFFSET: usize = 8 + 3 * 32 + 4 * 8;
 /// Byte offset of `executed_at`, following the status and decision fields in the fixed header.
 pub const EXECUTED_AT_OFFSET: usize = STATUS_OFFSET + 1 + 1 + 1 + 8 + 8 + 32 + 32;
+/// Byte offsets of the lens set, after `executed_at` and `bump`.
+pub const LENS_COUNT_OFFSET: usize = EXECUTED_AT_OFFSET + 8 + 1;
+pub const LENS_THRESHOLD_OFFSET: usize = LENS_COUNT_OFFSET + 1;
+pub const LENS_CONFIRMED_OFFSET: usize = LENS_THRESHOLD_OFFSET + 1;
+pub const MORE_LENSES_OFFSET: usize = LENS_CONFIRMED_OFFSET + 1;
+/// End of the lens set: the view reads nothing past it.
+pub const LENS_SET_END: usize = MORE_LENSES_OFFSET + MORE_LENSES * 32;
 
 /// What proposal_market and proposal_pledge read of an Agreement account, without deserializing
 /// it (they depend on this crate with `no-entrypoint`, so the id and layout live only here).
 pub struct AgreementView {
     /// The sponsor.
     pub authority: Pubkey,
+    /// The first lens member (default with no lens).
     pub lens: Pubkey,
+    /// All lens members, `lens_count` of them used.
+    pub lenses: [Pubkey; MAX_LENSES],
+    pub lens_count: u8,
     /// AgreementStatus code: 0 Active, 1 Executed, 2 Cancelled, 3 Expired.
     pub status: u8,
     pub deadline: i64,
     /// Chain time of execution (0 unless Executed).
     pub executed_at: i64,
+}
+
+impl AgreementView {
+    /// The member keys, in order.
+    pub fn lens_members(&self) -> &[Pubkey] {
+        &self.lenses[..(self.lens_count as usize).min(MAX_LENSES)]
+    }
+
+    /// `key` is one of the agreement's lens members.
+    pub fn is_lens(&self, key: &Pubkey) -> bool {
+        self.lens_members().contains(key)
+    }
 }
 
 /// `account` read as an Agreement of this program: owner, discriminator and length are checked.
@@ -497,16 +707,27 @@ pub fn read_agreement_view(account: &AccountInfo) -> Option<AgreementView> {
         return None;
     }
     let data = account.try_borrow_data().ok()?;
-    if data.len() < EXECUTED_AT_OFFSET + 8 || data[..8] != Agreement::DISCRIMINATOR {
+    if data.len() < LENS_SET_END || data[..8] != Agreement::DISCRIMINATOR {
         return None;
     }
     let key_at = |offset: usize| -> Option<Pubkey> {
         let bytes: [u8; 32] = data.get(offset..offset + 32)?.try_into().ok()?;
         Some(Pubkey::new_from_array(bytes))
     };
+    let lens_count = data[LENS_COUNT_OFFSET];
+    if lens_count as usize > MAX_LENSES {
+        return None;
+    }
+    let mut lenses = [Pubkey::default(); MAX_LENSES];
+    lenses[0] = key_at(LENS_OFFSET)?;
+    for (index, slot) in lenses.iter_mut().enumerate().skip(1) {
+        *slot = key_at(MORE_LENSES_OFFSET + (index - 1) * 32)?;
+    }
     Some(AgreementView {
         authority: key_at(8)?,
-        lens: key_at(LENS_OFFSET)?,
+        lens: lenses[0],
+        lenses,
+        lens_count,
         deadline: i64::from_le_bytes(data.get(8 + 3 * 32..8 + 3 * 32 + 8)?.try_into().ok()?),
         status: data[STATUS_OFFSET],
         executed_at: i64::from_le_bytes(data.get(EXECUTED_AT_OFFSET..EXECUTED_AT_OFFSET + 8)?.try_into().ok()?),
@@ -535,10 +756,13 @@ pub struct AgreementCreated {
     pub agreement: Pubkey,
     pub cid: String,
     pub authority: Pubkey,
-    pub lens: Pubkey,
+    pub lenses: Vec<Pubkey>,
+    pub lens_threshold: u8,
     pub payout: Pubkey,
     pub deadline: i64,
     pub required_lamports: u64,
+    pub funding_mint: Pubkey,
+    pub required_funding: u64,
     pub open_ground: bool,
     pub created_at: i64,
 }
@@ -557,13 +781,36 @@ pub struct AgreementFunded {
 pub struct AgreementAttested {
     pub agreement: Pubkey,
     pub cid: String,
+    /// The member that confirmed.
     pub lens: Pubkey,
     pub attestation: Pubkey,
     /// sha256 of the attestation's whole account bytes.
     pub attestation_hash: [u8; 32],
     pub evidence_ref: String,
     pub source_observed_at: i64,
+    /// Distinct members confirmed so far, and how many are needed.
+    pub confirmations: u8,
+    pub lens_threshold: u8,
+    /// The decision became Satisfied with this confirmation.
+    pub satisfied: bool,
     pub attested_at: i64,
+}
+
+#[event]
+pub struct AgreementFundingConfirmed {
+    pub agreement: Pubkey,
+    pub cid: String,
+    /// The proposal_pledge donation escrow that was read.
+    pub escrow: Pubkey,
+    pub funding_mint: Pubkey,
+    pub required_funding: u64,
+    /// Donated less refunded, as recorded by the escrow.
+    pub credited: u64,
+    /// The escrow vault's token balance.
+    pub vault_amount: u64,
+    /// The decision became Satisfied with this confirmation.
+    pub satisfied: bool,
+    pub confirmed_at: i64,
 }
 
 #[event]
@@ -650,6 +897,24 @@ pub enum AgreementError {
     InsufficientEscrowBalance,
     #[msg("The attestation names a different sponsor than the agreement's authority")]
     WrongSponsor,
+    #[msg("A lens has 1-8 distinct real keys and a threshold between 1 and their number")]
+    InvalidLens,
+    #[msg("A contribution target needs a mint, and a mint needs a target")]
+    InvalidFundingTarget,
+    #[msg("This lens member's confirmation is already recorded")]
+    MemberAlreadyConfirmed,
+    #[msg("Enough lens members have confirmed; only the contribution target is outstanding")]
+    LensAlreadyConfirmed,
+    #[msg("The agreement has no contribution target")]
+    NoFundingTarget,
+    #[msg("The contribution target is already confirmed")]
+    FundingAlreadyConfirmed,
+    #[msg("Credited contributions are below the agreement's target")]
+    FundingTargetNotMet,
+    #[msg("The account is not this agreement's donation escrow")]
+    InvalidEscrow,
+    #[msg("The account is not the donation escrow's vault, or it does not back the credited contributions")]
+    InvalidVault,
 }
 
 /// The last PDA seed of an agreement: sha256 over its CID's UTF-8 bytes.
@@ -666,6 +931,69 @@ fn require_valid_cid(cid: &str) -> Result<()> {
         AgreementError::InvalidCid
     );
     Ok(())
+}
+
+/// 0-8 distinct, real member keys; threshold 1..=members, or 0 with no members, which only an
+/// agreement with a contribution target may have.
+fn require_valid_lens(lenses: &[Pubkey], threshold: u8, required_funding: u64) -> Result<()> {
+    if lenses.is_empty() {
+        require!(required_funding > 0, AgreementError::NoLens);
+        require!(threshold == 0, AgreementError::InvalidLens);
+        return Ok(());
+    }
+    require!(lenses.len() <= MAX_LENSES, AgreementError::InvalidLens);
+    require!(threshold >= 1 && threshold as usize <= lenses.len(), AgreementError::InvalidLens);
+    for (index, member) in lenses.iter().enumerate() {
+        require!(*member != Pubkey::default(), AgreementError::InvalidLens);
+        require!(!lenses[..index].contains(member), AgreementError::InvalidLens);
+    }
+    Ok(())
+}
+
+fn u64_at(data: &[u8], offset: usize) -> Option<u64> {
+    Some(u64::from_le_bytes(data.get(offset..offset + 8)?.try_into().ok()?))
+}
+
+fn key_at(data: &[u8], offset: usize) -> Option<Pubkey> {
+    let bytes: [u8; 32] = data.get(offset..offset + 32)?.try_into().ok()?;
+    Some(Pubkey::new_from_array(bytes))
+}
+
+/// The agreement's proposal_pledge donation escrow, read without that crate: owned by
+/// proposal_pledge at PDA ["donation_escrow", agreement], DonationEscrow discriminator, naming this
+/// agreement and `mint`, not yet released; and its vault: the escrow's recorded vault, an
+/// initialized SPL token account of `mint` owned by the escrow. Returns (credited, vault amount),
+/// credited = donated less refunded; the vault must hold at least the credited amount.
+fn read_funding(agreement: &Pubkey, mint: &Pubkey, escrow: &AccountInfo, vault: &AccountInfo) -> Result<(u64, u64)> {
+    require_keys_eq!(*escrow.owner, PLEDGE_PROGRAM_ID, AgreementError::InvalidEscrow);
+    let (expected, _) =
+        Pubkey::find_program_address(&[DONATION_ESCROW_SEED, agreement.as_ref()], &PLEDGE_PROGRAM_ID);
+    require_keys_eq!(escrow.key(), expected, AgreementError::InvalidEscrow);
+    let (credited, vault_key) = {
+        let data = escrow.try_borrow_data()?;
+        let discriminator = &hash(b"account:DonationEscrow").to_bytes()[..8];
+        require!(
+            data.len() > ESCROW_RELEASED_OFFSET && &data[..8] == discriminator,
+            AgreementError::InvalidEscrow
+        );
+        let field = |value: Option<Pubkey>| value.ok_or(AgreementError::InvalidEscrow);
+        require_keys_eq!(field(key_at(&data, ESCROW_PROPOSAL_OFFSET))?, *agreement, AgreementError::InvalidEscrow);
+        require_keys_eq!(field(key_at(&data, ESCROW_MINT_OFFSET))?, *mint, AgreementError::InvalidEscrow);
+        require!(data[ESCROW_RELEASED_OFFSET] == 0, AgreementError::InvalidEscrow);
+        let donated = u64_at(&data, ESCROW_TOTAL_DONATED_OFFSET).ok_or(AgreementError::InvalidEscrow)?;
+        let refunded = u64_at(&data, ESCROW_TOTAL_REFUNDED_OFFSET).ok_or(AgreementError::InvalidEscrow)?;
+        let credited = donated.checked_sub(refunded).ok_or(AgreementError::InvalidEscrow)?;
+        (credited, field(key_at(&data, ESCROW_VAULT_OFFSET))?)
+    };
+    require_keys_eq!(vault.key(), vault_key, AgreementError::InvalidVault);
+    require_keys_eq!(*vault.owner, TOKEN_PROGRAM_ID, AgreementError::InvalidVault);
+    let data = vault.try_borrow_data()?;
+    require!(data.len() == TOKEN_ACCOUNT_LEN && data[108] == 1, AgreementError::InvalidVault);
+    require_keys_eq!(key_at(&data, 0).ok_or(AgreementError::InvalidVault)?, *mint, AgreementError::InvalidVault);
+    require_keys_eq!(key_at(&data, 32).ok_or(AgreementError::InvalidVault)?, escrow.key(), AgreementError::InvalidVault);
+    let amount = u64_at(&data, 64).ok_or(AgreementError::InvalidVault)?;
+    require!(amount >= credited, AgreementError::InvalidVault);
+    Ok((credited, amount))
 }
 
 fn sas_error(error: SasError) -> Error {
@@ -761,90 +1089,157 @@ mod agreement_view_tests {
         read_agreement_view(&account)
     }
 
-    #[test]
-    fn agreement_view_reads_executed_at_at_its_fixed_offset() {
-        let agreement = Agreement {
-            authority: Pubkey::new_from_array([0x11; 32]),
-            lens: Pubkey::new_from_array([0x22; 32]),
-            payout: Pubkey::new_from_array([0x33; 32]),
-            deadline: 101,
-            created_at: 102,
-            required_lamports: 103,
-            escrow_lamports: 104,
-            status: AgreementStatus::Executed,
-            open_ground: true,
-            decision: Decision::Satisfied,
-            decision_attested_at: 105,
-            decision_observed_at: 106,
-            decision_attestation: Pubkey::new_from_array([0x44; 32]),
-            decision_hash: [0x55; 32],
-            executed_at: 1234,
-            bump: 7,
-            cid: "bafkreiabc".to_owned(),
-        };
+    fn blank() -> Agreement {
+        Agreement {
+            authority: Pubkey::default(),
+            lens: Pubkey::default(),
+            payout: Pubkey::default(),
+            deadline: 0,
+            created_at: 0,
+            required_lamports: 0,
+            escrow_lamports: 0,
+            status: AgreementStatus::Active,
+            open_ground: false,
+            decision: Decision::Pending,
+            decision_attested_at: 0,
+            decision_observed_at: 0,
+            decision_attestation: Pubkey::default(),
+            decision_hash: [0; 32],
+            executed_at: 0,
+            bump: 0,
+            lens_count: 0,
+            lens_threshold: 0,
+            lens_confirmed: 0,
+            more_lenses: [Pubkey::default(); MORE_LENSES],
+            funding_mint: Pubkey::default(),
+            required_funding: 0,
+            funding_met: false,
+            funding_observed: 0,
+            funding_met_at: 0,
+            cid: String::new(),
+        }
+    }
+
+    fn serialized(agreement: &Agreement) -> Vec<u8> {
         let mut data = Vec::new();
         agreement.try_serialize(&mut data).unwrap();
+        data
+    }
+
+    #[test]
+    fn agreement_view_reads_the_fixed_header_and_every_lens_member() {
+        let mut agreement = blank();
+        agreement.authority = Pubkey::new_from_array([0x11; 32]);
+        agreement.lens = Pubkey::new_from_array([0x22; 32]);
+        agreement.payout = Pubkey::new_from_array([0x33; 32]);
+        agreement.deadline = 101;
+        agreement.status = AgreementStatus::Executed;
+        agreement.executed_at = 1234;
+        agreement.lens_count = 3;
+        agreement.lens_threshold = 2;
+        agreement.more_lenses[0] = Pubkey::new_from_array([0x66; 32]);
+        agreement.more_lenses[1] = Pubkey::new_from_array([0x77; 32]);
+        agreement.cid = "bafkreiabc".to_owned();
+        let mut data = serialized(&agreement);
 
         let view = read_view(&mut data, &crate::ID).unwrap();
         assert_eq!(view.authority, agreement.authority);
         assert_eq!(view.lens, agreement.lens);
         assert_eq!(view.status, AgreementStatus::Executed as u8);
+        assert_eq!(view.deadline, 101);
         assert_eq!(view.executed_at, agreement.executed_at);
+        assert_eq!(view.lens_members(), &[agreement.lens, agreement.more_lenses[0], agreement.more_lenses[1]]);
+        assert!(view.is_lens(&agreement.more_lenses[1]));
+        assert!(!view.is_lens(&Pubkey::default()));
+        assert!(!view.is_lens(&agreement.authority));
     }
 
     #[test]
-    fn agreement_view_rejects_missing_execution_timestamp_bytes() {
-        let agreement = Agreement {
-            authority: Pubkey::default(),
-            lens: Pubkey::default(),
-            payout: Pubkey::default(),
-            deadline: 0,
-            created_at: 0,
-            required_lamports: 0,
-            escrow_lamports: 0,
-            status: AgreementStatus::Active,
-            open_ground: false,
-            decision: Decision::Pending,
-            decision_attested_at: 0,
-            decision_observed_at: 0,
-            decision_attestation: Pubkey::default(),
-            decision_hash: [0; 32],
-            executed_at: 0,
-            bump: 0,
-            cid: String::new(),
-        };
-        let mut data = Vec::new();
-        agreement.try_serialize(&mut data).unwrap();
-        data.truncate(EXECUTED_AT_OFFSET + 7);
+    fn lens_set_offsets_follow_the_bump() {
+        let mut agreement = blank();
+        agreement.bump = 0xab;
+        agreement.lens_count = 2;
+        agreement.lens_threshold = 1;
+        agreement.lens_confirmed = 0b10;
+        agreement.more_lenses[6] = Pubkey::new_from_array([0x99; 32]);
+        let data = serialized(&agreement);
+        assert_eq!(data[EXECUTED_AT_OFFSET + 8], 0xab);
+        assert_eq!(data[LENS_COUNT_OFFSET], 2);
+        assert_eq!(data[LENS_THRESHOLD_OFFSET], 1);
+        assert_eq!(data[LENS_CONFIRMED_OFFSET], 0b10);
+        assert_eq!(&data[LENS_SET_END - 32..LENS_SET_END], &[0x99; 32]);
+    }
+
+    #[test]
+    fn agreement_view_rejects_short_accounts_and_impossible_lens_counts() {
+        let mut data = serialized(&blank());
+        data.truncate(LENS_SET_END - 1);
+        assert!(read_view(&mut data, &crate::ID).is_none());
+
+        let mut agreement = blank();
+        agreement.lens_count = MAX_LENSES as u8 + 1;
+        let mut data = serialized(&agreement);
         assert!(read_view(&mut data, &crate::ID).is_none());
     }
 
     #[test]
     fn agreement_view_rejects_wrong_owner_and_discriminator() {
-        let agreement = Agreement {
-            authority: Pubkey::default(),
-            lens: Pubkey::default(),
-            payout: Pubkey::default(),
-            deadline: 0,
-            created_at: 0,
-            required_lamports: 0,
-            escrow_lamports: 0,
-            status: AgreementStatus::Active,
-            open_ground: false,
-            decision: Decision::Pending,
-            decision_attested_at: 0,
-            decision_observed_at: 0,
-            decision_attestation: Pubkey::default(),
-            decision_hash: [0; 32],
-            executed_at: 0,
-            bump: 0,
-            cid: String::new(),
-        };
-        let mut data = Vec::new();
-        agreement.try_serialize(&mut data).unwrap();
+        let mut data = serialized(&blank());
         assert!(read_view(&mut data, &Pubkey::new_unique()).is_none());
 
         data[0] ^= 0xff;
         assert!(read_view(&mut data, &crate::ID).is_none());
+    }
+
+    #[test]
+    fn lens_rules_admit_one_to_eight_distinct_members_and_a_reachable_threshold() {
+        let keys: Vec<Pubkey> = (1..=9u8).map(|byte| Pubkey::new_from_array([byte; 32])).collect();
+        assert!(require_valid_lens(&keys[..1], 1, 0).is_ok());
+        assert!(require_valid_lens(&keys[..3], 2, 0).is_ok());
+        assert!(require_valid_lens(&keys[..8], 8, 0).is_ok());
+        assert!(require_valid_lens(&keys[..9], 1, 0).is_err());
+        assert!(require_valid_lens(&keys[..3], 0, 0).is_err());
+        assert!(require_valid_lens(&keys[..3], 4, 0).is_err());
+        assert!(require_valid_lens(&[keys[0], keys[0]], 1, 0).is_err());
+        assert!(require_valid_lens(&[Pubkey::default()], 1, 0).is_err());
+        // No lens: only with a contribution target, and then no threshold.
+        assert!(require_valid_lens(&[], 0, 0).is_err());
+        assert!(require_valid_lens(&[], 0, 5).is_ok());
+        assert!(require_valid_lens(&[], 1, 5).is_err());
+    }
+
+    #[test]
+    fn the_decision_settles_when_the_threshold_and_the_target_are_both_met() {
+        let mut agreement = blank();
+        agreement.lens = Pubkey::new_from_array([1; 32]);
+        agreement.more_lenses[0] = Pubkey::new_from_array([2; 32]);
+        agreement.more_lenses[1] = Pubkey::new_from_array([3; 32]);
+        agreement.lens_count = 3;
+        agreement.lens_threshold = 2;
+        agreement.required_funding = 10;
+        assert_eq!(agreement.member_index(&Pubkey::new_from_array([3; 32])), Some(2));
+        assert_eq!(agreement.member_index(&Pubkey::default()), None);
+
+        agreement.lens_confirmed = 0b001;
+        assert!(!agreement.lens_met());
+        assert!(!agreement.settle_if_ready(5));
+        agreement.lens_confirmed = 0b101;
+        assert!(agreement.lens_met());
+        assert!(!agreement.settle_if_ready(6), "the target is still outstanding");
+        agreement.funding_met = true;
+        assert!(agreement.settle_if_ready(7));
+        assert!(agreement.decision == Decision::Satisfied);
+        assert_eq!(agreement.decision_attested_at, 7);
+    }
+
+    #[test]
+    fn a_target_only_agreement_settles_on_its_funding_alone() {
+        let mut agreement = blank();
+        agreement.required_funding = 10;
+        assert!(agreement.lens_met());
+        assert!(!agreement.settle_if_ready(5));
+        agreement.funding_met = true;
+        assert!(agreement.settle_if_ready(9));
+        assert_eq!(agreement.decision_observed_at, 9);
     }
 }

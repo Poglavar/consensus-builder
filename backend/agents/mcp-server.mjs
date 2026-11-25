@@ -140,14 +140,14 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
 
     server.registerTool('ugt_get_agreement', {
         title: 'Read one agreement and its chain account',
-        description: 'Read an agreement from the index (GET /agreements/:cid) plus, when its content names a sponsor, its chain account (PDA of sponsor and CID) and that account as the chain holds it now (accountState: status, lens, deadline, required and escrowed lamports, decision); minted is false until the sponsor creates it.',
+        description: 'Read an agreement from the index (GET /agreements/:cid) plus, when its content names a sponsor, its chain account (PDA of sponsor and CID) and that account as the chain holds it now (accountState: status, lenses (the member keys), lensThreshold (how many must confirm), lensConfirmed (members whose confirmation is recorded), contribution target (fundingMint, requiredFunding, fundingMet, fundingObserved), deadline, required and escrowed lamports, decision); minted is false until the sponsor creates it.',
         inputSchema: z.object({ agreementCid }), annotations: READ_ONLY
     }, handler(args => actions.getAgreement(args)));
     registerPropertyOfferTools(server, { handler, env, fetchImpl });
 
     server.registerTool('ugt_list_attesters', {
         title: 'List lens members (attesters)',
-        description: 'Read the attester directory: lens members with kind and coverage. Pick a binding owners\' agreement\'s lens from it (rule.lens, one key): the member verifies the owners\' receipts and attests their decision, and the agreement program accepts the decision only from the lens key its account names.',
+        description: 'Read the attester directory: lens members with kind and coverage. Pick an agreement\'s lens from it (rule.lens, 0-8 keys; rule.lensThreshold how many must confirm, default any one): a member verifies the owners\' receipts and attests their decision, and the agreement program counts each listed member\'s decision once until the threshold is reached. Any key may be a member, the sponsor\'s own included.',
         inputSchema: z.object({ kind: z.string().optional().describe('Only members of this kind, for example owner-consent') }),
         annotations: READ_ONLY
     }, handler(args => actions.listAttesters(args)));
@@ -196,20 +196,20 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
     }, handler(args => { server.ugtPublishGate?.(); return actions.proposeAgreement(args); }));
 
     if (mode === 'local') {
-    server.registerTool('ugt_chain_agreements', { description: 'Discover agreement program accounts directly from Solana devnet without the UGT API. Returns CIDs, status, escrow and lens. The RPC reads the bounded agreement program; output is capped.', inputSchema: z.object({ limit: z.number().int().min(1).max(100).default(20) }), annotations: READ_ONLY }, handler(args => actions.listChainAgreements(args)));
+    server.registerTool('ugt_chain_agreements', { description: 'Discover agreement program accounts directly from Solana devnet without the UGT API. Returns CIDs, status, escrow, lens members, threshold, confirmations and any contribution target. The RPC reads the bounded agreement program; output is capped.', inputSchema: z.object({ limit: z.number().int().min(1).max(100).default(20) }), annotations: READ_ONLY }, handler(args => actions.listChainAgreements(args)));
     server.registerTool('ugt_chain_agreement', { description: 'Read and validate an agreement account directly from Solana devnet, with the UGT API offline.', inputSchema: z.object({ agreementAccount }), annotations: READ_ONLY }, handler(args => actions.getChainAgreement(args)));
     server.registerTool('ugt_open_agreement_market', {
-        description: 'Open a devnet USDC market as the signing wallet. Choose the closing Unix second and LMSR liquidity b in USDC. The USDC seed is rounded up from b × ln(2) and uses the operator spending cap. For public-record questions supply a supported tuple, evidence schema and credential. The agreement lens is the verifier.',
+        description: 'Open a devnet USDC market as the signing wallet. Choose the closing Unix second and LMSR liquidity b in USDC. The USDC seed is rounded up from b × ln(2) and uses the operator spending cap. For public-record questions supply a supported tuple, evidence schema and credential. The verifier is trustedAttester, which must be one of the agreement\'s lens members (default: its first). The sponsor and every lens member are insiders who cannot trade.',
         inputSchema: z.object({ agreementAccount, liquidityUsdc: amountUsdc, closesAt: z.number().int().positive(),
             external: z.object({ tuple: z.object({ milestone: z.enum(['adopted','permitted','built']), deadline: z.string(),
                 subject: z.object({ jurisdiction: z.string(), authority: z.string(), label: z.string(), parcelIds: z.array(z.string()).min(1) }), evidence: z.record(z.string(), z.unknown()) }),
-                credential: pubkey, schema: pubkey }).optional(), confirm: confirmation }), annotations: PAID_IDEMPOTENT
+                credential: pubkey, schema: pubkey }).optional(), trustedAttester: pubkey.optional(), confirm: confirmation }), annotations: PAID_IDEMPOTENT
     }, handler(args => actions.openMarket(args)));
     server.registerTool('ugt_buy_agreement_shares_on_account', { description: 'Buy shares on the selected agreement market within a devnet USDC budget.', inputSchema: z.object({ agreementAccount, marketAddress: pubkey, side: z.enum(['yes', 'no']), amountUsdc, confirm: confirmation }), annotations: PAID_NON_IDEMPOTENT }, handler(args => actions.betOnAccount(args)));
     server.registerTool('ugt_sell_agreement_shares', { description: 'Sell a fixed share quantity from your position on the selected market. The quote sets the minimum return; local signing applies.', inputSchema: z.object({ agreementCid, marketAddress: pubkey, side: z.enum(['yes', 'no']), shares, confirm: confirmation }), annotations: PAID_NON_IDEMPOTENT }, handler(args => actions.sellAgreementSharesOnAgreement(args)));
     server.registerTool('ugt_mint_agreement', {
         title: 'Mint a binding agreement as its sponsor',
-        description: 'Create a binding owner or investor crowdfunding agreement account on devnet with UGT_AGENT_KEYPAIR, which must be the agreement sponsor. The account commits the CID, selected lens member and deadline; the agreement program trusts that selected lens. The index reads back those exact published terms before recording it. Crowdfunding donations remain in the existing USDC donation escrow and are not sent by minting. Repeating it signs nothing new.',
+        description: 'Create a binding owner or investor crowdfunding agreement account on devnet with UGT_AGENT_KEYPAIR, which must be the agreement sponsor. The account commits the CID, the lens members and threshold, the deadline and, for crowdfunding, the devnet-USDC funding target the program confirms itself; the agreement program counts only those members\' decisions. The index reads back those exact published terms before recording it. Crowdfunding donations remain in the existing USDC donation escrow and are not sent by minting. Repeating it signs nothing new.',
         inputSchema: z.object({ agreementCid, lamports, confirm: confirmation }),
         annotations: PAID_IDEMPOTENT
     }, handler(args => actions.mintAgreement(args)));
@@ -283,6 +283,12 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
         description: 'Revoke this wallet’s unfunded soft pledge while the agreement remains active.',
         inputSchema: z.object({ agreementAccount, confirm: confirmation }), annotations: PAID_IDEMPOTENT
     }, handler(args => actions.revokePledge(args)));
+
+    server.registerTool('ugt_confirm_funding', {
+        title: 'Confirm a crowdfunding agreement\'s funding target',
+        description: 'Permissionlessly record on chain (confirm_funding) that credited contributions in the agreement\'s donation escrow (donated less refunded, backed by its vault) reached its funding target. No lens is involved; the program reads the escrow itself. An agreement without a target, or with it already confirmed, is a replay. Browser wallets use ugt_approval_link with action confirm-funding.',
+        inputSchema: z.object({ agreementAccount, confirm: confirmation }), annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.confirmFunding(args)));
 
     server.registerTool('ugt_release_donations', {
         title: 'Release an executed agreement’s donations',

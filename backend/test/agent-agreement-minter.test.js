@@ -6,10 +6,10 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 import { Keypair } from '@solana/web3.js';
 import {
-    AGREEMENT_PROGRAM_ID, agreementAccountOf, creationSignature, executeAgreement, expireAgreement, fundAgreement,
-    mintAgreement, readAgreementAccount, recordAgreementDecision
+    AGREEMENT_PROGRAM_ID, agreementAccountOf, confirmAgreementFunding, creationSignature, executeAgreement, expireAgreement, fundAgreement,
+    mintAgreement, mintTermsOf, readAgreementAccount, recordAgreementDecision
 } from '../agents/agreement-minter.js';
-import { createAgreementChain, decisionAttestation } from './helpers/agent-chain-fakes.js';
+import { createAgreementChain, decisionAttestation, donationEscrowAccount } from './helpers/agent-chain-fakes.js';
 
 const require = createRequire(import.meta.url);
 const agreementClient = require('../../frontend/js/solana/agreement-client.js');
@@ -25,7 +25,7 @@ let chain;
 let sponsor;
 let lens;
 const mint = (overrides = {}) => mintAgreement({
-    connection: chain.connection, sponsorKeypair: sponsor, cid: CID, lens: lens.publicKey.toBase58(),
+    connection: chain.connection, sponsorKeypair: sponsor, cid: CID, lenses: [lens.publicKey.toBase58()],
     deadline: iso(T0 + 7 * 86400), lamports: '5000000', sendAndConfirm: chain.sendAndConfirm, ...overrides
 });
 
@@ -59,8 +59,9 @@ describe('mintAgreement', () => {
         expect(chain.signed()[0].steps).toEqual(['create', 'fund']);
         const state = await readAgreementAccount(chain.connection, { cid: CID, sponsor: sponsor.publicKey.toBase58() });
         expect(state).toMatchObject({
-            cid: CID, authority: sponsor.publicKey.toBase58(), lens: lens.publicKey.toBase58(), payout: sponsor.publicKey.toBase58(),
-            deadline: T0 + 7 * 86400, requiredLamports: 5000000n, escrowLamports: 5000000n, status: 'Active', decision: 'Pending', openGround: false
+            cid: CID, authority: sponsor.publicKey.toBase58(), lens: lens.publicKey.toBase58(), lenses: [lens.publicKey.toBase58()], lensThreshold: 1,
+            payout: sponsor.publicKey.toBase58(), deadline: T0 + 7 * 86400, requiredLamports: 5000000n, escrowLamports: 5000000n, status: 'Active',
+            decision: 'Pending', openGround: false, requiredFunding: 0n, fundingMint: null
         });
     });
 
@@ -117,7 +118,7 @@ describe('mintAgreement', () => {
 
     it('refuses an existing account with other terms, and an account that can no longer be funded, signing nothing', async () => {
         await mint();
-        await expect(mint({ lens: Keypair.generate().publicKey.toBase58() })).rejects.toThrow(/exists with other terms \(lens /);
+        await expect(mint({ lenses: [Keypair.generate().publicKey.toBase58()] })).rejects.toThrow(/exists with other terms \(lens /);
         await expect(mint({ deadline: iso(T0 + 8 * 86400) })).rejects.toThrow(/other terms \(deadline/);
         await expect(mint({ lamports: '6000000' })).rejects.toThrow(/other terms \(required lamports/);
         expect(chain.signed()).toHaveLength(1);
@@ -131,9 +132,31 @@ describe('mintAgreement', () => {
         expect(chain.signed()).toHaveLength(1);
     });
 
-    it('refuses a sponsor that names itself as the lens', async () => {
-        await expect(mint({ lens: sponsor.publicKey.toBase58() })).rejects.toThrow(/cannot attest its own agreement/);
+    it('mints a lens set with its threshold, the sponsor\'s own key allowed among the members', async () => {
+        const members = [lens.publicKey.toBase58(), sponsor.publicKey.toBase58(), Keypair.generate().publicKey.toBase58()];
+        const minted = await mint({ lenses: members, lensThreshold: 2 });
+        expect(chain.agreement(minted.account)).toMatchObject({ lens: members[0], lenses: members, lensThreshold: 2, lensConfirmed: [] });
+        await expect(mint({ lenses: members, lensThreshold: 1 })).rejects.toThrow(/other terms \(lens threshold 2/);
+        await expect(mint({ lenses: members.slice(0, 2), lensThreshold: 2 })).rejects.toThrow(/other terms \(lens /);
+        expect(chain.signed()).toHaveLength(1);
+    });
+
+    it('refuses a lens the program would refuse before signing', async () => {
+        const member = lens.publicKey.toBase58();
+        await expect(mint({ lenses: [] })).rejects.toThrow(/without a lens needs a contribution target/);
+        await expect(mint({ lenses: [member, member] })).rejects.toThrow(/names each member once/);
+        await expect(mint({ lenses: [member], lensThreshold: 2 })).rejects.toThrow(/between 1 and 1/);
         expect(chain.transactions).toHaveLength(0);
+    });
+
+    it('takes an agreement\'s lens and, for crowdfunding, its devnet USDC target from the object', () => {
+        const member = lens.publicKey.toBase58();
+        const usdc = agreementClient.constants.USDC_DEVNET_MINT;
+        expect(mintTermsOf({ rule: { electorate: 'owners', lens: [member] } })).toEqual({ lenses: [member], lensThreshold: 1, fundingMint: null, requiredFunding: 0n });
+        expect(mintTermsOf({ rule: { electorate: 'investors', lens: [], lensThreshold: null }, funding: { targetUsdcAtomic: '20000000' } }))
+            .toEqual({ lenses: [], lensThreshold: 0, fundingMint: usdc, requiredFunding: 20_000_000n });
+        expect(mintTermsOf({ rule: { electorate: 'investors', lens: [member, sponsor.publicKey.toBase58()], lensThreshold: 2 }, funding: { targetUsdcAtomic: '5' } }))
+            .toMatchObject({ lensThreshold: 2, requiredFunding: 5n });
     });
 
     it('cannot be read under another sponsor: the CID alone names no account', async () => {
@@ -203,6 +226,41 @@ describe('recording the lens decision, executing and expiring', () => {
         await expect(record(account, fact.address, { nowSeconds: T0 + 8 * 86400 })).rejects.toThrow(/deadline-passed/);
         expect(chain.signed()).toHaveLength(1);
         expect(chain.agreement(account).decision).toBe('Pending');
+    });
+
+    it('counts each member once and settles at the threshold', async () => {
+        const second = Keypair.generate();
+        const { account } = await mint({ lenses: [lens.publicKey.toBase58(), second.publicKey.toBase58(), sponsor.publicKey.toBase58()], lensThreshold: 2 });
+        const first = attestationFor();
+        chain.putAttestation(first.address, first.bytes);
+        expect(await record(account, first.address)).toMatchObject({ replayed: false, decision: 'Pending' });
+        expect(chain.agreement(account)).toMatchObject({ lensConfirmed: [lens.publicKey.toBase58()], decision: 'Pending' });
+        // The same member again is a replay, never a second confirmation.
+        expect(await record(account, first.address)).toMatchObject({ replayed: true, signature: null, decision: 'Pending' });
+        // The sponsor is a member here and its own attestation counts.
+        const own = attestationFor({ lensKey: sponsor.publicKey.toBase58() });
+        chain.putAttestation(own.address, own.bytes);
+        expect(await record(account, own.address)).toMatchObject({ replayed: false, decision: 'Satisfied' });
+        expect(chain.agreement(account)).toMatchObject({ lensConfirmed: [lens.publicKey.toBase58(), sponsor.publicKey.toBase58()], decisionAttestation: own.address });
+        expect(chain.signed().map(tx => tx.steps)).toEqual([['create', 'fund'], ['attest'], ['attest']]);
+    });
+
+    it('confirms a contribution target from the donation escrow for anyone, with no lens at all', async () => {
+        const usdc = agreementClient.constants.USDC_DEVNET_MINT;
+        const { account } = await mint({ lenses: [], lamports: 0n, fundingMint: usdc, requiredFunding: 20_000_000n });
+        const vault = Keypair.generate().publicKey;
+        const placeEscrow = fields => {
+            const escrow = donationEscrowAccount({ agreement: account, beneficiary: sponsor.publicKey.toBase58(), vault, ...fields });
+            chain.put(escrow);
+            return { escrowAddress: escrow.address, escrow: require('../../frontend/js/solana/pledge-client.js').decodeDonationEscrow(escrow.data) };
+        };
+        const confirm = placed => confirmAgreementFunding({ connection: chain.connection, payerKeypair: Keypair.generate(), account, ...placed, sendAndConfirm: chain.sendAndConfirm });
+        await expect(confirm(placeEscrow({ totalDonated: 25_000_000n, totalRefunded: 6_000_000n }))).rejects.toThrow(/19000000 of 20000000 credited .* nothing signed/);
+        const confirmed = await confirm(placeEscrow({ totalDonated: 25_000_000n, totalRefunded: 5_000_000n }));
+        expect(confirmed).toMatchObject({ replayed: false, decision: 'Satisfied', fundingMet: true });
+        expect(chain.agreement(account)).toMatchObject({ fundingMet: true, fundingObserved: 20_000_000n, decision: 'Satisfied', lenses: [] });
+        expect(await confirm(placeEscrow({ totalDonated: 25_000_000n }))).toMatchObject({ replayed: true, signature: null });
+        expect(chain.signed().map(tx => tx.steps)).toEqual([['create'], ['confirm_funding']]);
     });
 
     it('executes only a decided, funded agreement before its deadline', async () => {

@@ -112,18 +112,23 @@ export function registryRights(parcels) {
 
 /**
  * The decision rule of a binding owners' agreement: every owner of its input parcels approves
- * (unanimous), each through a receipt the named lens member verifies; that member's AgreementDecision
- * attestation is what the agreement program records before it executes.
+ * (unanimous), each through a receipt a lens member verifies; `lensThreshold` of the listed members
+ * (1-8 keys, any key including the sponsor's; absent means any one) must each attest an
+ * AgreementDecision before the agreement program lets it execute.
  */
-export function ownersRule({ lens, rights }) {
-    const key = String(lens || '').trim();
-    if (!key) throw fail('invalid-agreement', 'a binding owners\' agreement names the lens member that decides it');
-    return {
+export function ownersRule({ lenses, lensThreshold = null, rights }) {
+    const keys = (Array.isArray(lenses) ? lenses : []).map(key => String(key || '').trim()).filter(Boolean);
+    if (!keys.length) throw fail('invalid-agreement', 'a binding owners\' agreement names the lens members that decide it');
+    const rule = {
         electorate: 'owners',
         binding: true,
         approvalConfig: approval.normalizeConfig({ schema: approval.CONFIG_SCHEMA, rights, policy: { type: 'unanimous' } }),
-        lens: [key]
+        lens: keys,
+        ...(lensThreshold == null ? {} : { lensThreshold })
     };
+    const issue = agreementRecord.lensRuleError(rule);
+    if (issue) throw fail('invalid-agreement', issue);
+    return rule;
 }
 
 /** The decision rule of a community vote, a poll in the index (never minted): nobody's decision binds the owners; no owner approval rule. */
@@ -183,7 +188,7 @@ export function parcelOutputs(parcels) {
  *   designs   [{ cid, goal, title }] local projection used to validate output producers
  *   parcels   [{ parcelId, parcelSourceId?, areaM2 (number | null) }] the input parcels, each its owners' abstract party
  *   outputs   [{ hash, areaM2, fromParcelIds, role, producedBy (a linked design CID | null), geometry? }]
- *   rule      { electorate, binding, approvalConfig, lens, settlement } (ownersRule() for a binding owners' agreement, communityRule() for a poll)
+ *   rule      { electorate, binding, approvalConfig, lens, lensThreshold?, settlement } (ownersRule() for a binding owners' agreement, communityRule() for a poll)
  *   title, author, sponsor (base58 wallet that mints and funds it, or null), city, createdAt (ISO | null),
  *   deadline (ISO | null), openGroundM2 (default 0), allocations (default: a piece on one input parcel goes to that parcel's party), money (settlement-derived),
  *   valuation ({ inputs: [{ parcelId, unitValueCents }], outputs: [{ output, unitValueCents }] } for settlement by value, else null)

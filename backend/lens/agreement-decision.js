@@ -1,12 +1,13 @@
 // Whether a lens member may issue AgreementDecision-v1 `satisfied` for an indexed agreement
 // (plan-design-agreement.md M3, programs/agreement/README.md), decided from the agreement and its
-// relayed owner decisions or finalized crowdfunding deposits, never from the caller. The approval engine counts owner decisions
+// relayed owner decisions, never from the caller. The approval engine counts owner decisions
 // exactly as the relay admits them (agreements/decisions.js decisionSubject; approval-relay.js fold
 // verifies every receipt; approval.js tally): `satisfied` once the rule passes, before the deadline.
 // There is no refusal: an agreement whose rule is not met by its deadline expires on chain. Pure: no
-// database or wall clock. Crowdfunding reads its injected finalized chain source.
+// database or wall clock. A crowdfunding agreement gets no automatic decision: the program checks its
+// contribution target itself (confirm_funding); its finalized funding accounts are read here only to
+// qualify apartment buyers (apartment-reservation-qualification.js).
 
-import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { decisionSubject } from '../agreements/decisions.js';
 import { isPublicKey } from '../agreements/onchain.js';
@@ -43,7 +44,9 @@ export const decisionEvidenceRef = approval.decisionEvidenceRef;
 
 // Investor-funded agreements use the same Agreement program and proposal_pledge donation escrow as
 // ordinary support donations.  This is deliberately separate from owner tallying: a soft pledge,
-// an owner ballot, a market position, or a naked transfer to the vault is not crowdfunding.
+// an owner ballot, a market position, or a naked transfer to the vault is not crowdfunding. The
+// observation checks that this member is one of the agreement's lens members and that the account
+// carries the published contribution target; the target itself is the program's to confirm.
 const refusal = (status, code, message, details = {}) => { throw new LensError(status, code, message, details); };
 export async function observeInvestorFunding({ agreement, lensKey, nowSeconds, chain }) {
     const content = agreement.content || {};
@@ -53,8 +56,8 @@ export async function observeInvestorFunding({ agreement, lensKey, nowSeconds, c
         refusal(422, 'invalid_funding_content', 'the indexed agreement content does not match its CID');
     const fundingIssue = agreementRecord.crowdfundingError(content, { requireSponsor: true });
     if (fundingIssue) refusal(422, 'invalid_funding_content', fundingIssue);
-    if (rule.electorate !== 'investors' || rule.binding !== true || !Array.isArray(rule.lens) || rule.lens.length !== 1 || rule.lens[0] !== lensKey)
-        refusal(422, 'invalid_funding_rule', 'investor funding requires one binding investors lens member');
+    if (rule.electorate !== 'investors' || rule.binding !== true || !Array.isArray(rule.lens) || !rule.lens.includes(lensKey))
+        refusal(422, 'invalid_funding_rule', 'investor funding requires a binding investors rule whose lens includes this member');
     if (!chain?.observe)
         refusal(503, 'funding_chain_not_configured', 'investor funding requires trusted devnet chain readers');
     if (agreement.status === 'executed' || agreement.status === 'cancelled') refusal(409, 'agreement_closed', `the agreement is ${agreement.status}`);
@@ -64,7 +67,7 @@ export async function observeInvestorFunding({ agreement, lensKey, nowSeconds, c
     const onchain = agreement.onchain;
     if (!onchain || onchain.chain !== 'solana' || onchain.cluster !== 'devnet' || !isPublicKey(onchain.account) || onchain.sponsor !== content.sponsor)
         refusal(422, 'invalid_agreement_account', 'the agreement does not name its canonical devnet account and sponsor');
-    if (onchain.lens !== lensKey) refusal(409, 'not_agreement_lens', 'the agreement account names another lens');
+    if (!onchain.lenses.includes(lensKey)) refusal(409, 'not_agreement_lens', 'the agreement account does not name this lens member');
     if (onchain.decision && onchain.decision !== 'pending') refusal(409, 'decision_recorded', `the agreement account already records ${onchain.decision}`);
     let observed;
     try {
@@ -77,7 +80,8 @@ export async function observeInvestorFunding({ agreement, lensKey, nowSeconds, c
     const deadline = seconds(content.deadline);
     if (!account || account.address !== onchain.account || account.cid !== agreement.cid || account.authority !== content.sponsor
         || account.payout !== content.sponsor || account.deadline !== deadline || account.openGround !== false
-        || account.lens !== lensKey || account.status !== 'Active' || account.decision !== 'Pending' || account.requiredLamports !== 0n)
+        || !account.lenses.includes(lensKey) || account.status !== 'Active' || account.decision !== 'Pending' || account.requiredLamports !== 0n
+        || account.fundingMint !== pledgeClient.constants.USDC_DEVNET_MINT || account.requiredFunding !== BigInt(funding.targetUsdcAtomic))
         refusal(422, 'invalid_agreement_account', 'the chain account is not the active canonical agreement');
     const escrow = observed.donation;
     if (!escrow || escrow.proposal !== onchain.account || escrow.beneficiary !== content.sponsor
@@ -95,36 +99,6 @@ export async function observeInvestorFunding({ agreement, lensKey, nowSeconds, c
     return { observed, account, escrow, onchain, netDeposits, funding, content };
 }
 
-export async function planInvestorFundingDecision({ agreement, lensKey, nowSeconds, chain }) {
-    const { observed, escrow, onchain, netDeposits, funding, content } =
-        await observeInvestorFunding({ agreement, lensKey, nowSeconds, chain });
-    let active = netDeposits;
-    let reservations;
-    if (funding.apartments) {
-        const units = funding.apartments.units;
-        if (!Array.isArray(observed.reservations) || observed.reservations.length !== units.length
-            || observed.reservations.some((row, i) => row.unitId !== units[i].unitId || row.deposit !== units[i].depositUsdcAtomic)) {
-            refusal(422, 'apartment_observation_missing', 'the finalized apartment inventory differs from the published schedule');
-        }
-        reservations = observed.reservations.filter(row => row.status === 'reserved');
-        if (reservations.some(row => !isPublicKey(row.qualification) || row.qualification === pledgeClient.constants.SYSTEM_PROGRAM_ID))
-            refusal(422, 'apartment_qualification_missing', 'a finalized apartment reservation is missing its lens qualification');
-        active = reservations.reduce((sum, row) => sum + BigInt(row.deposit), 0n);
-        if (active > netDeposits) refusal(422, 'invalid_donation_vault', 'the funded apartment reservations exceed recorded deposits');
-    }
-    if (active < BigInt(funding.targetUsdcAtomic)) refusal(409, 'funding_target_not_met', 'recorded active investor donations are below the target', { activeUsdcAtomic: String(active), targetUsdcAtomic: funding.targetUsdcAtomic });
-    const evidence = { kind: reservations ? 'apartment_reservations' : 'proposal_pledge_donation', ...(reservations ? { reservations } : {}),
-        agreement: onchain.account, sponsor: content.sponsor,
-        agreementProgram: chain.agreementProgramId, pledgeProgram: chain.pledgeProgramId, escrow: observed.escrow, vault: observed.vault,
-        mint: escrow.mint, targetUsdcAtomic: funding.targetUsdcAtomic, activeUsdcAtomic: String(active),
-        totalDonatedUsdcAtomic: String(escrow.totalDonated), totalRefundedUsdcAtomic: String(escrow.totalRefunded),
-        vaultUsdcAtomic: String(observed.vaultUsdcAtomic), slot: observed.slot, blockTime: observed.blockTime };
-    return { fields: { agreementCid: agreement.cid, sponsor: content.sponsor, decision: 'satisfied',
-        evidenceRef: `sha256:${createHash('sha256').update(approval.stableStringify(evidence), 'utf8').digest('hex')}`, sourceObservedAt: observed.blockTime }, evidence,
-    // Keep the endpoint response uniform with owner decisions without manufacturing owner evidence.
-    tally: null, counted: 0 };
-}
-
 /**
  * The AgreementDecision fields this member may issue now, or a LensError (with the tally) saying why not.
  * @param {{ agreement: object, count: ReturnType<typeof countAgreementDecisions>, lensKey: string,
@@ -132,9 +106,13 @@ export async function planInvestorFundingDecision({ agreement, lensKey, nowSecon
  *   agreement as GET /agreements/:cid serves it (status from the chain once minted), lensKey the member's key
  * @returns {{ fields: { agreementCid, sponsor, decision: 'satisfied', evidenceRef, sourceObservedAt }, tally: object, counted: number }}
  */
-export function planAgreementDecision({ agreement, count, lensKey, nowSeconds, chain = null }) {
+export function planAgreementDecision({ agreement, count, lensKey, nowSeconds }) {
     const content = agreement.content || {};
-    if (content.rule?.electorate === 'investors') return planInvestorFundingDecision({ agreement, lensKey, nowSeconds, chain });
+    // The program confirms a crowdfunding target itself (confirm_funding, permissionless), and the rule
+    // names no other condition this member could count, so it issues no automatic decision here.
+    if (content.rule?.electorate === 'investors') {
+        throw new LensError(409, 'funding_checked_on_chain', 'the program checks this agreement\'s funding target: anyone confirms it on chain with confirm_funding once contributions reach it; this lens issues no automatic decision for a crowdfunding agreement');
+    }
     const { tally } = count;
     const refusal = (status, code, message) => new LensError(status, code, message, { tally });
 
@@ -146,8 +124,8 @@ export function planAgreementDecision({ agreement, count, lensKey, nowSeconds, c
         throw refusal(409, 'not_in_lens', 'this lens member is not in the agreement\'s lens');
     }
     const onchain = agreement.onchain;
-    if (onchain && onchain.lens !== lensKey) {
-        throw refusal(409, 'not_agreement_lens', `the agreement's account names lens ${onchain.lens}; only its attestation settles it`);
+    if (onchain && !onchain.lenses.includes(lensKey)) {
+        throw refusal(409, 'not_agreement_lens', `the agreement's account names lens members ${onchain.lenses.join(', ') || '(none)'}; only their attestations settle it`);
     }
     if (agreement.status === 'executed' || agreement.status === 'cancelled') {
         throw refusal(409, 'agreement_closed', `the agreement is ${agreement.status}`);

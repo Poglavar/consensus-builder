@@ -387,8 +387,8 @@ describe('decodeParsedTransaction: agreement instructions (built with the codec)
 
     it('decodes create with every argument and the PDA of its sponsor and CID', () => {
         const { agreement, instruction } = AgreementClient.buildCreateIx({
-            authority: SPONSOR, cid: AGREEMENT_CID, lens: LENS, deadline: 1795000000, openGround: true,
-            requiredLamports: 50_000_000n, payout: TREASURY
+            authority: SPONSOR, cid: AGREEMENT_CID, lenses: [LENS, TREASURY], lensThreshold: 2, deadline: 1795000000, openGround: true,
+            requiredLamports: 50_000_000n, payout: TREASURY, fundingMint: CREDENTIAL, requiredFunding: 7_000_000n
         });
         expect(agreement.toBase58()).toBe(AGREEMENT_ACCOUNT);
         const decoded = decode(agreementTx(instruction));
@@ -397,7 +397,8 @@ describe('decodeParsedTransaction: agreement instructions (built with the codec)
         expect(ix.discriminator).toBe(idlDiscriminatorHex('agreement', 'create'));
         expect(ix).toMatchObject({ action: 'create', idlVersion: 'v1' });
         expect(ix.args).toEqual({
-            cid: AGREEMENT_CID, lens: LENS, deadline: '1795000000', open_ground: true, required_lamports: '50000000', payout: TREASURY
+            cid: AGREEMENT_CID, lenses: [LENS, TREASURY], lens_threshold: 2, deadline: '1795000000', open_ground: true, required_lamports: '50000000',
+            payout: TREASURY, funding_mint: CREDENTIAL, required_funding: '7000000'
         });
         expect(ix.argsError).toBeUndefined();
         expect(ix.accountsWarning).toBeUndefined();
@@ -412,12 +413,14 @@ describe('decodeParsedTransaction: agreement instructions (built with the codec)
     });
 
     it('decodes a legacy create with no deadline and no escrow as zeros', () => {
-        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, lens: LENS, payout: SPONSOR, deadline: 1795000000 });
-        // The codec no longer builds deadline 0 (create requires one), but creates sent before still decode:
-        // zero the i64 after the discriminator (8), the cid (u32 length + bytes) and the lens (32).
-        instruction.data.fill(0, 8 + 4 + AGREEMENT_CID.length + 32, 8 + 4 + AGREEMENT_CID.length + 32 + 8);
+        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, lenses: [LENS], lensThreshold: 1, payout: SPONSOR, deadline: 1795000000 });
+        // The codec never builds deadline 0 (create requires one), but such an instruction still decodes:
+        // zero the i64 after the discriminator (8), the cid (u32 length + bytes), the one-key lens list
+        // (u32 length + 32) and the threshold (1).
+        const at = 8 + 4 + AGREEMENT_CID.length + 4 + 32 + 1;
+        instruction.data.fill(0, at, at + 8);
         expect(decode(agreementTx(instruction)).instructions[0].args)
-            .toMatchObject({ deadline: '0', open_ground: false, required_lamports: '0', payout: SPONSOR });
+            .toMatchObject({ lenses: [LENS], lens_threshold: 1, deadline: '0', open_ground: false, required_lamports: '0', payout: SPONSOR, required_funding: '0' });
     });
 
     it('decodes fund with its lamports, signed by the sponsor', () => {
@@ -445,6 +448,16 @@ describe('decodeParsedTransaction: agreement instructions (built with the codec)
         expect(roles(execute).map(([role, address]) => [role, address])).toEqual([['agreement', AGREEMENT_ACCOUNT], ['payout', SPONSOR]]);
     });
 
+    it('decodes the permissionless confirm_funding with the escrow and vault it reads', () => {
+        const confirm = decode(agreementTx(AgreementClient.buildConfirmFundingIx({ agreement: AGREEMENT_ACCOUNT, escrow: ATTESTATION, vault: CREDENTIAL }), TREASURY));
+        expect(confirm.instructions[0]).toMatchObject({ action: 'confirm_funding', args: {} });
+        expect(roles(confirm)).toEqual([
+            ['agreement', AGREEMENT_ACCOUNT, false, true],
+            ['escrow', ATTESTATION, false, false],
+            ['vault', CREDENTIAL, false, false]
+        ]);
+    });
+
     it('tells cancel (the sponsor signs) from expire (the sponsor is only refunded)', () => {
         const cancel = decode(agreementTx(AgreementClient.buildCancelIx({ cid: AGREEMENT_CID, authority: SPONSOR })));
         expect(cancel.instructions[0].action).toBe('cancel');
@@ -457,7 +470,7 @@ describe('decodeParsedTransaction: agreement instructions (built with the codec)
     });
 
     it('reports a create cut short as undecodable args, never half of them', () => {
-        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, lens: LENS, payout: TREASURY, deadline: 1795000000 });
+        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, lenses: [LENS], lensThreshold: 1, payout: TREASURY, deadline: 1795000000 });
         const tx = agreementTx(instruction);
         tx.transaction.message.instructions[0].data = encodeBase58(Buffer.from(instruction.data).subarray(0, 30));
         const ix = decode(tx).instructions[0];
@@ -752,7 +765,7 @@ describe('decodeParsedTransaction: hydrated @solana/web3.js shape', () => {
     });
 
     it('still matches our anchor IDLs when the program id is a PublicKey', () => {
-        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, lens: LENS, payout: TREASURY, deadline: 1795000000 });
+        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, lenses: [LENS], lensThreshold: 1, payout: TREASURY, deadline: 1795000000 });
         const raw = decode(agreementTx(instruction));
         const hydrated = decode(hydrate(agreementTx(instruction)));
 

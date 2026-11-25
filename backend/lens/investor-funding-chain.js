@@ -1,7 +1,8 @@
-// Finalized, read-only evidence for an investor-funded agreement.  The agreement account, the
-// donation escrow and its USDC vault are read in one RPC context so an AgreementDecision cannot be
-// assembled from a mix of slots.  This is intentionally not the soft-pledge book: crowdfunding is
-// paid USDC held in the canonical donation vault.
+// Finalized, read-only evidence for an investor-funded agreement, read when this lens member qualifies
+// an apartment buyer.  The agreement account, the donation escrow, its USDC vault and the apartment
+// listings are read in one RPC context so a qualification cannot be assembled from a mix of slots.
+// The funding target is not judged here: the program confirms it (confirm_funding).  This is
+// intentionally not the soft-pledge book: crowdfunding is paid USDC held in the canonical donation vault.
 import { createRequire } from 'node:module';
 import { AGREEMENT_PROGRAM_ID, DEVNET_GENESIS_HASH } from '../agreements/onchain.js';
 
@@ -32,7 +33,7 @@ function tokenAmount(info, vault, escrow) {
 }
 
 /**
- * A production adapter for planInvestorFundingDecision.  `observe` returns only data read at
+ * A production adapter for observeInvestorFunding.  `observe` returns only data read at
  * finalized commitment, including the finalized slot and its chain block time.  It never signs.
  */
 export function createInvestorFundingChain({ connection, rpcUrl = 'https://api.devnet.solana.com' } = {}) {

@@ -147,15 +147,19 @@ refuses to start without that token. Its key is checkpointed as `summary.lens`.
 reads the account, market and YES position), so every market stays open for at least one run:
 
 - **decidable** (Active, before its deadline, decision pending, the persona owns all its land alone, its
-  lens is the operated member): `decide` (the approval receipt, signed and relayed to
+  lens is the operated member): `confirm-funding` (permissionless, only for an agreement with a
+  contribution target its escrow's credited contributions have reached) → `decide` (the approval receipt, signed and relayed to
   `POST /agreements/:cid/decisions`; nothing when the relay holds one) → `lens-decision` (the operated
-  member's `AgreementDecision-v1`, `POST /lens/agreements/:cid/decision`) → `attest` → `execute` (once
+  member's `AgreementDecision-v1`, `POST /lens/agreements/:cid/decision`; only while the lens has fewer
+  confirmations than its threshold) → `attest` → `execute` (once
   the escrow holds what it requires; the whole escrow goes to the payout, the sponsor) → `resolve` (YES)
   → `claim` the YES winnings;
 - **due** (Active, past its deadline): `expire` (the escrow returns to the sponsor) → `resolve` (NO) →
   `claim` the YES refund (a full refund when nobody staked NO; otherwise the stake is lost);
 - **executed / cancelled / expired**: `resolve` → `claim` when still open; **awaiting-owners** (a contest
-  answer on land the persona does not own), **lens-not-operated** and **awaiting-funds** wait.
+  answer on land the persona does not own), **lens-not-operated**, **awaiting-lens** (other lens
+  members' confirmations are still missing), **awaiting-contributions** (the funding target is not
+  reached yet) and **awaiting-funds** wait.
 - after any of these, on a market the persona opened: `reclaim` (`reclaim_seed`) takes back what the
   payouts leave of its b·ln2 seed, so a market costs cents instead of ~3.47 USDC (since 2026-11-12;
   `reclaim-seeds.mjs --dry-run|--apply` did it once for the markets settled before, and sweeps persona

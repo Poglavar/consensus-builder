@@ -315,12 +315,20 @@
      * The agreement the form describes (plan-design-agreement.md, M1 (b) record).
      * state: { id, createdAt?, updatedAt?, city?, designs (the chosen records, authored order),
      *   fingerprints (Map proposalId → design CID), land ({ inputs, outputs } from AgreementGround.derive),
-     *   approvalConfig, lens, currency (the agreement's city's money) }
+     *   approvalConfig, lens (member keys), lensThreshold (how many must confirm; 1 when absent),
+     *   currency (the agreement's city's money) }
      * values: { allocations ({ outputHash: select value }), cash ({ ownerKey: typed amounts }),
      *   valuation ({ inputs: { parcelId: cents per m² }, outputs: { outputHash: cents per m² } }),
      *   settlement, electorate ('owners' | 'community'), binding, title, deadline (the date field's day),
      *   organiser (website or did:web), participationUrl (HTTPS) }
      */
+    // The rule's lens: the member keys and, only when more than one must confirm, lensThreshold.
+    function lensRule(state) {
+        const lens = Array.isArray(state.lens) ? state.lens.slice() : [];
+        const threshold = Number(state.lensThreshold);
+        return { lens, ...(lens.length > 1 && Number.isInteger(threshold) && threshold > 1 ? { lensThreshold: Math.min(threshold, lens.length) } : {}) };
+    }
+
     function recordFromForm(state = {}, values = {}) {
         if (values.electorate === 'investors') {
             const funding = values.funding || {};
@@ -333,8 +341,7 @@
                     cid: idOf(record.published?.cid || record.cid || state.fingerprints?.get?.(idOf(record.proposalId))) || null
                 })), inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [],
                 money: { currency: state.currency || null, lines: [] }, valuation: null,
-                rule: { electorate: 'investors', binding: true, approvalConfig: null, settlement: null,
-                    lens: Array.isArray(state.lens) ? state.lens.slice() : [] }, consultation: null,
+                rule: { electorate: 'investors', binding: true, approvalConfig: null, settlement: null, ...lensRule(state) }, consultation: null,
                 deadline: values.fundingDeadlineDirty ? deadlineFromDate(values.deadline, 0)
                     : (values.fundingDeadline || deadlineFromDate(values.deadline, 0)),
                 funding: { targetUsdcAtomic: funding.targetUsdcAtomic || '', contract: funding.contract || null,
@@ -377,7 +384,7 @@
             money: { currency: state.currency || null, lines: [] },
             valuation: owners && settlement.method === 'value' ? valuationRows(values.valuation, inputs.parcels || [], outputs) : null,
             rule: owners
-                ? { electorate: 'owners', binding: values.binding === true, approvalConfig: state.approvalConfig || null, lens: Array.isArray(state.lens) ? state.lens.slice() : [], settlement }
+                ? { electorate: 'owners', binding: values.binding === true, approvalConfig: state.approvalConfig || null, ...lensRule(state), settlement }
                 : { electorate: 'community', binding: false, approvalConfig: null, lens: [] },
             consultation: owners ? null : { organiser: values.organiser || null, participationUrl: values.participationUrl || null,
                 ...(values.voting ? { voting: values.voting } : {}) },
@@ -669,6 +676,51 @@
         return `<h4 class="agreement-object-heading">${esc(t('agreement.workflow.personsByRights', 'Persons by ownership rights'))}</h4>`
             + `<table class="agreement-persons-table" data-agreement-derived-persons>${head}<tbody>${rows}</tbody></table>` + unresolved;
     }
+    // The lens in plain words (editor, panel, mint dialog): how many members must confirm, every
+    // member key (marked once its confirmation is recorded on chain) and whether the sponsor (the
+    // developer of a crowdfunding round) is one of them. `members` base58 keys; `threshold` as
+    // AgreementRecord.lensThresholdOf; `confirmed` the members whose confirmation the account records.
+    const shortKey = key => (String(key).length > 12 ? `${String(key).slice(0, 4)}…${String(key).slice(-4)}` : String(key));
+    function lensSummaryHtml({ members = [], threshold = null, sponsor = null, confirmed = [], crowdfunding = false } = {}, tr = t) {
+        const count = members.length;
+        const needed = count ? Math.min(count, Math.max(1, threshold || 1)) : 0;
+        const rule = !count
+            ? (crowdfunding ? tr('agreement.lens.noneCrowdfunding', 'No lens: the round settles on its funding target alone.') : tr('agreement.lens.none', 'No lens member is named.'))
+            : count === 1 ? tr('agreement.lens.single', 'The lens member must confirm.')
+                : needed === 1 ? tr('agreement.lens.any', 'Any 1 of {{count}} must confirm.', { count })
+                    : tr('agreement.lens.of', '{{needed}} of {{count}} must confirm.', { needed, count });
+        const done = new Set(confirmed || []);
+        const sponsorLabel = crowdfunding ? tr('agreement.lens.developerBadge', 'Developer') : tr('agreement.workflow.sponsor', 'Sponsor');
+        const items = members.map(key => `<li class="agreement-lens-summary__member" data-agreement-lens-member="${esc(key)}"><code dir="ltr" title="${esc(key)}">${esc(shortKey(key))}</code>`
+            + (done.has(key) ? `<span class="cb-badge cb-badge--success" data-agreement-lens-confirmed>${esc(tr('agreement.lens.confirmed', 'Confirmed'))}</span>` : '')
+            + (sponsor && key === sponsor ? `<span class="cb-badge cb-badge--warning">${esc(sponsorLabel)}</span>` : '') + '</li>').join('');
+        const sponsorIsMember = !!sponsor && members.includes(sponsor);
+        return '<div class="agreement-lens-summary" data-agreement-lens-summary-view>'
+            + (crowdfunding ? `<p class="agreement-lens-summary__rule">${esc(tr('agreement.lens.crowdfunding', 'The program checks the funding target. The lens checks investor eligibility and any other conditions.'))}</p>` : '')
+            + `<p class="agreement-lens-summary__rule" data-agreement-lens-rule>${esc(rule)}</p>`
+            + (items ? `<ul class="agreement-lens-summary__members" aria-label="${esc(tr('agreement.lens.members', 'Lens members'))}">${items}</ul>` : '')
+            + (sponsorIsMember ? `<p class="agreement-panel-note agreement-panel-note--warning" data-agreement-lens-developer>${esc(crowdfunding
+                ? tr('agreement.lens.developerMember', 'The developer is one of the verifiers.')
+                : tr('agreement.lens.sponsorMember', 'The sponsor is one of the verifiers.'))}</p>` : '')
+            + '</div>';
+    }
+
+    // The threshold choice for 2+ members: "Any 1 of N", then "k of N".
+    function lensThresholdOptionsHtml(count, threshold, tr = t) {
+        return Array.from({ length: count }, (_, index) => index + 1).map(needed => `<option value="${needed}"${needed === threshold ? ' selected' : ''}>`
+            + esc(needed === 1 ? tr('agreement.lens.anyOption', 'Any 1 of {{count}}', { count }) : tr('agreement.lens.ofOption', '{{needed}} of {{count}}', { needed, count })) + '</option>').join('');
+    }
+
+    // The editor's lens section: the member picker, the members in words and, with 2+ members, how
+    // many must confirm (filled by renderLens).
+    function lensSectionHtml(id) {
+        const choose = t('agreement.lens.choose', 'Choose lens members');
+        return `<section class="agreement-lens" data-agreement-lens-section aria-labelledby="${id}"><h4 id="${id}" class="agreement-object-heading">${esc(t('agreement.chain.facts.lens', 'Lens'))}</h4>`
+            + `<div class="agreement-lens__row"><button type="button" class="btn btn-icon btn-sm lens-pattern-button" data-lens-pattern data-agreement-action="lens" title="${esc(choose)}" aria-label="${esc(choose)}"><i class="fa-solid fa-glasses" aria-hidden="true"></i></button></div>`
+            + '<div data-agreement-lens-summary></div>'
+            + `<label class="proposal-editor-field" data-agreement-lens-threshold-field hidden><span>${esc(t('agreement.lens.thresholdLabel', 'Confirmations needed'))}</span><select data-agreement-lens-threshold></select></label></section>`;
+    }
+
     function bodyHtml(view) {
         const values = view.values || {};
         const funding = values.funding || {};
@@ -680,13 +732,13 @@
             + `<p class="agreement-hint" data-agreement-funding-file-name>${esc(funding.contract?.name || '')}</p>`
             + apartmentEditorHtml(funding)
             + detailsHtml({ title: values.title, deadline: values.deadline, today: view.today, deadlineRequired: values.electorate === 'investors' })
-            + '<section class="agreement-lens" aria-labelledby="agreement-funding-lens-title"><h4 id="agreement-funding-lens-title" class="agreement-object-heading">' + esc(t('agreement.funding.lens', 'Lens that verifies funding')) + '</h4><button type="button" class="btn btn-icon btn-sm lens-pattern-button" data-lens-pattern data-agreement-action="lens" aria-label="' + esc(t('agreement.funding.chooseKey', 'Choose funding verification lens')) + '"><i class="fa-solid fa-glasses" aria-hidden="true"></i></button></section></section>';
+            + lensSectionHtml('agreement-funding-lens-title') + '</section>';
         if (values.electorate === 'investors') {
             return '<ul class="agreement-issues agreement-issues--error" data-agreement-errors aria-live="assertive"></ul>'
                 + ruleHtml(values) + fundingHtml;
         }
         const panels = {
-            rules: ruleHtml(values) + '<div data-agreement-settlement></div><section class="agreement-lens" data-agreement-standard-lens aria-labelledby="agreement-lens-title"><h4 id="agreement-lens-title" class="agreement-object-heading">' + esc(t('agreement.chain.facts.lens', 'Lens')) + '</h4><div class="agreement-lens__row"><button type="button" class="btn btn-icon btn-sm lens-pattern-button" data-lens-pattern data-agreement-action="lens" title="' + esc(t('modal.lens.triggerDescription', 'Lens for viewing the world')) + '" aria-label="' + esc(t('modal.lens.triggerDescription', 'Lens for viewing the world')) + '"><i class="fa-solid fa-glasses" aria-hidden="true"></i></button></div></section>'
+            rules: ruleHtml(values) + '<div data-agreement-settlement></div>' + lensSectionHtml('agreement-lens-title')
                 + sectionHtml('consultation', t('agreement.sections.consultation', 'Nonbinding agreement'), consultationHtml(values), values.electorate !== 'community')
                 + detailsHtml({ title: values.title, deadline: values.deadline, today: view.today }),
             inputs: planSelectorHtml(view.plans || [], view.plan) + '<div class="cb-actions"><button type="button" class="btn" data-agreement-action="rights">' + esc(t('agreement.workflow.rights', 'Parcel ownership rights')) + '</button></div><div data-agreement-land></div><div data-agreement-plan-designs></div>',
@@ -825,7 +877,10 @@
             allocationMode: allocationMode(termsOf(base).allocations),
             currency: base?.money.currency || root.CityMoney.currentCurrency(),
             approvalConfig: scheme ? setup().withScheme(baseConfig, scheme) : baseConfig,
-            lens: base ? [...base.rule.lens] : setup().lensKeys(root.getLensEntries()),
+            // A new crowdfunding round starts with no lens: the program checks its funding target, and
+            // the developer adds members only for eligibility or other conditions.
+            lens: base ? [...base.rule.lens] : crowdfunding ? [] : setup().lensKeys(root.getLensEntries()),
+            lensThreshold: base ? api.lensThresholdOf(base.rule) : 1,
             // A new agreement is a non-binding vote: binding the owners takes the author's explicit tick.
             values: { ...termsOf(base), electorate: base?.rule.electorate || electorate,
                 binding: base?.rule.binding === true,
@@ -869,6 +924,8 @@
         saveButton.textContent = t(existing ? 'agreement.dialog.save' : 'agreement.dialog.titleCreate', existing ? 'Save agreement' : 'Create agreement');
         body.innerHTML = bodyHtml({ ...state, today: dateFromDeadline(new Date().toISOString()) });
         const part = selector => body.querySelector(selector);
+        // The wallet that will sponsor the agreement: the record's, else the connected one it is proposed with.
+        const sponsorKey = () => existing?.sponsor || root.AgreementBridge?.connectedWallet?.() || null;
         const listeners = new AbortController(), { signal } = listeners;
         let resolveClosed, auxiliary = null, unregisterEscape = null;
         const closed = new Promise(resolve => { resolveClosed = resolve; });
@@ -953,10 +1010,22 @@
             const container = part('[data-agreement-rule-form]');
             if (state.values.electorate === 'owners' && container.firstElementChild) state.approvalConfig = setup().withPolicyFromForm(container, state.approvalConfig);
         }
+        // The members in words and the threshold choice; a community vote names no lens of its own.
         function renderLens() {
             const button = part('[data-agreement-action="lens"]');
             if (button) button.dataset.lensEntries = JSON.stringify(state.lens.map(address => ({ address })));
             root.refreshLensPatternPreviews();
+            const community = state.values.electorate === 'community';
+            const count = state.lens.length;
+            state.lensThreshold = Math.min(Math.max(1, Number(state.lensThreshold) || 1), Math.max(1, count));
+            const summary = part('[data-agreement-lens-summary]');
+            if (summary) summary.innerHTML = community ? '' : lensSummaryHtml({ members: state.lens, threshold: state.lensThreshold,
+                sponsor: sponsorKey(), crowdfunding: state.values.electorate === 'investors' });
+            const field = part('[data-agreement-lens-threshold-field]');
+            if (field) {
+                field.hidden = community || count < 2;
+                field.querySelector('[data-agreement-lens-threshold]').innerHTML = count < 2 ? '' : lensThresholdOptionsHtml(count, state.lensThreshold);
+            }
         }
         // Which schemes the plan meets (every scheme, for the dropdown) and how the chosen one reads
         // against it (the card), from the record's own check; nothing when the draft cannot be built.
@@ -1066,11 +1135,11 @@
             if (kind === 'lens') {
                 const names = new Map(root.getLensEntries().map(entry => [entry.address, entry.name]));
                 auxiliary = root.showLensModal({ parent: modal,
-                    ...(state.values.electorate === 'investors' ? { chain: 'solana', single: true } : {}),
+                    ...(state.values.electorate === 'investors' ? { chain: 'solana' } : {}),
                     entries: state.lens.map(address => ({ address, name: names.get(address) || '' })),
                     onChange: entries => {
-                        const keys = setup().lensKeys(entries);
-                        state.lens = state.values.electorate === 'investors' ? keys.slice(0, 1) : keys;
+                        // Up to AgreementRecord.MAX_LENSES members; more are reported by the record's check.
+                        state.lens = setup().lensKeys(entries);
                         renderLens(); issues();
                     }
                 });
@@ -1280,10 +1349,13 @@
                     part('[data-agreement-allocation-summary]').outerHTML = allocationSummaryHtml(state.land, state.values.allocations);
                 }
                 if (target.matches('[data-agreement-binding]')) state.values.binding = target.checked;
+                if (target.matches('[data-agreement-lens-threshold]')) { state.lensThreshold = Number(target.value); renderLens(); issues(); return; }
                 if (target.matches('[data-agreement-electorate]')) {
                     const previous = state.values.electorate;
                     readRule(); state.values.electorate = target.value; state.values.binding = target.value === 'investors';
                     if (target.value === 'investors') setFundingPlanDesigns();
+                    // Switching a new agreement to crowdfunding drops the default lens (see the state above).
+                    if (target.value === 'investors' && !base) state.lens = [];
                     if (previous === 'investors' || target.value === 'investors') {
                         body.innerHTML = bodyHtml({ ...state, today: dateFromDeadline(new Date().toISOString()) });
                         if (target.value === 'investors') renderLens(); else { renderRule(); deriveLand(); }
@@ -1370,7 +1442,7 @@
     return {
         open, SCHEMA, LOCAL_RIGHTS_PROVIDER, appliedDesigns, designTitle, inputParcelIds, originalsById,
         partiesOf, allocationOptions, allocationValue, allocationTo, allocationMode, randomAllocations, allocationSpread,
-        allocationSummaryHtml, tabLabel, tabCounts, cashCents, cashInputText, termsOf,
+        allocationSummaryHtml, tabLabel, tabCounts, cashCents, cashInputText, termsOf, lensSummaryHtml, lensThresholdOptionsHtml, lensRule,
         keptTerms, sponsorLine, ruleConfigAfterDerive, deadlineFromDate, dateFromDeadline, recordFromForm,
         issueText, waitingText, ownersText, partyLabel, landHtml, allocationHtml, valuationHtml, valuationRows, ruleHtml, detailsHtml,
         consultationHtml, bodyHtml, personsHtml, planSelectorHtml, inputDesignsHtml

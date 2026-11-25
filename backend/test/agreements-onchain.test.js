@@ -115,7 +115,8 @@ describe('the onchain record of a decoded account', () => {
     it('spells the program\'s codes, keeps lamports exact as text and times as the chain\'s own', () => {
         const account = decoded({ ...executedFields, requiredLamports: 18446744073709551615n, escrowLamports: 18446744073709551615n });
         expect(onchainFromAccount(account, { cluster: 'devnet', observedAt: '2026-10-22T08:00:00.000Z', observedSlot: 321 })).toEqual({
-            chain: 'solana', cluster: 'devnet', programId: AGREEMENT_PROGRAM_ID, account: ACCOUNT, sponsor: SPONSOR, lens: LENS,
+            chain: 'solana', cluster: 'devnet', programId: AGREEMENT_PROGRAM_ID, account: ACCOUNT, sponsor: SPONSOR,
+            lenses: [LENS], lensThreshold: 1, lensConfirmed: [], fundingMint: null, requiredFunding: '0', fundingMet: false,
             status: 'executed', decision: 'satisfied', deadline: '2026-11-01T00:00:00.000Z',
             requiredLamports: '18446744073709551615', escrowLamports: '18446744073709551615',
             executedAt: '2026-10-22T07:30:00.000Z', observedAt: '2026-10-22T08:00:00.000Z', observedSlot: 321
@@ -143,17 +144,19 @@ describe('the onchain record of a decoded account', () => {
 
     it('takes only what the chain moves from a later observation', () => {
         const stored = { ...onchainFromAccount(decoded(), { cluster: 'devnet', observedAt: '2026-10-22T07:00:00.000Z', observedSlot: 100, signature: SIG }) };
-        const fresh = onchainFromAccount(decoded({ ...executedFields, lens: STRANGER, payout: STRANGER, deadline: DEADLINE + 1, requiredLamports: 5 }),
+        const fresh = onchainFromAccount(decoded({ ...executedFields, lens: STRANGER, lensConfirmed: [STRANGER], payout: STRANGER, deadline: DEADLINE + 1, requiredLamports: 5 }),
             { cluster: 'devnet', observedAt: '2026-10-22T08:00:00.000Z', observedSlot: 200 });
         const next = refreshOnchain(stored, fresh);
-        expect(MOVING_FIELDS).toEqual(['status', 'decision', 'escrowLamports', 'executedAt', 'observedAt', 'observedSlot']);
-        expect(next).toEqual({ ...stored, status: 'executed', decision: 'satisfied', escrowLamports: '0', executedAt: '2026-10-22T07:30:00.000Z',
+        expect(MOVING_FIELDS).toEqual(['status', 'decision', 'lensConfirmed', 'fundingMet', 'escrowLamports', 'executedAt', 'observedAt', 'observedSlot']);
+        expect(next).toEqual({ ...stored, status: 'executed', decision: 'satisfied', lensConfirmed: [STRANGER], escrowLamports: '0', executedAt: '2026-10-22T07:30:00.000Z',
             observedAt: '2026-10-22T08:00:00.000Z', observedSlot: 200 });
-        expect(next.lens).toBe(LENS);
+        expect(next.lenses).toEqual([LENS]);
         expect(next.signature).toBe(SIG);
         expect(onchainMoved(stored, fresh)).toBe(true);
         expect(onchainMoved(stored, { ...stored, observedAt: 'later', observedSlot: 999 })).toBe(false);
         expect(onchainMoved(stored, { ...stored, escrowLamports: '1001' })).toBe(true);
+        expect(onchainMoved(stored, { ...stored, lensConfirmed: [LENS] })).toBe(true);
+        expect(onchainMoved(stored, { ...stored, fundingMet: true })).toBe(true);
         expect(onchainMoved(null, fresh)).toBe(true);
     });
 
@@ -276,7 +279,8 @@ describe('POST /agreements/:cid/onchain', () => {
         const first = await postOnchain(app, pointer({ signature: SIG }));
         expect(first.status).toBe(201);
         const recorded = {
-            chain: 'solana', cluster: 'devnet', programId: AGREEMENT_PROGRAM_ID, account: ACCOUNT, sponsor: SPONSOR, lens: LENS,
+            chain: 'solana', cluster: 'devnet', programId: AGREEMENT_PROGRAM_ID, account: ACCOUNT, sponsor: SPONSOR,
+            lenses: [LENS], lensThreshold: 1, lensConfirmed: [], fundingMint: null, requiredFunding: '0', fundingMet: false,
             status: 'active', decision: 'pending', deadline: '2026-11-01T00:00:00.000Z', requiredLamports: '1000', escrowLamports: '1000',
             executedAt: null, observedAt: '2026-10-22T08:00:00.000Z', observedSlot: 500, signature: SIG
         };
@@ -383,11 +387,16 @@ describe('POST /agreements/:cid/onchain', () => {
             funding: { targetUsdcAtomic: '1000000', contract: { name: 'terms.txt', mediaType: 'text/plain', data: 'dGVybXM=' } }
         };
         const investorCid = cidOf(investor), investorAccount = agreementAccountOf(investorCid, SPONSOR);
-        const investorFields = overrides => ({ ...accountFields({ cid: investorCid, payout: SPONSOR, requiredLamports: 0, openGround: false }), ...overrides });
+        const usdc = require('../../frontend/js/solana/pledge-client.js').constants.USDC_DEVNET_MINT;
+        const investorFields = overrides => ({ ...accountFields({ cid: investorCid, payout: SPONSOR, requiredLamports: 0, openGround: false,
+            fundingMint: usdc, requiredFunding: 1_000_000n }), ...overrides });
         const pointerForInvestor = { chain: 'solana', cluster: 'devnet', account: investorAccount };
         const cases = [
             [investorFields({ payout: PAYOUT }), 'onchain-payout-mismatch'],
             [investorFields({ lens: STRANGER }), 'onchain-lens-mismatch'],
+            [investorFields({ lenses: [LENS, STRANGER] }), 'onchain-lens-mismatch'],
+            [investorFields({ requiredFunding: 999_999n }), 'onchain-funding-target-mismatch'],
+            [investorFields({ fundingMint: STRANGER }), 'onchain-funding-target-mismatch'],
             [investorFields({ deadline: DEADLINE + 1 }), 'onchain-deadline-mismatch'],
             [investorFields({ requiredLamports: 1n }), 'onchain-native-escrow-mismatch'],
             [investorFields({ openGround: true }), 'onchain-open-ground-mismatch']

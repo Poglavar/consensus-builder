@@ -28,7 +28,7 @@ export function setupLmsrRecipesRoute(app, pool, { env = process.env, readAgreem
             const source = validateAgreementRecipeSource(await read(account), account, { allowUndated: !!address });
             const market = address ? await readChainMarket(address) : null;
             if (address && (!market || market.proposal !== account || market.stakeMint !== DEVNET_USDC_MINT ||
-                ![0, 1].includes(market.kind) || (market.kind === 1 && market.trustedAttester !== source.insiders?.[1]))) {
+                ![0, 1].includes(market.kind) || (market.kind === 1 && !source.lenses.includes(market.trustedAttester)))) {
                 throw fail('market is not bound to this agreement', 400);
             }
             if (market?.kind === 1) return res.json(externalRecipeProjection(source, address, market));

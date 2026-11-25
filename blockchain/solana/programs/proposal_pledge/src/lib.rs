@@ -261,8 +261,12 @@ pub mod proposal_pledge {
             return Ok(());
         }
         let data = ctx.accounts.attestation.try_borrow_data()?;
+        // Any member of the round's lens may qualify the buyer.
+        let signer = sas_attestation::parse_attestation(&data)
+            .map_err(|_| error!(SupportError::InvalidBuyerQualification))?.authority;
+        require!(view.is_lens(&signer), SupportError::InvalidBuyerQualification);
         let proof = sas_attestation::property::qualification(&ctx.accounts.attestation, &data,
-            &ctx.accounts.credential, view.lens, Clock::get()?.unix_timestamp)
+            &ctx.accounts.credential, signer, Clock::get()?.unix_timestamp)
             .map_err(|_| error!(SupportError::InvalidBuyerQualification))?;
         let cid_hash = anchor_lang::solana_program::hash::hash(proof.cid);
         let (approved_round, _) = Pubkey::find_program_address(
@@ -530,6 +534,29 @@ mod tests {
         assert!(!is_refundable_status(STATUS_EXECUTED));
         assert!(is_refundable_status(STATUS_CANCELLED));
         assert!(is_refundable_status(STATUS_EXPIRED));
+    }
+    #[test]
+    fn the_agreement_program_reads_this_programs_donation_escrow_layout() {
+        assert_eq!(agreement::PLEDGE_PROGRAM_ID, crate::ID);
+        assert_eq!(agreement::DONATION_ESCROW_SEED, DONATION_ESCROW_SEED);
+        let escrow = DonationEscrow {
+            proposal: Pubkey::new_from_array([1; 32]), beneficiary: Pubkey::new_from_array([2; 32]),
+            mint: Pubkey::new_from_array([3; 32]), vault: Pubkey::new_from_array([4; 32]),
+            total_donated: 0x0101, total_released: 0x0202, total_refunded: 0x0303,
+            donation_count: 0x0404, donor_count: 0x0505, released: true, bump: 9,
+        };
+        let mut data = Vec::new();
+        escrow.try_serialize(&mut data).unwrap();
+        assert_eq!(&data[..8], &anchor_lang::solana_program::hash::hash(b"account:DonationEscrow").to_bytes()[..8]);
+        let key = |offset: usize| Pubkey::try_from(&data[offset..offset + 32]).unwrap();
+        let int = |offset: usize| u64::from_le_bytes(data[offset..offset + 8].try_into().unwrap());
+        assert_eq!(key(agreement::ESCROW_PROPOSAL_OFFSET), escrow.proposal);
+        assert_eq!(key(agreement::ESCROW_MINT_OFFSET), escrow.mint);
+        assert_eq!(key(agreement::ESCROW_VAULT_OFFSET), escrow.vault);
+        assert_eq!(int(agreement::ESCROW_TOTAL_DONATED_OFFSET), escrow.total_donated);
+        assert_eq!(int(agreement::ESCROW_TOTAL_REFUNDED_OFFSET), escrow.total_refunded);
+        assert_eq!(data[agreement::ESCROW_RELEASED_OFFSET], 1);
+        assert_eq!(agreement::TOKEN_PROGRAM_ID, anchor_spl::token::ID);
     }
     #[test]
     fn commitment_states_are_distinct() {

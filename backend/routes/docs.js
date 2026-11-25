@@ -351,18 +351,19 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     account: {
                         space: AgreementClient.constants.AGREEMENT_ACCOUNT_SPACE,
                         offsets: AgreementClient.AGREEMENT_OFFSETS,
-                        fields: 'authority, lens, payout, deadline (unix s, 0 none), created_at, required_lamports, escrow_lamports, status, open_ground, decision, decision_attested_at, decision_observed_at, decision_attestation, decision_hash, executed_at, bump, cid',
+                        fields: 'authority, lens (the first member), payout, deadline (unix s), created_at, required_lamports, escrow_lamports, status, open_ground, decision, decision_attested_at, decision_observed_at, decision_attestation, decision_hash, executed_at, bump, lens_count, lens_threshold, lens_confirmed (one bit per member), more_lenses (7 slots), funding_mint, required_funding, funding_met, funding_observed, funding_met_at, cid',
                         statuses: ['Active', 'Executed', 'Cancelled', 'Expired'],
                         decisions: ['Pending', 'Satisfied']
                     },
                     instructions: {
                         create: {
-                            args: ['cid: string', 'lens: pubkey', 'deadline: i64', 'open_ground: bool', 'required_lamports: u64', 'payout: pubkey'],
+                            args: ['cid: string', 'lenses: vec<pubkey>', 'lens_threshold: u8', 'deadline: i64', 'open_ground: bool', 'required_lamports: u64', 'payout: pubkey', 'funding_mint: pubkey', 'required_funding: u64'],
                             accounts: ['agreement (mut, init: the PDA)', 'authority (signer, mut: the sponsor; pays the rent)', 'system_program'],
-                            requires: 'cid 1-64 ASCII letters and digits; lens and payout not the default key; deadline 0 or in the future'
+                            requires: 'cid 1-64 ASCII letters and digits; 0-8 distinct lens members (any key, the sponsor\'s own included) and lens_threshold 1..members, or no members and threshold 0 only with a funding target; funding_mint set exactly when required_funding > 0; payout not the default key; deadline in the future'
                         },
                         fund: { args: ['lamports: u64'], accounts: ['agreement (mut)', 'authority (signer, mut)', 'system_program'], requires: 'the sponsor; Active; before the deadline' },
-                        attest: { args: [], accounts: ['agreement (mut)', 'attestation (the lens\'s AgreementDecision-v1)', 'credential (its SAS credential)'], requires: 'Active; decision Pending; before the deadline; permissionless' },
+                        attest: { args: [], accounts: ['agreement (mut)', 'attestation (a lens member\'s AgreementDecision-v1)', 'credential (its SAS credential)'], requires: 'Active; decision Pending; before the deadline; permissionless; the signer is a lens member not yet counted and the threshold is not yet reached' },
+                        confirm_funding: { args: [], accounts: ['agreement (mut)', 'escrow (proposal_pledge donation escrow ["donation_escrow", agreement])', 'vault (the escrow\'s token account)'], requires: 'Active; decision Pending; before the deadline; a funding target not yet confirmed; credited contributions (donated less refunded) >= required_funding and backed by the vault; permissionless' },
                         execute: { args: [], accounts: ['agreement (mut)', 'payout (mut)'], requires: 'decision Satisfied; before the deadline; escrow_lamports >= required_lamports; permissionless; the whole escrow goes to payout' },
                         cancel: { args: [], accounts: ['agreement (mut)', 'authority (signer, mut)'], requires: 'the sponsor; Active; no decision recorded; the escrow returns to the sponsor' },
                         expire: { args: [], accounts: ['agreement (mut)', 'authority (mut)'], requires: 'Active; the deadline set and passed; permissionless; the escrow returns to the sponsor' }
@@ -372,16 +373,16 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                         layout: decision.layout,
                         sasLayout: decision.sasLayout,
                         schemaPda: `["schema", credential, "${decision.name}", [${decision.version}]] under SAS ${SAS_PROGRAM_ID}`,
-                        decision: 'always "satisfied": the lens attests once the agreement\'s rule passes over the relayed owner decisions, before the deadline; there is no refusal: an agreement not decided by its deadline expires',
+                        decision: 'always "satisfied": a lens member attests once the agreement\'s rule passes over the relayed owner decisions, before the deadline; the account is Satisfied when lens_threshold members confirmed and any funding target is confirmed; there is no refusal: an agreement not decided by its deadline expires',
                         sponsor: 'must equal the account\'s authority, so an attestation fits one account only',
                         evidenceRef: 'sha256: over the counted receipts (approval.stableStringify, in signing order)',
-                        issuer: 'the lens key the account names, on its member service (operator only)'
+                        issuer: 'any lens member the account names, on its member service (operator only)'
                     }
                 },
                 // Lens model (lens-model.md): the attesters an agreement trusts.
                 lens: {
                     ruleField: 'rule.lens',
-                    programLens: 'the agreement program names exactly one lens key per account; it must not be the sponsor',
+                    programLens: 'the agreement program freezes 0-8 lens members and lens_threshold (rule.lensThreshold, default 1) per account; any key may be a member, the sponsor\'s own included',
                     members: `${base}/agent/lenses/members`,
                     memberFields: ['key', 'kind', 'name', 'description', 'serviceUrl', 'registeredAt', 'coverage'],
                     memberKinds: ['owner-consent', 'court', 'permit', 'imagery', 'osm', 'lifecycle'],

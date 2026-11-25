@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { Keypair } from '@solana/web3.js';
 import {
-    SIGNED_SETTLEMENT_STEPS, agreementStatusOf, claimAgreementMarket, fulfillPledge, refundDonation, releaseDonations,
+    SIGNED_SETTLEMENT_STEPS, agreementStatusOf, claimAgreementMarket, confirmFunding, fulfillPledge, refundDonation, releaseDonations,
     resolveAgreementMarket, revokePledge, voidPledge
 } from '../agents/lifecycle-actions.js';
 import { agreementAccountOf } from '../agents/agreement-minter.js';
@@ -61,7 +61,7 @@ describe('the status word of agreement account bytes', () => {
         }
         expect(agreementStatusOf(marketAccount({ agreement: Keypair.generate().publicKey.toBase58() }).data)).toBeNull();
         expect(agreementStatusOf(new Uint8Array(296))).toBeNull();
-        expect(SIGNED_SETTLEMENT_STEPS).toEqual(['attest', 'execute', 'release-donations', 'expire', 'resolve', 'claim', 'reclaim']);
+        expect(SIGNED_SETTLEMENT_STEPS).toEqual(['confirm-funding', 'attest', 'execute', 'release-donations', 'expire', 'resolve', 'claim', 'reclaim']);
     });
 });
 
@@ -87,6 +87,21 @@ describe('donations', () => {
         chain.put(donationEscrowAccount({ agreement: subject, beneficiary, totalDonated: 500000n, released: true }));
         expect(await release()).toEqual({ replayed: true, signature: null, released: true });
         expect(sent).toHaveBeenCalledTimes(1);
+    });
+
+    it('confirms a reached funding target from the escrow it reads, and replays a confirmed one', async () => {
+        const usdc = pledgeClient.constants.USDC_DEVNET_MINT;
+        const vault = Keypair.generate().publicKey;
+        const target = { ...agreementFields('Active'), lens: null, lenses: [], fundingMint: usdc, requiredFunding: 400000n };
+        chain.putAgreement(subject, target);
+        chain.put(donationEscrowAccount({ agreement: subject, beneficiary, totalDonated: 500000n, totalRefunded: 200000n, vault }));
+        const confirm = () => confirmFunding({ connection: chain.connection, payerKeypair: actor, subject, sendAndConfirm: chain.sendAndConfirm });
+        await expect(confirm()).rejects.toThrow(/300000 of 400000 credited/);
+        chain.put(donationEscrowAccount({ agreement: subject, beneficiary, totalDonated: 600000n, totalRefunded: 200000n, vault }));
+        expect(await confirm()).toMatchObject({ replayed: false, decision: 'Satisfied', fundingMet: true });
+        expect(chain.agreement(subject)).toMatchObject({ fundingMet: true, fundingObserved: 400000n });
+        expect(await confirm()).toMatchObject({ replayed: true, signature: null });
+        expect(chain.signed().map(tx => tx.steps)).toEqual([['confirm_funding']]);
     });
 
     it('refunds the donor\'s own position once', async () => {

@@ -47,17 +47,19 @@ const i64 = value => { const out = Buffer.alloc(8); out.writeBigInt64LE(BigInt(v
 const str = text => Buffer.concat([u32(Buffer.byteLength(text)), Buffer.from(text, 'utf8')]);
 const keyBytes = key => new PublicKey(key).toBuffer();
 
-// An Agreement account: every fixed field written at its README offset, padded to the 296-byte account.
+// An Agreement account: every fixed field written at its README offset, padded to the 580-byte account.
+// `lenses` are the members (first in `lens`, the rest in `more_lenses`), `lensConfirmed` their bitmap.
 function agreementBytes(fields = {}) {
     const f = {
-        authority: SPONSOR, lens: LENS, payout: PAYOUT, deadline: 0, createdAt: NOW - 600, requiredLamports: 2_000_000_000n,
+        authority: SPONSOR, lenses: [LENS], lensThreshold: 1, lensConfirmed: 0, fundingMint: keyOf(0), requiredFunding: 0n,
+        fundingMet: 0, fundingObserved: 0n, fundingMetAt: 0, payout: PAYOUT, deadline: 0, createdAt: NOW - 600, requiredLamports: 2_000_000_000n,
         escrowLamports: 500_000_000n, status: 0, openGround: 0, decision: 0, decisionAttestedAt: 0, decisionObservedAt: 0,
         decisionAttestation: keyOf(0), decisionHash: Buffer.alloc(32), executedAt: 0, bump: 253, cid: CID, ...fields
     };
     const bytes = Buffer.alloc(C.AGREEMENT_ACCOUNT_SPACE);
     Buffer.from(client.ACCOUNT_DISCRIMINATORS.Agreement).copy(bytes, 0);
     keyBytes(f.authority).copy(bytes, 8);
-    keyBytes(f.lens).copy(bytes, 40);
+    keyBytes(f.lenses[0] || keyOf(0)).copy(bytes, 40);
     keyBytes(f.payout).copy(bytes, 72);
     bytes.writeBigInt64LE(BigInt(f.deadline), 104);
     bytes.writeBigInt64LE(BigInt(f.createdAt), 112);
@@ -72,7 +74,16 @@ function agreementBytes(fields = {}) {
     Buffer.from(f.decisionHash).copy(bytes, 187);
     bytes.writeBigInt64LE(BigInt(f.executedAt), 219);
     bytes[227] = f.bump;
-    str(f.cid).copy(bytes, 228);
+    bytes[228] = f.lenses.length;
+    bytes[229] = f.lensThreshold;
+    bytes[230] = f.lensConfirmed;
+    f.lenses.slice(1).forEach((key, index) => keyBytes(key).copy(bytes, 231 + index * 32));
+    keyBytes(f.fundingMint).copy(bytes, 455);
+    bytes.writeBigUInt64LE(BigInt(f.requiredFunding), 487);
+    bytes[495] = f.fundingMet;
+    bytes.writeBigUInt64LE(BigInt(f.fundingObserved), 496);
+    bytes.writeBigInt64LE(BigInt(f.fundingMetAt), 504);
+    str(f.cid).copy(bytes, 512);
     return bytes;
 }
 
@@ -98,6 +109,12 @@ function decodeArgs(name, data) {
         else if (arg.type === 'i64') { out[arg.name] = bytes.readBigInt64LE(offset); offset += 8; }
         else if (arg.type === 'u64') { out[arg.name] = bytes.readBigUInt64LE(offset); offset += 8; }
         else if (arg.type === 'bool') { out[arg.name] = bytes[offset] === 1; offset += 1; }
+        else if (arg.type === 'u8') { out[arg.name] = bytes[offset]; offset += 1; }
+        else if (arg.type?.vec === 'pubkey') {
+            const count = bytes.readUInt32LE(offset);
+            out[arg.name] = Array.from({ length: count }, (_, index) => new PublicKey(bytes.subarray(offset + 4 + index * 32, offset + 36 + index * 32)).toBase58());
+            offset += 4 + count * 32;
+        }
         else throw new Error(`unhandled IDL type ${JSON.stringify(arg.type)}`);
     }
     expect(offset, `${name} data has trailing bytes`).toBe(bytes.length);
@@ -144,12 +161,14 @@ describe('the Agreement account layout', () => {
         for (const field of idlType('Agreement').type.fields) {
             fromIdl[field.name] = offset;
             if (field.type === 'string') break;
-            offset += field.type.defined ? 1 : field.type.array ? field.type.array[1] : sizes[field.type];
+            offset += field.type.defined ? 1 : field.type.array ? field.type.array[1] * (sizes[field.type.array[0]] || 1) : sizes[field.type];
         }
         expect(fromIdl).toEqual(readme);
         expect(client.AGREEMENT_OFFSETS).toEqual({
             authority: readme.authority, lens: readme.lens, payout: readme.payout, deadline: readme.deadline,
-            status: readme.status, decision: readme.decision, cid: readme.cid
+            status: readme.status, decision: readme.decision, lensCount: readme.lens_count, lensThreshold: readme.lens_threshold,
+            lensConfirmed: readme.lens_confirmed, moreLenses: readme.more_lenses, fundingMint: readme.funding_mint,
+            requiredFunding: readme.required_funding, cid: readme.cid
         });
         // 8 + Agreement::INIT_SPACE, with the cid at most 64 bytes behind its u32 length.
         expect(C.AGREEMENT_ACCOUNT_SPACE).toBe(readme.cid + 4 + C.MAX_CID_BYTES);
@@ -185,24 +204,40 @@ describe('the agreement address', () => {
 });
 
 describe('instructions', () => {
-    it('create carries cid, lens, deadline, open ground, required lamports and payout in the IDL\'s order', () => {
+    it('create carries cid, the lens set and threshold, deadline, open ground, required lamports, payout and target in the IDL\'s order', () => {
         const { agreement, instruction } = client.buildCreateIx({
-            authority: SPONSOR, cid: CID, lens: LENS, deadline: NOW + 86400, openGround: true, requiredLamports: 2_500_000_000n, payout: PAYOUT
+            authority: SPONSOR, cid: CID, lenses: [LENS, OTHER, SPONSOR], lensThreshold: 2, deadline: NOW + 86400, openGround: true,
+            requiredLamports: 2_500_000_000n, payout: PAYOUT, fundingMint: C.USDC_DEVNET_MINT, requiredFunding: 20_000_000n
         });
         expect(agreement.toBase58()).toBe(client.getAgreementPda(CID, SPONSOR)[0].toBase58());
         expect(instruction.programId.toBase58()).toBe(IDL.address);
         expect(decodeArgs('create', instruction.data)).toEqual({
-            cid: CID, lens: LENS, deadline: BigInt(NOW + 86400), open_ground: true, required_lamports: 2_500_000_000n, payout: PAYOUT
+            cid: CID, lenses: [LENS, OTHER, SPONSOR], lens_threshold: 2, deadline: BigInt(NOW + 86400), open_ground: true, required_lamports: 2_500_000_000n,
+            payout: PAYOUT, funding_mint: C.USDC_DEVNET_MINT, required_funding: 20_000_000n
         });
         expect(metas('create', instruction)).toEqual({ agreement: agreement.toBase58(), authority: SPONSOR, system_program: C.SYSTEM_PROGRAM_ID });
-        // Defaults: closed land, no escrow needed (the deadline has no default).
-        expect(decodeArgs('create', client.encodeCreateData({ cid: CID, lens: LENS, payout: PAYOUT, deadline: NOW + 60 })))
-            .toMatchObject({ deadline: BigInt(NOW + 60), open_ground: false, required_lamports: 0n });
+        // Defaults: threshold 1 ("any one"), closed land, no escrow needed, no target (the deadline has no default).
+        expect(decodeArgs('create', client.encodeCreateData({ cid: CID, lenses: [LENS, OTHER], payout: PAYOUT, deadline: NOW + 60 })))
+            .toMatchObject({ lens_threshold: 1, deadline: BigInt(NOW + 60), open_ground: false, required_lamports: 0n, funding_mint: C.DEFAULT_PUBKEY, required_funding: 0n });
+        // No lens at all: only with a contribution target, threshold 0.
+        expect(decodeArgs('create', client.encodeCreateData({ cid: CID, lenses: [], payout: PAYOUT, deadline: NOW + 60, fundingMint: C.USDC_DEVNET_MINT, requiredFunding: 1n })))
+            .toMatchObject({ lenses: [], lens_threshold: 0, required_funding: 1n });
     });
 
     it('create refuses what the program refuses for its arguments, before any wallet signs', () => {
-        const args = { authority: SPONSOR, cid: CID, lens: LENS, payout: PAYOUT, deadline: NOW + 86400 };
-        expect(() => client.buildCreateIx({ ...args, lens: C.DEFAULT_PUBKEY })).toThrow(/lens must not be the default key/);
+        const args = { authority: SPONSOR, cid: CID, lenses: [LENS], payout: PAYOUT, deadline: NOW + 86400 };
+        expect(() => client.buildCreateIx({ ...args, lenses: [C.DEFAULT_PUBKEY] })).toThrow(/lens member must not be the default key/);
+        expect(() => client.buildCreateIx({ ...args, lenses: LENS })).toThrow(/lenses must be a list/);
+        expect(() => client.buildCreateIx({ ...args, lenses: [LENS, LENS] })).toThrow(/names each member once/);
+        expect(() => client.buildCreateIx({ ...args, lenses: Array.from({ length: 9 }, (_, index) => keyOf(100 + index)) })).toThrow(/at most 8 members/);
+        expect(() => client.buildCreateIx({ ...args, lensThreshold: 0 })).toThrow(/between 1 and 1/);
+        expect(() => client.buildCreateIx({ ...args, lenses: [LENS, OTHER], lensThreshold: 3 })).toThrow(/between 1 and 2/);
+        expect(() => client.buildCreateIx({ ...args, lenses: [] })).toThrow(/without a lens needs a contribution target/);
+        expect(() => client.buildCreateIx({ ...args, lenses: [], lensThreshold: 1, fundingMint: C.USDC_DEVNET_MINT, requiredFunding: 1n })).toThrow(/threshold 0/);
+        expect(() => client.buildCreateIx({ ...args, requiredFunding: 5n })).toThrow(/target needs its mint/);
+        expect(() => client.buildCreateIx({ ...args, fundingMint: C.USDC_DEVNET_MINT })).toThrow(/target needs its mint/);
+        // Any key may be a member, the sponsor's own included.
+        expect(() => client.buildCreateIx({ ...args, lenses: [SPONSOR] })).not.toThrow();
         expect(() => client.buildCreateIx({ ...args, payout: C.DEFAULT_PUBKEY })).toThrow(/payout must not be the default key/);
         expect(() => client.buildCreateIx({ ...args, payout: client.getAgreementPda(CID, SPONSOR)[0] })).toThrow(/payout must not be the agreement itself/);
         expect(() => client.buildCreateIx({ ...args, deadline: -1 })).toThrow(/deadline/);
@@ -210,7 +245,7 @@ describe('instructions', () => {
         // The program requires a deadline: NO_DEADLINE, a missing one and 0n are refused.
         for (const deadline of [C.NO_DEADLINE, undefined, null, 0n, -5n]) {
             expect(() => client.buildCreateIx({ ...args, deadline }), String(deadline)).toThrow(/deadline must be unix seconds in the future/);
-            expect(() => client.encodeCreateData({ cid: CID, lens: LENS, payout: PAYOUT, deadline }), String(deadline)).toThrow(/deadline must be unix seconds in the future/);
+            expect(() => client.encodeCreateData({ cid: CID, lenses: [LENS], payout: PAYOUT, deadline }), String(deadline)).toThrow(/deadline must be unix seconds in the future/);
         }
         expect(() => client.buildCreateIx({ ...args, requiredLamports: -1n })).toThrow(/u64/);
         expect(() => client.buildCreateIx({ ...args, openGround: 'yes' })).toThrow(/boolean/);
@@ -244,6 +279,17 @@ describe('instructions', () => {
         expect(() => client.buildExecuteIx({ payout: PAYOUT })).toThrow(/agreement \(address\), or cid and authority, is required/);
     });
 
+    it('confirm_funding carries no arguments, with the agreement, its donation escrow and the escrow\'s vault', () => {
+        const agreement = keyOf(31);
+        const confirm = client.buildConfirmFundingIx({ agreement, escrow: keyOf(35), vault: keyOf(37) });
+        expect(decodeArgs('confirm_funding', confirm.data)).toEqual({});
+        expect(metas('confirm_funding', confirm)).toEqual({ agreement, escrow: keyOf(35), vault: keyOf(37) });
+    });
+
+    it('counts a crowdfunding target in the devnet USDC mint the pledge client contributes', () => {
+        expect(C.USDC_DEVNET_MINT).toBe(require('../../frontend/js/solana/pledge-client.js').constants.USDC_DEVNET_MINT);
+    });
+
     it('turns an agreement/v1 deadline into create\'s unix seconds, none defaulting to 90 days from now', () => {
         expect(C.DEFAULT_DEADLINE_SECONDS).toBe(90 * 86_400);
         expect(client.toDeadlineSeconds(null, NOW)).toBe(NOW + 90 * 86_400);
@@ -263,10 +309,12 @@ describe('reading an Agreement account', () => {
         const hash = Buffer.alloc(32, 0xab);
         const value = client.readAgreement(agreementBytes({
             deadline: NOW + 86400, status: 0, openGround: 1, decision: 1, decisionAttestedAt: NOW - 30, decisionObservedAt: NOW - 90,
-            decisionAttestation: keyOf(41), decisionHash: hash
+            decisionAttestation: keyOf(41), decisionHash: hash, lenses: [LENS, OTHER, SPONSOR], lensThreshold: 2, lensConfirmed: 0b101,
+            fundingMint: C.USDC_DEVNET_MINT, requiredFunding: 20_000_000n, fundingMet: 1, fundingObserved: 21_000_000n, fundingMetAt: NOW - 45
         }), 'Account1');
         expect(value).toEqual({
-            address: 'Account1', cid: CID, authority: SPONSOR, lens: LENS, payout: PAYOUT, deadline: NOW + 86400, createdAt: NOW - 600,
+            address: 'Account1', cid: CID, authority: SPONSOR, lens: LENS, lenses: [LENS, OTHER, SPONSOR], lensThreshold: 2, lensConfirmed: [LENS, SPONSOR],
+            fundingMint: C.USDC_DEVNET_MINT, requiredFunding: 20_000_000n, fundingMet: true, fundingObserved: 21_000_000n, fundingMetAt: NOW - 45, payout: PAYOUT, deadline: NOW + 86400, createdAt: NOW - 600,
             requiredLamports: 2_000_000_000n, escrowLamports: 500_000_000n, statusCode: 0, status: 'Active', openGround: true,
             decisionCode: 1, decision: 'Satisfied', decisionAttestedAt: NOW - 30, decisionObservedAt: NOW - 90,
             decisionAttestation: keyOf(41), decisionHash: 'ab'.repeat(32), executedAt: 0, bump: 253
@@ -282,7 +330,7 @@ describe('reading an Agreement account', () => {
     });
 
     it('reads an account without its padding, and refuses another account or a truncated one', () => {
-        const exact = agreementBytes().subarray(0, 228 + 4 + CID.length);
+        const exact = agreementBytes().subarray(0, 512 + 4 + CID.length);
         expect(client.readAgreement(exact).cid).toBe(CID);
         const other = agreementBytes();
         other[0] ^= 0xff;
@@ -293,6 +341,11 @@ describe('reading an Agreement account', () => {
         const notBool = agreementBytes();
         notBool[137] = 2;
         expect(() => client.readAgreement(notBool)).toThrow(/open_ground is not a bool/);
+        const tooMany = agreementBytes();
+        tooMany[228] = 9;
+        expect(() => client.readAgreement(tooMany)).toThrow(/lens_count 9 exceeds 8/);
+        // No target: no mint is reported, whatever the slot holds.
+        expect(client.readAgreement(agreementBytes()).fundingMint).toBeNull();
     });
 
     it('tells when a deadline has passed: one is set and the chain time is after it', () => {
@@ -336,8 +389,11 @@ describe('the attest checks the two accounts can answer', () => {
         agreement: account(agreementFields), attestation: attestation(attestationFields), nowSeconds: NOW
     });
 
-    it('pass a satisfied decision by the agreement\'s lens, about this CID and sponsor, while it is active and pending', () => {
+    it('pass a satisfied decision by an open lens member, about this CID and sponsor, while it is active and pending', () => {
         expect(check()).toBeNull();
+        expect(check({ lenses: [OTHER, LENS, SPONSOR], lensThreshold: 2, lensConfirmed: 0b001 })).toBeNull();
+        // The sponsor may be a member and attest its own agreement.
+        expect(check({ lenses: [SPONSOR] }, { signer: SPONSOR })).toBeNull();
         expect(check({ deadline: NOW + 60 })).toBeNull();
     });
 
@@ -356,6 +412,8 @@ describe('the attest checks the two accounts can answer', () => {
         expect(check({}, { expiry: NOW })).toBe('attestation-expired');
         expect(check({}, { schema: keyOf(51) })).toBe('wrong-schema');
         expect(check({}, { signer: OTHER })).toBe('wrong-lens');
+        expect(check({ lenses: [OTHER, LENS], lensThreshold: 2, lensConfirmed: 0b10 })).toBe('member-confirmed');
+        expect(check({ lenses: [OTHER, LENS], lensThreshold: 1, lensConfirmed: 0b01 })).toBe('lens-confirmed');
         expect(check({}, { agreementCid: `${CID.slice(0, -1)}a` })).toBe('wrong-cid');
         expect(check({}, { sponsor: OTHER })).toBe('wrong-sponsor');
         expect(check({}, { sourceObservedAt: NOW + 1 })).toBe('observed-in-future');

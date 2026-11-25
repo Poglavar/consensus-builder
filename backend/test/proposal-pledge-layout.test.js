@@ -42,6 +42,9 @@ describe('proposal_pledge source/IDL contract', () => {
         expect(pledgeSource).not.toMatch(/ProposalHead|PROPOSAL_NFT_PROGRAM_ID|PROPOSAL_DISCRIMINATOR|proposal_nft::|STATUS_OFFSET/);
         expect(pledgeCargo).toContain('agreement = { path = "../agreement", features = ["no-entrypoint"] }');
         expect(pledgeCargo).not.toMatch(/^proposal_nft\s*=/m);
+        // Any member of the round's lens may qualify an apartment buyer.
+        expect(pledgeSource).toContain('require!(view.is_lens(&signer), SupportError::InvalidBuyerQualification);');
+        expect(pledgeSource).not.toMatch(/view\.lens\b/);
         // The source says where the status byte is; it says the reader's offset.
         expect(Number(pledgeSource.match(/status at offset (\d+)/)[1])).toBe(layout.STATUS_OFFSET);
         // What the reader takes as the beneficiary is where the encoder writes the sponsor, and the

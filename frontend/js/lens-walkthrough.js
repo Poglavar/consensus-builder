@@ -104,14 +104,15 @@
         const block = element('div');
         const description = rule.electorate === 'owners'
             ? win.ProposalApprovalText.rulesText(rule.approvalConfig?.policy, t, win.AgreementRecord.schemeOf(rule))
-            : rule.electorate === 'investors' ? w('funding', 'The selected lens checks the funding target.')
+            : rule.electorate === 'investors' ? t('agreement.lens.crowdfunding', 'The program checks the funding target. The lens checks investor eligibility and any other conditions.')
                 : w('community', 'Community members vote on the agreement.');
         block.append(element('p', description));
         const facts = element('dl', null, 'lc-facts');
         const keys = (rule.lens || []).map(x => typeof x === 'string' ? x : x?.address).filter(Boolean);
         for (const key of keys) facts.append(field(w('selected', 'Selected lens'), member(key)));
-        const chainLens = s.chain?.account?.lens;
-        if (chainLens && !keys.includes(chainLens)) facts.append(field(w('chainLens', 'Lens named on Solana'), member(chainLens)));
+        for (const chainLens of s.chain?.account?.lenses || []) {
+            if (!keys.includes(chainLens)) facts.append(field(w('chainLens', 'Lens named on Solana'), member(chainLens)));
+        }
         block.append(facts.childElementCount ? facts : message(w('noLens', 'This agreement names no lens member.')));
         setContent(byId('lc-rule'), block);
     }
@@ -246,7 +247,7 @@
     async function readIssued(s) {
         await directoryReady;
         if (current !== s) return;
-        const keys = s.record.onchain?.lens ? [s.record.onchain.lens] : s.record.content.rule.lens || [];
+        const keys = s.record.onchain?.lenses || s.record.content.rule.lens || [];
         const results = await Promise.allSettled((s.record.content.sponsor ? keys : []).map(async key => {
             const issuer = directory.get(key);
             if (directoryError || !issuer?.serviceUrl) throw new Error('Member service unavailable');

@@ -250,6 +250,19 @@ describe('POST /agreements', () => {
         expect(res.status, JSON.stringify(res.body)).toBe(201);
         expect(res.body).toMatchObject({ content, inputParcelIds: [], parcelSourceId: null, designCids: [cidOf(park)] });
         expect(pool.getBindingCalls()).toEqual([]);
+
+        // A lens of several members with a threshold, the sponsor among them, or no lens at all (the
+        // program checks the target itself); a threshold the lens cannot reach is refused.
+        const lenses = ['9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt', content.sponsor];
+        for (const rule of [{ ...content.rule, lens: lenses, lensThreshold: 2 }, { ...content.rule, lens: [] }]) {
+            const variant = { ...content, rule };
+            const accepted = await post(appFor(indexPool()).app, variant, [{ cid: cidOf(park), content: park, parcelSourceId: 'oss-wfs' }]);
+            expect(accepted.status, JSON.stringify(accepted.body)).toBe(201);
+        }
+        const unreachable = { ...content, rule: { ...content.rule, lens: lenses, lensThreshold: 3 } };
+        const refused = await post(appFor(indexPool()).app, unreachable, [{ cid: cidOf(park), content: park, parcelSourceId: 'oss-wfs' }]);
+        expect(refused.status).toBe(400);
+        expect(refused.body.error).toMatch(/from 1 to the number of members/);
     });
 
     it('refuses content that does not hash to its CID, and a malformed request', async () => {

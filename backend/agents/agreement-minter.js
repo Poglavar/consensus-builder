@@ -2,7 +2,7 @@
 // keypair: the node twin of the browser's chain flow on the agreement panel, on the same codec
 // (frontend/js/solana/agreement-client.js). The account is PDA(sponsor, CID), so only the sponsor that
 // publishes an agreement can create its account (blockchain/solana/programs/agreement/README.md). Only a
-// binding owners' agreement is minted; a community vote is a poll in the index. Every step reads the chain
+// binding owners' or investor-funding agreement is minted; a community vote is a poll in the index. Every step reads the chain
 // first, so a rerun after a crash creates nothing twice and funds only what the escrow still lacks.
 import { createRequire } from 'node:module';
 import { setTimeout as delay } from 'node:timers/promises';
@@ -10,6 +10,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
 const agreementClient = require('../../frontend/js/solana/agreement-client.js');
+const agreementRecord = require('../../frontend/js/agreement-record.js');
 // The UMD codec resolves @solana/web3.js relative to frontend/js/solana, where it is not installed.
 agreementClient.configure({ web3 });
 
@@ -69,31 +70,54 @@ export async function creationSignature(connection, account) {
 }
 
 /**
+ * The settlement terms an agreement/v1 object mints with: its rule's lens set and threshold
+ * (agreement-record.js lensThresholdOf), and for a crowdfunding (investors) agreement its funding
+ * target in devnet USDC, checked by the program itself (confirm_funding). Any key may be a member, the
+ * sponsor's own included.
+ */
+export function mintTermsOf(content) {
+    const rule = content?.rule || {};
+    const lenses = Array.isArray(rule.lens) ? rule.lens.map(keyText) : [];
+    const crowdfunding = rule.electorate === 'investors';
+    return {
+        lenses,
+        lensThreshold: agreementRecord.lensThresholdOf({ ...rule, lens: lenses }),
+        fundingMint: crowdfunding ? agreementClient.constants.USDC_DEVNET_MINT : null,
+        requiredFunding: crowdfunding ? BigInt(content.funding?.targetUsdcAtomic ?? 0) : 0n
+    };
+}
+
+/**
  * Create the agreement account (if missing) and fund its escrow up to `lamports`, in one transaction.
- * `create(cid, lens, deadline, open_ground, required_lamports = lamports, payout)`; `fund` brings the
+ * `create(cid, lenses, lens_threshold, deadline, open_ground, required_lamports = lamports, payout,
+ * funding_mint, required_funding)` (mintTermsOf gives an agreement's lens and target); `fund` brings the
  * escrow to `lamports` (nothing when it already holds that much, nothing at all for 0). The program
  * requires a deadline in the future: a missing one becomes nowSeconds + DEFAULT_DEADLINE_SECONDS (90 days),
  * and a create with a deadline at or before nowSeconds is refused before anything is signed. An existing
- * account must carry the same lens and required lamports, and the same deadline when the caller named one
- * (a defaulted deadline moves with the clock, so a rerun could never match it), or nothing is signed.
- * @param {{ connection, sponsorKeypair, cid: string, lens: string, deadline: string|null, lamports?: bigint|string|number,
- *           payout?: string|null, openGround?: boolean, programId?: string, nowSeconds?: number,
- *           sendAndConfirm?: Function }} options
+ * account must carry the same lens set, threshold, contribution target and required lamports, and the
+ * same deadline when the caller named one (a defaulted deadline moves with the clock, so a rerun could
+ * never match it), or nothing is signed.
+ * @param {{ connection, sponsorKeypair, cid: string, lenses: string[], lensThreshold?: number,
+ *           deadline: string|null, lamports?: bigint|string|number, payout?: string|null, openGround?: boolean,
+ *           fundingMint?: string|null, requiredFunding?: bigint|string|number, programId?: string,
+ *           nowSeconds?: number, sendAndConfirm?: Function }} options
  *   payout defaults to the sponsor (the escrow returns to it at execution); nowSeconds defaults to the
  *   local clock
  * @returns {Promise<{ account, programId, signature: string|null, createSignature: string, created: boolean,
  *   fundedLamports: string, requiredLamports: string, escrowLamports: string, status: string }>}
  */
 export async function mintAgreement({
-    connection, sponsorKeypair, cid, lens, deadline = null, lamports = 0n, payout = null, openGround = false,
-    programId = AGREEMENT_PROGRAM_ID, nowSeconds = Math.floor(Date.now() / 1000), sendAndConfirm = web3.sendAndConfirmTransaction
+    connection, sponsorKeypair, cid, lenses, lensThreshold, deadline = null, lamports = 0n, payout = null, openGround = false,
+    fundingMint = null, requiredFunding = 0n, programId = AGREEMENT_PROGRAM_ID, nowSeconds = Math.floor(Date.now() / 1000), sendAndConfirm = web3.sendAndConfirmTransaction
 } = {}) {
     if (!connection?.getAccountInfo) throw new Error('a solana connection is required');
     if (!sponsorKeypair?.publicKey) throw new Error('sponsorKeypair is required');
     agreementClient.requireCid(cid);
     const sponsor = sponsorKeypair.publicKey;
-    const lensKey = keyText(lens);
-    if (lensKey === sponsor.toBase58()) throw new Error(`the lens is the sponsor's own key ${lensKey}: a sponsor cannot attest its own agreement`);
+    const target = BigInt(requiredFunding);
+    const threshold = lensThreshold ?? (Array.isArray(lenses) && lenses.length ? 1 : 0);
+    const lensKeys = agreementClient.requireLensSet(Array.isArray(lenses) ? lenses.map(keyText) : lenses, threshold, target);
+    const mint = fundingMint ? keyText(fundingMint) : null;
     const required = toLamports(lamports);
     const explicitDeadline = deadline !== null && deadline !== undefined && deadline !== '';
     const deadlineSeconds = agreementClient.toDeadlineSeconds(deadline, nowSeconds);
@@ -102,7 +126,9 @@ export async function mintAgreement({
     const existing = await readAgreementAccount(connection, { cid, sponsor: sponsor.toBase58(), programId });
     if (existing) {
         const differs = [
-            existing.lens !== lensKey ? `lens ${existing.lens}` : null,
+            existing.lenses.join() !== lensKeys.join() ? `lens ${existing.lenses.join(', ') || '(none)'}` : null,
+            existing.lensThreshold !== threshold ? `lens threshold ${existing.lensThreshold}` : null,
+            existing.fundingMint !== mint || existing.requiredFunding !== target ? `funding target ${existing.requiredFunding} of ${existing.fundingMint ?? 'no mint'}` : null,
             explicitDeadline && existing.deadline !== deadlineSeconds ? `deadline ${existing.deadline}` : null,
             existing.requiredLamports !== required ? `required lamports ${existing.requiredLamports}` : null
         ].filter(Boolean);
@@ -114,8 +140,8 @@ export async function mintAgreement({
             throw new Error(`agreement ${cid} has a deadline (${new Date(deadlineSeconds * 1000).toISOString()}) that is not in the future; nothing signed`);
         }
         instructions.push(agreementClient.buildCreateIx({
-            authority: sponsor, programId, cid, lens: lensKey, deadline: deadlineSeconds, openGround: Boolean(openGround),
-            requiredLamports: required, payout: payout ? keyText(payout) : sponsor
+            authority: sponsor, programId, cid, lenses: lensKeys, lensThreshold: threshold, deadline: deadlineSeconds, openGround: Boolean(openGround),
+            requiredLamports: required, payout: payout ? keyText(payout) : sponsor, fundingMint: mint, requiredFunding: target
         }).instruction);
     }
     const escrow = existing ? existing.escrowLamports : 0n;
@@ -163,10 +189,12 @@ export async function fundAgreement({
 }
 
 /**
- * Record the lens's AgreementDecision-v1 attestation on the agreement (`attest`, permissionless; the
- * signer only pays the fee). The program's own checks run first on the two accounts
+ * Record a lens member's AgreementDecision-v1 attestation on the agreement (`attest`, permissionless;
+ * the signer only pays the fee). The program's own checks run first on the two accounts
  * (agreement-client.js checkDecisionForAttest), so nothing is signed that the program would refuse; an
- * agreement whose decision is already recorded is a replay.
+ * agreement whose decision is already recorded, whose member already confirmed or whose lens threshold
+ * is already met is a replay. `decision` is the account's afterwards: Satisfied only once the threshold
+ * and any contribution target are met.
  */
 export async function recordAgreementDecision({
     connection, payerKeypair, account, attestation, nowSeconds = Math.floor(Date.now() / 1000), programId = AGREEMENT_PROGRAM_ID,
@@ -186,10 +214,39 @@ export async function recordAgreementDecision({
         await delay(ATTESTATION_READ_PAUSE_MS * attempt);
     }
     const reason = agreementClient.checkDecisionForAttest({ agreement: state, attestation: fact, nowSeconds });
+    if (reason === 'member-confirmed' || reason === 'lens-confirmed') return { replayed: true, signature: null, decision: state.decision, attestation };
     if (reason) throw new Error(`the decision attestation ${attestation} cannot be recorded on ${account}: ${reason}`);
     const signature = await send(connection, [agreementClient.buildAttestIx({ agreement: account, attestation, credential: fact.credential, programId })],
         payerKeypair, sendAndConfirm);
-    return { replayed: false, signature, decision: 'Satisfied', attestation };
+    const after = await readAgreementAccount(connection, { account, programId });
+    return { replayed: false, signature, decision: after?.decision ?? state.decision, attestation };
+}
+
+/**
+ * Record that the agreement's contribution target is met (`confirm_funding`, permissionless; the signer
+ * only pays the fee): the program reads the agreement's proposal_pledge donation escrow and its vault
+ * itself. `escrow` is the pledge client's decoded DonationEscrow (readDonationEscrow) at
+ * `escrowAddress`. An agreement without a target or with it already confirmed is a replay; credited
+ * contributions short of the target are refused before anything is signed.
+ */
+export async function confirmAgreementFunding({
+    connection, payerKeypair, account, escrowAddress, escrow, programId = AGREEMENT_PROGRAM_ID,
+    sendAndConfirm = web3.sendAndConfirmTransaction
+} = {}) {
+    if (!payerKeypair?.publicKey) throw new Error('payerKeypair is required');
+    const state = await readAgreementAccount(connection, { account, programId });
+    if (!state) throw new Error(`agreement account ${account} does not exist`);
+    if (!(state.requiredFunding > 0n) || state.fundingMet || state.decisionCode !== agreementClient.constants.DECISION_PENDING) {
+        return { replayed: true, signature: null, decision: state.decision, fundingMet: state.fundingMet };
+    }
+    const credited = escrow ? BigInt(escrow.totalDonated) - BigInt(escrow.totalRefunded) : 0n;
+    if (credited < state.requiredFunding) {
+        throw new Error(`agreement ${account} has ${credited} of ${state.requiredFunding} credited toward its funding target; nothing signed`);
+    }
+    const signature = await send(connection, [agreementClient.buildConfirmFundingIx({ agreement: account, escrow: escrowAddress, vault: escrow.vault, programId })],
+        payerKeypair, sendAndConfirm);
+    const after = await readAgreementAccount(connection, { account, programId });
+    return { replayed: false, signature, decision: after?.decision ?? state.decision, fundingMet: after?.fundingMet ?? true };
 }
 
 /**

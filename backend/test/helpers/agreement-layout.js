@@ -38,6 +38,19 @@ export function rustUsizeConst(source, name) {
     return match[1].split('+').reduce((sum, term) => sum + term.split('*').reduce((product, factor) => product * Number(factor.trim()), 1), 0);
 }
 
+// The value of `pub const NAME: usize = <expr>;` where the expression sums and subtracts products of
+// integers and other such constants (e.g. `MAX_LENSES - 1`, `LENS_COUNT_OFFSET + 1`), without eval.
+export function rustUsizeExpr(source, name) {
+    const match = source.match(new RegExp(`pub const ${name}: usize = ([0-9A-Z_ +*-]+);`));
+    if (!match) throw new Error(`usize const not found: ${name}`);
+    const factor = token => (/^\d+$/.test(token) ? Number(token) : rustUsizeExpr(source, token));
+    const term = text => text.split('*').reduce((product, token) => product * factor(token.trim()), 1);
+    return match[1].trim().split(/\s*(?=[+-])/).reduce((sum, part) => {
+        const sign = part.startsWith('-') ? -1 : 1;
+        return sum + sign * term(part.replace(/^[+-]\s*/, ''));
+    }, 0);
+}
+
 // The body of one Rust fn, from `fn name(` to the closing brace at the start of a line.
 export function rustFnBody(source, name) {
     const start = source.indexOf(`fn ${name}(`);
@@ -46,12 +59,12 @@ export function rustFnBody(source, name) {
 }
 
 // Borsh size of a fixed-size field; null for the trailing String, whose length varies.
-function fieldSize(type, unitEnums) {
+function fieldSize(type, unitEnums, source) {
     if (type === 'Pubkey') return 32;
     if (type === 'i64' || type === 'u64') return 8;
     if (type === 'bool' || type === 'u8' || unitEnums.includes(type)) return 1;
-    const array = type.match(/^\[u8; (\d+)\]$/);
-    if (array) return Number(array[1]);
+    const array = type.match(/^\[(u8|Pubkey); (\w+)\]$/);
+    if (array) return (array[1] === 'u8' ? 1 : 32) * (/^\d+$/.test(array[2]) ? Number(array[2]) : rustUsizeExpr(source, array[2]));
     if (type === 'String') return null;
     throw new Error(`no borsh size for ${type}`);
 }
@@ -66,7 +79,7 @@ export function agreementRustLayout() {
     let offset = 8;
     for (const field of fields) {
         offsets[field.name] = offset;
-        const size = fieldSize(field.type, unitEnums);
+        const size = fieldSize(field.type, unitEnums, source);
         if (size === null) break;
         offset += size;
     }
@@ -76,6 +89,11 @@ export function agreementRustLayout() {
         offsets,
         LENS_OFFSET: rustUsizeConst(source, 'LENS_OFFSET'),
         STATUS_OFFSET: rustUsizeConst(source, 'STATUS_OFFSET'),
+        EXECUTED_AT_OFFSET: rustUsizeExpr(source, 'EXECUTED_AT_OFFSET'),
+        LENS_COUNT_OFFSET: rustUsizeExpr(source, 'LENS_COUNT_OFFSET'),
+        MORE_LENSES_OFFSET: rustUsizeExpr(source, 'MORE_LENSES_OFFSET'),
+        LENS_SET_END: rustUsizeExpr(source, 'LENS_SET_END'),
+        MAX_LENSES: rustUsizeExpr(source, 'MAX_LENSES'),
         statusCodes: rustEnumCodes(source, 'AgreementStatus'),
         decisionCodes: rustEnumCodes(source, 'Decision'),
         programId: source.match(/declare_id!\("([1-9A-HJ-NP-Za-km-z]+)"\)/)[1]

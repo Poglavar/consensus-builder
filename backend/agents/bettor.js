@@ -38,7 +38,7 @@ function sideName(side) {
 
 function verifyBinding(raw, agreement) {
     if (raw && (raw.proposal !== agreement.address || raw.stakeMint !== DEVNET_USDC_MINT ||
-        raw.seed !== lmsr.maxLoss(raw.b) || (raw.kind === 1 && raw.trustedAttester !== agreement.lens))) {
+        raw.seed !== lmsr.maxLoss(raw.b) || (raw.kind === 1 && !agreement.lenses.includes(raw.trustedAttester)))) {
         throw failure('Market does not match the selected agreement and funded USDC terms.', 'MARKET_BINDING_MISMATCH');
     }
     return raw;
@@ -93,7 +93,7 @@ async function checkTrade({ agreement, market: raw, connection }, owner) {
     if (raw.resolved || raw.proposed || (raw.kind === 0 && agreement.status !== 'Active') || raw.closesAt <= BigInt(await chainTime(connection))) {
         throw failure('Trading has closed for this market.', 'MARKET_CLOSED');
     }
-    if ([agreement.authority, agreement.lens, raw.kind === 1 && raw.trustedAttester].includes(owner.toBase58())) {
+    if ([agreement.authority, ...agreement.lenses, raw.kind === 1 && raw.trustedAttester].includes(owner.toBase58())) {
         throw failure('The agreement sponsor and verifier cannot trade this market.', 'INSIDER_TRADE');
     }
 }
@@ -156,8 +156,12 @@ export function usdcToAtomic(decimalString) {
     return BigInt(whole) * 1_000_000n + BigInt(fraction.padEnd(6, '0') || '0');
 }
 
-/** Fund a market as its creator. Replaying the same terms returns the existing funded account. */
-export async function openAgreementMarket({ connection, creatorKeypair, sponsorKeypair, subject, b = DEFAULT_B, closesAt, external, publishRecipe, maxSeedAtomic,
+/**
+ * Fund a market as its creator. Replaying the same terms returns the existing funded account. A
+ * public-record (`external`) market names one of the agreement's lens members as its verifier:
+ * `trustedAttester`, or the first member when not given.
+ */
+export async function openAgreementMarket({ connection, creatorKeypair, sponsorKeypair, subject, b = DEFAULT_B, closesAt, external, trustedAttester = null, publishRecipe, maxSeedAtomic,
     ensureSeed = async () => {}, readSeedBalance = async (rpc, wallet) => {
         const ata = splToken.getAssociatedTokenAddressSync(new web3.PublicKey(DEVNET_USDC_MINT), wallet);
         try {
@@ -178,7 +182,9 @@ export async function openAgreementMarket({ connection, creatorKeypair, sponsorK
         throw failure('Agreement account identity is unavailable.', 'AGREEMENT_UNAVAILABLE');
     }
     const rpc = await chain.connection();
-    const data = external ? { proposal: subject, trustedAttester: agreement.lens, external } : null;
+    const attester = trustedAttester ?? agreement.lenses[0] ?? null;
+    if (external && !agreement.lenses.includes(attester)) throw failure('The verifier must be one of the agreement\'s lens members.', 'ATTESTER_NOT_IN_LENS');
+    const data = external ? { proposal: subject, trustedAttester: attester, external } : null;
     const prepared = data ? externalRecipe.build(data) : null;
     closesAt ??= prepared?.closesAt ?? agreement.deadline;
     if (!Number.isSafeInteger(closesAt) || (prepared && closesAt !== prepared.closesAt)) throw failure('Invalid question deadline.', 'INVALID_DEADLINE');

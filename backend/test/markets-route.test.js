@@ -57,7 +57,7 @@ const poolFor = (agreementRows = rows(), sites = OVERLAPPING) => ({
 });
 // The agreement reads a pool saw (the design reads beside them are not what the cache saves).
 const agreementReads = pool => pool.query.mock.calls.filter(([sql]) => sql !== DESIGN_LAND_SQL);
-const openPool = () => new Map([[ACCOUNT, { sponsor: SPONSOR, lens: STRANGER, chainStatus: 'active', deadline: '2026-12-31T00:00:00.000Z', markets: [{ address: MARKET, market: {
+const openPool = () => new Map([[ACCOUNT, { sponsor: SPONSOR, lenses: [STRANGER], chainStatus: 'active', deadline: '2026-12-31T00:00:00.000Z', markets: [{ address: MARKET, market: {
     b: 100_000_000n, qYes: 250000n, qNo: 0n, seed: 69_314_720n, closesAt: Math.floor(Date.parse('2026-12-31T00:00:00Z') / 1000),
     graceSeconds: 0, maxPosition: 0n, paidOut: 0n, creator: SPONSOR, resolved: false, outcome: 0
 } }] }]]);

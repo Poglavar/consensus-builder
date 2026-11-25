@@ -6,6 +6,7 @@
 // mint sends the one create instruction the agreement and its sponsor call for.
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
+import { agreementAccountBytes } from './fixtures/agreement-account.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
@@ -36,21 +37,13 @@ const u32 = value => { const out = Buffer.alloc(4); out.writeUInt32LE(value); re
 const i64 = value => { const out = Buffer.alloc(8); out.writeBigInt64LE(BigInt(value)); return out; };
 const str = text => Buffer.concat([u32(Buffer.byteLength(text)), Buffer.from(text, 'utf8')]);
 
-// An Agreement account (README offsets): status/decision as codes, lamports as BigInt.
-function agreementData({ cid = CID, authority = SPONSOR, lens = LENS, payout = PAYOUT, deadline = 0, required = 1_000_000_000n, escrow = 0n, status = 0, decision = 0 } = {}) {
-    const bytes = Buffer.alloc(C.AGREEMENT_ACCOUNT_SPACE);
-    Buffer.from(client.ACCOUNT_DISCRIMINATORS.Agreement).copy(bytes, 0);
-    new PublicKey(authority).toBuffer().copy(bytes, 8);
-    new PublicKey(lens).toBuffer().copy(bytes, 40);
-    new PublicKey(payout).toBuffer().copy(bytes, 72);
-    bytes.writeBigInt64LE(BigInt(deadline), 104);
-    bytes.writeBigUInt64LE(required, 120);
-    bytes.writeBigUInt64LE(escrow, 128);
-    bytes[136] = status;
-    bytes[138] = decision;
-    str(cid).copy(bytes, 228);
-    return bytes;
+// An Agreement account (README offsets, fixtures/agreement-account.js): status/decision as codes,
+// lamports as BigInt, a one-member lens unless `lenses` says otherwise.
+function agreementData({ cid = CID, authority = SPONSOR, lens = LENS, lenses = [lens], payout = PAYOUT, deadline = 0, required = 1_000_000_000n, escrow = 0n, status = 0, decision = 0, ...rest } = {}) {
+    return agreementAccountBytes({ cid, authority, lenses, payout, deadline, requiredLamports: required, escrowLamports: escrow, status, decision, ...rest });
 }
+// The terms a crowdfunding account carries: the sponsor's payout, no SOL escrow, the 20 USDC target.
+const CROWD_TERMS = Object.freeze({ payout: SPONSOR, required: 0n, fundingMint: C.USDC_DEVNET_MINT, requiredFunding: 20_000_000n });
 
 // The lens's AgreementDecision-v1 SAS attestation for this agreement.
 function attestationData({ signer = LENS, decision = 'satisfied', sponsor = SPONSOR } = {}) {
@@ -155,19 +148,28 @@ describe('pure helpers', () => {
         expect(Bridge.onchainRef(null)).toBeNull();
     });
 
-    it('names the rule\'s first lens key in a mint, or for a community vote the first one configured', () => {
-        expect(Bridge.mintLens(proposed({ rule: { electorate: 'owners', lens: ['not-a-key', { address: LENS }, PAYOUT] } }))).toBe(LENS);
-        expect(Bridge.mintLens(proposed({ rule: { electorate: 'owners', lens: [] } }), [LENS])).toBeNull();
-        expect(Bridge.mintLens(proposed({ rule: { electorate: 'community', lens: [] } }), [{ address: 'nope' }, { address: PAYOUT }])).toBe(PAYOUT);
-        expect(Bridge.mintLens(proposed({ rule: { electorate: 'community' } }))).toBeNull();
-        expect(Bridge.mintLens(null)).toBeNull();
+    it('mints the rule\'s lens set and threshold, or for a community vote the first lens member configured', () => {
+        const none = { lenses: [], lensThreshold: 0 };
+        expect(Bridge.mintLenses(proposed({ rule: { electorate: 'owners', lens: ['not-a-key', { address: LENS }, PAYOUT] } }))).toEqual({ lenses: [LENS, PAYOUT], lensThreshold: 1 });
+        expect(Bridge.mintLenses(proposed({ rule: { electorate: 'owners', lens: [LENS, PAYOUT, SPONSOR], lensThreshold: 2 } }))).toEqual({ lenses: [LENS, PAYOUT, SPONSOR], lensThreshold: 2 });
+        expect(Bridge.mintLenses(proposed({ rule: { electorate: 'owners', lens: [] } }), [LENS])).toEqual(none);
+        expect(Bridge.mintLenses(proposed({ rule: { electorate: 'community', lens: [] } }), [{ address: 'nope' }, { address: PAYOUT }, { address: LENS }])).toEqual({ lenses: [PAYOUT], lensThreshold: 1 });
+        expect(Bridge.mintLenses(proposed({ rule: { electorate: 'community' } }))).toEqual(none);
+        expect(Bridge.mintLenses(null)).toEqual(none);
+    });
+
+    it('counts the contributions an escrow credits towards a target', () => {
+        expect(Bridge.fundingCredited(null)).toBe(0n);
+        expect(Bridge.fundingCredited({ totalDonated: 30n, totalRefunded: 5n })).toBe(25n);
+        expect(Bridge.fundingCredited({ totalDonated: 5n, totalRefunded: 5n })).toBe(0n);
     });
 
     it('says what the program would accept now, from the account and the connected wallet', () => {
         const value = (fields = {}) => client.readAgreement(agreementData(fields));
         const now = 1_790_000_000;
         const actions = (fields, options = {}) => Bridge.chainActions(value(fields), { wallet: SPONSOR, nowSeconds: now, ...options });
-        expect(actions()).toEqual({ fund: true, attest: false, execute: false, cancel: true, expire: false, authority: true, funded: false, deadlinePassed: false });
+        expect(actions()).toEqual({ fund: true, attest: false, confirmFunding: false, execute: false, cancel: true, expire: false, authority: true, funded: false,
+            lensMet: false, fundingMet: true, credited: null, deadlinePassed: false });
         expect(actions({}, { attestation: ATTESTATION })).toMatchObject({ attest: true });
         expect(actions({}, { wallet: STRANGER, attestation: ATTESTATION })).toMatchObject({ fund: false, cancel: false, attest: true, authority: false });
         expect(actions({}, { wallet: null, attestation: ATTESTATION })).toMatchObject({ fund: false, attest: false, cancel: false, execute: false, expire: false });
@@ -177,7 +179,8 @@ describe('pure helpers', () => {
         expect(actions({ decision: 1, required: 0n })).toMatchObject({ execute: true, funded: true });
         // Past the deadline only expiry is left (cancel stays the sponsor's while undecided).
         expect(actions({ deadline: now - 1, decision: 1, escrow: 1_000_000_000n }, { attestation: ATTESTATION }))
-            .toEqual({ fund: false, attest: false, execute: false, cancel: false, expire: true, authority: true, funded: true, deadlinePassed: true });
+            .toEqual({ fund: false, attest: false, confirmFunding: false, execute: false, cancel: false, expire: true, authority: true, funded: true,
+                lensMet: false, fundingMet: true, credited: null, deadlinePassed: true });
         expect(actions({ deadline: now - 1 })).toMatchObject({ cancel: true, expire: true });
         // A closed agreement accepts nothing.
         for (const status of [1, 2, 3]) {
@@ -185,6 +188,19 @@ describe('pure helpers', () => {
                 .toMatchObject({ fund: false, attest: false, execute: false, cancel: false, expire: false });
         }
         expect(Bridge.chainActions(null, { wallet: SPONSOR })).toMatchObject({ fund: false, cancel: false, expire: false, authority: false });
+        // A lens of three with threshold 2: attest while short of it, not once two members confirmed.
+        const trio = { lenses: [LENS, STRANGER, PAYOUT], lensThreshold: 2 };
+        expect(actions({ ...trio, lensConfirmed: [LENS] }, { attestation: ATTESTATION })).toMatchObject({ attest: true, lensMet: false });
+        expect(actions({ ...trio, lensConfirmed: [LENS, PAYOUT] }, { attestation: ATTESTATION })).toMatchObject({ attest: false, lensMet: true });
+        // A contribution target: confirmable by anyone once the escrow credits it, recorded once.
+        const target = { ...CROWD_TERMS, lenses: [], lensThreshold: 0 };
+        const escrow = (donated, refunded = 0n) => ({ totalDonated: donated, totalRefunded: refunded });
+        expect(actions(target, { wallet: STRANGER, escrow: escrow(20_000_000n) })).toMatchObject({ confirmFunding: true, lensMet: true, fundingMet: false, credited: 20_000_000n });
+        expect(actions(target, { wallet: STRANGER, escrow: escrow(25_000_000n, 6_000_000n) })).toMatchObject({ confirmFunding: false, credited: 19_000_000n });
+        expect(actions(target, { wallet: STRANGER })).toMatchObject({ confirmFunding: false, credited: 0n });
+        expect(actions({ ...target, fundingMet: true }, { wallet: STRANGER, escrow: escrow(20_000_000n) })).toMatchObject({ confirmFunding: false, fundingMet: true });
+        expect(actions(target, { wallet: null, escrow: escrow(20_000_000n) })).toMatchObject({ confirmFunding: false });
+        expect(actions({ ...target, deadline: now - 1 }, { wallet: STRANGER, escrow: escrow(20_000_000n) })).toMatchObject({ confirmFunding: false, expire: true });
     });
 
     it('picks the lens decision the account can record from a member\'s listed attestations', () => {
@@ -199,6 +215,11 @@ describe('pure helpers', () => {
             expect(Bridge.decisionAttestationOf([other], { cid: CID, value }), JSON.stringify(other)).toBeNull();
         }
         expect(Bridge.decisionAttestationOf([fits], { cid: CID, value: null })).toBeNull();
+        // Any member whose confirmation is open; a member already counted is not asked again.
+        const trio = client.readAgreement(agreementData({ lenses: [STRANGER, LENS], lensThreshold: 2, lensConfirmed: [STRANGER] }));
+        expect(Bridge.decisionAttestationOf([listed({ authority: STRANGER }), fits], { cid: CID, value: trio })).toBe(fits);
+        expect(Bridge.decisionAttestationOf([listed({ authority: STRANGER })], { cid: CID, value: trio })).toBeNull();
+        expect(Bridge.decisionAttestationOf([fits], { cid: CID, value: trio, member: STRANGER })).toBeNull();
         expect(Bridge.decisionAttestationOf(null, { cid: CID, value })).toBeNull();
     });
 
@@ -230,9 +251,10 @@ describe('minting', () => {
         const { agreement, address, cid, deadline } = crowdfunding();
         const { win, bridge, connection } = fakeWindow();
         win.AgreementRecord = records;
-        await bridge.mint({ agreement, lens: STRANGER, payout: PAYOUT, requiredLamports: 999n });
-        expect(sentInstruction(connection).data).toEqual(client.buildCreateIx({ authority: SPONSOR, cid, lens: LENS, deadline, openGround: false, requiredLamports: 0n, payout: SPONSOR }).instruction.data);
-        const accounts = new Map([[address, { data: agreementData({ cid, payout: SPONSOR, required: 0n, deadline }) }]]);
+        await bridge.mint({ agreement, lenses: [STRANGER], lensThreshold: 1, payout: PAYOUT, requiredLamports: 999n });
+        expect(sentInstruction(connection).data).toEqual(client.buildCreateIx({ authority: SPONSOR, cid, lenses: [LENS], lensThreshold: 1, deadline, openGround: false,
+            requiredLamports: 0n, payout: SPONSOR, fundingMint: C.USDC_DEVNET_MINT, requiredFunding: 20_000_000n }).instruction.data);
+        const accounts = new Map([[address, { data: agreementData({ cid, ...CROWD_TERMS, deadline }) }]]);
         const investor = fakeWindow({ wallet: STRANGER, connection: fakeConnection({ accounts }) });
         Object.assign(investor.win, { AgreementRecord: records, SolanaPledgeClient: pledge.configure({ web3 }), crypto: globalThis.crypto });
         agreement.onchain = { chain: 'solana', cluster: 'devnet', account: address };
@@ -249,7 +271,7 @@ describe('minting', () => {
             drawing: { name: 'floor.pdf', mediaType: 'application/pdf', data: Buffer.from('%PDF-1.7').toString('base64') } };
         const { agreement, address, cid, deadline } = crowdfunding(undefined, { projectId: 'courtyard', units: [unit] });
         agreement.onchain = { chain: 'solana', cluster: 'devnet', account: address };
-        const accounts = new Map([[address, { data: agreementData({ cid, payout: SPONSOR, required: 0n, deadline }) }]]);
+        const accounts = new Map([[address, { data: agreementData({ cid, ...CROWD_TERMS, deadline }) }]]);
         const client = pledge.configure({ web3 });
         const [offer] = client.apartmentOffers(agreement.funding, SPONSOR, records);
         const developer = fakeWindow({ connection: fakeConnection({ accounts }) });
@@ -289,7 +311,7 @@ describe('minting', () => {
     it('explains investor funding failures only when the devnet account reads establish them', async () => {
         const { agreement, address, deadline } = crowdfunding();
         agreement.onchain = { chain: 'solana', cluster: 'devnet', account: address };
-        const accounts = new Map([[address, { data: agreementData({ cid: agreement.published.cid, payout: SPONSOR, required: 0n, deadline }) }]]);
+        const accounts = new Map([[address, { data: agreementData({ cid: agreement.published.cid, ...CROWD_TERMS, deadline }) }]]);
         const simulation = { err: 'InvalidAccountForFee', logs: [] };
         const connection = fakeConnection({ accounts, simulation });
         connection.getMultipleParsedAccounts = vi.fn().mockResolvedValue({ value: [null, null] });
@@ -334,7 +356,7 @@ describe('minting', () => {
     it('can cancel a contribution during simulation or wallet approval before broadcasting it', async () => {
         const { agreement, address, deadline } = crowdfunding();
         agreement.onchain = { chain: 'solana', cluster: 'devnet', account: address };
-        const accounts = new Map([[address, { data: agreementData({ cid: agreement.published.cid, payout: SPONSOR, required: 0n, deadline }) }]]);
+        const accounts = new Map([[address, { data: agreementData({ cid: agreement.published.cid, ...CROWD_TERMS, deadline }) }]]);
         const { win, bridge, provider, connection } = fakeWindow({ wallet: STRANGER, connection: fakeConnection({ accounts }) });
         Object.assign(win, { AgreementRecord: records, SolanaPledgeClient: pledge.configure({ web3 }), crypto: globalThis.crypto });
         const duringSimulation = new AbortController();
@@ -359,17 +381,18 @@ describe('minting', () => {
         win.AgreementRecord = records;
         agreement.onchain = { chain: 'solana', cluster: 'devnet', account: address };
         const contribute = (row = agreement) => bridge.donate({ agreement: row, amountAtomic: 1000001n });
-        for (const wrong of [{ payout: STRANGER }, { lens: STRANGER }, { deadline: deadline + 1 }, { required: 5n }]) {
-            accounts.set(address, { data: agreementData({ cid, payout: SPONSOR, required: 0n, deadline, ...wrong }) });
+        for (const wrong of [{ payout: STRANGER }, { lens: STRANGER }, { lenses: [LENS, STRANGER] }, { deadline: deadline + 1 }, { required: 5n },
+            { requiredFunding: 19_000_000n }, { fundingMint: STRANGER }]) {
+            accounts.set(address, { data: agreementData({ cid, ...CROWD_TERMS, deadline, ...wrong }) });
             await expect(contribute()).rejects.toMatchObject({ code: 'funding-mismatch' });
         }
         await expect(contribute({ ...agreement, funding: { ...agreement.funding, contract: { ...agreement.funding.contract, data: 'WA==' } } })).rejects.toMatchObject({ code: 'funding-mismatch' });
-        accounts.set(address, { data: agreementData({ cid, payout: SPONSOR, required: 0n, deadline }) });
+        accounts.set(address, { data: agreementData({ cid, ...CROWD_TERMS, deadline }) });
         win.solanaWalletManager.getCluster = () => 'mainnet-beta';
         await expect(contribute()).rejects.toMatchObject({ code: 'wrong-cluster' });
         win.solanaWalletManager.getCluster = () => 'devnet';
         const late = crowdfunding(nowSeconds() - 10);
-        accounts.set(late.address, { data: agreementData({ cid: late.cid, payout: SPONSOR, deadline: late.deadline, required: 0n }) });
+        accounts.set(late.address, { data: agreementData({ cid: late.cid, ...CROWD_TERMS, deadline: late.deadline }) });
         await expect(contribute({ ...late.agreement, onchain: { ...agreement.onchain, account: late.address } })).rejects.toMatchObject({ code: 'deadline-passed' });
         expect(provider.signTransaction).not.toHaveBeenCalled();
     });
@@ -377,7 +400,7 @@ describe('minting', () => {
     it('recovers the existing investor position after a lost confirmation without signing a second transfer', async () => {
         const { agreement, address, cid, deadline } = crowdfunding();
         agreement.onchain = { chain: 'solana', cluster: 'devnet', account: address };
-        const accounts = new Map([[address, { data: agreementData({ cid, payout: SPONSOR, required: 0n, deadline }) }]]);
+        const accounts = new Map([[address, { data: agreementData({ cid, ...CROWD_TERMS, deadline }) }]]);
         const connection = fakeConnection({ accounts, confirmation: new Error('timeout') });
         const { win, bridge, provider } = fakeWindow({ wallet: STRANGER, connection });
         const readPosition = vi.fn(async () => ({ amount: 5000001n, refunded: false }));
@@ -408,14 +431,14 @@ describe('minting', () => {
         const deadline = new Date(Date.now() + 7 * 86400 * 1000).toISOString();
         const { bridge, provider, connection } = fakeWindow();
         const states = [];
-        const result = await bridge.mint({ agreement: proposed({ deadline, inputs: { parcels: [], openGroundM2: 12 } }), lens: LENS,
+        const result = await bridge.mint({ agreement: proposed({ deadline, inputs: { parcels: [], openGroundM2: 12 } }), lenses: [LENS],
             requiredLamports: 2_000_000_000n, payout: PAYOUT, onStatus: status => states.push(status.state) });
         expect(result).toEqual({ signature: 'sig-1', account: ACCOUNT, cluster: 'devnet', explorerUrl: 'https://explorer.solana.com/tx/sig-1?cluster=devnet' });
         expect(states).toEqual(['preparing', 'awaiting_signature', 'submitted', 'confirmed']);
         expect(connection.calls).toEqual(['getLatestBlockhash', 'simulateTransaction/0', 'sendRawTransaction', 'confirmTransaction']);
         expect(provider.signTransaction).toHaveBeenCalledTimes(1);
         const instruction = sentInstruction(connection);
-        const expected = client.buildCreateIx({ authority: SPONSOR, cid: CID, lens: LENS, deadline: client.toDeadlineSeconds(deadline),
+        const expected = client.buildCreateIx({ authority: SPONSOR, cid: CID, lenses: [LENS], lensThreshold: 1, deadline: client.toDeadlineSeconds(deadline),
             openGround: true, requiredLamports: 2_000_000_000n, payout: PAYOUT }).instruction;
         expect(instruction.programId.toBase58()).toBe(C.AGREEMENT_PROGRAM_ID);
         expect(Buffer.from(instruction.data)).toEqual(Buffer.from(expected.data));
@@ -426,10 +449,11 @@ describe('minting', () => {
     it('gives an agreement without a deadline one 90 days from now, as the program requires one', async () => {
         const { bridge, connection } = fakeWindow();
         const before = Math.floor(Date.now() / 1000);
-        await bridge.mint({ agreement: proposed({ deadline: null }), lens: LENS, payout: PAYOUT });
+        await bridge.mint({ agreement: proposed({ deadline: null }), lenses: [LENS], payout: PAYOUT });
         const after = Math.floor(Date.now() / 1000);
-        // create data: discriminator (8), cid (u32 length + bytes), lens (32), then the i64 deadline.
-        const sent = Number(Buffer.from(sentInstruction(connection).data).readBigInt64LE(8 + 4 + CID.length + 32));
+        // create data: discriminator (8), cid (u32 length + bytes), lenses (u32 count + 32 each), the
+        // u8 threshold, then the i64 deadline.
+        const sent = Number(Buffer.from(sentInstruction(connection).data).readBigInt64LE(8 + 4 + CID.length + 4 + 32 + 1));
         expect(sent).toBeGreaterThanOrEqual(before + C.DEFAULT_DEADLINE_SECONDS);
         expect(sent).toBeLessThanOrEqual(after + C.DEFAULT_DEADLINE_SECONDS);
     });
@@ -437,7 +461,7 @@ describe('minting', () => {
     it('returns the account without sending when the agreement is already on chain at its address', async () => {
         const connection = mintedOn(agreementData());
         const { bridge, provider } = fakeWindow({ connection });
-        await expect(bridge.mint({ agreement: proposed(), lens: LENS, payout: PAYOUT }))
+        await expect(bridge.mint({ agreement: proposed(), lenses: [LENS], payout: PAYOUT }))
             .resolves.toEqual({ signature: null, account: ACCOUNT, cluster: 'devnet', explorerUrl: `https://explorer.solana.com/address/${ACCOUNT}?cluster=devnet` });
         expect(provider.signTransaction).not.toHaveBeenCalled();
         expect(connection.calls).toEqual([]);
@@ -451,7 +475,9 @@ describe('minting', () => {
             ['no-sponsor', fakeWindow(), { agreement: proposed({ published: { ...proposed().published, sponsor: null } }) }],
             ['wallet-required', fakeWindow({ wallet: null }), {}],
             ['not-sponsor', fakeWindow({ wallet: STRANGER }), {}],
-            ['no-lens', fakeWindow(), { lens: ' ' }],
+            ['no-lens', fakeWindow(), { lenses: [] }],
+            ['lens-invalid', fakeWindow(), { lenses: [LENS, LENS] }],
+            ['lens-invalid', fakeWindow(), { lenses: [LENS, PAYOUT], lensThreshold: 3 }],
             ['deadline-passed', fakeWindow(), { agreement: proposed({ deadline: past }) }],
             ['deadline-passed', fakeWindow(), { deadline: past }],
             // The epoch (what NO_DEADLINE meant) is a passed deadline now, not "none".
@@ -460,7 +486,7 @@ describe('minting', () => {
             ['web3-unavailable', fakeWindow({ web3Loaded: false }), {}]
         ];
         for (const [code, { bridge, provider, connection }, options] of cases) {
-            const error = await thrown(() => bridge.mint({ agreement: proposed(), lens: LENS, payout: PAYOUT, ...options }));
+            const error = await thrown(() => bridge.mint({ agreement: proposed(), lenses: [LENS], payout: PAYOUT, ...options }));
             expect(error?.code, code).toBe(code);
             expect(error.message, code).toBeTruthy();
             if (provider) expect(provider.signTransaction, code).not.toHaveBeenCalled();
@@ -469,18 +495,18 @@ describe('minting', () => {
     });
 
     it('words the refusals the user can act on', async () => {
-        expect((await thrown(() => fakeWindow({ wallet: STRANGER }).bridge.mint({ agreement: proposed(), lens: LENS, payout: PAYOUT }))).message)
+        expect((await thrown(() => fakeWindow({ wallet: STRANGER }).bridge.mint({ agreement: proposed(), lenses: [LENS], payout: PAYOUT }))).message)
             .toBe(`Only the sponsor’s wallet (${SPONSOR.slice(0, 4)}…${SPONSOR.slice(-4)}) can mint this agreement.`);
-        expect((await thrown(() => fakeWindow({ connection: fakeConnection({ deployed: false }) }).bridge.mint({ agreement: proposed(), lens: LENS, payout: PAYOUT }))).message)
+        expect((await thrown(() => fakeWindow({ connection: fakeConnection({ deployed: false }) }).bridge.mint({ agreement: proposed(), lenses: [LENS], payout: PAYOUT }))).message)
             .toBe('The agreement program is not deployed on Solana devnet yet.');
-        expect((await thrown(() => fakeWindow({ wallet: null }).bridge.mint({ agreement: proposed(), lens: LENS, payout: PAYOUT }))).message)
+        expect((await thrown(() => fakeWindow({ wallet: null }).bridge.mint({ agreement: proposed(), lenses: [LENS], payout: PAYOUT }))).message)
             .toBe('Connect a Solana wallet first.');
     });
 
     it('names the program\'s error when the simulation fails, and signs nothing', async () => {
         const connection = fakeConnection({ simulation: { err: { InstructionError: [0, { Custom: 6011 }] }, logs: ['Program log: AnchorError occurred. Error Code: InvalidPayout. Error Number: 6011. Error Message: The payout must be a real account other than the agreement itself.'] } });
         const { bridge, provider } = fakeWindow({ connection });
-        const error = await thrown(() => bridge.mint({ agreement: proposed(), lens: LENS, payout: PAYOUT }));
+        const error = await thrown(() => bridge.mint({ agreement: proposed(), lenses: [LENS], payout: PAYOUT }));
         expect(error).toMatchObject({ code: 'simulation-failed', programError: 'InvalidPayout' });
         expect(error.message).toBe('The transaction would fail: The payout must be a real account other than the agreement itself');
         expect(provider.signTransaction).not.toHaveBeenCalled();
@@ -488,10 +514,10 @@ describe('minting', () => {
 
     it('says whether a sent transaction failed or its confirmation is unknown', async () => {
         const failed = fakeWindow({ connection: fakeConnection({ confirmation: { value: { err: { InstructionError: [0, 'Custom'] } } } }) });
-        expect(await thrown(() => failed.bridge.mint({ agreement: proposed(), lens: LENS, payout: PAYOUT })))
+        expect(await thrown(() => failed.bridge.mint({ agreement: proposed(), lenses: [LENS], payout: PAYOUT })))
             .toMatchObject({ code: 'confirmation-failed', signature: 'sig-1', explorerUrl: 'https://explorer.solana.com/tx/sig-1?cluster=devnet' });
         const timedOut = fakeWindow({ connection: fakeConnection({ confirmation: new Error('block height exceeded') }) });
-        expect(await thrown(() => timedOut.bridge.mint({ agreement: proposed(), lens: LENS, payout: PAYOUT })))
+        expect(await thrown(() => timedOut.bridge.mint({ agreement: proposed(), lenses: [LENS], payout: PAYOUT })))
             .toMatchObject({ code: 'confirmation-unknown', signature: 'sig-1' });
     });
 });
@@ -568,6 +594,49 @@ describe('after the mint', () => {
         expect(await thrown(() => bridge.findAttestation(minted(), value))).toMatchObject({ code: 'lens-unavailable', message: 'The lens member could not be asked for its decision: bad gateway' });
         win.LensPicker = { loadDirectory: async () => ({ members: [{ key: LENS }] }) };
         await expect(bridge.findAttestation(minted(), value)).resolves.toBeNull();
+    });
+
+    it('asks each lens member whose confirmation is open, and nobody once the threshold is met', async () => {
+        const value = client.readAgreement(agreementData({ lenses: [STRANGER, PAYOUT, LENS], lensThreshold: 2, lensConfirmed: [STRANGER] }));
+        const { win, bridge } = fakeWindow();
+        const listed = { kind: 'decision', address: ATTESTATION, authority: LENS, expiry: nowSeconds() + 60, payload: { agreementCid: CID, sponsor: SPONSOR, decision: 'satisfied' } };
+        const fetchAttestations = vi.fn(async ({ serviceUrl }) => (serviceUrl === 'https://down.example'
+            ? { status: 502, attestations: null, outcome: { message: 'bad gateway' } } : { status: 200, attestations: [listed] }));
+        win.LensPicker = { loadDirectory: async () => ({ members: [{ key: STRANGER, serviceUrl: 'https://confirmed.example' },
+            { key: PAYOUT, serviceUrl: 'https://down.example' }, { key: LENS, serviceUrl: 'https://lens.example' }] }) };
+        win.LensServiceClient = { fetchAttestations };
+        await expect(bridge.findAttestation(minted(), value)).resolves.toEqual({ address: ATTESTATION, decision: 'satisfied', member: LENS });
+        expect(fetchAttestations.mock.calls.map(([call]) => call.serviceUrl)).toEqual(['https://down.example', 'https://lens.example']);
+        const met = client.readAgreement(agreementData({ lenses: [STRANGER, LENS], lensThreshold: 1, lensConfirmed: [STRANGER] }));
+        fetchAttestations.mockClear();
+        await expect(bridge.findAttestation(minted(), met)).resolves.toBeNull();
+        expect(fetchAttestations).not.toHaveBeenCalled();
+    });
+
+    it('confirms a reached contribution target for anyone, and refuses one the escrow has not reached', async () => {
+        const pledge = require('../../frontend/js/solana/pledge-client.js').configure({ web3 });
+        const crowd = { rule: { electorate: 'owners', binding: true, lens: [] } };
+        const data = agreementData({ ...CROWD_TERMS, lenses: [], lensThreshold: 0, required: 0n });
+        const vault = keyOf(23);
+        const withEscrow = (escrow, fields = data) => {
+            const window = fakeWindow({ wallet: STRANGER, connection: mintedOn(fields) });
+            window.win.SolanaPledgeClient = { ...pledge, readDonationEscrow: vi.fn(async () => escrow) };
+            return window;
+        };
+        const ok = withEscrow({ vault, totalDonated: 21_000_000n, totalRefunded: 1_000_000n });
+        await expect(ok.bridge.confirmFunding({ agreement: minted(crowd) })).resolves.toMatchObject({ signature: 'sig-1', account: ACCOUNT });
+        const instruction = sentInstruction(ok.connection);
+        expect(Buffer.from(instruction.data)).toEqual(Buffer.from(client.encodeConfirmFundingData()));
+        expect(instruction.keys.map(key => key.pubkey.toBase58())).toEqual([ACCOUNT, pledge.getDonationEscrowPda(ACCOUNT)[0].toBase58(), vault]);
+        for (const [code, window] of [
+            ['funding-short', withEscrow({ vault, totalDonated: 19_999_999n, totalRefunded: 0n })],
+            ['funding-short', withEscrow(null)],
+            ['nothing-to-confirm', withEscrow({ vault, totalDonated: 30_000_000n, totalRefunded: 0n }, agreementData({ ...CROWD_TERMS, lenses: [], lensThreshold: 0, fundingMet: true }))],
+            ['nothing-to-confirm', withEscrow({ vault, totalDonated: 30_000_000n, totalRefunded: 0n }, agreementData())]
+        ]) {
+            expect(await thrown(() => window.bridge.confirmFunding({ agreement: minted(crowd) })), code).toMatchObject({ code });
+            expect(window.provider.signTransaction).not.toHaveBeenCalled();
+        }
     });
 
     it('knows the connected wallet without asking it', () => {

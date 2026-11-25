@@ -33,10 +33,11 @@ export const TERMINAL_STATUSES = Object.freeze(['executed', 'cancelled', 'expire
 const DECISION_SATISFIED = AgreementClient.constants.DECISION_SATISFIED;
 if (!Number.isInteger(DECISION_SATISFIED)) throw new Error('agreement-client.js has no DECISION_SATISFIED code');
 // What the chain can still change after `onchain` is first written, plus the observation itself.
-// Everything else (cluster, program, account, sponsor, lens, deadline, required escrow) is fixed at create,
+// Everything else (cluster, program, account, sponsor, lens set and threshold, deadline, required escrow,
+// contribution target) is fixed at create,
 // and `endedAt`, when a terminal account ended in the chain's time, is the lifecycle oracle's to write
 // (oracle/agreement-lifecycle.js): a refresh keeps it as stored.
-export const MOVING_FIELDS = Object.freeze(['status', 'decision', 'escrowLamports', 'executedAt', 'observedAt', 'observedSlot']);
+export const MOVING_FIELDS = Object.freeze(['status', 'decision', 'lensConfirmed', 'fundingMet', 'escrowLamports', 'executedAt', 'observedAt', 'observedSlot']);
 
 const iso = seconds => new Date(seconds * 1000).toISOString();
 // A transaction signature: 64 bytes in base58.
@@ -55,8 +56,8 @@ export function isPublicKey(value) {
 }
 
 /**
- * A decoded account's decision as the index spells it: 'satisfied' once the program recorded the lens's
- * satisfied decision, else 'pending'.
+ * A decoded account's decision as the index spells it: 'satisfied' once the program recorded enough lens
+ * confirmations and any contribution target, else 'pending'.
  */
 export function decisionOf(account) {
     return account.decisionCode === DECISION_SATISFIED ? 'satisfied' : 'pending';
@@ -71,8 +72,9 @@ export function agreementAccountOf(cid, sponsor, programId = AGREEMENT_PROGRAM_I
 /**
  * The index's `onchain` for a decoded account (AgreementClient.readAgreement), observed at `observedAt`
  * (this server's clock when it read the account: the observation time, never an event time) and
- * `observedSlot` (the RPC's context slot of that read). Lamports are decimal strings (u64);
- * deadline and executedAt are the account's own chain times.
+ * `observedSlot` (the RPC's context slot of that read). Lamports and the contribution target are decimal
+ * strings (u64); deadline and executedAt are the account's own chain times. `lenses` are the members,
+ * `lensConfirmed` those whose attestation is recorded; `fundingMint` is null without a target.
  */
 export function onchainFromAccount(account, { cluster, programId = AGREEMENT_PROGRAM_ID, observedAt, observedSlot, signature = null }) {
     const status = ONCHAIN_STATUSES[account.statusCode];
@@ -83,7 +85,12 @@ export function onchainFromAccount(account, { cluster, programId = AGREEMENT_PRO
         programId,
         account: account.address,
         sponsor: account.authority,
-        lens: account.lens,
+        lenses: account.lenses,
+        lensThreshold: account.lensThreshold,
+        lensConfirmed: account.lensConfirmed,
+        fundingMint: account.fundingMint,
+        requiredFunding: String(account.requiredFunding),
+        fundingMet: account.fundingMet,
         status,
         decision: decisionOf(account),
         deadline: account.deadline ? iso(account.deadline) : null,
@@ -105,7 +112,8 @@ export function refreshOnchain(stored, fresh) {
 
 /** Whether a fresh observation moves anything but the observation itself. */
 export function onchainMoved(stored, fresh) {
-    return ['status', 'decision', 'escrowLamports', 'executedAt'].some(field => stored?.[field] !== fresh[field]);
+    return ['status', 'decision', 'fundingMet', 'escrowLamports', 'executedAt'].some(field => stored?.[field] !== fresh[field])
+        || JSON.stringify(stored?.lensConfirmed ?? null) !== JSON.stringify(fresh.lensConfirmed);
 }
 
 /**

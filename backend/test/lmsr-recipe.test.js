@@ -20,7 +20,7 @@ function fixture(overrides = {}) {
     return {
         account, sponsor, cid: 'bafy-test-agreement-cid', city: 'Test city',
         closesAt: 1_900_000_000, graceSeconds: 0, chainStatus: 'active',
-        executedAt: null, chainTime: 1_899_999_900, observedSlot: 42,
+        executedAt: null, chainTime: 1_899_999_900, observedSlot: 42, lenses: [], insiders: [sponsor],
         ...overrides
     };
 }
@@ -85,7 +85,9 @@ describe('agreement execution by deadline LMSR recipe', () => {
     it('reports the external market’s proposed outcome independently of agreement execution', async () => {
         const verifier = Keypair.generate().publicKey.toBase58();
         const source = fixture({ chainStatus: 'executed', executedAt: 100 });
-        source.insiders = [source.sponsor, verifier];
+        // The verifier is the second of two lens members: any member may be the external market's attester.
+        source.lenses = [Keypair.generate().publicKey.toBase58(), verifier];
+        source.insiders = [source.sponsor, ...source.lenses];
         const address = Keypair.generate().publicKey.toBase58();
         const terms = { kind: 1, proposal: source.account, stakeMint: DEVNET_USDC_MINT, creator: verifier, trustedAttester: verifier,
             recipeHash: Buffer.alloc(32, 1), subjectHash: Buffer.alloc(32, 2), yesValueHash: Buffer.alloc(32, 3), noValueHash: Buffer.alloc(32, 4),

@@ -134,7 +134,7 @@ describe('buildAgreementEvents', () => {
             transactionUrl: 'https://explorer.solana.com/tx/A-exec?cluster=devnet',
             transaction: 'A-exec', slot: 880, hash: `sha256:${sha256(data)}`
         };
-        const decision = { lens: LENS, decision: 'satisfied', attestation: ATTESTATION, attestationHash: `sha256:${'ab'.repeat(32)}` };
+        const decision = { lens: [LENS], lensThreshold: 1, decision: 'satisfied', attestation: ATTESTATION, attestationHash: `sha256:${'ab'.repeat(32)}` };
         expect(events).toEqual([
             {
                 id: `solana:devnet:agreement_lifecycle:${ACC_A}:executed`, eventType: AGREEMENT_LIFECYCLE_EVENT_TYPE,
@@ -290,7 +290,8 @@ function chainFake({ accounts, signatures = new Map(), transactions = new Map(),
 }
 
 const storedOnchain = (account, overrides = {}) => ({
-    chain: 'solana', cluster: 'devnet', programId: AGREEMENT_PROGRAM_ID, account, sponsor: SPONSOR, lens: LENS,
+    chain: 'solana', cluster: 'devnet', programId: AGREEMENT_PROGRAM_ID, account, sponsor: SPONSOR,
+    lenses: [LENS], lensThreshold: 1, lensConfirmed: [], fundingMint: null, requiredFunding: '0', fundingMet: false,
     status: 'active', decision: 'pending', deadline: iso(EXECUTED_AT + 86400), requiredLamports: '5000', escrowLamports: '0',
     executedAt: null, observedAt: '2026-10-21T00:00:00.000Z', observedSlot: 800, signature: 'create-sig', ...overrides
 });

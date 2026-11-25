@@ -205,7 +205,7 @@ pub mod proposal_market {
         validate_sas_schema(&ctx.accounts.credential, &ctx.accounts.schema)?;
         if let Some(subject) = ctx.remaining_accounts.first() {
             let view = read_subject(subject, None)?;
-            require_keys_eq!(view.lens, trusted_attester, MarketError::AttesterNotInProposalLens);
+            require!(view.is_lens(&trusted_attester), MarketError::AttesterNotInProposalLens);
         }
 
         let market = &mut ctx.accounts.market;

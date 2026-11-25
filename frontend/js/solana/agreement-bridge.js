@@ -1,9 +1,10 @@
 // agreement-bridge.js — the browser wallet side of the agreement program (plan-design-agreement.md,
 // "What is minted" and "M3 notes"; blockchain/solana/programs/agreement/README.md). A proposed
 // agreement is minted by its sponsor's wallet at PDA(sponsor, cid); the sponsor funds its escrow and
-// may cancel it until a satisfied decision is recorded; anyone records the lens's AgreementDecision
-// attestation (found at the lens member's service, GET /lens/attestations?kind=decision), executes a
-// satisfied and funded agreement, or expires one past its deadline. Every PDA, instruction byte and
+// may cancel it until a satisfied decision is recorded; anyone records a lens member's
+// AgreementDecision attestation (found at that member's service, GET /lens/attestations?kind=decision)
+// until the lens threshold is met, confirms a contribution target its donation escrow has reached,
+// executes a satisfied and funded agreement, or expires one past its deadline. Every PDA, instruction byte and
 // account decode is AgreementClient's (agreement-client.js); this file owns the wallet
 // (solanaWalletManager), the connection (SolanaChainDataLoader), the preflight simulation and the
 // status states (preparing → awaiting_signature → submitted → confirmed, as market-bridge.js).
@@ -56,44 +57,71 @@
         return { cluster: idOf(onchain.cluster), account: idOf(onchain.account) };
     }
 
-    // The lens member a mint names: the decision rule's first lens key. A community rule names none,
-    // so it takes the first lens member configured in the app (LensPicker): the lens attests the vote
-    // count too. null when there is none.
-    function mintLens(agreement, configured = [], isKey = value => lensCore().isBase58Pubkey(value)) {
+    // The lens a mint names and how many of its members must confirm: the decision rule's lens list
+    // and threshold (AgreementRecord.lensThresholdOf: absent means 1, none with no members). A
+    // community rule names none, so it takes the first lens member configured in the app (LensPicker)
+    // as a one-member lens: the lens attests the vote count too.
+    function mintLenses(agreement, configured = [], isKey = value => lensCore().isBase58Pubkey(value)) {
         const rule = agreement && agreement.rule;
-        const candidates = rule && rule.electorate !== 'community' ? (Array.isArray(rule.lens) ? rule.lens : []) : configured;
-        return (candidates || []).map(entry => idOf(entry && typeof entry === 'object' ? entry.address : entry)).find(key => key && isKey(key)) || null;
+        const keyOf = entry => idOf(entry && typeof entry === 'object' ? entry.address : entry);
+        if (rule && rule.electorate !== 'community') {
+            const lenses = (Array.isArray(rule.lens) ? rule.lens : []).map(keyOf).filter(key => key && isKey(key));
+            return { lenses, lensThreshold: lenses.length ? (rule.lensThreshold ?? 1) : 0 };
+        }
+        const first = (configured || []).map(keyOf).find(key => key && isKey(key));
+        return first ? { lenses: [first], lensThreshold: 1 } : { lenses: [], lensThreshold: 0 };
+    }
+
+    // Contributions the agreement's proposal_pledge donation escrow credits (donated less refunded),
+    // the amount the program's confirm_funding compares with the target. 0n before the first one.
+    function fundingCredited(escrow) {
+        if (!escrow) return 0n;
+        const credited = BigInt(escrow.totalDonated) - BigInt(escrow.totalRefunded);
+        return credited > 0n ? credited : 0n;
     }
 
     // What the program would accept now (README, "Instructions"), for the account read back
     // (AgreementClient.readAgreement) and the connected wallet (base58 or null; every send needs one
     // to pay the fee). Fund and cancel are the authority's (cancel only before the lens's decision is
-    // recorded); attest needs a known attestation. A decision is Pending until Satisfied: there are no
-    // refusals.
-    function chainActions(value, { wallet = null, nowSeconds = Math.floor(Date.now() / 1000), attestation = null } = {}) {
+    // recorded); attest needs a known attestation and a lens still short of its threshold;
+    // confirmFunding needs a contribution target not yet confirmed and an escrow (the pledge
+    // DonationEscrow, SolanaPledgeClient.readDonationEscrow) whose credited contributions reach it.
+    // A decision is Pending until Satisfied: there are no refusals.
+    function chainActions(value, { wallet = null, nowSeconds = Math.floor(Date.now() / 1000), attestation = null, escrow = null } = {}) {
         const c = client().constants;
         const active = !!value && value.statusCode === c.STATUS_ACTIVE;
+        const pending = !!value && value.decisionCode === c.DECISION_PENDING;
         const passed = !!value && client().deadlinePassed(value, nowSeconds);
         const authority = !!wallet && !!value && value.authority === wallet;
         const funded = !!value && value.escrowLamports >= value.requiredLamports;
+        const lensMet = !!value && value.lensConfirmed.length >= value.lensThreshold;
+        const target = !!value && value.requiredFunding > 0n;
+        const fundingMet = !!value && (!target || value.fundingMet);
+        const credited = target ? fundingCredited(escrow) : null;
         return {
             fund: active && authority && !passed,
-            attest: active && !!wallet && !!attestation && value.decisionCode === c.DECISION_PENDING && !passed,
+            attest: active && !!wallet && !!attestation && pending && !lensMet && !passed,
+            confirmFunding: active && !!wallet && pending && !passed && target && !value.fundingMet && credited >= value.requiredFunding,
             execute: active && !!wallet && value.decisionCode === c.DECISION_SATISFIED && funded && !passed,
             cancel: active && authority && value.decisionCode !== c.DECISION_SATISFIED,
             expire: active && !!wallet && passed,
             authority,
             funded,
+            lensMet,
+            fundingMet,
+            credited,
             deadlinePassed: passed
         };
     }
 
     // Among a lens member's listed attestations (LensCore.normalizeAttestations), the AgreementDecision
-    // the account can record: issued by the account's lens, naming this CID and the account's sponsor,
-    // unexpired. `value` is the account read back (AgreementClient.readAgreement). null when none is.
-    function decisionAttestationOf(attestations, { cid, value, nowSeconds = Math.floor(Date.now() / 1000) } = {}) {
+    // the account can record: issued by `member` (default: any member whose confirmation is not yet
+    // recorded), naming this CID and the account's sponsor, unexpired. `value` is the account read back
+    // (AgreementClient.readAgreement). null when none is.
+    function decisionAttestationOf(attestations, { cid, value, member = null, nowSeconds = Math.floor(Date.now() / 1000) } = {}) {
         if (!value || !Array.isArray(attestations)) return null;
-        return attestations.find(att => att && att.kind === 'decision' && att.authority === value.lens
+        const open = value.lenses.filter(key => !value.lensConfirmed.includes(key) && (!member || key === member));
+        return attestations.find(att => att && att.kind === 'decision' && open.includes(att.authority)
             && att.payload && att.payload.agreementCid === cid && att.payload.sponsor === value.authority
             && !(typeof att.expiry === 'number' && att.expiry > 0 && att.expiry <= nowSeconds)) || null;
     }
@@ -207,11 +235,17 @@
             return { cid: published.cid, sponsor: idOf(published.sponsor) || null };
         }
 
+        // A crowdfunding account must carry the published terms: the sponsor as authority and payout,
+        // the rule's lens set and threshold, the deadline, and the funding target in devnet USDC.
         function checkFundingAccount(agreement, clusterName, value) {
             if (agreement.rule?.electorate !== 'investors') return;
             if (clusterName !== 'devnet') throw codedError(t('agreement.funding.devnet', 'Switch to Solana devnet for this funding round.'), 'wrong-cluster');
+            const { lenses, lensThreshold } = mintLenses(agreement);
             if (value && (value.authority !== agreement.sponsor || value.payout !== agreement.sponsor
-                || value.lens !== agreement.rule.lens[0] || value.deadline !== Math.floor(Date.parse(agreement.deadline) / 1000)
+                || value.lenses.length !== lenses.length || value.lenses.some((key, index) => key !== lenses[index])
+                || value.lensThreshold !== lensThreshold
+                || value.fundingMint !== client().constants.USDC_DEVNET_MINT || value.requiredFunding !== BigInt(agreement.funding.targetUsdcAtomic)
+                || value.deadline !== Math.floor(Date.parse(agreement.deadline) / 1000)
                 || value.requiredLamports !== 0n || value.openGround !== false)) {
                 throw codedError(t('agreement.funding.mismatch', 'The funding terms differ from the published agreement.'), 'funding-mismatch');
             }
@@ -271,31 +305,45 @@
         }
 
         /**
-         * The lens's decision on a minted agreement, as its member's service lists it: the member is
-         * the account's lens, found in the lens directory (GET /lenses/members) the way the owner
-         * verification finds its members, and asked GET <service>/lens/attestations?kind=decision&
-         * agreementCid=<cid>. `value` is the account read back. Resolves { address, decision, member }
-         * or null when the member has issued none (or publishes no service address); throws code
-         * 'lens-unavailable' when the service cannot be read.
+         * A lens decision the minted agreement can still record, as a member's service lists it: each
+         * member whose confirmation is not yet recorded is found in the lens directory
+         * (GET /lenses/members) the way the owner verification finds its members, and asked
+         * GET <service>/lens/attestations?kind=decision&agreementCid=<cid>, in lens order. `value` is
+         * the account read back. Resolves { address, decision, member } of the first fitting one, or
+         * null when the lens is already met or no open member has issued one (or publishes no service
+         * address); throws code 'lens-unavailable' when no asked service could be read.
          */
         async function findAttestation(agreement, value) {
-            if (!value) return null;
+            if (!value || value.lensConfirmed.length >= value.lensThreshold) return null;
             const { cid } = publishedOf(agreement);
             if (!win.LensPicker || !win.LensServiceClient) throw codedError(t('agreement.chain.errors.lensUnavailable', 'The lens member could not be asked for its decision: {{reason}}', { reason: 'lens client not loaded' }), 'lens-unavailable');
             const directory = await win.LensPicker.loadDirectory();
-            const member = (directory.members || []).find(entry => entry.key === value.lens) || null;
-            if (!member || !member.serviceUrl) {
-                log(`lens ${value.lens} of ${cid} publishes no service address in the directory; its decision cannot be looked up`);
-                return null;
+            const open = value.lenses.filter(key => !value.lensConfirmed.includes(key));
+            let failure = null;
+            let asked = 0;
+            let failed = 0;
+            for (const key of open) {
+                const member = (directory.members || []).find(entry => entry.key === key) || null;
+                if (!member || !member.serviceUrl) {
+                    log(`lens member ${key} of ${cid} publishes no service address in the directory; its decision cannot be looked up`);
+                    continue;
+                }
+                asked += 1;
+                const response = await win.LensServiceClient.fetchAttestations({ serviceUrl: member.serviceUrl, filter: { kind: 'decision', agreementCid: cid } });
+                if (!Array.isArray(response.attestations)) {
+                    failure = (response.outcome && response.outcome.message) || `HTTP ${response.status}`;
+                    failed += 1;
+                    log(`lens member ${key} of ${cid} could not be read: ${failure}`);
+                    continue;
+                }
+                const match = decisionAttestationOf(response.attestations, { cid, value, member: key });
+                log(`lens member ${key} lists ${response.attestations.length} decision attestation(s) for ${cid}${match ? `; ${match.address} (${match.payload.decision}) fits the account` : '; none fits the account'}`);
+                if (match) return { address: match.address, decision: match.payload.decision || null, member: key };
             }
-            const response = await win.LensServiceClient.fetchAttestations({ serviceUrl: member.serviceUrl, filter: { kind: 'decision', agreementCid: cid } });
-            if (!Array.isArray(response.attestations)) {
-                throw codedError(t('agreement.chain.errors.lensUnavailable', 'The lens member could not be asked for its decision: {{reason}}',
-                    { reason: (response.outcome && response.outcome.message) || `HTTP ${response.status}` }), 'lens-unavailable');
+            if (asked && failed === asked) {
+                throw codedError(t('agreement.chain.errors.lensUnavailable', 'The lens member could not be asked for its decision: {{reason}}', { reason: failure }), 'lens-unavailable');
             }
-            const match = decisionAttestationOf(response.attestations, { cid, value });
-            log(`lens ${member.key} lists ${response.attestations.length} decision attestation(s) for ${cid}${match ? `; ${match.address} (${match.payload.decision}) fits the account` : '; none fits the account'}`);
-            return match ? { address: match.address, decision: match.payload.decision || null, member: member.key } : null;
+            return null;
         }
 
         // Reads the account and refuses when it is gone; the shared start of every action after mint.
@@ -313,8 +361,11 @@
         const result = (sent, ref) => ({ signature: sent.signature, account: ref.account, cluster: ref.cluster, explorerUrl: sent.explorerUrl });
 
         /**
-         * Mints a proposed agreement: create(cid, lens, deadline, open_ground, required_lamports, payout)
-         * signed by the connected wallet, which must be the sponsor the agreement was proposed with.
+         * Mints a proposed agreement: create(cid, lenses, lens_threshold, deadline, open_ground,
+         * required_lamports, payout, funding_mint, required_funding) signed by the connected wallet,
+         * which must be the sponsor the agreement was proposed with. `lenses`/`lensThreshold` default to
+         * mintLenses(agreement); a crowdfunding agreement always mints its record's lens, threshold,
+         * deadline and devnet-USDC funding target, paying out to its sponsor.
          * `deadline` defaults to the agreement's own (ISO or null); with neither, the agreement gets
          * now + DEFAULT_DEADLINE_SECONDS (90 days). A deadline that is not in the future is refused, as
          * the program refuses it. `requiredLamports` is the escrow
@@ -322,7 +373,7 @@
          * already at the address is this agreement minted before and is returned with signature null.
          * @returns {Promise<{ signature, account, cluster, explorerUrl }>}
          */
-        async function mint({ agreement, lens, deadline, requiredLamports = 0n, payout, onStatus } = {}) {
+        async function mint({ agreement, lenses, lensThreshold, deadline, requiredLamports = 0n, payout, onStatus } = {}) {
             const api = await dependencies();
             const { cid, sponsor } = publishedOf(agreement);
             if (onchainRef(agreement)) throw codedError(t('agreement.chain.errors.alreadyMinted', 'This agreement is already minted.'), 'already-minted');
@@ -330,17 +381,29 @@
                 throw codedError(t('agreement.chain.errors.noSponsor', 'This agreement was proposed without a wallet, so it cannot be minted. Propose it again with this wallet connected.'), 'no-sponsor');
             }
             const { provider, wallet, cluster: clusterName } = walletContext();
-            if (agreement.rule?.electorate === 'investors') {
+            const crowdfunding = agreement.rule?.electorate === 'investors';
+            let fundingMint = null;
+            let requiredFunding = 0n;
+            if (crowdfunding) {
                 checkFundingAccount(agreement, clusterName);
-                lens = agreement.rule.lens[0];
+                ({ lenses, lensThreshold } = mintLenses(agreement));
                 payout = sponsor;
                 deadline = agreement.deadline;
                 requiredLamports = 0n;
+                fundingMint = client().constants.USDC_DEVNET_MINT;
+                requiredFunding = BigInt(agreement.funding.targetUsdcAtomic);
+            } else if (!Array.isArray(lenses)) {
+                ({ lenses, lensThreshold } = mintLenses(agreement));
             }
             if (wallet.toBase58() !== sponsor) {
                 throw codedError(t('agreement.chain.errors.notSponsor', 'Only the sponsor’s wallet ({{sponsor}}) can mint this agreement.', { sponsor: short(sponsor) }), 'not-sponsor');
             }
-            if (!idOf(lens)) throw codedError(t('agreement.chain.errors.noLens', 'No lens member is named to attest this agreement’s decision.'), 'no-lens');
+            if (!lenses.length && !crowdfunding) throw codedError(t('agreement.chain.errors.noLens', 'No lens member is named to attest this agreement’s decision.'), 'no-lens');
+            try {
+                api.requireLensSet(lenses, lensThreshold ?? (lenses.length ? 1 : 0), requiredFunding);
+            } catch (error) {
+                throw codedError(t('agreement.chain.errors.lensInvalid', 'The agreement’s lens cannot be minted: {{reason}}', { reason: error.message }), 'lens-invalid', { cause: error });
+            }
             const now = Math.floor(Date.now() / 1000);
             const deadlineSeconds = api.toDeadlineSeconds(deadline ?? agreement.deadline, now);
             if (deadlineSeconds <= now) {
@@ -351,11 +414,14 @@
             const built = api.buildCreateIx({
                 authority: wallet,
                 cid,
-                lens: idOf(lens),
+                lenses,
+                lensThreshold: lensThreshold ?? (lenses.length ? 1 : 0),
                 deadline: deadlineSeconds,
                 openGround: !!(agreement.inputs && agreement.inputs.openGroundM2 > 0),
                 requiredLamports: BigInt(requiredLamports),
                 payout: idOf(payout),
+                fundingMint,
+                requiredFunding,
                 programId: programId()
             });
             const ref = { cluster: clusterName, account: built.agreement.toBase58() };
@@ -366,7 +432,7 @@
                 return { signature: null, account: ref.account, cluster: clusterName, explorerUrl: explorerUrl(ref) };
             }
             const sent = await send(connection, provider, wallet, clusterName, [built.instruction], { onStatus });
-            log(`minted ${cid} at ${ref.account} (${clusterName})`, { signature: sent.signature, lens: idOf(lens), deadline: deadlineSeconds, requiredLamports: String(requiredLamports) });
+            log(`minted ${cid} at ${ref.account} (${clusterName})`, { signature: sent.signature, lenses, lensThreshold, requiredFunding: String(requiredFunding), deadline: deadlineSeconds, requiredLamports: String(requiredLamports) });
             return result(sent, ref);
         }
 
@@ -404,6 +470,29 @@
             const sent = await send(connection, provider, wallet, ref.cluster, [instruction], { onStatus });
             log(`recorded the lens decision "${decision.fields.decision}" on ${ref.account}`, { signature: sent.signature, attestation: decision.address });
             return { ...result(sent, ref), decision: decision.fields.decision };
+        }
+
+        /**
+         * Records that the agreement's contribution target is met: confirm_funding with its
+         * proposal_pledge donation escrow and that escrow's vault. Permissionless: the program reads the
+         * credited contributions itself, so no lens is needed; the wallet only pays the fee.
+         */
+        async function confirmFunding({ agreement, onStatus } = {}) {
+            const api = await dependencies();
+            const { provider, wallet } = walletContext();
+            const { ref, connection, value } = await current(api, agreement);
+            const escrowAddress = pledge().getDonationEscrowPda(ref.account)[0];
+            const escrow = await pledge().readDonationEscrow(connection, ref.account);
+            if (!(value.requiredFunding > 0n) || value.fundingMet) {
+                throw codedError(t('agreement.chain.errors.nothingToConfirm', 'There is no funding target left to confirm.'), 'nothing-to-confirm');
+            }
+            if (!escrow || fundingCredited(escrow) < value.requiredFunding) {
+                throw codedError(t('agreement.chain.errors.fundingShort', 'Contributions have not reached the funding target yet.'), 'funding-short');
+            }
+            const instruction = api.buildConfirmFundingIx({ agreement: ref.account, escrow: escrowAddress, vault: escrow.vault, programId: programId() });
+            const sent = await send(connection, provider, wallet, ref.cluster, [instruction], { onStatus });
+            log(`confirmed the funding target of ${ref.account}: ${String(fundingCredited(escrow))} of ${String(value.requiredFunding)} credited`, { signature: sent.signature });
+            return result(sent, ref);
         }
 
         // Releases the whole escrow to the payout fixed at mint. Permissionless.
@@ -474,10 +563,26 @@
                 : pledge().listDonationPositions(connection, account, owner);
         }
 
-        async function apartmentQualification({ agreement, offer, buyer, lens, signal }) {
+        // A buyer qualification from any member of the round's lens (the program accepts any member's):
+        // the members are asked in lens order and the first proof wins; pending at all of them is pending.
+        async function apartmentQualification({ agreement, offer, buyer, lenses, signal }) {
             const directory = await win.LensPicker.loadDirectory();
-            const service = directory.members.find(member => member.key === lens)?.serviceUrl;
-            if (!service) throw codedError(t('agreement.funding.apartments.noLensService', 'The selected lens has no qualification service.'), 'lens-unavailable');
+            const members = lenses.map(key => ({ key, service: directory.members.find(member => member.key === key)?.serviceUrl })).filter(member => member.service);
+            if (!members.length) throw codedError(t('agreement.funding.apartments.noLensService', 'The selected lens has no qualification service.'), 'lens-unavailable');
+            let pending = null;
+            for (const [index, member] of members.entries()) {
+                try {
+                    return await memberQualification({ agreement, offer, buyer, lens: member.key, service: member.service, signal });
+                } catch (error) {
+                    if (error.code === 'qualification-pending') pending = error;
+                    else if (index === members.length - 1 && !pending) throw error;
+                    else log(`lens member ${member.key} gave no qualification for ${offer.unitId}: ${error.message}`);
+                }
+            }
+            throw pending;
+        }
+
+        async function memberQualification({ agreement, offer, buyer, lens, service, signal }) {
             const cid = agreement.published.cid;
             const url = new URL(`${service.replace(/\/$/, '')}/lens/agreements/${encodeURIComponent(cid)}/apartments/${encodeURIComponent(offer.unitId)}/qualification`);
             url.searchParams.set('buyer', buyer);
@@ -525,7 +630,7 @@
                 instructions.push(client.buildListApartmentIx(options));
             } else {
                 if (offer.status !== 'available') throw codedError(t('agreement.funding.apartments.unavailable', 'This apartment is unavailable for reservation.'), 'unit-unavailable');
-                const proof = await apartmentQualification({ agreement, offer, buyer: payer, lens: value.lens, signal });
+                const proof = await apartmentQualification({ agreement, offer, buyer: payer, lenses: value.lenses, signal });
                 receipt.qualification = proof.attestation;
                 const donationId = client.hashBytes(offer.unitKey);
                 const escrow = client.getDonationEscrowPda(ref.account)[0];
@@ -622,10 +727,10 @@
             return result(sent, ref);
         }
 
-        return { mint, fund, attest, execute, cancel, expire, read, findAttestation, connectedWallet, cluster, programId,
+        return { mint, fund, attest, confirmFunding, execute, cancel, expire, read, findAttestation, connectedWallet, cluster, programId,
             donations, donate, refundDonations, releaseDonations, apartmentInventory,
             listApartment: options => apartmentAction(options, true), reserveApartment: options => apartmentAction(options, false) };
     }
 
-    return { LAMPORTS_PER_SOL, MAX_REFUNDS_PER_TX, lamportsFromSol, solOf, explorerUrl, onchainRef, mintLens, chainActions, decisionAttestationOf, anchorError, browser };
+    return { LAMPORTS_PER_SOL, MAX_REFUNDS_PER_TX, lamportsFromSol, solOf, explorerUrl, onchainRef, mintLenses, fundingCredited, chainActions, decisionAttestationOf, anchorError, browser };
 });

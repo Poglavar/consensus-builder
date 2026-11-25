@@ -18,7 +18,7 @@ const record = { cid, content: { sponsor }, onchain: { cluster: 'devnet', progra
 const baseClient = {
     constants: { AGREEMENT_PROGRAM_ID: 'AgreementProgram', SAS_PROGRAM_ID: sas, DECISION_PENDING: 0 },
     getAgreementPda: () => [new PublicKey(Keypair.generate().publicKey)],
-    fetchAgreement: async () => ({ cid, authority: sponsor, lens, decisionCode: 1, decisionAttestation: attestation, decisionHash: 'aa'.repeat(32) }),
+    fetchAgreement: async () => ({ cid, authority: sponsor, lenses: [lens], decisionCode: 1, decisionAttestation: attestation, decisionHash: 'aa'.repeat(32) }),
     readDecisionAttestation: () => ({ address: attestation, credential, schema: 'schema', signer: lens, fields: { agreementCid: cid, sponsor, decision: 'satisfied' } }),
     getDecisionSchemaPda: () => [new PublicKey('11111111111111111111111111111111')]
 };
@@ -56,7 +56,7 @@ describe('LensAgreementEvidence.readChain', () => {
         const realClient = {
             ...RealClient,
             constants: { ...RealClient.constants, DECISION_PENDING: 0, AGREEMENT_PROGRAM_ID: RealClient.constants.AGREEMENT_PROGRAM_ID },
-            fetchAgreement: async () => ({ cid: realCid, authority: realSponsor, lens: realLens, status: 'Expired', decisionCode: 1, decisionAttestation: address, decisionHash: hash }),
+            fetchAgreement: async () => ({ cid: realCid, authority: realSponsor, lenses: [realLens], status: 'Expired', decisionCode: 1, decisionAttestation: address, decisionHash: hash }),
             getAgreementPda: (...args) => RealClient.getAgreementPda(...args)
         };
         const realConnection = { getAccountInfo: async key => key.toBase58() === address
@@ -69,7 +69,7 @@ describe('LensAgreementEvidence.readChain', () => {
     });
 
     it('preserves chain outcome when signer or credential owner is forged', async () => {
-        const forged = { ...baseClient, fetchAgreement: async () => ({ cid, authority: sponsor, lens, status: 'Executed', decisionCode: 1, decisionAttestation: attestation, decisionHash: 'aa'.repeat(32) }), readDecisionAttestation: () => ({ address: attestation, credential, schema: 'schema', signer: sponsor, fields: { agreementCid: cid, sponsor, decision: 'satisfied' } }) };
+        const forged = { ...baseClient, fetchAgreement: async () => ({ cid, authority: sponsor, lenses: [lens], status: 'Executed', decisionCode: 1, decisionAttestation: attestation, decisionHash: 'aa'.repeat(32) }), readDecisionAttestation: () => ({ address: attestation, credential, schema: 'schema', signer: sponsor, fields: { agreementCid: cid, sponsor, decision: 'satisfied' } }) };
         const result = await Evidence.readChain({ record, connection: { getAccountInfo: async () => ({ owner: new PublicKey(sponsor), data: Uint8Array.from([1]) }) }, client: forged, web3: { PublicKey }, crypto: { sha256Hex: async () => 'aa'.repeat(32) } });
         expect(result.account.status).toBe('Executed');
         expect(result.statement).toBeNull();

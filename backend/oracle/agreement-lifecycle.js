@@ -170,10 +170,12 @@ export function buildAgreementEvents({ agreement, account, accountData, cluster,
         hash: `sha256:${sha256Hex(Buffer.from(accountData))}`
     };
     // The decision attestation only when the decision reads as satisfied (decisionOf): a cancelled or
-    // expired account carries none.
-    const satisfied = decisionOf(account) === 'satisfied';
+    // expired account carries none, and neither does one with no lens (satisfied by its funding target).
+    // `lens` is the member list frozen at mint and `lensThreshold` how many of them had to confirm.
+    const satisfied = decisionOf(account) === 'satisfied' && account.lenses.length > 0;
     const decision = {
-        lens: account.lens,
+        lens: account.lenses,
+        lensThreshold: account.lensThreshold,
         decision: decisionOf(account),
         attestation: satisfied ? account.decisionAttestation : null,
         attestationHash: satisfied && account.decisionHash ? `sha256:${account.decisionHash}` : null

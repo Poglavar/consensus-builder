@@ -310,7 +310,7 @@ fn check_trade(market: &LmsrMarket, subject: &AccountInfo, trader: &Pubkey) -> R
     if market.kind == KIND_PROPOSAL || market.proposal != Pubkey::default() {
         let view = read_subject(subject, None)?;
         require_keys_neq!(*trader, view.authority, MarketError::InsiderTrade);
-        require_keys_neq!(*trader, view.lens, MarketError::InsiderTrade);
+        require!(!view.is_lens(trader), MarketError::InsiderTrade);
         if market.kind == KIND_PROPOSAL {
             require!(view.status == STATUS_ACTIVE, MarketError::ProposalNotActive);
         }
@@ -395,7 +395,7 @@ pub(crate) fn handle_create_lmsr_external_market(
         Some(subject) => {
             require_keys_eq!(subject.key(), proposal, MarketError::InvalidProposalAccount);
             let view = read_subject(subject, None)?;
-            require_keys_eq!(view.lens, trusted_attester, MarketError::AttesterNotInProposalLens);
+            require!(view.is_lens(&trusted_attester), MarketError::AttesterNotInProposalLens);
             subject.key()
         }
         None => {

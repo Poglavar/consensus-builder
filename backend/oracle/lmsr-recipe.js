@@ -32,7 +32,7 @@ export function canonicalJson(value) {
 
 export function validateAgreementRecipeSource(source, expectedAccount, { allowUndated = false } = {}) {
     if (!source || typeof source !== 'object' || source.account !== expectedAccount
-        || !canonicalAccount(source.account) || !canonicalAccount(source.sponsor)
+        || !canonicalAccount(source.account) || !canonicalAccount(source.sponsor) || !Array.isArray(source.lenses)
         || typeof source.cid !== 'string' || !source.cid || source.cid.length > 120
         || !Number.isSafeInteger(source.closesAt) || source.closesAt < (allowUndated ? 0 : 1)
         || source.graceSeconds !== MARKET_GRACE_SECONDS
