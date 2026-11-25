@@ -112,15 +112,13 @@
     }
 
     // ---- Publishing ----
-    // References the person chose to publish without, for the rest of this page's life: the plan or
-    // agreement that publishes several designs asks once.
-    const keptOnDevice = new Set();
-
     // Before records are published: asks once whether to upload their device-only models publicly or
     // publish without them. Resolves a Map ref → public URL of the uploaded ones (empty when kept or
     // when there are none); rejects with code 'cancelled' (cancelled: true) when the person cancels.
+    // The answer holds for this one publish only: the next publish asks again. A plan or agreement that
+    // publishes several designs asks once for all of them (DesignSync.publishDesign's modelsSettled).
     async function chooseForPublish(records) {
-        const refs = deviceModelRefs(records).filter(ref => !keptOnDevice.has(ref));
+        const refs = deviceModelRefs(records);
         if (!refs.length) return new Map();
         const choice = await root.CbDialog.choice(t('deviceModels.publishMessage',
             'Imported 3D models in what you are publishing are kept only on this device. Upload them so others see them, or publish without them and others see a plain block. An uploaded model is public: anyone with a link to the design can download it.'), [
@@ -128,10 +126,7 @@
             { value: 'keep', label: t('deviceModels.keep', 'Publish without the models') },
             { value: 'cancel', label: t('deviceModels.cancel', 'Cancel'), primary: true }
         ], { title: t('deviceModels.publishTitle', 'Models on this device only') });
-        if (choice === 'keep') {
-            refs.forEach(ref => keptOnDevice.add(ref));
-            return new Map();
-        }
+        if (choice === 'keep') return new Map();
         if (choice !== 'upload') throw Object.assign(new Error(t('deviceModels.cancelled', 'Nothing was published.')), { code: 'cancelled', cancelled: true });
         await root.ensureOptionalTool('modelUpload');
         const uploaded = new Map();

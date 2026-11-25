@@ -369,9 +369,11 @@
          * (ProposalPublishTerms.publishRefusal's code), a guest without a name ('name-needed', `cancelled: true`), a person
          * who cancels the device-model choice ('cancelled', `cancelled: true`; settleDeviceModels), and the
          * index's refusals ('cid-mismatch', 'too-large', 'network-failed', …).
+         * `modelsSettled`: the caller already asked about this design's device-only models in the same
+         * publish (an agreement asks once for all its designs), so the person is not asked again.
          * @returns {Promise<{ cid: string, row: object | null, alreadyPublished: boolean }>}
          */
-        async function publishDesign(localDesign) {
+        async function publishDesign(localDesign, { modelsSettled = false } = {}) {
             if (!isObject(localDesign)) throw new TypeError('publishDesign needs a local design record.');
             const apiBase = currentApiBase();
             if (!apiBase) throw new Error('The design index has no API base.');
@@ -382,7 +384,7 @@
             // Publishing leaves the device and the design carries its author (GuestPolicy 'publish').
             const nameNeeded = win.guestPolicyBlocks('publish');
             if (nameNeeded) throw failure('name-needed', nameNeeded, { cancelled: true });
-            await settleDeviceModels([localDesign]);
+            if (!modelsSettled) await settleDeviceModels([localDesign]);
             // The author is content: it is stamped before the CID is taken.
             win.stampCurrentAuthor(localDesign);
             const content = designRecord().published(localDesign);
@@ -757,7 +759,7 @@
 
         return {
             api: {
-                publishDesign: record => observe('publish', 'design-publish-failed', () => publishDesign(record)),
+                publishDesign: (record, options) => observe('publish', 'design-publish-failed', () => publishDesign(record, options)),
                 addressObject, markPublished, settleDeviceModels, fetchDesign, fetchDesigns, importDesign, importDraft, localCopyOf, localDesignIndex, listPage,
                 designLink, copyLink, prepareMapPreview, parcelSourceIdOf, parcelSourceForDesign, refusalMessage, clearPublicationProblem,
                 // A local record's exact CID at the current index, or an index summary's own.

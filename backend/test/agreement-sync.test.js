@@ -411,6 +411,17 @@ describe('publishAgreement', () => {
         expect(server.calls).toHaveLength(3);
     });
 
+    it('asks about device-only models once for all its designs, not again as each design is published', async () => {
+        const model = 'device-model:sha256-aa';
+        const withModel = { ...layout(), parcelLayout: { ...layout().parcelLayout, modelUrl: model } };
+        const { sync, server, win } = fakeWindow({ records: [withModel, road()] });
+        win.DeviceModels = { ...win.DeviceModels, chooseForPublish: vi.fn(async () => new Map()) };
+        await sync.publishAgreement('ag-1');
+        expect(win.DeviceModels.chooseForPublish).toHaveBeenCalledOnce();
+        expect(win.DeviceModels.chooseForPublish.mock.calls[0][0].map(record => record.proposalId)).toEqual(['layout-1', 'road-1']);
+        expect(server.calls.map(call => `${call.method} ${call.pathname}`)).toEqual(['POST /designs', 'POST /designs', 'POST /agreements']);
+    });
+
     it('proposes without a sponsor when no wallet is connected', async () => {
         const { sync, server, agreements } = fakeWindow({ wallet: null });
         await sync.publishAgreement('ag-1');
