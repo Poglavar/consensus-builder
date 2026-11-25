@@ -11,11 +11,11 @@
     const SCHEMA_VERSION = 1;
     // What the light configuration leaves out: the rare per-city blobs only the current city reads
     // (planning/views.js, the walk and drive launchers, Zagreb's curated roads and transit alignments,
-    // the city's default language, the state land layers, the administrative extent, which reaches the
-    // browser as an outline in data/boot-coverage.js). Everything else is read for other cities somewhere: parcel
-    // attribution by ui/map-credits.js, floorModels and the building fallback by building-source-client.js.
+    // the city's default language, the state land layers). Everything else is read for other cities somewhere: parcel
+    // attribution by ui/map-credits.js, floorModels and the building fallback by building-source-client.js, the
+    // administrative extent by city-config.js before the city's own file loads (whether its rate areas load).
     const DETAIL_KEYS = Object.freeze({
-        top: Object.freeze(['planning', 'walk', 'curatedRoads', 'transitAlignments', 'language', 'stateLand', 'extent']),
+        top: Object.freeze(['planning', 'walk', 'curatedRoads', 'transitAlignments', 'language', 'stateLand']),
         parcels: Object.freeze([]),
         buildings: Object.freeze([])
     });

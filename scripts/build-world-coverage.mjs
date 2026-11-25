@@ -96,7 +96,8 @@ export const strongest = (...tiers) => tiers.filter(Boolean).reduce((best, t) =>
 // The areas a parcel source covers, keyed by cadastre (a city's parcels.sourceId, else its native
 // parcels.source, as CityConfigManager.getCadastreKey): ISO 3166-1 country or ISO 3166-2 region codes.
 // A catalogue source declares its own (`coverage: { type: 'regions', regions }` in
-// frontend/data/source-catalog.json); native sources, which have no catalogue entry, are listed here.
+// frontend/data/source-catalog.json; `extents` there names the BOUNDARY_DATASETS id whose areas the
+// admission gives its new cities as their extent); native sources, which have no catalogue entry, are listed here.
 export const NATIVE_COVERAGE = { 'oss-wfs': { type: 'regions', regions: ['HR'], basis: 'Parcels are countrywide in the app' } };
 export function declaredCoverage(catalog = []) {
     const declared = new Map(Object.entries(NATIVE_COVERAGE));
@@ -132,6 +133,23 @@ export function loadBoundaries(repo = REPO) {
         if (!data.layers?.[layer]) throw new Error(`boundary dataset ${id}: ${file} has no layer ${layer}`);
         return [id, { scale: data.scale, ...data.layers[layer] }];
     }));
+}
+
+// The area of a boundary dataset a new city stands for (scripts/admit-qualified-cities.mjs writes it as
+// the city's `extent`): the one area named after the city (Manchester; Brighton and Hove for Brighton,
+// when exactly one name starts with the city's), else the area holding its centre. A town whose
+// centre lies in a neighbouring district and whose district has another name (Farnham in Waverley)
+// still needs its extent by hand. null where the dataset has no area there.
+export function extentAreaFor(boundary, { name, lat, lon }) {
+    const fold = text => String(text || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    const wanted = fold(name);
+    const exact = boundary.features.filter(feature => fold(feature.name) === wanted);
+    if (exact.length === 1) return exact[0].id;
+    const prefixed = boundary.features.filter(feature => fold(feature.name).startsWith(wanted + ' '));
+    if (wanted && prefixed.length === 1) return prefixed[0].id;
+    const require = createRequire(import.meta.url);
+    const { areaAt } = require('../frontend/js/economic-sources.js');
+    return areaAt({ scale: boundary.scale, layers: { areas: boundary } }, 'areas', [lon, lat])?.id || null;
 }
 
 // The outline of the union of a dataset's areas `ids`, as flat [lon, lat, ...] rings: the arcs the

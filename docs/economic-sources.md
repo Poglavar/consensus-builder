@@ -52,10 +52,12 @@ explicit rate and differs from missing evidence.
 - `area-rates` reads an area rate table: a dataset's rates per published area of an area layer (an
   English local authority, `lad`), written by a dataset reader through `scripts/lib/area_rate_table.py`
   (`id`, `name`, `url`, `layer`, `currency`, the dataset's own `asOf`, `rates` naming each metric's unit,
-  basis, area-row field and scope note, `areas` by code, optional `cities`). The file registers itself
+  basis, area-row field and scope note, `areas` by code). The file registers itself
   as `window.EconomicAreaRates[id]` (node: `CityMoney`'s table list). It gives the rates of the area
-  the location lies in (scope `E09000019 · Islington`, then the rate's note). The city's own area (a
-  table of the layer naming the city in `cities`, else the area under its map centre) stands in only
+  the location lies in (scope `E09000019 · Islington`, then the rate's note). The city's own area
+  (`EconomicSources.cityArea`: of the areas of its administrative extent, `extent` in
+  `data/city-configs.js`, the rated one holding its centre, else the first; a city without an extent,
+  the area under its centre) stands in only
   without a location, outside the mapped areas (Wales, Scotland, the sea) or in an area without a rate,
   and the scope says which, e.g. `E09000033 · Westminster (the city's area: no location given)`. A
   configured source may add `scale: { factor, note }` to convert the table's unit to the contract's
@@ -64,8 +66,7 @@ explicit rate and differs from missing evidence.
   - `uk-mhclg-land-2023` (`frontend/js/uk-land-rates.js`, `scripts/build-uk-land-rates.py`): MHCLG
     "Land value estimates for policy appraisal 2023", sheet Residential, medium site density at the
     median house price, for every English local authority, dated 1 October 2023, as `land` and
-    `roadLand`. Its `cities` name the authority each English city stands for (named like the city,
-    else under its map centre). It is a policy-appraisal figure, not a site valuation; `roadLand` uses
+    `roadLand`. A city's own authority is its extent's district, not a per-table list. It is a policy-appraisal figure, not a site valuation; `roadLand` uses
     the same residential proxy and retains that provenance. Hammersmith and Fulham's estimate
     (£19,390/m²) is about twice Kensington and Chelsea's (£9,215): the workbook assumes 400
     dwellings/ha as its medium density there against 140; it is the published figure and is used as
@@ -115,8 +116,8 @@ explicit rate and differs from missing evidence.
   extent of the realm; the Welsh ones have no MHCLG rate and serve the cities' administrative extents,
   [location-first.md](location-first.md) phase 3) and the six value bands, simplified to 30 m on shared
   borders (250 m on districts' sea and Scottish edges), shared borders stored once so neighbours leave no
-  gaps. About 620 KB, loaded by `city-config.js` only for a city an area rate table names (the 112
-  English cities) and read in node on first use. A second country's areas need that loader to take
+  gaps. About 620 KB, loaded by `city-config.js` only for a city whose extent an area rate table
+  rates (the 112 English cities) and read in node on first use. A second country's areas need that loader to take
   more than this one file. `EconomicSources.areaAt` finds the area of a point
   synchronously; a point within about 30 m of a border can fall in the neighbour (0.2–0.4 % of a
   London grid against the source polygons).
@@ -142,8 +143,7 @@ explicit rate and differs from missing evidence.
 
 City configuration can supply `economics.sources`, an ordered array of registered IDs and/or
 `rate-table` or `area-rates` descriptors. The standard frontend policy selects every built-in area
-table that covers the city (names it in `cities`, or has a rate for the area under its centre, in its
-currency), followed by scenario assumptions; London and Birmingham configure their sources explicitly. Explicit source lists replace
+table in its currency that rates the city's own area (`cityArea`), followed by scenario assumptions; London and Birmingham configure their sources explicitly. Explicit source lists replace
 that policy; include `scenario-assumptions` explicitly if wanted. No backend city routing is added.
 
 Settings → **Valuation & costs** displays effective rates and provenance. Visitors can enter local

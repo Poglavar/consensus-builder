@@ -398,8 +398,19 @@ function switchParcelsLine(configText, appCityId, descriptor) {
     return configText.slice(0, start) + block.replace(lines[0], parcelsLine(descriptor)) + configText.slice(end);
 }
 
-function cityConfigEntry(item) {
-    const { appCityId, code, label, center, descriptor, countryCode } = item;
+// The extent a new city declares: where its source's coverage names a boundary dataset (`coverage.extents`,
+// HM Land Registry: the ONS districts), the district named after the city or holding its centre
+// (extentAreaFor). null for a source that names none: the city keeps its circle.
+export function admissionExtent(item, { boundaries, extentAreaFor }) {
+    const dataset = item.catalogSource?.coverage?.extents;
+    if (!dataset) return null;
+    if (!boundaries[dataset]) throw new Error(`${item.appCityId}: ${item.catalogSource.id} names extent dataset ${dataset}, which BOUNDARY_DATASETS lacks`);
+    const area = extentAreaFor(boundaries[dataset], { name: item.name, lat: item.center[0], lon: item.center[1] });
+    return area ? { dataset, areas: [area] } : null;
+}
+
+export function cityConfigEntry(item) {
+    const { appCityId, code, label, center, descriptor, countryCode, extent } = item;
     const { locale, code: currency } = item.currency;
     const q = quote;
     return [
@@ -408,6 +419,7 @@ function cityConfigEntry(item) {
         `            label: translateCityText(${q(`city.labels.${appCityId}`)}, ${q(label)}),`,
         `            currency: { locale: ${q(locale)}, code: ${q(currency)} },`,
         `            map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [${center[0]}, ${center[1]}], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 16, max: Infinity }, latLngPadding: 0.08 },`,
+        ...(extent ? [`            extent: { dataset: ${q(extent.dataset)}, areas: [${extent.areas.map(q).join(', ')}] },`] : []),
         `            projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [${center[0]}, ${center[1]}], fallbackDataset: [${center[1]}, ${center[0]}] },`,
         parcelsLine(descriptor),
         `            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }`,
@@ -417,7 +429,7 @@ function cityConfigEntry(item) {
 
 async function main() {
     const args = parseArgs(process.argv.slice(2));
-    const { parseCityConfigs } = await import(pathToFileURL(path.join(REPO, 'scripts/build-world-coverage.mjs')));
+    const { parseCityConfigs, loadBoundaries, extentAreaFor } = await import(pathToFileURL(path.join(REPO, 'scripts/build-world-coverage.mjs')));
     const catalogDoc = readJson('frontend/data/source-catalog.json');
     const registry = readJson('world-parcels/registry.json');
     const demographics = readJson('world-parcels/report/city-demographics.json');
@@ -719,6 +731,8 @@ async function main() {
     let nextConfigText = configText;
     for (const item of plan.filter(entry => entry.switchedFrom)) nextConfigText = switchParcelsLine(nextConfigText, item.appCityId, item.descriptor);
     const added = plan.filter(item => !item.switchedFrom);
+    const boundaries = added.some(item => item.catalogSource?.coverage?.extents) ? loadBoundaries(REPO) : {};
+    for (const item of added) item.extent = admissionExtent(item, { boundaries, extentAreaFor });
     if (added.length) {
         const close = nextConfigText.indexOf('\n    };', nextConfigText.indexOf('const CITY_CONFIGS = {'));
         const before = nextConfigText.slice(0, close).replace(/\}\s*$/, match => (match.trimEnd().endsWith(',') ? match : match.replace('}', '},')));

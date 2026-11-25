@@ -158,6 +158,21 @@
     };
     // A whole number with thousands separators for a source's scope text (12666 → "12,666").
     const thousands = value => String(value).replace(/^(\d+)/, digits => digits.replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+    // The area of a rate table a city stands for where a location gives none: of its administrative
+    // extent's areas (`extent.areas` in data/city-configs.js) those the table rates, the one holding the
+    // city's centre (Westminster of London's 33 boroughs), else the first; without an extent, the area
+    // under its centre. One source of truth for "the city's district": the extent.
+    function cityArea(city, table, areas) {
+        const centre = cityCentre(city);
+        const rated = (city?.extent?.areas || []).filter(id => table.areas[id]);
+        if (rated.length) {
+            const holding = centre && rated.length > 1 ? areaAt(areas, table.layer, centre)?.id : null;
+            return rated.includes(holding) ? holding : rated[0];
+        }
+        if (city?.extent) return null;
+        const under = centre && areaAt(areas, table.layer, centre)?.id;
+        return under && table.areas[under] ? under : null;
+    }
     // Why a location-dependent rate is the city's rather than the location's.
     const standIn = (at, found, missing) => (at === null ? 'no location given' : found ? missing : 'the location is outside the mapped areas');
 
@@ -188,8 +203,8 @@
         // An area rate table (scripts/lib/area_rate_table.py, `source.table` in context.areaRates): a
         // dataset's rates per published area, such as an English local authority's land value, private
         // rent or building safety levy; any country's per-area statistics take the same shape. It gives
-        // the rates of the area the location lies in; the city's own area (named in a table's `cities`
-        // for the same layer, else the area under the city's centre) only where the location is not given, lies outside every area, or
+        // the rates of the area the location lies in; the city's own area (cityArea: its extent's) only
+        // where the location is not given, lies outside every area, or
         // in an area the table has no rate for, and the scope says which and why. A source's `scale`,
         // { factor, note }, converts the table's unit to the contract's (a rent per m² of dwelling to one
         // per m² of the building's floor area, by the place's net to gross) and is stated in the scope.
@@ -198,10 +213,7 @@
             if (!table || table.currency !== context.city?.currency?.code) return [];
             const found = at && areaAt(context.areas, table.layer, at);
             const located = found && table.areas[found.id] ? found.id : null;
-            // The city's area in this layer: as this or another table of the layer names it, else under its centre.
-            const centre = cityCentre(context.city), id = context.city?.id;
-            const named = [table, ...Object.values(context.areaRates)].find(other => other.layer === table.layer && other.cities?.[id]);
-            const code = located || named?.cities[id] || (centre && areaAt(context.areas, table.layer, centre)?.id);
+            const code = located || cityArea(context.city, table, context.areas);
             const row = code && table.areas[code];
             if (!row) return [];
             const where = `${code} · ${row.name}` + (located ? '' : ` (the city's area: ${standIn(at, found, `${found?.name} has no rate`)})`);
@@ -265,11 +277,10 @@
             custom: ['rate-table', 'area-rates'].includes(id), create: (config, context) => ({ rates: () => read(config, context) })
         }])), sources: Object.values(BUILT_INS).map(source => runtime.source('economics', source.adapter, source)) });
     // Source ordering belongs to the frontend. A local source may override just one metric. A city
-    // takes every built-in area table that covers it (names it in `cities`, or has an area under its
-    // centre in its currency), then the scenario assumptions. `areaRates` are the loaded tables by id.
+    // takes every built-in area table in its currency that rates its own area (cityArea), then the
+    // scenario assumptions. `areaRates` are the loaded tables by id.
     function defaults(city, areaRates, areas) {
-        const covers = table => Boolean(table && (table.cities?.[city?.id] || table.currency === city?.currency?.code
-            && cityCentre(city) && table.areas[areaAt(areas, table.layer, cityCentre(city))?.id]));
+        const covers = table => Boolean(table && table.currency === city?.currency?.code && cityArea(city, table, areas));
         return [...Object.values(BUILT_INS).filter(source => source.adapter === 'area-rates' && covers(areaRates?.[source.table])),
             BUILT_INS['scenario-assumptions']];
     }
@@ -310,5 +321,5 @@
             min: amount === null ? standard.min : Math.min(standard.min, amount / 2),
             max: amount === null ? standard.max : Math.max(standard.max, amount * 2) };
     }
-    return Object.freeze({ METRICS, BASES, FLOOR_PRICES, BUILT_INS, GLA_LPVS_2026, adapters, registry, rateTable, areaAt, locationOf, defaults, resolve, slider });
+    return Object.freeze({ METRICS, BASES, FLOOR_PRICES, BUILT_INS, GLA_LPVS_2026, adapters, registry, rateTable, areaAt, cityArea, locationOf, defaults, resolve, slider });
 });

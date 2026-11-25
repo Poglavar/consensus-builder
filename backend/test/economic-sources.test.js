@@ -9,7 +9,7 @@ const UkLandRates = require('../../frontend/js/uk-land-rates.js');
 const UkPrivateRents = require('../../frontend/js/uk-private-rents.js');
 const UkEconomicAreas = require('../../frontend/data/uk-economic-areas.js');
 
-const birmingham = { id: 'birmingham', currency: { code: 'GBP' } };
+const birmingham = { id: 'birmingham', currency: { code: 'GBP' }, extent: { dataset: 'ons-lad-2023', areas: ['E08000025'] } };
 const AREA_RATES = { [UkLandRates.id]: UkLandRates, [UkPrivateRents.id]: UkPrivateRents };
 const cityContext = (city, at = null) => ({ city, areaRates: AREA_RATES, areas: UkEconomicAreas, at });
 // Points, [lng, lat], in named places: their authorities are the land rate's areas.
@@ -37,8 +37,8 @@ describe('economic source adapters', () => {
     });
 
     it('has no UK land evidence for a city outside England', () => {
-        const cardiff = { id: 'cardiff', currency: { code: 'GBP' } };
-        expect(UkLandRates.cities).not.toHaveProperty('cardiff');
+        const cardiff = { id: 'cardiff', currency: { code: 'GBP' }, extent: { dataset: 'ons-lad-2023', areas: ['W06000015'] } };
+        expect(UkLandRates.areas).not.toHaveProperty('W06000015');
         const rates = EconomicSources.resolve(EconomicSources.defaults(cardiff, AREA_RATES, UkEconomicAreas), cityContext(cardiff, PLACES.cardiff));
         expect(rates).not.toHaveProperty('land');
         expect(rates).not.toHaveProperty('roadLand');
@@ -173,9 +173,12 @@ describe('rent', () => {
     });
 
     it('starts every city with money at an editable 15 a month', () => {
-        const rates = EconomicSources.resolve(EconomicSources.defaults(birmingham, AREA_RATES, UkEconomicAreas), cityContext(birmingham));
+        // A city no area table rates (Birmingham's extent has an ONS rent, 14.5, which it takes instead).
+        const elsewhere = { id: 'elsewhere', currency: { code: 'GBP' } };
+        const rates = EconomicSources.resolve(EconomicSources.defaults(elsewhere, AREA_RATES, UkEconomicAreas), cityContext(elsewhere));
         expect(rates.rent).toMatchObject({ amount: 15, unit: 'm2-floor-month', currency: 'GBP', basis: 'assumption', sourceId: 'scenario-assumptions' });
-        expect(CityMoney.assumptionsFor(birmingham).rentPerSqmMonth).toBe(15);
+        expect(CityMoney.assumptionsFor(elsewhere).rentPerSqmMonth).toBe(15);
+        expect(CityMoney.assumptionsFor(birmingham).rentPerSqmMonth).toBe(14.5);
     });
 });
 
@@ -242,8 +245,9 @@ describe('development charge', () => {
 
 describe('UK rates follow the location', () => {
     const london = { id: 'london', currency: { code: 'GBP' }, map: { defaultCenter: [51.5097885891913, -0.126303973484058] },
+        extent: { dataset: 'ons-lad-2023', areas: ['E09000001', 'E09000019', 'E09000033'] },
         economics: { sources: ['uk-mhclg-land-2023', 'gla-lpvs-2026', 'scenario-assumptions'] } };
-    const manchester = { id: 'manchester', currency: { code: 'GBP' } };
+    const manchester = { id: 'manchester', currency: { code: 'GBP' }, extent: { dataset: 'ons-lad-2023', areas: ['E08000003'] } };
     const at = (city, point) => CityMoney.ratesFor(city, null, point);
 
     it('finds the English local authority and the London value band a point lies in', () => {

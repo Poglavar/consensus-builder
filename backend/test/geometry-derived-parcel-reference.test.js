@@ -50,8 +50,8 @@ class Element {
     querySelectorAll() { return []; }
 }
 
-function renderParcelPanel(properties, { currency = 'EUR', id = 'test-city', proposals = [] } = {}) {
-    const cityConfig = { id, parcels: { ownership: false }, currency: { code: currency } };
+function renderParcelPanel(properties, { currency = 'EUR', id = 'test-city', proposals = [], extent = null } = {}) {
+    const cityConfig = { id, parcels: { ownership: false }, currency: { code: currency }, ...(extent ? { extent } : {}) };
     const ids = [
         'parcel-info-panel', 'parcel-info-title', 'info-content', 'propose-content', 'proposals-content',
         'selected-parcels-content', 'parcel-owners-count', 'tools-tab', 'measureAsRoadButton', 'roadMeasurements',
@@ -281,9 +281,10 @@ describe('geometry-derived parcel references', () => {
         expect(normalized).toContain('13,300 EUR');
     });
 
-    // A UK city prices land at its local authority's rate (js/uk-land-rates.js), in pounds.
+    // A UK city prices land at its local authority's rate (js/uk-land-rates.js), in pounds: its extent's.
     it('labels a UK parcel without a source price as a sterling area model', () => {
-        const rendered = renderParcelPanel({ parcelId: 'p-1', calculatedArea: 100 }, { currency: 'GBP', id: 'birmingham' });
+        const rendered = renderParcelPanel({ parcelId: 'p-1', calculatedArea: 100 }, { currency: 'GBP', id: 'birmingham',
+            extent: { dataset: 'ons-lad-2023', areas: ['E08000025'] } });
         const normalized = rendered.info.replace(/[\u00a0\u202f]/g, ' ');
         expect(normalized).toContain('Modeled area estimate (688 GBP/m²):');
         expect(normalized).toContain('68,800 GBP');

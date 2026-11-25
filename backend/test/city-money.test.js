@@ -8,7 +8,8 @@ const require = createRequire(import.meta.url);
 const CityMoney = require('../../frontend/js/city-money.js');
 const { buildParcelPriceEstimate } = require('../../frontend/js/financials.js');
 
-const birmingham = { id: 'birmingham', currency: { locale: 'en-GB', code: 'GBP' } };
+// A city's own authority is its administrative extent's (data/city-configs.js `extent`).
+const birmingham = { id: 'birmingham', currency: { locale: 'en-GB', code: 'GBP' }, extent: { dataset: 'ons-lad-2023', areas: ['E08000025'] } };
 const UkLandRates = require('../../frontend/js/uk-land-rates.js');
 const EconomicSources = require('../../frontend/js/economic-sources.js');
 const UkEconomicAreas = require('../../frontend/data/uk-economic-areas.js');
@@ -36,7 +37,6 @@ describe('price assumptions follow the city currency', () => {
     it('gives a UK place its own authority land rate in pounds', () => {
         const a = CityMoney.assumptionsFor(birmingham, null, BIRMINGHAM_CENTRE);
         expect(a).toMatchObject({ currency: 'GBP', landPerSqm: 688, roadLandPerSqm: 688, salesPerSqm: 4000 });
-        expect(UkLandRates.cities.birmingham).toBe('E08000025');
         expect(a.sources.land).toMatchObject({
             amount: 688, unit: 'm2-land', currency: 'GBP', basis: 'policy-appraisal', asOf: '2023-10-01',
             sourceId: 'uk-mhclg-land-2023', scope: 'E08000025 · Birmingham'
@@ -50,17 +50,31 @@ describe('price assumptions follow the city currency', () => {
         expect(assumptions.sources).not.toHaveProperty('land');
     });
 
-    // The table is generated from data/city-configs.js: every UK city whose centre lies in an English
-    // authority with an estimate has that authority for when a location gives none; the others none.
-    it('knows the authority of every English city in the config', () => {
-        const ukCities = [...cityConfigSource.matchAll(/\n {12}id: '([^']+)'[^\n]*\n {12}label: [^\n]*\n {12}currency: \{ locale: '[^']+', code: 'GBP' \},(?:\n {12}\/\/[^\n]*)*(?:\n {12}economics: [\s\S]*?)?\n {12}map: \{[^]*?defaultCenter: \[(-?[\d.]+), (-?[\d.]+)\]/g)]
-            .map(m => ({ id: m[1], centre: [Number(m[3]), Number(m[2])] }));
+    // A UK city's own authority, where a location gives none, is its extent's district: the one the
+    // city is named after, not the district its UN settlement locator happened to fall in.
+    it("rates every English city at its own extent's authority", () => {
+        new Function('globalThis', cityConfigSource)(globalThis);
+        const ukCities = Object.values(globalThis.__cityConfigs).filter(city => city.currency?.code === 'GBP');
         expect(ukCities.length).toBeGreaterThan(100);
-        const outside = ukCities.filter(city => !UkLandRates.cities[city.id]);
-        expect(outside.length).toBeLessThan(10);
-        // Outside England, or in an authority MHCLG gives no estimate for (Cumberland).
-        for (const city of outside) expect(UkLandRates.areas[EconomicSources.areaAt(UkEconomicAreas, 'lad', city.centre)?.id], city.id).toBeUndefined();
-        for (const city of ukCities.filter(row => UkLandRates.cities[row.id])) expect(UkLandRates.areas[UkLandRates.cities[city.id]], city.id).toBeTruthy();
+        const authority = city => EconomicSources.cityArea(city, UkLandRates, UkEconomicAreas);
+        for (const city of ukCities) {
+            expect(city.extent, city.id).toBeTruthy();
+            const code = authority(city);
+            // Welsh districts and Cumberland have no MHCLG estimate; every other city has its extent's.
+            if (code === null) expect(city.extent.areas.every(id => !UkLandRates.areas[id]), city.id).toBe(true);
+            else expect(city.extent.areas, city.id).toContain(code);
+        }
+        expect(ukCities.filter(city => authority(city) === null).map(city => city.id).sort())
+            .toEqual(['barry', 'bridgend', 'cardiff', 'carleton', 'newport']);
+        const byId = id => authority(globalThis.__cityConfigs[id]);
+        expect(byId('london')).toBe('E09000033'); // Westminster, the borough holding London's centre
+        expect({ brighton: byId('brighton'), farnham: byId('farnham'), walton_on_thames: byId('walton_on_thames'),
+            polegate: byId('polegate'), hoyland: byId('hoyland'), fazeley: byId('fazeley'), manchester: byId('manchester'), wakefield: byId('wakefield') })
+            .toEqual({ brighton: 'E06000043', farnham: 'E07000216', walton_on_thames: 'E07000207', polegate: 'E07000065',
+                hoyland: 'E08000016', fazeley: 'E07000194', manchester: 'E08000003', wakefield: 'E08000036' });
+        const land = id => CityMoney.ratesFor({ ...globalThis.__cityConfigs[id], economics: undefined }).land;
+        expect(land('brighton')).toMatchObject({ scope: expect.stringMatching(/^E06000043 · Brighton and Hove \(the city's area/) });
+        expect(land('brighton').amount).toBe(UkLandRates.areas.E06000043.perSqm);
     });
 
     // The 3D panel's two sliders start at the same figures in every city, in its own currency.

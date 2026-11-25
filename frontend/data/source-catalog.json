@@ -8181,6 +8181,7 @@
           "GB-ENG",
           "GB-WLS"
         ],
+        "extents": "ons-lad-2023",
         "basis": "HM Land Registry publishes the INSPIRE Index Polygons for every local authority in England and Wales; the static tile release covers all of them."
       },
       "attribution": "HM Land Registry INSPIRE Index Polygons. This information is subject to Crown copyright and database rights 2026 and is reproduced with the permission of HM Land Registry. The polygons (including the associated geometry, namely x, y co-ordinates) are subject to Crown copyright and database rights 2026 Ordnance Survey 100026316. Application ground derived by deterministic overlap resolution.",
