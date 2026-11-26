@@ -341,22 +341,34 @@ function publishBuildingPool() {
     window.dispatchEvent(new CustomEvent('buildingPoolUpdated'));
 }
 
-// One cell's answer into the pool. A stand-in's building that duplicates, over a cell line, one an
-// earlier source of the list already shows is left out (building-cells.js coveredKeys).
+// Pool buildings within this many degrees of a cell are layered with its answer (~50 m): a building
+// filed in the next cell can still lie over this one's.
+const POOL_LAYER_MARGIN_DEG = 0.0005;
+
+// One cell's answer into the pool. Buildings of several sources (stand-ins meeting over a cell line,
+// or a city's merged sources) are layered in list order: one lying mostly under a building of an
+// earlier source is left out, here or already in the pool (building-cells.js layeredOut).
 function mergeCellIntoPool(cell, result, sources) {
     const changedIds = new Set();
     const previous = buildingPoolCells.get(cell.key);
     if (previous) previous.keys.forEach(key => { buildingPoolByKey.delete(key); changedIds.add(key); });
-    let features = result.items.filter(item => item && item.geometry && item.id != null).map(item => poolFeatureOf(item, result.source));
-    const rank = sources.indexOf(result.source);
-    if (rank > 0 && window.turf) {
-        const earlier = [];
-        buildingPoolByKey.forEach(feature => {
-            if (sources.indexOf(feature.properties?.source) < rank) earlier.push(feature);
+    let features = result.items.filter(item => item && item.geometry && item.id != null).map(item => poolFeatureOf(item, item.source || result.source));
+    if (window.turf && window.BuildingCells?.layeredOut) {
+        const [w, s, e, n] = cell.bbox;
+        const near = [];
+        buildingPoolByKey.forEach((feature, key) => {
+            const [fw, fs, fe, fn] = window.turf.bbox(feature);
+            if (fw < e + POOL_LAYER_MARGIN_DEG && fe > w - POOL_LAYER_MARGIN_DEG && fs < n + POOL_LAYER_MARGIN_DEG && fn > s - POOL_LAYER_MARGIN_DEG) {
+                near.push({ key, source: feature.properties?.source, geometry: feature.geometry, pooled: true });
+            }
         });
-        const keyed = features.map(feature => ({ key: buildingPoolFeatureKey(feature), geometry: feature.geometry, feature }));
-        const covered = window.BuildingCells.coveredKeys(keyed, earlier, window.turf);
-        features = keyed.filter(entry => !covered.has(entry.key)).map(entry => entry.feature);
+        const keyed = features.map(feature => ({ key: buildingPoolFeatureKey(feature), source: feature.properties.source, geometry: feature.geometry, feature }));
+        if (new Set([...near, ...keyed].map(entry => entry.source)).size > 1) {
+            const out = window.BuildingCells.layeredOut([...near, ...keyed], sources, window.turf);
+            // A pooled building of a later source now lying under this cell's earlier one gives way.
+            near.forEach(entry => { if (out.has(entry.key)) { buildingPoolByKey.delete(entry.key); changedIds.add(entry.key); } });
+            features = keyed.filter(entry => !out.has(entry.key)).map(entry => entry.feature);
+        }
     }
     const keys = new Set();
     features.forEach(feature => {
@@ -412,7 +424,8 @@ function buildingCellsFor(box) {
     const cells = cellsApi.cellsCovering({ box, centre, gridSize: Number(manager.getParcelGridSize?.()),
         toDataset: wgs84ToDataset, toLatLng: (easting, northing) => manager.datasetToLatLng(easting, northing) });
     const sources = window.SourceList.inUse(manager.getBuildingSources(centre[1], centre[0]));
-    return { cells, sources, list: manager.getBuildingSources(centre[1], centre[0]) };
+    return { cells, sources, combine: manager.getBuildingCombine?.(centre[1], centre[0]) || 'first',
+        list: manager.getBuildingSources(centre[1], centre[0]) };
 }
 window.buildingCellsFor = buildingCellsFor;
 
@@ -423,7 +436,7 @@ async function fetchBuildingCells(bounds, { announce = false } = {}) {
     const loader = window.BuildingCellLoader;
     if (!loader) return;
     const box = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
-    const { cells, sources } = buildingCellsFor(box);
+    const { cells, sources, combine } = buildingCellsFor(box);
     if (!cells.length || !sources.length) return;
     if (announce && typeof updateStatus === 'function') updateStatus('Fetching existing buildings...');
     buildingFetchesInFlight += 1;
@@ -431,7 +444,7 @@ async function fetchBuildingCells(bounds, { announce = false } = {}) {
     let landed = 0;
     const generation = buildingReconcileGeneration;
     try {
-        const summary = await loader.load({ kind: 'footprints', sources, cells, onCell: (cell, result) => {
+        const summary = await loader.load({ kind: 'footprints', sources, combine, cells, onCell: (cell, result) => {
             if (result.failed || generation !== buildingReconcileGeneration) return;
             landed += result.items.length;
             const known = buildingPoolCells.get(cell.key);

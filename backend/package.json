@@ -59,6 +59,7 @@
         "geos-wasm": "3.1.1",
         "geotiff": "3.0.5",
         "helmet": "^8.3.0",
+        "hyparquet": "1.33.2",
         "ipfs-unixfs": "13.1.2",
         "ipfs-unixfs-importer": "17.1.1",
         "marked": "^16.4.2",

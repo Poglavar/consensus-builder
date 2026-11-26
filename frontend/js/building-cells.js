@@ -1,6 +1,7 @@
 // Buildings are loaded cell by cell on the city's parcel grid (docs/source-loading-plan.md): the
 // cells under a view or around a 3D anchor, nearest first, a few in flight, each cached and answered
-// wholly by one source of the city's ordered list (its own survey, then any declared stand-ins).
+// wholly by one source of the city's ordered list (its own survey, then any declared stand-ins), or,
+// when the city merges its sources (`buildings.combine: 'union'`), by every source of the list at once.
 // Pure: the transport, the projections and the clock are injected, so node tests drive it.
 (function (root, factory) {
     const api = factory();
@@ -139,6 +140,33 @@
         return covered;
     }
 
+    /**
+     * Several sources' buildings layered in list order: a building is left out when more than half of it
+     * lies under buildings kept from sources earlier in `sources` (a source not in the list comes last).
+     * Stand-ins meeting over a cell line and merged sources are layered alike.
+     * items: [{ key, source, geometry }] → Set of the keys left out.
+     */
+    function layeredOut(items, sources, turf) {
+        const rankOf = item => { const rank = (sources || []).indexOf(item.source); return rank < 0 ? Infinity : rank; };
+        const byRank = new Map();
+        for (const item of items || []) {
+            const rank = rankOf(item);
+            if (!byRank.has(rank)) byRank.set(rank, []);
+            byRank.get(rank).push(item);
+        }
+        const out = new Set();
+        const kept = [];
+        for (const rank of [...byRank.keys()].sort((a, b) => a - b)) {
+            const list = byRank.get(rank);
+            const covered = kept.length ? coveredKeys(list, kept, turf) : new Set();
+            for (const item of list) {
+                if (covered.has(item.key)) out.add(item.key);
+                else if (item.geometry) kept.push(item);
+            }
+        }
+        return out;
+    }
+
     // The cells within `radiusM` of a [lng, lat] centre, nearest first.
     function cellsAround({ centre, radiusM, gridSize, toDataset, toLatLng }) {
         const [lng, lat] = centre;
@@ -148,9 +176,12 @@
 
     /**
      * request({ kind, source, bbox, signal }) → { items, complete, unavailable?, retryAfter?, supported? }
-     * load({ kind, sources, cells, signal, onCell, onProgress }) → summary
+     * load({ kind, sources, combine, cells, signal, onCell, onProgress }) → summary
      * Each cell is answered wholly by the first source of `sources` that does not fail it; a source
      * that fails is left alone for its retry time, and its cells go to the next source meanwhile.
+     * With `combine: 'union'` every source answers each cell and its buildings are all returned (the
+     * consumer layers them, layeredOut); a source that fails meanwhile makes the cell a stand-in answer.
+     * Every item comes back with `source`, the id of the list source that answered it.
      */
     function createCellLoader({ request, now = Date.now, concurrency = DEFAULT_CONCURRENCY } = {}) {
         if (typeof request !== 'function') throw new TypeError('createCellLoader needs request().');
@@ -160,50 +191,73 @@
 
         // A stand-in answers a cell the source before it failed or found empty (a city survey ends
         // at its boundary); an empty cell the stand-ins cannot fill stays the first source's answer.
-        async function resolveCell(kind, sources, cell, signal) {
+        // One source's answer for one cell → { state: 'backoff' | 'refused' | 'unsupported' | 'unavailable'
+        // | 'answered', … }. A source that fails is left alone for its retry time.
+        async function askSource(kind, source, cell, signal) {
+            const until = backoffUntil.get(source) || 0;
+            if (until > now()) return { state: 'backoff', retryAfter: Math.ceil((until - now()) / 1000), status: null };
+            let answer;
+            try {
+                answer = await request({ kind, source, bbox: cell.bbox, signal });
+            } catch (error) {
+                if (error?.name === 'AbortError') throw error;
+                const status = Number(error?.status);
+                // Our own server refusing the request is not the source failing: say so, with its
+                // status, instead of hiding the fault behind a stand-in.
+                if (status >= 400 && status < 500 && status !== 429) return { state: 'refused', status };
+                answer = { unavailable: true, retryAfter: null, status: Number.isFinite(status) ? status : null };
+            }
+            if (answer?.supported === false) return { state: 'unsupported' };
+            if (answer?.unavailable) {
+                const seconds = Number(answer.retryAfter) > 0 ? Number(answer.retryAfter) : DEFAULT_BACKOFF_S;
+                backoffUntil.set(source, now() + seconds * 1000);
+                return { state: 'unavailable', retryAfter: seconds, status: answer.status ?? null };
+            }
+            // Each building is kept by the one cell its first vertex lies in. Whether the source has
+            // anything here is judged on its whole answer, before that filing.
+            const answered = Array.isArray(answer?.items) ? answer.items : [];
+            const items = answered.filter(item => {
+                const anchor = anchorOf(item);
+                return anchor && withinBox(anchor, cell.bbox);
+            }).map(item => ({ ...item, source }));
+            return { state: 'answered', items, complete: answer?.complete === true, any: answered.length > 0 };
+        }
+
+        const failedCell = failure => ({ items: [], complete: false, failed: true, retryAfter: failure?.retryAfter ?? null, status: failure?.status ?? null });
+
+        async function resolveCell(kind, sources, cell, signal, combine) {
+            // Merged sources are all asked at once; their buildings come back together, in list order.
+            if (combine === 'union') {
+                const answers = await Promise.all(sources.map(source => askSource(kind, source, cell, signal)));
+                const refused = answers.find(answer => answer.state === 'refused');
+                if (refused) return { items: [], complete: false, failed: true, retryAfter: null, status: refused.status };
+                const answered = answers.filter(answer => answer.state === 'answered');
+                const failures = answers.filter(answer => answer.state === 'backoff' || answer.state === 'unavailable');
+                if (!answered.length && !failures.length) return { items: [], complete: true, source: sources[0], standIn: false, unsupported: true };
+                if (!answered.length) return failedCell(failures.reduce((longest, failure) => (failure.retryAfter || 0) > (longest.retryAfter || 0) ? failure : longest));
+                // A source that failed or was backing off left its buildings out: a stand-in answer, not cached.
+                return { items: answered.flatMap(answer => answer.items), complete: answered.every(answer => answer.complete),
+                    source: sources[0], standIn: failures.length > 0 };
+            }
             let lastFailure = null, empty = null;
             for (let index = 0; index < sources.length; index++) {
                 const source = sources[index];
-                const until = backoffUntil.get(source) || 0;
-                if (until > now()) { lastFailure = { retryAfter: Math.ceil((until - now()) / 1000) }; continue; }
-                let answer;
-                try {
-                    answer = await request({ kind, source, bbox: cell.bbox, signal });
-                } catch (error) {
-                    if (error?.name === 'AbortError') throw error;
-                    const status = Number(error?.status);
-                    // Our own server refusing the request is not the source failing: say so, with its
-                    // status, instead of hiding the fault behind a stand-in.
-                    if (status >= 400 && status < 500 && status !== 429) {
-                        return { items: [], complete: false, failed: true, retryAfter: null, status };
-                    }
-                    answer = { unavailable: true, retryAfter: null, status: Number.isFinite(status) ? status : null };
-                }
-                if (answer?.supported === false) return { items: [], complete: true, source, standIn: index > 0, unsupported: true };
-                if (answer?.unavailable) {
-                    const seconds = Number(answer.retryAfter) > 0 ? Number(answer.retryAfter) : DEFAULT_BACKOFF_S;
-                    backoffUntil.set(source, now() + seconds * 1000);
-                    lastFailure = { retryAfter: seconds, status: answer.status ?? null };
-                    continue;
-                }
-                // Each building is kept by the one cell its first vertex lies in. Whether the source has
-                // anything here is judged on its whole answer, before that filing.
-                const answered = Array.isArray(answer?.items) ? answer.items : [];
-                const items = answered.filter(item => {
-                    const anchor = anchorOf(item);
-                    return anchor && withinBox(anchor, cell.bbox);
-                });
-                const result = { items, complete: answer?.complete === true, source, standIn: index > 0 };
-                if (answered.length) return result;
+                const answer = await askSource(kind, source, cell, signal);
+                if (answer.state === 'refused') return { items: [], complete: false, failed: true, retryAfter: null, status: answer.status };
+                if (answer.state === 'unsupported') return { items: [], complete: true, source, standIn: index > 0, unsupported: true };
+                if (answer.state === 'backoff' || answer.state === 'unavailable') { lastFailure = answer; continue; }
+                const result = { items: answer.items, complete: answer.complete, source, standIn: index > 0 };
+                if (answer.any) return result;
                 empty = empty || result;
             }
             if (empty) return empty;
-            return { items: [], complete: false, failed: true, retryAfter: lastFailure?.retryAfter ?? null, status: lastFailure?.status ?? null };
+            return failedCell(lastFailure);
         }
 
-        async function load({ kind, sources, cells, signal, onCell, onProgress }) {
+        async function load({ kind, sources, combine, cells, signal, onCell, onProgress }) {
             const list = Array.isArray(sources) ? sources.filter(Boolean) : [];
             if (!list.length) throw new Error('No building source to load from.');
+            const joiner = combine === 'union' ? '+' : '>';
             const queue = [...cells].sort((a, b) => (a.distanceM ?? 0) - (b.distanceM ?? 0));
             const summary = { total: queue.length, done: 0, loaded: 0, standIn: 0, failed: 0, incomplete: 0, unsupported: 0, cached: 0, retryAfter: null, status: null };
             const settle = (cell, result, cached) => {
@@ -226,11 +280,11 @@
                 while (queue.length) {
                     signal?.throwIfAborted?.();
                     const cell = queue.shift();
-                    const key = `${kind}|${list.join('>')}|${cell.key}`;
+                    const key = `${kind}|${list.join(joiner)}|${cell.key}`;
                     if (cache.has(key)) { settle(cell, cache.get(key), true); continue; }
                     let pending = inFlight.get(key);
                     if (!pending) {
-                        pending = resolveCell(kind, list, cell, signal).finally(() => inFlight.delete(key));
+                        pending = resolveCell(kind, list, cell, signal, combine).finally(() => inFlight.delete(key));
                         inFlight.set(key, pending);
                     }
                     const result = await pending;
@@ -247,10 +301,10 @@
         // Retry now: forget the back-off of every source (cached whole answers stay).
         function retry() { backoffUntil.clear(); }
         function clear() { cache.clear(); backoffUntil.clear(); }
-        function isCached(kind, sources, cellKey) { return cache.has(`${kind}|${sources.join('>')}|${cellKey}`); }
+        function isCached(kind, sources, cellKey, combine) { return cache.has(`${kind}|${sources.join(combine === 'union' ? '+' : '>')}|${cellKey}`); }
 
         return { load, retry, clear, isCached };
     }
 
-    return { TARGET_SIDE_M, cellsCovering, cellsAround, createCellLoader, distanceToBoxM, anchorOf, coveredKeys };
+    return { TARGET_SIDE_M, cellsCovering, cellsAround, createCellLoader, distanceToBoxM, anchorOf, coveredKeys, layeredOut };
 });

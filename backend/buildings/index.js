@@ -4,7 +4,7 @@ import { createDguProvider } from './dgu-cadastre.js';
 import { createNycProvider } from './nyc-footprints.js';
 import { createNycArcgisProvider } from './nyc-arcgis.js';
 import { createOsmProvider } from './osm-3d.js';
-import { readAlatauHeightEstimates } from './alatau-gba-heights.js';
+import { ATLAS_SOURCE, createAtlasBuildingProvider, createAtlasHeightEstimator, createAtlasReader } from './global-building-atlas.js';
 import { createKzNsdiBuildingProvider, kzNsdiBuildings } from './kz-nsdi.js';
 import { createCustomBuildingProvider } from './custom-source-3d.js';
 import { createOverpassBuildingProvider } from './overpass-source.js';
@@ -25,8 +25,12 @@ const builtins = [
     ['wien-lod2', 'wien-lod2'], ['nl-3dbag', 'nl-3dbag'], ['nrw-lod2', 'nrw-lod2'], ['nyc-3d', 'nyc-3d'],
     ['berlin-lod2', 'berlin-lod2'], ['hamburg-lod2', 'hamburg-lod2'], ['bw-lod2', 'bw-lod2'], ['sachsen-lod2', 'sachsen-lod2'],
     ['gdi-3d', 'gdi-3d'], ['dgu', 'dgu'], ['nyc-arcgis', 'nyc-arcgis'], ['nyc-socrata', 'nyc-socrata'], ['osm', 'osm'],
-    [kzNsdiBuildings.id, 'kz-nsdi-buildings', kzNsdiBuildings]
+    [kzNsdiBuildings.id, 'kz-nsdi-buildings', kzNsdiBuildings], [ATLAS_SOURCE, ATLAS_SOURCE]
 ];
+// One atlas reader per process: its tile indexes and row groups serve the atlas source and the height
+// estimates alike.
+let atlasReader = null;
+const sharedAtlasReader = () => (atlasReader ??= createAtlasReader());
 export const buildingSourceRegistry = SourceRuntime.createRegistry({
     abstraction: 'buildings',
     adapters: {
@@ -34,9 +38,7 @@ export const buildingSourceRegistry = SourceRuntime.createRegistry({
         dgu: { create: (_config, { pool }) => createDguProvider(pool), custom: false },
         'nyc-arcgis': { create: (_config, { env }) => createNycArcgisProvider(env), custom: false },
         'nyc-socrata': { create: (_config, { env }) => createNycProvider(env), custom: false },
-        osm: { create: (_config, { pool, env = process.env }) => createOsmProvider(pool, {
-            heightEstimateFor: readAlatauHeightEstimates(env.ALATAU_GBA_HEIGHTS_FILE)
-        }), custom: false },
+        osm: { create: (_config, { pool }) => createOsmProvider(pool), custom: false },
         'wien-lod2': { create: () => createWienLod2Provider(), custom: false },
         'nl-3dbag': { create: () => createNl3dbagProvider(), custom: false },
         'nrw-lod2': { create: () => createNrwLod2Provider(), custom: false },
@@ -46,6 +48,7 @@ export const buildingSourceRegistry = SourceRuntime.createRegistry({
         'bw-lod2': { create: () => createBwLod2Provider(), custom: false },
         'sachsen-lod2': { create: () => createSachsenLod2Provider(), custom: false },
         'kz-nsdi-buildings': { create: createKzNsdiBuildingProvider, custom: false },
+        [ATLAS_SOURCE]: { create: () => createAtlasBuildingProvider({ reader: sharedAtlasReader() }), custom: false },
         arcgis: { create: createCustomBuildingProvider },
         wfs: { create: createCustomBuildingProvider },
         'ogc-api': { create: createCustomBuildingProvider },
@@ -74,5 +77,14 @@ export function createBuildingProviders(pool, env = process.env) {
         }
         return customProviders.get(descriptor.id);
     }
-    return { resolveSource, forRequest: ({ source } = {}) => resolveSource(source) };
+    // Outside height estimates a request may ask for (`heightEstimates`), by name.
+    const heightEstimators = new Map([[ATLAS_SOURCE, createAtlasHeightEstimator({ reader: sharedAtlasReader() })]]);
+    function heightEstimator(name) {
+        if (name === undefined || name === null) return null;
+        if (!heightEstimators.has(name)) {
+            throw Object.assign(new Error(`Unknown heightEstimates "${name}" (only "${ATLAS_SOURCE}").`), { status: 400, code: 'invalid-height-estimates' });
+        }
+        return heightEstimators.get(name);
+    }
+    return { resolveSource, heightEstimator, forRequest: ({ source } = {}) => resolveSource(source) };
 }

@@ -5,8 +5,8 @@ import applyRoute from '../../frontend/js/proposals/apply/route.js';
 import demolition from '../../frontend/js/proposals/demolition-prefetch.js';
 import demolitionDerive from '../../frontend/js/demolition-derive.js';
 import buildingGround from '../../frontend/js/building-ground.js';
+import buildingCells from '../../frontend/js/building-cells.js';
 import { createBuildingProviders } from '../buildings/index.js';
-import { readAlatauHeightEstimates } from '../buildings/alatau-gba-heights.js';
 import { parcelSourceCatalog, parcelSourceById } from '../parcels/sources.js';
 import { cityBuildingSources } from '../scripts/lib/frontend-city-money.mjs';
 import { fetchParcelPolygonsByIds, hasParcelContext } from './parcel-geometry.js';
@@ -60,32 +60,50 @@ async function readStock(pool, city, bounds, options) {
     if ((east - west) * lonMetres + 2 * pad > 1200 || (north - south) * 110574 + 2 * pad > 1200) return null;
     const view = turf.bboxPolygon([west - padX, south - padY, east + padX, north + padY]).geometry;
     const providers = options.buildingProvider ? null : createBuildingProviders(pool);
-    const sources = options.buildingProvider ? ['fixture'] : cityBuildingSources(city);
-    for (const source of sources) {
+    const { sources, combine, heightEstimates } = options.buildingProvider
+        ? { sources: ['fixture'], combine: 'first', heightEstimates: null } : cityBuildingSources(city);
+    // One source's footprints under the view, or null when it cannot vouch for the whole view.
+    async function read(source) {
         try {
             const provider = options.buildingProvider || providers.resolveSource(source);
             const result = await provider.footprintsUnder([{ key: 'view', geometry: view }]);
             const rows = result?.regions?.get('view');
-            if (result?.unavailable || result?.truncated || result?.partial || !Array.isArray(rows)) continue;
-            const buildings = new Map();
-            let estimate;
-            if (source === 'osm' && city === 'alatau') {
-                try { estimate = readAlatauHeightEstimates(process.env.ALATAU_GBA_HEIGHTS_FILE); }
-                catch { /* Optional heights do not affect the observed footprints. */ }
-            }
-            for (const row of rows) {
+            if (result?.unavailable || result?.truncated || result?.partial || !Array.isArray(rows)) return null;
+            return rows.map(row => {
                 const geometry = polygonOf(row.geometry);
                 if (!geometry || row.id == null) throw new Error('Incomplete building footprint');
-                const floors = positive(row.floors);
-                const key = String(row.id);
-                const height = positive(row.height_m) ?? (floors ? floors * 3 : null)
-                    ?? estimate?.({ properties: { osm_id: key } })?.heightM ?? null;
-                buildings.set(key, { key, geometry, height, floors });
-            }
-            return [...buildings.values()];
-        } catch { /* Try the next configured dataset; a failed read never establishes an empty site. */ }
+                return { key: String(row.id), source, geometry, height: positive(row.height_m), floors: positive(row.floors) };
+            });
+        } catch { return null; /* Try the next configured dataset; a failed read never establishes an empty site. */ }
     }
-    return null;
+    let rows = null;
+    if (combine === 'union') {
+        // Merged sources: every one that answers, layered in list order (building-cells.js).
+        const answered = (await Promise.all(sources.map(read))).filter(Boolean);
+        if (answered.length) {
+            const all = answered.flat();
+            const out = buildingCells.layeredOut(all, sources, turf);
+            rows = all.filter(row => !out.has(row.key));
+        }
+    } else {
+        for (const source of sources) if ((rows = await read(source))) break;
+    }
+    if (!rows) return null;
+    let estimate = null;
+    if (heightEstimates && providers && rows.some(row => !row.height && !row.floors)) {
+        try {
+            estimate = await providers.heightEstimator(heightEstimates)(null, turf.bbox(view));
+        } catch (error) {
+            console.warn(`[${new Date().toISOString()}] [agreement-scene] no ${heightEstimates} heights: ${error.message}`);
+        }
+    }
+    const buildings = new Map();
+    for (const row of rows) {
+        const height = row.height ?? (row.floors ? row.floors * 3 : null)
+            ?? estimate?.({ geometry: row.geometry, properties: { osm_id: row.key } })?.heightM ?? null;
+        buildings.set(row.key, { key: row.key, geometry: row.geometry, height, floors: row.floors });
+    }
+    return [...buildings.values()];
 }
 
 export async function buildAgreementScene(pool, subject, options = {}) {

@@ -50,7 +50,12 @@ export function cityPlanningSourceIds(cityId) {
     return config?.id === cityId ? config.planning?.sourceIds || [] : [];
 }
 
+// A city's building sources in list order, how they meet ('first' or 'union') and the outside height
+// estimates it asks for (null when none), as the browser reads them.
 export function cityBuildingSources(cityId) {
     const config = cityConfigs().getCityConfig(cityId);
-    return config?.id === cityId ? SourceList.inUse(SourceList.cityList(config)) : [];
+    if (config?.id !== cityId) return { sources: [], combine: 'first', heightEstimates: null };
+    return { sources: SourceList.inUse(SourceList.cityList(config)),
+        combine: config.buildings?.combine === 'union' ? 'union' : 'first',
+        heightEstimates: config.buildings?.heightEstimates || null };
 }

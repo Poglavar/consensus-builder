@@ -418,9 +418,18 @@
     function buildingSourceIds(config) {
         return config && window.SourceList ? window.SourceList.inUse(window.SourceList.forConfig(config, window)) : [];
     }
+    // How a city's building sources meet (building-cells.js): 'first', each cell from the first source
+    // that answers it, or 'union', every source's buildings layered in list order.
+    function buildingCombineOf(config) {
+        return config?.buildings?.combine === 'union' ? 'union' : 'first';
+    }
+    function getBuildingCombine(lat, lng) {
+        return buildingCombineOf(Number.isFinite(lat) && Number.isFinite(lng) ? getCityConfigAt(lat, lng) : getCurrentCityConfig());
+    }
     // The building sources in use, in order, as one key (a scene or cache scope changes with it).
     function getBuildingSourceKey() {
-        return buildingSourceIds(getCurrentCityConfig()).join('>');
+        const config = getCurrentCityConfig();
+        return buildingSourceIds(config).join(buildingCombineOf(config) === 'union' ? '+' : '>');
     }
 
     // Live alternatives are opt-in for this boot. A reload switches providers without changing
@@ -1079,6 +1088,7 @@
         isFeatureEnabled,
         getBuildingSources,
         getBuildingSourceKey,
+        getBuildingCombine,
         applyFeatureVisibility
     };
 })();

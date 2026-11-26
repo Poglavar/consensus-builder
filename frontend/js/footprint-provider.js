@@ -83,9 +83,11 @@
 
     // featuresIn(bbox) → { features, truncated?, partial? } or throws when the upstream failed.
     // `sources` names the answer: { near: 'osm-3d', footprints: 'osm-footprints' }.
+    // near() may be given `estimateHeights(features, box)` → (feature) → { heightM, source } | null: an
+    // outside estimate (the atlas's predicted height) for buildings that state neither height nor storeys.
     function createFootprintProvider({ turf, featuresIn, sources, heightEstimateFor, label = 'buildings', log = () => {},
         maxBuildings = DEFAULT_MAX_BUILDINGS, maxSpanDeg = MAX_SPAN_DEG }) {
-        async function near(geometry, bufferMeters) {
+        async function near(geometry, bufferMeters, { estimateHeights } = {}) {
             const box = expandBbox(turf.bbox(geometry), bufferMeters, maxSpanDeg);
             let fc;
             try {
@@ -103,10 +105,21 @@
             };
             // Nearest first before the cap, as Overture does, so a growing radius only adds rings.
             const features = fc.features.slice().sort((a, b) => distance(a) - distance(b)).slice(0, maxBuildings);
+            let estimateFor = heightEstimateFor, estimatesUnavailable = false;
+            if (typeof estimateHeights === 'function' && features.length) {
+                try {
+                    const outside = await estimateHeights(features, box);
+                    estimateFor = feature => heightEstimateFor?.(feature) ?? outside(feature);
+                } catch (error) {
+                    // The buildings still stand; their heights fall back to the type estimate, and the answer says so.
+                    log(`no height estimates for ${label}: ${error.message}`);
+                    estimatesUnavailable = true;
+                }
+            }
             const buildings = [];
             const heights = { measured: 0, levels: 0, estimated: 0 };
             for (const feature of features) {
-                const record = footprintFeatureToBuilding(feature, heightEstimateFor);
+                const record = footprintFeatureToBuilding(feature, estimateFor);
                 if (!record) continue;
                 heights[record.height_source] += 1;
                 buildings.push(record);
@@ -117,7 +130,8 @@
                 source: sources.near,
                 partial: fc.partial === true,
                 truncated: fc.truncated === true || fc.features.length > maxBuildings,
-                heights
+                heights,
+                ...(estimatesUnavailable ? { heightEstimatesUnavailable: true } : {})
             };
         }
 

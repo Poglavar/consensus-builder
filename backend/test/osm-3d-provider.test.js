@@ -6,10 +6,6 @@
 import { describe, it, expect } from 'vitest';
 import { createOsmProvider, expandBbox } from '../buildings/osm-3d.js';
 import { createBuildingProviders } from '../buildings/index.js';
-import { readAlatauHeightEstimates } from '../buildings/alatau-gba-heights.js';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
 
 const box = (x, y, d = 0.0001) => ({ type: 'Polygon', coordinates: [[[x, y], [x + d, y], [x + d, y + d], [x, y + d], [x, y]]] });
 const building = (id, x, y, props = {}) => ({ type: 'Feature', id, geometry: box(x, y), properties: { osm_id: id, ...props } });
@@ -17,35 +13,6 @@ const live = features => async () => ({ type: 'FeatureCollection', features, tru
 const noStaged = async () => null;
 
 describe('OSM 3D provider', () => {
-    it('uses plausible atlas estimates only for 3D buildings without recorded dimensions', async () => {
-        const folder = mkdtempSync(join(tmpdir(), 'alatau-heights-'));
-        try {
-            const path = join(folder, 'estimates.json');
-            writeFileSync(path, JSON.stringify({ source: 'global-building-atlas', heights: { w1: 5.12, w2: 7, w3: 7, w4: 0.4, w5: '12', r1: 8 } }));
-            const heightEstimateFor = readAlatauHeightEstimates(path);
-            const provider = createOsmProvider(null, { fetchStaged: noStaged, heightEstimateFor, fetchLive: live([
-                building('w1', 77.11, 43.67),
-                building('w2', 77.111, 43.67, { measured_height_m: 9 }),
-                building('w3', 77.112, 43.67, { levels: 4 }),
-                building('w4', 77.113, 43.67),
-                building('w5', 77.114, 43.67),
-                building('r1', 77.115, 43.67)
-            ]) });
-            const area = box(77.109, 43.669, 0.008);
-            const result = await provider.near(area, 0);
-            const models = Object.fromEntries(result.buildings.map(model => [model.object_id, model]));
-            expect(models.w1).toMatchObject({ z_max: 5.12, height_source: 'estimated', height_estimate_source: 'global-building-atlas' });
-            expect(models.w2).toMatchObject({ z_max: 9, height_source: 'measured' });
-            expect(models.w3).toMatchObject({ z_max: 12, height_source: 'levels', floors: 4 });
-            expect(Object.values(models).filter(model => model.height_estimate_source)).toEqual([models.w1]);
-            expect(result.heights).toEqual({ measured: 1, levels: 1, estimated: 4 });
-            expect((await provider.footprints(area)).footprints.find(f => f.id === 'w1')).toMatchObject({ height_m: null, floors: null });
-            expect((await provider.mapFootprints(area)).footprints.find(f => f.id === 'w1').height_m).toBeNull();
-        } finally {
-            rmSync(folder, { recursive: true });
-        }
-    });
-
     it('extrudes every footprint and records where each height came from', async () => {
         const provider = createOsmProvider(null, { fetchStaged: noStaged, fetchLive: live([
             building('w1', 10, 10, { measured_height_m: 30 }),

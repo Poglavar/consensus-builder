@@ -238,7 +238,7 @@ A selected dataset described by stable `id`, `abstraction`, `adapter`, `kind`, r
 
 ### Source list
 
-The ordered sources of one abstraction for a city (buildings so far): the city's declared sources (`buildings.sources`) and any a person adds, each in use or not, and a source not in use optionally drawn as reference outlines. The sources in use stand in for each other in list order, one cell at a time: a cell is answered wholly by the first source that does not fail it or find it empty. The person's list is kept per backend and city, or given in the URL (`buildingSources`); a change applies at once. A URL source (`building.<base64url>`, a public ArcGIS, WFS, OGC API, Socrata, GeoJSON or Overpass service, or a CityJSON or CityGML file pinned by the hash of its bytes) is read in the browser; a database source (`gdi-3d`, `dgu`, `osm`, New York's) through our server.
+The ordered sources of one abstraction for a city (buildings so far): the city's declared sources (`buildings.sources`) and any a person adds, each in use or not, and a source not in use optionally drawn as reference outlines. The sources in use stand in for each other in list order, one cell at a time: a cell is answered wholly by the first source that does not fail it or find it empty. A city whose list is merged (`buildings.combine: 'union'`) has every source answer each cell instead, and a building of a later source is drawn only where no building of an earlier source covers more than half of it; the same layering removes a stand-in's duplicates over a cell line. The person's list is kept per backend and city, or given in the URL (`buildingSources`); a change applies at once. A URL source (`building.<base64url>`, a public ArcGIS, WFS, OGC API, Socrata, GeoJSON or Overpass service, or a CityJSON or CityGML file pinned by the hash of its bytes) is read in the browser; a database source (`gdi-3d`, `dgu`, `osm`, New York's) through our server.
 
 ## Land and parcel geometry
 
@@ -1214,9 +1214,9 @@ A stated distance between a building or permitted form and the relevant land bou
 
 A vertical size in metres with an identified basis, such as measured roof height, authored building height or storeys multiplied by an assumed storey height.
 
-An estimated context height shapes an existing building in Model view. It carries `height_source: estimated` and may name a prediction dataset in `height_estimate_source`. Its building footprint and recorded storeys retain their original source. The estimate supplies no measured building or floor-area evidence.
+An estimated context height shapes an existing building in Model view. It carries `height_source: estimated` and may name a prediction dataset in `height_estimate_source`: `global-building-atlas` when the GlobalBuildingAtlas's satellite-predicted height of the same building was used (a city asks for it with `buildings.heightEstimates`), else the height comes from the building's type and size. A stated height or storey count always wins over a prediction. Its building footprint and recorded storeys retain their original source. The estimate supplies no measured building or floor-area evidence.
 
-A height calculated from recorded storeys carries `height_source: levels`. For Astana's NSDI buildings, the recorded value is the `levels` field on the official footprint and the shared extrusion assumes three metres per storey.
+A height calculated from recorded storeys carries `height_source: levels`. For Kazakhstan's NSDI buildings, the recorded value is the `levels` field on the official footprint and the shared extrusion assumes three metres per storey.
 
 ### Height survey
 
