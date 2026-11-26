@@ -254,3 +254,17 @@ describe('sunlight to windows over the year', () => {
         expect(grade({ annual: 50, winter: 15 }, { annual: 49.5, winter: 14.8 })).toBe('same');
     });
 });
+
+describe('how far a plot is', () => {
+    it("names a plot's distance from the design's nearest building, not from what it replaces or a bounding box", () => {
+        const tri = { type: 'Polygon', coordinates: [[[12, 0], [40, 0], [40, 28], [12, 0]].map(lngLat)] };
+        // A triangle whose bounding box comes within 2.8 m of the north plot's corner (10, 30); its
+        // slope, the nearest side, runs 32/√2 m from it.
+        const [north] = assess([{ id: 'triangle', geometry: tri, heightM: 60 }]).lots.filter(lot => lot.id === 'north');
+        expect(north.distanceM).toBeCloseTo(32 / Math.SQRT2, 2);
+        // A design 50 m east of the plot that replaces the old house 20 m south of it: from the plot's
+        // corner (10, 30) to the design's (60, 28).
+        const far = assess([{ id: 'far', geometry: rect(60, 2, 70, 28), heightM: 60 }]).lots.find(lot => lot.id === 'north');
+        expect(far.distanceM).toBeCloseTo(Math.hypot(50, 2), 2);
+    });
+});

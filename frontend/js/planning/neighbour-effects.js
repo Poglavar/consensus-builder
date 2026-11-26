@@ -349,6 +349,18 @@
         return best;
     }
     const changed = (before, after, same) => finite(before) && finite(after) ? after < before - same : false;
+    // How far a plot's land lies from the design's nearest building, in metres: 0 where they touch or overlap.
+    function apartFrom(solids, shape) {
+        let best = Infinity;
+        for (const solid of solids) {
+            if (solid.parts.some(part => part.rings[0].some(([x, y]) => inParts(shape.parts, x, y)))
+                || shape.parts.some(part => part.rings[0].some(([x, y]) => inParts(solid.parts, x, y)))) return 0;
+            for (const part of shape.parts) for (const ring of part.rings) for (let i = 0; i < ring.length - 1; i++) {
+                best = Math.min(best, solidSegmentClosest(solid, ring[i], ring[i + 1]).distance);
+            }
+        }
+        return best;
+    }
 
     const areaOf = parts => parts.reduce((sum, part) => sum + Math.abs(ringArea(part.rings[0]))
         - part.rings.slice(1).reduce((holes, ring) => holes + Math.abs(ringArea(ring)), 0), 0);
@@ -596,7 +608,7 @@
                 reading.marks = (reading.marks || []).map(mark => ({ ...mark, points: mark.points.map(([x, y, z]) => [...projection.lngLat([x, y]), z]) }));
             }
             const bearing = (Math.atan2(middle[0] - centre[0], middle[1] - centre[1]) * 180 / Math.PI + 360) % 360;
-            results.push({ id: lot.id, status, direction: COMPASS[Math.round(bearing / 45) % 8], distanceM: apart, ...readings,
+            results.push({ id: lot.id, status, direction: COMPASS[Math.round(bearing / 45) % 8], distanceM: apartFrom(design, shape), ...readings,
                 estimatedHeights: around.kept.filter(solid => solid.estimated).length });
         }
         return { lots: arrange(results).flat(), reachM, estimated: standing.filter(solid => solid.estimated).length };
