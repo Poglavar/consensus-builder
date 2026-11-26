@@ -51,7 +51,7 @@
         if (!parse(source)) throw new Error(`Unknown read source: ${source}`);
         if (source !== 'both') return { ...(await read[source]()), readFrom: source };
         const fromChain = Promise.resolve().then(read.chain);
-        fromChain.catch(() => {}); // awaited below only when the server has no answer
+        fromChain.catch(() => { /* not lost: awaited below when the server has no answer, and its error then reported */ });
         let serverError;
         try { return { ...(await read.server()), readFrom: 'server' }; } catch (error) { serverError = error; }
         try { return { ...(await fromChain), readFrom: 'chain', readErrors: { server: messageOf(serverError) } }; }
