@@ -89,6 +89,9 @@
         "moreOptions": "Plus d’options",
         "undo": "Annuler",
         "lockReject": "L’emprise actuelle dépasse les limites du site verrouillé. Replacez-la à l’intérieur pour utiliser le verrouillage du site.",
+        "modelHandles": {
+            "storeys": "Niveaux : {{storeys}} · {{height}}"
+        },
         "placement": {
             "snap": "Accrocher aux bords",
             "lock": "Limiter au site initial",
@@ -1114,6 +1117,7 @@
             "renameLabel": "Renommer le bâtiment",
             "closeLabel": "Fermer la fenêtre du bâtiment",
             "mapHint": "Faites glisser le bâtiment ou ses angles. Touchez un bord pour ajouter un angle.",
+            "modelHint": "Faites glisser le bâtiment pour le déplacer, la flèche au-dessus pour changer sa hauteur et la poignée de l’anneau pour le faire pivoter.",
             "previewLabel": "Aperçu 3D",
             "heightLabel": "Hauteur (m) :",
             "useLabel": "Usage du bâtiment",
@@ -4627,6 +4631,7 @@
                 "uploadGeojson": "Importer des emprises de forme libre"
             },
             "title": "Règle d’urbanisme",
+            "modelHint": "Faites glisser la flèche au-dessus du bâtiment vers le haut ou le bas pour changer ses niveaux.",
             "mapHint": "Modifiez les lots et leurs limites sur la carte ; utilisez le panneau pour examiner la propriété et les quotes-parts.",
             "closeAria": "Fermer la fenêtre de création d’îlots",
             "generating": "Génération du bâtiment…",
@@ -4749,7 +4754,8 @@
             "closeAria": "Fermer la fenêtre des maisons en bande",
             "generating": "Génération des maisons en bande…",
             "helper": {
-                "adjust": "Faites glisser l’emprise pour la déplacer. Faites glisser les sommets pour modifier sa forme, cliquez sur une arête pour ajouter un sommet ou sélectionnez un sommet pour le supprimer."
+                "adjust": "Faites glisser l’emprise pour la déplacer. Faites glisser les sommets pour modifier sa forme, cliquez sur une arête pour ajouter un sommet ou sélectionnez un sommet pour le supprimer.",
+                "modelAdjust": "Faites glisser les maisons pour les déplacer, la flèche au-dessus pour changer leurs niveaux et la poignée de l’anneau pour les faire pivoter."
             },
             "uploadOutside": "Le polygone importé ne recoupe pas ces parcelles de manière exploitable.",
             "editShape": "Modifier l’emprise manuellement",
@@ -4800,6 +4806,7 @@
             },
             "regenerate": "Illustrer",
             "title": "Maisons individuelles",
+            "modelHint": "Faites glisser la flèche au-dessus des parcelles vers le haut ou le bas pour changer le nombre maximal de niveaux d’une maison.",
             "closeAria": "Fermer la fenêtre de construction par parcelle",
             "generating": "Génération des bâtiments…",
             "helper": {

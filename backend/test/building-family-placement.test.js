@@ -145,9 +145,15 @@ function rowHarness() {
         const restoreRowHouseGeometrySnapshot=${functions.get('restoreRowHouseGeometrySnapshot')};
         const syncRowHouseGeometryControls=${functions.get('syncRowHouseGeometryControls')};
         const rotateRowHouseFootprint=${functions.get('rotateRowHouseFootprint')};
+        let rowHouseTurn=null;
+        const beginRowHouseTurn=${functions.get('beginRowHouseTurn')};
+        const rowHouseTurnTo=${functions.get('rowHouseTurnTo')};
+        const endRowHouseTurn=${functions.get('endRowHouseTurn')};
         const latLngToMeters=${functions.get('latLngToMeters')};
+        const beginRowHouseDrag=${functions.get('beginRowHouseDrag')};
         const startDrag=${functions.get('startDrag')};
         const onDragMove=${functions.get('onDragMove')};
+        const dragRowHouseTo=${functions.get('dragRowHouseTo')};
         const onDragEnd=${functions.get('onDragEnd')};
         const destroyRowHousePolygonEditor=${functions.get('destroyRowHousePolygonEditor')};
         const renderRowHousePolygonEditor=${functions.get('renderRowHousePolygonEditor')};
@@ -164,6 +170,9 @@ function rowHarness() {
         this.move=(start,to)=>{ startDrag({latlng:start,originalEvent:{target:null}}); onDragMove(to); return onDragEnd(); };
         this.touchDrag=async (start,coord)=>{ const native={target:null,touches:[coord],changedTouches:[coord],preventDefault(){this.prevented=true;}}; startDrag({latlng:start,originalEvent:native}); documentHandlers.get('touchmove')(native); await documentHandlers.get('touchend')({}); return {prevented:native.prevented,feature:generatedRowHouseFeature}; };
         this.rotate=delta=>rotateRowHouseFootprint(delta);
+        // The model view's gestures (model-edit-handles.js): a drag by lat/lng and a turn through many angles.
+        this.modelMove=(start,to)=>{ if (!beginRowHouseDrag(start)) return null; dragRowHouseTo(to); return onDragEnd(); };
+        this.modelTurn=angles=>{ if (!beginRowHouseTurn()) return; angles.forEach(rowHouseTurnTo); endRowHouseTurn(); };
         this.edit=ring=>{ renderRowHousePolygonEditor(); window.__polygonOptions.onDragStart(); return window.__polygonOptions.onCommit({ring,reason:'move',vertexIndex:1}); };
         this.undo=()=>rowHouseHistory.undo();
         this.history=()=>rowHouseHistory;
@@ -405,6 +414,28 @@ describe('building-family rules stay on their parcels', () => {
         expect(h.state().manual).toBe(false);
         expect(h.state().rotation).toBeCloseTo(5 * Math.PI / 180);
         expect(h.state().feature.geometry).not.toEqual(moved.geometry);
+    });
+
+    it('moves a row from the model view exactly as a map drag over the same ground does', async () => {
+        const mapDrag = rowHarness();
+        const modelDrag = rowHarness();
+        const before = center(mapDrag.state().feature);
+        const to = { lat: before.lat + 0.0002, lng: before.lng + 0.0003 };
+        await mapDrag.move({ lat: before.lat, lng: before.lng }, to);
+        await modelDrag.modelMove({ lat: before.lat, lng: before.lng }, to);
+        expect(modelDrag.state()).toEqual(mapDrag.state());
+        expect(modelDrag.history().depth()).toBe(1);
+    });
+
+    it('turns a row through many model-view angles as one undo step', () => {
+        const h = rowHarness();
+        const before = clone(h.state().feature);
+        h.modelTurn([5, 10, 15]);
+        expect(h.state().rotation).toBeCloseTo(15 * Math.PI / 180);
+        expect(h.history().depth()).toBe(1);
+        expect(h.undo()).toBe(true);
+        expect(h.state().feature.geometry).toEqual(before.geometry);
+        expect(h.state().rotation).toBeCloseTo(0);
     });
 
     it('moves a row from document touch events and restores map dragging at touchend', async () => {

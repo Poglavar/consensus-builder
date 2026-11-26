@@ -106,6 +106,9 @@
         "moreOptions": "Más opciones",
         "undo": "Deshacer (Cmd/Ctrl+Z)",
         "lockReject": "La huella actual está fuera de la ubicación fijada. Muévela dentro para usar el bloqueo del sitio.",
+        "modelHandles": {
+            "storeys": "Plantas: {{storeys}} · {{height}}"
+        },
         "placement": {
             "snap": "Ajustar a los bordes",
             "lock": "Fijar a la ubicación inicial",
@@ -2556,6 +2559,7 @@
             "renameLabel": "Renombrar edificio",
             "closeLabel": "Cerrar modal de edificio único",
             "mapHint": "Arrastra el edificio o sus esquinas. Toca un borde para añadir una esquina.",
+            "modelHint": "Arrastra el edificio para moverlo, la flecha sobre él para cambiar su altura y el tirador del anillo para girarlo.",
             "previewLabel": "Vista 3D",
             "confirm": "Listo",
             "heightLabel": "Altura (m):",
@@ -3427,6 +3431,7 @@
         "modal": {
             "mapHint": "Edita las parcelas y sus límites en el mapa; revisa la titularidad y las participaciones en el panel.",
             "title": "Regla urbana",
+            "modelHint": "Arrastra la flecha sobre el edificio hacia arriba o hacia abajo para cambiar sus plantas.",
             "closeAria": "Cerrar modal de edificios",
             "generating": "Generando edificio…",
             "done": "Listo",
@@ -3565,7 +3570,8 @@
                 "minPlotArea": "Superficie mínima de parcela (m²):"
             },
             "helper": {
-                "adjust": "Arrastra la huella para moverla. Arrastra los vértices para cambiar la forma, haz clic en un borde para añadir uno o selecciona un vértice para eliminarlo."
+                "adjust": "Arrastra la huella para moverla. Arrastra los vértices para cambiar la forma, haz clic en un borde para añadir uno o selecciona un vértice para eliminarlo.",
+                "modelAdjust": "Arrastra las casas para moverlas, la flecha sobre ellas para cambiar sus plantas y el tirador del anillo para girarlas."
             },
             "rotateCounterclockwise": "Girar 5 grados en sentido antihorario",
             "rotateClockwise": "Girar 5 grados en sentido horario",
@@ -3603,6 +3609,7 @@
     "parcelBased": {
         "modal": {
             "title": "Viviendas aisladas",
+            "modelHint": "Arrastra la flecha sobre las parcelas hacia arriba o hacia abajo para cambiar el máximo de plantas de una casa.",
             "closeAria": "Cerrar modal de reglas por parcela",
             "generating": "Generando edificios…",
             "done": "Listo",

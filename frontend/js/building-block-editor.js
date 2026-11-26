@@ -220,6 +220,19 @@ function showBlockifyModalEditor() {
         // Geometry statistics close the panel, after the options that shape the geometry.
         const densityStats = content.querySelector('#blockify-density-stats')?.closest('details');
         if (densityStats) content.appendChild(densityStats);
+        // The model view's height arrow drives the storeys slider of the rule in use: Max storeys, or
+        // Proposed height when raising existing buildings to one height. Added storeys have no single top.
+        function blockifyModelHandles() {
+            const existing = blockifyMode === 'existing';
+            if (existing && existingRule !== 'exact') return null;
+            const input = document.getElementById(existing ? 'proposed-height-slider' : 'height-slider');
+            const features = (existing ? generatedBuildingFeatures : [generatedBuildingFeature]) || [];
+            const largest = features.filter(feature => feature?.geometry)
+                .reduce((best, feature) => (!best || turf.area(feature) > turf.area(best) ? feature : best), null);
+            if (!input || !largest) return null;
+            const [lng, lat] = turf.pointOnFeature(largest).geometry.coordinates;
+            return { height: { input, at: { lat, lng }, metresPerStep: existing ? currentFloorHeightM : DEFAULT_FLOOR_HEIGHT_M } };
+        }
         blockifyModal = window.OnMapEditor?.open({
             owner: 'urban-rule',
             id: 'blockify-modal',
@@ -227,6 +240,8 @@ function showBlockifyModalEditor() {
             content,
             footer,
             modes: ['2d', 'model'],
+            hints: { model: translateBuildingText('blockify.modal.modelHint', 'Drag the arrow above the building up or down to change its storeys.') },
+            modelHandles: blockifyModelHandles,
             onCancel: requestCloseBlockifyModal,
             onModeChange: mode => { if (mode === '2d' && blockifyMode === 'manual') renderManualPolygonEditor(); }
         });

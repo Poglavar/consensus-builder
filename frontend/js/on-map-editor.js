@@ -320,6 +320,10 @@
                 },
                 get preview() { return preview; },
                 setPreview(detail) { if (closed) return; preview = detail || null; announce(); },
+                // The model view's drag handles (model-edit-handles.js), read afresh on every redraw:
+                // { height: { input, at, metresPerStep, baseM? }, move: { hits, begin, to, end },
+                //   rotate: { centre, footprint, begin, to, end } }, each part optional.
+                modelHandles: () => options.modelHandles?.() || null,
                 setAnchor(value) { anchor = value; if (!anchor) tools.hidden = true; else positionTools(); },
                 fitFeature(feature, settings = {}) {
                     if (!feature) return;
@@ -404,6 +408,7 @@
             getOwner: () => active?.owner || null,
             getControlsContainer: () => active?.body || null,
             getPreview: () => active?.preview || null,
+            modelHandles: () => active?.modelHandles() || null,
             allowsMode: mode => !active || active.modes.includes(mode)
         };
     }

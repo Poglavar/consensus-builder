@@ -19,6 +19,34 @@ Once placed, the editing controls are live: the building and its corners can be 
 edge tapped to add a corner, and focus starts on the height slider. Saved designs and
 imported geometry reopen at their authored positions.
 
+## Model view handles
+
+In the model view the building editors keep direct manipulation (`frontend/js/model-edit-handles.js`,
+its geometry in `model-edit-handles-math.js`). Each editor declares its handles through the
+on-map editor's `modelHandles` option and keeps geometry, history and saving to itself:
+
+| Editor | Height arrow drives | Drag the building | Turn knob |
+| --- | --- | --- | --- |
+| Freeform | Height (m) | yes, the active building | yes |
+| Row houses | Max storeys | yes, the whole terrace | yes |
+| Urban rule | Max storeys, or Proposed height when raising existing buildings | no | no |
+| Detached houses | Max storeys, over the site | no | no |
+
+- The arrow stands on the building's top and sets the editor's own slider, firing the same input and
+  change events a slider drag does, so its undo step, autosave and Permitted check are the slider's.
+  It follows the pointer along its axis on screen; when the camera looks steeply down the axis, a
+  pixel counts as no more than at 35 % of the side-on view, so the height stays controllable.
+  Hovering or dragging it shows the value beside it. Urban rule's Added storeys rule has no arrow:
+  its buildings have no single top.
+- Grabbing the building drags it on the horizontal plane at the height where it was grabbed, through
+  the same move code as the map drag, so snapping, site lock and a Row's off-parcel drop dialog apply.
+- The knob on the ground ring turns the footprint in 5° steps (1° with Shift). A whole turn gesture
+  is one undo step, like one press of a rotate button.
+- Corners are reshaped on the map only. The photo view stays locked while an editor is open.
+- The sliders, rotate buttons and keyboard controls remain the accessible path: the arrow's label is
+  hidden from assistive technology because the slider carries the same value. Agents make the same
+  edits through MCP (`ugt_modify_design` height, floors, rotation and movement).
+
 The permanent building-name label inside the editor footprint has been removed,
 including the unresolved generated “Building {{n}}” text. Explicit imported names
 remain authored feature metadata.

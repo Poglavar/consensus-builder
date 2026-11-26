@@ -24,8 +24,8 @@
     let lastValidCenter = null; // LatLng of the last valid active-footprint centre
     let singleRectFeature = null;
     let rectDragActive = false;
-    let rectDragStartPointerPt = null;
-    let rectDragStartCenterPt = null;
+    let rectDragStartPointer = null; // where the move began, as a lat/lng
+    let rectDragStartCenter = null;
     let rectDragStartFeature = null;
     let rectDragLastValidFeature = null;
     const EDIT_LOCK_OWNER = 'single-building';
@@ -940,17 +940,56 @@
     }
 
     function rotateActiveFootprint(deltaDeg) {
+        if (!beginTurn()) return;
+        turnTo(deltaDeg);
+        singleTurn = null;
+    }
+
+    // A turn of the active building, one undo step however many angles it passes through: the
+    // rotate buttons take one step, the model view's turn knob (model-edit-handles.js) many.
+    let singleTurn = null;
+    function beginTurn() {
         const active = getActiveBuilding();
-        const candidate = rotatedFootprintCandidate(deltaDeg);
-        if (!active || !candidate) return;
-        ensureSingleBuildingHistory().record();
+        if (!active?.feature?.geometry) return false;
+        singleTurn = { feature: cloneSingleFeature(active.feature), rotation: Number(active.rotation || 0), recorded: false };
+        return true;
+    }
+    function turnTo(totalDeg) {
+        const active = getActiveBuilding();
+        if (!singleTurn || !active) return;
+        const geometry = window.SingleBuildingGeometry.rotateGeometry(singleTurn.feature.geometry, totalDeg);
+        const candidate = geometry ? featureWithGeometry(singleTurn.feature, geometry) : null;
+        if (!candidate || !editableFootprintValid(candidate)) return;
+        if (!singleTurn.recorded) {
+            ensureSingleBuildingHistory().record();
+            singleTurn.recorded = true;
+        }
         singlePendingVertexActionIndex = null;
-        const nextRotation = ((Number(active.rotation || 0) + deltaDeg) % 360 + 360) % 360;
+        const nextRotation = ((singleTurn.rotation + totalDeg) % 360 + 360) % 360;
         active.rotation = nextRotation;
         currentRotationDeg = nextRotation;
         candidate.properties = { ...(candidate.properties || {}), rotation: nextRotation };
         setActiveFeature(candidate);
         updateRectangleLayers();
+    }
+
+    // What the model view may drag while the building is down (none while it is still being placed).
+    function singleBuildingModelHandles() {
+        const active = getActiveBuilding();
+        if (!singleEditor || singlePlacement || !active?.feature?.geometry) return null;
+        const centre = window.SingleBuildingGeometry.geometryCenter(active.feature.geometry);
+        const input = document.getElementById('single-height-slider');
+        if (!centre || !input) return null;
+        return {
+            height: { input, at: centre, metresPerStep: 1 },
+            move: {
+                hits: latlng => pointInsideRect(latlng),
+                begin: latlng => beginRectDrag(latlng),
+                to: (latlng, event) => handleRectDragMove({ latlng, originalEvent: event }),
+                end: () => handleRectDragEnd()
+            },
+            rotate: { centre, footprint: active.feature, begin: beginTurn, to: turnTo, end: () => { singleTurn = null; } }
+        };
     }
 
     function pointInsideRect(latlng) {
@@ -972,8 +1011,8 @@
         rectDragStartDesign = null;
         rectDragHistoryRecorded = false;
         rectDragActive = false;
-        rectDragStartPointerPt = null;
-        rectDragStartCenterPt = null;
+        rectDragStartPointer = null;
+        rectDragStartCenter = null;
         rectDragStartFeature = null;
         rectDragLastValidFeature = null;
 
@@ -1000,17 +1039,20 @@
     }
 
     function handleRectDragMove(e) {
-        if (!rectDragActive || !rectDragStartPointerPt || !rectDragStartCenterPt) return;
+        if (!rectDragActive || !rectDragStartPointer || !rectDragStartCenter) return;
         if (!e || !e.latlng) return;
 
-        const currentPt = singleMap.latLngToLayerPoint(e.latlng);
-        const delta = currentPt.subtract(rectDragStartPointerPt);
-        const newCenterPt = rectDragStartCenterPt.add(delta);
-        const newCenter = singleMap.layerPointToLatLng(newCenterPt);
-        const startCenter = singleMap.layerPointToLatLng(rectDragStartCenterPt);
+        // The centre follows the pointer's displacement in Web Mercator, the plane both the map and
+        // the model view lay out, unrounded so a close model-view camera moves it smoothly.
+        const crs = L.CRS.EPSG3857;
+        const pointer = crs.project(L.latLng(e.latlng));
+        const from = crs.project(rectDragStartPointer);
+        const center = crs.project(rectDragStartCenter);
+        const newCenter = crs.unproject(L.point(center.x + pointer.x - from.x, center.y + pointer.y - from.y));
+        const startCenter = rectDragStartCenter;
         if (!rectDragStartFeature?.geometry) return;
         // Move only the active footprint; surroundings and their furniture stay on their ground.
-        if (Math.abs(delta.x) + Math.abs(delta.y) < 1 && !rectDragHistoryRecorded) return;
+        if (pointer.distanceTo(from) < 1e-6 && !rectDragHistoryRecorded) return;
         const target = singleSession.placement.moveTarget(rectDragStartFeature.geometry, startCenter, newCenter, e);
         const geometry = window.SingleBuildingGeometry.moveGeometry(rectDragStartFeature.geometry, startCenter, target);
         const candidate = featureWithGeometry(rectDragStartFeature, geometry);
@@ -1047,6 +1089,22 @@
         }
     }
 
+    // Start moving the active building from a point on it. The map drag (handleRectDragStart) and the
+    // model view's (model-edit-handles.js) both move it through handleRectDragMove and handleRectDragEnd.
+    function beginRectDrag(latlng) {
+        if (!singleBlockFeature || !latlng || rectDragActive || !pointInsideRect(latlng)) return false;
+        singlePendingVertexActionIndex = null;
+        rectDragStartCenter = L.latLng(lastValidCenter || latlng);
+        rectDragStartPointer = L.latLng(latlng);
+        rectDragStartDesign = captureSingleBuildingDesign();
+        rectDragHistoryRecorded = false;
+        rectDragStartFeature = cloneSingleFeature(singleRectFeature);
+        rectDragLastValidFeature = cloneSingleFeature(singleRectFeature);
+        rectDragActive = true;
+        destroySinglePolygonEditor();
+        return true;
+    }
+
     function handleRectDragStart(e) {
         if (!singleMap || !singleBlockFeature || !e || !e.latlng) return;
         if (rectDragActive) return;
@@ -1055,7 +1113,6 @@
             && originalTarget.closest('.polygon-geometry-editor__vertex, .polygon-geometry-editor__delete-marker')) return;
         // Only start a building drag when the touch is over the active building; otherwise let the map pan.
         if (!pointInsideRect(e.latlng)) return;
-        singlePendingVertexActionIndex = null;
         try {
             if (e.originalEvent) {
                 // Stop Leaflet's map drag from starting on this touch
@@ -1064,17 +1121,7 @@
                 L.DomEvent.stop(e);
             }
         } catch (_) { }
-        const centerLL = lastValidCenter
-            || (singleDragMarker && typeof singleDragMarker.getLatLng === 'function' ? singleDragMarker.getLatLng() : null)
-            || e.latlng;
-        rectDragStartCenterPt = singleMap.latLngToLayerPoint(centerLL);
-        rectDragStartPointerPt = singleMap.latLngToLayerPoint(e.latlng);
-        rectDragStartDesign = captureSingleBuildingDesign();
-        rectDragHistoryRecorded = false;
-        rectDragStartFeature = cloneSingleFeature(singleRectFeature);
-        rectDragLastValidFeature = cloneSingleFeature(singleRectFeature);
-        rectDragActive = true;
-        destroySinglePolygonEditor();
+        beginRectDrag(e.latlng);
 
         dragMapHandlers = Object.fromEntries(['dragging', 'boxZoom', 'doubleClickZoom']
             .map(name => [name, singleMap[name]?.enabled() === true]));
@@ -1421,8 +1468,10 @@
                 onModeChange: syncSingleBuildingView,
                 placement: { site: singleBlockFeature, onLockChange: () => { renderSharedPolygonEditor(); syncRotationButtons(); } },
                 hints: {
-                    '2d': translateSingleBuildingText('modal.singleBuilding.mapHint', 'Drag the building or its corners. Tap an edge to add a corner.')
+                    '2d': translateSingleBuildingText('modal.singleBuilding.mapHint', 'Drag the building or its corners. Tap an edge to add a corner.'),
+                    model: translateSingleBuildingText('modal.singleBuilding.modelHint', 'Drag the building to move it, the arrow above it to change its height, and the knob on the ring to turn it.')
                 },
+                modelHandles: singleBuildingModelHandles,
                 tools: `
                     <button id="single-rotate-counterclockwise" class="btn" type="button" title="${modalText.rotateCounterclockwiseLabel}" aria-label="${modalText.rotateCounterclockwiseLabel}"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> 5°</button>
                     <button id="single-rotate-clockwise" class="btn" type="button" title="${modalText.rotateClockwiseLabel}" aria-label="${modalText.rotateClockwiseLabel}"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i> 5°</button>

@@ -89,6 +89,9 @@
         "moreOptions": "Mais opções",
         "undo": "Anular",
         "lockReject": "A implantação atual está fora do terreno bloqueado. Mova-a de volta para o interior para usar o bloqueio ao terreno.",
+        "modelHandles": {
+            "storeys": "Pisos: {{storeys}} · {{height}}"
+        },
         "placement": {
             "snap": "Ajustar às arestas",
             "lock": "Restringir ao terreno inicial",
@@ -1114,6 +1117,7 @@
             "renameLabel": "Mudar o nome do edifício",
             "closeLabel": "Fechar a janela do edifício individual",
             "mapHint": "Arraste o edifício ou os seus cantos. Toque numa aresta para adicionar um canto.",
+            "modelHint": "Arraste o edifício para o mover, a seta acima dele para mudar a altura e a pega no anel para o rodar.",
             "previewLabel": "Pré-visualização 3D",
             "heightLabel": "Altura (m):",
             "useLabel": "Uso do edifício",
@@ -4627,6 +4631,7 @@
                 "uploadGeojson": "Importar implantações de forma livre"
             },
             "title": "Regra urbanística",
+            "modelHint": "Arraste a seta acima do edifício para cima ou para baixo para mudar os pisos.",
             "mapHint": "Edite os lotes e os limites no mapa; use o painel para rever a propriedade e as quotas.",
             "closeAria": "Fechar diálogo de criação de quarteirões",
             "generating": "A gerar edifício…",
@@ -4749,7 +4754,8 @@
             "closeAria": "Fechar diálogo de moradias em banda",
             "generating": "A gerar moradias em banda…",
             "helper": {
-                "adjust": "Arraste a área de implantação para a mover. Arraste os vértices para alterar a forma, clique numa aresta para adicionar um vértice ou selecione um vértice para o remover."
+                "adjust": "Arraste a área de implantação para a mover. Arraste os vértices para alterar a forma, clique numa aresta para adicionar um vértice ou selecione um vértice para o remover.",
+                "modelAdjust": "Arraste as casas para as mover, a seta acima delas para mudar os pisos e a pega no anel para as rodar."
             },
             "uploadOutside": "O polígono carregado não se sobrepõe a estas parcelas de forma utilizável.",
             "editShape": "Editar área de implantação manualmente",
@@ -4800,6 +4806,7 @@
             },
             "regenerate": "Ilustrar",
             "title": "Moradias isoladas",
+            "modelHint": "Arraste a seta acima dos lotes para cima ou para baixo para mudar o máximo de pisos de uma casa.",
             "closeAria": "Fechar diálogo de edificação por parcela",
             "generating": "A gerar edifícios…",
             "helper": {

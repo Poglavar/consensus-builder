@@ -139,3 +139,22 @@ body.on-map-editing .map-sheet { z-index: var(--cb-z-open-menu); }
     line-height: 1.4;
 }
 .on-map-editor__placement-warning[hidden] { display: none; }
+
+/* The height read-out beside the model view's height handle (model-edit-handles.js), placed at the
+   handle through --model-handle-x/-y. */
+.model-edit-handles__label {
+    position: fixed;
+    left: var(--model-handle-x, 0);
+    top: var(--model-handle-y, 0);
+    z-index: var(--cb-z-editor);
+    transform: translate(var(--cb-space-4), -50%);
+    padding: var(--cb-space-1) var(--cb-space-2);
+    border-radius: var(--cb-radius-sm);
+    background: var(--cb-surface);
+    box-shadow: var(--cb-shadow-sm);
+    color: var(--cb-text-strong);
+    font-size: var(--cb-text-sm);
+    white-space: nowrap;
+    pointer-events: none;
+}
+.model-edit-handles__label[hidden] { display: none; }

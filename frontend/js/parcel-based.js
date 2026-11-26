@@ -950,6 +950,14 @@
                 content,
                 footer,
                 modes: ['2d', 'model'],
+                hints: { model: translateParcelBasedText('parcelBased.modal.modelHint', 'Drag the arrow above the plots up or down to change the most storeys a house may have.') },
+                // The model view's height arrow drives Max storeys, standing over the site.
+                modelHandles: () => {
+                    const input = document.getElementById('parcelbased-maxfloors-slider');
+                    if (!input || !parcelBasedBoundary?.geometry) return null;
+                    const [lng, lat] = turf.pointOnFeature(parcelBasedBoundary).geometry.coordinates;
+                    return { height: { input, at: { lat, lng }, metresPerStep: currentFloorHeightM } };
+                },
                 onCancel: requestCloseParcelBasedModal
             });
             if (!parcelBasedModal) return false;

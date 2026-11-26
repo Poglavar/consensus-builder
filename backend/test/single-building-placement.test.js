@@ -88,7 +88,7 @@ function movementHarness({ moveTogether = true, treatment = 'paved', locked = fa
         if (active) active.feature = clone(candidate);
     };
     const stubs = {
-        document, window, turf, L: { latLng: (lat, lng) => ({ lat, lng }) },
+        document, window, turf, L: leafletStub(),
         singleMap: map,
         singleSession: { placement, setPreview: vi.fn() },
         singleEditor: {},
@@ -103,13 +103,13 @@ function movementHarness({ moveTogether = true, treatment = 'paved', locked = fa
         activeBuildingId: 'building-a',
         singleMoveTogether: moveTogether,
         singleHistory: null,
-        rectDragActive: true,
+        rectDragActive: false,
         rectDragHistoryRecorded: false,
         rectDragStartDesign: null,
         rectDragStartFeature: clone(buildingEntries[0].feature),
         rectDragLastValidFeature: clone(buildingEntries[0].feature),
-        rectDragStartPointerPt: null,
-        rectDragStartCenterPt: null,
+        rectDragStartPointer: null,
+        rectDragStartCenter: null,
         dragMapHandlers: null,
         singlePendingVertexActionIndex: null,
         sourceSnapshot,
@@ -127,8 +127,8 @@ function movementHarness({ moveTogether = true, treatment = 'paved', locked = fa
         setActiveBuilding: vi.fn(),
         updateRectangleLayers: renderEvents.layers,
         bindRectangleLayerEvents: vi.fn(),
+        destroySinglePolygonEditor: vi.fn(),
         singleBuildingLayers: layers,
-        rectDragStartCenterPt: null,
         activeBuildingId: 'building-a',
         currentHeightM: 12,
         lastValidCenter: null,
@@ -140,9 +140,9 @@ function movementHarness({ moveTogether = true, treatment = 'paved', locked = fa
         'singleDragMarker', 'currentGroundTreatment', 'currentGroundDecorationDesign', 'singleGroundBoundary',
         'singleBlockFeature', 'singleRectFeature', 'activeBuildingId', 'singleMoveTogether',
         'singleHistory', 'rectDragActive', 'rectDragHistoryRecorded', 'rectDragStartDesign',
-        'rectDragStartFeature', 'rectDragLastValidFeature', 'rectDragStartPointerPt',
-        'rectDragStartCenterPt', 'dragMapHandlers', 'singlePendingVertexActionIndex',
-        'currentHeightM', 'lastValidCenter', 'rectDragStartCenterPt'
+        'rectDragStartFeature', 'rectDragLastValidFeature', 'rectDragStartPointer',
+        'rectDragStartCenter', 'dragMapHandlers', 'singlePendingVertexActionIndex',
+        'currentHeightM', 'lastValidCenter'
     ]);
     const bindings = Object.keys(stubs).filter(key => !declared.has(key)
         && !['sourceSnapshot', 'placementUpdates', 'renderEvents', 'ensureSingleBuildingHistory'].includes(key))
@@ -157,8 +157,8 @@ function movementHarness({ moveTogether = true, treatment = 'paved', locked = fa
         let activeBuildingId=this.activeBuildingId, singleMoveTogether=this.singleMoveTogether;
         let singleHistory=null, rectDragActive=this.rectDragActive, rectDragHistoryRecorded=this.rectDragHistoryRecorded;
         let rectDragStartDesign=null, rectDragStartFeature=this.rectDragStartFeature;
-        let rectDragLastValidFeature=this.rectDragLastValidFeature, rectDragStartPointerPt=null;
-        let rectDragStartCenterPt=null, dragMapHandlers=null, singlePendingVertexActionIndex=null;
+        let rectDragLastValidFeature=this.rectDragLastValidFeature, rectDragStartPointer=null;
+        let rectDragStartCenter=null, dragMapHandlers=null, singlePendingVertexActionIndex=null;
         let currentHeightM=12, lastValidCenter=null;
         let sourceSnapshot=this.sourceSnapshot;
         const EDIT_PANE='test-pane';
@@ -172,17 +172,31 @@ function movementHarness({ moveTogether = true, treatment = 'paved', locked = fa
         }
         this.state=()=>({ buildingEntries, singleGroundBoundary, singleRectFeature, activeBuildingId,
             currentGroundTreatment, currentGroundDecorationDesign, rectDragActive, rectDragHistoryRecorded,
-            rectDragStartDesign, rectDragStartPointerPt, rectDragStartCenterPt, sourceSnapshot });
+            rectDragStartDesign, rectDragStartPointer, rectDragStartCenter, sourceSnapshot });
         this.getHistory=()=>singleHistory;
         this.prepareDrag=()=>{ const [lng,lat]=turf.centroid(buildingEntries[0].feature).geometry.coordinates;
-            rectDragStartDesign=captureSingleBuildingDesign(); rectDragStartCenterPt=point(lng,lat);
-            rectDragStartPointerPt=point(lng,lat); return { lng,lat }; };
+            if (!beginRectDrag({ lat, lng })) throw new Error('the drag did not start on the building'); return { lng,lat }; };
+        this.begin=beginRectDrag;
         this.reviewTake=take=>{ singleLandTakeReview={ take, snapshot:()=>({ take }) }; };
         this.valid=editableFootprintValid;
     `;
     const context = { ...stubs };
-    vm.runInNewContext(`${variables}\n${bindings}\n${functions.get('captureSingleBuildingDesign')}\n${functions.get('ensureSingleBuildingHistory')}\n${functions.get('editableOuterRing')}\n${functions.get('editableFootprintValid')}\n${functions.get('featureWithGeometry')}\n${functions.get('handleRectDragMove')}\n${functions.get('handleRectDragEnd')}\n${functions.get('touchPointerEvent')}\n${functions.get('onTouchDragMove')}\n${functions.get('onTouchDragEnd')}\n${functions.get('currentPlacementSite')}\nthis.ensure=ensureSingleBuildingHistory; this.move=handleRectDragMove; this.end=handleRectDragEnd; this.site=currentPlacementSite;`, context);
+    vm.runInNewContext(`${variables}\n${bindings}\n${functions.get('captureSingleBuildingDesign')}\n${functions.get('ensureSingleBuildingHistory')}\n${functions.get('editableOuterRing')}\n${functions.get('editableFootprintValid')}\n${functions.get('featureWithGeometry')}\n${functions.get('pointInsideRect')}\n${functions.get('beginRectDrag')}\n${functions.get('handleRectDragMove')}\n${functions.get('handleRectDragEnd')}\n${functions.get('touchPointerEvent')}\n${functions.get('onTouchDragMove')}\n${functions.get('onTouchDragEnd')}\n${functions.get('currentPlacementSite')}\nthis.ensure=ensureSingleBuildingHistory; this.move=handleRectDragMove; this.end=handleRectDragEnd; this.site=currentPlacementSite;`, context);
     return { context, stubs, map, placement, sourceSnapshot, groundBoundary, buildingEntries, renderEvents, placementUpdates };
+}
+
+// Leaflet's spherical Mercator, as handleRectDragMove uses it to follow the pointer.
+function leafletStub() {
+    const R = 6378137;
+    const xy = (x, y) => ({ x, y, distanceTo: other => Math.hypot(x - other.x, y - other.y) });
+    return {
+        latLng: (lat, lng) => (typeof lat === 'object' ? { lat: lat.lat, lng: lat.lng } : { lat, lng }),
+        point: xy,
+        CRS: { EPSG3857: {
+            project: ({ lat, lng }) => xy(R * lng * Math.PI / 180, R * Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360))),
+            unproject: ({ x, y }) => ({ lng: x / R * 180 / Math.PI, lat: (2 * Math.atan(Math.exp(y / R)) - Math.PI / 2) * 180 / Math.PI })
+        } }
+    };
 }
 
 function point(x, y) {
@@ -282,6 +296,14 @@ describe('single-building whole-proposal placement', () => {
         expect(restored.buildingEntries).toEqual(original.buildingEntries);
         expect(restored.singleGroundBoundary).toEqual(original.singleGroundBoundary);
         expect(h.context.getHistory().depth()).toBe(0);
+    });
+
+    it('starts a drag only on the active building, as the model view asks before taking the pointer', () => {
+        const h = movementHarness();
+        expect(h.context.begin({ lat: 0.0003, lng: 0.0008 })).toBe(false);
+        expect(h.context.state().rectDragActive).toBe(false);
+        expect(h.context.begin({ lat: 0.0003, lng: 0.0003 })).toBe(true);
+        expect(h.context.begin({ lat: 0.0003, lng: 0.0003 })).toBe(false);
     });
 
     it('moves only the active footprint when Move whole proposal is off', () => {

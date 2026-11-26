@@ -12809,6 +12809,20 @@
         return xyToLatLng(hit.x, hit.y);
     }
 
+    // The nearest solid of the open editor's preview under the pointer, for the drag handles
+    // (model-edit-handles.js): the scene point the ray meets, or null.
+    function pickEditorPreviewFromEvent(evt) {
+        if (!renderer || !camera || !proposalDraftGroup) return null;
+        const rect = renderer.domElement.getBoundingClientRect();
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(new THREE.Vector2(
+            ((evt.clientX - rect.left) / rect.width) * 2 - 1,
+            -((evt.clientY - rect.top) / rect.height) * 2 + 1
+        ), camera);
+        const hit = raycaster.intersectObject(proposalDraftGroup, true).find(entry => entry.object.isMesh);
+        return hit ? { x: hit.point.x, y: hit.point.y, z: hit.point.z } : null;
+    }
+
     // Raycast a click against proposal surfaces, parcels, and buildings: the nearest visible
     // subject along the ray, by the rule in three-click-plan.js subjectHit. Returns it with the
     // ray's direction, so the caller can find the ground under the point it met.
@@ -13466,6 +13480,7 @@
             scene: scene, camera: camera, renderer: renderer, controls: controls,
             latLngToXY: latLngToXY, xyToLatLng: xyToLatLng,
             pickGroundLatLng: pickGroundLatLngFromEvent,
+            pickEditorPreview: pickEditorPreviewFromEvent,
             originLatLng: function () { const ll = xyToLatLng(0, 0); return { lat: ll.lat, lng: ll.lng }; },
             groundStats: function () { return groundLayer ? groundLayer.stats() : null; },
             // Figures are numbered pedestrians first, then motorbike riders (three-life.js).

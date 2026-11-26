@@ -106,6 +106,9 @@
         "moreOptions": "More options",
         "undo": "Undo",
         "lockReject": "The current footprint is outside the locked site. Move it back inside to use site lock.",
+        "modelHandles": {
+            "storeys": "Storeys: {{storeys}} · {{height}}"
+        },
         "placement": {
             "snap": "Snap to edges",
             "lock": "Lock to starting site",
@@ -2529,6 +2532,7 @@
             "renameLabel": "Rename building",
             "closeLabel": "Close single building modal",
             "mapHint": "Drag the building or its corners. Tap an edge to add a corner.",
+            "modelHint": "Drag the building to move it, the arrow above it to change its height, and the knob on the ring to turn it.",
             "previewLabel": "3D preview",
             "confirm": "Done",
             "heightLabel": "Height (m):",
@@ -3400,6 +3404,7 @@
         "modal": {
             "mapHint": "Edit plots and boundaries on the map; use the panel to review ownership and shares.",
             "title": "Urban rule",
+            "modelHint": "Drag the arrow above the building up or down to change its storeys.",
             "closeAria": "Close blockify modal",
             "generating": "Generating building…",
             "done": "Done",
@@ -3538,7 +3543,8 @@
                 "minPlotArea": "Min plot size (m²):"
             },
             "helper": {
-                "adjust": "Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it."
+                "adjust": "Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it.",
+                "modelAdjust": "Drag the houses to move them, the arrow above them to change their storeys, and the knob on the ring to turn them."
             },
             "rotateCounterclockwise": "Rotate counterclockwise 5 degrees",
             "rotateClockwise": "Rotate clockwise 5 degrees",
@@ -3576,6 +3582,7 @@
     "parcelBased": {
         "modal": {
             "title": "Detached houses",
+            "modelHint": "Drag the arrow above the plots up or down to change the most storeys a house may have.",
             "closeAria": "Close parcel-based modal",
             "generating": "Generating buildings…",
             "done": "Done",

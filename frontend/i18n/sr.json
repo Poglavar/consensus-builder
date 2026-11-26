@@ -106,6 +106,9 @@
         "moreOptions": "Više opcija",
         "undo": "Opozovi (Cmd/Ctrl+Z)",
         "lockReject": "Trenutni tlocrt je izvan zaključane lokacije. Vratite ga unutar lokacije da biste je zaključali.",
+        "modelHandles": {
+            "storeys": "Etaže: {{storeys}} · {{height}}"
+        },
         "placement": {
             "snap": "Poravnaj sa ivicama",
             "lock": "Zaključaj na početnoj lokaciji",
@@ -2551,6 +2554,7 @@
             "renameLabel": "Preimenuj zgradu",
             "closeLabel": "Zatvori modal jedne zgrade",
             "mapHint": "Prevuci zgradu ili njene vrhove. Dodirni ivicu za dodavanje vrha.",
+            "modelHint": "Prevuci zgradu da je pomeriš, strelicu iznad nje da promeniš visinu, a ručicu na prstenu da je zarotiraš.",
             "previewLabel": "3D pregled",
             "confirm": "Gotovo",
             "heightLabel": "Visina (m):",
@@ -3428,6 +3432,7 @@
         "modal": {
             "mapHint": "Uredite parcele i granice na mapi; u panelu pregledajte vlasništvo i udele.",
             "title": "Urbano pravilo",
+            "modelHint": "Prevuci strelicu iznad zgrade gore ili dole da promeniš broj etaža.",
             "closeAria": "Zatvori blockify modal",
             "generating": "Generišem zgradu…",
             "done": "Gotovo",
@@ -3570,7 +3575,8 @@
                 "minPlotArea": "Najmanja površina parcele (m²):"
             },
             "helper": {
-                "adjust": "Prevuci osnovu za promenu položaja. Prevuci temena za promenu oblika, klikni ivicu za dodavanje temena ili izaberi teme da ga ukloniš."
+                "adjust": "Prevuci osnovu za promenu položaja. Prevuci temena za promenu oblika, klikni ivicu za dodavanje temena ili izaberi teme da ga ukloniš.",
+                "modelAdjust": "Prevuci kuće da ih pomeriš, strelicu iznad njih da promeniš broj etaža, a ručicu na prstenu da ih zarotiraš."
             },
             "rotateCounterclockwise": "Zakreni 5 stepeni suprotno od kazaljke na satu",
             "rotateClockwise": "Zakreni 5 stepeni u smeru kazaljke na satu",
@@ -3608,6 +3614,7 @@
     "parcelBased": {
         "modal": {
             "title": "Slobodnostojeće kuće",
+            "modelHint": "Prevuci strelicu iznad parcela gore ili dole da promeniš najveći broj etaža kuće.",
             "closeAria": "Zatvori prozor pravila po parceli",
             "generating": "Generišem zgrade…",
             "done": "Gotovo",

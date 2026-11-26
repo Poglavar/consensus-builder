@@ -578,21 +578,34 @@
         return { clientX: touch.clientX, clientY: touch.clientY, target: nativeEvent.target, originalEvent: nativeEvent, preventDefault: () => nativeEvent.preventDefault?.() };
     }
 
-    function startDrag(e) {
-        const originalTarget = e?.originalEvent?.target;
-        if (originalTarget && typeof originalTarget.closest === 'function'
-            && originalTarget.closest('.polygon-geometry-editor__vertex, .polygon-geometry-editor__delete-marker')) return;
-        if (e?.originalEvent && typeof e.originalEvent.preventDefault === 'function') e.originalEvent.preventDefault();
+    // Start moving the terrace from a point on it. The map drag (startDrag) and the model view's
+    // (model-edit-handles.js) both move it through dragRowHouseTo and end it in onDragEnd.
+    function beginRowHouseDrag(latlng) {
+        if (isDragging || !latlng || !generatedRowHouseFeature?.geometry) return false;
         isDragging = true;
         dragMapWasEnabled = rowHouseMap?.dragging?.enabled?.() !== false;
-        dragStartLatLng = e.latlng;
-        dragEndLatLng = e.latlng;
+        dragStartLatLng = latlng;
+        dragEndLatLng = latlng;
         dragStartOffset = [currentOffsetX, currentOffsetY];
         dragStartFeature = cloneRowHouseFeature(generatedRowHouseFeature);
         dragLastValidFeature = cloneRowHouseFeature(generatedRowHouseFeature);
         rowHouseHistory?.record?.();
         rowHousePendingVertexActionIndex = null;
         destroyRowHousePolygonEditor();
+        return true;
+    }
+
+    function rowHouseHits(latlng) {
+        if (!generatedRowHouseFeature?.geometry || !latlng) return false;
+        try { return turf.booleanPointInPolygon(turf.point([latlng.lng, latlng.lat]), generatedRowHouseFeature); } catch (_) { return false; }
+    }
+
+    function startDrag(e) {
+        const originalTarget = e?.originalEvent?.target;
+        if (originalTarget && typeof originalTarget.closest === 'function'
+            && originalTarget.closest('.polygon-geometry-editor__vertex, .polygon-geometry-editor__delete-marker')) return;
+        if (e?.originalEvent && typeof e.originalEvent.preventDefault === 'function') e.originalEvent.preventDefault();
+        if (!beginRowHouseDrag(e.latlng)) return;
 
         rowHouseMap.dragging.disable();
         document.addEventListener('mousemove', onDragMove);
@@ -608,8 +621,11 @@
 
         const pointer = rowHousePointerEvent(e);
         const containerPoint = rowHouseMap.mouseEventToContainerPoint(pointer);
-        const latlng = rowHouseMap.containerPointToLatLng(containerPoint);
+        dragRowHouseTo(rowHouseMap.containerPointToLatLng(containerPoint));
+    }
 
+    function dragRowHouseTo(latlng) {
+        if (!isDragging || !dragStartLatLng || !latlng) return;
         if (!dragStartFeature?.geometry || !window.SingleBuildingGeometry?.moveGeometry) return;
         // The footprint keeps its ground metres from the drag's start point, placed at the cursor. It
         // may leave its parcels while dragged; the drop decides what that means (onDragEnd).
@@ -634,6 +650,11 @@
             rowHouseBuildingLayer?.eachLayer?.(layer => layer.setLatLngs?.(latLngs));
         } catch (_) { }
         updateBuildingMetrics(candidate);
+        // The model view shows the terrace moving whole; its houses are cut again on release.
+        if (window.isThreeModeActive?.()) {
+            rowHouseModal?.setPreview({ ...(rowHouseModal.preview || {}), draftPreview: { kind: 'buildings', features: [candidate] },
+                massing: candidate, envelopes: [], excluded: [] });
+        }
     }
 
     // End drag interaction. Inside its parcels the move is the rule's offset; dropped off them, a Row
@@ -818,29 +839,65 @@
     }
 
     function rotateRowHouseFootprint(deltaDegrees) {
-        if (!generatedRowHouseFeature?.geometry || !Number.isFinite(deltaDegrees)) return;
+        if (!Number.isFinite(deltaDegrees) || !beginRowHouseTurn()) return;
+        rowHouseTurnTo(deltaDegrees);
+        endRowHouseTurn();
+    }
+
+    // A turn of the terrace, one undo step however many angles it passes through: the rotate buttons
+    // take one step, the model view's turn knob (model-edit-handles.js) many.
+    let rowHouseTurn = null;
+    function beginRowHouseTurn() {
+        if (!generatedRowHouseFeature?.geometry) return false;
+        rowHouseTurn = { feature: cloneRowHouseFeature(generatedRowHouseFeature), rotation: currentRotation, recorded: false };
+        return true;
+    }
+    function rowHouseTurnTo(totalDegrees) {
+        if (!rowHouseTurn || !Number.isFinite(totalDegrees)) return;
         let candidate = null;
         try {
-            const geometry = window.SingleBuildingGeometry?.rotateGeometry?.(
-                generatedRowHouseFeature.geometry,
-                deltaDegrees
-            );
+            const geometry = window.SingleBuildingGeometry?.rotateGeometry?.(rowHouseTurn.feature.geometry, totalDegrees);
             if (geometry) {
-                candidate = cloneRowHouseFeature(generatedRowHouseFeature);
+                candidate = cloneRowHouseFeature(rowHouseTurn.feature);
                 candidate.geometry = geometry;
             }
         } catch (_) { }
         if (!candidate || !rowHouseFeatureValid(candidate)) return;
-        rowHouseHistory?.record?.();
-        currentRotation += deltaDegrees * Math.PI / 180;
+        if (!rowHouseTurn.recorded) {
+            rowHouseHistory?.record?.();
+            rowHouseTurn.recorded = true;
+        }
+        currentRotation = rowHouseTurn.rotation + totalDegrees * Math.PI / 180;
         candidate.properties = {
-            ...(generatedRowHouseFeature.properties || {}),
+            ...(rowHouseTurn.feature.properties || {}),
             rotation: currentRotation,
             footprintMode: 'polygon'
         };
         generatedRowHouseFeature = candidate;
         displayRowHouseBuildingInModal(candidate);
-        autosaveRowHouseDraft();
+    }
+    function endRowHouseTurn() {
+        const turned = rowHouseTurn?.recorded;
+        rowHouseTurn = null;
+        if (turned) autosaveRowHouseDraft();
+    }
+
+    // What the model view may drag: the terrace's height, position and turn.
+    function rowHouseModelHandles() {
+        const feature = generatedRowHouseFeature;
+        const centre = feature?.geometry ? window.SingleBuildingGeometry?.geometryCenter?.(feature.geometry) : null;
+        const input = document.getElementById('rowhouse-height-slider');
+        if (!centre || !input) return null;
+        return {
+            height: { input, at: centre, metresPerStep: ROW_FLOOR_HEIGHT_M },
+            move: {
+                hits: rowHouseHits,
+                begin: beginRowHouseDrag,
+                to: latlng => dragRowHouseTo(latlng),
+                end: () => { onDragEnd(); }
+            },
+            rotate: { centre, footprint: feature, begin: beginRowHouseTurn, to: rowHouseTurnTo, end: endRowHouseTurn }
+        };
     }
 
     function loadRowHouseGeoJSON(file) {
@@ -1322,8 +1379,10 @@
                 modes: ['2d', 'model'],
                 tools: rotationTools,
                 hints: {
-                    '2d': translateRowHouseText('rowHouses.modal.helper.adjust', 'Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it.')
+                    '2d': translateRowHouseText('rowHouses.modal.helper.adjust', 'Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it.'),
+                    model: translateRowHouseText('rowHouses.modal.helper.modelAdjust', 'Drag the terrace to move it, the arrow above it to change its storeys, and the knob on the ring to turn it.')
                 },
+                modelHandles: rowHouseModelHandles,
                 onCancel: requestCloseRowHouseModal,
                 onModeChange: mode => { if (mode === '2d') renderRowHousePolygonEditor(); }
             });
