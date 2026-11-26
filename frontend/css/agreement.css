@@ -115,9 +115,10 @@
    not available stone. ---- */
 .apartment-round-stats { display: grid; gap: var(--cb-space-2); min-width: 0; font-size: var(--cb-text-sm); }
 .apartment-round-stats__title { margin: 0; font-size: var(--cb-text-sm); font-weight: var(--cb-weight-semibold); overflow-wrap: anywhere; }
-.apartment-round-stats__counts { display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); gap: var(--cb-space-2); margin: 0; }
+/* Tiles wide enough for the longest state word, so a phone shows two per row instead of splitting words. */
+.apartment-round-stats__counts { display: grid; grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr)); gap: var(--cb-space-2); margin: 0; }
 .apartment-round-stats__counts > div { display: grid; gap: var(--cb-space-1); padding: var(--cb-space-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-sm); }
-.apartment-round-stats__counts dt { display: flex; align-items: center; gap: var(--cb-space-1); color: var(--cb-text-muted); }
+.apartment-round-stats__counts dt { display: flex; align-items: center; gap: var(--cb-space-1); color: var(--cb-text-muted); overflow-wrap: normal; word-break: normal; hyphens: auto; }
 .apartment-round-stats__counts dd { margin: 0; font-size: var(--cb-text-lg); font-weight: var(--cb-weight-semibold); }
 .apartment-round-stats__deposits { margin: 0; overflow-wrap: anywhere; }
 .apartment-round-stats__table { width: 100%; border-collapse: collapse; }
