@@ -2,6 +2,7 @@
 // takes most of a second, which would stall drawing. One message in ({ id, input }), one out.
 importScripts('neighbour-effects.js' + self.location.search);
 self.onmessage = ({ data }) => {
-    try { self.postMessage({ id: data.id, result: self.NeighbourEffects.assess(data.input) }); }
+    // `task`: 'assess' (the default) or 'noSky', the rooms of one plot measured on demand.
+    try { self.postMessage({ id: data.id, result: self.NeighbourEffects[data.task === 'noSky' ? 'noSky' : 'assess'](data.input) }); }
     catch (error) { self.postMessage({ id: data.id, error: error && error.message ? error.message : String(error) }); }
 };

@@ -8794,6 +8794,7 @@
             "garden": "Garden sunlight",
             "sunlight": "Sunlight to a window over the year",
             "sky": "Sky from facing wall",
+            "noSky": "Room daylight (no-sky line)",
             "angle": "Angle above a facing window",
             "splay": "Splay beside a window",
             "distance": "Facing distance"
@@ -8825,6 +8826,17 @@
         "estimated": "Building heights nearby that are estimates: {{count}}",
         "sunshine": "Probable sunlight hours from the {{station}} sunshine records, {{period}} ({{source}}).",
         "noSunshine": "No sunshine records cover this place, so sunlight to windows over the year is not measured.",
+        "noSky": "{{room}}, {{floor}}: part of the room that sees the sky {{before}} → {{after}} (guide: {{ratio}} × before), from an estimated layout",
+        "noSkyPrompt": "Room daylight (no-sky line), from estimated layouts:",
+        "calculate": "Calculate",
+        "noSkySame": "Room daylight (no-sky line): no room loses sky (rooms measured: {{count}}, estimated layouts)",
+        "noSkyNone": "Room daylight (no-sky line): the estimated layouts give this plot's buildings no living room, kitchen or bedroom with a window.",
+        "noSkyFailed": "Room daylight could not be measured: {{reason}}",
+        "room": {
+            "living": "Living room",
+            "kitchen": "Kitchen",
+            "bedroom": "Bedroom"
+        },
         "direction": {
             "n": "north",
             "ne": "north-east",

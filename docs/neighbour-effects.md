@@ -15,6 +15,7 @@ a rule set's `neighbourGuides` in `frontend/data/planning-sources.json`, which a
   "note": "BRE: a reduction beyond a guide is likely to be noticeable; within it, unlikely. …",
   "garden": { "date": "03-21", "hours": 2, "share": 0.5, "ratio": 0.8 },
   "sky": { "percent": 27, "ratio": 0.8 },
+  "noSky": { "ratio": 0.8, "workingPlaneM": 0.85, "rooms": ["living", "kitchen", "bedroom"] },
   "sunlight": { "percent": 25, "winterPercent": 5, "winter": { "from": "09-21", "to": "03-21" }, "ratio": 0.8, "lossPercent": 4, "facingDeg": 90 },
   "angle": { "degrees": 25, "then": "sky" },
   "splay": { "degrees": 45, "then": "sky" },
@@ -26,6 +27,10 @@ a rule set's `neighbourGuides` in `frontend/data/planning-sources.json`, which a
   and under `ratio` times the share before.
 - `sky`: beyond the guide when the vertical sky component is under `percent`, and under `ratio`
   times before.
+- `noSky`: the no-sky line (BRE BR 209 2.2.10–2.2.11, Appendix D), measured on demand: in each room of
+  the `rooms` kinds, the share of its working plane (`workingPlaneM` above the floor) that sees sky over a
+  window head; beyond the guide when it falls under `ratio` times before. BRE applies it where room
+  layouts are known; here they are the suggested layouts of the plot's buildings (estimates, and said so).
 - `sunlight`: sunlight to a window over the year (BRE BR 209 3.2), for walls facing within
   `facingDeg` of the noon sun (due south north of the equator). Beyond the guide when the window
   gets under `percent` of the year's probable sunlight hours and under `ratio` times before, or
@@ -75,6 +80,11 @@ a share of the sun's light (`EMPHASIS_SHARE` in `three-sun.js`, 45%) comes from 
 the same direction that only the design blocks, so its shadow keeps full darkness while every other
 shadow is lit by that share. The second light's shadow map is drawn from the design's meshes alone.
 
+**Room daylight on demand.** Each listed plot with buildings has a row "Room daylight (no-sky line),
+from estimated layouts" with a **Calculate** button (it spins while it works): the plot's buildings
+are laid out, their rooms measured, and the result joins the plot's readings, its grade and the list's
+order; a plot where no room loses sky says how many rooms were measured.
+
 **Drawings.** The plot pointed at (hovered, or else the one clicked) has its readings drawn, on the
 2D map as their ground trace and in 3D in place: the window each reading is taken at (a yellow dot);
 for the sky, rays from the window to the design's top edge where it now stands above all else; for
@@ -98,6 +108,7 @@ place's guides are binding, beyond a guide reads "not permitted".
 |---|---|
 | Garden sunlight | the plot's land outside its buildings, on a grid of at most 200 points |
 | Sky from the facing wall | each wall of the plot's buildings that faces the design, 1.6 m up (CIE overcast sky) |
+| Room daylight (no-sky line), on demand | rooms of the guide's kinds in the suggested layouts of the plot's buildings (the shared planner with its rooms, entrance on the longest facade), working-plane points every 0.5 m (at most 400 a room); a point sees sky when a sight line over its window's head (sampled at its ends and middle, on the outside face) clears everything outside the room's own building. Rooms on the site, and windows with none of the design in front of their wall, are left out |
 | Sunlight to a window over the year | the middle of each wall with some of the design in front of its plane and facing within the guide's angle of the noon sun, 1.6 m up; the sun every 20 minutes of every 4th day, each position weighted by its month's chance of sunshine |
 | Angle from a facing window | windows every 3 m along those walls, 1.6 m up, square to the wall |
 | Splay beside a window | windows every 3 m along walls with the design in front of their plane, for buildings beside the window (not in front of it) starting within 3 m of the wall's plane |

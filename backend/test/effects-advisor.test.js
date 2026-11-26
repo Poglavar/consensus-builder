@@ -78,6 +78,38 @@ describe('Effects section', () => {
         expect(text).not.toContain('neighbourEffects.sunshine(');
     });
 
+    it('offers the no-sky line on demand, then states it with the room and floor, or that no room loses sky', () => {
+        const advisor = load();
+        const guides = { ...GUIDES, noSky: { ratio: 0.8, workingPlaneM: 0.85, rooms: ['living', 'kitchen', 'bedroom'] } };
+        const lot = { id: 'a', status: 'fail', direction: 'n', distanceM: 4, buildingIds: ['h1'], garden: { before: 0.8, after: 0.3, status: 'fail' } };
+        let section = element('section');
+        advisor.render(section, { ...AFFECTED, lots: [lot], guides });
+        let text = textOf(section);
+        expect(text).toContain('neighbourEffects.noSkyPrompt');
+        const buttons = [];
+        const walk = node => { if (typeof node !== 'string') { if (node.tag === 'button' && node.className.includes('neighbour-effects__calculate')) buttons.push(node); node.children.forEach(walk); } };
+        walk(section);
+        expect(buttons.length).toBe(1);
+        expect(typeof buttons[0].onclick).toBe('function');
+        // Measured: a room that loses sky is a reading like the others; none, a line saying so.
+        const measured = { ...lot, noSky: { before: 1, after: 0.3, ratio: 0.8, room: 'living', level: 0, rooms: 4, status: 'fail' } };
+        section = element('section');
+        advisor.render(section, { ...AFFECTED, lots: [measured], guides });
+        text = textOf(section);
+        expect(text).toContain('neighbourEffects.noSky(neighbourEffects.room.living()|threeMode.controls.floorGround()|100%|30%|0.8)');
+        expect(text).not.toContain('neighbourEffects.noSkyPrompt');
+        section = element('section');
+        advisor.render(section, { ...AFFECTED, lots: [{ ...lot, noSky: { status: 'same', rooms: 6, before: 1, after: 1 } }], guides });
+        expect(textOf(section)).toContain('neighbourEffects.noSkySame(6)');
+        // A plot without buildings, or a place without the guide, offers nothing.
+        section = element('section');
+        advisor.render(section, { ...AFFECTED, lots: [{ ...lot, buildingIds: [] }], guides });
+        expect(textOf(section)).not.toContain('neighbourEffects.noSkyPrompt');
+        section = element('section');
+        advisor.render(section, { ...AFFECTED, lots: [lot] });
+        expect(textOf(section)).not.toContain('neighbourEffects.noSkyPrompt');
+    });
+
     it('shows only the plots where one kind of reading changed when its filter is pressed', () => {
         const advisor = load();
         const section = element('section');

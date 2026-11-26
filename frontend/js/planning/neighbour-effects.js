@@ -21,12 +21,14 @@
         windowHeightM: 1.6, minWallM: 1.5,
         reachFactor: 4, minReachM: 30, maxReachM: 200,
         maxGardenPoints: 200, skyStepDeg: 2, sunStepMin: 10,
-        windowStepM: 3, adjoinM: 3
+        windowStepM: 3, adjoinM: 3,
+        // The no-sky line: room points every half metre, at most 400 per room.
+        noSkyStepM: 0.5, maxRoomPoints: 400, windowOnWallM: 0.6
     };
     const finite = value => typeof value === 'number' && Number.isFinite(value);
     // Less than this change is no change (garden share 0–1, sky in percentage points, metres,
     // degrees): a fraction of a point is noise of the sampling, not a loss anyone would notice.
-    const SAME = { share: 0.01, sky: 1, distance: 0.5, angle: 0.5, splay: 0.1, sunlight: 1 };
+    const SAME = { share: 0.01, sky: 1, distance: 0.5, angle: 0.5, splay: 0.1, sunlight: 1, noSky: 0.01 };
     const RAD = Math.PI / 180;
     // A wall this close to another building is a party wall: no window, so no sky or facing distance.
     const PARTY_WALL_M = 0.5;
@@ -564,17 +566,24 @@
     // sunYear(...) from the place's sunshine records; without it there is no sunlight reading. Answers { lots: [{ id, status, direction, distanceM, garden, sky,
     // distance, estimatedHeights }], reachM, estimated } with only the lots whose readings change,
     // beyond a guide first, then by largest loss.
-    function assess({ site, lots, existing, proposed, sun, year = null, guides = {} }) {
+    // The local frame of an assessment and its buildings in it: the design's, and those standing now,
+    // split into those its site removes and those kept. Null without a design building.
+    function frameOf({ site, existing, proposed }) {
         const firstPoint = proposed.map(record => record.geometry?.type === 'Polygon' ? record.geometry.coordinates[0]?.[0]
             : record.geometry?.coordinates?.[0]?.[0]?.[0]).find(Boolean);
-        if (!firstPoint) return { lots: [], reachM: 0, estimated: 0 };
+        if (!firstPoint) return null;
         const projection = projector(firstPoint[0], firstPoint[1]), project = projection.point;
         const siteParts = site.flatMap(geometry => partsOf(geometry, project));
         const design = proposed.map(record => solidOf(record, project)).filter(Boolean);
-        if (!design.length) return { lots: [], reachM: 0, estimated: 0 };
+        if (!design.length) return null;
         const standing = existing.map(record => solidOf(record, project)).filter(Boolean);
         const onSite = solid => solid.point && inParts(siteParts, solid.point[0], solid.point[1]);
-        const removed = standing.filter(onSite), kept = standing.filter(solid => !onSite(solid));
+        return { projection, project, siteParts, design, standing, removed: standing.filter(onSite), kept: standing.filter(solid => !onSite(solid)) };
+    }
+    function assess({ site, lots, existing, proposed, sun, year = null, guides = {} }) {
+        const frame = frameOf({ site, existing, proposed });
+        if (!frame) return { lots: [], reachM: 0, estimated: 0 };
+        const { projection, project, siteParts, design, standing, removed, kept } = frame;
         const tallest = Math.max(...design.map(solid => solid.heightM), ...removed.map(solid => solid.heightM));
         const reachM = Math.max(MEASURE.minReachM, Math.min(MEASURE.maxReachM, MEASURE.reachFactor * tallest));
         const changing = [...design, ...removed];
@@ -608,14 +617,109 @@
             }
             const bearing = (Math.atan2(middle[0] - centre[0], middle[1] - centre[1]) * 180 / Math.PI + 360) % 360;
             results.push({ id: lot.id, status, direction: COMPASS[Math.round(bearing / 45) % 8], distanceM: apartFrom(design, shape), ...readings,
+                // The plot's buildings, for readings taken on demand from their rooms (noSky).
+                buildingIds: lotBuildings.map(solid => solid.id),
                 estimatedHeights: around.kept.filter(solid => solid.estimated).length });
         }
         return { lots: arrange(results).flat(), reachM, estimated: standing.filter(solid => solid.estimated).length };
     }
     const COMPASS = ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'];
 
+    // ---- No-sky line (BRE BR 209 2.2.10–2.2.11 and Appendix D) ----
+    // Whether a point on a working plane sees sky through a window: a sight line from it over some
+    // point of the window head (`heads`, at height zHead) clears everything outside (`solids`).
+    function seesSky(px, py, pz, heads, zHead, solids) {
+        for (const [hx, hy] of heads) {
+            const run = Math.hypot(hx - px, hy - py);
+            if (run < 1e-6 || zHead <= pz) continue;
+            const ux = (hx - px) / run, uy = (hy - py) / run, slope = (zHead - pz) / run;
+            let clear = true;
+            for (const solid of solids) {
+                const rise = solid.heightM - zHead;
+                if (rise <= 0 || boxDistance(solid.box, hx, hy) * slope >= rise) continue;
+                const t = rayEntry(solid, hx, hy, ux, uy);
+                if (t < Infinity && t * slope < rise) { clear = false; break; }
+            }
+            if (clear) return true;
+        }
+        return false;
+    }
+    // The no-sky line in the rooms of a plot's buildings, before the design and after it: for each room
+    // of a kind the guide names, the share of its working plane that sees sky, and the worst room
+    // against the guide (beyond it when the share falls under `ratio` times before). `rooms`: [{
+    // buildingId, level, floorM, kind, ring: [[lng, lat]], windows: [{ a, b, headM }] }] from the
+    // buildings' layouts, `windows` those of the room's kind on its storey with their head above its
+    // floor (each counts for the room whose wall it lies on, within windowOnWallM). The
+    // room's own building is left out of what obstructs it. Answers the reading, with `rooms` (how
+    // many were measured), or null when no room was measured.
+    function noSky({ site, existing, proposed, rooms, guide }) {
+        const frame = frameOf({ site, existing, proposed });
+        if (!frame || !Array.isArray(rooms)) return null;
+        const { projection, project, siteParts, design, removed, kept } = frame;
+        const kinds = new Set(guide.rooms || []);
+        const designPoints = design.flatMap(solid => solid.parts.flatMap(part => part.rings[0]));
+        let worst = null, measured = 0;
+        for (const room of rooms) {
+            if (!kinds.has(room.kind) || !(room.level >= 0) || !room.windows?.length || !finite(room.floorM)) continue;
+            const ring = room.ring.map(project);
+            const part = { rings: [ring], box: boxOf(ring) };
+            const centre = pointIn([part]);
+            // A room on the site, or under the design, is not a neighbour's (a building reaching across).
+            if (!centre || inParts(siteParts, centre[0], centre[1]) || design.some(solid => inParts(solid.parts, centre[0], centre[1]))) continue;
+            const others = solids => solids.filter(solid => solid.id !== room.buildingId && boxDistance(solid.box, centre[0], centre[1]) <= MEASURE.maxReachM);
+            const before = [...others(kept), ...others(removed)], after = [...others(kept), ...others(design)];
+            // Each window's head on the outside face (a fifth of a metre out from the opening's line,
+            // away from the room), sampled at its ends and middle; the top corners decide (D7).
+            // A layout names a window's room by kind only: a room's windows are those on its own walls.
+            const onWalls = ([x, y]) => ring.some((p, i) => i < ring.length - 1 && segmentsClosest([x, y], [x, y], p, ring[i + 1]).distance <= MEASURE.windowOnWallM);
+            const windows = room.windows.map(window => ({ a: project(window.a), b: project(window.b), headM: window.headM }))
+                .filter(({ a, b }) => onWalls([(a[0] + b[0]) / 2, (a[1] + b[1]) / 2])).map(({ a, b, headM }) => {
+                const mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+                const length = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
+                let nx = (b[1] - a[1]) / length, ny = -(b[0] - a[0]) / length;
+                if ((centre[0] - mid[0]) * nx + (centre[1] - mid[1]) * ny > 0) { nx = -nx; ny = -ny; }
+                const heads = [0.1, 0.5, 0.9].map(f => [a[0] + f * (b[0] - a[0]) + nx * 0.2, a[1] + f * (b[1] - a[1]) + ny * 0.2]);
+                return { heads, zHead: room.floorM + headM, mid, faces: designPoints.some(([x, y]) => (x - mid[0]) * nx + (y - mid[1]) * ny > 0.05) };
+            });
+            // Only a window with some of the design in front of its wall can lose sky to it.
+            if (!windows.some(window => window.faces)) continue;
+            const pz = room.floorM + guide.workingPlaneM;
+            const area = Math.abs(ringArea(ring));
+            const step = Math.max(MEASURE.noSkyStepM, Math.sqrt(area / MEASURE.maxRoomPoints));
+            const [w, s, e, n] = part.box;
+            let total = 0, litBefore = 0, litAfter = 0;
+            const lost = [];
+            for (let x = w + step / 2; x < e; x += step) for (let y = s + step / 2; y < n; y += step) {
+                if (!inPart(part, x, y)) continue;
+                total++;
+                const sees = solids => windows.some(window => seesSky(x, y, pz, window.heads, window.zHead, solids));
+                const was = sees(before), now = sees(after);
+                if (was) litBefore++;
+                if (now) litAfter++;
+                if (was && !now) lost.push([x, y, pz]);
+            }
+            if (!total) continue;
+            measured++;
+            const reading = { before: litBefore / total, after: litAfter / total, room: room.kind, level: room.level, buildingId: room.buildingId, ratio: guide.ratio };
+            reading.status = reading.after < guide.ratio * reading.before - 1e-9 && changed(reading.before, reading.after, SAME.noSky) ? 'fail'
+                : changed(reading.before, reading.after, SAME.noSky) ? 'minor' : 'same';
+            const share = r => r.before > 0 ? r.after / r.before : 1;
+            if (!worst || rank(reading.status) > rank(worst.status) || (rank(reading.status) === rank(worst.status) && share(reading) < share(worst))) {
+                worst = { ...reading, marks: [
+                    ...windows.map(window => ({ type: 'point', role: 'window', points: [[...window.mid, window.zHead]] })),
+                    { type: 'plane', role: 'guide', points: ring.slice(0, -1).map(([x, y]) => [x, y, pz]) },
+                    { type: 'points', role: 'lost', points: lost }] };
+            }
+        }
+        if (!worst) return null;
+        const reading = { ...worst, rooms: measured };
+        if (reading.status === 'same') delete reading.marks;
+        else reading.marks = reading.marks.map(mark => ({ ...mark, points: mark.points.map(([x, y, z]) => [...projection.lngLat([x, y]), z]) }));
+        return reading;
+    }
+
     // ---- Ranking ----
-    const KINDS = ['garden', 'sunlight', 'sky', 'angle', 'splay', 'distance'];
+    const KINDS = ['garden', 'sunlight', 'sky', 'noSky', 'angle', 'splay', 'distance'];
     // How much one reading of a plot takes, 0–1: the share of its sunlit garden or sky lost, or for a
     // facing wall how far it now stands inside its guide. 0 when the reading did not change.
     function harmOf(lot, kind) {
@@ -648,5 +752,5 @@
         return GRADES.map(each => order(shown.filter(lot => gradeOf(lot) === each)));
     }
 
-    return { MEASURE, KINDS, GRADES, sunPath, sunYear, sunlightGrade, skyComponent, assess, projector, harm, changes, arrange };
+    return { MEASURE, KINDS, GRADES, sunPath, sunYear, sunlightGrade, skyComponent, assess, noSky, statusOf: lot => worst(KINDS.map(kind => lot[kind]?.status)), projector, harm, changes, arrange };
 });

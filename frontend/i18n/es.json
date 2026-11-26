@@ -8822,6 +8822,7 @@
             "garden": "Sol en el jardín",
             "sunlight": "Sol en una ventana a lo largo del año",
             "sky": "Cielo desde la fachada enfrentada",
+            "noSky": "Luz natural en las estancias (línea sin cielo)",
             "angle": "Ángulo sobre una ventana enfrentada",
             "splay": "Abanico junto a una ventana",
             "distance": "Distancia enfrentada"
@@ -8853,6 +8854,17 @@
         "estimated": "Alturas de edificios cercanos estimadas: {{count}}",
         "sunshine": "Horas de sol probables según los registros de insolación de {{station}}, {{period}} ({{source}}).",
         "noSunshine": "Ningún registro de insolación cubre este lugar, así que no se mide el sol en las ventanas a lo largo del año.",
+        "noSky": "{{room}}, {{floor}}: parte de la estancia que ve el cielo {{before}} → {{after}} (guía: {{ratio}} × antes), según una distribución estimada",
+        "noSkyPrompt": "Luz natural en las estancias (línea sin cielo), según distribuciones estimadas:",
+        "calculate": "Calcular",
+        "noSkySame": "Luz natural en las estancias (línea sin cielo): ninguna estancia pierde cielo (estancias medidas: {{count}}, distribuciones estimadas)",
+        "noSkyNone": "Luz natural en las estancias (línea sin cielo): las distribuciones estimadas no dan a los edificios de esta parcela ningún salón, cocina ni dormitorio con ventana.",
+        "noSkyFailed": "No se pudo medir la luz natural en las estancias: {{reason}}",
+        "room": {
+            "living": "Salón",
+            "kitchen": "Cocina",
+            "bedroom": "Dormitorio"
+        },
         "direction": {
             "n": "norte",
             "ne": "noreste",

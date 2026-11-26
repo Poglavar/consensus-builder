@@ -8840,6 +8840,7 @@
             "garden": "Sunce u vrtu",
             "sunlight": "Sunce na prozoru kroz godinu",
             "sky": "Nebo s nasuprotnog zida",
+            "noSky": "Dnevno svjetlo u prostorijama (linija bez neba)",
             "angle": "Kut iznad nasuprotnog prozora",
             "splay": "Lepeza uz prozor",
             "distance": "Udaljenost nasuprotnog zida"
@@ -8871,6 +8872,17 @@
         "estimated": "Procijenjene visine obližnjih zgrada: {{count}}",
         "sunshine": "Vjerojatni sunčani sati prema zapisima osunčanosti postaje {{station}}, {{period}} ({{source}}).",
         "noSunshine": "Ovo mjesto ne pokrivaju zapisi osunčanosti, pa se sunce na prozorima kroz godinu ne mjeri.",
+        "noSky": "{{room}}, {{floor}}: dio prostorije koji vidi nebo {{before}} → {{after}} (smjernica: {{ratio}} × prije), prema procijenjenom tlocrtu",
+        "noSkyPrompt": "Dnevno svjetlo u prostorijama (linija bez neba), prema procijenjenim tlocrtima:",
+        "calculate": "Izračunaj",
+        "noSkySame": "Dnevno svjetlo u prostorijama (linija bez neba): nijedna prostorija ne gubi nebo (izmjerenih prostorija: {{count}}, procijenjeni tlocrti)",
+        "noSkyNone": "Dnevno svjetlo u prostorijama (linija bez neba): procijenjeni tlocrti zgradama ove čestice ne daju dnevni boravak, kuhinju ni spavaću sobu s prozorom.",
+        "noSkyFailed": "Dnevno svjetlo u prostorijama nije bilo moguće izmjeriti: {{reason}}",
+        "room": {
+            "living": "Dnevni boravak",
+            "kitchen": "Kuhinja",
+            "bedroom": "Spavaća soba"
+        },
         "direction": {
             "n": "sjeveru",
             "ne": "sjeveroistoku",

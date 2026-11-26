@@ -8973,6 +8973,7 @@
             "garden": "Soleil au jardin",
             "sunlight": "Soleil sur une fenêtre au fil de l'année",
             "sky": "Ciel depuis le mur en vis-à-vis",
+            "noSky": "Lumière du jour dans les pièces (ligne de non-ciel)",
             "angle": "Angle au-dessus d'une fenêtre en vis-à-vis",
             "splay": "Éventail à côté d'une fenêtre",
             "distance": "Distance en vis-à-vis"
@@ -9004,6 +9005,17 @@
         "estimated": "Hauteurs estimées de bâtiments voisins : {{count}}",
         "sunshine": "Heures d'ensoleillement probables d'après les relevés d'insolation de {{station}}, {{period}} ({{source}}).",
         "noSunshine": "Aucun relevé d'insolation ne couvre ce lieu : le soleil sur les fenêtres au fil de l'année n'est pas mesuré.",
+        "noSky": "{{room}}, {{floor}} : part de la pièce qui voit le ciel {{before}} → {{after}} (repère : {{ratio}} × avant), d'après un plan estimé",
+        "noSkyPrompt": "Lumière du jour dans les pièces (ligne de non-ciel), d'après des plans estimés :",
+        "calculate": "Calculer",
+        "noSkySame": "Lumière du jour dans les pièces (ligne de non-ciel) : aucune pièce ne perd de ciel (pièces mesurées : {{count}}, plans estimés)",
+        "noSkyNone": "Lumière du jour dans les pièces (ligne de non-ciel) : les plans estimés ne donnent aux bâtiments de cette parcelle ni séjour, ni cuisine, ni chambre avec fenêtre.",
+        "noSkyFailed": "La lumière du jour dans les pièces n'a pas pu être mesurée : {{reason}}",
+        "room": {
+            "living": "Séjour",
+            "kitchen": "Cuisine",
+            "bedroom": "Chambre"
+        },
         "direction": {
             "n": "nord",
             "ne": "nord-est",

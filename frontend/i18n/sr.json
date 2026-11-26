@@ -8840,6 +8840,7 @@
             "garden": "Sunce u vrtu",
             "sunlight": "Sunce na prozoru tokom godine",
             "sky": "Nebo sa naspramnog zida",
+            "noSky": "Dnevno svetlo u prostorijama (linija bez neba)",
             "angle": "Ugao iznad naspramnog prozora",
             "splay": "Lepeza uz prozor",
             "distance": "Udaljenost naspramnog zida"
@@ -8871,6 +8872,17 @@
         "estimated": "Procenjene visine obližnjih zgrada: {{count}}",
         "sunshine": "Verovatni sunčani sati prema zapisima osunčanosti stanice {{station}}, {{period}} ({{source}}).",
         "noSunshine": "Ovo mesto ne pokrivaju zapisi osunčanosti, pa se sunce na prozorima tokom godine ne meri.",
+        "noSky": "{{room}}, {{floor}}: deo prostorije koji vidi nebo {{before}} → {{after}} (smernica: {{ratio}} × pre), prema procenjenoj osnovi",
+        "noSkyPrompt": "Dnevno svetlo u prostorijama (linija bez neba), prema procenjenim osnovama:",
+        "calculate": "Izračunaj",
+        "noSkySame": "Dnevno svetlo u prostorijama (linija bez neba): nijedna prostorija ne gubi nebo (izmerenih prostorija: {{count}}, procenjene osnove)",
+        "noSkyNone": "Dnevno svetlo u prostorijama (linija bez neba): procenjene osnove zgradama ove parcele ne daju dnevnu sobu, kuhinju ni spavaću sobu sa prozorom.",
+        "noSkyFailed": "Dnevno svetlo u prostorijama nije moglo da se izmeri: {{reason}}",
+        "room": {
+            "living": "Dnevna soba",
+            "kitchen": "Kuhinja",
+            "bedroom": "Spavaća soba"
+        },
         "direction": {
             "n": "severu",
             "ne": "severoistoku",

@@ -16,7 +16,7 @@
     const WORKER_SCRIPT = 'js/planning/neighbour-effects-worker.js';
     let worker = null, nextId = 0;
     const pending = new Map();
-    function inWorker(input) {
+    function inWorker(input, task = 'assess') {
         if (!worker) {
             worker = new Worker(root.appendBuildToken ? root.appendBuildToken(WORKER_SCRIPT) : WORKER_SCRIPT);
             worker.onmessage = ({ data }) => {
@@ -32,7 +32,7 @@
             };
         }
         const id = ++nextId;
-        return new Promise((resolve, reject) => { pending.set(id, { resolve, reject }); worker.postMessage({ id, input }); });
+        return new Promise((resolve, reject) => { pending.set(id, { resolve, reject }); worker.postMessage({ id, task, input }); });
     }
 
     let sunLoading = null;
@@ -77,13 +77,14 @@
     const crosses = (box, reach) => box[0] <= reach[2] && box[2] >= reach[0] && box[1] <= reach[3] && box[3] >= reach[1];
     // A map building with its height: a known one (a survey's or its source's), else the 3D view's
     // estimate, marked as such.
-    function standing(record) {
+    // `id` is the building pool's key: map buildings carry no top-level id of their own.
+    function standing(record, id) {
         const props = record.properties || {};
         const known = root.PlanningRuleTerms.buildingHeight(record);
-        if (known.known) return { id: record.id, geometry: record.geometry, heightM: known.heightM, survey: known.survey?.name || null };
+        if (known.known) return { id, geometry: record.geometry, heightM: known.heightM, survey: known.survey?.name || null };
         const estimate = root.BuildingExtrusion.resolveBuildingHeight({ id: String(record.id ?? props.id ?? ''), heightM: props.height_m,
             levels: props.floors, building: props.building, areaM2: root.BuildingExtrusion.footprintAreaM2(record.geometry) });
-        return { id: record.id, geometry: record.geometry, heightM: estimate.heightM, estimated: true };
+        return { id, geometry: record.geometry, heightM: estimate.heightM, estimated: true };
     }
 
     // The neighbour guides of a city: the first of its rule sets that states them, or null. Known
@@ -140,7 +141,9 @@
         let measured = pool;
         try { measured = await root.HeightSurveyClient.fillHeights(pool, { idOf }); }
         catch (error) { console.error(`[${new Date().toISOString()}] [neighbour-effects] Building heights could not be measured; source heights stand`, error); }
-        const existing = measured.map(standing);
+        // Every building needs an id of its own: readings name the wall's building, and the no-sky line
+        // leaves a room's own building out of what obstructs it.
+        const existing = measured.map((record, i) => standing(record, String(idOf(record) ?? `building-${i}`)));
         // The garden guide's day this year (MM-DD); the sun's path barely moves from year to year.
         const sun = guides.garden ? effects.sunPath(await sunCalc(), `${new Date().getUTCFullYear()}-${guides.garden.date}`, (bbox[1] + bbox[3]) / 2, (bbox[0] + bbox[2]) / 2) : null;
         // Sunlight to windows needs the place's sunshine records; without them it is not measured.
@@ -149,8 +152,70 @@
         const result = await inWorker({ site, lots, existing, proposed, sun, year: sunlight.year, guides });
         log(`${result.lots.length} of ${lots.length} plots affected, ${existing.length} buildings, ${Math.round(performance.now() - started)} ms`);
         const geometries = new Map(lots.map(lot => [lot.id, lot.geometry]));
-        return { status: result.lots.length ? 'affected' : 'clear', ...result, guides, geometries,
+        const answer = { status: result.lots.length ? 'affected' : 'clear', ...result, guides, geometries,
             surveys: [...new Set(existing.map(record => record.survey).filter(Boolean))], sunshine: sunlight.station };
+        // What was measured, kept for readings taken later on demand (the no-sky line).
+        inputs.set(answer, { site, existing, proposed });
+        return answer;
+    }
+
+    // ---- The no-sky line, on demand ----
+    // The inputs of each assessment (by its worker result), for readings taken later.
+    const inputs = new WeakMap();
+    let layoutPlanner = null;
+    const FLOOR_PLAN_WORKER = 'js/default-floor-plan-worker.js';
+    // The rooms of a plot's buildings from their suggested layouts (the shared planner, as Built X-ray
+    // and the 2D layouts use it, with its rooms; no roads, so the entrance faces the longest facade):
+    // [{ buildingId, level, floorM, kind, ring, windows: [{ a, b, headM }] }] in lng/lat.
+    async function roomsOf(records) {
+        await root.__ensureFloorPlanModules?.();
+        const context = root.__defaultFloorPlanContext, generator = root.__defaultFloorPlans, plans = root.__buildingFloorPlans;
+        if (!context || !generator || !plans) throw new Error('The floor-plan planner did not load');
+        layoutPlanner ??= root.__defaultFloorPlanWorker.create({ spawn: () => new Worker(root.appendBuildToken ? root.appendBuildToken(FLOOR_PLAN_WORKER) : FLOOR_PLAN_WORKER) });
+        const region = context.regionOf?.(root.CityConfigManager?.getCurrentCityConfig?.()) || null;
+        const pool = root.buildingFeaturePool || [];
+        const rooms = [];
+        for (const record of records) {
+            const feature = { type: 'Feature', id: record.id, properties: { id: record.id, height_m: record.heightM }, geometry: record.geometry };
+            const planned = await layoutPlanner.plan(feature, { owner: feature, existing: true, parcels: [], turf: root.turf, generator, region, roads: null,
+                heightM: record.heightM, storeyFallbackM: root.STOREY_HEIGHT_M || 3.3, neighbours: context.neighbourPool(feature, [], pool, root.turf), emitRooms: true });
+            for (const slice of planned.slices || []) {
+                const floorPlans = slice.result?.floorPlans;
+                if (!floorPlans) continue;
+                const toLngLat = plans.registrationToLngLat(floorPlans);
+                const layouts = new Map(floorPlans.layouts.map(layout => [layout.id, layout.architecture]));
+                for (const storey of floorPlans.storeys) {
+                    const architecture = layouts.get(storey.layoutId);
+                    if (!architecture) continue;
+                    const windows = architecture.openings.filter(opening => opening.kind === 'window' || opening.kind === 'glazedDoor');
+                    for (const unit of architecture.apartmentRegions || []) for (const room of unit.rooms || []) {
+                        const outline = room.polygons?.[0]?.[0];
+                        if (!outline?.length) continue;
+                        rooms.push({ buildingId: record.id, level: storey.level, floorM: storey.elevationM, kind: room.kind,
+                            ring: [...outline, outline[0]].map(([u, v]) => toLngLat(u, v)),
+                            windows: windows.filter(opening => opening.room === room.kind)
+                                .map(opening => ({ a: toLngLat(...opening.a), b: toLngLat(...opening.b), headM: opening.sillM + opening.heightM })) });
+                    }
+                }
+            }
+        }
+        return rooms;
+    }
+    // Measures the no-sky line on one listed plot of `result` and puts it on the plot: its reading, or
+    // { status: 'same', rooms: 0 } when no room of the guide's kinds could be measured. The plot's
+    // status and the order of the list follow.
+    async function calculateNoSky(result, lot) {
+        const input = inputs.get(result);
+        if (!input || !result.guides?.noSky) return;
+        const records = input.existing.filter(record => lot.buildingIds?.includes(record.id));
+        const started = performance.now();
+        const rooms = await roomsOf(records);
+        const reading = await inWorker({ ...input, rooms, guide: result.guides.noSky }, 'noSky');
+        lot.noSky = reading || { status: 'same', rooms: 0 };
+        log(`no-sky line on plot ${lot.id}: ${rooms.length} rooms, ${lot.noSky.rooms} measured, ${lot.noSky.status}, ${Math.round(performance.now() - started)} ms`);
+        const effects = root.NeighbourEffects;
+        lot.status = effects.statusOf(lot);
+        result.lots = effects.arrange(result.lots).flat();
     }
 
     // The newest design waits for the running assessment and replaces any design queued behind it;
@@ -195,9 +260,11 @@
         return node;
     }
     // One icon per kind of reading, so a list can be read at a glance. Literal keys for the locale test.
-    const KIND_ICONS = { garden: 'fa-sun', sunlight: 'fa-cloud-sun', sky: 'fa-cloud', angle: 'fa-angle-up', splay: 'fa-ruler-combined', distance: 'fa-left-right' };
-    const KIND_KEYS = { garden: 'neighbourEffects.kind.garden', sunlight: 'neighbourEffects.kind.sunlight', sky: 'neighbourEffects.kind.sky', angle: 'neighbourEffects.kind.angle',
+    const KIND_ICONS = { garden: 'fa-sun', sunlight: 'fa-cloud-sun', sky: 'fa-cloud', noSky: 'fa-house-chimney-window', angle: 'fa-angle-up', splay: 'fa-ruler-combined', distance: 'fa-left-right' };
+    const KIND_KEYS = { garden: 'neighbourEffects.kind.garden', sunlight: 'neighbourEffects.kind.sunlight', sky: 'neighbourEffects.kind.sky', noSky: 'neighbourEffects.kind.noSky', angle: 'neighbourEffects.kind.angle',
         splay: 'neighbourEffects.kind.splay', distance: 'neighbourEffects.kind.distance' };
+    // The rooms the no-sky line is measured in, as the planner names them. Literal keys for the locale test.
+    const ROOM_KEYS = { living: 'neighbourEffects.room.living', kitchen: 'neighbourEffects.room.kitchen', bedroom: 'neighbourEffects.room.bedroom' };
     function icon(kind, status) {
         const node = element('i', `fas ${KIND_ICONS[kind]} neighbour-effects__icon${status ? ` neighbour-effects__icon--${status}` : ''}`);
         node.setAttribute('aria-hidden', 'true');
@@ -219,6 +286,9 @@
         if (kind === 'splay') return t('neighbourEffects.splay', { depth: reading(value.after), degrees: degrees(guides.splay.degrees) });
         if (kind === 'garden') return t('neighbourEffects.garden', { hours: format().formatNumber(guides.garden.hours), date: dayOf(guides.garden.date),
             before: share(value.before), after: share(value.after), share: share(guides.garden.share), ratio: ratio(guides.garden.ratio) });
+        if (kind === 'noSky') return t('neighbourEffects.noSky', { room: ROOM_KEYS[value.room] ? t(ROOM_KEYS[value.room]) : value.room,
+            floor: value.level === 0 ? t('threeMode.controls.floorGround') : t('threeMode.controls.floorLevel', { level: value.level }),
+            before: share(value.before), after: share(value.after), ratio: ratio(value.ratio) });
         if (kind === 'sunlight') return t('neighbourEffects.sunlight', { after: sky(value.after), winterAfter: sky(value.winterAfter),
             before: sky(value.before), winterBefore: sky(value.winterBefore), percent: sky(guides.sunlight.percent), winterPercent: sky(guides.sunlight.winterPercent) });
         if (kind === 'sky') return t('neighbourEffects.sky', { before: sky(value.before), after: sky(value.after),
@@ -226,8 +296,8 @@
         return value.before === null ? t('neighbourEffects.distanceNew', { after: reading(value.after), metres: metres(guides.distance.metres) })
             : t('neighbourEffects.distance', { before: reading(value.before), after: reading(value.after), metres: metres(guides.distance.metres) });
     }
-    function plotItem(lot, container, guides) {
-        const effects = root.NeighbourEffects;
+    function plotItem(lot, container, result) {
+        const effects = root.NeighbourEffects, guides = result.guides;
         const item = element('li', `neighbour-effects__plot neighbour-effects__plot--${lot.status}`);
         // The plot's name points at it on the map: hover or focus highlights it, a click keeps it
         // highlighted and brings it into view.
@@ -251,6 +321,30 @@
         for (const { kind, status } of effects.changes(lot)) {
             const line = element('li', `neighbour-effects__reading neighbour-effects__reading--${status}`);
             line.append(icon(kind, status), ' ', readingText(lot, kind, guides));
+            lines.append(line);
+        }
+        // The no-sky line is measured on demand: it lays out the rooms of the plot's buildings first.
+        if (guides.noSky && lot.buildingIds?.length && (!lot.noSky || lot.noSky.status === 'same')) {
+            const line = element('li', 'neighbour-effects__reading neighbour-effects__reading--pending');
+            line.append(icon('noSky'), ' ');
+            if (lot.noSky) line.append(lot.noSky.rooms ? t('neighbourEffects.noSkySame', { count: lot.noSky.rooms }) : t('neighbourEffects.noSkyNone'));
+            else {
+                const button = element('button', 'btn btn-sm neighbour-effects__calculate', t('neighbourEffects.calculate'));
+                button.type = 'button';
+                button.addEventListener('click', () => {
+                    const work = calculateNoSky(result, lot);
+                    root.BusyControl?.track?.(button, work);
+                    work.then(() => {
+                        const map = shownOn;
+                        render(container, result);
+                        if (map) show(map, result);
+                    }, error => {
+                        console.error(`[${new Date().toISOString()}] [neighbour-effects] The no-sky line could not be measured on plot ${lot.id}`, error);
+                        line.replaceChildren(icon('noSky'), ' ', t('neighbourEffects.noSkyFailed', { reason: error?.message || String(error) }));
+                    });
+                });
+                line.append(t('neighbourEffects.noSkyPrompt'), ' ', button);
+            }
             lines.append(line);
         }
         item.append(name, ' ', badges, lines);
@@ -331,7 +425,7 @@
                 if (!lots.length) continue;
                 container.append(element('h4', `neighbour-effects__group neighbour-effects__group--${group}`, t(key, { count: lots.length })));
                 const list = element('ul', 'neighbour-effects__plots');
-                for (const lot of lots) list.append(plotItem(lot, container, result.guides));
+                for (const lot of lots) list.append(plotItem(lot, container, result));
                 container.append(list);
             }
             container.append(guidesNote(result.guides));

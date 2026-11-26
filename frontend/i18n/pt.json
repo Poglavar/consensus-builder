@@ -8973,6 +8973,7 @@
             "garden": "Sol no jardim",
             "sunlight": "Sol numa janela ao longo do ano",
             "sky": "Céu da parede fronteira",
+            "noSky": "Luz natural nas divisões (linha sem céu)",
             "angle": "Ângulo acima de uma janela fronteira",
             "splay": "Leque junto a uma janela",
             "distance": "Distância fronteira"
@@ -9004,6 +9005,17 @@
         "estimated": "Alturas estimadas de edifícios próximos: {{count}}",
         "sunshine": "Horas de sol prováveis segundo os registos de insolação de {{station}}, {{period}} ({{source}}).",
         "noSunshine": "Nenhum registo de insolação cobre este local, pelo que o sol nas janelas ao longo do ano não é medido.",
+        "noSky": "{{room}}, {{floor}}: parte da divisão que vê o céu {{before}} → {{after}} (referência: {{ratio}} × antes), segundo uma planta estimada",
+        "noSkyPrompt": "Luz natural nas divisões (linha sem céu), segundo plantas estimadas:",
+        "calculate": "Calcular",
+        "noSkySame": "Luz natural nas divisões (linha sem céu): nenhuma divisão perde céu (divisões medidas: {{count}}, plantas estimadas)",
+        "noSkyNone": "Luz natural nas divisões (linha sem céu): as plantas estimadas não dão aos edifícios deste lote nenhuma sala, cozinha ou quarto com janela.",
+        "noSkyFailed": "Não foi possível medir a luz natural nas divisões: {{reason}}",
+        "room": {
+            "living": "Sala",
+            "kitchen": "Cozinha",
+            "bedroom": "Quarto"
+        },
         "direction": {
             "n": "norte",
             "ne": "nordeste",

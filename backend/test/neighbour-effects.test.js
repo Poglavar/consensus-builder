@@ -282,3 +282,42 @@ describe('first checks', () => {
         expect(run(guides)).toEqual([]);
     });
 });
+
+// The no-sky line (BRE BR 209 2.2.10–11): rooms of a plot's buildings from their estimated layouts.
+describe('the no-sky line', () => {
+    // The north house's living room across its south side (y 50–54), a 4 m window in its south wall,
+    // its head 2.3 m above the floor.
+    const room = { buildingId: 'north-house', level: 0, floorM: 0, kind: 'living',
+        ring: [[1, 50], [9, 50], [9, 54], [1, 54], [1, 50]].map(lngLat), windows: [{ a: lngLat([3, 50]), b: lngLat([7, 50]), headM: 2.3 }] };
+    const run = (proposed, rooms = [room]) => effects.noSky({ site: [SITE], existing: [NORTH_HOUSE, OLD_HOUSE], proposed, rooms, guide: ENGLAND.noSky });
+
+    it("finds the room's working plane that loses its sight of the sky, beyond the guide", () => {
+        const reading = run([{ id: 'slab', geometry: rect(-100, 2, 110, 28), heightM: 30 }]);
+        // Before, a two-storey house 40 m off: the whole room sees sky. After, a 30 m slab 22 m off:
+        // only the metre or so nearest the window still does (1.45 / 1.27 m in section).
+        expect(reading.before).toBe(1);
+        expect(reading.after).toBeGreaterThan(0.15);
+        expect(reading.after).toBeLessThan(0.45);
+        expect(reading.status).toBe('fail');
+        expect(reading.room).toBe('living');
+        expect(reading.rooms).toBe(1);
+        expect(reading.marks.find(mark => mark.role === 'lost').points.length).toBeGreaterThan(10);
+        expect(reading.marks.filter(mark => mark.role === 'window').length).toBe(1);
+    });
+
+    it("leaves a room alone when the design is no taller than what it replaces, and measures only the guide's rooms", () => {
+        expect(run([{ id: 'same', geometry: OLD_HOUSE.geometry, heightM: 7 }]).status).toBe('same');
+        expect(run([{ id: 'slab', geometry: rect(-100, 2, 110, 28), heightM: 30 }], [{ ...room, kind: 'bathroom' }])).toBeNull();
+        // A window on another room's wall (another flat's living room) does not light this one.
+        const elsewhere = { ...room, windows: [{ a: lngLat([3, 58]), b: lngLat([7, 58]), headM: 2.3 }] };
+        expect(run([{ id: 'slab', geometry: rect(-100, 2, 110, 28), heightM: 30 }], [elsewhere])).toBeNull();
+        // A room on the site (a building reaching across it) is not a neighbour's, and a room whose
+        // windows look away from the design keeps its sky without being measured.
+        const onSite = { ...room, ring: [[1, 10], [9, 10], [9, 14], [1, 14], [1, 10]].map(lngLat), windows: [{ a: lngLat([3, 10]), b: lngLat([7, 10]), headM: 2.3 }] };
+        expect(run([{ id: 'slab', geometry: rect(-100, 2, 110, 28), heightM: 30 }], [onSite])).toBeNull();
+        const facingAway = { ...room, ring: [[1, 54], [9, 54], [9, 58], [1, 58], [1, 54]].map(lngLat), windows: [{ a: lngLat([3, 58]), b: lngLat([7, 58]), headM: 2.3 }] };
+        expect(run([{ id: 'slab', geometry: rect(-100, 2, 110, 28), heightM: 30 }], [facingAway])).toBeNull();
+        // A room's own building never obstructs it.
+        expect(run([{ id: 'same', geometry: OLD_HOUSE.geometry, heightM: 7 }]).before).toBe(1);
+    });
+});
