@@ -55,6 +55,7 @@ const NOT_COMMANDS = {
     'planning-reroll': 'example build-out view control, handled by PlanningViews',
     'planning-reroll-permitted': 'permitted configuration view control, handled by PlanningViews',
     'sun-enabled': 'model-view lighting setting, handled by three-sun.js',
+    'sun-clouds': 'model-view sky setting beside Sun and shadows, handled by three-sun.js',
     'sun-time': 'model-view lighting setting, handled by three-sun.js',
     'sun-date': 'model-view lighting setting, handled by three-sun.js',
     'sun-now': 'model-view lighting setting, handled by three-sun.js',
