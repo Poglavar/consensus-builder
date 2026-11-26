@@ -2523,6 +2523,7 @@
             "addTest": "Adicionar um critério",
             "authorityId": "Autoridade (um id abstrato; um membro da lente confirma quem atua em seu nome)",
             "customAuthority": "Também é necessária a aprovação de uma autoridade",
+            "authorityWalletHint": "Para uma autoridade que decide a partir da sua própria carteira, introduza a chave da carteira como o seu id e adicione a mesma chave como membro da lente. O seu Confirmar como membro da lente é então a sua decisão e executa o acordo assim que a regra é cumprida.",
             "unknownRegime": "Regras do acordo desconhecidas.",
             "explainer": "Carregue os direitos abstratos dos proprietários sobre as parcelas e defina quem tem de aprovar. Estes dados são independentes da geometria das parcelas; a falta de direitos não impede o desenho geométrico do projeto. Os direitos descrevem a propriedade declarada e não comprovam autorização.",
             "rightsTitle": "Direitos dos proprietários sobre as parcelas",
@@ -4003,6 +4004,7 @@
         "leaseholderLabel": "Arrendatário {{label}}",
         "authorityLabel": "Autoridade",
         "authorityLabelLettered": "Autoridade {{label}}",
+        "authorityOnChain": "A autoridade decide a partir da sua própria carteira: Confirmar como membro da lente, na secção Na blockchain do acordo, regista a sua decisão e executa o acordo.",
         "rules": {
             "all": "todos",
             "and": " e ",

@@ -228,6 +228,15 @@ completes the lens, executes the agreement in the same transaction
 service). MCP parity: `ugt_approval_link` action `confirm-member`; `ugt_inspect_agreement` already
 returns the record's content.
 
+An authority decides alone under a rule with no owner test: a scheme whose family is authority-led,
+or Custom rules with no test and **An authority must also approve**. Such a rule needs no ownership
+rights and no input parcels. When the authority's id is its wallet key and the same key is a lens
+member, that wallet's **Confirm as lens member** is the authority's decision: one transaction records
+it and executes the agreement, with no signed decision and no lens service. The Rules form says so
+beside the authority id, and the Owner decisions card points to On chain while that authority has
+not decided. A required authority keeps its own id even when the same body holds land under another.
+MCP parity: the rule is the agreement's `rule.approvalConfig`, edited like every other rule field.
+
 ## Source parcel geometry in the commitment
 
 A published agreement commits to each source parcel's own representation. An unchanged whole parcel

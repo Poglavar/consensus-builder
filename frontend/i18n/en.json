@@ -275,6 +275,7 @@
         "leaseholderLabel": "Leaseholder {{label}}",
         "authorityLabel": "Authority",
         "authorityLabelLettered": "Authority {{label}}",
+        "authorityOnChain": "The authority decides from its own wallet: Confirm as lens member in the agreement’s On chain section records its decision and executes the agreement.",
         "rules": {
             "all": "every one",
             "and": " and ",
@@ -797,6 +798,7 @@
             "addTest": "Add a test",
             "authorityId": "Authority (an abstract id; a lens member confirms who acts for it)",
             "customAuthority": "An authority must also approve",
+            "authorityWalletHint": "For an authority that decides from its own wallet, enter the wallet key as its id and add the same key as a lens member. Its Confirm as lens member is then its decision and executes the agreement once the rule passes.",
             "unknownRegime": "Unknown agreement rules.",
             "explainer": "Upload abstract parcel-owner rights and set who must approve. This data is separate from parcel geometry; missing rights do not block the geometric design. Rights describe declared ownership and do not prove authorization.",
             "rightsTitle": "Parcel-owner rights",

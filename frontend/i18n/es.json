@@ -275,6 +275,7 @@
         "leaseholderLabel": "Arrendatario {{label}}",
         "authorityLabel": "Autoridad",
         "authorityLabelLettered": "Autoridad {{label}}",
+        "authorityOnChain": "La autoridad decide desde su propia billetera: Confirmar como miembro de la lente, en la sección En la cadena del acuerdo, registra su decisión y ejecuta el acuerdo.",
         "rules": {
             "all": "la totalidad",
             "and": " y ",
@@ -797,6 +798,7 @@
             "addTest": "Añadir una prueba",
             "authorityId": "Autoridad (un ID abstracto; un miembro de la lente confirma quién actúa por ella)",
             "customAuthority": "También debe aprobar una autoridad",
+            "authorityWalletHint": "Para una autoridad que decide desde su propia billetera, introduce la clave de la billetera como su id y añade la misma clave como miembro de la lente. Su Confirmar como miembro de la lente es entonces su decisión y ejecuta el acuerdo cuando se cumple la regla.",
             "unknownRegime": "Reglas de acuerdo desconocidas.",
             "explainer": "Carga derechos abstractos de propietarios de parcelas y define quién debe aprobar. Estos datos son independientes de la geometría; su ausencia no impide revisar el diseño geométrica. Los derechos describen la propiedad declarada, pero no demuestran autorización.",
             "rightsTitle": "Derechos de propietarios",

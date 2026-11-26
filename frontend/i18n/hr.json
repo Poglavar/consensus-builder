@@ -275,6 +275,7 @@
         "leaseholderLabel": "Zakupnik {{label}}",
         "authorityLabel": "Nadležno tijelo",
         "authorityLabelLettered": "Nadležno tijelo {{label}}",
+        "authorityOnChain": "Tijelo odlučuje iz vlastitog novčanika: Potvrdi kao član leće u odjeljku Na lancu bilježi njegovu odluku i izvršava sporazum.",
         "rules": {
             "all": "svih",
             "and": " i ",
@@ -797,6 +798,7 @@
             "addTest": "Dodaj uvjet",
             "authorityId": "Nadležno tijelo (apstraktni ID; član leće potvrđuje tko djeluje za njega)",
             "customAuthority": "Mora odobriti i nadležno tijelo",
+            "authorityWalletHint": "Za tijelo koje odlučuje iz vlastitog novčanika upišite ključ novčanika kao njegov id i dodajte isti ključ kao člana leće. Njegovo Potvrdi kao član leće tada je njegova odluka i izvršava sporazum čim je pravilo ispunjeno.",
             "unknownRegime": "Nepoznata pravila sporazuma.",
             "explainer": "Prenesite apstraktne podatke o vlasnicima čestica i odredite tko mora odobriti dizajn. Ti su podaci odvojeni od geometrije; bez njih i dalje možete pregledati geometrijski dizajn. Podaci opisuju prijavljeno vlasništvo, ali ne dokazuju ovlaštenje.",
             "rightsTitle": "Prava vlasnika čestica",

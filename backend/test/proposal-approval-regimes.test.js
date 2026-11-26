@@ -126,6 +126,19 @@ describe('rights with leases and public bodies', () => {
         expect(A.partyLabel('planning-office', state)).toBe('Authority');
         expect(A.inspect(proposal(mixed, rules([], ['o-a']))).reason).toBe('authority-is-holder');
     });
+
+    it('counts an authority deciding alone without a rights snapshot or parcels, and still asks for rights once a test counts holders', () => {
+        const alone = { proposalId: 'authority-alone', cadastreParcelIds: [], approvalConfig: config(null, rules([], ['akimat'])), lens: ['akimat'] };
+        expect(A.inspect(alone)).toMatchObject({ ready: true, reason: null, ownerIds: [], authorityIds: ['akimat'], partyIds: ['akimat'] });
+        expect(A.tally(alone, [])).toMatchObject({ ready: true, passed: false, authorityMet: false });
+        expect(A.tally(alone, ['akimat'])).toMatchObject({ ready: true, passed: true, supportMet: true, authorityMet: true });
+        const counted = { ...alone, approvalConfig: config(null, rules([test('headcount', 'owners', 'all', 1, 2)], ['akimat'])) };
+        expect(A.inspect(counted).reason).toBe('missing-rights');
+        // The owner-decisions card says where such an authority decides: on chain, from its wallet.
+        const card = lens => loadApprovalPanel().cardHtml({ ...alone, agreementId: 'authority-alone', lens, ownerApprovals: {}, ownerApprovalHistory: [] });
+        expect(card(['akimat'])).toContain('data-approval-authority-on-chain');
+        expect(card(['member-1'])).not.toContain('data-approval-authority-on-chain');
+    });
 });
 
 // Every scheme version ever offered. A published proposal pins id@version, so removing or re-dating

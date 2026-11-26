@@ -575,6 +575,11 @@
             authorityHtml = `<label class="proposal-editor-check"><input type="checkbox" data-approval-rule data-approval-custom-authority${authorityIds.length ? ' checked' : ''}> ${esc(t('proposalDrafts.approval.customAuthority', 'An authority must also approve'))}</label>`
                 + (authorityIds.length ? authorityField(0, authorityIds[0]) : '');
         }
+        // An authority whose id is its wallet key and which is also a lens member decides from that
+        // wallet: Confirm as lens member records its decision and executes the agreement in one step.
+        if (authorityHtml && (template?.authorities || authorityIds.length)) {
+            authorityHtml += `<p class="agreement-hint" data-approval-authority-wallet-hint>${esc(t('proposalDrafts.approval.authorityWalletHint', 'For an authority that decides from its own wallet, enter the wallet key as its id and add the same key as a lens member. Its Confirm as lens member is then its decision and executes the agreement once the rule passes.'))}</p>`;
+        }
         return `<div class="proposal-editor-card" data-approval-rules-card>
             <label class="proposal-editor-field"><span class="approval-setup__rules-label"><span>${esc(t('proposalDrafts.approval.policyType', 'Rules'))}</span><span class="cb-badge cb-badge--warning" data-approval-experimental>${esc(t('proposalDrafts.approval.experimental', 'Experimental'))}</span></span><select data-approval-rule data-approval-regime>
                 ${option('unanimous', t('proposalDrafts.approval.unanimous', 'Every owner must agree'), choice)}${option('custom', t('proposalDrafts.approval.threshold', 'Custom rules'), choice)}${groups}

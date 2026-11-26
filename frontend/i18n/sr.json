@@ -275,6 +275,7 @@
         "leaseholderLabel": "Zakupac {{label}}",
         "authorityLabel": "Nadležni organ",
         "authorityLabelLettered": "Nadležni organ {{label}}",
+        "authorityOnChain": "Organ odlučuje iz sopstvenog novčanika: Potvrdi kao član sočiva u odeljku Na lancu beleži njegovu odluku i izvršava sporazum.",
         "rules": {
             "all": "svih",
             "and": " i ",
@@ -797,6 +798,7 @@
             "addTest": "Dodaj uslov",
             "authorityId": "Nadležni organ (apstraktni ID; član sočiva potvrđuje ko deluje za njega)",
             "customAuthority": "Mora da odobri i nadležni organ",
+            "authorityWalletHint": "Za organ koji odlučuje iz sopstvenog novčanika upišite ključ novčanika kao njegov id i dodajte isti ključ kao člana sočiva. Njegovo Potvrdi kao član sočiva tada je njegova odluka i izvršava sporazum čim je pravilo ispunjeno.",
             "unknownRegime": "Nepoznata pravila sporazuma.",
             "explainer": "Otpremite apstraktne podatke o vlasnicima parcela i odredite ko mora da odobri dizajn. Ovi podaci su odvojeni od geometrije; njihovo odsustvo ne sprečava pregled geometrijskog dizajna. Podaci opisuju prijavljeno vlasništvo, ali ne dokazuju ovlašćenje.",
             "rightsTitle": "Prava vlasnika parcela",

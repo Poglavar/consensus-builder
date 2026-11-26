@@ -260,9 +260,13 @@
         const holderIds = new Set([...ownerIds, ...leaseholderIds]);
         const authorityIds = rules.authorities.map(row => row.authorityId);
         const publicIds = (context.rights?.publicBodies || []).filter(id => holderIds.has(id));
-        const reason = !context.rights ? 'missing-rights' : !context.cadastreParcelIds.length ? 'missing-parcels'
-            : missingParcelIds.length ? 'incomplete-rights' : !ownerIds.length ? 'missing-owners'
-                : authorityIds.some(id => holderIds.has(id)) ? 'authority-is-holder' : null;
+        // Rules with no owner test (the authority decides alone) need no rights snapshot and no parcels:
+        // nobody's land is counted, so none is required.
+        const countsHolders = rules.tests.length > 0;
+        const reason = !countsHolders ? (authorityIds.some(id => holderIds.has(id)) ? 'authority-is-holder' : null)
+            : !context.rights ? 'missing-rights' : !context.cadastreParcelIds.length ? 'missing-parcels'
+                : missingParcelIds.length ? 'incomplete-rights' : !ownerIds.length ? 'missing-owners'
+                    : authorityIds.some(id => holderIds.has(id)) ? 'authority-is-holder' : null;
         return {
             ready: !reason, reason, ownerIds, leaseholderIds, authorityIds, publicIds,
             partyIds: unique([...holderIds, ...authorityIds]), parcels, missingParcelIds, context, rules

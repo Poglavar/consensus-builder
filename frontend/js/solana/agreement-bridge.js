@@ -508,7 +508,8 @@
          * confirm_funding when contributions reached the target; then execute and, for a round, the USDC
          * release to the developer when this confirmation completes the lens. A counted agreement
          * (owners) is confirmed only once its relayed signed decisions pass the rule
-         * (AgreementDecisionPlan.countedDecision, the rule the lens service applies). The first time a
+         * (AgreementDecisionPlan.countedDecision, the rule the lens service applies); when the wallet's key
+         * is also a required authority of the rule, this confirmation is that authority's decision. The first time a
          * member decides, the transaction can be too large for its setup; the credential and schema are
          * then sent first and the wallet asked twice. Resolves { signature, explorerUrl, executed, released }.
          */
@@ -540,7 +541,7 @@
                     const subject = { ...win.AgreementRecord.approvalSubject(agreement), agreementCid: cid, lifecycleStatus: value.status || 'Active', onchain: agreement.onchain || null };
                     const receipts = await win.ProposalApprovalRelay.pull(subject);
                     if (!receipts) throw codedError(t('agreement.chain.errors.decisionsUnavailable', 'The signed decisions could not be read; try again.'), 'decisions-unavailable');
-                    fields = plan.countedDecision({ agreement: decided, count: plan.countDecisions(subject, receipts), lensKey: member, nowSeconds: chainNow }).fields;
+                    fields = plan.countedDecision({ agreement: decided, count: plan.countDecisions(subject, receipts), lensKey: member, nowSeconds: chainNow, asAuthority: true }).fields;
                 }
             } catch (error) {
                 if (error && error.status && error.code) {

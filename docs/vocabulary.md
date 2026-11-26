@@ -938,7 +938,7 @@ The parties eligible to decide under an agreement's rule, such as the relevant o
 
 ### Approval rule
 
-The policy determining counted support and any required authority decisions from the electorate and rights snapshot. It can use headcount or area and distinguish holder classes; it does not summarize every requirement of a real legal procedure.
+The policy determining counted support and any required authority decisions from the electorate and rights snapshot. It can use headcount or area and distinguish holder classes; it does not summarize every requirement of a real legal procedure. A rule with no owner test, only required authority decisions, is one where the authority decides alone: it counts nobody's land, so it needs no rights snapshot and no parcels. A required authority keeps an id of its own, apart from any holder id, even when the same body also holds land.
 
 ### Approval context
 
@@ -978,7 +978,7 @@ A person's editable, chain-specific default trust set, persisted in the browser 
 
 ### Lens member
 
-An attester belonging to a lens, identified by its chain-qualified authority key and associated service or coverage information. Directory membership is not an owner's vote. A lens member is either a service holding its key (the reference lens member, asked by an operator) or a person's wallet, such as a city authority's key. A lens member in a wallet confirms from the agreement panel (**Confirm as lens member**): it issues its own `AgreementDecision-v1` under its own SAS credential and records it in the same transaction, which also executes the agreement when that confirmation completes the lens. On a counted agreement (owners) it may confirm only once the signed decisions pass the rule, as the service does. On a crowdfunding round its confirmation is its own approval, for example a city's consent to the plan.
+An attester belonging to a lens, identified by its chain-qualified authority key and associated service or coverage information. Directory membership is not an owner's vote. A lens member is either a service holding its key (the reference lens member, asked by an operator) or a person's wallet, such as a city authority's key. A lens member in a wallet confirms from the agreement panel (**Confirm as lens member**): it issues its own `AgreementDecision-v1` under its own SAS credential and records it in the same transaction, which also executes the agreement when that confirmation completes the lens. On a counted agreement (owners) it may confirm only once the signed decisions pass the rule, as the service does; when its key is also the id of a required authority, its confirmation is that authority's decision, so an authority that is its own lens member decides and executes in one transaction. On a crowdfunding round its confirmation is its own approval, for example a city's consent to the plan.
 
 ### Attestation
 

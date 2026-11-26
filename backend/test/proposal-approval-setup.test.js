@@ -160,6 +160,9 @@ describe('the form', () => {
         expect(scheme).toContain('data-approval-authority-id="0" value="governor"');
         expect(scheme).toContain('every lease and its holders and which holders are public bodies');
         expect(scheme).not.toContain('data-approval-test=');
+        // Wherever an authority id is asked for, the form says how it decides from its own wallet.
+        expect(scheme).toContain('data-approval-authority-wallet-hint');
+        expect(html).not.toContain('data-approval-authority-wallet-hint');
     });
 });
 

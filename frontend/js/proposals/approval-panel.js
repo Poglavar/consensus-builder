@@ -276,8 +276,15 @@
             : progress.supportMet
                 ? `<span class="cb-badge approval-card__status approval-card__status--pending" data-approval-awaiting-authority>${esc(t('proposalApproval.status.authorityPending', 'Required authority decision pending'))}</span>`
                 : `<span class="cb-badge approval-card__status approval-card__status--pending">${esc(t('proposalApproval.status.pending', 'Configured approval rules not met'))}</span>`;
+        // A required authority whose id is one of the lens keys decides on chain, not by a signed decision here.
+        const lensKeys = (subject.lens || []).map(row => (typeof row === 'string' ? row : row?.address || row?.key));
+        const onChainAuthority = !progress.passed && (progress.authorities || []).some(row => !row.approved && lensKeys.includes(row.authorityId));
+        const onChainNote = onChainAuthority
+            ? `<p class="approval-card__note" data-approval-authority-on-chain>${esc(t('proposalApproval.authorityOnChain', 'The authority decides from its own wallet: Confirm as lens member in the agreement’s On chain section records its decision and executes the agreement.'))}</p>`
+            : '';
         return `<section class="approval-card" data-approval-card aria-labelledby="${titleId}">
             <div class="approval-card__head">${heading}${status}</div>
+            ${onChainNote}
             ${regimeHtml(progress)}
             <p class="approval-card__rule">${esc(ruleText(progress.policy, progress.regime))}</p>
             ${progressHtml(progress, label)}

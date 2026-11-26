@@ -720,6 +720,45 @@ describe('confirmAsMember', () => {
             .toEqual(['sas:6', `agreement:${client.IX_DISCRIMINATORS.attest[0]}`]);
     });
 
+    // An agreement the authority decides alone (no owner test), its id the authority's wallet key, which
+    // is also the lens: no rights snapshot and no signed decision, one transaction decides and executes.
+    function authorityLed(authorityId, deadline = nowSeconds() + 3600) {
+        const content = require('../../frontend/js/plan-record.js').create('District', [CID], { at: '43.797866,77.087621,16', mode: '2d' });
+        const local = { schema: 'agreement/v1', id: 'district-authority', title: 'City plan', city: 'alatau', sponsor: SPONSOR, plan: { cid: cids.cidOfObject(content), content },
+            designs: [{ proposalId: 'p', cid: CID }], inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: 'KZT', lines: [] },
+            rule: { electorate: 'owners', binding: true, lens: [LENS], approvalConfig: { schema: 'proposal-approval/v1', rights: null,
+                policy: { type: 'rules', tests: [], authorities: [{ authorityId }] } } },
+            deadline: new Date(deadline * 1000).toISOString() };
+        const cid = records.publishedCid(local);
+        const address = client.getAgreementPda(cid, SPONSOR)[0].toBase58();
+        return { agreement: { ...local, published: { cid, sponsor: SPONSOR, apiBase: 'https://api.example.test' }, onchain: { chain: 'solana', cluster: 'devnet', account: address } }, address, cid, deadline };
+    }
+
+    it('lets an authority that is its own lens member decide alone and execute in one transaction, with no rights snapshot', async () => {
+        const { agreement, address, cid, deadline } = authorityLed(LENS);
+        const accounts = new Map([[address, { data: agreementData({ cid, lenses: [LENS], deadline, required: 0n }) }]]);
+        const { bridge, connection, provider } = memberWindow({ accounts });
+        const done = await bridge.confirmAsMember({ agreement });
+        expect(done).toMatchObject({ executed: true });
+        expect(provider.signTransaction).toHaveBeenCalledTimes(1);
+        const sas = C.SAS_PROGRAM_ID;
+        expect(sentPrograms(connection).map(([program, d]) => (program === sas ? `sas:${d}` : `agreement:${d}`)))
+            .toEqual(['sas:0', 'sas:1', 'sas:6', `agreement:${client.IX_DISCRIMINATORS.attest[0]}`, `agreement:${client.IX_DISCRIMINATORS.execute[0]}`]);
+        const attestation = connection.sent.flatMap(tx => tx.instructions).find(ix => ix.programId.toBase58() === sas && ix.data[0] === 6);
+        const payload = attestation.data.subarray(1 + 32 + 4, attestation.data.length - 8);
+        const decoded = client.readDecisionAttestation(Buffer.concat([Buffer.from([2]), Buffer.alloc(96), Buffer.from(attestation.data.subarray(33, 37)), payload, Buffer.alloc(32), Buffer.alloc(8), Buffer.alloc(32)])).fields;
+        expect(decoded).toEqual({ agreementCid: cid, sponsor: SPONSOR, decision: 'satisfied',
+            evidenceRef: require('../../frontend/js/proposals/approval.js').decisionEvidenceRef({ counted: [], decidedBy: LENS }), sourceObservedAt: CHAIN_NOW });
+    });
+
+    it('refuses a lens member whose key is not the required authority: the authority has not decided', async () => {
+        const { agreement, address, cid, deadline } = authorityLed(STRANGER);
+        const accounts = new Map([[address, { data: agreementData({ cid, lenses: [LENS], deadline, required: 0n }) }]]);
+        const { bridge, provider } = memberWindow({ accounts });
+        expect(await thrown(() => bridge.confirmAsMember({ agreement }))).toMatchObject({ code: 'member-refused', reason: 'rule_not_met' });
+        expect(provider.signTransaction).not.toHaveBeenCalled();
+    });
+
     it('refuses a wallet outside the lens, and an owners\' agreement whose signed decisions do not pass, before any signature', async () => {
         const { agreement, address, cid, deadline } = round();
         const accounts = new Map([[address, { data: agreementData({ cid, ...CROWD_TERMS, lenses: [LENS], deadline }) }]]);

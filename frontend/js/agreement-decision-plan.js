@@ -3,7 +3,10 @@
 // whose key is in a person's wallet, such as a city authority confirming in the agreement panel.
 // - An owners' or other counted agreement: the member counts the relayed signed decisions with the
 //   approval engine and may state `satisfied` only once the rule passes; the evidence is the hash of
-//   the counted receipts and the source time the last counted decision's signing time.
+//   the counted receipts and the source time the last counted decision's signing time. A member
+//   confirming from its wallet whose key is also one of the rule's required authorities decides as
+//   that authority by this confirmation: its key signs the attestation on chain, so no separate signed
+//   decision is needed. The evidence then also names it, and the source time is the chain time.
 // - A crowdfunding (investors) agreement: the program checks the funding target itself; the lens
 //   states its own approval (investor eligibility, a city's consent to the plan, any condition it was
 //   named for). The reference service issues no automatic one; a member's wallet may, and its evidence
@@ -36,7 +39,8 @@
         const folded = relay.fold(subject, receipts || []);
         const counted = relay.countedApprovals(folded);
         const last = folded.applied.at(-1) ?? null;
-        return { subject, counted, tally: approvalApi().tally(subject, Object.keys(folded.ownerApprovals)), lastDecidedAt: last?.decidedAt ?? null };
+        const approvedIds = Object.keys(folded.ownerApprovals);
+        return { subject, counted, approvedIds, tally: approvalApi().tally(subject, approvedIds), lastDecidedAt: last?.decidedAt ?? null };
     }
 
     // The checks every member makes before stating a decision. `agreement` is { cid, content, status,
@@ -69,13 +73,25 @@
 
     /**
      * The fields of a counted agreement's decision (owners, community-led rules): `count` from
-     * countDecisions. → { fields, tally, counted }
+     * countDecisions. `asAuthority`: the member decides from its own wallet, so when its key is a
+     * required authority of the rule this confirmation is that authority's decision (never for the
+     * reference service, which acts on an operator's request). → { fields, tally, counted, asAuthority }
      */
-    function countedDecision({ agreement, count, lensKey, nowSeconds }) {
-        const { tally } = count;
+    function countedDecision({ agreement, count, lensKey, nowSeconds, asAuthority = false }) {
+        const authorityIds = count.tally.authorities?.map(row => row.authorityId) || [];
+        const decidesAsAuthority = asAuthority && authorityIds.includes(lensKey) && !(count.approvedIds || []).includes(lensKey);
+        const tally = decidesAsAuthority ? approvalApi().tally(count.subject, [...count.approvedIds, lensKey]) : count.tally;
         const sponsor = commonChecks({ agreement, lensKey, nowSeconds, details: { tally } });
         if (!tally.passed) {
             throw refusal(409, 'rule_not_met', tally.ready ? 'the decision rule is not met' : `the decision rule cannot be counted: ${tally.reason}`, { tally });
+        }
+        if (decidesAsAuthority) {
+            if (!Number.isSafeInteger(nowSeconds)) throw refusal(422, 'source_time_missing', 'the decision needs the chain time it is made at', { tally });
+            return {
+                fields: { agreementCid: agreement.cid, sponsor, decision: 'satisfied',
+                    evidenceRef: approvalApi().decisionEvidenceRef({ counted: count.counted, decidedBy: lensKey }), sourceObservedAt: nowSeconds },
+                tally, counted: count.counted.length, asAuthority: true
+            };
         }
         if (!count.lastDecidedAt) throw refusal(422, 'source_time_missing', 'no counted decision gives the outcome a source time', { tally });
         const sourceObservedAt = seconds(count.lastDecidedAt);
@@ -85,7 +101,8 @@
         return {
             fields: { agreementCid: agreement.cid, sponsor, decision: 'satisfied', evidenceRef: approvalApi().decisionEvidenceRef(count.counted), sourceObservedAt },
             tally,
-            counted: count.counted.length
+            counted: count.counted.length,
+            asAuthority: false
         };
     }
 

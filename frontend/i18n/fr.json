@@ -2523,6 +2523,7 @@
             "addTest": "Ajouter un critère",
             "authorityId": "Autorité (un identifiant abstrait ; un membre du groupe de contrôle confirme qui agit en son nom)",
             "customAuthority": "Une autorité doit également approuver",
+            "authorityWalletHint": "Pour une autorité qui décide depuis son propre portefeuille, saisissez la clé du portefeuille comme identifiant et ajoutez la même clé comme membre de l’instance de vérification. Sa confirmation est alors sa décision et exécute l’accord dès que la règle est remplie.",
             "unknownRegime": "Règles de l’accord inconnues.",
             "explainer": "Importez les droits abstraits des propriétaires sur les parcelles et définissez qui doit approuver. Ces données sont distinctes de la géométrie des parcelles ; l’absence de droits ne bloque pas la conception géométrique. Les droits décrivent la propriété déclarée et ne constituent pas une preuve d’autorisation.",
             "rightsTitle": "Droits des propriétaires sur les parcelles",
@@ -4003,6 +4004,7 @@
         "leaseholderLabel": "Titulaire de bail {{label}}",
         "authorityLabel": "Autorité",
         "authorityLabelLettered": "Autorité {{label}}",
+        "authorityOnChain": "L’autorité décide depuis son propre portefeuille : Confirmer en tant que membre de l’instance de vérification, dans la section Sur la blockchain de l’accord, enregistre sa décision et exécute l’accord.",
         "rules": {
             "all": "la totalité",
             "and": " et ",
