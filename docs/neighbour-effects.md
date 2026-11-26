@@ -69,6 +69,10 @@ measures; while it re-measures after an edit, the last result stays. "What the g
 the groups. The plots are coloured on the map, red, orange and green the same way, and outlined on the ground
 in the 3D model view (the pointed-at plot in a wider line); closing the click stack or the editor
 clears both. In 3D a click on a name keeps the highlight but does not move the camera.
+While the editor shows the Effects tab, the 3D model view makes the design's own shadow stand out:
+a share of the sun's light (`EMPHASIS_SHARE` in `three-sun.js`, 45%) comes from a second light in
+the same direction that only the design blocks, so its shadow keeps full darkness while every other
+shadow is lit by that share. The second light's shadow map is drawn from the design's meshes alone.
 
 **Drawings.** The plot pointed at (hovered, or else the one clicked) has its readings drawn, on the
 2D map as their ground trace and in 3D in place: the window each reading is taken at (a yellow dot);

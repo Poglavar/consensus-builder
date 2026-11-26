@@ -1903,6 +1903,8 @@
     // markers and the garden's lost sun as dots.
     let neighbourEffectsGroup = null;
     function syncNeighbourEffects3D() {
+        // The design's shadow stands out while the editor shows Effects on neighbours.
+        window.__threeSun?.emphasise?.(!!window.NeighbourEffectsAdvisor?.isOpen?.());
         if (neighbourEffectsGroup) {
             clearGroupChildren(neighbourEffectsGroup);
             neighbourEffectsGroup.removeFromParent();
@@ -3066,6 +3068,8 @@
                 meshes = prepareProceduralFacadeMeshes(meshes, feature, height, floorHeight, metresPerUnit, city, true);
             } catch (_) { /* Keep the basic 3D preview if optional facade setup fails. */ }
         }
+        // The design's own buildings: their shadow stands out while Effects on neighbours is shown.
+        if (style === 'draft' && kind === 'buildings') meshes.forEach(mesh => { mesh.userData.designShadow = true; });
         meshes
             .forEach(mesh => { markOwnedMaterial(mesh, fill); mesh.renderOrder = style === 'source' ? 9100 : 9200; target.add(mesh); });
         polygonFeatureToBorderLines(feature, line, Math.max(0.5, height + 0.5))
@@ -11691,6 +11695,12 @@
             isAwake: decorationAwake,
             invalidate: () => invalidateThreeView(),
             excludedRoots: () => [lifeGroup],
+            // The design being edited, whose shadow stands out while Effects on neighbours is shown.
+            emphasisRoots: () => {
+                const roots = [];
+                proposalDraftGroup?.traverse(object => { if (object.userData?.designShadow) roots.push(object); });
+                return roots;
+            },
             // The playing day keeps the loop running through a frame hook, like the life layer.
             addFrameHook: fn => window.registerThreeModeFrameHook(fn),
             removeFrameHook: fn => window.unregisterThreeModeFrameHook(fn)

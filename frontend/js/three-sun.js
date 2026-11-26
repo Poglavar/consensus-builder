@@ -22,6 +22,11 @@
     const PLAY_STEP_MINUTES = 3;         // while playing, the light and shadows move in steps this long (~7 Hz)
     const STEP_MARGIN_MS = 20;           // asked on top of a step's wait, so the frame lands past the boundary
     const NOW_REFRESH_MS = 60000;        // a sun standing at "now" follows the real clock this often
+    // While a design's shadow is emphasised (the Effects on neighbours tab), this share of the sun's
+    // light comes from a second light in the same direction that only the design blocks: the design's
+    // shadow keeps its full darkness while every other shadow is lit by this share.
+    const EMPHASIS_SHARE = 0.45;
+    const EMPHASIS_MAP_SIZE = 2048;
 
     // Browser globals, or the same files required in node tests.
     const core = () => (root && root.__sunShadows) || require('./sun-shadows.js');
@@ -39,6 +44,8 @@
     // when the sun is computed, so they follow the scene to another city. Reduced motion starts paused.
     const state = { enabled: loadEnabled(), playing: !(root && root.__reducedMotion), dateISO: null, minutes: null };
     let attached = null;
+    // Whether the design's shadow stands out (emphasise()).
+    let emphasised = false;
 
     function loadEnabled() {
         try {
@@ -340,11 +347,21 @@
         const mapSize = Math.min(maxTexture, coarse ? 2048 : 4096);
         light.shadow.mapSize.set(mapSize, mapSize);
         light.shadow.bias = 0;
+        // The second light for an emphasised design's shadow (EMPHASIS_SHARE). Its shadow map holds only
+        // the design's meshes, so beforeRender draws it in a pass of its own and the scene's pass skips it.
+        const emphasis = new options.THREE.DirectionalLight(light.color, 0);
+        emphasis.name = 'sun-design-emphasis';
+        emphasis.castShadow = false;
+        emphasis.shadow.mapSize.set(Math.min(mapSize, EMPHASIS_MAP_SIZE), Math.min(mapSize, EMPHASIS_MAP_SIZE));
+        emphasis.shadow.bias = 0;
+        emphasis.shadow.autoUpdate = false;
+        // Its target stays out of the scene: its world matrix is updated whenever it moves.
+        options.scene.add(emphasis);
         // The light's target must be in the scene for its world matrix to follow our updates.
         if (!light.target.parent) options.scene.add(light.target);
 
         attached = {
-            ...options, defaults, mapSize, place: null, sun: null, sunDirty: true, frame: null,
+            ...options, defaults, mapSize, emphasis, emphasisHolder: new options.THREE.Group(), place: null, sun: null, sunDirty: true, frame: null,
             showingSun: null, lastSweep: 0, hooked: false
         };
         syncPlayback();
@@ -370,6 +387,8 @@
         if (nowTimer) { clearInterval(nowTimer); nowTimer = null; }
         restoreDefaults(attached);
         if (!defaults.targetParent && light.target.parent === scene) scene.remove(light.target);
+        scene.remove(attached.emphasis);
+        attached.emphasis.dispose();
         attached = null;
     }
 
@@ -379,6 +398,8 @@
         a.light.target.updateMatrixWorld();
         a.light.intensity = a.defaults.intensity;
         a.light.castShadow = false;
+        a.emphasis.intensity = 0;
+        a.emphasis.castShadow = false;
         if (a.hemi && a.defaults.hemiIntensity !== null) {
             a.hemi.intensity = a.defaults.hemiIntensity;
             a.hemi.color.copy(a.defaults.hemiSky);
@@ -442,8 +463,20 @@
             // Offsets along the surface normal by about a texel: removes acne without detaching
             // shadows from the walls that cast them.
             light.shadow.normalBias = frame.texel * 1.5;
-            light.intensity = a.defaults.intensity * strength;
+            // An emphasised design's share of the light comes from the second light, placed the same.
+            const share = emphasised && a.emphasisRoots ? EMPHASIS_SHARE : 0;
+            light.intensity = a.defaults.intensity * strength * (1 - share);
             light.castShadow = strength > 0;
+            const { emphasis } = a;
+            emphasis.position.copy(light.position);
+            emphasis.target.position.copy(light.target.position);
+            emphasis.target.updateMatrixWorld();
+            Object.assign(emphasis.shadow.camera, { left: shadowCamera.left, right: shadowCamera.right, top: shadowCamera.top,
+                bottom: shadowCamera.bottom, near: shadowCamera.near, far: shadowCamera.far });
+            emphasis.shadow.camera.updateProjectionMatrix();
+            emphasis.shadow.normalBias = light.shadow.normalBias;
+            emphasis.intensity = a.defaults.intensity * strength * share;
+            emphasis.castShadow = strength > 0 && share > 0;
             if (a.hemi && a.defaults.hemiIntensity !== null) {
                 // The sky's light follows the sky: warm at sunset, a dim moonlit blue at night.
                 const skyLight = c.skyLight(sun.altitude * 180 / Math.PI);
@@ -463,6 +496,30 @@
             applyShadowFlags(a.scene, true, new Set((a.excludedRoots() || []).filter(Boolean)));
         }
         if (sceneChanged) a.renderer.shadowMap.needsUpdate = true;
+        if (a.emphasis.castShadow && a.renderer.shadowMap.needsUpdate) renderEmphasis(a);
+    }
+    // The emphasised design's shadow map, from the design's meshes only (`emphasisRoots()`): drawn here
+    // in a pass of its own, since the scene's shadow pass picks casters by the view camera's layers,
+    // not by light. The scene's pass then skips the second light (its shadow does not auto-update)
+    // and still draws the sun's own map.
+    function renderEmphasis(a) {
+        const casters = [];
+        for (const rootObject of a.emphasisRoots() || []) rootObject?.traverse?.(object => { if (object.castShadow && object.visible !== false) casters.push(object); });
+        a.emphasisHolder.children = casters;
+        a.emphasis.shadow.needsUpdate = true;
+        a.renderer.shadowMap.render([a.emphasis], a.emphasisHolder, a.getCamera());
+        a.emphasisHolder.children = [];
+        a.renderer.shadowMap.needsUpdate = true;
+    }
+    // The design's shadow stands out (on) or is like any other (off): see EMPHASIS_SHARE.
+    function emphasise(on) {
+        if (emphasised === !!on) return;
+        emphasised = !!on;
+        const a = attached;
+        if (!a) return;
+        a.showingSun = null;
+        a.renderer.shadowMap.needsUpdate = true;
+        a.invalidate?.();
     }
 
     // The sun's altitude in degrees as the scene last resolved it, or null while the sun is off, photo
@@ -482,5 +539,5 @@
 
     bindSheet();
 
-    return { attach, detach, state, applyShadowFlags, resolveSun, placeOf, currentAltitudeDeg, currentSun, DAY_CYCLE_MS };
+    return { attach, detach, state, applyShadowFlags, resolveSun, placeOf, currentAltitudeDeg, currentSun, emphasise, DAY_CYCLE_MS, EMPHASIS_SHARE };
 });

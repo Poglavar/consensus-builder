@@ -251,6 +251,8 @@
             for (const tab of list.querySelectorAll('[role="tab"]')) tab.setAttribute('aria-selected', String(tab.dataset.singleTab === name));
             for (const panel of document.querySelectorAll('[data-single-panel]')) panel.hidden = panel.dataset.singlePanel !== name;
             window.CbTabs?.sync(list);
+            // The 3D model view makes the design's shadow stand out while Effects is shown.
+            window.NeighbourEffectsAdvisor?.setOpen?.(name === 'effects');
         };
         list.addEventListener('click', event => {
             const tab = event.target.closest('[role="tab"]');
@@ -1256,6 +1258,7 @@
         singleEffectsShown = false;
         finishEffectsTab?.();
         finishEffectsTab = null;
+        window.NeighbourEffectsAdvisor?.setOpen?.(false);
         window.NeighbourEffectsAdvisor?.clear();
         singleSession?.close();
         singleSession = null;

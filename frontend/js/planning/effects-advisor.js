@@ -424,6 +424,15 @@
         })).addTo(shownOn);
     }
     const changed = () => { drawMarks(); root.dispatchEvent?.(new CustomEvent('neighbourEffectsChanged')); };
+    // Whether the Effects tab is the one shown in the building editor: the 3D model view then makes
+    // the design's shadow stand out (three-sun.js emphasise).
+    let open = false;
+    function setOpen(on) {
+        if (open === !!on) return;
+        open = !!on;
+        changed();
+    }
+    const isOpen = () => open;
     // A plot stands out on the map while the list points at it; the pinned one stays out.
     function highlight(id, on) {
         const path = plotLayers.get(id);
@@ -449,5 +458,5 @@
         }
     }
 
-    root.NeighbourEffectsAdvisor = { assess, assessDesign, guidesFor, applies, render, busy, show, clear, highlight, pin, plots };
+    root.NeighbourEffectsAdvisor = { assess, assessDesign, guidesFor, applies, render, busy, show, clear, highlight, pin, plots, setOpen, isOpen };
 })(window);
