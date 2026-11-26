@@ -14,6 +14,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import vm from 'node:vm';
+import { readSource } from './helpers/read-source.js';
 
 const require = createRequire(import.meta.url);
 const planYield = require('../../frontend/js/proposals/plan-yield.js');
@@ -83,6 +84,8 @@ function makeWindow(proposals, { city = null } = {}) {
     const window = {
         document,
         console,
+        // Published agreements on a plan are read from our server's index (chain/read-source.js).
+        ReadSource: readSource('server'),
         __planYield: planYield,
         __siteStats: siteStats,
         __planScope: planScope,

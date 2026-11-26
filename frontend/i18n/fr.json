@@ -10291,13 +10291,33 @@
         "cannotStand": "{{title}} ne peut pas coexister avec les projets déjà cochés ; il n’est pas ajouté.",
         "loadMore": "Charger plus",
         "limited": "Affichage de 1 000 conceptions publiées au maximum.",
-        "source": "Source",
-        "sourceIndex": "Index du serveur",
-        "sourceChain": "Sur la blockchain (Solana {{cluster}})",
         "chainAgreement": "Accord {{cid}}",
         "chainLoading": "Lecture des accords sur la blockchain…",
         "chainFailed": "Les accords n’ont pas pu être lus sur la blockchain : {{reason}}"
     },
+  "readSource": {
+    "title": "Lire les enregistrements publiés depuis",
+    "short": "Lire depuis",
+    "server": "Notre serveur",
+    "chain": "Blockchain",
+    "both": "Les deux",
+    "describe": {
+      "server": "Les accords, plans et projets viennent de l’index de notre serveur. Rien n’est lu sur la blockchain ni sur IPFS.",
+      "chain": "Les accords sont listés depuis le programme d’accords sur Solana {{cluster}} ; accords, plans et projets sont lus sur des passerelles IPFS publiques, chacun vérifié par rapport à son CID. Notre serveur n’est pas sollicité.",
+      "both": "Les deux sont lus : les listes montrent les lignes de l’un ou de l’autre, chacune marquée selon l’endroit où elle a été trouvée, et un objet est pris chez celui qui le détient (la copie de notre serveur quand les deux l’ont)."
+    },
+    "fromLink": "Ce lien l’a choisi pour cette page ; un choix fait ici est conservé dans ce navigateur.",
+    "heldBy": "Trouvé sur : {{source}}",
+    "readFrom": "Lu depuis : {{source}}",
+    "gateway": "passerelle IPFS {{host}}",
+    "checking": "Lecture depuis {{source}}…",
+    "unavailable": "{{source}} n’a pas pu être lu : {{reason}}",
+    "servedBy": "Lu depuis : {{sources}}.",
+    "chainListsAgreementsOnly": "La blockchain ne liste que les accords, ni les projets ni les plans.",
+    "designNotOnChain": "Ce projet n’a pas pu être lu sur IPFS.",
+    "designNowhere": "Ce projet n’est pas sur notre serveur et n’a pas pu être lu sur IPFS.",
+    "designsNotOnChain": "Les projets n’ont pas pu être lus sur IPFS."
+  },
   "appUpdates": {
     "title": "Mise à jour de l’application",
     "build": "Version {{number}}",

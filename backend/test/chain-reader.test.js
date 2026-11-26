@@ -1,14 +1,18 @@
-// Unit tests for the chain and IPFS reader (frontend/js/chain/ipfs-read.js, chain-reader.js) and the
-// loaders that fall back to it (named-plans.js, proposals/design-sync.js) on fake gateways, a fake
-// index and a stub agreement client: only bytes that hash to the requested CID are accepted, a gateway
-// that answers wrongly is passed over, a loader asks the index first and reads IPFS when the index
-// cannot answer, and a design read from IPFS gets a binding derived in the browser.
+// Unit tests for the chain and IPFS reader (frontend/js/chain/ipfs-read.js, chain-reader.js), the
+// read-source choice (chain/read-source.js) and the loaders that follow it (named-plans.js,
+// proposals/design-sync.js) on fake gateways, a fake index and a stub agreement client: only bytes
+// that hash to the requested CID are accepted, a gateway that answers wrongly is passed over, a
+// loader reads only from the chosen source (our server never touches a gateway, the chain never the
+// index, both reads both and says which served), and a design read from IPFS gets a binding derived
+// in the browser.
 import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
+import { readSource } from './helpers/read-source.js';
 
 const require = createRequire(import.meta.url);
 const IpfsRead = require('../../frontend/js/chain/ipfs-read.js');
 const ChainReader = require('../../frontend/js/chain/chain-reader.js');
+const ReadSource = require('../../frontend/js/chain/read-source.js');
 const NamedPlans = require('../../frontend/js/named-plans.js');
 const DesignSync = require('../../frontend/js/proposals/design-sync.js');
 const Cid = require('../../frontend/js/cid.js');
@@ -35,6 +39,10 @@ const plan = PlanRecord.create('Lane plan', [designCid], { city: 'london', at: '
 const planCid = Cid.cidOfObject(plan);
 const agreement = { schema: AgreementRecord.PUBLISHED_SCHEMA, title: 'Lane agreement', planCid, sponsor: SPONSOR, city: 'london' };
 const agreementCid = Cid.cidOfObject(agreement);
+// A second design, held by the index but by no gateway.
+const indexedDesign = DesignRecord.published({ proposalId: 'park-1', goal: 'park', title: 'Pocket park', author: 'Ana', city: 'london',
+    site: square(-0.11, 51.5), createdAt: '2026-10-22T10:00:00.000Z' });
+const indexedDesignCid = Cid.cidOfObject(indexedDesign);
 const objects = new Map([[designCid, design], [planCid, plan], [agreementCid, agreement]]);
 
 // Gateways by base URL: 'good' serves the object, 'tampered' serves other bytes under its CID,
@@ -91,24 +99,57 @@ describe('reading a CID from IPFS gateways', () => {
     });
 });
 
-describe('falling back from the index', () => {
-    it('answers from the server when it can, and from the fallback with the server error kept when both fail', async () => {
+describe('the read-source choice', () => {
+    it('starts at our server, takes a kept choice, and lets a link choose for its page without keeping it', () => {
+        expect(ReadSource.initial()).toEqual({ source: 'server', fromLink: false });
+        expect(ReadSource.initial({ stored: 'chain' })).toEqual({ source: 'chain', fromLink: false });
+        expect(ReadSource.initial({ stored: 'chain', param: 'both' })).toEqual({ source: 'both', fromLink: true });
+        expect(ReadSource.initial({ stored: 'nonsense', param: 'everywhere' })).toEqual({ source: 'server', fromLink: false });
+        const stored = new Map([[ReadSource.STORAGE_KEY, 'server']]);
         const info = vi.spyOn(console, 'info').mockImplementation(() => {});
-        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-        const fallback = vi.fn(async () => 'ipfs');
-        expect(await ChainReader.withFallback('x', async () => 'server', fallback)).toBe('server');
-        expect(fallback).not.toHaveBeenCalled();
-        expect(await ChainReader.withFallback('x', async () => { throw new Error('down'); }, fallback)).toBe('ipfs');
-        const error = await ChainReader.withFallback('x', async () => { throw new Error('down'); }, async () => { throw new Error('gone'); }).catch(e => e);
-        expect(error.message).toBe('down');
-        expect(error.fallbackError.message).toBe('gone');
-        info.mockRestore(); warn.mockRestore();
+        const linked = readSource('chain', { stored });
+        expect(linked.get()).toBe('chain');
+        expect(linked.fromLink()).toBe(true);
+        expect(stored.get(ReadSource.STORAGE_KEY)).toBe('server');
+        const heard = [];
+        linked.subscribe(source => heard.push(source));
+        expect(linked.set('both')).toBe('both');
+        expect([linked.get(), linked.fromLink(), stored.get(ReadSource.STORAGE_KEY), heard]).toEqual(['both', false, 'both', ['both']]);
+        expect(() => linked.set('index')).toThrow('Unknown read source: index');
+        info.mockRestore();
+    });
+
+    it('reads one source alone, and under both prefers our server, keeps its failure, and names both when neither answers', async () => {
+        const served = { server: vi.fn(async () => ({ cid: 'x', from: 'index' })), chain: vi.fn(async () => ({ cid: 'x', from: 'ipfs' })) };
+        expect(await ReadSource.readOne('server', served)).toEqual({ cid: 'x', from: 'index', readFrom: 'server' });
+        expect(served.chain).not.toHaveBeenCalled();
+        expect(await ReadSource.readOne('chain', served)).toEqual({ cid: 'x', from: 'ipfs', readFrom: 'chain' });
+        expect(served.server).toHaveBeenCalledTimes(1);
+        expect(await ReadSource.readOne('both', served)).toEqual({ cid: 'x', from: 'index', readFrom: 'server' });
+        const down = { server: async () => { throw new Error('HTTP 503'); }, chain: async () => { throw new Error('no gateway'); } };
+        await expect(ReadSource.readOne('server', down)).rejects.toThrow('HTTP 503');
+        expect(await ReadSource.readOne('both', { ...down, chain: served.chain }))
+            .toEqual({ cid: 'x', from: 'ipfs', readFrom: 'chain', readErrors: { server: 'HTTP 503' } });
+        await expect(ReadSource.readOne('both', down)).rejects.toMatchObject({ code: 'read-failed', message: 'Our server: HTTP 503 · Chain: no gateway' });
+    });
+
+    it('lists each record once with the sources that hold it, the chain\'s account state over the index\'s observation', () => {
+        const indexed = { cid: 'a', title: 'Lane agreement', onchain: { account: 'Acc1', status: 'active', mintTx: 'sig' } };
+        const listed = { cid: 'a', readFrom: 'chain', onchain: { account: 'Acc1', status: 'executed' } };
+        const onlyIndexed = { cid: 'b', title: 'Not minted' };
+        const memo = new Map();
+        const union = ReadSource.unionRows([{ readFrom: 'server', rows: [indexed, onlyIndexed] }, { readFrom: 'chain', rows: [listed] }], memo);
+        expect(union.map(entry => [entry.record.cid, entry.heldBy])).toEqual([['a', ['server', 'chain']], ['b', ['server']]]);
+        expect(union[0].record).toMatchObject({ title: 'Lane agreement', onchain: { account: 'Acc1', status: 'executed', mintTx: 'sig' } });
+        expect(union[1].record).toBe(onlyIndexed);
+        // The same feeds give the same merged record, so its card is not redrawn.
+        expect(ReadSource.unionRows([{ readFrom: 'server', rows: [indexed] }, { readFrom: 'chain', rows: [listed] }], memo)[0].record).toBe(union[0].record);
     });
 
     it('lists an agreement account with its chain creation time and status in the index spelling', () => {
         const row = ChainReader.chainRowOf({ address: 'Acc1', cid: agreementCid, authority: SPONSOR, status: 'Executed', decision: 'Satisfied', createdAt: 1_790_000_000 },
             { programId: 'Prog', observedAt: '2026-11-27T10:00:00.000Z' });
-        expect(row).toEqual({ cid: agreementCid, createdAt: '2026-09-21T14:13:20.000Z', source: 'chain', onchain: {
+        expect(row).toEqual({ cid: agreementCid, createdAt: '2026-09-21T14:13:20.000Z', readFrom: 'chain', onchain: {
             chain: 'solana', cluster: 'devnet', programId: 'Prog', account: 'Acc1', sponsor: SPONSOR, status: 'executed', decision: 'satisfied', observedAt: '2026-11-27T10:00:00.000Z' } });
     });
 });
@@ -141,7 +182,7 @@ describe('the chain reader in the browser', () => {
         info.mockRestore();
         expect(win.SolanaChainDataLoader.getVerifiedConnection).toHaveBeenCalledWith('devnet');
         expect(win.AgreementClient.listAgreements).toHaveBeenCalledWith({ cluster: 'devnet' }, { programId: 'ProgramId1' });
-        expect(rows).toEqual([expect.objectContaining({ cid: agreementCid, source: 'chain', onchain: expect.objectContaining({ account: 'AgreementPda1', status: 'active' }) })]);
+        expect(rows).toEqual([expect.objectContaining({ cid: agreementCid, readFrom: 'chain', onchain: expect.objectContaining({ account: 'AgreementPda1', status: 'active' }) })]);
     });
 
     it('reads an agreement and its plan from IPFS with the state of its account', async () => {
@@ -150,8 +191,8 @@ describe('the chain reader in the browser', () => {
         const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
         const read = await win.ChainReader.fetchAgreement(agreementCid);
         info.mockRestore(); warn.mockRestore();
-        expect(read).toMatchObject({ cid: agreementCid, content: agreement, status: 'active', source: 'ipfs', gateway: GATEWAYS[1],
-            plan: { cid: planCid, content: plan }, designCids: [designCid], onchain: { account: 'AgreementPda1', sponsor: SPONSOR, programId: 'ProgramId1' } });
+        expect(read).toMatchObject({ cid: agreementCid, content: agreement, status: 'active', readFrom: 'chain', gateway: GATEWAYS[1],
+            plan: { cid: planCid, content: plan, readFrom: 'chain' }, designCids: [designCid], onchain: { account: 'AgreementPda1', sponsor: SPONSOR, programId: 'ProgramId1' } });
     });
 
     it('derives a binding for a design read from IPFS: open ground without parcels, else by the private-plan binder', async () => {
@@ -160,7 +201,7 @@ describe('the chain reader in the browser', () => {
         let withoutParcels = true;
         const { win } = readerWindow({}, { turf, __siteBinding: siteBinding, PlanAnalysis: { bindPrivateRows },
             ParcelGroundFallback: { isWithoutParcels: () => withoutParcels }, DesignSync: { parcelSourceIdOf: () => 'hmlr' } });
-        const row = { cid: designCid, content: design, source: 'ipfs' };
+        const row = { cid: designCid, content: design, readFrom: 'chain' };
         const info = vi.spyOn(console, 'info').mockImplementation(() => {});
         const open = (await win.ChainReader.withDerivedBindings([row])).get(designCid).binding;
         expect(open).toMatchObject({ parcels: [], coverage: 'none', source: 'browser:none' });
@@ -175,56 +216,110 @@ describe('the chain reader in the browser', () => {
     });
 });
 
-describe('loaders asking the index first', () => {
-    it('opens a plan from IPFS when the index is unreachable, checked against its CID', async () => {
-        const { win, asked } = readerWindow({ [GATEWAYS[0]]: 'tampered' }, {
-            location: new URL(`https://app.example.test/`), getBackendBase: () => API, PersistentStorage: { forEach() {} } });
-        const plans = NamedPlans.browser(win);
-        const info = vi.spyOn(console, 'info').mockImplementation(() => {});
-        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-        const read = await plans.fetchPlan(planCid);
-        info.mockRestore(); warn.mockRestore();
-        expect(read).toMatchObject({ cid: planCid, content: plan, source: 'ipfs', gateway: GATEWAYS[1] });
-        expect(asked[0]).toBe(`${API}/plans/${planCid}`);
+describe('loaders read only from the chosen source', () => {
+    const quiet = () => ['info', 'warn', 'log'].map(level => vi.spyOn(console, level).mockImplementation(() => {}));
+    const isIndex = url => url.startsWith(API);
+    // The index is unreachable (readerWindow's network); the gateways answer as `behaviour` says.
+    function planWindow(source, behaviour = {}) {
+        const { win, asked } = readerWindow(behaviour, { ReadSource: readSource(source),
+            location: new URL('https://app.example.test/'), getBackendBase: () => API, PersistentStorage: { forEach() {} } });
+        return { plans: NamedPlans.browser(win), asked };
+    }
+
+    it('our server: a plan the index cannot serve fails with the index\'s error, and no gateway is asked', async () => {
+        const spies = quiet();
+        const { plans, asked } = planWindow('server');
+        await expect(plans.fetchPlan(planCid)).rejects.toThrow('fetch failed');
+        expect(asked).toEqual([`${API}/plans/${planCid}`]);
+        spies.forEach(spy => spy.mockRestore());
     });
 
-    function designWindow({ indexHas = [] } = {}) {
-        const { win, asked } = readerWindow();
-        // The index answers, holding only `indexHas`.
+    it('chain: a plan is read from IPFS, checked against its CID, and the index is never asked', async () => {
+        const spies = quiet();
+        const { plans, asked } = planWindow('chain', { [GATEWAYS[0]]: 'tampered' });
+        const read = await plans.fetchPlan(planCid);
+        spies.forEach(spy => spy.mockRestore());
+        expect(read).toMatchObject({ cid: planCid, content: plan, readFrom: 'chain', gateway: GATEWAYS[1] });
+        expect(asked.filter(isIndex)).toEqual([]);
+    });
+
+    it('both: with the index unreachable the plan comes from IPFS, marked so, with the index\'s failure kept', async () => {
+        const spies = quiet();
+        const { plans, asked } = planWindow('both');
+        const read = await plans.fetchPlan(planCid);
+        spies.forEach(spy => spy.mockRestore());
+        expect(read).toMatchObject({ cid: planCid, readFrom: 'chain', gateway: GATEWAYS[0], readErrors: { server: 'fetch failed' } });
+        expect(asked).toContain(`${API}/plans/${planCid}`);
+    });
+
+    // The index answers /designs/batch holding only `indexHas`, or is unreachable when `indexDown`.
+    function designWindow(source, { indexHas = [], indexDown = false, behaviour = {} } = {}) {
+        const { win, asked } = readerWindow(behaviour, { ReadSource: readSource(source) });
+        const held = new Map([[designCid, design], [indexedDesignCid, indexedDesign]]);
         const gatewayFetch = win.fetch;
         win.fetch = vi.fn(async (url, init) => {
-            if (!String(url).startsWith(API)) return gatewayFetch(url, init);
+            if (!isIndex(String(url))) return gatewayFetch(url, init);
             asked.push(String(url));
+            if (indexDown) throw new TypeError('fetch failed');
+            const one = /\/designs\/([^/]+)$/.exec(String(url));
+            if (one && one[1] !== 'batch') {
+                const cid = decodeURIComponent(one[1]);
+                return indexHas.includes(cid) ? { ok: true, status: 200, json: async () => ({ cid, content: held.get(cid), binding: { parcels: [] } }) }
+                    : { ok: false, status: 404, json: async () => ({ code: 'design_not_found' }) };
+            }
             const { cids } = JSON.parse(init.body);
-            const items = cids.filter(cid => indexHas.includes(cid)).map(cid => ({ cid, design: { cid, content: objects.get(cid), binding: { parcels: [] } } }));
+            const items = cids.filter(cid => indexHas.includes(cid)).map(cid => ({ cid, design: { cid, content: held.get(cid), binding: { parcels: [] } } }));
             return { ok: true, status: 200, json: async () => ({ items }) };
         });
         Object.assign(win, { resolveBackendBaseUrl: () => API, CityConfigManager: { getCityConfig: () => null, resolveCityId: city => city } });
         return { sync: DesignSync.browser(win).api, win, asked };
     }
 
-    it('reads the designs the index does not hold from IPFS, and none when asked what the index holds', async () => {
-        const { sync, asked } = designWindow();
-        const info = vi.spyOn(console, 'info').mockImplementation(() => {});
-        const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+    it('our server: designs the index lacks are missing, an unreachable index fails, and no gateway is asked', async () => {
+        const spies = quiet();
+        const { sync, asked } = designWindow('server');
         const read = await sync.fetchDesigns([designCid]);
-        expect(read.missing).toEqual([]);
-        expect(read.rows.get(designCid)).toMatchObject({ cid: designCid, content: design, source: 'ipfs', gateway: GATEWAYS[0] });
-        expect(asked).toEqual([`${API}/designs/batch`, `${GATEWAYS[0]}${designCid}`]);
-        asked.length = 0;
-        expect((await sync.fetchDesigns([designCid], { indexOnly: true })).missing).toEqual([designCid]);
-        expect(asked).toEqual([`${API}/designs/batch`]);
+        expect([read.rows.size, read.missing, read.readFrom]).toEqual([0, [designCid], 'server']);
+        await expect(sync.fetchDesign(designCid)).rejects.toMatchObject({ code: 'design-not-found' });
+        const down = designWindow('server', { indexDown: true });
+        await expect(down.sync.fetchDesigns([designCid])).rejects.toMatchObject({ code: 'network-failed' });
+        spies.forEach(spy => spy.mockRestore());
+        expect([...asked, ...down.asked].filter(url => !isIndex(url))).toEqual([]);
+    });
+
+    it('chain: designs come from IPFS without asking the index; publishing still asks the index alone', async () => {
+        const spies = quiet();
+        const { sync, asked } = designWindow('chain', { indexHas: [designCid] });
+        const read = await sync.fetchDesigns([designCid, indexedDesignCid]);
+        expect(read.rows.get(designCid)).toMatchObject({ cid: designCid, content: design, readFrom: 'chain', gateway: GATEWAYS[0] });
+        expect(read.missing).toEqual([indexedDesignCid]);
+        expect(await sync.fetchDesign(designCid)).toMatchObject({ readFrom: 'chain', gateway: GATEWAYS[0] });
+        expect(asked.filter(isIndex)).toEqual([]);
+        expect((await sync.fetchDesigns([designCid], { indexOnly: true })).rows.get(designCid).readFrom).toBe('server');
+        expect(asked.filter(isIndex)).toEqual([`${API}/designs/batch`]);
         // Imported, it is marked published at the gateway that served it, not at this index.
         const stored = await sync.importDesign(read.rows.get(designCid), { _parcelMutation: { proposals: {
             getAllProposals: () => [], getProposal: () => null, importProposal: record => record } } });
         expect(stored.published.apiBase).toBe(GATEWAYS[0].replace(/\/$/, ''));
-        info.mockRestore(); log.mockRestore();
+        spies.forEach(spy => spy.mockRestore());
     });
 
-    it('keeps the index answer for a design it holds', async () => {
-        const { sync, asked } = designWindow({ indexHas: [designCid] });
-        const read = await sync.fetchDesigns([designCid]);
-        expect(read.rows.get(designCid).source).toBeUndefined();
-        expect(asked).toEqual([`${API}/designs/batch`]);
+    it('both: the index\'s designs from the index, the rest from IPFS, each marked; neither answering names both', async () => {
+        const spies = quiet();
+        const { sync, asked } = designWindow('both', { indexHas: [indexedDesignCid] });
+        const read = await sync.fetchDesigns([designCid, indexedDesignCid]);
+        expect(read.rows.get(indexedDesignCid)).toMatchObject({ readFrom: 'server', binding: { parcels: [] } });
+        expect(read.rows.get(designCid)).toMatchObject({ readFrom: 'chain', gateway: GATEWAYS[0] });
+        expect([read.missing, read.readErrors]).toEqual([[], null]);
+        // The chain is asked only for what the index lacks.
+        expect(asked.filter(url => !isIndex(url))).toEqual([`${GATEWAYS[0]}${designCid}`]);
+        const down = designWindow('both', { indexDown: true });
+        const fromChain = await down.sync.fetchDesigns([designCid]);
+        expect(fromChain.rows.get(designCid).readFrom).toBe('chain');
+        expect(fromChain.readErrors.server).toMatch(/could not be reached/);
+        const nowhere = designWindow('both', { indexDown: true, behaviour: Object.fromEntries(GATEWAYS.map(base => [base, 'down'])) });
+        await expect(nowhere.sync.fetchDesigns([designCid])).rejects.toMatchObject({ code: 'read-failed',
+            message: expect.stringMatching(/^Our server: .*could not be reached.* · Chain: The designs could not be read from IPFS\.$/) });
+        spies.forEach(spy => spy.mockRestore());
     });
 });

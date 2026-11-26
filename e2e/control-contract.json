@@ -1767,6 +1767,27 @@
       "controlType": "button"
     },
     {
+      "id": "control-a7f5b013c305ef-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"read-source-server\" class=\"cb-segmented__option\" data-read-source-choice=\"server\" aria-pressed=\"true\" aria-describedby=\"read-source-note\" data-i18n-key=\"readSource.server\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-17282ba4e21b97-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"read-source-chain\" class=\"cb-segmented__option\" data-read-source-choice=\"chain\" aria-pressed=\"false\" aria-describedby=\"read-source-note\" data-i18n-key=\"readSource.chain\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-17dca85fb27df0-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"read-source-both\" class=\"cb-segmented__option\" data-read-source-choice=\"both\" aria-pressed=\"false\" aria-describedby=\"read-source-note\" data-i18n-key=\"readSource.both\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-fdecca6b7f8e63-1",
       "source": "index.html",
       "markup": "<a id=\"source-system-link\" class=\"btn\" href=\"/sources.html\" data-i18n-key=\"sourceSystem.title\">",

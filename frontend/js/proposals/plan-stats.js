@@ -1166,7 +1166,8 @@
         const memberships = window.DesignMemberships;
         const backend = (window.resolveBackendBaseUrl ? window.resolveBackendBaseUrl() : window.getBackendBase()).replace(/\/$/, '');
         const rows = [];
-        for (let offset = 0, pages = 0; offset !== null && pages < 20; pages++) {
+        // The index is asked only when our server is read (chain/read-source.js).
+        for (let offset = window.ReadSource.reads('server') ? 0 : null, pages = 0; offset !== null && pages < 20; pages++) {
             const page = await memberships.fetchPage({ fetch: window.fetch.bind(window), backend, kind: 'agreements', planCid: cid, offset, limit: 50,
                 signal: AbortSignal.any([signal, AbortSignal.timeout(30000)]) });
             rows.push(...page.items);

@@ -10291,13 +10291,33 @@
         "cannotStand": "{{title}} não pode coexistir com os projetos já marcados, por isso não é adicionado.",
         "loadMore": "Carregar mais",
         "limited": "São apresentados até 1.000 desenhos publicados.",
-        "source": "Origem",
-        "sourceIndex": "Índice do servidor",
-        "sourceChain": "Na blockchain (Solana {{cluster}})",
         "chainAgreement": "Acordo {{cid}}",
         "chainLoading": "A ler os acordos na blockchain…",
         "chainFailed": "Não foi possível ler os acordos na blockchain: {{reason}}"
     },
+  "readSource": {
+    "title": "Ler os registos publicados de",
+    "short": "Ler de",
+    "server": "O nosso servidor",
+    "chain": "Blockchain",
+    "both": "Ambos",
+    "describe": {
+      "server": "Os acordos, planos e desenhos vêm do índice do nosso servidor. Nada é lido da blockchain nem do IPFS.",
+      "chain": "Os acordos são listados a partir do programa de acordos na Solana {{cluster}}; acordos, planos e desenhos são lidos de gateways IPFS públicos, cada um verificado com o seu CID. O nosso servidor não é consultado.",
+      "both": "Ambos são lidos: as listas mostram as linhas de qualquer um, cada uma marcada pelo sítio onde foi encontrada, e um objeto é obtido de quem o tiver (a cópia do nosso servidor quando ambos o têm)."
+    },
+    "fromLink": "Esta ligação escolheu-o para esta página; uma escolha feita aqui fica guardada neste navegador.",
+    "heldBy": "Encontrado em: {{source}}",
+    "readFrom": "Lido de: {{source}}",
+    "gateway": "gateway IPFS {{host}}",
+    "checking": "A ler de {{source}}…",
+    "unavailable": "Não foi possível ler {{source}}: {{reason}}",
+    "servedBy": "Lido de: {{sources}}.",
+    "chainListsAgreementsOnly": "A blockchain lista apenas acordos, não desenhos nem planos.",
+    "designNotOnChain": "Não foi possível ler este desenho do IPFS.",
+    "designNowhere": "Este desenho não está no nosso servidor e não foi possível lê-lo do IPFS.",
+    "designsNotOnChain": "Não foi possível ler os desenhos do IPFS."
+  },
   "appUpdates": {
     "title": "Atualização da aplicação",
     "build": "Versão {{number}}",

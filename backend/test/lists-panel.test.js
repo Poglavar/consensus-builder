@@ -3,6 +3,7 @@ import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { makeDocument } from './helpers/fake-dom.js';
 import { testI18n } from './helpers/i18n.js';
+import { readSource } from './helpers/read-source.js';
 const require = createRequire(import.meta.url);
 const { stageOf, mergeRows, filterRows, indexQuery, browser } = require('../../frontend/js/lists-panel.js');
 const NamedPlans = require('../../frontend/js/named-plans.js');
@@ -85,7 +86,8 @@ const ladderBadges = new Function('window', 'getProposalI18nHelper', 'getProposa
     { __proposalDisplayState: displayState }, () => (_key, fallback) => fallback, key => lifecycleLabels[key] || key,
     require('../../frontend/js/shared-utils.js').escapeHtml);
 
-function listsSheet({ designs = [], serverDesigns = [], plans = [], serverPlans = [], agreements = [], serverAgreements = [], offers = [], serverOffers = [], resolvePlan = null } = {}) {
+function listsSheet({ designs = [], serverDesigns = [], plans = [], serverPlans = [], agreements = [], serverAgreements = [], offers = [], serverOffers = [], resolvePlan = null,
+    source = 'server', chainAgreements = [] } = {}) {
     const doc = makeDocument();
     for (const id of ['lists-controls', 'lists-actions', 'lists-status', 'proposal-list-host', 'plan-list-host', 'agreement-list-host']) {
         const el = doc.createElement('div'); el.id = id; doc.body.append(el);
@@ -111,7 +113,10 @@ function listsSheet({ designs = [], serverDesigns = [], plans = [], serverPlans 
         normalizeCityCodeForApi: code => code,
         resolveCurrentCityCode: () => 'london',
         getProposalCountAreaContext: () => null,
-        fetch: async url => ({ ok: true, json: async () => (String(url).includes('/property-offers?') ? { propertyOffers: serverOffers } : { plans: serverPlans, agreements: serverAgreements }) }),
+        fetch: vi.fn(async url => ({ ok: true, json: async () => (String(url).includes('/property-offers?') ? { propertyOffers: serverOffers } : { plans: serverPlans, agreements: serverAgreements }) })),
+        // Where the rows are read from (chain/read-source.js), and the agreement program's accounts.
+        ReadSource: readSource(source),
+        ChainReader: { cluster: () => 'devnet', listAgreements: vi.fn(async () => chainAgreements) },
         DesignSync: { apiBase: () => 'https://api.test', publishedCid: record => record.cid || null,
             listPage: vi.fn(async () => ({ designs: serverDesigns, hasMore: false, nextOffset: null })),
             localDesignIndex: () => { const byCid = new Map(designs.filter(row => row.cid).map(row => [row.cid, row])); return { records: designs, byCid, published: new Map(designs.filter(row => row.cid).map(row => [row, row.cid])) }; },
@@ -343,28 +348,70 @@ describe('the Lists sheet', () => {
         expect(f.win.previewRecordsOnMap.mock.calls.map(call => call[1])).toEqual(['list:plans:plan-b']);
     });
 
-    it('lists agreements from the chain when Source is On chain, with their status, until Reset', async () => {
-        const cid = 'bafkreibzljimrgcqmzvmsmn337hetk56oarx5ypanyd6gwtnuakjqxigf4';
-        const f = listsSheet({ serverAgreements: [{ cid: 'indexed-agreement', title: 'From the index', createdAt: '2026-11-17T09:10:11.000Z' }] });
-        const listAgreements = vi.fn(async () => [{ cid, createdAt: '2026-11-26T18:50:09.000Z', source: 'chain',
-            onchain: { chain: 'solana', cluster: 'devnet', account: 'Acc1', status: 'executed' } }]);
-        f.win.ChainReader = { cluster: () => 'devnet', listAgreements };
+    // Where the rows are read from is the app-wide choice (chain/read-source.js), shown above the list.
+    const minted = 'bafkreibzljimrgcqmzvmsmn337hetk56oarx5ypanyd6gwtnuakjqxigf4';
+    const chainRow = { cid: minted, createdAt: '2026-11-26T18:50:09.000Z', readFrom: 'chain',
+        onchain: { chain: 'solana', cluster: 'devnet', account: 'Acc1', status: 'executed' } };
+    const chainSheet = options => {
+        const f = listsSheet({ chainAgreements: [chainRow], ...options });
         f.win.AgreementSync.shortCid = value => `${value.slice(0, 12)}…${value.slice(-6)}`;
         f.win.AgreementPanel.chainStatusText = status => `Status: ${status}`;
+        f.readFrom = () => f.doc.querySelector('[data-lists-read-from]');
+        f.indexAsked = () => f.win.fetch.mock.calls.length + f.win.DesignSync.listPage.mock.calls.length;
+        return f;
+    };
+
+    it('reads our server alone by default: the chain is never asked, and Read from shows the app-wide choice', async () => {
+        const f = chainSheet({ serverAgreements: [{ cid: 'indexed-agreement', title: 'From the index', createdAt: '2026-11-17T09:10:11.000Z' }] });
         await f.panel.select('agreements');
         await vi.waitFor(() => expect(f.shown('agreement-list-host')).toEqual(['indexed-agreement']));
-        const source = () => f.doc.querySelector('[data-list-filter="source"]');
-        expect(source().value).toBe('index');
-        expect(source().parentNode.textContent).toContain('Source');
-        expect(source().querySelectorAll('option').map(option => option.textContent)).toEqual(['Server index', 'On chain (Solana devnet)']);
-        source().value = 'chain'; source().dispatchEvent({ type: 'change', target: source() });
-        await vi.waitFor(() => expect(f.shown('agreement-list-host')).toEqual([cid]));
-        expect(listAgreements).toHaveBeenCalledTimes(1);
-        expect(f.item(cid).querySelector('.lists-item__title').textContent).toBe('Agreement bafkreibzlji…qxigf4');
-        expect(f.item(cid).textContent).toContain('Status: executed');
-        expect(f.item(cid).querySelector('time.lists-item__timestamp').dateTime).toBe('2026-11-26T18:50:09.000Z');
-        f.doc.querySelector('#lists-filter-panel .btn-quiet').click();
+        expect(f.win.ChainReader.listAgreements).not.toHaveBeenCalled();
+        expect(f.readFrom().value).toBe('server');
+        expect(f.readFrom().parentNode.textContent).toContain('Read from');
+        expect(f.readFrom().querySelectorAll('option').map(option => option.textContent)).toEqual(['Our server', 'Chain', 'Both']);
+        // No source badges when one source is read: Read from says it.
+        expect(f.item('indexed-agreement').querySelector('[data-held-by]')).toBeNull();
+    });
+
+    it('reads the chain alone once Chain is chosen: agreements from the program accounts, nothing from our server', async () => {
+        const f = chainSheet({ serverAgreements: [{ cid: 'indexed-agreement', title: 'From the index' }],
+            designs: [{ proposalId: 'own-draft', title: 'Own draft' }], serverDesigns: [{ cid: 'cid-server', title: 'Server street' }] });
+        await f.panel.select('agreements');
         await vi.waitFor(() => expect(f.shown('agreement-list-host')).toEqual(['indexed-agreement']));
-        expect(source().value).toBe('index');
+        f.readFrom().value = 'chain'; f.readFrom().dispatchEvent({ type: 'change', target: f.readFrom() });
+        expect(f.win.ReadSource.get()).toBe('chain');
+        const asked = f.indexAsked();
+        await vi.waitFor(() => expect(f.shown('agreement-list-host')).toEqual([minted]));
+        expect(f.win.ChainReader.listAgreements).toHaveBeenCalledTimes(1);
+        expect(f.item(minted).querySelector('.lists-item__title').textContent).toBe('Agreement bafkreibzlji…qxigf4');
+        expect(f.item(minted).textContent).toContain('Status: executed');
+        expect(f.item(minted).querySelector('time.lists-item__timestamp').dateTime).toBe('2026-11-26T18:50:09.000Z');
+        // Designs have no chain accounts: the tab lists this browser's own and says why.
+        await f.panel.select('designs');
+        await vi.waitFor(() => expect(f.shown('proposal-list-host')).toEqual(['own-draft']));
+        expect(f.doc.getElementById('lists-status').textContent).toContain('The chain lists agreements only, not designs or plans.');
+        expect(f.indexAsked()).toBe(asked);
+        // Reset filters leaves where the rows are read from alone: it is not a filter.
+        f.doc.querySelector('#lists-filter-panel .btn-quiet').click();
+        expect(f.win.ReadSource.get()).toBe('chain');
+    });
+
+    it('reads both: one row per agreement marked by the sources that hold it, a failed source named', async () => {
+        const f = chainSheet({ source: 'both', serverAgreements: [{ cid: minted, title: 'Minted lane', createdAt: '2026-11-17T09:10:11.000Z' },
+            { cid: 'indexed-agreement', title: 'Not minted' }] });
+        await f.panel.select('agreements');
+        await vi.waitFor(() => expect(f.shown('agreement-list-host').sort()).toEqual(['indexed-agreement', minted].sort()));
+        const heldBy = id => f.item(id).querySelectorAll('[data-held-by]').map(badge => badge.textContent);
+        expect(heldBy(minted)).toEqual(['Our server', 'Chain']);
+        expect(heldBy('indexed-agreement')).toEqual(['Our server']);
+        expect(f.item(minted).querySelector('.lists-item__title').textContent).toBe('Minted lane');
+        expect(f.item(minted).textContent).toContain('Status: executed');
+        // Our server down: the chain's rows are still listed and the failure is our server's.
+        const down = chainSheet({ source: 'both' });
+        down.win.fetch.mockImplementation(async () => ({ ok: false, status: 503, json: async () => ({ error: 'HTTP 503' }) }));
+        await down.panel.select('agreements');
+        await vi.waitFor(() => expect(down.shown('agreement-list-host')).toEqual([minted]));
+        expect(down.item(minted).querySelectorAll('[data-held-by]').map(badge => badge.textContent)).toEqual(['Chain']);
+        expect(down.doc.getElementById('lists-status').textContent).toContain('Our server could not be read: HTTP 503');
     });
 });

@@ -166,7 +166,7 @@
                 'css/plan-dialog.css?v=20261030-list-actions',
                 'css/shared-plan-session.css',
                 'css/buildout-clock.css?v=20261029-panes',
-                'css/lists.css?v=20261121-critics',
+                'css/lists.css?v=20261127-read-source',
                 'css/proposal-approval.css?v=20261020-approval-rules',
                 'css/agreement.css?v=20261126-stats-tiles',
                 'css/agreement-dialog.css?v=20261027-panel-buttons',
@@ -1482,6 +1482,23 @@
                             </div>
                         </div>
                     </div></section>
+                <!-- Where published agreements, plans and designs are read from (js/chain/read-source.js,
+                     wired in js/ui/settings-panel.js); the Lists show the same choice. -->
+                <section class="settings-section" data-section="read-source"><h3 class="settings-section-title" id="read-source-title">
+                        <i class="fas fa-database" aria-hidden="true"></i>
+                        <span data-i18n-key="readSource.title">Read published records from</span>
+                    </h3>
+                    <div class="sheet-section-body">
+                        <div class="cb-segmented cb-segmented--fill" role="group" aria-labelledby="read-source-title">
+                            <button type="button" id="read-source-server" class="cb-segmented__option" data-read-source-choice="server" aria-pressed="true"
+                                aria-describedby="read-source-note" data-i18n-key="readSource.server">Our server</button>
+                            <button type="button" id="read-source-chain" class="cb-segmented__option" data-read-source-choice="chain" aria-pressed="false"
+                                aria-describedby="read-source-note" data-i18n-key="readSource.chain">Chain</button>
+                            <button type="button" id="read-source-both" class="cb-segmented__option" data-read-source-choice="both" aria-pressed="false"
+                                aria-describedby="read-source-note" data-i18n-key="readSource.both">Both</button>
+                        </div>
+                        <p id="read-source-note" class="settings-note" aria-live="polite"></p>
+                    </div></section>
                 <section class="settings-section" data-section="assumptions">
                     <h3 class="settings-section-title" data-i18n-key="settingsPanel.dataAssumptions">Data &amp; assumptions</h3>
                     <div class="settings-links"><a id="source-system-link" class="btn" href="/sources.html" data-i18n-key="sourceSystem.title">Sources &amp; adapters</a><button type="button" id="economic-source-settings-button" class="btn" data-i18n-key="economicSources.title">Valuation &amp; costs</button><button type="button" id="parcel-source-notice-button" class="btn" onclick="openParcelSourceNotice()">
@@ -2027,7 +2044,7 @@
     <script>
         window.__CB_WORKSPACE_REQUIRED__ = true;
         window.writeVersionedLocalScripts([
-            'js/optional-tools-loader.js?v=20261029-undated',
+            'js/optional-tools-loader.js?v=20261127-read-source',
             'js/shared-utils.js',
             // bundle:start foundation
             'js/ui/tabs.js',
@@ -2064,10 +2081,12 @@
             'js/plan-record.js?v=20261126-heights-choice',
             'js/buildout-schedule.js?v=20261121-clock-end',
             'js/buildout-simulation.js',
-            // The chain and IPFS reader the plan, agreement and design loaders fall back to.
+            // Where the plan, agreement and design loaders read from (our server, the chain, or both),
+            // and the chain and IPFS reader they use when the chain is chosen.
+            'js/chain/read-source.js?v=20261127-read-source',
             'js/chain/ipfs-read.js?v=20261127-sol-reader',
-            'js/chain/chain-reader.js?v=20261127-sol-reader',
-            'js/named-plans.js?v=20261127-sol-reader',
+            'js/chain/chain-reader.js?v=20261127-read-source',
+            'js/named-plans.js?v=20261127-read-source',
             'js/plan-composition.js?v=20261112-unapply',
             'js/plan-workspace.js?v=20261127-sol-reader',
             'js/shared-plan-events.js',
@@ -2076,7 +2095,7 @@
             'js/ui/share-dialog.js',
             'js/plan-dialog.js?v=20261113-share',
             'js/ui/plan-analysis-controls.js?v=20261126-effects-config',
-            'js/lists-panel.js?v=20261127-sol-reader',
+            'js/lists-panel.js?v=20261127-read-source',
             'js/wipe-local-data.js',
             'js/world/world-entry-model.js?v=20261020-point-destinations',
             'data/boot-coverage.js',
@@ -2223,7 +2242,7 @@
             'js/ui/file-download.js',
             'js/release-updates.js',
             'js/ui/app-updates.js',
-            'js/ui/settings-panel.js',
+            'js/ui/settings-panel.js?v=20261127-read-source',
             'js/ui/commands.js?v=20261030-source-lists',
             'js/ui/map-shell.js',
             'js/ui/dock-clearance.js',
@@ -2431,7 +2450,7 @@
             'js/proposals/storage.js?v=20261020-estimated-city',
             // bundle:start proposal-sync
             'js/proposals/agent-provenance.js',
-            'js/proposals/design-sync.js?v=20261127-sol-reader',
+            'js/proposals/design-sync.js?v=20261127-read-source',
             // bundle:end proposal-sync
             'js/proposals/urban-rules.js',
             // bundle:start proposal-panel-text
@@ -2507,9 +2526,9 @@
             'js/agreement-ground.js?v=20261028-abstract-parties',
             'js/agreement-store.js',
             'js/agreement-dialog.js?v=20261030-plan-preview-apply',
-            'js/agreement-panel.js?v=20261127-anchor-inputs',
+            'js/agreement-panel.js?v=20261127-read-source',
             'js/agreement-list.js?v=20261027-agreement-tabs',
-            'js/agreement-sync.js?v=20261127-sol-reader',
+            'js/agreement-sync.js?v=20261127-read-source',
             'js/property-offer-record.js',
             'js/property-offer-consent.js',
             'js/property-offer-store.js',
@@ -2519,7 +2538,7 @@
             'js/suggested-layouts-2d.js?v=20261124-estimated-layouts',
             'js/proposals/replay-status.js',
             // bundle:end plans-agreements
-            'js/proposals/sharing-routes.js?v=20261127-sol-reader',
+            'js/proposals/sharing-routes.js?v=20261127-read-source',
             'js/proposals/core.js?v=20261022-agreement-chain',
             'js/proposals/data.js?v=20261031-inspector-organization',
             'js/proposals/bootstrap.js?v=20261112-unapply',
@@ -2534,7 +2553,7 @@
             'js/proposals/present-state.js?v=20261121-scope-ops',
             'js/proposals/plan-scope.js',
             'js/proposals/plan-decision.js',
-            'js/proposals/plan-stats.js?v=20261126-decision-sheet',
+            'js/proposals/plan-stats.js?v=20261127-read-source',
             'js/parcel-coverage-debug.js',
             'js/ui/notice-queue.js',
             // bundle:end plan-analysis
