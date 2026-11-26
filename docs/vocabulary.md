@@ -208,7 +208,11 @@ A hash committing to a named, versioned projection of content. Agreement approva
 
 ### Publication index
 
-A service's searchable projection of published records, their derived bindings and observed chain metadata. Index metadata and observations are distinct from the immutable bytes identified by the record's CID.
+A service's searchable projection of published records, their derived bindings and observed chain metadata. Index metadata and observations are distinct from the immutable bytes identified by the record's CID. Records reach it by publication and, for agreements minted on the current agreement program, by agreement discovery.
+
+### Agreement discovery
+
+The server's pass that finds agreement accounts on the current agreement program which the publication index lacks, or holds without a chain record, and indexes and records them. It reads the content from IPFS gateways by the account's CID and admits it only through the same checks as publication and as a reported mint; the account and the content are its evidence, never a signature. An agreement recorded on a retired agreement program is left as recorded.
 
 ### Qualified chain reference
 

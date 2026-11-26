@@ -2,8 +2,9 @@
 // agreements on, the account an agreement's sponsor and CID derive (PDA ["agreement", sponsor,
 // sha256(cid)], programs/agreement/README.md), reading and decoding those accounts over RPC with the
 // shared codec (frontend/js/solana/agreement-client.js), and the `onchain` JSON consensus.agreement
-// keeps. POST /agreements/:cid/onchain writes it once (routes/agreements.js); the lifecycle oracle
-// refreshes the fields the chain moves and discovers accounts nobody reported (oracle/agreement-lifecycle.js).
+// keeps. POST /agreements/:cid/onchain writes it once (routes/agreements.js); agreement discovery lists the
+// program's accounts and records the ones nobody reported (oracle/agreement-discovery.js); the lifecycle
+// oracle refreshes the fields the chain moves on agreements already recorded (oracle/agreement-lifecycle.js).
 
 import { createRequire } from 'node:module';
 import { createRpcConnection } from '../solana/rpc.js';
@@ -206,10 +207,45 @@ export function createAgreementChain({ cluster = 'devnet', env = process.env, co
         return rows;
     }
 
+    // Every agreement account of the program (getProgramAccounts, filtered by the account's size and
+    // discriminator), each kept only when it sits at the PDA its own authority and CID derive: an account
+    // anywhere else is not one the program created for that agreement and is reported, never imported.
+    // { slot, rows: [{ address, slot, account (decoded) | null, data (Buffer), problem: null | 'undecodable' | 'not-pda' }] }
+    async function listAccounts() {
+        const connection = await ready();
+        const answer = await connection.getProgramAccounts(new web3.PublicKey(programId), {
+            commitment: 'confirmed',
+            withContext: true,
+            filters: [
+                { dataSize: AgreementClient.constants.AGREEMENT_ACCOUNT_SPACE },
+                { memcmp: { offset: 0, bytes: Buffer.from(AgreementClient.ACCOUNT_DISCRIMINATORS.Agreement).toString('base64'), encoding: 'base64' } }
+            ]
+        });
+        const slot = answer?.context?.slot;
+        if (!Number.isSafeInteger(slot) || !Array.isArray(answer?.value)) throw new Error('getProgramAccounts returned no slot or no account list');
+        const rows = answer.value.map(({ pubkey, account: info }) => {
+            const address = pubkey.toBase58();
+            const row = { address, slot, account: null, data: Buffer.from(info.data), problem: null };
+            let account = null;
+            try { account = AgreementClient.readAgreement(new Uint8Array(row.data), address); } catch { account = null; }
+            if (!account) {
+                row.problem = 'undecodable';
+                return row;
+            }
+            let derived = null;
+            try { derived = agreementAccountOf(account.cid, account.authority, programId); } catch { derived = null; }
+            if (derived !== address) row.problem = 'not-pda';
+            else row.account = account;
+            return row;
+        });
+        return { slot, rows };
+    }
+
     return {
         cluster,
         programId,
         connection: ready,
+        listAccounts,
         readAccounts,
         async readAccount(address) {
             return (await readAccounts([address], { batchSize: 1 }))[0];
