@@ -71,8 +71,9 @@ for (const width of [1280, 390]) {
     expect(tabBounds.scrollWidth).toBeGreaterThanOrEqual(tabBounds.clientWidth);
     const tab = (name: string | RegExp) => contentTabs.getByRole('tab', { name, exact: typeof name === 'string' });
     const actions = panel.locator(':scope > .panel-body > .agreement-panel-actions');
-    // Propose, Before / after, Edit, Counter-agreement and Download fill the action grid.
-    await expect(actions.locator('button')).toHaveCount(5);
+    // Propose, Before / after, Edit, Counter-agreement, Download and Agreement record (3116ec74a)
+    // fill the action grid.
+    await expect(actions.getByRole('button')).toHaveText(['Propose', 'Before / after', 'Edit', 'Counter-agreement', 'Download', 'Agreement record']);
     const boxes = await actions.locator('button').evaluateAll(buttons => buttons.map(button => button.getBoundingClientRect().toJSON()));
     expect(Math.max(...boxes.map(b => b.width)) - Math.min(...boxes.map(b => b.width))).toBeLessThan(1);
     const row = await actions.boundingBox();

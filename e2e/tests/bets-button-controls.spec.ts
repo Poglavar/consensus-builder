@@ -71,7 +71,8 @@ test.describe('Bets shared button variants @features', () => {
     const content = page.locator('#bets-sheet-content');
     await expect(content).toContainText('Bets could not be loaded.', { timeout: 30_000 });
     await content.getByRole('button', { name: 'Try again' }).click();
-    await expect(content.locator('.bets-row__title')).toHaveText(TITLE, { timeout: 30_000 });
+    // A USDC market row is titled by its question (ae6ac4142).
+    await expect(content.locator('.bets-row__title')).toHaveText(`Will ${TITLE} execute by 2026-12-31 00:00:00 UTC?`, { timeout: 30_000 });
     expect(attempts).toBe(2);
   });
 
@@ -81,7 +82,9 @@ test.describe('Bets shared button variants @features', () => {
     await page.goto(`/?city=zg&bets=${ACCOUNT}&reduceMotion=1`);
     const dialog = page.locator('#proposalMarketOverlay');
     await expect(dialog.locator('.cb-dialog__title')).toContainText(`Will ${TITLE} execute by`, { timeout: 30_000 });
-    const expected = await page.evaluate(account => `${location.origin}/bets/${account}?city=zagreb&asset=devnet-usdc&betTest=local-preview`, ACCOUNT);
+    // A USDC bet link names the market it trades, since one agreement may have several (ae6ac4142).
+    const expected = await page.evaluate(({ account, market }) => `${location.origin}/bets/${account}?city=zagreb&market=${market}&asset=devnet-usdc&betTest=local-preview`,
+      { account: ACCOUNT, market: OPEN_POOL.address });
     await dialog.getByRole('button', { name: 'Share', exact: true }).click();
     await expect.poll(() => page.evaluate(() => (window as any).__betsShare?.url)).toBe(expected);
     await dialog.getByRole('button', { name: 'Copy link', exact: true }).click();
@@ -217,20 +220,16 @@ test.describe('Bets shared button variants @features', () => {
     });
   }
 
-  test('only the agreement sponsor sees the control to seed its USDC market', async ({ mockApi: page }) => {
+  // Any wallet may open an agreement's USDC market, not only its sponsor (ae6ac4142); opening it
+  // end to end is in bets-sheet.spec.ts.
+  test('a wallet that is not the sponsor sees the control to open the agreement\'s USDC market', async ({ mockApi: page }) => {
     fileMinted(page, { pool: null, sponsor: WALLET });
     await injectMockSolanaWallet(page, { publicKey: 'AoVsGaj8MSJ6xwKxfFxo9iZWH3enC8RRTXKH2fx2F8os', providerName: 'phantom' });
     await openCity(page);
     await connectWalletByConnectorId(page, 'solana-phantom');
     await page.locator('#bets-button').click();
-    const action = page.locator('#bets-sheet .bets-row__actions').getByRole('button', { name: 'Seed USDC market', exact: true });
-    await expect(action).toHaveCount(0);
-    await page.evaluate(() => {
-      const manager = (window as any).solanaWalletManager;
-      const original = manager.getState.bind(manager);
-      manager.getState = () => ({ ...original(), accounts: ['Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W'] });
-      return (window as any).BetsSheet.load({ force: true });
-    });
-    await expect(action).toBeVisible();
+    const actions = page.locator('#bets-sheet .bets-row__actions');
+    await expect(actions.getByRole('button', { name: 'Open a USDC market', exact: true })).toBeVisible({ timeout: 30_000 });
+    await expect(actions.getByRole('button')).toHaveCount(1);
   });
 });

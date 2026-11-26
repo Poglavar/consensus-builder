@@ -168,21 +168,22 @@ test.describe('Betting journey telemetry @features', () => {
     await connectWalletByConnectorId(page, 'solana-phantom');
     await page.locator('#bets-button').click();
     await waitForBlockchainRuntime(page, ['SolanaMarketBridge', 'solanaWeb3']);
-    await page.evaluate((account) => {
+    await page.evaluate((pool) => {
       const bridge = (window as any).SolanaMarketBridge;
       let claimed = false;
       bridge.readSummary = async () => ({
-        market: { ...OPEN_POOL, resolved: true, outcome: 'yes' },
-        marketAddress: 'test-market', chainStatus: 'Executed',
+        market: { ...pool, resolved: true, outcome: 'yes' },
+        marketAddress: pool.address, chainStatus: 'Executed',
       });
-      bridge.readPositions = async () => ({ [account]: { yes: { side: 1, amount: 100000n, claimed }, no: null } });
+      // USDC positions are keyed by the market they were bought in (ae6ac4142: one agreement may have several).
+      bridge.readPositions = async (requests: any[]) => ({ [requests[0].marketAddress]: { yes: { side: 1, amount: 100000n, claimed }, no: null } });
       bridge.claim = async (options: any) => {
         options.onStatus?.({ state: 'submitted', signature: 'claim-signature' });
         options.onStatus?.({ state: 'confirmed', signature: 'claim-signature' });
         claimed = true;
         return { transactionHash: 'claim-signature', explorerUrl: 'https://explorer.solana.com/tx/claim-signature?cluster=devnet' };
       };
-    }, ACCOUNT);
+    }, OPEN_POOL);
     await page.evaluate(async () => { await (window as any).BetsSheet.load({ force: true }); await (window as any).BetsSheet.whenPositions(); });
     await page.locator(ROW_TITLE).click();
     const dialog = page.locator('#proposalMarketOverlay');

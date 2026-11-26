@@ -46,10 +46,12 @@ test.describe('developer apartment funding authoring', () => {
     await rows.nth(1).locator('[data-apartment-drawing]').setInputFiles({ name: 'b.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.7 drawing B') });
     await editor.locator('[data-apartments-project]').fill('fair-project');
     await editor.locator('[data-agreement-action="lens"]').click();
+    // A crowdfunding round opens the Solana lens-set picker (f444a5c19) with no lens chosen.
     const lens = page.locator('.lens-modal');
-    const keys = lens.locator('.lens-address-input');
-    await keys.first().fill(E2E_LENS_MEMBER_KEY);
-    while (await keys.count() > 1) await lens.locator('.lens-remove-btn').last().click();
+    await lens.getByRole('textbox', { name: 'Paste a key' }).fill(E2E_LENS_MEMBER_KEY);
+    await lens.getByRole('button', { name: 'Add', exact: true }).click();
+    await expect(lens.getByRole('checkbox', { checked: true })).toHaveCount(1);
+    await expect(lens.getByRole('checkbox', { name: /E2E lens member/ })).toBeChecked();
     await lens.locator('.lens-close-btn').press('Enter');
     await editor.locator('[data-agreement-deadline]').fill('2030-12-31');
     await first.locator('[data-apartment="unitId"]').fill('unit-a');
@@ -58,6 +60,7 @@ test.describe('developer apartment funding authoring', () => {
     await editorClosed(page);
     const [saved] = await storedAgreements(page);
     expect(saved.funding.apartments.units).toHaveLength(2);
+    expect(saved.rule.lens).toEqual([E2E_LENS_MEMBER_KEY]);
     expect(saved.funding.apartments.units[0]).toMatchObject({ unitId: 'unit-a', drawing: { name: 'a.pdf' }, priceUsdcAtomic: '10500000' });
     const panel = await openStackAgreement(page);
     await openAgreementActions(page);

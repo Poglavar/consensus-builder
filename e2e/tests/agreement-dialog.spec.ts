@@ -343,8 +343,14 @@ test('developer crowdfunding opens from an unapplied plan, saves its attached te
 
   await page.evaluate(() => { (window as any).solanaWalletManager = { getState: () => ({ status: 'disconnected', accounts: [] }) }; });
   await editor.locator('[data-agreement-action="lens"]').press('Enter');
-  const picker = page.getByRole('dialog', { name: 'Choose lens' });
-  await picker.getByRole('radio', { name: /Project verifier/ }).press('Space');
+  // A crowdfunding lens is a set of up to 8 members (f444a5c19): the multi-member picker, and a new
+  // round starts with no lens rather than the saved default.
+  const picker = page.getByRole('dialog', { name: 'The lens through which I see the world' });
+  const verifier = picker.getByRole('checkbox', { name: /Project verifier/ });
+  await expect(verifier).not.toBeChecked();
+  await expect(picker.getByRole('checkbox', { checked: true })).toHaveCount(0);
+  await verifier.press('Space');
+  await expect(verifier).toBeChecked();
   await picker.getByRole('button', { name: 'Done' }).press('Enter');
   const title = editor.locator('[data-agreement-title]');
   await title.focus();
@@ -387,7 +393,11 @@ test('developer crowdfunding opens from an unapplied plan, saves its attached te
 
   const disclosure = agreementPanel(page).locator('[data-agreement-funding-disclosure]');
   await expect(disclosure).toBeVisible();
-  await expect(disclosure.locator('code').first()).toHaveText(saved.rule.lens[0]);
+  // The lens summary (f444a5c19) lists each member as a short key with the full key in its title.
+  const member = disclosure.locator(`[data-agreement-lens-member="${saved.rule.lens[0]}"] code`);
+  await expect(member).toHaveText('H37s…2B2E');
+  await expect(member).toHaveAttribute('title', saved.rule.lens[0]);
+  await expect(disclosure.locator('[data-agreement-lens-rule]')).toHaveText('The lens member must confirm.');
   await expect(disclosure).toContainText('Any wallet can contribute');
   expect(await disclosure.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
   const download = agreementPanel(page).getByRole('button', { name: 'Download investor contract (investor-terms.txt)' });

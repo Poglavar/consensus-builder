@@ -128,7 +128,7 @@ test.describe('Proposal browsing @features', () => {
     // The lens member's ownership attestation: who attested whom, and its account hash.
     const ownership = history.locator('[data-history-type="parcel_ownership"]');
     await expect(ownership).toContainText('Ownership attested');
-    await expect(ownership).toContainText(`Member ${LENS_MEMBER.slice(0, 4)}…${LENS_MEMBER.slice(-4)}`);
+    await expect(ownership).toContainText(`Lens member ${LENS_MEMBER.slice(0, 4)}…${LENS_MEMBER.slice(-4)}`);
     await expect(ownership).toContainText(`Owner ${SOLANA_WALLET.slice(0, 4)}…${SOLANA_WALLET.slice(-4)}`);
     await expect(ownership).toContainText('1 attested owner(s)');
     await expect(ownership.locator('.parcel-history-hash')).toHaveAttribute('title', `sha256:${'ab'.repeat(32)}`);
