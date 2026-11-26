@@ -110,6 +110,28 @@
     }
 
     const floorOf = level => (Number.isSafeInteger(level) ? level : null);
+    const storeys = () => root?.StoreyNumbering || (typeof require === 'function' ? require('./storey-numbering.js') : null);
+
+    /**
+     * A floor's name through `t(key, fallback, params)`: "Floor 2" ("Ground floor", "Basement 1"), or
+     * "Building 2 · floor 2" in a round over several buildings, numbered by the locale's convention
+     * (js/storey-numbering.js; `convention` defaults to the active locale's). A unit without a storey
+     * level reads "Floor unknown".
+     */
+    function floorName(floor, buildings, t, convention) {
+        if (floorOf(floor.level) === null) return t('agreement.funding.apartments.overviewNoFloor', 'Floor unknown', {});
+        if (buildings > 1) {
+            const figure = storeys().storeyFigure(floor.level, convention);
+            return t('agreement.funding.apartments.buildingFloor', `Building ${floor.building} · floor ${figure}`, { building: floor.building, level: figure });
+        }
+        return storeys().storeyLabel(floor.level, t, convention);
+    }
+
+    /** An X-ray apartment's place, "Floor 2 · Apartment 3", its floor numbered as floorName numbers it. */
+    function apartmentPlace(level, ordinal, t, convention) {
+        const figure = storeys().storeyFigure(level, convention);
+        return t('threeMode.controls.apartmentOption', `Floor ${figure} · Apartment ${ordinal}`, { level: figure, number: ordinal });
+    }
 
     /**
      * The building overview: one row per floor, the top floor first, then the units without a floor
@@ -154,7 +176,7 @@
         return String(cell.label || cell.unitId || '').split(/[\s·]+/).filter(Boolean).pop() || '';
     }
 
-    const model = { STATES, unitState, levelOf, roundView, buildingStates, filterUnits, overviewRows, cellText };
+    const model = { STATES, unitState, levelOf, roundView, buildingStates, filterUnits, overviewRows, cellText, floorName, apartmentPlace };
     if (!root || !root.document) return { model };
 
     // ---- browser -------------------------------------------------------------------------------------
@@ -194,8 +216,7 @@
     }
 
     function floorLabel(floor, view, t) {
-        return view.buildings > 1 ? text(t, 'buildingFloor', 'Building {{building}} · floor {{level}}', floor)
-            : t('threeMode.controls.floorLevel', 'Floor {{level}}', floor);
+        return floorName(floor, view.buildings, t);
     }
 
     function swatch(state) {
@@ -307,8 +328,7 @@
         for (const row of rows) {
             const line = el('div', 'apartment-round-overview__floor');
             line.setAttribute('role', 'group');
-            const name = el('span', 'apartment-round-overview__level', row.floor === null ? text(t, 'overviewNoFloor', 'Floor unknown')
-                : floorLabel({ building: row.building, level: row.floor }, { buildings }, t));
+            const name = el('span', 'apartment-round-overview__level', floorLabel({ building: row.building, level: row.floor }, { buildings }, t));
             name.id = `${title.id}-${grid.length}`;
             line.setAttribute('aria-labelledby', name.id);
             const cells = el('div', 'apartment-round-overview__cells');
@@ -319,8 +339,7 @@
                 button.dataset.apartmentOverviewCell = cell.key ?? cell.unitId;
                 button.dataset.apartmentRoundFocus = `cell-${cell.key ?? cell.unitId}`;
                 button.dataset.apartmentState = cell.state || '';
-                const place = cell.ordinal !== null ? t('threeMode.controls.apartmentOption', `Floor ${cell.floor} · Apartment ${cell.ordinal}`,
-                    { level: cell.floor, number: cell.ordinal }) : name.textContent;
+                const place = cell.ordinal !== null && cell.floor !== null ? apartmentPlace(cell.floor, cell.ordinal, t) : name.textContent;
                 const label = [place, cell.label, cell.state ? stateLabel(cell, t) : null].filter(Boolean).join(' · ');
                 button.setAttribute('aria-label', label);
                 button.title = label;

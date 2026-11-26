@@ -152,7 +152,7 @@
             row.tabIndex = -1;
             row.setAttribute('aria-label', unit.label);
             const place = el('div', 'agreement-apartment-unit__state');
-            place.append(el('span', 'agreement-panel-meta', t('threeMode.controls.floorLevel', 'Floor {{level}}', shown)));
+            place.append(el('span', 'agreement-panel-meta', round.model.floorName(shown, 1, t)));
             if (shown.state) place.append(round.stateBadge(shown, t));
             row.append(place, unitDetails(agreement, unit));
             searchable.push({ element: row, text: round.searchText(shown, view, t) });

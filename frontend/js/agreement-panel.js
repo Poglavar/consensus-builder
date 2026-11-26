@@ -1155,7 +1155,7 @@
         // The X-ray apartment panel loads the same scripts for its reservation colours and stats.
         let boostScripts = null;
         function ensureBoostScripts() {
-            boostScripts ??= Promise.all(['js/solana/pledge-client.js', 'js/apartment-round.js?v=20261126-building-overview', 'js/agreement-boost.js?v=20261126-building-overview'].map(path => new Promise((resolve, reject) => {
+            boostScripts ??= Promise.all(['js/solana/pledge-client.js', 'js/apartment-round.js?v=20261126-storey-numbering', 'js/agreement-boost.js?v=20261126-storey-numbering'].map(path => new Promise((resolve, reject) => {
                 const tag = doc.createElement('script');
                 tag.src = typeof win.appendBuildToken === 'function' ? win.appendBuildToken(path) : path;
                 tag.async = false;

@@ -242,7 +242,9 @@
             if (label.textContent !== title) label.textContent = title;
             const choices = units.map(item => {
                 const known = roundData?.states?.get(item.key);
-                const name = t('threeMode.controls.apartmentOption', `Floor ${item.level} · Apartment ${item.ordinal}`, { level: item.level, number: item.ordinal });
+                // The option keeps the unit key; its floor is numbered by the locale's convention.
+                const figure = win.StoreyNumbering.storeyFigure(item.level);
+                const name = t('threeMode.controls.apartmentOption', `Floor ${figure} · Apartment ${item.ordinal}`, { level: figure, number: item.ordinal });
                 return [item.key, known ? [name, known.unit.label, win.ApartmentRound.stateLabel(known.unit, t)].join(' · ') : name];
             });
             const signature = JSON.stringify(choices);

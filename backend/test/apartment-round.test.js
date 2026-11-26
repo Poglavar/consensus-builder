@@ -4,6 +4,8 @@
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 
+import { testI18n } from './helpers/i18n.js';
+
 const require = createRequire(import.meta.url);
 const { model } = require('../../frontend/js/apartment-round.js');
 
@@ -168,5 +170,35 @@ describe('ApartmentRound model', () => {
         expect(model.filterUnits(items, 'reserved', item => item.text)).toEqual([items[0], items[2]]);
         expect(model.filterUnits(items, 'Tower 2 · 302', item => item.text)).toEqual([items[2]]);
         expect(model.filterUnits(items, 'garage', item => item.text)).toEqual([]);
+    });
+});
+
+describe('ApartmentRound floor names', () => {
+    // The panels' lookup: t(key, fallback, params), the fallback used when the dictionary has no entry.
+    const translator = api => (key, fallback, params) => {
+        const value = api.t(key, params);
+        return value === key ? fallback : value;
+    };
+
+    it('names English floors from the ground floor up, basements and unknown floors included', () => {
+        const api = testI18n('en'), t = translator(api), convention = api.getStoreyNumbering();
+        expect([-1, 0, 1, 3].map(level => model.floorName({ building: 1, level }, 1, t, convention)))
+            .toEqual(['Basement 1', 'Ground floor', 'Floor 1', 'Floor 3']);
+        expect(model.floorName({ building: 1, level: null }, 1, t, convention)).toBe('Floor unknown');
+        expect(model.floorName({ building: 2, level: 1 }, 2, t, convention)).toBe('Building 2 · floor 1');
+        expect(model.apartmentPlace(1, 3, t, convention)).toBe('Floor 1 · Apartment 3');
+    });
+
+    it('names Russian floors one higher than the level: the storey at street level is floor 1', () => {
+        const api = testI18n('ru'), t = translator(api), convention = api.getStoreyNumbering();
+        expect(convention).toBe('ground-one');
+        const floor = number => api.t('threeMode.controls.floorLevel', { level: number });
+        expect([0, 1, 3].map(level => model.floorName({ building: 1, level }, 1, t, convention))).toEqual([floor(1), floor(2), floor(4)]);
+        expect(model.floorName({ building: 1, level: -1 }, 1, t, convention)).toBe(api.t('threeMode.controls.floorBasement', { level: 1 }));
+        expect(model.floorName({ building: 2, level: 0 }, 2, t, convention))
+            .toBe(api.t('agreement.funding.apartments.buildingFloor', { building: 2, level: 1 }));
+        expect(model.apartmentPlace(0, 3, t, convention)).toBe(api.t('threeMode.controls.apartmentOption', { level: 1, number: 3 }));
+        // Display only: the overview keeps the level itself.
+        expect(model.overviewRows({ apartments: [{ key: '0::A-1', level: 0, ordinal: 1 }] })[0].floor).toBe(0);
     });
 });

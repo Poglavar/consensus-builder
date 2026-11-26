@@ -10946,10 +10946,9 @@
                 [null, ...levels].forEach(level => {
                     const option = document.createElement('option');
                     option.value = level === null ? 'all' : String(level);
+                    // The option value stays the level; its words follow the locale's storey numbering.
                     option.textContent = level === null ? threeI18n('threeMode.controls.floorAll', 'All storeys')
-                        : level < 0 ? threeI18n('threeMode.controls.floorBasement', `Basement ${-level}`, { level: -level })
-                        : level === 0 ? threeI18n('threeMode.controls.floorGround', 'Ground floor')
-                        : threeI18n('threeMode.controls.floorLevel', `Floor ${level}`, { level });
+                        : window.StoreyNumbering.storeyLabel(level, threeI18n);
                     floorCutawaySelect.appendChild(option);
                 });
                 floorCutawaySelect.dataset.levels = signature;

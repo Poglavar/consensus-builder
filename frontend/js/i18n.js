@@ -4,18 +4,20 @@
     const STORAGE_KEY = 'cb_language';
     // This registry is the source for detection, dictionary loading and every locale picker.
     // Native names and flags are picker metadata; translated copy belongs in i18n/<language>.json.
+    // storeyNumbering is how the region counts storeys (js/storey-numbering.js): 'ground-zero' (default:
+    // ground floor, then the 1st floor above it) or 'ground-one' (the storey at street level is the 1st).
     const LOCALE_CHOICES = Object.freeze([
         { locale: 'en-GB', name: 'English (United Kingdom)', flag: '🇬🇧', key: 'language.switcher.to_en' },
         { locale: 'en-US', name: 'English (United States)', flag: '🇺🇸', key: 'language.switcher.to_en_us' },
         { locale: 'es-ES', name: 'Español', flag: '🇪🇸', key: 'language.switcher.to_es' },
-        { locale: 'es-CO', name: 'Español (Colombia)', flag: '🇨🇴', key: 'language.switcher.to_es' },
+        { locale: 'es-CO', name: 'Español (Colombia)', flag: '🇨🇴', key: 'language.switcher.to_es', storeyNumbering: 'ground-one' },
         { locale: 'sr-Latn-RS', name: 'Srpski', flag: '🇷🇸', key: 'language.switcher.to_sr' },
         { locale: 'hr-HR', name: 'Hrvatski', flag: '🇭🇷', key: 'language.switcher.to_hr' },
         { locale: 'ar-EG', name: 'العربية', flag: '🌐', key: 'language.switcher.to_ar', direction: 'rtl' },
         { locale: 'fr-FR', name: 'Français', flag: '🇫🇷', key: 'language.switcher.to_fr' },
         { locale: 'pt-PT', name: 'Português', flag: '🇵🇹', key: 'language.switcher.to_pt' },
-        { locale: 'ru-RU', name: 'Русский', flag: '🌐', key: 'language.switcher.to_ru' },
-        { locale: 'kk-KZ', name: 'Қазақша', flag: '🇰🇿', key: 'language.switcher.to_kk' }
+        { locale: 'ru-RU', name: 'Русский', flag: '🌐', key: 'language.switcher.to_ru', storeyNumbering: 'ground-one' },
+        { locale: 'kk-KZ', name: 'Қазақша', flag: '🇰🇿', key: 'language.switcher.to_kk', storeyNumbering: 'ground-one' }
     ].map(Object.freeze));
     // The viewer picks a locale: a UI language plus the region whose conventions numbers and dates
     // are written in (js/format.js). Money keeps the currency of the place it belongs to
@@ -290,6 +292,11 @@
         return SUPPORTED_LOCALES.slice();
     }
 
+    // How the active locale counts storeys: 'ground-zero' or 'ground-one' (LOCALE_CHOICES).
+    function getStoreyNumbering() {
+        return LOCALE_CHOICES.find(choice => choice.locale === currentLocale)?.storeyNumbering || 'ground-zero';
+    }
+
     function registerTranslations(lang, entries = {}) {
         const normalized = normalizeLanguage(lang);
         if (!normalized) return;
@@ -371,6 +378,7 @@
         getLanguage,
         getLocale,
         getSupportedLocales,
+        getStoreyNumbering,
         getLocaleChoices: () => LOCALE_CHOICES.map(choice => ({ ...choice })),
         getUrlLanguage: readUrlLanguage,
         resolveSessionLanguage,

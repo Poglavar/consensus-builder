@@ -661,6 +661,10 @@ An uploaded building model (`properties.modelUrl`) whose building also states `m
 
 The one colour a planned building has in the model view; parcel slices vary only its shade. A building of several features (stepped parts, each its own footprint and height) states one `buildingId` on every part, and its parts share the hue and the glass tint; any other building's hue comes from its own outline. An uploaded building model takes the same hue: its own material colours are tinted to it. It also takes the [illustrative facade](#illustrative-facade) on its walls, the style its building states or Mixed's; inside an X-ray [model section](#model-section) its own tinted materials show instead.
 
+### Storey level and storey numbering
+
+A storey level is a storey's position in its building: 0 is the storey at street level, 1 the one above it, negative levels are below ground. Unit addresses, apartment keys, links, the floor cutaway's value and agent (MCP) payloads carry the level. Storey numbering is only how a level is written for the reader, set per locale (`storeyNumbering` in `frontend/js/i18n.js`, applied by `frontend/js/storey-numbering.js`): `ground-zero` (the default) writes level 0 as the ground floor and level 1 as Floor 1; `ground-one` (Russian, Kazakh, Colombian Spanish) writes level 0 as Floor 1. Below-ground levels are basements numbered from 1 either way.
+
 ### Model section
 
 How X-ray shows the interior of an uploaded building model: a horizontal cut 1.2 m above the floor of the storey chosen in the floor cutaway, or of the ground storey when none is chosen (a model's storeys cannot all be open at once) (`frontend/js/model-section.js`). The storeys are found in the model's own horizontal surfaces: a floor is a height holding at least 3 % of the fullest height's area and 25 m², a slab's top and bottom are one floor, and the highest surface is the roof. A model's storeys below ground show only when a basement is chosen, with everything else hidden. The cut is display only and changes no design.
