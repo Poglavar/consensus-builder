@@ -488,6 +488,18 @@
             claimable.forEach(side => collect.append(button('btn btn-success btn-sm', t('panel.proposal.market.collect', 'Collect {{side}} winnings', { side: sideWord(side) }), event => transact('claim', side, event.currentTarget))));
             p.body.append(collect);
         }
+        // The wallet that opened a resolved USDC market takes back what its payouts leave of the seed.
+        if (row.asset === 'devnet-usdc' && row.marketAddress && row.outcome !== null && row.creator && row.creator === walletAddress()
+            && typeof bridge().readReclaimableSeed === 'function') {
+            const stake = el('div', 'bets-dialog__collect');
+            p.body.append(stake);
+            const account = state.account;
+            bridge().readReclaimableSeed({ proposal: account, marketAddress: row.marketAddress }).then(seed => {
+                if (state.account !== account || !stake.isConnected || !(seed?.amount > 0n)) return;
+                stake.append(button('btn btn-success btn-sm', t('bets.dialog.reclaimStake', 'Take back my stake ({{amount}})', { amount: moneyAtomic(seed.amount) }),
+                    event => reclaimStake(event.currentTarget)));
+            }).catch(error => console.warn(`[${new Date().toISOString()}] [bets] market stake unreadable for ${account}`, error));
+        }
 
         const words = lifecycleWords(row);
         if (words) {
@@ -770,6 +782,29 @@
             inFlight.delete(key);
             if (trigger && trigger.isConnected) trigger.disabled = false;
         }
+    }
+
+    // The market's opener takes back its remaining seed: one wallet transaction, the spinner on the
+    // button until it lands, the outcome in the note, then the overview re-read.
+    function reclaimStake(trigger) {
+        const row = state.row, account = state.account, overlay = state.overlay;
+        const visible = () => state.account === account && state.overlay === overlay;
+        if (!walletConnected()) { askForWallet(); return; }
+        if (root.BusyControl.isBusy(trigger)) return;
+        const v = view();
+        trigger.disabled = true;
+        root.BusyControl.track(trigger, async () => {
+            const result = await bridge().reclaimSeed({ proposal: account, marketAddress: row.marketAddress, onStatus: item => {
+                if (visible()) setStatus(v ? v.statusText(item) : '', item.explorerUrl);
+            } });
+            const message = t('bets.dialog.reclaimedStake', 'Took back {{amount}} of your market stake.', { amount: moneyAtomic(result.amount) });
+            announceChange(account);
+            if (visible()) await refresh();
+            if (visible()) setStatus(message, result.explorerUrl);
+        }).catch(error => {
+            console.error(`[${new Date().toISOString()}] [bets] reclaimSeed failed`, error);
+            if (visible()) setStatus(v ? v.errorText(error) : t('bets.error.transaction', 'The transaction failed.'), error && error.explorerUrl);
+        }).finally(() => { if (trigger.isConnected) trigger.disabled = false; });
     }
 
     // Re-read the row past the server's cache and draw the overview again (after a bet or a

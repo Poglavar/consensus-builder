@@ -90,7 +90,10 @@ claiming winnings and reclaiming the creator's available seed all pay from that 
   VOID: every share on either side pays one half, floored. Adds to `paid_out`.
 - `reclaim_seed()`. Creator only, after the outcome is final: transfers
   `vault − (obligation − paid_out)`, where `obligation` is the winning side's shares, or half of
-  both sides for VOID.
+  both sides for VOID. The bet dialog's "Take back my stake", shown only to the connected wallet that
+  opened the resolved market, computes it with `SolanaLmsrClient.reclaimableSeed`; the proposer bots'
+  settlement and the MCP tool `ugt_reclaim_market_seed` with `lifecycle-actions.js reclaimableSeed`,
+  which `lmsr-client.test.js` holds to the same results.
 
 The client computes shares for a budget off-chain with `sharesForBudget` and sends `shares` plus
 `max_cost`; the program never searches. Each trade costs two evaluations of `C`. Measured on

@@ -441,6 +441,43 @@
         return send(connection, provider, wallet, instructions, options);
     }
 
+    // The resolved market's seed its creator can still take back (SolanaLmsrClient.reclaimableSeed over
+    // the vault balance), with the creator; 0n for an open market.
+    async function seedContext(client, connection, options) {
+        if (!options.proposal) throw new Error('proposal account is required');
+        const agreement = await readAgreement(connection, options.proposal);
+        const { raw, address } = await liveMarket(connection, client, options.proposal, agreement, options.marketAddress, options.programId);
+        if (!raw) throw new Error('Selected market was not found.');
+        if (!raw.resolved) return { raw, address, amount: 0n };
+        const balance = await connection.getTokenAccountBalance(new root.solanaWeb3.PublicKey(raw.vault), 'confirmed');
+        if (!balance?.value || !/^\d+$/.test(balance.value.amount)) throw new Error('Market vault balance response is invalid.');
+        return { raw, address, amount: client.reclaimableSeed(raw, BigInt(balance.value.amount)) };
+    }
+
+    async function readReclaimableSeed(options = {}) {
+        const client = await dependencies();
+        const { raw, amount } = await seedContext(client, await verifiedConnection(), options);
+        return { creator: raw.creator, resolved: raw.resolved, amount };
+    }
+
+    // The market's opener takes back what its resolved market's payouts leave of the LMSR seed.
+    async function reclaimSeed(options = {}) {
+        const client = await dependencies();
+        const { provider, wallet } = walletContext();
+        const connection = await verifiedConnection();
+        const { raw, address, amount } = await seedContext(client, connection, options);
+        if (!raw.resolved) throw transactionError('This market has not been resolved yet.', 'MARKET_OPEN');
+        if (raw.creator !== publicKey(wallet)) throw transactionError('Only the wallet that opened this market can take back its stake.', 'NOT_MARKET_CREATOR');
+        if (amount <= 0n) throw transactionError('Nothing of this market\'s stake is left to take back.', 'NOTHING_TO_RECLAIM');
+        await preflightSol(connection, wallet);
+        const ata = client.getAssociatedTokenAddress(wallet, raw.stakeMint);
+        const instructions = [];
+        if (!await connection.getAccountInfo(ata, 'confirmed')) instructions.push(createAtaIdempotentlyInstruction(client, wallet, new root.solanaWeb3.PublicKey(raw.stakeMint), wallet));
+        instructions.push(client.buildReclaimSeedIx({ market: address, creator: wallet, stakeMint: raw.stakeMint, programId: options.programId }));
+        return { ...await send(connection, provider, wallet, instructions, options), amount };
+    }
+
     root.SolanaMarketBridge = { DEVNET_USDC_MINT, DEFAULT_B, GRACE_SECONDS, MAX_POSITION,
-        readSummary, readAgreementState, readPositions, readStakeBalance, createMarket, buy, sell, resolve, claim };
+        readSummary, readAgreementState, readPositions, readStakeBalance, createMarket, buy, sell, resolve, claim,
+        readReclaimableSeed, reclaimSeed };
 })(typeof window !== 'undefined' ? window : null);

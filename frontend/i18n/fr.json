@@ -5463,6 +5463,8 @@
             "closed": "Les échanges sont clos pour cet accord.",
             "wrongNetwork": "Passez votre portefeuille sur le devnet Solana.",
             "insider": "Le porteur de l’accord et son vérificateur ne peuvent pas effectuer de transactions sur ce marché.",
+            "notMarketCreator": "Seul le portefeuille qui a ouvert ce marché peut en récupérer la mise.",
+            "nothingToReclaim": "Il ne reste rien de la mise de ce marché à récupérer.",
             "preparing": "Préparation…",
             "sign": "Confirmez dans votre portefeuille…",
             "submitted": "En attente de confirmation…",
@@ -5492,6 +5494,8 @@
             "openAgreement": "Ouvrir l’accord",
             "noBets": "Vous n’avez aucun pari sur cet accord.",
             "settledMessage": "Réglé à partir du statut de l’accord sur la blockchain.",
+            "reclaimStake": "Récupérer ma mise ({{amount}})",
+            "reclaimedStake": "Vous avez récupéré {{amount}} de votre mise sur le marché.",
             "rule": "OUI gagne si l’accord est exécuté avant son échéance. NON gagne s’il expire, est annulé ou dépasse l’échéance.",
             "next": {
                 "open": "Les paris restent ouverts tant que l’accord est actif et que son échéance n’est pas atteinte ; vous pouvez vendre des parts avant la clôture des échanges.",

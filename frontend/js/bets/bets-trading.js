@@ -200,6 +200,9 @@
             buy: options => trade('buy', options), sell: options => trade('sell', options),
             resolve: options => lifecycle('resolve', options), claim: options => lifecycle('claim', options),
             createMarket: options => chain().createMarket(options), linkWallet, cityTokens,
+            // A USDC market's opener takes back what its resolved market's payouts leave of the seed.
+            readReclaimableSeed: options => chain().readReclaimableSeed(options),
+            reclaimSeed: options => chain().reclaimSeed(options),
             // Boost an agreement with the city token or UGT from this points account (docs/citymemetoken.md).
             boostCityToken: options => mutate('boost', { agreementAccount: options.agreementAccount, token: options.token, amount: String(options.amount) }, options),
             agreementBoosts: async agreementAccount => {

@@ -507,6 +507,58 @@ test.describe('Bets sheet @features', () => {
     expect(await page.evaluate(() => (window as any).__claims)).toEqual([[ACCOUNT, 1], [ACCOUNT, 0]]);
   });
 
+  // reclaim_seed: only the wallet that opened a resolved market sees "Take back my stake".
+  test('the opener of a resolved market takes back what its payouts leave of the stake', async ({ mockApi: page }) => {
+    fileContest(page, { ...OPEN_POOL, creator: SOLANA_WALLET, creatorRole: null, resolved: true, outcome: 'yes' }, 'executed');
+    await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
+    await openCity(page);
+    await connectWalletByConnectorId(page, 'solana-phantom');
+    await waitForBlockchainRuntime(page, ['SolanaMarketBridge', 'solanaWeb3']);
+    await page.evaluate(() => {
+      const w = window as any;
+      const bridge = w.SolanaMarketBridge;
+      w.__reclaims = [];
+      let left = 69_064_720n;
+      bridge.readPositions = async () => ({});
+      bridge.readReclaimableSeed = async () => ({ creator: w.solanaWalletManager.getState().accounts[0], resolved: true, amount: left });
+      bridge.reclaimSeed = async (options: any) => {
+        w.__reclaims.push([options.proposal, options.marketAddress]);
+        const amount = left; left = 0n;
+        options.onStatus?.({ state: 'confirmed', signature: 'sig', explorerUrl: 'https://explorer.solana.com/tx/sig?cluster=devnet' });
+        return { transactionHash: 'sig', explorerUrl: 'https://explorer.solana.com/tx/sig?cluster=devnet', amount };
+      };
+    });
+    await page.locator('#bets-button').click();
+    await page.locator('#bets-sheet .bets-row__title').first().click();
+    const dialog = page.locator('#proposalMarketOverlay');
+    const reclaim = dialog.getByRole('button', { name: /Take back my stake \(69\.06472/ });
+    await expect(reclaim).toBeVisible({ timeout: 30_000 });
+    await reclaim.click();
+    await expect.poll(() => page.evaluate(() => (window as any).__reclaims)).toEqual([[ACCOUNT, OPEN_POOL.address]]);
+    await expect(dialog.locator('[data-market-dialog-status]')).toContainText('Took back 69.06472');
+    await expect(dialog.getByRole('button', { name: /Take back my stake/ })).toHaveCount(0);
+  });
+
+  test('a bettor who did not open a resolved market is not offered its stake', async ({ mockApi: page }) => {
+    fileContest(page, { ...OPEN_POOL, resolved: true, outcome: 'yes' }, 'executed');
+    await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
+    await openCity(page);
+    await connectWalletByConnectorId(page, 'solana-phantom');
+    await waitForBlockchainRuntime(page, ['SolanaMarketBridge', 'solanaWeb3']);
+    await page.evaluate(() => {
+      const w = window as any;
+      w.__seedReads = 0;
+      w.SolanaMarketBridge.readPositions = async () => ({});
+      w.SolanaMarketBridge.readReclaimableSeed = async () => { w.__seedReads += 1; return { amount: 5n }; };
+    });
+    await page.locator('#bets-button').click();
+    await page.locator('#bets-sheet .bets-row__title').first().click();
+    const dialog = page.locator('#proposalMarketOverlay');
+    await expect(dialog.locator('.bets-dialog__chance-word')).toBeVisible();
+    await expect(dialog.getByRole('button', { name: /Take back my stake/ })).toHaveCount(0);
+    expect(await page.evaluate(() => (window as any).__seedReads)).toBe(0);
+  });
+
   test('an independent wallet can open the first USDC market from the Bets row', async ({ mockApi: page }) => {
     await connectMarketCreator(page);
     const row = page.locator(`#bets-sheet .bets-row[data-account="${ACCOUNT}"]`).last();

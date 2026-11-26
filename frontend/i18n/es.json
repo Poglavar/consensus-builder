@@ -8045,6 +8045,8 @@
             "openAgreement": "Abrir el acuerdo",
             "noBets": "No tienes apuestas en este acuerdo.",
             "settledMessage": "Liquidado según el estado del acuerdo en la cadena.",
+            "reclaimStake": "Recuperar mi aportación ({{amount}})",
+            "reclaimedStake": "Has recuperado {{amount}} de tu aportación al mercado.",
             "rule": "SÍ gana si el acuerdo se ejecuta antes del plazo. NO gana si vence, se cancela o no se ejecuta a tiempo.",
             "next": {
                 "open": "Se puede apostar mientras el acuerdo esté Activo y antes del plazo; puedes vender participaciones antes del cierre.",
@@ -8168,6 +8170,8 @@
             "closed": "El mercado de este acuerdo ya cerró.",
             "wrongNetwork": "Cambia tu cartera a Solana devnet.",
             "insider": "El patrocinador y el verificador del acuerdo no pueden operar en este mercado.",
+            "notMarketCreator": "Solo la cartera que abrió este mercado puede recuperar su aportación.",
+            "nothingToReclaim": "No queda nada de la aportación de este mercado por recuperar.",
             "preparing": "Preparando…",
             "sign": "Confirma en tu cartera…",
             "submitted": "Esperando confirmación…",

@@ -41,7 +41,9 @@
             WRONG_NETWORK: ['wrongNetwork', 'Switch your wallet to Solana devnet.'],
             WALLET_NOT_CONNECTED: ['connectWallet', 'Connect a wallet to use devnet USDC.'],
             AGREEMENT_INSIDERS_CANNOT_TRADE: ['insider', 'The agreement sponsor and its verifier cannot trade this bet.'],
-            INSIDER_TRADE: ['insider', 'The agreement sponsor and its verifier cannot trade this bet.']
+            INSIDER_TRADE: ['insider', 'The agreement sponsor and its verifier cannot trade this bet.'],
+            NOT_MARKET_CREATOR: ['notMarketCreator', 'Only the wallet that opened this market can take back its stake.'],
+            NOTHING_TO_RECLAIM: ['nothingToReclaim', 'Nothing of this market’s stake is left to take back.']
         }[error?.code];
         if (key) return t(`bets.trade.${key[0]}`, key[1]);
         return t('bets.trade.failed', 'The action could not be completed. Refresh your balance before trying again.');

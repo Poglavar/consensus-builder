@@ -322,6 +322,13 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
         annotations: PAID_IDEMPOTENT
     }, handler(args => actions.claim(args)));
 
+    server.registerTool('ugt_reclaim_market_seed', {
+        title: 'Take back a market stake',
+        description: 'As the wallet that opened the selected market: once it is resolved, take back what its payouts leave of the LMSR seed (reclaim_seed): the vault less what unclaimed winning positions are still owed. Nothing left signs nothing.',
+        inputSchema: z.object({ agreementAccount, marketAddress: pubkey, confirm: confirmation }),
+        annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.reclaimSeed(args)));
+
     server.registerTool('ugt_resolve_external_market', {
         title: 'Resolve an external-evidence market',
         description: 'Permissionlessly submit a matching SAS attestation to a recipe-bound external market after close.',

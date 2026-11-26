@@ -38,7 +38,7 @@ import {
     AGREEMENT_PROGRAM_ID, AGREEMENT_STATUS, agreementAccountOf, fundAgreement, mintAgreement, mintTermsOf, readAgreementAccount
 } from './agreement-minter.js';
 import {
-    claimAgreementMarket, claimExternalMarket, confirmFunding, fulfillPledge, refundDonation, releaseDonations, resolveAgreementMarket,
+    claimAgreementMarket, claimExternalMarket, confirmFunding, fulfillPledge, reclaimAgreementMarketSeed, refundDonation, releaseDonations, resolveAgreementMarket,
     resolveExternalMarket, revokePledge, voidPledge
 } from './lifecycle-actions.js';
 
@@ -253,6 +253,7 @@ export function createUrbanGameTheoryTools({
         fulfillPledge,
         resolveAgreementMarket,
         claimAgreementMarket,
+        reclaimAgreementMarketSeed,
         resolveExternalMarket,
         claimExternalMarket,
         sendAndConfirmPolling,
@@ -802,6 +803,17 @@ export function createUrbanGameTheoryTools({
             const { keypair, connection } = signer();
             return impl.claimAgreementMarket({
                 connection, claimerKeypair: keypair, subject: agreementAccount, marketAddress: selectedMarket(marketAddress), side,
+                sendAndConfirm: impl.sendAndConfirmPolling
+            });
+        },
+
+        // The market's opener takes back what its resolved market's payouts leave of the LMSR seed
+        // (reclaim_seed), as the bet dialog's "Take back my stake" does for a wallet.
+        async reclaimSeed({ agreementAccount, marketAddress, confirm } = {}) {
+            requireLive(confirm);
+            const { keypair, connection } = signer();
+            return impl.reclaimAgreementMarketSeed({
+                connection, creatorKeypair: keypair, subject: agreementAccount, marketAddress: selectedMarket(marketAddress),
                 sendAndConfirm: impl.sendAndConfirmPolling
             });
         },

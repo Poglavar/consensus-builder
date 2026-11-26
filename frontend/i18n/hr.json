@@ -8058,6 +8058,8 @@
             "openAgreement": "Otvori sporazum",
             "noBets": "Nemate oklada na ovaj sporazum.",
             "settledMessage": "Namireno prema statusu sporazuma na lancu.",
+            "reclaimStake": "Vrati moj ulog ({{amount}})",
+            "reclaimedStake": "Vraćeno je {{amount}} vašeg uloga u tržište.",
             "rule": "DA pobjeđuje ako se sporazum izvrši do roka. NE pobjeđuje ako istekne, bude otkazan ili se ne izvrši na vrijeme.",
             "next": {
                 "open": "Ulagati se može dok je sporazum aktivan i prije roka; udjele možete prodati prije zatvaranja trgovanja.",
@@ -8182,6 +8184,8 @@
             "closed": "Tržište ovog sporazuma je zatvoreno.",
             "wrongNetwork": "Prebacite novčanik na Solana devnet.",
             "insider": "Sponzor sporazuma i njegov verifikator ne mogu trgovati na ovom tržištu.",
+            "notMarketCreator": "Samo novčanik koji je otvorio ovo tržište može vratiti njegov ulog.",
+            "nothingToReclaim": "Od uloga ovog tržišta nije ostalo ništa za vratiti.",
             "preparing": "Priprema…",
             "sign": "Potvrdite u novčaniku…",
             "submitted": "Čekanje potvrde…",

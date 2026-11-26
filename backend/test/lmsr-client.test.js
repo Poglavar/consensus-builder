@@ -243,4 +243,22 @@ describe('Solana LMSR client codec', () => {
         expect(lmsr.decodePosition(positionBytes)).toMatchObject({ market: market.toBase58(), owner: owner.toBase58(),
             side: 1, amount: 9007199254740993n, claimed: false, bump: 252 });
     });
+
+    it('pays a resolved market\'s creator the vault less what unclaimed winners are owed, as the node settlement does', async () => {
+        const { reclaimableSeed: nodeReclaimable } = await import('../agents/lifecycle-actions.js');
+        const resolved = { resolved: true, qYes: 300_000n, qNo: 100_000n, paidOut: 0n };
+        const cases = [
+            [{ ...resolved, outcome: 1 }, 3_466_000n, 3_166_000n],
+            [{ ...resolved, outcome: 0 }, 3_466_000n, 3_366_000n],
+            [{ ...resolved, outcome: 2 }, 3_466_000n, 3_266_000n],
+            [{ ...resolved, outcome: 1, paidOut: 300_000n }, 3_166_000n, 3_166_000n],
+            [{ ...resolved, outcome: 1 }, 300_000n, 0n],
+            [{ ...resolved, resolved: false, outcome: 1 }, 3_466_000n, 0n],
+            [{ ...resolved, outcome: 1 }, null, 0n]
+        ];
+        for (const [market, vault, expected] of cases) {
+            expect(lmsr.reclaimableSeed(market, vault)).toBe(expected);
+            expect(nodeReclaimable(market, vault)).toBe(expected);
+        }
+    });
 });

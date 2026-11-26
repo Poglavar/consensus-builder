@@ -5463,6 +5463,8 @@
             "closed": "A negociação deste acordo terminou.",
             "wrongNetwork": "Mude a sua carteira para a devnet da Solana.",
             "insider": "O promotor do acordo e o respetivo verificador não podem negociar neste mercado.",
+            "notMarketCreator": "Apenas a carteira que abriu este mercado pode recuperar a respetiva entrada.",
+            "nothingToReclaim": "Não resta nada da entrada deste mercado para recuperar.",
             "preparing": "A preparar…",
             "sign": "Confirme na sua carteira…",
             "submitted": "A aguardar confirmação…",
@@ -5492,6 +5494,8 @@
             "openAgreement": "Abrir o acordo",
             "noBets": "Não tem apostas neste acordo.",
             "settledMessage": "Liquidado com base no estado on-chain do acordo.",
+            "reclaimStake": "Recuperar a minha entrada ({{amount}})",
+            "reclaimedStake": "Recuperou {{amount}} da sua entrada no mercado.",
             "rule": "SIM vence se o acordo for executado até à data-limite. NÃO vence se expirar, for cancelado ou ultrapassar a data-limite.",
             "next": {
                 "open": "As apostas permanecem abertas enquanto o acordo estiver Ativo e antes da sua data-limite; pode vender participações antes de a negociação encerrar.",

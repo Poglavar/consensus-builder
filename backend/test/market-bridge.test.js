@@ -206,4 +206,31 @@ describe('Solana LMSR market bridge', () => {
             .rejects.toMatchObject({ code: 'CONFIRMATION_UNKNOWN' });
         expect(lost.provider.signTransaction).toHaveBeenCalledTimes(1);
     });
+
+    it('lets only the opener of a resolved market take back what its payouts leave of the seed', async () => {
+        const sponsor = web3.Keypair.generate().publicKey;
+        const withReclaim = ctx => Object.assign(ctx.client, { reclaimableSeed: codec.reclaimableSeed,
+            buildReclaimSeedIx: vi.fn(args => ({ kind: 'reclaim', args })) }) && ctx;
+        const opener = withReclaim(setup({ sponsor, wallet: sponsor, resolved: true, outcome: 1, sponsorAtaExists: false, traderAtaExists: false }));
+        // vault 1 000 000 000, YES owed 12 000 000 less 1 000 paid out
+        expect(await opener.bridge.readReclaimableSeed({ proposal: opener.proposal, marketAddress: opener.marketAddress }))
+            .toEqual({ creator: sponsor.toBase58(), resolved: true, amount: 988_001_000n });
+        const receipt = await opener.bridge.reclaimSeed({ proposal: opener.proposal, marketAddress: opener.marketAddress });
+        expect(receipt).toMatchObject({ transactionHash: 'tx-signature', amount: 988_001_000n });
+        expect(opener.client.buildReclaimSeedIx).toHaveBeenCalledWith(expect.objectContaining({ creator: sponsor, stakeMint: USDC }));
+        const sent = opener.calls.find(([kind]) => kind === 'simulate')[1].instructions;
+        expect(sent.map(instruction => instruction.kind || 'ata')).toEqual(['ata', 'reclaim']);
+
+        const bettor = withReclaim(setup({ sponsor, resolved: true, outcome: 1 }));
+        await expect(bettor.bridge.reclaimSeed({ proposal: bettor.proposal, marketAddress: bettor.marketAddress }))
+            .rejects.toMatchObject({ code: 'NOT_MARKET_CREATOR' });
+        const open = withReclaim(setup({ sponsor, wallet: sponsor }));
+        expect((await open.bridge.readReclaimableSeed({ proposal: open.proposal, marketAddress: open.marketAddress })).amount).toBe(0n);
+        await expect(open.bridge.reclaimSeed({ proposal: open.proposal, marketAddress: open.marketAddress }))
+            .rejects.toMatchObject({ code: 'MARKET_OPEN' });
+        const taken = withReclaim(setup({ sponsor, wallet: sponsor, resolved: true, outcome: 1, tokenBalance: '11999000' }));
+        await expect(taken.bridge.reclaimSeed({ proposal: taken.proposal, marketAddress: taken.marketAddress }))
+            .rejects.toMatchObject({ code: 'NOTHING_TO_RECLAIM' });
+        expect([bettor, open, taken].every(ctx => !ctx.calls.length)).toBe(true);
+    });
 });

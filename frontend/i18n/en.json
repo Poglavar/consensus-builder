@@ -8018,6 +8018,8 @@
             "openAgreement": "Open the agreement",
             "noBets": "You have no bets on this agreement.",
             "settledMessage": "Settled from the agreement's on-chain status.",
+            "reclaimStake": "Take back my stake ({{amount}})",
+            "reclaimedStake": "Took back {{amount}} of your market stake.",
             "rule": "YES wins if the agreement executes by its deadline. NO wins if it expires, is cancelled, or misses the deadline.",
             "next": {
                 "open": "Betting stays open while the agreement is Active and before its deadline; you can sell shares before trading closes.",
@@ -8141,6 +8143,8 @@
             "closed": "Trading has closed for this agreement.",
             "wrongNetwork": "Switch your wallet to Solana devnet.",
             "insider": "The agreement sponsor and its verifier cannot trade this market.",
+            "notMarketCreator": "Only the wallet that opened this market can take back its stake.",
+            "nothingToReclaim": "Nothing of this market’s stake is left to take back.",
             "preparing": "Preparing…",
             "sign": "Confirm in your wallet…",
             "submitted": "Waiting for confirmation…",

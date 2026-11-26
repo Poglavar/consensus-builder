@@ -355,7 +355,18 @@
         }
         return position;
     }
-    const api = { constants, IX_DISCRIMINATORS, ACCOUNT_DISCRIMINATORS, MARKET_SIZE, POSITION_SIZE, configure,
+    // What reclaim_seed pays the creator now (lmsr_market.rs handle_reclaim_seed): the vault less what the
+    // unclaimed winning positions are still owed (each winning share one unit, a VOID half per share).
+    // 0n for an open market or an unknown vault balance.
+    function reclaimableSeed(market, vaultAtomic) {
+        if (!market?.resolved || typeof vaultAtomic !== 'bigint') return 0n;
+        const qYes = BigInt(market.qYes), qNo = BigInt(market.qNo), paidOut = BigInt(market.paidOut ?? 0n);
+        const outcome = Number(market.outcome);
+        const obligation = outcome === SIDE_YES ? qYes : outcome === SIDE_NO ? qNo : qYes / 2n + qNo / 2n;
+        const owed = obligation > paidOut ? obligation - paidOut : 0n;
+        return vaultAtomic > owed ? vaultAtomic - owed : 0n;
+    }
+    const api = { constants, reclaimableSeed, IX_DISCRIMINATORS, ACCOUNT_DISCRIMINATORS, MARKET_SIZE, POSITION_SIZE, configure,
         getMarketPda, getExternalMarketPda, getPositionPda, getAssociatedTokenAddress, getVaultAddress,
         buildCreateLmsrMarketIx, buildCreateLmsrExternalMarketIx, buildBuyIx, buildSellIx, buildResolveLmsrIx,
         buildChallengeLmsrIx, buildFinalizeLmsrIx, buildClaimLmsrIx, buildReclaimSeedIx, decodeMarket, decodePosition, readMarket, readMarketAccount, readPosition, readPositionAccount };

@@ -17,7 +17,8 @@ evidence credential and schema. The creator funds the required seed. The signed 
 the market account. Creator labels come from the agreement's on-chain sponsor and verifier.
 
 Use the selected `marketAddress` for `ugt_buy_agreement_shares_on_account`,
-`ugt_sell_agreement_shares`, `ugt_resolve_market` and `ugt_claim_market`. The local signer uses
+`ugt_sell_agreement_shares`, `ugt_resolve_market`, `ugt_claim_market` and, for the market's opener,
+`ugt_reclaim_market_seed`. The local signer uses
 its configured keypair and spending limit. The hosted catalogue can be read without a signer.
 [Funded market terms and settlement](lmsr-market.md)
 

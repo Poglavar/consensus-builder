@@ -130,6 +130,7 @@ SOLANA_RPC_URL=https://api.devnet.solana.com
 | `ugt_request_ownership` | signed | Ask a lens member to attest this wallet's ownership of a parcel (paid only to a priced member). |
 | `ugt_refund_donation`, `ugt_void_pledge`, `ugt_revoke_pledge`, `ugt_release_donations`, `ugt_fulfill_pledge` | signed | Settle support once the agreement's outcome is known. |
 | `ugt_resolve_market`, `ugt_claim_market` | signed | Resolve the agreement's market from its account, and claim. |
+| `ugt_reclaim_market_seed` | signed | As the wallet that opened a resolved market: take back what its payouts leave of the seed. |
 | `ugt_resolve_external_market`, `ugt_claim_external_market` | signed | The same for court-evidence markets (below). |
 
 Every local paid or signed tool needs `UGT_MCP_LIVE=1` in the process and `confirm: true` in the call. Unsigned publication needs only `confirm: true`.
