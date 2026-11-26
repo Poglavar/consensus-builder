@@ -1621,6 +1621,11 @@
       "markup": "<input id=\"sun-enabled\" type=\"checkbox\" checked>"
     },
     {
+      "id": "control-b4983ca97227f0-1",
+      "source": "index.html",
+      "markup": "<input id=\"sun-clouds\" type=\"checkbox\" checked>"
+    },
+    {
       "id": "control-897f60999bd86f-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"sun-play\" class=\"btn btn-icon btn-sm sun-play\" aria-pressed=\"true\" title=\"Pause the day\" aria-label=\"Pause the day\">"
