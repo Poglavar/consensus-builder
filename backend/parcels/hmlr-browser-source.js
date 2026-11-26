@@ -820,7 +820,18 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
                 reportProgress({ phase: 'source-fallback', reason: String(error?.message || error) });
             }
         }
-        return fallback();
+        try { return await fallback(); }
+        catch (error) {
+            if (error?.upstreamStatus !== 412) throw error;
+            // A pinned council archive answers 412 once HM Land Registry has republished it: this
+            // release can no longer be served from the councils, so the next query asks the tiles
+            // again instead of waiting out the retry pause.
+            tileStoreRetryAt = 0;
+            const stale = upstreamError('HM Land Registry has republished this council\'s file since the parcel release was built (HTTP 412); the release needs refreshing.');
+            stale.upstreamStatus = 412;
+            stale.cause = error;
+            throw stale;
+        }
     }
     async function queryBounds(bounds, { signal } = {}) {
         validateBounds(bounds, descriptor.maxBboxKm2 ?? 25, descriptor);
