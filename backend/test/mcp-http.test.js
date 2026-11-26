@@ -115,7 +115,7 @@ describe('hosted MCP HTTP', () => {
         expect((await client.readResource({ uri: 'ugt://editing' })).contents[0].text).toContain('JSON Pointer');
     });
     it('rejects credential-bearing environments before starting', () => {
-        for (const key of ['UGT_AGENT_KEYPAIR', 'DATABASE_URL', 'PINATA_JWT_TOKEN']) expect(() => createMcpHttpService({ env: { [key]: 'configured' } })).toThrow(/no credentials/);
+        for (const key of ['UGT_AGENT_KEYPAIR', 'DATABASE_URL', 'PINATA_JWT_TOKEN', 'UGT_PINATA_JWT', 'LENS_EVM_PRIVATE_KEY']) expect(() => createMcpHttpService({ env: { [key]: 'configured' } })).toThrow(/no credentials/);
         // The public basemap key reaches the preview renderer; credentials never do.
         const hosted = hostedEnvironment({ PATH: '/bin', UGT_API_BASE: 'https://api.example', CHAT_DEBUG_COSTS: 'true', MAPTILER_PUBLIC_KEY: 'public', UGT_AGENT_KEYPAIR: 'configured', DATABASE_URL: 'configured', ANTHROPIC_API_KEY: 'configured' });
         expect(hosted).toEqual({ PATH: '/bin', UGT_API_BASE: 'https://api.example', CHAT_DEBUG_COSTS: 'true', MAPTILER_PUBLIC_KEY: 'public' });
