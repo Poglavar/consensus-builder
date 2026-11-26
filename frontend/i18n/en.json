@@ -8783,6 +8783,37 @@
             "entitled": "entitled to {{value}}"
         }
     },
+    "neighbourEffects": {
+        "title": "Effects on neighbours",
+        "measuring": "Measuring sunlight, sky and distances on the neighbouring plots…",
+        "unavailable": "Effects on neighbours could not be measured: {{reason}}",
+        "clear": "No neighbouring plot loses sunlight or sky, and no facing wall comes closer.",
+        "noBuildings": "This adds no new buildings to measure.",
+        "summary": "Neighbouring plots affected: {{count}}; beyond a guide: {{fail}}",
+        "plot": "Plot to the {{direction}}, {{distance}} away",
+        "status": {
+            "fail": "beyond a guide",
+            "worse": "loses some, within the guides"
+        },
+        "garden": "Garden with 2 hours of sun on 21 March: {{before}} → {{after}} (guide: half, or 0.8 × before)",
+        "sky": "Sky seen from the facing wall: {{before}} → {{after}} (guide: 27%, or 0.8 × before)",
+        "distance": "Nearest facing wall: {{before}} → {{after}} (guide: 21 m)",
+        "distanceNew": "Nearest facing wall: {{after}}, none before (guide: 21 m)",
+        "basis": "Sun on 21 March; sky from a window 1.6 m up; flat ground. Heights: {{heights}}.",
+        "heightsSurvey": "measured by {{source}}",
+        "heightsSource": "from the building sources",
+        "estimated": "Building heights nearby that are estimates: {{count}}",
+        "direction": {
+            "n": "north",
+            "ne": "north-east",
+            "e": "east",
+            "se": "south-east",
+            "s": "south",
+            "sw": "south-west",
+            "w": "west",
+            "nw": "north-west"
+        }
+    },
     "permittedCheck": {
         "heightUnknown": "Height {{measured}}: the limit depends on the existing height, which is not recorded",
         "footprintAreaPass": "Ground floor {{measured}}: within {{limit}}",

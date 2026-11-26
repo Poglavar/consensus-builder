@@ -1,0 +1,33 @@
+/* Effects on neighbours (js/planning/effects-advisor.js): the editor sheet's section listing the
+   neighbouring plots a design takes sunlight, sky or distance from, and those plots on the map. */
+.neighbour-effects {
+    margin-top: var(--cb-space-2);
+    padding: var(--cb-space-2);
+    border-radius: var(--cb-radius-sm);
+    border-left: 3px solid var(--cb-success);
+    background: var(--cb-success-soft);
+    color: var(--cb-success-soft-ink);
+    font-size: var(--cb-text-sm);
+}
+.neighbour-effects[hidden] { display: none; }
+.neighbour-effects:is([data-status="affected"], [data-status="unavailable"], [data-status="measuring"]) {
+    border-left-color: var(--cb-warning); background: var(--cb-warning-soft); color: var(--cb-warning-soft-ink);
+}
+.neighbour-effects[data-status="fail"] { border-left-color: var(--cb-danger); background: var(--cb-danger-soft); color: var(--cb-danger-soft-ink); }
+.neighbour-effects .cb-kicker { margin: 0; }
+.neighbour-effects__headline { margin: var(--cb-space-1) 0 0; font-weight: 600; }
+.neighbour-effects__plots { margin: var(--cb-space-1) 0 0; padding-left: var(--cb-space-3); }
+.neighbour-effects__plot { margin: 0 0 var(--cb-space-1); }
+.neighbour-effects__status { font-size: var(--cb-text-xs); }
+.neighbour-effects__plot--fail .neighbour-effects__status { font-weight: 600; }
+.neighbour-effects__readings { margin: 0; padding-left: var(--cb-space-3); }
+.neighbour-effects__reading--fail { font-weight: 600; }
+.neighbour-effects__basis { margin: var(--cb-space-1) 0 0; opacity: 0.8; font-size: var(--cb-text-xs); }
+
+/* The affected plots on the map: red beyond a guide, amber where they only lose something. */
+.neighbour-effect { stroke-width: 2px; fill-opacity: 0.25; }
+.neighbour-effect--fail { stroke: var(--cb-danger); fill: var(--cb-danger); }
+.neighbour-effect--worse { stroke: var(--cb-warning); fill: var(--cb-warning); }
+
+/* The Effects button and section on a plan or design card (js/ui/plan-analysis-controls.js effects). */
+.plan-effects { margin-top: var(--cb-space-2); }

@@ -466,6 +466,15 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     ` : '';
 
+    // Effects on neighbours: the design's new buildings, as its one-member plan, against the
+    // neighbouring plots; the section below the actions shows them (ui/plan-analysis-controls.js).
+    const effectsButtonHtml = proposalKey
+        ? `
+        <button type="button" class="btn btn-design-effects" onclick="BusyControl.track(this, () => window.PlanAnalysisControls.runEffects(window, () => window.PlanAnalysisControls.designPlan(window, window.proposalStorage.getProposal(${inlineJsArg(proposalKey)})), this.closest('.proposal-primary-actions').parentElement.querySelector('[data-design-effects]')))">
+            <i class="fas fa-sun" aria-hidden="true"></i> ${tProposal('neighbourEffects.title', 'Effects on neighbours')}
+        </button>
+    ` : '';
+
     // Agreement creation belongs to a saved plan's actions, whose membership is fixed.
     // Duplicate places fresh movable geometry. Site-bound acts and rules have no free-copy action.
     // Edit geometry below still opens the source's design tool under the ordinary edit contract.
@@ -594,8 +603,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <i class="fas fa-circle-info" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.details', 'Details')}
             </button>
             ${additionalActionsHtml}
+            ${effectsButtonHtml}
             ${shareRefusalNote ? `<p class="proposal-publish-later" id="proposal-publish-later-note">${safeAgentText(shareRefusalNote)}</p>` : ''}
         </div>
+        ${proposalKey ? '<section class="neighbour-effects" data-design-effects role="status" aria-live="polite" hidden></section>' : ''}
         ${mapActionFailureHtml}
     `;
     const escapedProposalDescription = proposalDisplayDescription

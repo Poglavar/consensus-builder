@@ -8962,6 +8962,37 @@
         "whyGraticule": "Ici, les artères suivent les méridiens et les parallèles, comptés depuis Greenwich et l’équateur, avec le pas en secondes d’arc entières le plus proche de 1 km. Toute personne disposant d’une position GPS obtient les mêmes lignes : deux inconnus aboutissent ainsi au même plan.",
         "whyLocal": "Les rues locales divisent chaque super-îlot de manière régulière ; vous choisissez leur espacement, leur largeur et la taille des lots."
     },
+    "neighbourEffects": {
+        "title": "Effets sur les voisins",
+        "measuring": "Mesure du soleil, du ciel et des distances sur les parcelles voisines…",
+        "unavailable": "Les effets sur les voisins n'ont pas pu être mesurés : {{reason}}",
+        "clear": "Aucune parcelle voisine ne perd de soleil ni de ciel, et aucun mur en vis-à-vis ne se rapproche.",
+        "noBuildings": "Aucun nouveau bâtiment à mesurer.",
+        "summary": "Parcelles voisines touchées : {{count}} ; au-delà d'un repère : {{fail}}",
+        "plot": "Parcelle au {{direction}}, à {{distance}}",
+        "status": {
+            "fail": "au-delà d'un repère",
+            "worse": "perd un peu, dans les repères"
+        },
+        "garden": "Jardin avec 2 heures de soleil le 21 mars : {{before}} → {{after}} (repère : la moitié, ou 0,8 × avant)",
+        "sky": "Ciel vu du mur en vis-à-vis : {{before}} → {{after}} (repère : 27 %, ou 0,8 × avant)",
+        "distance": "Mur en vis-à-vis le plus proche : {{before}} → {{after}} (repère : 21 m)",
+        "distanceNew": "Mur en vis-à-vis le plus proche : {{after}}, aucun avant (repère : 21 m)",
+        "basis": "Soleil du 21 mars ; ciel depuis une fenêtre à 1,6 m ; terrain plat. Hauteurs : {{heights}}.",
+        "heightsSurvey": "mesurées par {{source}}",
+        "heightsSource": "issues des sources de bâtiments",
+        "estimated": "Hauteurs estimées de bâtiments voisins : {{count}}",
+        "direction": {
+            "n": "nord",
+            "ne": "nord-est",
+            "e": "est",
+            "se": "sud-est",
+            "s": "sud",
+            "sw": "sud-ouest",
+            "w": "ouest",
+            "nw": "nord-ouest"
+        }
+    },
     "permittedCheck": {
         "heightUnknown": "Hauteur {{measured}} : la limite dépend de la hauteur existante, qui n’est pas connue",
         "footprintAreaPass": "Emprise au sol {{measured}} : dans les {{limit}}",

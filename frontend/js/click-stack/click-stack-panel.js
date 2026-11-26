@@ -776,6 +776,8 @@
         }
         global.clearProposalHoverLayers?.();
         global.highlightFeaturesForInspection?.([]);
+        // A plan's effects on its neighbours, coloured on the map from its Stats and analysis page.
+        global.NeighbourEffectsAdvisor?.clear();
         state.memberships?.dispose();
         state.agreementScope?.dispose(); state.agreementScope = null;
         state.memberships = null;

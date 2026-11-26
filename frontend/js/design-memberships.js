@@ -296,7 +296,7 @@
             analysisPage.dataset.planCid = instance.cid;
             const getPlan = async () => ({ ...(instance.content ? planRow() : await win.NamedPlans.fetchPlan(instance.cid)),
                 ...(!instance.draft ? { published: true } : {}) });
-            analysisPage.append(analysis.stats(win, doc, getPlan, instance), analysis.critics(win, doc, getPlan, {
+            analysisPage.append(analysis.stats(win, doc, getPlan, instance), analysis.effects(win, doc, getPlan), analysis.critics(win, doc, getPlan, {
                 open: true,
                 returnTo: async (plan, critic) => {
                     await win.ClickStack.showPlan(plan, { designs: instance.localDesigns, draft: !!instance.draft, frame: false });

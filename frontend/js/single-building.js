@@ -231,6 +231,7 @@
                 id: entry.id, footprint: entry.feature, heightM: Number(entry.height ?? entry.feature.properties?.height) }));
             const site = stats?.parcelAreaM2 > 0
                 ? { plotAreaM2: stats.parcelAreaM2, footprintM2: stats.footprintAreaM2, floorAreaM2: stats.aboveGroundGbpM2 } : null;
+            scheduleSingleBuildingEffects(buildings);
             const result = await window.PermittedAdvisor.check({ buildings, site });
             if (!result || !singleSession) return;
             const changed = JSON.stringify(result.buildings) !== JSON.stringify(singlePermittedResult?.buildings);
@@ -238,6 +239,21 @@
             window.PermittedAdvisor.render(document.getElementById('single-building-permitted'), result);
             paintSingleBuildingPermitted();
             if (changed) singleSession.setPreview(singleBuildingPreview());
+        });
+    }
+
+    // The neighbouring plots the design takes sunlight, sky or distance from (planning/effects-advisor.js),
+    // listed under the Permitted check and coloured on the map. Advice only, like the check.
+    let singleEffectsShown = false;
+    function scheduleSingleBuildingEffects(buildings) {
+        const advisor = window.NeighbourEffectsAdvisor, container = document.getElementById('single-building-effects');
+        if (!advisor || !container) return;
+        if (!singleEffectsShown) advisor.render(container, null);
+        void advisor.assess({ buildings }, result => {
+            if (!result || !singleSession) return;
+            singleEffectsShown = true;
+            advisor.render(container, result);
+            advisor.show(singleMap, result);
         });
     }
 
@@ -1202,6 +1218,8 @@
         singleEditor = null;
         singleUploadOnConfirm = null;
         singlePermittedResult = null;
+        singleEffectsShown = false;
+        window.NeighbourEffectsAdvisor?.clear();
         singleSession?.close();
         singleSession = null;
         if (typeof window !== 'undefined') {
@@ -1434,6 +1452,7 @@
                         </div>
                         <div class="on-map-building__metrics"><span>${modalText.densityFootprint}</span><strong id="single-building-footprint-summary">—</strong></div>
                         <section id="single-building-permitted" class="permitted-check" role="status" aria-live="polite" hidden></section>
+                        <section id="single-building-effects" class="neighbour-effects" role="status" aria-live="polite" hidden></section>
                         <div class="on-map-building__fields">
                             <div class="parameter-group">
                                 <label for="single-building-use">${translateSingleBuildingText('modal.singleBuilding.useLabel', 'Building use')}</label>

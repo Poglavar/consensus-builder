@@ -8962,6 +8962,37 @@
         "whyGraticule": "Aqui, as vias arteriais seguem os meridianos e os paralelos, contados a partir de Greenwich e do Equador, com o intervalo em segundos de arco inteiros mais próximo de 1 km. Qualquer pessoa com uma posição GPS obtém as mesmas linhas, pelo que dois desconhecidos chegam ao mesmo plano.",
         "whyLocal": "As ruas locais dividem cada superquarteirão de forma uniforme; pode escolher o seu espaçamento e largura, bem como a dimensão dos lotes."
     },
+    "neighbourEffects": {
+        "title": "Efeitos nos vizinhos",
+        "measuring": "A medir o sol, o céu e as distâncias nos lotes vizinhos…",
+        "unavailable": "Não foi possível medir os efeitos nos vizinhos: {{reason}}",
+        "clear": "Nenhum lote vizinho perde sol nem céu, e nenhuma parede fronteira fica mais perto.",
+        "noBuildings": "Não acrescenta edifícios novos para medir.",
+        "summary": "Lotes vizinhos afetados: {{count}}; além de uma referência: {{fail}}",
+        "plot": "Lote a {{direction}}, a {{distance}}",
+        "status": {
+            "fail": "além de uma referência",
+            "worse": "perde algo, dentro das referências"
+        },
+        "garden": "Jardim com 2 horas de sol a 21 de março: {{before}} → {{after}} (referência: metade, ou 0,8 × antes)",
+        "sky": "Céu visto da parede fronteira: {{before}} → {{after}} (referência: 27 %, ou 0,8 × antes)",
+        "distance": "Parede fronteira mais próxima: {{before}} → {{after}} (referência: 21 m)",
+        "distanceNew": "Parede fronteira mais próxima: {{after}}, nenhuma antes (referência: 21 m)",
+        "basis": "Sol a 21 de março; céu a partir de uma janela a 1,6 m; terreno plano. Alturas: {{heights}}.",
+        "heightsSurvey": "medidas por {{source}}",
+        "heightsSource": "das fontes de edifícios",
+        "estimated": "Alturas estimadas de edifícios próximos: {{count}}",
+        "direction": {
+            "n": "norte",
+            "ne": "nordeste",
+            "e": "leste",
+            "se": "sudeste",
+            "s": "sul",
+            "sw": "sudoeste",
+            "w": "oeste",
+            "nw": "noroeste"
+        }
+    },
     "permittedCheck": {
         "heightUnknown": "Altura {{measured}}: o limite depende da altura existente, que não está registada",
         "footprintAreaPass": "Piso térreo {{measured}}: dentro de {{limit}}",

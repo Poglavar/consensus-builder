@@ -8829,6 +8829,37 @@
             "entitled": "ima pravo na {{value}}"
         }
     },
+    "neighbourEffects": {
+        "title": "Uticaji na susede",
+        "measuring": "Merim sunce, nebo i udaljenosti na susednim parcelama…",
+        "unavailable": "Uticaji na susede nisu izmereni: {{reason}}",
+        "clear": "Nijedna susedna parcela ne gubi sunce ni nebo, i nijedan naspramni zid ne dolazi bliže.",
+        "noBuildings": "Ne dodaje nove zgrade za merenje.",
+        "summary": "Pogođene susedne parcele: {{count}}; preko smernice: {{fail}}",
+        "plot": "Parcela na {{direction}}, udaljena {{distance}}",
+        "status": {
+            "fail": "preko smernice",
+            "worse": "nešto gubi, unutar smernica"
+        },
+        "garden": "Vrt sa 2 sata sunca 21. marta: {{before}} → {{after}} (smernica: polovina, ili 0,8 × pre)",
+        "sky": "Nebo sa naspramnog zida: {{before}} → {{after}} (smernica: 27 %, ili 0,8 × pre)",
+        "distance": "Najbliži naspramni zid: {{before}} → {{after}} (smernica: 21 m)",
+        "distanceNew": "Najbliži naspramni zid: {{after}}, pre nijedan (smernica: 21 m)",
+        "basis": "Sunce 21. marta; nebo sa prozora na 1,6 m; ravan teren. Visine: {{heights}}.",
+        "heightsSurvey": "izmerio {{source}}",
+        "heightsSource": "iz izvora zgrada",
+        "estimated": "Procenjene visine obližnjih zgrada: {{count}}",
+        "direction": {
+            "n": "severu",
+            "ne": "severoistoku",
+            "e": "istoku",
+            "se": "jugoistoku",
+            "s": "jugu",
+            "sw": "jugozapadu",
+            "w": "zapadu",
+            "nw": "severozapadu"
+        }
+    },
     "permittedCheck": {
         "heightUnknown": "Visina {{measured}}: granica zavisi od postojeće visine, koja nije zabeležena",
         "footprintAreaPass": "Osnova prizemlja {{measured}}: u okviru {{limit}}",
