@@ -287,7 +287,8 @@
         if (kind === 'garden') return t('neighbourEffects.garden', { hours: format().formatNumber(guides.garden.hours), date: dayOf(guides.garden.date),
             before: share(value.before), after: share(value.after), share: share(guides.garden.share), ratio: ratio(guides.garden.ratio) });
         if (kind === 'noSky') return t('neighbourEffects.noSky', { room: ROOM_KEYS[value.room] ? t(ROOM_KEYS[value.room]) : value.room,
-            floor: value.level === 0 ? t('threeMode.controls.floorGround') : t('threeMode.controls.floorLevel', { level: value.level }),
+            // The storey in the reader's numbering (storey-numbering.js: Russian and Kazakh call street level floor 1).
+            floor: root.StoreyNumbering.storeyLabel(value.level, (key, _fallback, params) => t(key, params)),
             before: share(value.before), after: share(value.after), ratio: ratio(value.ratio) });
         if (kind === 'sunlight') return t('neighbourEffects.sunlight', { after: sky(value.after), winterAfter: sky(value.winterAfter),
             before: sky(value.before), winterBefore: sky(value.winterBefore), percent: sky(guides.sunlight.percent), winterPercent: sky(guides.sunlight.winterPercent) });

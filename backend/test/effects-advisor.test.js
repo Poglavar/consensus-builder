@@ -9,6 +9,7 @@ const require = createRequire(import.meta.url);
 const source = readFileSync(new URL('../../frontend/js/planning/effects-advisor.js', import.meta.url), 'utf8');
 const controls = require('../../frontend/js/ui/plan-analysis-controls.js');
 const NeighbourEffects = require('../../frontend/js/planning/neighbour-effects.js');
+const StoreyNumbering = require('../../frontend/js/storey-numbering.js');
 
 const element = tag => ({ tag, className: '', textContent: '', children: [], dataset: {}, hidden: false, attributes: {},
     append(...nodes) { this.children.push(...nodes); }, prepend(node) { this.children.unshift(node); },
@@ -20,7 +21,7 @@ const format = { formatPercent: (v, o) => `${Math.round(o?.ofHundred ? v : v * 1
     formatNumber: v => String(v), currentLocale: () => 'en-GB' };
 
 function load() {
-    const window = { i18n: { t: (key, params = {}) => `${key}(${Object.values(params).join('|')})` }, CbFormat: format, NeighbourEffects };
+    const window = { i18n: { t: (key, params = {}) => `${key}(${Object.values(params).join('|')})` }, CbFormat: format, NeighbourEffects, StoreyNumbering };
     new Function('window', 'document', source)(window, { createElement: element });
     return window.NeighbourEffectsAdvisor;
 }
@@ -98,6 +99,13 @@ describe('Effects section', () => {
         text = textOf(section);
         expect(text).toContain('neighbourEffects.noSky(neighbourEffects.room.living()|threeMode.controls.floorGround()|100%|30%|0.8)');
         expect(text).not.toContain('neighbourEffects.noSkyPrompt');
+        // The storey follows the reader's numbering: in Russian and Kazakh street level is floor 1.
+        globalThis.i18n = { getStoreyNumbering: () => 'ground-one' };
+        try {
+            section = element('section');
+            advisor.render(section, { ...AFFECTED, lots: [measured], guides });
+            expect(textOf(section)).toContain('neighbourEffects.noSky(neighbourEffects.room.living()|threeMode.controls.floorLevel(1)|100%|30%|0.8)');
+        } finally { delete globalThis.i18n; }
         section = element('section');
         advisor.render(section, { ...AFFECTED, lots: [{ ...lot, noSky: { status: 'same', rooms: 6, before: 1, after: 1 } }], guides });
         expect(textOf(section)).toContain('neighbourEffects.noSkySame(6)');
@@ -190,7 +198,7 @@ describe('Plots in the list point at the map', () => {
         return { paths, map, drawn };
     }
     function loadWithWindow() {
-        const window = { i18n: { t: (key, params = {}) => `${key}(${Object.values(params).join('|')})` }, CbFormat: format, NeighbourEffects };
+        const window = { i18n: { t: (key, params = {}) => `${key}(${Object.values(params).join('|')})` }, CbFormat: format, NeighbourEffects, StoreyNumbering };
         new Function('window', 'document', source)(window, { createElement: element });
         return { advisor: window.NeighbourEffectsAdvisor, window };
     }
