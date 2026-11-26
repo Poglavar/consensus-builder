@@ -479,7 +479,8 @@ amount and reserve the unit. `ugt_approval_link` opens the relevant wallet actio
 
 `GET $(base)/agreements/apartment-offers?city=<city>&xrayBuilding=<building>&unit=<unit>` finds
 active minted rounds offering a selected apartment. Each result includes the agreement CID, title,
-city, permanent unit ID, label and deposit. Agents can use `ugt_apartment_offers` for the same lookup. Before a deposit, the developer’s assigned lens must qualify the buyer for that apartment. The lens serves `GET /lens/agreements/:cid/apartments/:unitId/qualification?buyer=<wallet>`.
+city, permanent unit ID, label and deposit. Without `unit` it lists every unit of the building offered
+by an active or executed minted round, one result per unit. Agents can use `ugt_apartment_offers` for the same lookup. Before a deposit, the developer’s assigned lens must qualify the buyer for that apartment. The lens serves `GET /lens/agreements/:cid/apartments/:unitId/qualification?buyer=<wallet>`.
 
 Standalone SOL bids and listings use `ugt_draft_property_offer` with `apartment: {xrayBuilding, unit, at}` and the maker’s `lens`. `ugt_list_property_offer` accepts city, building and unit for discovery. The named lens qualifies the accepting party.
 Read current on-chain availability with `GET $(base)/agreements/<cid>?inventory=1` or

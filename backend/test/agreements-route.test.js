@@ -516,12 +516,26 @@ describe('GET /agreements', () => {
         expect(res.status).toBe(200);
         expect(res.body).toEqual({ offers: [row] });
         const [call] = pool.getCalls();
-        expect(call.sql).toContain("AND item->>'xrayBuilding' = $2 AND item->>'unit' = $3");
+        expect(call.sql).toContain("AND item->>'xrayBuilding' = $2 AND ($3::text IS NULL OR item->>'unit' = $3)");
+        expect(call.sql).toMatch(/END = 'active'/);
         expect(call.sql).toContain('onchain IS NOT NULL');
         expect(call.sql).toContain('COALESCE($4::text, city) = $1');
         expect(call.params).toEqual([query.city, query.xrayBuilding, query.unit, query.city]);
         expect((await request(app).get('/agreements/apartment-offers').query({ ...query, unit: '101' })).status).toBe(400);
+        expect((await request(app).get('/agreements/apartment-offers').query({ ...query, unit: '' })).status).toBe(400);
         expect(pool.getCalls()).toHaveLength(1);
+    });
+
+    it('finds every active or executed round offering apartments of a building when no unit is named', async () => {
+        const pool = createMockPool();
+        const query = { city: 'zagreb', xrayBuilding: 'zagreb::gdi-3d::148972' };
+        pool.answer(/CROSS JOIN LATERAL jsonb_array_elements/, { rows: [] });
+        const res = await request(appFor(pool).app).get('/agreements/apartment-offers').query(query);
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ offers: [] });
+        const [call] = pool.getCalls();
+        expect(call.sql).toMatch(/END IN \('active', 'executed'\)/);
+        expect(call.params).toEqual([query.city, query.xrayBuilding, null, query.city]);
     });
     const listed = async (query) => {
         const pool = createMockPool();

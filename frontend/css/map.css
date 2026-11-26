@@ -367,6 +367,14 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 .three-apartment-panel [role=status], .three-apartment-panel .cb-link-row { grid-column: 1 / -1; }
 .three-apartment-panel .cb-link-row { overflow-y: auto; max-height: 24vh; }
 .three-apartment-panel .cb-link-row:empty { display: none; }
+/* The building's crowdfunding rounds: the chosen apartment's state and terms, the legend and stats. */
+.three-apartment-panel .three-apartment-rounds { grid-column: 1 / -1; display: grid; gap: var(--cb-space-2); min-width: 0; max-height: 40vh; overflow-y: auto; }
+.three-apartment-panel .three-apartment-rounds:empty { display: none; }
+.three-apartment-round-unit { display: grid; gap: var(--cb-space-1); padding: var(--cb-space-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-sm); }
+.three-apartment-round-unit > p { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cb-space-1); margin: 0; overflow-wrap: anywhere; }
+.three-apartment-round-unit > .btn { justify-self: start; }
+.three-apartment-round > summary { font-size: var(--cb-text-sm); }
+.three-apartment-round[open] > .apartment-round-stats { margin-block-start: var(--cb-space-2); }
 .three-apartment-panel .three-apartment-close {
     position: absolute;
     inset-block-start: var(--cb-space-2);

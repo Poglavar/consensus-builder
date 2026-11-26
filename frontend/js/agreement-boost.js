@@ -128,11 +128,23 @@
         const { agreement, account, wallet } = context;
         const wrap = el('section', 'agreement-apartment-inventory');
         wrap.append(el('h4', 'agreement-boost__title', apartmentText('inventory', 'Apartments')));
+        // The chain's states, counts and per-floor stats (ApartmentRound); a draft has none yet.
+        const round = root.ApartmentRound;
+        const view = round.model.roundView({ cid: agreement.published?.cid || null, funding: agreement.funding,
+            inventory: statuses.length ? statuses : null, accepting: active });
+        if (view.read) wrap.append(round.statsView(view, t));
+        const searchable = [];
+        const list = el('div', 'agreement-apartment-inventory__list');
         for (const unit of agreement.funding.apartments.units) {
             const offer = statuses.find(item => item.unitId === unit.unitId);
+            const shown = view.units.find(item => item.unitId === unit.unitId);
             const row = el('article', 'agreement-apartment-unit');
             row.dataset.agreementApartmentUnit = unit.unitId;
-            row.append(unitDetails(agreement, unit));
+            const place = el('div', 'agreement-apartment-unit__state');
+            place.append(el('span', 'agreement-panel-meta', t('threeMode.controls.floorLevel', 'Floor {{level}}', shown)));
+            if (shown.state) place.append(round.stateBadge(shown, t));
+            row.append(place, unitDetails(agreement, unit));
+            searchable.push({ element: row, text: round.searchText(shown, view, t) });
             const standalone = el('details');
             standalone.append(el('summary', 'cb-link', apartmentText('standalone', 'Independent offers in SOL')));
             const { xrayBuilding, at, access } = unit;
@@ -160,22 +172,19 @@
                 actions.append(schedule);
             }
             if (offer) {
-                const captions = {
-                    available: active ? apartmentText('available', 'Available') : apartmentText('closed', 'Round closed'),
-                    reserved: apartmentText('taken', 'Reserved'),
-                    unavailable: apartmentText('heldElsewhere', 'Reserved in another round'),
-                    unlisted: apartmentText('unlisted', 'Awaiting developer listing')
-                };
+                // The state is the row's badge; this line announces this wallet's own reservation.
                 const mine = offer.status === 'reserved' && offer.buyer === wallet;
-                const caption = el('span', 'agreement-panel-hint', mine ? reservedText(unit) : captions[offer.status]);
+                const caption = el('span', 'agreement-panel-hint agreement-boost__status', mine ? reservedText(unit) : '');
                 caption.setAttribute('role', 'status');
                 if (mine) caption.classList.add('agreement-boost__status--success');
                 actions.append(caption);
             }
             row.append(actions);
             row.append(standalone);
-            wrap.append(row);
+            list.append(row);
         }
+        if (searchable.length > 1) wrap.append(round.searchField(searchable, t));
+        wrap.append(list);
         return wrap;
     }
 
@@ -413,7 +422,8 @@
         const crowdfunding = context.crowdfunding;
         const active = doc.activeElement;
         const focusKey = slot.contains(active) && ['data-agreement-boost-action', 'data-agreement-list-unit', 'data-agreement-reserve-unit',
-            'data-agreement-schedule-unit', 'data-agreement-xray-unit', 'data-agreement-drawing-unit'].find(key => active.hasAttribute(key));
+            'data-agreement-schedule-unit', 'data-agreement-xray-unit', 'data-agreement-drawing-unit', 'data-apartment-round-search'].find(key => active.hasAttribute(key));
+        const query = slot.querySelector('[data-apartment-round-search]')?.value || '';
         const focusSelector = focusKey && `[${focusKey}="${CSS.escape(active.getAttribute(focusKey))}"]`;
         const section = el('div', 'agreement-boost');
         if (!crowdfunding) section.append(el('h4', 'agreement-boost__title', t('agreement.boost.title', 'Boost')));
@@ -427,7 +437,8 @@
             const accepting = state.canBoost && Math.floor(Date.now() / 1000) <= Math.floor(Date.parse(context.agreement.deadline) / 1000);
             const apartments = context.agreement.funding?.apartments;
             if (crowdfunding) {
-                const raised = apartments ? entry.inventory.reduce((sum, row) => sum + (row.status === 'reserved' ? BigInt(row.deposit) : 0n), 0n) : state.usdc.amount;
+                const raised = apartments ? root.ApartmentRound.model.roundView({ funding: context.agreement.funding, inventory: entry.inventory }).reservedDeposits
+                    : state.usdc.amount;
                 context.onFundingTotal?.(raised, state.usdc.released);
                 if (apartments) section.append(inventoryView(slot, context, entry.inventory, accepting));
             } else {
@@ -475,6 +486,8 @@
         if (contributeButton) contributeButton.after(line);
         else section.append(line);
         slot.replaceChildren(section);
+        const search = query && slot.querySelector('[data-apartment-round-search]');
+        if (search) { search.value = query; search.dispatchEvent(new Event('input')); }
         // A donate approval link may have opened the agreement before this lazy module loaded.
         // This is presentation readiness only; ApprovalLink focuses the button and never clicks it.
         doc.dispatchEvent(new CustomEvent('agreement-boost-ready', { detail: { cid: context.agreement?.published?.cid || context.agreement?.cid || null } }));

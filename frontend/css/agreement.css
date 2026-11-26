@@ -105,6 +105,34 @@
 .agreement-apartment-unit { display: grid; min-width: 0; gap: var(--cb-space-2); padding: var(--cb-space-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-sm); }
 .agreement-apartment-unit__details { display: grid; gap: var(--cb-space-1); min-width: 0; }
 .agreement-apartment-unit__details strong { overflow-wrap: anywhere; }
+.agreement-apartment-unit__state { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cb-space-2); }
+.agreement-apartment-unit[hidden] { display: none; }
+.agreement-apartment-inventory__list { display: grid; gap: var(--cb-space-2); }
+
+/* ---- Apartment rounds (js/apartment-round.js): the stats block, the state legend and the search,
+   in the funding section and the X-ray apartment panel. Badges use the warning, success and neutral
+   tones; the swatches use the map state colours the X-ray paints: reserved amber, available green,
+   not available stone. ---- */
+.apartment-round-stats { display: grid; gap: var(--cb-space-2); min-width: 0; font-size: var(--cb-text-sm); }
+.apartment-round-stats__title { margin: 0; font-size: var(--cb-text-sm); font-weight: var(--cb-weight-semibold); overflow-wrap: anywhere; }
+.apartment-round-stats__counts { display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); gap: var(--cb-space-2); margin: 0; }
+.apartment-round-stats__counts > div { display: grid; gap: var(--cb-space-1); padding: var(--cb-space-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-sm); }
+.apartment-round-stats__counts dt { display: flex; align-items: center; gap: var(--cb-space-1); color: var(--cb-text-muted); }
+.apartment-round-stats__counts dd { margin: 0; font-size: var(--cb-text-lg); font-weight: var(--cb-weight-semibold); }
+.apartment-round-stats__deposits { margin: 0; overflow-wrap: anywhere; }
+.apartment-round-stats__table { width: 100%; border-collapse: collapse; }
+.apartment-round-stats__table th, .apartment-round-stats__table td { padding: var(--cb-space-1); border-bottom: 1px solid var(--cb-line); text-align: end; }
+.apartment-round-stats__table th:first-child { text-align: start; }
+.apartment-round-legend { display: flex; flex-wrap: wrap; gap: var(--cb-space-1) var(--cb-space-3); margin: 0; padding: 0; list-style: none; font-size: var(--cb-text-sm); }
+.apartment-round-legend li { display: inline-flex; align-items: center; gap: var(--cb-space-1); }
+.apartment-round-swatch { display: inline-block; flex: none; width: var(--cb-space-3); height: var(--cb-space-3); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-sm); }
+.apartment-round-swatch--reserved { background: var(--cb-map-state-application); }
+.apartment-round-swatch--available { background: var(--cb-map-state-free); }
+.apartment-round-swatch--unavailable { background: var(--cb-map-state-stopped); }
+.apartment-round-swatch--not-offered { background: var(--cb-surface); }
+.apartment-round-search { display: grid; gap: var(--cb-space-1); }
+.apartment-round-search input { width: 100%; box-sizing: border-box; }
+.apartment-round-search__count:empty { display: none; }
 
 .agreement-panel-note--danger {
     background: var(--cb-danger-soft);

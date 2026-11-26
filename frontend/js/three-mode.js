@@ -10155,6 +10155,7 @@
         if (!apartmentPanel || !isActive || !floorPlanGroup || !xrayScope || (realisticLayerActive && xrayScope === 'built') || !apartmentAddress
             || !xrayDetailShown) {
             apartmentHover?.select(null);
+            paintApartmentStates([], null);
             apartmentPanel?.hide();
             return;
         }
@@ -10165,7 +10166,11 @@
         const unit = matches.length === 1 ? matches[0] : null;
         const region = unit?.floor?.userData.apartmentRegions.find(region => region.id === unit.regionId);
         apartmentHover?.select(region ? { floor: unit.floor, region } : null);
-        apartmentPanel.show(units, unit, groups.some(group => group.userData.suggested), units.length > 0 && apartmentAddress.unit !== null);
+        const rounds = apartmentRoundsFor(apartmentAddress.building);
+        const states = rounds?.status === 'ready' ? window.ApartmentRound.model.buildingStates(rounds.rounds, apartmentAddress.building) : null;
+        paintApartmentStates(units, states);
+        apartmentPanel.show(units, unit, groups.some(group => group.userData.suggested), units.length > 0 && apartmentAddress.unit !== null,
+            rounds && { entry: rounds, states });
         if (unit && apartmentAddress.openFloor) {
             apartmentAddress.openFloor = false;
             window.ThreeClickStack?.close({ silent: true });
@@ -10173,6 +10178,42 @@
             if (window.PlanningViews?.getSelected()?.role === 'existing') window.PlanningViews.select(null);
             if (floorCutawayLevel !== unit.level) setFloorCutaway(unit.level);
         }
+    }
+
+    // The crowdfunding rounds offering apartments of a shareable building (ApartmentRound, loaded
+    // with the agreement panel's funding scripts on first use); null for an unpublished building.
+    let apartmentRoundScripts = null;
+    function onApartmentRounds() {
+        refreshApartmentSelection();
+        queueThreeFrame();
+    }
+    function apartmentRoundsFor(building) {
+        const city = window.CityConfigManager?.getCurrentCityId?.();
+        if (!city || !buildingUnitLinks.apartmentLocator(building) || !window.AgreementPanel?.loadFundingScripts) return null;
+        if (!window.ApartmentRound) {
+            apartmentRoundScripts ??= window.AgreementPanel.loadFundingScripts().then(onApartmentRounds, error => {
+                console.error(`[${new Date().toISOString()}] [ThreeMode] the apartment round scripts could not be loaded`, error);
+                apartmentRoundScripts = null;
+            });
+            return null;
+        }
+        return window.ApartmentRound.buildingRounds({ city, xrayBuilding: building, onChange: onApartmentRounds });
+    }
+
+    // Paints each offered apartment of the shown building in its reservation state's colour.
+    let apartmentPaintSignature = '';
+    function paintApartmentStates(units, states) {
+        const entries = [];
+        for (const unit of states?.size ? units : []) {
+            const known = states.get(unit.key);
+            const region = known && unit.floor?.userData.apartmentRegions?.find(item => item.id === unit.regionId);
+            if (region) entries.push({ floor: unit.floor, region, state: known.state });
+        }
+        const signature = entries.map(entry => `${entry.floor.uuid}:${entry.region.id}:${entry.state}`).join('|');
+        if (signature === apartmentPaintSignature) return;
+        apartmentPaintSignature = signature;
+        apartmentHover?.paint(entries.map(entry => ({ ...entry, color: window.ApartmentRound.stateColor(entry.state) })).filter(entry => entry.color));
+        queueThreeFrame();
     }
 
     function selectApartment(building, unit = null) {
@@ -12181,6 +12222,7 @@
         cancelLoop();
         apartmentHover?.dispose();
         apartmentHover = null;
+        apartmentPaintSignature = '';
         apartmentPanel?.dispose();
         apartmentPanel = null;
         suggestedStreetLoader?.cancel(true);

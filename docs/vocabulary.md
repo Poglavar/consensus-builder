@@ -100,6 +100,8 @@ A crowdfunding offer for one whole apartment at a fixed price and deposit. The d
 
 The **reservation deposit** is the fixed USDC amount the buyer pays into the agreement’s escrow to reserve the unit. Only deposits attached to reserved units count toward an apartment round’s funding target.
 
+The **reservation state** of an offered apartment is read from its `ApartmentUnit` listing on Solana (`ApartmentRound.model`): **reserved** (this round’s listing holds a funded reservation), **available** (listed by this round, unreserved, and the round is active before its deadline) or **not available** (awaiting the developer’s listing, the round closed, or reserved in another round). A reserved apartment is not sold. An apartment of a building that no round offers is **not offered**. Where several rounds offer the same apartment, the strongest state shows: reserved, then available.
+
 The **contract schedule** ties that apartment, its full price and paid deposit to the buyer wallet, developer, exact agreement, attached contract and unit drawing. Its deposit position identifies the payment on Solana, and its qualification address identifies the lens attestation.
 
 ### Poll

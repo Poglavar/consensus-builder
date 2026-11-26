@@ -117,21 +117,22 @@
                 return true;
             });
         }
-        function overlay(picked, name, active = false) {
+        // `stateMaterial` paints an apartment's reservation state under the hover and selection.
+        function overlay(picked, name, active = false, stateMaterial = null) {
             const shapes = picked.region.polygons.map(polygon => {
                 const shape = new THREE.Shape(polygon[0].map(p => new THREE.Vector2(...p)));
                 polygon.slice(1).forEach(ring => shape.holes.push(new THREE.Path(ring.map(p => new THREE.Vector2(...p)))));
                 return shape;
             });
             const shared = picked.region.kind === 'non-apartment';
-            const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shapes), active ? selectionMaterial : shared ? sharedMaterial : material);
+            const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shapes), stateMaterial || (active ? selectionMaterial : shared ? sharedMaterial : material));
             mesh.name = `${name}:${picked.floor.userData.id}:${picked.region.id}`;
             mesh.userData = { cbApartmentHover: true, apartmentId: shared ? null : picked.region.id,
                 regionKind: shared ? 'non-apartment' : 'apartment', floorId: picked.floor.userData.id };
             // Warning patches end at .07 m. A slope offset alone cannot lift a .035 m
             // highlight above them when the camera looks straight down.
-            mesh.position.z = (picked.region.elevationM || 0) + (active ? .09 : .08);
-            mesh.renderOrder = active ? 6 : 5;
+            mesh.position.z = (picked.region.elevationM || 0) + (stateMaterial ? .075 : active ? .09 : .08);
+            mesh.renderOrder = stateMaterial ? 4 : active ? 6 : 5;
             mesh.raycast = () => {};
             picked.floor.add(mesh);
             return mesh;
@@ -142,6 +143,22 @@
             selectionMesh?.geometry.dispose();
             selected = picked;
             selectionMesh = picked ? overlay(picked, 'FloorUnitSelection', true) : null;
+        }
+        // Reservation states: [{ floor, region, color }] replaces every painted apartment.
+        let painted = [];
+        const paintMaterials = new Map();
+        function paint(entries = []) {
+            painted.forEach(mesh => { mesh.removeFromParent(); mesh.geometry.dispose(); });
+            painted = entries.map(entry => {
+                let state = paintMaterials.get(entry.color);
+                if (!state) {
+                    state = material.clone();
+                    state.color.set(entry.color);
+                    state.opacity = .6;
+                    paintMaterials.set(entry.color, state);
+                }
+                return overlay(entry, 'FloorUnitState', false, state);
+            });
         }
         function update(enabled) {
             if (!enabled || !pointer) { if (current) clear(); return; }
@@ -161,6 +178,8 @@
             Object.entries(listeners).forEach(([type, listener]) => canvas.removeEventListener(type, listener));
             leave();
             select(null);
+            paint([]);
+            paintMaterials.forEach(state => state.dispose());
             material.dispose();
             sharedMaterial.dispose();
             selectionMaterial.dispose();
@@ -174,7 +193,7 @@
             while (group && !group.userData.cbFloorPlan) group = group.parent;
             return group ? { group, floor: null, region: null } : null;
         }
-        return { update, clear, invalidate, dispose, select, pick };
+        return { update, clear, invalidate, dispose, select, pick, paint };
     }
 
     const api = { inRing, apartmentAtHit, spaceAtHit, attach };

@@ -303,6 +303,9 @@ test.describe('Agreements on chain @core', () => {
     await expect(panel.locator('[data-agreement-funding-disclosure]')).toContainText('lens must qualify your wallet');
     const reserve = row.getByRole('button', { name: 'Reserve apartment', exact: true });
     await expect(reserve).toBeVisible();
+    await expect(row.locator('[data-apartment-state="available"]')).toHaveText('Available');
+    const stats = panel.getByRole('region', { name: 'Apartment reservations' });
+    await expect(stats).toContainText('Reserved deposits: 0 of 12.5 devnet USDC (0% of the target)');
     await reserve.press('Enter');
     const review = page.locator('.cb-dialog--prompt');
     await expect(review).toContainText('Apartment A-101');
@@ -329,6 +332,8 @@ test.describe('Agreements on chain @core', () => {
     await receipt.getByRole('button', { name: 'OK' }).press('Enter');
     await expect(row.getByRole('status')).toHaveText('Apartment A-101 reserved. Your deposit was 12.5 devnet USDC.');
     await expect(panel.locator('[data-agreement-funding-goal]')).toContainText('12.5 of 12.5');
+    await expect(row.locator('[data-apartment-state="reserved"]')).toHaveText('Reserved');
+    await expect(stats).toContainText('Reserved deposits: 12.5 of 12.5 devnet USDC (100% of the target)');
     await expect(reserve).toHaveCount(0);
     const download = page.waitForEvent('download');
     await row.getByRole('button', { name: 'Download contract schedule' }).press('Enter');

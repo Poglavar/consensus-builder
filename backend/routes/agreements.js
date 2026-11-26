@@ -721,23 +721,26 @@ export function setupAgreementsRoute(app, deps) {
     });
 
     // Published apartment offers for an X-ray selection. Keep this lookup compact; the agreement
-    // route remains the source of drawings, terms and on-chain availability.
+    // route remains the source of drawings, terms and on-chain availability. Without a unit it finds
+    // every minted round offering apartments of the building, executed ones too (their reservations
+    // stand), for the X-ray's reservation colours; their states are read from Solana, not from here.
     app.get('/agreements/apartment-offers', async (req, res) => {
         const { city: rawCity, xrayBuilding, unit } = req.query;
         const building = agreementRecord.apartmentLocator(xrayBuilding);
-        if (typeof rawCity !== 'string' || !rawCity.trim() || !building || !agreementRecord.apartmentUnitLocator(unit)) {
-            return res.status(400).json({ error: 'city, xrayBuilding and unit are required.', code: 'bad-request' });
+        if (typeof rawCity !== 'string' || !rawCity.trim() || !building || (unit !== undefined && !agreementRecord.apartmentUnitLocator(unit))) {
+            return res.status(400).json({ error: 'city and xrayBuilding are required; unit must be an X-ray unit address.', code: 'bad-request' });
         }
         const city = normalizeCityCode(rawCity);
         if (!city) return res.status(400).json({ error: 'Unknown city.', code: 'bad-city' });
         const buildingCity = building[0] === 'design' ? null : normalizeCityCode(building[0]);
+        const statuses = unit === undefined ? `IN ('active', 'executed')` : `= 'active'`;
         try {
             const { rows } = await pool.query(`SELECT cid, title, city, item->>'unitId' AS "unitId", item->>'label' AS label,
                     item->>'depositUsdcAtomic' AS "depositUsdcAtomic"
                 FROM ${AGREEMENT_TABLE} CROSS JOIN LATERAL jsonb_array_elements(content->'funding'->'apartments'->'units') item
-                WHERE COALESCE($4::text, city) = $1 AND onchain IS NOT NULL AND ${STATUS_SQL} = 'active'
-                  AND item->>'xrayBuilding' = $2 AND item->>'unit' = $3
-                ORDER BY created_at DESC, cid`, [city, xrayBuilding, unit, buildingCity]);
+                WHERE COALESCE($4::text, city) = $1 AND onchain IS NOT NULL AND ${STATUS_SQL} ${statuses}
+                  AND item->>'xrayBuilding' = $2 AND ($3::text IS NULL OR item->>'unit' = $3)
+                ORDER BY created_at DESC, cid`, [city, xrayBuilding, unit ?? null, buildingCity]);
             return res.json({ offers: rows });
         } catch (error) {
             console.error(`[${new Date().toISOString()}] Error in GET /agreements/apartment-offers:`, error);

@@ -655,6 +655,24 @@
             return pledge().readApartmentInventory(connection, ref.account, sponsor, agreement.funding, win.AgreementRecord);
         }
 
+        // A published apartment round as Solana holds it, for a row whose content was checked against
+        // its CID (AgreementSync.fetchAgreement): the agreement account is derived from the CID and the
+        // developer, never taken from the index. { account, status, deadline, units }, or null unminted.
+        async function apartmentRound({ cid, content } = {}) {
+            const api = await dependencies();
+            const sponsor = idOf(content?.sponsor);
+            if (!idOf(cid) || !sponsor || !content?.funding?.apartments) throw codedError(t('agreement.funding.apartments.unknown', 'Choose an apartment offered by this round.'), 'unknown-unit');
+            const connection = win.SolanaChainDataLoader.getConnection('devnet');
+            const value = await api.fetchAgreement(connection, { cid, authority: sponsor, programId: programId() });
+            if (!value) return null;
+            if (value.requiredFunding !== BigInt(content.funding.targetUsdcAtomic) || value.fundingMint !== api.constants.USDC_DEVNET_MINT) {
+                throw codedError(t('agreement.funding.mismatch', 'The funding terms differ from the published agreement.'), 'funding-mismatch');
+            }
+            const account = api.getAgreementPda(cid, sponsor, programId())[0].toBase58();
+            const units = await pledge().readApartmentInventory(connection, account, sponsor, content.funding, win.AgreementRecord);
+            return { account, status: value.status, deadline: value.deadline, units };
+        }
+
         function positionsFor(agreement, connection, account, owner) {
             return agreement.funding?.apartments
                 ? pledge().apartmentPositions(connection, account, owner, agreement.funding, win.AgreementRecord)
@@ -826,7 +844,7 @@
         }
 
         return { mint, fund, attest, confirmAsMember, confirmFunding, execute, cancel, expire, read, findAttestation, connectedWallet, cluster, programId,
-            donations, donate, refundDonations, releaseDonations, apartmentInventory,
+            donations, donate, refundDonations, releaseDonations, apartmentInventory, apartmentRound,
             listApartment: options => apartmentAction(options, true), reserveApartment: options => apartmentAction(options, false) };
     }
 

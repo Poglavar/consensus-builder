@@ -312,6 +312,29 @@ describe('minting', () => {
         expect(buyer.provider.signTransaction).toHaveBeenCalledTimes(1);
     });
 
+    it('reads a published apartment round at the account its CID and developer derive, not the one the index names', async () => {
+        const unit = { unitId: 'a4-c-23', label: 'Apartment A4-C-23', xrayBuilding: 'zagreb::gdi-3d::148972', unit: '6::A4-C-23',
+            at: '45.7665,15.9722,19', priceUsdcAtomic: '200000000', depositUsdcAtomic: '20000000',
+            drawing: { name: 'floor.pdf', mediaType: 'application/pdf', data: Buffer.from('%PDF-1.7').toString('base64') } };
+        const { agreement, address, cid, deadline } = crowdfunding(undefined, { projectId: 'courtyard', units: [unit] });
+        const accounts = new Map([[address, { data: agreementData({ cid, ...CROWD_TERMS, deadline }) }]]);
+        const reader = fakeWindow({ wallet: null, connection: fakeConnection({ accounts }) });
+        const readApartmentInventory = vi.fn(async () => [{ unitId: unit.unitId, status: 'reserved', buyer: STRANGER }]);
+        Object.assign(reader.win, { AgreementRecord: records, SolanaPledgeClient: { ...pledge.configure({ web3 }), readApartmentInventory } });
+        // The index's claimed account is ignored: the chain account is the PDA of the CID and the developer.
+        const row = { cid, content: { sponsor: SPONSOR, funding: agreement.funding }, onchain: { chain: 'solana', cluster: 'devnet', account: STRANGER } };
+        await expect(reader.bridge.apartmentRound(row)).resolves.toMatchObject({ account: address, status: 'Active',
+            units: [{ unitId: unit.unitId, status: 'reserved', buyer: STRANGER }] });
+        expect(readApartmentInventory).toHaveBeenCalledWith(expect.anything(), address, SPONSOR, agreement.funding, records);
+        const otherTarget = { ...row, content: { ...row.content, funding: { ...agreement.funding, targetUsdcAtomic: '1' } } };
+        await expect(reader.bridge.apartmentRound(otherTarget)).rejects.toMatchObject({ code: 'funding-mismatch' });
+        const unminted = fakeWindow({ wallet: null });
+        Object.assign(unminted.win, { AgreementRecord: records, SolanaPledgeClient: { ...pledge.configure({ web3 }), readApartmentInventory } });
+        await expect(unminted.bridge.apartmentRound(row)).resolves.toBeNull();
+        await expect(reader.bridge.apartmentRound({ cid, content: { sponsor: SPONSOR, funding: { targetUsdcAtomic: '1' } } })).rejects.toMatchObject({ code: 'unknown-unit' });
+        expect(readApartmentInventory).toHaveBeenCalledTimes(1);
+    });
+
     it('explains investor funding failures only when the devnet account reads establish them', async () => {
         const { agreement, address, deadline } = crowdfunding();
         agreement.onchain = { chain: 'solana', cluster: 'devnet', account: address };

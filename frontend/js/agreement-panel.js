@@ -1152,9 +1152,10 @@
         }
 
         // Boost loads on first use: its program client and module are not in the page's script list.
+        // The X-ray apartment panel loads the same scripts for its reservation colours and stats.
         let boostScripts = null;
         function ensureBoostScripts() {
-            boostScripts ??= Promise.all(['js/solana/pledge-client.js', 'js/agreement-boost.js'].map(path => new Promise((resolve, reject) => {
+            boostScripts ??= Promise.all(['js/solana/pledge-client.js', 'js/apartment-round.js', 'js/agreement-boost.js'].map(path => new Promise((resolve, reject) => {
                 const tag = doc.createElement('script');
                 tag.src = typeof win.appendBuildToken === 'function' ? win.appendBuildToken(path) : path;
                 tag.async = false;
@@ -2219,7 +2220,7 @@
             const agreement = win.AgreementStore.get(agreementId);
             return agreement ? openAgreementRecord(agreement, state.id === agreementId ? state.chain?.value || null : null) : Promise.resolve();
         }
-        return { open, openReadOnly, mount, release, close, isOpen, current: () => state.id, recordTerms, openRecordOf };
+        return { open, openReadOnly, mount, release, close, isOpen, current: () => state.id, recordTerms, openRecordOf, loadFundingScripts: ensureBoostScripts };
     }
 
     return {
