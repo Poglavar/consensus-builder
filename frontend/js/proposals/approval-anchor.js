@@ -6,6 +6,7 @@
 // verifies every decision itself, so chain + IPFS reproduce the tally without our server. The chain
 // records decisions here; it does not count or pay them. Every function takes the agreement-like
 // object of ProposalApproval's decision functions, with `onchain` once the agreement is minted.
+// Only the API loads it (POST /agreements/:cid/decisions/bundle); no page loads or calls anchor().
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
