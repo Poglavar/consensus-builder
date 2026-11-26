@@ -375,7 +375,9 @@ describe('proposal details action footer', () => {
         const $ = parse(result.footer.innerHTML);
         expect($('.proposal-action-default').length + $('[onclick^="removeProposalFromMap"]').length).toBe(1);
         expect($('[onclick*="shareProposalFromDetails"]').length).toBe(1);
-        expect($('.btn-share-proposal').attr('title')).toBe('Share this design');
+        // An unpublished design reads Publish… until it is published (28e06647e).
+        expect($('.btn-share-proposal').attr('title')).toBe('Publish this design on the server and share its link');
+        expect($('.btn-share-proposal').text().trim()).toBe('Publish…');
         expect($('[onclick^="startDesignDuplication"]').length).toBe(1);
         expect($('.btn-duplicate-design').text().trim()).toBe('Duplicate');
         expect($('.btn-duplicate-design').attr('title')).toBe('Move a copy with the pointer and click to place a new design.');
@@ -383,8 +385,8 @@ describe('proposal details action footer', () => {
         expect($.text()).not.toContain('changed land');
     });
 
-    it('routes Add to plan to the selected design and keeps Share design only', () => {
-        const proposal = { proposalId: 'plan-target', goal: 'park', title: 'Garden', cadastreParcelIds: [] };
+    it('routes Add to plan to the selected design and keeps Share design only (a published design reads Share)', () => {
+        const proposal = published({ proposalId: 'plan-target', goal: 'park', title: 'Garden', cadastreParcelIds: [] });
         const result = render(proposal);
         const $ = parse(result.footer.innerHTML);
         const add = $('.btn-add-to-plan');

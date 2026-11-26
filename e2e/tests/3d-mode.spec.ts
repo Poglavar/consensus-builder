@@ -3,7 +3,7 @@ import { test, expect } from '../helpers/fixtures';
 import { openCity, createSpace, createBuilding, proposalState } from '../helpers/runtime';
 import { buildings3D, mockBuildingScene, mockFootprintCells } from '../helpers/mocks/building-data';
 import { mockPhotoTiles } from '../helpers/mocks/photo-data';
-import { openLayerSection, openPlanningSection } from '../helpers/layers';
+import { openLayerSection, openPlanningRole, openPlanningSection } from '../helpers/layers';
 import { Page } from '@playwright/test';
 
 async function enter3D(page: Page) {
@@ -453,6 +453,7 @@ test.describe('3D rendering and controls @features', () => {
     if (await isolation.isVisible()) await isolation.locator('.isolation-banner-close').click();
     await expect(isolation).toBeHidden();
     await openPlanningSection(page, 'building-appearance');
+    await openPlanningRole(page, 'existing');
     const display = page.locator('[data-planning-setting="existing"]');
     const scope = page.locator('[data-planning-setting="existingScope"]');
     for (const [state, count] of [['solid', 2], ['ghost', 2], ['surviving', 1], ['removed', 1], ['off', 0]] as const) {
@@ -644,6 +645,7 @@ test.describe('3D rendering and controls @features', () => {
       (window as any).getThreeModeInternals().scene.traverseVisible((o: any) => { if (o.isMesh && o.geometry?.attributes?.position?.count) count++; });
       return count;
     });
+    await openPlanningRole(page, 'proposed');
     await selectNativeOption(page.locator('[data-planning-setting="proposedForm"]'), 'massing');
     const massingCount = await allMeshes();
     await selectNativeOption(page.locator('[data-planning-setting="proposedForm"]'), 'buildout');

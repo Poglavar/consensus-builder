@@ -341,6 +341,7 @@
             + (published || readOnly ? '' : `<button type="button" class="btn" data-agreement-action="edit"><i class="fas fa-pen" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.edit', 'Edit'))}</button>`)
             + (canCounter ? `<button type="button" class="btn" data-agreement-action="counter"><i class="fas fa-reply" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.counter', 'Counter-agreement'))}</button>` : '')
             + `<button type="button" class="btn" data-agreement-action="download"><i class="fas fa-download" aria-hidden="true"></i> ${esc(tr('common.download', 'Download'))}</button>`
+            + `<button type="button" class="btn" data-agreement-action="record"><i class="fas fa-file-lines" aria-hidden="true"></i> ${esc(tr('agreement.record.open', 'Agreement record'))}</button>`
             + '</div>';
     }
 
@@ -503,6 +504,12 @@
         const active = value.status === 'Active';
         const buttons = [];
         const hints = [];
+        // A lens member whose key is the connected wallet (a city authority, a verifier) confirms here,
+        // from a shared link too: it needs no local copy of the designs.
+        if (active && actions.confirmAsMember) {
+            buttons.push(chainButton('confirm-member', 'fas fa-signature', tr('agreement.chain.actions.confirmMember', 'Confirm as lens member'), { tone: 'primary', disabled: locked }));
+            hints.push(tr('agreement.chain.hints.youAreMember', 'Your wallet is one of this agreement’s lens members. Confirming records your decision on Solana; when it is the last confirmation needed, the same transaction executes the agreement.'));
+        }
         if (active && (!view.readOnly || crowdfunding)) {
             if (fundingTarget && !value.fundingMet && value.decision === 'Pending') {
                 buttons.push(chainButton('confirm-funding', 'fas fa-circle-check', tr('agreement.chain.actions.confirmFunding', 'Confirm funding'), { tone: 'primary', disabled: locked || !actions.confirmFunding }));
@@ -672,6 +679,107 @@
         return `<ul class="agreement-panel-inputs">${rows}</ul>`;
     }
 
+    // ---- the agreement record: everything an official reviews, signs and files ------------------------
+
+    // The identity and terms a signer commits to, as definition rows: title, the agreement's CID (which
+    // fixes everything else), the plan, the sponsor wallet, the decision rule, the deadline and the lens
+    // by name. `lens` is [{ key, label }]; `threshold` how many must confirm.
+    function identityRows({ agreement, rule, deadline, lens = [], threshold = null }, tr = t) {
+        const cid = agreement.published?.cid || null;
+        const sponsor = agreement.published?.sponsor || agreement.sponsor || null;
+        const needed = lens.length ? Math.min(lens.length, Math.max(1, threshold || 1)) : 0;
+        return [
+            [tr('agreement.record.agreement', 'Agreement'), titleOf(agreement, tr)],
+            [tr('agreement.record.cid', 'Identity (CID)'), cid || tr('agreement.record.unpublished', 'Not proposed yet')],
+            ...(agreement.plan ? [[tr('agreement.panel.plan', 'Agreement plan'), `${agreement.plan.content?.title || ''} · ${agreement.plan.cid}`]] : []),
+            [tr('agreement.record.sponsor', 'Sponsor wallet'), sponsor || NO_VALUE],
+            [tr('agreement.sections.rule', 'Decision rule'), [rule.electorate, rule.binding].filter(Boolean).join(' · ') + (rule.detail ? ` — ${rule.detail}` : '')],
+            [tr('agreement.chain.facts.deadline', 'Deadline'), deadline || tr('agreement.chain.noDeadline', 'None')],
+            [tr('agreement.chain.facts.lens', 'Lens'), lens.length
+                ? `${tr('agreement.record.lensNeeded', '{{needed}} of {{count}} must confirm', { needed, count: lens.length })}: ${lens.map(member => (member.label && member.label !== member.key ? `${member.label} (${member.key})` : member.key)).join('; ')}`
+                : tr('agreement.lens.none', 'No lens member is named.')]
+        ];
+    }
+    const factsDl = rows => `<dl class="agreement-record__facts">${rows.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>`;
+
+    // A plain table: the record is read and printed, so it carries no inspect buttons.
+    function plainTable(head, rows, hook = '') {
+        if (!rows.length) return '';
+        return `<div class="agreement-panel-ledger-scroll"><table class="agreement-panel-ledger"${hook}><thead><tr>${head.map(label => `<th scope="col">${esc(label)}</th>`).join('')}</tr></thead>`
+            + `<tbody>${rows.map(cells => `<tr><th scope="row">${esc(cells[0])}</th>${cells.slice(1).map(cell => `<td>${esc(cell)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    }
+    function ledgerTable(ledger, tr, { only = null } = {}) {
+        const rows = (ledger.rows || []).filter(row => !only || only(row));
+        return plainTable([tr('agreement.money.party', 'Party'), tr('agreement.panel.ledger.contributes', 'Contributes'), tr('agreement.panel.ledger.receives', 'Receives'),
+            tr('agreement.panel.ledger.change', 'Net change'), tr('agreement.panel.ledger.cash', 'Cash')], rows.map(row => [row.name, row.contributes, row.receives, row.change, row.cash]), ' data-agreement-record-ledger');
+    }
+
+    /**
+     * What a signer sees before signing: the agreement's identity and terms and, for an owner's party,
+     * its own ledger row (what it contributes, receives and is paid), or for an authority every row.
+     * `ownerKeys` limits the ledger to those parties (the parcels an owner holds); null shows all.
+     */
+    function signingSummaryHtml({ agreement, ledger, rule, deadline, lens, threshold, ownerKeys = null }, tr = t) {
+        const own = ownerKeys ? row => ownerKeys.includes(row.ownerKey) : null;
+        const table = ledger.error
+            ? `<p class="agreement-panel-note agreement-panel-note--danger" role="alert">${esc(ledger.error)}</p>`
+            : ledgerTable(ledger, tr, { only: own });
+        return `<div class="agreement-record agreement-record--summary" data-agreement-signing-summary>${factsDl(identityRows({ agreement, rule, deadline, lens, threshold }, tr))}`
+            + (table ? `<h4 class="agreement-record__subheading">${esc(ownerKeys ? tr('agreement.record.yourTerms', 'What this party contributes, receives and is paid') : tr('agreement.record.allTerms', 'What every party contributes, receives and is paid'))}</h4>${table}` : '')
+            + (ledger.sponsor ? `<p class="agreement-panel-meta">${esc(ledger.sponsor)}</p>` : '')
+            + `<p class="agreement-panel-meta">${esc(tr('agreement.record.cashNote', 'Cash in this table is the agreement’s settlement schedule; executing the agreement on chain releases only its escrow. Legal registration and construction are separate.'))}</p></div>`;
+    }
+
+    /**
+     * The printable record of one agreement: identity and terms, land in and out, every allocation, the
+     * ledger by party and by person, funding terms of a round, the on-chain state and the signed
+     * decisions. `chain` is the account read back or null; `decisions` [{ party, signer, decision, decidedAt }].
+     */
+    function recordHtml({ agreement, ledger, persons = null, rule, deadline, lens = [], threshold = null, chain = null, minted = false, decisions = [], generatedAt = new Date().toISOString() }, tr = t) {
+        const date = value => (value ? format().formatDateTime(value) : NO_VALUE);
+        const land = landSummary(agreement);
+        const inputs = plainTable([tr('agreement.record.parcel', 'Parcel'), tr('agreement.land.area', 'Area'), tr('proposalApproval.meterOwners', 'Owners')],
+            (agreement.inputs?.parcels || []).map(parcel => [parcel.parcelId, format().formatArea(parcel.areaM2, { missing: NO_VALUE }),
+                dialogApi().ownersText(parcel.parcelId, agreement.rule?.approvalConfig?.rights)]));
+        const allocations = plainTable([tr('agreement.record.piece', 'Piece'), tr('agreement.land.area', 'Area'), tr('agreement.record.to', 'To')],
+            allocationLines(agreement, tr).map(line => [line.label, line.area, line.to]));
+        const chainRows = chain ? [
+            [tr('agreement.chain.facts.status', 'Status'), chainStatusText(chain.status, tr)],
+            [tr('agreement.chain.facts.decision', 'Decision'), CHAIN_DECISION[chain.decision] ? CHAIN_DECISION[chain.decision].text(tr) : chain.decision || NO_VALUE],
+            [tr('agreement.record.confirmations', 'Lens confirmations'), `${(chain.lensConfirmed || []).length} / ${chain.lensThreshold ?? 0}${(chain.lensConfirmed || []).length ? ` (${chain.lensConfirmed.join(', ')})` : ''}`],
+            [tr('agreement.record.account', 'Solana account'), chain.address || NO_VALUE],
+            ...(chain.executedAt ? [[tr('agreement.chain.facts.executedAt', 'Executed'), date(chain.executedAt)]] : [])
+        ] : null;
+        const decisionRows = decisions.map(row => [row.party, row.signer, row.decision, date(row.decidedAt)]);
+        const section = (title, content) => (content ? `<section class="agreement-record__section"><h3>${esc(title)}</h3>${content}</section>` : '');
+        return `<article class="agreement-record" data-agreement-record>`
+            + `<header class="agreement-record__head"><p class="agreement-record__kind">${esc(rule.electorate || '')}</p><h2>${esc(titleOf(agreement, tr))}</h2></header>`
+            + section(tr('agreement.record.terms', 'Identity and terms'), factsDl(identityRows({ agreement, rule, deadline, lens, threshold }, tr)))
+            + (agreement.rule?.electorate === 'investors' && agreement.funding ? section(tr('agreement.funding.title', 'Developer crowdfunding'), factsDl([
+                [tr('agreement.chain.facts.fundingTarget', 'Funding target'), `${recordApi().formatUsdc(BigInt(agreement.funding.targetUsdcAtomic))} USDC`],
+                [tr('agreement.record.contract', 'Investor contract'), agreement.funding.contract?.name || NO_VALUE],
+                ...(agreement.funding.apartments ? [[tr('agreement.record.apartments', 'Apartments offered'), String(agreement.funding.apartments.length)]] : [])
+            ])) : '')
+            + section(tr('agreement.sections.land', 'Land'), factsDl([
+                [tr('agreement.land.inputsHeading', 'Input parcels'), format().formatInteger(land.parcels)],
+                [tr('agreement.land.area', 'Area'), format().formatArea(land.areaM2, { missing: NO_VALUE })],
+                [tr('agreement.land.outputsHeading', 'Resulting pieces'), format().formatInteger(land.pieces)]
+            ]) + inputs)
+            + section(tr('agreement.sections.allocation', 'Allocation'), allocations)
+            + section(tr('agreement.panel.ledger.byParty', 'By parcel party'), ledger.error ? `<p class="agreement-panel-note agreement-panel-note--danger">${esc(ledger.error)}</p>`
+                : ledgerTable(ledger, tr) + (ledger.sponsor ? `<p class="agreement-panel-meta">${esc(ledger.sponsor)}</p>` : ''))
+            + (persons && persons.rows.length ? section(tr('agreement.panel.ledger.byPerson', 'By person'), plainTable([tr('agreement.workflow.person', 'Person'),
+                tr('agreement.panel.ledger.contributes', 'Contributes'), tr('agreement.panel.ledger.receives', 'Receives'), tr('agreement.panel.ledger.cash', 'Cash')],
+            persons.rows.map(row => [row.name, row.contributes, row.receives, row.cash]))) : '')
+            + section(tr('agreement.chain.heading', 'On chain'), chainRows ? factsDl(chainRows) : `<p class="agreement-panel-meta">${esc(minted
+                ? tr('agreement.record.chainUnread', 'Minted, but its chain account could not be read.') : tr('agreement.record.notMinted', 'Not minted.'))}</p>`)
+            + section(tr('agreement.record.decisions', 'Signed decisions'), decisionRows.length
+                ? plainTable([tr('agreement.money.party', 'Party'), tr('agreement.record.signer', 'Signed by'), tr('agreement.chain.facts.decision', 'Decision'), tr('agreement.record.date', 'Signed on')], decisionRows, ' data-agreement-record-decisions')
+                : `<p class="agreement-panel-meta">${esc(tr('agreement.record.noDecisions', 'No signed decisions yet.'))}</p>`)
+            + `<footer class="agreement-record__foot"><p>${esc(tr('agreement.record.footer', 'Generated {{date}}. The CID fixes every term above: anyone can recompute it from the published agreement. Executing the agreement on chain releases only its escrow; legal registration and construction are separate.', { date: date(generatedAt) }))}</p></footer>`
+            + '</article>';
+    }
+
     const FINAL_TEN_DAYS = 10 * 24 * 60 * 60;
 
     function fundingAmountView(targetAtomic, raisedAtomic, tr = t) {
@@ -775,9 +883,11 @@
     // row differs by CID, so two plans under one title still differ. A term that does not apply (the
     // settlement of a community vote) or a ledger that cannot be computed shows —, never zero.
     // summaryText(approvalConfig, lens): the owners' approval rule in words (ProposalApprovalSetup).
-    function compareTerms(agreements, tr = t, { summaryText = null } = {}) {
+    // raised: per agreement, its crowdfunding round's progress read from the chain, in words
+    // (FundingProgress.textOf: raised of target · contributors), null where it has none.
+    function compareTerms(agreements, tr = t, { summaryText = null, raised = null } = {}) {
         const area = value => format().formatArea(value, { missing: NO_VALUE });
-        const columns = (Array.isArray(agreements) ? agreements : []).map(raw => {
+        const columns = (Array.isArray(agreements) ? agreements : []).map((raw, index) => {
             // Its canonical form (an owners' rule carries its settlement); as given when it has none.
             let agreement = raw, ledger = null;
             try { agreement = recordApi().normalize(raw); } catch (_) { /* compared as given */ }
@@ -797,6 +907,7 @@
                 status: [status],
                 rule: [`${summary.electorate} · ${rule && rule.binding === true ? tr('agreement.rule.bindingShort', 'Binding') : tr('agreement.rule.nonBinding', 'Non-binding')}`],
                 fundingTarget: [agreement?.funding ? recordApi().formatUsdc(agreement.funding.targetUsdcAtomic) + ' USDC' : NO_VALUE],
+                raised: [raised?.[index] || NO_VALUE],
                 contract: [agreement?.funding?.contract?.name || NO_VALUE, agreement?.funding?.contract ? JSON.stringify(agreement.funding.contract) : null],
                 approval: [summary.detail || NO_VALUE],
                 settlement: [owners && rule.settlement ? (rule.settlement.method === 'value'
@@ -820,6 +931,7 @@
             status: tr('agreement.chain.facts.status', 'Status'),
             rule: tr('agreement.sections.rule', 'Decision rule'),
             ...(agreements?.some(item => item.funding) ? { fundingTarget: tr('agreement.funding.target', 'Funding target (devnet USDC)'),
+                ...(raised ? { raised: tr('agreement.compare.raised', 'Raised · contributors (read from Solana)') } : {}),
                 contract: tr('agreement.funding.contractLabel', 'Investor contract') } : {}),
             approval: tr('agreement.compare.approval', 'Approval'),
             settlement: tr('agreement.compare.settlement', 'Settlement'),
@@ -1689,6 +1801,119 @@
             });
         }
 
+        // The terms every summary of this agreement reads: its ledger rows and persons, the rule in words,
+        // the deadline and the lens members by their directory names.
+        async function recordTerms(agreement) {
+            let ledger = { rows: [], sponsor: '', error: null };
+            let persons = null;
+            try {
+                const computed = win.AgreementRecord.ledger(agreement);
+                const sponsor = dialogApi().sponsorLine(computed.money);
+                ledger = { rows: ledgerRows(computed), sponsor: sponsor ? sponsor.text : '', error: null };
+                persons = personRows(agreement, computed.currency);
+            } catch (error) {
+                ledger.error = error && error.message ? error.message : String(error);
+            }
+            const setup = win.ProposalApprovalSetup;
+            const rule = ruleSummary(agreement.rule, t, setup && typeof setup.summaryText === 'function' ? setup.summaryText : null);
+            const keys = (agreement.rule?.lens || []).map(entry => idOf(entry && typeof entry === 'object' ? entry.address : entry)).filter(Boolean);
+            let members = [];
+            try { members = (await win.LensPicker.loadDirectory()).members || []; } catch (_) { members = []; }
+            const lens = keys.map(key => ({ key, label: win.LensCore?.memberLabel ? win.LensCore.memberLabel(key, members) : key }));
+            return { ledger, persons, rule, deadline: agreement.deadline ? format().formatDateTime(agreement.deadline) : '', lens, threshold: agreement.rule?.lensThreshold ?? null };
+        }
+
+        // The signed decisions the relay holds for a published owners' agreement, verified, in signing order.
+        async function recordDecisions(agreement) {
+            const cid = agreement.published?.cid;
+            if (!cid || agreement.rule?.electorate !== 'owners' || !win.ProposalApprovalRelay) return [];
+            const subject = { ...win.AgreementRecord.approvalSubject(agreement), agreementCid: cid };
+            const receipts = await win.ProposalApprovalRelay.pull(subject);
+            if (!receipts) return [];
+            return win.ProposalApprovalRelay.fold(subject, receipts).applied.map(receipt => ({
+                party: receipt.ownerId, signer: receipt.actorId, decision: receipt.decision, decidedAt: receipt.decidedAt
+            }));
+        }
+
+        // Agreement record: everything about this agreement on one page, to read, print or save as PDF.
+        async function openAgreementRecord(agreement = state.readOnlyAgreement || state.agreement, value = state.chain?.value || null) {
+            if (!agreement) return;
+            const minted = !!win.AgreementBridge?.onchainRef(agreement);
+            // A minted agreement's account, read now when the panel has not read it yet.
+            const readValue = async () => {
+                if (value || !minted) return value;
+                try { return await win.AgreementBridge.read(agreement); } catch (error) {
+                    console.warn(`[${new Date().toISOString()}] [AgreementPanel] the record could not read the chain account`, error);
+                    return null;
+                }
+            };
+            const [terms, decisions, chain] = await Promise.all([recordTerms(agreement), recordDecisions(agreement), readValue()]);
+            const html = recordHtml({ agreement, ...terms, chain, minted, decisions }, t);
+            const body = doc.createElement('div');
+            body.className = 'agreement-record-dialog';
+            body.innerHTML = html;
+            win.CbDialog.open({
+                title: t('agreement.record.open', 'Agreement record'), size: 'lg', className: 'agreement-record-modal', body,
+                actions: [
+                    { id: 'close', label: t('modal.common.close', 'Close'), role: 'secondary' },
+                    { id: 'print', label: t('agreement.record.print', 'Print or save as PDF'), role: 'primary', keepOpen: true, onClick: () => printRecord(html, titleOf(agreement)) }
+                ]
+            });
+        }
+
+        // Prints the record alone from a same-origin frame that carries only the record, the theme tokens
+        // (light: the frame's <html> has no data-theme) and the record's stylesheet.
+        function printRecord(html, title) {
+            const frame = doc.createElement('iframe');
+            frame.className = 'agreement-record-print-frame';
+            frame.setAttribute('aria-hidden', 'true');
+            frame.tabIndex = -1;
+            doc.body.appendChild(frame);
+            const page = frame.contentDocument;
+            const sheets = ['css/tokens.css', 'css/agreement-record.css']
+                .map(file => new URL(typeof win.appendBuildToken === 'function' ? win.appendBuildToken(file) : file, doc.baseURI).href);
+            page.open();
+            page.write(`<!doctype html><html lang="${esc(doc.documentElement.lang || 'en')}"><head><meta charset="utf-8"><title>${esc(title)}</title>${sheets.map(sheet => `<link rel="stylesheet" href="${esc(sheet)}">`).join('')}</head><body class="agreement-record-page">${html}</body></html>`);
+            page.close();
+            const loaded = [...page.querySelectorAll('link')]
+                .map(link => link.sheet ? null : new Promise(resolve => link.addEventListener('load', resolve, { once: true })));
+            Promise.all(loaded).then(() => {
+                frame.contentWindow.addEventListener('afterprint', () => frame.remove(), { once: true });
+                frame.contentWindow.focus();
+                frame.contentWindow.print();
+            });
+        }
+
+        // Confirm as lens member (the connected wallet is one): states this member's decision and, when it
+        // completes the lens, executes the agreement and releases a round's contributions, in one approval.
+        async function confirmAsMember() {
+            const id = state.id;
+            const agreement = state.agreement;
+            const value = state.chain && state.chain.value;
+            if (!agreement || !value) return;
+            const crowdfunding = agreement.rule?.electorate === 'investors';
+            const completes = (value.lensConfirmed || []).length + 1 >= value.lensThreshold;
+            const parts = [t('agreement.chain.confirmMember.intro', 'Confirm “{{title}}” as a lens member? Your wallet signs one Solana transaction that records your decision for agreement {{cid}}.',
+                { title: agreement.title || shortKey(agreement.published?.cid || ''), cid: shortKey(agreement.published?.cid || '') })];
+            parts.push(completes
+                ? (crowdfunding
+                    ? t('agreement.chain.confirmMember.completesRound', 'Yours is the last confirmation needed: once the funding target is confirmed, the same transaction executes the round and releases the contributions to the developer’s payout wallet.')
+                    : t('agreement.chain.confirmMember.completes', 'Yours is the last confirmation needed: the same transaction executes the agreement when its escrow is funded.'))
+                : t('agreement.chain.confirmMember.partial', '{{more}} more lens confirmation(s) are needed after yours before it can execute.', { more: value.lensThreshold - (value.lensConfirmed || []).length - 1 }));
+            parts.push(t('agreement.chain.confirmMember.cost', 'The first decision of a wallet also registers its decision record on Solana; the wallet pays a small devnet SOL fee and rent.'));
+            const confirmed = await win.CbDialog.confirm(parts.join('\n\n'), {
+                okText: t('agreement.chain.actions.confirmMember', 'Confirm as lens member'),
+                cancelText: t('agreement.chain.keep', 'Keep it')
+            });
+            if (!confirmed || state.id !== id) return;
+            await runChain('confirm-member', async onStatus => {
+                const done = await win.AgreementBridge.confirmAsMember({ agreement, onStatus });
+                notice(done.released ? t('agreement.chain.memberReleased', 'Confirmed: the round executed and its contributions went to the developer.')
+                    : done.executed ? t('agreement.chain.memberExecuted', 'Confirmed: the agreement executed.')
+                        : t('agreement.chain.memberConfirmed', 'Your confirmation is recorded on chain.'));
+            });
+        }
+
         // Cancel (the sponsor): ends the agreement and refunds the escrow.
         async function cancel() {
             const id = state.id;
@@ -1802,7 +2027,8 @@
             if (!action || action.disabled) return;
             const actionName = action.getAttribute('data-agreement-action');
             const fundingAction = state.agreement?.rule?.electorate === 'investors' && ['contract', 'refresh-funding', 'mint', 'confirm-funding', 'attest', 'execute', 'cancel', 'expire'].includes(actionName);
-            if (state.readOnlyAgreement && !fundingAction && !['close', 'link', 'plan', 'scheme-guide', 'counter', 'download', 'apply-agreement'].includes(actionName)) return;
+            // A lens member confirms from a shared link too (confirm-member needs no local designs).
+            if (state.readOnlyAgreement && !fundingAction && !['close', 'link', 'plan', 'scheme-guide', 'counter', 'download', 'record', 'apply-agreement', 'confirm-member'].includes(actionName)) return;
             switch (actionName) {
                 case 'close': close(); break;
                 case 'contract': {
@@ -1839,6 +2065,8 @@
                 case 'fund': fund(); break;
                 case 'confirm-funding': confirmFunding(); break;
                 case 'attest': attest(); break;
+                case 'confirm-member': confirmAsMember(); break;
+                case 'record': win.BusyControl.track(action, () => openAgreementRecord()).catch(error => win.showStyledAlert(error.message)); break;
                 case 'execute': execute(); break;
                 case 'cancel': cancel(); break;
                 case 'expire': expire(); break;
@@ -1986,13 +2214,18 @@
             doc.body.classList.remove('agreement-panel-open');
         }
 
-        return { open, openReadOnly, mount, release, close, isOpen, current: () => state.id };
+        // openRecordOf: the record of a stored agreement (the approval review links to it).
+        function openRecordOf(agreementId) {
+            const agreement = win.AgreementStore.get(agreementId);
+            return agreement ? openAgreementRecord(agreement, state.id === agreementId ? state.chain?.value || null : null) : Promise.resolve();
+        }
+        return { open, openReadOnly, mount, release, close, isOpen, current: () => state.id, recordTerms, openRecordOf };
     }
 
     return {
         titleOf, statusOf, landSummary, ownerOutcomes, allocationLines, ledgerRows, personRows, personsHtml, ruleSummary, ruleShort, designRows, groundIds, partyLabel,
         statusHtml, actionsHtml, remoteStatusOf, observedRemote, publishedHtml, designsHtml, landHtml, piecesHtml, outcomesHtml, allocationHtml, ledgerHtml, ruleHtml,
         inputsHtml, fundingTermsHtml, fundingAmountView, fundingCountdown, inspectionFeatures, tabbedHtml, compareTerms,
-        shortKey, chainStatusText, mintReadiness, isBinding, chainHtml, nonBindingChainHtml, browserPanel
+        shortKey, chainStatusText, mintReadiness, isBinding, chainHtml, nonBindingChainHtml, identityRows, signingSummaryHtml, recordHtml, browserPanel
     };
 });

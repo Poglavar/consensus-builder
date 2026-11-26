@@ -216,7 +216,8 @@ describe('the wiring', () => {
         expect(fetchParcelData).toContain('throw error;');
         const refresh = fetchSource.slice(fetchSource.indexOf('async function refreshParcelDataWithBusyState('));
         expect(refresh).toContain('resetDismissal');
-        expect(mapCore).toContain("fetchParcelDataReported(undefined, 'initial map load');");
+        // The first load goes through the reported fetch, which offers the screen (9d02c2adf: viewport mode).
+        expect(mapCore).toContain("window.fetchParcelDataReported?.(undefined, 'initial map load', { viewport: true });");
     });
 
     it('says every sentence in every locale', () => {

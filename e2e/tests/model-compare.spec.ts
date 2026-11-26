@@ -6,7 +6,8 @@
 // opens the sides' figures in Compare plans.
 import { test, expect } from '../helpers/fixtures';
 import { selectNativeOption } from '../helpers/controls';
-import { openCity, createBuilding, createSpace, drawCorridor, PARCEL_ID } from '../helpers/runtime';
+import { openCity, createBuilding, createSpace, drawCorridor, PARCEL_ID, confirmPublish, chooseProfileName, openOnAnotherDevice } from '../helpers/runtime';
+import { pageIndex } from '../helpers/mocks/shared-server';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 import { waitForMapReady } from '../helpers/app';
 import { Page } from '@playwright/test';
@@ -413,27 +414,56 @@ test('an applied design\'s ground draws on its own side alone, on the map and in
   expect(split.passes.map((pass: any) => pass.designDrawn)).toEqual([false, true]);
 });
 
-test('Copy link copies the comparison for sides another browser can open, and says why a design side cannot be', async ({ mockApi: page }) => {
-  test.setTimeout(120_000);
+test('Copy link copies a comparison of what is on the server, publishes a design side first, and the link opens it on another device', async ({ mockApi: page, browser, baseURL }) => {
+  test.setTimeout(180_000);
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   await mockBuildingScene(page);
   await openCity(page);
   const designId = await createBuilding(page);
+  const title = await page.evaluate(id => (window as any).proposalStorage.getProposal(id).title, designId);
+  const index = pageIndex(page);
   await page.keyboard.press('Escape');
   await openCompareTab(page);
   const copy = page.locator('#planning-compare-copy-link');
   const note = page.locator('#planning-compare-link-note');
   await selectNativeOption(page.locator('#planning-compare-left'), 'built');
   await selectNativeOption(page.locator('#planning-compare-right'), 'permitted');
-  await expect(copy).toBeEnabled();
+  await expect(copy).toHaveText('Copy link');
   await expect(note).toBeHidden();
   await copy.click();
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toContain('compare=built%2Cpermitted');
-  // A design is only in this browser: nothing to copy, and the note says what can be shared.
+
+  // A design only in this browser: Copy link publishes it first, after saying what that means. A
+  // guest names a profile on the way, and nothing leaves the device until then.
   await selectNativeOption(page.locator('#planning-compare-right'), `design:${designId}`);
-  await expect(copy).toBeDisabled();
-  await expect(note).toBeVisible();
-  await expect(note).toContainText('published plans');
+  await expect(copy).toHaveText('Publish and copy link');
+  await expect(copy).toBeEnabled();
+  await expect(note).toBeHidden();
+  await copy.click();
+  await confirmPublish(page);
+  await chooseProfileName(page, 'Compare author');
+  expect(index.requests.filter(row => row.method === 'POST' && row.path === '/designs')).toHaveLength(0);
+  await page.evaluate(() => navigator.clipboard.writeText(''));
+  await copy.click();
+  await confirmPublish(page);
+  await expect.poll(() => page.evaluate(() => navigator.clipboard.readText()), { timeout: 30_000 }).toMatch(/compare=built%2Cdesign-bafkrei[a-z2-7]{52}/);
+  expect(index.requests.filter(row => row.method === 'POST' && row.path === '/designs')).toHaveLength(1);
+  await expect(copy).toHaveText('Copy link');
+  const link = new URL(await page.evaluate(() => navigator.clipboard.readText()));
+
+  // Another device reads the published design from the server and opens the same comparison.
+  const receiver = await openOnAnotherDevice(browser, `${link.pathname}${link.search}`, index, baseURL);
+  try {
+    await expect(receiver.page.locator('#map .map-compare__label--after')).toHaveText(`Design: ${title}`, { timeout: 45_000 });
+    await expect(receiver.page.locator('#map .map-compare__label--before')).toHaveText('Built today');
+    // A link naming a plan that was never published says so instead of opening half a comparison.
+    await receiver.page.goto(`/?city=zg&reduceMotion=1&compare=built%2Cbafkrei${'c'.repeat(52)}`, { waitUntil: 'domcontentloaded' });
+    await waitForMapReady(receiver.page);
+    await expect(receiver.page.getByText('This comparison link names a plan that has not been published', { exact: false })).toBeVisible({ timeout: 30_000 });
+    await expect(receiver.page.locator('#map .map-compare__handle')).toHaveCount(0);
+  } finally {
+    await receiver.context.close();
+  }
 });
 
 test('a comparison in the address opens with its two sides, and the address follows the comparison', async ({ mockApi: page }) => {

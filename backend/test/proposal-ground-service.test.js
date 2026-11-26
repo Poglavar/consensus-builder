@@ -609,7 +609,7 @@ describe('the ground service is the only parcel transport consumer', () => {
         const html = readFileSync(join(frontendRoot, 'index.html'), 'utf8');
         const fetchIndex = html.search(/'js\/parcels\/fetch\.js(?:\?[^']*)?'/);
         const serviceIndex = html.search(/'js\/parcels\/ground-service\.js(?:\?[^']*)?'/);
-        const managerIndex = html.indexOf("'js/proposal-manager.js'");
+        const managerIndex = html.search(/'js\/proposal-manager\.js(?:\?[^']*)?'/);
         expect(fetchIndex).toBeGreaterThanOrEqual(0);
         expect(serviceIndex).toBeGreaterThan(fetchIndex);
         expect(managerIndex).toBeGreaterThan(serviceIndex);

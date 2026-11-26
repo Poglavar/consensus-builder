@@ -8,7 +8,9 @@
     const CID = /^baf(?:krei|ybei)[a-z2-7]{52}$/;
     const ACCOUNT = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
     // confirm-funding: anyone records on chain that a crowdfunding target is met (confirm_funding).
-    const ACTIONS = ['mint', 'fund', 'decide', 'confirm-funding', 'execute', 'cancel', 'expire', 'bet', 'pledge', 'donate', 'reserve', 'list-apartment'];
+    // confirm-member: a lens member whose key is the person's wallet (a city authority) confirms the
+    // agreement itself, which executes it when that completes the lens (AgreementBridge.confirmAsMember).
+    const ACTIONS = ['mint', 'fund', 'decide', 'confirm-funding', 'confirm-member', 'execute', 'cancel', 'expire', 'bet', 'pledge', 'donate', 'reserve', 'list-apartment'];
     const AMOUNT = /^(?:0|[1-9]\d{0,8})(?:\.\d{1,6})?$/;
     function validate({ action, target, params = {} } = {}) {
         if (action === 'pledge') throw Object.assign(new Error('The app has no wallet form for an unfunded pledge.'), { code: 'approval-unavailable', next: { tool: 'ugt_pledge', action: 'Use an operator-controlled local devnet wallet.' } });

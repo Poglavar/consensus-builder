@@ -2,7 +2,7 @@
 // They cover compact-card actions and the narrow mobile footer, where a visible button must remain
 // reachable and complete its real UI transition rather than merely exist in the rendered markup.
 import { test, expect } from '../helpers/fixtures';
-import { closeShareBox, openCity, proposalState, showProposal, PARCEL_GEOMETRY, PARCEL_ID, showProposalTab } from '../helpers/runtime';
+import { closeShareBox, openCity, proposalState, showProposal, PARCEL_GEOMETRY, PARCEL_ID, showProposalTab, confirmPublish } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
 
 async function addLocalEditableProposal(page: import('@playwright/test').Page, key: string): Promise<string> {
@@ -91,6 +91,7 @@ test.describe('compact proposal card actions @features', () => {
     // exercising the next footer action.
     await openCompactFromProposalList(page, proposalId);
     await footer.locator('.btn-share-proposal').click();
+    await confirmPublish(page);
     await expectSharedAsDesign(page, proposalId);
 
     await footer.locator('.btn-edit-geometry').click();
@@ -134,6 +135,7 @@ test.describe('compact proposal card actions @features', () => {
 
     await share.scrollIntoViewIfNeeded();
     await share.click();
+    await confirmPublish(page);
     await expectSharedAsDesign(page, proposalId);
 
     await showProposalTab(page, 'overview');

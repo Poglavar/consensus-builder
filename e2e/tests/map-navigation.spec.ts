@@ -46,6 +46,9 @@ test.describe('Map navigation @core', () => {
   });
 
   test('dragging pans the map', async ({ mockApi: page }) => {
+    // '/' opens New York, whose parcels the mock API does not serve; unless a local API answers on :3000,
+    // the parcel-register recovery dialog opens over the map and swallows the drag.
+    await page.route('**/parcel-nyc?**', route => route.fulfill({ json: { type: 'FeatureCollection', features: [] } }));
     await page.goto('/');
     await waitForMapReady(page);
 

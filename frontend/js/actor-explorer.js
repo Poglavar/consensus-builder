@@ -20,6 +20,8 @@
         createMarket: 'Opened market', stake: 'Bet / stake', sell: 'Sold bet', resolve: 'Resolved market', claim: 'Claimed winnings',
         'reclaim-seed': 'Reclaimed market seed', donate: 'Donated', pledge: 'Pledged', revokePledge: 'Revoked pledge', fulfillPledge: 'Fulfilled pledge',
         voidPledge: 'Voided pledge', refundMyDonations: 'Refunded donation', releaseDonations: 'Released donations',
+        // Settlement steps an agent records under their step names (backend/agents/lifecycle-actions.js).
+        'confirm-funding': 'Confirmed funding', 'release-donations': 'Released donations',
         run_status: 'Run status'
     });
     // What an event can be about, by its entity type, and the words its link and scope use.

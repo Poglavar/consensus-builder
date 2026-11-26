@@ -191,6 +191,9 @@ describe('every decorative main-map canvas names a click-through pane', () => {
             // Parcels shown while a council still imports (HMLR): a non-interactive layer in its own
             // pane, below the parcel layer, with pointer events off.
             'parcels/preview-layer.js:PANE',
+            // The zoning overview of a whole plan (26f255875): one non-interactive canvas in the
+            // planning sources pane, whose canvas takes no pointer events (css/planning-views.css).
+            'planning/views.js:planningSources',
             // The before map of a before/after comparison (its own Leaflet map): parcels and
             // buildings on one canvas in that map's standard overlay pane.
             'proposals/before-after.js:overlayPane',
@@ -220,6 +223,16 @@ describe('every decorative main-map canvas names a click-through pane', () => {
         const pane = sourceSection(structures, 'function ensureSquaresPane()', 'function ensureSquaresIconPane');
         expect(pane).toContain("pane.style.pointerEvents = 'none'");
         expect(structures).toContain('L.canvas({ padding: 0.5, pane: SQUARES_PANE })');
+    });
+
+    it('keeps the zoning overview canvas click-through in the clickable planning sources pane', () => {
+        // The pane takes clicks for its massing paths (SVG); its one canvas covers the whole view.
+        const views = read('../../frontend/js/planning/views.js');
+        const css = read('../../frontend/css/planning-views.css');
+        const overview = sourceSection(views, 'function drawOverview()', 'function drawItem(');
+        expect(overview).toContain("L.canvas({ pane: 'planningSources' })");
+        expect(overview).toContain('interactive: false');
+        expect(css).toMatch(/^\.planning-sources-pane > canvas \{ pointer-events: none; \}$/m);
     });
 
     it('does not opt the main map into one shared catch-all canvas', () => {

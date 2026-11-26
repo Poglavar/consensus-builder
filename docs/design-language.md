@@ -263,7 +263,8 @@ palette is the legend beside each tick.
 
 - The bottom navigation belongs to the 2D map. The model and aerial views use their selection controls.
 - **Layers** and **Buildings and massing** sit beside each other in the left toolbar. On desktop,
-  both panels open flush with the left edge of the screen, directly below the toolbar. On phones,
+  both panels open directly below the toolbar, beside the left view strip (never over it, so the
+  view can change while a panel is open). On phones,
   both open as bottom sheets.
 - The left view strip chooses 2D map, 3D models or 3D aerial imagery. Measure is a 2D utility beside
   that strip, not a destination in the bottom dock.

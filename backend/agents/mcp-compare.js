@@ -7,7 +7,7 @@ import { cidOfObject, isCid } from './agreement-objects.js';
 import { deriveWithApp } from './mcp-ground-runtime.js';
 import { previewArtifact } from './mcp-preview.js';
 import { parcelSourceIdOf, cityEconomics } from './mcp-read-tools.js';
-import { cityMoney } from '../scripts/lib/frontend-city-money.mjs';
+import { cityMoney, cityPlanningSourceIds } from '../scripts/lib/frontend-city-money.mjs';
 const require = createRequire(import.meta.url);
 const records = require('../../frontend/js/agreement-record.js');
 const planYield = require('../../frontend/js/proposals/plan-yield.js');
@@ -15,13 +15,17 @@ const demolition = require('../../frontend/js/proposals/demolition-prefetch.js')
 const route = require('../../frontend/js/proposals/apply/route.js');
 const DemolitionDerive = require('../../frontend/js/demolition-derive.js');
 const { locationOf } = require('../../frontend/js/economic-sources.js');
+// The decision-sheet rules Compare plans reads by (road/green area, demolition totals, Permitted
+// verdict, backing agreements) and the chain reader of crowdfunding progress.
+const planDecision = require('../../frontend/js/proposals/plan-decision.js');
+const PermittedCheck = require('../../frontend/js/planning/permitted-check.js');
+const FundingProgress = require('../../frontend/js/solana/funding-progress.js');
 const finite = value => typeof value === 'number' && Number.isFinite(value);
 const union = features => features.reduce((out, feature) => out ? turf.union(out, feature) : feature, null);
 const fail = (code, message) => Object.assign(new Error(message), { code, next: { action: 'Review the alternative and its current parcel source in the app.' } });
 
 export function authoredAreas(designs) {
     let floorAreaM2 = 0;
-    const green = [], roads = [];
     for (const design of designs) {
         const buildings = planYield.buildingFeaturesOf(design);
         if (design.buildingProposal && !buildings.length) floorAreaM2 = null;
@@ -30,11 +34,56 @@ export function authoredAreas(designs) {
         const measured = planYield.measureProposal(design, {});
         if (measured.unmeasuredBuildings > 0) floorAreaM2 = null;
         else if (floorAreaM2 !== null) floorAreaM2 += measured.grossFloorAreaM2;
-        if (design.structureProposal?.kind === 'park') green.push(turf.feature(design.structureProposal.geometry));
-        if (design.roadProposal) roads.push(turf.feature(design.roadProposal.definition.polygon));
     }
-    return { floorAreaM2, greenAreaM2: green.length ? turf.area(union(green)) : 0,
-        roadAreaM2: roads.length ? turf.area(union(roads)) : 0 };
+    // Parks and road corridors by Compare plans' rule (plan-decision.js roadAndGreen).
+    return { floorAreaM2, ...planDecision.roadAndGreen(designs, { turf }) };
+}
+
+// The designs' new buildings against the Permitted limits where they stand, as Compare plans checks
+// a plan (planning/permitted-check.js over the city's Permitted source, plan-decision.js
+// permittedSummary). The zones' own limits only: designations of rule sets are not applied here and
+// limits stated relative to the existing context read unknown.
+export async function permittedOf(designs, { read, planningSource = null }) {
+    const buildings = planDecision.permittedBuildings(designs.map((design, index) => ({ ...design, proposalId: cidOfObject(design) || `design-${index}` })));
+    if (!buildings.length) return { state: 'noBuildings' };
+    const city = designs.find(design => typeof design?.city === 'string' && design.city)?.city;
+    const source = planningSource || (city ? cityPlanningSourceIds(city)[0] : null);
+    if (!source) return { state: 'none', reason: 'No Permitted source is configured for this city.' };
+    const box = turf.bbox(turf.featureCollection(buildings.map(building => building.footprint)));
+    const answer = await read.request('/planning/representations', { city, source, bbox: box.join(',') });
+    if (answer?.truncated || answer?.nextCursor) return { state: 'notChecked', source, reason: 'The Permitted source has more items over these buildings than one read returns.' };
+    const result = PermittedCheck.check({ items: answer?.items || [], buildings, geometryOps: turf });
+    const floorArea = new Map(buildings.map(building => [building.id, building.floorAreaM2]));
+    return { source, ...planDecision.permittedSummary(result, id => floorArea.get(id) ?? null) };
+}
+
+// The agreements published on one exact plan revision (GET /agreements?plan=), each as Compare plans'
+// Backing block reads it, with a crowdfunding round's progress read from the chain by readFunding
+// (FundingProgress.readProgress) when this server has a Solana connection. Amounts are USDC atomic
+// units as strings.
+export async function backingOf(planCid, { read, readFunding = null }) {
+    const rows = [];
+    for (let offset = 0, pages = 0; offset !== null && pages < 10; pages++) {
+        const page = await read.request('/agreements', { plan: planCid, limit: 100, offset });
+        rows.push(...(page?.agreements || []));
+        offset = page?.hasMore ? page.nextOffset : null;
+    }
+    const agreements = rows.map(row => ({ ...planDecision.backingOf(row) }));
+    const rounds = rows.filter(row => FundingProgress.isCrowdfunding(row));
+    let progress = null, progressError = null;
+    if (rounds.length && readFunding) {
+        try { progress = await readFunding(rounds); } catch (error) { progressError = error.message; }
+    }
+    agreements.forEach(agreement => {
+        if (!agreement.crowdfunding) return;
+        const observed = progress?.get(agreement.cid);
+        agreement.funding = !readFunding ? { state: 'notRead', reason: 'This MCP server has no Solana connection; read the agreement in the app or on Solana Explorer.' }
+            : progressError ? { state: 'failed', reason: progressError }
+                : !observed ? { state: 'failed', reason: 'Not read.' }
+                    : observed.state === 'read' ? { ...observed, raisedUsdcAtomic: String(observed.raisedUsdcAtomic),
+                        targetUsdcAtomic: observed.targetUsdcAtomic === null ? null : String(observed.targetUsdcAtomic), source: 'solana' } : observed;
+    });
+    return { planCid, agreements };
 }
 
 // The floor area of the part of an existing building a design takes, by plan-yield's rule, as Plan
@@ -79,8 +128,8 @@ export function landAreaOf(designs, siteOf) {
     return sites.length ? turf.area(union(sites)) : 0;
 }
 
-export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDraftReference, plans }) {
-    return async function compare({ targets, parcelSourceId, buildingSources, plan, prices }) {
+export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDraftReference, plans, readFunding = null }) {
+    return async function compare({ targets, parcelSourceId, buildingSources, plan, prices, planningSource }) {
         const alternatives = [], warnings = [];
         const scope = plan == null ? null : await plans.resolvePlan(plan);
         for (const target of targets) {
@@ -219,17 +268,13 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
                             stated.set(`${used}:${building.id}`, building);
                         }));
                         const { records } = DemolitionDerive.derive({ takers, buildings: [...byKey.values()] }, turf);
-                        buildingsRemoved = 0; buildingsCut = 0; removedFootprintM2 = 0;
-                        let floorArea = 0, unmeasured = 0;
-                        for (const [key, record] of records) {
+                        // Totalled by Compare plans' rule (plan-decision.js demolitionTotals): a removed
+                        // building the source gives no height leaves the removed floor area unknown.
+                        const totals = planDecision.demolitionTotals([...records].map(([key, record]) => {
                             const part = record.remainder ? record.demolishedPart : record.geometry;
-                            if (!record.remainder) buildingsRemoved++; else buildingsCut++;
-                            removedFootprintM2 += turf.area(turf.feature(part));
-                            const area = existingFloorArea(part, stated.get(key));
-                            if (area === null) unmeasured++; else floorArea += area;
-                        }
-                        // A removed building the source gives no height leaves the removed floor area unknown.
-                        removedFloorAreaM2 = unmeasured ? null : floorArea;
+                            return { whole: !record.remainder, footprintM2: turf.area(turf.feature(part)), floorAreaM2: existingFloorArea(part, stated.get(key)) };
+                        }));
+                        ({ buildingsRemoved, buildingsCut, removedFootprintM2, removedFloorAreaM2 } = totals);
                     }
                 } catch (error) {
                     measurementErrors.push({ code: error.code || 'buildings-unavailable', message: error.message,
@@ -252,11 +297,27 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
                 measurementErrors.push({ code: error.code || 'money-unavailable', message: error.message,
                     next: trustedMetadata(error.next || { action: 'Give salePerM2, constructionPerM2 and landPerM2 in prices, in the city currency.' }) });
             }
+            // Compare plans' decision rows: the tallest new building, the build-out and the Permitted
+            // limits, and the agreements published on the exact plan revision.
+            const form = planDecision.builtForm({ records: designs, turf });
+            const periods = isPlan || isAgreement ? planDecision.periodSummary(planYield.planYield(designs.map(design => ({ ...design, applied: true, proposalId: cidOfObject(design) })),
+                { periodOf: record => { const end = (isPlan ? content : agreementPlan?.content)?.schedule?.[record.proposalId]?.end; return end ? Number(end.slice(0, 4)) : null; } })) : null;
+            let permitted = null;
+            try { permitted = await permittedOf(designs, { read, planningSource }); }
+            catch (error) { permitted = { state: 'notChecked', reason: error.message }; }
+            const backedPlan = isPlan ? (published ? cid : null) : isAgreement ? agreementPlan.cid : null;
+            let backing = null;
+            if (backedPlan) {
+                try { backing = await backingOf(backedPlan, { read, readFunding }); }
+                catch (error) { backing = { planCid: backedPlan, agreements: null, error: error.message }; }
+            }
             alternatives.push({ cid, title: content.title, ...areas, areaBasis: 'authored-geometry',
+                maxHeightM: form.maxHeightM, maxStoreys: form.maxStoreys, buildOut: periods, permitted, backing,
                 parcelsTaken: takes, buildingsRemoved, buildingsCut, removedFootprintM2, removedFloorAreaM2, money, ledger,
                 measurementErrors, ...(isPlan ? { designSources } : {}), ...preview });
         }
         warnings.push('Areas describe authored geometry; they are not a prediction of construction. The party ledger is the app’s modeled allocation, not proof of ownership or compensation.');
+        warnings.push('Permitted checks each new building against the zones of the city\'s Permitted source where it stands (or planningSource); planning designations of rule sets are not applied here and limits relative to the existing context read unknown. Crowdfunding progress under backing is read from Solana when this server has a connection, never from the index.');
         warnings.push('Money is a model at prices each with its source: value of the new floor area, its all-in cost (construction, the development charge on new floor area, land at the land price, the sale tax inside the value, the value of the floor area it removes), profit, annual rent and its yield on the cost without the sale tax. It is not an appraisal; fees and finance are not in it.');
         return { alternatives, warnings };
     };

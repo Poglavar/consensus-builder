@@ -109,7 +109,9 @@ describe('hosted MCP HTTP', () => {
         const resources = await client.listResources();
         expect(resources.resources.map(r => r.uri)).toContain('ugt://vocabulary');
         expect((await client.readResource({ uri: 'ugt://schemas/design' })).contents[0].text).toContain('design/v1');
-        expect((await client.listPrompts()).prompts).toHaveLength(5);
+        expect((await client.listPrompts()).prompts.map(prompt => prompt.name)).toEqual([
+            'change-my-street', 'edit-my-plan', 'compare-alternatives', 'propose-to-owners', 'crowdfund-a-plan', 'bet-on-an-agreement'
+        ]);
         expect((await client.readResource({ uri: 'ugt://editing' })).contents[0].text).toContain('JSON Pointer');
     });
     it('rejects credential-bearing environments before starting', () => {

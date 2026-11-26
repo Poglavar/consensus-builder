@@ -1,6 +1,6 @@
 // Shared advertised tool catalogue, checked against actual MCP registration in protocol tests.
 export const MCP_LOCAL_TOOLS = Object.freeze([
-    'ugt_capabilities', 'ugt_activity', 'ugt_list_agreements', 'ugt_get_agreement',
+    'ugt_capabilities', 'ugt_activity', 'ugt_list_agreements', 'ugt_get_agreement', 'ugt_agreement_evidence',
     'ugt_draft_property_offer', 'ugt_edit_property_offer', 'ugt_list_property_offer', 'ugt_get_property_offer', 'ugt_prepare_property_offer', 'ugt_consent_property_offer', 'ugt_publish_property_offer',
     'ugt_list_attesters',
     'ugt_support_status', 'ugt_oracle_events', 'ugt_inspect_verified_fact', 'ugt_publish_design', 'ugt_propose_agreement',

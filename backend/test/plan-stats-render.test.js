@@ -86,6 +86,9 @@ function makeWindow(proposals, { city = null } = {}) {
         __planYield: planYield,
         __siteStats: siteStats,
         __planScope: planScope,
+        __planDecision: require('../../frontend/js/proposals/plan-decision.js'),
+        BuildingDensityStats: require('../../frontend/js/building-density-stats.js'),
+        turf,
         CbFormat,
         CityMoney: CityMoney.forCity(() => city),
         EconomicSources: require('../../frontend/js/economic-sources.js'),
@@ -138,7 +141,8 @@ function openDialog(proposals, options = {}) {
         document: window.document,
         proposalStorage: window.proposalStorage,
         console,
-        AbortController
+        AbortController,
+        AbortSignal
     });
     return window;
 }
@@ -399,7 +403,8 @@ describe('comparing plans', () => {
             ['compared', 'All compared plans'], ['plan:0', 'Two blocks'], ['plan:1', 'One block'], ['saved:other', 'Saved elsewhere']]);
         expect(window.openedDialog.title).toBe('Compare plans');
         let rows = rowsOf(tableOf(window));
-        expect(rows[0]).toEqual(['', 'Present state', 'Two blocks', 'One block', 'BrokenNot measured: Parcel coverage is unavailable.']);
+        // A column that could not be measured says why and offers to measure it again.
+        expect(rows[0]).toEqual(['', 'Present state', 'Two blocks', 'One block', 'BrokenNot measured: Parcel coverage is unavailable.Measure again']);
         const buildings = rows.find(row => row[0].startsWith('Buildings'));
         // Standing buildings: the present state's three existing ones; each plan's new ones plus the
         // one existing building it leaves.
@@ -411,7 +416,7 @@ describe('comparing plans', () => {
         const added = rows.find(row => row[0].startsWith('of which new'));
         expect([remaining[1], remaining[2]].map(digits)).toEqual([3, 1]);
         expect([added[1], added[2], added[3]].map(digits)).toEqual([0, 2, 1]);
-        expect(rows).toHaveLength(1 + 17);
+        expect(rows).toHaveLength(1 + 27);
         expect(rows.find(row => row[0].startsWith('Public land')).slice(1, 3)).toEqual(['300', '1,200']);
         expect(rows.find(row => row[0].startsWith('Private land')).slice(1, 3)).toEqual(['600', '3,400']);
 
@@ -420,7 +425,7 @@ describe('comparing plans', () => {
         expect(swap.getAttribute('aria-pressed')).toBe('true');
         rows = rowsOf(tableOf(window));
         expect(rows).toHaveLength(1 + 4);
-        expect(rows[0]).toHaveLength(1 + 17);
+        expect(rows[0]).toHaveLength(1 + 27);
         expect(rows[0][0]).toBe('Plan');
         expect(rows[1][0]).toBe('Present state');
         expect(rows[2][0]).toBe('Two blocks');
@@ -563,6 +568,139 @@ describe('comparing plans', () => {
         expect(textOf(body.querySelector('[data-plan-compare-rule]'))).toContain('÷ 130 m² per apartment');
         await window.showPlanStatsModal({ content: { title: 'Garden plan' } });
         expect(window.document.getElementById('plan-stats-apartment-size').value).toBe('130');
+    });
+});
+
+describe('Compare plans as a decision sheet', () => {
+    const textOf = node => node.textContent + node.children.map(textOf).join('');
+    const rowsOf = table => table.children.map(tr => tr.children.map(textOf));
+    const find = (window, test) => (function walk(node) { if (test(node)) return node; for (const child of node.children) { const hit = walk(child); if (hit) return hit; } return null; })(window.openedDialog.body);
+    const tableOf = window => find(window, node => node.dataset?.planCompare === 'plans-as-columns');
+    const row = (window, label) => rowsOf(tableOf(window)).find(cells => cells[0].startsWith(label));
+    const settle = async () => { for (let i = 0; i < 20; i++) await new Promise(resolve => setImmediate(resolve)); };
+    const land = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: SIBENIK } };
+    const ROUND = 'bafkreigmrraldkjtmcgcxfkq6gdhx55uyi3k7sbxjjqs27tzyeuakl634m';
+    const SPONSOR = '4EXtquCoNRBXvfVgDRfBSXSWzrBctcqLwwUau96Umeqk';
+    const round = { cid: ROUND, planCid: 'plan-1', onchain: { chain: 'solana', cluster: 'devnet', account: 'J9uyaoKFhkmi7XTtxZQ6VoJiDDLvTWoNkKwx1GfjEbK9', status: 'active' },
+        content: { title: 'Developer round', sponsor: SPONSOR, deadline: '2027-11-24T12:00:00.000Z',
+            rule: { electorate: 'investors', binding: true, lens: ['m8gLfyPspP6ABSNA4ZMFYCzzRGjNLBmrKKwKrGqbUfR', 'Bd3bVJQDjbUkJVDWtqBSHyyJQ7bkJKbTcSvzRJVqd4zY'] },
+            funding: { targetUsdcAtomic: '2500000000' } } };
+    function decisionWindow({ funding = null, permitted = null } = {}) {
+        const window = openDialog(plan);
+        window.getBackendBase = () => 'https://api.test';
+        window.fetch = async () => { throw new Error('no network'); };
+        window.AgreementRecord = require('../../frontend/js/agreement-record.js');
+        window.AgreementBridge = require('../../frontend/js/solana/agreement-bridge.js');
+        window.DesignMemberships = { fetchPage: async ({ planCid, offset }) => ({ items: planCid === 'plan-1' && offset === 0 ? [round] : [], nextOffset: null }),
+            localAgreements: () => [] };
+        const fundingModel = require('../../frontend/js/solana/funding-progress.js');
+        window.FundingProgress = { isCrowdfunding: fundingModel.isCrowdfunding, read: async rows => {
+            window.fundingRead = rows.map(row => row.cid);
+            return new Map(rows.map(item => [item.cid, funding || { state: 'failed', reason: 'RPC 429' }]));
+        }, textOf: progress => fundingModel.progressText(progress, { t: (key, fallback, params) => fallback.replace(/\{\{(\w+)\}\}/g, (_, name) => params[name]),
+            formatUsdc: window.AgreementRecord.formatUsdc, formatInteger: String }) };
+        if (permitted) { window.PermittedCheck = {}; window.PermittedAdvisor = { checkPlan: permitted }; }
+        window.FileDownload = { save: (_win, content, name) => { window.saved = { content, name }; } };
+        // The decision rule in the agreement panel's own words.
+        window.AgreementPanel = { ruleShort: rule => `${rule.electorate === 'investors' ? 'Developer crowdfunding' : rule.electorate} · ${rule.binding ? 'Binding' : 'Non-binding'}`,
+            chainStatusText: status => status };
+        return window;
+    }
+
+    it('adds the built form, demolition, build-out, Permitted limits and backing to each column', async () => {
+        const window = decisionWindow({
+            funding: { state: 'read', chainStatus: 'Active', raisedUsdcAtomic: 1000000000n, targetUsdcAtomic: 2500000000n, contributors: 3, apartmentsOffered: null },
+            permitted: async ({ buildings }) => ({ status: 'fail', buildings: { [buildings[0].id]: 'fail', [buildings[1].id]: 'pass' } }) });
+        await window.comparePlanStats([{ cid: 'plan-1', landFeature: land,
+            content: { title: 'Two blocks', schedule: { 'd-1': { end: '2030-06-01' }, 'd-2': { end: '2032-01-01' } } },
+            records: [block('d-1'), block('d-2')],
+            cleared: [{ before: { ...block(null), proposalId: 'built:x' }, after: null }] }]);
+        await settle();
+        expect(row(window, 'New buildings: maximum height')[2]).toBe('17.5 m · 5 storeys');
+        // Two 5-storey blocks over the same land: twice the land in floor area per storey.
+        expect(row(window, 'Floor-area ratio')[2]).toBe('10.00');
+        expect(row(window, 'Site coverage')[2]).toContain('100');
+        expect(row(window, 'Existing buildings demolished')[2]).toMatch(/^1 whole, 0 in part · /);
+        expect(row(window, 'Build-out by period')[2]).toBe('2030–2032 · 2 periods');
+        expect(row(window, 'Permitted limits')[2]).toMatch(/^1 of 2 buildings break limits \(/);
+        expect(row(window, 'Green area')[2]).toBe('0');
+        const backing = row(window, 'Agreements backing the plan')[2];
+        expect(backing).toContain('Developer round');
+        expect(backing).toContain('Developer crowdfunding · Binding');
+        expect(backing).toContain('Lead: 4EXt…meqk');
+        expect(backing).toContain('Any 1 of 2 must confirm.');
+        expect(backing).toContain('Target 2500 USDC by');
+        expect(backing).toContain('1000 of 2500 USDC raised · 3 contributors');
+        expect(window.fundingRead).toEqual([ROUND]);
+        // The present state is the baseline: no backing or limits of its own.
+        expect(row(window, 'Agreements backing the plan')[1]).toBe('—');
+        const lead = find(window, node => node.tagName === 'A');
+        expect(lead.href).toBe(`https://explorer.solana.com/address/${SPONSOR}?cluster=devnet`);
+    });
+
+    it('says why a figure is missing instead of a 0', async () => {
+        const window = decisionWindow({ permitted: async () => ({ status: 'unavailable', buildings: {}, checks: [], reason: 'Planning sources HTTP 503' }) });
+        await window.comparePlanStats([{ content: { title: 'Unpublished' }, records: [{ ...block('d-1'), buildingProposal: { buildings: [{ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: SIBENIK } }] } }] },
+            { cid: 'plan-1', content: { title: 'Published' }, records: [block('d-1')] }]);
+        await settle();
+        // A building that states no height has no tallest height; a plan without land has no ratios.
+        expect(row(window, 'New buildings: maximum height')[2]).toBe('—');
+        expect(row(window, 'Floor-area ratio')[2]).toBe('—');
+        expect(row(window, 'Build-out by period')[2]).toBe('No schedule');
+        expect(row(window, 'Permitted limits')[2]).toBe('Not checked: Planning sources HTTP 503');
+        expect(row(window, 'Agreements backing the plan')[2]).toBe('Plan not published: no agreements');
+        // A chain read that failed says so rather than reading as nothing raised.
+        expect(row(window, 'Agreements backing the plan')[3]).toContain('Chain not read: RPC 429');
+    });
+
+    it('measures a column again after a passing failure, and adds it to the scope and basis choices', async () => {
+        const window = decisionWindow();
+        const prepare = window.PlanAnalysis.prepare;
+        let failures = 1;
+        window.PlanAnalysis.prepare = async (p, options) => {
+            if (p.content.title === 'Flaky' && failures-- > 0) throw new Error('HTTP 500');
+            return prepare(p, options);
+        };
+        await window.comparePlanStats([{ content: { title: 'Steady' }, records: [block('d-1')] }, { content: { title: 'Flaky' }, records: [block('d-1'), block('d-2')] }]);
+        await settle();
+        expect(rowsOf(tableOf(window))[0][3]).toBe('FlakyNot measured: HTTP 500Measure again');
+        const basis = find(window, node => node.dataset && 'planCompareBasis' in node.dataset);
+        expect(basis.children.map(option => option.value)).toEqual(['plan:0', 'saved:other']);
+        const retry = find(window, node => node.dataset && 'planCompareRetry' in node.dataset);
+        retry.listeners.click.forEach(fn => fn());
+        await settle();
+        expect(rowsOf(tableOf(window))[0][3]).toBe('Flaky');
+        expect(digits(row(window, 'Buildings')[3])).toBe(2);
+        expect(basis.children.map(option => option.value)).toEqual(['compared', 'plan:0', 'plan:1', 'saved:other']);
+        expect(basis.value).toBe('plan:0');
+    });
+
+    it('reads a plan\'s agreements again after the index failed', async () => {
+        const window = decisionWindow({ funding: { state: 'unminted' } });
+        const fetchPage = window.DesignMemberships.fetchPage;
+        let failures = 1;
+        window.DesignMemberships.fetchPage = async options => { if (failures-- > 0) throw new Error('Membership lookup returned HTTP 500'); return fetchPage(options); };
+        await window.comparePlanStats([{ cid: 'plan-1', content: { title: 'Published' }, records: [block('d-1')] }]);
+        await settle();
+        expect(row(window, 'Agreements backing the plan')[2]).toBe('Not read: Membership lookup returned HTTP 500Retry');
+        find(window, node => node.dataset && 'planCompareBackingRetry' in node.dataset).listeners.click.forEach(fn => fn());
+        await settle();
+        expect(row(window, 'Agreements backing the plan')[2]).toContain('Developer round');
+        expect(row(window, 'Agreements backing the plan')[2]).toContain('Not minted');
+    });
+
+    it('downloads every row with the columns\' titles and CIDs and the assumptions as CSV', async () => {
+        const window = decisionWindow({ funding: { state: 'unminted' } });
+        await window.comparePlanStats([{ cid: 'plan-1', content: { title: 'Two blocks, east' }, records: [block('d-1')] }, { content: { title: 'One block' }, records: [block('d-2')] }]);
+        await settle();
+        find(window, node => node.dataset && 'planCompareCsv' in node.dataset).listeners.click.forEach(fn => fn());
+        const lines = window.saved.content.replace(/^\uFEFF/, '').trim().split('\r\n');
+        expect(window.saved.name).toMatch(/^compare-plans-\d{4}-\d{2}-\d{2}\.csv$/);
+        expect(lines[0]).toBe(',Present state,"Two blocks, east (plan-1)",One block');
+        expect(lines.filter(line => line.startsWith('New buildings: maximum height · most storeys,'))).toHaveLength(1);
+        expect(lines.find(line => line.startsWith('Agreements backing the plan,'))).toContain('Not minted');
+        expect(lines).toContain('Assumptions');
+        expect(lines.some(line => /^m² per apartment,65$/.test(line))).toBe(true);
     });
 });
 

@@ -46,6 +46,11 @@ class FakeElement {
         this.listeners.set(type, listeners);
     }
     closest(selector) { return selector === '[data-sheet-anchor]' ? null : null; }
+    // A selector list of single class or id selectors, as map-shell.js asks (positionSheet).
+    matches(selector) {
+        return selector.split(',').map(part => part.trim()).some(part => (part.startsWith('.')
+            ? this.classList.contains(part.slice(1)) : part.startsWith('#') && this.id === part.slice(1)));
+    }
     getBoundingClientRect() { return { top: 10, bottom: 50, left: 10, right: 50, width: 40, height: 40 }; }
     focus() { this.ownerDocument.activeElement = this; }
     contains(element) { return element === this || this.children.some(child => child.contains(element)); }

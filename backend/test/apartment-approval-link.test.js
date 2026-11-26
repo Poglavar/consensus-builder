@@ -11,6 +11,13 @@ describe('apartment approval links', () => {
         expect(() => approval.validate({ action: 'donate', target: cid, params: { unitId: 'a-101' } })).toThrow(/only valid for apartment/);
         expect(() => approval.validate({ action: 'reserve', target: cid, params: { unitId: '../wallet' } })).toThrow(/unitId/);
     });
+    it('builds a lens member confirmation intent that focuses the panel\'s Confirm as lens member', () => {
+        expect(approval.parse(new URL(`/agreements/${cid}?act=confirm-member`, 'https://app.test'))).toMatchObject({ action: 'confirm-member', target: cid });
+        expect(() => approval.validate({ action: 'confirm-member', target: cid, params: { amount: '1' } })).toThrow(/amount/);
+        const button = { disabled: false, setAttribute() {}, focus() { this.focused = true; }, closest() { return null; } };
+        expect(approval.preselect({ querySelector: selector => (selector === '[data-agreement-action="confirm-member"]' ? button : null) }, { action: 'confirm-member', target: cid, params: {} })).toBe(true);
+        expect(button.focused).toBe(true);
+    });
     it('focuses the matching control only', () => {
         const button = { disabled: false, attrs: {}, setAttribute(k, v) { this.attrs[k] = v; }, focus() { this.focused = true; }, closest() { return null; } };
         const container = { listeners: {}, querySelector(selector) { return selector.includes('a-101') ? button : null; }, addEventListener(name, fn) { this.listeners[name] = fn; } };

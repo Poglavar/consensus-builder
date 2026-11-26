@@ -56,7 +56,7 @@ describe('parcel history card builders', () => {
         expect(card.describeEvent({ type: 'agreement_executed', lens: [MEMBER, LENS] }).details).toEqual([`Lens: ${short(MEMBER)}, ${short(LENS)}`]);
         expect(card.describeEvent({ type: 'agreement_executed', lens: '' }).details).toEqual([]);
         expect(card.describeEvent({ type: 'parcel_ownership', member: MEMBER, ownerCount: 0 }))
-            .toEqual({ title: 'Ownership attested', details: [`Member ${short(MEMBER)}`, '0 attested owner(s)'] });
+            .toEqual({ title: 'Ownership attested', details: [`Lens member ${short(MEMBER)}`, '0 attested owner(s)'] });
         expect(card.describeEvent({})).toEqual({ title: 'Event', details: [] });
     });
 
@@ -75,7 +75,7 @@ describe('parcel history card builders', () => {
         expect(html).toContain(`href="https://api/agreements/${CID}"`);
         expect(html).toContain('href="https://explorer.solana.com/tx/sig?cluster=devnet"');
         expect(html).not.toContain('javascript:');
-        expect(html).toContain(`Member ${short(MEMBER)}`);
+        expect(html).toContain(`Lens member ${short(MEMBER)}`);
         expect(html).toContain('2 attested owner(s)');
         expect(html).toContain(`Lens: ${short(LENS)}`);
         expect(html).toContain(`title="sha256:${'cd'.repeat(32)}"`);

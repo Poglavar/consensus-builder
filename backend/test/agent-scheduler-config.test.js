@@ -20,7 +20,11 @@ describe('algorithmic agent schedule', () => {
         const proposers = apps.filter(item => item.script === 'agents/run.mjs');
         expect(proposers.map(item => item.name).sort()).toEqual(['consensus-builder-affordabot', 'consensus-builder-agents', 'consensus-builder-builder', 'consensus-builder-gentle']);
         // A settled agreement signs at most five transactions: attest, execute or expire, resolve, claim, reclaim.
-        const perSettlement = SIGNED_SETTLEMENT_STEPS.length - 1;
+        // A proposer mints binding owners' agreements, which carry no funding target and no donation
+        // escrow, so the crowdfunding steps (confirm-funding, release-donations) never apply to them.
+        const crowdfundingOnly = ['confirm-funding', 'release-donations'];
+        const perSettlement = SIGNED_SETTLEMENT_STEPS.filter(step => !crowdfundingOnly.includes(step)).length - 1;
+        expect(perSettlement).toBe(5);
         for (const proposer of proposers) {
             expect(proposer.env.AGENT_MARKET_SEED_USDC_CAP).toBe('3.5');
             expect(proposer.args).toContain('--seed-owners');

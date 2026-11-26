@@ -192,7 +192,7 @@ test('the Build tile opens the editor on equal plots, and the plot count sets ho
   await expect(editor.locator('.on-map-editor__heading h2')).toHaveText('Lay out parcels');
   expect(await algorithm(editor)).toBe('equal');
   const count = editor.locator('[data-parcel-layout-count]');
-  // One parcel starts at the smallest count: two plots, numbered on the map as in the list.
+  // One parcel opens split in two plots (the count allows one), numbered on the map as in the list.
   await expect(count).toHaveValue('2');
   await expect.poll(async () => (await plotRows(editor)).length).toBe(2);
   await expect(page.locator('.reparcel-plot-number')).toHaveCount(2);
@@ -201,11 +201,16 @@ test('the Build tile opens the editor on equal plots, and the plot count sets ho
   await count.press('Enter');
   await expect.poll(async () => (await plotRows(editor)).length).toBe(4);
   await expect(page.locator('.reparcel-plot-number')).toHaveCount(4);
-  // Below the smallest count the field comes back to it.
+  // One plot merges the pool into a single plot (65b95b608); below one the field comes back to it.
   await count.fill('1');
   await count.press('Enter');
-  await expect(count).toHaveValue('2');
-  await expect.poll(async () => (await plotRows(editor)).length).toBe(2);
+  await expect(count).toHaveValue('1');
+  await expect.poll(async () => (await plotRows(editor)).length).toBe(1);
+  await expect(page.locator('.reparcel-plot-number')).toHaveCount(1);
+  await count.fill('0');
+  await count.press('Enter');
+  await expect(count).toHaveValue('1');
+  await expect.poll(async () => (await plotRows(editor)).length).toBe(1);
   await count.fill('4');
   await count.press('Enter');
   await expect.poll(async () => (await plotRows(editor)).length).toBe(4);

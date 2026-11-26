@@ -151,7 +151,8 @@ describe('GET /agents.json', () => {
         expect(res.body.agreementProgram).toMatchObject({
             programId: AGREEMENT_PROGRAM_ID,
             cluster: 'devnet',
-            instructions: { create: { args: expect.arrayContaining(['cid: string', 'lens: pubkey']) } }
+            // The lens is a set of 0-8 members with a confirmation threshold, frozen at mint.
+            instructions: { create: { args: expect.arrayContaining(['cid: string', 'lenses: vec<pubkey>', 'lens_threshold: u8', 'required_funding: u64']) } }
         });
         expect(res.body.endpoints.agreementOnchain).toBe('https://api.example.test/agreements/{cid}/onchain');
         expect(res.body).not.toHaveProperty('proposalAccount');

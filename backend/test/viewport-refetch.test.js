@@ -214,8 +214,8 @@ describe('planning view refresh', () => {
             // The hatch as the grid it is painted from: the image and its map layer need a browser.
             failedGrid: failedCellGrid, hatch: null, hatchSignature: '', frozen: false,
             ZONING_ZOOM: 15, MASSING_ZOOM: 16, massingWaits: false,
-            // Zagreb has no planning rule set, so no designations are read (restriction-feed.js).
-            restrictionView: null, restrictionRequest: 0, reassemble: null,
+            // The restrictions stage (planning designations): no feed for the city, so answers pass through.
+            restrictionView: null, restrictionRequest: 0, reassemble: null, restrictionMemo: null, cutItems: new WeakMap(),
             hatchImage: grid => grid, drawHatch() {}, CustomEvent: class { constructor(type) { this.type = type; } },
             root: {
                 PlanningLoading: { track: (_kind, promise) => promise },

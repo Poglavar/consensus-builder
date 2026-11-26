@@ -485,6 +485,8 @@
             status.hidden = !status.textContent;
             list.setAttribute('aria-busy', String(!!page?.loading));
             const recordIds = visible.map(row => String(row.cid || row.key || '')).filter(Boolean);
+            // The crowdfunding rounds among the visible cards, their progress read from the chain at once.
+            const fundingLines = [];
             for (const row of visible.slice(0, shownLimit)) {
                 const recordId = String(row.cid || row.key || '');
                 const recordLabel = win.RecordLabel.label(row.title, recordId, recordIds);
@@ -495,6 +497,8 @@
                     cached.item.classList.toggle('is-selected', state.active === `${kind}:${row.key}`);
                     const check = cached.item.querySelector('input[type="checkbox"]');
                     if (check && !check.disabled) check.checked = state.selected.has(row.key);
+                    const funding = cached.item.querySelector('[data-funding-progress]');
+                    if (funding) fundingLines.push({ agreement: fundingRoundOf(row), line: funding });
                     desired.push(cached.item);
                     continue;
                 }
@@ -566,6 +570,12 @@
                 if (kind === 'plans') item.append(node('p', 'sheet-note', t('agreement.list.designs', { count: row.record.content?.designCids.length ?? row.record.designCount })));
                 if (row.propertyOffer) item.append(node('p', 'sheet-note', offerDirection((row.local?.content || row.record.content).direction)));
                 else if (kind === 'agreements' && row.local) item.append(node('p', 'sheet-note', win.AgreementPanel.ruleShort(row.local.rule)));
+                if (kind === 'agreements' && !row.propertyOffer && fundingRoundOf(row)) {
+                    const funding = node('p', 'sheet-note lists-item__funding', t('planCompare.backing.chainReading'));
+                    funding.dataset.fundingProgress = '';
+                    item.append(funding);
+                    fundingLines.push({ agreement: fundingRoundOf(row), line: funding });
+                }
                 const actions = node('div', 'cb-actions lists-item__actions');
                 const open = button(t('lists.open'), () => inspect(row, kind), 'btn-primary lists-item__open', 'arrow-pointer');
                 open.setAttribute('aria-label', t('lists.openNamed', { title: recordLabel }));
@@ -629,11 +639,34 @@
             for (const child of Array.from(list.children)) if (!keep.has(child)) child.remove();
             desired.forEach((el, position) => { if (list.children[position] !== el) list.insertBefore(el, list.children[position] || null); });
             for (const [key, card] of cards) if (!keep.has(card.item)) cards.delete(key);
+            if (fundingLines.length) void showFunding(fundingLines);
             if (focused && doc.activeElement !== focused) {
                 const card = cards.get(focusedCard?.dataset.listId)?.item;
                 const next = card ? card.querySelectorAll(selector)[focusIndex] || card
                     : focused.dataset.listsMore !== undefined ? list.querySelector('[data-lists-more]') || desired.find(el => el.dataset.listId) : null;
                 next?.focus({ preventScroll: true });
+            }
+        }
+        // A card's agreement when it is a developer crowdfunding round (rule.electorate 'investors'):
+        // the index's row, else this browser's copy.
+        function fundingRoundOf(row) {
+            const agreement = row.record?.content?.rule ? row.record : row.local || row.record;
+            const rule = agreement?.content?.rule || agreement?.rule;
+            return rule?.electorate === 'investors' ? agreement : null;
+        }
+        // Raised of target and contributors under each visible round, from one batched chain read
+        // (js/solana/funding-progress.js); a minted one not read says why, an unminted one says so.
+        async function showFunding(lines) {
+            try {
+                if (!win.FundingProgress) await win.ensureOptionalTool('fundingProgress');
+                const progress = await win.FundingProgress.read(lines.map(entry => entry.agreement));
+                lines.forEach(({ agreement, line }) => {
+                    const cid = agreement.cid || agreement.published?.cid || null;
+                    if (line.isConnected) line.textContent = win.FundingProgress.textOf(cid ? progress.get(cid) : { state: 'unminted' });
+                });
+            } catch (error) {
+                win.console.error(`[${new Date().toISOString()}] [Lists] crowdfunding progress could not be read`, error);
+                lines.forEach(({ line }) => { if (line.isConnected) line.textContent = t('planCompare.backing.chainFailed', { reason: error.message || String(error) }); });
             }
         }
         function controls() {

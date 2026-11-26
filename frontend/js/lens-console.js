@@ -86,8 +86,8 @@
         if (state.status && state.status.key) {
             const same = state.status.key === state.wallet;
             target.append(el('p', same ? 'lc-ok' : 'lc-warn', same
-                ? t('lensConsole.wallet.matches', 'This wallet is the member key of the loaded service.')
-                : t('lensConsole.wallet.differs', 'This wallet is not the member key of the loaded service ({{key}}).', { key: core.shortKey(state.status.key) })));
+                ? t('lensConsole.wallet.matches', 'This wallet is the lens member key of the loaded service.')
+                : t('lensConsole.wallet.differs', 'This wallet is not the lens member key of the loaded service ({{key}}).', { key: core.shortKey(state.status.key) })));
         }
     }
 
@@ -99,7 +99,7 @@
         target.replaceChildren();
         const price = core.describeOwnershipPrice(status);
         const counts = status.counts && typeof status.counts === 'object' ? status.counts : {};
-        const keyRow = line(t('lensConsole.status.key', 'Member key'), '');
+        const keyRow = line(t('lensConsole.status.key', 'Lens member key'), '');
         keyRow.lastChild.replaceWith(explorerLink(status.key));
         target.append(
             keyRow,
@@ -110,7 +110,7 @@
             line(t('lensConsole.status.price', 'Ownership price'), price || t('lensConsole.status.free', 'not priced (free or not configured)'))
         );
         if (status.dryRun) target.append(el('p', 'lc-warn', t('lensConsole.status.dryRun', 'Dry run: attestations are built in memory and never reach the chain.')));
-        if (status.ephemeralKey) target.append(el('p', 'lc-warn', t('lensConsole.status.ephemeral', 'Ephemeral key: this member has no persistent identity; restart it with a keypair to be listed in a lens.')));
+        if (status.ephemeralKey) target.append(el('p', 'lc-warn', t('lensConsole.status.ephemeral', 'Ephemeral key: this lens member has no persistent identity; restart it with a keypair to be listed in a lens.')));
     }
 
     function internalLink(label, selection) {
@@ -140,7 +140,9 @@
     function statementText(att) {
         const p = att.payload || {};
         if (att.kind === 'decision' && p.decision === 'satisfied') return t('lensWalk.met', 'The agreement’s approval rule was met.');
-        if (att.kind === 'ownership' && p.owner && p.parcelUid) return t('lensActivity.ownershipClaim', '{{owner}} holds ownership rights on parcel {{parcel}}.', { owner: p.owner, parcel: p.parcelUid });
+        // A service lists an ownership fact's owner and parcel on the record itself or in its payload.
+        const owner = p.owner || att.owner, parcel = p.parcelUid || att.parcelUid;
+        if (att.kind === 'ownership' && owner && parcel) return t('lensActivity.ownershipClaim', '{{owner}} holds ownership rights on parcel {{parcel}}.', { owner, parcel });
         if (att.kind === 'evidence' && p.subject && p.value != null) return t('lensActivity.evidenceClaim', '{{subject}} was reported as {{value}}.', p);
         if (att.kind === 'propertyOffer' && p.counterpartyQualified === 1 && p.cid) return t('lensActivity.offerClaim', 'The counterparty qualified for offer {{offer}}.', { offer: p.cid });
         return kindLabel(att.kind);
@@ -161,12 +163,15 @@
     function receiptCard(att, exact) {
         const li = el('li', 'lc-item');
         const payload = att.payload || {};
-        const entry = state.directory.find(m => m.key === att.authority);
+        // A directory name only for the service the directory lists for that key: any other service
+        // may report any key, and its statements must not borrow a listed lens member's name.
+        const entry = state.directory.find(m => m.key === att.authority && core.normalizeServiceUrl(m.serviceUrl || '') === state.serviceUrl);
         const issuer = entry?.name ? `${entry.name} · ${core.shortKey(att.authority)}` : att.authority;
         li.append(el('p', 'lc-meta', kindLabel(att.kind)), el('h3', 'lc-claim', statementText(att)),
             line(t('lensActivity.signedBy', 'Issued by'), issuer),
             dateLine(t('lensConsole.attestations.issuedAt', 'Issued (chain time)'), att.issuedAt));
         if (state.status.dryRun) li.append(el('p', 'lc-warn', t('lensActivity.dryRun', 'Simulated statement')));
+        else li.append(el('p', 'lc-muted', t('lensActivity.unchecked', 'As this lens member’s service reports it. Open the attestation on Solana to check it.')));
         const subject = payload.agreementCid;
         const subjectLink = subject && internalLink(t('lensActivity.openSubject', 'Follow this agreement') + ' · ' + subject.slice(0, 12) + '…' + subject.slice(-6), { agreement: subject });
         if (subjectLink) li.append(subjectLink);
@@ -178,11 +183,15 @@
             else details.addEventListener('toggle', () => { if (details.open) showAgreementTitle(subjectLink, subject); });
         }
         details.append(el('summary', '', t('lensActivity.details', 'Statement details')),
-            line(t('lensConsole.status.key', 'Member key'), att.authority, true));
+            line(t('lensConsole.status.key', 'Lens member key'), att.authority, true));
         if (subject) details.append(line(t('lensConsole.attestations.agreement', 'Agreement'), subject, true));
         if (payload.sourceObservedAt) details.append(dateLine(t('lensActivity.sourceObservedAt', 'Source observed'), payload.sourceObservedAt));
         if (payload.evidenceRef || payload.sourceRef) details.append(line(t('lensActivity.source', 'Evidence source'), payload.evidenceRef || payload.sourceRef, true));
-        if (att.expiry) details.append(dateLine(t('lensActivity.expiry', 'Expires'), att.expiry));
+        if (att.expiry) {
+            const expiry = dateLine(t('lensActivity.expiry', 'Expires'), att.expiry);
+            if (att.expiry * 1000 <= Date.now()) expiry.append(el('span', 'lc-warn', ' · ' + t('lensActivity.expired', 'expired, no longer counts')));
+            details.append(expiry);
+        }
         const identifiers = [[t('lensConsole.decision.address', 'Attestation'), att.address], [t('lensActivity.credential', 'Credential'), att.credential],
             [t('lensActivity.schema', 'Schema'), att.schema], [t('lensActivity.transaction', 'Issuance transaction'), att.transactionSignature, 'tx']];
         for (const [label, id, kind] of identifiers) {
@@ -209,8 +218,8 @@
         const focus = target.contains?.(doc.activeElement) && doc.activeElement.closest('details')?.id;
         const ul = el('ul', 'lc-list');
         for (const att of list) ul.append(receiptCard(att, exact));
-        target.replaceChildren(list.length ? ul : el('p', 'lc-muted', t('lensActivity.empty', 'This response contains no matching statements from this member.')));
-        if (exact) target.append(internalLink(t('lensActivity.allStatements', 'See all statements by this member'), { member: state.status.key }));
+        target.replaceChildren(list.length ? ul : el('p', 'lc-muted', t('lensActivity.empty', 'This lens member’s service lists no matching statements.')));
+        if (exact) target.append(internalLink(t('lensActivity.allStatements', 'See all statements by this lens member'), { member: state.status.key }));
         for (const id of open) { const d = doc.getElementById(id); if (d) d.open = true; }
         if (focus) doc.getElementById(focus)?.querySelector('summary')?.focus({ preventScroll: true });
     }
@@ -238,7 +247,7 @@
         if (request !== state.serviceRequest) return false;
         const error = result.outcome.kind !== 'ok' ? outcomeMessage(result.outcome)
             : !core.isBase58Pubkey(result.body?.key) || (state.expectedKey && result.body.key !== state.expectedKey)
-                ? t('lensActivity.wrongMember', 'The service returned a different member identity.') : null;
+                ? t('lensActivity.wrongMember', 'The service answered for a different lens member.') : null;
         if (error) {
             showError(doc.getElementById('lc-status'), error);
             showError(doc.getElementById('lc-attestations'), error);
@@ -294,8 +303,8 @@
         const placeholder = el('option', '', state.directoryError
             ? t('lensConsole.service.directoryFailed', 'Could not load the lens directory ({{message}})', { message: state.directoryError })
             : state.directory.length
-                ? t('lensConsole.service.directoryPick', 'Pick a member…')
-                : t('lensConsole.service.directoryNone', 'No member in the directory publishes a service URL'));
+                ? t('lensConsole.service.directoryPick', 'Pick a lens member…')
+                : t('lensConsole.service.directoryNone', 'No lens member in the directory lists a statement service'));
         placeholder.value = '';
         select.append(placeholder);
         state.directory.forEach(member => {
@@ -313,7 +322,7 @@
         const input = doc.getElementById('lc-service-url');
         if (state.serviceRequest) return;
         const member = requestedKey ? state.directory.find(entry => entry.key === requestedKey) : state.directory[0];
-        if (requestedKey && !member?.serviceUrl) return showError(doc.getElementById('lc-attestations'), state.directoryError || t('lensActivity.unknownMember', 'This member has no service listed in the directory.'));
+        if (requestedKey && !member?.serviceUrl) return showError(doc.getElementById('lc-attestations'), state.directoryError || t('lensActivity.unknownMember', 'This lens member lists no statement service in the directory.'));
         const url = requestedKey ? member?.serviceUrl : params.get('service') || member?.serviceUrl || input.value;
         if (!url) return;
         input.value = url;
@@ -342,15 +351,15 @@
         case 'rule_not_met': return t('lensConsole.decision.errors.ruleNotMet', 'The owner decisions relayed so far do not meet the agreement’s decision rule.');
         case 'deadline_passed': return t('lensConsole.decision.errors.deadlinePassed', 'The agreement’s deadline has passed; its account can only expire.');
         case 'agreement_closed': return t('lensConsole.decision.errors.agreementClosed', 'The agreement is already executed or cancelled.');
-        case 'not_in_lens': return t('lensConsole.decision.errors.notInLens', 'This member is not in the agreement’s lens.');
+        case 'not_in_lens': return t('lensConsole.decision.errors.notInLens', 'This lens member is not in the agreement’s lens.');
         case 'not_agreement_lens': return t('lensConsole.decision.errors.notAgreementLens', 'The agreement’s account names another lens member; only its decision settles it.');
         case 'decision_recorded': return t('lensConsole.decision.errors.decisionRecorded', 'The agreement’s account already records a decision.');
         case 'no_sponsor': return t('lensConsole.decision.errors.noSponsor', 'The agreement names no sponsor wallet, so no chain account can carry its decision.');
-        case 'agreement_not_found': return t('lensConsole.decision.errors.notFound', 'This member’s agreement index does not hold that agreement.');
-        case 'operator_only': return t('lensConsole.decision.errors.operatorOnly', 'The member refused the operator token.');
+        case 'agreement_not_found': return t('lensConsole.decision.errors.notFound', 'This lens member’s agreement index does not hold that agreement.');
+        case 'operator_only': return t('lensConsole.decision.errors.operatorOnly', 'The lens member refused the operator token.');
         case 'operator_not_configured':
         case 'agreements_not_configured':
-            return t('lensConsole.decision.errors.notConfigured', 'This member is not set up to attest agreement decisions ({{message}}).', { message: outcome.message || outcome.code });
+            return t('lensConsole.decision.errors.notConfigured', 'This lens member is not set up to attest agreement decisions ({{message}}).', { message: outcome.message || outcome.code });
         default: return outcomeMessage(outcome);
         }
     }
@@ -430,7 +439,7 @@
         const answer = core.readDecisionAnswer(result.body, cid);
         if (!answer.ok) {
             settle('refused', answer.reason);
-            return showError(target, t('lensConsole.decision.errors.answer', 'The member answered something other than the decision of this agreement.'));
+            return showError(target, t('lensConsole.decision.errors.answer', 'The lens member answered something other than the decision of this agreement.'));
         }
         settle(answer.reused ? 'reused' : 'issued');
         renderDecisionAnswer(target, answer);

@@ -864,6 +864,10 @@ export function createUrbanGameTheoryTools({
     actions.editDesign = placing('editDesign', (_row, args) => args.expectedCid);
     actions.modifyDesign = placing('modifyDesign', row => row.design.origin?.cid || null);
     Object.assign(actions, createMcpValidationTools({ read: companion, drafts, plans: actions }));
-    actions.compare = createMcpComparison({ read: companion, resolveDesign: drafts.resolveDesign, plans: actions, appOrigin, resolveDraftReference });
+    // Crowdfunding progress under ugt_compare's backing, read from the chain (funding-progress.js).
+    const readFunding = agreements => require('../../frontend/js/solana/funding-progress.js').readProgress(agreements, {
+        connectionFor: async () => chain(), web3: require('@solana/web3.js'), agreementClient, record: agreementRecord,
+        pledgeClient: require('../../frontend/js/solana/pledge-client.js').configure({ web3: require('@solana/web3.js') }) });
+    actions.compare = createMcpComparison({ read: companion, resolveDesign: drafts.resolveDesign, plans: actions, appOrigin, resolveDraftReference, readFunding });
     return actions;
 }

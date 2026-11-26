@@ -439,20 +439,23 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     }
 
     // A design that cannot be published yet (ProposalPublishTerms.publishRefusal) shows a disabled Share.
-    const publishRefusal = window.DesignSync.publishedCid(fullProposal || proposal)
-        ? null : window.ProposalPublishTerms.publishRefusal(fullProposal || proposal);
+    // One not published yet reads Publish…: Share publishes it first, after saying what that means.
+    const designPublished = !!window.DesignSync.publishedCid(fullProposal || proposal);
+    const publishRefusal = designPublished ? null : window.ProposalPublishTerms.publishRefusal(fullProposal || proposal);
+    const shareIconClass = designPublished ? 'fa-share-alt' : 'fa-upload';
+    const shareLabel = designPublished ? tProposal('panel.proposal.actions.share', 'Share') : tProposal('panel.proposal.actions.publish', 'Publish…');
     // Share publishes this exact design; adding it to a plan is a separate action.
     const shareRefusalNote = publishRefusal ? publishRefusal.message : '';
     const shareButtonHtml = publishRefusal
         ? `
         <button type="button" class="btn btn-share-proposal" disabled aria-disabled="true" aria-describedby="proposal-publish-later-note">
-            <i class="fas fa-share-alt"></i> ${tProposal('panel.proposal.actions.share', 'Share')}
+            <i class="fas ${shareIconClass}"></i> ${shareLabel}
         </button>
     `
         : `
         <button type="button" class="btn ${appliedState ? 'btn-primary' : ''} btn-share-proposal" onclick="BusyControl.track(this, () => shareProposalFromDetails())"
-            title="${safeAgentText(tProposal('planDialog.shareDesignHint', 'Share this design'))}">
-            <i class="fas fa-share-alt"></i> ${tProposal('panel.proposal.actions.share', 'Share')}
+            title="${safeAgentText(designPublished ? tProposal('planDialog.shareDesignHint', 'Share this design') : tProposal('panel.proposal.actions.publishHint', 'Publish this design on the server and share its link'))}">
+            <i class="fas ${shareIconClass}"></i> ${shareLabel}
         </button>
     `;
 

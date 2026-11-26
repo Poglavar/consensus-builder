@@ -44,6 +44,12 @@ export function cityPlanningRuleSetIds(cityId) {
     return config?.id === cityId ? config.planning?.ruleSetIds || [] : [];
 }
 
+// The Permitted sources a city's planning layer reads (city config planning.sourceIds), first the default.
+export function cityPlanningSourceIds(cityId) {
+    const config = cityConfigs().getCityConfig(cityId);
+    return config?.id === cityId ? config.planning?.sourceIds || [] : [];
+}
+
 export function cityBuildingSources(cityId) {
     const config = cityConfigs().getCityConfig(cityId);
     return config?.id === cityId ? SourceList.inUse(SourceList.cityList(config)) : [];

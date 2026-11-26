@@ -563,9 +563,10 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 }
 
 @media (min-width: 768px) {
+    /* Beside the view strip, never over it: the left edge belongs to the 2D/3D/photo tiles. */
     .map-sheet--left {
         top: var(--map-shell-top-clearance);
-        left: 0;
+        left: var(--map-mode-strip);
         width: var(--map-panel-width);
         max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance));
     }

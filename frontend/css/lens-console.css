@@ -33,22 +33,45 @@ code.lc-v, .lc-mono { font:12px/1.4 var(--cb-font-mono); overflow-wrap:anywhere;
 /* Agreement trail and its public evidence. Keep long addresses out of the reading column. */
 .lc-body [hidden], .lc-body [role="status"]:empty { display:none; }
 .lc-views { display:flex; flex-wrap:wrap; gap:4px; padding:4px; margin:0 0 18px; border:1px solid var(--cb-line); border-radius:var(--cb-radius-lg); background:var(--cb-surface-2); }
-.lc-views a { flex:1 1 auto; padding:9px 12px; border-radius:var(--cb-radius-sm); color:var(--cb-text-muted); font-weight:600; text-align:center; text-decoration:none; }
-.lc-views a:hover { color:var(--cb-link); }
-.lc-views a[aria-current="page"] { background:var(--cb-surface); color:var(--cb-primary-soft-ink); box-shadow:0 1px 3px var(--cb-line); }
+.lc-view { flex:1 1 auto; padding:9px 12px; border-radius:var(--cb-radius-sm); color:var(--cb-text-muted); font-weight:600; text-align:center; text-decoration:none; }
+.lc-view:hover { color:var(--cb-link); }
+.lc-view[aria-current="page"] { background:var(--cb-surface); color:var(--cb-primary-soft-ink); box-shadow:0 1px 3px var(--cb-line); }
 .lc-lead { margin:0 0 16px; max-width:68ch; }
 .lc-filters { display:grid; gap:6px 12px; }
 .lc-filters > div { min-width:0; }
 .lc-subject { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; margin:24px 0 12px; }
 .lc-subject h2 { margin:0; font-size:1.3rem; overflow-wrap:anywhere; }
-.lc-stages { margin:0; padding:0; list-style:none; counter-reset:stage; }
-.lc-stages > li { position:relative; counter-increment:stage; padding:0 0 14px; padding-inline-start:38px; }
-.lc-stages > li::before { content:counter(stage); position:absolute; inset-inline-start:0; top:12px; display:grid; place-items:center; height:27px; width:27px; border-radius:50%; background:var(--cb-primary-soft); color:var(--cb-primary-soft-ink); font-weight:700; border:1px solid var(--cb-line); }
-.lc-stages > li:not(:last-child)::after { content:""; position:absolute; inset-inline-start:13px; top:42px; bottom:-8px; border-inline-start:1px solid var(--cb-line); }
-.lc-stages section { min-width:0; padding:12px 14px; border:1px solid var(--cb-line); border-radius:var(--cb-radius-lg); background:var(--cb-surface); }
-.lc-stages section > div { min-width:0; }
-.lc-stages h3, .lc-claim { margin:0 0 5px; font-size:1.02rem; overflow-wrap:anywhere; }
-.lc-stages p { margin:2px 0 6px; }
+/* Walkthrough: three role cards, then the checklist of what the agreement needs. Each check's
+   state is its icon and colour plus a visually hidden word, so it never rests on colour alone. */
+.lc-sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
+.lc-section-title { margin:22px 0 10px; font-size:1.05rem; }
+.lc-roles { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; margin:0; padding:0; list-style:none; }
+.lc-role { min-width:0; padding:12px 14px; border:1px solid var(--cb-line); border-radius:var(--cb-radius-lg); background:var(--cb-surface); }
+.lc-role__title { margin:0; font-size:1rem; }
+.lc-role p { margin:2px 0 6px; }
+.lc-role__value { overflow-wrap:anywhere; }
+.lc-names { font-weight:600; }
+.lc-checks { display:grid; gap:10px; margin:0; padding:0; list-style:none; }
+.lc-check { display:grid; grid-template-columns:24px minmax(0,1fr); gap:10px; padding:12px 14px; border:1px solid var(--cb-line); border-radius:var(--cb-radius-lg); background:var(--cb-surface); }
+.lc-check__icon { margin-top:3px; font-size:1.1rem; color:var(--cb-text-muted); }
+.lc-check--met .lc-check__icon { color:var(--cb-success); }
+.lc-check--failed { border-color:var(--cb-warning); }
+.lc-check--failed .lc-check__icon { color:var(--cb-warning); }
+.lc-check--waiting .lc-check__icon { color:var(--cb-primary); }
+.lc-check__body { min-width:0; }
+.lc-check__body p { margin:2px 0 6px; }
+.lc-check__title { font-weight:650; font-size:1.02rem; overflow-wrap:anywhere; }
+.lc-sublist { display:grid; gap:8px; margin:6px 0 0; padding:0; list-style:none; }
+.lc-sublist > li { min-width:0; padding:8px 10px; border-inline-start:3px solid var(--cb-line); background:var(--cb-surface-2); border-radius:var(--cb-radius-sm); }
+.lc-member--confirmed { border-inline-start-color:var(--cb-success); }
+.lc-member--issued { border-inline-start-color:var(--cb-primary); }
+.lc-sublist > li:target { outline:2px solid var(--cb-primary); outline-offset:2px; }
+.lc-line { overflow-wrap:anywhere; }
+.lc-how { margin:16px 0 0; padding:0 12px; border:1px solid var(--cb-line); border-radius:var(--cb-radius-lg); background:var(--cb-surface); }
+.lc-how > summary { cursor:pointer; padding:10px 0; font-weight:600; }
+.lc-how ul { margin:0 0 8px; padding-inline-start:1.2em; }
+.lc-how p { margin:0 0 10px; }
+.lc-claim { margin:0 0 5px; font-size:1.02rem; overflow-wrap:anywhere; }
 .lc-facts { margin:0; }
 .lc-fact { display:flex; flex-wrap:wrap; gap:0 10px; padding:2px 0; }
 .lc-facts dt { flex:0 1 142px; color:var(--cb-text-muted); font-size:.88rem; }
@@ -57,14 +80,13 @@ code.lc-v, .lc-mono { font:12px/1.4 var(--cb-font-mono); overflow-wrap:anywhere;
 .lc-proof > summary, .lc-operator > summary { cursor:pointer; padding:8px 0; font-weight:600; overflow-wrap:anywhere; }
 .lc-proof pre { max-height:20rem; overflow:auto; padding:8px; background:var(--cb-surface-2); white-space:pre-wrap; overflow-wrap:anywhere; font:12px/1.45 var(--cb-font-mono); }
 .lc-meta { margin:0 0 3px; font-size:.83rem; color:var(--cb-text-muted); }
-.lc-result { font-weight:650; }
 #lc-directory { margin-bottom:14px; }
+.lc-check--loading .lc-check__icon { animation:lc-turn 1s linear infinite; }
 .lc-loading::before { display:inline-block; content:""; width:.8em; height:.8em; margin-inline-end:.5em; border:2px solid var(--cb-line); border-top-color:var(--cb-primary); border-radius:50%; animation:lc-turn 1s linear infinite; }
 @keyframes lc-turn { to { transform:rotate(360deg); } }
-@media (prefers-reduced-motion:reduce) { .lc-loading::before { animation:none; } }
+@media (prefers-reduced-motion:reduce) { .lc-loading::before, .lc-check--loading .lc-check__icon { animation:none; } }
 @media (min-width:700px) {
     .lc-filters { grid-template-columns:minmax(120px,1fr) minmax(0,2.5fr); }
-    .lc-stages section { display:grid; grid-template-columns:minmax(120px,1fr) minmax(0,3fr); gap:18px; }
 }
 @media (min-width:640px) {
     .lc-wrap { padding:20px 18px 48px; }

@@ -13,11 +13,13 @@ escrow. JS codec:
 `window.AgreementClient` in the browser, `require` in node); the browser drives it through
 `frontend/js/solana/agreement-bridge.js`.
 
-**Status: the lens-set layout (580-byte account, `confirm_funding`) is not deployed.** The devnet
-program at the id below still has the earlier 296-byte layout with one lens. Deploying this version
-changes the account layout, so agreements minted under the old one cannot be read by the new codec:
-recreate them after the upgrade (or deploy under a new program id, rebuilding `proposal_market` and
-`proposal_pledge`, which compile the id in).
+**Status: the lens-set layout (580-byte account, `confirm_funding`) is deployed on devnet** at the id
+below, a new address (2026-11-25); agreements minted under the earlier one-lens program are not read
+by this codec and are recreated. A lens member's `AgreementDecision-v1` may come from its service or
+from its own wallet: the browser builds the member's SAS credential, schema and attestation
+(`agreement-client.js` `buildCreateLensCredentialIx`, `buildCreateDecisionSchemaIx`,
+`buildCreateDecisionAttestationIx`, byte-identical to sas-lib) and sends them with `attest` (and
+`execute` when the lens completes) in one transaction.
 [`../../idl/agreement.json`](../../idl/agreement.json) is the generated IDL.
 
 ## Lifecycle

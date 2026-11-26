@@ -4,7 +4,7 @@
 // copied /designs/<cid> link imports and applies the design on another device, and a second Share
 // sends nothing again.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, closeShareBox, createSpace, showProposal, showProposalTab, proposalState, chooseProfileName, stubBasemapTiles, openOnAnotherDevice } from '../helpers/runtime';
+import { openCity, closeShareBox, createSpace, showProposal, showProposalTab, proposalState, chooseProfileName, stubBasemapTiles, openOnAnotherDevice, confirmPublish } from '../helpers/runtime';
 import { canonicalJson, cidOfBytes, cidOfObject, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
 
 test.beforeEach(async ({ mockApi: page }) => {
@@ -31,12 +31,14 @@ test('Share on an applied park publishes its design object under the CID the bro
   // A guest chooses a profile name first: the design carries its author, and nothing left the device.
   await page.locator('#click-stack [data-page="actions"]').click();
   await details.locator('.btn-share-proposal').click();
+  await confirmPublish(page);
   await expect(page.getByRole('alertdialog', { name: 'Share design or plan?', exact: true })).toHaveCount(0);
   await chooseProfileName(page, 'Share author');
   expect(postsOf(index)).toEqual([]);
 
   await showProposal(page, proposalId);
   await details.locator('.btn-share-proposal').click();
+  await confirmPublish(page);
   await expect(page.getByRole('alertdialog', { name: 'Share design or plan?', exact: true })).toHaveCount(0);
   await closeShareBox(page);
   await showProposalTab(page, 'overview');
@@ -126,9 +128,11 @@ test('the 3D design card offers Share, which publishes the design and opens its 
   await expect(share).toHaveCount(1);
   // A guest names a profile first; nothing has left the device.
   await share.click();
+  await confirmPublish(page);
   await chooseProfileName(page, 'Share author');
   expect(postsOf(index)).toEqual([]);
   await share.click();
+  await confirmPublish(page);
   const link = await closeShareBox(page);
   expect(link).toMatch(/\/designs\/bafkrei[a-z2-7]{52}/);
   expect(postsOf(index).map(request => request.path)).toEqual(['/designs']);

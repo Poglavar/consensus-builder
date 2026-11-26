@@ -342,8 +342,29 @@ binding, which for an unpublished design can name fewer parcels than its pieces 
 **Compare plans** (Lists → Plans) adds checkboxes; **Compare** measures each chosen plan that way at
 the default assumptions (`comparePlanStats` in `plan-stats.js`) and shows one table whose **Swap
 rows and columns** turns between plans as columns and plans as rows. A plan that cannot be measured
-keeps its place with the reason. The figures are Plan stats' own (`summaryTexts`), including
-**Plan area**: every parcel the plan stands on, once, plus its open ground.
+keeps its place with the reason and a **Measure again** button; a column measured late joins the
+scope and basis choices and is counted, checked and backed like the others. The figures are Plan
+stats' own (`summaryTexts`), including **Plan area**: every parcel the plan stands on, once, plus its
+open ground.
+The table reads as a decision sheet for a city choosing among competing plans: beside Plan stats'
+figures each column gives the existing parcels taken and buildings demolished (whole, in part,
+footprint, floor area), the tallest new building, the floor-area ratio and site coverage over the
+plan's land of everything standing after it, green (parks) and road area, the build-out in brief
+(first–last period), its **Permitted limits** and the **agreements backing the plan**. The pure rules
+are `proposals/plan-decision.js`, which MCP `ugt_compare` reads by too. Permitted limits run after the
+core figures, one plan at a time, through `PermittedAdvisor.checkPlan` (the editors' check, never
+superseded) on each new building of the whole plan: within limits, how many break them and their
+floor area, no Permitted source here, or not checked with the reason. The backing block lists the
+agreements published on that exact plan revision (`GET /agreements?plan=`, the design memberships'
+reader) and this browser's drafts on it: decision rule, stage and chain status, and for a developer
+crowdfunding round its lead (the sponsor's wallet, linked to Solana Explorer), lens and threshold,
+target and deadline, and its progress read from Solana in one batched account read
+(`solana/funding-progress.js`, loaded with `ensureOptionalTool('fundingProgress')`): USDC raised less
+refunds, contributors, apartments reserved of offered. The user chose chain reads over storing
+progress on the server; a failed read says why, never 0, and a failed agreements lookup offers Retry. The same progress line is a row of Compare
+agreements' terms and a line under each crowdfunding card in Lists → Agreements. **Download CSV**
+saves every row with a header of the columns' titles and CIDs, the agreements' terms and the
+assumptions; **Print** prints the comparison alone (`@media print` in `css/modals.css`).
 `proposals/present-state.js` (user decisions 2026-10-28) adds the ground: **Public land** is road
 parcels, OpenStreetMap parks and squares (our server's Overpass chain via
 `GET /osm-public-spaces` first, public Overpass from the browser when it cannot answer; user

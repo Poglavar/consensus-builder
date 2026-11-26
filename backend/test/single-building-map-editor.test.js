@@ -7,7 +7,7 @@ import { parse } from '@babel/parser';
 
 const require = createRequire(import.meta.url);
 const turf = require('@turf/turf');
-const { footprintWithinBoundary } = require('../../frontend/js/single-building-geometry.js');
+const { footprintWithinBoundary, filePlacementNear } = require('../../frontend/js/single-building-geometry.js');
 
 const source = readFileSync(new URL('../../frontend/js/single-building.js', import.meta.url), 'utf8');
 const ast = parse(source, { sourceType: 'script', plugins: ['optionalChaining', 'nullishCoalescingOperator'] });
@@ -343,7 +343,8 @@ describe('single-building map editor lifecycle', () => {
         const confirm = vi.fn();
         const variables = `let singleEditor=null, singleBuildingOverrideContext=null, singleBlockFeature=null, buildingEntries=[], activeBuildingId=null, nextBuildingId=1, singleBuildingSeedBuildings=null, singleUploadOnConfirm=null; const DEFAULT_HEIGHT_M=12, DEFAULT_WIDTH_M=10; this.getSeed=()=>singleBuildingSeedBuildings; this.getContext=()=>singleBuildingOverrideContext;`;
         const stubs = {
-            window: { OnMapEditor: { isActive: () => false }, SingleBuildingGeometry: { placeModelFootprint: () => entry.feature } },
+            // A glTF upload carries no file placement, so it starts in the block (filePlacementNear, b089862b1).
+            window: { OnMapEditor: { isActive: () => false }, SingleBuildingGeometry: { placeModelFootprint: () => entry.feature, filePlacementNear } },
             markAsEditablePolygon: vi.fn(), editableFootprintValid: () => true,
             singleBuildingParcelsForIds: ids => ids.map(id => ({ id })),
             describeSingleBuildingSelection: () => 'Parcel block',

@@ -2,6 +2,7 @@ import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel } from '../helpers/runtime';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 import { fillNativeDateTime, selectNativeOption } from '../helpers/controls';
+import { openLayerSection } from '../helpers/layers';
 
 test('sun controls set a date and time, pause playback, reset now and disable shadows', async ({ mockApi: page }) => {
   await mockBuildingScene(page);
@@ -36,7 +37,8 @@ test('sun controls set a date and time, pause playback, reset now and disable sh
   await expect(sheet.locator('#sun-time')).toBeEnabled();
   await sheet.locator('[data-sheet-close]').click();
   await expect(sheet).toBeHidden();
-  await page.locator('#layers-button').click();
+  // The model's scenery switches sit in Layers → Scenery and sound, collapsed by default (fe088cad9).
+  await openLayerSection(page, 'scenery');
   const ground = page.locator('.three-mode-wide-toggle').filter({ hasText: 'Streets and pavement' }).locator('input');
   await expect(ground).toBeChecked();
   await ground.uncheck();

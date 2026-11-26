@@ -17,7 +17,7 @@ describe('compare sides', () => {
     it('offers the three base states, then every applied design and plan', () => {
         const options = compare.sideOptions({ designs: [{ id: 7, title: 'Row' }, { id: null }], plans: [{ id: 'p', title: 'P', members: [7, 'x'] }] });
         expect(options.map(option => option.value)).toEqual(['built', 'permitted', 'proposed', 'design:7', 'plan:p']);
-        expect(options[3]).toEqual({ value: 'design:7', kind: 'design', id: '7', title: 'Row' });
+        expect(options[3]).toEqual({ value: 'design:7', kind: 'design', id: '7', title: 'Row', canPublish: false });
         expect(options[4].members).toEqual(['7', 'x']);
         expect(compare.parseSide('design:7', options).kind).toBe('design');
         expect(compare.parseSide('design:gone', options)).toBeNull();
@@ -79,7 +79,7 @@ describe('what a side shows', () => {
     it('offers a design that is not applied as a side that applies it alone, read under its CID', () => {
         const options = compare.sideOptions({ designs: [{ id: 'tower', title: 'Tower' }, { id: 'block', title: 'Block', cid: 'cidBlock', readId: 'plan-of-block' }] });
         expect(options[4]).toEqual({ value: 'design:block', kind: 'design', id: 'block', title: 'Block',
-            members: ['cidBlock'], unapplied: ['cidBlock'], readId: 'plan-of-block' });
+            members: ['cidBlock'], unapplied: ['cidBlock'], readId: 'plan-of-block', canPublish: false });
         const applies = (value, by) => compare.appliesDesign(compare.parseSide(value, options), by);
         expect(applies('design:block', { id: 'cidBlock', unapplied: true })).toBe(true);
         expect(applies('design:block', { id: 'tower' })).toBe(false);
@@ -216,34 +216,47 @@ describe("the divider's stats", () => {
 });
 
 describe('a comparison in the address', () => {
-    const cidA = `bafkrei${'a'.repeat(52)}`, cidB = `bafkrei${'b'.repeat(52)}`;
-    it('names today\'s states by name and a saved plan by its CID, and reads them back', () => {
-        expect(compare.compareParam(`plan:${cidA}`, `plan:${cidB}`)).toBe(`${cidA},${cidB}`);
-        expect(compare.compareParam('built', `plan:${cidB}`)).toBe(`built,${cidB}`);
-        expect(compare.parseCompareParam(`${cidA},${cidB}`)).toEqual({ left: `plan:${cidA}`, right: `plan:${cidB}` });
-        expect(compare.parseCompareParam(`permitted, ${cidA}`)).toEqual({ left: 'permitted', right: `plan:${cidA}` });
+    const cidA = `bafkrei${'a'.repeat(52)}`, cidB = `bafkrei${'b'.repeat(52)}`, cidD = `bafkrei${'d'.repeat(52)}`;
+    const options = compare.sideOptions({
+        designs: [{ id: 'local-1', title: 'Block', canPublish: true }, { id: 'p-2', title: 'Published', publishedCid: cidD },
+            { id: 'too-big', title: 'Refused' }],
+        plans: [{ id: cidA, title: 'Published', published: true }, { id: cidB, title: 'Only here' }],
+        agreements: [{ id: 'ag', title: 'Agreement', readId: cidA }]
     });
-    it('does not name a side without a shareable name, and reads nothing from a malformed value', () => {
-        expect(compare.compareParam('design:local-1', 'built')).toBeNull();
-        expect(compare.compareParam(`agreement:${cidA}`, 'built')).toBeNull();
-        expect(compare.compareParam('plan:not-a-cid', 'built')).toBeNull();
-        for (const value of [null, '', cidA, `${cidA},${cidB},built`, `${cidA},nope`, 'built,']) {
+    const on = value => compare.parseSide(value, options);
+    it('names today\'s states by name, a saved plan by its CID and a published design as design-<cid>, and reads them back', () => {
+        expect(compare.compareParam(on(`plan:${cidA}`), on(`plan:${cidB}`))).toBe(`${cidA},${cidB}`);
+        expect(compare.compareParam(on('built'), on('design:p-2'))).toBe(`built,design-${cidD}`);
+        expect(compare.parseCompareParam(`${cidA},design-${cidD}`)).toEqual({ left: { kind: 'plan', cid: cidA }, right: { kind: 'design', cid: cidD } });
+        expect(compare.parseCompareParam(`permitted, ${cidA}`)).toEqual({ left: { kind: 'permitted' }, right: { kind: 'plan', cid: cidA } });
+    });
+    it('finds the offered side a link names: a plan by its CID, a design by the CID it was published under', () => {
+        expect(compare.resolveWanted({ kind: 'built' }, options)).toBe('built');
+        expect(compare.resolveWanted({ kind: 'plan', cid: cidB }, options)).toBe(`plan:${cidB}`);
+        expect(compare.resolveWanted({ kind: 'design', cid: cidD }, options)).toBe('design:p-2');
+        // Not offered (yet): the caller fetches the design, or reports the plan as not published.
+        expect(compare.resolveWanted({ kind: 'design', cid: cidB }, options)).toBeNull();
+        expect(compare.resolveWanted({ kind: 'plan', cid: cidD }, options)).toBeNull();
+    });
+    it('does not name a design that is not published or an agreement, and reads nothing from a malformed value', () => {
+        expect(compare.compareParam(on('design:local-1'), on('built'))).toBeNull();
+        expect(compare.compareParam(on('agreement:ag'), on('built'))).toBeNull();
+        for (const value of [null, '', cidA, `${cidA},${cidB},built`, `${cidA},nope`, 'built,', `design-nope,built`]) {
             expect(compare.parseCompareParam(value), String(value)).toBeNull();
         }
     });
     it('gives Copy link the page address with the chosen sides, keeping the view and replacing an old comparison', () => {
-        const options = compare.sideOptions({
-            designs: [{ id: 'local-1', title: 'Block' }],
-            plans: [{ id: cidA, title: 'Published', published: true }, { id: cidB, title: 'Only here' }]
-        });
-        const on = value => compare.parseSide(value, options);
         const page = `https://example.test/?at=1%2C2%2C18&compare=built%2Cpermitted&xray=proposed`;
         const link = new URL(compare.comparisonLink(page, on('proposed'), on(`plan:${cidA}`)));
         expect(link.searchParams.get('compare')).toBe(`proposed,${cidA}`);
         expect(link.searchParams.get('at')).toBe('1,2,18');
         expect(link.searchParams.get('xray')).toBe('proposed');
-        // Another browser could not open a design, or a plan that is only in this browser.
+        expect(new URL(compare.comparisonLink(page, on('design:p-2'), on('built'))).searchParams.get('compare')).toBe(`design-${cidD},built`);
+        // Another browser could not open what is only in this browser: Copy link publishes it first.
         expect(compare.comparisonLink(page, on('design:local-1'), on('built'))).toBeNull();
         expect(compare.comparisonLink(page, on('built'), on(`plan:${cidB}`))).toBeNull();
+        expect([on('design:local-1'), on(`plan:${cidB}`)].map(compare.publishable)).toEqual([true, true]);
+        // An agreement, and a design the publication terms refuse, cannot be published from here.
+        expect([on('agreement:ag'), on('design:too-big'), on('built'), on(`plan:${cidA}`)].map(compare.publishable)).toEqual([false, false, false, false]);
     });
 });

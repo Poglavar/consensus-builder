@@ -556,6 +556,110 @@ body.site-intro-open { overflow: hidden; }
     font-weight: normal;
 }
 
+/* The comparison's tools (swap, side by side, CSV, print) wrap on a phone. */
+.plan-compare__tools {
+    flex-wrap: wrap;
+}
+
+/* Measure again, under a column that could not be measured. */
+.plan-compare__retry {
+    margin-block-start: var(--cb-space-1);
+}
+
+/* Agreements backing the plan: one entry per agreement, its lines wrapping in a narrow column. */
+.plan-compare__table th[data-plan-compare-row="backing"] {
+    vertical-align: top;
+}
+
+.plan-compare__table td.plan-compare__backing-cell {
+    white-space: normal;
+    min-width: 12rem;
+    text-align: start;
+    vertical-align: top;
+}
+
+.plan-compare__backing {
+    display: grid;
+    gap: var(--cb-space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.plan-compare__backing-item {
+    display: grid;
+    gap: var(--cb-space-1);
+}
+
+.plan-compare__backing-progress {
+    color: var(--cb-text-strong);
+    font-weight: 600;
+}
+
+/* Print (Compare plans → Print): only the comparison, its table at full length. */
+@media print {
+    .plan-compare-printing body > :not(.plan-compare-overlay) {
+        display: none;
+    }
+
+    /* On paper the dialog is plain flow: a flex column of scrolled parts would overlap across pages. */
+    .plan-compare-printing .plan-compare-overlay,
+    .plan-compare-printing .plan-compare-overlay .cb-dialog,
+    .plan-compare-printing .plan-compare-overlay .cb-dialog__body,
+    .plan-compare-printing .plan-compare {
+        display: block;
+        position: static;
+        width: auto;
+        max-width: none;
+        height: auto;
+        max-height: none;
+        overflow: visible;
+        padding: 0;
+        background: none;
+        box-shadow: none;
+    }
+
+    .plan-compare-printing .plan-compare > * + * {
+        margin-block-start: var(--cb-space-3);
+    }
+
+    .plan-compare-printing .plan-compare__scroll {
+        overflow: visible;
+    }
+
+    .plan-compare-printing .plan-compare__table {
+        width: 100%;
+    }
+
+    .plan-compare-printing .plan-compare__table th[scope="row"],
+    .plan-compare-printing .plan-compare__table th.plan-compare__plan,
+    .plan-compare-printing .plan-compare__table td.plan-compare__backing-cell {
+        min-width: 0;
+    }
+
+    .plan-compare-printing .plan-compare__tools,
+    .plan-compare-printing .plan-compare__scope,
+    .plan-compare-printing .plan-compare__basis,
+    .plan-compare-printing .plan-compare__retry,
+    .plan-compare-printing .plan-compare-overlay .close-circle-btn,
+    .plan-compare-printing .plan-stats-slider {
+        display: none;
+    }
+
+    .plan-compare-printing .plan-compare__table {
+        font-size: 9px;
+    }
+
+    .plan-compare-printing .plan-compare__table :is(td, th) {
+        white-space: normal;
+        overflow-wrap: normal;
+    }
+
+    .plan-compare-printing .plan-compare__table tr {
+        break-inside: avoid;
+    }
+}
+
 /* An Apartments or People figure while plan-units.js lays the buildings out: the shared busy ring
    (primitives.css cb-spin) before "Counting…". */
 .plan-stats-counting {

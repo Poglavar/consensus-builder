@@ -1221,19 +1221,22 @@ describe('structure geometry editor history wiring', () => {
         expect(lake.panel.innerHTML).not.toContain('data-furniture-kind');
     });
 
-    it('uploads a furniture model within the limits, saves it under models, and undoes or removes it', async () => {
+    it('keeps a furniture model within the limits on the device, saves it under models, and undoes or removes it', async () => {
+        // Furniture models stay on this device; publishing the design offers to upload them (0429fb09f).
         const modelUpload = {
             parseModelFile: vi.fn(async () => ({ scene: true })),
             modelSummary: vi.fn((_scene, bytes) => ({ triangles: 1200, textures: [{ width: 512, height: 512 }], bytes })),
             disposeScene: vi.fn(),
-            uploadModel: vi.fn(async () => '/models/bench.glb')
+            uploadModel: vi.fn(async () => '/models/bench.glb'),
+            storeModel: vi.fn(async () => 'device-model:sha256-bench')
         };
         const harness = makeEditorHarness({ fountains: [], version: 2 }, { kind: 'square', modelUpload });
         expect(harness.open()).toBe(true);
         const file = { name: 'Bench.glb', size: 40000 };
         const input = harness.panel.chooseFurnitureFile('bench', file);
         expect(input.value).toBe('');
-        await vi.waitFor(() => expect(modelUpload.uploadModel).toHaveBeenCalledWith(file));
+        await vi.waitFor(() => expect(modelUpload.storeModel).toHaveBeenCalledWith(file));
+        expect(modelUpload.uploadModel).not.toHaveBeenCalled();
         await vi.waitFor(() => expect(harness.undoButton.disabled).toBe(false));
         expect(harness.context.ensureOptionalTool).toHaveBeenCalledWith('modelUpload');
         expect(modelUpload.disposeScene).toHaveBeenCalledOnce();
@@ -1253,7 +1256,7 @@ describe('structure geometry editor history wiring', () => {
         expect(kept.open()).toBe(true);
         kept.panel.chooseFurnitureFile('bench', file);
         await vi.waitFor(() => expect(kept.undoButton.disabled).toBe(false));
-        expect(kept.save().models).toEqual({ bench: { url: '/models/bench.glb', name: 'Bench.glb' } });
+        expect(kept.save().models).toEqual({ bench: { url: 'device-model:sha256-bench', name: 'Bench.glb' } });
     });
 
     it.each([
@@ -1264,18 +1267,20 @@ describe('structure geometry editor history wiring', () => {
             parseModelFile: vi.fn(async () => ({})),
             modelSummary: vi.fn((_scene, bytes) => ({ ...summary, bytes })),
             disposeScene: vi.fn(),
-            uploadModel: vi.fn(async () => '/models/x.glb')
+            uploadModel: vi.fn(async () => '/models/x.glb'),
+            storeModel: vi.fn(async () => 'device-model:sha256-x')
         };
         const harness = makeEditorHarness({ trees: [], version: 3 }, { kind: 'park', modelUpload });
         expect(harness.open()).toBe(true);
         harness.panel.chooseFurnitureFile('lamp', { name: 'lamp.glb', size: 1000 });
         await vi.waitFor(() => expect(harness.statusMessages).toContain(message));
+        expect(modelUpload.storeModel).not.toHaveBeenCalled();
         expect(modelUpload.uploadModel).not.toHaveBeenCalled();
         expect(harness.save()).not.toHaveProperty('models');
     });
 
     it('refuses a furniture file over 4 MiB before parsing it', async () => {
-        const modelUpload = { parseModelFile: vi.fn(), modelSummary: vi.fn(), disposeScene: vi.fn(), uploadModel: vi.fn() };
+        const modelUpload = { parseModelFile: vi.fn(), modelSummary: vi.fn(), disposeScene: vi.fn(), uploadModel: vi.fn(), storeModel: vi.fn() };
         const harness = makeEditorHarness({ trees: [], version: 3 }, { kind: 'park', modelUpload });
         expect(harness.open()).toBe(true);
         harness.panel.chooseFurnitureFile('bench', { name: 'big.glb', size: 5 * 1024 * 1024 });

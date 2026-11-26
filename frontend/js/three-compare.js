@@ -32,7 +32,10 @@
         for (const design of designs) {
             if (design?.id == null) continue;
             const read = design.cid != null ? { members: [String(design.cid)], unapplied: [String(design.cid)], readId: String(design.readId) } : {};
-            options.push({ value: `design:${design.id}`, kind: 'design', id: String(design.id), title: design.title || String(design.id), ...atOf(design), ...read });
+            // publishedCid: the design's CID on the server, once published; canPublish: it can be published.
+            const publication = design.publishedCid ? { publishedCid: String(design.publishedCid) } : { canPublish: design.canPublish === true };
+            options.push({ value: `design:${design.id}`, kind: 'design', id: String(design.id), title: design.title || String(design.id), ...atOf(design), ...read,
+                ...publication });
         }
         for (const plan of plans) {
             if (plan?.id == null) continue;
@@ -172,34 +175,59 @@
     }
 
     // A comparison in the address: `compare=<left>,<right>`, each side Built today, Permitted massing
-    // or Proposed by name (built, permitted, proposed), or a saved plan by its CID. Other sides (a
-    // design or agreement this browser holds) have no shareable name, so such a comparison is not
-    // written. compareParam gives the value for two select values, or null; parseCompareParam the
-    // two select values back, or null when the value is not two such sides.
-    const PLAN_CID = /^baf(?:krei[a-z2-7]{52}|ybei[a-z2-7]{52})$/;
-    const tokenOf = value => (BASE.includes(value) ? value
-        : typeof value === 'string' && value.startsWith('plan:') && PLAN_CID.test(value.slice(5)) ? value.slice(5) : null);
-    const sideOf = token => (BASE.includes(token) ? token : PLAN_CID.test(token) ? `plan:${token}` : null);
+    // or Proposed by name (built, permitted, proposed), a saved plan by its CID, or a published design
+    // as `design-<cid>`. A design not published yet and an agreement have no name another browser
+    // could read, so such a comparison is not written. The address names a plan that is only in this
+    // browser too, so a refresh here reopens it; Copy link names only what is on the server.
+    const CID = /^baf(?:krei[a-z2-7]{52}|ybei[a-z2-7]{52})$/;
+    const DESIGN_TOKEN = 'design-';
+    // A side's name in the address (an option of sideOptions), or null.
+    function tokenOf(side) {
+        if (!side) return null;
+        if (BASE.includes(side.kind)) return side.kind;
+        if (side.kind === 'plan' && CID.test(side.id)) return side.id;
+        if (side.kind === 'design' && CID.test(side.publishedCid || '')) return `${DESIGN_TOKEN}${side.publishedCid}`;
+        return null;
+    }
+    // compareParam: the address value for two sides (options), or null. parseCompareParam: what the
+    // value asks for, { left, right } each { kind } for today's states or { kind, cid } for a plan or
+    // a design, or null when the value is not two such sides.
     function compareParam(left, right) {
         const a = tokenOf(left), b = tokenOf(right);
         return a && b ? `${a},${b}` : null;
     }
+    function wantedOf(token) {
+        if (BASE.includes(token)) return { kind: token };
+        if (CID.test(token)) return { kind: 'plan', cid: token };
+        if (token.startsWith(DESIGN_TOKEN) && CID.test(token.slice(DESIGN_TOKEN.length))) return { kind: 'design', cid: token.slice(DESIGN_TOKEN.length) };
+        return null;
+    }
     function parseCompareParam(value) {
         const parts = typeof value === 'string' ? value.split(',') : [];
         if (parts.length !== 2) return null;
-        const [left, right] = parts.map(part => sideOf(part.trim()));
+        const [left, right] = parts.map(part => wantedOf(part.trim()));
         return left && right ? { left, right } : null;
     }
+    // The offered side a wanted one names (its select value), or null while it is not offered.
+    function resolveWanted(wanted, options) {
+        const found = (options || []).find(option => (BASE.includes(wanted?.kind) ? option.value === wanted.kind
+            : wanted?.kind === 'plan' ? option.kind === 'plan' && option.id === wanted.cid
+                : wanted?.kind === 'design' && option.kind === 'design' && option.publishedCid === wanted.cid));
+        return found ? found.value : null;
+    }
 
-    // Whether another browser can open a side from a link: today's states, and a plan once it is
-    // published (on the server). A plan only in this browser, a design and an agreement cannot.
-    const linkable = side => !!side && (BASE.includes(side.kind) || (side.kind === 'plan' && side.published === true));
+    // Whether another browser can open a side from a link: today's states, and a plan or design once
+    // it is published (on the server). An agreement cannot.
+    const linkable = side => !!side && (BASE.includes(side.kind) || (side.kind === 'plan' && side.published === true)
+        || (side.kind === 'design' && !!side.publishedCid));
+    // Whether Copy link can publish a side first: a plan, or a design that can be published.
+    const publishable = side => !!side && !linkable(side) && (side.kind === 'plan' || (side.kind === 'design' && side.canPublish === true));
 
     // The link Copy link gives: the page's address with the two chosen sides (options) as `compare=`,
     // so it opens that comparison whether or not it is on. Null when a side cannot be opened elsewhere.
     function comparisonLink(href, left, right) {
         if (!linkable(left) || !linkable(right)) return null;
-        const value = compareParam(left.value, right.value);
+        const value = compareParam(left, right);
         if (!value) return null;
         const url = new URL(href);
         url.searchParams.set('compare', value);
@@ -207,7 +235,7 @@
     }
 
     const pure = { BASE, sideOptions, optionGroups, planRowsOf, parseSide, statsOf, appliesDesign, showsOn, splitDescriptors, scissorRects, readiness,
-        compareParam, parseCompareParam, comparisonLink };
+        compareParam, parseCompareParam, resolveWanted, linkable, publishable, comparisonLink };
     if (!global || !global.document) return Object.freeze(pure);
 
     // ── the Compare tab and the divider ──────────────────────────────────────────────────────
@@ -308,7 +336,7 @@
             if (!publishedWanted) return [];
             const entry = { rows: [] };
             publishedPlans.set(city, entry);
-            readPublishedPlans(city).then(rows => { entry.rows = rows; refresh(); }).catch(error => {
+            readPublishedPlans(city).then(rows => { entry.rows = rows; entry.loaded = true; refresh(); }).catch(error => {
                 publishedPlans.delete(city);
                 global.console.error(`[${new Date().toISOString()}] [ThreeCompare] the published plans of ${city} could not be read`, error);
             });
@@ -332,13 +360,15 @@
         for (const proposal of saved) {
             const title = proposal.title || proposal.name || String(proposal.proposalId);
             const at = proposal.authoredAt || proposal.createdAt || null;
-            if (isApplied(proposal)) { designs.push({ id: String(proposal.proposalId), title, at }); continue; }
+            const publishedCid = global.DesignSync?.publishedCid?.(proposal) || null;
+            const canPublish = !publishedCid && !!global.ProposalPublishTerms && !global.ProposalPublishTerms.publishRefusal(proposal);
+            if (isApplied(proposal)) { designs.push({ id: String(proposal.proposalId), title, at, publishedCid, canPublish }); continue; }
             if (!inCity(proposal.city)) continue;
             const cid = cidOf(proposal);
             const row = cid ? designRead(proposal, cid) : null;
             if (!row) continue;
             planRows.set(String(row.cid), row);
-            designs.push({ id: String(proposal.proposalId), title, at, cid, readId: String(row.cid) });
+            designs.push({ id: String(proposal.proposalId), title, at, cid, readId: String(row.cid), publishedCid, canPublish });
         }
         const localPlans = (global.PlanWorkspace?.list?.() || []).filter(row => inCity(row.content?.view?.city));
         const plans = pure.planRowsOf(localPlans, publishedPlansOf(city)).map(row => {
@@ -425,9 +455,33 @@
     function writeAddress() {
         if (state.pending || !global.history?.replaceState) return;
         const url = new URL(global.location.href);
-        const value = state.enabled ? pure.compareParam(state.left, state.right) : null;
+        const current = sides();
+        const value = state.enabled ? pure.compareParam(current.left, current.right) : null;
         if (value) url.searchParams.set('compare', value); else url.searchParams.delete('compare');
         if (url.href !== global.location.href) global.history.replaceState(global.history.state, '', url.href);
+    }
+
+    // A side a comparison link names that is not offered yet: a published design is fetched and kept
+    // in this browser (not applied), as opening its link does; a plan is offered once the city's
+    // published plans are read. 'waiting' until then, else 'missing-plan' or 'missing-design'.
+    const designArrivals = new Map();
+    function arrivalOf(wanted) {
+        if (wanted.kind === 'plan') {
+            const city = global.normalizeCityCodeForApi?.(global.resolveCurrentCityCode?.()) || null;
+            return publishedPlans.get(city)?.loaded ? 'missing-plan' : 'waiting';
+        }
+        if (wanted.kind !== 'design') return 'waiting';
+        const arrival = designArrivals.get(wanted.cid);
+        if (arrival === 'missing' || arrival === 'kept') return 'missing-design';
+        if (!arrival) {
+            designArrivals.set(wanted.cid, 'fetching');
+            global.DesignSync.fetchDesign(wanted.cid).then(row => global.DesignSync.importDesign(row))
+                .then(() => designArrivals.set(wanted.cid, 'kept'), error => {
+                    global.console.warn(`[${new Date().toISOString()}] [ThreeCompare] design ${wanted.cid} of a comparison link could not be read`, error);
+                    designArrivals.set(wanted.cid, 'missing');
+                }).then(refresh);
+        }
+        return 'waiting';
     }
 
     function refresh() {
@@ -435,10 +489,23 @@
         // A comparison from the address opens once a view is there and both sides are offered (a
         // published plan is offered once the city's published plans are read).
         const pending = state.pending;
-        if (pending && scene() && pure.parseSide(pending.left, state.options) && pure.parseSide(pending.right, state.options)) {
-            state.pending = null;
-            show(pending);
-            return;
+        if (pending && scene()) {
+            const left = pure.resolveWanted(pending.left, state.options), right = pure.resolveWanted(pending.right, state.options);
+            if (left && right) {
+                state.pending = null;
+                show({ left, right });
+                return;
+            }
+            const missing = [[pending.left, left], [pending.right, right]].filter(([, value]) => !value)
+                .map(([wanted]) => arrivalOf(wanted)).find(arrival => arrival === 'missing-plan' || arrival === 'missing-design');
+            if (missing) {
+                state.pending = null;
+                const message = missing === 'missing-plan'
+                    ? t('planningViews.compare.linkMissingPlan', 'This comparison link names a plan that has not been published, so it cannot open here.')
+                    : t('planningViews.compare.linkMissingDesign', 'This comparison link names a design that is not on the server, so it cannot open here.');
+                global.console.warn(`[${new Date().toISOString()}] [ThreeCompare] ${message}`, pending);
+                global.showEphemeralMessage?.(message, 10000, 'info');
+            }
         }
         fillSelect(el('planning-compare-left'), state.left);
         fillSelect(el('planning-compare-right'), state.right);
@@ -469,22 +536,40 @@
             : t('planningViews.tabs.compare', 'Compare');
     }
 
-    // Copy link: available while both chosen sides have a shareable name; otherwise the note under it
-    // says which sides can be shared.
+    // Copy link: copies the comparison's link when both sides are on the server. A plan or design side
+    // that is not published yet turns it into Publish and copy link, which publishes it first (after
+    // saying what publishing means); a side that cannot be published (an agreement, a design the
+    // publication terms refuse) leaves it disabled, with the note saying what can be shared.
     function renderCopyLink() {
         const button = el('planning-compare-copy-link');
         if (!button) return;
         const { left, right } = sides();
-        const shareable = !!pure.comparisonLink(global.location.href, left, right);
-        button.disabled = !scene() || !shareable;
+        const usable = [left, right].every(side => pure.linkable(side) || pure.publishable(side));
+        const toPublish = usable && [left, right].some(side => pure.publishable(side));
+        button.disabled = !scene() || !usable;
+        const label = button.querySelector('.planning-compare-copy-link__label');
+        if (label) label.textContent = toPublish
+            ? t('planningViews.compare.publishAndCopyLink', 'Publish and copy link')
+            : t('planningViews.compare.copyLink', 'Copy link');
         const note = el('planning-compare-link-note');
-        if (note) note.hidden = shareable;
+        if (note) note.hidden = usable;
     }
 
     async function copyLink() {
-        const { left, right } = sides();
+        let { left, right } = sides();
+        const toPublish = [left, right].filter((side, index, list) => pure.publishable(side) && list.indexOf(side) === index);
+        if (toPublish.length) {
+            const confirmed = await global.confirmPublication(toPublish.map(side => ({ kind: side.kind, title: side.title })));
+            if (!confirmed) return;
+            for (const side of toPublish) {
+                if (side.kind === 'plan') await global.PlanWorkspace.publish(planRows.get(side.id));
+                else await global.DesignSync.publishDesign(global.proposalStorage.getProposal(side.id));
+            }
+            refresh();
+            ({ left, right } = sides());
+        }
         const href = pure.comparisonLink(global.location.href, left, right);
-        if (!href) return;
+        if (!href) throw new Error(t('planningViews.compare.copyLinkFailed', 'The link could not be copied.'));
         if (!(await global.copyTextWithFeedback(href))) {
             global.updateStatus?.(t('planningViews.compare.copyLinkFailed', 'The link could not be copied.'));
         }
@@ -625,7 +710,12 @@
             if (tab.dataset.planningTab === 'compare') { publishedWanted = true; refresh(); }
         });
         el('planning-compare-enable')?.addEventListener('click', () => setEnabled(!state.enabled));
-        el('planning-compare-copy-link')?.addEventListener('click', copyLink);
+        el('planning-compare-copy-link')?.addEventListener('click', event => global.BusyControl.track(event.currentTarget, copyLink).catch(error => {
+            // A guest is asked for a profile name first (GuestPolicy 'publish'): nothing was published.
+            if (error?.cancelled) return;
+            global.console.error(`[${new Date().toISOString()}] [ThreeCompare] the comparison could not be published or copied`, error);
+            global.showEphemeralMessage?.(error?.message || String(error), 8000, 'error');
+        }));
         el('planning-compare-left')?.addEventListener('change', event => { state.left = event.target.value; syncDivider(); });
         el('planning-compare-right')?.addEventListener('change', event => { state.right = event.target.value; syncDivider(); });
         el('planning-compare-swap')?.addEventListener('click', () => {

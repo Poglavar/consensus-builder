@@ -576,7 +576,8 @@ test.describe('Agreements on chain @core', () => {
     const bet = page.locator('#proposalMarketOverlay');
     await expect(bet.locator('.cb-dialog__title')).toHaveText(`Will ${TITLE} execute on-chain?`, { timeout: 30_000 });
     await expect(bet).toContainText('No deadline set; this agreement cannot have an open market.');
-    await expect(bet.getByRole('button', { name: 'Seed USDC market', exact: true })).toHaveCount(0);
+    // Any wallet may open a USDC market (ae6ac4142), but not on an agreement without a deadline.
+    await expect(bet.getByRole('button', { name: /Open (a USDC|another) market/ })).toHaveCount(0);
     await expect(bet.locator('[data-market-submit]')).toHaveCount(0);
     await bet.locator('.close-circle-btn').click();
     await expect(bet).toHaveCount(0);

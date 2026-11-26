@@ -23,7 +23,7 @@ test.describe('Supporting page form controls @core', () => {
       return json(route, { key: south ? southKey : '11111111111111111111111111111111', kind: 'permit', identity: 'verified', credential: 'fixture', counts: { ownership: 1 }, pricing: {} });
     });
     await page.route('**/lens/attestations*', route => json(route, { attestations: [] }));
-    // The member counts the relayed owner decisions and refuses while the rule is not met, with the tally.
+    // The lens member counts the relayed owner approvals and refuses while the rule is not met, with the tally.
     await page.route('https://south-lens.example/lens/agreements/**', route => {
       const request = route.request();
       if (request.method() !== 'POST') return route.fallback();
@@ -33,9 +33,10 @@ test.describe('Supporting page form controls @core', () => {
         tally: { passed: false, ready: true, reason: null, acceptedOwners: 1, totalOwners: 2, acceptedAreaM2: 400, totalAreaM2: 812.5 },
       }) });
     });
-    await page.goto('/lens.html');
+    await page.goto('/lens.html?view=members');
     await expect(page.locator('#lc-language')).toBeVisible();
-    await expect(page.locator('#lc-service-title')).toHaveText('Member service');
+    await page.locator('#lc-operator > summary').click();
+    await expect(page.locator('#lc-service-title')).toHaveText('Lens member service');
 
     await selectNativeOption(page.locator('#lc-directory'), 'https://south-lens.example');
     await expect(page.locator('#lc-service-url')).toHaveValue('https://south-lens.example');
@@ -52,7 +53,7 @@ test.describe('Supporting page form controls @core', () => {
     await expect(page.locator('#lc-decision-token')).toHaveValue('fixture-operator-token');
     expect(posted).toEqual([]);
 
-    // The member refuses: its code and the tally it judged on are shown, and the token is gone.
+    // The lens member refuses: its code and the tally it judged on are shown, and the token is gone.
     await page.locator('#lc-decision-cid').fill(cid);
     await page.locator('#lc-decision-submit').click();
     await expect(result).toHaveAttribute('data-outcome', 'refused', { timeout: 15_000 });
@@ -65,7 +66,7 @@ test.describe('Supporting page form controls @core', () => {
 
     await selectNativeOption(page.locator('#lc-language'), 'hr');
     await expect(page.locator('html')).toHaveAttribute('lang', 'hr');
-    await expect(page.locator('#lc-service-title')).toHaveText('Servis člana');
+    await expect(page.locator('#lc-service-title')).toHaveText('Servis člana leće');
     await expect(page.locator('#lc-service-load')).toHaveText('Učitaj');
   });
 

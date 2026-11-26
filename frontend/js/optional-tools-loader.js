@@ -10,6 +10,8 @@
         singleBuilding: ['js/single-building.js'],
         designDuplication: ['js/design-duplication.js'],
         designMemberships: ['js/design-memberships.js?v=20261121-critic-tour'],
+        // Crowdfunding progress read from Solana (Compare plans, Compare agreements, Lists → Agreements).
+        fundingProgress: ['js/solana/pledge-client.js', 'js/solana/funding-progress.js'],
         rowHouse: ['js/row-house.js'],
         parcelBased: ['js/parcel-based.js'],
         buildingUpload: ['js/single-building.js', 'js/building-model-geometry.js', 'js/building-upload.js'],

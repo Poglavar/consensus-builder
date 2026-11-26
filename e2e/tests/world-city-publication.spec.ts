@@ -5,7 +5,7 @@
 import { Browser, BrowserContext, Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady, panMap } from '../helpers/app';
-import { closeShareBox, openCity, createSpace, showProposal } from '../helpers/runtime';
+import { closeShareBox, openCity, createSpace, showProposal, confirmPublish } from '../helpers/runtime';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
 import { attachSharedIndex, fileAgreement, filePlan, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
 
@@ -28,6 +28,7 @@ async function publishPark(page: Page): Promise<string> {
   const proposalId = await createSpace(page, 'park');
   await showProposal(page, proposalId);
   await page.locator('#proposal-details-panel .btn-share-proposal').click();
+  await confirmPublish(page);
   const index = pageIndex(page);
   await expect.poll(() => index.designs.size, { timeout: 30_000 }).toBe(1);
   await closeShareBox(page);
@@ -224,7 +225,10 @@ test.describe('Worldwide publication and city routing @core', () => {
       await duplicate.locator('#workspace-retry').click();
       await expect.poll(() => duplicate.evaluate(() => (window as any).BrowserWorkspace?.status)).toBe('ready');
       await waitForMapReady(duplicate);
-      expect(new URL(duplicate.url()).pathname).toBe(`/designs/${cid}`);
+      // The link survives: still /designs/<cid>, or already handed to the selection it opened
+      // (?design=<cid>, selection-address.js), never dropped to a bare address.
+      const kept = (href: string) => { const url = new URL(href); return url.pathname === `/designs/${cid}` || url.searchParams.get('design') === cid ? cid : href; };
+      expect(kept(duplicate.url())).toBe(cid);
       expect(await duplicate.evaluate(() => (window as any).BrowserWorkspace.id)).toBe(workspace);
       await expect.poll(() => hasPublished(duplicate), { timeout: 30_000 })
         .toEqual({ city: 'zagreb', stored: true });

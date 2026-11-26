@@ -448,7 +448,8 @@ describe('three-mode Xray wiring', () => {
         expect(feature.properties.floorPlans).toBeUndefined();
         expect(c.polygonFeatureToMeshes).toHaveBeenCalledExactlyOnceWith(slices[1].footprint, 'flagged-material', 0, 12);
         expect(group.add).toHaveBeenCalledOnce();
-        expect(group.add.mock.calls[0][0].userData).toEqual({ parcelId: 'B', cbSuggestedLayoutWarnings: slices[1].result.warnings });
+        // The red volume carries its design so Compare shows it on that design's side (905311f13).
+        expect(group.add.mock.calls[0][0].userData).toEqual({ parcelId: 'B', cbSuggestedLayoutWarnings: slices[1].result.warnings, designIds: ['p1'] });
         expect(c.totals).toMatchObject({ buildings: 1, slices: 2, flagged: 1, apartments: 2, cores: 1 });
         // The drawn slice's north-only flats are painted on its group; the view's Access reaches the planner.
         expect(c.appendFlaggedFlats).toHaveBeenCalledExactlyOnceWith(true, slices[0].result);
@@ -569,17 +570,21 @@ describe('three-mode Xray wiring', () => {
         expect(fetch).toHaveBeenCalledExactlyOnceWith('http://api/streets/near?bbox=1%2C2%2C3%2C4', { signal: expect.any(AbortSignal) });
     });
     it('keeps one scope pressed and exposes access options while X-ray is active', () => {
-        const access = {}, select = {}, toolbar = {}, buttons = Object.fromEntries(['proposed', 'built']
+        const access = {}, select = {}, toolbar = {}, note = { hidden: true }, buttons = Object.fromEntries(['proposed', 'built']
             .map(scope => [scope, { setAttribute: vi.fn() }]));
         const [update, c] = extracted('updateXrayControls', `
             let xrayButton=null, xrayToolbar=this.toolbar, xrayScopeButtons=this.buttons;
             let suggestedAccessControl=this.access, suggestedAccessSelect=this.select, suggestedAccess='point';
-            let floorCutawayControl=null, floorCutawaySelect=null, xrayNote=null;`, { toolbar, buttons, access, select });
+            let floorCutawayControl=null, floorCutawaySelect=null, xrayNote=null;
+            let xrayZoomNote=this.note, xrayDetailShown=false, isActive=true;
+            const floorPlanGroup={ children: [{ visible: true, userData: { detailBounds: {} } }] };`, { toolbar, buttons, access, select, note }, ['syncXrayZoomNote']);
         for (const scope of ['built', 'proposed', null]) {
             c.xrayScope = scope;
             update();
             expect(toolbar.hidden).toBe(scope === null);
             expect(access.hidden).toBe(scope === null);
+            // A floor-planned building but none up close: the zoom note shows while X-ray is on.
+            expect(note.hidden).toBe(scope === null);
             for (const role of ['proposed', 'built']) {
                 expect(buttons[role].setAttribute).toHaveBeenLastCalledWith('aria-pressed', String(role === scope));
             }

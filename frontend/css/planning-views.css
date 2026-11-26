@@ -112,6 +112,9 @@ body:is([data-planning-proposed="solid"], [data-planning-proposed="ghost"]) .pla
 .planning-inspector__name { margin: var(--cb-space-1) 0 0; font-weight: var(--cb-weight-semibold); overflow-wrap: anywhere; }
 .planning-source-wording { margin: var(--cb-space-1) 0 0; font-size: var(--cb-text-sm); color: var(--cb-text-muted); overflow-wrap: anywhere; }
 .planning-sources-pane { z-index: var(--cb-z-map-pane-site); }
+/* The zoning overview's canvas (js/planning/views.js drawOverview) covers the whole view; the pane takes
+   clicks for its massing paths, so the canvas must let them through to everything below. */
+.planning-sources-pane > canvas { pointer-events: none; }
 .leaflet-pane.planning-failed-pane { z-index: var(--cb-z-map-pane-planning-failed); pointer-events: none; }
 .map-comparing .planning-failed-pane { display: none; }
 body[data-planning-proposed="ghost"] .leaflet-proposedBuildings-pane { opacity: 0.4; }

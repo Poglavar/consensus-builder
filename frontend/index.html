@@ -169,6 +169,7 @@
                 'css/proposal-approval.css?v=20261020-approval-rules',
                 'css/agreement.css?v=20261031-inspector-organization',
                 'css/agreement-dialog.css?v=20261027-panel-buttons',
+                'css/agreement-record.css',
                 'css/property-offer.css',
                 'css/mobile-sheets.css?v=20261027-style',
                 'css/click-stack-navigation.css?v=20261121-plan-analysis',
@@ -733,9 +734,9 @@
                     </button>
                     <button type="button" id="planning-compare-copy-link" class="btn planning-compare-copy-link" aria-describedby="planning-compare-link-note">
                         <i class="fa-solid fa-link" aria-hidden="true"></i>
-                        <span data-i18n-key="planningViews.compare.copyLink">Copy link</span>
+                        <span class="planning-compare-copy-link__label" data-i18n-key="planningViews.compare.copyLink">Copy link</span>
                     </button>
-                    <p id="planning-compare-link-note" class="sheet-note" data-i18n-key="planningViews.compare.linkUnavailable" hidden>Only Built today, Permitted massing, Proposed and published plans can be shared in a link. Publish a plan to share it.</p>
+                    <p id="planning-compare-link-note" class="sheet-note" data-i18n-key="planningViews.compare.linkUnavailable" hidden>An agreement, or a design that cannot be published yet, cannot be named in a link. Choose another side to share this comparison.</p>
                     <div id="planning-compare-status" class="planning-compare-status" role="status" aria-live="polite" hidden></div>
                     <div class="planning-compare-note" hidden>
                         <p class="sheet-note" data-i18n-key="planningViews.compare.mapNote">On the map, each side draws its own buildings and permitted massing as footprints. Parcels, roads and parks show on both sides.</p>
@@ -1021,10 +1022,12 @@
                 </details>
 
                 <div class="accordion-section" data-section="buildings">
-                    <button type="button" id="layers-open-buildings" class="sheet-section-title" data-sheet-target="planning-views" data-reveal-control="planning-existing-scope" aria-controls="planning-views" aria-expanded="false" hidden>
-                        <i class="fas fa-building" aria-hidden="true"></i>
-                        <span data-i18n-key="planningViews.title">Buildings and massing</span>
-                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    <button type="button" id="layers-open-buildings" data-sheet-target="planning-views" data-reveal-control="planning-existing-scope" aria-controls="planning-views" aria-expanded="false" hidden>
+                        <span class="sheet-section-title">
+                            <i class="fas fa-building" aria-hidden="true"></i>
+                            <span data-i18n-key="planningViews.title">Buildings and massing</span>
+                            <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                        </span>
                     </button>
                 </div>
 
@@ -2153,8 +2156,8 @@
             'js/lens-service-client.js',
             'js/solana/chain-data-loader.js?v=20261022-agreement-chain',
             'js/solana/parcel-client.js?v=20261022-agreement-chain',
-            'js/solana/agreement-client.js?v=20261022-agreement-chain',
-            'js/solana/agreement-bridge.js?v=20261022-agreement-chain',
+            'js/solana/agreement-client.js?v=20261126-member-decision',
+            'js/solana/agreement-bridge.js?v=20261126-member-decision',
             'js/solana/property-offer-client.js',
             'js/solana/property-offer-bridge.js',
             'js/proposals/site-hash.js',
@@ -2386,6 +2389,7 @@
             'js/proposals/approval-lens-authority.js',
             'js/proposals/approval-runtime.js',
             'js/proposals/approval-relay.js',
+            'js/agreement-decision-plan.js',
             'js/proposals/approval-anchor.js',
             'js/reparcellization-ownership.js',
             'js/reparcellization-deal.js?v=20261019-plot-provenance',
@@ -2520,7 +2524,8 @@
             'js/plan-analysis.js',
             'js/proposals/present-state.js?v=20261121-scope-ops',
             'js/proposals/plan-scope.js',
-            'js/proposals/plan-stats.js?v=20261124-estimated-layouts',
+            'js/proposals/plan-decision.js',
+            'js/proposals/plan-stats.js?v=20261126-decision-sheet',
             'js/parcel-coverage-debug.js',
             'js/ui/notice-queue.js',
             // bundle:end plan-analysis

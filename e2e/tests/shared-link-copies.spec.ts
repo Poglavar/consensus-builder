@@ -3,7 +3,7 @@
 // imports it as design-<cid> once and then reuses that exact copy (plan-design-agreement.md M2).
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { closeShareBox, createSpace, openCity, showProposal, stubBasemapTiles, PARCEL_ID } from '../helpers/runtime';
+import { closeShareBox, createSpace, openCity, showProposal, stubBasemapTiles, PARCEL_ID, confirmPublish } from '../helpers/runtime';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
 import { attachSharedIndex, fileDesign, pageIndex } from '../helpers/mocks/shared-server';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
@@ -66,6 +66,7 @@ test('design links ignore a local key equal to the CID and fork ancestry, then r
   const authoredId = await createSpace(author, 'park');
   await showProposal(author, authoredId);
   await author.locator('#proposal-details-panel .btn-share-proposal').click();
+  await confirmPublish(author);
   const index = pageIndex(author);
   await expect.poll(() => index.designs.size, { timeout: 30_000 }).toBe(1);
   await closeShareBox(author);

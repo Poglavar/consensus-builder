@@ -215,7 +215,7 @@ describe('Urban Game Theory MCP server', () => {
     it('marks reads read-only, publishing additive and idempotent, and chain actions destructive', async () => {
         await connect(stubTools());
         const byName = await toolsByName();
-        for (const name of ['ugt_capabilities', 'ugt_activity', 'ugt_list_agreements', 'ugt_get_agreement', 'ugt_list_attesters', 'ugt_support_status', 'ugt_oracle_events', 'ugt_inspect_verified_fact']) {
+        for (const name of ['ugt_capabilities', 'ugt_activity', 'ugt_list_agreements', 'ugt_get_agreement', 'ugt_agreement_evidence', 'ugt_list_attesters', 'ugt_support_status', 'ugt_oracle_events', 'ugt_inspect_verified_fact']) {
             expect(byName[name].annotations).toMatchObject({ readOnlyHint: true, destructiveHint: false });
         }
         for (const name of ['ugt_publish_design', 'ugt_propose_agreement']) {

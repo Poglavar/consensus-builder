@@ -68,6 +68,43 @@ describe('LensAgreementEvidence.readChain', () => {
         expect(result.statement.fields.decision).toBe('satisfied');
     });
 
+    // One authentic decision account, then each check broken alone: every check must refuse on its own.
+    function authentic({ payload = {}, lenses = [lens], schemaName = 'AgreementDecision', credentialAuthority = lens } = {}) {
+        const realCredential = deriveCredentialPda({ authority: lens, name: 'LensMember' });
+        const schema = deriveSchemaPda({ credential: realCredential, name: schemaName, version: 1 });
+        const bytes = buildSasAttestationAccount({
+            nonce: Keypair.generate().publicKey.toBase58(), credential: realCredential, schema, authority: lens, expiry: 1_900_000_000,
+            payload: encodeLensPayload('decision', { agreementCid: cid, sponsor, decision: 'satisfied', evidenceRef: 'case-1', sourceObservedAt: 1_790_000_000, ...payload })
+        });
+        const address = Keypair.generate().publicKey.toBase58();
+        const hash = createHash('sha256').update(bytes).digest('hex');
+        const client = {
+            ...RealClient,
+            constants: { ...RealClient.constants, DECISION_PENDING: 0 },
+            fetchAgreement: async () => ({ cid, authority: sponsor, lenses, status: 'Executed', decisionCode: 1, decisionAttestation: address, decisionHash: hash }),
+            getAgreementPda: (...args) => RealClient.getAgreementPda(...args)
+        };
+        const sasOwner = new PublicKey(client.constants.SAS_PROGRAM_ID);
+        const chain = { getAccountInfo: async key => key.toBase58() === address ? { owner: sasOwner, data: bytes } : { owner: sasOwner, data: Uint8Array.from([0, ...new PublicKey(credentialAuthority).toBytes()]) } };
+        return Evidence.readChain({ record: { cid, content: { sponsor }, onchain: { cluster: 'devnet', programId: client.constants.AGREEMENT_PROGRAM_ID } }, connection: chain, client, web3: { PublicKey }, crypto: { sha256Hex: async value => createHash('sha256').update(value).digest('hex') } });
+    }
+    it('verifies the authentic decision used by the refusal cases', async () => {
+        expect((await authentic()).statement?.verified).toBe(true);
+    });
+    it.each([
+        ['a signer outside the agreement lens', { lenses: [Keypair.generate().publicKey.toBase58()] }, /lens members/],
+        ['another agreement', { payload: { agreementCid: 'bafkreihnfsdwy3dz4ywcukbiknoixg3acqt7jozxg532gbcj54ymys7alf' } }, /subject/],
+        ['another sponsor', { payload: { sponsor: Keypair.generate().publicKey.toBase58() } }, /subject/],
+        ['a decision other than satisfied', { payload: { decision: 'expired' } }, /not satisfied/],
+        ['another schema', { schemaName: 'ParcelOwnership' }, /schema/],
+        ['a credential another key controls', { credentialAuthority: Keypair.generate().publicKey.toBase58() }, /credential authority/]
+    ])('refuses a statement from %s and keeps the chain outcome', async (_, variant, reason) => {
+        const result = await authentic(variant);
+        expect(result.account.status).toBe('Executed');
+        expect(result.statement).toBeNull();
+        expect(result.statementError).toMatch(reason);
+    });
+
     it('preserves chain outcome when signer or credential owner is forged', async () => {
         const forged = { ...baseClient, fetchAgreement: async () => ({ cid, authority: sponsor, lenses: [lens], status: 'Executed', decisionCode: 1, decisionAttestation: attestation, decisionHash: 'aa'.repeat(32) }), readDecisionAttestation: () => ({ address: attestation, credential, schema: 'schema', signer: sponsor, fields: { agreementCid: cid, sponsor, decision: 'satisfied' } }) };
         const result = await Evidence.readChain({ record, connection: { getAccountInfo: async () => ({ owner: new PublicKey(sponsor), data: Uint8Array.from([1]) }) }, client: forged, web3: { PublicKey }, crypto: { sha256Hex: async () => 'aa'.repeat(32) } });

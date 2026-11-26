@@ -42,8 +42,8 @@
         return url.href;
     }
 
-    async function fetchPage({ fetch, backend, kind, designCid, planCid, offset = 0, signal }) {
-        const query = new URLSearchParams({ ...(planCid ? { plan: planCid } : { design: designCid }), limit: String(PAGE_SIZE), offset: String(offset) });
+    async function fetchPage({ fetch, backend, kind, designCid, planCid, offset = 0, limit = PAGE_SIZE, signal }) {
+        const query = new URLSearchParams({ ...(planCid ? { plan: planCid } : { design: designCid }), limit: String(limit), offset: String(offset) });
         const response = await fetch(`${backend}/${kind}?${query}`, { signal });
         if (!response.ok) throw new Error(`Membership lookup returned HTTP ${response.status}`);
         const page = await response.json();

@@ -28,7 +28,8 @@ test.describe('Map shell sheets @features', () => {
     expect(await sections.evaluateAll(nodes => nodes.map(node => (node as HTMLElement).dataset.section))).toEqual([
       'base-map', 'parcels', 'blocks', 'buildings', 'zoning-land-use', 'parks-squares', 'roads', 'schelling-plan', 'scenery'
     ]);
-    await expect(sections.locator('> .sheet-section-title')).toHaveText([
+    // The Buildings and massing opener is a button whose heading is an inner span (47e68d241).
+    await expect(sections.locator(':scope > .sheet-section-title, :scope > button > .sheet-section-title')).toHaveText([
       'Base map', 'Parcels', 'Parcel blocks', 'Buildings and massing', 'Zoning and land use', 'Parks and squares', 'Roads', 'Schelling plan', 'Scenery and sound'
     ]);
     await expect(sheet.locator('details.accordion-section[open]')).toHaveCount(0);
@@ -75,7 +76,7 @@ test.describe('Map shell sheets @features', () => {
     });
   }
 
-  test('Layers and Buildings and massing share the left screen edge on desktop and the bottom edge on phones', async ({ mockApi: page }) => {
+  test('Layers and Buildings and massing dock beside the view strip on desktop and the bottom edge on phones', async ({ mockApi: page }) => {
     const height = 844;
     const layersButton = page.locator(selectors.layersButton);
     const buildingsButton = page.locator('#planning-views-button');
@@ -90,9 +91,12 @@ test.describe('Map shell sheets @features', () => {
       await expect(layers).toBeHidden();
       await expect(buildings).toBeVisible();
       const buildingBox = (await buildings.boundingBox())!;
-      expect(layerBox.x).toBe(0);
-      expect(buildingBox.x).toBe(0);
       if (width >= 768) {
+        // Docked beside the view strip, so the 2D/3D/photo tiles stay clickable with a sheet open.
+        const strip = (await page.locator('#mode-2d-toggle').boundingBox())!;
+        expect(layerBox.x).toBeGreaterThanOrEqual(strip.x + strip.width);
+        expect(layerBox.x).toBeLessThanOrEqual(strip.x + strip.width + 20);
+        expect(buildingBox.x).toBe(layerBox.x);
         const toolbar = (await layersButton.boundingBox())!;
         expect(layerBox.y).toBeGreaterThanOrEqual(toolbar.y + toolbar.height);
         expect(buildingBox.y).toBe(layerBox.y);
@@ -100,6 +104,7 @@ test.describe('Map shell sheets @features', () => {
         expect(buildingBox.width).toBe(440);
       } else {
         for (const box of [layerBox, buildingBox]) {
+          expect(box.x).toBe(0);
           expect(box.width).toBe(width);
           expect(box.y + box.height).toBe(height);
         }

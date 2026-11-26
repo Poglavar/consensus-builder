@@ -158,15 +158,16 @@ test.describe('Supporting pages @core', () => {
       }, 201, { 'access-control-allow-origin': '*' });
     });
 
-    await page.goto('/lens.html');
+    await page.goto('/lens.html?view=members');
+    await page.locator('#lc-operator > summary').click();
     await page.locator('#lc-service-url').fill('http://lens-member.test');
     await page.locator('#lc-service-load').click();
     await expect(page.locator('#lc-directory')).toContainText('Test Lens');
     await expect(page.locator('#lc-status')).toContainText('notary');
     await expect(page.locator('#lc-attestations .lc-item')).toHaveCount(2);
-    // The kinds a member issues: ownership, the decisions of agreements and market evidence.
+    // The kinds a lens member issues: ownership, the decisions of agreements, market evidence and property qualification.
     expect(await page.locator('#lc-filter-kind option').evaluateAll(options => options.map(option => (option as HTMLOptionElement).value)))
-      .toEqual(['', 'ownership', 'decision', 'evidence']);
+      .toEqual(['', 'ownership', 'decision', 'evidence', 'propertyOffer']);
     await selectNativeOption(page.locator('#lc-filter-kind'), 'ownership');
     await page.locator('#lc-filter-parcel').fill('parcel-1');
     await page.locator('#lc-attestations-load').click();
@@ -180,7 +181,7 @@ test.describe('Supporting pages @core', () => {
     const decisions = page.locator('#lc-attestations .lc-item');
     await expect(decisions).toHaveCount(1);
     await expect(decisions.first()).toContainText(OTHER_AGREEMENT_CID);
-    await expect(decisions.first()).toContainText('Decision');
+    await expect(decisions.first()).toContainText('Agreement decision');
     await expect(decisions.first()).toContainText('satisfied');
 
     await page.locator('#lc-wallet-connect').click();

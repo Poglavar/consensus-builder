@@ -207,6 +207,27 @@ spatial inspection without authoring actions. Hash-only outputs get no fabricate
 design's Overview metric is Source parcels; its Formed parcels list excludes remainder land, using
 the shared formation helper's structure, building, corridor and layout-plot roles.
 
+## Agreement record and signing review
+
+**Agreement record** (an action of every agreement, read-only ones included) opens one page that
+holds everything about the agreement: its identity (title, CID, plan and plan CID, sponsor wallet),
+decision rule, deadline, lens members by directory name and key with the threshold, a crowdfunding
+round's target and contract, input parcels with their owners, every allocation, the ledger by party
+and by person, the on-chain account (status, decision, confirmations, account; read when the panel
+has not read it yet) and the signed decisions the relay holds, verified. **Print or save as PDF**
+prints that page alone from a frame that loads only `css/agreement-record.css`. The record has no
+inspect controls. Accept and Approve reviews (proposals/approval-panel.js) include **What you sign**:
+the same identity and terms, and the ledger rows of the signer's parcels (an authority sees every
+row), with a link to the record. Both are built by `recordHtml` and `signingSummaryHtml` in
+agreement-panel.js from the panel's own renderers.
+
+A connected wallet that is one of a minted agreement's lens members sees **Confirm as lens member**
+in On chain, also in a read-only view. It records that member's own decision and, when that
+completes the lens, executes the agreement in the same transaction
+(`AgreementBridge.confirmAsMember`; the rule in `agreement-decision-plan.js`, shared with the lens
+service). MCP parity: `ugt_approval_link` action `confirm-member`; `ugt_inspect_agreement` already
+returns the record's content.
+
 ## Source parcel geometry in the commitment
 
 A published agreement commits to each source parcel's own representation. An unchanged whole parcel

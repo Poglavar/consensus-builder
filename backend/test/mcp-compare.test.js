@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import * as turf from '@turf/turf';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
 import { agreementObject, communityRule, cidOfObject, outputHash, designObject, mapViewFromGeometry, planForDesigns } from '../agents/agreement-objects.js';
-import { authoredAreas, existingFloorArea, moneyOf } from '../agents/mcp-compare.js';
+import { authoredAreas, backingOf, existingFloorArea, moneyOf, permittedOf } from '../agents/mcp-compare.js';
 const require = createRequire(import.meta.url);
 const builder = require('../../frontend/js/intent-design.js');
 const site = turf.bboxPolygon([-0.1, 51.5, -0.099, 51.501]).geometry;
@@ -170,5 +170,36 @@ describe('MCP comparison money', () => {
         expect(built.money).toMatchObject({ profit: null, totalCost: null });
         // Value band B's 4-6 storey construction cost at the site.
         expect(built.money.constructionCost).toBeCloseTo(built.floorAreaM2 * 3730);
+    });
+});
+
+describe('MCP comparison as Compare plans\' decision sheet', () => {
+    const tower = builder.build({ kind: 'building', site, floors: 12, city: 'alatau', authoredAt: park.authoredAt }, { turf });
+    const zone = (limit) => ({ id: 'zone-1', role: 'permitted', title: 'Mid-rise zone', areas: [{ geometry: turf.bboxPolygon([-0.2, 51.4, 0.1, 51.6]).geometry }],
+        constraints: [{ quantity: 'storeys', bound: 'maximum', value: limit }], assessment: { status: 'allowed' } });
+    it('checks the new buildings against the city\'s Permitted source where they stand', async () => {
+        const asked = [];
+        const read = { request: async (path, query) => { asked.push([path, query.source]); return { items: [zone(9)], truncated: false, nextCursor: null }; } };
+        const result = await permittedOf([tower], { read });
+        expect(asked).toEqual([['/planning/representations', 'alatau-genplan-727']]);
+        expect(result).toMatchObject({ source: 'alatau-genplan-727', state: 'breaks', buildings: 1, breaking: 1 });
+        expect(result.breakingFloorAreaM2).toBeCloseTo(turf.area(tower.geometry.buildings[0]) * 12, 0);
+        const within = await permittedOf([tower], { read: { request: async () => ({ items: [zone(16)] }) } });
+        expect(within.state).toBe('within');
+        expect(await permittedOf([park], { read })).toEqual({ state: 'noBuildings' });
+    });
+
+    it('lists the agreements on the plan revision, reading crowdfunding progress from the chain, never the index', async () => {
+        const row = { cid: 'bafk-round', planCid: 'plan-1', onchain: { chain: 'solana', cluster: 'devnet', account: 'Acc', status: 'active' },
+            content: { title: 'Round', sponsor: 'Lead', rule: { electorate: 'investors', binding: true, lens: ['L1'] }, funding: { targetUsdcAtomic: '2500000000' } } };
+        const read = { request: async (path, query) => (path === '/agreements' && query.plan === 'plan-1' ? { agreements: [row], hasMore: false } : null) };
+        const readFunding = async rows => new Map(rows.map(item => [item.cid, { state: 'read', chainStatus: 'Active', raisedUsdcAtomic: 1000000000n, targetUsdcAtomic: 2500000000n, contributors: 3 }]));
+        const backing = await backingOf('plan-1', { read, readFunding });
+        expect(backing.agreements[0]).toMatchObject({ cid: 'bafk-round', crowdfunding: true, lead: 'Lead', lensThreshold: 1,
+            funding: { state: 'read', raisedUsdcAtomic: '1000000000', targetUsdcAtomic: '2500000000', contributors: 3, source: 'solana' } });
+        // JSON-safe: amounts as strings.
+        expect(() => JSON.stringify(backing)).not.toThrow();
+        const offline = await backingOf('plan-1', { read });
+        expect(offline.agreements[0].funding.state).toBe('notRead');
     });
 });

@@ -1,5 +1,6 @@
-// Public agreement evidence. The published terms, signed owner messages, member service and
-// Solana account can answer independently. A slow or unavailable source affects only its stage.
+// Public agreement walkthrough: who takes part, a checklist of what the agreement needs and who
+// stated each fact. The published terms, signed owner approvals, lens member services and the Solana
+// account answer independently; LensWalkthroughModel turns their states into the checklist.
 (function (win) {
     'use strict';
     const doc = win.document;
@@ -8,6 +9,8 @@
     const city = query.get('city');
     const base = win.getBackendBase().replace(/\/$/, '');
     const links = win.LensLinks;
+    const Model = win.LensWalkthroughModel;
+    const programId = () => win.AgreementClient?.constants?.AGREEMENT_PROGRAM_ID;
     const directory = new Map();
     const scripts = new Map();
     let selected = query.get('agreement');
@@ -22,7 +25,7 @@
         const translated = win.i18n?.t(key, params);
         return translated && translated !== key ? translated : fallback.replace(/\{\{(\w+)\}\}/g, (_, k) => params[k] ?? '');
     }
-    const w = (key, fallback) => t('lensWalk.' + key, fallback);
+    const w = (key, fallback, params) => t('lensWalk.' + key, fallback, params);
     function element(tag, text, cls) {
         const el = doc.createElement(tag);
         if (text != null) el.textContent = text;
@@ -38,10 +41,20 @@
     function explorer(label, value, type = 'address') {
         return anchor(label, 'https://explorer.solana.com/' + type + '/' + encodeURIComponent(value) + '?cluster=devnet', true);
     }
-    function member(key) {
+    const nameOf = key => {
         const name = directory.get(key)?.name;
-        const label = name ? name + ' · ' + win.LensCore.shortKey(key) : win.LensCore.shortKey(key);
-        const a = anchor(label, links.pageUrl({ member: key, subject: current?.cid, city: current?.record?.city || city }));
+        return name ? name + ' · ' + win.LensCore.shortKey(key) : win.LensCore.shortKey(key);
+    };
+    // A lens member's name, linking to its statements when its service is listed.
+    function lensMember(key) {
+        const listed = directory.get(key)?.serviceUrl;
+        const node = listed ? anchor(nameOf(key), links.pageUrl({ member: key, city: current?.record?.city || city })) : element('span', nameOf(key));
+        node.title = key;
+        return node;
+    }
+    // A lens member named inside an owner approval: jump to its row in the lens check.
+    function lensMemberRef(key) {
+        const a = anchor(nameOf(key), '#lc-lens-' + key);
         a.title = key;
         return a;
     }
@@ -52,21 +65,26 @@
         return row;
     }
     function when(value) {
-        if (!value) return null;
+        if (value == null || value === '') return null;
         const date = new Date(typeof value === 'number' || typeof value === 'bigint' ? Number(value) * 1000 : value);
         if (!Number.isFinite(date.getTime())) return null;
-        const time = element('time', new Intl.DateTimeFormat(win.i18n?.getLocale?.() || 'en', { dateStyle: 'medium', timeStyle: 'medium' }).format(date));
+        const time = element('time', new Intl.DateTimeFormat(win.i18n?.getLocale?.() || 'en', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' }).format(date));
         time.dateTime = date.toISOString();
         time.title = time.dateTime;
         return time;
     }
     const loading = () => element('p', t('lensConsole.loading', 'Loading…'), 'lc-muted lc-loading');
-    const message = text => element('p', text, 'lc-muted');
+    const message = (text, cls = 'lc-muted') => element('p', text, cls);
     function disclosure(id, label) {
         const details = element('details', null, 'lc-proof');
         details.id = id;
         details.append(element('summary', label));
         return details;
+    }
+    function line(...parts) {
+        const p = element('p', null, 'lc-line');
+        p.append(...parts.filter(part => part != null && part !== ''));
+        return p;
     }
     function setContent(target, ...children) {
         const fragment = doc.createDocumentFragment();
@@ -99,141 +117,198 @@
         }));
         return scripts.get(src);
     }
-    function drawRule(s) {
-        const { rule } = s.record.content;
-        const block = element('div');
-        const description = rule.electorate === 'owners'
-            ? win.ProposalApprovalText.rulesText(rule.approvalConfig?.policy, t, win.AgreementRecord.schemeOf(rule))
-            : rule.electorate === 'investors' ? t('agreement.lens.crowdfunding', 'The program checks the funding target. The lens checks investor eligibility and any other conditions.')
-                : w('community', 'Community members vote on the agreement.');
-        block.append(element('p', description));
-        const facts = element('dl', null, 'lc-facts');
-        const keys = (rule.lens || []).map(x => typeof x === 'string' ? x : x?.address).filter(Boolean);
-        for (const key of keys) facts.append(field(w('selected', 'Selected lens'), member(key)));
-        for (const chainLens of s.chain?.account?.lenses || []) {
-            if (!keys.includes(chainLens)) facts.append(field(w('chainLens', 'Lens named on Solana'), member(chainLens)));
-        }
-        block.append(facts.childElementCount ? facts : message(w('noLens', 'This agreement names no lens member.')));
-        setContent(byId('lc-rule'), block);
+    const usdc = value => win.AgreementRecord.formatUsdc(value);
+    const STATE_LABELS = () => ({
+        met: w('stateMet', 'Done'), waiting: w('stateWaiting', 'Waiting'), failed: w('stateFailed', 'Unmet'),
+        unknown: w('stateUnknown', 'Not checked'), loading: w('stateLoading', 'Loading'), none: w('stateNone', 'Not needed')
+    });
+    const STATE_ICONS = { met: 'fa-circle-check', waiting: 'fa-clock', failed: 'fa-circle-xmark', unknown: 'fa-circle-question', loading: 'fa-spinner', none: 'fa-circle-minus' };
+
+    // The hash a lens member's statement cites, recomputed from the verified approvals it could count.
+    function approvalsRef(s) {
+        const statement = s.chain?.statement;
+        if (!statement?.fields || !s.receipts) return null;
+        const subject = { ...win.AgreementRecord.approvalSubject(s.record.content), agreementCid: s.record.cid };
+        const counted = Model.approvalsCountedBy(s.receipts.filter(row => row.verified).map(row => row.receipt), statement.fields.sourceObservedAt);
+        const folded = win.ProposalApprovalRelay.fold(subject, counted, () => true);
+        return win.ProposalApproval.decisionEvidenceRef(win.ProposalApprovalRelay.countedApprovals(folded));
     }
-    function drawReceipts(s) {
-        if (s.record.content.rule.electorate !== 'owners') return;
-        const target = byId('lc-receipts');
-        if (s.receiptsError) return setContent(target, message(w('unavailable', 'This source could not be read.')));
-        if (!s.receipts) return setContent(target, loading());
-        if (!s.receipts.length) return setContent(target, message(w('noReceipts', 'No owner decisions have been relayed.')));
-        const rows = s.receipts.map(({ receipt, verified }, i) => {
-            const outcome = receipt.decision === 'approve' ? w('approved', 'Approved') : receipt.decision === 'withdraw' ? w('withdrew', 'Withdrew approval') : (receipt.decision || '—');
-            const signedAt = when(receipt.decidedAt);
-            const details = disclosure('lc-owner-' + i, outcome + ' · ' + win.LensCore.shortKey(receipt.actorId) + (signedAt ? ' · ' + signedAt.textContent : ''));
-            if (!verified) details.firstChild.append(' · ', w('invalid', 'Receipt could not be verified'));
-            const facts = element('dl', null, 'lc-facts');
-            facts.append(field(w('signed', 'Signed by'), receipt.actorId || '—'));
-            if (receipt.ownerId && receipt.ownerId !== receipt.actorId) facts.append(field(w('owner', 'Owner'), receipt.ownerId));
-            for (const [fact, label] of [[receipt.evidence?.rights, w('rights', 'Rights attested by')], [receipt.evidence?.authority, w('authority', 'Signing authority attested by')]]) {
-                if (fact?.member) facts.append(field(label, member(fact.member)));
-            }
-            details.append(element('p', verified ? w('valid', 'Signatures verified') : w('invalid', 'Receipt could not be verified'), verified ? 'lc-ok' : 'lc-warn'), facts);
-            const raw = disclosure('lc-owner-raw-' + i, w('raw', 'Signed receipt'));
-            raw.append(element('pre', JSON.stringify(receipt, null, 2)));
-            details.append(raw);
-            return details;
+    function modelOf(s) {
+        return Model.build({ ...s, programId: programId(), approvalsRef: approvalsRef(s) });
+    }
+
+    function roleCard(title, does, ...value) {
+        const li = element('li', null, 'lc-role');
+        li.append(element('h3', title, 'lc-role__title'), element('p', does, 'lc-muted'));
+        const body = element('div', null, 'lc-role__value');
+        body.append(...value.filter(Boolean));
+        li.append(body);
+        return li;
+    }
+    function drawRoles(s, m) {
+        const cards = [];
+        const approvals = m.checks.find(c => c.id === 'approvals');
+        const funding = m.checks.find(c => c.id === 'funding');
+        if (m.kind === 'owners') cards.push(roleCard(w('roleOwners', 'Owners'), w('roleOwnersDo', 'Approve with their own wallet'),
+            approvals?.state === 'loading' ? loading() : approvals?.total != null ? element('p', w('ownersCount', '{{approved}} of {{total}} approved', { approved: approvals.approved, total: approvals.total })) : null));
+        else if (m.kind === 'investors') cards.push(roleCard(w('roleInvestors', 'Contributors'), w('roleInvestorsDo', 'Fund the round'),
+            funding?.required != null ? element('p', w('fundingCount', '{{observed}} of {{required}} USDC', { observed: usdc(funding.observed ?? 0n), required: usdc(funding.required) })) : null));
+        else cards.push(roleCard(w('roleCommunity', 'Community'), w('community', 'Community members vote on the agreement.'), element('p', w('nonbinding', 'This vote is counted off chain.'))));
+        if (m.kind !== 'poll') {
+            const names = element('p', null, 'lc-names');
+            m.lens.keys.forEach((key, i) => { if (i) names.append(', '); names.append(lensMember(key)); });
+            cards.push(roleCard(w('roleLens', 'Lens members'), w('roleLensDo', 'Vouch for owners and confirm the rule was met'),
+                m.lens.keys.length ? names : element('p', w('noLens', 'No lens: the program checks the funding target itself.')),
+                m.lens.keys.length ? element('p', w('lensNeeded', '{{threshold}} of {{count}} must confirm', { threshold: m.lens.threshold, count: m.lens.keys.length }), 'lc-muted') : null));
+            cards.push(roleCard(w('roleAgreement', 'The agreement on Solana'), w('roleAgreementDo', 'Pays out once the rule is met'),
+                element('p', executionText(m.execution)), m.execution.account ? explorer(w('account', 'View agreement account'), m.execution.account) : null));
+        }
+        setContent(byId('lc-roles'), ...cards);
+    }
+    function executionText(execution) {
+        return {
+            executed: w('executed', 'Executed'), active: w('active', 'Waiting for execution'), expired: w('expired', 'Expired: the deadline passed'),
+            cancelled: w('cancelled', 'Cancelled by its sponsor'), unminted: w('unminted', 'Not on Solana yet'),
+            retired: w('retired', 'Recorded with a retired version of the agreement program, which this page no longer reads'),
+            unreadable: w('noChain', 'The Solana account could not be read'), loading: t('lensConsole.loading', 'Loading…'), poll: w('nonbinding', 'This vote is counted off chain.')
+        }[execution.state] || execution.status || '—';
+    }
+
+    function approvalRows(s, m) {
+        if (!m.approvals.length) return [message(w('approvalsNone', 'No owner approvals have been relayed yet.'))];
+        const ul = element('ul', null, 'lc-sublist');
+        m.approvals.forEach((row, i) => {
+            const li = element('li');
+            const verb = row.decision === 'approve' ? w('approvedBy', 'Approved by') : row.decision === 'withdraw' ? w('withdrewBy', 'Approval withdrawn by') : (row.decision || '—');
+            const owner = element('span', win.LensCore.shortKey(row.owner || '—'));
+            owner.title = row.owner || '';
+            li.append(line(verb, ' ', owner, ' · ', when(row.decidedAt) || '—'));
+            if (row.signer && row.signer !== row.owner) li.append(line(w('signedFor', 'Signed by {{signer}} for the owner', { signer: win.LensCore.shortKey(row.signer) })));
+            if (row.rightsBy) li.append(line(w('rightsPer', 'Owner of the parcel, per'), ' ', lensMemberRef(row.rightsBy)));
+            if (row.authorityBy) li.append(line(w('authorityPer', 'Allowed to sign for the owner, per'), ' ', lensMemberRef(row.authorityBy)));
+            if (!row.verified) li.append(message(w('invalid', 'The signatures on this approval do not verify, so it is not counted.'), 'lc-warn'));
+            const raw = disclosure('lc-owner-raw-' + i, w('raw', 'Signed approval'));
+            raw.append(element('pre', JSON.stringify(row.receipt, null, 2)));
+            li.append(raw);
+            ul.append(li);
         });
-        setContent(target, ...rows);
+        return [ul];
     }
-    function drawStatement(s) {
-        const target = byId('lc-statement');
-        const recorded = s.chain?.account?.decisionAttestation;
-        const verified = s.chain?.statement;
-        const receipt = recorded ? s.issued?.find(r => r.address === recorded) : s.issued?.[0];
+    function statementFacts(s, statement, idPrefix) {
         const nodes = [];
-        if (verified || receipt || recorded) {
-            const title = verified ? w('matched', 'Verified against the agreement on Solana.')
-                : recorded ? w('recorded', 'Recorded on Solana') : s.chain?.account ? w('issued', 'Issued by the member · awaiting recording') : w('listed', 'Reported by the member');
-            nodes.push(element('p', title, verified ? 'lc-ok' : ''));
-            const att = verified?.fields || receipt?.payload;
-            const facts = element('dl', null, 'lc-facts');
-            const signer = verified?.signer || receipt?.authority;
-            if (signer) facts.append(field(w('signed', 'Signed by'), member(signer)));
-            if (att?.decision) facts.append(field(t('lensConsole.attestations.decision', 'Decision'), att.decision === 'satisfied' ? w('met', 'The agreement’s approval rule was met.') : String(att.decision)));
-            const observed = when(att?.sourceObservedAt), issued = when(receipt?.issuedAt), at = when(s.chain?.account?.decisionAttestedAt);
-            if (observed) facts.append(field(w('sourceTime', 'Source observed'), observed));
-            if (issued) facts.append(field(t('lensConsole.attestations.issuedAt', 'Issued (chain time)'), issued));
-            if (recorded && at) facts.append(field(w('recordedTime', 'Decision recorded'), at));
-            nodes.push(facts);
-            if (verified && s.ownerEvidenceRef && att.evidenceRef === s.ownerEvidenceRef) {
-                nodes.push(anchor(w('receiptsMatch', 'The owner approvals match the evidence cited by this member.'), '#lc-receipts-title'));
-            }
-            const details = disclosure('lc-decision-proof', w('details', 'Evidence details'));
-            const meta = element('dl', null, 'lc-facts');
-            if (att?.evidenceRef) meta.append(field(w('evidence', 'Evidence reference'), att.evidenceRef));
-            const address = recorded || receipt?.address;
-            if (address) meta.append(field(t('lensConsole.decision.address', 'Attestation'), explorer(address, address)));
-            if (receipt?.transactionSignature) meta.append(field(w('tx', 'Issuance transaction'), explorer(receipt.transactionSignature, receipt.transactionSignature, 'tx')));
-            const credential = verified?.credential || receipt?.credential, schema = verified?.schema || receipt?.schema;
-            if (credential) meta.append(field(t('lensActivity.credential', 'Credential'), explorer(credential, credential)));
-            if (schema) meta.append(field(t('lensActivity.schema', 'Schema'), explorer(schema, schema)));
-            details.append(meta);
-            nodes.push(details);
-            if (address && signer) nodes.push(anchor(w('exact', 'Open this statement'), links.pageUrl({ member: signer, attestation: address, subject: s.cid, city: s.record.city })));
-            if (!recorded && s.issued?.length > 1) {
-                for (const other of s.issued.slice(1)) {
-                    const row = element('p');
-                    row.append(member(other.authority), ' · ', anchor(w('exact', 'Open this statement'), links.pageUrl({ member: other.authority, attestation: other.address, subject: s.cid, city: s.record.city })));
-                    nodes.push(row);
-                }
-            }
-        } else if (s.chainError) nodes.push(message(w('noChain', 'The live Solana account could not be read.')));
-        else if (s.chainPending || s.servicePending) nodes.push(loading());
-        else if (s.record.content.rule.binding === false) nodes.push(message(w('nonbinding', 'This vote is counted off chain.')));
-        else nodes.push(message(w('awaiting', 'Awaiting a recorded lens decision.')));
-        if (s.chain?.statementError) nodes.push(message(w('proofUnavailable', 'The signed statement could not be verified.')));
-        if (s.serviceError && !verified) nodes.push(message(w('unavailable', 'This source could not be read.')));
-        setContent(target, ...nodes);
-    }
-    function drawExecution(s) {
-        const target = byId('lc-execution');
-        const account = s.chain?.account;
-        if (!account) {
-            const text = s.chainError ? w('noChain', 'The live Solana account could not be read.') : s.record.onchain ? w('noAccount', 'The indexed agreement account was not found.')
-                : s.record.content.rule.binding === false ? w('nonbinding', 'This vote is counted off chain.') : w('unminted', 'This agreement has no indexed Solana account.');
-            if (s.chainPending) return setContent(target, loading());
-            const indexed = s.chainError && s.record.onchain?.status;
-            if (indexed) {
-                const labels = { executed: w('executed', 'Executed'), active: w('active', 'Awaiting execution'), expired: w('expired', 'Expired'), cancelled: w('cancelled', 'Cancelled') };
-                const snapshot = element('p', w('indexed', 'Last indexed outcome') + ' · ' + (labels[indexed] || indexed));
-                return setContent(target, snapshot, message(text));
-            }
-            return setContent(target, message(text));
+        const fields = statement.fields || statement.payload || {};
+        const facts = element('dl', null, 'lc-facts');
+        if (fields.decision) facts.append(field(w('says', 'Says'), fields.decision === 'satisfied' ? w('met', 'The agreement’s approval rule was met.') : String(fields.decision)));
+        const observed = when(fields.sourceObservedAt);
+        if (observed) facts.append(field(w('sourceTime', 'Approvals counted up to'), observed));
+        const issued = when(statement.issuedAt);
+        if (issued) facts.append(field(t('lensConsole.attestations.issuedAt', 'Issued (chain time)'), issued));
+        nodes.push(facts);
+        const details = disclosure(idPrefix + '-proof', w('details', 'Technical details'));
+        const meta = element('dl', null, 'lc-facts');
+        if (fields.evidenceRef) meta.append(field(w('evidence', 'Evidence reference'), fields.evidenceRef));
+        if (statement.address) meta.append(field(t('lensConsole.decision.address', 'Attestation'), explorer(statement.address, statement.address)));
+        if (statement.transactionSignature) meta.append(field(w('tx', 'Issuance transaction'), explorer(statement.transactionSignature, statement.transactionSignature, 'tx')));
+        if (statement.credential) meta.append(field(t('lensActivity.credential', 'Credential'), explorer(statement.credential, statement.credential)));
+        if (statement.schema) meta.append(field(t('lensActivity.schema', 'Schema'), explorer(statement.schema, statement.schema)));
+        details.append(meta);
+        nodes.push(details);
+        const signer = statement.signer || statement.authority;
+        if (statement.address && signer && directory.get(signer)?.serviceUrl) {
+            const open = anchor(w('exact', 'Open this statement'), links.pageUrl({ member: signer, attestation: statement.address, subject: s.cid, city: s.record.city }));
+            open.setAttribute('aria-label', w('exactBy', 'Open the statement by {{member}}', { member: nameOf(signer) }));
+            nodes.push(open);
         }
-        const status = { Active: w('active', 'Awaiting execution'), Executed: w('executed', 'Executed'), Cancelled: w('cancelled', 'Cancelled'), Expired: w('expired', 'Expired') }[account.status] || account.status;
-        const outcome = element('p', status, 'lc-result' + (account.status === 'Executed' ? ' lc-ok' : ''));
-        const at = when(account.executedAt);
-        if (account.status === 'Executed' && at) outcome.append(' · ', at);
-        setContent(target, outcome, explorer(w('account', 'View agreement account'), account.address));
+        return nodes;
+    }
+    function lensRows(s, m) {
+        const states = {
+            confirmed: w('memberConfirmed', 'Confirmed on Solana'), issued: w('memberIssued', 'Statement issued, not yet recorded on Solana'),
+            none: w('memberNone', 'No statement yet'), unlisted: w('memberUnlisted', 'Lists no statement service. Solana shows no confirmation from this lens member yet.'),
+            unknown: w('memberUnknown', 'Its statement service could not be read'), loading: t('lensConsole.loading', 'Loading…')
+        };
+        const ul = element('ul', null, 'lc-sublist');
+        for (const member of m.lens.members) {
+            const li = element('li', null, 'lc-member lc-member--' + member.state);
+            li.id = 'lc-lens-' + member.key;
+            li.append(line(lensMember(member.key), ' · ', states[member.state]));
+            if (member.recorded) {
+                li.append(message(w('statementChecked', 'Statement checked against the agreement on Solana.'), 'lc-ok'));
+                li.append(...statementFacts(s, member.recorded, 'lc-statement-' + member.key));
+            } else for (const statement of member.statements) {
+                li.append(message(w('statementReported', 'As its statement service reports it. Solana has not recorded it for this agreement.'), 'lc-muted'));
+                li.append(...statementFacts(s, statement, 'lc-statement-' + statement.address));
+            }
+            ul.append(li);
+        }
+        return [ul];
+    }
+    function checkItem(check, title, ...body) {
+        const li = element('li', null, 'lc-check lc-check--' + check.state);
+        const icon = element('i', null, 'fa-solid ' + STATE_ICONS[check.state] + ' lc-check__icon');
+        icon.setAttribute('aria-hidden', 'true');
+        const head = element('p', null, 'lc-check__title');
+        head.append(element('span', STATE_LABELS()[check.state] + ': ', 'lc-sr-only'), title);
+        const main = element('div', null, 'lc-check__body');
+        main.append(head, ...body.flat().filter(Boolean));
+        li.append(icon, main);
+        return li;
+    }
+    function drawChecks(s, m) {
+        const target = byId('lc-checks');
+        if (m.kind === 'poll') return setContent(target, element('li', w('nonbinding', 'This vote is counted off chain.'), 'lc-check lc-check--none'));
+        const items = m.checks.map(check => {
+            if (check.id === 'approvals') {
+                const rule = s.record.content.rule;
+                return checkItem(check, w('checkApprovals', 'Owners approve'),
+                    element('p', win.ProposalApprovalText.rulesText(rule.approvalConfig?.policy, t, win.AgreementRecord.schemeOf(rule)), 'lc-muted'),
+                    check.total != null ? element('p', w('approvalsCount', '{{approved}} of {{total}} owners approved', { approved: check.approved, total: check.total })) : null,
+                    check.state === 'loading' ? loading() : s.receiptsError ? message(w('unavailable', 'This source could not be read.')) : approvalRows(s, m));
+            }
+            if (check.id === 'funding') return checkItem(check, w('checkFunding', 'The funding target is reached'),
+                check.required != null ? element('p', w('fundingCount', '{{observed}} of {{required}} USDC', { observed: usdc(check.observed ?? 0n), required: usdc(check.required) })) : null);
+            if (check.id === 'lens') {
+                if (check.state === 'none') return checkItem(check, w('checkLens', 'Lens members confirm the rule was met'), element('p', w('noLens', 'No lens: the program checks the funding target itself.')));
+                return checkItem(check, w('checkLens', 'Lens members confirm the rule was met'),
+                    element('p', w('lensCount', '{{confirmed}} of {{threshold}} required confirmations recorded on Solana', { confirmed: check.confirmed, threshold: check.threshold })),
+                    lensRows(s, m),
+                    m.statementError ? message(w('proofUnavailable', 'The recorded statement could not be verified: {{reason}}', { reason: m.statementError }), 'lc-warn') : null);
+            }
+            if (check.id === 'cited') {
+                const text = { met: w('citedMet', 'The approvals above are the ones the lens member counted.'),
+                    failed: w('citedFailed', 'The approvals relayed up to the statement do not match the ones the lens member counted. Check them before relying on this agreement.'),
+                    unknown: w('citedUnknown', 'Could not compare: the owner approvals could not be read.'), loading: t('lensConsole.loading', 'Loading…') }[check.state];
+                return checkItem(check, w('checkCited', 'The lens counted these owner approvals'), message(text, check.state === 'failed' ? 'lc-warn' : 'lc-muted'));
+            }
+            const at = when(m.execution.at);
+            return checkItem(check, w('checkExecution', 'The agreement executes on Solana'),
+                line(executionText(m.execution), at ? ' · ' : '', at),
+                m.execution.account ? explorer(w('account', 'View agreement account'), m.execution.account) : null);
+        });
+        setContent(target, ...items);
     }
     function draw(s) {
         if (current !== s || !s.record) return;
-        drawRule(s); drawReceipts(s); drawStatement(s); drawExecution(s);
-        byId('lc-retry').hidden = !win.BusyControl.isBusy(byId('lc-retry')) && !(s.receiptsError || s.chainError || s.chain?.statementError || s.serviceError || listError);
+        const m = modelOf(s);
+        drawRoles(s, m); drawChecks(s, m);
+        byId('lc-retry').hidden = !win.BusyControl.isBusy(byId('lc-retry')) && !(m.retry || listError);
     }
     async function readReceipts(s) {
-        if (s.record.content.rule.electorate !== 'owners') return;
+        if (Model.kindOf(s.record) !== 'owners') return;
         try {
             const [body] = await Promise.all([json('/agreements/' + s.record.cid + '/decisions'), library('vendor/noble-curves-1.2.0/ed25519.js')]);
-            if (body.agreementCid !== s.record.cid || !Array.isArray(body.decisions)) throw new Error('Unexpected receipt response');
+            if (body.agreementCid !== s.record.cid || !Array.isArray(body.decisions)) throw new Error('Unexpected approval response');
             const subject = { ...win.AgreementRecord.approvalSubject(s.record.content), agreementCid: s.record.cid };
             s.receipts = body.decisions.map(receipt => ({ receipt, verified: win.ProposalApprovalRelay.verifyLensReceipt(subject, receipt) }));
-            const verifiedReceipts = s.receipts.filter(row => row.verified).map(row => row.receipt);
-            const folded = win.ProposalApprovalRelay.fold(subject, verifiedReceipts, () => true);
-            if (verifiedReceipts.length) s.ownerEvidenceRef = win.ProposalApproval.decisionEvidenceRef(win.ProposalApprovalRelay.countedApprovals(folded));
+            const folded = win.ProposalApprovalRelay.fold(subject, s.receipts.filter(row => row.verified).map(row => row.receipt), () => true);
+            s.tally = win.ProposalApproval.tally(subject, Object.keys(folded.ownerApprovals));
         } catch { s.receiptsError = true; }
-        if (current === s) { drawReceipts(s); drawStatement(s); if (s.receiptsError) byId('lc-retry').hidden = false; }
+        draw(s);
     }
-    async function readStatement(s) {
+    async function readChain(s) {
         try {
             await library('vendor/solana-web3-1.98.4/index.iife.min.js');
-            const connection = await win.SolanaChainDataLoader.getVerifiedConnection(s.record.onchain.cluster);
+            const connection = await win.SolanaChainDataLoader.getVerifiedConnection(s.record.onchain?.cluster || 'devnet');
             s.chain = await win.LensAgreementEvidence.readChain({ record: s.record, connection, client: win.AgreementClient });
         } catch { s.chainError = true; }
         s.chainPending = false;
@@ -244,24 +319,29 @@
         directoryError = result.outcome.kind !== 'ok';
         if (!directoryError) result.members.forEach(m => directory.set(m.key, m));
     }
+    // Each lens member's statements about this agreement, from the service the directory lists for it.
     async function readIssued(s) {
         await directoryReady;
         if (current !== s) return;
-        const keys = s.record.onchain?.lenses || s.record.content.rule.lens || [];
-        const results = await Promise.allSettled((s.record.content.sponsor ? keys : []).map(async key => {
+        const lens = Model.build({ record: s.record, programId: programId() }).lens.keys;
+        s.services = {};
+        const results = await Promise.all((s.record.content.sponsor ? lens : []).map(async key => {
             const issuer = directory.get(key);
-            if (directoryError || !issuer?.serviceUrl) throw new Error('Member service unavailable');
-            const result = await win.LensServiceClient.fetchAttestations({ serviceUrl: issuer.serviceUrl, filter: { agreementCid: s.cid, kind: 'decision' } });
-            if (!Array.isArray(result.attestations)) throw new Error('Member feed unavailable');
-            return result.attestations.filter(r => r.authority === key && r.kind === 'decision' && r.payload?.agreementCid === s.cid
-                && r.payload.sponsor === s.record.content.sponsor && r.payload.decision === 'satisfied' && win.LensCore.isBase58Pubkey(r.address));
+            if (directoryError) { s.services[key] = 'error'; return []; }
+            if (!issuer?.serviceUrl) { s.services[key] = 'unlisted'; return []; }
+            try {
+                const result = await win.LensServiceClient.fetchAttestations({ serviceUrl: issuer.serviceUrl, filter: { agreementCid: s.cid, kind: 'decision' } });
+                if (!Array.isArray(result.attestations)) throw new Error('Lens member feed unavailable');
+                s.services[key] = 'ok';
+                return result.attestations.filter(r => r.authority === key && r.kind === 'decision' && r.payload?.agreementCid === s.cid
+                    && r.payload.sponsor === s.record.content.sponsor && r.payload.decision === 'satisfied' && win.LensCore.isBase58Pubkey(r.address));
+            } catch { s.services[key] = 'error'; return []; }
         }));
-        s.issued = results.flatMap(result => result.status === 'fulfilled' ? result.value : []);
-        s.serviceError = results.some(result => result.status === 'rejected');
-        s.servicePending = false; draw(s);
+        s.issued = results.flat();
+        draw(s);
     }
     async function openAgreement(cid) {
-        const s = { cid, record: null, servicePending: true };
+        const s = { cid, record: null, receipts: null, issued: null, services: {}, chain: null };
         current = s;
         byId('lc-story').hidden = true;
         byId('lc-retry').hidden = !win.BusyControl.isBusy(byId('lc-retry'));
@@ -271,15 +351,19 @@
             const record = await json('/agreements/' + encodeURIComponent(cid));
             if (current !== s) return;
             if (record.cid !== cid || record.content?.schema !== 'agreement/v1' || !record.content.rule || win.Cid.cidOfObject(record.content) !== cid) throw new Error('Agreement does not match CID');
-            s.record = record; s.chainPending = !!record.onchain;
+            s.record = record;
+            // The chain is read whatever the index says, from the account the sponsor and CID derive;
+            // an agreement minted under a retired program is not read.
+            const chainReadable = Model.kindOf(record) !== 'poll' && record.content.sponsor && !Model.isRetiredProgram(record, programId());
+            s.chainPending = Boolean(chainReadable);
             byId('lc-subject').textContent = record.content.title || record.title || cid;
             byId('lc-map-agreement').href = links.mapUrl({ agreement: cid, city: record.city });
-            byId('lc-owner-stage').hidden = record.content.rule.electorate !== 'owners';
             byId('lc-story').hidden = false;
             byId('lc-flow-status').replaceChildren();
             drawList(); draw(s);
-            await Promise.all([readReceipts(s), readIssued(s), record.onchain && readStatement(s)]);
-        } catch {
+            await Promise.all([readReceipts(s), readIssued(s), chainReadable && readChain(s)]);
+        } catch (error) {
+            console.error(`[${new Date().toISOString()}] [lens-walkthrough] agreement ${cid} could not be shown`, error);
             if (current !== s) return;
             byId('lc-flow-status').replaceChildren(message(w('unavailable', 'This source could not be read.')));
             byId('lc-retry').hidden = false;
@@ -318,7 +402,9 @@
         } catch { listError = true; }
         listLoaded = true; drawList();
         if (!selected && list.length) {
-            const example = list.find(r => r.onchain?.status === 'executed' && r.onchain.decision === 'satisfied') || list[0];
+            // Open an example the current program can read: executed first, then any minted one.
+            const readable = list.filter(r => r.onchain && !Model.isRetiredProgram(r, programId()));
+            const example = readable.find(r => r.onchain.status === 'executed') || readable[0] || list[0];
             return selectAgreement(example.cid, false);
         }
     }

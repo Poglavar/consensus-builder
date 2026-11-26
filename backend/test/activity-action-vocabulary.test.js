@@ -22,7 +22,7 @@ const TYPE = "'([A-Za-z0-9_-]+)'";
 const VOCABULARY = [
     'create', 'design', 'propose', 'mint', 'fund', 'decide', 'lens-decision', 'attest', 'execute', 'cancel', 'expire',
     'createMarket', 'stake', 'sell', 'resolve', 'claim', 'reclaim-seed', 'donate', 'pledge', 'revokePledge', 'fulfillPledge', 'voidPledge',
-    'refundMyDonations', 'releaseDonations', 'run_status'
+    'refundMyDonations', 'releaseDonations', 'confirm-funding', 'release-donations', 'run_status'
 ];
 
 function block(source, pattern, name) {

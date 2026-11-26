@@ -326,27 +326,36 @@
     }
 
     // Share publishes a design this browser holds (sharing-routes.js shareSingleProposal) and opens
-    // its link; a published one held elsewhere only has its link shared. A design that cannot be
-    // published yet keeps Share disabled, with the reason as its title.
+    // its link; a published one held elsewhere only has its link shared. One not published yet reads
+    // Publish… until it is. A design that cannot be published yet keeps it disabled, with the reason
+    // as its title.
     function renderDesignShare(instance, doc, win) {
         const share = doc.createElement('button');
         share.type = 'button';
         share.className = 'btn btn-share-proposal';
         share.dataset.designAction = 'share';
         const shareIcon = doc.createElement('i');
-        shareIcon.className = 'fas fa-share-alt';
         shareIcon.setAttribute('aria-hidden', 'true');
         const shareLabel = doc.createElement('span');
-        shareLabel.textContent = win?.i18n?.t?.('panel.proposal.actions.share') || 'Share';
-        share.append(shareIcon, shareLabel);
         const held = win.proposalStorage?.getProposal?.(instance.id) || null;
+        const label = published => {
+            shareIcon.className = published ? 'fas fa-share-alt' : 'fas fa-upload';
+            shareLabel.textContent = published ? (win?.i18n?.t?.('panel.proposal.actions.share') || 'Share')
+                : (win?.i18n?.t?.('panel.proposal.actions.publish') || 'Publish…');
+        };
+        label(!held || !!win.DesignSync.publishedCid(held));
+        share.append(shareIcon, shareLabel);
         const refusal = held && !win.DesignSync.publishedCid(held) ? win.ProposalPublishTerms.publishRefusal(held) : null;
         if (refusal) {
             share.disabled = true;
             share.title = refusal.message;
         }
         share.addEventListener('click', () => win.BusyControl.track(share, async () => {
-            if (held) return win.shareSingleProposal(held);
+            if (held) {
+                const shared = await win.shareSingleProposal(held);
+                if (shared) label(true);
+                return shared;
+            }
             if (!instance.serverId) return null;
             const link = win.DesignSync.designLink([instance.serverId], { city: instance.proposal?.city || null });
             return win.ShareDialog.open({ kind: 'design', title: instance.proposal?.title || instance.label || '', link, published: false });

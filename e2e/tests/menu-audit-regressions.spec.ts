@@ -53,8 +53,10 @@ test('the NYC command palette respects building-source availability', async ({ m
   await page.keyboard.press('Control+k');
   const palette = page.locator('.command-palette-backdrop');
   await expect(palette).toBeVisible();
-  await palette.locator('input').fill('Show buildings');
-  const workingProvider = palette.getByRole('option').filter({ hasText: 'Show buildings' }).first();
+  // The Built appearance select replaced the "Show buildings" checkbox (fe088cad9).
+  await palette.locator('input').fill('Built');
+  const workingProvider = palette.locator('[role="option"][data-command="layers.buildings"]');
+  await expect(workingProvider).toHaveText(/Built/);
   await expect(workingProvider).toBeVisible();
   await expect(workingProvider).not.toHaveAttribute('aria-disabled', 'true');
   // Which surveys are used or outlined is the city's building source list, one command away.

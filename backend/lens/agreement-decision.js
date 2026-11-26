@@ -15,7 +15,8 @@ import { LensError } from './errors.js';
 
 const require = createRequire(import.meta.url);
 const approval = require('../../frontend/js/proposals/approval.js');
-const relay = require('../../frontend/js/proposals/approval-relay.js');
+// The rule a lens member applies before stating `satisfied`, shared with a lens member deciding from its wallet.
+const decisionPlan = require('../../frontend/js/agreement-decision-plan.js');
 const pledgeClient = require('../../frontend/js/solana/pledge-client.js');
 const agreementRecord = require('../../frontend/js/agreement-record.js');
 const cidApi = require('../../frontend/js/cid.js');
@@ -28,11 +29,7 @@ const seconds = instant => Math.floor(Date.parse(instant) / 1000);
  * decision (an approval or a withdrawal) was signed: the moment the counted state came to be.
  */
 export function countAgreementDecisions(agreement, receipts) {
-    const subject = decisionSubject(agreement);
-    const folded = relay.fold(subject, receipts || []);
-    const counted = relay.countedApprovals(folded);
-    const last = folded.applied.at(-1) ?? null;
-    return { subject, counted, tally: approval.tally(subject, Object.keys(folded.ownerApprovals)), lastDecidedAt: last?.decidedAt ?? null };
+    return decisionPlan.countDecisions(decisionSubject(agreement), receipts);
 }
 
 /**
@@ -111,45 +108,15 @@ export function planAgreementDecision({ agreement, count, lensKey, nowSeconds })
     // The program confirms a crowdfunding target itself (confirm_funding, permissionless), and the rule
     // names no other condition this member could count, so it issues no automatic decision here.
     if (content.rule?.electorate === 'investors') {
-        throw new LensError(409, 'funding_checked_on_chain', 'the program checks this agreement\'s funding target: anyone confirms it on chain with confirm_funding once contributions reach it; this lens issues no automatic decision for a crowdfunding agreement');
+        throw new LensError(409, 'funding_checked_on_chain', 'the program checks this agreement\'s funding target: anyone confirms it on chain with confirm_funding once contributions reach it; this lens service issues no automatic decision for a crowdfunding agreement (a lens member whose key is in a wallet confirms in the agreement panel)');
     }
-    const { tally } = count;
-    const refusal = (status, code, message) => new LensError(status, code, message, { tally });
-
-    const sponsor = content.sponsor;
-    if (!isPublicKey(sponsor)) {
-        throw refusal(422, 'no_sponsor', 'the agreement names no sponsor wallet, so no chain account can carry its decision');
+    if (!isPublicKey(content.sponsor)) {
+        throw new LensError(422, 'no_sponsor', 'the agreement names no sponsor wallet, so no chain account can carry its decision', { tally: count.tally });
     }
-    if (!approval.lensKeys({ lens: content.rule?.lens }).includes(lensKey)) {
-        throw refusal(409, 'not_in_lens', 'this lens member is not in the agreement\'s lens');
+    try {
+        return decisionPlan.countedDecision({ agreement, count, lensKey, nowSeconds });
+    } catch (error) {
+        if (error && error.status && error.code) throw new LensError(error.status, error.code, error.message, error.details);
+        throw error;
     }
-    const onchain = agreement.onchain;
-    if (onchain && !onchain.lenses.includes(lensKey)) {
-        throw refusal(409, 'not_agreement_lens', `the agreement's account names lens members ${onchain.lenses.join(', ') || '(none)'}; only their attestations settle it`);
-    }
-    if (agreement.status === 'executed' || agreement.status === 'cancelled') {
-        throw refusal(409, 'agreement_closed', `the agreement is ${agreement.status}`);
-    }
-    if (onchain && onchain.decision !== 'pending') {
-        throw refusal(409, 'decision_recorded', `the agreement's account already records the decision ${onchain.decision}`);
-    }
-
-    // The program records a decision only before the deadline (attest: DeadlinePassed), so one issued
-    // later would spend rent on an attestation no account can take: the account can only expire.
-    if (agreement.deadline && seconds(agreement.deadline) <= nowSeconds) {
-        throw refusal(409, 'deadline_passed', `the deadline ${agreement.deadline} has passed; the account can only expire`);
-    }
-    if (!tally.passed) {
-        throw refusal(409, 'rule_not_met', tally.ready ? 'the decision rule is not met' : `the decision rule cannot be counted: ${tally.reason}`);
-    }
-    if (!count.lastDecidedAt) throw refusal(422, 'source_time_missing', 'no counted decision gives the outcome a source time');
-    const sourceObservedAt = seconds(count.lastDecidedAt);
-    if (sourceObservedAt > nowSeconds) {
-        throw refusal(409, 'source_time_in_future', 'the last counted decision is signed later than this member\'s clock; ask again shortly');
-    }
-    return {
-        fields: { agreementCid: agreement.cid, sponsor, decision: 'satisfied', evidenceRef: decisionEvidenceRef(count.counted), sourceObservedAt },
-        tally,
-        counted: count.counted.length
-    };
 }

@@ -85,6 +85,7 @@ if (typeof window !== 'undefined') {
     window.buildProposalThumbHtml = buildProposalThumbHtml;
     window.isProposalUIActive = isProposalUIActive;
     window.shareProposalFromDetails = shareProposalFromDetails;
+    window.confirmPublication = confirmPublication;
     window.showWalkUploadGateModal = showWalkUploadGateModal;
 
     window.guestPolicyBlocks = guestPolicyBlocks;

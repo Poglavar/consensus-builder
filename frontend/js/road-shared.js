@@ -70,8 +70,9 @@ function showAcquiringDifficultyDialog() {
     const t = translateRoadText;
     const title = t('panel.road.acquiringDifficultyTitle', 'Modeled acquisition score');
     // The area-model sentence names the road-land rate where the road's parcels are (road-drawing.js
-    // roadLandRate); a city without one has none to name.
-    const roadRate = roadLandRate();
+    // roadLandRate); a city without one has none to name. This file loads at startup and road-drawing.js
+    // on demand: before it loads there is no road and no road parcels, so the rate is the city's own.
+    const roadRate = typeof roadLandRate === 'function' ? roadLandRate() : window.CityMoney.currentLandPriceOptions('road');
     const explanation = t('panel.road.acquiringDifficultyTooltip', 'An illustrative score: each parcel value is multiplied by a category weight. It does not estimate legal rights, acquisition cost or consent.\nGovernment: 0\nInstitution: 0\nCompany: 1\nIndividual or mixed: 2\nMissing ownership categories, unusable prices or mixed currencies leave the score unknown.')
         + (typeof roadRate.areaPricePerSqm === 'number'
             ? '\n' + t('panel.road.acquiringDifficultyAreaModel', 'Area estimates use a {{rate}}/m² model.', { rate: CbFormat.formatMoney(roadRate.areaPricePerSqm, roadRate.currency) })
