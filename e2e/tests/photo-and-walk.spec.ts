@@ -4,7 +4,7 @@ import { openCity, createSpace, createBuilding, PARCEL_GEOMETRY } from '../helpe
 import { mockPhotoTiles } from '../helpers/mocks/photo-data';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 import { openAndClosePopup, selectNativeOption } from '../helpers/controls';
-import { openLayerSection, openPlanningSection } from '../helpers/layers';
+import { openLayerSection, openPlanningRole, openPlanningSection } from '../helpers/layers';
 import { pageIndex } from '../helpers/mocks/shared-server';
 
 test('walk chooses a real 3D ground point, cancels with Escape, and opens the configured walking map', async ({ mockApi: page, context }) => {
@@ -200,7 +200,8 @@ test('Photo clicks use the shared parcel section independently of boundary visib
   await expect.poll(tiles.requests, { timeout: 20_000 }).toBeGreaterThan(0);
   await expect(page.locator('body')).toHaveClass(/realistic-mode-active/);
 
-  await page.locator('#layers-button').click();
+  // Photo boundaries sit in the shared Parcels section, collapsed by default (fe088cad9).
+  await openLayerSection(page, 'parcels');
   const toggle = page.locator('#photo-parcels-visible');
   const status = page.locator('#photo-parcels-status');
   await expect(toggle).toBeVisible();
@@ -250,7 +251,7 @@ test('Photo clicks use the shared parcel section independently of boundary visib
   });
   await expect.poll(selectedOutline).toEqual({ kind: 'parcels', pattern: 'surface', lines: 0 });
   const camera = await page.evaluate(() => (window as any).getThreeModeInternals().camera.position.toArray());
-  await page.locator('#layers-button').click();
+  await openLayerSection(page, 'parcels');
   await toggle.uncheck();
   await expect(status).toBeHidden();
   await expect(parcelSection).toHaveClass(/is-selected/);
@@ -410,7 +411,7 @@ test('Photo view keeps permitted massing controls and its shared inspector avail
   await expect(section).toContainText('Permitted building');
   await expect.poll(() => page.evaluate(() => (window as any).getThreeModeInternals().scene.getObjectByName('click-stack-focus')?.userData))
     .toMatchObject({ kind: 'permitted', representation: 'volume' });
-  await page.locator('#planning-views-button').click();
+  await openPlanningRole(page, 'permitted');
   await expect(panel.locator('[data-planning-setting="permittedForm"]')).toBeEnabled();
   await panel.locator('[data-planning-setting="permittedForm"]').selectOption('bound');
   await expect.poll(() => page.evaluate(() => (window as any).PlanningViews.getState().permittedForm)).toBe('bound');

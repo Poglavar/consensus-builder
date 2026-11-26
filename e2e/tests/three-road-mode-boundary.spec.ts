@@ -64,7 +64,8 @@ test('3D road selection keeps buildings stable, ground continuous and 2D handles
   const opacity = result.samples.map(s => s.opacity).filter(Number.isFinite);
   expect(Math.max(...opacity) - Math.min(...opacity)).toBeGreaterThan(0.15);
   expect(result.groundWidth).toBeGreaterThan(100000);
-  expect(result.groundTriangles).toBe(2);
+  // One uncut pavement: four quadrants of two triangles each (4400aaa83).
+  expect(result.groundTriangles).toBe(8);
   await page.locator('#mode-2d-toggle').click();
   await expect(page.locator('body')).not.toHaveClass(/three-mode-active/);
   await expect(page.locator('.road-node-handle')).toHaveCount(2);
