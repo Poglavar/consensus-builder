@@ -163,7 +163,9 @@ and manifest hash remain historical records; later city qualification results
 stay separate until their next admission.
 
 The current v2 routing release is
-`af29bc44f39eefffff610c64df4d14dfe40f64ef94ec9ca4e7e7b0c353af2263`.
+`393082d4a4fe7dc906e9f73e1efd26b25da6a1b079f63d1caf38be019aa4252f`
+(HM Land Registry data of 2026-11-01), with tile release
+`bccfeae21d135a6d988ee5c6fa74df93a813cf74d1a171f209218d67a28402e3`.
 Since 2026-10-28 it is served from the `uk-cadastre` R2 bucket next to the tile
 releases (`https://uk-cadastre.urbangametheory.xyz/<releaseId>/manifest.json`), not
 from the frontend docroot. Moving it only rebased the scope and ID URLs inside the
