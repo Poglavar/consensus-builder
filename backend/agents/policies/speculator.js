@@ -9,8 +9,12 @@
 //   revoke: an ACTIVE own pledge on a still-open agreement whose probability < revokeBelowProbability,
 //           or whose age > maxAgeDays. Lowest probability first, then oldest.
 //   pledge: an open minted agreement by another actor with no own pledge of any status (a revoked
-//           pledge is never re-made, so the persona cannot flap), probability ≥ minPledgeProbability
-//           and age ≤ pledgeWithinDays. Highest probability first, then the larger market, then the seed.
+//           pledge is never re-made, so the persona cannot flap), probability strictly above
+//           minPledgeProbability and age ≤ pledgeWithinDays. Highest probability first, then the larger
+//           market, then the seed. Strictly above, so at 0.5 an untraded LMSR market (exactly 50%) is
+//           never a favourite. The 5 USDC liquidity of an agreement market against 0.01–0.02 USDC
+//           agent stakes keeps prices within a point or two of 50% (2026-11: none passed 51% in 14
+//           days), so the default favours any market that leans YES at all.
 import {
     agreementAgeDays, agreementName, firstFitting, fraction, impliedYesProbability, isOpen, isOthersOpen, nonNegative,
     positiveDecimal, stableNumber, totalPool
@@ -25,7 +29,7 @@ export function policyConfig(persona = {}) {
     const label = persona.name || 'speculator';
     const config = {
         amountUsdc: positiveDecimal(policy.amountUsdc, '0.05', `${label} policy.amountUsdc`),
-        minPledgeProbability: fraction(policy.minPledgeProbability, 0.6, `${label} policy.minPledgeProbability`),
+        minPledgeProbability: fraction(policy.minPledgeProbability, 0.5,`${label} policy.minPledgeProbability`),
         revokeBelowProbability: fraction(policy.revokeBelowProbability, 0.5, `${label} policy.revokeBelowProbability`),
         pledgeWithinDays: nonNegative(policy.pledgeWithinDays, 3, `${label} policy.pledgeWithinDays`),
         maxAgeDays: nonNegative(policy.maxAgeDays, 7, `${label} policy.maxAgeDays`)
@@ -36,7 +40,8 @@ export function policyConfig(persona = {}) {
     return config;
 }
 
-const percent = value => `${(value * 100).toFixed(0)}%`;
+// One decimal (as the LMSR price is quoted), so a market at 50.2% does not read as "50% above 50%".
+const percent = value => `${Number((value * 100).toFixed(1))}%`;
 
 /** Why an own active pledge on this agreement should be revoked now, or null. */
 export function revokeReason({ probability, ageDays }, config) {
@@ -80,7 +85,7 @@ export function decide({ persona, seed, now, wallet = null, agreements = [], mar
 
     const candidates = open.filter(agreement => isOthersOpen(agreement, { wallet, personaName: persona.name, now }) && !pledges[agreement.cid])
         .map(view)
-        .filter(item => item.probability !== null && item.probability >= config.minPledgeProbability
+        .filter(item => item.probability !== null && item.probability > config.minPledgeProbability
             && item.ageDays !== null && item.ageDays <= config.pledgeWithinDays)
         .map(item => ({ ...item, pool: totalPool(markets?.[item.account]), rank: stableNumber(`${seed}:${persona.name}:${item.agreement.cid}`) }))
         .sort((a, b) => b.probability - a.probability || b.pool - a.pool || a.rank - b.rank);
@@ -89,7 +94,7 @@ export function decide({ persona, seed, now, wallet = null, agreements = [], mar
         action: {
             type: 'pledge', amount: config.amountUsdc, usdc: Number(config.amountUsdc), signedActions: 1,
             agreementCid: item.agreement.cid, account: item.account, agreementName: agreementName(item.agreement),
-            rationale: `Pledge ${config.amountUsdc} USDC early to ${agreementName(item.agreement)}: the market implies ${percent(item.probability)} YES${index === 0 ? ', the highest' : ''} among ${candidates.length} agreement${candidates.length === 1 ? '' : 's'} ≤ ${config.pledgeWithinDays} days old at ≥ ${percent(config.minPledgeProbability)}.`
+            rationale: `Pledge ${config.amountUsdc} USDC early to ${agreementName(item.agreement)}: the market implies ${percent(item.probability)} YES${index === 0 ? ', the highest' : ''} among ${candidates.length} agreement${candidates.length === 1 ? '' : 's'} ≤ ${config.pledgeWithinDays} days old above ${percent(config.minPledgeProbability)}.`
         }
     }));
 
@@ -99,7 +104,7 @@ export function decide({ persona, seed, now, wallet = null, agreements = [], mar
         const held = Object.values(pledges).filter(pledge => pledge?.status === 'active').length;
         return {
             action: null, options, eligibleCids, capped: false,
-            reason: `No pledge is due for revocation${held ? ` (${held} held)` : ''} and no agreement ≤ ${config.pledgeWithinDays} days old has a market at ≥ ${percent(config.minPledgeProbability)} YES without an existing pledge.`
+            reason: `No pledge is due for revocation${held ? ` (${held} held)` : ''} and no agreement ≤ ${config.pledgeWithinDays} days old has a market above ${percent(config.minPledgeProbability)} YES without an existing pledge.`
         };
     }
     const { chosen, capped } = firstFitting(options, budget);

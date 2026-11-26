@@ -225,7 +225,7 @@ describe('HMLR tile store', () => {
         };
         const tiles = (options = {}, failTiles = false) => f.create({ fetchImpl: serve(failTiles), ...options },
             { tileManifestUrl: `${tileRoot}manifest.json`, snapshotId: f.releaseId });
-        return { f, out, tiles, tileCalls, cleanup: () => rm(out, { recursive: true, force: true }) };
+        return { f, out, tiles, tilesFetch: serve(false), tileCalls, cleanup: () => rm(out, { recursive: true, force: true }) };
     }
 
     it('answers views and exact IDs with the same derived ground as the per-council import, without downloading a council', async () => {
@@ -257,6 +257,26 @@ describe('HMLR tile store', () => {
             expect(result).toEqual(await t.f.create().queryBounds(views()[0]));
             expect(progress.some(detail => detail.phase === 'source-fallback' && /HTTP 503/.test(detail.reason))).toBe(true);
             expect(t.f.archiveCalls.length).toBeGreaterThan(0);
+        } finally { await t.cleanup(); }
+    });
+
+    // HM Land Registry republishes monthly; a pinned archive then answers 412 to its If-Match. The
+    // councils cannot serve the release any more, so the tiles are asked again at once.
+    it('says the council file was republished when the fallback meets a 412, and asks the tiles again on the next query', async () => {
+        const t = await withTiles();
+        try {
+            let tilesDown = true;
+            const archives = new Set(t.f.manifest.authorities.map(authority => authority.endpoint));
+            const healthy = t.tiles();
+            const fetchImpl = async (url, options) => {
+                if (archives.has(String(url))) return new Response('', { status: 412, statusText: 'Precondition Failed' });
+                if (tilesDown && String(url).startsWith('https://tiles.example/')) return new Response('unavailable', { status: 503 });
+                return t.tilesFetch(url, options);
+            };
+            const source = t.tiles({ fetchImpl });
+            await expect(source.queryBounds(views()[0])).rejects.toMatchObject({ upstreamStatus: 412, message: expect.stringMatching(/republished/) });
+            tilesDown = false;
+            expect(await source.queryBounds(views()[0])).toEqual(await healthy.queryBounds(views()[0]));
         } finally { await t.cleanup(); }
     });
 

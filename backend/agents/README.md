@@ -224,7 +224,7 @@ YES, Cancelled/Expired → NO). Otherwise the role decides:
 |---|---|---|
 | `preservationist-01` | `contrarian` | NO stake on the densest open agreement by another actor (proposed gross floor area of its building designs; a text heuristic ranks after measured ones; parks score 0) |
 | `backer-01` | `backer` | YES stake on the most modest open agreement by another actor, the underdog (YES pool < NO pool) first |
-| `speculator-01` | `speculator` | revoke an own pledge when the market's implied YES falls below `revokeBelowProbability` or the agreement is older than `maxAgeDays`; else pledge to the favourite ≥ `minPledgeProbability` and ≤ `pledgeWithinDays` old |
+| `speculator-01` | `speculator` | revoke an own pledge when the market's implied YES falls below `revokeBelowProbability` or the agreement is older than `maxAgeDays`; else pledge to the favourite strictly above `minPledgeProbability` (0.5: any market leaning YES; an untraded one sits at exactly 50%) and ≤ `pledgeWithinDays` old |
 
 Caps bound one invocation: `AGENT_SOCIETY_ACTION_CAP` (default 4) and `AGENT_SOCIETY_USDC_CAP`
 (default 0.05). `--turns N` plays N game days; `--slot` runs again on the same UTC day;

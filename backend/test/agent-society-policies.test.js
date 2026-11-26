@@ -1,6 +1,7 @@
 // The society policies (agents/policies/contrarian.js, speculator.js) and the history they read, on
 // agreements: which single action each chooses over discovery.js agreement summaries and their markets
 // (keyed by the agreement account), and when it chooses none. History is keyed by agreement CID.
+import fs from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import * as contrarian from '../agents/policies/contrarian.js';
 import * as speculator from '../agents/policies/speculator.js';
@@ -131,7 +132,7 @@ describe('speculator policy (speculator-01)', () => {
     it('revokes an active pledge when the probability drops below the threshold, before any new pledge', () => {
         const decision = speculator.decide({ ...base, history: { pledges: { 'cid-cold': { status: 'active' }, 'cid-hot': { status: 'active' } } } });
         expect(decision.action).toMatchObject({ type: 'revokePledge', agreementCid: 'cid-cold', account: 'account-cold', usdc: 0 });
-        expect(decision.action.rationale).toMatch(/fell to 15% \(< 50%\)/);
+        expect(decision.action.rationale).toMatch(/fell to 14\.9% \(< 50%\)/);
     });
 
     it('revokes an active pledge when the agreement ages past maxAgeDays', () => {
@@ -160,6 +161,23 @@ describe('speculator policy (speculator-01)', () => {
         expect(noPledgeRoom).toMatchObject({ action: null, capped: true });
         const noActions = speculator.decide({ ...base, budget: { actionsLeft: 0, usdcLeft: 1 }, history: { pledges: { 'cid-cold': { status: 'active' } } } });
         expect(noActions).toMatchObject({ action: null, capped: true });
+    });
+
+    it('with the deployed persona, pledges to a market that leans YES at all, never to an untraded or NO-leaning one', () => {
+        // Prod-sized markets (b = 5 USDC): one 0.02 USDC YES stake moves the price to 50.2%; a 0.02 NO
+        // and a 0.02 YES stake leave it at 49.9%; untraded is exactly 50%. In 2026-11 no open market
+        // passed 51% in 14 days, so the old 60% threshold never pledged.
+        const deployed = JSON.parse(fs.readFileSync(new URL('../agents/personas.json', import.meta.url), 'utf8')).personas
+            .find(persona => persona.name === 'speculator-01');
+        const prodMarket = (qYes, qNo) => ({ model: 'lmsr', b: 5_000_000n, qYes, qNo, closesAt: 1_800_000_000, graceSeconds: 0, resolved: false });
+        const decision = speculator.decide({
+            persona: deployed, seed: '2026-11-26', now: NOW, wallet: OWN_WALLET, budget: ROOMY,
+            agreements: [agreement('leaning'), agreement('flat'), agreement('against')],
+            markets: { 'account-leaning': prodMarket(39_918n, 0n), 'account-flat': prodMarket(0n, 0n), 'account-against': prodMarket(40_157n, 59_817n) }
+        });
+        expect(decision.action).toMatchObject({ type: 'pledge', agreementCid: 'cid-leaning', amount: '0.05' });
+        expect(decision.action.rationale).toMatch(/implies 50\.2% YES, the highest among 1 agreement ≤ 3 days old above 50%/);
+        expect(decision.eligibleCids).toEqual(['cid-leaning']);
     });
 
     it('refuses thresholds that would flap, and a missing clock', () => {
