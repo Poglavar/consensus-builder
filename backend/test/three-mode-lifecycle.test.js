@@ -403,6 +403,7 @@ function warmEnterFixture() {
         rebuild3DBuildingsOnly: async () => { calls.rebuild += 1; },
         applyModeVisibility() { calls.syncPlanningView += 1; },
         rebuildPlanningSources3D() {},
+        syncNeighbourEffects3D() {},
         activeProposalDraftComparison: null,
         console,
         clearTimeout() {},

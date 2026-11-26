@@ -57,6 +57,7 @@ Each document describes a current contract, an open plan or research. Verificati
 - [Alatau neighbourhood alternatives](demo/alatau-neighbourhoods/README.md): published courtyard and garden plans with small building plots and editable plan files.
 - [Almaty general plan and detailed plans](almaty-plan-source.md).
 - [Alatau investment and apartment rights](reports/Alatau%20investment%20and%20apartment%20rights.md) covers the four tradable house proposals, state-land decisions, developer funding and off-plan apartment sales.
+- [Effects on neighbours](neighbour-effects.md): garden sunlight, sky from facing walls and facing distances a design or plan takes from the plots around it, and where they show.
 - [Permitted massing for plan-made parcels](permitted-plan-parcels.md): how cadastral parcels, government-plan lots and applied design plots receive their permitted massing.
 - [UPU permitted-layer integration](upu-permitted-layer-integration.md): research and proposed source-to-rule model using the Staro Trnje–Savica UPU.
 - [Source loading plan](source-loading-plan.md): open plan for buildings on the parcel cell grid with a view budget, area-limit errors apart from outages, sources that load and fail independently, and 3D panning in steps.

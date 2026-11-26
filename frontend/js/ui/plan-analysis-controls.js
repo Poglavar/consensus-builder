@@ -28,6 +28,48 @@
         return control;
     }
 
+    // A design as Compare designs and Effects measure it: its one-member plan, placed at its site.
+    function designPlan(win, record) {
+        const site = win.__siteBinding.siteOf(record);
+        const [lng, lat] = win.turf.centroid(site.type === 'Feature' ? site : win.turf.feature(site)).geometry.coordinates;
+        return win.PlanComposition.ofDesign(record, [lat, lng]);
+    }
+
+    // Effects on neighbours of a plan (getPlan) into `section`: its new buildings against the
+    // neighbouring plots (planning/effects-advisor.js), listed there and coloured on the map.
+    async function runEffects(win, getPlan, section) {
+        const advisor = win.NeighbourEffectsAdvisor;
+        advisor.render(section, null);
+        const prepared = await win.PlanAnalysis.prepare(await getPlan(), {});
+        const buildings = win.__planDecision.permittedBuildings(prepared.records);
+        const result = await new Promise(resolve => advisor.assess({ buildings }, resolve));
+        if (!result) return;
+        advisor.render(section, result);
+        advisor.show(win.map, result);
+    }
+
+    // The Effects on neighbours button and its section, for a plan or a design's one-member plan.
+    // On request, since it reads the plan's land and measures the neighbours' heights.
+    function effects(win, doc, getPlan) {
+        const wrapper = doc.createElement('div');
+        wrapper.className = 'plan-effects';
+        const section = doc.createElement('section');
+        section.className = 'neighbour-effects';
+        section.setAttribute('role', 'status');
+        section.setAttribute('aria-live', 'polite');
+        section.hidden = true;
+        const control = button(win, doc, win.i18n.t('neighbourEffects.title'), () => runEffects(win, getPlan, section));
+        // Only where the city's rule sets state neighbour guides.
+        wrapper.hidden = true;
+        win.NeighbourEffectsAdvisor?.guidesFor?.().then(guides => { wrapper.hidden = !guides; }, () => {});
+        const icon = doc.createElement('i');
+        icon.className = 'fas fa-sun';
+        icon.setAttribute('aria-hidden', 'true');
+        control.prepend(icon);
+        wrapper.append(control, section);
+        return wrapper;
+    }
+
     async function restoreCriticOrigin(win, doc, { plan, row, returnTo, mode }, critic) {
         if (mode && mode !== '2d') await win.requestMapMode(mode);
         if (returnTo) return returnTo(plan, critic);
@@ -82,5 +124,5 @@
         return picker;
     }
 
-    return { stats, critics, restoreCriticOrigin };
+    return { stats, effects, runEffects, designPlan, critics, restoreCriticOrigin };
 });

@@ -16,6 +16,13 @@
     function ruleSetIds(city) {
         return root.CityConfigManager?.getCityConfig(city)?.planning?.ruleSetIds || [];
     }
+    // The city's rule sets as configured, in the order it names them.
+    async function ruleSets(city) {
+        const ids = ruleSetIds(city);
+        if (!ids.length) return [];
+        const settings = await config();
+        return ids.map(id => (settings.ruleSets || []).find(ruleSet => ruleSet.id === id)).filter(Boolean);
+    }
     // The constraint reads for a box: [{ ruleSet, source, areas, partial }], or null when the city
     // has no rule set. `effects` limits the datasets (the map reads only what cuts the envelope).
     async function load(city, bbox, { effects = null } = {}) {
@@ -53,5 +60,5 @@
         const ids = ruleSetIds(city);
         return ids.length ? root.PlanningApplicationPreview.targetFor(await config(), ids) : null;
     }
-    root.PlanningRestrictionFeed = { load, membership, resolve, ruleSetIds, submissionTarget };
+    root.PlanningRestrictionFeed = { load, membership, resolve, ruleSetIds, ruleSets, submissionTarget };
 })(window);

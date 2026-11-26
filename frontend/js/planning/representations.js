@@ -38,7 +38,9 @@
         const height = finite(building.z_min) && finite(building.z_max) && building.z_max > building.z_min
             ? building.z_max - building.z_min : null;
         return { type: 'Feature', geometry: building.floorModel?.footprint || null,
-            properties: { ...building.properties, object_id: building.object_id, height_m: height } };
+            properties: { ...building.properties, object_id: building.object_id, height_m: height,
+                // An extrusion's basis (footprint-provider.js): an `estimated` height is a display default.
+                ...(building.height_source ? { height_source: building.height_source } : {}) } };
     }
     function proposed(proposal, { key, city, applied = false } = {}) {
         if (!proposal || !key) return null;

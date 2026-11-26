@@ -1,0 +1,285 @@
+// The Effects section (frontend/js/planning/effects-advisor.js) and its button on a saved plan's Stats
+// and analysis page (frontend/js/ui/plan-analysis-controls.js effects): what the section says for an
+// assessment, that a superseded design is answered null, and that the plan's buildings reach it.
+import { describe, it, expect, vi } from 'vitest';
+import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
+
+const require = createRequire(import.meta.url);
+const source = readFileSync(new URL('../../frontend/js/planning/effects-advisor.js', import.meta.url), 'utf8');
+const controls = require('../../frontend/js/ui/plan-analysis-controls.js');
+const NeighbourEffects = require('../../frontend/js/planning/neighbour-effects.js');
+
+const element = tag => ({ tag, className: '', textContent: '', children: [], dataset: {}, hidden: false, attributes: {},
+    append(...nodes) { this.children.push(...nodes); }, prepend(node) { this.children.unshift(node); },
+    replaceChildren(...nodes) { this.children = nodes; }, setAttribute(key, value) { this.attributes[key] = value; },
+    removeAttribute(key) { delete this.attributes[key]; },
+    addEventListener(type, handler) { this[`on${type}`] = handler; } });
+const textOf = node => typeof node === 'string' ? node : [node.textContent, ...node.children.map(textOf)].join('');
+const format = { formatPercent: (v, o) => `${Math.round(o?.ofHundred ? v : v * 100)}%`, formatLength: v => `${Math.round(v)} m`,
+    formatNumber: v => String(v), currentLocale: () => 'en-GB' };
+
+function load() {
+    const window = { i18n: { t: (key, params = {}) => `${key}(${Object.values(params).join('|')})` }, CbFormat: format, NeighbourEffects };
+    new Function('window', 'document', source)(window, { createElement: element });
+    return window.NeighbourEffectsAdvisor;
+}
+const GUIDES = { label: 'Test guides', binding: false, garden: { date: '03-21', hours: 2, share: 0.5, ratio: 0.8 },
+    sky: { percent: 27, ratio: 0.8 }, distance: { metres: 21 } };
+const AFFECTED = { status: 'affected', estimated: 2, surveys: ['EA LiDAR'], guides: GUIDES, geometries: new Map(), lots: [
+    { id: 'a', status: 'fail', direction: 'n', distanceM: 4, garden: { before: 0.8, after: 0.3, status: 'fail' },
+        sky: { before: 30, after: 29.9, status: 'same' }, distance: { before: null, after: 12, status: 'fail' } }] };
+
+describe('Effects section', () => {
+    it('lists each affected plot with only its changed readings, and the basis', () => {
+        const advisor = load();
+        const section = element('section');
+        advisor.render(section, AFFECTED);
+        expect(section.dataset.status).toBe('fail');
+        const text = textOf(section);
+        expect(text).toContain('neighbourEffects.plot(neighbourEffects.direction.n()|4 m)');
+        // The guide's numbers and day come from the place's guides.
+        expect(text).toContain('neighbourEffects.garden(2|21 March|80%|30%|50%|0.8)');
+        expect(text).toContain('neighbourEffects.distanceNew(12 m|21 m)');
+        expect(text).not.toContain('neighbourEffects.sky(');
+        expect(text).toContain('neighbourEffects.heightsSurvey(EA LiDAR)');
+        expect(text).toContain('neighbourEffects.estimated(2)');
+        // Grouped, with what the guides mean a click away, and an icon per changed reading.
+        expect(text).toContain('neighbourEffects.groupBeyond(1)');
+        expect(text).not.toContain('neighbourEffects.groupBelow');
+        expect(text).not.toContain('neighbourEffects.groupMinor');
+        expect(text).toContain('neighbourEffects.guidesText(Test guides)');
+        expect(text).toContain('neighbourEffects.guidesAdvice');
+        const icons = [];
+        const walk = node => { if (typeof node !== 'string') { if (node.tag === 'i') icons.push(node.className); node.children.forEach(walk); } };
+        walk(section);
+        expect(icons.filter(name => name.includes('neighbour-effects__icon--fail'))).toEqual(expect.arrayContaining([
+            expect.stringContaining('fa-sun'), expect.stringContaining('fa-left-right')]));
+        expect(icons.some(name => name.includes('fa-cloud') && name.includes('--'))).toBe(false);
+    });
+
+    it("states a window's sunlight over the year with its guide, and which sunshine records weigh it", () => {
+        const advisor = load();
+        const sunlightGuide = { percent: 25, winterPercent: 5, winter: { from: '09-21', to: '03-21' }, ratio: 0.8, lossPercent: 4, facingDeg: 90 };
+        const lot = { id: 'a', status: 'fail', direction: 's', distanceM: 6,
+            sunlight: { before: 60, after: 20, winterBefore: 20, winterAfter: 2, status: 'fail' } };
+        const station = { name: 'Heathrow', period: '1991-2020', source: { name: 'Met Office' } };
+        const result = { ...AFFECTED, lots: [lot], guides: { ...GUIDES, sunlight: sunlightGuide }, sunshine: station };
+        let section = element('section');
+        advisor.render(section, result);
+        let text = textOf(section);
+        expect(text).toContain('neighbourEffects.sunlight(20%|2%|60%|20%|25%|5%)');
+        expect(text).toContain('neighbourEffects.sunshine(Heathrow|1991-2020|Met Office)');
+        // A place no sunshine records cover says that the reading is not taken.
+        section = element('section');
+        advisor.render(section, { ...result, lots: [], status: 'clear', sunshine: null });
+        text = textOf(section);
+        expect(text).toContain('neighbourEffects.noSunshine');
+        expect(text).not.toContain('neighbourEffects.sunshine(');
+    });
+
+    it('offers the no-sky line on demand, then states it with the room and floor, or that no room loses sky', () => {
+        const advisor = load();
+        const guides = { ...GUIDES, noSky: { ratio: 0.8, workingPlaneM: 0.85, rooms: ['living', 'kitchen', 'bedroom'] } };
+        const lot = { id: 'a', status: 'fail', direction: 'n', distanceM: 4, buildingIds: ['h1'], garden: { before: 0.8, after: 0.3, status: 'fail' } };
+        let section = element('section');
+        advisor.render(section, { ...AFFECTED, lots: [lot], guides });
+        let text = textOf(section);
+        expect(text).toContain('neighbourEffects.noSkyPrompt');
+        const buttons = [];
+        const walk = node => { if (typeof node !== 'string') { if (node.tag === 'button' && node.className.includes('neighbour-effects__calculate')) buttons.push(node); node.children.forEach(walk); } };
+        walk(section);
+        expect(buttons.length).toBe(1);
+        expect(typeof buttons[0].onclick).toBe('function');
+        // Measured: a room that loses sky is a reading like the others; none, a line saying so.
+        const measured = { ...lot, noSky: { before: 1, after: 0.3, ratio: 0.8, room: 'living', level: 0, rooms: 4, status: 'fail' } };
+        section = element('section');
+        advisor.render(section, { ...AFFECTED, lots: [measured], guides });
+        text = textOf(section);
+        expect(text).toContain('neighbourEffects.noSky(neighbourEffects.room.living()|threeMode.controls.floorGround()|100%|30%|0.8)');
+        expect(text).not.toContain('neighbourEffects.noSkyPrompt');
+        section = element('section');
+        advisor.render(section, { ...AFFECTED, lots: [{ ...lot, noSky: { status: 'same', rooms: 6, before: 1, after: 1 } }], guides });
+        expect(textOf(section)).toContain('neighbourEffects.noSkySame(6)');
+        // A plot without buildings, or a place without the guide, offers nothing.
+        section = element('section');
+        advisor.render(section, { ...AFFECTED, lots: [{ ...lot, buildingIds: [] }], guides });
+        expect(textOf(section)).not.toContain('neighbourEffects.noSkyPrompt');
+        section = element('section');
+        advisor.render(section, { ...AFFECTED, lots: [lot] });
+        expect(textOf(section)).not.toContain('neighbourEffects.noSkyPrompt');
+    });
+
+    it('shows only the plots where one kind of reading changed when its filter is pressed', () => {
+        const advisor = load();
+        const section = element('section');
+        const skyOnly = { ...AFFECTED.lots[0], id: 'b', status: 'below', garden: null, distance: null, sky: { before: 30, after: 25, status: 'below' } };
+        const result = { ...AFFECTED, lots: [AFFECTED.lots[0], skyOnly] };
+        advisor.render(section, result);
+        const filters = section.children.find(child => child.className === 'neighbour-effects__filters').children;
+        expect(filters.map(textOf)).toEqual(['neighbourEffects.filterAll() (2)', ' neighbourEffects.kind.garden() (1)', ' neighbourEffects.kind.sky() (1)', ' neighbourEffects.kind.distance() (1)']);
+        filters[2].onclick();
+        const text = textOf(section);
+        expect(text).toContain('neighbourEffects.groupBelow(1)');
+        expect(text).not.toContain('neighbourEffects.groupBeyond');
+        // The filter stays when a new result for the same section arrives.
+        advisor.render(section, result);
+        expect(textOf(section)).not.toContain('neighbourEffects.groupBeyond');
+    });
+
+    it('has no section where the place states no guides, and says when guides bind', () => {
+        const advisor = load();
+        const section = element('section');
+        advisor.render(section, { status: 'notApplicable', lots: [] });
+        expect(section.hidden).toBe(true);
+        expect(section.children).toEqual([]);
+        advisor.render(section, { ...AFFECTED, guides: { ...GUIDES, binding: true } });
+        expect(section.hidden).toBe(false);
+        expect(textOf(section)).toContain('neighbourEffects.groupBeyondBinding(1)');
+        expect(textOf(section)).toContain('neighbourEffects.guidesBinding');
+        // Filters only for the readings the guides use.
+        // (A place with only a garden guide has only garden readings.)
+        const gardenOnly = { ...AFFECTED.lots[0], sky: null, distance: null };
+        advisor.render(section, { ...AFFECTED, lots: [gardenOnly], guides: { label: 'Only gardens', garden: GUIDES.garden } }, { kind: null });
+        const filters = section.children.find(child => child.className === 'neighbour-effects__filters').children;
+        expect(filters.map(textOf)).toEqual(['neighbourEffects.filterAll() (1)', ' neighbourEffects.kind.garden() (1)']);
+    });
+
+    it('says when nothing changes, and while measuring', () => {
+        const advisor = load();
+        const section = element('section');
+        advisor.render(section, null);
+        expect(textOf(section)).toContain('neighbourEffects.measuring');
+        // A spinner in the heading while measuring, gone once the result is in.
+        expect(section.children[0].className).toContain('cb-busy');
+        expect(section.attributes['aria-busy']).toBe('true');
+        advisor.render(section, { status: 'clear', lots: [], surveys: [], estimated: 0 });
+        expect(textOf(section)).toContain('neighbourEffects.clear');
+        expect(section.children[0].className).not.toContain('cb-busy');
+        expect(section.attributes['aria-busy']).toBeUndefined();
+        expect(section.hidden).toBe(false);
+        advisor.render(section, { status: 'none', lots: [] });
+        expect(textOf(section)).toContain('neighbourEffects.noBuildings');
+        expect(section.hidden).toBe(false);
+    });
+});
+
+describe('Plots in the list point at the map', () => {
+    // A geoJSON layer stand-in: one path per feature, its element's classes and the view it pans.
+    function withMap(advisor, window) {
+        const paths = [];
+        window.L = { geoJSON: data => ({
+            addTo() { return this; }, remove() {},
+            eachLayer(visit) {
+                for (const feature of data.features) {
+                    const classes = new Set(), handlers = {};
+                    const path = { feature, handlers, on: (type, handler) => { handlers[type] = handler; }, bringToFront: vi.fn(), getBounds: () => ({ getCenter: () => feature.properties.id }),
+                        getElement: () => ({ classList: { toggle: (name, on) => (on ? classes.add(name) : classes.delete(name)), contains: name => classes.has(name) } }) };
+                    path.lit = () => classes.has('neighbour-effect--focus');
+                    paths.push(path);
+                    visit(path);
+                }
+            } }),
+            // The pointed-at plot's readings: each drawn layer kept with its kind and class.
+            polyline: (latLngs, options) => ({ type: 'polyline', latLngs, options }),
+            polygon: (latLngs, options) => ({ type: 'polygon', latLngs, options }),
+            circleMarker: (latLng, options) => ({ type: 'circleMarker', latLngs: [latLng], options }),
+            layerGroup: layers => ({ layers, shown: false, addTo() { this.shown = true; drawn.push(this); return this; }, remove() { this.shown = false; } }) };
+        const drawn = [];
+        const map = { panTo: vi.fn(), getBounds: () => ({ contains: () => false }) };
+        return { paths, map, drawn };
+    }
+    function loadWithWindow() {
+        const window = { i18n: { t: (key, params = {}) => `${key}(${Object.values(params).join('|')})` }, CbFormat: format, NeighbourEffects };
+        new Function('window', 'document', source)(window, { createElement: element });
+        return { advisor: window.NeighbourEffectsAdvisor, window };
+    }
+    const TWO = { ...AFFECTED, geometries: new Map([['a', { type: 'Polygon' }], ['b', { type: 'Polygon' }]]),
+        lots: [AFFECTED.lots[0], { ...AFFECTED.lots[0], id: 'b', direction: 's' }] };
+
+    it('highlights a plot while its name is hovered, and keeps it on a click', () => {
+        const { advisor, window } = loadWithWindow();
+        const { paths, map } = withMap(advisor, window);
+        const section = element('section');
+        section.querySelectorAll = () => names;
+        advisor.render(section, TWO);
+        advisor.show(map, TWO);
+        const items = section.children.find(child => child.tag === 'ul').children;
+        const names = items.map(item => item.children[0]);
+        expect(names.map(name => name.tag)).toEqual(['button', 'button']);
+        const [a, b] = paths;
+        names[1].onmouseenter();
+        expect(b.lit()).toBe(true);
+        expect(a.lit()).toBe(false);
+        // The 3D view reads the same plots, the pointed-at one marked.
+        expect(advisor.plots().map(plot => [plot.id, plot.focus])).toEqual([['a', false], ['b', true]]);
+        names[1].onmouseleave();
+        expect(b.lit()).toBe(false);
+        names[0].onclick();
+        names[0].onmouseleave();
+        expect(a.lit()).toBe(true);
+        expect(names[0].attributes['aria-pressed']).toBe('true');
+        expect(map.panTo).toHaveBeenCalledWith('a');
+        names[0].onclick();
+        expect(a.lit()).toBe(false);
+        expect(advisor.plots().some(plot => plot.focus)).toBe(false);
+        // A click on the plot on the map selects it in the list too.
+        b.handlers.click();
+        expect(b.lit()).toBe(true);
+        expect(names[1].attributes['aria-pressed']).toBe('true');
+        expect(names[0].attributes['aria-pressed']).toBe('false');
+        advisor.clear();
+        expect(advisor.plots()).toEqual([]);
+    });
+
+    it("draws the pointed-at plot's readings on the map and hands them to the 3D view", () => {
+        const { advisor, window } = loadWithWindow();
+        const { map, drawn } = withMap(advisor, window);
+        const marks = [{ type: 'point', role: 'window', points: [[1, 2, 1.6]] }, { type: 'plane', role: 'guide', points: [[1, 2, 1.6], [3, 2, 1.6], [3, 4, 5], [1, 4, 5]] },
+            { type: 'line', role: 'measured', points: [[1, 2, 1.6], [1, 3, 30]] }];
+        const lot = { ...AFFECTED.lots[0], angle: { before: 0, after: 40, degrees: 25, status: 'screen', marks },
+            garden: { ...AFFECTED.lots[0].garden, marks: [{ type: 'points', role: 'lost', points: [[5, 6, 0.15], [7, 8, 0.15]] }] } };
+        const result = { ...AFFECTED, guides: { ...GUIDES, angle: { degrees: 25, then: 'sky' } }, geometries: new Map([['a', { type: 'Polygon' }]]), lots: [lot] };
+        const section = element('section');
+        advisor.render(section, result);
+        advisor.show(map, result);
+        // Nothing drawn until a plot is pointed at.
+        expect(drawn.filter(group => group.shown)).toEqual([]);
+        expect(advisor.plots()[0].marks).toEqual([]);
+        advisor.highlight('a', true);
+        const [group] = drawn.filter(each => each.shown);
+        expect(group.layers.map(layer => layer.type)).toEqual(['circleMarker', 'circleMarker', 'circleMarker', 'polygon', 'polyline']);
+        // Leaflet takes [lat, lng]; the crossed first check in its own colour, the guide dashed by class.
+        expect(group.layers[3].latLngs[0]).toEqual([2, 1]);
+        expect(group.layers[3].options.className).toContain('neighbour-effect-mark--guide');
+        expect(group.layers[3].options.className).toContain('neighbour-effect--screen');
+        expect(group.layers[0].options.className).toContain('neighbour-effect--fail');
+        // The 3D view gets the same drawings, each with its reading's kind and status.
+        expect(advisor.plots()[0].marks.map(mark => `${mark.kind}:${mark.role}:${mark.status}`))
+            .toEqual(['garden:lost:fail', 'angle:window:screen', 'angle:guide:screen', 'angle:measured:screen']);
+        advisor.highlight('a', false);
+        expect(drawn.filter(each => each.shown)).toEqual([]);
+        // The angle line says which reading decides.
+        expect(textOf(section)).toContain('neighbourEffects.screen(neighbourEffects.kind.sky())');
+    });
+});
+
+describe('Effects on a saved plan', () => {
+    it("assesses the plan's new buildings and shows the result in the section and on the map", async () => {
+        const records = [{ proposalId: 'p1' }];
+        const buildings = [{ id: 'p1#0', footprint: {}, heightM: 20 }];
+        const advisor = { render: vi.fn(), show: vi.fn(), assess: vi.fn((design, answer) => answer(AFFECTED)) };
+        const win = { i18n: { t: key => key }, map: { id: 'map' }, NeighbourEffectsAdvisor: advisor,
+            BusyControl: { isBusy: () => false, track: (_el, run) => run() }, showStyledAlert: vi.fn(),
+            PlanAnalysis: { prepare: vi.fn(async () => ({ records })) },
+            __planDecision: { permittedBuildings: vi.fn(() => buildings) } };
+        const wrapper = controls.effects(win, { createElement: element }, async () => ({ cid: 'plan' }));
+        const [button, section] = wrapper.children;
+        button.onclick();
+        await vi.waitFor(() => expect(advisor.show).toHaveBeenCalled());
+        expect(win.__planDecision.permittedBuildings).toHaveBeenCalledWith(records);
+        expect(advisor.assess.mock.calls[0][0]).toEqual({ buildings });
+        expect(advisor.render).toHaveBeenLastCalledWith(section, AFFECTED);
+        expect(advisor.show).toHaveBeenCalledWith(win.map, AFFECTED);
+    });
+});

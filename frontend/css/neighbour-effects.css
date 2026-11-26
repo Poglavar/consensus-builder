@@ -1,0 +1,69 @@
+/* Effects on neighbours (js/planning/effects-advisor.js): the editor sheet's section listing the
+   neighbouring plots a design takes sunlight, sky or distance from, and those plots on the map. */
+/* A neutral surface, so the red, orange and green of each plot read on it; only the left edge says
+   the worst: red when a plot is beyond a guide. */
+.neighbour-effects {
+    margin-top: var(--cb-space-2);
+    padding: var(--cb-space-2);
+    border-radius: var(--cb-radius-sm);
+    border-left: 3px solid var(--cb-success);
+    background: var(--cb-surface-2);
+    color: var(--cb-text-strong);
+    font-size: var(--cb-text-sm);
+}
+.neighbour-effects[hidden] { display: none; }
+.neighbour-effects:is([data-status="affected"], [data-status="unavailable"], [data-status="measuring"]) { border-left-color: var(--cb-warning); }
+.neighbour-effects[data-status="fail"] { border-left-color: var(--cb-danger); }
+.neighbour-effects .cb-kicker { margin: 0; }
+.neighbour-effects__headline { margin: var(--cb-space-1) 0 0; font-weight: 600; }
+.neighbour-effects__plots { margin: var(--cb-space-1) 0 0; padding-left: var(--cb-space-3); }
+.neighbour-effects__plot { margin: 0 0 var(--cb-space-1); }
+/* A plot's name points at it on the map (hover, focus, click to keep it highlighted). */
+.neighbour-effects__name { font-weight: 600; text-align: start; color: inherit; }
+.neighbour-effects__name[aria-pressed="true"] { outline: 2px solid currentColor; outline-offset: 2px; border-radius: var(--cb-radius-sm); }
+.neighbour-effects__readings { margin: 0; padding-left: var(--cb-space-3); }
+.neighbour-effects__reading--fail { font-weight: 600; }
+/* Filter buttons: all plots, or one kind of reading. */
+.neighbour-effects__filters { display: flex; flex-wrap: wrap; gap: var(--cb-space-1); margin: var(--cb-space-1) 0 0; }
+.neighbour-effects__filter[aria-pressed="true"] { outline: 2px solid currentColor; outline-offset: 1px; }
+/* The three groups: beyond a guide (red), below a guide's level within its allowance (orange),
+   minor losses that still meet the guides (green). */
+.neighbour-effects__group { margin: var(--cb-space-2) 0 0; font-size: var(--cb-text-sm); font-weight: 600; }
+.neighbour-effects__group--beyond { color: var(--cb-danger); }
+.neighbour-effects__group--below { color: var(--cb-warning); }
+.neighbour-effects__group--minor { color: var(--cb-success); }
+/* A plot pointed at on the map. */
+.neighbour-effects__plot.is-pointed { outline: 2px solid currentColor; outline-offset: 2px; border-radius: var(--cb-radius-sm); }
+/* One icon per kind of reading (sun: garden sunlight, cloud: sky, arrows: facing distance), red
+   beyond a guide and amber within the guides. */
+.neighbour-effects__badges { display: inline-flex; gap: var(--cb-space-1); }
+.neighbour-effects__icon { width: 1.1em; text-align: center; }
+.neighbour-effects__icon--fail { color: var(--cb-danger); }
+.neighbour-effects__icon--below { color: var(--cb-warning); }
+.neighbour-effects__icon--minor { color: var(--cb-success); }
+/* A crossed first check: its detailed reading decides, so it is information, not a grade. */
+.neighbour-effects__icon--screen { color: var(--cb-info); }
+.neighbour-effects__guides { margin: var(--cb-space-2) 0 0; font-size: var(--cb-text-xs); }
+.neighbour-effects__guides summary { cursor: pointer; font-weight: 600; }
+.neighbour-effects__guides p { margin: var(--cb-space-1) 0 0; }
+.neighbour-effects__basis { margin: var(--cb-space-1) 0 0; opacity: 0.8; font-size: var(--cb-text-xs); }
+
+/* The affected plots on the map: red beyond a guide, orange below a guide's level, green minor. */
+.neighbour-effect { stroke-width: 2px; fill-opacity: 0.25; }
+.neighbour-effect--fail { stroke: var(--cb-danger); fill: var(--cb-danger); }
+.neighbour-effect--below { stroke: var(--cb-warning); fill: var(--cb-warning); }
+.neighbour-effect--minor { stroke: var(--cb-success); fill: var(--cb-success); }
+.neighbour-effect--focus { stroke-width: 5px; fill-opacity: 0.6; }
+.neighbour-effect--screen { stroke: var(--cb-info); fill: var(--cb-info); }
+
+/* The pointed-at plot's readings drawn (effects-advisor.js drawMarks): the guide's lines dashed,
+   its planes as a light trace, what the design does solid, windows and lost garden sun as dots. */
+.neighbour-effect-mark { stroke-width: 2px; fill-opacity: 0; }
+.neighbour-effect-mark--guide { stroke-dasharray: 6 4; }
+.neighbour-effect-mark--plane { fill-opacity: 0.15; }
+.neighbour-effect-mark--measured { stroke-width: 3px; }
+.neighbour-effect-mark--window { stroke: var(--cb-map-highlight-ink); stroke-width: 2px; fill: var(--cb-map-highlight); fill-opacity: 1; }
+.neighbour-effect-mark--lost { stroke-width: 0; fill-opacity: 0.85; }
+
+/* The Effects button and section on a plan or design card (js/ui/plan-analysis-controls.js effects). */
+.plan-effects { margin-top: var(--cb-space-2); }

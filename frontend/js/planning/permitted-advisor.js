@@ -103,7 +103,24 @@
         try { streets = await streetsByParcel.get(parcel.id); }
         catch (error) { console.error(`[${new Date().toISOString()}] [permitted-check] Streets could not be read; street terms stay unknown`, error); }
         const setting = root.PlanningStreetWidth.streetSetting({ parcel, streets, parcels: lots, buildings: pool, turf });
-        return root.PlanningRuleTerms.existingContext({ parcel, buildings: pool.filter(inside), street: setting.street, neighbours: setting.neighbours, geometryOps: turf });
+        const [buildings, neighbours] = await measuredHeights(pool.filter(inside), setting.neighbours);
+        return root.PlanningRuleTerms.existingContext({ parcel, buildings, street: setting.street, neighbours, geometryOps: turf });
+    }
+    // The parcel's buildings and its neighbours with the heights a height survey measures in place of
+    // their source's (buildings/height-survey-client.js), in one request window. Where a survey gives
+    // none, each keeps its source's height. Always the best measure available: Built → Heights changes
+    // only what the map and 3D view show, never a rule result (and agents measure the same way).
+    async function measuredHeights(buildings, neighbours) {
+        const client = root.HeightSurveyClient, idOf = record => root.buildingPoolFeatureKey?.(record) || record.id;
+        if (!client) return [buildings, neighbours];
+        const own = buildings.length, all = [...buildings, ...(neighbours || [])];
+        try {
+            const filled = await client.fillHeights(all, { idOf });
+            return [filled.slice(0, own), neighbours ? filled.slice(own) : neighbours];
+        } catch (error) {
+            console.error(`[${new Date().toISOString()}] [permitted-check] Building heights could not be measured; they stay unknown`, error);
+            return [buildings, neighbours];
+        }
     }
     const statesTerms = items => items.some(item => (item.constraints || []).some(constraint => constraint.term || constraint.when));
     let generation = 0;
@@ -137,7 +154,12 @@
         if (!loaded || !isCurrent()) return null;
         const result = root.PermittedCheck.check({ ...design, items: loaded.items, restrictions: loaded.restrictions,
             restrictionsPartial: loaded.partial, baseRule: loaded.baseRule, context, geometryOps: root.turf });
-        return { ...result, source: loaded.source };
+        return { ...result, source: loaded.source, heightSurveys: heightSurveysOf(context) };
+    }
+    // The height surveys whose measurements the existing context stands on, by name.
+    function heightSurveysOf(context) {
+        const records = [...(context?.buildings || []), ...(context?.neighbours || [])];
+        return [...new Set(records.map(record => record.survey?.name).filter(Boolean))];
     }
     // The person-readable lines, literal keys so the locale coverage test sees each one.
     const LINE_KEYS = {
@@ -254,6 +276,7 @@
         }
         if (list.children.length) container.append(list);
         if (result.source?.label) container.append(element('p', 'permitted-check__source', root.i18n.t('permittedCheck.source', { source: result.source.label })));
+        if (result.heightSurveys?.length) container.append(element('p', 'permitted-check__source', root.i18n.t('permittedCheck.heightsSource', { source: result.heightSurveys.join(', ') })));
     }
     root.PermittedAdvisor = { check, checkPlan, render, restrictionText, restrictionItem, existingContextFor };
 })(window);

@@ -237,7 +237,7 @@ describe('the sun in the scene', () => {
 
     function attach() {
         return threeSun.attach({
-            THREE: { PCFShadowMap: 1, SRGBColorSpace: THREE.SRGBColorSpace }, scene, renderer, light, hemi,
+            THREE: { PCFShadowMap: 1, SRGBColorSpace: THREE.SRGBColorSpace, DirectionalLight: THREE.DirectionalLight, Group: THREE.Group }, scene, renderer, light, hemi,
             getOrigin: () => origin, getK: () => 1 / Math.cos(ZAGREB.lat * DEG),
             getCamera: () => camera, getTarget: () => target,
             isPhotoActive: () => photo, invalidate: () => { invalidations++; }, excludedRoots: () => [],
@@ -311,7 +311,7 @@ describe('the sun in the scene', () => {
         threeSun.state.minutes = 600;
         let awake = true;
         handle = threeSun.attach({
-            THREE: { PCFShadowMap: 1, SRGBColorSpace: THREE.SRGBColorSpace }, scene, renderer, light, hemi,
+            THREE: { PCFShadowMap: 1, SRGBColorSpace: THREE.SRGBColorSpace, DirectionalLight: THREE.DirectionalLight, Group: THREE.Group }, scene, renderer, light, hemi,
             getOrigin: () => origin, getK: () => 1 / Math.cos(ZAGREB.lat * DEG),
             getCamera: () => camera, getTarget: () => target,
             isPhotoActive: () => photo, isAwake: () => awake, invalidate: () => { invalidations++; }, excludedRoots: () => [],

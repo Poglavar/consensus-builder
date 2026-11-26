@@ -204,11 +204,7 @@
             return row.local || { ...win.DesignSync.localDesignFromRow(await win.DesignSync.fetchDesign(row.key), { apiBase: win.DesignSync.apiBase() }), proposalId: row.key };
         }
         // A design as Compare designs measures it: its one-member plan, placed at its site.
-        function designPlan(record) {
-            const site = win.__siteBinding.siteOf(record);
-            const [lng, lat] = win.turf.centroid(site.type === 'Feature' ? site : win.turf.feature(site)).geometry.coordinates;
-            return win.PlanComposition.ofDesign(record, [lat, lng]);
-        }
+        const designPlan = record => analysis.designPlan(win, record);
         async function planOf(row) {
             const plan = row.record.content ? row.record : await win.NamedPlans.fetchPlan(row.key);
             return row.published ? { ...plan, published: true } : plan;
@@ -614,6 +610,9 @@
                     trash.setAttribute('aria-label', label); trash.title = label; actions.append(trash);
                 }
                 item.append(actions);
+                // Effects on neighbours: a plan's new buildings, or a design's as its one-member plan.
+                if (kind === 'plans') item.append(analysis.effects(win, doc, () => planOf(row)));
+                if (kind === 'designs') item.append(analysis.effects(win, doc, async () => designPlan(await designRecord(row))));
                 if (kind === 'plans') {
                     // A refresh can replace the card before the native details toggle event runs.
                     const open = cached?.item.querySelector('.lists-critics')?.open ?? state.openCritics.has(row.key);

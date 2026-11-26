@@ -21,13 +21,14 @@
     function buildingHeight(record) {
         const props = record?.properties || record || {};
         let source = props.height_source ?? props.heightSource ?? null;
-        let value = finite(props.heightM) ? props.heightM : finite(props.height) ? props.height : null;
+        let value = finite(props.heightM) ? props.heightM : finite(props.height) ? props.height : finite(props.height_m) ? props.height_m : null;
         if (!source && ('height_m' in props || 'floors' in props)) {
             const resolved = extrusion().resolveBuildingHeight({ id: String(record?.id ?? props.id ?? ''), heightM: props.height_m, levels: props.floors });
             source = resolved.source; value = resolved.heightM;
         }
         const known = KNOWN_HEIGHT_SOURCES.includes(source) && finite(value) && value > 0;
-        return { heightM: known ? value : null, known, source: source || 'missing' };
+        // A height a height survey measured names that survey (buildings/height-survey.js).
+        return { heightM: known ? value : null, known, source: source || 'missing', ...(known && props.height_survey ? { survey: props.height_survey } : {}) };
     }
     const maxOf = values => values.reduce((a, b) => Math.max(a, b), -Infinity);
     function quantile(values, q) {

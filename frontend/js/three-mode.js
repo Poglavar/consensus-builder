@@ -1895,6 +1895,97 @@
         invalidateThreeView();
     }
 
+    // Effects on neighbours (planning/effects-advisor.js): the affected plots outlined on the ground
+    // in the 2D map's red (beyond a guide), orange (below a guide's level) and green (minor), from
+    // the palette's tokens;
+    // the plot the list points at in a wider line, with its readings drawn (its marks): each guide's
+    // lines dashed and planes translucent, what the design does to them in solid lines, windows as
+    // markers and the garden's lost sun as dots.
+    let neighbourEffectsGroup = null;
+    function syncNeighbourEffects3D() {
+        // The design's shadow stands out while the editor shows Effects on neighbours.
+        window.__threeSun?.emphasise?.(!!window.NeighbourEffectsAdvisor?.isOpen?.());
+        if (neighbourEffectsGroup) {
+            clearGroupChildren(neighbourEffectsGroup);
+            neighbourEffectsGroup.removeFromParent();
+            neighbourEffectsGroup = null;
+            invalidateThreeView();
+        }
+        const plots = window.NeighbourEffectsAdvisor?.plots?.() || [];
+        if (!isActive || !scene || !plots.length) return;
+        const style = getComputedStyle(document.documentElement);
+        const colours = { fail: style.getPropertyValue('--cb-danger').trim(), below: style.getPropertyValue('--cb-warning').trim(),
+            minor: style.getPropertyValue('--cb-success').trim(), screen: style.getPropertyValue('--cb-info').trim(),
+            window: style.getPropertyValue('--cb-map-highlight').trim() };
+        neighbourEffectsGroup = new THREE.Group();
+        neighbourEffectsGroup.name = 'neighbour-effects';
+        const temporaryMaterial = new THREE.LineBasicMaterial();
+        for (const plot of plots) {
+            const segments = [];
+            for (const line of polygonFeatureToBorderLines({ type: 'Feature', geometry: plot.geometry }, temporaryMaterial, 0.5)) {
+                const positions = line.geometry.attributes.position;
+                for (let i = 0; i < positions.count; i++) {
+                    const next = (i + 1) % positions.count;
+                    segments.push(positions.getX(i), positions.getY(i), positions.getZ(i), positions.getX(next), positions.getY(next), positions.getZ(next));
+                }
+                line.geometry.dispose();
+            }
+            if (!segments.length) continue;
+            const geometry = new THREE.LineSegmentsGeometry();
+            geometry.setPositions(segments);
+            const material = new THREE.LineMaterial({ color: new THREE.Color(colours[plot.status] || colours.below), linewidth: plot.focus ? 6 : 2.5,
+                transparent: true, opacity: plot.focus ? 1 : 0.85, depthTest: false, depthWrite: false, toneMapped: false });
+            const outline = new THREE.LineSegments2(geometry, material);
+            markOwnedGeometry(outline, geometry);
+            markOwnedMaterial(outline, material);
+            outline.userData.neighbourEffect = { id: plot.id, status: plot.status, focus: plot.focus };
+            outline.renderOrder = plot.focus ? 9996 : 9995;
+            outline.raycast = () => {};
+            neighbourEffectsGroup.add(outline);
+            for (const mark of plot.marks || []) addNeighbourEffectMark(mark, colours);
+        }
+        temporaryMaterial.dispose();
+        scene.add(neighbourEffectsGroup);
+        invalidateThreeView();
+    }
+    function addNeighbourEffectMark(mark, colours) {
+        const colour = new THREE.Color(colours[mark.status] || colours.below);
+        const at = ([lng, lat, z]) => { const [x, y] = coordsToXY([lng, lat]); return [x, y, z]; };
+        const points = mark.points.map(at);
+        let object;
+        if (mark.type === 'line') {
+            const geometry = new THREE.LineSegmentsGeometry();
+            geometry.setPositions(points.slice(1).flatMap((point, i) => [...points[i], ...point]));
+            const guide = mark.role === 'guide';
+            const material = new THREE.LineMaterial({ color: colour, linewidth: guide ? 2.5 : 4, dashed: guide, dashSize: 0.8, gapSize: 0.5,
+                transparent: true, depthTest: false, depthWrite: false, toneMapped: false });
+            object = new THREE.LineSegments2(geometry, material);
+            if (guide) object.computeLineDistances();
+        } else if (mark.type === 'plane') {
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(points.flat(), 3));
+            geometry.setIndex([0, 1, 2, 0, 2, 3]);
+            object = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: colour, transparent: true, opacity: 0.18,
+                side: THREE.DoubleSide, depthWrite: false, toneMapped: false }));
+        } else if (mark.role === 'window') {
+            object = new THREE.Mesh(new THREE.SphereGeometry(0.8, 12, 8), new THREE.MeshBasicMaterial({ color: new THREE.Color(colours.window),
+                depthTest: false, depthWrite: false, toneMapped: false }));
+            object.position.set(...points[0]);
+        } else {
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(points.flat(), 3));
+            object = new THREE.Points(geometry, new THREE.PointsMaterial({ color: colour, size: 6, sizeAttenuation: false,
+                depthWrite: false, toneMapped: false }));
+        }
+        markOwnedGeometry(object, object.geometry);
+        markOwnedMaterial(object, object.material);
+        object.userData.neighbourEffectMark = { kind: mark.kind, role: mark.role, type: mark.type };
+        object.renderOrder = 9997;
+        object.raycast = () => {};
+        neighbourEffectsGroup.add(object);
+    }
+    window.addEventListener('neighbourEffectsChanged', syncNeighbourEffects3D);
+
     function appendMapActions(body, select) {
         const actions = document.createElement('button');
         actions.type = 'button';
@@ -2977,6 +3068,8 @@
                 meshes = prepareProceduralFacadeMeshes(meshes, feature, height, floorHeight, metresPerUnit, city, true);
             } catch (_) { /* Keep the basic 3D preview if optional facade setup fails. */ }
         }
+        // The design's own buildings: their shadow stands out while Effects on neighbours is shown.
+        if (style === 'draft' && kind === 'buildings') meshes.forEach(mesh => { mesh.userData.designShadow = true; });
         meshes
             .forEach(mesh => { markOwnedMaterial(mesh, fill); mesh.renderOrder = style === 'source' ? 9100 : 9200; target.add(mesh); });
         polygonFeatureToBorderLines(feature, line, Math.max(0.5, height + 0.5))
@@ -6551,6 +6644,7 @@
                             const facts = inspectionFeature?.properties || {};
                             tagBuildingStoreys(mesh, { use: facts.use ?? bld.use },
                                 { floors: facts.floors ?? bld.floors, heightM: building3DHeightMeters(bld) });
+                            scaleToChosenHeight(mesh, bld);
                             targetGroup.add(mesh);
                         };
                         const carve = carving.carveOf(threeBuildingKey(bld), () => buildingFootprintPolygon(bld)?.geometry || null);
@@ -6994,6 +7088,116 @@
 
     // Sources and height evidence for the current set of nearby building models.
     let nearbyBuildingsProvenance = null;
+
+    // --- Heights from a height survey (buildings/height-survey-client.js) ---
+    // An extruded block (a record with `height_source`: footprint × height, not a city model's own
+    // roofs) shows the height chosen under Built → Heights: the survey's measurement where it has one,
+    // else its source's. A block's mesh keeps its source geometry and shows the chosen height as its
+    // vertical scale, so rebuilding a scene never needs the survey again. Answers arrive window by
+    // window, nearest the view's centre first, and the blocks grow to them (buildings/height-growth.js).
+    const surveyedHeights = new Map();
+    const heightSurveyAsked = new Set();
+    const heightGrowth = window.HeightGrowth.create();
+    let heightGrowthFrame = null, heightGrowthCentre = null, heightSurveyRun = null;
+    let lastHeightsMode = heightsMode();
+    function heightsMode() { return window.PlanningViews?.getState?.()?.existingHeights || 'survey'; }
+    function chosenHeight(key, sourceM) {
+        return window.HeightGrowth.targetHeight({ sourceM, measuredM: surveyedHeights.get(key), mode: heightsMode() });
+    }
+    function scaleToChosenHeight(mesh, bld) {
+        if (!bld?.height_source) return;
+        const builtM = building3DHeightMeters(bld);
+        if (!(builtM > 0)) return;
+        const key = threeBuildingKey(bld);
+        mesh.userData.heightKey = key;
+        mesh.userData.builtHeightM = builtM;
+        mesh.scale.z = (heightGrowth.heightOf(key, performance.now()) ?? chosenHeight(key, builtM)) / builtM;
+    }
+    // Metres from the growth's centre to a mesh's footprint: the ripple's delay.
+    function growthDistanceM(mesh) {
+        const at = mesh.userData.footprintLatLng, centre = heightGrowthCentre;
+        if (!at || !centre) return 0;
+        return Math.hypot((at[0] - centre[0]) * 111320 * Math.cos(centre[1] * Math.PI / 180), (at[1] - centre[1]) * 110540);
+    }
+    // Blocks (`keys`, or every block) ease to their chosen heights, nearer ones first.
+    function growBuildingsTo(keys = null) {
+        if (!existingBuildingsGroup) return;
+        const now = performance.now(), seen = new Set();
+        existingBuildingsGroup.traverse(node => {
+            const key = node.userData?.heightKey;
+            if (!key || seen.has(key) || (keys && !keys.has(key))) return;
+            seen.add(key);
+            const builtM = node.userData.builtHeightM;
+            heightGrowth.grow(key, node.scale.z * builtM, chosenHeight(key, builtM), window.__reducedMotion ? 0 : growthDistanceM(node), window.__reducedMotion ? now - 1e6 : now);
+        });
+        if (!heightGrowthFrame) heightGrowthFrame = requestAnimationFrame(stepHeightGrowth);
+    }
+    function stepHeightGrowth() {
+        heightGrowthFrame = null;
+        if (!existingBuildingsGroup) return;
+        const heights = heightGrowth.step(performance.now());
+        if (heights.size) {
+            existingBuildingsGroup.traverse(node => {
+                const key = node.userData?.heightKey;
+                if (key && heights.has(key)) node.scale.z = heights.get(key) / node.userData.builtHeightM;
+            });
+            invalidateThreeView();
+        }
+        if (heightGrowth.active) heightGrowthFrame = requestAnimationFrame(stepHeightGrowth);
+    }
+    // Measures the shown blocks the survey has not answered for yet, nearest the camera's target first.
+    function measureSceneHeights() {
+        const client = window.HeightSurveyClient;
+        if (!client?.usesSurvey() || !Array.isArray(nearbyProposalBuildings)) return;
+        const view = getGeoCameraView();
+        heightGrowthCentre = view ? [view.targetLng, view.targetLat] : heightGrowthCentre;
+        const observed = new Map((window.buildingFeaturePool || []).map(feature => [String(window.buildingPoolFeatureKey(feature)), feature]));
+        const asks = [];
+        for (const bld of nearbyProposalBuildings) {
+            if (!bld.height_source) continue;
+            const key = threeBuildingKey(bld);
+            if (heightSurveyAsked.has(key)) continue;
+            // The 2D footprint where the pool has it; the hull of the block's faces otherwise.
+            const geometry = observed.get(key)?.geometry || buildingFootprintPolygon(bld)?.geometry;
+            if (!geometry || !client.surveyFor({ geometry })) continue;
+            heightSurveyAsked.add(key);
+            asks.push({ id: key, geometry });
+        }
+        if (!asks.length) return;
+        const survey = client.surveyFor(asks[0]);
+        const run = heightSurveyRun = { survey, asked: asks.length, answered: 0, started: performance.now() };
+        updateBuildingsSourceNote();
+        client.measureAround(asks, {
+            around: heightGrowthCentre,
+            onWindow: results => {
+                const changed = new Set();
+                for (const [key, result] of results) {
+                    if (typeof result?.heightM === 'number' && Number.isFinite(result.heightM)) { surveyedHeights.set(key, result.heightM); changed.add(key); }
+                    // A survey that did not answer is asked again the next time the scene loads.
+                    else if (result?.rejection === 'survey-unavailable') heightSurveyAsked.delete(key);
+                }
+                run.answered += results.size;
+                if (changed.size && client.usesSurvey()) growBuildingsTo(changed);
+                if (heightSurveyRun === run) updateBuildingsSourceNote();
+            }
+        }).then(() => {
+            console.log(`[${new Date().toISOString()}] [3D] Height survey answered for ${run.asked} blocks in ${Math.round(performance.now() - run.started)} ms`);
+        }).catch(error => {
+            asks.forEach(ask => heightSurveyAsked.delete(ask.id));
+            console.warn(`[${new Date().toISOString()}] [3D] Building heights could not be measured`, error);
+        });
+    }
+    // Built → Heights changed: the blocks grow or shrink to the newly chosen heights.
+    window.addEventListener('planningviewchange', () => {
+        const mode = heightsMode();
+        if (mode === lastHeightsMode) return;
+        lastHeightsMode = mode;
+        const view = getGeoCameraView();
+        if (view) heightGrowthCentre = [view.targetLng, view.targetLat];
+        growBuildingsTo();
+        if (mode === 'survey') measureSceneHeights();
+        updateBuildingsSourceNote();
+    });
     let buildingsSourceNoteEl = null;
 
     function updateBuildingsSourceNote() {
@@ -7004,11 +7208,19 @@
             buildingsSourceNoteEl.hidden = true;
             return;
         }
-        const heights = info.heights || { measured: 0, levels: 0, estimated: 0 };
+        const heights = { ...(info.heights || { measured: 0, levels: 0, estimated: 0 }) };
         const total = heights.measured + heights.levels + heights.estimated;
         const parts = info.sources.map(id => id === 'osm'
             ? threeI18n('threeMode.buildingsSource.osm', 'OpenStreetMap buildings')
             : (info.sourceNames.get(id) || id));
+        const run = heightsMode() === 'survey' ? heightSurveyRun : null;
+        const surveyed = run ? (nearbyProposalBuildings || []).filter(bld => bld.height_source && surveyedHeights.has(threeBuildingKey(bld))) : [];
+        if (run && run.answered < run.asked) {
+            parts.push(threeI18n('threeMode.buildingsSource.surveying', 'measuring heights: {{done}} of {{total}}', { done: run.answered, total: run.asked }));
+        } else if (surveyed.length) {
+            parts.push(threeI18n('threeMode.buildingsSource.surveyed', '{{count}} of {{total}} heights measured', { count: surveyed.length, total }));
+            heights.estimated -= surveyed.filter(bld => bld.height_source === 'estimated').length;
+        }
         if (heights.estimated > 0) {
             parts.push(threeI18n('threeMode.buildingsSource.estimated', '{{count}} of {{total}} heights estimated',
                 { count: heights.estimated, total }).replace('{{count}}', heights.estimated).replace('{{total}}', total));
@@ -7019,6 +7231,15 @@
             const credit = document.createElement('a');
             credit.href = 'https://github.com/zhu-xlab/GlobalBuildingAtlas';
             credit.textContent = 'GlobalBuildingAtlas (CC BY-NC 4.0)';
+            buildingsSourceNoteEl.append(' · ', credit);
+        }
+        // The survey's attribution its licence asks for, linked to the dataset.
+        if (run?.survey && (surveyed.length || run.answered < run.asked)) {
+            const credit = document.createElement('a');
+            credit.href = run.survey.url;
+            credit.target = '_blank'; credit.rel = 'noopener noreferrer';
+            credit.textContent = run.survey.name;
+            credit.title = run.survey.attribution || '';
             buildingsSourceNoteEl.append(' · ', credit);
         }
         buildingsSourceNoteEl.hidden = false;
@@ -7156,6 +7377,7 @@
                 rebuildProposalGrounds3D();
                 refreshLifeSurface();
                 updateBuildingsLoader();
+                measureSceneHeights();
             })
             .catch(err => {
                 if (!current() || err.name === 'AbortError') return;
@@ -11515,6 +11737,12 @@
             isAwake: decorationAwake,
             invalidate: () => invalidateThreeView(),
             excludedRoots: () => [lifeGroup],
+            // The design being edited, whose shadow stands out while Effects on neighbours is shown.
+            emphasisRoots: () => {
+                const roots = [];
+                proposalDraftGroup?.traverse(object => { if (object.userData?.designShadow) roots.push(object); });
+                return roots;
+            },
             // The playing day keeps the loop running through a frame hook, like the life layer.
             addFrameHook: fn => window.registerThreeModeFrameHook(fn),
             removeFrameHook: fn => window.unregisterThreeModeFrameHook(fn)
@@ -12553,6 +12781,7 @@
         // be pending here; re-syncing it would enqueue another full proposal rebuild.
         applyModeVisibility();
         rebuildPlanningSources3D();
+        syncNeighbourEffects3D();
         if (window.activeProposalDraftComparison?.draftId && typeof window.renderProposalDraftComparison === 'function') {
             window.renderProposalDraftComparison(
                 window.activeProposalDraftComparison.draftId,

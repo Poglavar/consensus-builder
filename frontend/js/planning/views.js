@@ -216,8 +216,79 @@
             city: root.CityConfigManager.getCurrentCityId(), footprintM2: feature.geometry ? root.turf.area(feature) : null,
             title: root.ClickStackHits?.buildingLabel?.(feature) || null,
             sourceName: root.CityConfigManager.getBuildingSources?.().find(source => source.id === feature.properties?.source)?.name || null });
-        if (record) { selectRecord(record); return true; }
+        if (record) { selectRecord(record); measureHeight(record, feature); return true; }
         return false;
+    }
+    // A built record whose source has no known height (rule-terms buildingHeight) is measured from
+    // the height survey covering it (buildings/height-survey-client.js): the card says so meanwhile,
+    // and the result replaces the record's height and names its survey, or says why there is none.
+    // The state is kept per building (record id) and copied onto whichever record of it the
+    // inspector shows when the answer arrives.
+    const heightSurveys = new Map(), heightFeatures = new Map();
+    function applyHeightSurvey(record, state) {
+        if (!('sourceHeightM' in record)) record.sourceHeightM = record.metrics.heightM;
+        record.heightSurvey = state;
+        if (state.status === 'measured') record.metrics.heightM = state.heightM;
+    }
+    // Heights chosen as the building source's (Built → Heights): the card shows the source's height again.
+    function dropHeightSurvey(record) {
+        if (!record?.heightSurvey) return;
+        record.metrics.heightM = record.sourceHeightM;
+        delete record.heightSurvey;
+    }
+    function measureHeight(record, feature) {
+        const client = root.HeightSurveyClient, survey = client?.surveyFor(feature);
+        if (!survey) return;
+        heightFeatures.set(record.id, feature);
+        if (!client.usesSurvey()) return;
+        const named = { id: survey.id, name: survey.name };
+        applyHeightSurvey(record, heightSurveys.get(record.id)?.status === 'measured' ? heightSurveys.get(record.id) : { status: 'measuring', survey: named });
+        if (selected()?.id === record.id) renderInspector();
+        client.measureOne(feature, record.source.recordId).then(result => {
+            const measured = typeof result?.heightM === 'number' && Number.isFinite(result.heightM);
+            const state = { status: measured ? 'measured' : 'none', survey: named, ...result };
+            heightSurveys.set(record.id, state);
+            applyHeightSurvey(record, state);
+            const shown = selected();
+            if (shown?.id !== record.id) return;
+            applyHeightSurvey(shown, state);
+            renderInspector();
+        }).catch(error => console.error(`[${new Date().toISOString()}] [planning] Building height could not be measured`, error));
+    }
+    // Built → Heights: shown where a height survey covers the map's centre, its options named after
+    // that survey and the city's building sources.
+    function renderHeightsChoice() {
+        const field = panel.querySelector('.planning-existing-heights');
+        if (!field) return;
+        const centre = root.map?.getCenter?.();
+        const survey = centre ? root.HeightSurveyClient?.surveyAtPoint([centre.lng, centre.lat]) : null;
+        field.hidden = !survey;
+        if (!survey) return;
+        field.querySelector('.planning-existing-heights-label').textContent = t('existingHeights');
+        const sources = (root.CityConfigManager.getBuildingSources?.() || []).map(source => source.name).filter(Boolean);
+        const select = field.querySelector('select');
+        select.setAttribute('aria-label', t('existingHeights'));
+        select.querySelector('option[value="survey"]').textContent = survey.name;
+        select.querySelector('option[value="source"]').textContent = sources.length ? sources.join(', ') : t('source');
+    }
+    // Why a survey gave no height, literal keys so the locale coverage test sees each one.
+    const HEIGHT_SURVEY_NONE = {
+        'no-building-seen': 'heightSurveyNoBuilding', 'too-few-cells': 'heightSurveyTooSmall', 'smaller-than-a-cell': 'heightSurveyTooSmall',
+        'low-confidence': 'heightSurveyUnclear', 'no-survey-data': 'heightSurveyNoData', 'implausibly-tall': 'heightSurveyImplausible',
+        'survey-unavailable': 'heightSurveyUnavailable'
+    };
+    function heightSurveyLine(item) {
+        const state = item.heightSurvey, survey = state?.survey?.name || '';
+        if (!state) return null;
+        if (state.status === 'measuring') return t('heightSurveyMeasuring', { survey });
+        if (state.status === 'measured') {
+            const parts = [t('heightSurveyMeasured', { survey })];
+            if (state.surveyedFrom) parts.push(t('heightSurveyFlown', { date: root.CbFormat.formatDate(new Date(`${state.surveyedFrom}T00:00:00Z`), { timeZone: 'UTC' }) }));
+            if (typeof state.eaveM === 'number') parts.push(t('heightSurveyEave', { eave: root.CbFormat.formatLength(state.eaveM, { maxFractionDigits: 1 }) }));
+            return parts.join(' · ');
+        }
+        const key = HEIGHT_SURVEY_NONE[state.rejection];
+        return key ? t(key, { survey }) : null;
     }
     function inspectProposal(proposal) {
         const key = root.getProposalKey(proposal);
@@ -609,6 +680,12 @@
             entry.append(element('dt', '', label), cell); metrics.append(entry);
         }
         if (displayedMetrics.length) info.append(metrics);
+        const surveyLine = item.heightSurvey ? heightSurveyLine(item) : null;
+        if (surveyLine) {
+            const line = element('p', 'planning-inspector__description', surveyLine);
+            line.setAttribute('role', 'status');
+            info.append(line);
+        }
         const heights = [...new Set(item.volumes.map(volume => volume.topM))].sort((a, b) => a - b);
         if (heights.length > 1) info.append(element('p', 'planning-inspector__description', t('heightParts', { heights: heights.map(height => root.CbFormat.formatLength(height)).join(' · ') })));
         const realization = permittedFeatures(item), shown = realization.configuration;
@@ -851,6 +928,7 @@
             panel.querySelector(`[data-planning-setting="${key}"]`).setAttribute('aria-label', t(key));
         }
         panel.querySelector('.planning-permitted-scope-label').textContent = t('permittedScope');
+        renderHeightsChoice();
         const coverageHelp = panel.querySelector('#planning-coverage-help');
         coverageHelp.textContent = t('survivingCoverageHelp');
         coverageHelp.hidden = store.get().permittedScope !== 'surviving';
@@ -907,6 +985,13 @@
                 document.dispatchEvent(new CustomEvent('building-layers-changed'));
             }
             if (previous.existingScope !== state.existingScope) root.rebuildBuildingLayerFromPool?.();
+            if (previous.existingHeights && previous.existingHeights !== state.existingHeights) {
+                const shown = selected();
+                if (shown?.role === 'existing' && heightFeatures.has(shown.id)) {
+                    if (state.existingHeights === 'survey') measureHeight(shown, heightFeatures.get(shown.id));
+                    else dropHeightSurvey(shown);
+                }
+            }
             if (previous.proposedForm !== state.proposedForm || previous.proposedVariation !== state.proposedVariation) {
                 root.updateProposedBuildingsLayer?.({ announce: false });
             }
@@ -1458,7 +1543,11 @@
             if (role === 'existing') {
                 const scope = control('existingScope');
                 scope.id = 'planning-existing-scope';
-                content.append(scope, document.getElementById('planning-built-sources'));
+                // Heights: a height survey's (named by it) or the building source's, where a survey covers the map.
+                const heights = element('label', 'planning-source-field planning-existing-heights');
+                heights.hidden = true;
+                heights.append(element('span', 'planning-existing-heights-label'), control('existingHeights'));
+                content.append(scope, heights, document.getElementById('planning-built-sources'));
             } else {
                 const formRow = element('div', 'planning-form-row');
                 formRow.append(control(`${role}Form`), panel.querySelector(`[data-planning-reroll="${role}"]`));
@@ -1595,6 +1684,9 @@
         root.addEventListener('buildingsLayerUpdated', restoreSelection);
         root.addEventListener('i18n:translationsLoaded', render);
         root.addEventListener('mapmodechange', render);
+        // Built → Heights appears once the height surveys are read, and follows the map to where one covers it.
+        root.HeightSurveyClient?.ready?.then(() => renderHeightsChoice());
+        root.map.on('moveend', renderHeightsChoice);
         root.addEventListener('planningloadingchange', paintLoading);
         root.addEventListener('keydown', event => {
             if (event.key === 'Escape' && selected() && !event.defaultPrevented) { select(null); event.preventDefault(); }

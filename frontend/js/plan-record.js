@@ -14,7 +14,7 @@
     const LIMITS = Object.freeze({ latitude: 85.0511, longitude: 180, zoomMin: 3, zoomMax: 22, city: 100, setting: 200 });
     const CID = /^baf(?:krei[a-z2-7]{52}|ybei[a-z2-7]{52})$/;
     const SETTINGS = ['existing', 'permitted', 'proposed', 'existingScope', 'proposedForm', 'permittedForm',
-        'permittedMap', 'permittedScope', 'zoningAreas', 'planningSource', 'planningScenario'];
+        'permittedMap', 'permittedScope', 'zoningAreas', 'existingHeights', 'planningSource', 'planningScenario'];
     const CAMERA = ['targetLat', 'targetLng', 'headingDeg', 'pitchRad', 'range'];
     // A construction window is a start and an end month, both inclusive (YYYY-MM), within the years
     // a plan can reach.
