@@ -12,7 +12,7 @@ import {
     AGREEMENT_PUBLISHED_EVENT_TYPE, OWNERSHIP_EVENT_TYPE, PARCEL_PROGRAM_ID,
     agreementEvent, deriveParcelAnchor, landEventHistoryEvent, loadParcelHistory, sortHistory
 } from '../oracle/parcel-history.js';
-import { AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
+import { AGREEMENT_PROGRAM_ID, OLD_AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
 import { cidOf } from './helpers/content-fixtures.js';
 
 const PARCEL = 'HR-335347-1208/3';
@@ -106,9 +106,22 @@ describe('GET /parcels/:parcelUid/history', () => {
         const landCall = pool.calls.find(call => /FROM consensus\.land_event/.test(call.sql));
         expect(landCall.params).toEqual([PARCEL, 'agreement_executed']);
         expect(landCall.sql).toMatch(/WHERE event_type = \$2 AND/);
-        expect(landCall.sql).toContain(`attester = '${AGREEMENT_PROGRAM_ID}'`);
+        expect(landCall.sql).toContain(`attester IN ('${AGREEMENT_PROGRAM_ID}', '${OLD_AGREEMENT_PROGRAM_ID}')`);
         expect(landCall.sql).toMatch(/subject_type = 'parcel' AND subject_id = \$1::text/);
         expect(pool.calls).toHaveLength(3);
+    });
+
+    it('keeps the executions a retired agreement program attested, labelled retired, beside the current program\'s', async () => {
+        const retiredRow = { ...executedRow, event_id: 'retired-exec', attester: OLD_AGREEMENT_PROGRAM_ID, source_observed_at: new Date('2026-09-01T09:00:00Z'),
+            transaction_signature: 'oldSig', evidence: { ...executedRow.evidence, source: {}, agreementCid: COUNTER_CID } };
+        const pool = stubPool({ landEvents: [retiredRow, { ...executedRow, attester: AGREEMENT_PROGRAM_ID }] });
+        const history = await loadParcelHistory(pool, PARCEL);
+        expect(history.events.map(event => [event.agreementCid, event.agreementProgram])).toEqual([
+            [COUNTER_CID, { programId: OLD_AGREEMENT_PROGRAM_ID, status: 'retired' }],
+            [CID, { programId: AGREEMENT_PROGRAM_ID, status: 'current' }]
+        ]);
+        // The query asks for the attester, so the label comes from the row, never from a guess.
+        expect(pool.calls.find(call => /FROM consensus\.land_event/.test(call.sql)).sql).toMatch(/source_observed_at, attester,/);
     });
 
     it('returns an empty history and a non-existent anchor for an unknown parcel', async () => {

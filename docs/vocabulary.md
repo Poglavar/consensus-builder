@@ -1074,7 +1074,11 @@ A source-attributed observation concerning land or an agreement, with a subject,
 
 ### Parcel history
 
-The sequence of recorded events associated with a source-qualified parcel, such as agreement publication, ownership evidence and agreement execution. Events retain their respective sources and meanings.
+The sequence of recorded events associated with a source-qualified parcel, such as agreement publication, ownership evidence and agreement execution. Events retain their respective sources and meanings. An execution attested by a retired agreement program stays in the history, labelled retired; its agreement still reads as unminted (see Agreement program).
+
+### Agreement program
+
+The Solana program that keeps chain agreement accounts. Exactly one is current: agreements are minted on it, and the index and the lifecycle oracle read it. A retired one is an earlier deployment at another address (the single-lens program before the 2026-11-25 redeploy); it stays deployed, an index row naming it reads as unminted, and the land events it attested remain parcel history. `AGREEMENT_PROGRAMS` in `backend/agreements/onchain.js` lists them.
 
 ### Escrow
 
