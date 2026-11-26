@@ -53,7 +53,7 @@ describe('plural groups', () => {
 describe('actor counts', () => {
     it.each([
         ['en', [[1, '1 activity'], [2, '2 activities'], [0, '0 activities']]],
-        ['ru', [[1, '1 мероприятие'], [2, '2 мероприятия'], [5, '5 мероприятий'], [21, '21 мероприятие']]],
+        ['ru', [[1, '1 действие'], [2, '2 действия'], [5, '5 действий'], [21, '21 действие']]],
         ['hr', [[1, '1 sporazum'], [3, '3 sporazuma'], [5, '5 sporazuma']]]
     ])('%s picks the plural form from the count', (lang, cases) => {
         const api = testI18n(lang);

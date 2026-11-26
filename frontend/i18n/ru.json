@@ -6439,10 +6439,10 @@
                 "activityAria": "Активность",
                 "activityCount": "Активность ({{count}})",
                 "countActivity": {
-                    "one": "{{count}} мероприятие",
-                    "few": "{{count}} мероприятия",
-                    "many": "{{count}} мероприятий",
-                    "other": "{{count}} мероприятия"
+                    "one": "{{count}} действие",
+                    "few": "{{count}} действия",
+                    "many": "{{count}} действий",
+                    "other": "{{count}} действия"
                 },
                 "countAgreement": {
                     "one": "{{count}} соглашение",
