@@ -238,8 +238,8 @@ describe('shared building and proposal representations', () => {
         const t = key => ({ sourceWording: 'Source wording:', envelopeTitle: 'Permitted envelope', conditionalHeight: 'Height under a condition' }[key] || key);
         const root = { i18n: { t: fullT }, CbFormat: { formatLength: value => `${value} m`, formatNumber: value => String(value), formatArea: value => `${value} m²`, formatDate: String } };
         const context = vm.createContext({ selected: () => item, inspector, root: { ...root, PlanningSourceProposal }, element, t, fullT, labels, parcelOf: () => 'KZ-1',
-            inspectorBadgeKey: () => 'bound', area: value => `${value} m²`, number: value => String(value), resultLabel: value => String(value),
-            permittedFeatures: () => ({ configuration: null }), renderConfigurations: () => element('section'), scenarioLabel: value => value,
+            inspectorBadgeKey: () => 'bound', isParcelTooSmall: () => false, area: value => `${value} m²`, number: value => String(value), resultLabel: value => String(value),
+            permittedFeatures: () => ({ configuration: null }), renderConfigurations: () => element('section'), scenarioLabel: value => value, sourceConditionNotes: () => [], renderCalculationTrace: () => null,
             sourceRecord: async () => [], selectRecord() {}, select() {}, referenceStatus: null, document, sceneItems: () => [item, zone], appearance: () => 'ghost' });
         for (const name of ['renderInspector', 'sourceText', 'sourcePlanUrl', 'legendRows']) vm.runInContext(source.slice(declaration(name).start, declaration(name).end), context);
         vm.runInContext(source.match(/const itemTitle = .*;/)[0], context);

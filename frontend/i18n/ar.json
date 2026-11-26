@@ -9572,11 +9572,61 @@
         "minimumBuildingPlotArea": "الحد الأدنى لمساحة قطعة البناء",
         "candidateBuildingPlotArea": "قطعة البناء ضمن {{block}}",
         "assumedStoreyHeight": "ارتفاع الطابق المفترض",
-        "calculationTraceTitle": "تفصيل الحساب", "calculationTraceNote": "المدخلات والحسابات والافتراضات والمتطلبات المتبقية لهذه النتيجة.", "traceInputs": "المدخلات", "traceResult": "النتيجة", "traceLimit": "الحد المسجل", "traceExpression": "التعبير",
-        "traceBound": { "minimum": "الحد الأدنى", "maximum": "الحد الأقصى", "recorded": "مسجل" }, "traceStatus": { "passed": "ناجح", "failed": "فشل", "applied": "مطبق", "assumed": "مفترض", "not-evaluated": "غير مقيم", "pending": "قيد الانتظار" },
-        "traceInput": {"candidateBuildingPlotAreaM2": "مساحة القطعة المرشحة", "footprintM2": "البصمة", "floorAreaM2": "المساحة الطابقية", "floors": "الطوابق", "heightM": "الارتفاع", "divisor": "المقسوم عليه", "storeyHeightM": "ارتفاع الطابق المفترض", "insetM": "الارتداد"},
-        "traceRow": { "candidate-plot-area": "القطعة المرشحة", "site-coverage": "تغطية الموقع", "above-ground-far": "معامل المساحة فوق الأرض", "storeys": "الطوابق", "model-height": "ارتفاع النموذج", "building-line": "خط البناء", "detached-edge-mask": "قناع المبنى المنفصل", "natural-terrain": "الأرض الطبيعية", "preparcelation": "إعادة التقسيم", "competition": "مسابقة عمرانية" },
-        "traceNote": {"b1": {"candidatePlotArea": "جزء B-1 المرسوم.", "siteCoverage": "نسبة البصمة إلى القطعة.", "aboveGroundFar": "نسبة المساحة الطابقية إلى القطعة.", "storeys": "حد مسجل.", "modelHeight": "ارتفاع معروض مفترض.", "buildingLine": "ارتداد 4 م من حد B-1.", "detachedEdgeMask": "يُطبّق ارتداد محافظ يساوي نصف الارتفاع المصمم على جميع حواف القطعة المرشحة؛ ولا تُستخدم استثناءات الشوارع والمباني المتلاصقة.", "naturalTerrain": "لا يتحقق منه هذا الحساب.", "preparcelation": "التكوين مطلوب.", "competition": "شرط مسبق."}},
+        "calculationTraceTitle": "تفصيل الحساب",
+        "calculationTraceNote": "المدخلات والحسابات والافتراضات والمتطلبات المتبقية لهذه النتيجة.",
+        "traceInputs": "المدخلات",
+        "traceResult": "النتيجة",
+        "traceLimit": "الحد المسجل",
+        "traceExpression": "التعبير",
+        "traceBound": {
+            "minimum": "الحد الأدنى",
+            "maximum": "الحد الأقصى",
+            "recorded": "مسجل"
+        },
+        "traceStatus": {
+            "passed": "ناجح",
+            "failed": "فشل",
+            "applied": "مطبق",
+            "assumed": "مفترض",
+            "not-evaluated": "غير مقيم",
+            "pending": "قيد الانتظار"
+        },
+        "traceInput": {
+            "candidateBuildingPlotAreaM2": "مساحة القطعة المرشحة",
+            "footprintM2": "البصمة",
+            "floorAreaM2": "المساحة الطابقية",
+            "floors": "الطوابق",
+            "heightM": "الارتفاع",
+            "divisor": "المقسوم عليه",
+            "storeyHeightM": "ارتفاع الطابق المفترض",
+            "insetM": "الارتداد"
+        },
+        "traceRow": {
+            "candidate-plot-area": "القطعة المرشحة",
+            "site-coverage": "تغطية الموقع",
+            "above-ground-far": "معامل المساحة فوق الأرض",
+            "storeys": "الطوابق",
+            "model-height": "ارتفاع النموذج",
+            "building-line": "خط البناء",
+            "detached-edge-mask": "قناع المبنى المنفصل",
+            "natural-terrain": "الأرض الطبيعية",
+            "preparcelation": "إعادة التقسيم",
+            "competition": "مسابقة عمرانية"
+        },
+        "traceNote": {
+            "b1": {
+                "candidatePlotArea": "جزء B-1 المرسوم.",
+                "siteCoverage": "نسبة البصمة إلى القطعة.",
+                "aboveGroundFar": "نسبة المساحة الطابقية إلى القطعة.",
+                "storeys": "حد مسجل.",
+                "modelHeight": "ارتفاع معروض مفترض.",
+                "buildingLine": "ارتداد 4 م من حد B-1.",
+                "detachedEdgeMask": "يُطبّق ارتداد محافظ يساوي نصف الارتفاع المصمم على جميع حواف القطعة المرشحة؛ ولا تُستخدم استثناءات الشوارع والمباني المتلاصقة.",
+                "naturalTerrain": "لا يتحقق منه هذا الحساب.",
+                "preparcelation": "التكوين مطلوب.",
+                "competition": "شرط مسبق."
+            }
+        },
         "sourceBoundaryUncertainty": "حُدّ المصدر مرسوم بهامش عدم يقين قدره {{meters}} م.",
         "sourceBoundaryCrosses": "تتجاوز هذه القطعة المساحية حد المصدر المرسوم.",
         "sourceBoundaryUncertain": "لا تلتقي القطعة إلا بالحافة غير المؤكدة لحد المصدر المرسوم، لذا تظل قابلية التطبيق غير محسومة.",
@@ -9687,7 +9737,7 @@
             "sideSetback": "الحد الأدنى للارتداد الجانبي",
             "rearSetback": "الحد الأدنى للارتداد الخلفي",
             "height": "الحد الأقصى للارتفاع",
-                "storeys": "الحد الأقصى لعدد الطوابق",
+            "storeys": "الحد الأقصى لعدد الطوابق",
             "lotArea": "الحد الأدنى لمساحة الأرض",
             "siteCoverage": "الحد الأقصى لتغطية الموقع",
             "floorAreaRatioAboveGround": "الحد الأقصى لمعامل المساحة الطابقية فوق الأرض",
@@ -9779,6 +9829,7 @@
         },
         "scenario": {
             "all": "جميع أنواع السكن (مجمعة لكل قطعة أرض)",
+            "conditional-formed-b1-plot-detached": "قطعة B-1 مُشكَّلة بشرط · منفصلة",
             "family1": "لأسرة واحدة",
             "family2": "لأسرتين",
             "family3": "لثلاث أسر",

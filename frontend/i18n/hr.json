@@ -9181,12 +9181,59 @@
         "assumedStoreyHeight": "Pretpostavljena visina etaže",
         "calculationTraceTitle": "Raščlamba izračuna",
         "calculationTraceNote": "Ulazni podaci, izračuni, pretpostavke i preostali zahtjevi za ovaj rezultat.",
-        "traceInputs": "Ulazni podaci", "traceResult": "Rezultat", "traceLimit": "Zabilježena granica", "traceExpression": "Izraz",
-        "traceBound": { "minimum": "Najmanje", "maximum": "Najviše", "recorded": "Zabilježeno" },
-        "traceStatus": { "passed": "Prošlo", "failed": "Nije prošlo", "applied": "Primijenjeno", "assumed": "Pretpostavljeno", "not-evaluated": "Nije ocijenjeno", "pending": "Na čekanju" },
-        "traceInput": {"candidateBuildingPlotAreaM2": "Površina predložene građevne čestice", "footprintM2": "Tlocrt", "floorAreaM2": "Podna površina", "floors": "Etaže", "heightM": "Visina", "divisor": "Djelitelj", "storeyHeightM": "Pretpostavljena visina etaže", "insetM": "Umak"},
-        "traceRow": { "candidate-plot-area": "Predložena građevna čestica", "site-coverage": "Izgrađenost", "above-ground-far": "Nadzemni koeficijent iskoristivosti", "storeys": "Etaže", "model-height": "Visina modela", "building-line": "Građevni pravac", "detached-edge-mask": "Rubni uvjet samostojeće zgrade", "natural-terrain": "Prirodni teren", "preparcelation": "Preparcelacija", "competition": "Urbanističko-arhitektonski natječaj" },
-        "traceNote": {"b1": {"candidatePlotArea": "Predložena čestica je kartirani dio B-1 katastarske čestice.", "siteCoverage": "Izračunato kao tlocrtna površina podijeljena površinom predložene čestice.", "aboveGroundFar": "Izračunato kao nadzemna bruto podna površina podijeljena površinom predložene čestice.", "storeys": "Zabilježena granica etaža primjenjuje se na predloženu česticu.", "modelHeight": "Visina prikaza koristi pretpostavljenu visinu etaže; nije izvorna visinska granica.", "buildingLine": "Građevni pravac udaljen je 4 m od granice B-1.", "detachedEdgeMask": "Na svim rubovima predložene čestice koristi se konzervativni odmak od polovice modelirane visine; iznimke uz ulice i prislonjene zgrade nisu korištene.", "naturalTerrain": "Nije provjereno ovim izračunom.", "preparcelation": "Formiranje čestice ostaje potrebno prije procjene nove građevne čestice.", "competition": "Obavezni natječaj ostaje preduvjet."}},
+        "traceInputs": "Ulazni podaci",
+        "traceResult": "Rezultat",
+        "traceLimit": "Zabilježena granica",
+        "traceExpression": "Izraz",
+        "traceBound": {
+            "minimum": "Najmanje",
+            "maximum": "Najviše",
+            "recorded": "Zabilježeno"
+        },
+        "traceStatus": {
+            "passed": "Prošlo",
+            "failed": "Nije prošlo",
+            "applied": "Primijenjeno",
+            "assumed": "Pretpostavljeno",
+            "not-evaluated": "Nije ocijenjeno",
+            "pending": "Na čekanju"
+        },
+        "traceInput": {
+            "candidateBuildingPlotAreaM2": "Površina predložene građevne čestice",
+            "footprintM2": "Tlocrt",
+            "floorAreaM2": "Podna površina",
+            "floors": "Etaže",
+            "heightM": "Visina",
+            "divisor": "Djelitelj",
+            "storeyHeightM": "Pretpostavljena visina etaže",
+            "insetM": "Umak"
+        },
+        "traceRow": {
+            "candidate-plot-area": "Predložena građevna čestica",
+            "site-coverage": "Izgrađenost",
+            "above-ground-far": "Nadzemni koeficijent iskoristivosti",
+            "storeys": "Etaže",
+            "model-height": "Visina modela",
+            "building-line": "Građevni pravac",
+            "detached-edge-mask": "Rubni uvjet samostojeće zgrade",
+            "natural-terrain": "Prirodni teren",
+            "preparcelation": "Preparcelacija",
+            "competition": "Urbanističko-arhitektonski natječaj"
+        },
+        "traceNote": {
+            "b1": {
+                "candidatePlotArea": "Predložena čestica je kartirani dio B-1 katastarske čestice.",
+                "siteCoverage": "Izračunato kao tlocrtna površina podijeljena površinom predložene čestice.",
+                "aboveGroundFar": "Izračunato kao nadzemna bruto podna površina podijeljena površinom predložene čestice.",
+                "storeys": "Zabilježena granica etaža primjenjuje se na predloženu česticu.",
+                "modelHeight": "Visina prikaza koristi pretpostavljenu visinu etaže; nije izvorna visinska granica.",
+                "buildingLine": "Građevni pravac udaljen je 4 m od granice B-1.",
+                "detachedEdgeMask": "Na svim rubovima predložene čestice koristi se konzervativni odmak od polovice modelirane visine; iznimke uz ulice i prislonjene zgrade nisu korištene.",
+                "naturalTerrain": "Nije provjereno ovim izračunom.",
+                "preparcelation": "Formiranje čestice ostaje potrebno prije procjene nove građevne čestice.",
+                "competition": "Obavezni natječaj ostaje preduvjet."
+            }
+        },
         "sourceBoundaryUncertainty": "Granica izvora trasirana je uz nesigurnost od {{meters}} m.",
         "sourceBoundaryCrosses": "Ova katastarska čestica prelazi kartiranu granicu izvora.",
         "sourceBoundaryUncertain": "Čestica dodiruje samo nesiguran rub trasirane granice izvora pa primjenjivost ostaje nerazriješena.",
@@ -9374,6 +9421,7 @@
             "general": "Opće (karta tretmana)",
             "sustainable": "Etaže za održivu gradnju (Dekret 676/2025)",
             "all": "Svi tipovi stanovanja (nasumično po čestici)",
+            "conditional-formed-b1-plot-detached": "Uvjetno formirana čestica B-1 · samostojeća",
             "family1": "Jednoobiteljsko",
             "family2": "Dvije obitelji",
             "family3": "Tri obitelji",
