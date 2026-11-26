@@ -2,8 +2,9 @@
 // agreements on, the account an agreement's sponsor and CID derive (PDA ["agreement", sponsor,
 // sha256(cid)], programs/agreement/README.md), reading and decoding those accounts over RPC with the
 // shared codec (frontend/js/solana/agreement-client.js), and the `onchain` JSON consensus.agreement
-// keeps. POST /agreements/:cid/onchain writes it once (routes/agreements.js); the lifecycle oracle
-// refreshes the fields the chain moves and discovers accounts nobody reported (oracle/agreement-lifecycle.js).
+// keeps. POST /agreements/:cid/onchain writes it once (routes/agreements.js); agreement discovery lists the
+// program's accounts and records the ones nobody reported (oracle/agreement-discovery.js); the lifecycle
+// oracle refreshes the fields the chain moves on agreements already recorded (oracle/agreement-lifecycle.js).
 
 import { createRequire } from 'node:module';
 import { createRpcConnection } from '../solana/rpc.js';
@@ -16,6 +17,26 @@ export const AgreementClient = require('../../frontend/js/solana/agreement-clien
 
 export const AGREEMENT_PROGRAM_ID = AgreementClient.constants.AGREEMENT_PROGRAM_ID;
 export const DEVNET_GENESIS_HASH = 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG';
+// The agreement program before the lens-set redeploy of 2026-11-25 (single-lens, 296-byte accounts).
+export const OLD_AGREEMENT_PROGRAM_ID = 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ';
+
+// Every agreement program the index has recorded agreements on, newest first. Exactly one is `current`:
+// the program agreements are minted on and read from (AGREEMENT_PROGRAM_ID). A `retired` program stays
+// deployed with its accounts, but the index reads rows naming it as unminted and the lifecycle oracle no
+// longer reads them; the land events it attested stay in parcel history (oracle/parcel-history.js). A
+// redeploy at a new address adds its id here as current and marks the one before it retired.
+export const AGREEMENT_PROGRAMS = Object.freeze([
+    Object.freeze({ programId: AGREEMENT_PROGRAM_ID, cluster: 'devnet', status: 'current', since: '2026-11-25' }),
+    Object.freeze({ programId: OLD_AGREEMENT_PROGRAM_ID, cluster: 'devnet', status: 'retired', retiredAt: '2026-11-25' })
+]);
+if (AGREEMENT_PROGRAMS.filter(program => program.status === 'current').length !== 1 || AGREEMENT_PROGRAMS[0].programId !== AGREEMENT_PROGRAM_ID) {
+    throw new Error('AGREEMENT_PROGRAMS must list agreement-client.js AGREEMENT_PROGRAM_ID first, as the one current program');
+}
+
+/** The AGREEMENT_PROGRAMS entry of a program id, or null for any other program. */
+export function agreementProgramOf(programId) {
+    return AGREEMENT_PROGRAMS.find(program => program.programId === programId) ?? null;
+}
 
 // The clusters the index reads agreements on, by the name `onchain.cluster` records: devnet only, over
 // SOLANA_RPC_URL like every other server-side chain read. A reader checks the RPC's genesis hash once.
@@ -186,10 +207,45 @@ export function createAgreementChain({ cluster = 'devnet', env = process.env, co
         return rows;
     }
 
+    // Every agreement account of the program (getProgramAccounts, filtered by the account's size and
+    // discriminator), each kept only when it sits at the PDA its own authority and CID derive: an account
+    // anywhere else is not one the program created for that agreement and is reported, never imported.
+    // { slot, rows: [{ address, slot, account (decoded) | null, data (Buffer), problem: null | 'undecodable' | 'not-pda' }] }
+    async function listAccounts() {
+        const connection = await ready();
+        const answer = await connection.getProgramAccounts(new web3.PublicKey(programId), {
+            commitment: 'confirmed',
+            withContext: true,
+            filters: [
+                { dataSize: AgreementClient.constants.AGREEMENT_ACCOUNT_SPACE },
+                { memcmp: { offset: 0, bytes: Buffer.from(AgreementClient.ACCOUNT_DISCRIMINATORS.Agreement).toString('base64'), encoding: 'base64' } }
+            ]
+        });
+        const slot = answer?.context?.slot;
+        if (!Number.isSafeInteger(slot) || !Array.isArray(answer?.value)) throw new Error('getProgramAccounts returned no slot or no account list');
+        const rows = answer.value.map(({ pubkey, account: info }) => {
+            const address = pubkey.toBase58();
+            const row = { address, slot, account: null, data: Buffer.from(info.data), problem: null };
+            let account = null;
+            try { account = AgreementClient.readAgreement(new Uint8Array(row.data), address); } catch { account = null; }
+            if (!account) {
+                row.problem = 'undecodable';
+                return row;
+            }
+            let derived = null;
+            try { derived = agreementAccountOf(account.cid, account.authority, programId); } catch { derived = null; }
+            if (derived !== address) row.problem = 'not-pda';
+            else row.account = account;
+            return row;
+        });
+        return { slot, rows };
+    }
+
     return {
         cluster,
         programId,
         connection: ready,
+        listAccounts,
         readAccounts,
         async readAccount(address) {
             return (await readAccounts([address], { batchSize: 1 }))[0];

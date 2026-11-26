@@ -208,7 +208,11 @@ A hash committing to a named, versioned projection of content. Agreement approva
 
 ### Publication index
 
-A service's searchable projection of published records, their derived bindings and observed chain metadata. Index metadata and observations are distinct from the immutable bytes identified by the record's CID.
+A service's searchable projection of published records, their derived bindings and observed chain metadata. Index metadata and observations are distinct from the immutable bytes identified by the record's CID. Records reach it by publication and, for agreements minted on the current agreement program, by agreement discovery.
+
+### Agreement discovery
+
+The server's pass that finds agreement accounts on the current agreement program which the publication index lacks, or holds without a chain record, and indexes and records them. It reads the content from IPFS gateways by the account's CID and admits it only through the same checks as publication and as a reported mint; the account and the content are its evidence, never a signature. An agreement recorded on a retired agreement program is left as recorded.
 
 ### Chain reader
 
@@ -1078,7 +1082,11 @@ A source-attributed observation concerning land or an agreement, with a subject,
 
 ### Parcel history
 
-The sequence of recorded events associated with a source-qualified parcel, such as agreement publication, ownership evidence and agreement execution. Events retain their respective sources and meanings.
+The sequence of recorded events associated with a source-qualified parcel, such as agreement publication, ownership evidence and agreement execution. Events retain their respective sources and meanings. An execution attested by a retired agreement program stays in the history, labelled retired; its agreement still reads as unminted (see Agreement program).
+
+### Agreement program
+
+The Solana program that keeps chain agreement accounts. Exactly one is current: agreements are minted on it, and the index and the lifecycle oracle read it. A retired one is an earlier deployment at another address (the single-lens program before the 2026-11-25 redeploy); it stays deployed, an index row naming it reads as unminted, and the land events it attested remain parcel history. `AGREEMENT_PROGRAMS` in `backend/agreements/onchain.js` lists them.
 
 ### Escrow
 

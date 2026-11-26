@@ -267,6 +267,34 @@ module.exports = {
     merge_logs: true,
     time: true
   }, {
+    // Agreement discovery (oracle/agreement-discovery-job.mjs, added 2026-11-26; OPT-IN: start it with
+    // `--only consensus-builder-agreement-discovery`): every 30 minutes, between land-oracle passes, one
+    // applied pass lists the current agreement program's accounts (one getProgramAccounts call) and indexes
+    // and records the agreements the index was never told about, their content read from IPFS gateways and
+    // checked against the account's CID; the land oracle refreshes them from its next pass. At most 10
+    // imports and 60 gateway reads a pass; failed accounts wait (15 min, doubling to a day) in the retry
+    // state file. Idempotent, so an overlapping or repeated run writes nothing twice.
+    name: 'consensus-builder-agreement-discovery',
+    script: 'oracle/agreement-discovery-job.mjs',
+    args: '--apply',
+    cwd: BACKEND_ROOT,
+    exec_mode: 'fork',
+    instances: 1,
+    autorestart: false,
+    cron_restart: '7,37 * * * *',
+    kill_timeout: 600000,
+    env: {
+      NODE_ENV: 'production',
+      SOLANA_RPC_MIN_INTERVAL_MS: jobEnv.SOLANA_RPC_MIN_INTERVAL_MS,
+      AGREEMENT_DISCOVERY_RUN_STATS: path.join(BACKEND_ROOT, 'logs', 'agreement-discovery-stats.json'),
+      AGREEMENT_DISCOVERY_STATE: path.join(BACKEND_ROOT, 'logs', 'agreement-discovery-state.json')
+      // SOLANA_RPC_URL, SOLANA_PROGRAM_ACCOUNTS_RPC_URL, IPFS_READ_GATEWAY and DATABASE_URL from backend/.env.
+    },
+    error_file: path.join(BACKEND_ROOT, 'logs', 'agreement-discovery-error.log'),
+    out_file: path.join(BACKEND_ROOT, 'logs', 'agreement-discovery.log'),
+    merge_logs: true,
+    time: true
+  }, {
     // Daily, an hour and a half after the nightly court-oracle pipeline (22:15 UTC): the market waits
     // weeks for post-close court evidence, which that pipeline records at most once a day.
     name: 'consensus-builder-prospective-resolver',

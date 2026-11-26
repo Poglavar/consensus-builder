@@ -7,7 +7,7 @@ import { PublicKey } from '@solana/web3.js';
 import fs from 'node:fs';
 import { isCid } from '../cid.js';
 import { AGREEMENT_EVENT_TYPES, AGREEMENT_LIFECYCLE_EVENT_TYPE } from '../oracle/agreement-lifecycle.js';
-import { landEventParcelCondition, validParcelUid } from '../oracle/parcel-history.js';
+import { attestingAgreementProgram, landEventParcelCondition, validParcelUid } from '../oracle/parcel-history.js';
 import {
     buildCourtParcelOperationRecipe,
     buildCourtParcelOperationRecipeV2,
@@ -39,7 +39,9 @@ function eventFromRow(row) {
         outcome: row.outcome,
         observedAt: row.source_observed_at,
         recordedAt: row.created_at,
-        attester: { kind: 'solana_program', address: row.attester },
+        // agreementProgram ('current' | 'retired'): when the attester is an agreement program, which one.
+        attester: { kind: 'solana_program', address: row.attester,
+            ...(attestingAgreementProgram(row.attester) ? { agreementProgram: attestingAgreementProgram(row.attester).status } : {}) },
         source: {
             url: row.source_url,
             hash: row.source_hash,

@@ -8,7 +8,7 @@ import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
 import { setupLandEventsRoute } from '../routes/land-events.js';
 import { COURT_SCHEMA_V2 } from '../oracle/court-parcel-operation.js';
-import { AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
+import { AGREEMENT_PROGRAM_ID, OLD_AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
 import { cidOf } from './helpers/content-fixtures.js';
 
 const ACCOUNT = 'Gsvt6nMhsvfrEDgvcqZDzPKZhhqACFEi3mueMxQNQ6UT';
@@ -140,7 +140,7 @@ describe('GET /oracle/events', () => {
             events: [{
                 id: lifecycleRow.event_id, eventType: 'agreement_lifecycle', subject: { type: 'agreement', id: ACCOUNT },
                 outcome: 'executed', observedAt: '2026-10-22T07:30:00.000Z', recordedAt: '2026-10-22T07:35:00.000Z',
-                attester: { kind: 'solana_program', address: AGREEMENT_PROGRAM_ID },
+                attester: { kind: 'solana_program', address: AGREEMENT_PROGRAM_ID, agreementProgram: 'current' },
                 source: { url: lifecycleRow.source_url, hash: lifecycleRow.source_hash, transaction: 'exec-tx', ...lifecycleRow.evidence.source },
                 evidence: lifecycleRow.evidence
             }]
@@ -174,14 +174,19 @@ describe('GET /oracle/events', () => {
         expect(pool.query).toHaveBeenCalledTimes(1);
     });
 
-    it('filters to a parcel through the agreement program\'s events only, numbering every parameter', async () => {
+    it('labels an event a retired agreement program attested as retired', async () => {
+        const res = await request(appFor(recording([{ ...lifecycleRow, attester: OLD_AGREEMENT_PROGRAM_ID }]))).get('/oracle/events');
+        expect(res.body.events[0].attester).toEqual({ kind: 'solana_program', address: OLD_AGREEMENT_PROGRAM_ID, agreementProgram: 'retired' });
+    });
+
+    it('filters to a parcel through the agreement programs\' events only (the current and the retired one), numbering every parameter', async () => {
         const pool = recording([]);
         const res = await request(appFor(pool)).get(`/oracle/events?type=agreement_executed&subject=${ACCOUNT}&agreement=${CID}&parcelUid=${encodeURIComponent('HR-1/1')}&limit=7`);
         expect(res.status).toBe(200);
         expect(res.body).toMatchObject({ count: 0, eventType: 'agreement_executed', agreement: CID, parcelUid: 'HR-1/1' });
         const [sql, params] = pool.query.mock.calls[0];
         expect(params).toEqual(['agreement_executed', ACCOUNT, CID, 'HR-1/1', 7]);
-        expect(sql).toContain(`attester = '${AGREEMENT_PROGRAM_ID}'`);
+        expect(sql).toContain(`attester IN ('${AGREEMENT_PROGRAM_ID}', '${OLD_AGREEMENT_PROGRAM_ID}')`);
         expect(sql).toMatch(/THEN subject_type = 'parcel' AND subject_id = \$4::text\s+ELSE evidence->'inputParcelIds' @> jsonb_build_array\(\$4::text\)/);
         expect(sql).toMatch(/LIMIT \$5/);
     });

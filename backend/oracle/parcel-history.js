@@ -3,13 +3,14 @@
 // by each event's own time. Sources: the published agreements that take the parcel as an input
 // (consensus.agreement), lens members' ownership attestations (consensus.lens_attestation) and the
 // parcel's `agreement_executed` land events (consensus.land_event, written by agreement-lifecycle.js:
-// one per input parcel of an executed agreement, pointing at it). Every `at` is the source's own time;
+// one per input parcel of an executed agreement, pointing at it; attested by the current agreement program
+// or a retired one, each event labelled with which). Every `at` is the source's own time;
 // an event whose source carries no time keeps `at: null` and sorts last, it is never given the time of
 // this read.
 
 import { PublicKey } from '@solana/web3.js';
 import { createHash } from 'node:crypto';
-import { AGREEMENT_PROGRAM_ID } from '../agreements/onchain.js';
+import { AGREEMENT_PROGRAMS, agreementProgramOf } from '../agreements/onchain.js';
 import { AGREEMENT_EXECUTED_EVENT_TYPE, explorer } from './agreement-lifecycle.js';
 
 export const PARCEL_PROGRAM_ID = '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1';
@@ -60,14 +61,17 @@ export function parcelAnchorAccountMatches(info, parcelUid) {
 }
 
 /**
- * SQL condition selecting consensus.land_event rows about parcel `$n`, attested by the agreement
- * program: an `agreement_executed` event is the parcel's own (its subject); an `agreement_lifecycle`
- * event names an agreement, so it matches when the agreement's input parcels list the parcel. Shared by
- * GET /oracle/events?parcelUid= (routes/land-events.js).
+ * SQL condition selecting consensus.land_event rows about parcel `$n`, attested by an agreement program,
+ * the current one or a retired one (agreements/onchain.js AGREEMENT_PROGRAMS: what a retired program
+ * attested stays the parcel's history): an `agreement_executed` event is the parcel's own (its subject);
+ * an `agreement_lifecycle` event names an agreement, so it matches when the agreement's input parcels
+ * list the parcel. Shared by GET /oracle/events?parcelUid= (routes/land-events.js).
  */
 export function landEventParcelCondition(paramIndex) {
     const p = `$${paramIndex}`;
-    return `(attester = '${AGREEMENT_PROGRAM_ID}'
+    // Program ids are base58 constants, never request input, so they are safe to inline.
+    const attesters = AGREEMENT_PROGRAMS.map(program => `'${program.programId}'`).join(', ');
+    return `(attester IN (${attesters})
         AND CASE WHEN event_type = '${AGREEMENT_EXECUTED_EVENT_TYPE}'
             THEN subject_type = 'parcel' AND subject_id = ${p}::text
             ELSE evidence->'inputParcelIds' @> jsonb_build_array(${p}::text)
@@ -114,6 +118,16 @@ export function ownershipEvent(row) {
     });
 }
 
+/**
+ * Which agreement program attested a land event: { programId, status: 'current' | 'retired' }, or
+ * undefined for an attester that is not an agreement program. A retired program's events stay history;
+ * the label says that its agreement reads as unminted today.
+ */
+export function attestingAgreementProgram(attester) {
+    const program = agreementProgramOf(attester);
+    return program ? { programId: program.programId, status: program.status } : undefined;
+}
+
 export function landEventHistoryEvent(row) {
     const evidence = row.evidence || {};
     const source = evidence.source || {};
@@ -121,6 +135,7 @@ export function landEventHistoryEvent(row) {
         type: row.event_type,
         at: isoOrNull(row.source_observed_at),
         outcome: row.outcome,
+        agreementProgram: attestingAgreementProgram(row.attester),
         agreementCid: evidence.agreementCid,
         account: evidence.account,
         lens: evidence.lens,
@@ -188,7 +203,7 @@ export async function loadParcelHistory(pool, parcelUid, { readAnchorAccount = n
         `, [uid]),
         pool.query(`
             SELECT event_id, event_type, subject_id, outcome, source_url, source_hash,
-                   source_observed_at, transaction_signature, evidence
+                   source_observed_at, attester, transaction_signature, evidence
             FROM consensus.land_event
             WHERE event_type = $2 AND ${landEventParcelCondition(1)}
             ORDER BY source_observed_at, event_id

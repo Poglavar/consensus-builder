@@ -42,7 +42,8 @@ Rules behind the table:
   is published; a chain watcher on the server imports records it finds on chain whose content it can
   fetch from IPFS (chain → server), so content published without our server still reaches the index.
   The browser mirrors a mint it performed (`POST /agreements/:cid/onchain` today) as a courtesy; a
-  failure to mirror never fails the mint.
+  failure to mirror never fails the mint. Built for Solana agreements (2026-11-26): agreement
+  discovery, below under "Browser and server pieces".
 
 ```mermaid
 flowchart LR
@@ -231,6 +232,18 @@ so every account layout above is final at that deploy; devnet and testnet carry 
 - Server: a chain watcher in `backend/oracle/` importing records and agreements from both chains
   into the index after fetching and verifying their content; the lifecycle oracle already observes
   agreement status and is extended rather than duplicated.
+  Built for Solana agreements (2026-11-26) as **agreement discovery**
+  (`oracle/agreement-discovery.js`, PM2 job `consensus-builder-agreement-discovery`, every 30
+  minutes): one `getProgramAccounts` call lists the current agreement program's accounts (size and
+  discriminator filters), each kept only at the PDA of its own sponsor and CID. For an account whose
+  agreement the index lacks, or holds without `onchain`, the pass reads the agreement from IPFS
+  gateways (only bytes that hash to the account's CID; the plan and designs too when the index asks
+  for them), indexes it through `POST /agreements`'s own checks (`indexAgreement`, judged at the
+  account's creation time) and records `onchain` from the account through `POST
+  /agreements/:cid/onchain`'s checks. The account and the content are the proof; no signature is.
+  An agreement recorded on a retired program is left as it is. Failures are retried after 15 minutes,
+  doubling to a day; at most 10 imports and 60 gateway reads a pass. Not built: records, plans and
+  designs on their own, EVM.
 - MCP parity: agents mint through the same adapters with the agent keypair. `ugt_mint_agreement`
   exists; `ugt_mint_design`, `ugt_mint_plan`, `ugt_anchor_parcels` and `ugt_chain_records` are added
   in the same milestone as the browser flow they mirror, and the discovery catalogue

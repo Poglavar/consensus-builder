@@ -49,6 +49,14 @@ is ever unpinned.
 | `FILEBASE_BUCKET` | IPFS bucket; currently `consensus-builder-publications` |
 | `PINATA_API_KEY`, `PINATA_API_SECRET` | Reserve provider credentials |
 | `IPFS_READ_GATEWAY` | Independent HTTP gateway base ending in `/ipfs` |
+| `IPFS_DISCOVERY_GATEWAYS` | Comma-separated gateway bases agreement discovery reads from, in order; default `IPFS_READ_GATEWAY`, then `https://ipfs.filebase.io/ipfs` |
+
+Agreement discovery (`backend/oracle/agreement-discovery.js`) reads an agreement it finds on chain,
+and the plan and designs the index lacks, back from these gateways, accepting only bytes that hash to
+the CID (`backend/storage/gateway-read.js`). The free public gateways no longer serve such reads
+(measured 2026-11-26: ipfs.io, dweb.link and nftstorage.link answer 429, gateway.pinata.cloud timed
+out), so content pinned only with a sponsor's own Pinata key is found only when a gateway that serves
+it is listed in `IPFS_DISCOVERY_GATEWAYS`.
 
 Credentials live in the ignored backend `.env`. Public deployment settings live
 in `backend/ecosystem.config.cjs`; local overrides can also be set in `.env`.
