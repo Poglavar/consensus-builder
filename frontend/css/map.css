@@ -363,7 +363,8 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 }
 .three-apartment-panel[hidden], .three-apartment-panel [role=status]:empty { display: none; }
 .three-apartment-panel label { grid-column: 1 / -1; padding-inline-end: 36px; font-weight: 600; }
-.three-apartment-panel select { width: 100%; min-height: 36px; }
+/* The apartment picker spans the panel: its options ("Floor 2 · Apartment 3 · Tower 2 · 203") run long in every language. */
+.three-apartment-panel select { grid-column: 1 / -1; width: 100%; min-height: 36px; }
 .three-apartment-panel [role=status], .three-apartment-panel .cb-link-row { grid-column: 1 / -1; }
 .three-apartment-panel .cb-link-row { overflow-y: auto; max-height: 24vh; }
 .three-apartment-panel .cb-link-row:empty { display: none; }
@@ -421,7 +422,8 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 .model-view-controls .three-mode-suggested-access select {
     flex: 1;
     min-width: 0;
-    max-width: 145px;
+    /* Up to two thirds of the row, so longer Russian and Kazakh options are not cut after a few letters. */
+    max-width: 66%;
 }
 
 /* The 3D view's value figures (Built / Planned / Proposed), shown inside the Design and Parcel
