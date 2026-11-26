@@ -383,7 +383,7 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
 
     server.registerTool('ugt_anchor_parcels', {
         title: 'Anchor parcels on Solana',
-        description: 'Create parcel anchors on the parcel_nft program as the parcel panel\'s "Anchor on chain" does: an ownerless public record per parcel, seeded by its anchor id (HR-<cadastral municipality>-<parcel number>, else the source parcel id), whose URI is the parcel\'s page on the app (<UGT_APP_ORIGIN>/parcel/<anchor id>; nothing is pinned). Nobody owns an anchor: this wallet pays rent and gains no rights. Several anchors go in one transaction; an existing anchor is reported and costs nothing, and an id that cannot seed one (over 32 bytes) is reported in skipped.',
+        description: 'Create parcel anchors on the parcel_nft program as the parcel panel\'s "Mint anchor" does: an ownerless public record per parcel, seeded by its anchor id (HR-<cadastral municipality>-<parcel number>, else the source parcel id), whose URI is the parcel\'s page on the app (<UGT_APP_ORIGIN>/parcel/<anchor id>; nothing is pinned). Nobody owns an anchor: this wallet pays rent and gains no rights. Several anchors go in one transaction; an existing anchor is reported and costs nothing, and an id that cannot seed one (over 32 bytes) is reported in skipped.',
         inputSchema: z.object({ city: z.string().min(1), parcelSourceId: z.string().min(1), parcelIds: z.array(z.string().min(1)).min(1).max(10), confirm: confirmation }),
         annotations: PAID_IDEMPOTENT
     }, handler(args => actions.anchorParcels(args)));

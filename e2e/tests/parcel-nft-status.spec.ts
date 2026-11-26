@@ -1,5 +1,5 @@
 // The parcel panel's Tools tab reads the parcel's anchor from the connected wallet's chain and links
-// the minted token or anchor on its explorer; "Anchor on chain" is off once it exists. There is no Claim:
+// the minted token or anchor on its explorer; "Mint anchor" is off once it exists. There is no Claim:
 // parcel anchors are ownerless, so nothing is claimed.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel } from '../helpers/runtime';
@@ -45,7 +45,7 @@ test('with a Solana wallet, the anchor status links the parcel anchor account an
   await page.evaluate(() => { (window as any).ethers = undefined; });
   await openParcel(page, 'tools');
   const status = page.locator('#parcelMintStatus');
-  await expect(status.getByRole('link', { name: 'Anchored on Solana' })).toHaveAttribute('href', `https://explorer.solana.com/address/${ANCHOR}?cluster=devnet`);
+  await expect(status.getByRole('link', { name: 'Anchor minted on Solana' })).toHaveAttribute('href', `https://explorer.solana.com/address/${ANCHOR}?cluster=devnet`);
   await expect(page.locator('#mintAndClaimButton')).toBeDisabled();
   await expect(page.locator('#tools-tab').getByRole('button', { name: /claim/i })).toHaveCount(0);
 });

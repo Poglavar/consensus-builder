@@ -229,7 +229,7 @@
         }
         // Always use the chain if we have it - we attempted to check on this chain
         const chainParam = cachedChain ? { chain: cachedChain } : {};
-        // "Not anchored yet" is only said when the chain answered that the parcel has no anchor. When the
+        // "No anchor minted yet" is only said when the chain answered that the parcel has no anchor. When the
         // check itself could not run (no RPC, RPC down, wrong program), say so — never imply absence.
         let retryMessage;
         if (state === 'error') {
@@ -238,7 +238,7 @@
                 : tParcel('panel.parcel.nft.checkFailedRetryNoChain', {}, "Couldn't check the anchor. Click to try again.");
         } else {
             retryMessage = cachedChain
-                ? tParcel('panel.parcel.nft.statusNotMinted', {}, 'Not anchored yet')
+                ? tParcel('panel.parcel.nft.statusNotMinted', {}, 'No anchor minted yet')
                 : tParcel('panel.parcel.nft.statusUnknown', {}, 'Anchor not checked yet.');
         }
         const retryTooltip = tParcel('panel.parcel.nft.retryTooltip', {}, 'Click to check again');
@@ -327,7 +327,7 @@
         if (result.minted) {
             const onSolana = String(result.chainSlug || result.chainId || '').startsWith('solana');
             const messageText = onSolana || !displayChain
-                ? tParcel('panel.parcel.nft.statusMinted', {}, 'Anchored on Solana')
+                ? tParcel('panel.parcel.nft.statusMinted', {}, 'Anchor minted on Solana')
                 : tParcel('panel.parcel.nft.statusMintedOn', { chain: displayChain }, `Anchored on ${displayChain}`);
             const explorerUrl = buildParcelNftExplorerUrl({
                 chainId: result.chainId,
@@ -426,7 +426,7 @@
         const isMultiActive = global.multiParcelSelection && (global.multiParcelSelection.isActive || global.multiParcelSelection.selectedParcels?.size > 0);
         if (isMultiActive) {
             setParcelMintStatusIndicator(
-                tParcel('panel.parcel.nft.multiReady', {}, 'Ready to anchor the selected parcels.'),
+                tParcel('panel.parcel.nft.multiReady', {}, 'Ready to mint anchors for the selected parcels.'),
                 'neutral'
             );
             return null;
@@ -872,7 +872,7 @@
             const body = doc.createElement('p');
             body.textContent = parcelCount === 1
                 ? tParcel('panel.parcel.anchorDialog.anchoredOne', {}, 'The parcel is anchored.')
-                : tParcel('panel.parcel.anchorDialog.anchoredMany', { count: parcelCount }, `${parcelCount} parcels are anchored.`);
+                : tParcel('panel.parcel.anchorDialog.anchoredMany', { count: parcelCount }, `${parcelCount} anchors are minted.`);
             const content = [body];
 
             const isSolana = typeof chainId === 'string' && chainId.startsWith('solana');
@@ -910,7 +910,7 @@
             }
 
             const dialogApi = global.CbDialog.open({
-                title: tParcel('panel.parcel.anchorDialog.successTitle', {}, 'Parcels anchored'),
+                title: tParcel('panel.parcel.anchorDialog.successTitle', {}, 'Anchors minted'),
                 size: 'sm',
                 top: true,
                 className: 'parcel-mint-success',
@@ -1079,7 +1079,7 @@
         const subtitle = global.document.createElement('p');
         subtitle.className = 'parcel-mint-subtitle';
         // The one sentence that explains an anchor, also the Tools tab button's tooltip.
-        subtitle.textContent = tParcel('panel.parcel.mintTooltip', {}, 'A parcel anchor is a public record of the parcel on the blockchain. Nobody owns it, and it doesn’t grant ownership.');
+        subtitle.textContent = tParcel('panel.parcel.mintTooltip', {}, 'Mint a parcel anchor: a public record of the parcel on the blockchain. Nobody owns it, and it doesn’t grant ownership.');
 
         const meta = global.document.createElement('div');
         meta.className = 'parcel-mint-meta';
@@ -1178,7 +1178,7 @@
         // The dialog has no automatic dismissals: while a mint transaction is in flight (is-busy)
         // neither the close button, the backdrop nor Escape may close it, so it owns all three.
         const dialogApi = global.CbDialog.open({
-            title: tParcel('panel.parcel.anchorDialog.title', {}, 'Anchor parcels on chain'),
+            title: tParcel('panel.parcel.anchorDialog.title', {}, 'Mint parcel anchors'),
             size: 'md',
             top: true,
             className: 'parcel-mint-modal',
@@ -1188,7 +1188,7 @@
             closeOnBackdrop: false,
             closeOnEscape: false,
             body: [subtitle, meta, list, status],
-            actions: [{ id: 'mint', label: tParcel('panel.parcel.mintAndClaimButton', {}, 'Anchor on chain'), role: 'primary', keepOpen: true, onClick: () => mint() }]
+            actions: [{ id: 'mint', label: tParcel('panel.parcel.mintAndClaimButton', {}, 'Mint anchor'), role: 'primary', keepOpen: true, onClick: () => mint() }]
         });
         if (!dialogApi) return;
         parcelMintDialog = dialogApi;
@@ -1255,11 +1255,11 @@
                 if (skippedIds.length) {
                     status.textContent = tParcel('panel.parcel.anchorDialog.skipped', { parcels: skippedIds.join(', ') }, `Not anchored, because the parcel id is longer than an anchor allows: ${skippedIds.join(', ')}`);
                 } else if (!hasStatusContent) {
-                    status.textContent = result?.statusMessage || tParcel('panel.parcel.anchorDialog.partial', {}, 'Some parcels are anchored. You can anchor the remaining ones.');
+                    status.textContent = result?.statusMessage || tParcel('panel.parcel.anchorDialog.partial', {}, 'Some anchors are minted. You can anchor the remaining ones.');
                 }
             } catch (error) {
                 console.error('Parcel mint failed', error);
-                setBusy(false, error?.message || tParcel('panel.parcel.anchorDialog.failed', {}, 'Anchoring failed. Please try again.'));
+                setBusy(false, error?.message || tParcel('panel.parcel.anchorDialog.failed', {}, 'Minting failed. Please try again.'));
             }
         };
     }
@@ -1422,7 +1422,7 @@
                     // with one wallet approval where the wallet can (solana/parcel-mint.js).
                     onConfirm: async ({ parcels: selectedParcels, setBusy, statusEl }) => {
                         const progress = ({ done, total }) => {
-                            if (statusEl) statusEl.textContent = tParcel('panel.parcel.anchorDialog.progress', { done, total }, `Anchoring parcels: ${done} of ${total}…`);
+                            if (statusEl) statusEl.textContent = tParcel('panel.parcel.anchorDialog.progress', { done, total }, `Minting anchors: ${done} of ${total}…`);
                         };
                         try {
                             const result = await global.SolanaParcelAnchors.anchorParcels(selectedParcels.map(p => p.parcelId), { programId: contractAddress, cluster, onProgress: progress });
@@ -1430,7 +1430,7 @@
                             return { mintedParcelIds: result.anchoredParcelIds, transactions: result.transactions, chainId: `solana-${cluster}`, skipped: result.skipped };
                         } catch (err) {
                             console.error(`[${new Date().toISOString()}] Solana parcel anchoring failed`, err);
-                            setBusy(false, err?.message || tParcel('panel.parcel.anchorDialog.failed', {}, 'Anchoring failed. Please try again.'));
+                            setBusy(false, err?.message || tParcel('panel.parcel.anchorDialog.failed', {}, 'Minting failed. Please try again.'));
                             return { mintedParcelIds: err?.anchoredParcelIds || [], statusMessage: err?.message };
                         }
                     }
@@ -1492,7 +1492,7 @@
                     return;
                 }
 
-                setParcelMintStatusIndicator(tParcel('panel.parcel.nft.multiReady', {}, 'Ready to anchor the selected parcels.'), 'not-minted', chainSlug);
+                setParcelMintStatusIndicator(tParcel('panel.parcel.nft.multiReady', {}, 'Ready to mint anchors for the selected parcels.'), 'not-minted', chainSlug);
             }
 
             await buildParcelMintModal({
@@ -1521,7 +1521,7 @@
         } catch (error) {
             console.error('Unable to open parcel mint modal', error);
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus(error?.message || tParcel('panel.parcel.anchorDialog.failed', {}, 'Anchoring failed. Please try again.'));
+                global.updateStatus(error?.message || tParcel('panel.parcel.anchorDialog.failed', {}, 'Minting failed. Please try again.'));
             }
         }
     }
@@ -1540,7 +1540,7 @@
         const doc = global.document;
         if (!doc) return;
         const titles = [
-            ['mintAndClaimButton', 'panel.parcel.mintTooltip', 'A parcel anchor is a public record of the parcel on the blockchain. Nobody owns it, and it doesn’t grant ownership.']
+            ['mintAndClaimButton', 'panel.parcel.mintTooltip', 'Mint a parcel anchor: a public record of the parcel on the blockchain. Nobody owns it, and it doesn’t grant ownership.']
         ];
         titles.forEach(([id, key, fallback]) => {
             const el = doc.getElementById(id);

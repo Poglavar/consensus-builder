@@ -138,7 +138,7 @@ SOLANA_RPC_URL=https://api.devnet.solana.com
 | `ugt_refund_contributions` | signed | Take back your contributions (apartment deposits included) once the agreement is cancelled or expired. |
 | `ugt_list_apartments` | signed | As an apartment round's developer: list its apartments on chain while the round is open. |
 | `ugt_reserve_apartment` | signed | As a buyer the round's lens qualified: pay one apartment's deposit and reserve it. |
-| `ugt_anchor_parcels` | signed | Create parcels' ownerless anchors on Solana, as the parcel panel's "Anchor on chain" does: the URI is the parcel's page, several anchors go in one transaction, existing ones cost nothing. |
+| `ugt_anchor_parcels` | signed | Create parcels' ownerless anchors on Solana, as the parcel panel's "Mint anchor" does: the URI is the parcel's page, several anchors go in one transaction, existing ones cost nothing. |
 | `ugt_mint_property_offer`, `ugt_take_property_offer`, `ugt_fund_property_offer`, `ugt_release_property_offer`, `ugt_cancel_property_offer`, `ugt_expire_property_offer` | signed | A published property offer's chain steps, as the offer panel takes them. |
 | `ugt_resolve_external_market`, `ugt_claim_external_market` | signed | The same for court-evidence markets (below). |
 

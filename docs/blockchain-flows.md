@@ -161,7 +161,7 @@ keeps the same rule so both chains read alike.
 Anchoring is batched. Built on Solana (2026-11-27): as many `parcel_nft` `mint_parcel` instructions
 per transaction as fit its 1232 bytes (about eight), parcels already anchored skipped, so a resumed
 batch costs nothing for the done ones (`SolanaParcelClient.packMintParcelInstructions`, used by the
-parcel panel's "Anchor on chain" in `solana/parcel-mint.js`, the agreement mint in
+parcel panel's "Mint anchor" in `solana/parcel-mint.js`, the agreement mint in
 `agreement-bridge.js` and the agents' `chain-actions.js`). The agreement mint anchors its input
 parcels before the create; a wallet that signs several transactions at once (`signAllTransactions`)
 approves the anchors and the create together, others approve each. An id over 32 bytes cannot seed an

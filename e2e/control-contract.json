@@ -2071,7 +2071,7 @@
     {
       "id": "control-4166a61eb872b3-1",
       "source": "index.html",
-      "markup": "<button id=\"mintAndClaimButton\" class=\"btn btn-primary\" type=\"button\" onclick=\"(window.Parcels?.uiClaim?.openParcelMintModal || window.openParcelMintModal || function(){})()\" title=\"A parcel anchor is a public record of the parcel on the blockchain. Nobody owns it, and it doesn’t grant ownership.\" disabled>",
+      "markup": "<button id=\"mintAndClaimButton\" class=\"btn btn-primary\" type=\"button\" onclick=\"(window.Parcels?.uiClaim?.openParcelMintModal || window.openParcelMintModal || function(){})()\" title=\"Mint a parcel anchor: a public record of the parcel on the blockchain. Nobody owns it, and it doesn’t grant ownership.\" disabled>",
       "interaction": "click",
       "controlType": "button"
     },

@@ -1,5 +1,5 @@
 // The parcel anchor's id and URI (frontend/js/parcels/parcel-anchor.js), shared by the parcel panel's
-// "Anchor on chain", the agreement mint and the MCP's ugt_anchor_parcels, and by the page's
+// "Mint anchor", the agreement mint and the MCP's ugt_anchor_parcels, and by the page's
 // deriveParcelIdentifier (parcels/blockchain.js).
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';

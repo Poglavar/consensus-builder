@@ -112,7 +112,7 @@ test.describe('Proposal actions @features', () => {
     await expect(busy).toHaveAttribute('aria-busy', 'true');
     await expect(busy).toHaveClass(/cb-busy/);
     await page.evaluate(() => (window as any).__completeNftRead());
-    await expect(page.getByRole('button', { name: /Not anchored yet/ })).toBeEnabled();
+    await expect(page.getByRole('button', { name: /No anchor minted yet/ })).toBeEnabled();
   });
 
   test('a connected wallet anchors the parcel from the parcel tools dialog and receives a confirmed transaction', async ({ mockApi: page }) => {
@@ -137,7 +137,7 @@ test.describe('Proposal actions @features', () => {
     await expect(mint).toBeEnabled();
     await mint.click();
     await expect(mintDialog).toBeVisible();
-    await mintDialog.getByRole('button', { name: 'Anchor on chain', exact: true }).click();
+    await mintDialog.getByRole('button', { name: 'Mint anchor', exact: true }).click();
 
     const success = page.locator('#parcel-mint-success-modal');
     await expect(success).toBeVisible({ timeout: 15000 });

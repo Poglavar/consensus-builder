@@ -3,7 +3,7 @@
 // confirmation as the agreement panel's "Confirm as lens member" sends it (decision attestation, attest,
 // and execute or release when it completes the lens), taking back a wallet's contributions (with an
 // apartment's reservation cleared), an apartment buyer's qualification read from the round's lens, and
-// parcel anchors as the parcel panel's "Anchor on chain" creates them. Same codecs and rules as the browser
+// parcel anchors as the parcel panel's "Mint anchor" creates them. Same codecs and rules as the browser
 // (agreement-bridge.js chainActions, AgreementDecisionPlan, SolanaPledgeClient, SolanaParcelClient);
 // every step reads the chain first, so a rerun signs nothing twice.
 import { createRequire } from 'node:module';
@@ -197,7 +197,7 @@ export async function apartmentQualification({ cid, sponsor, lenses, members, of
 }
 
 /**
- * Anchor parcels on parcel_nft as the parcel panel's "Anchor on chain" does: an ownerless PDA
+ * Anchor parcels on parcel_nft as the parcel panel's "Mint anchor" does: an ownerless PDA
  * ["parcel", anchorId] holding the parcel's page URI; the signer only pays rent. Existing anchors are
  * reported and cost nothing, so a resumed batch signs only what is left; the rest go several to a
  * transaction, packed by size (SolanaParcelClient.packMintParcelInstructions). `parcels` are

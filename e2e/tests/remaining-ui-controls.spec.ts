@@ -367,8 +367,8 @@ test.describe('Remaining UI controls @features', () => {
     await expect(second).toBeChecked();
     await first.uncheck();
     await expect(first).not.toBeChecked();
-    await dialog.getByRole('button', { name: 'Anchor on chain', exact: true }).click();
-    await expect(dialog.getByRole('status')).toContainText('Some parcels are anchored');
+    await dialog.getByRole('button', { name: 'Mint anchor', exact: true }).click();
+    await expect(dialog.getByRole('status')).toContainText('Some anchors are minted');
     await expect.poll(() => page.evaluate(() => (window as any).__mintedParcelIds)).toEqual(['TEST-PARCEL-2']);
   });
 

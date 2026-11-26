@@ -981,7 +981,7 @@ export function createUrbanGameTheoryTools({
             return { agreementCid, account, unitId, qualification: qualification.address, ...await reserve(qualification) };
         },
 
-        // Anchor parcels on parcel_nft as the parcel panel's "Anchor on chain" does: the same anchor id
+        // Anchor parcels on parcel_nft as the parcel panel's "Mint anchor" does: the same anchor id
         // (ParcelAnchor.anchorIdOf), the parcel's page on UGT_APP_ORIGIN as its URI, several anchors per
         // transaction, existing ones skipped. An id that cannot seed an anchor is reported in `skipped`.
         async anchorParcels({ city, parcelSourceId, parcelIds, confirm } = {}) {

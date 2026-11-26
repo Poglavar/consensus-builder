@@ -5,7 +5,7 @@
  * pays rent; nobody owns an anchor. Parcels already anchored are skipped, the rest go several to a
  * transaction (SolanaParcelClient.packMintParcelInstructions), all signed with one wallet approval when
  * the wallet signs several at once (signAllTransactions). window.SolanaParcelAnchors: the parcel
- * panel's "Anchor on chain" (parcels/ui/claim.js) calls anchorParcels; the agreement mint
+ * panel's "Mint anchor" (parcels/ui/claim.js) calls anchorParcels; the agreement mint
  * (agreement-bridge.js) takes instructionGroups for its input parcels.
  */
 (function (root, factory) {
@@ -82,7 +82,7 @@
     }
 
     /**
-     * Anchors `parcelIds` with the connected Solana wallet as the parcel panel's "Anchor on chain" does.
+     * Anchors `parcelIds` with the connected Solana wallet as the parcel panel's "Mint anchor" does.
      * `onProgress({ done, total })` follows the confirmed transactions. Resolves { anchoredParcelIds
      * (newly anchored and already anchored), transactions: [{ parcelIds, txHash }], alreadyAnchored, skipped }.
      */

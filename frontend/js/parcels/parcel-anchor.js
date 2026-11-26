@@ -1,4 +1,4 @@
-// A parcel's anchor on the parcel_nft program, as the parcel panel's "Anchor on chain", the agreement
+// A parcel's anchor on the parcel_nft program, as the parcel panel's "Mint anchor", the agreement
 // mint and an agent's ugt_anchor_parcels make it: the id the anchor PDA ["parcel", id] is seeded with
 // and its URI, the parcel's page on the public site (nothing is pinned). Pure, UMD: window.ParcelAnchor
 // in the browser (parcels/blockchain.js, parcels/ui/claim.js, solana/parcel-mint.js), module.exports
