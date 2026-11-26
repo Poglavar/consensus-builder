@@ -2,6 +2,7 @@
 // the sky a wall sees, garden sunlight on 21 March and the nearest facing wall, before and after.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
 
 const require = createRequire(import.meta.url);
 const effects = require('../../frontend/js/planning/neighbour-effects.js');
@@ -21,7 +22,10 @@ const FAR = { id: 'far', geometry: rect(400, 0, 410, 30) };
 const NORTH_HOUSE = { id: 'north-house', geometry: rect(1, 50, 9, 58), heightM: 7 };
 const OLD_HOUSE = { id: 'old-house', geometry: rect(1, 2, 9, 10), heightM: 7 };
 
-const assess = proposed => effects.assess({ site: [SITE], lots: [NORTH, FAR], existing: [NORTH_HOUSE, OLD_HOUSE], proposed, sun: SUN });
+// England's guides as configured (frontend/data/planning-sources.json, rule set gb-eng-planning).
+const config = JSON.parse(readFileSync(new URL('../../frontend/data/planning-sources.json', import.meta.url), 'utf8'));
+const ENGLAND = config.ruleSets.find(ruleSet => ruleSet.id === 'gb-eng-planning').neighbourGuides;
+const assess = (proposed, guides = ENGLAND) => effects.assess({ site: [SITE], lots: [NORTH, FAR], existing: [NORTH_HOUSE, OLD_HOUSE], proposed, sun: SUN, guides });
 
 describe('vertical sky component', () => {
     it('is 39.6 % for a wall with nothing in front of it', () => {
@@ -70,6 +74,22 @@ describe('effects on neighbouring plots', () => {
         expect(north.sky.after).toBeGreaterThan(27);
     });
 
+    it('takes only the readings a place has guides for, with its thresholds', () => {
+        const slab = [{ id: 'slab', geometry: rect(-100, 2, 110, 28), heightM: 30 }];
+        // No guides: nothing is measured.
+        expect(assess(slab, {}).lots).toEqual([]);
+        // Only a sky guide: no garden or distance reading, and a laxer threshold turns fail into within.
+        const [skyOnly] = assess(slab, { sky: { percent: 27, ratio: 0.8 } }).lots;
+        expect(skyOnly.garden ?? null).toBe(null);
+        expect(skyOnly.distance ?? null).toBe(null);
+        expect(skyOnly.sky.status).toBe('fail');
+        const [lax] = assess(slab, { sky: { percent: 5, ratio: 0.1 } }).lots;
+        expect(lax.sky.status).toBe('worse');
+        // A 30 m distance guide makes the 22 m wall a failure the 21 m one does not.
+        const [far] = assess(slab, { distance: { metres: 30 } }).lots;
+        expect(far.distance.status).toBe('fail');
+    });
+
     it('calls a facing wall closer than 21 m beyond the guide', () => {
         const [north] = assess([{ id: 'block', geometry: rect(1, 2, 9, 35), heightM: 6 }]).lots;
         expect(north.distance.after).toBeCloseTo(15, 0);
@@ -81,7 +101,7 @@ describe('effects on neighbouring plots', () => {
         const small = lot('small', { before: 1, after: 0.9, status: 'worse' }, null, null);
         const big = lot('big', null, { before: 30, after: 15, status: 'worse' }, null);
         const failing = lot('failing', { before: 0.6, after: 0.45, status: 'fail' }, { before: 30, after: 29, status: 'worse' }, null);
-        const near = lot('near', null, null, { before: null, after: 10.5, status: 'fail' });
+        const near = lot('near', null, null, { before: null, after: 10.5, guideM: 21, status: 'fail' });
         const [beyond, within] = effects.arrange([small, big, failing, near]);
         // near: 10.5 m is half way inside 21 m (0.5); failing: a quarter of its garden sun (0.25).
         expect(beyond.map(l => l.id)).toEqual(['near', 'failing']);

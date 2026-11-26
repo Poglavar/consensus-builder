@@ -1,6 +1,7 @@
 // The Effects section of the building editor: the neighbouring plots a design takes sunlight, sky or
 // distance from (planning/neighbour-effects.js), listed under the Permitted check and coloured on the
-// map. Neighbours come from the map's parcels and buildings, their heights from the height survey
+// map. Which readings a place uses and their thresholds are its guides, a rule set's
+// `neighbourGuides` (data/planning-sources.json); a place without them gets no section. Neighbours come from the map's parcels and buildings, their heights from the height survey
 // where one covers them (the best measure, as the Permitted check uses), else their source's, else an
 // estimate that the section counts. One assessment at a time, the newest design last.
 (function (root) {
@@ -61,17 +62,48 @@
         return { id: record.id, geometry: record.geometry, heightM: estimate.heightM, estimated: true };
     }
 
+    // The neighbour guides of a city: the first of its rule sets that states them, or null. Known
+    // ones are kept, so applies() answers at once after the first read.
+    const known = new Map();
+    function guidesFor(city = root.CityConfigManager?.getCurrentCityId?.()) {
+        if (!known.has(city)) {
+            const reading = (root.PlanningRestrictionFeed?.ruleSets?.(city) || Promise.resolve([]))
+                .then(ruleSets => ruleSets.find(ruleSet => ruleSet.neighbourGuides)?.neighbourGuides || null)
+                .catch(error => { known.delete(city); throw error; });
+            known.set(city, reading);
+            reading.then(guides => {
+                if (known.get(city) !== reading) return;
+                known.set(city, { guides });
+                // Controls drawn before the guides were known (a design card) show or stay hidden.
+                if (city === root.CityConfigManager?.getCurrentCityId?.()) {
+                    for (const control of root.document?.querySelectorAll?.('[data-neighbour-effects-control]') || []) control.hidden = !guides;
+                }
+            }, () => {});
+        }
+        const entry = known.get(city);
+        return entry instanceof Promise ? entry : Promise.resolve(entry.guides);
+    }
+    // Whether the city has neighbour guides, as far as is known yet (false while they are read).
+    function applies(city = root.CityConfigManager?.getCurrentCityId?.()) {
+        const entry = known.get(city);
+        if (!entry) { guidesFor(city).catch(() => {}); return false; }
+        return !(entry instanceof Promise) && !!entry.guides;
+    }
+
     // `design`: { buildings: [{ id, footprint: Feature, heightM }] }. Answers the assessment with the
-    // lot geometries it names, or { status: 'unavailable', reason }.
+    // lot geometries it names and the guides it used, { status: 'notApplicable' } where the city has
+    // no neighbour guides, or { status: 'unavailable', reason }.
     async function assessDesign(design) {
         const turf = root.turf, fabric = root.LiveParcelFabric, effects = root.NeighbourEffects;
+        const guides = await guidesFor();
+        if (!guides) return { status: 'notApplicable', lots: [] };
         const proposed = (design.buildings || []).filter(building => building.footprint?.geometry && building.heightM > 0)
             .map(building => ({ id: building.id, geometry: building.footprint.geometry, heightM: building.heightM }));
         if (!proposed.length || !fabric?.peekBounds) return { status: 'none', lots: [] };
         const bbox = turf.bbox(turf.featureCollection(proposed.map(record => turf.feature(record.geometry))));
         const tallest = Math.max(...proposed.map(record => record.heightM));
-        const reachM = Math.max(effects.GUIDE.minReachM, Math.min(effects.GUIDE.maxReachM, effects.GUIDE.reachFactor * tallest));
-        const around = metresBox(bbox, reachM + effects.GUIDE.maxReachM / 2);
+        const reachM = Math.max(effects.MEASURE.minReachM, Math.min(effects.MEASURE.maxReachM, effects.MEASURE.reachFactor * tallest));
+        const around = metresBox(bbox, reachM + effects.MEASURE.maxReachM / 2);
         const pieces = fabric.peekBounds(around, { includeCorridors: false }).filter(piece => ['Polygon', 'MultiPolygon'].includes(piece?.geometry?.type));
         const lots = pieces.map(piece => ({ id: String(piece.properties.parcelId), geometry: piece.geometry }));
         const footprints = proposed.map(record => turf.feature(record.geometry));
@@ -85,12 +117,13 @@
         try { measured = await root.HeightSurveyClient.fillHeights(pool, { idOf }); }
         catch (error) { console.error(`[${new Date().toISOString()}] [neighbour-effects] Building heights could not be measured; source heights stand`, error); }
         const existing = measured.map(standing);
-        const sun = effects.sunPath(await sunCalc(), `${new Date().getUTCFullYear()}-03-21`, (bbox[1] + bbox[3]) / 2, (bbox[0] + bbox[2]) / 2);
+        // The garden guide's day this year (MM-DD); the sun's path barely moves from year to year.
+        const sun = guides.garden ? effects.sunPath(await sunCalc(), `${new Date().getUTCFullYear()}-${guides.garden.date}`, (bbox[1] + bbox[3]) / 2, (bbox[0] + bbox[2]) / 2) : null;
         const started = performance.now();
-        const result = await inWorker({ site, lots, existing, proposed, sun });
+        const result = await inWorker({ site, lots, existing, proposed, sun, guides });
         log(`${result.lots.length} of ${lots.length} plots affected, ${existing.length} buildings, ${Math.round(performance.now() - started)} ms`);
         const geometries = new Map(lots.map(lot => [lot.id, lot.geometry]));
-        return { status: result.lots.length ? 'affected' : 'clear', ...result, geometries,
+        return { status: result.lots.length ? 'affected' : 'clear', ...result, guides, geometries,
             surveys: [...new Set(existing.map(record => record.survey).filter(Boolean))] };
     }
 
@@ -143,14 +176,21 @@
         node.setAttribute('aria-hidden', 'true');
         return node;
     }
-    function readingText(lot, kind) {
+    // A guide's day (MM-DD) in the reader's language: "21 March".
+    const dayOf = monthDay => new Intl.DateTimeFormat(format().currentLocale(), { day: 'numeric', month: 'long', timeZone: 'UTC' })
+        .format(new Date(`2000-${monthDay}T12:00:00Z`));
+    const ratio = value => format().formatNumber(value, { maxFractionDigits: 2 });
+    // A reading in words, with the place's guide for it.
+    function readingText(lot, kind, guides) {
         const value = lot[kind];
-        if (kind === 'garden') return t('neighbourEffects.garden', { before: share(value.before), after: share(value.after) });
-        if (kind === 'sky') return t('neighbourEffects.sky', { before: sky(value.before), after: sky(value.after) });
-        return value.before === null ? t('neighbourEffects.distanceNew', { after: reading(value.after) })
-            : t('neighbourEffects.distance', { before: reading(value.before), after: reading(value.after) });
+        if (kind === 'garden') return t('neighbourEffects.garden', { hours: format().formatNumber(guides.garden.hours), date: dayOf(guides.garden.date),
+            before: share(value.before), after: share(value.after), share: share(guides.garden.share), ratio: ratio(guides.garden.ratio) });
+        if (kind === 'sky') return t('neighbourEffects.sky', { before: sky(value.before), after: sky(value.after),
+            percent: sky(guides.sky.percent), ratio: ratio(guides.sky.ratio) });
+        return value.before === null ? t('neighbourEffects.distanceNew', { after: reading(value.after), metres: metres(guides.distance.metres) })
+            : t('neighbourEffects.distance', { before: reading(value.before), after: reading(value.after), metres: metres(guides.distance.metres) });
     }
-    function plotItem(lot, container) {
+    function plotItem(lot, container, guides) {
         const effects = root.NeighbourEffects;
         const item = element('li', `neighbour-effects__plot neighbour-effects__plot--${lot.status}`);
         // The plot's name points at it on the map: hover or focus highlights it, a click keeps it
@@ -174,7 +214,7 @@
         const lines = element('ul', 'neighbour-effects__readings');
         for (const { kind, status } of effects.changes(lot)) {
             const line = element('li', `neighbour-effects__reading neighbour-effects__reading--${status}`);
-            line.append(icon(kind, status), ' ', readingText(lot, kind));
+            line.append(icon(kind, status), ' ', readingText(lot, kind, guides));
             lines.append(line);
         }
         item.append(name, ' ', badges, lines);
@@ -196,15 +236,18 @@
             return control;
         };
         group.append(option(null, t('neighbourEffects.filterAll'), result.lots.length));
-        for (const each of root.NeighbourEffects.KINDS) {
+        // Only the readings this place's guides use.
+        for (const each of root.NeighbourEffects.KINDS.filter(kind => result.guides[kind])) {
             group.append(option(each, t(KIND_KEYS[each]), result.lots.filter(lot => lot[each] && lot[each].status !== 'same').length));
         }
         return group;
     }
-    // What "beyond a guide" means, a click away.
-    function guides() {
+    // What "beyond a guide" means here, a click away: the place's guides, and whether they bind.
+    function guidesNote(guides) {
         const details = element('details', 'neighbour-effects__guides');
-        details.append(element('summary', '', t('neighbourEffects.guidesTitle')), element('p', '', t('neighbourEffects.guidesText')));
+        details.append(element('summary', '', t('neighbourEffects.guidesTitle')),
+            element('p', '', t('neighbourEffects.guidesText', { source: guides.label || '' })),
+            element('p', '', t(guides.binding ? 'neighbourEffects.guidesBinding' : 'neighbourEffects.guidesAdvice')));
         return details;
     }
     // The heading's icon turns into a spinner while the section measures (BusyControl's .cb-busy);
@@ -223,7 +266,9 @@
         if (kind === undefined) kind = shownKind.get(container) ?? null;
         shownKind.set(container, kind);
         const status = result?.status || 'measuring';
-        container.hidden = false;
+        // A place without neighbour guides has no section.
+        container.hidden = status === 'notApplicable';
+        if (status === 'notApplicable') { container.replaceChildren(); return; }
         container.dataset.status = status === 'affected' && result.lots.some(lot => lot.status === 'fail') ? 'fail' : status;
         // While measuring, the heading's icon is a spinner (BusyControl's .cb-busy).
         const title = element('h3', `cb-kicker neighbour-effects__title${status === 'measuring' ? ' cb-busy' : ''}`);
@@ -241,14 +286,15 @@
             container.append(element('p', 'neighbour-effects__headline', t('neighbourEffects.summary', { count: result.lots.length, fail: fails })),
                 filters(container, result, kind));
             const [beyond, within] = root.NeighbourEffects.arrange(result.lots, { kind });
-            for (const [lots, key, group] of [[beyond, 'neighbourEffects.groupBeyond', 'beyond'], [within, 'neighbourEffects.groupWithin', 'within']]) {
+            const beyondKey = result.guides.binding ? 'neighbourEffects.groupBeyondBinding' : 'neighbourEffects.groupBeyond';
+            for (const [lots, key, group] of [[beyond, beyondKey, 'beyond'], [within, 'neighbourEffects.groupWithin', 'within']]) {
                 if (!lots.length) continue;
                 container.append(element('h4', `neighbour-effects__group neighbour-effects__group--${group}`, t(key, { count: lots.length })));
                 const list = element('ul', 'neighbour-effects__plots');
-                for (const lot of lots) list.append(plotItem(lot, container));
+                for (const lot of lots) list.append(plotItem(lot, container, result.guides));
                 container.append(list);
             }
-            container.append(guides());
+            container.append(guidesNote(result.guides));
         }
         const heights = result.surveys.length ? t('neighbourEffects.heightsSurvey', { source: result.surveys.join(', ') }) : t('neighbourEffects.heightsSource');
         container.append(element('p', 'neighbour-effects__basis', t('neighbourEffects.basis', { heights })));
@@ -312,5 +358,5 @@
         }
     }
 
-    root.NeighbourEffectsAdvisor = { assess, assessDesign, render, busy, show, clear, highlight, pin, plots };
+    root.NeighbourEffectsAdvisor = { assess, assessDesign, guidesFor, applies, render, busy, show, clear, highlight, pin, plots };
 })(window);

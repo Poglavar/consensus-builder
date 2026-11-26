@@ -367,6 +367,13 @@
         "label": "National Planning Policy Framework (2026), chapters 13, 18 and 20",
         "url": "https://www.gov.uk/guidance/national-planning-policy-framework"
       },
+      "neighbourGuides": {
+        "label": "BRE, Site layout planning for daylight and sunlight (BR 209, 2022); 21 m between facing windows in local design guides",
+        "binding": false,
+        "garden": { "date": "03-21", "hours": 2, "share": 0.5, "ratio": 0.8 },
+        "sky": { "percent": 27, "ratio": 0.8 },
+        "distance": { "metres": 21 }
+      },
       "effects": [
         { "dataset": "scheduled-monument", "effect": "prohibit", "reasonCode": "scheduled-monument" },
         { "dataset": "listed-building-outline", "effect": "prohibit", "subject": "existing-building", "reasonCode": "listed-building" },

@@ -59,6 +59,9 @@
         section.setAttribute('aria-live', 'polite');
         section.hidden = true;
         const control = button(win, doc, win.i18n.t('neighbourEffects.title'), () => runEffects(win, getPlan, section));
+        // Only where the city's rule sets state neighbour guides.
+        wrapper.hidden = true;
+        win.NeighbourEffectsAdvisor?.guidesFor?.().then(guides => { wrapper.hidden = !guides; }, () => {});
         const icon = doc.createElement('i');
         icon.className = 'fas fa-sun';
         icon.setAttribute('aria-hidden', 'true');

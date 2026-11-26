@@ -247,11 +247,13 @@
     let singleEffectsShown = false;
     function scheduleSingleBuildingEffects(buildings) {
         const advisor = window.NeighbourEffectsAdvisor, container = document.getElementById('single-building-effects');
+        // Only where the city's rule sets state neighbour guides (the assessment answers notApplicable
+        // otherwise, and the section stays hidden).
         if (!advisor || !container) return;
         // The first time the section says it is measuring; afterwards the last result stays while its
         // heading spins until the new one lands.
-        if (!singleEffectsShown) advisor.render(container, null);
-        else advisor.busy(container, true);
+        if (singleEffectsShown) advisor.busy(container, true);
+        else if (advisor.applies()) advisor.render(container, null);
         void advisor.assess({ buildings }, result => {
             if (!result || !singleSession) return;
             singleEffectsShown = true;

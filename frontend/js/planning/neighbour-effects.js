@@ -1,8 +1,9 @@
-// Effects of a design on its neighbouring plots, before and after, against the usual daylight and
-// privacy guides: garden sunlight on 21 March (half the garden with 2 hours of sun, or 0.8 times
-// before), sky visible from a facing wall (vertical sky component 27 %, or 0.8 times before) and the
-// distance to the nearest facing wall (21 m). Pure: footprints in lng/lat, heights in metres above
-// flat ground, sun positions passed in (SunCalc's convention); no DOM, no turf. docs/neighbour-effects.md.
+// Effects of a design on its neighbouring plots, before and after: garden sunlight on a day, sky
+// visible from a facing wall (vertical sky component) and the distance to the nearest facing wall.
+// How each is measured is here; which readings a place uses and their thresholds are its guides
+// (a rule set's `neighbourGuides`, data/planning-sources.json), passed in. Pure: footprints in
+// lng/lat, heights in metres above flat ground, sun positions passed in (SunCalc's convention); no
+// DOM, no turf. docs/neighbour-effects.md.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -10,9 +11,10 @@
 })(typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : null, function () {
     'use strict';
 
-    const GUIDE = {
-        gardenHours: 2, gardenShare: 0.5, ratio: 0.8,
-        skyPercent: 27, facingDistanceM: 21,
+    // How the readings are taken, the same everywhere: a window's centre 1.6 m up a wall, walls from
+    // 1.5 m long, plots within 4 times the tallest changed building (30–200 m), a garden grid of at
+    // most 200 points, the sky every 2° and the sun every 10 minutes.
+    const MEASURE = {
         windowHeightM: 1.6, minWallM: 1.5,
         reachFactor: 4, minReachM: 30, maxReachM: 200,
         maxGardenPoints: 200, skyStepDeg: 2, sunStepMin: 10
@@ -130,7 +132,7 @@
     // ---- Sun ----
     // The sun's positions over a day at a place, every `stepMin` minutes while it is up:
     // [{ altitude, dx, dy }] with (dx, dy) the horizontal unit vector towards the sun (east, north).
-    function sunPath(sunCalc, dateISO, lat, lng, stepMin = GUIDE.sunStepMin) {
+    function sunPath(sunCalc, dateISO, lat, lng, stepMin = MEASURE.sunStepMin) {
         const [year, month, day] = String(dateISO).split('-').map(Number);
         const solarMidnight = Date.UTC(year, month - 1, day) - lng / 15 * 3600000;
         const path = [];
@@ -154,7 +156,7 @@
     const F = theta => (theta / 2 + Math.sin(2 * theta) / 4 - (2 / 3) * Math.cos(theta) ** 3) / 3;
     const HORIZONTAL = 7 * Math.PI / 9;
     // The directions a wall point facing (nx, ny) looks along: [{ dx, dy, weight }] over the half plane.
-    function wallDirections(nx, ny, stepDeg = GUIDE.skyStepDeg) {
+    function wallDirections(nx, ny, stepDeg = MEASURE.skyStepDeg) {
         const step = stepDeg * Math.PI / 180, normal = Math.atan2(ny, nx), directions = [];
         for (let phi = -Math.PI / 2 + step / 2; phi < Math.PI / 2; phi += step) {
             directions.push({ dx: Math.cos(normal + phi), dy: Math.sin(normal + phi), weight: Math.cos(phi) * step });
@@ -178,7 +180,7 @@
     // obstruction elevations along `directions`: 39.6 with nothing in front of it.
     const skyPercent = (directions, elevations) => 100 * directions.reduce((sum, direction, i) =>
         sum + direction.weight * (F(Math.PI / 2) - F(elevations[i])), 0) / HORIZONTAL;
-    function skyComponent(solids, x, y, h0, nx, ny, stepDeg = GUIDE.skyStepDeg) {
+    function skyComponent(solids, x, y, h0, nx, ny, stepDeg = MEASURE.skyStepDeg) {
         const directions = wallDirections(nx, ny, stepDeg);
         return skyPercent(directions, obstructions(solids, x, y, h0, directions));
     }
@@ -199,7 +201,7 @@
             const ring = part.rings[0], outward = ringArea(ring) > 0 ? 1 : -1;
             for (let i = 0; i < ring.length - 1; i++) {
                 const a = ring[i], b = ring[i + 1], length = Math.hypot(b[0] - a[0], b[1] - a[1]);
-                if (length < GUIDE.minWallM) continue;
+                if (length < MEASURE.minWallM) continue;
                 // A counter-clockwise ring's outside is on the right of each edge.
                 const nx = outward * (b[1] - a[1]) / length, ny = -outward * (b[0] - a[0]) / length;
                 const mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
@@ -230,7 +232,7 @@
     // The garden of a lot (its land outside every building, before and after) sampled on a grid, and
     // the share of it with at least two hours of sun on the day of `sun`. Buildings that stay are
     // tested once for both states; a point stops counting once both states have their two hours.
-    function gardenReading(lot, { kept, removed, design }, sun) {
+    function gardenReading(lot, { kept, removed, design }, sun, guide) {
         const [w, s, e, n] = lot.box;
         // Per sun position, only the solids that can shade some part of the lot: on the sun's side of
         // it and tall enough for their shadow to reach it, nearest first. When neither the design nor
@@ -245,8 +247,8 @@
         const changing = sun.positions.map(position => ({ position, removed: casting(goes, position), design: casting(comes, position) }));
         if (changing.every(entry => !entry.removed.length && !entry.design.length)) return null;
         const casters = changing.map(entry => ({ ...entry, kept: casting(stays, entry.position) }));
-        const step = Math.max(1, Math.sqrt(areaOf(lot.parts) / GUIDE.maxGardenPoints));
-        const need = Math.ceil(GUIDE.gardenHours * 60 / sun.stepMin);
+        const step = Math.max(1, Math.sqrt(areaOf(lot.parts) / MEASURE.maxGardenPoints));
+        const need = Math.ceil(guide.hours * 60 / sun.stepMin);
         const covered = (solids, x, y) => solids.some(solid => inParts(solid.parts, x, y));
         const before = { lit: 0, total: 0 }, after = { lit: 0, total: 0 };
         for (let x = w + step / 2; x < e; x += step) for (let y = s + step / 2; y < n; y += step) {
@@ -264,25 +266,28 @@
         }
         if (!before.total || !after.total) return null;
         const share = { before: before.lit / before.total, after: after.lit / after.total };
-        const status = share.after < GUIDE.gardenShare && share.after < GUIDE.ratio * share.before - 1e-9 ? 'fail'
+        const status = share.after < guide.share && share.after < guide.ratio * share.before - 1e-9 ? 'fail'
             : changed(share.before, share.after, SAME.share) ? 'worse' : 'same';
         return { areaM2: after.total * step * step, before: share.before, after: share.after, status };
     }
     // The worst facing wall of a lot's buildings: the sky it sees before and after, and the nearest
-    // facing wall of the design (and, before, of what the design replaces).
-    function wallReadings(lotBuildings, { kept, removed, design }, reachM) {
+    // facing wall of the design (and, before, of what the design replaces). Each only when the place
+    // has a guide for it (`guides.sky`, `guides.distance`).
+    function wallReadings(lotBuildings, { kept, removed, design }, reachM, guides) {
         let sky = null, distance = null;
         const loss = reading => reading.before ? reading.after / reading.before : 1;
         for (const building of lotBuildings) {
             for (const wall of facingWalls(building, design, [...kept, ...removed])) {
                 const after = Math.min(...design.map(solid => solidSegmentDistance(solid, wall.a, wall.b)));
                 const was = removed.length ? Math.min(...removed.map(solid => solidSegmentDistance(solid, wall.a, wall.b))) : null;
-                const near = { before: was, after, buildingId: building.id };
-                // Only a wall brought within the guide counts; farther than 21 m a closer wall is no effect.
-                near.status = near.after < GUIDE.facingDistanceM - 1e-9 && (near.before === null || near.after < near.before - SAME.distance) ? 'fail' : 'same';
-                if (!distance || near.after < distance.after) distance = near;
-                if (after > reachM) continue;
-                const x = wall.mid[0] + wall.nx * 0.05, y = wall.mid[1] + wall.ny * 0.05, h0 = GUIDE.windowHeightM;
+                if (guides.distance) {
+                    const near = { before: was, after, guideM: guides.distance.metres, buildingId: building.id };
+                    // Only a wall brought within the guide counts; beyond it a closer wall is no effect.
+                    near.status = near.after < near.guideM - 1e-9 && (near.before === null || near.after < near.before - SAME.distance) ? 'fail' : 'same';
+                    if (!distance || near.after < distance.after) distance = near;
+                }
+                if (!guides.sky || after > reachM) continue;
+                const x = wall.mid[0] + wall.nx * 0.05, y = wall.mid[1] + wall.ny * 0.05, h0 = MEASURE.windowHeightM;
                 const directions = wallDirections(wall.nx, wall.ny);
                 const went = obstructions(removed, x, y, h0, directions), come = obstructions(design, x, y, h0, directions);
                 // A wall that sees neither the design nor what it replaces keeps its sky.
@@ -291,7 +296,7 @@
                 const stay = obstructions(byDistance, x, y, h0, directions);
                 const reading = { before: skyPercent(directions, stay.map((v, i) => Math.max(v, went[i]))),
                     after: skyPercent(directions, stay.map((v, i) => Math.max(v, come[i]))), buildingId: building.id };
-                reading.status = reading.after < GUIDE.skyPercent - 1e-9 && reading.after < GUIDE.ratio * reading.before - 1e-9 ? 'fail'
+                reading.status = reading.after < guides.sky.percent - 1e-9 && reading.after < guides.sky.ratio * reading.before - 1e-9 ? 'fail'
                     : changed(reading.before, reading.after, SAME.sky) ? 'worse' : 'same';
                 if (!sky || rank(reading.status) > rank(sky.status) || (rank(reading.status) === rank(sky.status) && loss(reading) < loss(sky))) sky = reading;
             }
@@ -304,10 +309,12 @@
 
     // `site`: the design's parcels (lng/lat geometries). `lots`: [{ id, geometry }] around it.
     // `existing`: [{ id, geometry, heightM, estimated? }] buildings standing now; those on the site go
-    // with the design. `proposed`: [{ id, geometry, heightM }]. `sun`: sunPath(...) for 21 March.
-    // Answers { lots: [{ id, status, direction, distanceM, garden, sky, distance, estimatedHeights }],
-    // reachM, estimated } with only the lots whose readings change, worst first.
-    function assess({ site, lots, existing, proposed, sun }) {
+    // with the design. `guides`: the place's { garden?: { hours, share, ratio }, sky?: { percent,
+    // ratio }, distance?: { metres } }; a reading without a guide is not taken. `sun`: sunPath(...) for
+    // the garden guide's day. Answers { lots: [{ id, status, direction, distanceM, garden, sky,
+    // distance, estimatedHeights }], reachM, estimated } with only the lots whose readings change,
+    // beyond a guide first, then by largest loss.
+    function assess({ site, lots, existing, proposed, sun, guides = {} }) {
         const firstPoint = proposed.map(record => record.geometry?.type === 'Polygon' ? record.geometry.coordinates[0]?.[0]
             : record.geometry?.coordinates?.[0]?.[0]?.[0]).find(Boolean);
         if (!firstPoint) return { lots: [], reachM: 0, estimated: 0 };
@@ -319,7 +326,7 @@
         const onSite = solid => solid.point && inParts(siteParts, solid.point[0], solid.point[1]);
         const removed = standing.filter(onSite), kept = standing.filter(solid => !onSite(solid));
         const tallest = Math.max(...design.map(solid => solid.heightM), ...removed.map(solid => solid.heightM));
-        const reachM = Math.max(GUIDE.minReachM, Math.min(GUIDE.maxReachM, GUIDE.reachFactor * tallest));
+        const reachM = Math.max(MEASURE.minReachM, Math.min(MEASURE.maxReachM, MEASURE.reachFactor * tallest));
         const changing = [...design, ...removed];
         const designBox = joinBoxes(design.map(solid => solid.box));
         const centre = [(designBox[0] + designBox[2]) / 2, (designBox[1] + designBox[3]) / 2];
@@ -333,10 +340,10 @@
             const apart = Math.min(...changing.map(solid => boxesApart(solid.box, shape.box)));
             if (apart > reachM) continue;
             const lotBuildings = kept.filter(solid => solid.point && inParts(parts, solid.point[0], solid.point[1]));
-            const near = solids => solids.filter(solid => boxesApart(solid.box, shape.box) <= GUIDE.maxReachM);
+            const near = solids => solids.filter(solid => boxesApart(solid.box, shape.box) <= MEASURE.maxReachM);
             const around = { kept: near(kept), removed: near(removed), design: near(design) };
-            const garden = gardenReading(shape, around, sun);
-            const { sky, distance } = wallReadings(lotBuildings, around, reachM);
+            const garden = guides.garden && sun ? gardenReading(shape, around, sun, guides.garden) : null;
+            const { sky, distance } = guides.sky || guides.distance ? wallReadings(lotBuildings, around, reachM, guides) : {};
             const status = worst([garden?.status, sky?.status, distance?.status]);
             if (status === 'same') continue;
             const bearing = (Math.atan2(middle[0] - centre[0], middle[1] - centre[1]) * 180 / Math.PI + 360) % 360;
@@ -350,13 +357,13 @@
     // ---- Ranking ----
     const KINDS = ['garden', 'sky', 'distance'];
     // How much one reading of a plot takes, 0–1: the share of its sunlit garden or sky lost, or for a
-    // facing wall how far it now stands inside the 21 m guide. 0 when the reading did not change.
+    // facing wall how far it now stands inside its guide. 0 when the reading did not change.
     function harmOf(lot, kind) {
         const value = lot[kind];
         if (!value || value.status === 'same') return 0;
         if (kind === 'distance') {
-            const was = Math.min(finite(value.before) ? value.before : GUIDE.facingDistanceM, GUIDE.facingDistanceM);
-            return Math.max(0, Math.min(1, (was - value.after) / GUIDE.facingDistanceM));
+            const was = Math.min(finite(value.before) ? value.before : value.guideM, value.guideM);
+            return Math.max(0, Math.min(1, (was - value.after) / value.guideM));
         }
         return value.before > 0 ? Math.max(0, Math.min(1, (value.before - value.after) / value.before)) : 0;
     }
@@ -372,5 +379,5 @@
         return [order(shown.filter(beyond)), order(shown.filter(lot => !beyond(lot)))];
     }
 
-    return { GUIDE, KINDS, sunPath, skyComponent, assess, projector, harm, changes, arrange };
+    return { MEASURE, KINDS, sunPath, skyComponent, assess, projector, harm, changes, arrange };
 });

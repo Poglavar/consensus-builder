@@ -16,14 +16,17 @@ const element = tag => ({ tag, className: '', textContent: '', children: [], dat
     removeAttribute(key) { delete this.attributes[key]; },
     addEventListener(type, handler) { this[`on${type}`] = handler; } });
 const textOf = node => typeof node === 'string' ? node : [node.textContent, ...node.children.map(textOf)].join('');
-const format = { formatPercent: (v, o) => `${Math.round(o?.ofHundred ? v : v * 100)}%`, formatLength: v => `${Math.round(v)} m` };
+const format = { formatPercent: (v, o) => `${Math.round(o?.ofHundred ? v : v * 100)}%`, formatLength: v => `${Math.round(v)} m`,
+    formatNumber: v => String(v), currentLocale: () => 'en-GB' };
 
 function load() {
     const window = { i18n: { t: (key, params = {}) => `${key}(${Object.values(params).join('|')})` }, CbFormat: format, NeighbourEffects };
     new Function('window', 'document', source)(window, { createElement: element });
     return window.NeighbourEffectsAdvisor;
 }
-const AFFECTED = { status: 'affected', estimated: 2, surveys: ['EA LiDAR'], geometries: new Map(), lots: [
+const GUIDES = { label: 'Test guides', binding: false, garden: { date: '03-21', hours: 2, share: 0.5, ratio: 0.8 },
+    sky: { percent: 27, ratio: 0.8 }, distance: { metres: 21 } };
+const AFFECTED = { status: 'affected', estimated: 2, surveys: ['EA LiDAR'], guides: GUIDES, geometries: new Map(), lots: [
     { id: 'a', status: 'fail', direction: 'n', distanceM: 4, garden: { before: 0.8, after: 0.3, status: 'fail' },
         sky: { before: 30, after: 29.9, status: 'same' }, distance: { before: null, after: 12, status: 'fail' } }] };
 
@@ -35,15 +38,17 @@ describe('Effects section', () => {
         expect(section.dataset.status).toBe('fail');
         const text = textOf(section);
         expect(text).toContain('neighbourEffects.plot(neighbourEffects.direction.n()|4 m)');
-        expect(text).toContain('neighbourEffects.garden(80%|30%)');
-        expect(text).toContain('neighbourEffects.distanceNew(12 m)');
+        // The guide's numbers and day come from the place's guides.
+        expect(text).toContain('neighbourEffects.garden(2|21 March|80%|30%|50%|0.8)');
+        expect(text).toContain('neighbourEffects.distanceNew(12 m|21 m)');
         expect(text).not.toContain('neighbourEffects.sky(');
         expect(text).toContain('neighbourEffects.heightsSurvey(EA LiDAR)');
         expect(text).toContain('neighbourEffects.estimated(2)');
         // Grouped, with what the guides mean a click away, and an icon per changed reading.
         expect(text).toContain('neighbourEffects.groupBeyond(1)');
         expect(text).not.toContain('neighbourEffects.groupWithin');
-        expect(text).toContain('neighbourEffects.guidesText');
+        expect(text).toContain('neighbourEffects.guidesText(Test guides)');
+        expect(text).toContain('neighbourEffects.guidesAdvice');
         const icons = [];
         const walk = node => { if (typeof node !== 'string') { if (node.tag === 'i') icons.push(node.className); node.children.forEach(walk); } };
         walk(section);
@@ -67,6 +72,24 @@ describe('Effects section', () => {
         // The filter stays when a new result for the same section arrives.
         advisor.render(section, result);
         expect(textOf(section)).not.toContain('neighbourEffects.groupBeyond');
+    });
+
+    it('has no section where the place states no guides, and says when guides bind', () => {
+        const advisor = load();
+        const section = element('section');
+        advisor.render(section, { status: 'notApplicable', lots: [] });
+        expect(section.hidden).toBe(true);
+        expect(section.children).toEqual([]);
+        advisor.render(section, { ...AFFECTED, guides: { ...GUIDES, binding: true } });
+        expect(section.hidden).toBe(false);
+        expect(textOf(section)).toContain('neighbourEffects.groupBeyondBinding(1)');
+        expect(textOf(section)).toContain('neighbourEffects.guidesBinding');
+        // Filters only for the readings the guides use.
+        // (A place with only a garden guide has only garden readings.)
+        const gardenOnly = { ...AFFECTED.lots[0], sky: null, distance: null };
+        advisor.render(section, { ...AFFECTED, lots: [gardenOnly], guides: { label: 'Only gardens', garden: GUIDES.garden } }, { kind: null });
+        const filters = section.children.find(child => child.className === 'neighbour-effects__filters').children;
+        expect(filters.map(textOf)).toEqual(['neighbourEffects.filterAll() (1)', ' neighbourEffects.kind.garden() (1)']);
     });
 
     it('says when nothing changes, and while measuring', () => {

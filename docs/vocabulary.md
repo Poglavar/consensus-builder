@@ -735,7 +735,7 @@ The comparison of a design's buildings with the Permitted items under them, rule
 
 ### Effects on neighbours
 
-What a design does to each neighbouring plot, before and after it: the share of the plot's garden with 2 hours of sun on 21 March, the sky a wall facing the design sees (vertical sky component) and the distance to the nearest facing wall, each against its guide (half the garden or 0.8 times before; 27 % or 0.8 times before; 21 m). "Before" is the buildings standing now; "after" removes those on the design's parcels and adds the design's. Neighbours' heights are the height survey's where it covers them. A plot is listed only when a reading changes; it is beyond a guide, or loses something within the guides. Advice, like the Permitted check. See [neighbour-effects.md](neighbour-effects.md).
+What a design does to each neighbouring plot, before and after it: the share of the plot's garden with a number of hours of sun on a given day, the sky a wall facing the design sees (vertical sky component) and the distance to the nearest facing wall, each against the place's guide for it. The guides (which readings apply, their thresholds, whether they bind) are a rule set's `neighbourGuides`; a place whose rule sets state none has no effects readings. "Before" is the buildings standing now; "after" removes those on the design's parcels and adds the design's. Neighbours' heights are the height survey's where it covers them. A plot is listed only when a reading changes; it is beyond a guide, or loses something within the guides. Advice, like the Permitted check. See [neighbour-effects.md](neighbour-effects.md).
 
 ### Planning designation
 
@@ -747,7 +747,7 @@ A publisher of planning designations read for a box through one adapter (`fronte
 
 ### Rule set
 
-The planning regime of a place for designations: which datasets of a constraint source matter and the effect each has (`effects`, optionally narrowed by a source field, `where`), plus the regime's policies stated as rule terms (`policies`). A city names its rule sets in `planning.ruleSetIds`. `baseRule: null` says the regime has no base Permitted rule here (England is discretionary).
+The planning regime of a place for designations: which datasets of a constraint source matter and the effect each has (`effects`, optionally narrowed by a source field, `where`), plus the regime's policies stated as rule terms (`policies`) and its guides for effects on neighbours (`neighbourGuides`). A city names its rule sets in `planning.ruleSetIds`. `baseRule: null` says the regime has no base Permitted rule here (England is discretionary).
 
 ### Restriction effect
 

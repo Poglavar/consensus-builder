@@ -468,9 +468,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
     // Effects on neighbours: the design's new buildings, as its one-member plan, against the
     // neighbouring plots; the section below the actions shows them (ui/plan-analysis-controls.js).
-    const effectsButtonHtml = proposalKey
+    // Only where the city's rule sets state neighbour guides: hidden until they are known
+    // (effects-advisor.js shows [data-neighbour-effects-control] once they are read).
+    const effectsButtonHtml = proposalKey && window.NeighbourEffectsAdvisor
         ? `
-        <button type="button" class="btn btn-design-effects" onclick="BusyControl.track(this, () => window.PlanAnalysisControls.runEffects(window, () => window.PlanAnalysisControls.designPlan(window, window.proposalStorage.getProposal(${inlineJsArg(proposalKey)})), this.closest('.proposal-primary-actions').parentElement.querySelector('[data-design-effects]')))">
+        <button type="button" class="btn btn-design-effects" data-neighbour-effects-control ${window.NeighbourEffectsAdvisor.applies() ? '' : 'hidden'} onclick="BusyControl.track(this, () => window.PlanAnalysisControls.runEffects(window, () => window.PlanAnalysisControls.designPlan(window, window.proposalStorage.getProposal(${inlineJsArg(proposalKey)})), this.closest('.proposal-primary-actions').parentElement.querySelector('[data-design-effects]')))">
             <i class="fas fa-sun" aria-hidden="true"></i> ${tProposal('neighbourEffects.title', 'Effects on neighbours')}
         </button>
     ` : '';
@@ -606,7 +608,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             ${effectsButtonHtml}
             ${shareRefusalNote ? `<p class="proposal-publish-later" id="proposal-publish-later-note">${safeAgentText(shareRefusalNote)}</p>` : ''}
         </div>
-        ${proposalKey ? '<section class="neighbour-effects" data-design-effects role="status" aria-live="polite" hidden></section>' : ''}
+        ${effectsButtonHtml ? '<section class="neighbour-effects" data-design-effects role="status" aria-live="polite" hidden></section>' : ''}
         ${mapActionFailureHtml}
     `;
     const escapedProposalDescription = proposalDisplayDescription
