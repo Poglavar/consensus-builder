@@ -8967,13 +8967,20 @@
         "measuring": "A medir o sol, o céu e as distâncias nos lotes vizinhos…",
         "unavailable": "Não foi possível medir os efeitos nos vizinhos: {{reason}}",
         "clear": "Nenhum lote vizinho perde sol nem céu, e nenhuma parede fronteira fica mais perto.",
+        "kind": {
+            "garden": "Sol no jardim",
+            "sky": "Céu da parede fronteira",
+            "distance": "Distância fronteira"
+        },
+        "filterLabel": "Mostrar lotes por medição",
+        "filterAll": "Todos",
+        "groupBeyond": "Além de uma referência ({{count}}): provavelmente conta contra o projeto",
+        "groupWithin": "Dentro das referências ({{count}}): uma perda que as referências aceitam",
+        "guidesTitle": "O que são as referências",
+        "guidesText": "As referências são os padrões habituais para a luz e a privacidade de um vizinho em Inglaterra: o sol no jardim e o céu segundo o guia BRE Site layout planning for daylight and sunlight (2022), e os 21 m entre janelas fronteiras que muitos guias de desenho locais usam. Além de uma referência, o vizinho provavelmente notará a perda, e a autoridade de planeamento esperará que o projeto a justifique ou mude. Dentro das referências, o lote perde algo, mas não o suficiente para contar contra o projeto. As referências são conselhos que as autoridades aplicam com flexibilidade, não lei: nenhuma destas medições proíbe um projeto. Os limites vinculativos estão na verificação do permitido.",
         "noBuildings": "Não acrescenta edifícios novos para medir.",
         "summary": "Lotes vizinhos afetados: {{count}}; além de uma referência: {{fail}}",
         "plot": "Lote a {{direction}}, a {{distance}}",
-        "status": {
-            "fail": "além de uma referência",
-            "worse": "perde algo, dentro das referências"
-        },
         "garden": "Jardim com 2 horas de sol a 21 de março: {{before}} → {{after}} (referência: metade, ou 0,8 × antes)",
         "sky": "Céu visto da parede fronteira: {{before}} → {{after}} (referência: 27 %, ou 0,8 × antes)",
         "distance": "Parede fronteira mais próxima: {{before}} → {{after}} (referência: 21 m)",

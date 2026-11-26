@@ -8834,13 +8834,20 @@
         "measuring": "Mjerim sunce, nebo i udaljenosti na susjednim česticama…",
         "unavailable": "Učinci na susjede nisu izmjereni: {{reason}}",
         "clear": "Nijedna susjedna čestica ne gubi sunce ni nebo, i nijedan nasuprotni zid ne dolazi bliže.",
+        "kind": {
+            "garden": "Sunce u vrtu",
+            "sky": "Nebo s nasuprotnog zida",
+            "distance": "Udaljenost nasuprotnog zida"
+        },
+        "filterLabel": "Prikaži čestice po mjerenju",
+        "filterAll": "Sve",
+        "groupBeyond": "Preko smjernice ({{count}}): vjerojatno ide protiv projekta",
+        "groupWithin": "Unutar smjernica ({{count}}): gubitak koji smjernice prihvaćaju",
+        "guidesTitle": "Što su smjernice",
+        "guidesText": "Smjernice su uobičajena mjerila za svjetlo i privatnost susjeda u Engleskoj: sunce u vrtu i nebo prema BRE smjernici Site layout planning for daylight and sunlight (2022), i 21 m između nasuprotnih prozora koje koriste mnoge lokalne smjernice za oblikovanje. Preko smjernice susjed će vjerojatno primijetiti gubitak, a nadležno tijelo očekivat će da ga projekt opravda ili se promijeni. Unutar smjernica čestica nešto gubi, ali ne toliko da bi to išlo protiv projekta. Smjernice su savjet koji tijela primjenjuju fleksibilno, a ne zakon: nijedno od ovih mjerenja ne zabranjuje projekt. Obvezujuća ograničenja su u provjeri dopuštenog.",
         "noBuildings": "Ne dodaje nove zgrade za mjerenje.",
         "summary": "Pogođene susjedne čestice: {{count}}; preko smjernice: {{fail}}",
         "plot": "Čestica na {{direction}}, udaljena {{distance}}",
-        "status": {
-            "fail": "preko smjernice",
-            "worse": "nešto gubi, unutar smjernica"
-        },
         "garden": "Vrt s 2 sata sunca 21. ožujka: {{before}} → {{after}} (smjernica: polovica, ili 0,8 × prije)",
         "sky": "Nebo s nasuprotnog zida: {{before}} → {{after}} (smjernica: 27 %, ili 0,8 × prije)",
         "distance": "Najbliži nasuprotni zid: {{before}} → {{after}} (smjernica: 21 m)",

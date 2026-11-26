@@ -76,6 +76,23 @@ describe('effects on neighbouring plots', () => {
         expect(north.distance.status).toBe('fail');
     });
 
+    it('groups plots beyond a guide before those within, each by its largest loss, and filters by reading', () => {
+        const lot = (id, garden, sky, distance) => ({ id, distanceM: 1, status: [garden, sky, distance].some(r => r?.status === 'fail') ? 'fail' : 'worse', garden, sky, distance });
+        const small = lot('small', { before: 1, after: 0.9, status: 'worse' }, null, null);
+        const big = lot('big', null, { before: 30, after: 15, status: 'worse' }, null);
+        const failing = lot('failing', { before: 0.6, after: 0.45, status: 'fail' }, { before: 30, after: 29, status: 'worse' }, null);
+        const near = lot('near', null, null, { before: null, after: 10.5, status: 'fail' });
+        const [beyond, within] = effects.arrange([small, big, failing, near]);
+        // near: 10.5 m is half way inside 21 m (0.5); failing: a quarter of its garden sun (0.25).
+        expect(beyond.map(l => l.id)).toEqual(['near', 'failing']);
+        expect(within.map(l => l.id)).toEqual(['big', 'small']);
+        const [skyBeyond, skyWithin] = effects.arrange([small, big, failing, near], { kind: 'sky' });
+        expect(skyBeyond).toEqual([]);
+        // By sky alone: big lost half, failing a thirtieth; the garden-only and distance-only plots drop out.
+        expect(skyWithin.map(l => l.id)).toEqual(['big', 'failing']);
+        expect(effects.changes(failing)).toEqual([{ kind: 'garden', status: 'fail' }, { kind: 'sky', status: 'worse' }]);
+    });
+
     it('counts sun on 21 March only while the sun is up', () => {
         expect(SUN.positions.length * SUN.stepMin).toBeGreaterThan(11.5 * 60);
         expect(SUN.positions.length * SUN.stepMin).toBeLessThan(12.7 * 60);

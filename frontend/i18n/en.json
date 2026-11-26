@@ -8788,13 +8788,20 @@
         "measuring": "Measuring sunlight, sky and distances on the neighbouring plots…",
         "unavailable": "Effects on neighbours could not be measured: {{reason}}",
         "clear": "No neighbouring plot loses sunlight or sky, and no facing wall comes closer.",
+        "kind": {
+            "garden": "Garden sunlight",
+            "sky": "Sky from facing wall",
+            "distance": "Facing distance"
+        },
+        "filterLabel": "Show plots by reading",
+        "filterAll": "All",
+        "groupBeyond": "Beyond a guide ({{count}}): likely to count against the design",
+        "groupWithin": "Within the guides ({{count}}): a loss the guides accept",
+        "guidesTitle": "What the guides are",
+        "guidesText": "The guides are the usual benchmarks for a neighbour's light and privacy in England: garden sunlight and sky from the BRE guide Site layout planning for daylight and sunlight (2022), and the 21 m between facing windows that many local design guides use. Beyond a guide, a neighbour is likely to notice the loss, and the planning authority will expect the design to justify it or change. Within the guides, the plot loses something, but not enough to count against the design. The guides are advice that authorities apply flexibly, not law: none of these readings forbids a design. Binding limits are in the Permitted check.",
         "noBuildings": "This adds no new buildings to measure.",
         "summary": "Neighbouring plots affected: {{count}}; beyond a guide: {{fail}}",
         "plot": "Plot to the {{direction}}, {{distance}} away",
-        "status": {
-            "fail": "beyond a guide",
-            "worse": "loses some, within the guides"
-        },
         "garden": "Garden with 2 hours of sun on 21 March: {{before}} → {{after}} (guide: half, or 0.8 × before)",
         "sky": "Sky seen from the facing wall: {{before}} → {{after}} (guide: 27%, or 0.8 × before)",
         "distance": "Nearest facing wall: {{before}} → {{after}} (guide: 21 m)",

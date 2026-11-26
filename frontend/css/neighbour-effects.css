@@ -21,10 +21,23 @@
 /* A plot's name points at it on the map (hover, focus, click to keep it highlighted). */
 .neighbour-effects__name { font-weight: 600; text-align: start; color: inherit; }
 .neighbour-effects__name[aria-pressed="true"] { outline: 2px solid currentColor; outline-offset: 2px; border-radius: var(--cb-radius-sm); }
-.neighbour-effects__status { font-size: var(--cb-text-xs); }
-.neighbour-effects__plot--fail .neighbour-effects__status { font-weight: 600; }
 .neighbour-effects__readings { margin: 0; padding-left: var(--cb-space-3); }
 .neighbour-effects__reading--fail { font-weight: 600; }
+/* Filter buttons: all plots, or one kind of reading. */
+.neighbour-effects__filters { display: flex; flex-wrap: wrap; gap: var(--cb-space-1); margin: var(--cb-space-1) 0 0; }
+.neighbour-effects__filter[aria-pressed="true"] { outline: 2px solid currentColor; outline-offset: 1px; }
+/* The two groups: beyond a guide, within the guides. */
+.neighbour-effects__group { margin: var(--cb-space-2) 0 0; font-size: var(--cb-text-sm); font-weight: 600; }
+.neighbour-effects__group--beyond { color: var(--cb-danger); }
+/* One icon per kind of reading (sun: garden sunlight, cloud: sky, arrows: facing distance), red
+   beyond a guide and amber within the guides. */
+.neighbour-effects__badges { display: inline-flex; gap: var(--cb-space-1); }
+.neighbour-effects__icon { width: 1.1em; text-align: center; }
+.neighbour-effects__icon--fail { color: var(--cb-danger); }
+.neighbour-effects__icon--worse { color: var(--cb-warning); }
+.neighbour-effects__guides { margin: var(--cb-space-2) 0 0; font-size: var(--cb-text-xs); }
+.neighbour-effects__guides summary { cursor: pointer; font-weight: 600; }
+.neighbour-effects__guides p { margin: var(--cb-space-1) 0 0; }
 .neighbour-effects__basis { margin: var(--cb-space-1) 0 0; opacity: 0.8; font-size: var(--cb-text-xs); }
 
 /* The affected plots on the map: red beyond a guide, amber where they only lose something. */

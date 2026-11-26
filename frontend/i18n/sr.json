@@ -8834,13 +8834,20 @@
         "measuring": "Merim sunce, nebo i udaljenosti na susednim parcelama…",
         "unavailable": "Uticaji na susede nisu izmereni: {{reason}}",
         "clear": "Nijedna susedna parcela ne gubi sunce ni nebo, i nijedan naspramni zid ne dolazi bliže.",
+        "kind": {
+            "garden": "Sunce u vrtu",
+            "sky": "Nebo sa naspramnog zida",
+            "distance": "Udaljenost naspramnog zida"
+        },
+        "filterLabel": "Prikaži parcele po merenju",
+        "filterAll": "Sve",
+        "groupBeyond": "Preko smernice ({{count}}): verovatno ide protiv projekta",
+        "groupWithin": "Unutar smernica ({{count}}): gubitak koji smernice prihvataju",
+        "guidesTitle": "Šta su smernice",
+        "guidesText": "Smernice su uobičajena merila za svetlo i privatnost suseda u Engleskoj: sunce u vrtu i nebo prema BRE smernici Site layout planning for daylight and sunlight (2022), i 21 m između naspramnih prozora koje koriste mnoge lokalne smernice za oblikovanje. Preko smernice sused će verovatno primetiti gubitak, a nadležni organ očekivaće da ga projekat opravda ili se promeni. Unutar smernica parcela nešto gubi, ali ne toliko da bi to išlo protiv projekta. Smernice su savet koji organi primenjuju fleksibilno, a ne zakon: nijedno od ovih merenja ne zabranjuje projekat. Obavezujuća ograničenja su u proveri dozvoljenog.",
         "noBuildings": "Ne dodaje nove zgrade za merenje.",
         "summary": "Pogođene susedne parcele: {{count}}; preko smernice: {{fail}}",
         "plot": "Parcela na {{direction}}, udaljena {{distance}}",
-        "status": {
-            "fail": "preko smernice",
-            "worse": "nešto gubi, unutar smernica"
-        },
         "garden": "Vrt sa 2 sata sunca 21. marta: {{before}} → {{after}} (smernica: polovina, ili 0,8 × pre)",
         "sky": "Nebo sa naspramnog zida: {{before}} → {{after}} (smernica: 27 %, ili 0,8 × pre)",
         "distance": "Najbliži naspramni zid: {{before}} → {{after}} (smernica: 21 m)",

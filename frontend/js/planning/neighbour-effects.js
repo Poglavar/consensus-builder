@@ -320,7 +320,7 @@
         const removed = standing.filter(onSite), kept = standing.filter(solid => !onSite(solid));
         const tallest = Math.max(...design.map(solid => solid.heightM), ...removed.map(solid => solid.heightM));
         const reachM = Math.max(GUIDE.minReachM, Math.min(GUIDE.maxReachM, GUIDE.reachFactor * tallest));
-        const changes = [...design, ...removed];
+        const changing = [...design, ...removed];
         const designBox = joinBoxes(design.map(solid => solid.box));
         const centre = [(designBox[0] + designBox[2]) / 2, (designBox[1] + designBox[3]) / 2];
         const results = [];
@@ -330,7 +330,7 @@
             const shape = { parts, box: joinBoxes(parts.map(part => part.box)) };
             const middle = pointIn(parts);
             if (!middle || inParts(siteParts, middle[0], middle[1])) continue;
-            const apart = Math.min(...changes.map(solid => boxesApart(solid.box, shape.box)));
+            const apart = Math.min(...changing.map(solid => boxesApart(solid.box, shape.box)));
             if (apart > reachM) continue;
             const lotBuildings = kept.filter(solid => solid.point && inParts(parts, solid.point[0], solid.point[1]));
             const near = solids => solids.filter(solid => boxesApart(solid.box, shape.box) <= GUIDE.maxReachM);
@@ -343,10 +343,34 @@
             results.push({ id: lot.id, status, direction: COMPASS[Math.round(bearing / 45) % 8], distanceM: apart, garden, sky, distance,
                 estimatedHeights: around.kept.filter(solid => solid.estimated).length });
         }
-        results.sort((a, b) => rank(b.status) - rank(a.status) || a.distanceM - b.distanceM);
-        return { lots: results, reachM, estimated: standing.filter(solid => solid.estimated).length };
+        return { lots: arrange(results).flat(), reachM, estimated: standing.filter(solid => solid.estimated).length };
     }
     const COMPASS = ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'];
 
-    return { GUIDE, sunPath, skyComponent, assess, projector };
+    // ---- Ranking ----
+    const KINDS = ['garden', 'sky', 'distance'];
+    // How much one reading of a plot takes, 0–1: the share of its sunlit garden or sky lost, or for a
+    // facing wall how far it now stands inside the 21 m guide. 0 when the reading did not change.
+    function harmOf(lot, kind) {
+        const value = lot[kind];
+        if (!value || value.status === 'same') return 0;
+        if (kind === 'distance') {
+            const was = Math.min(finite(value.before) ? value.before : GUIDE.facingDistanceM, GUIDE.facingDistanceM);
+            return Math.max(0, Math.min(1, (was - value.after) / GUIDE.facingDistanceM));
+        }
+        return value.before > 0 ? Math.max(0, Math.min(1, (value.before - value.after) / value.before)) : 0;
+    }
+    const harm = (lot, kind = null) => kind ? harmOf(lot, kind) : Math.max(...KINDS.map(each => harmOf(lot, each)));
+    // The kinds of reading that changed on a plot, with their status: [{ kind, status }].
+    const changes = lot => KINDS.filter(kind => lot[kind] && lot[kind].status !== 'same').map(kind => ({ kind, status: lot[kind].status }));
+    // Plots in two groups, those beyond a guide and those within the guides, each by its largest loss
+    // first. With `kind`, only the plots where that reading changed, by that reading's loss.
+    function arrange(lots, { kind = null } = {}) {
+        const shown = kind ? lots.filter(lot => lot[kind] && lot[kind].status !== 'same') : lots;
+        const order = list => list.slice().sort((a, b) => harm(b, kind) - harm(a, kind) || a.distanceM - b.distanceM);
+        const beyond = lot => (kind ? lot[kind]?.status : lot.status) === 'fail';
+        return [order(shown.filter(beyond)), order(shown.filter(lot => !beyond(lot)))];
+    }
+
+    return { GUIDE, KINDS, sunPath, skyComponent, assess, projector, harm, changes, arrange };
 });

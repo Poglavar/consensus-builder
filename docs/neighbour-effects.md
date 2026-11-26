@@ -13,9 +13,25 @@ the [Permitted check](vocabulary.md#permitted-check): they never stop a design b
 - **A saved plan:** the same button on the plan's Stats and analysis page in the map's plan panel,
   and on its card in Lists → Plans.
 
-Each lists the affected plots, worst first, by compass direction and distance, with the readings
-that changed, and colours the plots on the map: red beyond a guide, amber where they only lose
-something. Closing the click stack or the editor clears the map colouring.
+Each lists the affected plots in two groups, **beyond a guide** and **within the guides**, each by
+its largest loss first, named by compass direction and distance. A plot shows an icon per reading
+that changed (sun: garden sunlight, cloud: sky, arrows: facing distance), red beyond a guide and
+amber within, and the readings in words below. Filter buttons narrow the list to one kind of
+reading, sorted by that reading's loss. A plot's name highlights it on the map while hovered or
+focused; a click keeps it highlighted and brings it into view. The heading spins while the section
+measures; while it re-measures after an edit, the last result stays. "What the guides are" explains
+the groups. The plots are coloured on the map, red and amber the same way; closing the click stack
+or the editor clears the colouring.
+
+**Loss** is the share of a plot's sunlit garden or of its sky that it loses, or for a facing wall
+how far it now stands inside 21 m, as a share of 21 m.
+
+**What the groups mean.** The guides are advice that planning authorities apply flexibly (in
+England, the BRE guide *Site layout planning for daylight and sunlight*, 2022, and the 21 m between
+facing windows many local design guides use), not law. Beyond a guide, the neighbour is likely to
+notice the loss and an authority will expect the design to justify it; within the guides, the loss
+does not count against the design. No reading forbids a design: binding limits are the Permitted
+check's.
 
 ## Readings
 

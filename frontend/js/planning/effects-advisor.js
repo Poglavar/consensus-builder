@@ -129,58 +129,126 @@
     // Literal keys so the locale coverage test sees each one.
     const DIRECTION_KEYS = { n: 'neighbourEffects.direction.n', ne: 'neighbourEffects.direction.ne', e: 'neighbourEffects.direction.e', se: 'neighbourEffects.direction.se',
         s: 'neighbourEffects.direction.s', sw: 'neighbourEffects.direction.sw', w: 'neighbourEffects.direction.w', nw: 'neighbourEffects.direction.nw' };
-    const STATUS_KEYS = { fail: 'neighbourEffects.status.fail', worse: 'neighbourEffects.status.worse' };
     function element(tag, className, text) {
         const node = document.createElement(tag);
         if (className) node.className = className;
         if (text !== undefined) node.textContent = text;
         return node;
     }
-    function readings(lot) {
-        const lines = [];
-        if (lot.garden && lot.garden.status !== 'same') lines.push([lot.garden.status, t('neighbourEffects.garden', { before: share(lot.garden.before), after: share(lot.garden.after) })]);
-        if (lot.sky && lot.sky.status !== 'same') lines.push([lot.sky.status, t('neighbourEffects.sky', { before: sky(lot.sky.before), after: sky(lot.sky.after) })]);
-        if (lot.distance && lot.distance.status !== 'same') lines.push([lot.distance.status, lot.distance.before === null
-            ? t('neighbourEffects.distanceNew', { after: reading(lot.distance.after) })
-            : t('neighbourEffects.distance', { before: reading(lot.distance.before), after: reading(lot.distance.after) })]);
-        return lines;
+    // One icon per kind of reading, so a list can be read at a glance. Literal keys for the locale test.
+    const KIND_ICONS = { garden: 'fa-sun', sky: 'fa-cloud', distance: 'fa-left-right' };
+    const KIND_KEYS = { garden: 'neighbourEffects.kind.garden', sky: 'neighbourEffects.kind.sky', distance: 'neighbourEffects.kind.distance' };
+    function icon(kind, status) {
+        const node = element('i', `fas ${KIND_ICONS[kind]} neighbour-effects__icon${status ? ` neighbour-effects__icon--${status}` : ''}`);
+        node.setAttribute('aria-hidden', 'true');
+        return node;
     }
-    // Fills `container`: a heading, a line per affected plot (worst first) with its changed readings,
-    // and the basis. `result` null while measuring.
-    function render(container, result) {
+    function readingText(lot, kind) {
+        const value = lot[kind];
+        if (kind === 'garden') return t('neighbourEffects.garden', { before: share(value.before), after: share(value.after) });
+        if (kind === 'sky') return t('neighbourEffects.sky', { before: sky(value.before), after: sky(value.after) });
+        return value.before === null ? t('neighbourEffects.distanceNew', { after: reading(value.after) })
+            : t('neighbourEffects.distance', { before: reading(value.before), after: reading(value.after) });
+    }
+    function plotItem(lot, container) {
+        const effects = root.NeighbourEffects;
+        const item = element('li', `neighbour-effects__plot neighbour-effects__plot--${lot.status}`);
+        // The plot's name points at it on the map: hover or focus highlights it, a click keeps it
+        // highlighted and brings it into view.
+        const name = element('button', 'cb-link neighbour-effects__name', t('neighbourEffects.plot', { direction: t(DIRECTION_KEYS[lot.direction]), distance: metres(lot.distanceM) }));
+        name.type = 'button';
+        name.dataset.plotId = lot.id;
+        name.setAttribute('aria-pressed', String(pinned === lot.id));
+        name.addEventListener('mouseenter', () => highlight(lot.id, true));
+        name.addEventListener('focus', () => highlight(lot.id, true));
+        name.addEventListener('mouseleave', () => highlight(lot.id, false));
+        name.addEventListener('blur', () => highlight(lot.id, false));
+        name.addEventListener('click', () => pin(lot.id, container));
+        // What it loses, as icons coloured by status; the readings below say it in words.
+        const badges = element('span', 'neighbour-effects__badges');
+        for (const { kind, status } of effects.changes(lot)) {
+            const badge = icon(kind, status);
+            badge.title = t(KIND_KEYS[kind]);
+            badges.append(badge);
+        }
+        const lines = element('ul', 'neighbour-effects__readings');
+        for (const { kind, status } of effects.changes(lot)) {
+            const line = element('li', `neighbour-effects__reading neighbour-effects__reading--${status}`);
+            line.append(icon(kind, status), ' ', readingText(lot, kind));
+            lines.append(line);
+        }
+        item.append(name, ' ', badges, lines);
+        return item;
+    }
+    // Filter buttons: all plots, or only those where one kind of reading changed (sorted by it).
+    function filters(container, result, kind) {
+        const group = element('div', 'neighbour-effects__filters');
+        group.setAttribute('role', 'group');
+        group.setAttribute('aria-label', t('neighbourEffects.filterLabel'));
+        const option = (value, label, count) => {
+            const control = element('button', 'btn btn-sm neighbour-effects__filter');
+            control.type = 'button';
+            control.setAttribute('aria-pressed', String(kind === value));
+            if (value) control.append(icon(value), ' ');
+            control.append(`${label} (${count})`);
+            control.disabled = !count;
+            control.addEventListener('click', () => render(container, result, { kind: value }));
+            return control;
+        };
+        group.append(option(null, t('neighbourEffects.filterAll'), result.lots.length));
+        for (const each of root.NeighbourEffects.KINDS) {
+            group.append(option(each, t(KIND_KEYS[each]), result.lots.filter(lot => lot[each] && lot[each].status !== 'same').length));
+        }
+        return group;
+    }
+    // What "beyond a guide" means, a click away.
+    function guides() {
+        const details = element('details', 'neighbour-effects__guides');
+        details.append(element('summary', '', t('neighbourEffects.guidesTitle')), element('p', '', t('neighbourEffects.guidesText')));
+        return details;
+    }
+    // The heading's icon turns into a spinner while the section measures (BusyControl's .cb-busy);
+    // the last result stays readable meanwhile.
+    function busy(container, on) {
         if (!container) return;
+        container.querySelector?.('.neighbour-effects__title')?.classList.toggle('cb-busy', on);
+        if (on) container.setAttribute('aria-busy', 'true'); else container.removeAttribute('aria-busy');
+    }
+    // Fills `container`: a heading, the plots beyond a guide and those within the guides (largest
+    // loss first, optionally only one kind of reading), what the guides are, and the basis.
+    // `result` null while measuring.
+    const shownKind = new WeakMap();
+    function render(container, result, { kind } = {}) {
+        if (!container) return;
+        if (kind === undefined) kind = shownKind.get(container) ?? null;
+        shownKind.set(container, kind);
         const status = result?.status || 'measuring';
         container.hidden = false;
         container.dataset.status = status === 'affected' && result.lots.some(lot => lot.status === 'fail') ? 'fail' : status;
-        container.replaceChildren(element('h3', 'cb-kicker', t('neighbourEffects.title')));
+        // While measuring, the heading's icon is a spinner (BusyControl's .cb-busy).
+        const title = element('h3', `cb-kicker neighbour-effects__title${status === 'measuring' ? ' cb-busy' : ''}`);
+        const titleIcon = element('i', 'fas fa-house-circle-exclamation');
+        titleIcon.setAttribute('aria-hidden', 'true');
+        title.append(titleIcon, ' ', t('neighbourEffects.title'));
+        container.replaceChildren(title);
+        if (status === 'measuring') container.setAttribute('aria-busy', 'true'); else container.removeAttribute('aria-busy');
         if (status === 'none') { container.append(element('p', 'neighbour-effects__headline', t('neighbourEffects.noBuildings'))); return; }
         if (status === 'measuring') { container.append(element('p', 'neighbour-effects__headline', t('neighbourEffects.measuring'))); return; }
         if (status === 'unavailable') { container.append(element('p', 'neighbour-effects__headline', t('neighbourEffects.unavailable', { reason: result.reason || '' }))); return; }
         if (status === 'clear') container.append(element('p', 'neighbour-effects__headline', t('neighbourEffects.clear')));
         else {
             const fails = result.lots.filter(lot => lot.status === 'fail').length;
-            container.append(element('p', 'neighbour-effects__headline', t('neighbourEffects.summary', { count: result.lots.length, fail: fails })));
-            const list = element('ul', 'neighbour-effects__plots');
-            for (const lot of result.lots) {
-                const item = element('li', `neighbour-effects__plot neighbour-effects__plot--${lot.status}`);
-                // The plot's name points at it on the map: hover or focus highlights it, a click keeps
-                // it highlighted and brings it into view.
-                const name = element('button', 'cb-link neighbour-effects__name', t('neighbourEffects.plot', { direction: t(DIRECTION_KEYS[lot.direction]), distance: metres(lot.distanceM) }));
-                name.type = 'button';
-                name.dataset.plotId = lot.id;
-                name.setAttribute('aria-pressed', 'false');
-                name.addEventListener('mouseenter', () => highlight(lot.id, true));
-                name.addEventListener('focus', () => highlight(lot.id, true));
-                name.addEventListener('mouseleave', () => highlight(lot.id, false));
-                name.addEventListener('blur', () => highlight(lot.id, false));
-                name.addEventListener('click', () => pin(lot.id, container));
-                item.append(name, ' ', element('span', 'neighbour-effects__status', t(STATUS_KEYS[lot.status])));
-                const lines = element('ul', 'neighbour-effects__readings');
-                for (const [lineStatus, text] of readings(lot)) lines.append(element('li', `neighbour-effects__reading neighbour-effects__reading--${lineStatus}`, text));
-                item.append(lines);
-                list.append(item);
+            container.append(element('p', 'neighbour-effects__headline', t('neighbourEffects.summary', { count: result.lots.length, fail: fails })),
+                filters(container, result, kind));
+            const [beyond, within] = root.NeighbourEffects.arrange(result.lots, { kind });
+            for (const [lots, key, group] of [[beyond, 'neighbourEffects.groupBeyond', 'beyond'], [within, 'neighbourEffects.groupWithin', 'within']]) {
+                if (!lots.length) continue;
+                container.append(element('h4', `neighbour-effects__group neighbour-effects__group--${group}`, t(key, { count: lots.length })));
+                const list = element('ul', 'neighbour-effects__plots');
+                for (const lot of lots) list.append(plotItem(lot, container));
+                container.append(list);
             }
-            container.append(list);
+            container.append(guides());
         }
         const heights = result.surveys.length ? t('neighbourEffects.heightsSurvey', { source: result.surveys.join(', ') }) : t('neighbourEffects.heightsSource');
         container.append(element('p', 'neighbour-effects__basis', t('neighbourEffects.basis', { heights })));
@@ -230,5 +298,5 @@
         }
     }
 
-    root.NeighbourEffectsAdvisor = { assess, assessDesign, render, show, clear, highlight, pin };
+    root.NeighbourEffectsAdvisor = { assess, assessDesign, render, busy, show, clear, highlight, pin };
 })(window);

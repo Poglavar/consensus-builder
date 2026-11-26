@@ -248,7 +248,10 @@
     function scheduleSingleBuildingEffects(buildings) {
         const advisor = window.NeighbourEffectsAdvisor, container = document.getElementById('single-building-effects');
         if (!advisor || !container) return;
+        // The first time the section says it is measuring; afterwards the last result stays while its
+        // heading spins until the new one lands.
         if (!singleEffectsShown) advisor.render(container, null);
+        else advisor.busy(container, true);
         void advisor.assess({ buildings }, result => {
             if (!result || !singleSession) return;
             singleEffectsShown = true;

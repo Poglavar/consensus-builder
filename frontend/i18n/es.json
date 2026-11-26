@@ -8816,13 +8816,20 @@
         "measuring": "Midiendo el sol, el cielo y las distancias en las parcelas vecinas…",
         "unavailable": "No se pudieron medir los efectos en los vecinos: {{reason}}",
         "clear": "Ninguna parcela vecina pierde sol ni cielo, y ninguna fachada enfrentada se acerca.",
+        "kind": {
+            "garden": "Sol en el jardín",
+            "sky": "Cielo desde la fachada enfrentada",
+            "distance": "Distancia enfrentada"
+        },
+        "filterLabel": "Mostrar parcelas por lectura",
+        "filterAll": "Todas",
+        "groupBeyond": "Fuera de una guía ({{count}}): probablemente cuente en contra del diseño",
+        "groupWithin": "Dentro de las guías ({{count}}): una pérdida que las guías aceptan",
+        "guidesTitle": "Qué son las guías",
+        "guidesText": "Las guías son las referencias habituales para la luz y la privacidad de un vecino en Inglaterra: el sol en el jardín y el cielo según la guía BRE Site layout planning for daylight and sunlight (2022), y los 21 m entre ventanas enfrentadas que usan muchas guías de diseño locales. Fuera de una guía, el vecino probablemente notará la pérdida y la autoridad urbanística esperará que el diseño la justifique o cambie. Dentro de las guías, la parcela pierde algo, pero no lo bastante para contar en contra del diseño. Las guías son recomendaciones que las autoridades aplican con flexibilidad, no leyes: ninguna de estas lecturas prohíbe un diseño. Los límites vinculantes están en la comprobación de lo permitido.",
         "noBuildings": "No añade edificios nuevos que medir.",
         "summary": "Parcelas vecinas afectadas: {{count}}; fuera de una guía: {{fail}}",
         "plot": "Parcela al {{direction}}, a {{distance}}",
-        "status": {
-            "fail": "fuera de una guía",
-            "worse": "pierde algo, dentro de las guías"
-        },
         "garden": "Jardín con 2 horas de sol el 21 de marzo: {{before}} → {{after}} (guía: la mitad, o 0,8 × antes)",
         "sky": "Cielo visto desde la fachada enfrentada: {{before}} → {{after}} (guía: 27 %, o 0,8 × antes)",
         "distance": "Fachada enfrentada más cercana: {{before}} → {{after}} (guía: 21 m)",

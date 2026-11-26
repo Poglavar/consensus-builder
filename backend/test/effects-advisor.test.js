@@ -8,16 +8,18 @@ import { readFileSync } from 'node:fs';
 const require = createRequire(import.meta.url);
 const source = readFileSync(new URL('../../frontend/js/planning/effects-advisor.js', import.meta.url), 'utf8');
 const controls = require('../../frontend/js/ui/plan-analysis-controls.js');
+const NeighbourEffects = require('../../frontend/js/planning/neighbour-effects.js');
 
 const element = tag => ({ tag, className: '', textContent: '', children: [], dataset: {}, hidden: false, attributes: {},
     append(...nodes) { this.children.push(...nodes); }, prepend(node) { this.children.unshift(node); },
     replaceChildren(...nodes) { this.children = nodes; }, setAttribute(key, value) { this.attributes[key] = value; },
+    removeAttribute(key) { delete this.attributes[key]; },
     addEventListener(type, handler) { this[`on${type}`] = handler; } });
 const textOf = node => typeof node === 'string' ? node : [node.textContent, ...node.children.map(textOf)].join('');
 const format = { formatPercent: (v, o) => `${Math.round(o?.ofHundred ? v : v * 100)}%`, formatLength: v => `${Math.round(v)} m` };
 
 function load() {
-    const window = { i18n: { t: (key, params = {}) => `${key}(${Object.values(params).join('|')})` }, CbFormat: format };
+    const window = { i18n: { t: (key, params = {}) => `${key}(${Object.values(params).join('|')})` }, CbFormat: format, NeighbourEffects };
     new Function('window', 'document', source)(window, { createElement: element });
     return window.NeighbourEffectsAdvisor;
 }
@@ -38,6 +40,33 @@ describe('Effects section', () => {
         expect(text).not.toContain('neighbourEffects.sky(');
         expect(text).toContain('neighbourEffects.heightsSurvey(EA LiDAR)');
         expect(text).toContain('neighbourEffects.estimated(2)');
+        // Grouped, with what the guides mean a click away, and an icon per changed reading.
+        expect(text).toContain('neighbourEffects.groupBeyond(1)');
+        expect(text).not.toContain('neighbourEffects.groupWithin');
+        expect(text).toContain('neighbourEffects.guidesText');
+        const icons = [];
+        const walk = node => { if (typeof node !== 'string') { if (node.tag === 'i') icons.push(node.className); node.children.forEach(walk); } };
+        walk(section);
+        expect(icons.filter(name => name.includes('neighbour-effects__icon--fail'))).toEqual(expect.arrayContaining([
+            expect.stringContaining('fa-sun'), expect.stringContaining('fa-left-right')]));
+        expect(icons.some(name => name.includes('fa-cloud') && name.includes('--'))).toBe(false);
+    });
+
+    it('shows only the plots where one kind of reading changed when its filter is pressed', () => {
+        const advisor = load();
+        const section = element('section');
+        const skyOnly = { ...AFFECTED.lots[0], id: 'b', status: 'worse', garden: null, distance: null, sky: { before: 30, after: 20, status: 'worse' } };
+        const result = { ...AFFECTED, lots: [AFFECTED.lots[0], skyOnly] };
+        advisor.render(section, result);
+        const filters = section.children.find(child => child.className === 'neighbour-effects__filters').children;
+        expect(filters.map(textOf)).toEqual(['neighbourEffects.filterAll() (2)', ' neighbourEffects.kind.garden() (1)', ' neighbourEffects.kind.sky() (1)', ' neighbourEffects.kind.distance() (1)']);
+        filters[2].onclick();
+        const text = textOf(section);
+        expect(text).toContain('neighbourEffects.groupWithin(1)');
+        expect(text).not.toContain('neighbourEffects.groupBeyond');
+        // The filter stays when a new result for the same section arrives.
+        advisor.render(section, result);
+        expect(textOf(section)).not.toContain('neighbourEffects.groupBeyond');
     });
 
     it('says when nothing changes, and while measuring', () => {
@@ -45,8 +74,13 @@ describe('Effects section', () => {
         const section = element('section');
         advisor.render(section, null);
         expect(textOf(section)).toContain('neighbourEffects.measuring');
+        // A spinner in the heading while measuring, gone once the result is in.
+        expect(section.children[0].className).toContain('cb-busy');
+        expect(section.attributes['aria-busy']).toBe('true');
         advisor.render(section, { status: 'clear', lots: [], surveys: [], estimated: 0 });
         expect(textOf(section)).toContain('neighbourEffects.clear');
+        expect(section.children[0].className).not.toContain('cb-busy');
+        expect(section.attributes['aria-busy']).toBeUndefined();
         expect(section.hidden).toBe(false);
         advisor.render(section, { status: 'none', lots: [] });
         expect(textOf(section)).toContain('neighbourEffects.noBuildings');
@@ -74,7 +108,7 @@ describe('Plots in the list point at the map', () => {
         return { paths, map };
     }
     function loadWithWindow() {
-        const window = { i18n: { t: (key, params = {}) => `${key}(${Object.values(params).join('|')})` }, CbFormat: format };
+        const window = { i18n: { t: (key, params = {}) => `${key}(${Object.values(params).join('|')})` }, CbFormat: format, NeighbourEffects };
         new Function('window', 'document', source)(window, { createElement: element });
         return { advisor: window.NeighbourEffectsAdvisor, window };
     }
