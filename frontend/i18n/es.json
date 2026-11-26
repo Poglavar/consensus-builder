@@ -4041,6 +4041,7 @@
             "no_parcels_to_clear": "No hay parcelas que borrar.",
             "no_road_parcels_in_view": "No hay parcelas viales en vista.",
             "opening_claim_portal": "Abriendo portal de reclamación…",
+            "parcel_token_not_minted": "No se puede reclamar: el token de la parcela aún no se ha acuñado.",
             "parcel_not_minted_yet_and_the_mint_attest_flow_couldn_t_be_prepared": "La parcela aún no está acuñada y no se pudo preparar el flujo Mint & Attest.",
             "parcel_not_minted_yet_opening_mint_attest_flow": "La parcela aún no está acuñada. Abriendo el flujo Mint & Attest…",
             "checking_parcel_nft_status": "Comprobando el estado NFT…",

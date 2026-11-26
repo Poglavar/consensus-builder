@@ -4022,6 +4022,7 @@
             "no_parcels_to_clear": "Тазалауға болатын жер учаскелері жоқ.",
             "no_road_parcels_in_view": "Жолдың ешқандай учаскесі көрінбейді.",
             "opening_claim_portal": "Шағым ашу порталы…",
+            "parcel_token_not_minted": "Талап ету мүмкін емес: учаске токені әлі шығарылмаған.",
             "parcel_not_minted_yet_and_the_mint_attest_flow_couldn_t_be_prepared": "Жер телімі әзірге күрделі емес еді, жалбыз бен аттестаттың ағыны да дайын емес еді.",
             "parcel_not_minted_yet_opening_mint_attest_flow": "Неміс участогы әлі тұйықталған жоқ. Мен жалбызды және сынақ ағынын ашамын…",
             "checking_parcel_nft_status": "Мәртебені тексеру NFT…",

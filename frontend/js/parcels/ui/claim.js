@@ -1202,6 +1202,25 @@
                 throw contextError;
             }
 
+            // A Solana wallet: the parcel's parcel_nft anchor, read fresh, rather than an ERC-721 token.
+            if (claimContext && claimContext.chainType === 'solana') {
+                const anchor = await fetchParcelMintStatus(parcelId);
+                currentParcelMintStatusCache = { parcelId, result: anchor };
+                currentParcelMintStatusParcelId = parcelId;
+                applyParcelMintStatusResult(anchor);
+                if (!anchor.minted) {
+                    if (typeof global.updateStatus === 'function') {
+                        global.updateStatus(tParcel('status.messages.parcel_token_not_minted', {}, "Can't claim, the parcel token has not been minted yet."));
+                    }
+                    return;
+                }
+                if (typeof global.updateStatus === 'function') {
+                    global.updateStatus(tParcel('status.messages.opening_claim_portal', {}, 'Opening claim portal...'));
+                }
+                openExternalUrl(buildSolanaClaimUrl({ baseUrl, chainSlug: anchor.chainSlug, anchorAddress: anchor.tokenId }));
+                return;
+            }
+
             if (!ethersLib) {
                 throw new Error('Blockchain library is not available.');
             }
@@ -1261,7 +1280,7 @@
                 currentParcelMintStatusParcelId = parcelId;
                 applyParcelMintStatusResult(notMintedResult);
                 if (typeof global.updateStatus === 'function') {
-                    global.updateStatus("Can't claim, the parcel token has not been minted yet.");
+                    global.updateStatus(tParcel('status.messages.parcel_token_not_minted', {}, "Can't claim, the parcel token has not been minted yet."));
                 }
                 return;
             }
@@ -1960,29 +1979,14 @@
                 ? neighboursByParcelId[parcel.parcelId]
                 : findNeighbourPolygonsFromLiveFabric(parcel.parcelId);
             const resolvedFeature = (parcel.feature && parcel.feature.geometry) ? parcel.feature : null;
-            const calculatedArea = resolvedFeature?.properties?.calculatedArea;
-            const areaSquareMeters = Number.isFinite(calculatedArea) && calculatedArea > 0
-                ? Math.round(calculatedArea * 100) / 100
-                : null;
-
-            const attributes = [
-                { trait_type: 'Parcel ID', value: parcel.parcelId },
-                { trait_type: 'Minted By', value: signerAddress }
-            ];
-
-            if (areaSquareMeters !== null) {
-                attributes.push({ trait_type: 'Area (m²)', value: areaSquareMeters, display_type: 'number' });
-            }
-
-            const metadataPayload = {
-                name: parcel.parcelName || `Parcel ${parcel.parcelId}`,
-                description: `Digitized cadastral parcel ${parcel.parcelId}. Minted by ${signerAddress}.`,
-                image: '',
-                attributes,
-                parcelId: parcel.parcelId,
-                areaSquareMeters,
-                geometry: resolvedFeature?.geometry || null
-            };
+            // The same metadata an agent's ugt_anchor_parcels pins (ParcelAnchor.anchorMetadata).
+            const metadataPayload = (global.ParcelAnchor || require('../parcel-anchor.js')).anchorMetadata({
+                anchorId: parcel.parcelId,
+                parcelName: parcel.parcelName,
+                minter: signerAddress,
+                calculatedArea: resolvedFeature?.properties?.calculatedArea,
+                geometry: resolvedFeature?.geometry
+            });
 
             try {
                 if (statusEl) {
@@ -2214,6 +2218,7 @@
     const deriveParcelIdentifier = global.Parcels?.blockchain?.deriveParcelIdentifier || global.deriveParcelIdentifier;
     const resolveParcelClaimContext = global.Parcels?.blockchain?.resolveParcelClaimContext || global.resolveParcelClaimContext;
     const buildClaimUrl = global.Parcels?.blockchain?.buildClaimUrl || global.buildClaimUrl;
+    const buildSolanaClaimUrl = global.Parcels?.blockchain?.buildSolanaClaimUrl || global.buildSolanaClaimUrl;
     const isParcelTokenMissingError = global.Parcels?.blockchain?.isParcelTokenMissingError || global.isParcelTokenMissingError || (() => false);
     const resolveChainSlug = global.Parcels?.blockchain?.resolveChainSlug || global.resolveChainSlug;
     const normalizeChainIdValue = global.Parcels?.blockchain?.normalizeChainIdValue || global.normalizeChainIdValue;

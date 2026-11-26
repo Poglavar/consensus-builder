@@ -223,24 +223,10 @@
         return trimmed;
     }
 
-    // The id a parcel anchor is minted under: HR-<cadastral municipality>-<parcel number> from the
-    // Croatian cadastre's own fields, else the feature's parcelId, else the same HR form from the wider
-    // field names other sources use (parcel_number, cadastralMunicipality.id).
+    // The id a parcel anchor is minted under (ParcelAnchor.anchorIdOf, shared with the MCP's
+    // ugt_anchor_parcels): HR-<cadastral municipality>-<parcel number>, else the feature's parcelId.
     function deriveParcelIdentifier(feature) {
-        if (!feature || typeof feature !== 'object') return null;
-        const props = feature.properties || {};
-        const text = value => (value === undefined || value === null ? '' : String(value).trim());
-        const hrId = (municipality, number) => (text(municipality) && text(number) ? `HR-${text(municipality)}-${text(number)}` : null);
-        const parcelId = text(props.parcelId);
-        if (feature.properties) {
-            const canonical = hrId(props.MATICNI_BROJ_KO ?? props.maticni_broj_ko, props.BROJ_CESTICE ?? props.broj_cestice);
-            if (canonical) return canonical;
-            if (parcelId) return parcelId;
-        }
-        return hrId(
-            props.MATICNI_BROJ_KO ?? props.maticni_broj_ko ?? (props.cadastralMunicipality && props.cadastralMunicipality.id),
-            props.BROJ_CESTICE ?? props.broj_cestice ?? props.parcel_number ?? props.parcelNumber
-        ) || parcelId || null;
+        return (global.ParcelAnchor || require('./parcel-anchor.js')).anchorIdOf(feature);
     }
 
     function deriveParcelDisplayName(props, fallbackName) {
@@ -561,6 +547,17 @@
         return url.toString();
     }
 
+    // On Solana a parcel's anchor is an ownerless parcel_nft account, not a token anyone holds, so the
+    // claim portal has no token to attest ownership of: Claim opens the portal's page of the anchor
+    // account on the anchor's network (Tokenizario /address/<account>?chain=solana-devnet).
+    function buildSolanaClaimUrl({ baseUrl, chainSlug, anchorAddress }) {
+        if (!anchorAddress) throw new Error('A Solana claim needs the parcel anchor account.');
+        const base = String(baseUrl || PARCEL_CLAIM_PORTAL_URLS.production);
+        const url = new URL(`address/${encodeURIComponent(anchorAddress)}`, base.endsWith('/') ? base : `${base}/`);
+        url.searchParams.set('chain', chainSlug || 'solana-devnet');
+        return url.toString();
+    }
+
     global.resolveParcelNftAddressSolana = resolveParcelNftAddressSolana;
     global.normalizeChainIdValue = normalizeChainIdValue;
     global.chainKeyVariants = chainKeyVariants;
@@ -573,4 +570,5 @@
     global.resolveParcelClaimContext = resolveParcelClaimContext;
     global.isParcelTokenMissingError = isParcelTokenMissingError;
     global.buildClaimUrl = buildClaimUrl;
+    global.buildSolanaClaimUrl = buildSolanaClaimUrl;
 })(typeof window !== 'undefined' ? window : globalThis);

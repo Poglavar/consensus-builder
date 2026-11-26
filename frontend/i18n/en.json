@@ -4022,6 +4022,7 @@
             "no_parcels_to_clear": "No parcels to clear.",
             "no_road_parcels_in_view": "No road parcels in view.",
             "opening_claim_portal": "Opening claim portal…",
+            "parcel_token_not_minted": "Can't claim, the parcel token has not been minted yet.",
             "parcel_not_minted_yet_and_the_mint_attest_flow_couldn_t_be_prepared": "Parcel not minted yet and the Mint & Attest flow couldn't be prepared.",
             "parcel_not_minted_yet_opening_mint_attest_flow": "Parcel not minted yet. Opening Mint & Attest flow…",
             "checking_parcel_nft_status": "Checking NFT status…",

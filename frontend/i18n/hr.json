@@ -4054,6 +4054,7 @@
             "no_parcels_to_clear": "Nema čestica za brisanje.",
             "no_road_parcels_in_view": "Nema čestica cesta u prikazu.",
             "opening_claim_portal": "Otvaram portal za preuzimanje…",
+            "parcel_token_not_minted": "Nije moguće preuzeti: token čestice još nije iskovan.",
             "parcel_not_minted_yet_and_the_mint_attest_flow_couldn_t_be_prepared": "Čestica još nije iskovana i tok za Mint & Attest nije mogao biti pripremljen.",
             "parcel_not_minted_yet_opening_mint_attest_flow": "Čestica još nije iskovana. Otvaram tok Mint & Attest…",
             "checking_parcel_nft_status": "Provjeravam NFT status…",

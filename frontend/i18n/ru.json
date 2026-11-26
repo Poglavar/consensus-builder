@@ -4095,6 +4095,7 @@
             "no_parcels_to_clear": "Нет земельных участков, которые можно было бы очистить.",
             "no_road_parcels_in_view": "Никаких участков дорог не видно.",
             "opening_claim_portal": "Портал для открытия претензии…",
+            "parcel_token_not_minted": "Заявить права нельзя: токен участка ещё не выпущен.",
             "parcel_not_minted_yet_and_the_mint_attest_flow_couldn_t_be_prepared": "Не был пока сложен участок земли, и поток мяты и аттеста не был подготовлен.",
             "parcel_not_minted_yet_opening_mint_attest_flow": "Немецкий участок еще не замкнулся. Открываю мятный и пробный поток…",
             "checking_parcel_nft_status": "Проверка статуса NFT…",

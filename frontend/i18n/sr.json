@@ -4054,6 +4054,7 @@
             "no_parcels_to_clear": "Nema parcela za brisanje.",
             "no_road_parcels_in_view": "Nema parcela puteva u prikazu.",
             "opening_claim_portal": "Otvaram portal za preuzimanje…",
+            "parcel_token_not_minted": "Nije moguće preuzeti: token parcele još nije iskovan.",
             "parcel_not_minted_yet_and_the_mint_attest_flow_couldn_t_be_prepared": "Parcela još nije iskovana i tok za Mint & Attest nije mogao da se pripremi.",
             "parcel_not_minted_yet_opening_mint_attest_flow": "Parcela još nije iskovana. Otvaram Mint & Attest tok…",
             "checking_parcel_nft_status": "Proveravam NFT status…",

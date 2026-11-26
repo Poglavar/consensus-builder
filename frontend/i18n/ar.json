@@ -6759,6 +6759,7 @@
             "no_parcels_to_clear": "لا توجد قطع أراض لمسحها.",
             "no_road_parcels_in_view": "لا توجد قطع أراض مخصصة للطرق في نطاق العرض.",
             "opening_claim_portal": "جار فتح بوابة المطالبة…",
+            "parcel_token_not_minted": "لا يمكن المطالبة: لم يُسكّ رمز القطعة بعد.",
             "parcel_not_minted_yet_and_the_mint_attest_flow_couldn_t_be_prepared": "لم يتم سك رمز قطعة الأرض بعد، وتعذر إعداد مسار السك والتوثيق.",
             "parcel_not_minted_yet_opening_mint_attest_flow": "لم يتم سك رمز قطعة الأرض بعد. جار فتح مسار السك والتوثيق…",
             "unable_to_check_parcel_nft_status": "تعذر التحقق من حالة NFT.",

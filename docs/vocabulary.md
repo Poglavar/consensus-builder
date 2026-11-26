@@ -62,6 +62,10 @@ An immutable offer to buy or sell one exact apartment or a bundle of cadastral p
 
 An ownerless, non-transferable Solana account identifying an apartment by its published or fingerprinted X-ray building and unit address. Different bids and listings share the same anchor. Creating it grants the payer no rights over the apartment. Its identity is independent of the developer’s inventory IDs used for crowdfunding reservations.
 
+### Parcel anchor
+
+An ownerless Solana `parcel_nft` account seeded by the parcel's anchor id: `HR-<cadastral municipality>-<parcel number>` for the Croatian cadastre, else the source's parcel id. Its metadata names the parcel, who created the anchor, its area and geometry. Creating it grants the payer no rights over the parcel. With a Solana wallet, the parcel panel's NFT status says whether the anchor exists and links its account. Claim opens the claim portal's page of that account. Ownership of the parcel is a lens member's attestation, not the anchor.
+
 ### Parcel ownership transfer
 
 Seller-signed evidence linking source-qualified parcels and their previous ownership evidence to the buyer named in a finalized property offer. A lens recognizes successor ownership by following validated transfers from roots it trusts. The anchor remains fixed, and registered title comes from the land registry.

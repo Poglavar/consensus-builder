@@ -6530,6 +6530,7 @@
             "no_parcels_to_clear": "Aucune parcelle à effacer.",
             "no_road_parcels_in_view": "Aucune parcelle routière dans la vue.",
             "opening_claim_portal": "Ouverture du portail de revendication…",
+            "parcel_token_not_minted": "Revendication impossible : le jeton de la parcelle n’a pas encore été frappé.",
             "parcel_not_minted_yet_and_the_mint_attest_flow_couldn_t_be_prepared": "La parcelle n’a pas encore été créée sous forme de NFT et le parcours Mint & Attest n’a pas pu être préparé.",
             "parcel_not_minted_yet_opening_mint_attest_flow": "La parcelle n’a pas encore été créée sous forme de NFT. Ouverture du parcours Mint & Attest…",
             "unable_to_check_parcel_nft_status": "Impossible de vérifier le statut du NFT.",

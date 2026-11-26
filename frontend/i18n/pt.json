@@ -6530,6 +6530,7 @@
             "no_parcels_to_clear": "Não há parcelas para eliminar.",
             "no_road_parcels_in_view": "Não há parcelas viárias na área visível.",
             "opening_claim_portal": "A abrir o portal de reivindicação…",
+            "parcel_token_not_minted": "Não é possível reivindicar: o token da parcela ainda não foi cunhado.",
             "parcel_not_minted_yet_and_the_mint_attest_flow_couldn_t_be_prepared": "A parcela ainda não foi emitida como NFT e não foi possível preparar o processo de emissão e atestação.",
             "parcel_not_minted_yet_opening_mint_attest_flow": "A parcela ainda não foi emitida como NFT. A abrir o processo de emissão e atestação…",
             "unable_to_check_parcel_nft_status": "Não foi possível verificar o estado do NFT.",
