@@ -4525,6 +4525,7 @@
                 "rateLimitedFor": "Demasiadas publicações de momento. Tente novamente dentro de cerca de {{minutes}} min.",
                 "rateLimited": "Demasiadas publicações de momento. Aguarde alguns minutos e tente novamente.",
                 "refused": "O servidor recusou este projeto: {{reason}}",
+                "originNotAllowed": "Este servidor só publica projetos a partir do seu próprio site, e esta página corre em {{origin}}. O projeto continua guardado neste dispositivo; para publicar a partir de uma cópia local, aponte-a para uma API local.",
                 "outsideSite": "O projeto estende-se {{area}} m² para além do limite de terreno guardado. O limite do terreno tem de incluir a geometria antes de o projeto poder ser publicado.",
                 "namedFailure": "«{{title}}»: {{reason}}",
                 "siteProblemMap": "O vermelho assinala a área fora do limite de terreno guardado; a linha amarela tracejada mostra esse limite.",

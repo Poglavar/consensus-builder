@@ -358,9 +358,11 @@ export function createApp({
         // callers to POST /parcels/under and /buildings/footprints, and without this they got a 403.
         if (req.method === 'POST' && (READ_ONLY_POST_PATHS.has(req.path) || PARCEL_SOURCE_UNDER_PATH.test(req.path))) return next();
 
+        // A refusal says which origin was refused and why, so a page on another origin (a local
+        // frontend pointed at this API) can tell its visitor instead of showing a bare "Forbidden".
         const origin = req.get('origin') || req.get('referer');
         if (!origin) {
-            return res.status(403).json({ error: 'Forbidden' });
+            return res.status(403).json({ error: 'Writes must come from a page on one of this API\'s sites; the request named no origin.', code: 'origin-missing' });
         }
 
         let originHost;
@@ -370,7 +372,8 @@ export function createApp({
             || (!isProduction && localhostPattern.test(originHost));
 
         if (!allowed) {
-            return res.status(403).json({ error: 'Forbidden' });
+            return res.status(403).json({ error: `Writes are accepted only from this API's own sites, not from ${originHost}.`,
+                code: 'origin-not-allowed', origin: originHost });
         }
         next();
     });

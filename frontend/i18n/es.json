@@ -1213,6 +1213,7 @@
                 "rateLimitedFor": "Demasiadas publicaciones por ahora. Inténtalo de nuevo en unos {{minutes}} min.",
                 "rateLimited": "Demasiadas publicaciones por ahora. Espera unos minutos e inténtalo de nuevo.",
                 "refused": "El servidor rechazó este diseño: {{reason}}",
+                "originNotAllowed": "Este servidor solo publica diseños desde su propio sitio, y esta página se ejecuta en {{origin}}. El diseño sigue guardado en este dispositivo; para publicar desde una copia local, apúntela a una API local.",
                 "outsideSite": "El diseño se extiende {{area}} m² fuera del límite de terreno guardado. El límite debe incluir la geometría antes de publicarlo.",
                 "namedFailure": "«{{title}}»: {{reason}}",
                 "siteProblemMap": "El rojo indica el área fuera del límite de terreno guardado; la línea amarilla discontinua muestra ese límite.",

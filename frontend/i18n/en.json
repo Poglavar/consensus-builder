@@ -1213,6 +1213,7 @@
                 "rateLimitedFor": "Too many publications for now. Try again in about {{minutes}} min.",
                 "rateLimited": "Too many publications for now. Wait a few minutes and try again.",
                 "refused": "The server refused this design: {{reason}}",
+                "originNotAllowed": "This server publishes designs only from its own site, and this page runs at {{origin}}. The design is still saved on this device; to publish from a local copy, point it at a local API.",
                 "outsideSite": "The design extends {{area}} m² beyond its saved land boundary. The land boundary must include the geometry before it can be published.",
                 "namedFailure": "“{{title}}”: {{reason}}",
                 "siteProblemMap": "Red marks the area outside the saved land boundary; the dashed yellow line shows that boundary.",

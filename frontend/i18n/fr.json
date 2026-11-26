@@ -4525,6 +4525,7 @@
                 "rateLimitedFor": "Trop de publications pour le moment. Réessayez dans environ {{minutes}} min.",
                 "rateLimited": "Trop de publications pour le moment. Patientez quelques minutes et réessayez.",
                 "refused": "Le serveur a refusé ce projet : {{reason}}",
+                "originNotAllowed": "Ce serveur ne publie les projets que depuis son propre site, et cette page tourne sur {{origin}}. Le projet reste enregistré sur cet appareil ; pour publier depuis une copie locale, pointez-la vers une API locale.",
                 "outsideSite": "Le projet dépasse de {{area}} m² la limite foncière enregistrée. Cette limite doit englober la géométrie avant que le projet puisse être publié.",
                 "namedFailure": "« {{title}} » : {{reason}}",
                 "siteProblemMap": "Le rouge indique la zone située hors de la limite foncière enregistrée ; la ligne jaune en pointillés représente cette limite.",

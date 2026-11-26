@@ -222,7 +222,7 @@ describe('the Origin gate lets read-only POSTs through and still stops writes', 
 
     it('reaches the handler of every read-only POST without an Origin', async () => {
         // An empty body is invalid on each of them, so each handler answers its own 400: proof the
-        // request got past the gate, whose refusal is 403 { error: 'Forbidden' }.
+        // request got past the gate, whose refusal is 403 with an `origin-` code.
         const server = app();
         expect(READ_ONLY_POST_PATHS).toContain('/buildings/footprints');
         // A read whose input fits a URL is a GET, not a POST on this list: 3D scenery (asked again on
@@ -235,7 +235,7 @@ describe('the Origin gate lets read-only POSTs through and still stops writes', 
         for (const path of READ_ONLY_POST_PATHS) {
             const res = await request(server).post(path).send({});
             expect(res.status, path).toBe(400);
-            expect(res.body.error, path).not.toBe('Forbidden');
+            expect(String(res.body.code), path).not.toMatch(/^origin-/);
         }
     });
 
@@ -246,7 +246,7 @@ describe('the Origin gate lets read-only POSTs through and still stops writes', 
         for (const path of ['/designs', '/agreements', '/pins']) {
             const res = await request(server).post(path).send({ cid: 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq', content: {} });
             expect(res.status, path).toBe(403);
-            expect(res.body, path).toEqual({ error: 'Forbidden' });
+            expect(res.body, path).toMatchObject({ code: 'origin-missing' });
         }
         expect(pool.calls).toHaveLength(0);
     });

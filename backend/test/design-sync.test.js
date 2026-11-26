@@ -636,6 +636,9 @@ describe('links, parcel sources and refusals', () => {
         expect(sync.refusalMessage(429, { retryAfterSeconds: 30 })).toBe('Too many publications for now. Try again in about 1 min.');
         expect(sync.refusalMessage(400, { error: 'site is not a polygon' })).toBe('The server refused this design: site is not a polygon');
         expect(sync.refusalMessage(502, null)).toBe('The server refused this design: HTTP 502');
+        // The API's origin check (a local page pointed at the production API) names the refused origin.
+        expect(sync.refusalMessage(403, { code: 'origin-not-allowed', origin: 'http://localhost:8792', error: 'x' }))
+            .toBe('This server publishes designs only from its own site, and this page runs at http://localhost:8792. The design is still saved on this device; to publish from a local copy, point it at a local API.');
         const described = [];
         win.ParcelSourceHealth = { describeFailure: problem => { described.push(problem); return `source down: ${problem.code}`; } };
         expect(sync.refusalMessage(503, { code: 'parcel-source-unavailable', error: 'DGU is down' })).toBe('source down: parcel-source-unavailable');

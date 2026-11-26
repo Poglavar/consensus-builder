@@ -386,7 +386,7 @@ describe('createApp', () => {
             .send({ name: 'blocked' });
 
         expect(res.status).toBe(403);
-        expect(res.body).toEqual({ error: 'Forbidden' });
+        expect(res.body).toMatchObject({ code: 'origin-missing', error: expect.stringContaining('named no origin') });
     });
 
     it('allows write requests from configured origins', async () => {
@@ -450,7 +450,7 @@ describe('createApp', () => {
             .send({});
 
         expect(res.status).toBe(403);
-        expect(res.body).toEqual({ error: 'Forbidden' });
+        expect(res.body).toMatchObject({ code: 'origin-not-allowed', origin: 'not a valid url' });
     });
 
     it('allows localhost write requests outside production', async () => {
@@ -494,7 +494,9 @@ describe('createApp', () => {
             .send({});
 
         expect(res.status).toBe(403);
-        expect(res.body).toEqual({ error: 'Forbidden' });
+        // The refusal names the refused origin, so the page can say why its write was refused.
+        expect(res.body).toEqual({ error: "Writes are accepted only from this API's own sites, not from http://localhost:5173.",
+            code: 'origin-not-allowed', origin: 'http://localhost:5173' });
     });
 
     it('applies the write rate limiter to patch requests', async () => {

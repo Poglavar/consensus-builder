@@ -253,6 +253,9 @@
             const code = body && body.code;
             if (code === 'cid-mismatch') return t('proposals.share.errors.cidMismatch', 'The server computed a different identity for this design, so nothing was published.');
             if (code === 'too-large') return t('proposals.share.errors.tooLarge', 'This design exceeds the 10 MiB publication limit. Reduce its extent or detail before sharing; it is saved locally.');
+            // The API takes writes only from its own sites (backend/index.js origin check): a local
+            // frontend pointed at the production API can read through it but not publish.
+            if (code === 'origin-not-allowed' || code === 'origin-missing') return t('proposals.share.errors.originNotAllowed', 'This server publishes designs only from its own site, and this page runs at {{origin}}. The design is still saved on this device; to publish from a local copy, point it at a local API.', { origin: body.origin || win.location?.origin || '' });
             if (code === 'footprint-outside-site') return t('proposals.share.errors.outsideSite', 'The design extends {{area}} m² beyond its saved land boundary. The land boundary must include the geometry before it can be published.', { area: body.outsideM2 });
             if (status === 429) {
                 const seconds = Number(body && body.retryAfterSeconds);

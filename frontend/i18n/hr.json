@@ -1215,6 +1215,7 @@
                 "rateLimitedFor": "Zasad je previše objava. Pokušajte ponovno za otprilike {{minutes}} min.",
                 "rateLimited": "Zasad je previše objava. Pričekajte nekoliko minuta pa pokušajte ponovno.",
                 "refused": "Poslužitelj je odbio ovaj dizajn: {{reason}}",
+                "originNotAllowed": "Ovaj poslužitelj objavljuje dizajne samo sa svoje stranice, a ova stranica radi na {{origin}}. Dizajn je i dalje spremljen na ovom uređaju; za objavu iz lokalne kopije usmjerite je na lokalni API.",
                 "outsideSite": "Dizajn prelazi spremljenu granicu zemljišta za {{area}} m². Granica zemljišta mora obuhvatiti geometriju prije objave.",
                 "namedFailure": "„{{title}}”: {{reason}}",
                 "siteProblemMap": "Crveno označava područje izvan spremljene granice zemljišta; isprekidana žuta crta prikazuje tu granicu.",
