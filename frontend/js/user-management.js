@@ -8,11 +8,6 @@ let userWalletBalanceRequestId = 0;
 
 const MAX_USER_AVATAR_COUNT = 16;
 
-const ATTESTIFY_BASE_URLS = Object.freeze({
-    development: 'http://localhost:3000/',
-    production: 'https://tokenizario.app/'
-});
-
 function isProposalDeepLinkPath() {
     try {
         if (typeof window !== 'undefined' && /^\/designs\/?$/.test(window.location?.pathname) && new URLSearchParams(window.location.search).has('draft')) return true;
@@ -98,56 +93,6 @@ function ensureGuestUserAgent() {
     window.dispatchEvent(new CustomEvent('welcomeModalComplete'));
 
     return guestAgent;
-}
-
-function resolveAttestifyBaseUrl() {
-    const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
-    if (!globalScope) {
-        return ATTESTIFY_BASE_URLS.production;
-    }
-
-    const pickString = (...candidates) => candidates.find(v => typeof v === 'string' && v.trim());
-
-    const explicit = pickString(
-        globalScope.AttestifyNetworbaseUrl,
-        globalScope.AttestifyNetworkBaseUrl,
-        globalScope.ATTESTIFY_BASE_URL,
-        globalScope.ATTESTIFY_URL
-    );
-    if (explicit) {
-        return explicit.trim();
-    }
-
-    const hostname = (globalScope.location && typeof globalScope.location.hostname === 'string')
-        ? globalScope.location.hostname.toLowerCase()
-        : '';
-    const isLocalHost = hostname === 'localhost'
-        || hostname === '127.0.0.1'
-        || hostname === '0.0.0.0'
-        || hostname.endsWith('.local');
-    const env = globalScope.current_environment || (isLocalHost ? 'development' : 'production');
-
-    if (env === 'development') {
-        const devOverride = pickString(
-            globalScope.AttestifyNetworkDevBaseUrl,
-            globalScope.ATTESTIFY_DEV_BASE_URL,
-            globalScope.ATTESTIFY_DEV_URL
-        );
-        if (devOverride) {
-            return devOverride.trim();
-        }
-        return ATTESTIFY_BASE_URLS.development;
-    }
-
-    const prodOverride = pickString(
-        globalScope.AttestifyNetworkProdBaseUrl,
-        globalScope.ATTESTIFY_PROD_BASE_URL,
-        globalScope.ATTESTIFY_PROD_URL
-    );
-    if (prodOverride) {
-        return prodOverride.trim();
-    }
-    return ATTESTIFY_BASE_URLS.production;
 }
 
 const NETWORK_LABELS = {
@@ -1705,24 +1650,12 @@ function updateAgentDialogChainInfo() {
         const accountAddress = solanaActive
             ? (window.solanaWalletManager.getState().accounts[0] || '')
             : ((evmState.accounts && evmState.accounts[0]) || '');
-        const attestBase = resolveAttestifyBaseUrl();
-        const hasAccount = Boolean(accountAddress);
-        let attestUrl = null;
-        if (hasAccount) {
-            try {
-                const urlObj = new URL(attestBase, typeof window !== 'undefined' && window.location ? window.location.origin : undefined);
-                urlObj.searchParams.append('attest', '');
-                urlObj.searchParams.set('schemaUid', '0xc5dd5682a31d774cfac30a8f827be296cf0f1fd5d920dea7adb08d6d75ccbfaa');
-                urlObj.searchParams.set('targetType', 'address');
-                urlObj.searchParams.set('existingOrNew', 'existing');
-                urlObj.searchParams.set('eoaAddress', accountAddress);
-                urlObj.searchParams.set('MY_NAME_IS', displayName);
-                const builtUrl = urlObj.toString();
-                attestUrl = builtUrl.replace('attest=', 'attest');
-            } catch (err) {
-                console.warn('Failed to build Attestify URL', err);
-            }
-        }
+        // Register nickname leads to the wallet's own page on Tokenizario, where it publishes its
+        // profile. The live site has such a page only for a Solana devnet wallet (tokenizario-links.js);
+        // any other wallet gets no button rather than a link that leads nowhere.
+        const attestUrl = solanaActive
+            ? window.TokenizarioLinks.walletPageUrl(accountAddress, window.solanaWalletManager.getCluster())
+            : null;
         const attestTitle = `Attest ${displayName} is connected to the address`;
 
         chainInfoContainer.innerHTML = `
@@ -1794,7 +1727,7 @@ function openAttestifyExplainer(attestUrl, attestTitle) {
     const title = translateUM('attestify.title', 'Register nickname');
     const body = translateUM(
         'attestify.body',
-        'Optionally, you can connect your nickname with your address on chain. This additional metadata makes advanced attestations easier. You do not have to do it, everything works without it, but you can at any time. If you wish to do it now proceed to Tokenizario.'
+        'Optionally, you can connect your nickname with your address on chain. This additional metadata makes advanced attestations easier. You do not have to do it, everything works without it, but you can at any time. If you wish to do it now, proceed to your wallet\'s page on Tokenizario and describe your wallet there.'
     );
     const proceedLabel = translateUM('attestify.proceed', 'Proceed to Tokenizario');
     const closeLabel = translateUM('attestify.close', 'Close');

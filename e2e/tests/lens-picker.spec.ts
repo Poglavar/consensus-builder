@@ -53,18 +53,20 @@ test.describe('Lens settings @features', () => {
     await expect.poll(() => page.evaluate(() => (window as any).getLensEntries().at(-1))).toMatchObject({ address, name: 'Test lens member' });
 
     const etherscanUrl = `https://sepolia.etherscan.io/address/${address}`;
-    const attestifyUrl = `http://localhost:3000/address/${address}`;
     const newEntry = lens.locator('.lens-row').nth(initialRows);
     const links = newEntry.locator('.lens-inline-actions a.cb-link--external[target="_blank"]');
     const etherscan = links.nth(0);
     const attestify = links.nth(1);
     await expect(etherscan).toHaveAttribute('href', etherscanUrl);
-    await expect(attestify).toHaveAttribute('href', attestifyUrl);
+    // Tokenizario's live site has wallet pages for Solana devnet keys only: an EVM address gets an
+    // inert link, never one that leads nowhere.
+    await expect(attestify).toHaveClass(/lens-link--disabled/);
+    expect(await attestify.getAttribute('href')).toBeNull();
     await page.context().route('https://sepolia.etherscan.io/address/**', route => route.fulfill({
       status: 200, contentType: 'text/html', body: '<title>Etherscan navigation boundary</title>',
     }));
-    await page.context().route('http://localhost:3000/address/**', route => route.fulfill({
-      status: 200, contentType: 'text/html', body: '<title>Attestify navigation boundary</title>',
+    await page.context().route('https://tokenizario.app/address/**', route => route.fulfill({
+      status: 200, contentType: 'text/html', body: '<title>Tokenizario navigation boundary</title>',
     }));
 
     const etherscanPopup = page.waitForEvent('popup').then(async popup => {
@@ -74,17 +76,23 @@ test.describe('Lens settings @features', () => {
       await popup.close();
     });
     await Promise.all([etherscanPopup, etherscan.click()]);
+    // A Solana key links to its wallet page on the live site, on the devnet the site serves.
+    const solanaKey = 'G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg';
+    const tokenizarioUrl = `https://tokenizario.app/address/${solanaKey}?chain=devnet`;
+    await lens.locator('.lens-address-input').last().fill(solanaKey);
+    await expect(attestify).toHaveAttribute('href', tokenizarioUrl);
+    await expect(attestify).not.toHaveClass(/lens-link--disabled/);
     const attestifyPopup = page.waitForEvent('popup').then(async popup => {
-      await expect(popup).toHaveURL(attestifyUrl);
-      expect(new URL(popup.url()).hostname).toBe('localhost');
-      expect(new URL(popup.url()).pathname).toBe(`/address/${address}`);
+      await expect(popup).toHaveURL(tokenizarioUrl);
+      expect(new URL(popup.url()).hostname).toBe('tokenizario.app');
+      expect(new URL(popup.url()).pathname).toBe(`/address/${solanaKey}`);
       await popup.close();
     });
     await Promise.all([attestifyPopup, attestify.click()]);
 
     await lens.locator('.lens-remove-btn').last().click();
     await expect(lens.locator('.lens-address-input')).toHaveCount(initialRows);
-    await expect.poll(() => page.evaluate(key => (window as any).getLensEntries().some((entry: any) => entry.address === key), address)).toBe(false);
+    await expect.poll(() => page.evaluate(key => (window as any).getLensEntries().some((entry: any) => entry.address === key), solanaKey)).toBe(false);
     await lens.locator('.lens-close-btn').click();
     await expect(lens).toHaveCount(0);
     await expect(profile).toBeVisible();

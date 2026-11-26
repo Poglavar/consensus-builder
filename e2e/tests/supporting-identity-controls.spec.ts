@@ -2,7 +2,6 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, PARCEL_ID } from '../helpers/runtime';
 import { getWalletStates, injectMockEvmWallet, injectMockSolanaWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
-import { openAndClosePopup } from '../helpers/controls';
 
 async function openProfile(page: import('@playwright/test').Page, username: string) {
   await page.locator('#username-display').click();
@@ -46,7 +45,7 @@ test.describe('Supporting identity controls @core', () => {
     await expect(profile).toBeVisible();
   });
 
-  test('a Brave Ethereum connector click connects EVM, switches chain, and exposes city-token and Attestify outcomes', async ({ mockApi: page }) => {
+  test('a Brave Ethereum connector click connects EVM, switches chain, exposes the city token and offers no Register nickname link', async ({ mockApi: page }) => {
     await injectMockEvmWallet(page, { chainIdHex: '0xaa36a7', walletKind: 'brave' });
     await injectMockSolanaWallet(page, { providerName: 'brave' });
     await page.addInitScript(() => {
@@ -66,12 +65,6 @@ test.describe('Supporting identity controls @core', () => {
     await page.route('**/contracts/contracts.json', route => route.fulfill({ json: {
       '1337': {}, '84532': {}, '11155111': {},
     } }));
-    // Keep the popup URL/query assertions real without requiring the separate Attestify dev server.
-    await page.context().route('http://localhost:3000/**', route => route.fulfill({
-      status: 200,
-      contentType: 'text/html',
-      body: '<!doctype html><title>Attestify test fixture</title>',
-    }));
     await openCity(page);
     const profile = await openProfile(page, 'Identity controls actor');
 
@@ -141,20 +134,9 @@ test.describe('Supporting identity controls @core', () => {
     await expect(profile).toBeVisible();
     await expect.poll(async () => (await getWalletStates(page)).evm?.status).toBe('connected');
 
-    await profile.locator('.wallet-attest-link').click();
-    const attestify = page.locator('.attestify-overlay');
-    await expect(attestify).toBeVisible();
-    await attestify.locator('.attestify-close').click();
-    await expect(attestify).toHaveCount(0);
-
-    await profile.locator('.wallet-attest-link').click();
-    await openAndClosePopup(page, () => attestify.locator('[data-attest-proceed]').click(), async popup => {
-      await popup.waitForURL(url => url.searchParams.has('eoaAddress'), { waitUntil: 'commit' });
-      const destination = new URL(popup.url());
-      expect(destination.searchParams.get('eoaAddress')).toBe('0x1234567890abcdef1234567890abcdef12345678');
-      expect(destination.searchParams.get('MY_NAME_IS')).toBe('Identity controls actor');
-    });
-    await expect(attestify).toHaveCount(0);
+    // Register nickname leads to the wallet's page on Tokenizario, whose live site serves Solana
+    // devnet wallets only: an EVM wallet gets no button rather than a link that leads nowhere.
+    await expect(profile.locator('.wallet-attest-link')).toHaveCount(0);
 
     // Exercise both additional EVM choices through the connected wallet's real chain-switch path.
     await network.click();

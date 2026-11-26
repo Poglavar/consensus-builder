@@ -7,11 +7,6 @@
     ];
     const COLOR_PALETTE = ['#ff5252', '#ffa726', '#ffd54f', '#81c784', '#4dd0e1', '#42a5f5', '#7e57c2', '#ba68c8', '#8d6e63', '#bdbdbd'];
 
-    const ATTESTIFY_BASE_URLS = Object.freeze({
-        development: 'http://localhost:3000/',
-        production: 'https://tokenizario.app/'
-    });
-
     function formatTemplate(template, params = {}) {
         if (!template) return '';
         return String(template).replace(/\{\{\s*(\w+)\s*\}\}|\{(\w+)\}/g, (match, key1, key2) => {
@@ -37,56 +32,6 @@
         if (api && typeof api.applyTranslations === 'function') {
             api.applyTranslations(root);
         }
-    }
-
-    function resolveAttestifyBaseUrl() {
-        const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
-        if (!globalScope) {
-            return ATTESTIFY_BASE_URLS.production;
-        }
-
-        const pickString = (...candidates) => candidates.find(v => typeof v === 'string' && v.trim());
-
-        const explicit = pickString(
-            globalScope.AttestifyNetworbaseUrl,
-            globalScope.AttestifyNetworkBaseUrl,
-            globalScope.ATTESTIFY_BASE_URL,
-            globalScope.ATTESTIFY_URL
-        );
-        if (explicit) {
-            return explicit.trim();
-        }
-
-        const hostname = (globalScope.location && typeof globalScope.location.hostname === 'string')
-            ? globalScope.location.hostname.toLowerCase()
-            : '';
-        const isLocalHost = hostname === 'localhost'
-            || hostname === '127.0.0.1'
-            || hostname === '0.0.0.0'
-            || hostname.endsWith('.local');
-        const env = globalScope.current_environment || (isLocalHost ? 'development' : 'production');
-
-        if (env === 'development') {
-            const devOverride = pickString(
-                globalScope.AttestifyNetworkDevBaseUrl,
-                globalScope.ATTESTIFY_DEV_BASE_URL,
-                globalScope.ATTESTIFY_DEV_URL
-            );
-            if (devOverride) {
-                return devOverride.trim();
-            }
-            return ATTESTIFY_BASE_URLS.development;
-        }
-
-        const prodOverride = pickString(
-            globalScope.AttestifyNetworkProdBaseUrl,
-            globalScope.ATTESTIFY_PROD_BASE_URL,
-            globalScope.ATTESTIFY_PROD_URL
-        );
-        if (prodOverride) {
-            return prodOverride.trim();
-        }
-        return ATTESTIFY_BASE_URLS.production;
     }
 
     let lensEntries = loadLensEntries();
@@ -214,15 +159,12 @@
         return `${base}/address/${address}`;
     }
 
+    // The key's wallet page on Tokenizario, where the live site has one (tokenizario-links.js).
     function buildAttestifyUrl(address) {
-        if (!address) return null;
-        try {
-            const base = resolveAttestifyBaseUrl();
-            const url = new URL(`address/${address}`, base);
-            return url.toString();
-        } catch (_) {
-            return null;
-        }
+        const cluster = window.solanaWalletManager && window.solanaWalletManager.getCluster
+            ? window.solanaWalletManager.getCluster()
+            : 'devnet';
+        return window.TokenizarioLinks.walletPageUrl(address, cluster);
     }
 
     function generateLensPatternSvg(entries = lensEntries) {

@@ -1338,7 +1338,7 @@
     },
     "attestify": {
         "title": "Register nickname",
-        "body": "Optionally, you can connect your nickname with your address on chain. This additional metadata makes advanced attestations easier. You do not have to do it, everything works without it, but you can at any time. If you wish to do it now proceed to Tokenizario.",
+        "body": "Optionally, you can connect your nickname with your address on chain. This additional metadata makes advanced attestations easier. You do not have to do it, everything works without it, but you can at any time. If you wish to do it now, proceed to your wallet's page on Tokenizario and describe your wallet there.",
         "proceed": "Proceed to Tokenizario",
         "close": "Close"
     },

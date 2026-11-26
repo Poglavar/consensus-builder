@@ -5939,7 +5939,7 @@
     "attestify": {
         "close": "Fermer",
         "title": "Enregistrer un pseudonyme",
-        "body": "Vous pouvez, si vous le souhaitez, associer votre pseudonyme à votre adresse sur la blockchain. Ces métadonnées supplémentaires facilitent les attestations avancées. Cette étape est facultative : tout fonctionne sans elle, et vous pouvez l’effectuer à tout moment. Pour le faire maintenant, rendez-vous sur Tokenizario.",
+        "body": "Vous pouvez, si vous le souhaitez, associer votre pseudonyme à votre adresse sur la blockchain. Ces métadonnées supplémentaires facilitent les attestations avancées. Cette étape est facultative : tout fonctionne sans elle, et vous pouvez l’effectuer à tout moment. Pour le faire maintenant, rendez-vous sur la page de votre portefeuille sur Tokenizario et décrivez-le.",
         "proceed": "Accéder à Tokenizario"
     },
     "hud": {

@@ -148,30 +148,18 @@ test.describe('Supporting secondary controls @core', () => {
     await expect(cityToken).toHaveCount(0);
   });
 
-  test('Attestify close and Proceed buttons produce their expected outcomes', async ({ mockApi: page }) => {
-    await page.context().route(url => url.searchParams.has('eoaAddress') && url.searchParams.has('MY_NAME_IS'), route => route.fulfill({
-      contentType: 'text/html', body: '<title>Attestify navigation boundary</title>',
+  test('Register nickname Close and Proceed lead a Solana wallet to its page on Tokenizario', async ({ mockApi: page }) => {
+    const wallet = 'Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W';
+    // The live site's wallet page for a devnet key; no query parameters the site does not read.
+    const walletPage = `https://tokenizario.app/address/${wallet}?chain=devnet`;
+    await page.context().route('https://tokenizario.app/**', route => route.fulfill({
+      contentType: 'text/html', body: '<title>Tokenizario navigation boundary</title>',
     }));
-    await injectMockEvmWallet(page, { chainIdHex: '0xaa36a7', walletKind: 'metamask' });
-    await page.addInitScript(() => {
-      const provider = (window as any).ethereum;
-      if (!provider?.request) return;
-      const request = provider.request.bind(provider);
-      provider.request = async (args: any) => {
-        if (args?.method === 'eth_getCode') return '0x6000';
-        if (args?.method === 'eth_getBalance') return '0x0';
-        if (args?.method === 'eth_blockNumber') return '0x1';
-        if (args?.method === 'eth_getTransactionCount') return '0x0';
-        if (args?.method === 'eth_gasPrice' || args?.method === 'eth_maxPriorityFeePerGas') return '0x1';
-        if (args?.method === 'eth_estimateGas') return '0x5208';
-        if (args?.method === 'eth_call') return '0x';
-        return request(args);
-      };
-    });
+    await injectMockSolanaWallet(page, { publicKey: wallet, providerName: 'phantom' });
     await openCity(page);
     await openWalletModal(page);
-    await page.locator(`${selectors.walletConnectorButton}[data-wallet-connector="metamask"]`).click();
-    const profile = await openProfile(page, 'Attestify actor');
+    await page.locator(`${selectors.walletConnectorButton}[data-wallet-connector="solana-phantom"]`).click();
+    const profile = await openProfile(page, 'Nickname actor');
     const attest = profile.locator('.wallet-attest-link');
     await attest.click();
     const explainer = page.locator('.attestify-overlay');
@@ -184,8 +172,7 @@ test.describe('Supporting secondary controls @core', () => {
     await Promise.all([
       explainer.locator('[data-attest-proceed]').click(),
       popupPromise.then(async popup => {
-        await expect(popup).toHaveURL(url => url.searchParams.get('eoaAddress') === '0x1234567890abcdef1234567890abcdef12345678');
-        expect(new URL(popup.url()).searchParams.get('MY_NAME_IS')).toBe('Attestify actor');
+        await expect(popup).toHaveURL(walletPage);
         await popup.close();
       }),
     ]);

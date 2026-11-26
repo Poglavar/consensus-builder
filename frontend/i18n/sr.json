@@ -1344,7 +1344,7 @@
     },
     "attestify": {
         "title": "Registruj nadimak",
-        "body": "Opcionalno možeš povezati svoj nadimak sa adresom na lancu. Ovi dodatni metapodaci olakšavaju napredne atestacije. Ne moraš to uraditi; sve radi i bez toga, ali možeš uvek. Ako želiš sada, nastavi ka Tokenizario.",
+        "body": "Opcionalno možeš povezati svoj nadimak sa adresom na lancu. Ovi dodatni metapodaci olakšavaju napredne atestacije. Ne moraš to uraditi; sve radi i bez toga, ali možeš uvek. Ako želiš sada, nastavi na stranicu svog novčanika na Tokenizariju i tamo ga opiši.",
         "proceed": "Nastavi na Tokenizario",
         "close": "Zatvori"
     },

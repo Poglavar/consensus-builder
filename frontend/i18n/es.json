@@ -1339,7 +1339,7 @@
     },
     "attestify": {
         "title": "Registrar apodo",
-        "body": "Opcionalmente, puedes conectar tu apodo con tu dirección en la cadena. Estos metadatos adicionales facilitan las atestaciones avanzadas. No tienes que hacerlo; todo funciona sin ello, pero puedes hacerlo en cualquier momento. Si deseas hacerlo ahora, continúa a Tokenizario.",
+        "body": "Opcionalmente, puedes conectar tu apodo con tu dirección en la cadena. Estos metadatos adicionales facilitan las atestaciones avanzadas. No tienes que hacerlo; todo funciona sin ello, pero puedes hacerlo en cualquier momento. Si deseas hacerlo ahora, continúa a la página de tu billetera en Tokenizario y descríbela allí.",
         "proceed": "Ir a Tokenizario",
         "close": "Cerrar"
     },

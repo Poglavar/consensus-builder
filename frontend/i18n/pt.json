@@ -5939,7 +5939,7 @@
     "attestify": {
         "close": "Fechar",
         "title": "Registar alcunha",
-        "body": "Opcionalmente, pode associar a sua alcunha ao seu endereço na cadeia. Estes metadados adicionais facilitam as atestações avançadas. Não é obrigatório: tudo funciona sem esta associação, que pode fazer a qualquer momento. Se quiser fazê-la agora, avance para Tokenizario.",
+        "body": "Opcionalmente, pode associar a sua alcunha ao seu endereço na cadeia. Estes metadados adicionais facilitam as atestações avançadas. Não é obrigatório: tudo funciona sem esta associação, que pode fazer a qualquer momento. Se quiser fazê-la agora, avance para a página da sua carteira no Tokenizario e descreva-a aí.",
         "proceed": "Avançar para Tokenizario"
     },
     "hud": {
