@@ -20,9 +20,12 @@ const FACILITATOR = 'CKPKJWNdJEqa81x7CkZ14BVPiY6y16Sxs7owznqtWYp5';
 const USDC = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 const TOKEN_PROGRAM = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
 const SYSTEM_PROGRAM = '11111111111111111111111111111111';
-const MARKET_PROGRAM = '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71';
-const PLEDGE_PROGRAM = '5RvXB53atCdCkDEydpvgUDz4Ph6uFUVyMgpjdSzNwXAq';
+const MARKET_PROGRAM = '79dH9KGrbffN37Hv1mbyUWdbHAVcCt6o2Z1VZ3c745Bn';
+const PLEDGE_PROGRAM = 'DY4zKtE1hucUHsQGDhQmBaH3ZdAaeusnmj9HzVtpmYnK';
 const PROPOSAL_PROGRAM = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
+// The proposal_market deploy recorded in fixtures/solana-tx/proposal-market-deploy.json, retired since
+// the plan-CID layout moved the market to a new address: the book no longer names it.
+const RETIRED_MARKET_PROGRAM = '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71';
 
 // Deterministic PDAs standing in for market accounts that do not exist on devnet yet. SUBJECT is the
 // agreement account a market or pledge is about (the account their IDLs still call `proposal`).
@@ -356,6 +359,7 @@ describe('decodeParsedTransaction: a proposal_nft transaction from devnet histor
 // --- agreement program (not deployed yet, so built with the codec the browser and agents sign with) --
 
 const AGREEMENT_CID = 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku';
+const PLAN_CID = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
 const SPONSOR = PERSONA_WALLET;
 const keyOf = (byte) => new PublicKey(Uint8Array.from({ length: 32 }, () => byte)).toBase58();
 const LENS = keyOf(19);
@@ -387,7 +391,7 @@ describe('decodeParsedTransaction: agreement instructions (built with the codec)
 
     it('decodes create with every argument and the PDA of its sponsor and CID', () => {
         const { agreement, instruction } = AgreementClient.buildCreateIx({
-            authority: SPONSOR, cid: AGREEMENT_CID, lenses: [LENS, TREASURY], lensThreshold: 2, deadline: 1795000000, openGround: true,
+            authority: SPONSOR, cid: AGREEMENT_CID, planCid: PLAN_CID, lenses: [LENS, TREASURY], lensThreshold: 2, deadline: 1795000000, openGround: true,
             requiredLamports: 50_000_000n, payout: TREASURY, fundingMint: CREDENTIAL, requiredFunding: 7_000_000n
         });
         expect(agreement.toBase58()).toBe(AGREEMENT_ACCOUNT);
@@ -397,7 +401,7 @@ describe('decodeParsedTransaction: agreement instructions (built with the codec)
         expect(ix.discriminator).toBe(idlDiscriminatorHex('agreement', 'create'));
         expect(ix).toMatchObject({ action: 'create', idlVersion: 'v1' });
         expect(ix.args).toEqual({
-            cid: AGREEMENT_CID, lenses: [LENS, TREASURY], lens_threshold: 2, deadline: '1795000000', open_ground: true, required_lamports: '50000000',
+            cid: AGREEMENT_CID, plan_cid: PLAN_CID, lenses: [LENS, TREASURY], lens_threshold: 2, deadline: '1795000000', open_ground: true, required_lamports: '50000000',
             payout: TREASURY, funding_mint: CREDENTIAL, required_funding: '7000000'
         });
         expect(ix.argsError).toBeUndefined();
@@ -413,11 +417,11 @@ describe('decodeParsedTransaction: agreement instructions (built with the codec)
     });
 
     it('decodes a legacy create with no deadline and no escrow as zeros', () => {
-        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, lenses: [LENS], lensThreshold: 1, payout: SPONSOR, deadline: 1795000000 });
+        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, planCid: PLAN_CID, lenses: [LENS], lensThreshold: 1, payout: SPONSOR, deadline: 1795000000 });
         // The codec never builds deadline 0 (create requires one), but such an instruction still decodes:
-        // zero the i64 after the discriminator (8), the cid (u32 length + bytes), the one-key lens list
-        // (u32 length + 32) and the threshold (1).
-        const at = 8 + 4 + AGREEMENT_CID.length + 4 + 32 + 1;
+        // zero the i64 after the discriminator (8), the cid and plan cid (u32 length + bytes each), the
+        // one-key lens list (u32 length + 32) and the threshold (1).
+        const at = 8 + 4 + AGREEMENT_CID.length + 4 + PLAN_CID.length + 4 + 32 + 1;
         instruction.data.fill(0, at, at + 8);
         expect(decode(agreementTx(instruction)).instructions[0].args)
             .toMatchObject({ lenses: [LENS], lens_threshold: 1, deadline: '0', open_ground: false, required_lamports: '0', payout: SPONSOR, required_funding: '0' });
@@ -470,7 +474,7 @@ describe('decodeParsedTransaction: agreement instructions (built with the codec)
     });
 
     it('reports a create cut short as undecodable args, never half of them', () => {
-        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, lenses: [LENS], lensThreshold: 1, payout: TREASURY, deadline: 1795000000 });
+        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, planCid: PLAN_CID, lenses: [LENS], lensThreshold: 1, payout: TREASURY, deadline: 1795000000 });
         const tx = agreementTx(instruction);
         tx.transaction.message.instructions[0].data = encodeBase58(Buffer.from(instruction.data).subarray(0, 30));
         const ix = decode(tx).instructions[0];
@@ -494,15 +498,16 @@ describe('decodeParsedTransaction: program deploy (recorded devnet tx)', () => {
     const decoded = decode(fixture('proposal-market-deploy'));
 
     it('names the deploy rather than the system createAccount that precedes it', () => {
-        expect(decoded.summary).toBe('program proposal_market deployed by treasury wallet');
+        expect(decoded.summary).toBe('program 9S7j…gJ71 deployed by treasury wallet');
     });
 
     it('decodes the BPF upgradeable loader instruction', () => {
         const loader = decoded.instructions.find((instruction) => instruction.program.name === 'bpf-upgradeable-loader');
         expect(loader.action).toBe('deployWithMaxDataLen');
         expect(loader.program.label).toBe('BPF Upgradeable Loader');
-        expect(loader.args.programAccount).toBe(MARKET_PROGRAM);
-        expect(loader.accounts.find((account) => account.role === 'programAccount').label).toBe('proposal_market program');
+        expect(loader.args.programAccount).toBe(RETIRED_MARKET_PROGRAM);
+        // An unlabelled address: the book names only the current programs.
+        expect(loader.accounts.find((account) => account.role === 'programAccount').label).toBeNull();
     });
 });
 
@@ -765,7 +770,7 @@ describe('decodeParsedTransaction: hydrated @solana/web3.js shape', () => {
     });
 
     it('still matches our anchor IDLs when the program id is a PublicKey', () => {
-        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, lenses: [LENS], lensThreshold: 1, payout: TREASURY, deadline: 1795000000 });
+        const { instruction } = AgreementClient.buildCreateIx({ authority: SPONSOR, cid: AGREEMENT_CID, planCid: PLAN_CID, lenses: [LENS], lensThreshold: 1, payout: TREASURY, deadline: 1795000000 });
         const raw = decode(agreementTx(instruction));
         const hydrated = decode(hydrate(agreementTx(instruction)));
 

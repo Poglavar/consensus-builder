@@ -37,7 +37,7 @@ const key = value => new web3.PublicKey(value).toBuffer();
 function str(text) { const bytes = Buffer.from(text, 'utf8'); const length = Buffer.alloc(4); length.writeUInt32LE(bytes.length); return Buffer.concat([length, bytes]); }
 
 /**
- * The Agreement account bytes (programs/agreement/README.md, "Agreement account"): 580 bytes, the CID
+ * The Agreement account bytes (programs/agreement/README.md, "Agreement account"): 612 bytes, the CID
  * last and zero-padded to the account's fixed space (fixtures/agreement-account.js). `lens` alone is a
  * one-member lens; `fundingMint` null means no target. Read back with agreement-client readAgreement.
  */
@@ -195,6 +195,9 @@ export function createAgreementChain({ now = systemNow } = {}) {
             let offset = 8;
             const cidLength = data.readUInt32LE(offset); offset += 4;
             const cid = data.subarray(offset, offset + cidLength).toString('utf8'); offset += cidLength;
+            const planCidLength = data.readUInt32LE(offset); offset += 4;
+            const planCid = data.subarray(offset, offset + planCidLength).toString('utf8'); offset += planCidLength;
+            try { agreementClient.requireCid(planCid); } catch (error) { throw programError('InvalidCid', error.message); }
             const lensCount = data.readUInt32LE(offset); offset += 4;
             const lenses = Array.from({ length: lensCount }, (_, index) => new web3.PublicKey(data.subarray(offset + index * 32, offset + (index + 1) * 32)).toBase58());
             offset += lensCount * 32;
@@ -215,7 +218,7 @@ export function createAgreementChain({ now = systemNow } = {}) {
             write(address, {
                 authority, lenses, lensThreshold, lensConfirmed: [], payout, deadline, createdAt: time, requiredLamports, escrowLamports: 0n, statusCode: 0, openGround,
                 fundingMint: requiredFunding > 0n ? fundingMint : null, requiredFunding, fundingMet: false, fundingObserved: 0n, fundingMetAt: 0,
-                decisionCode: 0, decisionAttestedAt: 0, decisionObservedAt: 0, executedAt: 0, bump, cid
+                decisionCode: 0, decisionAttestedAt: 0, decisionObservedAt: 0, executedAt: 0, bump, planCid, cid
             });
             return { name, account: address };
         }

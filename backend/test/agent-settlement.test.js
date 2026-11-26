@@ -332,7 +332,7 @@ describe('the settlement phase of a run (run.mjs settleStage)', () => {
             outputs: parcelOutputs([{ parcelId: PARCEL_ID, geometry: PARCEL, areaM2: 612.4 }]),
             rule: ownersRule({ lenses: [LENS], rights }), deadline: deadlineAfterDays(Date.now(), deadlineDays), money: noMoney('EUR')
         });
-        const minted = await mintAgreement({ connection: chain.connection, sponsorKeypair: owner, cid, lenses: [LENS], deadline: content.deadline, lamports: '1000', sendAndConfirm: chain.sendAndConfirm });
+        const minted = await mintAgreement({ connection: chain.connection, sponsorKeypair: owner, cid, planCid: content.planCid, lenses: [LENS], deadline: content.deadline, lamports: '1000', sendAndConfirm: chain.sendAndConfirm });
         world.rows.set(cid, { cid, content, status: 'active', deadline: content.deadline, onchain: null });
         return { cid, content, account: minted.account };
     }

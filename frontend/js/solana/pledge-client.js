@@ -33,8 +33,11 @@
         PledgeBook: [24, 193, 154, 165, 1, 51, 253, 96],
         PledgeCommitment: [238, 112, 179, 175, 31, 209, 249, 219]
     });
+    // The program ids live in program-ids.js (window.SolanaProgramIds, loaded before this file).
+    const programIds = globalThis.SolanaProgramIds || (typeof require === 'function' ? require('./program-ids.js') : null);
+    if (!programIds) throw new Error('SolanaProgramIds (js/solana/program-ids.js) must load before pledge-client.js');
     const constants = Object.freeze({
-        PROGRAM_ID: '5RvXB53atCdCkDEydpvgUDz4Ph6uFUVyMgpjdSzNwXAq',
+        PROGRAM_ID: programIds.PLEDGE_PROGRAM_ID,
         USDC_DEVNET_MINT: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
         TOKEN_PROGRAM_ID: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
         ASSOCIATED_TOKEN_PROGRAM_ID: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',

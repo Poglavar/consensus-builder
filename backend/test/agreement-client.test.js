@@ -34,6 +34,7 @@ const LENS = keyOf(11);
 const PAYOUT = keyOf(13);
 const CREDENTIAL = keyOf(17);
 const CID = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
+const PLAN_CID = 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku';
 const NOW = 1_790_000_000;
 const sha256 = text => createHash('sha256').update(text).digest();
 const anchor = (prefix, name) => Array.from(sha256(`${prefix}:${name}`).subarray(0, 8));
@@ -47,14 +48,14 @@ const i64 = value => { const out = Buffer.alloc(8); out.writeBigInt64LE(BigInt(v
 const str = text => Buffer.concat([u32(Buffer.byteLength(text)), Buffer.from(text, 'utf8')]);
 const keyBytes = key => new PublicKey(key).toBuffer();
 
-// An Agreement account: every fixed field written at its README offset, padded to the 580-byte account.
+// An Agreement account: every fixed field written at its README offset, padded to the 612-byte account.
 // `lenses` are the members (first in `lens`, the rest in `more_lenses`), `lensConfirmed` their bitmap.
 function agreementBytes(fields = {}) {
     const f = {
         authority: SPONSOR, lenses: [LENS], lensThreshold: 1, lensConfirmed: 0, fundingMint: keyOf(0), requiredFunding: 0n,
         fundingMet: 0, fundingObserved: 0n, fundingMetAt: 0, payout: PAYOUT, deadline: 0, createdAt: NOW - 600, requiredLamports: 2_000_000_000n,
         escrowLamports: 500_000_000n, status: 0, openGround: 0, decision: 0, decisionAttestedAt: 0, decisionObservedAt: 0,
-        decisionAttestation: keyOf(0), decisionHash: Buffer.alloc(32), executedAt: 0, bump: 253, cid: CID, ...fields
+        decisionAttestation: keyOf(0), decisionHash: Buffer.alloc(32), executedAt: 0, bump: 253, planCid: PLAN_CID, cid: CID, ...fields
     };
     const bytes = Buffer.alloc(C.AGREEMENT_ACCOUNT_SPACE);
     Buffer.from(client.ACCOUNT_DISCRIMINATORS.Agreement).copy(bytes, 0);
@@ -83,7 +84,8 @@ function agreementBytes(fields = {}) {
     bytes[495] = f.fundingMet;
     bytes.writeBigUInt64LE(BigInt(f.fundingObserved), 496);
     bytes.writeBigInt64LE(BigInt(f.fundingMetAt), 504);
-    str(f.cid).copy(bytes, 512);
+    sha256(f.planCid).copy(bytes, 512);
+    str(f.cid).copy(bytes, 544);
     return bytes;
 }
 
@@ -168,8 +170,9 @@ describe('the Agreement account layout', () => {
             authority: readme.authority, lens: readme.lens, payout: readme.payout, deadline: readme.deadline,
             status: readme.status, decision: readme.decision, lensCount: readme.lens_count, lensThreshold: readme.lens_threshold,
             lensConfirmed: readme.lens_confirmed, moreLenses: readme.more_lenses, fundingMint: readme.funding_mint,
-            requiredFunding: readme.required_funding, cid: readme.cid
+            requiredFunding: readme.required_funding, planCidHash: readme.plan_cid_hash, cid: readme.cid
         });
+        expect([readme.plan_cid_hash, readme.cid]).toEqual([512, 544]);
         // 8 + Agreement::INIT_SPACE, with the cid at most 64 bytes behind its u32 length.
         expect(C.AGREEMENT_ACCOUNT_SPACE).toBe(readme.cid + 4 + C.MAX_CID_BYTES);
         expect(README).toContain(`8-byte discriminator + ${C.AGREEMENT_ACCOUNT_SPACE - 8} bytes = ${C.AGREEMENT_ACCOUNT_SPACE}`);
@@ -204,28 +207,31 @@ describe('the agreement address', () => {
 });
 
 describe('instructions', () => {
-    it('create carries cid, the lens set and threshold, deadline, open ground, required lamports, payout and target in the IDL\'s order', () => {
+    it('create carries cid, plan cid, the lens set and threshold, deadline, open ground, required lamports, payout and target in the IDL\'s order', () => {
         const { agreement, instruction } = client.buildCreateIx({
-            authority: SPONSOR, cid: CID, lenses: [LENS, OTHER, SPONSOR], lensThreshold: 2, deadline: NOW + 86400, openGround: true,
+            authority: SPONSOR, cid: CID, planCid: PLAN_CID, lenses: [LENS, OTHER, SPONSOR], lensThreshold: 2, deadline: NOW + 86400, openGround: true,
             requiredLamports: 2_500_000_000n, payout: PAYOUT, fundingMint: C.USDC_DEVNET_MINT, requiredFunding: 20_000_000n
         });
         expect(agreement.toBase58()).toBe(client.getAgreementPda(CID, SPONSOR)[0].toBase58());
         expect(instruction.programId.toBase58()).toBe(IDL.address);
         expect(decodeArgs('create', instruction.data)).toEqual({
-            cid: CID, lenses: [LENS, OTHER, SPONSOR], lens_threshold: 2, deadline: BigInt(NOW + 86400), open_ground: true, required_lamports: 2_500_000_000n,
+            cid: CID, plan_cid: PLAN_CID, lenses: [LENS, OTHER, SPONSOR], lens_threshold: 2, deadline: BigInt(NOW + 86400), open_ground: true, required_lamports: 2_500_000_000n,
             payout: PAYOUT, funding_mint: C.USDC_DEVNET_MINT, required_funding: 20_000_000n
         });
         expect(metas('create', instruction)).toEqual({ agreement: agreement.toBase58(), authority: SPONSOR, system_program: C.SYSTEM_PROGRAM_ID });
         // Defaults: threshold 1 ("any one"), closed land, no escrow needed, no target (the deadline has no default).
-        expect(decodeArgs('create', client.encodeCreateData({ cid: CID, lenses: [LENS, OTHER], payout: PAYOUT, deadline: NOW + 60 })))
+        expect(decodeArgs('create', client.encodeCreateData({ cid: CID, planCid: PLAN_CID, lenses: [LENS, OTHER], payout: PAYOUT, deadline: NOW + 60 })))
             .toMatchObject({ lens_threshold: 1, deadline: BigInt(NOW + 60), open_ground: false, required_lamports: 0n, funding_mint: C.DEFAULT_PUBKEY, required_funding: 0n });
         // No lens at all: only with a contribution target, threshold 0.
-        expect(decodeArgs('create', client.encodeCreateData({ cid: CID, lenses: [], payout: PAYOUT, deadline: NOW + 60, fundingMint: C.USDC_DEVNET_MINT, requiredFunding: 1n })))
+        expect(decodeArgs('create', client.encodeCreateData({ cid: CID, planCid: PLAN_CID, lenses: [], payout: PAYOUT, deadline: NOW + 60, fundingMint: C.USDC_DEVNET_MINT, requiredFunding: 1n })))
             .toMatchObject({ lenses: [], lens_threshold: 0, required_funding: 1n });
     });
 
     it('create refuses what the program refuses for its arguments, before any wallet signs', () => {
-        const args = { authority: SPONSOR, cid: CID, lenses: [LENS], payout: PAYOUT, deadline: NOW + 86400 };
+        const args = { authority: SPONSOR, cid: CID, planCid: PLAN_CID, lenses: [LENS], payout: PAYOUT, deadline: NOW + 86400 };
+        // The plan the agreement names is required and must be a CID the program accepts.
+        expect(() => client.buildCreateIx({ ...args, planCid: undefined })).toThrow(/planCid .* is required/);
+        for (const bad of ['', 'a'.repeat(65), 'bafk rei']) expect(() => client.buildCreateIx({ ...args, planCid: bad }), bad).toThrow(/cid/);
         expect(() => client.buildCreateIx({ ...args, lenses: [C.DEFAULT_PUBKEY] })).toThrow(/lens member must not be the default key/);
         expect(() => client.buildCreateIx({ ...args, lenses: LENS })).toThrow(/lenses must be a list/);
         expect(() => client.buildCreateIx({ ...args, lenses: [LENS, LENS] })).toThrow(/names each member once/);
@@ -245,7 +251,7 @@ describe('instructions', () => {
         // The program requires a deadline: NO_DEADLINE, a missing one and 0n are refused.
         for (const deadline of [C.NO_DEADLINE, undefined, null, 0n, -5n]) {
             expect(() => client.buildCreateIx({ ...args, deadline }), String(deadline)).toThrow(/deadline must be unix seconds in the future/);
-            expect(() => client.encodeCreateData({ cid: CID, lenses: [LENS], payout: PAYOUT, deadline }), String(deadline)).toThrow(/deadline must be unix seconds in the future/);
+            expect(() => client.encodeCreateData({ cid: CID, planCid: PLAN_CID, lenses: [LENS], payout: PAYOUT, deadline }), String(deadline)).toThrow(/deadline must be unix seconds in the future/);
         }
         expect(() => client.buildCreateIx({ ...args, requiredLamports: -1n })).toThrow(/u64/);
         expect(() => client.buildCreateIx({ ...args, openGround: 'yes' })).toThrow(/boolean/);
@@ -313,7 +319,7 @@ describe('reading an Agreement account', () => {
             fundingMint: C.USDC_DEVNET_MINT, requiredFunding: 20_000_000n, fundingMet: 1, fundingObserved: 21_000_000n, fundingMetAt: NOW - 45
         }), 'Account1');
         expect(value).toEqual({
-            address: 'Account1', cid: CID, authority: SPONSOR, lens: LENS, lenses: [LENS, OTHER, SPONSOR], lensThreshold: 2, lensConfirmed: [LENS, SPONSOR],
+            address: 'Account1', cid: CID, planCidHash: sha256(PLAN_CID).toString('hex'), authority: SPONSOR, lens: LENS, lenses: [LENS, OTHER, SPONSOR], lensThreshold: 2, lensConfirmed: [LENS, SPONSOR],
             fundingMint: C.USDC_DEVNET_MINT, requiredFunding: 20_000_000n, fundingMet: true, fundingObserved: 21_000_000n, fundingMetAt: NOW - 45, payout: PAYOUT, deadline: NOW + 86400, createdAt: NOW - 600,
             requiredLamports: 2_000_000_000n, escrowLamports: 500_000_000n, statusCode: 0, status: 'Active', openGround: true,
             decisionCode: 1, decision: 'Satisfied', decisionAttestedAt: NOW - 30, decisionObservedAt: NOW - 90,
@@ -330,7 +336,7 @@ describe('reading an Agreement account', () => {
     });
 
     it('reads an account without its padding, and refuses another account or a truncated one', () => {
-        const exact = agreementBytes().subarray(0, 512 + 4 + CID.length);
+        const exact = agreementBytes().subarray(0, 544 + 4 + CID.length);
         expect(client.readAgreement(exact).cid).toBe(CID);
         const other = agreementBytes();
         other[0] ^= 0xff;
@@ -460,5 +466,50 @@ describe('fetching through a connection', () => {
         await expect(client.fetchDecisionAttestation(connection(new Map()), at)).resolves.toBeNull();
         await expect(client.fetchDecisionAttestation(connection(new Map([[at, { owner: programKey, data: attestationBytes() }]])), at))
             .rejects.toThrow(/not a SAS attestation/);
+    });
+
+    it('lists a plan\'s agreements with one getProgramAccounts: the account size and a memcmp on sha256(planCid) at byte 512', async () => {
+        expect(client.planCidHash(PLAN_CID)).toBe(sha256(PLAN_CID).toString('hex'));
+        const asked = [];
+        const later = client.getAgreementPda(CID, OTHER)[0];
+        const rows = [
+            { pubkey: later, account: { data: agreementBytes({ authority: OTHER, createdAt: NOW - 10 }) } },
+            { pubkey: new PublicKey(address), account: { data: agreementBytes({ createdAt: NOW - 600 }) } },
+            // An RPC that ignored the filter: another plan's account is dropped by its own hash.
+            { pubkey: new PublicKey(keyOf(71)), account: { data: agreementBytes({ planCid: CID }) } }
+        ];
+        const chain = { getProgramAccounts: async (program, config) => { asked.push([program.toBase58(), config]); return rows; } };
+        const found = await client.fetchAgreementsForPlan(chain, PLAN_CID);
+        expect(asked).toEqual([[C.AGREEMENT_PROGRAM_ID, { commitment: 'confirmed', filters: [
+            { dataSize: 612 }, { memcmp: { offset: 512, bytes: new PublicKey(sha256(PLAN_CID)).toBase58() } }
+        ] }]]);
+        expect(found.map(value => [value.address, value.authority])).toEqual([[address, SPONSOR], [later.toBase58(), OTHER]]);
+        await expect(client.fetchAgreementsForPlan(chain, 'not a cid')).rejects.toThrow(/cid/);
+    });
+});
+
+describe('program ids', () => {
+    const ids = require('../../frontend/js/solana/program-ids.js');
+    const read = file => readFileSync(path.join(REPO, file), 'utf8');
+
+    it('come from program-ids.js, which Anchor.toml, declare_id!, the IDLs and addresses.json restate', () => {
+        const anchorToml = read('blockchain/solana/Anchor.toml');
+        const addresses = JSON.parse(read('frontend/contracts/addresses.json'));
+        const programs = { agreement: [ids.AGREEMENT_PROGRAM_ID, null], proposal_pledge: [ids.PLEDGE_PROGRAM_ID, 'ProposalPledge'], proposal_market: [ids.MARKET_PROGRAM_ID, 'ProposalMarket'] };
+        for (const [name, [id, book]] of Object.entries(programs)) {
+            expect(ids.programs[name].current, name).toBe(id);
+            expect(anchorToml.match(new RegExp(`^${name} = "(\\w+)"`, 'gm')), name).toEqual([`${name} = "${id}"`, `${name} = "${id}"`]);
+            expect(read(`blockchain/solana/programs/${name}/src/lib.rs`), name).toContain(`declare_id!("${id}");`);
+            expect(JSON.parse(read(`blockchain/solana/idl/${name}.json`)).address, name).toBe(id);
+            if (book) expect([addresses.solana[book], addresses['solana-devnet'][book]], name).toEqual([id, id]);
+            expect(ids.programs[name].retired, name).not.toContain(id);
+        }
+        expect(read('blockchain/solana/programs/agreement/src/lib.rs')).toContain(`PLEDGE_PROGRAM_ID: Pubkey = pubkey!("${ids.PLEDGE_PROGRAM_ID}")`);
+        expect(C.AGREEMENT_PROGRAM_ID).toBe(ids.AGREEMENT_PROGRAM_ID);
+        expect(C.RETIRED_AGREEMENT_PROGRAM_IDS).toEqual(['ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH', 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ']);
+        expect(ids.AGREEMENT_PROGRAM_IDS).toEqual([ids.AGREEMENT_PROGRAM_ID, ...C.RETIRED_AGREEMENT_PROGRAM_IDS]);
+        expect(require('../../frontend/js/solana/market-client.js').constants.PROGRAM_ID).toBe(ids.MARKET_PROGRAM_ID);
+        expect(require('../../frontend/js/solana/lmsr-client.js').constants.PROGRAM_ID).toBe(ids.MARKET_PROGRAM_ID);
+        expect(require('../../frontend/js/solana/pledge-client.js').constants.PROGRAM_ID).toBe(ids.PLEDGE_PROGRAM_ID);
     });
 });

@@ -24,7 +24,7 @@ are proposed; [vocabulary.md](vocabulary.md) changes when a milestone lands, not
 | **Parcel anchor** | cadastral parcel id | an ownerless account per parcel: id, fixed metadata URI. Created once, never transferred, never closed. The parcel's public address and inbox. | nothing | anyone (pays rent only) | Solana (`parcel_nft` v2 today; moves into the one program, see Chain contracts); EVM (to build: `ParcelNFT.sol` is a transferable ERC-721 minted to an address, which contradicts this row) |
 | **Design record** | design CID | the CID, the minter, the chain time | the content retrievable from IPFS | anyone | both, to build |
 | **Plan record** | plan CID | the CID, the minter, the chain time | the plan and every member design retrievable from IPFS. Member designs need no record of their own: the plan's CID commits to their CIDs. | anyone | both, to build |
-| **Agreement** | agreement CID + sponsor | the account the agreement program keeps: escrow, lens, deadline, decision, status ([program README](../blockchain/solana/programs/agreement/README.md)) | the content retrievable; **every input parcel anchored**; the plan it names retrievable | the sponsor's wallet | Solana (built, devnet); EVM (to build) |
+| **Agreement** | agreement CID + sponsor | the account the agreement program keeps: escrow, lens, deadline, decision, status, the sha256 of the plan CID it names ([program README](../blockchain/solana/programs/agreement/README.md)) | the content retrievable; **every input parcel anchored**; the plan it names retrievable | the sponsor's wallet | Solana (built, devnet); EVM (to build) |
 
 Rules behind the table:
 
@@ -69,6 +69,13 @@ RPC, not our server.
    An agreement imports its plan and designs the same way, transitively.
 5. **Show** the chain state on the record: minted at, minter, explorer link; for an agreement the
    status, escrow and decision the account holds.
+
+A plan's agreements are a chain filter: every agreement account stores the sha256 of the plan CID its
+sponsor named at create at a fixed offset, so one `getProgramAccounts` with a memcmp on it lists them
+(`AgreementClient.fetchAgreementsForPlan`, `AgreementBridge.agreementsForPlan` in the browser,
+`createAgreementChain().agreementsForPlan` on the server). The hash is the sponsor's claim, which the
+program does not check against the content: the reader confirms it against each agreement's own
+`planCid` after fetching the agreement (step 3).
 
 Agreements are also found by a design or a parcel: a design's agreements are the agreement accounts
 whose plan commits to its CID, which the reader resolves from the plans it has fetched; a parcel's
@@ -155,10 +162,12 @@ adapter, and the agreement can check anchors and records it owns without cross-p
 - **`Record`** at `PDA([kind, sha256(cid)])` for `kind` design or plan: `kind u8`, `cid string`,
   `minter Pubkey`, `created_at i64`, `bump u8`, fixed fields first so memcmp on `kind` works.
   `create_record(kind, cid)` is refused when the account exists.
-- **`Agreement`**: the current program's account and lifecycle, plus `plan_cid` stored at a fixed
-  offset (as its sha256, so memcmp finds the agreements of a plan without fetching every agreement).
-  Anchoring stays the browser's guard, as in Flow 3; the account records `input_count` from the
-  content for readers.
+- **`Agreement`**: the current program's account and lifecycle, with `plan_cid_hash` (sha256 of the
+  plan CID passed to `create`, the sponsor's claim) at byte 512, so memcmp finds the agreements of a
+  plan without fetching every agreement. Built in the `agreement` program (612-byte account; its new
+  address and those of `proposal_market` and `proposal_pledge` await their devnet deploy). Anchoring
+  stays the browser's guard, as in Flow 3; the account records `input_count` from the content for
+  readers.
 - `proposal_nft`, the separate `parcel_nft` and the separate `agreement` program are retired.
   `proposal_market` and `proposal_pledge` are repointed at the new agreement account layout; they
   may be merged into the same program later if their deploy cost argues for it.

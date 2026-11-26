@@ -136,8 +136,9 @@ function assertChallengeUnderCap(challenge, maximum, label) {
     }
 }
 
-// The account carries the lens set, threshold and contribution target the published agreement mints with.
-const sameMintTerms = (account, terms) => account.lenses.join() === terms.lenses.join() && account.lensThreshold === terms.lensThreshold
+// The account carries the plan hash, lens set, threshold and contribution target the published agreement mints with.
+const sameMintTerms = (account, terms) => account.planCidHash === agreementClient.planCidHash(terms.planCid)
+    && account.lenses.join() === terms.lenses.join() && account.lensThreshold === terms.lensThreshold
     && account.fundingMint === terms.fundingMint && account.requiredFunding === terms.requiredFunding;
 
 // A whole number of lamports as a decimal string (agreement-minter.js reads it as u64).

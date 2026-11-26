@@ -13,13 +13,14 @@ import { AGREEMENT_LIFECYCLE_EVENT_TYPE } from '../oracle/agreement-lifecycle.js
 import { AGREEMENT_EXECUTION_RECIPE_ID } from '../oracle/market-recipe.js';
 import { readX402OracleConfig } from '../utils/x402-payment.js';
 import { eventFromRow, validAddress } from './land-events.js';
+import { MARKET_PROGRAM_ID } from '../oracle/court-parcel-operation.js';
 
 export const AGENT_ORACLE_FACTS_PATH = '/agent/oracle/facts';
 
 export const AGENT_ORACLE_FACTS_DISCOVERY = declareDiscoveryExtension({
     input: {
         subject: 'Gsvt6nMhsvfrEDgvcqZDzPKZhhqACFEi3mueMxQNQ6UT',
-        market: '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71'
+        market: MARKET_PROGRAM_ID
     },
     inputSchema: {
         type: 'object',

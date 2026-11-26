@@ -15,9 +15,11 @@ const agreementRecord = require('../../frontend/js/agreement-record.js');
 agreementClient.configure({ web3 });
 
 export const AGREEMENT_PROGRAM_ID = agreementClient.constants.AGREEMENT_PROGRAM_ID;
-// The agreement program before the lens-set redeploy of 2026-11-25. Index rows whose `onchain.programId`
-// names it are known not to be on the current program (scripts/remint-agreements.mjs re-mints them).
-export const OLD_AGREEMENT_PROGRAM_ID = 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ';
+// Earlier agreement programs, newest first (frontend/js/solana/program-ids.js). Index rows whose
+// `onchain.programId` names one are known not to be on the current program.
+export const RETIRED_AGREEMENT_PROGRAM_IDS = agreementClient.constants.RETIRED_AGREEMENT_PROGRAM_IDS;
+// The program the current one superseded, whose accounts scripts/remint-agreements.mjs re-mints from.
+export const OLD_AGREEMENT_PROGRAM_ID = RETIRED_AGREEMENT_PROGRAM_IDS[0];
 export const AGREEMENT_STATUS = Object.freeze({ active: 'Active', executed: 'Executed', cancelled: 'Cancelled', expired: 'Expired' });
 const SIGNATURE_PAGE = 1000;
 const ATTESTATION_READ_ATTEMPTS = 4;
@@ -73,16 +75,17 @@ export async function creationSignature(connection, account) {
 }
 
 /**
- * The settlement terms an agreement/v1 object mints with: its rule's lens set and threshold
- * (agreement-record.js lensThresholdOf), and for a crowdfunding (investors) agreement its funding
- * target in devnet USDC, checked by the program itself (confirm_funding). Any key may be a member, the
- * sponsor's own included.
+ * The settlement terms an agreement/v1 object mints with: the plan it names (`planCid`, stored as the
+ * account's plan_cid_hash), its rule's lens set and threshold (agreement-record.js lensThresholdOf),
+ * and for a crowdfunding (investors) agreement its funding target in devnet USDC, checked by the
+ * program itself (confirm_funding). Any key may be a member, the sponsor's own included.
  */
 export function mintTermsOf(content) {
     const rule = content?.rule || {};
     const lenses = Array.isArray(rule.lens) ? rule.lens.map(keyText) : [];
     const crowdfunding = rule.electorate === 'investors';
     return {
+        planCid: content?.planCid ?? null,
         lenses,
         lensThreshold: agreementRecord.lensThresholdOf({ ...rule, lens: lenses }),
         fundingMint: crowdfunding ? agreementClient.constants.USDC_DEVNET_MINT : null,
@@ -92,15 +95,15 @@ export function mintTermsOf(content) {
 
 /**
  * Create the agreement account (if missing) and fund its escrow up to `lamports`, in one transaction.
- * `create(cid, lenses, lens_threshold, deadline, open_ground, required_lamports = lamports, payout,
- * funding_mint, required_funding)` (mintTermsOf gives an agreement's lens and target); `fund` brings the
+ * `create(cid, plan_cid, lenses, lens_threshold, deadline, open_ground, required_lamports = lamports, payout,
+ * funding_mint, required_funding)` (mintTermsOf gives an agreement's plan, lens and target); `fund` brings the
  * escrow to `lamports` (nothing when it already holds that much, nothing at all for 0). The program
  * requires a deadline in the future: a missing one becomes nowSeconds + DEFAULT_DEADLINE_SECONDS (90 days),
  * and a create with a deadline at or before nowSeconds is refused before anything is signed. An existing
- * account must carry the same lens set, threshold, contribution target and required lamports, and the
+ * account must carry the same plan hash, lens set, threshold, contribution target and required lamports, and the
  * same deadline when the caller named one (a defaulted deadline moves with the clock, so a rerun could
  * never match it), or nothing is signed.
- * @param {{ connection, sponsorKeypair, cid: string, lenses: string[], lensThreshold?: number,
+ * @param {{ connection, sponsorKeypair, cid: string, planCid: string, lenses: string[], lensThreshold?: number,
  *           deadline: string|null, lamports?: bigint|string|number, payout?: string|null, openGround?: boolean,
  *           fundingMint?: string|null, requiredFunding?: bigint|string|number, programId?: string,
  *           nowSeconds?: number, sendAndConfirm?: Function }} options
@@ -110,12 +113,14 @@ export function mintTermsOf(content) {
  *   fundedLamports: string, requiredLamports: string, escrowLamports: string, status: string }>}
  */
 export async function mintAgreement({
-    connection, sponsorKeypair, cid, lenses, lensThreshold, deadline = null, lamports = 0n, payout = null, openGround = false,
+    connection, sponsorKeypair, cid, planCid, lenses, lensThreshold, deadline = null, lamports = 0n, payout = null, openGround = false,
     fundingMint = null, requiredFunding = 0n, programId = AGREEMENT_PROGRAM_ID, nowSeconds = Math.floor(Date.now() / 1000), sendAndConfirm = web3.sendAndConfirmTransaction
 } = {}) {
     if (!connection?.getAccountInfo) throw new Error('a solana connection is required');
     if (!sponsorKeypair?.publicKey) throw new Error('sponsorKeypair is required');
     agreementClient.requireCid(cid);
+    if (!planCid) throw new Error('planCid (the agreement object\'s planCid) is required');
+    const planHash = agreementClient.planCidHash(planCid);
     const sponsor = sponsorKeypair.publicKey;
     const target = BigInt(requiredFunding);
     const threshold = lensThreshold ?? (Array.isArray(lenses) && lenses.length ? 1 : 0);
@@ -129,6 +134,7 @@ export async function mintAgreement({
     const existing = await readAgreementAccount(connection, { cid, sponsor: sponsor.toBase58(), programId });
     if (existing) {
         const differs = [
+            existing.planCidHash !== planHash ? `plan hash ${existing.planCidHash}` : null,
             existing.lenses.join() !== lensKeys.join() ? `lens ${existing.lenses.join(', ') || '(none)'}` : null,
             existing.lensThreshold !== threshold ? `lens threshold ${existing.lensThreshold}` : null,
             existing.fundingMint !== mint || existing.requiredFunding !== target ? `funding target ${existing.requiredFunding} of ${existing.fundingMint ?? 'no mint'}` : null,
@@ -143,7 +149,7 @@ export async function mintAgreement({
             throw new Error(`agreement ${cid} has a deadline (${new Date(deadlineSeconds * 1000).toISOString()}) that is not in the future; nothing signed`);
         }
         instructions.push(agreementClient.buildCreateIx({
-            authority: sponsor, programId, cid, lenses: lensKeys, lensThreshold: threshold, deadline: deadlineSeconds, openGround: Boolean(openGround),
+            authority: sponsor, programId, cid, planCid, lenses: lensKeys, lensThreshold: threshold, deadline: deadlineSeconds, openGround: Boolean(openGround),
             requiredLamports: required, payout: payout ? keyText(payout) : sponsor, fundingMint: mint, requiredFunding: target
         }).instruction);
     }

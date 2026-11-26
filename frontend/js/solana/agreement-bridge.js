@@ -230,14 +230,16 @@
             return { signature, explorerUrl: link };
         }
 
-        // The proposed agreement's CID and sponsor, or a refusal in words.
+        // The proposed agreement's CID, sponsor and plan CID (the published object's planCid, which the
+        // account stores as its plan_cid_hash), or a refusal in words.
         function publishedOf(agreement) {
             const published = agreement && agreement.published;
+            const planCid = (published && published.content ? idOf(published.content.planCid) : '') || null;
             if (!published || !idOf(published.cid)) throw codedError(t('agreement.chain.errors.notProposed', 'Propose the agreement before minting it.'), 'not-proposed');
             if (agreement.rule?.electorate === 'investors' && (win.AgreementRecord.publishedCid(agreement) !== published.cid || agreement.sponsor !== published.sponsor)) {
                 throw codedError(t('agreement.funding.mismatch', 'The funding terms differ from the published agreement.'), 'funding-mismatch');
             }
-            return { cid: published.cid, sponsor: idOf(published.sponsor) || null };
+            return { cid: published.cid, sponsor: idOf(published.sponsor) || null, planCid };
         }
 
         // A crowdfunding account must carry the published terms: the sponsor as authority and payout,
@@ -307,6 +309,16 @@
             const value = await api.fetchAgreement(connection, { address: ref.account, cid, ...(sponsor ? { authority: sponsor } : {}), programId: programId() });
             checkFundingAccount(agreement, ref.cluster, value);
             return value;
+        }
+
+        /**
+         * Every agreement account on `clusterName` whose sponsor named `planCid` at create, read from the
+         * chain alone (AgreementClient.fetchAgreementsForPlan, a memcmp on the plan CID hash). The hash is
+         * the sponsor's claim: check it against each agreement object's planCid before relying on it.
+         */
+        async function agreementsForPlan(planCid, clusterName = cluster()) {
+            const api = await dependencies();
+            return api.fetchAgreementsForPlan(win.SolanaChainDataLoader.getConnection(clusterName), planCid, { programId: programId() });
         }
 
         /**
@@ -380,8 +392,10 @@
          */
         async function mint({ agreement, lenses, lensThreshold, deadline, requiredLamports = 0n, payout, onStatus } = {}) {
             const api = await dependencies();
-            const { cid, sponsor } = publishedOf(agreement);
+            const { cid, sponsor, planCid } = publishedOf(agreement);
             if (onchainRef(agreement)) throw codedError(t('agreement.chain.errors.alreadyMinted', 'This agreement is already minted.'), 'already-minted');
+            // The account stores the plan the published object names; without that object there is none to store.
+            if (!planCid) throw codedError(t('agreement.chain.errors.notProposed', 'Propose the agreement before minting it.'), 'not-proposed');
             if (!sponsor) {
                 throw codedError(t('agreement.chain.errors.noSponsor', 'This agreement was proposed without a wallet, so it cannot be minted. Propose it again with this wallet connected.'), 'no-sponsor');
             }
@@ -419,6 +433,7 @@
             const built = api.buildCreateIx({
                 authority: wallet,
                 cid,
+                planCid,
                 lenses,
                 lensThreshold: lensThreshold ?? (lenses.length ? 1 : 0),
                 deadline: deadlineSeconds,
@@ -843,7 +858,7 @@
             return result(sent, ref);
         }
 
-        return { mint, fund, attest, confirmAsMember, confirmFunding, execute, cancel, expire, read, findAttestation, connectedWallet, cluster, programId,
+        return { mint, fund, attest, confirmAsMember, confirmFunding, execute, cancel, expire, read, agreementsForPlan, findAttestation, connectedWallet, cluster, programId,
             donations, donate, refundDonations, releaseDonations, apartmentInventory, apartmentRound,
             listApartment: options => apartmentAction(options, true), reserveApartment: options => apartmentAction(options, false) };
     }

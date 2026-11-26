@@ -57,9 +57,10 @@ export interface SharedIndex {
 // The directory's one member and the service it answers at (an origin no request leaves the browser for).
 export const E2E_LENS_MEMBER_KEY = 'GmaDrppBC7P5ARKV8g3djiwP89vz1jLK23V2GBjuAEGB';
 export const E2E_LENS_SERVICE_URL = 'https://lens-member.e2e.invalid';
-// The program ids GET /markets names (agreement-client.js, market-client.js; devnet USDC).
-export const AGREEMENT_PROGRAM_ID = 'ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH';
-const MARKET_PROGRAM_ID = '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71';
+// The program ids GET /markets names (frontend/js/solana/program-ids.js; devnet USDC).
+const programIds = createRequire(__filename)('../../../frontend/js/solana/program-ids.js');
+export const AGREEMENT_PROGRAM_ID: string = programIds.AGREEMENT_PROGRAM_ID;
+const MARKET_PROGRAM_ID: string = programIds.MARKET_PROGRAM_ID;
 const DEVNET_USDC_MINT = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 
 export function createSharedIndex(options: { cadastre?: any[] } = {}): SharedIndex {

@@ -205,6 +205,29 @@ describe('createAgreementChain over a fake connection', () => {
         await expect(chain.readAccounts([ACCOUNT, others[0]])).rejects.toThrow(/returned 1 results for 2 accounts/);
     });
 
+    it('lists a plan\'s agreements from the chain alone: one getProgramAccounts on the plan CID hash, on the checked cluster', async () => {
+        const planCid = content.planCid;
+        const hash = createHash('sha256').update(planCid, 'utf8').digest();
+        const asked = [];
+        const connection = fakeConnection();
+        connection.getProgramAccounts = async (program, config) => {
+            asked.push([program.toBase58(), config]);
+            return [
+                { pubkey: new PublicKey(ACCOUNT), account: agreementAccountInfo({ ...accountFields(), planCid }) },
+                // An RPC that ignored the memcmp: another plan's agreement is not listed.
+                { pubkey: new PublicKey(others[0]), account: agreementAccountInfo({ ...accountFields(), planCid: CID }) }
+            ];
+        };
+        const chain = createAgreementChain({ connection });
+        const found = await chain.agreementsForPlan(planCid);
+        expect(found.map(account => [account.address, account.cid, account.planCidHash])).toEqual([[ACCOUNT, CID, hash.toString('hex')]]);
+        expect(asked).toEqual([[AGREEMENT_PROGRAM_ID, { commitment: 'confirmed', filters: [
+            { dataSize: AgreementClient.constants.AGREEMENT_ACCOUNT_SPACE },
+            { memcmp: { offset: AgreementClient.AGREEMENT_OFFSETS.planCidHash, bytes: new PublicKey(hash).toBase58() } }
+        ] }]]);
+        expect(connection.calls.genesis).toBe(1);
+    });
+
     it('checks the genesis once, refuses another cluster with rpc-wrong-cluster and checks again after a failure', async () => {
         const connection = fakeConnection({ genesis: 'another-cluster' });
         const chain = createAgreementChain({ connection });

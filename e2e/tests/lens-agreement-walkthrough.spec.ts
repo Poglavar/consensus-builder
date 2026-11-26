@@ -3,12 +3,13 @@
 // replaced by canned account states (its byte checks are unit-tested in lens-agreement-evidence).
 import { test, expect } from '../helpers/fixtures';
 import { cidOfObject } from '../../frontend/js/cid.js';
+import { AGREEMENT_PROGRAM_ID } from '../helpers/mocks/shared-server';
 
 const SPONSOR = 'AoVsGaj8MSJ6xwKxfFxo9iZWH3enC8RRTXKH2fx2F8os';
 const A = 'GmaDrppBC7P5ARKV8g3djiwP89vz1jLK23V2GBjuAEGB';
 const B = '5x8hiYo9V6kWpG8eVoyXZf4BHXnKSoCP3r7r3PyMBg4z';
 const C = 'm8gLfyPspP6ABSNA4ZMFYCzzRGjNLBmrKKwKrGqbUfR';
-const PROGRAM = 'ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH';
+const PROGRAM = AGREEMENT_PROGRAM_ID;
 const BACKEND = encodeURIComponent('http://localhost:3099');
 
 function agreement(title: string, { lens = [A], electorate = 'owners', onchain = null as Record<string, unknown> | null } = {}) {

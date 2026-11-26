@@ -194,6 +194,13 @@ export function createAgreementChain({ cluster = 'devnet', env = process.env, co
         async readAccount(address) {
             return (await readAccounts([address], { batchSize: 1 }))[0];
         },
+        // Every agreement account whose sponsor named `planCid` at create, decoded, oldest first: one
+        // getProgramAccounts with a memcmp on the plan CID hash (AgreementClient.fetchAgreementsForPlan).
+        // The hash is the sponsor's claim; check it against each agreement object's planCid before relying
+        // on it. The RPC must serve getProgramAccounts.
+        async agreementsForPlan(planCid) {
+            return AgreementClient.fetchAgreementsForPlan(await ready(), planCid, { programId });
+        },
         // Whether a reported transaction succeeded and names the account: 'ok', 'not-found' (unknown to
         // the RPC, perhaps not yet), 'failed' or 'unrelated'.
         async transactionTouches(signature, address) {

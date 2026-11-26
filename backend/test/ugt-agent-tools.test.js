@@ -4,6 +4,7 @@
 // binding owners' agreement as its own sponsor with its lens set (any keys, its own included), and every market, pledge and
 // donation keyed by the agreement's chain account. The index is driven over a fake fetch, chain steps
 // through injected adapters; the agent key is a throwaway generated per test file.
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -421,7 +422,7 @@ describe('betting on an agreement', () => {
 });
 
 describe('support and settlement on the agreement account', () => {
-    it('checks a recognized crowdfunding account CID against the published sponsor, payout, lens set, target and deadline before donating', async () => {
+    it('checks a recognized crowdfunding account CID against the published plan, sponsor, payout, lens set, target and deadline before donating', async () => {
         const base = agreementOf();
         const content = { ...base.content, rule: { electorate: 'investors', binding: true, approvalConfig: null, lens: [LENS], settlement: null },
             inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: 'EUR', lines: [] }, valuation: null,
@@ -429,8 +430,8 @@ describe('support and settlement on the agreement account', () => {
         const agreement = { cid: cidOfObject(content), content };
         const agreementAccount = agreementAccountOf(agreement.cid, AGENT);
         const ensureDonationEscrowAndDonate = vi.fn(async () => ({ signature: 'donate-tx' }));
-        const state = { cid: agreement.cid, status: 'Active', deadline: Math.floor(Date.parse(content.deadline) / 1000),
-            authority: AGENT, payout: AGENT, lenses: [LENS], lensThreshold: 1, fundingMint: USDC_DEVNET, requiredFunding: 1000000n,
+        const state = { cid: agreement.cid, planCidHash: createHash('sha256').update(content.planCid, 'utf8').digest('hex'),
+            status: 'Active', deadline: Math.floor(Date.parse(content.deadline) / 1000), authority: AGENT, payout: AGENT, lenses: [LENS], lensThreshold: 1, fundingMint: USDC_DEVNET, requiredFunding: 1000000n,
             openGround: false, requiredLamports: 0n };
         const readAgreementAccount = vi.fn(async () => state);
         const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: fakeApi({ agreements: [agreement] }).fetchImpl,
@@ -439,7 +440,7 @@ describe('support and settlement on the agreement account', () => {
         await tools.donate(args);
         expect(ensureDonationEscrowAndDonate).toHaveBeenCalledTimes(1);
         for (const change of [{ lenses: [OTHER] }, { lenses: [LENS, OTHER] }, { lensThreshold: 0 }, { requiredFunding: 999999n }, { fundingMint: OTHER },
-            { payout: OTHER }, { requiredLamports: 1n }, { openGround: true }]) {
+            { payout: OTHER }, { requiredLamports: 1n }, { openGround: true }, { planCidHash: '00'.repeat(32) }]) {
             readAgreementAccount.mockResolvedValueOnce({ ...state, ...change });
             await expect(tools.donate(args)).rejects.toThrow(/terms differ/);
         }

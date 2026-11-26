@@ -1,7 +1,8 @@
 // Pure client codec for the agreement program (blockchain/solana/programs/agreement, README there):
 // the Agreement PDA from its sponsor and CID, byte-exact Anchor/borsh instruction builders for
-// create, fund, attest, execute, cancel and expire, the Agreement account decoder and the reader of
-// the lens's AgreementDecision-v1 SAS attestation. No DOM and no wallet: @solana/web3.js and sha256
+// create, fund, attest, execute, cancel and expire, the Agreement account decoder, the reader of a
+// plan's agreements (memcmp on the plan CID hash) and the reader of the lens's AgreementDecision-v1
+// SAS attestation. No DOM and no wallet: @solana/web3.js and sha256
 // are injected (configure), the browser's vendored builds, or the node packages; fetchAgreement only
 // reads through a passed connection. UMD like market-client.js: window.AgreementClient in the
 // browser (frontend/js/solana/agreement-bridge.js drives it), module.exports for node.
@@ -28,9 +29,14 @@
         Agreement: Object.freeze([83, 212, 5, 110, 225, 249, 197, 84])
     });
 
+    // The program ids live in program-ids.js (window.SolanaProgramIds, loaded before this file).
+    const programIds = globalThis.SolanaProgramIds || (typeof require === 'function' ? require('./program-ids.js') : null);
+    if (!programIds) throw new Error('SolanaProgramIds (js/solana/program-ids.js) must load before agreement-client.js');
+
     const constants = Object.freeze({
-        // Placeholder, not deployed: replace with the deployed id (programs/agreement/README.md, "Program id").
-        AGREEMENT_PROGRAM_ID: 'ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH',
+        AGREEMENT_PROGRAM_ID: programIds.AGREEMENT_PROGRAM_ID,
+        // Earlier agreement programs, newest first: their accounts are another layout and read as unminted here.
+        RETIRED_AGREEMENT_PROGRAM_IDS: programIds.RETIRED_AGREEMENT_PROGRAM_IDS,
         SAS_PROGRAM_ID: '22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG',
         SYSTEM_PROGRAM_ID: '11111111111111111111111111111111',
         DEFAULT_PUBKEY: '11111111111111111111111111111111',
@@ -58,8 +64,8 @@
         SAS_CREATE_SCHEMA: 1,
         SAS_CREATE_ATTESTATION: 6,
         SAS_ATTESTATION_DISCRIMINATOR: 2,
-        // 8-byte discriminator + Agreement::INIT_SPACE (572).
-        AGREEMENT_ACCOUNT_SPACE: 580,
+        // 8-byte discriminator + Agreement::INIT_SPACE (604).
+        AGREEMENT_ACCOUNT_SPACE: 612,
         // Most lens members an agreement names; its threshold is 1..members (0 with none).
         MAX_LENSES: 8,
         // The devnet USDC mint a crowdfunding agreement's contribution target is counted in; the same
@@ -79,7 +85,8 @@
     const DECISION_NAMES = Object.freeze(['Pending', 'Satisfied']);
 
     // Offsets of the fixed fields, which all precede the trailing cid: memcmp filters for
-    // getProgramAccounts (e.g. every agreement a lens settles: { offset: AGREEMENT_OFFSETS.lens, bytes }).
+    // getProgramAccounts (e.g. every agreement a lens settles: { offset: AGREEMENT_OFFSETS.lens, bytes },
+    // every agreement of a plan: fetchAgreementsForPlan).
     const AGREEMENT_OFFSETS = Object.freeze({
         authority: 8,
         lens: 40,
@@ -93,7 +100,8 @@
         moreLenses: 231,
         fundingMint: 455,
         requiredFunding: 487,
-        cid: 512
+        planCidHash: 512,
+        cid: 544
     });
 
     let injectedWeb3 = null;
@@ -222,6 +230,11 @@
         return hexToBytes(resolveSha256Hex()(requireCid(cid)));
     }
 
+    // The account's plan_cid_hash for a plan CID: the same sha256 over its UTF-8 bytes, as lowercase hex.
+    function planCidHash(planCid) {
+        return toHex(cidSeed(planCid));
+    }
+
     // ["agreement", authority, sha256(cid)] under the agreement program. `authority` is the sponsor that
     // creates the account: agreement/v1 carries its wallet as `sponsor` (base58), so the address follows
     // from the agreement object alone. Another wallet's account for the same CID is not the agreement's
@@ -269,16 +282,19 @@
         return keys;
     }
 
-    // create(cid: String, lenses: Vec<Pubkey>, lens_threshold: u8, deadline: i64, open_ground: bool,
-    // required_lamports: u64, payout: Pubkey, funding_mint: Pubkey, required_funding: u64).
+    // create(cid: String, plan_cid: String, lenses: Vec<Pubkey>, lens_threshold: u8, deadline: i64,
+    // open_ground: bool, required_lamports: u64, payout: Pubkey, funding_mint: Pubkey, required_funding: u64).
+    // `planCid` is the agreement/v1 object's `planCid` (the program stores its sha256).
     // Mirrors the program's argument checks that need no clock, so a wallet never signs a create the
     // program refuses for its arguments. The deadline is required and positive (NO_DEADLINE is refused);
     // whether it is still in the future is checked by the callers against their clock and finally by the
     // program against the chain's. A contribution target (requiredFunding > 0) needs its fundingMint,
     // and a mint needs a target.
-    function encodeCreateData({ cid, lenses, lensThreshold, deadline, openGround = false, requiredLamports = 0n, payout,
+    function encodeCreateData({ cid, planCid, lenses, lensThreshold, deadline, openGround = false, requiredLamports = 0n, payout,
         fundingMint = null, requiredFunding = 0n } = {}) {
         requireCid(cid);
+        if (planCid === undefined || planCid === null) throw new Error('planCid (the plan the agreement names) is required');
+        requireCid(planCid);
         const funding = BigInt(requiredFunding);
         const keys = requireLensSet(lenses, lensThreshold ?? (Array.isArray(lenses) && lenses.length ? 1 : 0), funding);
         const threshold = lensThreshold ?? (keys.length ? 1 : 0);
@@ -291,6 +307,7 @@
         return concat([
             disc('create'),
             encodeString(cid),
+            encodeString(planCid),
             u32(keys.length),
             ...keys.map((key, index) => encodePubkey(key, `lenses[${index}]`)),
             Uint8Array.of(threshold),
@@ -475,10 +492,10 @@
     function readAgreement(data, address = null) {
         const bytes = data instanceof Uint8Array ? data : Uint8Array.from(data || []);
         if (!hasDiscriminator(bytes, ACCOUNT_DISCRIMINATORS.Agreement)) return null;
-        // An account minted under the single-lens layout (296 bytes) ends before the lens set and the
-        // CID's new offset: it is not readable as one, and its agreement must be recreated.
+        // An account of an earlier layout (a retired program's) ends before the CID's offset: it is not
+        // readable as one, and its agreement must be recreated.
         if (bytes.length < AGREEMENT_OFFSETS.cid + 4) {
-            throw new RangeError(`agreement account${address ? ` ${address}` : ''} is ${bytes.length} bytes, shorter than the lens-set layout: recreate the agreement`);
+            throw new RangeError(`agreement account${address ? ` ${address}` : ''} is ${bytes.length} bytes, shorter than the plan-CID layout: recreate the agreement`);
         }
         const r = reader(bytes, 8);
         const authority = r.pubkey('authority');
@@ -506,6 +523,7 @@
         const fundingMet = r.bool('funding_met');
         const fundingObserved = r.u64('funding_observed');
         const fundingMetAt = r.i64('funding_met_at');
+        const planHash = r.bytes(32, 'plan_cid_hash');
         const cid = r.string('cid');
         if (lensCount > constants.MAX_LENSES) throw new RangeError(`lens_count ${lensCount} exceeds ${constants.MAX_LENSES}`);
         const lenses = [lens, ...moreLenses].slice(0, lensCount);
@@ -513,6 +531,9 @@
         return {
             address,
             cid,
+            // sha256 hex of the plan CID the sponsor named at create: its claim, to check against the
+            // agreement object's planCid (planCidHash) before relying on it.
+            planCidHash: toHex(planHash),
             authority,
             lens,
             lenses,
@@ -717,6 +738,30 @@
         return value;
     }
 
+    // The getProgramAccounts filters for every agreement whose sponsor named `planCid` at create: the
+    // account size, and sha256(planCid) at AGREEMENT_OFFSETS.planCidHash (a 32-byte value, so its
+    // base58 is a public key's).
+    function planFilters(planCid) {
+        const { PublicKey } = resolveWeb3();
+        return [
+            { dataSize: constants.AGREEMENT_ACCOUNT_SPACE },
+            { memcmp: { offset: AGREEMENT_OFFSETS.planCidHash, bytes: new PublicKey(cidSeed(planCid)).toBase58() } }
+        ];
+    }
+
+    // Every agreement account naming `planCid`, read straight from the chain (no server), oldest first.
+    // The plan hash is the sponsor's claim: a reader that relies on it compares it with the agreement
+    // object's own planCid on IPFS. Needs an RPC that serves getProgramAccounts (Alchemy's free tier
+    // refuses it).
+    async function fetchAgreementsForPlan(connection, planCid, { programId = constants.AGREEMENT_PROGRAM_ID } = {}) {
+        const rows = await connection.getProgramAccounts(toKey(programId, 'programId'), { commitment: 'confirmed', filters: planFilters(planCid) });
+        const hash = planCidHash(planCid);
+        return rows
+            .map(row => readAgreement(new Uint8Array(row.account.data), toKey(row.pubkey, 'pubkey').toBase58()))
+            .filter(value => value && value.planCidHash === hash)
+            .sort((a, b) => a.createdAt - b.createdAt || (a.address < b.address ? -1 : a.address > b.address ? 1 : 0));
+    }
+
     // The lens's AgreementDecision-v1 attestation at `address`, checked to be a SAS account. null when
     // the account is absent.
     async function fetchDecisionAttestation(connection, address) {
@@ -739,6 +784,8 @@
         configure,
         requireCid,
         cidSeed,
+        planCidHash,
+        planFilters,
         getAgreementPda,
         toDeadlineSeconds,
         encodeCreateData,
@@ -769,6 +816,7 @@
         buildCreateDecisionAttestationIx,
         checkDecisionForAttest,
         fetchAgreement,
+        fetchAgreementsForPlan,
         fetchDecisionAttestation
     };
 
