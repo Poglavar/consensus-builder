@@ -111,7 +111,7 @@ The PR is open, not approved or published. At the last check no CI results were 
 
 [Urban Game Theory plugin repository](https://github.com/Poglavar/urban-game-theory-plugin), latest prepared commit `1a9056246092b9a74c10f5550499774b51043dfd`, including the published privacy-policy link.
 
-The package in [`plugins/urban-game-theory`](../plugins/urban-game-theory) is a public copy of the existing private planning plugin, with brand-only authorship, the same hosted endpoint, one planning skill and its references, the existing logo, and the project's MIT license. The original private installation was not modified. Portable Agent Plugins clients use `mcp.json`; Open Plugins clients use `.mcp.json`. Both configurations identify exactly the same endpoint. No private app bindings, personal contact details, credentials, telemetry or executable hooks are included.
+The package in [`plugins/urban-game-theory`](../plugins/urban-game-theory) is a public copy of the existing private planning plugin, with brand-only authorship, the same hosted endpoint, one planning skill and its references, the existing logo, and the project's Apache-2.0 license. The original private installation was not modified. Portable Agent Plugins clients use `mcp.json`; Open Plugins clients use `.mcp.json`. Both configurations identify exactly the same endpoint. No private app bindings, personal contact details, credentials, telemetry or executable hooks are included.
 
 The GitHub file inventory was read back after publication. JSON, relative skill links, the square PNG and the identity scan passed. Marketplace installation and acceptance are separate from publishing this source; no Cursor IDE installation is claimed.
 

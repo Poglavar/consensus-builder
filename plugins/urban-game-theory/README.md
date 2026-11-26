@@ -47,4 +47,4 @@ The plugin reuses the hosted server and supplies no authentication credentials. 
 - [MCP editing guide](https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/docs/mcp-editing.md)
 - [Server source](https://github.com/Poglavar/consensus-builder/tree/colosseum-worlds-fair/backend/agents)
 
-Version 0.1.0 · MIT; see [LICENSE](LICENSE).
+Version 0.1.0 · Apache-2.0; see [LICENSE](LICENSE).
