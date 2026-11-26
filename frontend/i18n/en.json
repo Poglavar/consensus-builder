@@ -3404,7 +3404,7 @@
         "modal": {
             "mapHint": "Edit plots and boundaries on the map; use the panel to review ownership and shares.",
             "title": "Urban rule",
-            "modelHint": "Drag the arrow above the building up or down to change its storeys.",
+            "modelHint": "Drag the building to move it, and the arrow above it up or down to change its storeys.",
             "closeAria": "Close blockify modal",
             "generating": "Generating building…",
             "done": "Done",
@@ -3582,7 +3582,7 @@
     "parcelBased": {
         "modal": {
             "title": "Detached houses",
-            "modelHint": "Drag the arrow above the plots up or down to change the most storeys a house may have.",
+            "modelHint": "Drag the houses to move them, and the arrow above the plots up or down to change the most storeys a house may have.",
             "closeAria": "Close parcel-based modal",
             "generating": "Generating buildings…",
             "done": "Done",

@@ -279,8 +279,10 @@ function blockDropHarness(answer) {
         const blockifyClone=${functions.get('blockifyClone')};
         const blockifyDesignBoundary=${functions.get('blockifyDesignBoundary')};
         const blockifyPointerEvent=${functions.get('blockifyPointerEvent')};
+        const beginBlockifyMassMove=${functions.get('beginBlockifyMassMove')};
         const startBlockifyMassMove=${functions.get('startBlockifyMassMove')};
         const moveBlockifyMass=${functions.get('moveBlockifyMass')};
+        const blockifyMassTo=${functions.get('blockifyMassTo')};
         const blockifyStopMassMoveListeners=${functions.get('blockifyStopMassMoveListeners')};
         const finishBlockifyMassMove=${functions.get('finishBlockifyMassMove')};
         this.touchDrag=async (start,coordinate)=>{
@@ -289,6 +291,13 @@ function blockDropHarness(answer) {
             documentHandlers.get('touchmove')(native);
             await documentHandlers.get('touchend')({});
             return {prevented:native.prevented,feature:generatedBuildingFeature,dragging:this.blockifyMap.dragging.active};
+        };
+        // The model view's drag (model-edit-handles.js): lat/lngs, no map events or listeners.
+        this.modelDrag=async (start,to)=>{
+            if (!beginBlockifyMassMove(start)) return null;
+            blockifyMassTo(to);
+            await finishBlockifyMassMove();
+            return {feature:generatedBuildingFeature,listeners:documentHandlers.size};
         };
     `;
     context.documentHandlers = documentHandlers;
@@ -477,6 +486,18 @@ describe('building-family rules stay on their parcels', () => {
         expect(result.feature.geometry).toEqual(before.geometry);
         expect(result.dragging).toBe(true);
         expect(h.closed).toEqual([]);
+    });
+
+    it('a block massing dragged in the model view asks on the drop and converts at the drop point', async () => {
+        const h = blockDropHarness('convert');
+        const before = clone(h.generatedBuildingFeature);
+        const start = center(before);
+        const result = await h.modelDrag(start, { lat: start.lat, lng: start.lng + 0.0003 });
+        expect(result.listeners).toBe(0);
+        expect(h.window.chooseRuleDrop).toHaveBeenCalledOnce();
+        const { features } = h.window.convertActiveDesignToFreeform.mock.calls[0][0];
+        expect(center(features[0]).lng).toBeCloseTo(start.lng + 0.0003, 7);
+        expect(h.closed).toEqual([[{ preservePending: true }]]);
     });
 
     it('a block massing dropped and converted becomes a Freeform at the drop, and the editor closes as Done', async () => {

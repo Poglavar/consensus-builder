@@ -348,15 +348,13 @@ function blockifyPointerEvent(event) {
 // previews it at the drop, and the drop asks what should happen there (proposal-editor-shell.js
 // chooseRuleDrop): convert to one Freeform building kept here, run the same rule on the parcels
 // here, or cancel, which puts it back.
-function startBlockifyMassMove(event) {
-    const originalTarget = event?.originalEvent?.target;
-    if (!event?.latlng || (originalTarget?.closest?.('.polygon-geometry-editor__vertex, .polygon-geometry-editor__delete-marker, .map-shell-button, button, input, label'))) return;
-    if (!generatedBuildingFeature?.geometry || blockifyDragState || blockifyMode === 'existing') return;
-    L.DomEvent?.stopPropagation?.(event);
-    if (event?.originalEvent && typeof event.originalEvent.preventDefault === 'function') event.originalEvent.preventDefault();
+// The map drag (startBlockifyMassMove) and the model view's (model-edit-handles.js) both start here,
+// move through blockifyMassTo and end in finishBlockifyMassMove.
+function beginBlockifyMassMove(latlng) {
+    if (!latlng || !generatedBuildingFeature?.geometry || blockifyDragState || blockifyMode === 'existing') return false;
     blockifyDragState = {
-        start: event.latlng,
-        point: event.latlng,
+        start: latlng,
+        point: latlng,
         feature: blockifyClone(generatedBuildingFeature),
         last: blockifyClone(generatedBuildingFeature),
         wasMapDraggingEnabled: blockifyMap?.dragging?.enabled?.() !== false
@@ -366,6 +364,24 @@ function startBlockifyMassMove(event) {
         blockifyPolygonEditor.destroy();
         blockifyPolygonEditor = null;
     }
+    return true;
+}
+
+// Whether a point is on the Block: its massing outline or one of its per-parcel pieces.
+function blockifyMassHits(latlng) {
+    if (!latlng || blockifyMode === 'existing') return false;
+    const point = turf.point([latlng.lng, latlng.lat]);
+    return [generatedBuildingFeature, ...(blockMassingPieces || [])]
+        .some(feature => feature?.geometry && ['Polygon', 'MultiPolygon'].includes(feature.geometry.type) && turf.booleanPointInPolygon(point, feature));
+}
+
+function startBlockifyMassMove(event) {
+    const originalTarget = event?.originalEvent?.target;
+    if (!event?.latlng || (originalTarget?.closest?.('.polygon-geometry-editor__vertex, .polygon-geometry-editor__delete-marker, .map-shell-button, button, input, label'))) return;
+    if (!generatedBuildingFeature?.geometry || blockifyDragState || blockifyMode === 'existing') return;
+    L.DomEvent?.stopPropagation?.(event);
+    if (event?.originalEvent && typeof event.originalEvent.preventDefault === 'function') event.originalEvent.preventDefault();
+    beginBlockifyMassMove(event.latlng);
     blockifyMap.dragging.disable();
     document.addEventListener('mousemove', moveBlockifyMass);
     document.addEventListener('mouseup', finishBlockifyMassMove);
@@ -377,7 +393,11 @@ function startBlockifyMassMove(event) {
 function moveBlockifyMass(event) {
     if (!blockifyDragState || !blockifyMap) return;
     const pointer = blockifyPointerEvent(event);
-    const point = blockifyMap.containerPointToLatLng(blockifyMap.mouseEventToContainerPoint(pointer));
+    blockifyMassTo(blockifyMap.containerPointToLatLng(blockifyMap.mouseEventToContainerPoint(pointer)));
+}
+
+function blockifyMassTo(point) {
+    if (!blockifyDragState || !point) return;
     const moved = window.SingleBuildingGeometry?.moveGeometry?.(blockifyDragState.feature.geometry, blockifyDragState.start, point);
     if (!moved) return;
     const candidate = blockifyClone(blockifyDragState.feature);

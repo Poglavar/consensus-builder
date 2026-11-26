@@ -4631,7 +4631,7 @@
                 "uploadGeojson": "Importer des emprises de forme libre"
             },
             "title": "Règle d’urbanisme",
-            "modelHint": "Faites glisser la flèche au-dessus du bâtiment vers le haut ou le bas pour changer ses niveaux.",
+            "modelHint": "Faites glisser le bâtiment pour le déplacer, et la flèche au-dessus vers le haut ou le bas pour changer ses niveaux.",
             "mapHint": "Modifiez les lots et leurs limites sur la carte ; utilisez le panneau pour examiner la propriété et les quotes-parts.",
             "closeAria": "Fermer la fenêtre de création d’îlots",
             "generating": "Génération du bâtiment…",
@@ -4806,7 +4806,7 @@
             },
             "regenerate": "Illustrer",
             "title": "Maisons individuelles",
-            "modelHint": "Faites glisser la flèche au-dessus des parcelles vers le haut ou le bas pour changer le nombre maximal de niveaux d’une maison.",
+            "modelHint": "Faites glisser les maisons pour les déplacer, et la flèche au-dessus des parcelles vers le haut ou le bas pour changer le nombre maximal de niveaux d’une maison.",
             "closeAria": "Fermer la fenêtre de construction par parcelle",
             "generating": "Génération des bâtiments…",
             "helper": {

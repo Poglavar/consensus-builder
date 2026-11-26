@@ -222,6 +222,8 @@ function showBlockifyModalEditor() {
         if (densityStats) content.appendChild(densityStats);
         // The model view's height arrow drives the storeys slider of the rule in use: Max storeys, or
         // Proposed height when raising existing buildings to one height. Added storeys have no single top.
+        // A Block drags as it does on the map, and the drop asks what to do there; raised existing
+        // buildings stay where they stand.
         function blockifyModelHandles() {
             const existing = blockifyMode === 'existing';
             if (existing && existingRule !== 'exact') return null;
@@ -231,7 +233,10 @@ function showBlockifyModalEditor() {
                 .reduce((best, feature) => (!best || turf.area(feature) > turf.area(best) ? feature : best), null);
             if (!input || !largest) return null;
             const [lng, lat] = turf.pointOnFeature(largest).geometry.coordinates;
-            return { height: { input, at: { lat, lng }, metresPerStep: existing ? currentFloorHeightM : DEFAULT_FLOOR_HEIGHT_M } };
+            return {
+                height: { input, at: { lat, lng }, metresPerStep: existing ? currentFloorHeightM : DEFAULT_FLOOR_HEIGHT_M },
+                move: existing ? null : { hits: blockifyMassHits, begin: beginBlockifyMassMove, to: blockifyMassTo, end: () => { finishBlockifyMassMove(); } }
+            };
         }
         blockifyModal = window.OnMapEditor?.open({
             owner: 'urban-rule',
@@ -240,7 +245,7 @@ function showBlockifyModalEditor() {
             content,
             footer,
             modes: ['2d', 'model'],
-            hints: { model: translateBuildingText('blockify.modal.modelHint', 'Drag the arrow above the building up or down to change its storeys.') },
+            hints: { model: translateBuildingText('blockify.modal.modelHint', 'Drag the building to move it, and the arrow above it up or down to change its storeys.') },
             modelHandles: blockifyModelHandles,
             onCancel: requestCloseBlockifyModal,
             onModeChange: mode => { if (mode === '2d' && blockifyMode === 'manual') renderManualPolygonEditor(); }

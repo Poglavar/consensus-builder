@@ -3432,7 +3432,7 @@
         "modal": {
             "mapHint": "Uredite parcele i granice na mapi; u panelu pregledajte vlasništvo i udele.",
             "title": "Urbano pravilo",
-            "modelHint": "Prevuci strelicu iznad zgrade gore ili dole da promeniš broj etaža.",
+            "modelHint": "Prevuci zgradu da je pomeriš, a strelicu iznad nje gore ili dole da promeniš broj etaža.",
             "closeAria": "Zatvori blockify modal",
             "generating": "Generišem zgradu…",
             "done": "Gotovo",
@@ -3614,7 +3614,7 @@
     "parcelBased": {
         "modal": {
             "title": "Slobodnostojeće kuće",
-            "modelHint": "Prevuci strelicu iznad parcela gore ili dole da promeniš najveći broj etaža kuće.",
+            "modelHint": "Prevuci kuće da ih pomeriš, a strelicu iznad parcela gore ili dole da promeniš najveći broj etaža kuće.",
             "closeAria": "Zatvori prozor pravila po parceli",
             "generating": "Generišem zgrade…",
             "done": "Gotovo",

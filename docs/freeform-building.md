@@ -29,8 +29,8 @@ on-map editor's `modelHandles` option and keeps geometry, history and saving to 
 | --- | --- | --- | --- |
 | Freeform | Height (m) | yes, the active building | yes |
 | Row houses | Max storeys | yes, the whole terrace | yes |
-| Urban rule | Max storeys, or Proposed height when raising existing buildings | no | no |
-| Detached houses | Max storeys, over the site | no | no |
+| Urban rule | Max storeys, or Proposed height when raising existing buildings | yes, the Block (not raised existing buildings) | no |
+| Detached houses | Max storeys, over the site | yes, all the houses | no |
 
 - The arrow stands on the building's top and sets the editor's own slider, firing the same input and
   change events a slider drag does, so its undo step, autosave and Permitted check are the slider's.
@@ -40,6 +40,9 @@ on-map editor's `modelHandles` option and keeps geometry, history and saving to 
   its buildings have no single top.
 - Grabbing the building drags it on the horizontal plane at the height where it was grabbed, through
   the same move code as the map drag, so snapping, site lock and a Row's off-parcel drop dialog apply.
+  A Block or Detached houses are built by their rule on their parcels, so, as on the map, the drop
+  asks: convert to Freeform where it was dropped, run the same rule on the parcels there, or put it
+  back.
 - The knob on the ground ring turns the footprint in 5° steps (1° with Shift). A whole turn gesture
   is one undo step, like one press of a rotate button.
 - Corners are reshaped on the map only. The photo view stays locked while an editor is open.

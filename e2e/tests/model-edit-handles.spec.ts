@@ -110,7 +110,7 @@ test('Freeform in model view: drag the arrow for height, the building to move it
   expect(await camera(page)).toEqual(view);
 });
 
-test('Urban rule in model view: the arrow above the building sets Max storeys', async ({ mockApi: page }) => {
+test('Urban rule in model view: the arrow sets Max storeys, and dragging the Block asks on the drop', async ({ mockApi: page }) => {
   await stubBasemapTiles(page);
   await mockBuildingScene(page);
   await openCity(page);
@@ -131,6 +131,27 @@ test('Urban rule in model view: the arrow above the building sets Max storeys', 
     return z;
   });
   expect(top).toBeCloseTo(Number(await slider.inputValue()) * 3.5, 6);
+
+  // Dragging the Block asks on the drop, as on the map; Put it back leaves it where it was.
+  const massing = () => page.evaluate(() => {
+    const w = window as any;
+    const features = w.OnMapEditor.getPreview().draftPreview.features;
+    // A point on the building itself: a Block's centre can be its open courtyard.
+    const [lng, lat] = w.turf.pointOnFeature(features[0]).geometry.coordinates;
+    return { lat, lng };
+  });
+  await expect.poll(async () => (await massing()) !== null).toBe(true);
+  const start = await massing();
+  const metresEast = 25 / (111320 * Math.cos(start.lat * Math.PI / 180));
+  const grab = await screenOf(page, { lat: start.lat, lng: start.lng, z: 1 });
+  const east = await screenOf(page, { lat: start.lat, lng: start.lng + metresEast, z: 1 });
+  await drag(page, grab!, [{ x: (grab!.x + east!.x) / 2, y: (grab!.y + east!.y) / 2 }, east!]);
+  const prompt = page.getByRole('alertdialog');
+  await expect(prompt).toBeVisible();
+  await prompt.getByRole('button', { name: 'Put it back', exact: true }).click();
+  await expect(prompt).toBeHidden();
+  const after = await massing();
+  expect(after.lng).toBeCloseTo(start.lng, 9);
 });
 
 test('Row houses in model view: the arrow sets storeys and the terrace drags east', async ({ mockApi: page }) => {
@@ -165,4 +186,32 @@ test('Row houses in model view: the arrow sets storeys and the terrace drags eas
   await drag(page, grab!, [{ x: (grab!.x + east!.x) / 2, y: (grab!.y + east!.y) / 2 }, east!]);
   await expect.poll(async () => (await terrace()).lng).toBeGreaterThan(start.lng + metresEast / 2);
   expect((await terrace()).lat).toBeCloseTo(start.lat, 6);
+});
+
+test('Detached houses in model view: dragging the houses asks on the drop, and Put it back restores them', async ({ mockApi: page }) => {
+  await stubBasemapTiles(page);
+  await mockBuildingScene(page);
+  await openCity(page);
+  await openParcel(page, 'proposals');
+  await page.locator('.parcel-build-btn--parcelBased').click();
+  await answerBlockScope(page);
+  await expect(page.locator('#parcelbased .on-map-editor__panel')).toBeVisible();
+  await enterModelView(page);
+  const house = () => page.evaluate(() => {
+    const w = window as any;
+    const features = w.OnMapEditor.getPreview()?.draftPreview?.features || [];
+    return features.length ? w.SingleBuildingGeometry.geometryCenter(features[0].geometry) : null;
+  });
+  await expect.poll(house).not.toBeNull();
+  const start = await house();
+  const metresEast = 25 / (111320 * Math.cos(start.lat * Math.PI / 180));
+  const grab = await screenOf(page, { lat: start.lat, lng: start.lng, z: 1 });
+  const east = await screenOf(page, { lat: start.lat, lng: start.lng + metresEast, z: 1 });
+  await drag(page, grab!, [{ x: (grab!.x + east!.x) / 2, y: (grab!.y + east!.y) / 2 }, east!]);
+  const prompt = page.getByRole('alertdialog');
+  await expect(prompt).toBeVisible();
+  await expect(prompt.getByRole('button', { name: 'Apply the same rule to the parcels here' })).toBeVisible();
+  await prompt.getByRole('button', { name: 'Put it back', exact: true }).click();
+  await expect(prompt).toBeHidden();
+  await expect.poll(async () => (await house())?.lng).toBeCloseTo(start.lng, 9);
 });

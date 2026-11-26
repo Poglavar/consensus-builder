@@ -3431,7 +3431,7 @@
         "modal": {
             "mapHint": "Edita las parcelas y sus límites en el mapa; revisa la titularidad y las participaciones en el panel.",
             "title": "Regla urbana",
-            "modelHint": "Arrastra la flecha sobre el edificio hacia arriba o hacia abajo para cambiar sus plantas.",
+            "modelHint": "Arrastra el edificio para moverlo y la flecha sobre él hacia arriba o hacia abajo para cambiar sus plantas.",
             "closeAria": "Cerrar modal de edificios",
             "generating": "Generando edificio…",
             "done": "Listo",
@@ -3609,7 +3609,7 @@
     "parcelBased": {
         "modal": {
             "title": "Viviendas aisladas",
-            "modelHint": "Arrastra la flecha sobre las parcelas hacia arriba o hacia abajo para cambiar el máximo de plantas de una casa.",
+            "modelHint": "Arrastra las casas para moverlas y la flecha sobre las parcelas hacia arriba o hacia abajo para cambiar el máximo de plantas de una casa.",
             "closeAria": "Cerrar modal de reglas por parcela",
             "generating": "Generando edificios…",
             "done": "Listo",

@@ -718,15 +718,31 @@
         return geometry ? { ...feature, geometry } : feature;
     }
 
+    // The map drag (startParcelBasedDrag) and the model view's (model-edit-handles.js) both start
+    // here, move through moveParcelBasedDrag with a lat/lng and end in finishParcelBasedDrag.
+    function beginParcelBasedDrag(latlng) {
+        if (!parcelBasedMap || parcelBasedDragState || !generatedParcelBasedFeatures?.length || !latlng) return false;
+        parcelBasedDragState = {
+            start: latlng,
+            end: latlng,
+            mapWasDraggable: parcelBasedMap.dragging?.enabled?.() !== false
+        };
+        return true;
+    }
+
+    // Whether a point is on a house or its envelope, the shapes the map drag starts from.
+    function parcelBasedHits(latlng) {
+        if (!latlng) return false;
+        const point = turf.point([latlng.lng, latlng.lat]);
+        return [...(generatedParcelBasedFeatures || []), ...(parcelBasedBuildOut || [])]
+            .some(feature => feature?.geometry && ['Polygon', 'MultiPolygon'].includes(feature.geometry.type) && turf.booleanPointInPolygon(point, feature));
+    }
+
     function startParcelBasedDrag(event) {
         if (!parcelBasedMap || parcelBasedDragState || !generatedParcelBasedFeatures?.length) return;
         L.DomEvent?.stopPropagation?.(event);
         event?.originalEvent?.preventDefault?.();
-        parcelBasedDragState = {
-            start: event.latlng,
-            end: event.latlng,
-            mapWasDraggable: parcelBasedMap.dragging?.enabled?.() !== false
-        };
+        if (!beginParcelBasedDrag(event.latlng)) return;
         parcelBasedMap.dragging?.disable?.();
         document.addEventListener('mousemove', moveParcelBasedDrag);
         document.addEventListener('mouseup', finishParcelBasedDrag);
@@ -950,13 +966,17 @@
                 content,
                 footer,
                 modes: ['2d', 'model'],
-                hints: { model: translateParcelBasedText('parcelBased.modal.modelHint', 'Drag the arrow above the plots up or down to change the most storeys a house may have.') },
-                // The model view's height arrow drives Max storeys, standing over the site.
+                hints: { model: translateParcelBasedText('parcelBased.modal.modelHint', 'Drag the houses to move them, and the arrow above the plots up or down to change the most storeys a house may have.') },
+                // The model view's height arrow drives Max storeys, standing over the site; the houses
+                // drag as they do on the map, and the drop asks what to do there.
                 modelHandles: () => {
                     const input = document.getElementById('parcelbased-maxfloors-slider');
                     if (!input || !parcelBasedBoundary?.geometry) return null;
                     const [lng, lat] = turf.pointOnFeature(parcelBasedBoundary).geometry.coordinates;
-                    return { height: { input, at: { lat, lng }, metresPerStep: currentFloorHeightM } };
+                    return {
+                        height: { input, at: { lat, lng }, metresPerStep: currentFloorHeightM },
+                        move: { hits: parcelBasedHits, begin: beginParcelBasedDrag, to: latlng => moveParcelBasedDrag({ latlng }), end: () => { finishParcelBasedDrag(); } }
+                    };
                 },
                 onCancel: requestCloseParcelBasedModal
             });
