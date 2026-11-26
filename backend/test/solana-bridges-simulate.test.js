@@ -156,7 +156,7 @@ describe('wallet bridges preflight through real web3 simulateTransaction', () =>
             const parcelIds = ['HR-335754-1/1', ...Array.from({ length: 10 }, (_, i) => `HR-335754-${100 + i}/2`), long];
             const agreement = {
                 deadline: null, inputs: { openGroundM2: 0, parcels: parcelIds.map(parcelId => ({ parcelId })) }, onchain: null,
-                published: { cid: CID, publishedAt: '2026-10-22T08:00:00.000Z', apiBase: 'https://api.example.test', sponsor: WALLET.toBase58() }
+                published: { cid: CID, publishedAt: '2026-10-22T08:00:00.000Z', apiBase: 'https://api.example.test', sponsor: WALLET.toBase58(), content: { planCid: CID } }
             };
             const statuses = [];
             const result = await bridge.mint({ agreement, lenses: [LENS], payout: WALLET.toBase58(), onStatus: s => statuses.push(s) });

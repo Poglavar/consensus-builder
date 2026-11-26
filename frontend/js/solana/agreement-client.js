@@ -764,6 +764,8 @@
             agreements.push(value);
         }
         return agreements.sort((a, b) => b.createdAt - a.createdAt || (a.address < b.address ? -1 : a.address > b.address ? 1 : 0));
+    }
+
     // The getProgramAccounts filters for every agreement whose sponsor named `planCid` at create: the
     // account size, and sha256(planCid) at AGREEMENT_OFFSETS.planCidHash (a 32-byte value, so its
     // base58 is a public key's).

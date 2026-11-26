@@ -493,6 +493,8 @@ describe('fetching through a connection', () => {
         expect(asked).toEqual([[C.AGREEMENT_PROGRAM_ID, { commitment: 'confirmed', filters: [{ dataSize: C.AGREEMENT_ACCOUNT_SPACE }] }]]);
         expect(warnings).toHaveLength(3);
         expect(warnings.join('\n')).toMatch(/not the PDA of/);
+    });
+
     it('lists a plan\'s agreements with one getProgramAccounts: the account size and a memcmp on sha256(planCid) at byte 512', async () => {
         expect(client.planCidHash(PLAN_CID)).toBe(sha256(PLAN_CID).toString('hex'));
         const asked = [];
