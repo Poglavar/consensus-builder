@@ -1086,7 +1086,7 @@ The sequence of recorded events associated with a source-qualified parcel, such 
 
 ### Agreement program
 
-The Solana program that keeps chain agreement accounts. Exactly one is current: agreements are minted on it, and the index and the lifecycle oracle read it. A retired one is an earlier deployment at another address (the single-lens program before the 2026-11-25 redeploy); it stays deployed, an index row naming it reads as unminted, and the land events it attested remain parcel history. `AGREEMENT_PROGRAMS` in `backend/agreements/onchain.js` lists them.
+The Solana program that keeps chain agreement accounts. Exactly one is current: agreements are minted on it, and the index and the lifecycle oracle read it. A retired one is an earlier deployment at another address (each layout change of the account moves the program: the single-lens program, then the lens-set program without the plan CID hash); it stays deployed, an index row naming it reads as unminted, and the land events it attested remain parcel history. `frontend/js/solana/program-ids.js` lists them, with the pledge and market programs that read agreement accounts.
 
 ### Escrow
 
