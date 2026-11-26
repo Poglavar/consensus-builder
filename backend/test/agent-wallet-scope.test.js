@@ -51,7 +51,7 @@ import { readFileSync } from 'node:fs';
 import { parse } from '@babel/parser';
 import vm from 'node:vm';
 const source = readFileSync(new URL('../../frontend/js/agents.js', import.meta.url), 'utf8');
-const names = new Set(['forEachPersistentParcelOwnership', 'getAgentOwnedParcels', 'buildAgentOwnedParcelIndex', 'getAgentObservedWalletParcels', 'normalizeParcelEntries', 'ensureAgentDialogListState']);
+const names = new Set(['forEachPersistentParcelOwnership', 'getAgentOwnedParcels', 'buildAgentOwnedParcelIndex', 'getAgentObservedWalletParcels', 'getAgentParcelDetails', 'getParcelProposalCount', 'normalizeParcelEntries', 'ensureAgentDialogListState']);
 const functions = parse(source, { sourceType: 'script' }).program.body.filter(node => names.has(node.id?.name)).map(node => source.slice(node.start, node.end)).join('\n');
 function readers() {
     let active = evm;
@@ -71,22 +71,25 @@ function readers() {
     return { context, writes, setScope: value => { active = value; }, setUser: value => { userControlled = value; } };
 }
 
-describe('wallet evidence in ownership readers', () => {
-    it('adds matching observations to both the query and index without rewriting model storage', () => {
+// Parcels anchored with the wallet (an old anchor's owner field included) are listed on the profile,
+// never counted as owned: not by the ownership query, the index the game and apply flows read, or the
+// land estimate (docs/vocabulary.md, Parcel anchor).
+describe('wallet anchors in ownership readers', () => {
+    it('counts only the model\'s owner rows as owned, and lists matching anchors on the profile', () => {
         const h = readers();
-        expect(h.context.getAgentOwnedParcels('user')).toEqual(['model-parcel', 'wallet-parcel']);
-        expect(h.context.buildAgentOwnedParcelIndex().get('user')).toEqual(['model-parcel', 'wallet-parcel']);
+        expect(h.context.getAgentOwnedParcels('user')).toEqual(['model-parcel']);
+        expect(h.context.buildAgentOwnedParcelIndex().get('user')).toEqual(['model-parcel']);
+        expect(h.context.getAgentParcelDetails('user').map(row => row.id)).toEqual(['model-parcel']);
+        expect(h.context.getAgentParcelDetails('user', { includeAnchored: true }).map(row => row.id)).toEqual(['model-parcel', 'wallet-parcel']);
         expect([...h.context.PersistentStorage.keys()]).toEqual(['parcel_model-parcel_owner']);
     });
-    it.each([null, { chainId: 2, walletAddress: '0xAbC' }, { chainId: 1, walletAddress: 'other' }])('excludes observations outside the active scope %j', active => {
+    it.each([null, { chainId: 2, walletAddress: '0xAbC' }, { chainId: 1, walletAddress: 'other' }])('lists no anchors outside the active scope %j', active => {
         const h = readers(); h.setScope(active);
-        expect(h.context.getAgentOwnedParcels('user')).toEqual(['model-parcel']);
-        expect(h.context.buildAgentOwnedParcelIndex().get('user')).toEqual(['model-parcel']);
+        expect(h.context.getAgentParcelDetails('user', { includeAnchored: true }).map(row => row.id)).toEqual(['model-parcel']);
     });
-    it('excludes chain observations after the agent stops being user-controlled', () => {
+    it('lists no chain observations after the agent stops being user-controlled', () => {
         const h = readers(); h.setUser(false);
-        expect(h.context.getAgentOwnedParcels('user')).toEqual(['model-parcel']);
-        expect(h.context.buildAgentOwnedParcelIndex().get('user')).toEqual(['model-parcel']);
+        expect(h.context.getAgentParcelDetails('user', { includeAnchored: true }).map(row => row.id)).toEqual(['model-parcel']);
     });
     it('initializes the parcels and created lists without writing or advancing a chain snapshot', () => {
         const h = readers();

@@ -1,5 +1,6 @@
-// The parcel anchor's id and metadata (frontend/js/parcels/parcel-anchor.js), shared by the parcel
-// panel's Mint and the MCP's ugt_anchor_parcels, and by the page's deriveParcelIdentifier (parcels/blockchain.js).
+// The parcel anchor's id and URI (frontend/js/parcels/parcel-anchor.js), shared by the parcel panel's
+// "Anchor on chain", the agreement mint and the MCP's ugt_anchor_parcels, and by the page's
+// deriveParcelIdentifier (parcels/blockchain.js).
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 
@@ -17,14 +18,26 @@ describe('parcel anchor', () => {
         expect(globalThis.deriveParcelIdentifier({ properties: { maticni_broj_ko: '9', broj_cestice: '3' } })).toBe('HR-9-3');
     });
 
-    it('describes the anchor with its minter, rounded area and geometry', () => {
-        const geometry = { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]] };
-        expect(ParcelAnchor.anchorMetadata({ anchorId: 'HR-1-7', minter: 'Agent111', calculatedArea: 123.456, geometry })).toEqual({
-            name: 'Parcel HR-1-7', description: 'Digitized cadastral parcel HR-1-7. Minted by Agent111.', image: '',
-            attributes: [{ trait_type: 'Parcel ID', value: 'HR-1-7' }, { trait_type: 'Minted By', value: 'Agent111' },
-                { trait_type: 'Area (m²)', value: 123.46, display_type: 'number' }],
-            parcelId: 'HR-1-7', areaSquareMeters: 123.46, geometry
-        });
-        expect(ParcelAnchor.anchorMetadata({ anchorId: 'p', parcelName: 'Named', minter: 'm' })).toMatchObject({ name: 'Named', areaSquareMeters: null, geometry: null, attributes: [{}, {}] });
+    it('points the anchor at the parcel page on the public site, never pinned metadata', () => {
+        expect(ParcelAnchor.anchorUri('HR-335754-1234/2')).toBe('https://urbangametheory.xyz/parcel/HR-335754-1234/2');
+        expect(ParcelAnchor.anchorUri('a b#c', { base: 'https://app.test/' })).toBe('https://app.test/parcel/a%20b%23c');
+        expect(ParcelAnchor.anchorUri(' ')).toBeNull();
+        expect(ParcelAnchor.anchorMetadata).toBeUndefined();
     });
+
+    it('turns parcel ids into anchor targets, once each, and reports ids that cannot be anchored', () => {
+        const long = 'X'.repeat(33);
+        const longUri = 'p'.repeat(32);
+        expect(ParcelAnchor.anchorTargets(['HR-1-7', ' HR-1-7 ', long, '', 'gb-42'])).toEqual({
+            parcels: [{ anchorId: 'HR-1-7', metadataUri: 'https://urbangametheory.xyz/parcel/HR-1-7' },
+                { anchorId: 'gb-42', metadataUri: 'https://urbangametheory.xyz/parcel/gb-42' }],
+            skipped: [{ parcelId: long, reason: 'id-too-long' }]
+        });
+        expect(ParcelAnchor.anchorTargets([longUri], { base: `https://${'h'.repeat(240)}.test` }).skipped)
+            .toEqual([{ parcelId: longUri, reason: 'uri-too-long' }]);
+        // The longest id that seeds a PDA still fits the program's 256-byte URI on the public site.
+        const uri = ParcelAnchor.anchorUri('Ž'.repeat(16));
+        expect(new TextEncoder().encode(uri).length).toBeLessThanOrEqual(ParcelAnchor.MAX_URI_BYTES);
+    });
+
 });

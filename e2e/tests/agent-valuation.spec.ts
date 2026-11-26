@@ -77,7 +77,7 @@ test('agent profiles keep connected-wallet observations out of other agents', as
   await dialog.locator('.agent-dialog-modal-close').click();
   await page.evaluate(id => (window as any).showAgentDialog(id), ids.user);
   await expect.poll(() => page.evaluate(() => (window as any).__profileWalletCalls)).toBe(1);
-  await expect(dialog.locator('[data-agent-parcels-basis]')).toContainText('parcel NFTs observed in the connected wallet');
+  await expect(dialog.locator('[data-agent-parcels-basis]')).toContainText('parcels anchored with the connected wallet');
   await dialog.locator('.agent-dialog-modal-close').click();
   await page.evaluate(id => (window as any).showAgentDialog(id), ids.other);
   await page.evaluate(async () => {
@@ -131,6 +131,9 @@ test('wallet profile replaces observations across accounts, networks and disconn
   await resolveRequest(0, ['wallet-a-parcel']);
   await expect(parcelItems).toHaveCount(2);
   expect(await page.evaluate(id => (window as any).agentWalletObservations[id].parcelIds, id)).toEqual(['wallet-a-parcel']);
+  // Listed, never owned: an anchor (an old one's owner field included) is not a holding.
+  expect(await page.evaluate(id => (window as any).getAgentOwnedParcels(id), id)).toEqual([PARCEL_ID]);
+  expect(await page.evaluate(id => (window as any).buildAgentOwnedParcelIndex().get(id), id)).toEqual([PARCEL_ID]);
   const fetchedAt = await page.evaluate(id => (window as any).agentDialogCache[id].lastFetchedAt, id);
   await dialog.locator('.agent-dialog-modal-close').click();
   await page.evaluate(id => (window as any).showAgentDialog(id), id);

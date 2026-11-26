@@ -460,7 +460,9 @@ describe('minting', () => {
         const states = [];
         const result = await bridge.mint({ agreement: proposed({ deadline, inputs: { parcels: [], openGroundM2: 12 } }), lenses: [LENS],
             requiredLamports: 2_000_000_000n, payout: PAYOUT, onStatus: status => states.push(status.state) });
-        expect(result).toEqual({ signature: 'sig-1', account: ACCOUNT, cluster: 'devnet', explorerUrl: 'https://explorer.solana.com/tx/sig-1?cluster=devnet' });
+        // No input parcels: nothing to anchor before the create.
+        expect(result).toEqual({ signature: 'sig-1', account: ACCOUNT, cluster: 'devnet', explorerUrl: 'https://explorer.solana.com/tx/sig-1?cluster=devnet',
+            inputAnchors: { anchored: [], alreadyAnchored: [], skipped: [] } });
         expect(states).toEqual(['preparing', 'awaiting_signature', 'submitted', 'confirmed']);
         expect(connection.calls).toEqual(['getLatestBlockhash', 'simulateTransaction/0', 'sendRawTransaction', 'confirmTransaction']);
         expect(provider.signTransaction).toHaveBeenCalledTimes(1);

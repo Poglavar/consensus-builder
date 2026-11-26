@@ -223,26 +223,26 @@
 
         const cachedChain = formatChainLabel(chainSlug || currentParcelMintStatusCache?.result?.chainSlug || null);
         if (!cachedChain && (state === 'not-minted' || state === 'error')) {
-            // Chain should always be available when checking NFT status
+            // Chain should always be available when checking the anchor
             // If we don't have it, this is an unexpected state - we attempted to check on a chain
-            console.error('Chain information not available for NFT status indicator - this should not happen as we attempted to check on a specific chain');
+            console.error('Chain information not available for the anchor status indicator - this should not happen as we attempted to check on a specific chain');
         }
         // Always use the chain if we have it - we attempted to check on this chain
         const chainParam = cachedChain ? { chain: cachedChain } : {};
-        // "Not found" is only said when the chain answered that the parcel has no token. When the
-        // check itself could not run (no RPC, RPC down, wrong contract), say so — never imply absence.
+        // "Not anchored yet" is only said when the chain answered that the parcel has no anchor. When the
+        // check itself could not run (no RPC, RPC down, wrong program), say so — never imply absence.
         let retryMessage;
         if (state === 'error') {
             retryMessage = cachedChain
-                ? tParcel('panel.parcel.nft.checkFailedRetry', chainParam, `Couldn't check NFT status on ${cachedChain}. Click to try again.`)
-                : tParcel('panel.parcel.nft.checkFailedRetryNoChain', {}, "Couldn't check NFT status. Click to try again.");
+                ? tParcel('panel.parcel.nft.checkFailedRetry', chainParam, `Couldn't check the anchor on ${cachedChain}. Click to try again.`)
+                : tParcel('panel.parcel.nft.checkFailedRetryNoChain', {}, "Couldn't check the anchor. Click to try again.");
         } else {
             retryMessage = cachedChain
-                ? tParcel('panel.parcel.nft.notFoundRetry', chainParam, 'NFT not found. Click to check again.')
-                : tParcel('panel.parcel.nft.statusUnknown', {}, 'NFT status: Not checked yet.');
+                ? tParcel('panel.parcel.nft.statusNotMinted', {}, 'Not anchored yet')
+                : tParcel('panel.parcel.nft.statusUnknown', {}, 'Anchor not checked yet.');
         }
-        const retryTooltip = tParcel('panel.parcel.nft.retryTooltip', {}, 'Click to check NFT status again');
-        const resolvedMessage = message || tParcel('panel.parcel.nft.statusUnknown', {}, 'NFT status: Not checked yet.');
+        const retryTooltip = tParcel('panel.parcel.nft.retryTooltip', {}, 'Click to check again');
+        const resolvedMessage = message || tParcel('panel.parcel.nft.statusUnknown', {}, 'Anchor not checked yet.');
 
         const setIndicatorContent = (content) => {
             indicator.innerHTML = '';
@@ -264,7 +264,7 @@
             retryButton.addEventListener('click', event => {
                 activeMintStatusRetry = retryButton;
                 global.BusyControl.track(retryButton, () => recheckParcelMintStatus(event))
-                    .catch(error => console.error('Parcel NFT status retry failed:', error))
+                    .catch(error => console.error('Parcel anchor status retry failed:', error))
                     .finally(() => { if (activeMintStatusRetry === retryButton) activeMintStatusRetry = null; });
             });
             indicator.replaceChildren(retryButton);
@@ -301,7 +301,7 @@
         currentParcelMintStatusParcelId = null;
         currentParcelMintStatusPromise = null;
         setParcelMintStatusIndicator(
-            tParcel('panel.parcel.nft.statusUnknown', {}, 'NFT status: Not checked yet.'),
+            tParcel('panel.parcel.nft.statusUnknown', {}, 'Anchor not checked yet.'),
             'neutral'
         );
     }
@@ -309,7 +309,7 @@
     function applyParcelMintStatusResult(result) {
         if (!result) {
             setParcelMintStatusIndicator(
-                tParcel('panel.parcel.nft.statusUnknown', {}, 'NFT status: Not checked yet.'),
+                tParcel('panel.parcel.nft.statusUnknown', {}, 'Anchor not checked yet.'),
                 'neutral'
             );
             return;
@@ -325,14 +325,10 @@
         const displayChain = formatChainLabel(result.chainSlug);
 
         if (result.minted) {
-            const chainText = displayChain
-                ? tParcel('panel.parcel.nft.chainSuffix', { chain: displayChain }, ` (${displayChain})`)
-                : '';
-            const messageText = tParcel(
-                'panel.parcel.nft.statusMinted',
-                { chain: chainText },
-                `NFT status: Minted${chainText}`
-            );
+            const onSolana = String(result.chainSlug || result.chainId || '').startsWith('solana');
+            const messageText = onSolana || !displayChain
+                ? tParcel('panel.parcel.nft.statusMinted', {}, 'Anchored on Solana')
+                : tParcel('panel.parcel.nft.statusMintedOn', { chain: displayChain }, `Anchored on ${displayChain}`);
             const explorerUrl = buildParcelNftExplorerUrl({
                 chainId: result.chainId,
                 chainSlug: result.chainSlug,
@@ -430,7 +426,7 @@
         const isMultiActive = global.multiParcelSelection && (global.multiParcelSelection.isActive || global.multiParcelSelection.selectedParcels?.size > 0);
         if (isMultiActive) {
             setParcelMintStatusIndicator(
-                tParcel('panel.parcel.nft.multiReady', {}, 'Ready to mint selected parcels. Mint will check on press.'),
+                tParcel('panel.parcel.nft.multiReady', {}, 'Ready to anchor the selected parcels.'),
                 'neutral'
             );
             return null;
@@ -439,7 +435,7 @@
         const parcelFeature = getCurrentLiveParcelFeature();
         if (!parcelFeature) {
             setParcelMintStatusIndicator(
-                tParcel('panel.parcel.nft.statusPrompt', {}, 'Select a parcel to check NFT status.'),
+                tParcel('panel.parcel.nft.statusPrompt', {}, 'Select a parcel to check its anchor.'),
                 'neutral'
             );
             currentParcelMintStatusCache = null;
@@ -472,7 +468,7 @@
 
         if (currentParcelMintStatusPromise && currentParcelMintStatusParcelId === parcelId && !forceRecheck) {
             setParcelMintStatusIndicator(
-                tParcel('panel.parcel.nft.checking', {}, 'Checking NFT status...'),
+                tParcel('panel.parcel.nft.checking', {}, 'Checking the anchor…'),
                 'loading'
             );
             return currentParcelMintStatusPromise;
@@ -480,7 +476,7 @@
 
         currentParcelMintStatusParcelId = parcelId;
         setParcelMintStatusIndicator(
-            tParcel('panel.parcel.nft.checking', {}, 'Checking NFT status...'),
+            tParcel('panel.parcel.nft.checking', {}, 'Checking the anchor…'),
             'loading'
         );
 
@@ -533,7 +529,7 @@
             } catch (error) {
                 if (currentParcelMintStatusParcelId === parcelId) {
                     if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-                        console.warn('Parcel NFT status check failed:', error);
+                        console.warn('Parcel anchor status check failed:', error);
                     }
                     // Use chain from cache, or from claim context we captured, or from attempted chain ID
                     let chainSlug = currentParcelMintStatusCache?.result?.chainSlug || claimContextChainSlug || null;
@@ -875,13 +871,13 @@
 
             const body = doc.createElement('p');
             body.textContent = parcelCount === 1
-                ? 'Parcel has been minted!'
-                : `${parcelCount} parcels have been minted!`;
+                ? tParcel('panel.parcel.anchorDialog.anchoredOne', {}, 'The parcel is anchored.')
+                : tParcel('panel.parcel.anchorDialog.anchoredMany', { count: parcelCount }, `${parcelCount} parcels are anchored.`);
             const content = [body];
 
             const isSolana = typeof chainId === 'string' && chainId.startsWith('solana');
             const txList = Array.isArray(transactions) ? transactions.filter(t => t && t.txHash) : [];
-            const explorerTitle = isSolana ? 'View on Solana Explorer' : 'View on Explorer';
+            const explorerTitle = tParcel('panel.parcel.nft.viewOnExplorer', {}, 'View on explorer');
             const explorerLink = (url, text) => {
                 const link = doc.createElement('a');
                 link.href = url;
@@ -906,7 +902,7 @@
                 txList.forEach((tx, idx) => {
                     const url = buildExplorerTxUrl({ chainId, chainSlug: chainId, txHash: tx.txHash });
                     if (!url) return;
-                    const link = explorerLink(url, tx.parcelId ? tx.parcelId : `Transaction ${idx + 1}`);
+                    const link = explorerLink(url, tParcel('panel.parcel.anchorDialog.transaction', { number: idx + 1 }, `Transaction ${idx + 1}`));
                     link.title = explorerTitle;
                     list.appendChild(link);
                 });
@@ -914,12 +910,12 @@
             }
 
             const dialogApi = global.CbDialog.open({
-                title: 'Success!',
+                title: tParcel('panel.parcel.anchorDialog.successTitle', {}, 'Parcels anchored'),
                 size: 'sm',
                 top: true,
                 className: 'parcel-mint-success',
                 body: content,
-                actions: [{ id: 'ok', label: 'OK', role: 'primary' }],
+                actions: [{ id: 'ok', label: tParcel('modal.common.ok', {}, 'OK'), role: 'primary' }],
                 onClose: () => {
                     if (parcelMintSuccessDialog === dialogApi) parcelMintSuccessDialog = null;
                     if (typeof onClose === 'function') {
@@ -957,7 +953,7 @@
             : polygons;
         const bounds = computeBoundingBox(allShapes);
         if (!bounds) {
-            imgEl.alt = 'Preview unavailable';
+            imgEl.alt = tParcel('panel.parcel.anchorDialog.previewUnavailable', {}, 'Preview unavailable');
             return;
         }
         const width = 240;
@@ -1028,7 +1024,7 @@
             }
         }
         imgEl.src = canvas.toDataURL('image/png');
-        imgEl.alt = `Parcel ${entry.parcelId} preview`;
+        imgEl.alt = tParcel('panel.parcel.anchorDialog.previewAlt', { id: entry.parcelId }, `Parcel ${entry.parcelId} preview`);
     }
 
     function buildParcelThumbnailLoader(entry, imgEl, neighbours = []) {
@@ -1036,7 +1032,7 @@
         const geometrySource = entry.feature?.geometry || {};
         const polygons = extractPolygonCoordinateSets(geometrySource);
         if (!polygons.length) {
-            imgEl.alt = 'Preview unavailable';
+            imgEl.alt = tParcel('panel.parcel.anchorDialog.previewUnavailable', {}, 'Preview unavailable');
             return;
         }
         const neighbourRings = (Array.isArray(neighbours) ? neighbours : []).map(ring => {
@@ -1082,15 +1078,17 @@
 
         const subtitle = global.document.createElement('p');
         subtitle.className = 'parcel-mint-subtitle';
-        subtitle.textContent = 'Choose which parcels to mint on the ParcelNFT contract. If feasible (not too many), the parcels will all be minted in one transaction.';
+        // The one sentence that explains an anchor, also the Tools tab button's tooltip.
+        subtitle.textContent = tParcel('panel.parcel.mintTooltip', {}, 'A parcel anchor is a public record of the parcel on the blockchain. Nobody owns it, and it doesn’t grant ownership.');
 
         const meta = global.document.createElement('div');
         meta.className = 'parcel-mint-meta';
         const displayChain = chainSlug ? `${String(chainSlug).charAt(0).toUpperCase()}${String(chainSlug).slice(1)}` : 'unknown';
         const metaList = [
-            { label: 'Chain', value: displayChain },
-            { label: 'Minting contract', value: contractAddress || 'n/a', monospace: true, url: buildExplorerAddressUrl({ chainId, chainSlug, address: contractAddress }) },
-            { label: 'Owner address', value: ownerAddress || 'n/a', monospace: true, url: buildExplorerAddressUrl({ chainId, chainSlug, address: ownerAddress }) }
+            { label: tParcel('panel.parcel.anchorDialog.chain', {}, 'Chain'), value: displayChain },
+            { label: tParcel('panel.parcel.anchorDialog.program', {}, 'Anchor program'), value: contractAddress || 'n/a', monospace: true, url: buildExplorerAddressUrl({ chainId, chainSlug, address: contractAddress }) },
+            // The wallet pays the rent of each anchor; it does not become an owner.
+            { label: tParcel('panel.parcel.anchorDialog.payer', {}, 'Paid by'), value: ownerAddress || 'n/a', monospace: true, url: buildExplorerAddressUrl({ chainId, chainSlug, address: ownerAddress }) }
         ];
         metaList.forEach((item) => {
             const row = global.document.createElement('div');
@@ -1156,7 +1154,7 @@
 
             const thumb = global.document.createElement('img');
             thumb.className = 'parcel-mint-thumb';
-            thumb.alt = `Parcel ${parcel.parcelId} preview`;
+            thumb.alt = tParcel('panel.parcel.anchorDialog.previewAlt', { id: parcel.parcelId }, `Parcel ${parcel.parcelId} preview`);
             // Transparent 1x1 placeholder to avoid broken image icon while thumbnail loads
             thumb.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
@@ -1180,7 +1178,7 @@
         // The dialog has no automatic dismissals: while a mint transaction is in flight (is-busy)
         // neither the close button, the backdrop nor Escape may close it, so it owns all three.
         const dialogApi = global.CbDialog.open({
-            title: 'Mint parcel representations as NFTs',
+            title: tParcel('panel.parcel.anchorDialog.title', {}, 'Anchor parcels on chain'),
             size: 'md',
             top: true,
             className: 'parcel-mint-modal',
@@ -1190,7 +1188,7 @@
             closeOnBackdrop: false,
             closeOnEscape: false,
             body: [subtitle, meta, list, status],
-            actions: [{ id: 'mint', label: 'Mint', role: 'primary', keepOpen: true, onClick: () => mint() }]
+            actions: [{ id: 'mint', label: tParcel('panel.parcel.mintAndClaimButton', {}, 'Anchor on chain'), role: 'primary', keepOpen: true, onClick: () => mint() }]
         });
         if (!dialogApi) return;
         parcelMintDialog = dialogApi;
@@ -1200,7 +1198,7 @@
         const closeBtn = global.document.createElement('button');
         closeBtn.type = 'button';
         closeBtn.className = 'close-circle-btn parcel-mint-close';
-        closeBtn.setAttribute('aria-label', 'Close');
+        closeBtn.setAttribute('aria-label', tParcel('modal.common.close', {}, 'Close'));
         closeBtn.textContent = '×';
         closeBtn.addEventListener('click', () => {
             if (!isBusy()) removeParcelMintModal('close');
@@ -1226,12 +1224,12 @@
                 .filter(entry => entry.checkbox.checked)
                 .map(entry => entry.parcel);
             if (!selected.length) {
-                status.textContent = 'Select at least one parcel to mint.';
+                status.textContent = tParcel('panel.parcel.anchorDialog.selectOne', {}, 'Select at least one parcel to anchor.');
                 return;
             }
             try {
-                setBusy(true, 'Preparing mint transaction...');
-                const result = await onConfirm({ parcels: selected, setBusy, statusEl: status, neighboursByParcelId: neighbourMap });
+                setBusy(true, tParcel('panel.parcel.anchorDialog.preparing', {}, 'Preparing the transactions…'));
+                const result = await onConfirm({ parcels: selected, setBusy, statusEl: status });
                 const mintedIds = Array.isArray(result?.mintedParcelIds)
                     ? result.mintedParcelIds.filter(Boolean)
                     : selected.map(entry => entry.parcel?.parcelId || entry.parcelId).filter(Boolean);
@@ -1240,7 +1238,9 @@
                     mintedLayerApi.addMintedParcels(mintedIds);
                 }
                 const mintedAll = mintedIds.length >= parcels.length;
-                if (mintedAll) {
+                // An id longer than an anchor seed allows is reported, not anchored.
+                const skippedIds = (result?.skipped || []).map(entry => entry.parcelId);
+                if (mintedAll && !skippedIds.length) {
                     removeParcelMintModal('completed');
                     showParcelMintSuccessPopup({
                         parcelCount: mintedIds.length,
@@ -1252,12 +1252,14 @@
                 mintBtn.disabled = false;
                 overlay.classList.remove('is-busy');
                 const hasStatusContent = Boolean(status.innerHTML && status.innerHTML.trim());
-                if (!hasStatusContent) {
-                    status.textContent = result?.statusMessage || 'Mint successful. You can mint remaining parcels.';
+                if (skippedIds.length) {
+                    status.textContent = tParcel('panel.parcel.anchorDialog.skipped', { parcels: skippedIds.join(', ') }, `Not anchored, because the parcel id is longer than an anchor allows: ${skippedIds.join(', ')}`);
+                } else if (!hasStatusContent) {
+                    status.textContent = result?.statusMessage || tParcel('panel.parcel.anchorDialog.partial', {}, 'Some parcels are anchored. You can anchor the remaining ones.');
                 }
             } catch (error) {
                 console.error('Parcel mint failed', error);
-                setBusy(false, error?.message || 'Mint failed. Please try again.');
+                setBusy(false, error?.message || tParcel('panel.parcel.anchorDialog.failed', {}, 'Anchoring failed. Please try again.'));
             }
         };
     }
@@ -1271,53 +1273,6 @@
             || (parcelFeature.properties && parcelFeature.properties.parcel_name)
             || `Parcel ${parcelId}`;
         return [{ parcelId, parcelName, feature: parcelFeature }];
-    }
-
-    // The parcel image and its NFT metadata, pinned on IPFS (js/asset-upload.js).
-    async function uploadParcelMetadataAsset({ imageData, metadata, fileName }) {
-        if (!global.AssetService || typeof global.AssetService.uploadProposalAssets !== 'function') {
-            throw new Error('Asset upload service is not available.');
-        }
-        return global.AssetService.uploadProposalAssets({ imageData, metadata, fileName });
-    }
-
-    async function uploadParcelMetadataOnly({ metadata, fileName }) {
-        const base = (typeof getBackendBase === 'function' ? getBackendBase() : '').replace(/\/$/, '');
-        if (!base) {
-            throw new Error('Backend base URL is not available for metadata upload.');
-        }
-
-        const response = await fetch(`${base}/metadata`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                metadata,
-                fileName
-            })
-        });
-
-        if (!response.ok) {
-            let message = 'Failed to store parcel metadata.';
-            try {
-                const errorBody = await response.json();
-                if (errorBody && errorBody.error) {
-                    message = errorBody.error;
-                }
-            } catch (_) { }
-            throw new Error(message);
-        }
-
-        return await response.json();
-    }
-
-    function requireParcelMetadataUri(metadataUri, parcelId) {
-        const value = typeof metadataUri === 'string' ? metadataUri.trim() : '';
-        if (value) {
-            return value;
-        }
-        throw new Error(`Failed to create metadata URI for parcel ${parcelId}. Parcel was not minted.`);
     }
 
     // Bounding boxes of immutable feature snapshots returned by the committed fabric.
@@ -1411,78 +1366,6 @@
         }
     }
 
-    async function prepareParcelMintAssets(parcels, signerAddress, neighboursByParcelId = {}, statusEl = null) {
-        const prepared = [];
-        for (let idx = 0; idx < parcels.length; idx++) {
-            const parcel = parcels[idx];
-            let metadataUri = null;
-            const neighbours = Array.isArray(neighboursByParcelId[parcel.parcelId])
-                ? neighboursByParcelId[parcel.parcelId]
-                : findNeighbourPolygonsFromLiveFabric(parcel.parcelId);
-            const resolvedFeature = (parcel.feature && parcel.feature.geometry) ? parcel.feature : null;
-            // The same metadata an agent's ugt_anchor_parcels pins (ParcelAnchor.anchorMetadata).
-            const metadataPayload = (global.ParcelAnchor || require('../parcel-anchor.js')).anchorMetadata({
-                anchorId: parcel.parcelId,
-                parcelName: parcel.parcelName,
-                minter: signerAddress,
-                calculatedArea: resolvedFeature?.properties?.calculatedArea,
-                geometry: resolvedFeature?.geometry
-            });
-
-            try {
-                if (statusEl) {
-                    const label = parcels.length > 1 ? `Uploading parcel ${idx + 1}/${parcels.length} to IPFS...` : 'Uploading parcel metadata to IPFS...';
-                    statusEl.textContent = label;
-                }
-                if (global.MapScreenshot && typeof global.MapScreenshot.capturePolygonImage === 'function' && global.AssetService && typeof global.AssetService.uploadProposalAssets === 'function') {
-                    const polygonRings = extractOuterPolygonRings(resolvedFeature?.geometry || parcel.feature || {});
-                    const rings = polygonRings.length > 0 ? polygonRings[0] : [];
-
-                    if (rings.length >= 3 && global.L) {
-                        const latLngRings = rings.map(coord => ({ lat: coord[1], lng: coord[0] }));
-                        const bounds = global.L.latLngBounds(latLngRings);
-                        const screenshot = await global.MapScreenshot.capturePolygonImage({
-                            polygon: latLngRings,
-                            parcelPolygons: polygonRings.map(ring => ring.map(coord => ({ lat: coord[1], lng: coord[0] }))),
-                            bounds,
-                            padding: 0.14,
-                            size: 640,
-                            neighbours,
-                            parcelLabel: parcel.parcelId || null
-                        });
-                        const uploadResult = await uploadParcelMetadataAsset({
-                            imageData: screenshot,
-                            metadata: metadataPayload,
-                            fileName: `parcel-${parcel.parcelId}.png`
-                        });
-                        metadataUri = uploadResult?.metadataUri || uploadResult?.metadataUrl || null;
-                    }
-                }
-            } catch (assetError) {
-                console.warn('Failed to prepare parcel metadata.', assetError);
-            }
-            if (!metadataUri) {
-                try {
-                    const metadataOnlyResult = await uploadParcelMetadataOnly({
-                        metadata: metadataPayload,
-                        fileName: `parcel-${parcel.parcelId}.json`
-                    });
-                    metadataUri = metadataOnlyResult?.metadataUrl || null;
-                } catch (metadataError) {
-                    console.warn('Failed to store parcel metadata without image.', metadataError);
-                }
-            }
-            metadataUri = requireParcelMetadataUri(metadataUri, parcel.parcelId);
-            prepared.push({
-                parcelId: parcel.parcelId,
-                parcelName: parcel.parcelName,
-                feature: parcel.feature,
-                metadataUri
-            });
-        }
-        return prepared;
-    }
-
     async function executeParcelBatchMint({ parcels, signer, ownerAddress, contractAddress, chainSlug, statusEl }) {
         const ethersLib = global.ethers;
         if (!ethersLib) {
@@ -1493,10 +1376,11 @@
         ];
         const contract = new ethersLib.Contract(contractAddress, abi, signer);
         const parcelIds = parcels.map(p => p.parcelId);
-        const metadataUris = parcels.map(p => requireParcelMetadataUri(p.metadataUri, p.parcelId));
-        if (statusEl) statusEl.textContent = 'Submitting mint transaction...';
+        // The same URI as a Solana anchor: the parcel's page on the public site (ParcelAnchor.anchorUri).
+        const metadataUris = parcelIds.map(parcelId => (global.ParcelAnchor || require('../parcel-anchor.js')).anchorUri(parcelId));
+        if (statusEl) statusEl.textContent = tParcel('panel.parcel.anchorDialog.submitting', {}, 'Submitting the transaction…');
         const tx = await contract.mintBatch(ownerAddress, parcelIds, metadataUris);
-        if (statusEl) statusEl.textContent = `Waiting for confirmation on ${chainSlug || 'chain'}...`;
+        if (statusEl) statusEl.textContent = tParcel('panel.parcel.anchorDialog.confirming', { chain: chainSlug || 'chain' }, `Waiting for confirmation on ${chainSlug || 'chain'}…`);
         const receipt = typeof tx.wait === 'function' ? await tx.wait() : null;
         return { txHash: tx.hash, receipt };
     }
@@ -1510,7 +1394,7 @@
                 : (isMultiActive ? collectMultiSelectedParcelsForMint() : collectCurrentParcelForMint());
             if (!parcels.length) {
                 if (typeof global.updateStatus === 'function') {
-                    global.updateStatus('Select a parcel before minting.');
+                    global.updateStatus(tParcel('panel.parcel.anchorDialog.selectFirst', {}, 'Select a parcel before anchoring it.'));
                 }
                 return;
             }
@@ -1519,11 +1403,11 @@
             const solanaState = solanaWalletManager && typeof solanaWalletManager.getState === 'function' ? solanaWalletManager.getState() : null;
             const isSolanaConnected = solanaState && solanaState.status === 'connected' && Array.isArray(solanaState.accounts) && solanaState.accounts.length > 0;
 
-            if (isSolanaConnected && global.mintParcelSolana) {
+            if (isSolanaConnected && global.SolanaParcelAnchors) {
                 const cluster = solanaState.cluster || 'devnet';
                 const contractAddress = await resolveParcelNftAddressSolana(cluster);
                 if (!contractAddress) {
-                    throw new Error('ParcelNFT program not configured for Solana.');
+                    throw new Error(tParcel('panel.parcel.anchorDialog.noProgram', {}, 'The parcel anchor program is not configured for this chain.'));
                 }
                 const ownerAddress = solanaState.accounts[0];
                 const chainSlug = `solana-${cluster}`;
@@ -1534,34 +1418,21 @@
                     contractAddress,
                     ownerAddress,
                     onExit: typeof options.onExit === 'function' ? options.onExit : null,
-                    onConfirm: async ({ parcels: selectedParcels, setBusy, statusEl, neighboursByParcelId }) => {
-                        const prepared = await prepareParcelMintAssets(selectedParcels, ownerAddress, neighboursByParcelId, statusEl);
-                        const mintedParcelIds = [];
-                        const transactions = [];
-                        for (let i = 0; i < prepared.length; i++) {
-                            const p = prepared[i];
-                            if (statusEl) statusEl.textContent = `Minting parcel ${i + 1}/${prepared.length}...`;
-                            try {
-                                const result = await global.mintParcelSolana(
-                                    p.parcelId,
-                                    requireParcelMetadataUri(p.metadataUri, p.parcelId),
-                                    contractAddress,
-                                    cluster
-                                );
-                                mintedParcelIds.push(p.parcelId);
-                                if (result?.txHash) {
-                                    transactions.push({ parcelId: p.parcelId, txHash: result.txHash });
-                                } else if (result?.alreadyMinted && statusEl) {
-                                    statusEl.textContent = `Parcel ${i + 1}/${prepared.length} already minted.`;
-                                }
-                            } catch (err) {
-                                console.error('Solana parcel mint failed', err);
-                                setBusy(false, err?.message || 'Mint failed.');
-                                return { mintedParcelIds, statusMessage: err?.message };
-                            }
+                    // Anchors already on chain cost nothing; the rest go several to a transaction, signed
+                    // with one wallet approval where the wallet can (solana/parcel-mint.js).
+                    onConfirm: async ({ parcels: selectedParcels, setBusy, statusEl }) => {
+                        const progress = ({ done, total }) => {
+                            if (statusEl) statusEl.textContent = tParcel('panel.parcel.anchorDialog.progress', { done, total }, `Anchoring parcels: ${done} of ${total}…`);
+                        };
+                        try {
+                            const result = await global.SolanaParcelAnchors.anchorParcels(selectedParcels.map(p => p.parcelId), { programId: contractAddress, cluster, onProgress: progress });
+                            setBusy(false);
+                            return { mintedParcelIds: result.anchoredParcelIds, transactions: result.transactions, chainId: `solana-${cluster}`, skipped: result.skipped };
+                        } catch (err) {
+                            console.error(`[${new Date().toISOString()}] Solana parcel anchoring failed`, err);
+                            setBusy(false, err?.message || tParcel('panel.parcel.anchorDialog.failed', {}, 'Anchoring failed. Please try again.'));
+                            return { mintedParcelIds: err?.anchoredParcelIds || [], statusMessage: err?.message };
                         }
-                        setBusy(false);
-                        return { mintedParcelIds, transactions, chainId: `solana-${cluster}` };
                     }
                 });
                 return;
@@ -1570,7 +1441,7 @@
             const walletManager = global.walletManager;
             const walletProvider = walletManager && typeof walletManager.getProvider === 'function' ? walletManager.getProvider() : null;
             if (!walletProvider) {
-                throw new Error('Connect your wallet to mint parcels.');
+                throw new Error(tParcel('panel.parcel.anchorDialog.connectWallet', {}, 'Connect a wallet to anchor parcels.'));
             }
             const ethersLib = global.ethers;
             if (!ethersLib) {
@@ -1584,7 +1455,7 @@
             const chainSlug = resolveChainSlug(chainId);
             const contractAddress = await resolveParcelNftAddress(chainId);
             if (!contractAddress) {
-                throw new Error('ParcelNFT address is not configured for this chain.');
+                throw new Error(tParcel('panel.parcel.anchorDialog.noProgram', {}, 'The parcel anchor program is not configured for this chain.'));
             }
 
             if (isMultiActive) {
@@ -1610,7 +1481,7 @@
 
                 if (mintedParcels.length > 0) {
                     setParcelMintStatusIndicator(
-                        'some of the selected parcels have already been minted. deselect them to proceed to mint.',
+                        tParcel('panel.parcel.anchorDialog.someAnchored', {}, 'Some of the selected parcels are already anchored. Deselect them to continue.'),
                         'error',
                         chainSlug
                     );
@@ -1621,7 +1492,7 @@
                     return;
                 }
 
-                setParcelMintStatusIndicator('Selected parcels are ready to mint.', 'not-minted', chainSlug);
+                setParcelMintStatusIndicator(tParcel('panel.parcel.nft.multiReady', {}, 'Ready to anchor the selected parcels.'), 'not-minted', chainSlug);
             }
 
             await buildParcelMintModal({
@@ -1631,10 +1502,9 @@
                 contractAddress,
                 ownerAddress,
                 onExit: typeof options.onExit === 'function' ? options.onExit : null,
-                onConfirm: async ({ parcels: selectedParcels, setBusy, statusEl, neighboursByParcelId }) => {
-                    const prepared = await prepareParcelMintAssets(selectedParcels, ownerAddress, neighboursByParcelId, statusEl);
-                    const result = await executeParcelBatchMint({ parcels: prepared, signer, ownerAddress, contractAddress, chainSlug, statusEl });
-                    const mintedParcelIds = prepared.map(p => p.parcelId).filter(Boolean);
+                onConfirm: async ({ parcels: selectedParcels, setBusy, statusEl }) => {
+                    const result = await executeParcelBatchMint({ parcels: selectedParcels, signer, ownerAddress, contractAddress, chainSlug, statusEl });
+                    const mintedParcelIds = selectedParcels.map(p => p.parcelId).filter(Boolean);
                     const txHash = result?.txHash || null;
                     const transactions = txHash ? [{ txHash }] : [];
                     setBusy(false);
@@ -1651,7 +1521,7 @@
         } catch (error) {
             console.error('Unable to open parcel mint modal', error);
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus(error?.message || 'Unable to open mint modal.');
+                global.updateStatus(error?.message || tParcel('panel.parcel.anchorDialog.failed', {}, 'Anchoring failed. Please try again.'));
             }
         }
     }
@@ -1670,7 +1540,7 @@
         const doc = global.document;
         if (!doc) return;
         const titles = [
-            ['mintAndClaimButton', 'panel.parcel.mintTooltip', 'Mint the parcel NFT']
+            ['mintAndClaimButton', 'panel.parcel.mintTooltip', 'A parcel anchor is a public record of the parcel on the blockchain. Nobody owns it, and it doesn’t grant ownership.']
         ];
         titles.forEach(([id, key, fallback]) => {
             const el = doc.getElementById(id);

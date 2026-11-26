@@ -3,7 +3,7 @@
 // and the refusals and replays that sign nothing.
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
-import { Keypair, PublicKey } from '@solana/web3.js';
+import { Keypair, PublicKey, Transaction } from '@solana/web3.js';
 import { anchorParcels, cancelAgreement, confirmAsLensMember, refundContributions } from '../agents/chain-actions.js';
 import { agreementAccountOf } from '../agents/agreement-minter.js';
 import { cidOfObject } from '../cid.js';
@@ -138,25 +138,48 @@ describe('refund contributions', () => {
 });
 
 describe('parcel anchors', () => {
-    it('anchors a new parcel with its metadata and reports an existing anchor without storing metadata', async () => {
+    const uri = id => `https://urbangametheory.xyz/parcel/${id}`;
+    it('skips existing anchors and packs the rest several to a transaction, within the size limit', async () => {
         const payer = Keypair.generate();
         const accounts = new Map();
         const [existing] = parcelClient.getParcelPda('HR-1-1');
         accounts.set(existing.toBase58(), { owner: parcelClient.constants.PARCEL_NFT_PROGRAM_ID, data: new Uint8Array(40) });
-        const metadataFor = { old: vi.fn(async () => 'https://api.example/metadata/old.json'), fresh: vi.fn(async () => 'https://api.example/metadata/new.json') };
+        const ids = ['HR-1-1', ...Array.from({ length: 20 }, (_, i) => `HR-335754-${1000 + i}/2`)];
         const { sent, sendAndConfirm } = recorder();
-        const { parcels } = await anchorParcels({ connection: chain(accounts), payerKeypair: payer, sendAndConfirm,
-            parcels: [{ anchorId: 'HR-1-1', metadataUri: metadataFor.old }, { anchorId: 'HR-1-2', metadataUri: metadataFor.fresh }] });
-        expect(parcels).toEqual([
-            { anchorId: 'HR-1-1', anchor: existing.toBase58(), alreadyAnchored: true, signature: null },
-            { anchorId: 'HR-1-2', anchor: parcelClient.getParcelPda('HR-1-2')[0].toBase58(), alreadyAnchored: false, signature: 'sig-1' }
-        ]);
-        expect(metadataFor.old).not.toHaveBeenCalled();
-        const [ix] = sent[0].instructions;
-        expect(Buffer.from(ix.data).equals(Buffer.from(parcelClient.encodeMintParcelData('HR-1-2', 'https://api.example/metadata/new.json')))).toBe(true);
-        expect(ix.keys[1].pubkey.toBase58()).toBe(payer.publicKey.toBase58());
-        await expect(anchorParcels({ connection: chain(new Map()), payerKeypair: payer, sendAndConfirm, parcels: [{ anchorId: 'HR-1-3', metadataUri: async () => null }] }))
-            .rejects.toMatchObject({ code: 'metadata-required' });
-        expect(sent).toHaveLength(1);
+        const connection = chain(accounts);
+        const result = await anchorParcels({ connection, payerKeypair: payer, sendAndConfirm,
+            parcels: ids.map(anchorId => ({ anchorId, metadataUri: uri(anchorId) })) });
+        expect(connection.getAccountInfo).not.toHaveBeenCalled();
+        expect(result.parcels[0]).toEqual({ anchorId: 'HR-1-1', anchor: existing.toBase58(), alreadyAnchored: true, signature: null });
+        // 20 new anchors fit in fewer transactions than anchors, each within 1232 bytes, in order.
+        expect(sent.length).toBe(result.transactions);
+        expect(sent.length).toBeGreaterThan(1);
+        expect(sent.length).toBeLessThan(5);
+        const sentIds = sent.flatMap(tx => tx.instructions.map(ix => ix.keys[0].pubkey.toBase58()));
+        expect(sentIds).toEqual(ids.slice(1).map(id => parcelClient.getParcelPda(id)[0].toBase58()));
+        for (const tx of sent) {
+            const probe = new Transaction({ feePayer: payer.publicKey, recentBlockhash: PublicKey.default.toBase58() }).add(...tx.instructions);
+            expect(probe.serialize({ requireAllSignatures: false, verifySignatures: false }).length).toBeLessThanOrEqual(1232);
+        }
+        const [first] = sent[0].instructions;
+        expect(Buffer.from(first.data).equals(Buffer.from(parcelClient.encodeMintParcelData(ids[1], uri(ids[1]))))).toBe(true);
+        expect(first.keys[1].pubkey.toBase58()).toBe(payer.publicKey.toBase58());
+        expect(result.parcels.slice(1).every(row => row.alreadyAnchored === false && /^sig-\d$/.test(row.signature))).toBe(true);
+    });
+
+    it('signs nothing for anchored parcels or a parcel without a URI, and reports what was done when a transaction fails', async () => {
+        const payer = Keypair.generate();
+        const [existing] = parcelClient.getParcelPda('HR-1-1');
+        const accounts = new Map([[existing.toBase58(), { owner: parcelClient.constants.PARCEL_NFT_PROGRAM_ID, data: new Uint8Array(40) }]]);
+        const { sent, sendAndConfirm } = recorder();
+        expect(await anchorParcels({ connection: chain(accounts), payerKeypair: payer, sendAndConfirm, parcels: [{ anchorId: 'HR-1-1', metadataUri: uri('HR-1-1') }] }))
+            .toEqual({ parcels: [{ anchorId: 'HR-1-1', anchor: existing.toBase58(), alreadyAnchored: true, signature: null }], transactions: 0 });
+        await expect(anchorParcels({ connection: chain(new Map()), payerKeypair: payer, sendAndConfirm, parcels: [{ anchorId: 'HR-1-3', metadataUri: '' }] }))
+            .rejects.toMatchObject({ code: 'uri-required' });
+        expect(sent).toHaveLength(0);
+        const refused = vi.fn(async () => { throw new Error('refused'); });
+        await expect(anchorParcels({ connection: chain(accounts), payerKeypair: payer, sendAndConfirm: refused,
+            parcels: [{ anchorId: 'HR-1-1', metadataUri: uri('HR-1-1') }, { anchorId: 'HR-1-2', metadataUri: uri('HR-1-2') }] }))
+            .rejects.toMatchObject({ message: 'refused', parcels: [{ anchorId: 'HR-1-1', alreadyAnchored: true }] });
     });
 });

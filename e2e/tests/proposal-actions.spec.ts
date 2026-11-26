@@ -87,7 +87,7 @@ test.describe('Proposal actions @features', () => {
     await expect(mint).toBeDisabled();
   });
 
-  test('parcel NFT status retries a failed read and restores its control', async ({ mockApi: page }) => {
+  test('parcel anchor status retries a failed read and restores its control', async ({ mockApi: page }) => {
     await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
     await openCity(page);
     await connectWalletByConnectorId(page, 'solana-phantom');
@@ -104,31 +104,28 @@ test.describe('Proposal actions @features', () => {
       };
     });
     await openParcel(page, 'tools');
-    const retry = page.getByRole('button', { name: /Couldn't check NFT status/ });
+    const retry = page.getByRole('button', { name: /Couldn’t check the anchor/ });
     await expect(retry).toBeVisible();
     await retry.click();
     await expect.poll(() => page.evaluate(() => (window as any).__nftReadCalls)).toBe(2);
-    const busy = page.getByRole('button', { name: /Checking NFT status/ });
+    const busy = page.getByRole('button', { name: /Checking the anchor/ });
     await expect(busy).toHaveAttribute('aria-busy', 'true');
     await expect(busy).toHaveClass(/cb-busy/);
     await page.evaluate(() => (window as any).__completeNftRead());
-    await expect(page.getByRole('button', { name: /NFT not found/ })).toBeEnabled();
+    await expect(page.getByRole('button', { name: /Not anchored yet/ })).toBeEnabled();
   });
 
-  test('connected parcel owner mints from the parcel tools dialog and receives a confirmed transaction', async ({ mockApi: page }) => {
+  test('a connected wallet anchors the parcel from the parcel tools dialog and receives a confirmed transaction', async ({ mockApi: page }) => {
     await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
     await openCity(page);
     await connectWalletByConnectorId(page, 'solana-phantom');
     await waitForBlockchainRuntime(page, ['SolanaChainDataLoader', 'SolanaParcelClient', 'solanaWeb3']);
     await stubSolanaParcelMint(page, { parcelProgramId: PARCEL_PROGRAM });
 
-    // The metadata service is the app's external asset boundary. RPC instruction creation,
-    // wallet signing, sending and confirmation remain on their normal production code paths.
-    await page.route('**/metadata', route => route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ metadataUrl: 'ipfs://e2e-parcel-metadata.json' }),
-    }));
+    // Nothing is uploaded: the anchor's URI is the parcel's page. RPC instruction creation, wallet
+    // signing, sending and confirmation remain on their normal production code paths.
+    const uploads: string[] = [];
+    page.on('request', request => { if (/\/metadata(\?|$)/.test(new URL(request.url()).pathname)) uploads.push(request.url()); });
     await openParcel(page, 'tools');
     const mint = page.locator('#mintAndClaimButton');
     await expect(mint).toBeEnabled();
@@ -140,19 +137,20 @@ test.describe('Proposal actions @features', () => {
     await expect(mint).toBeEnabled();
     await mint.click();
     await expect(mintDialog).toBeVisible();
-    await mintDialog.getByRole('button', { name: 'Mint', exact: true }).click();
+    await mintDialog.getByRole('button', { name: 'Anchor on chain', exact: true }).click();
 
     const success = page.locator('#parcel-mint-success-modal');
     await expect(success).toBeVisible({ timeout: 15000 });
-    await expect(success).toContainText('Parcel has been minted');
+    await expect(success).toContainText('The parcel is anchored');
+    expect(uploads).toEqual([]);
     await expect(success.locator('a[href*="explorer.solana.com/tx/"]')).toBeVisible();
     await success.getByRole('button', { name: 'OK', exact: true }).click();
     await expect(success).toBeHidden();
   });
 
-  // The anchor mint (solana/parcel-mint.js) asks the chain first: an anchor already there is reported
-  // as minted with no transaction, and the cached status is refreshed from what the chain said.
-  test('mintParcelSolana short-circuits when the parcel anchor is already minted and caches the result', async ({ mockApi: page }) => {
+  // Anchoring (solana/parcel-mint.js) asks the chain first: an anchor already there is reported with no
+  // transaction, and the cached status is refreshed from what the chain said.
+  test('SolanaParcelAnchors skips a parcel that is already anchored and caches the result', async ({ mockApi: page }) => {
     await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
     await page.goto('/');
     await waitForMapReady(page);
@@ -170,16 +168,14 @@ test.describe('Proposal actions @features', () => {
       const originalSet = w.SolanaChainDataLoader.setParcelMintStatusCache;
       w.SolanaChainDataLoader.setParcelMintStatusCache = (...args: unknown[]) => { setCalls.push(args); return args; };
       try {
-        const minted = await w.mintParcelSolana('HR-335754-1234', 'ipfs://parcel-image', programId, 'devnet');
+        const minted = await w.SolanaParcelAnchors.anchorParcels(['HR-335754-1234'], { programId, cluster: 'devnet' });
         return { minted, setCalls, sends };
       } finally {
         w.SolanaChainDataLoader.setParcelMintStatusCache = originalSet;
       }
     }, PARCEL_PROGRAM);
 
-    expect(result.minted).toMatchObject({ txHash: null, alreadyMinted: true });
-    expect(typeof result.minted.tokenId).toBe('string');
-    expect(result.minted.tokenId).toBeTruthy();
+    expect(result.minted).toMatchObject({ transactions: [], alreadyAnchored: ['HR-335754-1234'], anchoredParcelIds: ['HR-335754-1234'], skipped: [] });
     // Nothing was sent: the anchor exists.
     expect(result.sends).toEqual([]);
     expect(result.setCalls).toHaveLength(1);

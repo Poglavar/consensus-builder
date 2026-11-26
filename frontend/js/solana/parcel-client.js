@@ -1,5 +1,6 @@
 // Pure client codec for the parcel_nft program (blockchain/solana/idl/parcel_nft.json): the ownerless
-// parcel anchor PDA ["parcel", parcel_id] and the byte-exact mint_parcel instruction. No DOM and no
+// parcel anchor PDA ["parcel", parcel_id], the byte-exact mint_parcel instruction and anchors packed
+// several to a transaction by size. No DOM and no
 // wallet: @solana/web3.js is injected (configure), the browser's vendored build, or the package. UMD
 // like market-client.js: window.SolanaParcelClient in the browser (solana/parcel-mint.js signs with
 // it), module.exports for node.
@@ -119,6 +120,50 @@
         };
     }
 
+    // A legacy transaction holds at most 1232 bytes; signatures included.
+    const MAX_TRANSACTION_BYTES = 1232;
+
+    function transactionBytes(instructions, payer) {
+        const { Transaction, PublicKey } = resolveWeb3();
+        const probe = new Transaction({ feePayer: toKey(payer, 'payer'), recentBlockhash: PublicKey.default.toBase58() });
+        instructions.forEach(instruction => probe.add(instruction));
+        // web3.js refuses to serialize a transaction over the limit; that is "does not fit".
+        try { return probe.serialize({ requireAllSignatures: false, verifySignatures: false }).length; } catch (_) { return Infinity; }
+    }
+
+    // [{ parcelId, metadataUri }] → mint_parcel instructions packed into as few transactions as the size
+    // limit allows (no program change: one instruction per anchor, several per transaction), in the
+    // order given: [[{ parcelId, parcel, instruction }, …], …]. Each instruction creates one account and
+    // brings its own compute budget, so the size limit is the only bound.
+    function packMintParcelInstructions(parcels, { payer, programId = constants.PARCEL_NFT_PROGRAM_ID, maxBytes = MAX_TRANSACTION_BYTES } = {}) {
+        const batches = [];
+        let current = [];
+        for (const { parcelId, metadataUri } of parcels || []) {
+            const { parcel, instruction } = buildMintParcelIx({ parcelId, metadataUri, payer, programId });
+            const entry = { parcelId, parcel, instruction };
+            const next = [...current, entry];
+            if (transactionBytes(next.map(row => row.instruction), payer) <= maxBytes) { current = next; continue; }
+            if (!current.length) throw Object.assign(new Error(`Parcel ${parcelId} and its URI do not fit one transaction.`), { code: 'anchor-too-large' });
+            batches.push(current);
+            current = [entry];
+            if (transactionBytes([instruction], payer) > maxBytes) throw Object.assign(new Error(`Parcel ${parcelId} and its URI do not fit one transaction.`), { code: 'anchor-too-large' });
+        }
+        if (current.length) batches.push(current);
+        return batches;
+    }
+
+    // The anchor ids among `parcelIds` that have no account yet, read in getMultipleAccounts pages of 100.
+    async function missingParcelAnchors(connection, parcelIds, { programId = constants.PARCEL_NFT_PROGRAM_ID, commitment = 'confirmed' } = {}) {
+        const ids = Array.from(new Set((parcelIds || []).map(String)));
+        const missing = [];
+        for (let start = 0; start < ids.length; start += 100) {
+            const page = ids.slice(start, start + 100);
+            const infos = await connection.getMultipleAccountsInfo(page.map(id => getParcelPda(id, programId)[0]), commitment);
+            page.forEach((id, index) => { if (!infos[index]) missing.push(id); });
+        }
+        return missing;
+    }
+
     function hashBytes(identityHashHex) {
         if (typeof identityHashHex !== 'string' || !/^[0-9a-f]{64}$/i.test(identityHashHex)) throw new Error('identityHash must be 64 hex characters');
         return Uint8Array.from(identityHashHex.match(/../g).map(pair => parseInt(pair, 16)));
@@ -150,6 +195,7 @@
         if (!hash.every((byte, i) => data[i + 8] === byte) || data[40] !== bump) throw new Error('invalid apartment anchor identity hash or bump');
         return { address: address.toBase58(), identityHash: identityHashHex.toLowerCase(), bump };
     }
-    api = { constants, IX_DISCRIMINATORS, configure, encodeMintParcelData, getParcelPda, buildMintParcelIx, getApartmentPda, buildMintApartmentIx: buildMintApartmentInstruction, readApartmentAnchor };
+    api = { constants, IX_DISCRIMINATORS, MAX_TRANSACTION_BYTES, configure, encodeMintParcelData, getParcelPda, buildMintParcelIx,
+        packMintParcelInstructions, missingParcelAnchors, getApartmentPda, buildMintApartmentIx: buildMintApartmentInstruction, readApartmentAnchor };
     return api;
 });

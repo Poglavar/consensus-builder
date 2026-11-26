@@ -192,26 +192,49 @@
             if (options && typeof options.onStatus === 'function') options.onStatus({ state, ...extra });
         }
 
-        // Simulate, sign, send, confirm. A simulation failure names the program's error.
+        // Simulate, sign, send, confirm. A simulation failure names the program's error. `options.before`
+        // ([{ instructions, onConfirmed }]) are transactions sent and confirmed first, such as the
+        // agreement's parcel anchors; with a wallet that signs several at once, all of them and this one
+        // take one approval.
         async function send(connection, provider, wallet, clusterName, instructions, options = {}) {
             emitStatus(options, 'preparing');
             const latest = await connection.getLatestBlockhash('confirmed');
-            const transaction = new win.solanaWeb3.Transaction({ feePayer: wallet, recentBlockhash: latest.blockhash });
-            instructions.forEach(instruction => transaction.add(instruction));
+            const build = ixs => {
+                const built = new win.solanaWeb3.Transaction({ feePayer: wallet, recentBlockhash: latest.blockhash });
+                ixs.forEach(instruction => built.add(instruction));
+                return built;
+            };
+            const before = options.before || [];
+            const transaction = build(instructions);
+            const all = [...before.map(group => build(group.instructions)), transaction];
             // A legacy Transaction goes to web3.js 1.x's (transaction, signers?) overload: a config
             // object there throws before anything is signed. No signers: an unsigned simulation.
-            const simulation = await connection.simulateTransaction(transaction);
-            options.signal?.throwIfAborted();
-            if (simulation && simulation.value && simulation.value.err) {
-                const logs = simulation.value.logs || [];
-                const program = anchorError(logs);
-                console.warn(`[${new Date().toISOString()}] [AgreementBridge] simulation failed`, simulation.value.err, logs);
-                throw codedError(t('agreement.chain.errors.simulationFailed', 'The transaction would fail: {{reason}}',
-                    { reason: program ? program.message : JSON.stringify(simulation.value.err) }), 'simulation-failed',
-                { logs, simulationError: simulation.value.err, programError: program ? program.code : null });
+            for (const candidate of all) {
+                const simulation = await connection.simulateTransaction(candidate);
+                options.signal?.throwIfAborted();
+                if (simulation && simulation.value && simulation.value.err) {
+                    const logs = simulation.value.logs || [];
+                    const program = anchorError(logs);
+                    console.warn(`[${new Date().toISOString()}] [AgreementBridge] simulation failed`, simulation.value.err, logs);
+                    throw codedError(t('agreement.chain.errors.simulationFailed', 'The transaction would fail: {{reason}}',
+                        { reason: program ? program.message : JSON.stringify(simulation.value.err) }), 'simulation-failed',
+                    { logs, simulationError: simulation.value.err, programError: program ? program.code : null });
+                }
             }
             emitStatus(options, 'awaiting_signature');
-            const signed = await provider.signTransaction(transaction);
+            const presigned = all.length > 1 && typeof provider.signAllTransactions === 'function' ? await provider.signAllTransactions(all) : null;
+            options.signal?.throwIfAborted();
+            for (let index = 0; index < before.length; index += 1) {
+                const signedBefore = presigned ? presigned[index] : await provider.signTransaction(all[index]);
+                const beforeSignature = await connection.sendRawTransaction(signedBefore.serialize(), { skipPreflight: false });
+                const confirmedBefore = await connection.confirmTransaction({ ...latest, signature: beforeSignature }, 'confirmed');
+                if (confirmedBefore && confirmedBefore.value && confirmedBefore.value.err) {
+                    throw codedError(t('agreement.chain.errors.confirmationFailed', 'The transaction failed on chain.'), 'confirmation-failed',
+                        { signature: beforeSignature, explorerUrl: explorerUrl({ signature: beforeSignature, cluster: clusterName }) });
+                }
+                before[index].onConfirmed?.(beforeSignature);
+            }
+            const signed = presigned ? presigned[all.length - 1] : await provider.signTransaction(transaction);
             options.signal?.throwIfAborted();
             const signature = await connection.sendRawTransaction(signed.serialize(), { skipPreflight: false });
             const link = explorerUrl({ signature, cluster: clusterName });
@@ -376,8 +399,30 @@
          * the program refuses it. `requiredLamports` is the escrow
          * execution needs (0: none); `payout` receives the whole escrow at execution. An account
          * already at the address is this agreement minted before and is returned with signature null.
-         * @returns {Promise<{ signature, account, cluster, explorerUrl }>}
+         * Before the create, every input parcel without an anchor is anchored (inputAnchors), in the same
+         * wallet approval where the wallet signs several transactions at once.
+         * @returns {Promise<{ signature, account, cluster, explorerUrl, inputAnchors }>}
          */
+        // The agreement's input parcels that have no anchor yet, as transactions sent before the create
+        // (docs/blockchain-flows.md Flow 3): several anchors each, with the parcel's page as the URI
+        // (solana/parcel-mint.js). `report` lists the parcels anchored now, before, and the ids that
+        // cannot seed an anchor (reported, not fatal).
+        async function inputAnchors(connection, wallet, agreement, onStatus) {
+            const parcelIds = (agreement.inputs?.parcels || []).map(parcel => parcel.parcelId);
+            const anchorsApi = win.SolanaParcelAnchors;
+            if (!parcelIds.length) return { before: [], report: { anchored: [], alreadyAnchored: [], skipped: [] } };
+            if (!anchorsApi) throw codedError(t('agreement.chain.errors.web3Unavailable', 'The Solana library could not be loaded.'), 'web3-unavailable');
+            const { groups, alreadyAnchored, skipped } = await anchorsApi.instructionGroups({ connection, wallet, parcelIds });
+            const report = { anchored: [], alreadyAnchored, skipped };
+            const total = groups.reduce((sum, group) => sum + group.parcelIds.length, 0);
+            const before = groups.map(group => ({ instructions: group.instructions, onConfirmed: signature => {
+                report.anchored.push(...group.parcelIds.map(parcelId => ({ parcelId, signature })));
+                emitStatus({ onStatus }, 'anchoring', { detail: { done: report.anchored.length, total } });
+            } }));
+            if (skipped.length) log(`input parcels that cannot be anchored: ${skipped.map(row => row.parcelId).join(', ')}`);
+            return { before, report };
+        }
+
         async function mint({ agreement, lenses, lensThreshold, deadline, requiredLamports = 0n, payout, onStatus } = {}) {
             const api = await dependencies();
             const { cid, sponsor } = publishedOf(agreement);
@@ -436,9 +481,10 @@
                 log(`${cid} is already minted at ${ref.account} (${clusterName})`);
                 return { signature: null, account: ref.account, cluster: clusterName, explorerUrl: explorerUrl(ref) };
             }
-            const sent = await send(connection, provider, wallet, clusterName, [built.instruction], { onStatus });
+            const anchors = await inputAnchors(connection, wallet, agreement, onStatus);
+            const sent = await send(connection, provider, wallet, clusterName, [built.instruction], { onStatus, before: anchors.before });
             log(`minted ${cid} at ${ref.account} (${clusterName})`, { signature: sent.signature, lenses, lensThreshold, requiredFunding: String(requiredFunding), deadline: deadlineSeconds, requiredLamports: String(requiredLamports) });
-            return result(sent, ref);
+            return { ...result(sent, ref), inputAnchors: anchors.report };
         }
 
         // The sponsor adds `lamports` (BigInt) to the escrow.

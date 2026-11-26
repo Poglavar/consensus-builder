@@ -249,6 +249,9 @@ export async function stubSolanaParcelMint(page: Page, options: MockSolanaParcel
         blockhash: 'EkSnNWid2cvwEVnVx9aBqpiCpY1QoUW63D2Hp31e4gwJ',
         lastValidBlockHeight: 1000,
       }),
+      // Anchor reads (SolanaParcelClient.missingParcelAnchors): every PDA exists when alreadyMinted.
+      getMultipleAccountsInfo: async (keys: unknown[]) => keys.map(() => (stubOptions.alreadyMinted ? { data: new Uint8Array(0) } : null)),
+      simulateTransaction: async () => ({ value: { err: null, logs: [] } }),
       sendRawTransaction: async () => signature,
       confirmTransaction: async () => ({ value: { err: null } }),
     };

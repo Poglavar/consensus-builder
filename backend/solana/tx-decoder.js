@@ -474,7 +474,7 @@ function innerTokenAmount(primary, rawInner, ctx) {
 }
 
 function buildSummary(primary, ctx) {
-    const { book, tokenAccounts, feePayerAddress, rawInner, idlsByAddress, signature } = ctx;
+    const { book, tokenAccounts, feePayerAddress, rawInner, idlsByAddress, signature, topLevel = [] } = ctx;
     if (!primary) return `transaction ${shortAddress(signature) ?? 'unknown'}`;
 
     const name = primary.program.name;
@@ -590,12 +590,17 @@ function buildSummary(primary, ctx) {
         if (action === 'void_pledge') return `a pledge was voided${onAgreement}`;
     }
 
+    // A parcel anchor is ownerless: its payer anchors it and gains nothing. Anchors are created several
+    // per transaction, so the sentence names the first and counts the rest.
     if (name === 'parcel_nft') {
-        const owner = label(actorAddress(primary, 'owner'));
-        if (action === 'mint_parcel') return `${owner} minted parcel ${args.parcel_id ?? '?'}`;
+        if (action === 'mint_parcel') {
+            const payer = label(actorAddress(primary, 'payer'));
+            const others = topLevel.filter((decoded) => decoded !== primary && decoded.program.name === 'parcel_nft' && decoded.action === 'mint_parcel').length;
+            return `${payer} anchored parcel ${args.parcel_id ?? '?'}${others ? ` and ${others} more` : ''}`;
+        }
         if (action === 'set_parcel_metadata_uri') {
             const parcel = accountAddress(primary, 'parcel');
-            return `${owner} updated the metadata uri of parcel ${parcel ? label(parcel) : 'account'}`;
+            return `${label(actorAddress(primary, 'owner'))} updated the metadata uri of parcel ${parcel ? label(parcel) : 'account'}`;
         }
     }
 
@@ -669,7 +674,8 @@ export function decodeParsedTransaction(rpcTx, { book, idls } = {}) {
         feePayerAddress,
         rawInner,
         idlsByAddress,
-        signature
+        signature,
+        topLevel
     });
     if (failed) summary = `${summary} (failed)`;
 

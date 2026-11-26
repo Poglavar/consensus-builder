@@ -52,7 +52,6 @@ const require = createRequire(import.meta.url);
 const agreementClient = require('../../frontend/js/solana/agreement-client.js');
 const agreementRecord = require('../../frontend/js/agreement-record.js');
 const parcelAnchor = require('../../frontend/js/parcels/parcel-anchor.js');
-const turfArea = feature => require('@turf/turf').area(feature);
 agreementClient.configure({ web3: require('@solana/web3.js') });
 
 const DEFAULT_API_BASE = 'https://api.urbangametheory.xyz';
@@ -319,6 +318,18 @@ export function createUrbanGameTheoryTools({
     function index() {
         indexClient ??= impl.createIndexClient({ apiBase, origin: appOrigin, fetchImpl, log });
         return indexClient;
+    }
+
+    // Anchors for `anchorIds` signed by this agent: the parcel's page on the configured app origin as
+    // the URI, several per transaction, existing anchors skipped (cost nothing). Ids that cannot seed an
+    // anchor come back in `skipped` instead of failing the batch.
+    async function anchorTargetsSigned(anchorIds) {
+        const { parcels, skipped } = parcelAnchor.anchorTargets(anchorIds, { base: appOrigin });
+        const { keypair, connection } = signer();
+        const anchors = parcels.length
+            ? await impl.anchorParcels({ connection, payerKeypair: keypair, parcels, sendAndConfirm: impl.sendAndConfirmPolling })
+            : { parcels: [], transactions: 0 };
+        return { ...anchors, skipped, explorer: anchors.parcels.map(row => `https://explorer.solana.com/address/${row.anchor}?cluster=devnet`) };
     }
 
     // The exact canonical bytes a mint references: the agreement, its plan and the plan's designs, each
@@ -686,6 +697,9 @@ export function createUrbanGameTheoryTools({
                 const objects = await mintContentObjects(agreementCid, content);
                 await impl.pinWithPinata({ objects, jwt: env.UGT_PINATA_JWT, fetchImpl });
             }
+            // Every input parcel anchored before the account exists (docs/blockchain-flows.md Flow 3), as the
+            // agreement panel's Mint does; anchored ones cost nothing, an id that cannot seed one is reported.
+            const anchors = await anchorTargetsSigned((content.inputs?.parcels || []).map(parcel => parcel.parcelId));
             const minted = await impl.mintAgreement({
                 connection, sponsorKeypair: keypair, cid: agreementCid, ...mintTermsOf(content), deadline: content.deadline ?? null,
                 lamports: required, openGround: Number(content.inputs?.openGroundM2) > 0,
@@ -694,7 +708,7 @@ export function createUrbanGameTheoryTools({
             const recorded = await index().recordOnchain(agreementCid, {
                 chain: 'solana', cluster: AGREEMENT_CLUSTER, account: minted.account, signature: minted.createSignature
             });
-            return { ...minted, onchain: recorded.onchain ?? null };
+            return { ...minted, onchain: recorded.onchain ?? null, inputAnchors: { parcels: anchors.parcels, skipped: anchors.skipped } };
         },
 
         // Top the escrow up to `targetLamports` as the sponsor; a target already held signs nothing.
@@ -966,24 +980,18 @@ export function createUrbanGameTheoryTools({
             return { agreementCid, account, unitId, qualification: qualification.address, ...await reserve(qualification) };
         },
 
-        // Anchor parcels on parcel_nft as the parcel panel's Mint does: the same anchor id and metadata
-        // (ParcelAnchor), the metadata stored through the same API (POST /metadata), one transaction each.
+        // Anchor parcels on parcel_nft as the parcel panel's "Anchor on chain" does: the same anchor id
+        // (ParcelAnchor.anchorIdOf), the parcel's page on UGT_APP_ORIGIN as its URI, several anchors per
+        // transaction, existing ones skipped. An id that cannot seed an anchor is reported in `skipped`.
         async anchorParcels({ city, parcelSourceId, parcelIds, confirm } = {}) {
             requireLive(confirm);
             const { features } = await companion.parcels({ city, parcelSourceId, parcelIds });
-            const { keypair, connection } = signer();
-            const minter = keypair.publicKey.toBase58();
-            const parcels = [];
-            for (const feature of features) {
+            const anchorIds = features.map(feature => {
                 const anchorId = parcelAnchor.anchorIdOf(feature);
                 if (!anchorId) throw new Error(`parcel ${feature.id ?? '(no id)'} has no anchor id`);
-                const metadata = parcelAnchor.anchorMetadata({ anchorId, minter, calculatedArea: turfArea(feature), geometry: feature.geometry });
-                parcels.push({ anchorId, metadata });
-            }
-            const anchors = await impl.anchorParcels({ connection, payerKeypair: keypair, sendAndConfirm: impl.sendAndConfirmPolling,
-                parcels: parcels.map(row => ({ anchorId: row.anchorId,
-                    metadataUri: async () => (await companion.request('/metadata', {}, { metadata: row.metadata, fileName: `parcel-${row.anchorId}.json` })).metadataUrl })) });
-            return { ...anchors, explorer: anchors.parcels.map(row => `https://explorer.solana.com/address/${row.anchor}?cluster=devnet`) };
+                return anchorId;
+            });
+            return anchorTargetsSigned(anchorIds);
         },
 
         // ---- a published property offer's chain steps (the offer panel's) -------------------------------

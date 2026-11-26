@@ -382,6 +382,28 @@ function agreementTx(instruction, payer = SPONSOR) {
     });
 }
 
+// Parcel anchors are created several per transaction by their payer, who gains nothing: the sentence
+// says anchored, never minted or owned.
+describe('decodeParsedTransaction: parcel anchors (built with the codec)', () => {
+    it('names the payer and the first parcel of a batched anchor transaction', async () => {
+        const { createRequire } = await import('node:module');
+        const web3 = createRequire(import.meta.url)('@solana/web3.js');
+        const parcelClient = createRequire(import.meta.url)('../../frontend/js/solana/parcel-client.js').configure({ web3 });
+        const parcels = ['HR-335754-1/1', 'HR-335754-2/1', 'HR-335754-3/1'].map(parcelId => parcelClient.buildMintParcelIx({
+            parcelId, metadataUri: `https://urbangametheory.xyz/parcel/${parcelId}`, payer: SPONSOR }).instruction);
+        const keys = new Map([[SPONSOR, key(SPONSOR, { signer: true, writable: true })]]);
+        for (const ix of parcels) for (const meta of ix.keys) {
+            const address = meta.pubkey.toBase58();
+            if (!keys.has(address)) keys.set(address, key(address, { signer: meta.isSigner, writable: meta.isWritable }));
+        }
+        keys.set(parcelClient.constants.PARCEL_NFT_PROGRAM_ID, key(parcelClient.constants.PARCEL_NFT_PROGRAM_ID));
+        const decoded = decode(buildTx({ accountKeys: [...keys.values()], instructions: parcels.map(ix => ({
+            accounts: ix.keys.map(meta => meta.pubkey.toBase58()), data: encodeBase58(Buffer.from(ix.data)), programId: ix.programId.toBase58(), stackHeight: 1 })) }));
+        expect(decoded.actions).toEqual(['mint_parcel']);
+        expect(decoded.summary).toBe('agent densifier-01 anchored parcel HR-335754-1/1 and 2 more');
+    });
+});
+
 describe('decodeParsedTransaction: agreement instructions (built with the codec)', () => {
     const roles = (decoded) => decoded.instructions[0].accounts.map((account) => [account.role, account.address, account.signer, account.writable]);
 

@@ -121,7 +121,7 @@ SOLANA_RPC_URL=https://api.devnet.solana.com
 | `ugt_inspect_verified_fact` | read | The x402 challenge of an agreement's verified fact, without paying. |
 | `ugt_publish_design` | write | Index a `design/v1` object. |
 | `ugt_propose_agreement` | write | Index an `agreement/v1` object, with any linked designs the index does not hold yet. |
-| `ugt_mint_agreement` | signed | As the sponsor of a binding owners' or crowdfunding agreement: create the account with its lens members, threshold and any funding target, fund its escrow, then record it in the index. |
+| `ugt_mint_agreement` | signed | As the sponsor of a binding owners' or crowdfunding agreement: anchor its input parcels that have no anchor yet, create the account with its lens members, threshold and any funding target, fund its escrow, then record it in the index. |
 | `ugt_confirm_funding` | signed | Anyone: record on chain that a crowdfunding agreement's credited contributions reached its funding target (no lens involved). |
 | `ugt_fund_agreement` | signed | As the sponsor: top the escrow up to a target. |
 | `ugt_bet_on_agreement` | signed, USDC | Open the agreement's market if needed and stake YES or NO. |
@@ -138,7 +138,7 @@ SOLANA_RPC_URL=https://api.devnet.solana.com
 | `ugt_refund_contributions` | signed | Take back your contributions (apartment deposits included) once the agreement is cancelled or expired. |
 | `ugt_list_apartments` | signed | As an apartment round's developer: list its apartments on chain while the round is open. |
 | `ugt_reserve_apartment` | signed | As a buyer the round's lens qualified: pay one apartment's deposit and reserve it. |
-| `ugt_anchor_parcels` | signed | Create parcels' ownerless anchors on Solana, as the parcel panel's Mint does. |
+| `ugt_anchor_parcels` | signed | Create parcels' ownerless anchors on Solana, as the parcel panel's "Anchor on chain" does: the URI is the parcel's page, several anchors go in one transaction, existing ones cost nothing. |
 | `ugt_mint_property_offer`, `ugt_take_property_offer`, `ugt_fund_property_offer`, `ugt_release_property_offer`, `ugt_cancel_property_offer`, `ugt_expire_property_offer` | signed | A published property offer's chain steps, as the offer panel takes them. |
 | `ugt_resolve_external_market`, `ugt_claim_external_market` | signed | The same for court-evidence markets (below). |
 
