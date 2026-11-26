@@ -28,8 +28,9 @@ export function summarizeExecutionPlan(entries, policy = executionPolicy()) {
             plans.push({
                 persona: entry.persona.name,
                 pickId: pick.pickId,
-                // Conservative: create+fund, seed-wallet top-up, market opening. No sponsor trade.
-                actions: policy.maxMarketSeedUsdc > 0 ? 3 : 1,
+                // Conservative: create+fund, seed-wallet top-up, market opening. No sponsor trade. A
+                // developer's round states its own count (mint, listings, market: developer-round.js).
+                actions: Number.isInteger(pick.signedActions) ? pick.signedActions : policy.maxMarketSeedUsdc > 0 ? 3 : 1,
                 usdc: 0,
                 marketSeedUsdc: policy.maxMarketSeedUsdc > 0 && !entry.run.summary.markets?.[pick.candidateId] ? Number(MARKET_SEED_ATOMIC) / 1e6 : 0
             });
@@ -70,7 +71,7 @@ export function decisionCompletion(picks) {
 // refund). These are pure limits and selection; the chain reads and signing live in
 // lifecycle-actions.js (inspectSettlement / executeSettlement).
 
-const SIGNED_STEPS = new Set(['confirm-funding', 'attest', 'execute', 'release-donations', 'expire', 'resolve', 'claim', 'reclaim']);
+const SIGNED_STEPS = new Set(['confirm-funding', 'confirm-member', 'attest', 'execute', 'release-donations', 'expire', 'resolve', 'claim', 'reclaim']);
 const signedCount = steps => (steps || []).filter(step => SIGNED_STEPS.has(step)).length;
 
 export function settlementPolicy(env = {}) {
@@ -134,7 +135,7 @@ export function settlementsSpent(settlements = {}) {
     let actions = 0;
     let count = 0;
     for (const record of Object.values(settlements || {})) {
-        const signed = [record?.attest, record?.execution, record?.expiry, record?.resolution, record?.claim, record?.reclaim].filter(step => step?.signature).length;
+        const signed = [record?.memberConfirmation, record?.attest, record?.execution, record?.expiry, record?.resolution, record?.claim, record?.reclaim].filter(step => step?.signature).length;
         actions += signed;
         if (signed || record?.approval) count += 1;
     }

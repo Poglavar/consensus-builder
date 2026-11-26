@@ -46,7 +46,10 @@ export function selectSupportAction({ day, persona, agreements, wallet = null, e
                 : 'No open agreement by another actor was available.'
         };
     }
-    const ranked = eligible.map(agreement => ({
+    // support.focusCities: an open agreement in one of these cities is supported first.
+    const focus = persona.support?.focusCities || [];
+    const focused = eligible.filter(agreement => focus.includes(agreement.city));
+    const ranked = (focused.length ? focused : eligible).map(agreement => ({
         agreement,
         rank: stableNumber(`${day}:${persona.name}:${agreement.cid}`)
     })).sort((left, right) => left.rank - right.rank);

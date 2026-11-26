@@ -206,6 +206,21 @@ module.exports = {
   proposerJob('consensus-builder-gentle', 'gentle-01', '15 2-23/3 * * *'),
   societyJob('consensus-builder-skeptic', 'skeptic-02', '50 1-23/2 * * *', { actions: '3', usdc: '0.02' }),
   societyJob('consensus-builder-backer', 'backer-01', '10 1-23/2 * * *', { actions: '3', usdc: '0.02' }),
+  // Added 2026-11-26 (agents/README.md, "Developer rounds and homebuyers"): a developer that opens
+  // crowdfunding rounds with apartments on the Alatau plans (developer-round.js; its settlement has
+  // lifecycle-01 confirm a funded apartment round from its wallet), and three homebuyers that reserve
+  // apartments, contribute to plain rounds and trade apartments in fixed-price offers
+  // (policies/homebuyer.js). A homebuyer's deposit is at most 4 devnet USDC; settling an accepted
+  // offer signs fund and execute.
+  // A round signs its mint, its listings (two transactions for five units) and its market (seed top-up and
+  // opening); each settled round at most five (confirm-funding or the lens member's confirmation, execute,
+  // release, resolve, reclaim): 5 + 3 × 5.
+  { ...proposerJob('consensus-builder-developer', 'developer-01', '25 */6 * * *'),
+    args: '--live --controller algorithm --persona developer-01 --slot auto --api https://api.urbangametheory.xyz',
+    env: { ...proposerJob('', '', '').env, AGENT_DAILY_ACTION_CAP: '20' } },
+  societyJob('consensus-builder-homebuyer-1', 'homebuyer-01', '35 */2 * * *', { actions: '3', usdc: '4' }),
+  societyJob('consensus-builder-homebuyer-2', 'homebuyer-02', '55 1-23/2 * * *', { actions: '3', usdc: '4' }),
+  societyJob('consensus-builder-homebuyer-3', 'homebuyer-03', '5 1-22/3 * * *', { actions: '3', usdc: '4' }),
   {
     // Tops up consensus.solana_transaction (every persona wallet and program in the address book),
     // which the public activity feed and the globe's carousel read; before 2026-10-11 only the daily

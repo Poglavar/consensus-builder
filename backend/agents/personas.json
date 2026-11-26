@@ -47,8 +47,10 @@
           "lima",
           "nairobi",
           "boston",
-          "austin"
+          "austin",
+          "alatau"
         ],
+        "focusCities": ["alatau"],
         "actions": ["pledge", "donate", "stake"],
         "amountUsdc": "0.10"
       }
@@ -76,6 +78,7 @@
       "keypairPath": "~/.config/solana/ugt-preservationist-01.json",
       "policy": {
         "cities": ["*"],
+        "focusCities": ["alatau"],
         "amountUsdc": "0.01"
       }
     },
@@ -86,6 +89,7 @@
       "keypairPath": "~/.config/solana/ugt-speculator-01.json",
       "policy": {
         "cities": ["*"],
+        "focusCities": ["alatau"],
         "amountUsdc": "0.05",
         "minPledgeProbability": 0.6,
         "revokeBelowProbability": 0.5,
@@ -105,7 +109,8 @@
         "kind": "lifecycle",
         "credentialName": "LensMember",
         "identity": "devnet-registry",
-        "operatorTokenEnv": "AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN"
+        "operatorTokenEnv": "AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN",
+        "confirmsFundedRounds": true
       }
     },
     {
@@ -151,6 +156,7 @@
       "keypairPath": "~/.config/solana/ugt-skeptic-02.json",
       "policy": {
         "cities": ["*"],
+        "focusCities": ["alatau"],
         "amountUsdc": "0.02"
       }
     },
@@ -161,6 +167,7 @@
       "keypairPath": "~/.config/solana/ugt-backer-01.json",
       "policy": {
         "cities": ["*"],
+        "focusCities": ["alatau"],
         "amountUsdc": "0.02"
       }
     },
@@ -307,6 +314,50 @@
       "dailyProposals": 1,
       "stakeUsdc": "0.01",
       "agreement": { "deadlineDays": 3, "lamports": "1000000" }
+    },
+    {
+      "name": "developer-01",
+      "role": "developer",
+      "wallet": "HZde4bPhD1NFSDXxgLE2UfMjBCAfXLBm5HpB9Dks4auu",
+      "keypairPath": "~/.config/solana/ugt-developer-01.json",
+      "developer": {
+        "city": "alatau",
+        "plans": [
+          "bafkreign6yfigxrchcmsgzkvwfobaohxhwcibuwv6sxevauizastujd6cy",
+          "bafkreigghsqk3urhxhg7c4orsgrixyumi6g2jjlkoiqcdldf7z4nyrw4i4"
+        ],
+        "projectPrefix": "alatau",
+        "maxOpenRounds": 3,
+        "deadlineDays": 3,
+        "apartmentsPerRound": 5,
+        "plainRoundEvery": 3,
+        "plainTargetUsdc": "2",
+        "priceUsdcPerM2": "0.08",
+        "depositShare": 0.3,
+        "targetShare": 0.45,
+        "lens": "lifecycle-01"
+      }
+    },
+    {
+      "name": "homebuyer-01",
+      "role": "homebuyer",
+      "wallet": "3KcgcFoHeSD7ev64Wq6G1CgmBaec6MRwzHmmqNL4s9o5",
+      "keypairPath": "~/.config/solana/ugt-homebuyer-01.json",
+      "policy": { "cities": ["alatau"], "maxReservations": 2, "maxDepositUsdc": "4", "donationUsdc": "0.5", "offerMinSol": "0.01", "offerMaxSol": "0.03", "offerDays": 3, "offerLens": "lifecycle-01" }
+    },
+    {
+      "name": "homebuyer-02",
+      "role": "homebuyer",
+      "wallet": "5LU4Jvke8A7YCBVT8Wwoo4Lwu2WWoUUGjPbYoMNAEbnP",
+      "keypairPath": "~/.config/solana/ugt-homebuyer-02.json",
+      "policy": { "cities": ["alatau"], "maxReservations": 2, "maxDepositUsdc": "3", "donationUsdc": "0.5", "offerMinSol": "0.01", "offerMaxSol": "0.03", "offerDays": 3, "offerLens": "lifecycle-01", "weights": { "reserve": 3, "offerSell": 1, "offerBuy": 3, "donate": 2 } }
+    },
+    {
+      "name": "homebuyer-03",
+      "role": "homebuyer",
+      "wallet": "7HtSAbKTKZ14Fv3JLr1j3VEXiDHag5RFmeTxGKzsfkr4",
+      "keypairPath": "~/.config/solana/ugt-homebuyer-03.json",
+      "policy": { "cities": ["alatau"], "maxReservations": 1, "maxDepositUsdc": "2.5", "donationUsdc": "0.5", "offerMinSol": "0.01", "offerMaxSol": "0.02", "offerDays": 2, "offerLens": "lifecycle-01", "weights": { "reserve": 2, "offerSell": 3, "offerBuy": 1, "donate": 3 } }
     }
   ]
 }

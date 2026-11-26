@@ -229,6 +229,56 @@ Caps bound one invocation: `AGENT_SOCIETY_ACTION_CAP` (default 4) and `AGENT_SOC
 `--controller llm` lets a model pick one of the policy's options (`society-llm.js`), never anything
 else. History (`policies/history.js`) is keyed by agreement CID.
 
+## Developer rounds and homebuyers
+
+A `developer` persona (`developer-01`) runs on `run.mjs` beside the proposers (`developer-round.js`).
+Each run plans at most one new crowdfunding round ([developer-crowdfunding.md](../../docs/developer-crowdfunding.md))
+while fewer than `maxOpenRounds` of its rounds are open, rotating through its `plans` (the Alatau
+tower and courtyard plans). A round offers `apartmentsPerRound` whole apartments of one residential
+building of the plan, never a unit an earlier round offered. Every `plainRoundEvery`th round is a
+plain contribution round without apartments and without a lens. The building is laid out in node by
+the planner behind X-ray's Suggested layouts (`apartment-units.js`). Each unit gets its X-ray address
+(`design::<cid>::<building index>`, `<level>::<unit>::<fingerprint>`), a price of floor area ×
+`priceUsdcPerM2`, a deposit of `depositShare` of the price and a one-page PDF drawing
+(`apartment-drawing.js`). The target is `targetShare` of the offered deposits, so a round reaches it
+only when most of its units are reserved. The browser lays a building out with more context (live
+parcel pieces, nearby streets, neighbouring buildings, facade bays), so its fingerprint can differ:
+"View apartment in X-ray" may then open the building without selecting the unit.
+
+| stage | what happens | checkpoint |
+|---|---|---|
+| `chosen` | the round candidate: plan, building, units, amounts, lens | `candidates`, `picks` (with `signedActions`) |
+| `proposed` | agreement/v1 (investors, binding, the developer as sponsor, `developer.lens` for an apartment round) built, checkpointed, indexed with its plan | `agreements[round-N]` |
+| `minted` / `recorded` | minted without native escrow (the USDC target is frozen at mint), recorded in the index | `mints`, `onchain` |
+| (listed) | the developer lists every unit (`apartment-actions.js` `listApartments`; the first listing opens the escrow) | `listings` |
+| (market) | the sponsor opens the round's market under the run's seed allowance | `markets` |
+
+Settlement is the proposers' phase. A plain round goes confirm-funding, execute, release-donations.
+An apartment round needs its lens: a lens-member persona with `service.confirmsFundedRounds` whose key
+file is on the host (`lifecycle-01`) confirms it from its own wallet once the target is reached
+(`confirm-member`: `chain-actions.js` `confirmAsLensMember` confirms the target, records its decision,
+executes and releases the deposits to the developer in one transaction). A round past its deadline
+expires; its buyers take their deposits back. Then resolve and reclaim the market seed as for any agreement.
+
+`homebuyer` personas (`homebuyer-01…03`) run on `society-run.mjs` with `policies/homebuyer.js`.
+`homebuyer-chain.js` gathers the developer rounds of their `policy.cities` with their apartment
+inventory, their own deposits in rounds that ended unexecuted, and the cities' apartment offers with
+their accounts. Each turn takes one action. Obligations come first, in this order: take back
+deposits (`refundMyDonations`), fund and release an accepted offer it buys (`settle-offer`), accept
+another agent's open offer it can take (`accept-offer`). Otherwise it makes one seed-stable, weighted
+choice: reserve an available apartment (`reserve-apartment`, one per round, at most
+`maxReservations` in open rounds, deposits up to `maxDepositUsdc`), list a held apartment for resale
+(`make-offer` sell), bid on an apartment another wallet holds (`make-offer` buy) or contribute
+`donationUsdc` to a plain round (`donate`). Offers are priced in SOL between `offerMinSol` and
+`offerMaxSol`, run `offerDays` and name `offerLens`. The lens member of the round or offer qualifies
+the bot counterparty through its operator token (the variable its persona's `service.operatorTokenEnv`
+names), as the lens operator would for a person's qualification request. The chain steps are the
+shared signers: `apartment-actions.js`, `chain-actions.js` and `property-offer-signer.js`.
+
+The bettors and the supporter read every city but act on `policy.focusCities` / `support.focusCities`
+(`alatau`) first. A speculator pledges only behind a market at ≥ `minPledgeProbability` YES, so it
+joins an Alatau round once others have moved its market.
+
 ## Persona config (`personas.json`)
 
 | field | meaning |
@@ -243,8 +293,9 @@ else. History (`policies/history.js`) is keyed by agreement CID.
 | `agreement` | proposers: `{ deadlineDays, lamports }`: each binding agreement's deadline (days after it is built; unexecuted by then it expires) and the escrow it is funded with at mint and execution requires, paid back to the sponsor at execution (`"0"` for none) |
 | `stakeUsdc` | proposers: the YES stake on each own agreement's market (`"0"` skips the stage) |
 | `support` | supporters: cities, allowed action types and per-action USDC amount |
-| `service` | lens members: `port`, `url`, `kind`, `priceUsdc`, `credentialName`, `identity`, optional `operatorTokenEnv` |
-| `policy` | society roles: `cities` plus the policy module's parameters |
+| `service` | lens members: `port`, `url`, `kind`, `priceUsdc`, `credentialName`, `identity`, optional `operatorTokenEnv`, optional `confirmsFundedRounds` (the runner may confirm a funded crowdfunding round with this member's key) |
+| `policy` | society roles: `cities`, optional `focusCities` (acted on first), plus the policy module's parameters |
+| `developer` | developers: `city`, `plans` (named plan CIDs), `projectPrefix`, `maxOpenRounds`, `deadlineDays`, `apartmentsPerRound` (1–8), `plainRoundEvery`, `plainTargetUsdc`, `priceUsdcPerM2`, `depositShare`, `targetShare`, `lens` (a lens-member persona) |
 
 `heritage` is declared and weighted but contributes **0**: no heritage dataset is wired in.
 

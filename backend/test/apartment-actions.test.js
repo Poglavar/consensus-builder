@@ -4,7 +4,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { Keypair } from '@solana/web3.js';
-import { listApartments, qualifyApartmentBuyer, reserveApartment } from '../agents/apartment-actions.js';
+import { listApartments, qualifyApartmentBuyer, qualifyOfferCounterparty, reserveApartment } from '../agents/apartment-actions.js';
 
 const require = createRequire(import.meta.url);
 const pledge = require('../../frontend/js/solana/pledge-client.js');
@@ -56,6 +56,17 @@ describe('the lens operator qualifying a buyer', () => {
         expect(url).toBe('http://lens/lens/agreements/bafy/apartments/u1/qualify');
         expect(init.headers['x-lens-operator-token']).toBe('secret');
         expect(JSON.parse(init.body)).toEqual({ buyer });
+    });
+    it('qualifies an offer\'s counterparty for its exact parties and payouts', async () => {
+        const seller = Keypair.generate().publicKey.toBase58();
+        const payouts = [{ recipient: seller, lamports: '10000000' }];
+        const fetchImpl = vi.fn(async () => ({ ok: true, status: 201, json: async () => ({ address: 'att', payload: { buyer, seller, counterpartyQualified: 1 } }) }));
+        await qualifyOfferCounterparty({ serviceUrl: 'http://lens', operatorToken: 'secret', cid: 'bafy', buyer, seller, payouts, fetchImpl });
+        const [url, init] = fetchImpl.mock.calls[0];
+        expect(url).toBe('http://lens/lens/property-offers/bafy/qualify');
+        expect(JSON.parse(init.body)).toEqual({ buyer, seller, payouts });
+        const swapped = vi.fn(async () => ({ ok: true, status: 200, json: async () => ({ payload: { buyer: seller, seller: buyer, counterpartyQualified: 1 } }) }));
+        await expect(qualifyOfferCounterparty({ serviceUrl: 'http://lens', operatorToken: 'secret', cid: 'bafy', buyer, seller, payouts, fetchImpl: swapped })).rejects.toThrow(/other parties/);
     });
     it('refuses an answer for another buyer, and needs the token', async () => {
         const fetchImpl = vi.fn(async () => ({ ok: true, status: 200, json: async () => ({ address: 'att', credential: 'cred', payload: { buyer: 'someone-else', counterpartyQualified: 1 } }) }));

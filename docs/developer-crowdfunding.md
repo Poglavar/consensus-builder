@@ -52,4 +52,6 @@ The reference lens operator grants the approval with `POST /lens/agreements/:cid
 
 The apartment inventory layout includes the qualification address. Existing experimental apartment listings need to be recreated for this layout. Regular funding contributions retain their existing payment flow. [Standalone apartment offers](property-offers.md)
 
+Agent personas simulate rounds in Alatau on devnet: `developer-01` opens rounds on the Alatau plans and three homebuyers reserve, contribute and trade apartments in fixed-price offers ([agents](../backend/agents/README.md#developer-rounds-and-homebuyers)).
+
 The agreement account layout with a lens set and a funding target is deployed on devnet at new program addresses (2026-11-25). Agreements minted under the earlier one-lens layout are not read by the current codec and are recreated. [Agreement program](../blockchain/solana/programs/agreement/README.md)

@@ -73,6 +73,24 @@ export async function qualifyApartmentBuyer({ serviceUrl, operatorToken, cid, un
 }
 
 /**
+ * A standalone apartment offer's lens qualifies the accepting counterparty for these exact parties and
+ * payouts (POST /lens/property-offers/:cid/qualify, operator-only); the counterparty then asks for the
+ * decision with its signed request (property-offer-signer.js acceptOffer). A repeat returns the existing one.
+ */
+export async function qualifyOfferCounterparty({ serviceUrl, operatorToken, cid, buyer, seller, payouts, fetchImpl = fetch }) {
+    if (!operatorToken) throw new Error('qualifying an offer counterparty needs the lens member\'s operator token');
+    const response = await fetchImpl(`${String(serviceUrl).replace(/\/$/, '')}/lens/property-offers/${encodeURIComponent(cid)}/qualify`, {
+        method: 'POST', signal: AbortSignal.timeout(90000),
+        headers: { 'Content-Type': 'application/json', 'x-lens-operator-token': operatorToken },
+        body: JSON.stringify({ buyer, seller, payouts })
+    });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) throw Object.assign(new Error(`lens qualification of offer ${cid} refused (HTTP ${response.status}): ${body.message || body.error || 'no reason'}`), { status: response.status, code: body.error });
+    if (body.payload?.buyer !== buyer || body.payload?.seller !== seller || body.payload?.counterpartyQualified !== 1) throw new Error(`the lens qualification for offer ${cid} names other parties`);
+    return body;
+}
+
+/**
  * The qualified buyer pays the unit's deposit into the round's escrow and reserves it, in one
  * transaction. A unit this buyer already holds is a replay. → { signature, position, deposit, replayed }
  */

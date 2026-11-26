@@ -17,12 +17,12 @@ const app = apps.find(item => item.name === 'consensus-builder-agents');
 describe('algorithmic agent schedule', () => {
     it('lets every proposer seed its own land and leaves its action cap room for its pick and its settlements', () => {
         const personas = JSON.parse(fs.readFileSync(new URL('../agents/personas.json', import.meta.url), 'utf8')).personas;
-        const proposers = apps.filter(item => item.script === 'agents/run.mjs');
+        const proposers = apps.filter(item => item.script === 'agents/run.mjs' && item.name !== 'consensus-builder-developer');
         expect(proposers.map(item => item.name).sort()).toEqual(['consensus-builder-affordabot', 'consensus-builder-agents', 'consensus-builder-builder', 'consensus-builder-gentle']);
         // A settled agreement signs at most five transactions: attest, execute or expire, resolve, claim, reclaim.
         // A proposer mints binding owners' agreements, which carry no funding target and no donation
         // escrow, so the crowdfunding steps (confirm-funding, release-donations) never apply to them.
-        const crowdfundingOnly = ['confirm-funding', 'release-donations'];
+        const crowdfundingOnly = ['confirm-funding', 'confirm-member', 'release-donations'];
         const perSettlement = SIGNED_SETTLEMENT_STEPS.filter(step => !crowdfundingOnly.includes(step)).length - 1;
         expect(perSettlement).toBe(5);
         for (const proposer of proposers) {
@@ -47,7 +47,7 @@ describe('algorithmic agent schedule', () => {
     });
     it('enables bounded devnet fee funding for all configured actor and lens jobs', () => {
         const actors = apps.filter(item => /^agents\/(run|support-run|society-run|lens-member-run)\.mjs$/.test(item.script));
-        expect(actors).toHaveLength(11);
+        expect(actors).toHaveLength(15);
         for (const actor of actors) {
             expect(actor.env.AGENT_SOL_FUNDING_ENABLED).toBe('1');
             expect(actor.env.AGENT_USDC_FUNDING_ENABLED).toBe('1');
@@ -165,6 +165,29 @@ describe('algorithmic agent schedule', () => {
             expect(personas.find(item => item.name === persona)).toMatchObject({ role: 'proposer', keypairPath: `~/.config/solana/ugt-${persona}.json` });
         }
         expect(personas.find(item => item.name === 'gentle-01').areas).toEqual([expect.objectContaining({ mode: 'contest' })]);
+    });
+
+    it('schedules the developer on the proposers\' runner and the homebuyers on the society runner, with deposits within their cap', () => {
+        const personas = JSON.parse(fs.readFileSync(new URL('../agents/personas.json', import.meta.url), 'utf8')).personas;
+        const developer = apps.find(item => item.name === 'consensus-builder-developer');
+        expect(developer).toMatchObject({ script: 'agents/run.mjs', autorestart: false, cron_restart: '25 */6 * * *',
+            env: { AGENT_MARKET_SEED_USDC_CAP: '3.5', SOLANA_RPC_MIN_INTERVAL_MS: '1250' } });
+        expect(developer.args).toContain('--persona developer-01');
+        expect(developer.args).not.toContain('--seed-owners');
+        const persona = personas.find(item => item.name === 'developer-01');
+        expect(persona).toMatchObject({ role: 'developer', keypairPath: '~/.config/solana/ugt-developer-01.json', developer: { city: 'alatau', lens: 'lifecycle-01' } });
+        // A round's mint, its listings and its market, plus three settled rounds of at most five signed steps each.
+        const policy = executionPolicy(developer.env);
+        expect(policy.maxActions).toBeGreaterThanOrEqual(1 + Math.ceil(persona.developer.apartmentsPerRound / 4) + 2 + 3 * 5);
+        expect(personas.find(item => item.name === 'lifecycle-01').service.confirmsFundedRounds).toBe(true);
+        for (const name of ['homebuyer-01', 'homebuyer-02', 'homebuyer-03']) {
+            const entry = apps.find(item => item.args?.includes(`--persona ${name}`));
+            expect(entry).toMatchObject({ script: 'agents/society-run.mjs', autorestart: false, env: { SOLANA_RPC_MIN_INTERVAL_MS: '1250' } });
+            const homebuyer = personas.find(item => item.name === name);
+            expect(homebuyer).toMatchObject({ role: 'homebuyer', policy: { cities: ['alatau'], offerLens: 'lifecycle-01' } });
+            expect(Number(homebuyer.policy.maxDepositUsdc)).toBeLessThanOrEqual(Number(entry.env.AGENT_SOCIETY_USDC_CAP));
+            expect(Number(entry.env.AGENT_SOCIETY_ACTION_CAP)).toBeGreaterThanOrEqual(2);
+        }
     });
 
     it('refreshes the transaction store the activity feed reads every 20 minutes', () => {

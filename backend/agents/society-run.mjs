@@ -37,6 +37,7 @@ import { sendTelegram } from './telegram.js';
 import { isEntrypoint } from './entrypoint.js';
 import { discoverAgreements, isMinted, readAgreementStatuses } from './discovery.js';
 import { createIndexClient } from './publication-client.js';
+import { executeHomeAction, gatherHomes, HOME_ACTIONS, homeActivityEntity, homeActivityMessage } from './homebuyer-chain.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -193,11 +194,24 @@ async function gatherInputs({ index, persona, needs, connection, wallet }) {
             if (needs.yesPositions && held?.yes?.amount > 0n) chain.yesPositionCids.push(agreement.cid);
         });
         if (needs.pledges) {
+            // One batched read of every open agreement's commitment PDA, checked as readPledgeCommitment checks it.
             const open = minted.filter(agreement => isOpen(agreement));
-            await Promise.all(open.map(async agreement => {
-                const commitment = await supportClient.readPledgeCommitment(connection, agreement.account, owner);
-                if (commitment) chain.pledges[agreement.cid] = { status: PLEDGE_STATUS[commitment.status] || `status-${commitment.status}` };
-            }));
+            const expected = open.map(agreement => {
+                const book = supportClient.getPledgeBookPda(agreement.account)[0];
+                return { book: book.toBase58(), proposal: agreement.account, address: supportClient.getPledgeCommitmentPda(book, owner)[0] };
+            });
+            const infos = await readAccounts(connection, expected.map(item => item.address));
+            const programId = supportClient.constants.PROGRAM_ID;
+            open.forEach((agreement, i) => {
+                const info = infos[i];
+                if (!info?.data) return;
+                if (info.owner?.toBase58?.() !== programId) throw new Error('Support account belongs to another program.');
+                const commitment = supportClient.decodePledgeCommitment(info.data);
+                if (commitment.book !== expected[i].book || commitment.proposal !== expected[i].proposal || commitment.owner !== owner.toBase58()) {
+                    throw new Error(`pledge commitment of ${agreement.cid} names another book, agreement or owner`);
+                }
+                chain.pledges[agreement.cid] = { status: PLEDGE_STATUS[commitment.status] || `status-${commitment.status}` };
+            });
         }
     }
     let recordFailures = 0;
@@ -226,9 +240,14 @@ async function gatherInputs({ index, persona, needs, connection, wallet }) {
 const ADAPTERS = { fundBotAction, buyAgreementShares, sellAgreementShares, readAgreementMarket, ensurePledgeBookAndSet, revokePledge, resolveAgreementMarket, claimAgreementMarket };
 
 /** Sign one society action. `adapters` replaces the chain calls in tests. */
-export async function execute({ action, connection, keypair, caps, pool, persona, runId, adapters = {} }) {
+export async function execute({ action, connection, keypair, caps, pool, persona, runId, adapters = {}, homes = null }) {
     const act = { ...ADAPTERS, ...adapters };
     if (action.usdc > caps.maxUsdc + 1e-9) throw new Error(`${action.type} of ${action.amount} USDC exceeds AGENT_SOCIETY_USDC_CAP ${caps.maxUsdc}`);
+    // A homebuyer's rounds and apartment offers (policies/homebuyer.js, homebuyer-chain.js).
+    if (HOME_ACTIONS.has(action.type)) {
+        return (act.executeHomeAction || executeHomeAction)({ action, connection, keypair, pool, persona, ...homes,
+            maxUsdcAtomic: usdcToAtomic(String(caps.maxUsdc)), sendAndConfirm: sendAndConfirmPolling });
+    }
     if (action.type === 'stake' && (action.side === 'yes' || action.side === 'no')) {
         const context = await act.readAgreementMarket(connection, action.account);
         if (!context.market) throw Object.assign(new Error('The sponsor has not opened the canonical agreement market.'), { code: 'MARKET_NOT_OPEN' });
@@ -269,6 +288,7 @@ export async function execute({ action, connection, keypair, caps, pool, persona
 }
 
 export function activityMessage(persona, action) {
+    if (HOME_ACTIONS.has(action.type)) return homeActivityMessage(persona, action);
     if (action.type === 'stake') return `${persona.name} bought ${String(action.side).toUpperCase()} shares with a budget of ${action.amount} USDC on agreement ${action.agreementName}.`;
     if (action.type === 'sell') return `${persona.name} sold ${String(action.side).toUpperCase()} shares on agreement ${action.agreementName}.`;
     if (action.type === 'claim') return `${persona.name} collected ${action.payout} USDC from its ${String(action.side).toUpperCase()} bet on agreement ${action.agreementName}${action.resolveFirst ? ' after settling its market' : ''}.`;
@@ -374,14 +394,19 @@ async function main() {
                 let decision = null;
                 if (!action) {
                     const inputs = await gatherInputs({ index, persona, needs: policy.NEEDS, connection, wallet });
+                    const homes = policy.NEEDS.homes ? await gatherHomes({ index, persona, connection, wallet, apiBase, log }) : null;
                     const runs = live ? await listPersonaRuns(pool, persona.name) : [];
                     const history = societyHistory({ runs, chain: inputs.chain, simulated });
                     // A claim the persona is owed comes first; otherwise the role's own policy decides.
-                    decision = decideTurn(policy.decide, {
+                    const turnInput = {
                         persona, seed: turn.seed, now: Date.now(), wallet,
                         agreements: inputs.agreements, markets: inputs.markets, positions: inputs.positions,
-                        chainStatuses: inputs.chainStatuses, history, budget
-                    });
+                        chainStatuses: inputs.chainStatuses, history, budget, homes
+                    };
+                    // policy.focusCities: the persona acts on those cities' agreements first, then anywhere.
+                    const focus = persona.policy?.focusCities || [];
+                    const focused = focus.length ? decideTurn(policy.decide, { ...turnInput, agreements: inputs.agreements.filter(agreement => focus.includes(agreement.city)) }) : null;
+                    decision = focused?.action ? focused : decideTurn(policy.decide, turnInput);
                     log(`${label}: ${decision.reason}`);
                     if (live) await updateRun(pool, turn.runId, { summaryPatch: {
                         decisionInput: { controller: args.controller, seed: turn.seed, step: decision.step, budget, eligibleCids: decision.eligibleCids, recordFailures: inputs.recordFailures }
@@ -438,8 +463,8 @@ async function main() {
                     source: 'live',
                     action: { type: action.type, agreementCid: action.agreementCid, account: action.account, amount: action.amount, side: action.side || null },
                     execute: async () => ({
-                        ...(await execute({ action, connection, keypair, caps, pool, persona, runId: turn.runId })),
-                        entity: { type: 'agreement', id: action.agreementCid }, message: activityMessage(persona, action)
+                        ...(await execute({ action, connection, keypair, caps, pool, persona, runId: turn.runId, homes: { index, apiBase } })),
+                        entity: HOME_ACTIONS.has(action.type) ? homeActivityEntity(action) : { type: 'agreement', id: action.agreementCid }, message: activityMessage(persona, action)
                     })
                 });
                 const { message: _message, entity: _entity, ...result } = execution.outcome;

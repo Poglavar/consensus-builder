@@ -9,6 +9,7 @@ import { createRequire } from 'node:module';
 import { donationIdBytes } from './donor.js';
 import { AGREEMENT_STATUS, confirmAgreementFunding, executeAgreement, expireAgreement, readAgreementAccount, recordAgreementDecision } from './agreement-minter.js';
 import { readAgreementMarket } from './bettor.js';
+import { confirmAsLensMember } from './chain-actions.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
@@ -306,8 +307,8 @@ export async function claimExternalMarket({
 // expires after its deadline (the escrow returns to the sponsor) and the market resolves NO.
 
 // Steps that sign a chain transaction; decide (a signed message, relayed) and lens (the member's own
-// transaction) cost the proposer none.
-export const SIGNED_SETTLEMENT_STEPS = Object.freeze(['confirm-funding', 'attest', 'execute', 'release-donations', 'expire', 'resolve', 'claim', 'reclaim']);
+// transaction) cost the proposer none. confirm-member is signed by a lens member's own wallet.
+export const SIGNED_SETTLEMENT_STEPS = Object.freeze(['confirm-funding', 'confirm-member', 'attest', 'execute', 'release-donations', 'expire', 'resolve', 'claim', 'reclaim']);
 
 const SETTLEMENT_READERS = {
     readAgreement: (connection, account) => readAgreementAccount(connection, { account }),
@@ -339,7 +340,7 @@ function yesPayout(market, position, outcome) {
  *   lens-not-operated | awaiting-lens | awaiting-contributions | awaiting-funds | due | executed |
  *   cancelled | expired | closed | missing | foreign | retired), `outcome` (YES | NO | null) and `steps`
  */
-export async function inspectSettlement({ connection, owner, agreement, lensKey = null, nowSeconds = Math.floor(Date.now() / 1000), readers = {} } = {}) {
+export async function inspectSettlement({ connection, owner, agreement, lensKey = null, memberKeys = [], nowSeconds = Math.floor(Date.now() / 1000), readers = {} } = {}) {
     if (!connection?.getAccountInfo) throw new Error('a solana connection is required');
     if (!owner) throw new Error('owner is required');
     // Retired experimental content cannot be decided by the current contract. Keep its chain
@@ -377,11 +378,18 @@ export async function inspectSettlement({ connection, owner, agreement, lensKey 
         // This runner can add its own lens member's confirmation; the lens decides an owners' agreement,
         // and on a crowdfunding round the lens attests only conditions it is asked to, never on its own.
         const operated = lensOpen && !investorFunding && !!lensKey && state.lenses.includes(lensKey) && !state.lensConfirmed.includes(lensKey);
+        // A round's lens member whose wallet this runner holds and that confirms funded rounds
+        // (personas.json service.confirmsFundedRounds) states its own decision once the target is reached.
+        const member = lensOpen && investorFunding && fundingReady
+            ? (memberKeys || []).find(key => state.lenses.includes(key) && !state.lensConfirmed.includes(key)) ?? null : null;
         if (lensOpen && !investorFunding && !agreement.soleOwner) return { ...base, ...lensState, state: 'awaiting-owners', outcome: null, steps: [] };
         if (lensOpen && !investorFunding && !operated) return { ...base, ...lensState, state: 'lens-not-operated', outcome: null, steps: [] };
-        if (fundingOpen && fundingReady) steps.push('confirm-funding');
+        // The member's confirmation (chain-actions.js confirmAsLensMember) also confirms the target and,
+        // when it completes the lens, executes and releases, all in its one transaction.
+        if (member) { steps.push('confirm-member'); base.member = member; }
+        else if (fundingOpen && fundingReady) steps.push('confirm-funding');
         if (operated) steps.push('decide', 'lens', 'attest');
-        const lensWillMeet = !lensOpen || (operated && state.lensConfirmed.length + 1 >= state.lensThreshold);
+        const lensWillMeet = !lensOpen || ((operated || Boolean(member)) && state.lensConfirmed.length + 1 >= state.lensThreshold);
         if (!fundingReady) {
             return { ...base, ...lensState, state: 'awaiting-contributions', outcome: null, steps,
                 note: `contributions credit ${credited} of the ${state.requiredFunding} target` };
@@ -390,7 +398,7 @@ export async function inspectSettlement({ connection, owner, agreement, lensKey 
     }
     if (active && !due) {
         if (!funded) return { ...base, state: pending ? 'decidable' : 'awaiting-funds', outcome: null, steps, note: 'the escrow lacks what execution requires' };
-        steps.push('execute');
+        if (!steps.includes('confirm-member')) steps.push('execute');
         label = pending ? 'decidable' : 'decided';
         outcome = 'YES';
     } else if (due) {
@@ -404,7 +412,7 @@ export async function inspectSettlement({ connection, owner, agreement, lensKey 
     }
     // Once an investor agreement executes, the existing permissionless release instruction moves
     // the exact donation-vault balance to the sponsor.  No owner approval is involved.
-    if (investorFunding && (state.status === AGREEMENT_STATUS.executed || (active && !due && funded))) {
+    if (investorFunding && !steps.includes('confirm-member') && (state.status === AGREEMENT_STATUS.executed || (active && !due && funded))) {
         const donation = await read.readDonation(connection, agreement.account);
         if (donation && !donation.released) steps.push('release-donations');
     }
@@ -438,13 +446,13 @@ export async function inspectSettlement({ connection, owner, agreement, lensKey 
  * relayed approval, lens-approval-client.js); the claim is re-derived from the market after resolution.
  */
 export async function executeSettlement({
-    connection, ownerKeypair, item, perform, checkpoint, decide, askLens, record = {}, readers = {}, adapters = {},
+    connection, ownerKeypair, item, perform, checkpoint, decide, askLens, memberSigner = null, record = {}, readers = {}, adapters = {},
     sendAndConfirm = web3.sendAndConfirmTransaction
 } = {}) {
     if (!ownerKeypair?.publicKey) throw new Error('ownerKeypair is required');
     if (typeof perform !== 'function' || typeof checkpoint !== 'function') throw new Error('perform and checkpoint are required');
     const read = { ...SETTLEMENT_READERS, ...readers };
-    const act = { confirmFunding, recordAgreementDecision, executeAgreement, expireAgreement, releaseDonations, resolveAgreementMarket, claimAgreementMarket, reclaimAgreementMarketSeed, ...adapters };
+    const act = { confirmFunding, recordAgreementDecision, executeAgreement, expireAgreement, releaseDonations, resolveAgreementMarket, claimAgreementMarket, reclaimAgreementMarketSeed, confirmAsLensMember, ...adapters };
     const subject = item.account;
     const current = { ...record, cid: item.cid, account: subject, pickId: item.pickId ?? null, sourceRunId: item.sourceRunId ?? null, sourceDay: item.sourceDay ?? null };
     const has = step => item.steps.includes(step);
@@ -463,6 +471,14 @@ export async function executeSettlement({
         if (typeof askLens !== 'function') throw new Error('a lens step needs askLens()');
         const issued = await perform({ type: 'lens-decision', agreementCid: item.cid }, () => askLens(item));
         current.lensDecision = { address: issued.address, credential: issued.credential, reused: issued.reused === true, issuedAt: issued.issuedAt ?? null, transactionSignature: issued.transactionSignature ?? null };
+        await checkpoint({ ...current });
+    }
+    if (has('confirm-member')) {
+        const memberKeypair = typeof memberSigner === 'function' ? memberSigner(item.member) : null;
+        if (!memberKeypair) throw new Error(`a confirm-member step needs lens member ${item.member}'s wallet`);
+        current.memberConfirmation = await perform({ type: 'lens-decision', agreementCid: item.cid, member: item.member }, () => act.confirmAsLensMember({
+            connection, memberKeypair, agreement: { cid: item.cid, content: item.content }, sendAndConfirm
+        }));
         await checkpoint({ ...current });
     }
     if (has('attest')) {

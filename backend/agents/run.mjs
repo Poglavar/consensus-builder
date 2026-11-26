@@ -89,6 +89,7 @@ import { mintAgreement, mintTermsOf } from './agreement-minter.js';
 import { agentRegistrationNote, isSoleOwner, readParcelOwners, registerSoleOwners } from './lens-owner-registry.js';
 import { ensureOwnerApproval, requestAgreementDecision } from './lens-approval-client.js';
 import { isEntrypoint } from './entrypoint.js';
+import { advanceRound, createPlanReaders, planRound, roundSignedActions } from './developer-round.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -168,10 +169,23 @@ function readPersonas() {
     return JSON.parse(fs.readFileSync(path.join(__dirname, 'personas.json'), 'utf8')).personas || [];
 }
 
+// Proposers and developers (developer-round.js: crowdfunding rounds on named plans) share this runner.
 function proposersOf(all, onlyName) {
-    const personas = all.filter((p) => (p.role || 'proposer') === 'proposer' && (!onlyName || p.name === onlyName));
-    if (!personas.length) throw new Error(onlyName ? `no proposer persona named ${onlyName}` : 'personas.json lists no proposer personas');
+    const personas = all.filter((p) => ['proposer', 'developer'].includes(p.role || 'proposer') && (!onlyName || p.name === onlyName));
+    if (!personas.length) throw new Error(onlyName ? `no proposer or developer persona named ${onlyName}` : 'personas.json lists no proposer personas');
     return personas;
+}
+
+// Lens members whose wallets this runner may sign with to confirm funded crowdfunding rounds
+// (service.confirmsFundedRounds and a keypair present on this host): { key: () => Keypair }.
+export function roundConfirmingMembers(all, exists = fs.existsSync) {
+    return Object.fromEntries(all.filter(p => p.role === 'lens-member' && p.wallet && p.service?.confirmsFundedRounds === true && p.keypairPath
+        && exists(p.keypairPath.startsWith('~') ? path.join(os.homedir(), p.keypairPath.slice(1)) : p.keypairPath))
+        .map(p => [p.wallet, () => {
+            const keypair = loadKeypair(p.keypairPath);
+            if (keypair.publicKey.toBase58() !== p.wallet) throw new Error(`Wallet does not match persona ${p.name}`);
+            return keypair;
+        }]));
 }
 
 // The lens member this runner operates: a lens-member persona whose service names an operator token
@@ -243,7 +257,9 @@ export function settlementMessage(persona, lens, item, type) {
     switch (type) {
     case 'decide': return `${persona.name} approved its agreement ${cid} as the sole owner of its land.`;
     case 'confirm-funding': return `${persona.name} confirmed on chain that contributions to agreement ${cid} reached its funding target.`;
-    case 'lens-decision': return `${persona.name} asked lens member ${lens?.name ?? item.lens} for its decision on agreement ${cid}: satisfied.`;
+    case 'lens-decision': return item.member
+        ? `Lens member ${item.member} confirmed the funded round ${cid} from its own wallet; it executed and its contributions went to ${persona.name}.`
+        : `${persona.name} asked lens member ${lens?.name ?? item.lens} for its decision on agreement ${cid}: satisfied.`;
     case 'attest': return `${persona.name} recorded the lens decision on agreement ${cid} on chain.`;
     case 'execute': return `${persona.name} executed its agreement ${cid}; the escrow went to its payout.`;
     case 'release-donations': return `${persona.name} released the funded USDC donation vault for agreement ${cid} to its sponsor.`;
@@ -261,7 +277,7 @@ export function settlementMessage(persona, lens, item, type) {
 // already signed in this run) leaves over, and the run says what waits. The signer, the transaction
 // sender, the lens's fetch, the market readers and adapters and the clock are injected for tests.
 export async function settleStage({
-    pool, connection, index, lens, entries, dryRun, controller, plannedActions, failures, report,
+    pool, connection, index, lens, entries, dryRun, controller, plannedActions, failures, report, memberSigners = {},
     env = process.env, loadSigner = persona => loadKeypair(persona.keypairPath), sendAndConfirm = sendAndConfirmPolling,
     fetchImpl, readers = {}, adapters = {}, now = () => new Date()
 }) {
@@ -280,7 +296,7 @@ export async function settleStage({
         const inspections = [];
         for (const agreement of owned) {
             try {
-                inspections.push(await inspectSettlement({ connection, owner, agreement, lensKey: lens.key, readers }));
+                inspections.push(await inspectSettlement({ connection, owner, agreement, lensKey: lens.key, memberKeys: Object.keys(memberSigners), readers }));
             } catch (err) {
                 log(`${persona.name} settlement: could not read ${agreement.cid} ${agreement.account}: ${safeFailureDiagnostic(err)}`);
                 failures.push(`${persona.name} settlement inspect ${agreement.cid}: ${safeFailureDiagnostic(err)}`);
@@ -318,6 +334,7 @@ export async function settleStage({
                     sendAndConfirm, readers, adapters,
                     decide: () => ensureOwnerApproval({ index, serviceUrl: lens.serviceUrl, lensKey: lens.key, cid: item.cid, content: item.content, keypair: signer, fetchImpl }),
                     askLens: () => requestAgreementDecision({ serviceUrl: lens.serviceUrl, operatorToken: lens.operatorToken, cid: item.cid, fetchImpl }),
+                    memberSigner: key => memberSigners[key]?.() ?? null,
                     perform: (action, execute) => run({ ...action, account: item.account }, execute, {
                         entity, message: settlementMessage(persona, lens, item, action.type)
                     }),
@@ -329,7 +346,8 @@ export async function settleStage({
                 // The index refreshes the agreement's state from the chain (decision, status).
                 await index.recordOnchain(item.cid, { cluster: CLUSTER, account: item.account });
                 // Executed or expired, its market resolved and the claim taken: nothing is left to settle.
-                const terminal = item.steps.includes('execute') || item.steps.includes('expire') || ['executed', 'cancelled', 'expired'].includes(item.state);
+                const terminal = item.steps.includes('execute') || item.steps.includes('expire') || ['executed', 'cancelled', 'expired'].includes(item.state)
+                    || settlements[item.account]?.memberConfirmation?.executed === true;
                 settlements[item.account] = { ...settlements[item.account], completedAt: now().toISOString(), settled: terminal };
                 e.run = await updateRun(pool, e.runId, { summaryPatch: { settlements, settlementPlan, activities } });
                 settled += 1;
@@ -337,6 +355,7 @@ export async function settleStage({
                 log(`${persona.name} settled ${item.cid} (${item.state}): ${[
                     done.approval ? `approval ${done.approval.replayed ? 'already relayed' : done.approval.decidedAt}` : null,
                     done.lensDecision ? `lens decision ${done.lensDecision.address}${done.lensDecision.reused ? ' (reused)' : ''}` : null,
+                    done.memberConfirmation ? `lens member ${item.member} confirmed ${done.memberConfirmation.signature ?? 'already'}${done.memberConfirmation.executed ? ', executed' : ''}${done.memberConfirmation.released ? ' and released the contributions' : ''}` : null,
                     done.attest ? `attest ${done.attest.signature ?? 'already recorded'}` : null,
                     done.execution ? `execute ${done.execution.signature ?? done.execution.status}` : null,
                     done.donationRelease ? `release donations ${done.donationRelease.signature ?? done.donationRelease.status}` : null,
@@ -619,9 +638,13 @@ async function main() {
     const allPersonas = readPersonas();
     const personas = proposersOf(allPersonas, args.persona);
     const lens = operatedLens(allPersonas, args.lens ?? process.env.AGENT_LENS);
-    if (args.live && !lens.operatorToken) {
+    // A developer's rounds ask no lens member for a decision; owners' agreements do.
+    if (args.live && !lens.operatorToken && personas.some(p => p.role !== 'developer')) {
         throw new Error(`${lens.tokenEnv} is not set: the runner asks lens member ${lens.name} for agreement decisions as its operator`);
     }
+    const memberSigners = roundConfirmingMembers(allPersonas);
+    const lensKeys = Object.fromEntries(allPersonas.filter(p => p.role === 'lens-member' && p.wallet).map(p => [p.name, p.wallet]));
+    const planReaders = createPlanReaders({ apiBase, index });
     // Owner ids are wallets; an owner that is one of the personas is shown by its name.
     const walletNames = Object.fromEntries(allPersonas.filter(p => p.wallet).map(p => [p.wallet, p.name]));
     const pool = createPool();
@@ -651,6 +674,32 @@ async function main() {
             if (args.live) {
                 await startRun(pool, { runId, persona: persona.name, day, mode });
                 startedRuns.add(runId);
+            }
+            // A developer plans one crowdfunding round (or none) and chooses it in the same step.
+            if (persona.role === 'developer') {
+                if (Array.isArray(existing?.summary?.picks)) {
+                    log(`${persona.name} ${i + 1}/${personas.length}: resumed ${existing.summary.picks.length} round pick(s) from ${runId}`);
+                    entries.push({ persona, runId, day, run: existing, candidates: existing.summary.candidates || [] });
+                    continue;
+                }
+                const planned = await planRound({ persona, runs: allRuns, runKey, ...planReaders, lensKeys });
+                const candidates = planned.candidate ? [planned.candidate] : [];
+                const seeding = executionPolicy(process.env).maxMarketSeedUsdc > 0;
+                const picks = candidates.map((candidate, index) => ({ candidateId: candidate.candidateId, pickId: pickIdFor(persona, runKey, index),
+                    name: candidate.plain ? `${candidate.planTitle}: contribution round` : `${candidate.planTitle}: ${candidate.units.length} apartments`,
+                    signedActions: roundSignedActions(candidate, { marketSeed: seeding }) }));
+                log(`${persona.name} ${i + 1}/${personas.length} developer: ${planned.candidate
+                    ? `${picks[0].name} · target ${Number(planned.candidate.targetUsdcAtomic) / 1e6} USDC · deadline in ${planned.candidate.deadlineDays} days`
+                    : `no new round (${planned.reason})`}`);
+                const completion = decisionCompletion(picks);
+                const run = args.live ? await updateRun(pool, runId, { stage: 'chosen', status: completion.status, summaryPatch: {
+                    candidates, city: planned.candidate?.city ?? persona.developer?.city ?? null, area: 'developer rounds', slot, wallet: persona.wallet,
+                    controller: 'algorithm', picks, pickCostUsd: 0,
+                    decisionResult: { controller: 'algorithm', costUsd: 0, reason: planned.reason ?? null },
+                    ...(completion.outcome ? { outcome: completion.outcome } : {})
+                } }) : { summary: { picks } };
+                entries.push({ persona, runId, day, run, candidates });
+                continue;
             }
             const refreshPlanning = planningNeedsRefresh(existing, persona);
             const resumePlanning = existing && !refreshPlanning && stageIndex(existing.stage) >= stageIndex('planned') && existing.summary?.candidates?.length;
@@ -882,7 +931,7 @@ async function main() {
         // ---- settlement phase: finish own agreements of earlier runs before anything new -----
         await settleStage({
             pool, connection, index, lens, entries, dryRun: false, controller,
-            plannedActions: executionPlan.actionCount, failures, report
+            plannedActions: executionPlan.actionCount, failures, report, memberSigners
         });
         for (const e of entries.filter(entry => entry.run?.summary?.picks?.length)) {
             e.run = await updateRun(pool, e.runId, { status: 'running', summaryPatch: {
@@ -924,6 +973,43 @@ async function main() {
             const save = async (stage, patch) => {
                 e.run = await updateRun(pool, e.runId, { ...(stage ? { stage } : {}), status: 'running', summaryPatch: { ...patch, activities } });
             };
+            if (persona.role === 'developer') {
+                const listings = { ...(summary.listings ?? {}) };
+                let allDone = true;
+                for (const [k, pick] of picks.entries()) {
+                    const candidate = e.candidates.find(c => c.candidateId === pick.candidateId);
+                    const tag = `${persona.name} ${k + 1}/${picks.length} ${pick.pickId}`;
+                    try {
+                        if (!candidate) throw new Error(`pick ${pick.candidateId} has no candidate`);
+                        const { done } = await advanceRound({
+                            pick, candidate, tag, persona, keypair, state: { agreements, mints, onchain, listings, markets, marketFunding },
+                            index, connection, run, save, ...planReaders, pool, marketSeedCapUsdc: policy.maxMarketSeedUsdc, sendAndConfirm: sendAndConfirmPolling
+                        });
+                        allDone &&= done;
+                    } catch (err) {
+                        allDone = false;
+                        if (isFundingSourceShort(err)) { fundingShort = err; break; }
+                        failures.push(`${tag}: ${safeFailureDiagnostic(err)}`);
+                        personaFailed = true;
+                        break;
+                    }
+                }
+                const furthest = ['recorded', 'minted', 'proposed'].find(stage => picks.some(pick => ({
+                    proposed: agreements[pick.candidateId]?.indexedAt, minted: mints[pick.candidateId], recorded: onchain[pick.candidateId]
+                })[stage])) || 'chosen';
+                await updateRun(pool, e.runId, {
+                    stage: allDone && !personaFailed ? 'staked' : furthest,
+                    status: personaFailed ? 'failed' : 'done',
+                    summaryPatch: {
+                        agreements, mints, onchain, listings, markets, marketFunding, activities,
+                        error: personaFailed ? failures.filter(value => value.startsWith(persona.name)).map(safeFailureDiagnostic).join('; ').slice(0, 500) : null,
+                        outcome: personaFailed ? 'failed' : fundingShort ? 'funding-short' : allDone ? 'completed' : 'partial',
+                        ...(fundingShort ? { fundingShort: { sourceWallet: fundingShort.sourceWallet, asset: fundingShort.asset, message: safeFailureDiagnostic(fundingShort) } } : {})
+                    }
+                });
+                report.push(`${persona.name}: ${picks.length} round(s) · ${Object.keys(mints).length} minted · ${Object.keys(listings).length} listed · ${Object.keys(markets).length} market(s)`);
+                continue;
+            }
 
             for (const [k, pick] of picks.entries()) {
                 const candidate = e.candidates.find((c) => c.candidateId === pick.candidateId);
