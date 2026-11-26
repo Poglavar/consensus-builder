@@ -21,7 +21,12 @@
     let spec = null;               // the editor's handles as last read
     let drag = null;               // the gesture in progress
     let knobDeg = -90;             // where the knob rests on its ring, counter-clockwise from east
+    // The turn ring shows only while the pointer is on the building or within its ring, so it does
+    // not stand round every building being edited. A screen with no hovering pointer (a phone) shows
+    // it throughout; a touch on a hybrid screen shows it the way a hover does.
+    let turnRevealed = false;
     let hoverFrame = null, hoverEvent = null, cursorSet = false, swallowClick = false;
+    const canHover = () => global.matchMedia?.('(hover: hover)').matches !== false;
 
     const math = () => global.ModelEditHandlesMath;
     const THREE = () => global.THREE;
@@ -130,7 +135,7 @@
         spec = global.OnMapEditor?.modelHandles?.() || null;
         const height = spec?.height?.input && !spec.height.input.disabled && spec.height.at ? spec.height : null;
         const rotate = spec?.rotate?.centre ? spec.rotate : null;
-        if (!spec) knobDeg = -90;
+        if (!spec) { knobDeg = -90; turnRevealed = false; }
         if (!height && label) label.hidden = true;
         arrow.visible = guide.visible = !!height;
         if (height) {
@@ -139,7 +144,8 @@
             arrow.position.set(x, y, top);
             guide.geometry.setFromPoints([new (THREE().Vector3)(x, y, 0), new (THREE().Vector3)(x, y, top)]);
         }
-        ring.visible = knob.visible = !!rotate;
+        ring.userData = rotate ? ring.userData : {};
+        showTurn();
         if (rotate) {
             const centre = view.latLngToXY(rotate.centre.lat, rotate.centre.lng);
             const radius = footprintRadius(rotate.footprint, centre, rotate.centre.lat);
@@ -151,6 +157,29 @@
             ring.userData = { centre, radius };
             placeKnob(drag?.kind === 'rotate' ? drag.startDeg + drag.total : knobDeg);
         }
+        scaleHandles();
+    }
+
+    function showTurn() {
+        ring.visible = knob.visible = !!spec?.rotate?.centre && (turnRevealed || drag?.kind === 'rotate' || !canHover());
+    }
+
+    // Whether the pointer is over what the turn ring belongs to: the building, a handle, or the
+    // ground inside the ring (with the knob's own reach beyond it).
+    function nearTurn(event, found) {
+        if (!spec?.rotate?.centre || !ring.userData.centre || !view || event.target !== view.renderer.domElement) return false;
+        if (found) return true;
+        const point = math().rayPointAtHeight(rayOf(event).ray, RING_Z);
+        if (!point) return false;
+        const [cx, cy] = ring.userData.centre;
+        const reach = pixelsToWorld(knob.position) * HANDLE_PX;
+        return Math.hypot(point.x - cx, point.y - cy) <= ring.userData.radius + reach;
+    }
+
+    function revealTurn(next) {
+        if (next === turnRevealed) return;
+        turnRevealed = next;
+        showTurn();
         scaleHandles();
     }
 
@@ -245,6 +274,7 @@
         swallowClick = false;
         if (drag || event.button !== 0 || !event.isPrimary) return;
         const found = target(event);
+        if (event.pointerType !== 'mouse' && view && spec) revealTurn(nearTurn(event, found));
         if (!found) return;
         const ray = found.raycaster.ray;
         if (found.kind === 'height') {
@@ -359,6 +389,7 @@
             hoverFrame = null;
             if (drag || !hoverEvent) return;
             const found = target(hoverEvent);
+            revealTurn(nearTurn(hoverEvent, found));
             setCursor(found ? CURSORS[found.kind] : null);
             showLabel(found?.kind === 'height' ? spec.height : null);
         });

@@ -87,6 +87,14 @@ test('Freeform in model view: drag the arrow for height, the building to move it
   expect(moved.height).toBe(raised.height);
   expect(await camera(page)).toEqual(view);
 
+  // The turn ring shows only while the pointer is on the building or within its ring.
+  const box = (await page.locator('#three-container canvas').boundingBox())!;
+  await page.mouse.move(box.x + 20, box.y + box.height - 20, { steps: 4 });
+  await expect.poll(() => screenOf(page, { handle: 'rotate' })).toBeNull();
+  const onBuilding = await screenOf(page, { lat: moved.center.lat, lng: moved.center.lng, z: moved.height / 2 });
+  await page.mouse.move(onBuilding!.x, onBuilding!.y, { steps: 4 });
+  await expect.poll(() => screenOf(page, { handle: 'rotate' })).not.toBeNull();
+
   // Take the knob a quarter of the way round its ring, counter-clockwise on the ground.
   const knob = await screenOf(page, { handle: 'rotate' });
   expect(knob).not.toBeNull();

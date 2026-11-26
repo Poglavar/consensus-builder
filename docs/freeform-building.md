@@ -44,7 +44,10 @@ on-map editor's `modelHandles` option and keeps geometry, history and saving to 
   asks: convert to Freeform where it was dropped, run the same rule on the parcels there, or put it
   back.
 - The knob on the ground ring turns the footprint in 5° steps (1° with Shift). A whole turn gesture
-  is one undo step, like one press of a rotate button.
+  is one undo step, like one press of a rotate button. The ring shows only while the pointer is on
+  the building or inside the ring; a touch there shows it too, and a screen without hover shows it
+  throughout. A rule (Urban rule, Detached houses) is laid out by its parcels and has no knob; once
+  converted to Freeform, the building has one.
 - Corners are reshaped on the map only. The photo view stays locked while an editor is open.
 - The sliders, rotate buttons and keyboard controls remain the accessible path: the arrow's label is
   hidden from assistive technology because the slider carries the same value. Agents make the same
