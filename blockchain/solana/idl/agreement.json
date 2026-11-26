@@ -1,5 +1,5 @@
 {
-  "address": "ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH",
+  "address": "6X5ihiKNpsF39eYzWGaw7swgYa6vouZ8gT1LHB5H86Cb",
   "metadata": {
     "name": "agreement",
     "version": "0.1.0",
@@ -126,7 +126,8 @@
       "name": "create",
       "docs": [
         "Commit an agreement to the chain at PDA [\"agreement\", authority, sha256(cid)], the signing",
-        "authority being its sponsor. `lenses` are the 0-8 distinct member keys whose",
+        "authority being its sponsor. `plan_cid` is the CID of the plan the agreement names, stored",
+        "as its sha256 (`plan_cid_hash`; the sponsor's claim, see the module docs). `lenses` are the 0-8 distinct member keys whose",
         "AgreementDecision attestations settle it, and `lens_threshold` how many of them must confirm",
         "(1..=members; 0 with no members). No members is allowed only with a contribution target.",
         "`deadline` is unix seconds in the future (mandatory: an agreement that can never expire",
@@ -169,6 +170,10 @@
       "args": [
         {
           "name": "cid",
+          "type": "string"
+        },
+        {
+          "name": "plan_cid",
           "type": "string"
         },
         {
@@ -603,7 +608,7 @@
       "docs": [
         "One agreement: PDA [\"agreement\", authority, sha256(cid)]. Every fixed-size field comes before",
         "`cid`, so their offsets are the same in every account (README, \"Agreement account\") and memcmp",
-        "filters on authority, the first lens member or status work. The header up to `bump` keeps the",
+        "filters on authority, the first lens member, status or the plan CID hash work. The header up to `bump` keeps the",
         "offsets proposal_market and proposal_pledge read."
       ],
       "type": {
@@ -795,6 +800,19 @@
             "type": "i64"
           },
           {
+            "name": "plan_cid_hash",
+            "docs": [
+              "sha256 of the plan CID the sponsor named at create (UTF-8, as `cid_seed`), at",
+              "PLAN_CID_HASH_OFFSET: the memcmp key for \"agreements of this plan\". Frozen at create."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
             "name": "cid",
             "docs": [
               "The agreement's CIDv1 (`bafkrei…`), the IPFS object this account commits to."
@@ -911,6 +929,13 @@
           },
           {
             "name": "cid",
+            "type": "string"
+          },
+          {
+            "name": "plan_cid",
+            "docs": [
+              "The plan the sponsor says the agreement names (stored as `plan_cid_hash`)."
+            ],
             "type": "string"
           },
           {

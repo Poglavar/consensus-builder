@@ -13,9 +13,10 @@ escrow. JS codec:
 `window.AgreementClient` in the browser, `require` in node); the browser drives it through
 `frontend/js/solana/agreement-bridge.js`.
 
-**Status: the lens-set layout (580-byte account, `confirm_funding`) is deployed on devnet** at the id
-below, a new address (2026-11-25); agreements minted under the earlier one-lens program are not read
-by this codec and are recreated. A lens member's `AgreementDecision-v1` may come from its service or
+**Status: the plan-CID layout (612-byte account) is built, not yet deployed**: its id below is a new
+address, and `proposal_market` and `proposal_pledge` move to new addresses with it. Until the deploy,
+devnet holds only the earlier programs (`frontend/js/solana/program-ids.js` lists them as retired);
+agreements minted under a retired program are not read by this codec and are recreated. A lens member's `AgreementDecision-v1` may come from its service or
 from its own wallet: the browser builds the member's SAS credential, schema and attestation
 (`agreement-client.js` `buildCreateLensCredentialIx`, `buildCreateDecisionSchemaIx`,
 `buildCreateDecisionAttestationIx`, byte-identical to sas-lib) and sends them with `attest` (and
@@ -74,10 +75,10 @@ never on the CID inside an event.
 
 ## Agreement account
 
-8-byte discriminator + 572 bytes = 580. Fixed fields come first, so these offsets hold in every
-account (memcmp filters on `authority`, the first lens member `lens` or `status` work). The header up
-to `bump` keeps the offsets `proposal_market` and `proposal_pledge` read; the lens set and the
-contribution target follow it:
+8-byte discriminator + 604 bytes = 612. Fixed fields come first, so these offsets hold in every
+account (memcmp filters on `authority`, the first lens member `lens`, `status` or `plan_cid_hash`
+work). The header up to `bump` keeps the offsets `proposal_market` and `proposal_pledge` read; the
+lens set, the contribution target and the plan CID hash follow it:
 
 | Offset | Field | Type | Meaning |
 |---|---|---|---|
@@ -106,7 +107,19 @@ contribution target follow it:
 | 495 | `funding_met` | bool | `confirm_funding` found the target met |
 | 496 | `funding_observed` | u64 | credited contributions it observed (0 until confirmed) |
 | 504 | `funding_met_at` | i64 | chain time of that confirmation (0 until confirmed) |
-| 512 | `cid` | string | u32 LE length + up to 64 ASCII letters and digits |
+| 512 | `plan_cid_hash` | [u8; 32] | sha256 of the plan CID named at create (UTF-8, as the PDA's CID seed); frozen |
+| 544 | `cid` | string | u32 LE length + up to 64 ASCII letters and digits |
+
+### Agreements of a plan
+
+`create` takes the plan the agreement names (`agreement/v1` `planCid`) and stores its sha256 at byte
+512, so every agreement backing a plan is one `getProgramAccounts` away, with no server:
+`filters: [{ dataSize: 612 }, { memcmp: { offset: 512, bytes: base58(sha256(planCid)) } }]`
+(`agreement-client.js` `fetchAgreementsForPlan`; the backend's `createAgreementChain().agreementsForPlan`).
+The hash is the sponsor's claim: the program checks only that `plan_cid` is a well-formed CID, never
+that the agreement object on IPFS names that plan, so a reader that relies on it compares it with the
+object's own `planCid` (fetch the agreement by its `cid`, hash its `planCid`). The RPC must serve
+`getProgramAccounts` (Alchemy's free tier does not).
 
 The escrow is held by the agreement account itself, on top of its rent (proposal_nft's pattern).
 Only `escrow_lamports` is ever paid out; lamports sent to the account by a plain transfer stay there.
@@ -116,7 +129,7 @@ The account is never closed: it stays as the agreement's chain record.
 
 | Instruction | Accounts (in order) | Requires | Effect |
 |---|---|---|---|
-| `create(cid: String, lenses: Vec<Pubkey>, lens_threshold: u8, deadline: i64, open_ground: bool, required_lamports: u64, payout: Pubkey, funding_mint: Pubkey, required_funding: u64)` | `agreement` (mut, init, PDA of `authority` and `cid`), `authority` (signer, mut: the sponsor), `system_program` | `cid` 1-64 ASCII alphanumerics; `lenses` 0-8 distinct keys, none the default key, with `lens_threshold` 1..members, or no members (threshold 0) only with a target (`NoLens`, `InvalidLens`); `funding_mint` set exactly when `required_funding` > 0 (`InvalidFundingTarget`); `payout` neither the default key nor the agreement; `deadline` in the future (0 is refused) | Active account; emits `AgreementCreated` |
+| `create(cid: String, plan_cid: String, lenses: Vec<Pubkey>, lens_threshold: u8, deadline: i64, open_ground: bool, required_lamports: u64, payout: Pubkey, funding_mint: Pubkey, required_funding: u64)` | `agreement` (mut, init, PDA of `authority` and `cid`), `authority` (signer, mut: the sponsor), `system_program` | `cid` and `plan_cid` 1-64 ASCII alphanumerics (`InvalidCid`, `CidTooLong`); `lenses` 0-8 distinct keys, none the default key, with `lens_threshold` 1..members, or no members (threshold 0) only with a target (`NoLens`, `InvalidLens`); `funding_mint` set exactly when `required_funding` > 0 (`InvalidFundingTarget`); `payout` neither the default key nor the agreement; `deadline` in the future (0 is refused) | Active account, `plan_cid_hash = sha256(plan_cid)`; emits `AgreementCreated` |
 | `fund(lamports: u64)` | `agreement` (mut), `authority` (signer, mut), `system_program` | the agreement's authority; `lamports` > 0; Active; deadline not passed (also after the decision) | system transfer into the agreement, `escrow_lamports += lamports`; emits `AgreementFunded` |
 | `attest()` | `agreement` (mut), `attestation` (SAS AgreementDecision-v1), `credential` (its SAS credential) | Active; decision Pending; deadline not passed; lens threshold not yet met (`LensAlreadyConfirmed`); the signer a member not yet counted (`WrongLens`, `MemberAlreadyConfirmed`); the attestation checks below | sets the member's bit in `lens_confirmed`; the confirmation that reaches the threshold is kept as the decision's evidence (`decision_observed_at`, attestation key and hash); Satisfied once any target is also confirmed; emits `AgreementAttested`. Permissionless |
 | `confirm_funding()` | `agreement` (mut), `escrow` (proposal_pledge DonationEscrow at `["donation_escrow", agreement]`), `vault` (the escrow's token account) | Active; decision Pending; deadline not passed; a target set (`NoFundingTarget`) and not yet confirmed (`FundingAlreadyConfirmed`); the escrow owned by proposal_pledge at that address, for this agreement and `funding_mint`, not released (`InvalidEscrow`); the vault the escrow's, an initialized SPL token account of that mint holding at least the credited amount (`InvalidVault`); credited contributions (donated less refunded) ≥ `required_funding` (`FundingTargetNotMet`) | `funding_met`, `funding_observed`, `funding_met_at`; Satisfied once the lens is also met; emits `AgreementFundingConfirmed`. Permissionless: the program reads the escrow, so no lens is needed. Contributions cannot be refunded while the agreement is Active, so a confirmed target stays met |
@@ -127,7 +140,7 @@ The account is never closed: it stays as the agreement's chain record.
 `payout` must be able to hold what it receives: an account with no lamports that receives less than
 the rent-exempt minimum makes `execute` fail.
 
-Events, all with `agreement` and `cid`: `AgreementCreated` (authority, lenses, lens_threshold,
+Events, all with `agreement` and `cid`: `AgreementCreated` (plan_cid, authority, lenses, lens_threshold,
 payout, deadline, required_lamports, funding_mint, required_funding, open_ground, created_at),
 `AgreementFunded` (lamports, escrow_lamports, funded_at), `AgreementAttested` (lens: the attesting
 member, attestation, attestation_hash, evidence_ref, source_observed_at, confirmations,
@@ -180,10 +193,11 @@ decision: schemaDefinition(
 
 ## Program id
 
-`ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH` on devnet (the lens-set layout deployed 2026-11-25 at a new address, upgrade authority the
-deployer wallet `~/.config/solana/id.json`), in `declare_id!`, both `Anchor.toml` sections,
-`frontend/js/solana/agreement-client.js` and `idl/agreement.json`. The program keypair is kept outside
-the repo (`~/.config/solana/program-keys/`). `proposal_market` and `proposal_pledge` compile this id in
-(they read agreement accounts), so a change of id means rebuilding and upgrading both as well. Upgrade
-one program at a time, never with `anchor keys sync` (see `../../README.md`):
-`solana program deploy target/deploy/agreement.so --program-id <id> --url devnet`.
+`6X5ihiKNpsF39eYzWGaw7swgYa6vouZ8gT1LHB5H86Cb` (the plan-CID layout, not yet deployed; the deployer
+wallet `~/.config/solana/id.json` will hold the upgrade authority), in `declare_id!`, both `Anchor.toml`
+sections, `frontend/js/solana/program-ids.js` (with the retired ids) and `idl/agreement.json`. The
+program keypair is kept outside the repo (`~/.config/solana/program-keys/`). `proposal_market` and
+`proposal_pledge` compile this id in (they read agreement accounts), and this program compiles
+`proposal_pledge`'s id in (`PLEDGE_PROGRAM_ID`), so a layout change that moves this program to a new
+address moves both of them too. Deploy one program at a time, never with `anchor keys sync` (see
+`../../README.md`): `solana program deploy target/deploy/agreement.so --program-id <keypair> --url devnet`.
