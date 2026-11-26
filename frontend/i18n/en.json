@@ -6810,8 +6810,8 @@
         },
         "sun": {
             "title": "Sun and shadows",
-            "enabled": "Show sun and shadows",
-            "clouds": "Show clouds",
+            "enabled": "Sun and shadows",
+            "clouds": "Clouds",
             "when": "When",
             "time": "Time of day",
             "date": "Date",

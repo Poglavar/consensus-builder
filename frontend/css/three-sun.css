@@ -3,6 +3,18 @@
    Colours are theme tokens (css/tokens.css, --cb-sun-*); JS supplies the sun's height,
    daylight interval and clock angle. The rim uses the same local day as the sheet. */
 
+/* The sheet's two switches, side by side; they wrap on a narrow sheet. */
+.checkbox-group.sun-switches {
+    flex-direction: row;
+    flex-wrap: wrap;
+    column-gap: var(--cb-space-4);
+    row-gap: var(--cb-space-1);
+}
+
+.checkbox-group.sun-switches label {
+    margin-bottom: 0;
+}
+
 .sun-controls {
     margin: var(--cb-space-2) 0 0;
     padding: 0;
