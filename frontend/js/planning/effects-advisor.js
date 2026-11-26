@@ -269,20 +269,33 @@
             style: feature => ({ className: `neighbour-effect ${STATUS_CLASS[feature.properties.status] || ''}` })
         }).addTo(map);
         layer.eachLayer(path => plotLayers.set(path.feature.properties.id, path));
+        changed();
     }
     function clear() {
         if (layer) { layer.remove(); layer = null; }
         plotLayers.clear();
         shownOn = null;
         pinned = null;
+        lit = null;
+        changed();
     }
+    // The 3D model view draws the same plots (three-mode.js syncNeighbourEffects3D): it reads them
+    // here and is told when they or the highlighted one change.
+    let lit = null;
+    function plots() {
+        return [...plotLayers.entries()].map(([id, path]) => ({ id, geometry: path.feature.geometry,
+            status: path.feature.properties.status, focus: id === lit || id === pinned }));
+    }
+    const changed = () => root.dispatchEvent?.(new CustomEvent('neighbourEffectsChanged'));
     // A plot stands out on the map while the list points at it; the pinned one stays out.
     function highlight(id, on) {
         const path = plotLayers.get(id);
         if (!path) return;
-        const lit = on || pinned === id;
-        path.getElement?.()?.classList.toggle('neighbour-effect--focus', lit);
-        if (lit) path.bringToFront?.();
+        const shown = on || pinned === id;
+        path.getElement?.()?.classList.toggle('neighbour-effect--focus', shown);
+        if (shown) path.bringToFront?.();
+        lit = on ? id : lit === id ? null : lit;
+        changed();
     }
     // A click on a plot's name: it stays highlighted (another click lets go) and comes into view.
     function pin(id, container) {
@@ -292,11 +305,12 @@
         highlight(id, pinned === id);
         for (const name of container.querySelectorAll?.('.neighbour-effects__name') || []) name.setAttribute('aria-pressed', String(name.dataset.plotId === pinned));
         const path = plotLayers.get(id);
-        if (pinned === id && path && shownOn) {
+        // The 2D map stays still while the 3D view is open (three-mode.js), so only 2D pans.
+        if (pinned === id && path && shownOn && !root.document?.body?.classList.contains('three-mode-active')) {
             const bounds = path.getBounds();
             if (!shownOn.getBounds().contains(bounds)) shownOn.panTo(bounds.getCenter());
         }
     }
 
-    root.NeighbourEffectsAdvisor = { assess, assessDesign, render, busy, show, clear, highlight, pin };
+    root.NeighbourEffectsAdvisor = { assess, assessDesign, render, busy, show, clear, highlight, pin, plots };
 })(window);

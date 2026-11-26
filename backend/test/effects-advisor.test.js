@@ -129,6 +129,8 @@ describe('Plots in the list point at the map', () => {
         names[1].onmouseenter();
         expect(b.lit()).toBe(true);
         expect(a.lit()).toBe(false);
+        // The 3D view reads the same plots, the pointed-at one marked.
+        expect(advisor.plots().map(plot => [plot.id, plot.focus])).toEqual([['a', false], ['b', true]]);
         names[1].onmouseleave();
         expect(b.lit()).toBe(false);
         names[0].onclick();
@@ -138,6 +140,9 @@ describe('Plots in the list point at the map', () => {
         expect(map.panTo).toHaveBeenCalledWith('a');
         names[0].onclick();
         expect(a.lit()).toBe(false);
+        expect(advisor.plots().some(plot => plot.focus)).toBe(false);
+        advisor.clear();
+        expect(advisor.plots()).toEqual([]);
     });
 });
 

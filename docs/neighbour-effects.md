@@ -20,8 +20,9 @@ amber within, and the readings in words below. Filter buttons narrow the list to
 reading, sorted by that reading's loss. A plot's name highlights it on the map while hovered or
 focused; a click keeps it highlighted and brings it into view. The heading spins while the section
 measures; while it re-measures after an edit, the last result stays. "What the guides are" explains
-the groups. The plots are coloured on the map, red and amber the same way; closing the click stack
-or the editor clears the colouring.
+the groups. The plots are coloured on the map, red and amber the same way, and outlined on the ground
+in the 3D model view (the pointed-at plot in a wider line); closing the click stack or the editor
+clears both. In 3D a click on a name keeps the highlight but does not move the camera.
 
 **Loss** is the share of a plot's sunlit garden or of its sky that it loses, or for a facing wall
 how far it now stands inside 21 m, as a share of 21 m.

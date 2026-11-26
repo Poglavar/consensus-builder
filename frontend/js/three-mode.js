@@ -1895,6 +1895,53 @@
         invalidateThreeView();
     }
 
+    // Effects on neighbours (planning/effects-advisor.js): the affected plots outlined on the ground
+    // in the 2D map's red (beyond a guide) and amber (within the guides), from the palette's tokens;
+    // the plot the list points at in a wider line.
+    let neighbourEffectsGroup = null;
+    function syncNeighbourEffects3D() {
+        if (neighbourEffectsGroup) {
+            clearGroupChildren(neighbourEffectsGroup);
+            neighbourEffectsGroup.removeFromParent();
+            neighbourEffectsGroup = null;
+            invalidateThreeView();
+        }
+        const plots = window.NeighbourEffectsAdvisor?.plots?.() || [];
+        if (!isActive || !scene || !plots.length) return;
+        const style = getComputedStyle(document.documentElement);
+        const colours = { fail: style.getPropertyValue('--cb-danger').trim(), worse: style.getPropertyValue('--cb-warning').trim() };
+        neighbourEffectsGroup = new THREE.Group();
+        neighbourEffectsGroup.name = 'neighbour-effects';
+        const temporaryMaterial = new THREE.LineBasicMaterial();
+        for (const plot of plots) {
+            const segments = [];
+            for (const line of polygonFeatureToBorderLines({ type: 'Feature', geometry: plot.geometry }, temporaryMaterial, 0.5)) {
+                const positions = line.geometry.attributes.position;
+                for (let i = 0; i < positions.count; i++) {
+                    const next = (i + 1) % positions.count;
+                    segments.push(positions.getX(i), positions.getY(i), positions.getZ(i), positions.getX(next), positions.getY(next), positions.getZ(next));
+                }
+                line.geometry.dispose();
+            }
+            if (!segments.length) continue;
+            const geometry = new THREE.LineSegmentsGeometry();
+            geometry.setPositions(segments);
+            const material = new THREE.LineMaterial({ color: new THREE.Color(colours[plot.status] || colours.worse), linewidth: plot.focus ? 6 : 2.5,
+                transparent: true, opacity: plot.focus ? 1 : 0.85, depthTest: false, depthWrite: false, toneMapped: false });
+            const outline = new THREE.LineSegments2(geometry, material);
+            markOwnedGeometry(outline, geometry);
+            markOwnedMaterial(outline, material);
+            outline.userData.neighbourEffect = { id: plot.id, status: plot.status, focus: plot.focus };
+            outline.renderOrder = plot.focus ? 9996 : 9995;
+            outline.raycast = () => {};
+            neighbourEffectsGroup.add(outline);
+        }
+        temporaryMaterial.dispose();
+        scene.add(neighbourEffectsGroup);
+        invalidateThreeView();
+    }
+    window.addEventListener('neighbourEffectsChanged', syncNeighbourEffects3D);
+
     function appendMapActions(body, select) {
         const actions = document.createElement('button');
         actions.type = 'button';
@@ -12639,6 +12686,7 @@
         // be pending here; re-syncing it would enqueue another full proposal rebuild.
         applyModeVisibility();
         rebuildPlanningSources3D();
+        syncNeighbourEffects3D();
         if (window.activeProposalDraftComparison?.draftId && typeof window.renderProposalDraftComparison === 'function') {
             window.renderProposalDraftComparison(
                 window.activeProposalDraftComparison.draftId,
