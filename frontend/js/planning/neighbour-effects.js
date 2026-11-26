@@ -26,7 +26,7 @@
     const finite = value => typeof value === 'number' && Number.isFinite(value);
     // Less than this change is no change (garden share 0–1, sky in percentage points, metres,
     // degrees): a fraction of a point is noise of the sampling, not a loss anyone would notice.
-    const SAME = { share: 0.01, sky: 1, distance: 0.5, angle: 0.5, splay: 0.1 };
+    const SAME = { share: 0.01, sky: 1, distance: 0.5, angle: 0.5, splay: 0.1, sunlight: 1 };
     const RAD = Math.PI / 180;
     // A wall this close to another building is a party wall: no window, so no sky or facing distance.
     const PARTY_WALL_M = 0.5;
@@ -159,6 +159,61 @@
         // Highest first: a garden point finds its two hours sooner, and the count stops there.
         path.sort((a, b) => b.altitude - a.altitude);
         return { stepMin, positions: path };
+    }
+    // The sun over a year at a place, for probable sunlight hours (BRE BR 209 3.2.4: the hours the
+    // sun is expected to shine on unobstructed ground, allowing for the place's average cloudiness):
+    // positions every `stepMin` minutes on every `dayStep`th day, each weighted by the hours it
+    // stands for times the chance the sun is out in its month, that month's recorded sunshine hours
+    // (`monthHours`, January first) over the hours the sun is up in it. `winter` { from, to } (MM-DD,
+    // from inclusive) marks the positions in the guide's winter months. Answers { positions: [{ dx,
+    // dy, tan, weight, winter }], total (probable sunlight hours), equatorY (the y of the direction
+    // of the noon sun: -1 south, 1 north) }.
+    function sunYear(sunCalc, year, lat, lng, monthHours, winter = null, { stepMin = 20, dayStep = 4 } = {}) {
+        const inWinter = !winter ? () => false : winter.from <= winter.to
+            ? monthDay => monthDay >= winter.from && monthDay < winter.to
+            : monthDay => monthDay >= winter.from || monthDay < winter.to;
+        const upHours = new Array(12).fill(0), positions = [], hours = stepMin / 60 * dayStep;
+        for (let day = 0; ; day += dayStep) {
+            const date = new Date(Date.UTC(year, 0, 1 + day));
+            if (date.getUTCFullYear() !== year) break;
+            const month = date.getUTCMonth(), cold = inWinter(date.toISOString().slice(5, 10));
+            const solarMidnight = date.getTime() - lng / 15 * 3600000;
+            for (let minutes = stepMin / 2; minutes < 1440; minutes += stepMin) {
+                const { altitude, azimuth } = sunCalc.getPosition(new Date(solarMidnight + minutes * 60000), lat, lng);
+                if (altitude <= 0) continue;
+                upHours[month] += hours;
+                // SunCalc's azimuth runs from south, positive towards west.
+                positions.push({ month, dx: -Math.sin(azimuth), dy: -Math.cos(azimuth), tan: Math.tan(altitude), winter: cold });
+            }
+        }
+        const chance = upHours.map((up, month) => up > 0 && finite(monthHours[month]) ? Math.min(1, monthHours[month] / up) : 0);
+        const weighted = positions.map(({ month, ...position }) => ({ ...position, weight: chance[month] * hours }));
+        return { positions: weighted, total: weighted.reduce((sum, position) => sum + position.weight, 0), equatorY: lat >= 0 ? -1 : 1 };
+    }
+    // The share of probable sunlight hours (percent of `year.total`) reaching a wall point facing
+    // (nx, ny), over the year and in the winter months, from the obstruction elevations along
+    // wallDirections(nx, ny, stepDeg): a position counts when the sun is in front of the wall and
+    // above the obstruction in its direction.
+    function sunlightAt(year, bins, elevations) {
+        const tans = elevations.map(Math.tan);
+        let annual = 0, winter = 0;
+        year.positions.forEach((position, i) => {
+            const bin = bins[i];
+            if (bin < 0 || position.tan <= tans[bin]) return;
+            annual += position.weight;
+            if (position.winter) winter += position.weight;
+        });
+        return { annual: 100 * annual / year.total, winter: 100 * winter / year.total };
+    }
+    // Which of wallDirections(nx, ny, stepDeg) each of the year's sun positions lies in, -1 behind the wall.
+    function sunBins(year, nx, ny, stepDeg = MEASURE.skyStepDeg) {
+        const count = Math.round(180 / stepDeg);
+        return year.positions.map(({ dx, dy }) => {
+            const along = dx * nx + dy * ny;
+            if (along <= 0) return -1;
+            const phi = Math.atan2(nx * dy - ny * dx, along) / RAD;
+            return Math.min(count - 1, Math.max(0, Math.floor((phi + 90) / stepDeg)));
+        });
     }
     // Whether a ground point is in a solid's shadow for a sun position.
     function shades(solid, x, y, sun) {
@@ -343,11 +398,13 @@
     // The worst wall of a lot's buildings for each reading the place has a guide for: the sky a wall
     // facing the design sees before and after, the nearest facing wall of the design (and, before,
     // of what the design replaces), the angle the design rises to in front of a window (`angle`) and
-    // whether a building beside a window crosses its splay lines (`splay`). Each reading carries
+    // whether a building beside a window crosses its splay lines (`splay`), and the share of the
+    // year's probable sunlight hours a wall facing within the guide's angle of the noon sun gets
+    // (`sunlight`, with `year`: sunYear(...)). Each reading carries
     // `marks`, its drawing in local metres: the window, the guide's lines and planes, and what the
     // design does to them.
-    function wallReadings(lotBuildings, { kept, removed, design }, reachM, guides) {
-        let sky = null, distance = null, angle = null, splay = null;
+    function wallReadings(lotBuildings, { kept, removed, design }, reachM, guides, year) {
+        let sky = null, distance = null, angle = null, splay = null, sunlight = null;
         const loss = reading => reading.before ? reading.after / reading.before : 1;
         const h0 = MEASURE.windowHeightM;
         // A screening test whose place names the detailed reading that then decides ("then") is
@@ -366,9 +423,26 @@
                     reading.status = reading.after > reading.before + SAME.splay ? crossed('splay') : 'same';
                     if (worse(reading, splay)) splay = { ...reading, marks: splayMarks(point, wall, come, h0, guides.splay.degrees) };
                 }
-                if (!wall.faces) continue;
                 const closest = design.map(solid => solidSegmentClosest(solid, wall.a, wall.b)).reduce((a, b) => b.distance < a.distance ? b : a);
                 const after = closest.distance;
+                // What a point on the wall sees in each direction, swept once for both the sky and
+                // the sun: null when it sees neither the design nor what the design replaces.
+                let seen;
+                const sweep = () => seen !== undefined ? seen : (seen = view(wall, { kept, removed, design }, h0));
+                // Sunlight over the year, for a wall facing within the guide's angle of the noon sun.
+                if (guides.sunlight && year && after <= reachM && wall.ny * year.equatorY >= Math.cos(guides.sunlight.facingDeg * RAD) - 1e-9 && sweep()) {
+                    const bins = sunBins(year, wall.nx, wall.ny);
+                    const then = sunlightAt(year, bins, seen.stay.map((v, i) => Math.max(v, seen.went[i])));
+                    const now = sunlightAt(year, bins, seen.stay.map((v, i) => Math.max(v, seen.come[i])));
+                    const reading = { before: then.annual, after: now.annual, winterBefore: then.winter, winterAfter: now.winter, buildingId: building.id };
+                    reading.status = sunlightGrade(then, now, guides.sunlight);
+                    if (!sunlight || rank(reading.status) > rank(sunlight.status) || (rank(reading.status) === rank(sunlight.status) && reading.before - reading.after > sunlight.before - sunlight.after)) {
+                        // The sun the design takes: rays to its top edge in directions the sun comes from.
+                        const sunny = new Set(bins.filter((bin, i) => bin >= 0 && year.positions[i].weight > 0));
+                        sunlight = { ...reading, marks: lostRays(seen, h0, i => sunny.has(i)) };
+                    }
+                }
+                if (!wall.faces) continue;
                 const was = removed.length ? Math.min(...removed.map(solid => solidSegmentClosest(solid, wall.a, wall.b).distance)) : null;
                 if (guides.distance) {
                     const near = { before: was, after, guideM: guides.distance.metres, buildingId: building.id };
@@ -386,28 +460,49 @@
                     reading.status = reading.after > guides.angle.degrees + 1e-9 && reading.after > reading.before + SAME.angle ? crossed('angle') : 'same';
                     if (worse(reading, angle)) angle = { ...reading, marks: angleMarks(point, wall, come, h0, guides.angle.degrees) };
                 }
-                if (!guides.sky || after > reachM) continue;
-                const x = wall.mid[0] + wall.nx * 0.05, y = wall.mid[1] + wall.ny * 0.05;
-                const directions = wallDirections(wall.nx, wall.ny);
-                const reach = obstructionsReach(design, x, y, h0, directions);
-                const went = obstructions(removed, x, y, h0, directions), come = reach.map(top => top.elevation);
                 // A wall that sees neither the design nor what it replaces keeps its sky.
-                if (went.every(v => v === 0) && come.every(v => v === 0)) continue;
-                const byDistance = kept.map(solid => [boxDistance(solid.box, x, y), solid]).sort((a, b) => a[0] - b[0]).map(entry => entry[1]);
-                const stay = obstructions(byDistance, x, y, h0, directions);
+                if (!guides.sky || after > reachM || !sweep()) continue;
+                const { directions, stay, went, come } = seen;
                 const reading = { before: skyPercent(directions, stay.map((v, i) => Math.max(v, went[i]))),
                     after: skyPercent(directions, stay.map((v, i) => Math.max(v, come[i]))), buildingId: building.id };
                 reading.status = grade(reading.before, reading.after, guides.sky.percent, guides.sky.ratio, SAME.sky);
                 if (!sky || rank(reading.status) > rank(sky.status) || (rank(reading.status) === rank(sky.status) && loss(reading) < loss(sky))) {
-                    // The sky the design takes: a ray from the window to the design's top edge in
-                    // every third direction where the design stands above all else.
-                    const rays = reach.map((top, i) => ({ top, i })).filter(({ top, i }) => i % 3 === 1 && top.t !== null && top.elevation > Math.max(stay[i], went[i]))
-                        .map(({ top, i }) => ({ type: 'line', role: 'measured', points: [[x, y, h0], [x + directions[i].dx * top.t, y + directions[i].dy * top.t, top.heightM]] }));
-                    sky = { ...reading, marks: [{ type: 'point', role: 'window', points: [[x, y, h0]] }, ...rays] };
+                    sky = { ...reading, marks: lostRays(seen, h0, () => true) };
                 }
             }
         }
-        return { sky, distance, angle, splay };
+        return { sky, distance, angle, splay, sunlight };
+    }
+    // What a window point in the middle of a wall sees along wallDirections: the elevation of what
+    // stays (`stay`), what the design replaces (`went`) and the design (`come`, with `reach`: how far
+    // and how high), or null when it sees neither the design nor what it replaces.
+    function view(wall, { kept, removed, design }, h0) {
+        const x = wall.mid[0] + wall.nx * 0.05, y = wall.mid[1] + wall.ny * 0.05;
+        const directions = wallDirections(wall.nx, wall.ny);
+        const reach = obstructionsReach(design, x, y, h0, directions);
+        const went = obstructions(removed, x, y, h0, directions), come = reach.map(top => top.elevation);
+        if (went.every(v => v === 0) && come.every(v => v === 0)) return null;
+        const byDistance = kept.map(solid => [boxDistance(solid.box, x, y), solid]).sort((a, b) => a[0] - b[0]).map(entry => entry[1]);
+        return { x, y, directions, reach, went, come, stay: obstructions(byDistance, x, y, h0, directions) };
+    }
+    // What the design takes from a window drawn: the window, and a ray to the design's top edge in
+    // every third direction (of those `counts`) where the design stands above all else.
+    function lostRays({ x, y, directions, reach, stay, went }, h0, counts) {
+        const rays = reach.map((top, i) => ({ top, i })).filter(({ top, i }) => i % 3 === 1 && counts(i) && top.t !== null && top.elevation > Math.max(stay[i], went[i]))
+            .map(({ top, i }) => ({ type: 'line', role: 'measured', points: [[x, y, h0], [x + directions[i].dx * top.t, y + directions[i].dy * top.t, top.heightM]] }));
+        return [{ type: 'point', role: 'window', points: [[x, y, h0]] }, ...rays];
+    }
+    // Sunlight to a window against its guide (BRE BR 209 3.2.13): beyond it when the window gets less
+    // than `percent` of probable sunlight hours over the year and under `ratio` times before, or less
+    // than `winterPercent` in the winter months and under `ratio` times its winter before, and loses
+    // more than `lossPercent` of the year's; under a level within the guide otherwise ('below'), a
+    // loss that meets both levels ('minor'), or 'same'. `before`, `after`: sunlightAt(...).
+    function sunlightGrade(before, after, guide) {
+        const under = (now, was, level) => now < level - 1e-9 && now < guide.ratio * was - 1e-9;
+        const beyond = under(after.annual, before.annual, guide.percent) || under(after.winter, before.winter, guide.winterPercent);
+        if (beyond && before.annual - after.annual > guide.lossPercent + 1e-9) return 'fail';
+        if (!changed(before.annual, after.annual, SAME.sunlight) && !changed(before.winter, after.winter, SAME.sunlight)) return 'same';
+        return after.annual < guide.percent - 1e-9 || after.winter < guide.winterPercent - 1e-9 ? 'below' : 'minor';
     }
     // The angle test drawn: the window, the guide's plane rising from the wall at its angle, and the
     // line from the window to the top of what the design puts in front of it.
@@ -452,11 +547,12 @@
     // `site`: the design's parcels (lng/lat geometries). `lots`: [{ id, geometry }] around it.
     // `existing`: [{ id, geometry, heightM, estimated? }] buildings standing now; those on the site go
     // with the design. `guides`: the place's { garden?: { hours, share, ratio }, sky?: { percent,
-    // ratio }, distance?: { metres } }; a reading without a guide is not taken. `sun`: sunPath(...) for
-    // the garden guide's day. Answers { lots: [{ id, status, direction, distanceM, garden, sky,
+    // ratio }, sunlight?: { percent, winterPercent, ratio, lossPercent, facingDeg }, distance?: { metres }, … };
+    // a reading without a guide is not taken. `sun`: sunPath(...) for the garden guide's day. `year`:
+    // sunYear(...) from the place's sunshine records; without it there is no sunlight reading. Answers { lots: [{ id, status, direction, distanceM, garden, sky,
     // distance, estimatedHeights }], reachM, estimated } with only the lots whose readings change,
     // beyond a guide first, then by largest loss.
-    function assess({ site, lots, existing, proposed, sun, guides = {} }) {
+    function assess({ site, lots, existing, proposed, sun, year = null, guides = {} }) {
         const firstPoint = proposed.map(record => record.geometry?.type === 'Polygon' ? record.geometry.coordinates[0]?.[0]
             : record.geometry?.coordinates?.[0]?.[0]?.[0]).find(Boolean);
         if (!firstPoint) return { lots: [], reachM: 0, estimated: 0 };
@@ -485,8 +581,8 @@
             const near = solids => solids.filter(solid => boxesApart(solid.box, shape.box) <= MEASURE.maxReachM);
             const around = { kept: near(kept), removed: near(removed), design: near(design) };
             const garden = guides.garden && sun ? gardenReading(shape, around, sun, guides.garden) : null;
-            const walls = guides.sky || guides.distance || guides.angle || guides.splay ? wallReadings(lotBuildings, around, reachM, guides) : {};
-            const readings = { garden, sky: walls.sky || null, distance: walls.distance || null, angle: walls.angle || null, splay: walls.splay || null };
+            const walls = guides.sky || guides.distance || guides.angle || guides.splay || guides.sunlight ? wallReadings(lotBuildings, around, reachM, guides, year) : {};
+            const readings = { garden, sky: walls.sky || null, sunlight: walls.sunlight || null, distance: walls.distance || null, angle: walls.angle || null, splay: walls.splay || null };
             let status = worst(KINDS.map(kind => readings[kind]?.status));
             // A screening test crossed while the detailed reading still meets the guides: listed with
             // the plots that meet them.
@@ -508,7 +604,7 @@
     const COMPASS = ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'];
 
     // ---- Ranking ----
-    const KINDS = ['garden', 'sky', 'angle', 'splay', 'distance'];
+    const KINDS = ['garden', 'sunlight', 'sky', 'angle', 'splay', 'distance'];
     // How much one reading of a plot takes, 0–1: the share of its sunlit garden or sky lost, or for a
     // facing wall how far it now stands inside its guide. 0 when the reading did not change.
     function harmOf(lot, kind) {
@@ -541,5 +637,5 @@
         return GRADES.map(each => order(shown.filter(lot => gradeOf(lot) === each)));
     }
 
-    return { MEASURE, KINDS, GRADES, sunPath, skyComponent, assess, projector, harm, changes, arrange };
+    return { MEASURE, KINDS, GRADES, sunPath, sunYear, sunlightGrade, skyComponent, assess, projector, harm, changes, arrange };
 });

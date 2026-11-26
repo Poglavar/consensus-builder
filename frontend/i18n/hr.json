@@ -8838,6 +8838,7 @@
         "clear": "Nijedna susjedna čestica ne gubi sunce ni nebo, i nijedan nasuprotni zid ne dolazi bliže.",
         "kind": {
             "garden": "Sunce u vrtu",
+            "sunlight": "Sunce na prozoru kroz godinu",
             "sky": "Nebo s nasuprotnog zida",
             "angle": "Kut iznad nasuprotnog prozora",
             "splay": "Lepeza uz prozor",
@@ -8858,6 +8859,7 @@
         "plot": "Čestica na {{direction}}, udaljena {{distance}}",
         "garden": "Vrt s {{hours}} sata sunca na dan {{date}}: {{before}} → {{after}} (smjernica: {{share}}, ili {{ratio}} × prije)",
         "sky": "Nebo s nasuprotnog zida: {{before}} → {{after}} (smjernica: {{percent}}, ili {{ratio}} × prije)",
+        "sunlight": "Prozor dobiva {{after}} vjerojatnih sunčanih sati u godini, {{winterAfter}} zimi (prije: {{before}}, {{winterBefore}}; smjernica: {{percent}}, {{winterPercent}} zimi)",
         "distance": "Najbliži nasuprotni zid: {{before}} → {{after}} (smjernica: {{metres}})",
         "distanceNew": "Najbliži nasuprotni zid: {{after}}, prije nijedan (smjernica: {{metres}})",
         "angle": "Diže se {{after}} iznad nasuprotnog prozora, preko crte od {{degrees}} (prije: {{before}})",
@@ -8867,6 +8869,8 @@
         "heightsSurvey": "izmjerio {{source}}",
         "heightsSource": "iz izvora zgrada",
         "estimated": "Procijenjene visine obližnjih zgrada: {{count}}",
+        "sunshine": "Vjerojatni sunčani sati prema zapisima osunčanosti postaje {{station}}, {{period}} ({{source}}).",
+        "noSunshine": "Ovo mjesto ne pokrivaju zapisi osunčanosti, pa se sunce na prozorima kroz godinu ne mjeri.",
         "direction": {
             "n": "sjeveru",
             "ne": "sjeveroistoku",

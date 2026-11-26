@@ -8971,6 +8971,7 @@
         "clear": "Aucune parcelle voisine ne perd de soleil ni de ciel, et aucun mur en vis-à-vis ne se rapproche.",
         "kind": {
             "garden": "Soleil au jardin",
+            "sunlight": "Soleil sur une fenêtre au fil de l'année",
             "sky": "Ciel depuis le mur en vis-à-vis",
             "angle": "Angle au-dessus d'une fenêtre en vis-à-vis",
             "splay": "Éventail à côté d'une fenêtre",
@@ -8991,6 +8992,7 @@
         "plot": "Parcelle au {{direction}}, à {{distance}}",
         "garden": "Jardin avec {{hours}} heures de soleil le {{date}} : {{before}} → {{after}} (repère : {{share}}, ou {{ratio}} × avant)",
         "sky": "Ciel vu du mur en vis-à-vis : {{before}} → {{after}} (repère : {{percent}}, ou {{ratio}} × avant)",
+        "sunlight": "Une fenêtre reçoit {{after}} des heures d'ensoleillement probables de l'année, {{winterAfter}} en hiver (avant : {{before}}, {{winterBefore}} ; repère : {{percent}}, {{winterPercent}} en hiver)",
         "distance": "Mur en vis-à-vis le plus proche : {{before}} → {{after}} (repère : {{metres}})",
         "distanceNew": "Mur en vis-à-vis le plus proche : {{after}}, aucun avant (repère : {{metres}})",
         "angle": "S'élève à {{after}} au-dessus d'une fenêtre en vis-à-vis, au-delà de la ligne de {{degrees}} (avant : {{before}})",
@@ -9000,6 +9002,8 @@
         "heightsSurvey": "mesurées par {{source}}",
         "heightsSource": "issues des sources de bâtiments",
         "estimated": "Hauteurs estimées de bâtiments voisins : {{count}}",
+        "sunshine": "Heures d'ensoleillement probables d'après les relevés d'insolation de {{station}}, {{period}} ({{source}}).",
+        "noSunshine": "Aucun relevé d'insolation ne couvre ce lieu : le soleil sur les fenêtres au fil de l'année n'est pas mesuré.",
         "direction": {
             "n": "nord",
             "ne": "nord-est",

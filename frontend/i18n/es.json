@@ -8820,6 +8820,7 @@
         "clear": "Ninguna parcela vecina pierde sol ni cielo, y ninguna fachada enfrentada se acerca.",
         "kind": {
             "garden": "Sol en el jardín",
+            "sunlight": "Sol en una ventana a lo largo del año",
             "sky": "Cielo desde la fachada enfrentada",
             "angle": "Ángulo sobre una ventana enfrentada",
             "splay": "Abanico junto a una ventana",
@@ -8840,6 +8841,7 @@
         "plot": "Parcela al {{direction}}, a {{distance}}",
         "garden": "Jardín con {{hours}} horas de sol el {{date}}: {{before}} → {{after}} (guía: {{share}}, o {{ratio}} × antes)",
         "sky": "Cielo visto desde la fachada enfrentada: {{before}} → {{after}} (guía: {{percent}}, o {{ratio}} × antes)",
+        "sunlight": "Una ventana recibe {{after}} de las horas de sol probables del año, {{winterAfter}} en invierno (antes: {{before}}, {{winterBefore}}; guía: {{percent}}, {{winterPercent}} en invierno)",
         "distance": "Fachada enfrentada más cercana: {{before}} → {{after}} (guía: {{metres}})",
         "distanceNew": "Fachada enfrentada más cercana: {{after}}, ninguna antes (guía: {{metres}})",
         "angle": "Se eleva {{after}} sobre una ventana enfrentada, por encima de la línea de {{degrees}} (antes: {{before}})",
@@ -8849,6 +8851,8 @@
         "heightsSurvey": "medidas por {{source}}",
         "heightsSource": "de las fuentes de edificios",
         "estimated": "Alturas de edificios cercanos estimadas: {{count}}",
+        "sunshine": "Horas de sol probables según los registros de insolación de {{station}}, {{period}} ({{source}}).",
+        "noSunshine": "Ningún registro de insolación cubre este lugar, así que no se mide el sol en las ventanas a lo largo del año.",
         "direction": {
             "n": "norte",
             "ne": "noreste",

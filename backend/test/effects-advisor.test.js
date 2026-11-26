@@ -58,6 +58,26 @@ describe('Effects section', () => {
         expect(icons.some(name => name.includes('fa-cloud') && name.includes('--'))).toBe(false);
     });
 
+    it("states a window's sunlight over the year with its guide, and which sunshine records weigh it", () => {
+        const advisor = load();
+        const sunlightGuide = { percent: 25, winterPercent: 5, winter: { from: '09-21', to: '03-21' }, ratio: 0.8, lossPercent: 4, facingDeg: 90 };
+        const lot = { id: 'a', status: 'fail', direction: 's', distanceM: 6,
+            sunlight: { before: 60, after: 20, winterBefore: 20, winterAfter: 2, status: 'fail' } };
+        const station = { name: 'Heathrow', period: '1991-2020', source: { name: 'Met Office' } };
+        const result = { ...AFFECTED, lots: [lot], guides: { ...GUIDES, sunlight: sunlightGuide }, sunshine: station };
+        let section = element('section');
+        advisor.render(section, result);
+        let text = textOf(section);
+        expect(text).toContain('neighbourEffects.sunlight(20%|2%|60%|20%|25%|5%)');
+        expect(text).toContain('neighbourEffects.sunshine(Heathrow|1991-2020|Met Office)');
+        // A place no sunshine records cover says that the reading is not taken.
+        section = element('section');
+        advisor.render(section, { ...result, lots: [], status: 'clear', sunshine: null });
+        text = textOf(section);
+        expect(text).toContain('neighbourEffects.noSunshine');
+        expect(text).not.toContain('neighbourEffects.sunshine(');
+    });
+
     it('shows only the plots where one kind of reading changed when its filter is pressed', () => {
         const advisor = load();
         const section = element('section');

@@ -194,3 +194,63 @@ describe('effects on neighbouring plots', () => {
         expect(SUN.positions.every(position => position.altitude > 0)).toBe(true);
     });
 });
+
+// Sunlight to windows over the year (BRE BR 209 3.2): the sun weighted by the place's sunshine
+// records (frontend/data/sunshine-records.json), graded against England's sunlight guide.
+const STATION = JSON.parse(readFileSync(new URL('../../frontend/data/sunshine-records.json', import.meta.url), 'utf8')).stations[0];
+const YEAR = effects.sunYear(sunCalc, 2026, LAT, LNG, STATION.monthHours, ENGLAND.sunlight.winter);
+const assessYear = (proposed, guides = ENGLAND) => effects.assess({ site: [SITE], lots: [NORTH, FAR], existing: [NORTH_HOUSE, OLD_HOUSE], proposed, sun: SUN, year: YEAR, guides });
+
+describe('sunlight to windows over the year', () => {
+    it("weights the year's sun by each month's recorded sunshine, so open ground gets the records' total", () => {
+        const recorded = STATION.monthHours.reduce((sum, hours) => sum + hours, 0);
+        expect(YEAR.total).toBeCloseTo(recorded, 0);
+        expect(YEAR.equatorY).toBe(-1);
+        // 21 September to 21 March is winter: some positions are, some are not.
+        const winter = YEAR.positions.filter(position => position.winter).reduce((sum, position) => sum + position.weight, 0);
+        expect(winter / YEAR.total).toBeGreaterThan(0.2);
+        expect(winter / YEAR.total).toBeLessThan(0.4);
+    });
+
+    it('takes the sun a tall slab south of a window takes, beyond the guide', () => {
+        const [north] = assessYear([{ id: 'slab', geometry: rect(-100, 2, 110, 28), heightM: 60 }]).lots;
+        // The house's south wall saw the low two-storey house beyond the back line; a 60 m slab 22 m
+        // away rises 69° from the window, above London's highest sun, and blocks most of the year's.
+        // (At 30 m, 52°, the summer midday sun still clears it.)
+        expect(north.sunlight.before).toBeGreaterThan(25);
+        expect(north.sunlight.after).toBeLessThan(25);
+        expect(north.sunlight.before - north.sunlight.after).toBeGreaterThan(4);
+        expect(north.sunlight.winterAfter).toBeLessThan(north.sunlight.winterBefore);
+        expect(north.sunlight.status).toBe('fail');
+        expect(north.sunlight.marks.find(mark => mark.role === 'window')).toBeTruthy();
+        expect(north.sunlight.marks.filter(mark => mark.role === 'measured').length).toBeGreaterThan(0);
+    });
+
+    it('takes no sunlight reading for a window facing north, nor without sunshine records or a guide', () => {
+        // A slab north of the house, no wider than it: only its north wall sees it, and no sun
+        // comes from there.
+        const behind = [{ id: 'behind', geometry: rect(1, 64, 9, 90), heightM: 30 }];
+        const north = assessYear(behind).lots.find(lot => lot.id === 'north');
+        expect(north.sky).toBeTruthy();
+        expect(north.sunlight).toBeNull();
+        const slab = [{ id: 'slab', geometry: rect(-100, 2, 110, 28), heightM: 30 }];
+        expect(assess(slab).lots[0].sunlight).toBeNull();
+        const { sunlight, ...withoutSunlight } = ENGLAND;
+        expect(sunlight).toBeTruthy();
+        expect(assessYear(slab, withoutSunlight).lots[0].sunlight).toBeNull();
+    });
+
+    it("grades by BRE's tests: under 25 % or 5 % in winter, under 0.8 times before, and over 4 % lost in the year", () => {
+        const grade = (before, after) => effects.sunlightGrade(before, after, ENGLAND.sunlight);
+        expect(grade({ annual: 40, winter: 10 }, { annual: 20, winter: 4 })).toBe('fail');
+        // Winter alone under its level and its ratio, with more than 4 % lost over the year.
+        expect(grade({ annual: 40, winter: 10 }, { annual: 34, winter: 4 })).toBe('fail');
+        // Under the levels and the ratio, but only 4 % lost over the year: within the guide.
+        expect(grade({ annual: 18, winter: 3 }, { annual: 14, winter: 2 })).toBe('below');
+        // Under 25 % but at 0.8 times before or more: within the guide.
+        expect(grade({ annual: 28, winter: 8 }, { annual: 23, winter: 7 })).toBe('below');
+        // Still over both levels.
+        expect(grade({ annual: 50, winter: 15 }, { annual: 40, winter: 10 })).toBe('minor');
+        expect(grade({ annual: 50, winter: 15 }, { annual: 49.5, winter: 14.8 })).toBe('same');
+    });
+});

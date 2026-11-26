@@ -8792,6 +8792,7 @@
         "clear": "No neighbouring plot loses sunlight or sky, and no facing wall comes closer.",
         "kind": {
             "garden": "Garden sunlight",
+            "sunlight": "Sunlight to a window over the year",
             "sky": "Sky from facing wall",
             "angle": "Angle above a facing window",
             "splay": "Splay beside a window",
@@ -8812,6 +8813,7 @@
         "plot": "Plot to the {{direction}}, {{distance}} away",
         "garden": "Garden with {{hours}} hours of sun on {{date}}: {{before}} → {{after}} (guide: {{share}}, or {{ratio}} × before)",
         "sky": "Sky seen from the facing wall: {{before}} → {{after}} (guide: {{percent}}, or {{ratio}} × before)",
+        "sunlight": "A window gets {{after}} of the year's probable sunlight hours, {{winterAfter}} in winter (before: {{before}}, {{winterBefore}}; guide: {{percent}}, {{winterPercent}} in winter)",
         "distance": "Nearest facing wall: {{before}} → {{after}} (guide: {{metres}})",
         "distanceNew": "Nearest facing wall: {{after}}, none before (guide: {{metres}})",
         "angle": "Rises {{after}} above a facing window, over the {{degrees}} line (before: {{before}})",
@@ -8821,6 +8823,8 @@
         "heightsSurvey": "measured by {{source}}",
         "heightsSource": "from the building sources",
         "estimated": "Building heights nearby that are estimates: {{count}}",
+        "sunshine": "Probable sunlight hours from the {{station}} sunshine records, {{period}} ({{source}}).",
+        "noSunshine": "No sunshine records cover this place, so sunlight to windows over the year is not measured.",
         "direction": {
             "n": "north",
             "ne": "north-east",

@@ -48,6 +48,28 @@
         return sunLoading;
     }
 
+    // The sunshine records (data/sunshine-records.json), read once; the station whose coverage holds
+    // a point, or null. A failed read is logged, and then no sunlight-to-windows reading is taken.
+    const SUNSHINE_DATA = 'data/sunshine-records.json';
+    let stationsLoading = null;
+    function sunshineStation(lng, lat) {
+        stationsLoading ??= fetch(SUNSHINE_DATA, { cache: 'no-cache' })
+            .then(response => { if (!response.ok) throw new Error(`HTTP ${response.status}`); return response.json(); })
+            .then(data => Array.isArray(data?.stations) ? data.stations : [])
+            .catch(error => { console.error(`[${new Date().toISOString()}] [neighbour-effects] ${SUNSHINE_DATA} could not be read; sunlight to windows is not measured`, error); return []; });
+        return stationsLoading.then(stations => stations.find(({ coverage: { bbox: [w, s, e, n] = [] } = {} }) =>
+            lng >= w && lng <= e && lat >= s && lat <= n) || null);
+    }
+    // The year's sun weighted by a station's records, kept per station and place (to 0.01°).
+    const years = new Map();
+    async function sunlightYear(guide, lng, lat) {
+        const station = await sunshineStation(lng, lat);
+        if (!station) return { station: null, year: null };
+        const key = `${station.id}|${lng.toFixed(2)},${lat.toFixed(2)}`;
+        if (!years.has(key)) years.set(key, root.NeighbourEffects.sunYear(await sunCalc(), new Date().getUTCFullYear(), lat, lng, station.monthHours, guide.winter));
+        return { station, year: years.get(key) };
+    }
+
     const metresBox = (bbox, reachM) => {
         const [w, s, e, n] = bbox, dLat = reachM / 110540, dLng = reachM / (111320 * Math.cos((s + n) / 2 * Math.PI / 180));
         return [w - dLng, s - dLat, e + dLng, n + dLat];
@@ -121,12 +143,14 @@
         const existing = measured.map(standing);
         // The garden guide's day this year (MM-DD); the sun's path barely moves from year to year.
         const sun = guides.garden ? effects.sunPath(await sunCalc(), `${new Date().getUTCFullYear()}-${guides.garden.date}`, (bbox[1] + bbox[3]) / 2, (bbox[0] + bbox[2]) / 2) : null;
+        // Sunlight to windows needs the place's sunshine records; without them it is not measured.
+        const sunlight = guides.sunlight ? await sunlightYear(guides.sunlight, (bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2) : { station: null, year: null };
         const started = performance.now();
-        const result = await inWorker({ site, lots, existing, proposed, sun, guides });
+        const result = await inWorker({ site, lots, existing, proposed, sun, year: sunlight.year, guides });
         log(`${result.lots.length} of ${lots.length} plots affected, ${existing.length} buildings, ${Math.round(performance.now() - started)} ms`);
         const geometries = new Map(lots.map(lot => [lot.id, lot.geometry]));
         return { status: result.lots.length ? 'affected' : 'clear', ...result, guides, geometries,
-            surveys: [...new Set(existing.map(record => record.survey).filter(Boolean))] };
+            surveys: [...new Set(existing.map(record => record.survey).filter(Boolean))], sunshine: sunlight.station };
     }
 
     // The newest design waits for the running assessment and replaces any design queued behind it;
@@ -171,8 +195,8 @@
         return node;
     }
     // One icon per kind of reading, so a list can be read at a glance. Literal keys for the locale test.
-    const KIND_ICONS = { garden: 'fa-sun', sky: 'fa-cloud', angle: 'fa-angle-up', splay: 'fa-ruler-combined', distance: 'fa-left-right' };
-    const KIND_KEYS = { garden: 'neighbourEffects.kind.garden', sky: 'neighbourEffects.kind.sky', angle: 'neighbourEffects.kind.angle',
+    const KIND_ICONS = { garden: 'fa-sun', sunlight: 'fa-cloud-sun', sky: 'fa-cloud', angle: 'fa-angle-up', splay: 'fa-ruler-combined', distance: 'fa-left-right' };
+    const KIND_KEYS = { garden: 'neighbourEffects.kind.garden', sunlight: 'neighbourEffects.kind.sunlight', sky: 'neighbourEffects.kind.sky', angle: 'neighbourEffects.kind.angle',
         splay: 'neighbourEffects.kind.splay', distance: 'neighbourEffects.kind.distance' };
     function icon(kind, status) {
         const node = element('i', `fas ${KIND_ICONS[kind]} neighbour-effects__icon${status ? ` neighbour-effects__icon--${status}` : ''}`);
@@ -195,6 +219,8 @@
         if (kind === 'splay') return t('neighbourEffects.splay', { depth: reading(value.after), degrees: degrees(guides.splay.degrees) });
         if (kind === 'garden') return t('neighbourEffects.garden', { hours: format().formatNumber(guides.garden.hours), date: dayOf(guides.garden.date),
             before: share(value.before), after: share(value.after), share: share(guides.garden.share), ratio: ratio(guides.garden.ratio) });
+        if (kind === 'sunlight') return t('neighbourEffects.sunlight', { after: sky(value.after), winterAfter: sky(value.winterAfter),
+            before: sky(value.before), winterBefore: sky(value.winterBefore), percent: sky(guides.sunlight.percent), winterPercent: sky(guides.sunlight.winterPercent) });
         if (kind === 'sky') return t('neighbourEffects.sky', { before: sky(value.before), after: sky(value.after),
             percent: sky(guides.sky.percent), ratio: ratio(guides.sky.ratio) });
         return value.before === null ? t('neighbourEffects.distanceNew', { after: reading(value.after), metres: metres(guides.distance.metres) })
@@ -313,6 +339,10 @@
         const heights = result.surveys.length ? t('neighbourEffects.heightsSurvey', { source: result.surveys.join(', ') }) : t('neighbourEffects.heightsSource');
         container.append(element('p', 'neighbour-effects__basis', t('neighbourEffects.basis', { heights })));
         if (result.estimated) container.append(element('p', 'neighbour-effects__basis', t('neighbourEffects.estimated', { count: result.estimated })));
+        // Where the probable sunlight hours come from, or that no records cover the place.
+        if (result.guides?.sunlight) container.append(element('p', 'neighbour-effects__basis', result.sunshine
+            ? t('neighbourEffects.sunshine', { station: result.sunshine.name, period: result.sunshine.period, source: result.sunshine.source?.name || '' })
+            : t('neighbourEffects.noSunshine')));
     }
 
     // The affected plots drawn on `map`, coloured by how badly each is affected; replaces the last.

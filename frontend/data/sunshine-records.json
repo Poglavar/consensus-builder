@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "description": "Sunshine records: long-term mean sunshine hours per month at weather stations, which weight the sun's positions by how likely the sun is to be out (BRE BR 209's probable sunlight hours: 'allowing for average levels of cloudiness for the location in question, based on sunshine probability data'). A station answers inside its `coverage.bbox` [w,s,e,n] in WGS84; a place no station covers gets no sunlight-to-windows reading. `monthHours` runs January to December. Read by js/planning/effects-advisor.js; the calculation is NeighbourEffects.sunYear.",
+  "stations": [
+    {
+      "id": "gb-metoffice-heathrow",
+      "name": "Heathrow (London Airport)",
+      "lat": 51.479,
+      "lng": -0.449,
+      "period": "1991-2020",
+      "monthHours": [59.0, 75.9, 119.6, 169.3, 197.0, 196.6, 205.7, 192.4, 149.7, 110.5, 68.3, 53.2],
+      "derivation": "Mean of the station's monthly sunshine totals for 1991-2020: 30 years for each month, none estimated or missing.",
+      "coverage": {
+        "bbox": [-0.6, 51.25, 0.4, 51.75],
+        "note": "Greater London and its edge."
+      },
+      "source": {
+        "name": "Met Office historic station data",
+        "url": "https://www.metoffice.gov.uk/pub/data/weather/uk/climate/stationdata/heathrowdata.txt"
+      },
+      "licence": {
+        "name": "Open Government Licence v3.0",
+        "url": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+      },
+      "attribution": "Contains Met Office data © Crown copyright"
+    }
+  ]
+}

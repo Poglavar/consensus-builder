@@ -8971,6 +8971,7 @@
         "clear": "Nenhum lote vizinho perde sol nem céu, e nenhuma parede fronteira fica mais perto.",
         "kind": {
             "garden": "Sol no jardim",
+            "sunlight": "Sol numa janela ao longo do ano",
             "sky": "Céu da parede fronteira",
             "angle": "Ângulo acima de uma janela fronteira",
             "splay": "Leque junto a uma janela",
@@ -8991,6 +8992,7 @@
         "plot": "Lote a {{direction}}, a {{distance}}",
         "garden": "Jardim com {{hours}} horas de sol a {{date}}: {{before}} → {{after}} (referência: {{share}}, ou {{ratio}} × antes)",
         "sky": "Céu visto da parede fronteira: {{before}} → {{after}} (referência: {{percent}}, ou {{ratio}} × antes)",
+        "sunlight": "Uma janela recebe {{after}} das horas de sol prováveis do ano, {{winterAfter}} no inverno (antes: {{before}}, {{winterBefore}}; referência: {{percent}}, {{winterPercent}} no inverno)",
         "distance": "Parede fronteira mais próxima: {{before}} → {{after}} (referência: {{metres}})",
         "distanceNew": "Parede fronteira mais próxima: {{after}}, nenhuma antes (referência: {{metres}})",
         "angle": "Eleva-se a {{after}} acima de uma janela fronteira, além da linha de {{degrees}} (antes: {{before}})",
@@ -9000,6 +9002,8 @@
         "heightsSurvey": "medidas por {{source}}",
         "heightsSource": "das fontes de edifícios",
         "estimated": "Alturas estimadas de edifícios próximos: {{count}}",
+        "sunshine": "Horas de sol prováveis segundo os registos de insolação de {{station}}, {{period}} ({{source}}).",
+        "noSunshine": "Nenhum registo de insolação cobre este local, pelo que o sol nas janelas ao longo do ano não é medido.",
         "direction": {
             "n": "norte",
             "ne": "nordeste",
