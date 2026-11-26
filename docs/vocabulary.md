@@ -192,7 +192,7 @@ The configured service retaining the content the application pins on IPFS: commu
 
 ### Read gateway
 
-The HTTP service resolving an IPFS CID for a reader. `IPFS_READ_GATEWAY` selects generated asset URLs independently of the upload provider. Changing storage or gateway configuration does not change published content identifiers or rewrite existing URLs.
+The HTTP service resolving an IPFS CID for a reader. `IPFS_READ_GATEWAY` selects generated asset URLs independently of the upload provider. The chain reader tries its own ordered list in the browser (`IPFS_READ_GATEWAYS`) and trusts none of them: bytes are accepted only when they hash to the requested CID. Changing storage or gateway configuration does not change published content identifiers or rewrite existing URLs.
 
 ### CID
 
@@ -209,6 +209,10 @@ A hash committing to a named, versioned projection of content. Agreement approva
 ### Publication index
 
 A service's searchable projection of published records, their derived bindings and observed chain metadata. Index metadata and observations are distinct from the immutable bytes identified by the record's CID.
+
+### Chain reader
+
+The browser's reading of minted agreements without the publication index ([blockchain-flows.md](blockchain-flows.md), Flow 1): the agreement program's accounts listed from the chain (the Agreements tab's Source: On chain), and agreement, plan and design objects read by CID from read gateways. The agreement, plan and design loaders ask the publication index first and use the chain reader when the index is unreachable or does not hold the object. A design read this way has no index binding; one is derived in the browser where it is applied. Only minted agreements and the plans and designs they name are pinned, so only those are expected to be readable this way.
 
 ### Qualified chain reference
 

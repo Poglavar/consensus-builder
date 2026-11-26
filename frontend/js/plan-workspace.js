@@ -70,7 +70,8 @@
         const row = await resolve(plan);
         const existing=await publication(row);
         if(existing)return existing;
-        const known = await win.DesignSync.fetchDesigns(row.content.designCids);
+        // What the index holds, not what IPFS can supply: every design it lacks is published to it.
+        const known = await win.DesignSync.fetchDesigns(row.content.designCids, { indexOnly: true });
         // Check every dependency before publishing any. The same policy applies to single-design
         // publication.
         const records = win.PlanComposition.localRecords(row, { apiBase: backend() });

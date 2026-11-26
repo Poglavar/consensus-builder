@@ -342,4 +342,29 @@ describe('the Lists sheet', () => {
         await Promise.resolve(); await Promise.resolve();
         expect(f.win.previewRecordsOnMap.mock.calls.map(call => call[1])).toEqual(['list:plans:plan-b']);
     });
+
+    it('lists agreements from the chain when Source is On chain, with their status, until Reset', async () => {
+        const cid = 'bafkreibzljimrgcqmzvmsmn337hetk56oarx5ypanyd6gwtnuakjqxigf4';
+        const f = listsSheet({ serverAgreements: [{ cid: 'indexed-agreement', title: 'From the index', createdAt: '2026-11-17T09:10:11.000Z' }] });
+        const listAgreements = vi.fn(async () => [{ cid, createdAt: '2026-11-26T18:50:09.000Z', source: 'chain',
+            onchain: { chain: 'solana', cluster: 'devnet', account: 'Acc1', status: 'executed' } }]);
+        f.win.ChainReader = { cluster: () => 'devnet', listAgreements };
+        f.win.AgreementSync.shortCid = value => `${value.slice(0, 12)}…${value.slice(-6)}`;
+        f.win.AgreementPanel.chainStatusText = status => `Status: ${status}`;
+        await f.panel.select('agreements');
+        await vi.waitFor(() => expect(f.shown('agreement-list-host')).toEqual(['indexed-agreement']));
+        const source = () => f.doc.querySelector('[data-list-filter="source"]');
+        expect(source().value).toBe('index');
+        expect(source().parentNode.textContent).toContain('Source');
+        expect(source().querySelectorAll('option').map(option => option.textContent)).toEqual(['Server index', 'On chain (Solana devnet)']);
+        source().value = 'chain'; source().dispatchEvent({ type: 'change', target: source() });
+        await vi.waitFor(() => expect(f.shown('agreement-list-host')).toEqual([cid]));
+        expect(listAgreements).toHaveBeenCalledTimes(1);
+        expect(f.item(cid).querySelector('.lists-item__title').textContent).toBe('Agreement bafkreibzlji…qxigf4');
+        expect(f.item(cid).textContent).toContain('Status: executed');
+        expect(f.item(cid).querySelector('time.lists-item__timestamp').dateTime).toBe('2026-11-26T18:50:09.000Z');
+        f.doc.querySelector('#lists-filter-panel .btn-quiet').click();
+        await vi.waitFor(() => expect(f.shown('agreement-list-host')).toEqual(['indexed-agreement']));
+        expect(source().value).toBe('index');
+    });
 });
