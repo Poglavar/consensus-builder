@@ -282,7 +282,8 @@ in commits.
 ## MCP and chat agent
 
 - 2026-11-01: In-app chat agent (docs/chat-agent.md): runs in the API process and edits through public MCP tools over loopback (MCP improved for all agents where chat needs it); changes land at once with Undo; drafting/editing only; caps $5/day and 100 turns per IP per day; provider Anthropic or OpenAI; paid evals need a yes per run; cost displays debug-only (`CHAT_DEBUG_COSTS`).
-- ~2026-11-01: Mechaurbanista offers a real random starting parcel for unspecified sites and asks before continuing; landmark requests resolve real mapped geometry; it may prepare private agreements and record requested feedback, never publish or sign.
+- 2026-11-27 (user decision): the chat assistant is Hippodamus (after Hippodamus of Miletus, the grid planner), full name in each language's established form (Hipodam, Гипподам, Hipódamo, Hippodamos, هيبوداموس); its portrait (`assets/avatars/hippodamus.svg`, sage before a street grid) replaced the robot icon on the chat button, panel header and its messages; the AI-friendly badge keeps the robot.
+- ~2026-11-01: The chat assistant (then Mechaurbanista) offers a real random starting parcel for unspecified sites and asks before continuing; landmark requests resolve real mapped geometry; it may prepare private agreements and record requested feedback, never publish or sign.
 - 2026-10-28: Student AI assistance starts with one real agent operating the existing browser tab; hosted MCP stays for independent authoring; shared-draft sync deferred.
 - 2026-10-28: Accessible map editing: labelled native controls, searchable object lists, coordinate/metre moves, focus retention, announcements.
 - 2026-10-25: MCP named-plan tools operate on `plan/v1` independently of agreement ground and terms; private drafts persist with explicit expiry and export; reference publication checks the reviewed CID.

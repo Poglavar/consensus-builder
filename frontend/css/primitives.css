@@ -292,6 +292,17 @@
     mask-image: url('../assets/icons/station-underground.svg');
 }
 
+/* The chat assistant's portrait, in full colour on its own disc so it reads on light and dark themes. */
+.cb-avatar-hippodamus {
+    display: inline-block;
+    flex: none;
+    width: 1.5em;
+    height: 1.5em;
+    vertical-align: middle;
+    border-radius: 50%;
+    background: url('../assets/avatars/hippodamus.svg') center / contain no-repeat;
+}
+
 .btn-block {
     display: flex;
     width: 100%;

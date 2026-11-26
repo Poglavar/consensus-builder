@@ -31,7 +31,7 @@ async function openEditedParcelLayout(page: any) {
 }
 
 async function openChatByKeyboard(page: any) {
-  const button = page.getByRole('button', { name: 'Ask Mechaurbanista' });
+  const button = page.getByRole('button', { name: 'Ask Hippodamus' });
   await button.focus();
   await page.keyboard.press('Enter');
   const sheet = page.locator(selectors.chatSheet);
@@ -127,7 +127,7 @@ test('chat ignores stale navigation and plan events while parcel layout is open,
   });
 
   const modal = await openEditedParcelLayout(page);
-  await page.getByRole('button', { name: 'Ask Mechaurbanista' }).click();
+  await page.getByRole('button', { name: 'Ask Hippodamus' }).click();
   const sheet = page.locator(selectors.chatSheet);
   const composer = sheet.locator('.chat-input');
   await expect(composer).toBeVisible();

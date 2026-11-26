@@ -10504,7 +10504,7 @@
   }
 ,
   "chat": {
-    "title": "Pitajte Mechaurbanista",
+    "title": "Pitajte Hipodama",
     "intro": "Opišite promjenu plana na kojem radite.",
     "tips": {
       "title": "Pokušajte pitati",
@@ -10546,7 +10546,7 @@
     "planTitle": "Trenutačni rad",
     "roles": {
       "you": "Vi",
-      "agent": "Agent"
+      "agent": "Hipodam"
     },
     "errors": {
         "budget": "Dosegnut je dnevni limit za chat.",

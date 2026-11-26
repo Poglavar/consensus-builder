@@ -30,6 +30,8 @@
 .chat-message--user { background: var(--cb-primary-soft); color: var(--cb-primary-soft-ink); }
 .chat-message--agent { background: var(--cb-surface); color: var(--cb-text); }
 .chat-message p { margin: var(--cb-space-1) 0 0; }
+/* Who wrote the message; the assistant's portrait stands before its name. */
+.chat-message__author { display: inline-flex; align-items: center; gap: var(--cb-space-1); }
 .chat-copy-button { flex: 0 0 auto; margin-top: var(--cb-space-1); }
 .chat-options,
 .chat-controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cb-space-1); }

@@ -10476,7 +10476,7 @@
   }
 ,
   "chat": {
-    "title": "Pregúntale a Mechaurbanista",
+    "title": "Pregúntale a Hipódamo",
     "intro": "Describe un cambio para tu plan de trabajo.",
     "tips": {
       "title": "Prueba a pedir",
@@ -10516,7 +10516,7 @@
     "planTitle": "Trabajo actual",
     "roles": {
       "you": "Tú",
-      "agent": "Agente"
+      "agent": "Hipódamo"
     },
     "errors": {
         "budget": "Se alcanzó el presupuesto diario del chat.",

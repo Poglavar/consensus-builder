@@ -10455,7 +10455,7 @@
   }
 ,
   "chat": {
-    "title": "Demander à Mechaurbanista",
+    "title": "Demander à Hippodamos",
     "intro": "Décrivez une modification de votre plan de travail.",
     "tips": {
       "title": "Essayez de demander",
@@ -10495,7 +10495,7 @@
     "planTitle": "Travail en cours",
     "roles": {
       "you": "Vous",
-      "agent": "Agent"
+      "agent": "Hippodamos"
     },
     "errors": {
         "budget": "Le budget quotidien du chat est atteint.",

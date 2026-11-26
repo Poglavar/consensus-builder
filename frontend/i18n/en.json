@@ -10404,8 +10404,8 @@
   }
 ,
   "chat": {
-    "title": "Ask Mechaurbanista",
-    "intro": "Tell the agent what you want to change.",
+    "title": "Ask Hippodamus",
+    "intro": "Tell Hippodamus what you want to change.",
     "tips": {
       "title": "Try asking",
       "design": "Design a park on the selected parcels or move a building 50 m north.",
@@ -10444,7 +10444,7 @@
     "planTitle": "Current work",
     "roles": {
       "you": "You",
-      "agent": "Agent"
+      "agent": "Hippodamus"
     },
     "errors": {
       "budget": "The daily chat budget has been reached.",

@@ -372,6 +372,16 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     color: var(--cb-text);
 }
 
+/* A button whose content is a portrait fills the round button instead of padding an icon. */
+.map-shell-button--avatar {
+    padding: 0;
+}
+
+.map-shell-button--avatar .cb-avatar-hippodamus {
+    width: calc(var(--map-shell-button-size) - 8px);
+    height: calc(var(--map-shell-button-size) - 8px);
+}
+
 /* The view's zoom, a small bubble pinned to the Layers button's corner (js/ui/view-zoom.js). */
 .map-shell-button-zoom {
     position: absolute;

@@ -265,7 +265,10 @@
         messages.replaceChildren();
         state.messages.forEach(message => {
             const article = node('article', `chat-message chat-message--${message.role}`);
-            article.append(node('strong', '', t(message.role === 'user' ? 'chat.roles.you' : 'chat.roles.agent')));
+            const author = node('strong', 'chat-message__author');
+            if (message.role === 'agent') { const avatar = node('i', 'cb-avatar-hippodamus'); avatar.setAttribute('aria-hidden', 'true'); author.append(avatar); }
+            author.append(t(message.role === 'user' ? 'chat.roles.you' : 'chat.roles.agent'));
+            article.append(author);
             if (message.text) article.append(node('p', '', message.text));
             if (message.pending) article.append(node('p', '', t('chat.working')));
             if (state.conversation?.debugCosts === true && message.steps?.length) {

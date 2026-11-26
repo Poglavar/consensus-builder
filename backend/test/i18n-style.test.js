@@ -34,8 +34,8 @@ describe('en.json copy rules', () => {
             .toEqual({ titleCaseLabels: Math.min(list.length, ceiling), ceiling, sample: [] });
     });
 
-    it('recognizes Mechaurbanista as the named chat assistant', () => {
-        expect(titleCaseLabels(en)).not.toContain('chat.title = Ask Mechaurbanista');
+    it('recognizes Hippodamus as the named chat assistant', () => {
+        expect(titleCaseLabels(en)).not.toContain('chat.title = Ask Hippodamus');
     });
 
     it('does not add case conflicts (the same words with different capitals)', () => {
