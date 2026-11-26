@@ -18,6 +18,9 @@
 .neighbour-effects__headline { margin: var(--cb-space-1) 0 0; font-weight: 600; }
 .neighbour-effects__plots { margin: var(--cb-space-1) 0 0; padding-left: var(--cb-space-3); }
 .neighbour-effects__plot { margin: 0 0 var(--cb-space-1); }
+/* A plot's name points at it on the map (hover, focus, click to keep it highlighted). */
+.neighbour-effects__name { font-weight: 600; text-align: start; color: inherit; }
+.neighbour-effects__name[aria-pressed="true"] { outline: 2px solid currentColor; outline-offset: 2px; border-radius: var(--cb-radius-sm); }
 .neighbour-effects__status { font-size: var(--cb-text-xs); }
 .neighbour-effects__plot--fail .neighbour-effects__status { font-weight: 600; }
 .neighbour-effects__readings { margin: 0; padding-left: var(--cb-space-3); }
@@ -28,6 +31,7 @@
 .neighbour-effect { stroke-width: 2px; fill-opacity: 0.25; }
 .neighbour-effect--fail { stroke: var(--cb-danger); fill: var(--cb-danger); }
 .neighbour-effect--worse { stroke: var(--cb-warning); fill: var(--cb-warning); }
+.neighbour-effect--focus { stroke-width: 5px; fill-opacity: 0.6; }
 
 /* The Effects button and section on a plan or design card (js/ui/plan-analysis-controls.js effects). */
 .plan-effects { margin-top: var(--cb-space-2); }

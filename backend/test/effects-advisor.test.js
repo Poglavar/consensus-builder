@@ -54,6 +54,59 @@ describe('Effects section', () => {
     });
 });
 
+describe('Plots in the list point at the map', () => {
+    // A geoJSON layer stand-in: one path per feature, its element's classes and the view it pans.
+    function withMap(advisor, window) {
+        const paths = [];
+        window.L = { geoJSON: data => ({
+            addTo() { return this; }, remove() {},
+            eachLayer(visit) {
+                for (const feature of data.features) {
+                    const classes = new Set();
+                    const path = { feature, bringToFront: vi.fn(), getBounds: () => ({ getCenter: () => feature.properties.id }),
+                        getElement: () => ({ classList: { toggle: (name, on) => (on ? classes.add(name) : classes.delete(name)), contains: name => classes.has(name) } }) };
+                    path.lit = () => classes.has('neighbour-effect--focus');
+                    paths.push(path);
+                    visit(path);
+                }
+            } }) };
+        const map = { panTo: vi.fn(), getBounds: () => ({ contains: () => false }) };
+        return { paths, map };
+    }
+    function loadWithWindow() {
+        const window = { i18n: { t: (key, params = {}) => `${key}(${Object.values(params).join('|')})` }, CbFormat: format };
+        new Function('window', 'document', source)(window, { createElement: element });
+        return { advisor: window.NeighbourEffectsAdvisor, window };
+    }
+    const TWO = { ...AFFECTED, geometries: new Map([['a', { type: 'Polygon' }], ['b', { type: 'Polygon' }]]),
+        lots: [AFFECTED.lots[0], { ...AFFECTED.lots[0], id: 'b', direction: 's' }] };
+
+    it('highlights a plot while its name is hovered, and keeps it on a click', () => {
+        const { advisor, window } = loadWithWindow();
+        const { paths, map } = withMap(advisor, window);
+        const section = element('section');
+        section.querySelectorAll = () => names;
+        advisor.render(section, TWO);
+        advisor.show(map, TWO);
+        const items = section.children.find(child => child.tag === 'ul').children;
+        const names = items.map(item => item.children[0]);
+        expect(names.map(name => name.tag)).toEqual(['button', 'button']);
+        const [a, b] = paths;
+        names[1].onmouseenter();
+        expect(b.lit()).toBe(true);
+        expect(a.lit()).toBe(false);
+        names[1].onmouseleave();
+        expect(b.lit()).toBe(false);
+        names[0].onclick();
+        names[0].onmouseleave();
+        expect(a.lit()).toBe(true);
+        expect(names[0].attributes['aria-pressed']).toBe('true');
+        expect(map.panTo).toHaveBeenCalledWith('a');
+        names[0].onclick();
+        expect(a.lit()).toBe(false);
+    });
+});
+
 describe('Effects on a saved plan', () => {
     it("assesses the plan's new buildings and shows the result in the section and on the map", async () => {
         const records = [{ proposalId: 'p1' }];

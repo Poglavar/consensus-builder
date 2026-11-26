@@ -124,6 +124,8 @@
     // One decimal: 26.6 % is under the 27 % guide, and must not read as 27 %.
     const sky = value => format().formatPercent(value, { ofHundred: true, maxFractionDigits: 1 });
     const metres = value => format().formatLength(value, { maxFractionDigits: 0 });
+    // Readings to a tenth: 13.4 m → 12.8 m is a change, and must not read as 13 m → 13 m.
+    const reading = value => format().formatLength(value, { maxFractionDigits: 1 });
     // Literal keys so the locale coverage test sees each one.
     const DIRECTION_KEYS = { n: 'neighbourEffects.direction.n', ne: 'neighbourEffects.direction.ne', e: 'neighbourEffects.direction.e', se: 'neighbourEffects.direction.se',
         s: 'neighbourEffects.direction.s', sw: 'neighbourEffects.direction.sw', w: 'neighbourEffects.direction.w', nw: 'neighbourEffects.direction.nw' };
@@ -139,8 +141,8 @@
         if (lot.garden && lot.garden.status !== 'same') lines.push([lot.garden.status, t('neighbourEffects.garden', { before: share(lot.garden.before), after: share(lot.garden.after) })]);
         if (lot.sky && lot.sky.status !== 'same') lines.push([lot.sky.status, t('neighbourEffects.sky', { before: sky(lot.sky.before), after: sky(lot.sky.after) })]);
         if (lot.distance && lot.distance.status !== 'same') lines.push([lot.distance.status, lot.distance.before === null
-            ? t('neighbourEffects.distanceNew', { after: metres(lot.distance.after) })
-            : t('neighbourEffects.distance', { before: metres(lot.distance.before), after: metres(lot.distance.after) })]);
+            ? t('neighbourEffects.distanceNew', { after: reading(lot.distance.after) })
+            : t('neighbourEffects.distance', { before: reading(lot.distance.before), after: reading(lot.distance.after) })]);
         return lines;
     }
     // Fills `container`: a heading, a line per affected plot (worst first) with its changed readings,
@@ -161,8 +163,18 @@
             const list = element('ul', 'neighbour-effects__plots');
             for (const lot of result.lots) {
                 const item = element('li', `neighbour-effects__plot neighbour-effects__plot--${lot.status}`);
-                item.append(element('strong', 'neighbour-effects__name', t('neighbourEffects.plot', { direction: t(DIRECTION_KEYS[lot.direction]), distance: metres(lot.distanceM) })),
-                    ' ', element('span', 'neighbour-effects__status', t(STATUS_KEYS[lot.status])));
+                // The plot's name points at it on the map: hover or focus highlights it, a click keeps
+                // it highlighted and brings it into view.
+                const name = element('button', 'cb-link neighbour-effects__name', t('neighbourEffects.plot', { direction: t(DIRECTION_KEYS[lot.direction]), distance: metres(lot.distanceM) }));
+                name.type = 'button';
+                name.dataset.plotId = lot.id;
+                name.setAttribute('aria-pressed', 'false');
+                name.addEventListener('mouseenter', () => highlight(lot.id, true));
+                name.addEventListener('focus', () => highlight(lot.id, true));
+                name.addEventListener('mouseleave', () => highlight(lot.id, false));
+                name.addEventListener('blur', () => highlight(lot.id, false));
+                name.addEventListener('click', () => pin(lot.id, container));
+                item.append(name, ' ', element('span', 'neighbour-effects__status', t(STATUS_KEYS[lot.status])));
                 const lines = element('ul', 'neighbour-effects__readings');
                 for (const [lineStatus, text] of readings(lot)) lines.append(element('li', `neighbour-effects__reading neighbour-effects__reading--${lineStatus}`, text));
                 item.append(lines);
@@ -176,19 +188,47 @@
     }
 
     // The affected plots drawn on `map`, coloured by how badly each is affected; replaces the last.
-    let layer = null;
+    // Each plot's path is kept by its id, for the list to point at.
+    let layer = null, shownOn = null, pinned = null;
+    const plotLayers = new Map();
     function show(map, result) {
         clear();
         if (!map || !result?.lots?.length) return;
+        shownOn = map;
         layer = root.L.geoJSON({ type: 'FeatureCollection', features: result.lots.map(lot => ({ type: 'Feature',
-            properties: { status: lot.status }, geometry: result.geometries.get(lot.id) })).filter(feature => feature.geometry) }, {
+            properties: { id: lot.id, status: lot.status }, geometry: result.geometries.get(lot.id) })).filter(feature => feature.geometry) }, {
             interactive: false,
             style: feature => ({ className: `neighbour-effect ${STATUS_CLASS[feature.properties.status] || ''}` })
         }).addTo(map);
+        layer.eachLayer(path => plotLayers.set(path.feature.properties.id, path));
     }
     function clear() {
         if (layer) { layer.remove(); layer = null; }
+        plotLayers.clear();
+        shownOn = null;
+        pinned = null;
+    }
+    // A plot stands out on the map while the list points at it; the pinned one stays out.
+    function highlight(id, on) {
+        const path = plotLayers.get(id);
+        if (!path) return;
+        const lit = on || pinned === id;
+        path.getElement?.()?.classList.toggle('neighbour-effect--focus', lit);
+        if (lit) path.bringToFront?.();
+    }
+    // A click on a plot's name: it stays highlighted (another click lets go) and comes into view.
+    function pin(id, container) {
+        const previous = pinned;
+        pinned = previous === id ? null : id;
+        if (previous && previous !== id) highlight(previous, false);
+        highlight(id, pinned === id);
+        for (const name of container.querySelectorAll?.('.neighbour-effects__name') || []) name.setAttribute('aria-pressed', String(name.dataset.plotId === pinned));
+        const path = plotLayers.get(id);
+        if (pinned === id && path && shownOn) {
+            const bounds = path.getBounds();
+            if (!shownOn.getBounds().contains(bounds)) shownOn.panTo(bounds.getCenter());
+        }
     }
 
-    root.NeighbourEffectsAdvisor = { assess, assessDesign, render, show, clear };
+    root.NeighbourEffectsAdvisor = { assess, assessDesign, render, show, clear, highlight, pin };
 })(window);
