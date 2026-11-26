@@ -160,7 +160,7 @@ describe('the lens decision', () => {
     it('settles the minted agreement on chain: the program records it and executes', async () => {
         const chain = createAgreementChain();
         const minted = await mintAgreement({
-            connection: chain.connection, sponsorKeypair: owner, cid: agreement.cid, lenses: [LENS], lensThreshold: 1, deadline: agreement.content.deadline,
+            connection: chain.connection, sponsorKeypair: owner, cid: agreement.cid, planCid: agreement.content.planCid, lenses: [LENS], lensThreshold: 1, deadline: agreement.content.deadline,
             lamports: '1000', sendAndConfirm: chain.sendAndConfirm
         });
         await ensureOwnerApproval({ index, serviceUrl: SERVICE, lensKey: LENS, cid: agreement.cid, content: agreement.content, keypair: owner, fetchImpl: lensFetch });

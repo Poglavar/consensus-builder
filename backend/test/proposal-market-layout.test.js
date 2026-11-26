@@ -48,9 +48,9 @@ describe('the Agreement account the market and pledge programs read', () => {
         const o = layout.offsets;
         expect({ authority: o.authority, lens: o.lens, payout: o.payout, deadline: o.deadline, status: o.status, decision: o.decision,
             lensCount: o.lens_count, lensThreshold: o.lens_threshold, lensConfirmed: o.lens_confirmed, moreLenses: o.more_lenses,
-            fundingMint: o.funding_mint, requiredFunding: o.required_funding, cid: o.cid }).toEqual(agreementClient.AGREEMENT_OFFSETS);
+            fundingMint: o.funding_mint, requiredFunding: o.required_funding, planCidHash: o.plan_cid_hash, cid: o.cid }).toEqual(agreementClient.AGREEMENT_OFFSETS);
         expect(o.status).toBe(136);
-        // Every fixed field comes before the CID, which ends the 580-byte account (CID at most 64 bytes).
+        // Every fixed field comes before the CID, which ends the 612-byte account (CID at most 64 bytes).
         expect(o.cid + 4 + 64).toBe(agreementClient.constants.AGREEMENT_ACCOUNT_SPACE);
         expect(layout.MAX_LENSES).toBe(agreementClient.constants.MAX_LENSES);
     });

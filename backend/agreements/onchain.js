@@ -17,21 +17,19 @@ export const AgreementClient = require('../../frontend/js/solana/agreement-clien
 
 export const AGREEMENT_PROGRAM_ID = AgreementClient.constants.AGREEMENT_PROGRAM_ID;
 export const DEVNET_GENESIS_HASH = 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG';
-// The agreement program before the lens-set redeploy of 2026-11-25 (single-lens, 296-byte accounts).
-export const OLD_AGREEMENT_PROGRAM_ID = 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ';
+// The agreement program the current one superseded (frontend/js/solana/program-ids.js lists them all).
+export const OLD_AGREEMENT_PROGRAM_ID = AgreementClient.constants.RETIRED_AGREEMENT_PROGRAM_IDS[0];
 
-// Every agreement program the index has recorded agreements on, newest first. Exactly one is `current`:
-// the program agreements are minted on and read from (AGREEMENT_PROGRAM_ID). A `retired` program stays
-// deployed with its accounts, but the index reads rows naming it as unminted and the lifecycle oracle no
-// longer reads them; the land events it attested stay in parcel history (oracle/parcel-history.js). A
-// redeploy at a new address adds its id here as current and marks the one before it retired.
+// Every agreement program the index has recorded agreements on, newest first, from the one list of
+// program ids (frontend/js/solana/program-ids.js). Exactly one is `current`: the program agreements are
+// minted on and read from (AGREEMENT_PROGRAM_ID). A `retired` program stays deployed with its accounts,
+// but the index reads rows naming it as unminted and the lifecycle oracle no longer reads them; the land
+// events it attested stay in parcel history (oracle/parcel-history.js). A redeploy at a new address
+// changes program-ids.js only.
 export const AGREEMENT_PROGRAMS = Object.freeze([
-    Object.freeze({ programId: AGREEMENT_PROGRAM_ID, cluster: 'devnet', status: 'current', since: '2026-11-25' }),
-    Object.freeze({ programId: OLD_AGREEMENT_PROGRAM_ID, cluster: 'devnet', status: 'retired', retiredAt: '2026-11-25' })
+    Object.freeze({ programId: AGREEMENT_PROGRAM_ID, cluster: 'devnet', status: 'current' }),
+    ...AgreementClient.constants.RETIRED_AGREEMENT_PROGRAM_IDS.map(programId => Object.freeze({ programId, cluster: 'devnet', status: 'retired' }))
 ]);
-if (AGREEMENT_PROGRAMS.filter(program => program.status === 'current').length !== 1 || AGREEMENT_PROGRAMS[0].programId !== AGREEMENT_PROGRAM_ID) {
-    throw new Error('AGREEMENT_PROGRAMS must list agreement-client.js AGREEMENT_PROGRAM_ID first, as the one current program');
-}
 
 /** The AGREEMENT_PROGRAMS entry of a program id, or null for any other program. */
 export function agreementProgramOf(programId) {
@@ -249,6 +247,13 @@ export function createAgreementChain({ cluster = 'devnet', env = process.env, co
         readAccounts,
         async readAccount(address) {
             return (await readAccounts([address], { batchSize: 1 }))[0];
+        },
+        // Every agreement account whose sponsor named `planCid` at create, decoded, oldest first: one
+        // getProgramAccounts with a memcmp on the plan CID hash (AgreementClient.fetchAgreementsForPlan).
+        // The hash is the sponsor's claim; check it against each agreement object's planCid before relying
+        // on it. The RPC must serve getProgramAccounts.
+        async agreementsForPlan(planCid) {
+            return AgreementClient.fetchAgreementsForPlan(await ready(), planCid, { programId });
         },
         // Whether a reported transaction succeeded and names the account: 'ok', 'not-found' (unknown to
         // the RPC, perhaps not yet), 'failed' or 'unrelated'.

@@ -35,6 +35,13 @@
 //! names both the CID and the sponsor, so it settles only PDA(sponsor, cid): another wallet's
 //! account for the same CID can never record that decision.
 //!
+//! Plan: `create` takes the CID of the plan the agreement names (agreement/v1 `planCid`) and stores
+//! its sha256 (`plan_cid_hash`, the same hash as `cid_seed`) at a fixed offset (PLAN_CID_HASH_OFFSET),
+//! so a getProgramAccounts memcmp finds every agreement backing a plan without any server. It is
+//! the sponsor's claim, frozen at create: the program checks only that it is a well-formed CID, not
+//! that the agreement object on IPFS names that plan, so readers compare it with the object's
+//! `planCid` before trusting it.
+//!
 //! Escrow: the agreement account itself holds the funded lamports on top of its rent
 //! (proposal_nft's pattern); `escrow_lamports` counts what `fund` brought in, and only that is paid
 //! out: to `payout` at execution, back to the authority (the one wallet that paid) on cancel or
@@ -66,9 +73,9 @@ use anchor_lang::system_program;
 use anchor_lang::Discriminator;
 use sas_attestation::{PayloadReader, SasError, SAS_PROGRAM_ID};
 
-// Placeholder id, never deployed. Whoever deploys generates the program keypair and replaces it here,
-// in Anchor.toml and in frontend/js/solana/agreement-client.js (programs/agreement/README.md, "Program id").
-declare_id!("ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH");
+// Whoever deploys at a new address replaces it here, in Anchor.toml and in
+// frontend/js/solana/program-ids.js (programs/agreement/README.md, "Program id").
+declare_id!("6X5ihiKNpsF39eYzWGaw7swgYa6vouZ8gT1LHB5H86Cb");
 
 pub const AGREEMENT_SEED: &[u8] = b"agreement";
 /// Longest CID an agreement can store (a raw sha2-256 CIDv1 in base32 is 59 bytes).
@@ -91,7 +98,7 @@ pub const MORE_LENSES: usize = MAX_LENSES - 1;
 /// proposal_pledge, whose donation escrow `confirm_funding` reads. That program depends on this
 /// crate, so its id and the escrow layout are restated here; proposal_pledge's tests assert they
 /// match its own (proposal_pledge::tests).
-pub const PLEDGE_PROGRAM_ID: Pubkey = pubkey!("5RvXB53atCdCkDEydpvgUDz4Ph6uFUVyMgpjdSzNwXAq");
+pub const PLEDGE_PROGRAM_ID: Pubkey = pubkey!("DY4zKtE1hucUHsQGDhQmBaH3ZdAaeusnmj9HzVtpmYnK");
 pub const DONATION_ESCROW_SEED: &[u8] = b"donation_escrow";
 /// DonationEscrow: discriminator, then proposal, beneficiary, mint, vault (4 × 32), then
 /// total_donated, total_released, total_refunded, donation_count, donor_count (5 × u64), released.
@@ -111,7 +118,8 @@ pub mod agreement {
     use super::*;
 
     /// Commit an agreement to the chain at PDA ["agreement", authority, sha256(cid)], the signing
-    /// authority being its sponsor. `lenses` are the 0-8 distinct member keys whose
+    /// authority being its sponsor. `plan_cid` is the CID of the plan the agreement names, stored
+    /// as its sha256 (`plan_cid_hash`; the sponsor's claim, see the module docs). `lenses` are the 0-8 distinct member keys whose
     /// AgreementDecision attestations settle it, and `lens_threshold` how many of them must confirm
     /// (1..=members; 0 with no members). No members is allowed only with a contribution target.
     /// `deadline` is unix seconds in the future (mandatory: an agreement that can never expire
@@ -125,6 +133,7 @@ pub mod agreement {
     pub fn create(
         ctx: Context<Create>,
         cid: String,
+        plan_cid: String,
         lenses: Vec<Pubkey>,
         lens_threshold: u8,
         deadline: i64,
@@ -136,6 +145,7 @@ pub mod agreement {
     ) -> Result<()> {
         let now = Clock::get()?.unix_timestamp;
         require_valid_cid(&cid)?;
+        require_valid_cid(&plan_cid)?;
         require_valid_lens(&lenses, lens_threshold, required_funding)?;
         require!(
             (required_funding == 0) == (funding_mint == Pubkey::default()),
@@ -166,6 +176,7 @@ pub mod agreement {
         agreement.funding_met = false;
         agreement.funding_observed = 0;
         agreement.funding_met_at = 0;
+        agreement.plan_cid_hash = cid_seed(&plan_cid);
         agreement.payout = payout;
         agreement.deadline = deadline;
         agreement.created_at = now;
@@ -185,6 +196,7 @@ pub mod agreement {
         emit!(AgreementCreated {
             agreement: agreement_key,
             cid: agreement.cid.clone(),
+            plan_cid,
             authority,
             lenses,
             lens_threshold,
@@ -559,7 +571,7 @@ pub struct Expire<'info> {
 
 /// One agreement: PDA ["agreement", authority, sha256(cid)]. Every fixed-size field comes before
 /// `cid`, so their offsets are the same in every account (README, "Agreement account") and memcmp
-/// filters on authority, the first lens member or status work. The header up to `bump` keeps the
+/// filters on authority, the first lens member, status or the plan CID hash work. The header up to `bump` keeps the
 /// offsets proposal_market and proposal_pledge read.
 #[account]
 #[derive(InitSpace)]
@@ -614,6 +626,9 @@ pub struct Agreement {
     pub funding_observed: u64,
     /// Chain time of that confirmation (0 until confirmed).
     pub funding_met_at: i64,
+    /// sha256 of the plan CID the sponsor named at create (UTF-8, as `cid_seed`), at
+    /// PLAN_CID_HASH_OFFSET: the memcmp key for "agreements of this plan". Frozen at create.
+    pub plan_cid_hash: [u8; 32],
     /// The agreement's CIDv1 (`bafkrei…`), the IPFS object this account commits to.
     #[max_len(MAX_CID_LEN)]
     pub cid: String,
@@ -670,6 +685,11 @@ pub const LENS_CONFIRMED_OFFSET: usize = LENS_THRESHOLD_OFFSET + 1;
 pub const MORE_LENSES_OFFSET: usize = LENS_CONFIRMED_OFFSET + 1;
 /// End of the lens set: the view reads nothing past it.
 pub const LENS_SET_END: usize = MORE_LENSES_OFFSET + MORE_LENSES * 32;
+/// Byte offset of `plan_cid_hash` (512): after the contribution target (funding_mint 32,
+/// required_funding 8, funding_met 1, funding_observed 8, funding_met_at 8), before `cid`.
+pub const PLAN_CID_HASH_OFFSET: usize = LENS_SET_END + 32 + 8 + 1 + 8 + 8;
+/// Byte offset of `cid` (its u32 length prefix), the one variable-length field, last.
+pub const CID_OFFSET: usize = PLAN_CID_HASH_OFFSET + 32;
 
 /// What proposal_market and proposal_pledge read of an Agreement account, without deserializing
 /// it (they depend on this crate with `no-entrypoint`, so the id and layout live only here).
@@ -755,6 +775,8 @@ pub enum Decision {
 pub struct AgreementCreated {
     pub agreement: Pubkey,
     pub cid: String,
+    /// The plan the sponsor says the agreement names (stored as `plan_cid_hash`).
+    pub plan_cid: String,
     pub authority: Pubkey,
     pub lenses: Vec<Pubkey>,
     pub lens_threshold: u8,
@@ -1116,6 +1138,7 @@ mod agreement_view_tests {
             funding_met: false,
             funding_observed: 0,
             funding_met_at: 0,
+            plan_cid_hash: [0; 32],
             cid: String::new(),
         }
     }
@@ -1168,6 +1191,23 @@ mod agreement_view_tests {
         assert_eq!(data[LENS_THRESHOLD_OFFSET], 1);
         assert_eq!(data[LENS_CONFIRMED_OFFSET], 0b10);
         assert_eq!(&data[LENS_SET_END - 32..LENS_SET_END], &[0x99; 32]);
+    }
+
+    #[test]
+    fn plan_cid_hash_sits_at_its_fixed_offset_before_the_cid() {
+        let mut agreement = blank();
+        agreement.funding_met_at = -1;
+        agreement.plan_cid_hash = cid_seed("bafkreiplan");
+        agreement.cid = "bafkreiabc".to_owned();
+        let data = serialized(&agreement);
+        assert_eq!(PLAN_CID_HASH_OFFSET, 512);
+        assert_eq!(CID_OFFSET, 544);
+        assert_eq!(&data[PLAN_CID_HASH_OFFSET - 8..PLAN_CID_HASH_OFFSET], &(-1i64).to_le_bytes());
+        assert_eq!(&data[PLAN_CID_HASH_OFFSET..CID_OFFSET], &hash(b"bafkreiplan").to_bytes());
+        assert_eq!(&data[CID_OFFSET..CID_OFFSET + 4], &10u32.to_le_bytes());
+        assert_eq!(&data[CID_OFFSET + 4..], b"bafkreiabc");
+        assert_eq!(8 + Agreement::INIT_SPACE, CID_OFFSET + 4 + MAX_CID_LEN);
+        assert_eq!(8 + Agreement::INIT_SPACE, 612);
     }
 
     #[test]

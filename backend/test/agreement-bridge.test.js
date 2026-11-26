@@ -26,6 +26,8 @@ const PAYOUT = keyOf(13);
 const CREDENTIAL = keyOf(17);
 const ATTESTATION = keyOf(19);
 const CID = 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq';
+// The plan the published agreement names (its content's planCid), which create stores as a hash.
+const PLAN_CID = 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku';
 const ACCOUNT = client.getAgreementPda(CID, SPONSOR)[0].toBase58();
 const BLOCKHASH = 'EkSnNWid2cvwEVnVx9aBqpiCpY1QoUW63D2Hp31e4gwJ';
 const nowSeconds = () => Math.floor(Date.now() / 1000);
@@ -101,7 +103,7 @@ function fakeWindow({ wallet = SPONSOR, connection = fakeConnection(), web3Loade
 const proposed = (extra = {}) => ({
     id: 'ag-1', deadline: null, inputs: { parcels: [], openGroundM2: 0 },
     rule: { electorate: 'owners', binding: true, lens: [LENS] },
-    published: { cid: CID, publishedAt: '2026-10-21T12:00:00.000Z', apiBase: 'https://api.example.test', sponsor: SPONSOR },
+    published: { cid: CID, publishedAt: '2026-10-21T12:00:00.000Z', apiBase: 'https://api.example.test', sponsor: SPONSOR, content: { planCid: PLAN_CID } },
     onchain: null, ...extra
 });
 const minted = (extra = {}) => proposed({ onchain: { chain: 'solana', cluster: 'devnet', account: ACCOUNT }, ...extra });
@@ -248,7 +250,7 @@ describe('minting', () => {
                 ...(apartments ? { apartments } : {}) }, deadline: new Date(deadline * 1000).toISOString() };
         const cid = records.publishedCid(local);
         const address = client.getAgreementPda(cid, SPONSOR)[0].toBase58();
-        return { agreement: { ...local, published: { cid, sponsor: SPONSOR, apiBase: 'https://api.example.test' } }, address, cid, deadline };
+        return { agreement: { ...local, published: { cid, sponsor: SPONSOR, apiBase: 'https://api.example.test', content: records.published(local) } }, address, cid, deadline };
     }
 
     it('mints the published crowdfunding terms with zero SOL and contributes devnet USDC using the original program', async () => {
@@ -256,7 +258,7 @@ describe('minting', () => {
         const { win, bridge, connection } = fakeWindow();
         win.AgreementRecord = records;
         await bridge.mint({ agreement, lenses: [STRANGER], lensThreshold: 1, payout: PAYOUT, requiredLamports: 999n });
-        expect(sentInstruction(connection).data).toEqual(client.buildCreateIx({ authority: SPONSOR, cid, lenses: [LENS], lensThreshold: 1, deadline, openGround: false,
+        expect(sentInstruction(connection).data).toEqual(client.buildCreateIx({ authority: SPONSOR, cid, planCid: agreement.plan.cid, lenses: [LENS], lensThreshold: 1, deadline, openGround: false,
             requiredLamports: 0n, payout: SPONSOR, fundingMint: C.USDC_DEVNET_MINT, requiredFunding: 20_000_000n }).instruction.data);
         const accounts = new Map([[address, { data: agreementData({ cid, ...CROWD_TERMS, deadline }) }]]);
         const investor = fakeWindow({ wallet: STRANGER, connection: fakeConnection({ accounts }) });
@@ -467,7 +469,7 @@ describe('minting', () => {
         expect(connection.calls).toEqual(['getLatestBlockhash', 'simulateTransaction/0', 'sendRawTransaction', 'confirmTransaction']);
         expect(provider.signTransaction).toHaveBeenCalledTimes(1);
         const instruction = sentInstruction(connection);
-        const expected = client.buildCreateIx({ authority: SPONSOR, cid: CID, lenses: [LENS], lensThreshold: 1, deadline: client.toDeadlineSeconds(deadline),
+        const expected = client.buildCreateIx({ authority: SPONSOR, cid: CID, planCid: PLAN_CID, lenses: [LENS], lensThreshold: 1, deadline: client.toDeadlineSeconds(deadline),
             openGround: true, requiredLamports: 2_000_000_000n, payout: PAYOUT }).instruction;
         expect(instruction.programId.toBase58()).toBe(C.AGREEMENT_PROGRAM_ID);
         expect(Buffer.from(instruction.data)).toEqual(Buffer.from(expected.data));
@@ -480,9 +482,9 @@ describe('minting', () => {
         const before = Math.floor(Date.now() / 1000);
         await bridge.mint({ agreement: proposed({ deadline: null }), lenses: [LENS], payout: PAYOUT });
         const after = Math.floor(Date.now() / 1000);
-        // create data: discriminator (8), cid (u32 length + bytes), lenses (u32 count + 32 each), the
-        // u8 threshold, then the i64 deadline.
-        const sent = Number(Buffer.from(sentInstruction(connection).data).readBigInt64LE(8 + 4 + CID.length + 4 + 32 + 1));
+        // create data: discriminator (8), cid and plan_cid (u32 length + bytes each), lenses (u32 count +
+        // 32 each), the u8 threshold, then the i64 deadline.
+        const sent = Number(Buffer.from(sentInstruction(connection).data).readBigInt64LE(8 + 4 + CID.length + 4 + PLAN_CID.length + 4 + 32 + 1));
         expect(sent).toBeGreaterThanOrEqual(before + C.DEFAULT_DEADLINE_SECONDS);
         expect(sent).toBeLessThanOrEqual(after + C.DEFAULT_DEADLINE_SECONDS);
     });
@@ -500,6 +502,8 @@ describe('minting', () => {
         const past = new Date(Date.now() - 60_000).toISOString();
         const cases = [
             ['not-proposed', fakeWindow(), { agreement: proposed({ published: null }) }],
+            // Without the published object there is no plan CID for the account to store.
+            ['not-proposed', fakeWindow(), { agreement: proposed({ published: { ...proposed().published, content: null } }) }],
             ['already-minted', fakeWindow(), { agreement: minted() }],
             ['no-sponsor', fakeWindow(), { agreement: proposed({ published: { ...proposed().published, sponsor: null } }) }],
             ['wallet-required', fakeWindow({ wallet: null }), {}],
@@ -559,6 +563,17 @@ describe('after the mint', () => {
         const squatted = fakeWindow({ connection: mintedOn(agreementData({ authority: STRANGER })) });
         await expect(squatted.bridge.read(minted())).rejects.toThrow(/belongs to/);
         expect(await thrown(() => squatted.bridge.read(proposed()))).toMatchObject({ code: 'not-minted' });
+    });
+
+    it('lists the agreements naming a plan from the wallet cluster\'s chain, by the plan CID hash', async () => {
+        const connection = fakeConnection();
+        connection.getProgramAccounts = vi.fn(async () => [{ pubkey: new PublicKey(ACCOUNT), account: { data: agreementData({ planCid: PLAN_CID }) } }]);
+        const { win, bridge } = fakeWindow({ connection });
+        const found = await bridge.agreementsForPlan(PLAN_CID);
+        expect(found).toEqual([expect.objectContaining({ address: ACCOUNT, cid: CID, planCidHash: client.planCidHash(PLAN_CID) })]);
+        expect(win.SolanaChainDataLoader.getConnection).toHaveBeenCalledWith('devnet');
+        expect(connection.getProgramAccounts.mock.calls[0][0].toBase58()).toBe(C.AGREEMENT_PROGRAM_ID);
+        expect(connection.getProgramAccounts.mock.calls[0][1].filters).toEqual(client.planFilters(PLAN_CID));
     });
 
     it('lets only the sponsor fund and cancel', async () => {

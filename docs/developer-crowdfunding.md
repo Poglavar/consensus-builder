@@ -55,4 +55,4 @@ The apartment inventory layout includes the qualification address. Existing expe
 
 Agent personas simulate rounds in Alatau on devnet: `developer-01` opens rounds on the Alatau plans and three homebuyers reserve, contribute and trade apartments in fixed-price offers ([agents](../backend/agents/README.md#developer-rounds-and-homebuyers)).
 
-The agreement account layout with a lens set and a funding target is deployed on devnet at new program addresses (2026-11-25). Agreements minted under the earlier one-lens layout are not read by the current codec and are recreated. [Agreement program](../blockchain/solana/programs/agreement/README.md)
+The agreement account carries a lens set, a funding target and the plan CID hash; its programs move to new addresses with that layout (deploy pending). Agreements minted under a retired program are not read by the current codec and are recreated. [Agreement program](../blockchain/solana/programs/agreement/README.md)

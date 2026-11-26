@@ -106,7 +106,7 @@ describe('GET /parcels/:parcelUid/history', () => {
         const landCall = pool.calls.find(call => /FROM consensus\.land_event/.test(call.sql));
         expect(landCall.params).toEqual([PARCEL, 'agreement_executed']);
         expect(landCall.sql).toMatch(/WHERE event_type = \$2 AND/);
-        expect(landCall.sql).toContain(`attester IN ('${AGREEMENT_PROGRAM_ID}', '${OLD_AGREEMENT_PROGRAM_ID}')`);
+        expect(landCall.sql).toContain(`attester IN ('${AGREEMENT_PROGRAM_ID}', 'ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH', 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ')`);
         expect(landCall.sql).toMatch(/subject_type = 'parcel' AND subject_id = \$1::text/);
         expect(pool.calls).toHaveLength(3);
     });

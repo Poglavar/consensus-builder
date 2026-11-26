@@ -6,7 +6,7 @@
 import { createRequire } from 'node:module';
 import { PublicKey } from '@solana/web3.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
-import { AGREEMENT_PROGRAM_ID, OLD_AGREEMENT_PROGRAM_ID, agreementAccountOf } from './agreement-minter.js';
+import { AGREEMENT_PROGRAM_ID, RETIRED_AGREEMENT_PROGRAM_IDS, agreementAccountOf } from './agreement-minter.js';
 
 const require = createRequire(import.meta.url);
 const agreementClient = require('../../frontend/js/solana/agreement-client.js');
@@ -62,12 +62,12 @@ export async function discoverAgreements({ index, cities, log = () => {} }) {
 /**
  * Set chainStatus on every agreement with an account, from one batched read of the accounts. An account
  * owned by another program, or holding another CID or sponsor, fails the whole read: nothing acts on it.
- * An agreement the index records on the old program is not read: it is known not to be on this one, so
- * it stays unminted (chainStatus null). One with no recorded mint is still read, since the chain, not
+ * An agreement the index records on a retired program is not read: it is known not to be on this one,
+ * so it stays unminted (chainStatus null). One with no recorded mint is still read, since the chain, not
  * the index, proves a mint.
  */
 export async function readAgreementStatuses(agreements, connection, { env = process.env, programId = AGREEMENT_PROGRAM_ID } = {}) {
-    const withAccount = (agreements || []).filter(agreement => agreement.account && agreement.recordedProgramId !== OLD_AGREEMENT_PROGRAM_ID);
+    const withAccount = (agreements || []).filter(agreement => agreement.account && !RETIRED_AGREEMENT_PROGRAM_IDS.includes(agreement.recordedProgramId));
     if (!withAccount.length) return agreements;
     const infos = await getMultipleAccountsBatched(connection, withAccount.map(agreement => new PublicKey(agreement.account)), { batchSize: accountsPerRequest(env) });
     const program = new PublicKey(programId);

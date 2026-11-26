@@ -19,7 +19,7 @@ const ParcelAnchors = require('../../frontend/js/solana/parcel-mint.js');
 ParcelClient.configure({ web3 });
 
 const WALLET = new web3.PublicKey('Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W');
-const PROGRAM = new web3.PublicKey('9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71');
+const PROGRAM = new web3.PublicKey('79dH9KGrbffN37Hv1mbyUWdbHAVcCt6o2Z1VZ3c745Bn');
 const USDC = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 const BLOCKHASH = 'EkSnNWid2cvwEVnVx9aBqpiCpY1QoUW63D2Hp31e4gwJ';
 const BRIDGES = ['market-bridge.js', 'agreement-bridge.js', 'parcel-mint.js'];
@@ -121,7 +121,7 @@ describe('wallet bridges preflight through real web3 simulateTransaction', () =>
             });
             const agreement = {
                 deadline: null, inputs: { openGroundM2: 0 }, onchain: null,
-                published: { cid: CID, publishedAt: '2026-10-22T08:00:00.000Z', apiBase: 'https://api.example.test', sponsor: WALLET.toBase58() }
+                published: { cid: CID, publishedAt: '2026-10-22T08:00:00.000Z', apiBase: 'https://api.example.test', sponsor: WALLET.toBase58(), content: { planCid: CID } }
             };
             const statuses = [];
             const result = await bridge.mint({ agreement, lenses: [LENS], payout: WALLET.toBase58(), onStatus: s => statuses.push(s.state) });

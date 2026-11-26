@@ -12,6 +12,10 @@
 })(typeof window !== 'undefined' ? window : globalThis, function solanaMarketClientFactory() {
     'use strict';
 
+    // The program ids live in program-ids.js (window.SolanaProgramIds, loaded before this file).
+    const programIds = globalThis.SolanaProgramIds || (typeof require === 'function' ? require('./program-ids.js') : null);
+    if (!programIds) throw new Error('SolanaProgramIds (js/solana/program-ids.js) must load before market-client.js');
+
     // Discriminators are COPIED from blockchain/solana/idl/proposal_market.json, never computed at
     // runtime: the browser has no synchronous sha256, and a hardcoded table is what a test can pin
     // against both the IDL file and sha256("global:<name>") / sha256("account:<Name>").
@@ -41,7 +45,7 @@
         // proposal_market::EXTERNAL_RESOLUTION_TIMEOUT_SECONDS: an ExternalMarket unresolved this long
         // after its close can only be voided.
         EXTERNAL_RESOLUTION_TIMEOUT_SECONDS: 90 * 86_400,
-        PROGRAM_ID: '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71',
+        PROGRAM_ID: programIds.MARKET_PROGRAM_ID,
         SAS_PROGRAM_ID: '22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG',
         TOKEN_PROGRAM_ID: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
         ASSOCIATED_TOKEN_PROGRAM_ID: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',

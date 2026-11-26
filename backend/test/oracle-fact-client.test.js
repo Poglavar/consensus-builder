@@ -6,7 +6,7 @@ import { buyOracleFact, fetchOracleFactChallenge, oracleFactUrl } from '../agent
 
 // An agreement account (the fact's subject) and a market account.
 const AGREEMENT = 'Gsvt6nMhsvfrEDgvcqZDzPKZhhqACFEi3mueMxQNQ6UT';
-const MARKET = '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71';
+const MARKET = '79dH9KGrbffN37Hv1mbyUWdbHAVcCt6o2Z1VZ3c745Bn';
 
 describe('paid oracle fact client', () => {
     it('builds the exact query URL without hand-concatenating user input', () => {

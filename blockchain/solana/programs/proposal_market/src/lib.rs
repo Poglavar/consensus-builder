@@ -26,7 +26,7 @@ pub mod lmsr;
 pub mod lmsr_market;
 pub use lmsr_market::*;
 
-declare_id!("9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71");
+declare_id!("79dH9KGrbffN37Hv1mbyUWdbHAVcCt6o2Z1VZ3c745Bn");
 
 /// Solana Attestation Service program used by the court oracle on devnet. External markets do not
 /// trust an API response: they parse an account owned by this program and pin its credential,

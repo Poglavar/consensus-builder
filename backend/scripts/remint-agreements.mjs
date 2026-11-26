@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-// Re-mints indexed agreements on the current agreement program (the lens-set redeploy of 2026-11-25 left
-// rows minted on the old program reading as unminted) with each sponsor's own agent key, and optionally
+// Re-mints indexed agreements on the current agreement program (a redeploy at a new address, such as the
+// plan-CID one, leaves rows minted on the previous program reading as unminted) with each sponsor's own
+// agent key, and optionally
 // reopens a yes/no market on each. Dry run by default: it reads the index (GET only) and devnet and prints
 // the plan. --run signs: per agreement it pins the content (POST /agreements/:cid/pin), mints, records the
 // account (POST /agreements/:cid/onchain) through the agent tools' mintAgreement, then opens the market.
@@ -25,8 +26,9 @@ export { OLD_AGREEMENT_PROGRAM_ID };
 const DEFAULT_API = 'https://api.urbangametheory.xyz';
 const DEFAULT_ORIGIN = 'https://urbangametheory.xyz';
 const DEFAULT_STATE = path.join(REPO, 'tmp/remint-agreements/state.json');
-// Old-layout (296-byte) agreement account: discriminator 8 | authority, lens, payout 32 each |
-// deadline, created_at i64 | required_lamports, escrow_lamports u64 | status u8.
+// The previous program's agreement account (OLD_AGREEMENT_PROGRAM_ID; every layout so far shares this
+// header): discriminator 8 | authority, lens, payout 32 each | deadline, created_at i64 |
+// required_lamports, escrow_lamports u64 | status u8.
 const OLD_REQUIRED_LAMPORTS_OFFSET = 8 + 96 + 16;
 const OLD_STATUS_OFFSET = 8 + 96 + 32;
 

@@ -1,9 +1,10 @@
 // Test helper: the bytes of an `agreement` program Agreement account, field by field in the order of
 // blockchain/solana/programs/agreement/README.md ("Agreement account": discriminator, authority, lens,
 // payout, deadline, created_at, required/escrow lamports, status, open_ground, decision, decision times,
-// attestation, hash, executed_at, bump, lens set, contribution target, cid), padded to the 580-byte
-// account, so tests decode exactly
+// attestation, hash, executed_at, bump, lens set, contribution target, plan CID hash, cid), padded to the
+// 612-byte account, so tests decode exactly
 // what the program writes with frontend/js/solana/agreement-client.js readAgreement.
+import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { PublicKey } from '@solana/web3.js';
 
@@ -23,7 +24,8 @@ const str = value => { const bytes = Buffer.from(value, 'utf8'); return Buffer.c
 /**
  * @param fields `lenses` the member keys (`lens` alone: a one-member set), `lensConfirmed` the
  *   members whose confirmation is recorded; status/decision as codes (0 Active, 1 Executed, 2 Cancelled, 3 Expired; 0 Pending,
- *   1 Satisfied), lamports as anything BigInt takes, times as unix seconds
+ *   1 Satisfied), lamports as anything BigInt takes, times as unix seconds; `planCid` the plan named at
+ *   create (stored as its sha256), or `planCidHash` that hash as hex (readAgreement's value); neither: zeros
  */
 export function agreementAccountBytes({
     cid,
@@ -51,6 +53,8 @@ export function agreementAccountBytes({
     fundingMet = false,
     fundingObserved = 0,
     fundingMetAt = 0,
+    planCid = null,
+    planCidHash = null,
     padTo = AGREEMENT_ACCOUNT_SPACE
 } = {}) {
     if (!cid || !authority) throw new Error('agreementAccountBytes: cid and authority are required');
@@ -64,7 +68,8 @@ export function agreementAccountBytes({
         i64(decisionAttestedAt), i64(decisionObservedAt), key(decisionAttestation), Buffer.from(decisionHash),
         i64(executedAt), Buffer.from([bump, lenses.length, lensThreshold, confirmedBits]),
         ...members.slice(1).map(key), key(fundingMint), u64(requiredFunding), Buffer.from([fundingMet ? 1 : 0]),
-        u64(fundingObserved), i64(fundingMetAt), str(cid)
+        u64(fundingObserved), i64(fundingMetAt),
+        planCid ? createHash('sha256').update(planCid, 'utf8').digest() : planCidHash ? Buffer.from(planCidHash, 'hex') : Buffer.alloc(32), str(cid)
     ]);
     return Buffer.concat([content, Buffer.alloc(Math.max(0, padTo - content.length))]);
 }

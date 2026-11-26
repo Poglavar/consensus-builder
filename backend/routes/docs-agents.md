@@ -407,15 +407,17 @@ from the deadline before. Read it back at `GET $(base)/agreements/<cid>`; list w
 Only a binding owners' agreement is minted; a vote stays a poll in the index and ends with §5.
 
 - **Program:** `agreement`, `$(agreementProgram)` on Solana devnet ($(agreementProgramStatus)).
-- **Account:** PDA `["agreement", sponsor, sha256(cid as UTF-8)]`, 580 bytes: authority (the sponsor),
+- **Account:** PDA `["agreement", sponsor, sha256(cid as UTF-8)]`, 612 bytes: authority (the sponsor),
   the first lens member, payout, deadline (unix seconds), required and escrowed lamports, status (0 Active,
   1 Executed, 2 Cancelled, 3 Expired), open ground, decision (0 Pending, 1 Satisfied), the recorded
   attestation, executed_at, then the lens set (member count, threshold, a confirmation bit per member, the
-  other 7 member slots), the contribution target (mint, required base units, met, observed, met at) and
-  the CID at byte 512.
-- **`create(cid: string, lenses: vec<pubkey>, lens_threshold: u8, deadline: i64, open_ground: bool, required_lamports: u64, payout: pubkey, funding_mint: pubkey, required_funding: u64)`**, accounts
+  other 7 member slots), the contribution target (mint, required base units, met, observed, met at), the
+  plan CID hash (sha256 of `planCid` as UTF-8) at byte 512 and the CID at byte 544. A
+  `getProgramAccounts` memcmp on byte 512 lists every agreement naming a plan; the hash is the sponsor's
+  claim, so compare it with each agreement's own `planCid`.
+- **`create(cid: string, plan_cid: string, lenses: vec<pubkey>, lens_threshold: u8, deadline: i64, open_ground: bool, required_lamports: u64, payout: pubkey, funding_mint: pubkey, required_funding: u64)`**, accounts
   `agreement` (writable, the PDA), `authority` (signer, writable: the sponsor; pays the rent), System
-  Program. `lenses` is `rule.lens` (0-8 distinct keys, frozen here), `lens_threshold` how many of them must
+  Program. `plan_cid` is the agreement's `planCid`; `lenses` is `rule.lens` (0-8 distinct keys, frozen here), `lens_threshold` how many of them must
   each attest (`rule.lensThreshold`, default 1; 0 with no members, allowed only with a target),
   `funding_mint`/`required_funding` the crowdfunding target (devnet USDC, `funding.targetUsdcAtomic`;
   the default key and 0 otherwise), `deadline` its

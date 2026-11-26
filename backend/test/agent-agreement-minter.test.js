@@ -17,6 +17,8 @@ const Cid = require('../../frontend/js/cid.js');
 
 const CID = Cid.cidOfObject({ schema: 'agreement/v1', title: 'Six storeys on the corner lot' });
 const OTHER_CID = Cid.cidOfObject({ schema: 'agreement/v1', title: 'A counter-agreement' });
+const PLAN_CID = Cid.cidOfObject({ schema: 'plan/v1', title: 'Corner lot plan' });
+const planHash = cid => require('node:crypto').createHash('sha256').update(cid, 'utf8').digest('hex');
 const T0 = Math.floor(Date.now() / 1000);
 const iso = seconds => new Date(seconds * 1000).toISOString();
 
@@ -25,7 +27,7 @@ let chain;
 let sponsor;
 let lens;
 const mint = (overrides = {}) => mintAgreement({
-    connection: chain.connection, sponsorKeypair: sponsor, cid: CID, lenses: [lens.publicKey.toBase58()],
+    connection: chain.connection, sponsorKeypair: sponsor, cid: CID, planCid: PLAN_CID, lenses: [lens.publicKey.toBase58()],
     deadline: iso(T0 + 7 * 86400), lamports: '5000000', sendAndConfirm: chain.sendAndConfirm, ...overrides
 });
 
@@ -59,7 +61,7 @@ describe('mintAgreement', () => {
         expect(chain.signed()[0].steps).toEqual(['create', 'fund']);
         const state = await readAgreementAccount(chain.connection, { cid: CID, sponsor: sponsor.publicKey.toBase58() });
         expect(state).toMatchObject({
-            cid: CID, authority: sponsor.publicKey.toBase58(), lens: lens.publicKey.toBase58(), lenses: [lens.publicKey.toBase58()], lensThreshold: 1,
+            cid: CID, planCidHash: planHash(PLAN_CID), authority: sponsor.publicKey.toBase58(), lens: lens.publicKey.toBase58(), lenses: [lens.publicKey.toBase58()], lensThreshold: 1,
             payout: sponsor.publicKey.toBase58(), deadline: T0 + 7 * 86400, requiredLamports: 5000000n, escrowLamports: 5000000n, status: 'Active',
             decision: 'Pending', openGround: false, requiredFunding: 0n, fundingMint: null
         });
@@ -76,7 +78,7 @@ describe('mintAgreement', () => {
     it('funds only what the escrow lacks when a run stopped after the create', async () => {
         const account = agreementAccountOf(CID, sponsor.publicKey);
         chain.putAgreement(account, {
-            cid: CID, authority: sponsor.publicKey.toBase58(), lens: lens.publicKey.toBase58(), payout: sponsor.publicKey.toBase58(),
+            cid: CID, planCid: PLAN_CID, authority: sponsor.publicKey.toBase58(), lens: lens.publicKey.toBase58(), payout: sponsor.publicKey.toBase58(),
             deadline: T0 + 7 * 86400, requiredLamports: 5000000n, escrowLamports: 2000000n
         });
         const topped = await mint();
@@ -121,11 +123,12 @@ describe('mintAgreement', () => {
         await expect(mint({ lenses: [Keypair.generate().publicKey.toBase58()] })).rejects.toThrow(/exists with other terms \(lens /);
         await expect(mint({ deadline: iso(T0 + 8 * 86400) })).rejects.toThrow(/other terms \(deadline/);
         await expect(mint({ lamports: '6000000' })).rejects.toThrow(/other terms \(required lamports/);
+        await expect(mint({ planCid: OTHER_CID })).rejects.toThrow(/other terms \(plan hash /);
         expect(chain.signed()).toHaveLength(1);
 
         const account = agreementAccountOf(OTHER_CID, sponsor.publicKey);
         chain.putAgreement(account, {
-            cid: OTHER_CID, authority: sponsor.publicKey.toBase58(), lens: lens.publicKey.toBase58(), payout: sponsor.publicKey.toBase58(),
+            cid: OTHER_CID, planCid: PLAN_CID, authority: sponsor.publicKey.toBase58(), lens: lens.publicKey.toBase58(), payout: sponsor.publicKey.toBase58(),
             deadline: T0 + 7 * 86400, requiredLamports: 5000000n, escrowLamports: 0n, status: 2
         });
         await expect(mint({ cid: OTHER_CID })).rejects.toThrow(/is Cancelled; its escrow can no longer be funded/);
@@ -149,12 +152,20 @@ describe('mintAgreement', () => {
         expect(chain.transactions).toHaveLength(0);
     });
 
-    it('takes an agreement\'s lens and, for crowdfunding, its devnet USDC target from the object', () => {
+    it('needs the plan the agreement names, a CID the program accepts, before signing', async () => {
+        await expect(mint({ planCid: undefined })).rejects.toThrow(/planCid .* is required/);
+        await expect(mint({ planCid: 'not a cid' })).rejects.toThrow(/cid must be/);
+        expect(chain.transactions).toHaveLength(0);
+    });
+
+    it('takes an agreement\'s plan, lens and, for crowdfunding, its devnet USDC target from the object', () => {
         const member = lens.publicKey.toBase58();
         const usdc = agreementClient.constants.USDC_DEVNET_MINT;
-        expect(mintTermsOf({ rule: { electorate: 'owners', lens: [member] } })).toEqual({ lenses: [member], lensThreshold: 1, fundingMint: null, requiredFunding: 0n });
+        expect(mintTermsOf({ planCid: PLAN_CID, rule: { electorate: 'owners', lens: [member] } }))
+            .toEqual({ planCid: PLAN_CID, lenses: [member], lensThreshold: 1, fundingMint: null, requiredFunding: 0n });
+        expect(mintTermsOf({ rule: { electorate: 'owners', lens: [member] } })).toEqual({ planCid: null, lenses: [member], lensThreshold: 1, fundingMint: null, requiredFunding: 0n });
         expect(mintTermsOf({ rule: { electorate: 'investors', lens: [], lensThreshold: null }, funding: { targetUsdcAtomic: '20000000' } }))
-            .toEqual({ lenses: [], lensThreshold: 0, fundingMint: usdc, requiredFunding: 20_000_000n });
+            .toEqual({ planCid: null, lenses: [], lensThreshold: 0, fundingMint: usdc, requiredFunding: 20_000_000n });
         expect(mintTermsOf({ rule: { electorate: 'investors', lens: [member, sponsor.publicKey.toBase58()], lensThreshold: 2 }, funding: { targetUsdcAtomic: '5' } }))
             .toMatchObject({ lensThreshold: 2, requiredFunding: 5n });
     });

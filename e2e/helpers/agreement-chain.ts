@@ -14,7 +14,7 @@ const { PublicKey } = backendRequire('@solana/web3.js');
 
 // sha256("account:Agreement")[..8] and the account's size (8 + Agreement::INIT_SPACE), as the client copies them.
 const AGREEMENT_DISCRIMINATOR = [83, 212, 5, 110, 225, 249, 197, 84];
-const AGREEMENT_ACCOUNT_SPACE = 580;
+const AGREEMENT_ACCOUNT_SPACE = 612;
 const DEFAULT_PUBKEY = '11111111111111111111111111111111';
 
 export const STATUS = { active: 0, executed: 1, cancelled: 2, expired: 3 } as const;
@@ -28,6 +28,8 @@ export function agreementAccountAddress(cid: string, sponsor: string): string {
 
 export interface AgreementAccount {
   cid: string; authority: string; payout: string;
+  /** The plan the agreement names (stored as sha256 of the CID). Default: none named (zero hash). */
+  planCid?: string;
   /** The lens members (0-8) and how many must confirm (default 1, 0 with none). */
   lenses: string[]; lensThreshold?: number;
   /** The contribution target in devnet USDC base units (0: none) and its mint. */
@@ -63,6 +65,8 @@ export function encodeAgreementAccount(account: AgreementAccount): Buffer {
     ...Array.from({ length: 7 }, (_, index) => key(account.lenses[index + 1] ?? DEFAULT_PUBKEY)),
     // funding_mint, required_funding, funding_met, funding_observed, funding_met_at
     key(account.fundingMint ?? DEFAULT_PUBKEY), u64(account.requiredFunding ?? 0n), u8(0), u64(0n), i64(0),
+    // plan_cid_hash
+    account.planCid ? createHash('sha256').update(account.planCid, 'utf8').digest() : Buffer.alloc(32),
     length, cid,
   ]);
   return Buffer.concat([bytes, Buffer.alloc(Math.max(0, AGREEMENT_ACCOUNT_SPACE - bytes.length))]);

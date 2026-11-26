@@ -133,13 +133,13 @@ describe("agreement", () => {
 
     /** create() sent directly, for the argument checks: `agreement` defaults to PDA(signer, cid). */
     function sendCreate(a: {
-        cid: string; signer?: Keypair; agreement?: PublicKey; lens?: PublicKey; lenses?: PublicKey[]; threshold?: number;
+        cid: string; planCid?: string; signer?: Keypair; agreement?: PublicKey; lens?: PublicKey; lenses?: PublicKey[]; threshold?: number;
         deadline?: number; payout?: PublicKey; fundingMint?: PublicKey; requiredFunding?: number;
     }) {
         const signer = a.signer ?? sponsor;
         const lenses = a.lenses ?? [a.lens ?? lens.publicKey];
         return program.methods
-            .create(a.cid, lenses, a.threshold ?? (lenses.length ? 1 : 0), new anchor.BN(a.deadline ?? farDeadline), false,
+            .create(a.cid, a.planCid ?? testCid("plan"), lenses, a.threshold ?? (lenses.length ? 1 : 0), new anchor.BN(a.deadline ?? farDeadline), false,
                 new anchor.BN(0), a.payout ?? signer.publicKey, a.fundingMint ?? PublicKey.default, new anchor.BN(a.requiredFunding ?? 0))
             .accountsStrict({
                 agreement: a.agreement ?? findAgreementPda(program.programId, signer.publicKey, a.cid),
@@ -211,12 +211,15 @@ describe("agreement", () => {
             expect(data[OFFSET.decision]).to.equal(0);
             expect(data[OFFSET.bump]).to.equal(bump);
             expect([data[OFFSET.lensCount], data[OFFSET.lensThreshold], data[OFFSET.lensConfirmed]]).to.deep.equal([1, 1, 0]);
+            expect(data.subarray(OFFSET.planCidHash, OFFSET.planCidHash + 32).equals(createHash("sha256").update(created.planCid, "utf8").digest())).to.be.true;
+            expect(Buffer.from(account.planCidHash).equals(createHash("sha256").update(created.planCid, "utf8").digest())).to.be.true;
             expect(data.readUInt32LE(OFFSET.cid)).to.equal(created.cid.length);
             expect(data.subarray(OFFSET.cid + 4, OFFSET.cid + 4 + created.cid.length).toString("utf8")).to.equal(created.cid);
 
             const event = await eventOf(created.signature, "AgreementCreated");
             expect(event.agreement.toBase58()).to.equal(created.agreement.toBase58());
             expect(event.cid).to.equal(created.cid);
+            expect(event.planCid).to.equal(created.planCid);
             expect(event.authority.toBase58()).to.equal(sponsor.publicKey.toBase58());
             expect(event.lenses.map((key: PublicKey) => key.toBase58())).to.deep.equal([lens.publicKey.toBase58()]);
             expect(event.lensThreshold).to.equal(1);
@@ -264,6 +267,35 @@ describe("agreement", () => {
             const longest = "b".repeat(64);
             await sendCreate({ cid: longest });
             expect((await fetchAgreement(findAgreementPda(program.programId, sponsor.publicKey, longest))).cid).to.equal(longest);
+        });
+
+        it("is 612 bytes: 8 + INIT_SPACE with the plan CID hash before the CID padded to 64", async () => {
+            expect(OFFSET.cid).to.equal(OFFSET.planCidHash + 32);
+            expect(AGREEMENT_ACCOUNT_SIZE).to.equal(OFFSET.cid + 4 + 64);
+            expect((await rawAgreement(created.agreement)).length).to.equal(612);
+        });
+
+        it("finds every agreement of a plan with one memcmp on the plan CID hash, and no other", async () => {
+            const planCid = testCid("plan");
+            const first = await createAgreement(program, { sponsor, planCid, lens: lens.publicKey });
+            const second = await createAgreement(program, { sponsor: stranger, planCid, lens: lens.publicKey });
+            const elsewhere = await createAgreement(program, { sponsor, lens: lens.publicKey });
+            const hash = createHash("sha256").update(planCid, "utf8").digest();
+            const found = await connection.getProgramAccounts(program.programId, {
+                commitment: "confirmed",
+                filters: [{ memcmp: { offset: OFFSET.planCidHash, bytes: anchor.utils.bytes.bs58.encode(hash) } }],
+            });
+            expect(found.map(row => row.pubkey.toBase58()).sort())
+                .to.deep.equal([first.agreement.toBase58(), second.agreement.toBase58()].sort());
+            expect(found.map(row => row.pubkey.toBase58())).to.not.include(elsewhere.agreement.toBase58());
+        });
+
+        it("refuses a plan CID that is empty, longer than 64 bytes or not ASCII letters and digits", async () => {
+            const cid = testCid("bad-plan");
+            await expectFailure(() => sendCreate({ cid, planCid: "" }), "InvalidCid");
+            await expectFailure(() => sendCreate({ cid, planCid: "b".repeat(65) }), "CidTooLong");
+            await expectFailure(() => sendCreate({ cid, planCid: "bafk rei" }), "InvalidCid");
+            expect(await connection.getAccountInfo(findAgreementPda(program.programId, sponsor.publicKey, cid))).to.be.null;
         });
 
         it("refuses the default lens key, a default or self payout, and a deadline that is not in the future", async () => {

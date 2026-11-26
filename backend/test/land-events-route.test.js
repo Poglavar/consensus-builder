@@ -186,7 +186,7 @@ describe('GET /oracle/events', () => {
         expect(res.body).toMatchObject({ count: 0, eventType: 'agreement_executed', agreement: CID, parcelUid: 'HR-1/1' });
         const [sql, params] = pool.query.mock.calls[0];
         expect(params).toEqual(['agreement_executed', ACCOUNT, CID, 'HR-1/1', 7]);
-        expect(sql).toContain(`attester IN ('${AGREEMENT_PROGRAM_ID}', '${OLD_AGREEMENT_PROGRAM_ID}')`);
+        expect(sql).toContain(`attester IN ('${AGREEMENT_PROGRAM_ID}', 'ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH', 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ')`);
         expect(sql).toMatch(/THEN subject_type = 'parcel' AND subject_id = \$4::text\s+ELSE evidence->'inputParcelIds' @> jsonb_build_array\(\$4::text\)/);
         expect(sql).toMatch(/LIMIT \$5/);
     });

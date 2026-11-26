@@ -17,10 +17,10 @@ export const OFFSET = {
     status: 136, openGround: 137, decision: 138, decisionAttestedAt: 139, decisionObservedAt: 147,
     decisionAttestation: 155, decisionHash: 187, executedAt: 219, bump: 227,
     lensCount: 228, lensThreshold: 229, lensConfirmed: 230, moreLenses: 231, fundingMint: 455,
-    requiredFunding: 487, fundingMet: 495, fundingObserved: 496, fundingMetAt: 504, cid: 512,
+    requiredFunding: 487, fundingMet: 495, fundingObserved: 496, fundingMetAt: 504, planCidHash: 512, cid: 544,
 } as const;
-/** 8-byte discriminator + 572 bytes (the CID padded to its 64-byte maximum). */
-export const AGREEMENT_ACCOUNT_SIZE = 580;
+/** 8-byte discriminator + 604 bytes (the CID padded to its 64-byte maximum). */
+export const AGREEMENT_ACCOUNT_SIZE = 612;
 /** Most lens members an agreement names. */
 export const MAX_LENSES = 8;
 
@@ -70,6 +70,8 @@ export type AgreementTerms = {
     /** The sponsor: signs create, pays the rent, funds, cancels, receives refunds. Default: the provider wallet. */
     sponsor?: Keypair;
     cid?: string;
+    /** The plan the agreement names. Default: a fresh test CID. */
+    planCid?: string;
     /** One lens member (shorthand for lenses: [lens]). */
     lens?: PublicKey;
     /** The lens members (0-8); default [lens], or none. */
@@ -89,7 +91,7 @@ export type AgreementTerms = {
     fund?: number | bigint;
 };
 
-export type CreatedAgreement = { agreement: PublicKey; cid: string; sponsor: Keypair; signature: string };
+export type CreatedAgreement = { agreement: PublicKey; cid: string; planCid: string; sponsor: Keypair; signature: string };
 
 /** How far ahead an agreement's deadline lies when a test names none: past every suite's run time. */
 export const DEFAULT_DEADLINE_SECONDS = 30 * 86_400;
@@ -99,16 +101,18 @@ async function deadlineAhead(program: Program, seconds: number): Promise<number>
     return (await chainNow((program.provider as anchor.AnchorProvider).connection)) + seconds;
 }
 
-/** create(cid, lenses, lens_threshold, deadline, open_ground, required_lamports, payout, funding_mint,
- *  required_funding) from the sponsor, then an optional fund. */
+/** create(cid, plan_cid, lenses, lens_threshold, deadline, open_ground, required_lamports, payout,
+ *  funding_mint, required_funding) from the sponsor, then an optional fund. */
 export async function createAgreement(program: Program, terms: AgreementTerms): Promise<CreatedAgreement> {
     const sponsor = terms.sponsor ?? providerPayer(program);
     const cid = terms.cid ?? testCid();
+    const planCid = terms.planCid ?? testCid("plan");
     const agreement = findAgreementPda(program.programId, sponsor.publicKey, cid);
     const lenses = terms.lenses ?? (terms.lens ? [terms.lens] : []);
     const signature = await program.methods
         .create(
             cid,
+            planCid,
             lenses,
             terms.lensThreshold ?? (lenses.length ? 1 : 0),
             new anchor.BN(terms.deadline ?? (await deadlineAhead(program, DEFAULT_DEADLINE_SECONDS))),
@@ -122,7 +126,7 @@ export async function createAgreement(program: Program, terms: AgreementTerms): 
         .signers(signersOf(program, [sponsor]))
         .rpc();
     if (terms.fund && BigInt(terms.fund) > 0n) await fundAgreement(program, agreement, sponsor, terms.fund);
-    return { agreement, cid, sponsor, signature };
+    return { agreement, cid, planCid, sponsor, signature };
 }
 
 export function fundAgreement(program: Program, agreement: PublicKey, authority: Keypair, lamports: number | bigint): Promise<string> {

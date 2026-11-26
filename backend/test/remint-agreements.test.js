@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { OLD_AGREEMENT_PROGRAM_ID, personaKeys, planRemint } from '../scripts/remint-agreements.mjs';
 
-const CURRENT = 'ESJ1w3rpzXtUXcZFgRfzHYRBzcrT7HeCychLNXvdBeYH';
+const CURRENT = '6X5ihiKNpsF39eYzWGaw7swgYa6vouZ8gT1LHB5H86Cb';
 const SPONSOR = '4EXtquCoNRBXvfVgDRfBSXSWzrBctcqLwwUau96Umeqk';
 const NOW = Date.parse('2026-11-26T12:00:00Z');
 const row = (overrides = {}) => ({

@@ -351,15 +351,15 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     account: {
                         space: AgreementClient.constants.AGREEMENT_ACCOUNT_SPACE,
                         offsets: AgreementClient.AGREEMENT_OFFSETS,
-                        fields: 'authority, lens (the first member), payout, deadline (unix s), created_at, required_lamports, escrow_lamports, status, open_ground, decision, decision_attested_at, decision_observed_at, decision_attestation, decision_hash, executed_at, bump, lens_count, lens_threshold, lens_confirmed (one bit per member), more_lenses (7 slots), funding_mint, required_funding, funding_met, funding_observed, funding_met_at, cid',
+                        fields: 'authority, lens (the first member), payout, deadline (unix s), created_at, required_lamports, escrow_lamports, status, open_ground, decision, decision_attested_at, decision_observed_at, decision_attestation, decision_hash, executed_at, bump, lens_count, lens_threshold, lens_confirmed (one bit per member), more_lenses (7 slots), funding_mint, required_funding, funding_met, funding_observed, funding_met_at, plan_cid_hash (sha256 of the plan CID the sponsor named; memcmp at offsets.planCidHash lists a plan\'s agreements; check it against the content\'s planCid), cid',
                         statuses: ['Active', 'Executed', 'Cancelled', 'Expired'],
                         decisions: ['Pending', 'Satisfied']
                     },
                     instructions: {
                         create: {
-                            args: ['cid: string', 'lenses: vec<pubkey>', 'lens_threshold: u8', 'deadline: i64', 'open_ground: bool', 'required_lamports: u64', 'payout: pubkey', 'funding_mint: pubkey', 'required_funding: u64'],
+                            args: ['cid: string', 'plan_cid: string', 'lenses: vec<pubkey>', 'lens_threshold: u8', 'deadline: i64', 'open_ground: bool', 'required_lamports: u64', 'payout: pubkey', 'funding_mint: pubkey', 'required_funding: u64'],
                             accounts: ['agreement (mut, init: the PDA)', 'authority (signer, mut: the sponsor; pays the rent)', 'system_program'],
-                            requires: 'cid 1-64 ASCII letters and digits; 0-8 distinct lens members (any key, the sponsor\'s own included) and lens_threshold 1..members, or no members and threshold 0 only with a funding target; funding_mint set exactly when required_funding > 0; payout not the default key; deadline in the future'
+                            requires: 'cid and plan_cid (the content\'s planCid) 1-64 ASCII letters and digits; 0-8 distinct lens members (any key, the sponsor\'s own included) and lens_threshold 1..members, or no members and threshold 0 only with a funding target; funding_mint set exactly when required_funding > 0; payout not the default key; deadline in the future'
                         },
                         fund: { args: ['lamports: u64'], accounts: ['agreement (mut)', 'authority (signer, mut)', 'system_program'], requires: 'the sponsor; Active; before the deadline' },
                         attest: { args: [], accounts: ['agreement (mut)', 'attestation (a lens member\'s AgreementDecision-v1)', 'credential (its SAS credential)'], requires: 'Active; decision Pending; before the deadline; permissionless; the signer is a lens member not yet counted and the threshold is not yet reached' },

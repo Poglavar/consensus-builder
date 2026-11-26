@@ -57,16 +57,17 @@ describe('court parcel operation recipe', () => {
 
     it('keeps the hashes of precommitted recipes, and so their market addresses, byte for byte', () => {
         // A market keyed on them must still resolve. A recipe commits to its market program, so these are
-        // the hashes under the lens-set proposal_market program (9S7jXSk…); the canonical form is the one
-        // recorded before M3 moved it into this module (under the previous program id the same bodies hash
-        // to sha256:9c0b0b69… and sha256:b877cf3e…).
+        // the hashes under the plan-CID proposal_market program (79dH9KG…); the canonical form is the one
+        // recorded before M3 moved it into this module (under the lens-set program 9S7jXSk… the same bodies
+        // hash to sha256:3f5aca30… and sha256:a363312d…, under the one before to sha256:9c0b0b69… and
+        // sha256:b877cf3e…).
         const v1 = buildCourtParcelOperationRecipe(input);
         const v2 = buildCourtParcelOperationRecipeV2(input);
         expect(v1.verification.marketProgram).toBe(MARKET_PROGRAM_ID);
-        expect(v1.hash).toBe('sha256:3f5aca30f11333dbb1e13205c998af24c24b4bfa83f69834111a2b633b5f21f1');
-        expect(externalMarketAddress(v1.hash)).toBe('HT69NhYjpKyrPUrYUizUmg9HgzAewFWTx93tNSBN8Kr');
-        expect(v2.hash).toBe('sha256:a363312dbd8e94f412d33822f224a406fdbf836d793435cc520dab11866af6ab');
-        expect(externalMarketAddress(v2.hash)).toBe('BpStroG1qmBUowsyHhARCNCTvvo8jGyrygg4ePzmkSNP');
+        expect(v1.hash).toBe('sha256:06a522df6b8445fc502be8004489d9b8296d49eb6cde2dab3caf05f2f526cbeb');
+        expect(externalMarketAddress(v1.hash)).toBe('FEru2qh33KnJJYcb8Qv8HhgPbQRFC3gCsDncVXmPAxz1');
+        expect(v2.hash).toBe('sha256:99c23dcba7ca77202cb548f88533b036300a0f6e7eb03dd3bca4b9a27b936d1f');
+        expect(externalMarketAddress(v2.hash)).toBe('8Y26hcSLtTaMQPeDRVaDw6TzCZyBCQTVXBLSrFz2Rr6p');
     });
 
     it('changes both the recipe hash and market when a committed rule changes', () => {

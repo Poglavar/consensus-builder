@@ -1062,11 +1062,11 @@ The provenance of a lifecycle claim: an observed matching chain state or event, 
 
 ### Chain agreement account
 
-The agreement program account identified by network, program, sponsor and agreement CID. On Solana its address is derived from the sponsor and the hash of the CID; the account is separate from the published agreement content.
+The agreement program account identified by network, program, sponsor and agreement CID. On Solana its address is derived from the sponsor and the hash of the CID; the account is separate from the published agreement content. It also holds the hash of the plan CID its sponsor named at minting, by which every account naming a plan can be listed from the chain alone; that hash is the sponsor's claim, which a reader confirms against the agreement content's `planCid`. An account under a retired agreement program reads as unminted.
 
 ### Minting
 
-The creation of a binding agreement's chain account. Publishing a design, creating a local fabric piece and computing a CID are separate operations. The account commits to an agreement CID and, through the CIDs inside each record, to its plan and the plan's designs. Before the wallet signs, all of them are pinned on IPFS, by our server or with the sponsor's own Pinata key, and the pinning provider must confirm each CID ([ipfs-storage.md](ipfs-storage.md)); each CID is pinned once and never unpinned.
+The creation of a binding agreement's chain account. Publishing a design, creating a local fabric piece and computing a CID are separate operations. The account commits to an agreement CID and, through the CIDs inside each record, to its plan and the plan's designs; it also stores the hash of the content's `planCid`. Before the wallet signs, all of them are pinned on IPFS, by our server or with the sponsor's own Pinata key, and the pinning provider must confirm each CID ([ipfs-storage.md](ipfs-storage.md)); each CID is pinned once and never unpinned.
 
 ### Settlement
 

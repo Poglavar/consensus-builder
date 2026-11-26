@@ -3,6 +3,7 @@
 // ExternalMarket account verifies directly on-chain.
 
 import { createHash } from 'node:crypto';
+import { createRequire } from 'node:module';
 import { PublicKey } from '@solana/web3.js';
 
 export const COURT_RECIPE_ID = 'court-parcel-operation-v1';
@@ -31,7 +32,7 @@ export function courtAttesterFromEnv(env = process.env) {
 }
 
 export const COURT_ATTESTER = courtAttesterFromEnv();
-export const MARKET_PROGRAM_ID = '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71';
+export const MARKET_PROGRAM_ID = createRequire(import.meta.url)('../../frontend/js/solana/program-ids.js').MARKET_PROGRAM_ID;
 
 function hashText(value) {
     return createHash('sha256').update(value, 'utf8').digest('hex');

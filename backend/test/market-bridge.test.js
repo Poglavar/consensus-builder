@@ -10,7 +10,7 @@ const lmsr = require('../../frontend/js/bets/lmsr.js');
 const codec = require('../../frontend/js/solana/lmsr-client.js').configure({ web3 });
 const bridgeSource = fs.readFileSync(new URL('../../frontend/js/solana/market-bridge.js', import.meta.url), 'utf8');
 const USDC = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
-const programId = new web3.PublicKey('9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71');
+const programId = new web3.PublicKey('79dH9KGrbffN37Hv1mbyUWdbHAVcCt6o2Z1VZ3c745Bn');
 const associatedTokenProgram = new web3.PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
 const tokenProgram = new web3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
 

@@ -7,7 +7,10 @@
 })(typeof window !== 'undefined' ? window : globalThis, function solanaLmsrClientFactory() {
     'use strict';
 
-    const PROGRAM_ID = '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71';
+    // The program ids live in program-ids.js (window.SolanaProgramIds, loaded before this file).
+    const programIds = globalThis.SolanaProgramIds || (typeof require === 'function' ? require('./program-ids.js') : null);
+    if (!programIds) throw new Error('SolanaProgramIds (js/solana/program-ids.js) must load before lmsr-client.js');
+    const PROGRAM_ID = programIds.MARKET_PROGRAM_ID;
     const TOKEN_PROGRAM_ID = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
     const ASSOCIATED_TOKEN_PROGRAM_ID = 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL';
     const SYSTEM_PROGRAM_ID = '11111111111111111111111111111111';

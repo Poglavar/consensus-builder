@@ -89,7 +89,7 @@ describe('GET /markets', () => {
         expect(readMarkets).toHaveBeenCalledWith([ACCOUNT], expect.arrayContaining([expect.objectContaining({ account: ACCOUNT, sponsor: SPONSOR })]));
         expect(res.body).toMatchObject({
             city: 'zg', cluster: 'devnet', agreementProgram: AGREEMENT_PROGRAM_ID,
-            marketProgram: '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71', stakeMint: DEVNET_USDC_MINT, stakeDecimals: 6,
+            marketProgram: '79dH9KGrbffN37Hv1mbyUWdbHAVcCt6o2Z1VZ3c745Bn', stakeMint: DEVNET_USDC_MINT, stakeDecimals: 6,
             summary: { contests: 1, agreements: 2, markets: 1, openMarkets: 1, sharesAtomic: '250000' }
         });
         const [contest] = res.body.contests;
