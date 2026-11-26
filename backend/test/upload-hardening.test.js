@@ -9,7 +9,6 @@ import express from 'express';
 import request from 'supertest';
 import { afterAll, afterEach, describe, expect, it, vi } from 'vitest';
 import { setupFileStorageRoutes } from '../routes/file-storage.js';
-import { setupAssetsRoute } from '../routes/assets.js';
 import { uploadStaticHeaders } from '../utils/upload-static-headers.js';
 import { createRouteApp } from './helpers/create-route-app.js';
 
@@ -55,21 +54,6 @@ describe('POST /images refuses anything that is not a real image', () => {
     });
 });
 
-describe('POST /assets/upload refuses anything that is not a real image', () => {
-    const app = createRouteApp(setupAssetsRoute);
-
-    for (const [label, dataUrl] of HOSTILE) {
-        it(`refuses ${label}`, async () => {
-            const write = vi.spyOn(fsp, 'writeFile').mockResolvedValue(undefined);
-            const res = await request(app)
-                .post('/assets/upload')
-                .send({ fileName: 'x', imageData: dataUrl, metadata: { name: 'x' } });
-            expect(res.status).toBe(400);
-            expect(write).not.toHaveBeenCalled();
-        });
-    }
-});
-
 describe('POST /models refuses anything that is not glTF', () => {
     const app = createRouteApp(setupFileStorageRoutes);
 
@@ -98,7 +82,6 @@ describe('POST /models refuses anything that is not glTF', () => {
 
 describe('client-supplied names never overwrite an existing file', () => {
     // Real disk writes: the point is what ends up on disk, not which call was made.
-    const assetsApp = createRouteApp(setupAssetsRoute);
     const storageApp = createRouteApp(setupFileStorageRoutes);
     const track = (servedUrl, dir) => {
         const file = path.resolve('uploads', dir, path.basename(servedUrl));
@@ -118,27 +101,6 @@ describe('client-supplied names never overwrite an existing file', () => {
         expect(fs.readFileSync(track(a.body.imageUrl, 'images'))).toEqual(PNG_BYTES);
         expect(fs.readFileSync(track(b.body.imageUrl, 'images'))).toEqual(second);
     });
-
-    it('POST /metadata with the same fileName twice keeps both documents', async () => {
-        const a = await request(storageApp).post('/metadata').send({ fileName: 'parcel-1', metadata: { v: 1 } });
-        const b = await request(storageApp).post('/metadata').send({ fileName: 'parcel-1', metadata: { v: 2 } });
-        expect(b.body.fileName).not.toBe(a.body.fileName);
-        expect(JSON.parse(fs.readFileSync(track(a.body.metadataUrl, 'metadata'), 'utf8'))).toEqual({ v: 1 });
-        expect(JSON.parse(fs.readFileSync(track(b.body.metadataUrl, 'metadata'), 'utf8'))).toEqual({ v: 2 });
-    });
-
-    it('POST /assets/upload with the same fileName twice keeps both image and metadata', async () => {
-        const a = await request(assetsApp).post('/assets/upload').send({ fileName: 'road', imageData: PNG_DATA_URL, metadata: { name: 'A' } });
-        const b = await request(assetsApp).post('/assets/upload').send({ fileName: 'road', imageData: PNG_DATA_URL, metadata: { name: 'B' } });
-        expect(a.status).toBe(200);
-        expect(b.status).toBe(200);
-        expect(b.body.imageUrl).not.toBe(a.body.imageUrl);
-        expect(b.body.metadataUrl).not.toBe(a.body.metadataUrl);
-        track(a.body.imageUrl, 'images');
-        track(b.body.imageUrl, 'images');
-        expect(JSON.parse(fs.readFileSync(track(a.body.metadataUrl, 'metadata'), 'utf8')).name).toBe('A');
-        expect(JSON.parse(fs.readFileSync(track(b.body.metadataUrl, 'metadata'), 'utf8')).name).toBe('B');
-    });
 });
 
 describe('persisted asset URLs ignore a spoofed Host', () => {
@@ -147,17 +109,15 @@ describe('persisted asset URLs ignore a spoofed Host', () => {
         const previous = process.env.PUBLIC_API_BASE_URL;
         process.env.PUBLIC_API_BASE_URL = 'https://api.example.test';
         try {
-            const app = createRouteApp(setupAssetsRoute);
+            const app = createRouteApp(setupFileStorageRoutes);
             const res = await request(app)
-                .post('/assets/upload')
+                .post('/images')
                 .set('host', 'attacker.test')
-                .send({ fileName: 'road', imageData: PNG_DATA_URL, metadata: { name: 'x' } });
+                .send({ fileName: 'road', imageData: PNG_DATA_URL });
             expect(res.status).toBe(200);
-            expect(res.body.imageUrl).toMatch(/^https:\/\/api\.example\.test\/uploads\/images\//);
-            expect(res.body.metadataUrl).toMatch(/^https:\/\/api\.example\.test\/uploads\/metadata\//);
-            const saved = write.mock.calls[1][1];
-            expect(saved).not.toContain('attacker.test');
-            expect(JSON.parse(saved).image).toBe(res.body.imageUrl);
+            expect(res.body.imageUrl).toMatch(/^https:\/\/api\.example\.test\//);
+            expect(res.body.imageUrl).not.toContain('attacker.test');
+            expect(write).toHaveBeenCalled();
         } finally {
             if (previous === undefined) delete process.env.PUBLIC_API_BASE_URL;
             else process.env.PUBLIC_API_BASE_URL = previous;

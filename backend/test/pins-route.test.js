@@ -8,7 +8,7 @@ import { createMockPool } from './helpers/mock-pool.js';
 import { createContentApp } from './helpers/create-app.js';
 import { canonicalBytes, cidOf } from '../cid.js';
 import { MAX_PINNED_OBJECT_BYTES } from '../storage/pinning.js';
-import { createUploadRateLimiter } from '../utils/nft-asset-upload.js';
+import { createUploadRateLimiter } from '../utils/upload-guards.js';
 import { agreementContent, designContent, planContent } from './helpers/content-fixtures.js';
 
 const PINNED_AT = '2026-10-21T10:00:00.000Z';

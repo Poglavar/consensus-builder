@@ -4,12 +4,10 @@ import fsp from 'fs/promises';
 import request from 'supertest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { setupFileStorageRoutes } from '../routes/file-storage.js';
-import { setupAssetsRoute } from '../routes/assets.js';
-import { createUploadRateLimiter, requireUploadDiskHeadroom } from '../utils/nft-asset-upload.js';
+import { createUploadRateLimiter, requireUploadDiskHeadroom } from '../utils/upload-guards.js';
 import { createRouteApp } from './helpers/create-route-app.js';
 
 const PNG_DATA_URL = `data:image/png;base64,${Buffer.from('89504e470d0a1a0a0000000d49484452', 'hex').toString('base64')}`;
-const metadata = { name: 'Parcel 1', description: 'd' };
 const roomy = () => ({ bavail: 1e9, bsize: 4096 });
 const full = () => ({ bavail: 10, bsize: 4096 });
 
@@ -17,9 +15,7 @@ afterEach(() => vi.restoreAllMocks());
 
 const routes = [
     ['/models', setupFileStorageRoutes, { fileName: 'a.glb', modelData: 'data:model/gltf-binary;base64,Z2xURgIAAAA=' }],
-    ['/images', setupFileStorageRoutes, { fileName: 'a', imageData: PNG_DATA_URL }],
-    ['/metadata', setupFileStorageRoutes, { fileName: 'a', metadata }],
-    ['/assets/upload', setupAssetsRoute, { fileName: 'a', imageData: PNG_DATA_URL, metadata }]
+    ['/images', setupFileStorageRoutes, { fileName: 'a', imageData: PNG_DATA_URL }]
 ];
 
 describe('upload budget per route', () => {

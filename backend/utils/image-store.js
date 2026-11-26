@@ -1,5 +1,4 @@
-// Single writer for uploaded/generated images. Both the /assets/upload route and the server-side
-// proposal thumbnail renderer store PNGs here, so there is exactly one place that decides where
+// Single writer for generated images. The server-side proposal thumbnail renderer stores PNGs here, so there is exactly one place that decides where
 // image bytes live (uploads/images) and what URL they are served at (/uploads/images/<file>).
 import fs from 'fs';
 import fsp from 'fs/promises';
@@ -66,21 +65,6 @@ export async function saveImageBuffer(buffer, fileNameBase) {
     const absolutePath = path.join(IMAGE_DIR, fileName);
     await fsp.writeFile(absolutePath, buffer, { flag: 'wx' });
     return { fileName, imagePath: `/uploads/images/${fileName}`, absolutePath, contentType };
-}
-
-/**
- * Decode a base64 data URL into { buffer, contentType, extension }, where contentType/extension
- * come from sniffing the bytes (null when they are not an allowlisted image) — the declared mime
- * is ignored. Returns null only when the input is not a data URL at all; a data URL that decodes
- * to zero bytes still comes back (with an empty buffer), because callers report that separately.
- */
-export function decodeImageDataUrl(dataUrl) {
-    if (typeof dataUrl !== 'string') return null;
-    const matches = dataUrl.match(/^data:(.+);base64,(.+)$/);
-    if (!matches || matches.length < 3) return null;
-    const buffer = Buffer.from(matches[2], 'base64');
-    const contentType = sniffImageType(buffer);
-    return { buffer, contentType, extension: contentType ? IMAGE_EXTENSIONS[contentType] : null };
 }
 
 export function imageFileExists(fileName) {

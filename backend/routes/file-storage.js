@@ -3,17 +3,16 @@ import path from 'path';
 import { createJsonBodyValidator, isPlainObject, validators } from '../utils/request-validation.js';
 import { publicFileUrl } from '../utils/public-base-url.js';
 import { sniffImageType, uniqueFileBase } from '../utils/image-store.js';
-import { createUploadRateLimiter, requireUploadDiskHeadroom } from '../utils/nft-asset-upload.js';
+import { createUploadRateLimiter, requireUploadDiskHeadroom } from '../utils/upload-guards.js';
 
 const UPLOAD_ROOT = path.resolve('uploads');
 const IMAGE_DIR = path.join(UPLOAD_ROOT, 'images');
-const METADATA_DIR = path.join(UPLOAD_ROOT, 'metadata');
 const MODEL_DIR = path.join(UPLOAD_ROOT, 'models');
 const MAX_FILE_NAME_LENGTH = 255;
 const MAX_MODEL_DATA_LENGTH = 14_000_000; // base64 data URL; ~10 MB binary, under the 15mb JSON body cap
 
 async function ensureDirectories() {
-    await Promise.all([UPLOAD_ROOT, IMAGE_DIR, METADATA_DIR, MODEL_DIR].map(dir => fsp.mkdir(dir, { recursive: true })));
+    await Promise.all([UPLOAD_ROOT, IMAGE_DIR, MODEL_DIR].map(dir => fsp.mkdir(dir, { recursive: true })));
 }
 
 const IMAGE_EXTENSIONS = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' };
@@ -48,37 +47,6 @@ const imageUploadBodyValidator = createJsonBodyValidator({
                 minLengthMessage: 'imageData (base64 data URL) is required.',
                 maxLength: 5_500_000,
                 maxLengthMessage: 'imageData exceeds the maximum allowed size (~4MB).'
-            })
-        },
-        fileName: {
-            required: false,
-            validate: validators.optional(validators.string({
-                label: 'fileName',
-                maxLength: MAX_FILE_NAME_LENGTH,
-                disallowControlChars: true
-            }))
-        }
-    }
-});
-
-const metadataUploadBodyValidator = createJsonBodyValidator({
-    schema: {
-        metadata: {
-            required: true,
-            missingMessage: 'metadata object is required.',
-            validate: validators.custom((value) => {
-                let metadataObject = value;
-                if (typeof value === 'string') {
-                    try {
-                        metadataObject = JSON.parse(value);
-                    } catch {
-                        return validators.fail('metadata must be valid JSON when sent as a string.');
-                    }
-                }
-                if (!isPlainObject(metadataObject)) {
-                    return validators.fail('metadata object is required.');
-                }
-                return validators.ok(metadataObject);
             })
         },
         fileName: {
@@ -192,31 +160,6 @@ export function setupFileStorageRoutes(app, deps = {}) {
         } catch (error) {
             console.error('Image upload failed:', error);
             res.status(500).json({ error: 'Failed to store image.' });
-        }
-    });
-
-    app.post('/metadata', limiter(), headroom, metadataUploadBodyValidator, async (req, res) => {
-        try {
-            await ensureDirectories();
-            const { metadata: metadataObject, fileName } = req.validatedBody;
-            // Random suffix + `wx`: metadata that minted tokens point to can never be overwritten.
-            const baseName = String(fileName || '').replace(/\.json$/i, '');
-            const finalFileName = `${uniqueFileBase(baseName, 'metadata')}.json`;
-            await fsp.writeFile(
-                path.join(METADATA_DIR, finalFileName),
-                JSON.stringify(metadataObject, null, 2),
-                { encoding: 'utf8', flag: 'wx' }
-            );
-
-            const metadataUrl = publicFileUrl(`/metadata/${finalFileName}`);
-
-            res.json({
-                fileName: finalFileName,
-                metadataUrl
-            });
-        } catch (error) {
-            console.error('Metadata upload failed:', error);
-            res.status(500).json({ error: 'Failed to store metadata.' });
         }
     });
 }

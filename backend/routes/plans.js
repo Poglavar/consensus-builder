@@ -2,7 +2,7 @@
 import { normalizeCityCode } from '../utils/city-code.js';
 import { createRequire } from 'node:module';
 import { canonicalBytes, cidOf, isCid } from '../cid.js';
-import { createUploadRateLimiter } from '../utils/nft-asset-upload.js';
+import { createUploadRateLimiter } from '../utils/upload-guards.js';
 const require = createRequire(import.meta.url);
 const PlanRecord = require('../../frontend/js/plan-record.js');
 

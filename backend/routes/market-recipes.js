@@ -1,7 +1,7 @@
 import { createRequire } from 'node:module';
 import { canonicalBytes, cidOf } from '../cid.js';
 import { pinBytes, ipfsGatewayUrl } from '../storage/pinning.js';
-import { createUploadRateLimiter } from '../utils/nft-asset-upload.js';
+import { createUploadRateLimiter } from '../utils/upload-guards.js';
 import { canonicalAccount } from '../oracle/lmsr-recipe.js';
 
 const require = createRequire(import.meta.url);

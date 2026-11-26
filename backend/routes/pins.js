@@ -8,7 +8,7 @@
 import { canonicalBytes, cidOf, isCid } from '../cid.js';
 import { MAX_PINNED_OBJECT_BYTES, pinBytes as defaultPinBytes } from '../storage/pinning.js';
 import { isPlainObject } from '../utils/request-validation.js';
-import { createUploadRateLimiter } from '../utils/nft-asset-upload.js';
+import { createUploadRateLimiter } from '../utils/upload-guards.js';
 import { DESIGN_SCHEMA, validateDesignContent } from './designs.js';
 import { AGREEMENT_SCHEMA, validateAgreementContent } from './agreements.js';
 import { validatePlanContent } from './plans.js';

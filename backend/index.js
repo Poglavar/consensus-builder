@@ -40,8 +40,6 @@ import { setupEstimateContextRoute } from './parcels/estimate-context.js';
 import { setupUrbanRulesRoute } from './routes/urban-rules.js';
 import { setupLandUsesRoute } from './routes/land-uses.js';
 import { setupDocsRoute } from './routes/docs.js';
-import { setupIpfsRoute } from './routes/ipfs.js';
-import { setupAssetsRoute } from './routes/assets.js';
 import { setupFileStorageRoutes } from './routes/file-storage.js';
 import { setupAdsRoute } from './routes/ads.js';
 import { setupRoadParcelsRoute } from './routes/road-parcels.js';
@@ -437,7 +435,6 @@ export function createApp({
     // uploadStaticHeaders: nosniff everywhere, and non-image/model/JSON files only as downloads.
     const uploadsRoot = path.resolve('uploads');
     app.use('/uploads', privateUploadGuard, embeddableStatic, uploadStaticHeaders, express.static(uploadsRoot));
-    app.use('/metadata', embeddableStatic, uploadStaticHeaders, express.static(path.join(uploadsRoot, 'metadata')));
     app.use('/images', embeddableStatic, uploadStaticHeaders, express.static(path.join(uploadsRoot, 'images')));
 
     app.use((req, res, next) => {
@@ -480,8 +477,6 @@ export function createApp({
     setupLandUsesRoute(app, activePool);
     setupWellKnownRoutes(app, { env }); // /.well-known/x402, llms.txt, openapi.json, robots.txt; must precede docs (/agents.json aliases /docs/agents.json)
     setupDocsRoute(app, activePool);
-    setupIpfsRoute(app);
-    setupAssetsRoute(app);
     setupFileStorageRoutes(app);
     setupAdsRoute(app, activePool);
     setupRoadParcelsRoute(app, activePool);

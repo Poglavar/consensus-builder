@@ -14,7 +14,6 @@ valid and are not rewritten.
 Pinned on IPFS:
 
 - signed community reports, which the UI links on `ipfs.io`;
-- parcel NFT images and metadata (`/ipfs/upload`);
 - every binding agreement about to be minted on Solana, its plan and the plan's designs, by our server
   or with the sponsor's own Pinata key.
 

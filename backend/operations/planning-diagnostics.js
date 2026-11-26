@@ -96,7 +96,7 @@ export function createDiagnosticStore(pool) {
     };
 }
 
-const API_WRITES = Object.freeze({ '/plans': 'plan', '/designs': 'design', '/agreements': 'artifact', '/pins': 'artifact', '/ipfs/upload': 'artifact' });
+const API_WRITES = Object.freeze({ '/plans': 'plan', '/designs': 'design', '/agreements': 'artifact', '/pins': 'artifact' });
 export function createApiObservation(req, res, { knownTest = false } = {}) {
     const entity = API_WRITES[req.route?.path];
     if (req.method !== 'POST' || !entity) return null;

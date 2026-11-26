@@ -18,7 +18,7 @@ import { MAX_PINNED_OBJECT_BYTES } from '../storage/pinning.js';
 import { COVERAGE } from '../proposals/binding.js';
 import { isPlainObject } from '../utils/request-validation.js';
 import { publicApiBaseUrl } from '../utils/public-base-url.js';
-import { createUploadRateLimiter } from '../utils/nft-asset-upload.js';
+import { createUploadRateLimiter } from '../utils/upload-guards.js';
 import { defaultThumbnailQueue } from '../thumbnails/thumbnail-queue.js';
 import { defaultAgreementPreviewService } from '../thumbnails/agreement-preview.js';
 import { enqueueDesignThumbnail, insertDesign, loadDesigns, parseListLimit, prepareDesign } from './designs.js';

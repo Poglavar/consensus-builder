@@ -4,12 +4,9 @@ import { decode as decodeDagPb } from '@ipld/dag-pb';
 import { UnixFS } from 'ipfs-unixfs';
 import { S3Client, PutObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
 import { createHash } from 'node:crypto';
-import request from 'supertest';
 import { pinBytes, pinFile, ipfsGatewayUrl } from '../storage/pinning.js';
 import { createFileCar } from '../storage/ipfs-car.js';
 import { cidOf } from '../cid.js';
-import { setupIpfsRoute } from '../routes/ipfs.js';
-import { createRouteApp } from './helpers/create-route-app.js';
 
 const bytes = Buffer.from('{"schema":"test/v1"}');
 const cid = cidOf(bytes);
@@ -123,16 +120,4 @@ describe('provider-independent pins', () => {
         expect(payload(root)).toEqual(source);
     // The 1 MiB case chunks and hashes in JS (~1.5 s alone); under the parallel suite it outran 5 s.
     }, 20000);
-
-    it('uses the selected provider and independent gateway for both NFT image and metadata', async () => {
-        const image = Buffer.from('iVBORw0KGgoAAAAAAAAAAAAAAAAAAAAA', 'base64');
-        const result = await request(createRouteApp(setupIpfsRoute)).post('/ipfs/upload').send({
-            imageData: `data:image/png;base64,${image.toString('base64')}`, metadata: { name: 'Test NFT' }
-        });
-        expect(result.status).toBe(200);
-        expect(result.body.imageUri).toBe(`ipfs://${cidOf(image)}`);
-        expect(result.body.imageGatewayUrl).toBe(`https://example.com/ipfs/${cidOf(image)}`);
-        expect(result.body.metadataGatewayUrl).toMatch(/^https:\/\/example.com\/ipfs\/baf/);
-        expect(send).toHaveBeenCalledTimes(4);
-    });
 });

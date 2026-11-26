@@ -20,7 +20,7 @@ import { pinBytes } from '../storage/pinning.js';
  *   the thumbnail queue (thumbnails/thumbnail-queue.js), the pinning call (storage/pinning.js), the
  *   origin stored thumbnail URLs get (PUBLIC_API_BASE_URL by default), the decision store
  *   (agreements/decisions.js), the clock, the per-client limiter of the two pinning routes
- *   (one fresh utils/nft-asset-upload.js limiter per route by default), and the chain reader of
+ *   (one fresh utils/upload-guards.js limiter per route by default), and the chain reader of
  *   POST /agreements/:cid/onchain (cluster → agreements/onchain.js createAgreementChain)
  */
 export function registerContentRoutes(app, pool, overrides = {}) {

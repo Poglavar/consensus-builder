@@ -7,13 +7,11 @@ Current route-level coverage status for modules wired in [backend/index.js](../i
 | `routes/area-monitors.js` | Covered | `test/area-monitors.test.js` |
 | `routes/ads.js`           | Covered | `test/ads.test.js`           |
 | `routes/agent-proposals.js` | Covered | `test/agent-proposals.test.js` |
-| `routes/assets.js`        | Covered | `test/assets.test.js`        |
 | `routes/buildings.js`     | Covered | `test/buildings.test.js`     |
 | `routes/city-stats.js`    | Covered | `test/city-stats.test.js`    |
 | `routes/docs.js`          | Covered | `test/docs.test.js`          |
 | `routes/file-storage.js`  | Covered | `test/file-storage.test.js`  |
 | `routes/health.js`        | Covered | `test/health.test.js`        |
-| `routes/ipfs.js`          | Covered | `test/ipfs.test.js`          |
 | `routes/land-uses.js`     | Covered | `test/land-uses.test.js`     |
 | `routes/objects.js`       | Covered | `test/objects.test.js`       |
 | `routes/parcel-ba.js`     | Covered | `test/parcel-ba.test.js`     |
