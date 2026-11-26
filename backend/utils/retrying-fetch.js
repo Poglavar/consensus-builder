@@ -13,7 +13,7 @@ function transientHttpReason(response) {
 export function createRetryingFetch({ fetchImpl = globalThis.fetch, attempts = 4,
     firstDelayMs = 1000, maxDelayMs = 10000, timeoutMs = 15000, wait = delay,
     retryMethods = DEFAULT_RETRY_METHODS, shouldRetryRequest = null, shouldRetryResponse = () => true, inspectResponse = null,
-    requestLabel = ({ method }) => method.toLowerCase(), onAttempt = null,
+    requestLabel = ({ method }) => method.toLowerCase(), onAttempt = null, beforeAttempt = null,
     log = message => console.warn(`[${new Date().toISOString()}] [fetch-retry] ${message}`) } = {}) {
     if (typeof fetchImpl !== 'function') throw new Error('a fetch implementation is required');
     if (!Number.isInteger(attempts) || attempts < 1 || attempts > 6) throw new Error('fetch attempts must be between 1 and 6');
@@ -31,6 +31,10 @@ export function createRetryingFetch({ fetchImpl = globalThis.fetch, attempts = 4
             let response;
             let reason;
             try {
+                init.signal?.throwIfAborted();
+                // A wait for a request slot (solana/rpc.js pacing) happens before the attempt's
+                // timeout starts: time spent queued is not time the server took to answer.
+                await beforeAttempt?.(request);
                 init.signal?.throwIfAborted();
                 onAttempt?.(request);
                 const timeout = AbortSignal.timeout(timeoutMs);

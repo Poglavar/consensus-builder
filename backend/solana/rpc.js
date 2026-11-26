@@ -23,9 +23,11 @@ async function transientJsonRpcResponse(response) {
     } catch { return 'invalid RPC response'; }
 }
 
-// Scheduled agents are not in a hurry: SOLANA_RPC_MIN_INTERVAL_MS spaces the start of every RPC request (each
+// Scheduled agents are not in a hurry: SOLANA_RPC_MIN_INTERVAL_MS spaces the start of every RPC call (each
 // retry included) by at least that many milliseconds, so a run spreads its calls out instead of bursting into
-// provider rate limits. Unset or 0 leaves a process unpaced (the API). One pacer per interval per process.
+// provider rate limits. A JSON-RPC batch of N calls takes N slots: public devnet counts each call in a batch
+// against its per-method limit (x-ratelimit-method-limit: 10 per 10 s per IP, seen 2026-11-26). Unset or 0
+// leaves a process unpaced (the API). One pacer per interval per process.
 export function rpcMinIntervalMs(env = process.env) {
     const raw = env.SOLANA_RPC_MIN_INTERVAL_MS;
     if (raw === undefined || raw === '') return 0;
@@ -34,14 +36,16 @@ export function rpcMinIntervalMs(env = process.env) {
     return ms;
 }
 
+// Resolves when a request of `calls` JSON-RPC calls may start, and books the slots after it. The retrying
+// transport awaits it before an attempt's timeout starts, so a queue of parallel reads waits its turn
+// instead of timing out in the queue and retrying (the "transport failure" bursts of 2026-11-25).
 export function createRequestPacer(minIntervalMs, { now = Date.now, sleep = ms => new Promise(resolve => setTimeout(resolve, ms)) } = {}) {
     let nextStartAt = 0;
-    return fetchImpl => async (input, init) => {
+    return async (calls = 1) => {
         const startAt = Math.max(now(), nextStartAt);
-        nextStartAt = startAt + minIntervalMs;
+        nextStartAt = startAt + minIntervalMs * Math.max(1, calls);
         const delay = startAt - now();
         if (delay > 0) await sleep(delay);
-        return fetchImpl(input, init);
     };
 }
 
@@ -57,7 +61,8 @@ export function createRetryingRpcFetch({ fetchImpl = globalThis.fetch, onRpcRequ
     log = message => console.warn(`[${new Date().toISOString()}] [solana-rpc] ${message}`) } = {}) {
     if (!Number.isInteger(attempts) || attempts < 1 || attempts > 6) throw new Error('RPC attempts must be between 1 and 6');
     const pace = pacer || (minIntervalMs > 0 ? processPacer(minIntervalMs) : null);
-    const retryFetch = createRetryingFetch({ fetchImpl: pace ? pace(fetchImpl) : fetchImpl, attempts, firstDelayMs, maxDelayMs, timeoutMs, wait, log,
+    const retryFetch = createRetryingFetch({ fetchImpl, attempts, firstDelayMs, maxDelayMs, timeoutMs, wait, log,
+        beforeAttempt: pace ? ({ init }) => pace(requestMethods(init.body).length) : null,
         shouldRetryRequest: ({ init }) => {
             const methods = requestMethods(init.body);
             return methods.length > 0 && methods.every(retryableMethod);

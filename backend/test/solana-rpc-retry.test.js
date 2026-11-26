@@ -273,6 +273,34 @@ describe('RPC request pacing for scheduled agents', () => {
         expect(fetchImpl).toHaveBeenCalledTimes(3);
     });
 
+    it('counts every call of a JSON-RPC batch against the pace', async () => {
+        const waits = [];
+        const pacer = createRequestPacer(1000, { now: () => 0, sleep: async ms => { waits.push(ms); } });
+        const fetchImpl = vi.fn(async (_url, init) => response(JSON.parse(init.body).map(row => ({ jsonrpc: '2.0', id: row.id, result: null }))));
+        const retry = createRetryingRpcFetch({ fetchImpl, pacer, wait: vi.fn(async () => {}), log: vi.fn() });
+        const batch = JSON.stringify([1, 2, 3].map(id => ({ jsonrpc: '2.0', id, method: 'getTransaction', params: [] })));
+        // A batch of three getTransaction calls books three slots: the next request waits three intervals.
+        await retry(rpcUrl, { method: 'POST', body: batch });
+        await retry(rpcUrl, { method: 'POST', body: JSON.stringify([{ jsonrpc: '2.0', id: 4, method: 'getSlot', params: [] }]) });
+        expect(waits).toEqual([3000]);
+    });
+
+    it('starts an attempt timeout only once the request has its slot, so a queued burst does not time out', async () => {
+        // Real timers: five parallel reads paced 30 ms apart wait up to 120 ms in the queue, longer than the
+        // 40 ms per-attempt timeout. Queue time must not count against it (no abort, no retry).
+        const pacer = createRequestPacer(30);
+        const fetchImpl = vi.fn(async (_url, init) => {
+            if (init.signal?.aborted) throw new DOMException('The operation was aborted.', 'AbortError');
+            return response({ jsonrpc: '2.0', id: 7, result: 1 });
+        });
+        const log = vi.fn();
+        const retry = createRetryingRpcFetch({ fetchImpl, pacer, timeoutMs: 40, wait: vi.fn(async () => {}), log });
+        const results = await Promise.all([1, 2, 3, 4, 5].map(() => retry(rpcUrl, { method: 'POST', body: rpcRequest('getAccountInfo') })));
+        expect(results.map(result => result.status)).toEqual([200, 200, 200, 200, 200]);
+        expect(fetchImpl).toHaveBeenCalledTimes(5);
+        expect(log).not.toHaveBeenCalled();
+    });
+
     it('reads the interval from SOLANA_RPC_MIN_INTERVAL_MS, unpaced when unset, and refuses nonsense', () => {
         expect(rpcMinIntervalMs({})).toBe(0);
         expect(rpcMinIntervalMs({ SOLANA_RPC_MIN_INTERVAL_MS: '1000' })).toBe(1000);
