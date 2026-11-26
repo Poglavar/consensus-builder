@@ -12,7 +12,7 @@ function freshTransaction(payer) {
 function stubConnection({ statuses, heights = [100], lastValidBlockHeight = 150, sendErrors = [] }) {
     const statusQueue = [...statuses];
     const heightQueue = [...heights];
-    const calls = { sent: 0, statusPolls: 0, blockhashReads: 0, raws: [], signature: null };
+    const calls = { sent: 0, statusPolls: 0, blockhashReads: 0, raws: [], signature: null, statusOptions: [] };
     return {
         calls,
         async getLatestBlockhash() {
@@ -30,7 +30,7 @@ function stubConnection({ statuses, heights = [100], lastValidBlockHeight = 150,
         async getSignatureStatuses(sigs, options) {
             calls.statusPolls += 1;
             expect(sigs).toEqual([calls.signature]);
-            expect(options).toEqual({ searchTransactionHistory: true });
+            calls.statusOptions.push(options);
             return { value: [statusQueue.length > 1 ? statusQueue.shift() : statusQueue[0]] };
         },
         async getBlockHeight() {
@@ -49,6 +49,8 @@ describe('sendAndConfirmPolling', () => {
         expect(signature).toBe(connection.calls.signature);
         expect(connection.calls.sent).toBe(1);
         expect(connection.calls.statusPolls).toBe(3);
+        // A transaction it just sent is in the node's recent status cache: no ledger history search.
+        expect(connection.calls.statusOptions).toEqual([undefined, undefined, undefined]);
     });
 
     it('accepts finalized as reaching confirmed', async () => {
@@ -69,6 +71,8 @@ describe('sendAndConfirmPolling', () => {
         const connection = stubConnection({ statuses: [null], heights: [151], lastValidBlockHeight: 150 });
         await expect(sendAndConfirmPolling(connection, freshTransaction(payer), [payer], { pollMs: 1 })).rejects.toThrow(/expired/);
         expect(connection.calls.statusPolls).toBe(2);
+        // Only the last look, after the blockhash died, searches the history.
+        expect(connection.calls.statusOptions).toEqual([undefined, { searchTransactionHistory: true }]);
     });
 
     it('does not call a transaction expired when the last look finds it confirmed', async () => {

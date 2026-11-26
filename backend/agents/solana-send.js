@@ -61,8 +61,12 @@ export async function sendAndConfirmPolling(connection, transaction, signers, {
     await broadcast();
     const reached = (status) => status && (status.confirmationStatus === 'finalized' || status.confirmationStatus === commitment
         || (commitment === 'confirmed' && status.confirmationStatus === 'confirmed'));
-    const readStatus = async () => {
-        const { value } = await connection.getSignatureStatuses([signature], { searchTransactionHistory: true });
+    // While the blockhash lives, the node's recent status cache holds this transaction's status, so the
+    // polls skip the ledger history search; only the one look after expiry searches the history.
+    const readStatus = async ({ history = false } = {}) => {
+        const { value } = history
+            ? await connection.getSignatureStatuses([signature], { searchTransactionHistory: true })
+            : await connection.getSignatureStatuses([signature]);
         const status = value?.[0] ?? null;
         if (status?.err) throw new Error(`transaction ${signature} failed on chain: ${JSON.stringify(status.err)}`);
         return status;
@@ -76,7 +80,7 @@ export async function sendAndConfirmPolling(connection, transaction, signers, {
         if (height > lastValidBlockHeight) {
             // The blockhash is dead; one last look so a confirmation that arrived while we asked for
             // the height is not misreported as expiry.
-            if (reached(await readStatus())) return signature;
+            if (reached(await readStatus({ history: true }))) return signature;
             throw new Error(`transaction ${signature} expired: block height ${height} > ${lastValidBlockHeight} without confirmation`);
         }
         if (now() - started > maxMs) {
