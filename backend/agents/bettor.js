@@ -75,6 +75,15 @@ export async function readAgreementMarket(connection, subject, options = {}) {
     return (await readAgreementMarkets(connection, [subject], options)).get(subject);
 }
 
+/**
+ * The owner's position on one side of a market read by readAgreementMarket(s), or null when it holds
+ * none: one account read. A held position means the owner has already staked on that side; the
+ * supporter's eligibility and a resumed society stake both judge "already staked" by it.
+ */
+export function readHeldPosition(context, owner, side) {
+    return market.readPosition(context.connection, context.address, owner, side);
+}
+
 async function send(connection, instructions, signer, sendAndConfirm) {
     const transaction = new web3.Transaction().add(...instructions);
     transaction.feePayer = signer.publicKey;

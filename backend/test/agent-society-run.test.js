@@ -161,6 +161,41 @@ describe('society execution wiring', () => {
         expect(calls).toHaveLength(2);
     });
 
+    describe('a resumed stake (a run killed after saving its selection, rerun with the same run id)', () => {
+        const stake = { type: 'stake', side: 'no', amount: '0.01', usdc: 0.01, agreementCid: 'cid-a', account: 'account-a' };
+        const context = { market: {}, address: { toBase58: () => 'market-a' } };
+        function chain({ held }) {
+            const calls = [];
+            const adapters = {
+                readAgreementMarket: async () => context,
+                readHeldPosition: vi.fn(async (...args) => { calls.push(['position', ...args]); return held ? { amount: 9_000n } : null; }),
+                fundBotAction: async () => { calls.push(['fund']); return { status: 'skipped' }; },
+                buyAgreementShares: async args => { calls.push(['stake', args.side]); return { signature: 's', replayed: false }; }
+            };
+            return { calls, adapters };
+        }
+
+        it('does not buy (or fund) again when the wallet already holds that side of the market', async () => {
+            const { calls, adapters } = chain({ held: true });
+            const result = await execute({ action: stake, keypair, caps, adapters, resumed: true });
+            expect(result).toEqual({ marketPda: 'market-a', signature: null, shares: 9_000n, replayed: true });
+            expect(calls).toEqual([['position', context, 'Owner', 0]]);
+        });
+
+        it('buys when the saved stake never landed, after one position read', async () => {
+            const { calls, adapters } = chain({ held: false });
+            expect(await execute({ action: stake, keypair, caps, adapters, resumed: true })).toEqual({ signature: 's', replayed: false });
+            expect(calls).toEqual([['position', context, 'Owner', 0], ['fund'], ['stake', 0]]);
+        });
+
+        it('reads no position on a fresh (not resumed) stake', async () => {
+            const { calls, adapters } = chain({ held: true });
+            expect(await execute({ action: stake, keypair, caps, adapters })).toEqual({ signature: 's', replayed: false });
+            expect(adapters.readHeldPosition).not.toHaveBeenCalled();
+            expect(calls).toEqual([['fund'], ['stake', 0]]);
+        });
+    });
+
     it('pledges and revokes on the agreement account', async () => {
         const { calls, adapters } = recorder();
         await execute({ action: { type: 'pledge', amount: '0.05', usdc: 0.05, agreementCid: 'cid-a', account: 'account-a' }, keypair, caps, adapters });

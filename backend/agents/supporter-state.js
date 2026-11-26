@@ -5,7 +5,7 @@ import { PublicKey } from '@solana/web3.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
 import { eligibleSupportAgreements } from './supporter-picker.js';
 import { AGREEMENT_STATUS } from './agreement-minter.js';
-import { readAgreementMarket } from './bettor.js';
+import { readAgreementMarket, readHeldPosition } from './bettor.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
@@ -37,8 +37,7 @@ export async function readSupportEligibility({ connection, wallet, persona, agre
             if (!raw) continue;
             if (raw.resolved) { closed.add(agreement.cid); continue; }
             if (!owner) continue;
-            const position = await market.readPosition(context.connection, context.address, owner, market.constants.SIDE_YES);
-            if (position) supported.add(agreement.cid);
+            if (await readHeldPosition(context, owner, market.constants.SIDE_YES)) supported.add(agreement.cid);
         }
     }
 

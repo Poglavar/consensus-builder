@@ -24,7 +24,7 @@ import { societyHistory } from './policies/history.js';
 import { decideTurn } from './policies/collect.js';
 import { societyPolicy, societySlot, societyTurns, societyTurnSpent, societyBudget } from './run-policy.js';
 import { ensurePledgeBookAndSet } from './pledger.js';
-import { buyAgreementShares, sellAgreementShares, readAgreementMarket, readAgreementMarkets, usdcToAtomic } from './bettor.js';
+import { buyAgreementShares, sellAgreementShares, readAgreementMarket, readAgreementMarkets, readHeldPosition, usdcToAtomic } from './bettor.js';
 import { claimAgreementMarket, resolveAgreementMarket, revokePledge } from './lifecycle-actions.js';
 import { assertUnderCap, dailyCapUsd, dailySpendUsd, failStaleRuns, getRun, listPersonaRuns, recordCosts, STALE_RUN_HOURS, startRun, updateRun } from './ledger.js';
 import { markAgentRunFailed, markAgentRunFundingShort, safeFailureDiagnostic } from './run-failure.js';
@@ -223,19 +223,29 @@ async function gatherInputs({ index, persona, needs, connection, wallet }) {
     return { agreements, markets, positions, chainStatuses, chain, recordFailures };
 }
 
-const ADAPTERS = { fundBotAction, buyAgreementShares, sellAgreementShares, readAgreementMarket, ensurePledgeBookAndSet, revokePledge, resolveAgreementMarket, claimAgreementMarket };
+const ADAPTERS = { fundBotAction, buyAgreementShares, sellAgreementShares, readAgreementMarket, readHeldPosition, ensurePledgeBookAndSet, revokePledge, resolveAgreementMarket, claimAgreementMarket };
 
-/** Sign one society action. `adapters` replaces the chain calls in tests. */
-export async function execute({ action, connection, keypair, caps, pool, persona, runId, adapters = {} }) {
+/**
+ * Sign one society action. `adapters` replaces the chain calls in tests. `resumed`: the action is the
+ * saved selection of a run killed before it recorded completion, so its stake may already have landed.
+ */
+export async function execute({ action, connection, keypair, caps, pool, persona, runId, resumed = false, adapters = {} }) {
     const act = { ...ADAPTERS, ...adapters };
     if (action.usdc > caps.maxUsdc + 1e-9) throw new Error(`${action.type} of ${action.amount} USDC exceeds AGENT_SOCIETY_USDC_CAP ${caps.maxUsdc}`);
     if (action.type === 'stake' && (action.side === 'yes' || action.side === 'no')) {
+        const side = action.side === 'yes' ? SIDE_YES : SIDE_NO;
         const context = await act.readAgreementMarket(connection, action.account);
         if (!context.market) throw Object.assign(new Error('The sponsor has not opened the canonical agreement market.'), { code: 'MARKET_NOT_OPEN' });
+        // The policies never stake a side the persona already holds, so a held position on a resumed
+        // stake is that stake, landed before the kill: replay it instead of buying (and funding) twice.
+        if (resumed) {
+            const held = await act.readHeldPosition(context, keypair.publicKey, side);
+            if (held) return { marketPda: context.address.toBase58(), signature: null, shares: held.amount, replayed: true };
+        }
         await act.fundBotAction({ action, connection, pool, persona, runId });
         return act.buyAgreementShares({
             connection, ownerKeypair: keypair, subject: action.account, stakeMint: USDC_DEVNET,
-            side: action.side === 'yes' ? SIDE_YES : SIDE_NO, amountAtomic: usdcToAtomic(action.amount), sendAndConfirm: sendAndConfirmPolling
+            side, amountAtomic: usdcToAtomic(action.amount), sendAndConfirm: sendAndConfirmPolling
         });
     }
     if (action.type === 'sell' && (action.side === 'yes' || action.side === 'no')) {
@@ -370,6 +380,7 @@ async function main() {
                 }
                 const budget = societyBudget(caps, spent);
                 let action = existing?.status === 'running' ? existing.summary?.society?.action || null : null;
+                const resumed = Boolean(action);
                 let decisionResult = existing?.summary?.decisionResult || null;
                 let decision = null;
                 if (!action) {
@@ -438,7 +449,7 @@ async function main() {
                     source: 'live',
                     action: { type: action.type, agreementCid: action.agreementCid, account: action.account, amount: action.amount, side: action.side || null },
                     execute: async () => ({
-                        ...(await execute({ action, connection, keypair, caps, pool, persona, runId: turn.runId })),
+                        ...(await execute({ action, connection, keypair, caps, pool, persona, runId: turn.runId, resumed })),
                         entity: { type: 'agreement', id: action.agreementCid }, message: activityMessage(persona, action)
                     })
                 });
