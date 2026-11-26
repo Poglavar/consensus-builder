@@ -10242,7 +10242,11 @@
         "limited": "Showing up to 1,000 published designs.",
         "chainAgreement": "Agreement {{cid}}",
         "chainLoading": "Reading agreements on chain…",
-        "chainFailed": "Agreements could not be read on chain: {{reason}}"
+        "chainFailed": "Agreements could not be read on chain: {{reason}}",
+        "chainReadingPlans": "Reading the plans behind minted agreements… {{done}}/{{total}}",
+        "chainReadingDesigns": "Reading the designs of those plans… {{done}}/{{total}}",
+        "chainSkipped": "Not listed from the chain: {{items}}",
+        "chainPlanMismatch": "its account names another plan than its content"
     },
   "readSource": {
     "title": "Read published records from",
@@ -10262,7 +10266,7 @@
     "checking": "Reading from {{source}}…",
     "unavailable": "{{source}} could not be read: {{reason}}",
     "servedBy": "Read from: {{sources}}.",
-    "chainListsAgreementsOnly": "The chain lists agreements only, not designs or plans.",
+    "chainListsMinted": "The chain lists the plans and designs behind minted agreements; unminted ones are only on our server.",
     "designNotOnChain": "This design could not be read from IPFS.",
     "designNowhere": "This design is not on our server and could not be read from IPFS.",
     "designsNotOnChain": "The designs could not be read from IPFS."

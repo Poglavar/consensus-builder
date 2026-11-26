@@ -9,7 +9,7 @@
         roadDetection: ['js/osm-roads-source.js', 'js/osm-road-coverage.js', 'js/road-detection.js'],
         singleBuilding: ['js/single-building.js'],
         designDuplication: ['js/design-duplication.js'],
-        designMemberships: ['js/design-memberships.js?v=20261127-read-source'],
+        designMemberships: ['js/design-memberships.js?v=20261127-chain-plans'],
         // Crowdfunding progress read from Solana (Compare plans, Compare agreements, Lists → Agreements).
         fundingProgress: ['js/solana/pledge-client.js', 'js/solana/funding-progress.js'],
         rowHouse: ['js/row-house.js'],

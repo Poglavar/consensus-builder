@@ -10293,7 +10293,11 @@
         "limited": "São apresentados até 1.000 desenhos publicados.",
         "chainAgreement": "Acordo {{cid}}",
         "chainLoading": "A ler os acordos na blockchain…",
-        "chainFailed": "Não foi possível ler os acordos na blockchain: {{reason}}"
+        "chainFailed": "Não foi possível ler os acordos na blockchain: {{reason}}",
+        "chainReadingPlans": "A ler os planos dos acordos registados na blockchain… {{done}}/{{total}}",
+        "chainReadingDesigns": "A ler os desenhos desses planos… {{done}}/{{total}}",
+        "chainSkipped": "Não listados a partir da blockchain: {{items}}",
+        "chainPlanMismatch": "a sua conta indica outro plano que não o do seu conteúdo"
     },
   "readSource": {
     "title": "Ler os registos publicados de",
@@ -10313,7 +10317,7 @@
     "checking": "A ler de {{source}}…",
     "unavailable": "Não foi possível ler {{source}}: {{reason}}",
     "servedBy": "Lido de: {{sources}}.",
-    "chainListsAgreementsOnly": "A blockchain lista apenas acordos, não desenhos nem planos.",
+    "chainListsMinted": "A blockchain lista os planos e desenhos dos acordos nela registados; os restantes estão apenas no nosso servidor.",
     "designNotOnChain": "Não foi possível ler este desenho do IPFS.",
     "designNowhere": "Este desenho não está no nosso servidor e não foi possível lê-lo do IPFS.",
     "designsNotOnChain": "Não foi possível ler os desenhos do IPFS."

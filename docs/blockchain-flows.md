@@ -97,14 +97,28 @@ filters.
   by the account size, each account decoded by the shared codec and kept only when it sits at the
   PDA its own sponsor and CID derive), newest first by the account's `created_at`, with the
   account's status on the row. Its rows carry no content, so a row is named by this browser's copy,
-  else by its CID, until it is opened. Designs and plans have no chain accounts until R2, so with
-  Chain their tabs list this browser's own records and say why. With Both, each tab is the union of
+  else by its CID, until it is opened. Designs and plans have no chain accounts (by decision, none
+  will be added): with Chain, Plans lists the plans behind the minted agreements and Designs the
+  designs those plans name (`ChainReader.catalog`): every agreement account is listed, its agreement
+  object read from IPFS, its `planCid` checked against the account's `plan_cid_hash` (an account
+  that disagrees is left out, and the list status names it with the reason), the plan read, and for
+  Designs each design the plans name. Reads go one object at a time with the gateway timeouts, only
+  when a Plans or Designs tab (or a design's plans in the click stack) is shown, with progress in the
+  list status ("Reading the plans behind minted agreements… 4/12"); every object is kept in memory
+  by CID for the page, and the catalog until Refresh lists the accounts again. Plans are scoped by
+  their view's city and designs by theirs (in Explore by the visible area), as the index scopes
+  them; an object that cannot be read is named in the status and the rest still listed. Unminted
+  plans and designs are on our server only, and the tabs say so. Whenever the chain is read, each
+  row is badged with the sources that hold it. With Both, each tab is the union of
   the two (`ReadSource.unionRows`): one row per CID, badged with the source or sources that hold it,
   the server's record with the chain's account state over the index's observation; a source that
   fails is named in the list status while the other's rows stay. The chain reads go through the
   genesis-checked devnet connection and the program-accounts RPC routing. The click stack's
-  membership lists (a design's plans, a plan's agreements; `design-memberships.js`) and Compare
-  plans' agreements ask the index only when our server is read; with Chain they list this
+  membership lists (`design-memberships.js`) ask the index when our server is read; with Chain a
+  design's plans are this browser's and the catalog's plans that name its exact CID, and a plan's
+  agreements are this browser's and the chain's (`ChainReader.agreementsOfPlan`:
+  `fetchAgreementsForPlan`'s memcmp, each kept only when its object on IPFS names the plan).
+  Compare plans' agreements ask the index only when our server is read; with Chain they list this
   browser's own. The read source does not cover the map's published-design layer, Bets and markets,
   or community vote tallies, which read our server.
 - **Objects.** The agreement, plan and design loaders (`AgreementSync.fetchAgreement`,

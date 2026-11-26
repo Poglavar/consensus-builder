@@ -316,8 +316,10 @@ the stage filter (Draft, Published and, for agreements, On chain) and the orderi
 Above the list, **Read from** shows the app-wide read source (**Our server**, **Chain** or **Both**;
 the same choice as Settings → Read published records from, not a list filter, so Reset filters
 leaves it). Our server lists every tab from its index; Chain lists agreements from the agreement
-program's accounts and nothing from our server, so Designs and Plans then show this browser's own;
-Both lists the union, each row badged with the sources that hold it
+program's accounts, and Plans and Designs the plans those agreements name and the designs of those
+plans (read from IPFS when the tab is shown, with progress in the list status and anything left out
+named there), beside this browser's own and nothing from our server; Both lists the union. Whenever
+the chain is read, each row is badged with the sources that hold it
 ([blockchain-flows.md](blockchain-flows.md), Flow 1).
 Each tab starts newest first, using the same timestamp shown on its rows. Published records use
 publication time when available, and drafts use their recorded creation time. Undated rows follow

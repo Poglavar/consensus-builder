@@ -10314,7 +10314,11 @@
         "limited": "Se muestran hasta 1.000 diseños publicados.",
         "chainAgreement": "Acuerdo {{cid}}",
         "chainLoading": "Leyendo los acuerdos en la cadena…",
-        "chainFailed": "No se pudieron leer los acuerdos en la cadena: {{reason}}"
+        "chainFailed": "No se pudieron leer los acuerdos en la cadena: {{reason}}",
+        "chainReadingPlans": "Leyendo los planes de los acuerdos acuñados… {{done}}/{{total}}",
+        "chainReadingDesigns": "Leyendo los diseños de esos planes… {{done}}/{{total}}",
+        "chainSkipped": "No listados desde la cadena: {{items}}",
+        "chainPlanMismatch": "su cuenta nombra otro plan que su contenido"
     },
   "readSource": {
     "title": "Leer los registros publicados desde",
@@ -10334,7 +10338,7 @@
     "checking": "Leyendo desde {{source}}…",
     "unavailable": "No se pudo leer {{source}}: {{reason}}",
     "servedBy": "Leído desde: {{sources}}.",
-    "chainListsAgreementsOnly": "La cadena solo lista acuerdos, no diseños ni planes.",
+    "chainListsMinted": "La cadena lista los planes y diseños de los acuerdos acuñados; los no acuñados solo están en nuestro servidor.",
     "designNotOnChain": "No se pudo leer este diseño desde IPFS.",
     "designNowhere": "Este diseño no está en nuestro servidor y no se pudo leer desde IPFS.",
     "designsNotOnChain": "No se pudieron leer los diseños desde IPFS."

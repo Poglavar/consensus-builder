@@ -12,10 +12,14 @@ const require = createRequire(import.meta.url);
 const { localAgreements, localPlans, mergeRows, fetchPage, createSession, inspect, createAgreementScope, mountSection } = require('../../frontend/js/design-memberships.js');
 const page = (kind, items = [], nextOffset = null) => Response.json({ [kind]: items, hasMore: nextOffset !== null, nextOffset });
 
-function fixture({ published = true, agreements = [], fetch = vi.fn(async url => page(new URL(url).pathname.slice(1))), source = 'server' } = {}) {
+function fixture({ published = true, agreements = [], fetch = vi.fn(async url => page(new URL(url).pathname.slice(1))), source = 'server',
+    chainPlans = [], chainAgreements = [] } = {}) {
     const win = {
         fetch, location: new URL('https://app.example/?backend=https%3A%2F%2Fapi.example'),
         ReadSource: readSource(source),
+        // The plans behind minted agreements and a plan's agreements, as the chain reader finds them.
+        ChainReader: { catalog: vi.fn(async () => ({ agreements: chainPlans.length, plans: chainPlans, skipped: [] })),
+            agreementsOfPlan: vi.fn(async planCid => ({ rows: chainAgreements.filter(row => row.planCid === planCid), skipped: [] })) },
         console: { warn: vi.fn() }, resolveBackendBaseUrl: () => 'https://api.example',
         DesignSync: { publishedCid: proposal => proposal.cid || null },
         AgreementStore: { list: () => agreements },
@@ -69,21 +73,38 @@ describe('design membership sessions', () => {
         expect(f.win.fetch.mock.calls.some(([url]) => url.includes('/agreements?'))).toBe(false);
     });
 
-    it('asks our server nothing when the chain alone is read: this browser\'s plans, and why there are no others', async () => {
-        const empty = fixture({ source: 'chain' });
+    it('asks our server nothing when the chain alone is read: this browser\'s plans and those behind minted agreements', async () => {
+        const empty = fixture({ source: 'chain', chainPlans: [{ cid: 'plan-elsewhere', content: { title: 'Other', designCids: ['design-other'] } }] });
         const session = empty.session();
         await session.ready;
-        expect(session.instances('plans', true).map(row => row.label)).toEqual(['The chain lists agreements only, not designs or plans.']);
+        expect(empty.win.ChainReader.catalog).toHaveBeenCalledTimes(1);
+        expect(session.instances('plans', true).map(row => row.label))
+            .toEqual(['The chain lists the plans and designs behind minted agreements; unminted ones are only on our server.']);
         expect(empty.win.fetch).not.toHaveBeenCalled();
-        const f = fixture({ source: 'chain', agreements: [{ id: 'a1', title: 'Own terms', designs: [{ proposalId: 'local-design' }],
-            plan: { cid: 'plan-one', content: { title: 'Own plan', designCids: ['design-current'] } } }] });
+        const minted = { cid: 'plan-minted', content: { title: 'Minted plan', designCids: ['design-current', 'design-other'] } };
+        const f = fixture({ source: 'chain', chainPlans: [minted], chainAgreements: [{ cid: 'agreement-minted', title: 'Minted terms', planCid: 'plan-one', readFrom: 'chain' }],
+            agreements: [{ id: 'a1', title: 'Own terms', designs: [{ proposalId: 'local-design' }],
+                plan: { cid: 'plan-one', content: { title: 'Own plan', designCids: ['design-current'] } } }] });
         const own = f.session();
         await own.ready;
-        expect(own.instances('plans').map(row => row.label)).toEqual(['Own plan']);
+        expect(own.instances('plans').map(row => row.label)).toEqual(['Own plan', 'Minted plan']);
+        expect(own.groups.plans.items.find(row => row.cid === 'plan-minted')).toMatchObject({ content: minted.content, readFrom: 'chain', draft: false });
+        // A plan's agreements come from the chain filter beside this browser's own.
         const updates = vi.fn(), scope = createAgreementScope(f.win, { getPlan: () => ({ cid: 'plan-one', draft: false }), onChange: updates });
-        await scope.sync(); await vi.waitFor(() => expect(updates).toHaveBeenCalled());
-        expect(updates.mock.lastCall[0].map(row => row.id)).toEqual(['a1']);
+        await scope.sync(); await vi.waitFor(() => expect(updates.mock.lastCall?.[1].loading).toBe(false));
+        expect(f.win.ChainReader.agreementsOfPlan).toHaveBeenCalledWith('plan-one');
+        expect(updates.mock.lastCall[0].map(row => row.id)).toEqual(['agreement-minted', 'a1']);
+        expect(updates.mock.lastCall[1].more).toBe(false);
         expect(f.win.fetch).not.toHaveBeenCalled(); scope.dispose();
+    });
+
+    it('our server alone never reads the chain for a design\'s plans or a plan\'s agreements', async () => {
+        const f = fixture({ chainPlans: [{ cid: 'plan-minted', content: { title: 'Minted plan', designCids: ['design-current'] } }] });
+        await f.session().ready;
+        const scope = createAgreementScope(f.win, { getPlan: () => ({ cid: 'plan-one', draft: false }), onChange: vi.fn() });
+        await scope.sync(); scope.dispose();
+        expect(f.win.ChainReader.catalog).not.toHaveBeenCalled();
+        expect(f.win.ChainReader.agreementsOfPlan).not.toHaveBeenCalled();
     });
 
     it('keeps the known plan when the public lookup fails and retries only that list', async () => {

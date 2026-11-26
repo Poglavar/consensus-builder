@@ -47,6 +47,33 @@
         if (offset || kind !== 'designs') params.set('offset', String(offset));
         return params;
     }
+    // The chain's plans and designs (ChainReader.catalog) that belong in this list, as the index
+    // scopes its own: a plan by the city of its view (one with none everywhere, as stored plans are),
+    // a design by its city, or in Explore by its site meeting the visible area (bbox).
+    function chainRowsHere(rows, kind, { city, area = null, normalize = code => code }) {
+        if (kind === 'plans') return rows.filter(row => !row.content.view?.city || normalize(row.content.view.city) === city);
+        if (area?.explore && area.bbox) {
+            const [west, south, east, north] = area.bbox;
+            return rows.filter(row => {
+                const box = boundsOf(row.content.site);
+                return !!box && box[0] <= east && box[2] >= west && box[1] <= north && box[3] >= south;
+            });
+        }
+        return rows.filter(row => !!row.content.city && normalize(row.content.city) === city);
+    }
+    // [west, south, east, north] of a GeoJSON geometry's positions, or null when it has none.
+    function boundsOf(geometry) {
+        const box = [Infinity, Infinity, -Infinity, -Infinity];
+        const visit = value => {
+            if (!Array.isArray(value)) return;
+            if (typeof value[0] === 'number' && typeof value[1] === 'number') {
+                box[0] = Math.min(box[0], value[0]); box[1] = Math.min(box[1], value[1]);
+                box[2] = Math.max(box[2], value[0]); box[3] = Math.max(box[3], value[1]);
+            } else value.forEach(visit);
+        };
+        visit(geometry?.type === 'GeometryCollection' ? geometry.geometries?.map(part => part.coordinates) : geometry?.coordinates);
+        return Number.isFinite(box[0]) ? box : null;
+    }
     // A row's trash: Delete draft for an unpublished object, which lives only in this browser;
     // Remove from this device for this browser's copy of a published one, which stays available
     // through its link. A design on the map comes off it (deleteProposal unapplies it first).
@@ -93,13 +120,13 @@
         }
         const city = () => win.normalizeCityCodeForApi(win.resolveCurrentCityCode());
         const area = () => state.tab === 'designs' ? win.getProposalCountAreaContext() : null;
-        // Our server lists every kind; the chain lists agreements only (the agreement program's
-        // accounts, chain/chain-reader.js): designs and plans have no accounts to list.
+        // Our server lists every kind. The chain lists the agreement program's accounts, the plans
+        // their agreements name and the designs of those plans (chain/chain-reader.js catalog):
+        // designs and plans have no accounts of their own.
         const reads = which => win.ReadSource.reads(which);
-        const chainLists = () => state.tab === 'agreements' && reads('chain');
         const areaKey = () => {
             const view = area();
-            return [win.ReadSource.get(), reads('server') ? win.DesignSync.apiBase() : '', chainLists() ? win.ChainReader.cluster() : '',
+            return [win.ReadSource.get(), reads('server') ? win.DesignSync.apiBase() : '', reads('chain') ? win.ChainReader.cluster() : '',
                 view?.explore ? view.key : city(), state.tab].join(':');
         };
         const cacheKey = () => state.tab === 'designs' ? JSON.stringify([areaKey(), state.search.trim(), state.sort]) : areaKey();
@@ -161,7 +188,7 @@
                 : t(kind === 'designs' ? 'planDialog.untitledDesign' : 'agreement.panel.untitled');
             return rows.map(record => ({ key: record.cid, propertyOffer: record.content?.schema === 'property-offer/v1', cid: record.cid || null, title: record.title || record.content?.title || untitled(record),
                 // The design, agreement and offer indexes call their first publication time createdAt.
-                author: record.author, publishedAt: record.publishedAt ?? record.createdAt,
+                author: record.author ?? record.content?.author, publishedAt: record.publishedAt ?? record.createdAt,
                 createdAt: record.content?.createdAt ?? record.content?.authoredAt, published: true, onChain: !!record.onchain, record,
                 local: copies.get(record.cid) }));
         }
@@ -175,7 +202,7 @@
             const feeds = [
                 ...(!reads('server') ? [] : kind === 'agreements' ? [['agreements', 'agreements'], ['property-offers', 'propertyOffers']] : [[kind, kind]])
                     .map(([path, field]) => [path, field, 'server']),
-                ...(chainLists() ? [['chain', 'agreements', 'chain']] : [])
+                ...(reads('chain') ? [['chain', kind, 'chain']] : [])
             ];
             const page = more && previous ? previous : { scope, union: new Map(),
                 feeds: feeds.map(([path, field, readFrom]) => ({ path, field, readFrom, rows: [], next: 0 })) };
@@ -184,14 +211,23 @@
             const redraw = () => { if (opened() && cacheKey() === key && state.remote.get(key) === page) renderRows(); };
             page.loading = true;
             page.pending = Promise.all(page.feeds.filter(feed => feed.next !== null).map(async feed => {
-                feed.error = null;
+                feed.error = null; feed.skipped = null;
                 try {
                     const offset = feed.next;
                     let result;
                     if (feed.readFrom === 'chain') {
-                        // Every account in one read: the chain has no pages, and its rows carry no content.
-                        try { result = { agreements: await win.ChainReader.listAgreements(), hasMore: false }; }
-                        catch (error) { throw new Error(t('lists.chainFailed', { reason: error.message || String(error) })); }
+                        // Every account in one read: the chain has no pages. Agreement rows carry no
+                        // content; plans and designs are read from IPFS one at a time, their progress
+                        // shown, and what could not be read is named (feed.skipped).
+                        const onProgress = progress => { page.progress = progress; redraw(); };
+                        try {
+                            if (kind === 'agreements') result = { agreements: await win.ChainReader.listAgreements(), hasMore: false };
+                            else {
+                                const found = await win.ChainReader.catalog({ designs: kind === 'designs', force, onProgress });
+                                feed.skipped = found.skipped;
+                                result = { [kind]: chainRowsHere(found[kind], kind, { ...location, normalize: win.normalizeCityCodeForApi }), hasMore: false };
+                            }
+                        } catch (error) { throw new Error(t('lists.chainFailed', { reason: error.message || String(error) })); }
                     } else if (kind === 'designs') result = await win.DesignSync.listPage({ ...location, offset, force });
                     else {
                         const response = await win.fetch(`${base}/${feed.path}?${indexQuery(kind, { ...location, offset })}`, { cache: 'no-store', signal: AbortSignal.timeout(30000) });
@@ -206,7 +242,7 @@
                         ? t('readSource.unavailable', { source: win.ReadSource.label('server'), reason: error.message }) : error.message;
                 }
                 redraw();
-            })).finally(() => { page.loading = false; page.pending = null; redraw(); });
+            })).finally(() => { page.loading = false; page.pending = null; page.progress = null; redraw(); });
             redraw();
             return page.pending;
         }
@@ -493,7 +529,9 @@
             const heldBy = new Map(union.map(({ record, heldBy }) => [record.cid, heldBy]));
             const rows = mergeRows(local, remoteRows(union.map(entry => entry.record), kind, local, index))
                 .map(row => ({ ...row, applied: kind === 'designs' && appliedHere(row.local), heldBy: row.cid ? heldBy.get(row.cid) || null : null }));
-            const both = win.ReadSource.get() === 'both';
+            // Rows are marked by the sources that hold them whenever the chain is read: with Chain, its
+            // rows say so beside this browser's own.
+            const marked = reads('chain');
             const visible = filterRows(rows, { ...state, onMap: kind === 'designs' && state.onMap }), list = host();
             let cards = cardCaches.get(list);
             if (!cards) { cards = new Map(); cardCaches.set(list, cards); }
@@ -509,10 +547,16 @@
             const status = doc.getElementById('lists-status');
             const errors = (page?.feeds || []).map(feed => feed.error).filter(Boolean).join(' · ');
             const previewTitle = loadingPreview?.sequence === previewSequence ? loadingPreview.title : '';
-            // Designs and plans have no chain accounts: read from the chain, they list this browser's own.
-            const chainNote = kind !== 'agreements' && reads('chain') ? t('readSource.chainListsAgreementsOnly') : '';
-            status.textContent = [page?.loading || previewTitle ? t(page?.loading && chainLists() && !reads('server') ? 'lists.chainLoading' : 'lists.loading') : '', previewTitle, errors,
-                chainNote, visible.length ? t('lists.count', { count: Math.min(visible.length, shownLimit) }) : ''].filter(Boolean).join(' · ');
+            // Only minted agreements' plans and designs are on IPFS: the rest are on our server alone.
+            const chainNote = kind !== 'agreements' && reads('chain') ? t('readSource.chainListsMinted') : '';
+            const skipped = (page?.feeds || []).flatMap(feed => feed.skipped || []);
+            const left = skipped.length ? t('lists.chainSkipped', { items: skipped.map(entry => `${win.AgreementSync.shortCid(entry.cid)} (${
+                entry.code === 'plan-hash-mismatch' ? t('lists.chainPlanMismatch') : entry.reason})`).join('; ') }) : '';
+            const progress = page?.progress;
+            const reading = progress?.stage === 'plans' ? t('lists.chainReadingPlans', { done: progress.done, total: progress.total })
+                : progress?.stage === 'designs' ? t('lists.chainReadingDesigns', { done: progress.done, total: progress.total }) : '';
+            status.textContent = [page?.loading || previewTitle ? reading || t(page?.loading && reads('chain') && !reads('server') ? 'lists.chainLoading' : 'lists.loading') : '', previewTitle, errors,
+                left, chainNote, visible.length ? t('lists.count', { count: Math.min(visible.length, shownLimit) }) : ''].filter(Boolean).join(' · ');
             status.hidden = !status.textContent;
             list.setAttribute('aria-busy', String(!!page?.loading));
             const recordIds = visible.map(row => String(row.cid || row.key || '')).filter(Boolean);
@@ -522,7 +566,7 @@
                 const recordId = String(row.cid || row.key || '');
                 const recordLabel = win.RecordLabel.label(row.title, recordId, recordIds);
                 const signature = JSON.stringify([recordLabel, row.title, row.applied, row.published, row.onChain,
-                    timestampOf(row), both && row.heldBy, state.selecting, state.purpose, win.i18n.getLocale?.(), row.local && win.proposalStorage.revision]);
+                    timestampOf(row), marked && row.heldBy, state.selecting, state.purpose, win.i18n.getLocale?.(), row.local && win.proposalStorage.revision]);
                 const cached = cards.get(row.key);
                 if (cached && cached.signature === signature && cached.record === row.record && cached.local === row.local) {
                     cached.item.classList.toggle('is-selected', state.active === `${kind}:${row.key}`);
@@ -588,8 +632,8 @@
                     const status = row.record.onchain?.status || row.record.status;
                     badges.append(node('span', 'cb-badge', win.AgreementPanel.chainStatusText(status)));
                 }
-                // Read from both sources, a row says which of them hold it.
-                if (both && row.heldBy) {
+                // Read from the chain, alone or with our server, a row says which sources hold it.
+                if (marked && row.heldBy) {
                     for (const source of row.heldBy) {
                         const held = node('span', 'cb-badge cb-badge--neutral lists-item__held-by', win.ReadSource.label(source));
                         held.dataset.heldBy = source; held.title = t('readSource.heldBy', { source: win.ReadSource.label(source) });
@@ -842,5 +886,5 @@
         }
         return { open: async () => { await win.i18n.translationsReady; init(); controls(); return select(state.tab); }, select, refresh, choosePlanDesigns, drafts, reviewDrafts };
     }
-    return { stageOf, mergeRows, filterRows, indexQuery, browser };
+    return { stageOf, mergeRows, filterRows, indexQuery, chainRowsHere, browser };
 });

@@ -10293,7 +10293,11 @@
         "limited": "Affichage de 1 000 conceptions publiées au maximum.",
         "chainAgreement": "Accord {{cid}}",
         "chainLoading": "Lecture des accords sur la blockchain…",
-        "chainFailed": "Les accords n’ont pas pu être lus sur la blockchain : {{reason}}"
+        "chainFailed": "Les accords n’ont pas pu être lus sur la blockchain : {{reason}}",
+        "chainReadingPlans": "Lecture des plans des accords inscrits sur la blockchain… {{done}}/{{total}}",
+        "chainReadingDesigns": "Lecture des projets de ces plans… {{done}}/{{total}}",
+        "chainSkipped": "Non listés depuis la blockchain : {{items}}",
+        "chainPlanMismatch": "son compte désigne un autre plan que son contenu"
     },
   "readSource": {
     "title": "Lire les enregistrements publiés depuis",
@@ -10313,7 +10317,7 @@
     "checking": "Lecture depuis {{source}}…",
     "unavailable": "{{source}} n’a pas pu être lu : {{reason}}",
     "servedBy": "Lu depuis : {{sources}}.",
-    "chainListsAgreementsOnly": "La blockchain ne liste que les accords, ni les projets ni les plans.",
+    "chainListsMinted": "La blockchain liste les plans et projets des accords qui y sont inscrits ; les autres ne sont que sur notre serveur.",
     "designNotOnChain": "Ce projet n’a pas pu être lu sur IPFS.",
     "designNowhere": "Ce projet n’est pas sur notre serveur et n’a pas pu être lu sur IPFS.",
     "designsNotOnChain": "Les projets n’ont pas pu être lus sur IPFS."

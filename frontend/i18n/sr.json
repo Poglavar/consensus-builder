@@ -10342,7 +10342,11 @@
         "limited": "Prikazuje se do 1.000 objavljenih dizajna.",
         "chainAgreement": "Sporazum {{cid}}",
         "chainLoading": "Čitanje sporazuma sa lanca…",
-        "chainFailed": "Sporazumi nisu mogli da se pročitaju sa lanca: {{reason}}"
+        "chainFailed": "Sporazumi nisu mogli da se pročitaju sa lanca: {{reason}}",
+        "chainReadingPlans": "Čitanje planova iskovanih sporazuma… {{done}}/{{total}}",
+        "chainReadingDesigns": "Čitanje dizajna tih planova… {{done}}/{{total}}",
+        "chainSkipped": "Nije navedeno sa lanca: {{items}}",
+        "chainPlanMismatch": "njegov nalog navodi drugi plan nego njegov sadržaj"
     },
   "readSource": {
     "title": "Objavljene zapise čitaj sa",
@@ -10362,7 +10366,7 @@
     "checking": "Čitanje sa izvora {{source}}…",
     "unavailable": "Izvor {{source}} nije mogao da se pročita: {{reason}}",
     "servedBy": "Pročitano sa: {{sources}}.",
-    "chainListsAgreementsOnly": "Lanac navodi samo sporazume, ne dizajne ni planove.",
+    "chainListsMinted": "Lanac navodi planove i dizajne iskovanih sporazuma; neiskovani su samo na našem serveru.",
     "designNotOnChain": "Ovaj dizajn nije mogao da se pročita sa IPFS-a.",
     "designNowhere": "Ovaj dizajn nije na našem serveru i nije mogao da se pročita sa IPFS-a.",
     "designsNotOnChain": "Dizajni nisu mogli da se pročitaju sa IPFS-a."

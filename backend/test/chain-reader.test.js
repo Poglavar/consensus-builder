@@ -3,8 +3,9 @@
 // proposals/design-sync.js) on fake gateways, a fake index and a stub agreement client: only bytes
 // that hash to the requested CID are accepted, a gateway that answers wrongly is passed over, a
 // loader reads only from the chosen source (our server never touches a gateway, the chain never the
-// index, both reads both and says which served), and a design read from IPFS gets a binding derived
-// in the browser.
+// index, both reads both and says which served), a design read from IPFS gets a binding derived
+// in the browser, and the plans and designs behind minted agreements are found from the accounts
+// alone (each agreement's plan checked against its account's plan hash, every object read once).
 import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { readSource } from './helpers/read-source.js';
@@ -20,6 +21,7 @@ const PlanRecord = require('../../frontend/js/plan-record.js');
 const DesignRecord = require('../../frontend/js/design-record.js');
 const AgreementRecord = require('../../frontend/js/agreement-record.js');
 const siteBinding = require('../../frontend/js/proposals/site-binding.js');
+const { planCidHash } = require('../../frontend/js/solana/agreement-client.js');
 const turf = require('@turf/turf');
 
 const API = 'https://api.example.test';
@@ -158,15 +160,19 @@ describe('the read-source choice', () => {
 // `behaviour` says, and the agreement account read from a stub client.
 function readerWindow(behaviour = {}, extra = {}) {
     const { fetch, asked } = network(behaviour);
-    const account = { address: 'AgreementPda1', cid: agreementCid, authority: SPONSOR, status: 'Active', decision: 'Pending', createdAt: 1_790_000_000 };
+    const account = { address: 'AgreementPda1', cid: agreementCid, authority: SPONSOR, status: 'Active', decision: 'Pending', createdAt: 1_790_000_000,
+        planCidHash: planCidHash(planCid) };
+    const accounts = extra.accounts || [account];
     const win = {
         fetch, IPFS_READ_GATEWAYS: GATEWAYS, IpfsRead, Cid, PlanRecord, DesignRecord, AgreementRecord,
         solanaWeb3: { Connection: class {} },
         SolanaChainDataLoader: { getVerifiedConnection: vi.fn(async cluster => ({ cluster })) },
         AgreementClient: {
             constants: { AGREEMENT_PROGRAM_ID: 'ProgramId1' },
-            listAgreements: vi.fn(async () => [account]),
-            fetchAgreement: vi.fn(async (_connection, { cid, authority }) => (cid === agreementCid && authority === SPONSOR ? account : null))
+            listAgreements: vi.fn(async () => accounts),
+            fetchAgreement: vi.fn(async (_connection, { cid, authority }) => (cid === agreementCid && authority === SPONSOR ? account : null)),
+            fetchAgreementsForPlan: vi.fn(async (_connection, cid) => accounts.filter(row => row.planCidHash === planCidHash(cid))),
+            planCidHash
         },
         ...extra
     };
@@ -213,6 +219,102 @@ describe('the chain reader in the browser', () => {
         const indexed = { cid: designCid, content: design, binding: { parcels: [], coverage: 'complete' } };
         expect((await win.ChainReader.withDerivedBindings([indexed])).get(designCid)).toBe(indexed);
         info.mockRestore();
+    });
+});
+
+// A second minted agreement on the same plan, and a third whose account claims that plan while its
+// object names another: the chain's catalog must not trust the claim.
+const secondAgreement = { ...agreement, title: 'Second agreement on the lane' };
+const secondCid = Cid.cidOfObject(secondAgreement);
+const otherPlan = PlanRecord.create('Other plan', [indexedDesignCid], { city: 'london', at: '51.5,-0.1,17', mode: '2d', language: 'en' });
+const otherPlanCid = Cid.cidOfObject(otherPlan);
+const lying = { ...agreement, title: 'Claims the lane plan', planCid: otherPlanCid };
+const lyingCid = Cid.cidOfObject(lying);
+const accountOf = (cid, plan, createdAt) => ({ address: `Pda-${cid.slice(-6)}`, cid, authority: SPONSOR, status: 'Active', decision: 'Pending', createdAt, planCidHash: planCidHash(plan) });
+
+describe('the plans and designs behind minted agreements', () => {
+    // read(kind, cid) over `objects`, recording each read; a CID it does not hold fails as IpfsRead's does.
+    const reader = held => {
+        const reads = [];
+        const read = vi.fn(async (kind, cid) => {
+            reads.push(`${kind}:${cid}`);
+            if (!held.has(cid)) throw Object.assign(new Error(`${cid} could not be read from IPFS`), { code: 'ipfs-unavailable' });
+            return { content: held.get(cid), gateway: GATEWAYS[0] };
+        });
+        return { read, reads };
+    };
+
+    it('reads each agreement and then its plan once, leaving out an account whose plan hash its object contradicts', async () => {
+        const held = new Map([...objects, [secondCid, secondAgreement], [lyingCid, lying], [otherPlanCid, otherPlan]]);
+        const { read, reads } = reader(held);
+        const progress = [];
+        const accounts = [accountOf(secondCid, planCid, 3), accountOf(lyingCid, planCid, 2), accountOf(agreementCid, planCid, 1)];
+        const found = await ChainReader.plansBehind(accounts, { read, planCidHash, onProgress: step => progress.push(`${step.done}/${step.total}`) });
+        expect(found.agreements).toBe(3);
+        expect(found.plans).toEqual([{ cid: planCid, content: plan, gateway: GATEWAYS[0], agreementCids: [secondCid, agreementCid] }]);
+        expect(found.skipped).toEqual([expect.objectContaining({ kind: 'agreement', cid: lyingCid, code: 'plan-hash-mismatch' })]);
+        // The plan the lying agreement names is never read; the lane plan is read once.
+        expect(reads).toEqual([`agreement:${secondCid}`, `plan:${planCid}`, `agreement:${lyingCid}`, `agreement:${agreementCid}`]);
+        expect(progress).toEqual(['0/3', '1/3', '2/3', '3/3']);
+    });
+
+    it('names an agreement or plan it cannot read and still lists the rest', async () => {
+        const { read } = reader(new Map([[agreementCid, agreement], [secondCid, { ...secondAgreement, planCid: otherPlanCid }]]));
+        const absent = Cid.cidOfObject({ absent: 'agreement' });
+        const found = await ChainReader.plansBehind([accountOf(absent, planCid, 3), accountOf(secondCid, otherPlanCid, 2), accountOf(agreementCid, planCid, 1)],
+            { read: async (kind, cid) => (kind === 'plan' && cid === planCid ? { content: plan, gateway: GATEWAYS[1] } : read(kind, cid)), planCidHash });
+        expect(found.plans.map(row => row.cid)).toEqual([planCid]);
+        expect(found.skipped.map(entry => [entry.kind, entry.cid, entry.code])).toEqual([['agreement', absent, 'ipfs-unavailable'], ['plan', otherPlanCid, 'ipfs-unavailable']]);
+    });
+
+    it('reads each design its plans name once, with the plans that name it, one unreadable design not failing the rest', async () => {
+        const { read, reads } = reader(new Map([[designCid, design]]));
+        const plans = [{ cid: planCid, content: plan }, { cid: otherPlanCid, content: { ...otherPlan, designCids: [indexedDesignCid, designCid] } }];
+        const progress = [];
+        const found = await ChainReader.designsOf(plans, { read, onProgress: step => progress.push(`${step.stage} ${step.done}/${step.total}`) });
+        expect(found.designs).toEqual([{ cid: designCid, content: design, gateway: GATEWAYS[0], planCids: [planCid, otherPlanCid] }]);
+        expect(found.skipped).toEqual([expect.objectContaining({ kind: 'design', cid: indexedDesignCid })]);
+        expect(reads).toEqual([`design:${designCid}`, `design:${indexedDesignCid}`]);
+        expect(progress).toEqual(['designs 0/2', 'designs 1/2', 'designs 2/2']);
+    });
+
+    it('in the browser: one catalog per page from the program accounts, every object read from IPFS once, Refresh listing the accounts again', async () => {
+        const second = accountOf(secondCid, planCid, 1_790_000_100);
+        const { win, asked } = readerWindow({ [GATEWAYS[0]]: 'tampered' }, { accounts: [second] });
+        objects.set(secondCid, secondAgreement);
+        const spies = ['info', 'warn'].map(level => vi.spyOn(console, level).mockImplementation(() => {}));
+        try {
+            const progress = [];
+            const found = await win.ChainReader.catalog({ designs: true, onProgress: step => progress.push(step.stage) });
+            expect(found.plans).toEqual([expect.objectContaining({ cid: planCid, content: plan, gateway: GATEWAYS[1], agreementCids: [secondCid] })]);
+            expect(found.designs).toEqual([expect.objectContaining({ cid: designCid, content: design, planCids: [planCid] })]);
+            expect(progress).toEqual(['accounts', 'plans', 'plans', 'designs', 'designs']);
+            // A tampered gateway is passed over: each object took two requests, and none is asked again.
+            const firstReads = asked.length;
+            expect(firstReads).toBe(6);
+            expect(await win.ChainReader.catalog()).toBe(await win.ChainReader.catalog());
+            expect(win.AgreementClient.listAgreements).toHaveBeenCalledTimes(1);
+            await win.ChainReader.catalog({ force: true, designs: true });
+            expect(win.AgreementClient.listAgreements).toHaveBeenCalledTimes(2);
+            expect(asked.length).toBe(firstReads);
+            // Opening the plan reads the cached bytes, not the gateways.
+            expect(await win.ChainReader.fetchPlan(planCid)).toMatchObject({ cid: planCid, readFrom: 'chain' });
+            expect(asked.length).toBe(firstReads);
+        } finally { objects.delete(secondCid); spies.forEach(spy => spy.mockRestore()); }
+    });
+
+    it('in the browser: a plan\'s agreements come from the chain filter, kept only when their objects name the plan', async () => {
+        const accounts = [accountOf(agreementCid, planCid, 1), accountOf(lyingCid, planCid, 2)];
+        const { win } = readerWindow({}, { accounts });
+        objects.set(lyingCid, lying);
+        const spies = ['info', 'warn'].map(level => vi.spyOn(console, level).mockImplementation(() => {}));
+        try {
+            const found = await win.ChainReader.agreementsOfPlan(planCid);
+            expect(win.AgreementClient.fetchAgreementsForPlan).toHaveBeenCalledWith({ cluster: 'devnet' }, planCid, { programId: 'ProgramId1' });
+            expect(found.rows).toEqual([expect.objectContaining({ cid: agreementCid, title: 'Lane agreement', planCid, readFrom: 'chain',
+                onchain: expect.objectContaining({ account: accounts[0].address }) })]);
+            expect(found.skipped).toEqual([expect.objectContaining({ cid: lyingCid, code: 'plan-hash-mismatch' })]);
+        } finally { objects.delete(lyingCid); spies.forEach(spy => spy.mockRestore()); }
     });
 });
 

@@ -81,10 +81,13 @@
                 ? [{ cid: knownPlan.cid, title: knownPlan.content.title, content: knownPlan.content,
                     designCids: knownPlan.content.designCids, publishedAt: knownPlan.publishedAt, draft: false }] : []) }
         };
-        // Read from the chain alone (chain/read-source.js), the index is not asked: plans have no
-        // chain accounts, so only this browser's plans are listed, and the list says why.
+        // Read from the chain alone (chain/read-source.js), the index is not asked: the plans are
+        // this browser's and those behind minted agreements that name this exact revision
+        // (ChainReader.catalog); an empty list says that unminted plans are on our server only.
         const fromIndex = win.ReadSource.reads('server');
-        for (const group of Object.values(groups)) Object.assign(group, { nextOffset: cid && fromIndex ? 0 : null, loading: !!cid && fromIndex, error: false, chainOnly: !fromIndex });
+        const exact = revision || cid;
+        for (const group of Object.values(groups)) Object.assign(group, { nextOffset: cid && fromIndex ? 0 : null,
+            loading: fromIndex ? !!cid : !!exact, error: false, chainOnly: !fromIndex });
         const detailCache = new Map();
         const notify = () => { if (!controller.signal.aborted) onChange(session); };
         const session = { groups, cid, revision, proposalId: String(proposal.proposalId),
@@ -94,7 +97,7 @@
                 const items = state.items.map(row => ({ ...row, id: String(row.localId || row.cid), label: row.title || String(row.cid || row.localId),
                     membershipDesignCid: cid || revision, onParcel: true }));
                 if (!items.length && (state.loading || state.error || keepEmpty)) items.push({ id: `membership-${kind}`, membershipPlaceholder: true, onParcel: true,
-                    label: state.chainOnly ? win.i18n.t('readSource.chainListsAgreementsOnly') : t(state.loading ? 'loading' : state.error ? 'failed' : 'empty') });
+                    label: state.chainOnly && !state.loading && !state.error ? win.i18n.t('readSource.chainListsMinted') : t(state.loading ? 'loading' : state.error ? 'failed' : 'empty') });
                 return items;
             },
             details(kind, instance) {
@@ -109,6 +112,13 @@
             state.loading = true; state.error = false;
             if (!wasLoading) notify();
             try {
+                if (!fromIndex) {
+                    const found = await win.ChainReader.catalog();
+                    if (controller.signal.aborted) return;
+                    state.items = mergeRows(state.items, found.plans.filter(plan => plan.content.designCids.includes(exact)).map(plan => ({
+                        cid: plan.cid, title: plan.content.title, content: plan.content, designCids: plan.content.designCids, draft: false, readFrom: 'chain' })));
+                    return;
+                }
                 const page = await fetchPage({ fetch: win.fetch.bind(win), backend, kind, designCid: cid,
                     offset: state.nextOffset || 0, signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]) });
                 if (controller.signal.aborted) return;
@@ -122,7 +132,7 @@
         }
         session.ready = Promise.resolve().then(() => {
             notify();
-            return cid && fromIndex ? Promise.all(Object.keys(groups).map(load)) : undefined;
+            return (fromIndex ? cid : exact) ? Promise.all(Object.keys(groups).map(load)) : undefined;
         });
         return session;
     }
@@ -204,6 +214,13 @@
             loading = true; failed = false;
             if (!items.length && !locals().length) notify();
             try {
+                if (offset === 'chain') {
+                    // Every agreement on the plan in one chain read (no pages).
+                    const found = await win.ChainReader.agreementsOfPlan(plan.cid);
+                    if (version !== generation) return;
+                    items = mergeRows(items, found.rows); offset = null;
+                    return;
+                }
                 const page = await fetchPage({ fetch: win.fetch.bind(win), backend: win.resolveBackendBaseUrl().replace(/\/$/, ''),
                     kind: 'agreements', planCid: plan.cid, offset, signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]) });
                 if (version !== generation) return;
@@ -220,8 +237,10 @@
                 const selected = getPlan();
                 if ((selected?.cid || null) === (plan?.cid || null)) return;
                 controller?.abort(); generation++; plan = selected?.membershipPlaceholder ? null : selected;
-                // The index's agreements on the plan only when our server is read (chain/read-source.js).
-                items = []; loading = false; failed = false; offset = plan && !plan.draft && win.ReadSource.reads('server') ? 0 : null;
+                // The index's agreements on the plan when our server is read, the chain's when it alone
+                // is (ChainReader.agreementsOfPlan; chain/read-source.js).
+                items = []; loading = false; failed = false;
+                offset = plan && !plan.draft ? (win.ReadSource.reads('server') ? 0 : 'chain') : null;
                 controller = new AbortController(); notify();
                 if (offset !== null) return load();
             },

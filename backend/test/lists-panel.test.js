@@ -5,7 +5,7 @@ import { makeDocument } from './helpers/fake-dom.js';
 import { testI18n } from './helpers/i18n.js';
 import { readSource } from './helpers/read-source.js';
 const require = createRequire(import.meta.url);
-const { stageOf, mergeRows, filterRows, indexQuery, browser } = require('../../frontend/js/lists-panel.js');
+const { stageOf, mergeRows, filterRows, indexQuery, chainRowsHere, browser } = require('../../frontend/js/lists-panel.js');
 const NamedPlans = require('../../frontend/js/named-plans.js');
 const PlanRecord = require('../../frontend/js/plan-record.js');
 const Cid = require('../../frontend/js/cid.js');
@@ -58,6 +58,17 @@ describe('shared lists', () => {
         expect(filterRows(dated).map(row => row.title)).toEqual(['Zebra', 'Alpha', 'Beta']);
         expect(filterRows(dated, { sort: 'title' }).map(row => row.title)).toEqual(['Alpha', 'Beta', 'Zebra']);
     });
+    it('keeps the chain\'s plans of this city and its designs of this city, or in Explore those whose site meets the view', () => {
+        const square = (x, y) => ({ type: 'Polygon', coordinates: [[[x, y], [x + 0.01, y], [x + 0.01, y + 0.01], [x, y]]] });
+        const plans = [{ cid: 'p-here', content: { view: { city: 'London' } } }, { cid: 'p-away', content: { view: { city: 'alatau' } } }, { cid: 'p-anywhere', content: { view: {} } }];
+        const designs = [{ cid: 'd-here', content: { city: 'london', site: square(-0.1, 51.5) } }, { cid: 'd-away', content: { city: 'alatau', site: square(76.9, 43.6) } },
+            { cid: 'd-nowhere', content: {} }];
+        const normalize = code => String(code).toLowerCase();
+        expect(chainRowsHere(plans, 'plans', { city: 'london', normalize }).map(row => row.cid)).toEqual(['p-here', 'p-anywhere']);
+        expect(chainRowsHere(designs, 'designs', { city: 'london', normalize }).map(row => row.cid)).toEqual(['d-here']);
+        expect(chainRowsHere(designs, 'designs', { city: 'explore', area: { explore: true, bbox: [76.8, 43.5, 77, 43.7] } }).map(row => row.cid)).toEqual(['d-away']);
+    });
+
     it('removes only the stored plan, retaining its agreement and member records', () => {
         const content = PlanRecord.create('Plan', [Cid.cidOfObject({ test: 'design' })], { city: 'london', at: '51.5,-0.1,17', mode: '2d', language: 'en' });
         const plan = { cid: Cid.cidOfObject(content), content };
@@ -87,7 +98,7 @@ const ladderBadges = new Function('window', 'getProposalI18nHelper', 'getProposa
     require('../../frontend/js/shared-utils.js').escapeHtml);
 
 function listsSheet({ designs = [], serverDesigns = [], plans = [], serverPlans = [], agreements = [], serverAgreements = [], offers = [], serverOffers = [], resolvePlan = null,
-    source = 'server', chainAgreements = [] } = {}) {
+    source = 'server', chainAgreements = [], chainCatalog = { agreements: 0, plans: [], designs: [], skipped: [] } } = {}) {
     const doc = makeDocument();
     for (const id of ['lists-controls', 'lists-actions', 'lists-status', 'proposal-list-host', 'plan-list-host', 'agreement-list-host']) {
         const el = doc.createElement('div'); el.id = id; doc.body.append(el);
@@ -116,7 +127,9 @@ function listsSheet({ designs = [], serverDesigns = [], plans = [], serverPlans 
         fetch: vi.fn(async url => ({ ok: true, json: async () => (String(url).includes('/property-offers?') ? { propertyOffers: serverOffers } : { plans: serverPlans, agreements: serverAgreements }) })),
         // Where the rows are read from (chain/read-source.js), and the agreement program's accounts.
         ReadSource: readSource(source),
-        ChainReader: { cluster: () => 'devnet', listAgreements: vi.fn(async () => chainAgreements) },
+        ChainReader: { cluster: () => 'devnet', listAgreements: vi.fn(async () => chainAgreements),
+            // The plans and designs behind those agreements (ChainReader.catalog), with its progress.
+            catalog: vi.fn(async ({ onProgress } = {}) => { onProgress?.({ stage: 'plans', done: 1, total: 1 }); return chainCatalog; }) },
         DesignSync: { apiBase: () => 'https://api.test', publishedCid: record => record.cid || null,
             listPage: vi.fn(async () => ({ designs: serverDesigns, hasMore: false, nextOffset: null })),
             localDesignIndex: () => { const byCid = new Map(designs.filter(row => row.cid).map(row => [row.cid, row])); return { records: designs, byCid, published: new Map(designs.filter(row => row.cid).map(row => [row, row.cid])) }; },
@@ -386,14 +399,73 @@ describe('the Lists sheet', () => {
         expect(f.item(minted).querySelector('.lists-item__title').textContent).toBe('Agreement bafkreibzlji…qxigf4');
         expect(f.item(minted).textContent).toContain('Status: executed');
         expect(f.item(minted).querySelector('time.lists-item__timestamp').dateTime).toBe('2026-11-26T18:50:09.000Z');
-        // Designs have no chain accounts: the tab lists this browser's own and says why.
+        // Read from the chain alone, its rows say so.
+        expect(f.item(minted).querySelectorAll('[data-held-by]').map(badge => badge.textContent)).toEqual(['Chain']);
+        // Designs have no chain accounts: the tab lists this browser's own and those behind minted
+        // agreements, and says that unminted ones are on our server only.
         await f.panel.select('designs');
         await vi.waitFor(() => expect(f.shown('proposal-list-host')).toEqual(['own-draft']));
-        expect(f.doc.getElementById('lists-status').textContent).toContain('The chain lists agreements only, not designs or plans.');
+        expect(f.doc.getElementById('lists-status').textContent).toContain('The chain lists the plans and designs behind minted agreements; unminted ones are only on our server.');
         expect(f.indexAsked()).toBe(asked);
         // Reset filters leaves where the rows are read from alone: it is not a filter.
         f.doc.querySelector('#lists-filter-panel .btn-quiet').click();
         expect(f.win.ReadSource.get()).toBe('chain');
+    });
+
+    // What the chain's catalog found behind the minted agreements: a London plan and its design, and
+    // an Alatau design this London list leaves out; one agreement could not be confirmed.
+    const chainPlan = { cid: 'bafkreichainplan', content: { title: 'Lane plan', view: { city: 'london' }, designCids: ['bafkreichaindesign'] },
+        gateway: 'https://gw.example/ipfs/', agreementCids: [minted] };
+    const chainDesigns = [{ cid: 'bafkreichaindesign', content: { title: 'New lane', author: 'Ana', city: 'london', createdAt: '2026-11-20T10:00:00.000Z' }, planCids: [chainPlan.cid] },
+        { cid: 'bafkreialataudesign', content: { title: 'Courtyard', city: 'alatau' }, planCids: ['bafkreiotherplan'] }];
+    const catalog = { agreements: 2, plans: [chainPlan], designs: chainDesigns,
+        skipped: [{ kind: 'agreement', cid: 'bafkreilyingagreement0001', code: 'plan-hash-mismatch', reason: 'its account names another plan' }] };
+
+    it('reads the chain alone: Plans and Designs list what minted agreements name, marked Chain, with what was left out', async () => {
+        const f = chainSheet({ source: 'chain', chainCatalog: catalog, designs: [{ proposalId: 'own-draft', title: 'Own draft' }],
+            serverPlans: [{ cid: 'indexed-plan', content: { title: 'Indexed', view: {}, designCids: [] } }] });
+        await f.panel.select('plans');
+        await vi.waitFor(() => expect(f.shown('plan-list-host')).toEqual([chainPlan.cid]));
+        expect(f.win.ChainReader.catalog).toHaveBeenLastCalledWith(expect.objectContaining({ designs: false, force: false }));
+        expect(f.item(chainPlan.cid).querySelector('.lists-item__title').textContent).toBe('Lane plan');
+        expect(f.item(chainPlan.cid).querySelectorAll('[data-held-by]').map(badge => badge.textContent)).toEqual(['Chain']);
+        const status = () => f.doc.getElementById('lists-status').textContent;
+        expect(status()).toContain('Not listed from the chain: bafkreilying…nt0001 (its account names another plan than its content)');
+        expect(status()).toContain('unminted ones are only on our server');
+        await f.panel.select('designs');
+        await vi.waitFor(() => expect(f.shown('proposal-list-host').sort()).toEqual(['bafkreichaindesign', 'own-draft']));
+        expect(f.win.ChainReader.catalog).toHaveBeenLastCalledWith(expect.objectContaining({ designs: true }));
+        expect(f.item('bafkreichaindesign').querySelectorAll('[data-held-by]').map(badge => badge.textContent)).toEqual(['Chain']);
+        expect(f.item('own-draft').querySelector('[data-held-by]')).toBeNull();
+        expect(f.indexAsked()).toBe(0);
+        // Refresh reads the chain again.
+        f.doc.querySelector('.lists-refresh').click();
+        await vi.waitFor(() => expect(f.win.ChainReader.catalog).toHaveBeenLastCalledWith(expect.objectContaining({ designs: true, force: true })));
+    });
+
+    it('shows how far the reading of the plans behind minted agreements has come', async () => {
+        let finish;
+        const f = chainSheet({ source: 'chain' });
+        f.win.ChainReader.catalog.mockImplementation(({ onProgress }) => new Promise(resolve => {
+            onProgress({ stage: 'plans', done: 4, total: 12 });
+            finish = () => resolve(catalog);
+        }));
+        f.panel.select('plans');
+        const status = () => f.doc.getElementById('lists-status').textContent;
+        await vi.waitFor(() => expect(status()).toContain('Reading the plans behind minted agreements… 4/12'));
+        finish();
+        await vi.waitFor(() => expect(f.shown('plan-list-host')).toEqual([chainPlan.cid]));
+        expect(status()).not.toContain('Reading the plans');
+    });
+
+    it('reads both: a plan held by both is one row marked by both, the chain\'s alone marked Chain', async () => {
+        const f = chainSheet({ source: 'both', chainCatalog: { ...catalog, plans: [chainPlan, { ...chainPlan, cid: 'bafkreichainonly', content: { ...chainPlan.content, title: 'Chain only' } }] },
+            serverPlans: [{ cid: chainPlan.cid, publishedAt: '2026-11-17T09:10:11.000Z', content: chainPlan.content }, { cid: 'indexed-plan', content: { title: 'Unminted', view: {}, designCids: [] } }] });
+        await f.panel.select('plans');
+        await vi.waitFor(() => expect(f.shown('plan-list-host').sort()).toEqual(['bafkreichainonly', chainPlan.cid, 'indexed-plan'].sort()));
+        const heldBy = id => f.item(id).querySelectorAll('[data-held-by]').map(badge => badge.textContent);
+        expect([heldBy(chainPlan.cid), heldBy('bafkreichainonly'), heldBy('indexed-plan')]).toEqual([['Our server', 'Chain'], ['Chain'], ['Our server']]);
+        expect(f.item(chainPlan.cid).querySelector('time.lists-item__timestamp').dateTime).toBe('2026-11-17T09:10:11.000Z');
     });
 
     it('reads both: one row per agreement marked by the sources that hold it, a failed source named', async () => {
