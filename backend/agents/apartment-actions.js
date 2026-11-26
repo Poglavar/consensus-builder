@@ -4,14 +4,18 @@
 // opening the round's USDC escrow), a member of the round's lens qualifies a buyer for one unit
 // (POST /lens/agreements/:cid/apartments/:unitId/qualify, operator-only), and the buyer deposits and
 // reserves it in one transaction (donate + reserve_apartment). Every step reads the chain first, so a
-// rerun signs nothing twice.
+// rerun signs nothing twice. roundStats reads a round's states and counts with the browser's own model
+// (frontend/js/apartment-round.js), for the MCP's ugt_inspect_agreement.
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
 const pledge = require('../../frontend/js/solana/pledge-client.js');
 const agreementRecord = require('../../frontend/js/agreement-record.js');
+const agreementClient = require('../../frontend/js/solana/agreement-client.js');
+const apartmentRound = require('../../frontend/js/apartment-round.js').model;
 pledge.configure({ web3 });
+agreementClient.configure({ web3 });
 
 // list_apartment instructions per transaction; the first may also carry the escrow's creation.
 const LISTINGS_PER_TRANSACTION = 4;
@@ -26,6 +30,32 @@ async function send(connection, instructions, signer, sendAndConfirm) {
 export function readRoundInventory(connection, { account, content }) {
     if (!content?.funding?.apartments) return Promise.resolve([]);
     return pledge.readApartmentInventory(connection, account, content.sponsor, content.funding, agreementRecord);
+}
+
+/**
+ * Whether a round takes listings and reservations, as the agreement panel decides it: its account is
+ * Active on chain and its deadline has not passed. `chainAccount` is the decoded Agreement account
+ * (agreement-minter.js readAgreementAccount), null when it is not on chain.
+ */
+export function roundAccepting(chainAccount, nowSeconds = Math.floor(Date.now() / 1000)) {
+    return !!chainAccount && chainAccount.status === 'Active' && !agreementClient.deadlinePassed(chainAccount, nowSeconds);
+}
+
+/**
+ * A round's apartment states and counts by the browser's model (ApartmentRound roundView): `units` the
+ * chain inventory (readRoundInventory, or the API's apartmentAvailability.units), `chainAccount` the
+ * decoded Agreement account the accepting state comes from. Amounts are USDC atomic decimal strings.
+ */
+export function roundStats({ funding, units, chainAccount, nowSeconds = Math.floor(Date.now() / 1000) }) {
+    const accepting = roundAccepting(chainAccount, nowSeconds);
+    const view = apartmentRound.roundView({ funding, inventory: units, accepting });
+    return {
+        accepting, chainStatus: chainAccount?.status ?? null,
+        counts: view.counts, reservedDeposits: String(view.reservedDeposits), target: String(view.target), percent: view.percent,
+        floors: view.floors,
+        units: view.units.map(unit => ({ unitId: unit.unitId, label: unit.label, building: unit.building, level: unit.level,
+            depositUsdcAtomic: unit.depositUsdcAtomic, state: unit.state, reason: unit.reason, buyer: unit.buyer }))
+    };
 }
 
 /** The developer lists every unlisted unit of its round. → { listed, alreadyListed, signatures } */

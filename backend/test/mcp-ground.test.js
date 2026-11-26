@@ -155,6 +155,43 @@ describe('headless app formation host', () => {
         expect(draft.agreement.funding.apartments.units[0].priceUsdcAtomic).toBe('100000000');
     });
 
+    it('adds a published round\'s apartment states and counts by the browser\'s model, accepting from the chain', async () => {
+        const authoring = createUrbanGameTheoryTools({ mode: 'hosted', env: {} });
+        const plan = await authoring.draftPlan({ title: 'Round plan', designs: [make('space', { spaceKind: 'park', city: 'zagreb' }).content] });
+        const drawing = { name: 'floor-six.pdf', mediaType: 'application/pdf', data: Buffer.from('%PDF-1.7').toString('base64') };
+        const apartment = id => ({ unitId: id, label: id.toUpperCase(), xrayBuilding: 'zagreb::gdi-3d::148972', unit: '6::' + id.toUpperCase(),
+            at: '45.7665,15.9722,19', priceUsdcAtomic: '100000000', depositUsdcAtomic: '10000000', drawing });
+        const sponsor = 'So11111111111111111111111111111111111111112';
+        const draft = await authoring.draftAgreement({ rulePreset: 'crowdfunding', plan: plan.draftArtifact, sponsor, lenses: ['9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt'],
+            deadline: '2099-01-01T00:00:00.000Z', targetUsdcAtomic: '20000000', contract: { name: 'terms.txt', mediaType: 'text/plain', data: 'dGVybXM=' },
+            apartments: { projectId: 'round', units: [apartment('a1'), apartment('a2'), apartment('a3')] } });
+        const { agreement: content, plan: planContent, designs } = draft.draftArtifact;
+        const cid = cidOfObject(content);
+        const buyer = '9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt';
+        // The index's chain inventory (GET /agreements/:cid?inventory=1) and the round's own account.
+        const units = [{ unitId: 'a1', status: 'reserved', buyer }, { unitId: 'a2', status: 'available' }, { unitId: 'a3', status: 'unlisted' }];
+        const asked = [];
+        const fetchImpl = async url => {
+            asked.push(String(url));
+            return new Response(JSON.stringify({ cid, content, plan: planContent, designs, apartmentAvailability: { status: 'confirmed', units } }));
+        };
+        const chainStatus = { value: { status: 'Active', deadline: 4070908800 } };
+        const readAgreementAccount = async (_connection, { cid: asks, sponsor: of }) => (asks === cid && of === sponsor ? chainStatus.value : null);
+        const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: { UGT_API_BASE: 'https://api.test' }, fetchImpl, createConnection: () => ({}), dependencies: { readAgreementAccount } });
+        const inspected = await tools.inspectAgreement({ plan: cid, includeAvailability: true });
+        expect(asked[0]).toBe(`https://api.test/agreements/${cid}?inventory=1`);
+        expect(inspected.apartmentStats).toMatchObject({ accepting: true, chainStatus: 'Active', counts: { offered: 3, reserved: 1, available: 1, unavailable: 1 },
+            reservedDeposits: '10000000', target: '20000000', percent: 50, floors: [{ building: 1, level: 6, offered: 3 }] });
+        expect(inspected.apartmentStats.units.map(row => [row.unitId, row.state, row.reason])).toEqual([['a1', 'reserved', null], ['a2', 'available', null], ['a3', 'unavailable', 'unlisted']]);
+        // A round no longer Active on chain takes no reservation: its listed unit reads closed.
+        chainStatus.value = { status: 'Executed', deadline: 4070908800 };
+        const executed = await tools.inspectAgreement({ plan: cid, includeAvailability: true });
+        expect(executed.apartmentStats).toMatchObject({ accepting: false, chainStatus: 'Executed' });
+        expect(executed.apartmentStats.units[1]).toMatchObject({ state: 'unavailable', reason: 'closed' });
+        // Without includeAvailability nothing is read from the chain.
+        expect(await tools.inspectAgreement({ plan: cid })).not.toHaveProperty('apartmentStats');
+    });
+
     it('takes crowdfunding city and default currency from the canonical plan view', async () => {
         const design = make('space', { spaceKind: 'park', city: 'alatau' });
         const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {} });

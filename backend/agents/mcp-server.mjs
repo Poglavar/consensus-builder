@@ -367,6 +367,20 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
         inputSchema: z.object({ agreementCid, confirm: confirmation }), annotations: PAID_IDEMPOTENT
     }, handler(args => actions.refundContributions(args)));
 
+    // An apartment round's listing and reservation, as the agreement panel's funding section takes them.
+    server.registerTool('ugt_list_apartments', {
+        title: 'List a round\'s apartments',
+        description: 'As the apartment round\'s developer (its sponsor, this agent\'s wallet): list every apartment of the minted round that is not listed yet on Solana, as the funding section\'s List does, four a transaction; the first listing opens the round\'s USDC escrow. Only while the round is Active and before its deadline. Everything listed already is a replay. Browser wallets use the agreement panel.',
+        inputSchema: z.object({ agreementCid, confirm: confirmation }), annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.listApartments(args)));
+
+    server.registerTool('ugt_reserve_apartment', {
+        title: 'Reserve an apartment',
+        description: 'As a buyer: reserve one listed apartment of an open round, as the funding section\'s Reserve apartment does. The round\'s lens must already have qualified this wallet for that unit (its qualification is read from the lens members\' services; code qualification-pending otherwise). One transaction pays the unit\'s USDC deposit into the round\'s escrow and reserves it; the deposit must not exceed UGT_MCP_MAX_USDC_PER_ACTION. A unit this wallet already holds is a replay. Find units and their states with ugt_inspect_agreement includeAvailability.',
+        inputSchema: z.object({ agreementCid, unitId: z.string().regex(/^[a-z0-9][a-z0-9-]{0,63}$/).describe('The unit\'s permanent unitId in the round\'s funding.apartments'), confirm: confirmation }),
+        annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.reserveApartment(args)));
+
     server.registerTool('ugt_anchor_parcels', {
         title: 'Anchor parcels on Solana',
         description: 'Create parcel anchors on the parcel_nft program as the parcel panel\'s Mint does: an ownerless account per parcel, seeded by its anchor id (HR-<cadastral municipality>-<parcel number>, else the source parcel id), holding the URI of its metadata (name, minter, area, geometry; stored through the app API). This wallet pays rent and gains no rights. An existing anchor is reported, not minted again.',

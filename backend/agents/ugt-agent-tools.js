@@ -38,7 +38,8 @@ import {
     AGREEMENT_PROGRAM_ID, AGREEMENT_STATUS, agreementAccountOf, executeAgreement, expireAgreement, fundAgreement, mintAgreement, mintTermsOf,
     readAgreementAccount, recordAgreementDecision
 } from './agreement-minter.js';
-import { anchorParcels, cancelAgreement, confirmAsLensMember, refundContributions } from './chain-actions.js';
+import { anchorParcels, apartmentQualification, cancelAgreement, confirmAsLensMember, refundContributions } from './chain-actions.js';
+import { listApartments, readRoundInventory, reserveApartment, roundAccepting, roundStats } from './apartment-actions.js';
 import {
     acceptOffer, cancelOffer, createOfferOnChain, createOnchainRecorder, expireOffer, fundOffer, releaseOffer
 } from './property-offer-signer.js';
@@ -277,6 +278,10 @@ export function createUrbanGameTheoryTools({
         confirmAsLensMember,
         refundContributions,
         anchorParcels,
+        listApartments,
+        readRoundInventory,
+        apartmentQualification,
+        reserveApartment,
         createOfferOnChain,
         acceptOffer,
         fundOffer,
@@ -360,6 +365,19 @@ export function createUrbanGameTheoryTools({
         return { agreement, sponsor, account: agreementAccountOf(agreementCid, sponsor) };
     }
 
+    // A minted apartment round (agreement panel, funding section): its index row, the account its sponsor
+    // and CID derive, the Agreement account read from the chain, and whether it still takes listings and
+    // reservations (Active and before its deadline).
+    async function apartmentRound(agreementCid) {
+        const { agreement, sponsor, account } = await chainAgreement(agreementCid);
+        if (!agreement.content.funding?.apartments) throw Object.assign(new Error(`agreement ${agreementCid} offers no apartments`), { code: 'not-apartment-round' });
+        const { keypair, connection } = signer();
+        const value = await impl.readAgreementAccount(connection, { cid: agreementCid, sponsor });
+        if (!value) throw Object.assign(new Error(`agreement ${agreementCid} is not minted on the current agreement program`), { code: 'not-minted' });
+        return { agreement, sponsor, account, value, keypair, connection, accepting: roundAccepting(value) };
+    }
+    const roundClosed = agreementCid => Object.assign(new Error(`The apartment round ${agreementCid} is closed: it is not Active on chain or its deadline has passed.`), { code: 'round-closed' });
+
     const companion = createMcpReadTools({ apiBase, appOrigin, fetchImpl });
     const drafts = createMcpDraftTools({ read: companion, appOrigin, resolveDraftReference, resolvePlan: value => namedPlanTools.resolvePlan(value) });
     const agreements = createMcpAgreementTools({ read: companion, drafts, appOrigin });
@@ -435,7 +453,15 @@ export function createUrbanGameTheoryTools({
         ...createMcpVotingTools({ read: companion }),
         ...drafts,
         ...agreements,
-        inspectAgreement: agreementPlans.inspectPlan,
+        // With includeAvailability, an apartment round's states and counts by the browser's model
+        // (ApartmentRound), over the API's chain inventory and the round's own chain status and deadline.
+        async inspectAgreement(args = {}) {
+            const result = await agreementPlans.inspectPlan(args);
+            const availability = result.investorReview?.availability;
+            if (availability?.status !== 'confirmed') return result;
+            const chainAccount = await impl.readAgreementAccount(chain(), { cid: result.cid, sponsor: result.investorReview.payout });
+            return { ...result, apartmentStats: roundStats({ funding: result.funding, units: availability.units, chainAccount }) };
+        },
         editAgreement: agreementPlans.editAgreement,
         config: {
             apiBase,
@@ -902,6 +928,42 @@ export function createUrbanGameTheoryTools({
             const { agreement } = await chainAgreement(agreementCid);
             const { keypair, connection } = signer();
             return { agreementCid, ...await impl.refundContributions({ connection, donorKeypair: keypair, agreement, sendAndConfirm: impl.sendAndConfirmPolling }) };
+        },
+
+        // ---- an apartment round's listing and reservation (the funding section's) -------------------------
+        // As the round's developer (its sponsor): list every unit not yet listed; the first listing opens
+        // the round's USDC escrow. Everything listed already is a replay.
+        async listApartments({ agreementCid, confirm } = {}) {
+            requireLive(confirm);
+            const { agreement, sponsor, account, keypair, connection, accepting } = await apartmentRound(agreementCid);
+            const developer = keypair.publicKey.toBase58();
+            if (developer !== sponsor) throw Object.assign(new Error(`only the round's developer ${sponsor} lists its apartments, not this agent's wallet ${developer}`), { code: 'developer-required' });
+            if (!accepting) {
+                const rows = await impl.readRoundInventory(connection, { account, content: agreement.content });
+                if (rows.some(row => row.status === 'unlisted')) throw roundClosed(agreementCid);
+            }
+            return { agreementCid, account, ...await impl.listApartments({ connection, developerKeypair: keypair, account, content: agreement.content, sendAndConfirm: impl.sendAndConfirmPolling }) };
+        },
+
+        // As a buyer: read this wallet's qualification for the unit from the round's lens members, then
+        // pay the unit's deposit and reserve it in one transaction. A unit this wallet holds is a replay.
+        async reserveApartment({ agreementCid, unitId, confirm } = {}) {
+            requireLive(confirm);
+            const { agreement, sponsor, account, value, keypair, connection, accepting } = await apartmentRound(agreementCid);
+            const { content } = agreement;
+            const buyer = keypair.publicKey.toBase58();
+            const offer = (await impl.readRoundInventory(connection, { account, content })).find(row => row.unitId === unitId);
+            if (!offer) throw Object.assign(new Error(`unit ${unitId} is not offered by agreement ${agreementCid}`), { code: 'unknown-unit' });
+            const reserve = qualification => impl.reserveApartment({ connection, buyerKeypair: keypair, account, content, unitId, qualification, sendAndConfirm: impl.sendAndConfirmPolling });
+            if (offer.status === 'reserved' && offer.buyer === buyer) return { agreementCid, account, unitId, ...await reserve(null) };
+            if (!accepting) throw roundClosed(agreementCid);
+            if (offer.status !== 'available') throw Object.assign(new Error(`unit ${unitId} is ${offer.status}, not available`), { code: 'unit-unavailable' });
+            if (BigInt(offer.deposit) > usdcToAtomic(maxUsdcPerAction)) {
+                throw new Error(`unit ${unitId}'s deposit (${agreementRecord.formatUsdc(BigInt(offer.deposit))} USDC) exceeds UGT_MCP_MAX_USDC_PER_ACTION (${maxUsdcPerAction} USDC)`);
+            }
+            const members = await impl.fetchLensMembers({ apiBase, fetchImpl });
+            const qualification = await impl.apartmentQualification({ cid: agreementCid, sponsor, lenses: value.lenses, members, offer, buyer, fetchImpl });
+            return { agreementCid, account, unitId, qualification: qualification.address, ...await reserve(qualification) };
         },
 
         // Anchor parcels on parcel_nft as the parcel panel's Mint does: the same anchor id and metadata

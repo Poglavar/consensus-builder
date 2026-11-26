@@ -16,6 +16,9 @@ describe('MCP public source reads', () => {
         const found = await reads.apartmentOffers({ city: 'zagreb', xrayBuilding: 'zagreb::gdi-3d::148972', unit: '6::A4-C-23' });
         expect(fetchImpl.mock.calls[0][0]).toBe('https://api.example/agreements/apartment-offers?city=zagreb&xrayBuilding=zagreb%3A%3Agdi-3d%3A%3A148972&unit=6%3A%3AA4-C-23');
         expect(found.offers).toEqual([{ cid, city: 'zagreb', unitId: 'a4-c-23', untrusted: { title: 'Round', label: 'Apartment A4-C-23' } }]);
+        // Without a unit: every offered unit of the building (the route answers active and executed rounds).
+        await reads.apartmentOffers({ city: 'zagreb', xrayBuilding: 'zagreb::gdi-3d::148972' });
+        expect(fetchImpl.mock.calls[1][0]).toBe('https://api.example/agreements/apartment-offers?city=zagreb&xrayBuilding=zagreb%3A%3Agdi-3d%3A%3A148972');
     });
     it('reads the backend chat cost endpoint and forwards optional token counts', async () => {
         const fetchImpl = vi.fn(async url => json({ provider: 'openai', model: 'test', currency: 'USD', pricesPerMillionTokens: { input: 1, output: 2, cacheRead: 0.5, cacheWrite: 1.5 }, maximumTurnReservationUsd: 1 }));

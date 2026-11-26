@@ -4,7 +4,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { Keypair } from '@solana/web3.js';
-import { listApartments, qualifyApartmentBuyer, qualifyOfferCounterparty, reserveApartment } from '../agents/apartment-actions.js';
+import { listApartments, qualifyApartmentBuyer, qualifyOfferCounterparty, reserveApartment, roundAccepting, roundStats } from '../agents/apartment-actions.js';
 
 const require = createRequire(import.meta.url);
 const pledge = require('../../frontend/js/solana/pledge-client.js');
@@ -43,6 +43,31 @@ describe('reserving an apartment', () => {
         await expect(reserveApartment({ connection: emptyChain(), buyerKeypair: buyer, account, content: content(2), unitId: 'u1', qualification: {}, sendAndConfirm }))
             .rejects.toMatchObject({ code: 'UNIT_UNAVAILABLE' });
         expect(sendAndConfirm).not.toHaveBeenCalled();
+    });
+});
+
+describe('a round\'s states and counts', () => {
+    const NOW = 1_800_000_000;
+    const active = { status: 'Active', deadline: NOW + 3600 };
+    it('accepts only while the account is Active on chain and before its deadline', () => {
+        expect(roundAccepting(active, NOW)).toBe(true);
+        expect(roundAccepting({ ...active, deadline: NOW - 1 }, NOW)).toBe(false);
+        expect(roundAccepting({ ...active, status: 'Executed' }, NOW)).toBe(false);
+        expect(roundAccepting(null, NOW)).toBe(false);
+    });
+    it('reads each unit\'s state and the counts, deposits and floors with the browser\'s model', () => {
+        const buyer = Keypair.generate().publicKey.toBase58();
+        const units = [{ unitId: 'u1', status: 'reserved', buyer }, { unitId: 'u2', status: 'available' }, { unitId: 'u3', status: 'unavailable' }];
+        const stats = roundStats({ funding: content(4).funding, units, chainAccount: active, nowSeconds: NOW });
+        expect(stats).toMatchObject({ accepting: true, chainStatus: 'Active', counts: { offered: 4, reserved: 1, available: 1, unavailable: 2 },
+            reservedDeposits: '1000000', target: '3000000', percent: 33, floors: [{ building: 1, level: 6, offered: 4, reserved: 1, available: 1, unavailable: 2 }] });
+        expect(stats.units.map(({ unitId, state, reason, buyer: holder }) => [unitId, state, reason, holder])).toEqual([
+            ['u1', 'reserved', null, buyer], ['u2', 'available', null, null], ['u3', 'unavailable', 'heldElsewhere', null], ['u4', 'unavailable', 'unlisted', null]
+        ]);
+        // Past its deadline a listed unit is closed, not available.
+        const closed = roundStats({ funding: content(4).funding, units, chainAccount: { ...active, deadline: NOW - 1 }, nowSeconds: NOW });
+        expect(closed.units[1]).toMatchObject({ state: 'unavailable', reason: 'closed' });
+        expect(closed.accepting).toBe(false);
     });
 });
 

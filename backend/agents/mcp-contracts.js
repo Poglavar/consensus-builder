@@ -82,7 +82,15 @@ const cyclingAssessment = z.object({ score: z.number().int().min(0).max(100).nul
     segments: z.array(z.object({ metres: z.number().positive(), tiers: z.array(cyclingTier), points: z.tuple([travelPoint, travelPoint]) })).optional(),
     selectedRoute: travelRoute.optional() });
 assign(['ugt_inspect_plan'], inventory.extend({ openingAssessment: openingAssessment.optional(), walkingAssessment: walkingAssessment.optional(), cyclingAssessment: cyclingAssessment.optional() }));
-assign(['ugt_inspect_agreement'], inventory);
+// An apartment round's states and counts (ApartmentRound roundView), with includeAvailability.
+const apartmentState = z.enum(['reserved', 'available', 'unavailable']);
+const apartmentCounts = z.object({ offered: count, reserved: count, available: count, unavailable: count });
+const usdcAtomic = z.string().regex(/^\d+$/);
+const apartmentStats = z.object({ accepting: z.boolean(), chainStatus: z.string().nullable(), counts: apartmentCounts,
+    reservedDeposits: usdcAtomic, target: usdcAtomic, percent: z.number().int().nonnegative().nullable(),
+    floors: z.array(apartmentCounts.extend({ building: count, level: z.number().int().nullable() })),
+    units: z.array(z.object({ unitId: z.string(), state: apartmentState.nullable(), reason: z.enum(['closed', 'heldElsewhere', 'unlisted']).nullable() }).passthrough()) });
+assign(['ugt_inspect_agreement'], inventory.extend({ apartmentStats: apartmentStats.optional() }));
 assign(['ugt_inspect_design'], mcpResultSchema.extend({ cid, values: z.array(z.object({ path: z.string(), untrustedValue: z.unknown() })).min(1) }));
 assign(['ugt_apartment_offers'], mcpResultSchema.extend({ offers: z.array(z.object({
     cid, city: z.string(), unitId: z.string(), untrusted: z.object({ title: z.string().nullable(), label: z.string() })

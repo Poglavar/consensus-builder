@@ -136,6 +136,8 @@ SOLANA_RPC_URL=https://api.devnet.solana.com
 | `ugt_confirm_as_lens_member` | signed | As one of the agreement's lens members: state your decision on chain, executing the agreement when it completes the lens. |
 | `ugt_record_lens_decision` | signed | Anyone: record a lens member's decision attestation already on Solana. |
 | `ugt_refund_contributions` | signed | Take back your contributions (apartment deposits included) once the agreement is cancelled or expired. |
+| `ugt_list_apartments` | signed | As an apartment round's developer: list its apartments on chain while the round is open. |
+| `ugt_reserve_apartment` | signed | As a buyer the round's lens qualified: pay one apartment's deposit and reserve it. |
 | `ugt_anchor_parcels` | signed | Create parcels' ownerless anchors on Solana, as the parcel panel's Mint does. |
 | `ugt_mint_property_offer`, `ugt_take_property_offer`, `ugt_fund_property_offer`, `ugt_release_property_offer`, `ugt_cancel_property_offer`, `ugt_expire_property_offer` | signed | A published property offer's chain steps, as the offer panel takes them. |
 | `ugt_resolve_external_market`, `ugt_claim_external_market` | signed | The same for court-evidence markets (below). |
@@ -475,16 +477,24 @@ The codec is `frontend/js/solana/pledge-client.js`, the IDL `blockchain/solana/i
 Add `apartments` to a crowdfunding agreement with `ugt_draft_agreement` or `ugt_edit_agreement`.
 The developer signs a listing for each unit. The buyer signs one transaction to deposit the fixed
 amount and reserve the unit. `ugt_approval_link` opens the relevant wallet action with
-`action: "list-apartment"` or `action: "reserve"` and `params.unitId`.
+`action: "list-apartment"` or `action: "reserve"` and `params.unitId`. The local MCP signs the same
+steps with the agent's key: `ugt_list_apartments { agreementCid }` as the developer (every unit not yet
+listed, while the round is Active and before its deadline) and `ugt_reserve_apartment { agreementCid,
+unitId }` as the buyer, which reads the buyer's qualification from the round's lens members and pays a
+deposit of at most `UGT_MCP_MAX_USDC_PER_ACTION`.
 
 `GET $(base)/agreements/apartment-offers?city=<city>&xrayBuilding=<building>&unit=<unit>` finds
 active minted rounds offering a selected apartment. Each result includes the agreement CID, title,
 city, permanent unit ID, label and deposit. Without `unit` it lists every unit of the building offered
-by an active or executed minted round, one result per unit. Agents can use `ugt_apartment_offers` for the same lookup. Before a deposit, the developer’s assigned lens must qualify the buyer for that apartment. The lens serves `GET /lens/agreements/:cid/apartments/:unitId/qualification?buyer=<wallet>`.
+by an active or executed minted round, one result per unit. Agents can use `ugt_apartment_offers` for the same lookup, with or without `unit`. Before a deposit, the developer’s assigned lens must qualify the buyer for that apartment. The lens serves `GET /lens/agreements/:cid/apartments/:unitId/qualification?buyer=<wallet>`.
 
 Standalone SOL bids and listings use `ugt_draft_property_offer` with `apartment: {xrayBuilding, unit, at}` and the maker’s `lens`. `ugt_list_property_offer` accepts city, building and unit for discovery. The named lens qualifies the accepting party.
 Read current on-chain availability with `GET $(base)/agreements/<cid>?inventory=1` or
-`ugt_inspect_agreement` with `includeAvailability: true`.
+`ugt_inspect_agreement` with `includeAvailability: true`. The MCP answer adds `apartmentStats`, the
+funding section's view from the same model (`frontend/js/apartment-round.js`): each unit's `state`
+(`reserved`, `available`, `unavailable`) and `reason` (`closed`, `heldElsewhere`, `unlisted`), the
+counts, `reservedDeposits` against `target` with `percent`, and per-floor counts. `accepting` comes from
+the round's own account: Active on chain and before its deadline.
 
 ## 8. Decisions, the lens attestation, execution and expiry
 

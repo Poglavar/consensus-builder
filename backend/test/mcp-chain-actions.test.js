@@ -89,6 +89,78 @@ describe('local MCP chain actions', () => {
         expect(fetchImpl).not.toHaveBeenCalled();
     });
 
+    it('lists a round\'s apartments only as its developer and only while the round is open', async () => {
+        const self = keypair.publicKey.toBase58();
+        const round = (sponsor, funding = { targetUsdcAtomic: '3000000', apartments: { projectId: 'p', units: [{ unitId: 'u1' }] } }) => {
+            const content = { schema: 'agreement/v1', title: 'Round', sponsor, funding, rule: { electorate: 'investors', binding: true, lens: [sponsor], lensThreshold: 1 }, inputs: { parcels: [] } };
+            const cid = cidOfObject(content);
+            return { cid, content, createIndexClient: () => ({ getAgreement: async asked => asked === cid ? { cid, content, onchain: null } : null }) };
+        };
+        const open = { status: 'Active', deadline: Math.floor(Date.now() / 1000) + 3600, lenses: [] };
+        const listApartments = vi.fn(async () => ({ listed: 1, alreadyListed: 0, signatures: ['l'] }));
+        const own = round(self);
+        const account = agreementAccountOf(own.cid, self);
+        const live = (row, value = open, inventory = [{ unitId: 'u1', status: 'unlisted' }]) => tools({ listApartments, createIndexClient: row.createIndexClient,
+            readAgreementAccount: vi.fn(async () => value), readRoundInventory: vi.fn(async () => inventory) });
+        expect(await live(own).listApartments({ agreementCid: own.cid, confirm: true })).toEqual({ agreementCid: own.cid, account, listed: 1, alreadyListed: 0, signatures: ['l'] });
+        expect(listApartments.mock.calls[0][0]).toMatchObject({ account, content: own.content });
+        expect(listApartments.mock.calls[0][0].developerKeypair.publicKey.toBase58()).toBe(self);
+
+        const foreign = round(Keypair.generate().publicKey.toBase58());
+        await expect(live(foreign).listApartments({ agreementCid: foreign.cid, confirm: true })).rejects.toMatchObject({ code: 'developer-required' });
+        await expect(live(own, { ...open, deadline: Math.floor(Date.now() / 1000) - 1 }).listApartments({ agreementCid: own.cid, confirm: true })).rejects.toMatchObject({ code: 'round-closed' });
+        await expect(live(own, null).listApartments({ agreementCid: own.cid, confirm: true })).rejects.toMatchObject({ code: 'not-minted' });
+        const landDeal = round(self, null);
+        await expect(live(landDeal).listApartments({ agreementCid: landDeal.cid, confirm: true })).rejects.toMatchObject({ code: 'not-apartment-round' });
+        await expect(live(own).listApartments({ agreementCid: own.cid })).rejects.toThrow(/confirm must be true/);
+        expect(listApartments).toHaveBeenCalledTimes(1);
+    });
+
+    it('reserves an apartment with the qualification the round\'s lens issued this wallet, within the USDC cap', async () => {
+        const self = keypair.publicKey.toBase58();
+        const sponsor = Keypair.generate().publicKey.toBase58();
+        const lens = Keypair.generate().publicKey.toBase58();
+        const content = { schema: 'agreement/v1', title: 'Round', sponsor, rule: { electorate: 'investors', binding: true, lens: [lens], lensThreshold: 1 }, inputs: { parcels: [] },
+            funding: { targetUsdcAtomic: '3000000', apartments: { projectId: 'p', units: [{ unitId: 'u1' }, { unitId: 'u2' }] } } };
+        const cid = cidOfObject(content);
+        const account = agreementAccountOf(cid, sponsor);
+        const createIndexClient = () => ({ getAgreement: async asked => asked === cid ? { cid, content, onchain: null } : null });
+        const value = { status: 'Active', deadline: Math.floor(Date.now() / 1000) + 3600, lenses: [lens] };
+        const offer = { unitId: 'u1', status: 'available', deposit: 200000n, account: 'unit-account', termsHash: 'h' };
+        const qualification = { address: 'qualification-account', credential: 'c' };
+        const members = [{ key: lens, serviceUrl: 'https://lens.test' }];
+        const adapters = () => ({
+            createIndexClient, readAgreementAccount: vi.fn(async () => value),
+            readRoundInventory: vi.fn(async () => [offer, { unitId: 'u2', status: 'reserved', buyer: self, deposit: 200000n }]),
+            fetchLensMembers: vi.fn(async () => members), apartmentQualification: vi.fn(async () => qualification),
+            reserveApartment: vi.fn(async ({ qualification: proof }) => (proof ? { signature: 'r', replayed: false } : { signature: null, replayed: true }))
+        });
+        const deps = adapters();
+        const result = await tools(deps).reserveApartment({ agreementCid: cid, unitId: 'u1', confirm: true });
+        expect(result).toEqual({ agreementCid: cid, account, unitId: 'u1', qualification: 'qualification-account', signature: 'r', replayed: false });
+        expect(deps.apartmentQualification).toHaveBeenCalledWith(expect.objectContaining({ cid, sponsor, lenses: [lens], members, offer, buyer: self }));
+        expect(deps.reserveApartment.mock.calls[0][0]).toMatchObject({ account, content, unitId: 'u1', qualification });
+        expect(deps.reserveApartment.mock.calls[0][0].buyerKeypair.publicKey.toBase58()).toBe(self);
+
+        // A unit this wallet holds is a replay: no qualification is asked for, nothing is signed.
+        const replay = adapters();
+        expect(await tools(replay).reserveApartment({ agreementCid: cid, unitId: 'u2', confirm: true })).toMatchObject({ replayed: true, signature: null });
+        expect(replay.apartmentQualification).not.toHaveBeenCalled();
+        // Refused before any qualification or signature: a deposit above the cap, an unknown unit, a closed round.
+        for (const [env, unitId, patch, refusal] of [
+            [{ UGT_MCP_MAX_USDC_PER_ACTION: '0.1' }, 'u1', {}, /exceeds UGT_MCP_MAX_USDC_PER_ACTION/],
+            [{}, 'u9', {}, /not offered/],
+            [{}, 'u1', { status: 'Cancelled' }, /round .* is closed/]
+        ]) {
+            const refused = adapters();
+            refused.readAgreementAccount = vi.fn(async () => ({ ...value, ...patch }));
+            await expect(tools(refused, env).reserveApartment({ agreementCid: cid, unitId, confirm: true })).rejects.toThrow(refusal);
+            expect(refused.apartmentQualification).not.toHaveBeenCalled();
+            expect(refused.reserveApartment).not.toHaveBeenCalled();
+        }
+        await expect(tools(adapters(), { UGT_MCP_LIVE: '' }).reserveApartment({ agreementCid: cid, unitId: 'u1', confirm: true })).rejects.toThrow(/live actions are disabled/);
+    });
+
     it('anchors the selected parcels with the panel\'s anchor id and metadata, stored through the app API', async () => {
         const geometry = { type: 'Polygon', coordinates: [[[15.97, 45.8], [15.9701, 45.8], [15.9701, 45.8001], [15.97, 45.8]]] };
         const posted = [];

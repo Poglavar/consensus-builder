@@ -8,7 +8,7 @@ export const MCP_LOCAL_TOOLS = Object.freeze([
     'ugt_buy_verified_fact', 'ugt_request_ownership', 'ugt_pledge', 'ugt_donate', 'ugt_refund_donation', 'ugt_void_pledge',
     'ugt_revoke_pledge', 'ugt_confirm_funding', 'ugt_release_donations', 'ugt_fulfill_pledge', 'ugt_resolve_market', 'ugt_claim_market', 'ugt_reclaim_market_seed',
     'ugt_execute_agreement', 'ugt_expire_agreement', 'ugt_cancel_agreement', 'ugt_confirm_as_lens_member', 'ugt_record_lens_decision',
-    'ugt_refund_contributions', 'ugt_anchor_parcels',
+    'ugt_refund_contributions', 'ugt_list_apartments', 'ugt_reserve_apartment', 'ugt_anchor_parcels',
     'ugt_mint_property_offer', 'ugt_take_property_offer', 'ugt_fund_property_offer', 'ugt_release_property_offer', 'ugt_cancel_property_offer', 'ugt_expire_property_offer',
     'ugt_resolve_external_market', 'ugt_claim_external_market',
     'ugt_voting_status', 'ugt_cast_community_vote', 'ugt_approval_link', 'ugt_find_place', 'ugt_map_view', 'ugt_select_parcels', 'ugt_parcel_context', 'ugt_planning_areas', 'ugt_list_designs', 'ugt_get_design', 'ugt_apartment_offers', 'ugt_markets', 'ugt_explain',

@@ -30,11 +30,14 @@ On an agreement (the agreement panel): `ugt_confirm_as_lens_member` (a lens memb
 "Confirm as lens member": an owners' agreement's relayed signed decisions must pass its rule first, and
 the confirmation that completes the lens also executes, and for a round confirms the target and releases
 the contributions), `ugt_record_lens_decision`, `ugt_execute_agreement`, `ugt_cancel_agreement`,
-`ugt_expire_agreement` and `ugt_refund_contributions`. On a parcel (the Tools tab's Mint):
+`ugt_expire_agreement` and `ugt_refund_contributions`. On an apartment round (the funding section):
+`ugt_list_apartments` (the developer lists every unit not yet listed) and `ugt_reserve_apartment` (a
+buyer the round's lens has qualified pays the unit's deposit and reserves it); `ugt_inspect_agreement`
+with `includeAvailability` reads the section's states and counts (`apartmentStats`). On a parcel (the Tools tab's Mint):
 `ugt_anchor_parcels`, with the panel's anchor id and metadata (`ParcelAnchor`). On a published property
 offer (the offer panel): `ugt_mint_property_offer`, `ugt_take_property_offer` (accept),
 `ugt_fund_property_offer`, `ugt_release_property_offer`, `ugt_cancel_property_offer` and
-`ugt_expire_property_offer`. The node adapters (`agents/chain-actions.js`, `agents/property-offer-signer.js`)
+`ugt_expire_property_offer`. The node adapters (`agents/chain-actions.js`, `agents/apartment-actions.js`, `agents/property-offer-signer.js`)
 build the browser's instructions from the same codecs and rules (`AgreementBridge.chainActions`,
 `AgreementDecisionPlan`, the pledge, parcel and property-offer clients), read the chain first, refuse
 before signing what the program would refuse, and sign nothing on a replay.

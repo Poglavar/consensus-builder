@@ -153,6 +153,23 @@ describe('Urban Game Theory MCP server', () => {
         expect(names.some(name => /proposal|forecast|verdict|accept/.test(name))).toBe(false);
     });
 
+    it('reads apartment offers with or without a unit and routes the apartment round\'s signed steps', async () => {
+        const tools = stubTools();
+        for (const method of ['apartmentOffers', 'listApartments', 'reserveApartment']) tools[method] = vi.fn(async () => ({ offers: [] }));
+        await connect(tools);
+        const building = { city: 'alatau', xrayBuilding: 'alatau::gdi-3d::1' };
+        expect((await client.callTool({ name: 'ugt_apartment_offers', arguments: building })).isError).toBeFalsy();
+        expect(tools.apartmentOffers.mock.calls[0][0]).toEqual(building);
+        const agreementCid = 'bafkrei' + 'a'.repeat(52);
+        await client.callTool({ name: 'ugt_list_apartments', arguments: { agreementCid, confirm: true } });
+        expect(tools.listApartments.mock.calls[0][0]).toEqual({ agreementCid, confirm: true });
+        await client.callTool({ name: 'ugt_reserve_apartment', arguments: { agreementCid, unitId: 'l2-core-2-whole-2', confirm: true } });
+        expect(tools.reserveApartment.mock.calls[0][0]).toEqual({ agreementCid, unitId: 'l2-core-2-whole-2', confirm: true });
+        expect((await client.callTool({ name: 'ugt_reserve_apartment', arguments: { agreementCid, unitId: 'Not A Slug', confirm: true } })).isError).toBe(true);
+        expect((await client.callTool({ name: 'ugt_reserve_apartment', arguments: { agreementCid, unitId: 'u1' } })).isError).toBe(true);
+        expect(tools.reserveApartment).toHaveBeenCalledTimes(1);
+    });
+
     it('declares only supported typed urban-rule inputs', async () => {
         await connect(stubTools());
         const rule = (await toolsByName()).ugt_draft_urban_rule.inputSchema.properties.rule;
