@@ -8302,7 +8302,10 @@
                 "roundsLoading": "Leyendo las reservas de apartamentos en Solana…",
                 "roundsFailed": "No se pudieron leer las reservas de apartamentos.",
                 "roundsPartlyFailed": "No se pudieron leer {{count}} ronda(s) de financiación colectiva.",
-                "roundSummary": "{{title}}: {{reserved}} de {{offered}} reservados · {{percent}} % del objetivo"
+                "roundSummary": "{{title}}: {{reserved}} de {{offered}} reservados · {{percent}} % del objetivo",
+                "overview": "Vista del edificio",
+                "overviewKeys": "Las flechas mueven entre apartamentos.",
+                "overviewNoFloor": "Planta desconocida"
             },
             "title": "Financiación colectiva del promotor",
             "target": "Objetivo de financiación (USDC de devnet)",

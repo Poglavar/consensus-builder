@@ -1967,7 +1967,10 @@
                 "roundsLoading": "جارٍ قراءة حجوزات الشقق من Solana…",
                 "roundsFailed": "تعذّرت قراءة حجوزات الشقق.",
                 "roundsPartlyFailed": "تعذّرت قراءة {{count}} من جولات التمويل الجماعي.",
-                "roundSummary": "{{title}}: {{reserved}} محجوزة من {{offered}} · {{percent}}% من الهدف"
+                "roundSummary": "{{title}}: {{reserved}} محجوزة من {{offered}} · {{percent}}% من الهدف",
+                "overview": "نظرة عامة على المبنى",
+                "overviewKeys": "تنتقل مفاتيح الأسهم بين الشقق.",
+                "overviewNoFloor": "الطابق غير معروف"
             },
             "title": "التمويل الجماعي لمشروع المطوّر",
             "target": "المبلغ المستهدف (USDC على devnet)",

@@ -8316,7 +8316,10 @@
                 "roundsLoading": "Čitanje rezervacija stanova sa Solane…",
                 "roundsFailed": "Rezervacije stanova nije moguće pročitati.",
                 "roundsPartlyFailed": "Broj krugova skupnog financiranja koje nije moguće pročitati: {{count}}.",
-                "roundSummary": "{{title}}: rezervirano {{reserved}} od {{offered}} · {{percent}} % cilja"
+                "roundSummary": "{{title}}: rezervirano {{reserved}} od {{offered}} · {{percent}} % cilja",
+                "overview": "Pregled zgrade",
+                "overviewKeys": "Strelicama se krećete između stanova.",
+                "overviewNoFloor": "Kat nepoznat"
             },
             "title": "Skupno financiranje projekta",
             "target": "Ciljani iznos (USDC, devnet)",

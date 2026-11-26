@@ -125,11 +125,45 @@
 .apartment-round-stats__table th:first-child { text-align: start; }
 .apartment-round-legend { display: flex; flex-wrap: wrap; gap: var(--cb-space-1) var(--cb-space-3); margin: 0; padding: 0; list-style: none; font-size: var(--cb-text-sm); }
 .apartment-round-legend li { display: inline-flex; align-items: center; gap: var(--cb-space-1); }
-.apartment-round-swatch { display: inline-block; flex: none; width: var(--cb-space-3); height: var(--cb-space-3); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-sm); }
+.apartment-round-swatch { display: inline-grid; place-items: center; flex: none; width: var(--cb-space-3); height: var(--cb-space-3); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-sm); }
 .apartment-round-swatch--reserved { background: var(--cb-map-state-application); }
 .apartment-round-swatch--available { background: var(--cb-map-state-free); }
 .apartment-round-swatch--unavailable { background: var(--cb-map-state-stopped); }
-.apartment-round-swatch--not-offered { background: var(--cb-surface); }
+.apartment-round-swatch--not-offered { background: var(--cb-surface); border: 1px dashed var(--cb-line-strong); }
+
+/* Each state also has a mark, the same on the swatches and the Building overview's cells, so it reads
+   without colour (colour-blind viewers, greyscale print): reserved ●, available ○, not available ×;
+   not offered is an empty dashed outline. */
+.apartment-round-swatch::before, .apartment-round-cell::before { color: var(--cb-map-state-ink); font-size: var(--cb-text-xs); line-height: 1; }
+.apartment-round-swatch::before { font-size: 0.5625rem; }
+.apartment-round-swatch--reserved::before, .apartment-round-cell--reserved::before { content: "●" / ""; }
+.apartment-round-swatch--available::before, .apartment-round-cell--available::before { content: "○" / ""; }
+.apartment-round-swatch--unavailable::before, .apartment-round-cell--unavailable::before { content: "×" / ""; }
+
+/* The Building overview: one row per floor (top floor first), one button per apartment. The rows
+   scroll inside the chart, never the page: tall buildings stop at a fixed height and wide floors wrap. */
+.apartment-round-overview { display: grid; gap: var(--cb-space-1); min-width: 0; font-size: var(--cb-text-sm); }
+.apartment-round-overview__title { margin: 0; font-size: var(--cb-text-sm); font-weight: var(--cb-weight-semibold); }
+.apartment-round-overview__keys { margin: 0; color: var(--cb-text-muted); font-size: var(--cb-text-xs); }
+.apartment-round-overview__floors { display: grid; gap: 2px; max-height: min(15rem, 25vh); overflow: auto; overscroll-behavior: contain; padding: 3px; }
+.apartment-round-overview__floor { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: var(--cb-space-2); align-items: start; }
+.apartment-round-overview__level { min-height: 1.75rem; display: flex; align-items: center; color: var(--cb-text-muted); font-size: var(--cb-text-xs); overflow-wrap: anywhere; }
+.apartment-round-overview__cells { display: flex; flex-wrap: wrap; gap: 2px; min-width: 0; }
+.apartment-round-cell {
+    display: inline-flex; align-items: center; justify-content: center; gap: 2px;
+    min-width: 2rem; height: 1.75rem; margin: 0; padding: 0 var(--cb-space-1); box-sizing: border-box;
+    border: 1px solid transparent; border-radius: var(--cb-radius-sm);
+    color: var(--cb-map-state-ink); font: inherit; font-size: var(--cb-text-xs); font-variant-numeric: tabular-nums; line-height: 1;
+    cursor: pointer; print-color-adjust: exact; -webkit-print-color-adjust: exact;
+}
+.apartment-round-cell--reserved { background: var(--cb-map-state-application); }
+.apartment-round-cell--available { background: var(--cb-map-state-free); }
+.apartment-round-cell--unavailable { background: var(--cb-map-state-stopped); }
+.apartment-round-cell--not-offered { background: var(--cb-surface); border: 1px dashed var(--cb-line-strong); color: var(--cb-text-muted); }
+.apartment-round-cell:hover { filter: brightness(1.1); }
+.apartment-round-cell[aria-current="true"] { box-shadow: inset 0 0 0 2px var(--cb-text-strong); font-weight: var(--cb-weight-semibold); }
+.apartment-round-cell:focus-visible { outline: 2px solid var(--cb-focus); outline-offset: 1px; }
+.agreement-apartment-unit:focus { outline: 2px solid var(--cb-focus); outline-offset: 1px; }
 .apartment-round-search { display: grid; gap: var(--cb-space-1); }
 .apartment-round-search input { width: 100%; box-sizing: border-box; }
 .apartment-round-search__count:empty { display: none; }

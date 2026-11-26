@@ -29,6 +29,16 @@ describe('3D keyboard context', () => {
         expect(classifyThreeModeKeydown({ active: true, key: 'F5' })).toBe('pass');
     });
 
+    it('lets a widget that marks itself [data-arrow-keys] move focus with the arrow keys, Home and End', () => {
+        const inWidget = { tagName: 'BUTTON', closest: selector => (selector === '[data-arrow-keys]' ? {} : null) };
+        const outside = { tagName: 'BUTTON', closest: () => null };
+        for (const key of ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End']) {
+            expect(classifyThreeModeKeydown({ active: true, key, target: inWidget })).toBe('pass');
+            expect(classifyThreeModeKeydown({ active: true, key, target: outside })).toBe('block-2d');
+        }
+        expect(classifyThreeModeKeydown({ active: true, key: 'r', target: inWidget })).toBe('block-2d');
+    });
+
     it('routes Escape through the 3D-owned actions', () => {
         expect(classifyThreeModeKeydown({ active: true, key: 'Escape', walkPickActive: true, hasIsolation: true }))
             .toBe('cancel-walk');

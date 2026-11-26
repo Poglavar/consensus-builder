@@ -2786,6 +2786,11 @@
       "markup": "doc.createElement(tag)"
     },
     {
+      "id": "control-221b71f6d77167-1",
+      "source": "js/apartment-round.js",
+      "markup": "doc.createElement(tag)"
+    },
+    {
       "id": "control-5e79f4bc9789f7-1",
       "source": "js/agreement-dialog.js",
       "markup": "<button type=\"button\" class=\"cb-option agreement-object-row\" data-agreement-inspect=\"${kind}\" data-agreement-object-id=\"${esc(item.id)}\" aria-pressed=\"false\">"

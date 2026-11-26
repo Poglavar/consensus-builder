@@ -8371,7 +8371,10 @@
                 "roundsLoading": "Чтение бронирований квартир из Solana…",
                 "roundsFailed": "Не удалось прочитать бронирования квартир.",
                 "roundsPartlyFailed": "Не удалось прочитать раунды коллективного финансирования: {{count}}.",
-                "roundSummary": "{{title}}: забронировано {{reserved}} из {{offered}} · {{percent}}% цели"
+                "roundSummary": "{{title}}: забронировано {{reserved}} из {{offered}} · {{percent}}% цели",
+                "overview": "Обзор здания",
+                "overviewKeys": "Клавиши со стрелками переходят между квартирами.",
+                "overviewNoFloor": "Этаж неизвестен"
             },
             "title": "Коллективное финансирование проекта",
             "target": "Целевая сумма (USDC, devnet)",

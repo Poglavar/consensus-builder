@@ -8275,7 +8275,10 @@
                 "roundsLoading": "Пәтер броньдары Solana-дан оқылуда…",
                 "roundsFailed": "Пәтер броньдарын оқу мүмкін болмады.",
                 "roundsPartlyFailed": "Оқылмаған ұжымдық қаржыландыру раундтары: {{count}}.",
-                "roundSummary": "{{title}}: {{offered}} пәтердің {{reserved}} брондалған · мақсаттың {{percent}}%"
+                "roundSummary": "{{title}}: {{offered}} пәтердің {{reserved}} брондалған · мақсаттың {{percent}}%",
+                "overview": "Ғимаратқа шолу",
+                "overviewKeys": "Көрсеткі пернелері пәтерлер арасында жылжытады.",
+                "overviewNoFloor": "Қабаты белгісіз"
             },
             "title": "Жобаны ұжымдық қаржыландыру",
             "target": "Нысаналы сома (USDC, devnet)",

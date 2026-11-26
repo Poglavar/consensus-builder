@@ -177,25 +177,34 @@
             }
             return card;
         }
-        function drawRounds(data, unit) {
+        // `units` are the building's apartments ([{ key, level, ordinal }]) for the Building overview.
+        function drawRounds(data, unit, units = []) {
             const states = data?.states || new Map();
             const entry = data?.entry;
             const signature = entry ? JSON.stringify([entry.status, entry.failed, entry.error, entry.readAt, unit?.key || null,
-                [...states].map(([key, item]) => [key, item.state, item.reason, item.unit.buyer, item.round.cid])]) : '';
+                [...states].map(([key, item]) => [key, item.state, item.reason, item.unit.buyer, item.round.cid]),
+                units.map(item => [item.key, item.level, item.ordinal])]) : '';
             if (signature === roundsShown) return;
             roundsShown = signature;
             const focus = rounds.contains(doc.activeElement) && doc.activeElement.dataset.apartmentRoundFocus;
+            const overviewScroll = rounds.querySelector('[data-apartment-overview-floors]')?.scrollTop || 0;
             rounds.replaceChildren();
             if (!entry) return;
             // Most buildings have no round: nothing shows until the index names one.
             if (entry.status === 'loading') return;
             if (entry.status === 'reading') { rounds.append(hint(roundText('roundsLoading', 'Reading apartment reservations from Solana…'), true)); return; }
             if (entry.status === 'failed') { rounds.append(hint(roundText('roundsFailed', 'Apartment reservations could not be read.'), true)); return; }
+            let overview = null;
+            const focusedCell = focus && focus.startsWith('cell-') ? focus.slice('cell-'.length) : null;
             if (entry.rounds.length) {
+                // The Building overview: every apartment of the building by floor, in its state; a cell
+                // chooses its apartment as the picker and the model do (and moves the floor cut to it).
+                overview = win.ApartmentRound.overviewView(win.ApartmentRound.model.overviewRows({ apartments: units, states }), t,
+                    { selected: unit?.key ?? null, current: focusedCell, onPick: cell => onChoose(cell.key) });
+                rounds.append(overview, win.ApartmentRound.legendView(t));
                 const known = unit && states.get(unit.key);
                 if (known) rounds.append(unitCard(known));
                 else if (unit) rounds.append(hint(roundText('notOfferedHint', 'This apartment is not offered in a crowdfunding round.')));
-                rounds.append(win.ApartmentRound.legendView(t));
                 // Each round's stats block folds under a one-line summary, so the panel leaves the model in view.
                 for (const view of entry.rounds) {
                     const heading = appLink(`/agreements/${encodeURIComponent(view.cid)}?city=${encodeURIComponent(view.city || '')}`, view.title || view.cid);
@@ -213,7 +222,9 @@
                 }
             }
             if (entry.failed) rounds.append(hint(roundText('roundsPartlyFailed', '{{count}} crowdfunding round(s) could not be read.', { count: entry.failed }), true));
-            if (focus) rounds.querySelector(`[data-apartment-round-focus="${focus}"]`)?.focus({ preventScroll: true });
+            const focusTarget = !focus ? null : rounds.querySelector(`[data-apartment-round-focus="${CSS.escape(focus)}"]`);
+            focusTarget?.focus({ preventScroll: true });
+            if (overview) win.ApartmentRound.keepCellInView(overview, focusedCell ? focusTarget : overview.querySelector('[aria-current="true"]'), overviewScroll);
         }
 
         // `roundData` ({ entry: ApartmentRound.buildingRounds(...), states: buildingStates(...) }) adds
@@ -247,7 +258,7 @@
                 : !choices.length ? t('threeMode.controls.apartmentsLoading', 'Waiting for the floor plans…')
                 : unit && !addressable ? t('threeMode.controls.apartmentPublishHint', 'Publish this design to share the apartment or make an offer.') : '';
             if (next !== message || changedUnit) status.textContent = message = next;
-            drawRounds(roundData, unit);
+            drawRounds(roundData, unit, units);
         }
         return { show, hide() { if (!panel.hidden) resetOffers(); panel.hidden = true; message = ''; drawRounds(null, null); }, dispose() { resetOffers(); panel.remove(); } };
     }

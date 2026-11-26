@@ -109,7 +109,52 @@
         return items.filter(item => ` ${words(textOf(item))}`.includes(` ${phrase}`));
     }
 
-    const model = { STATES, unitState, levelOf, roundView, buildingStates, filterUnits };
+    const floorOf = level => (Number.isSafeInteger(level) ? level : null);
+
+    /**
+     * The building overview: one row per floor, the top floor first, then the units without a floor
+     * (floor null); within a floor the cells keep their order. Each cell is { key, unitId, label,
+     * ordinal, floor, state, reason }: `key` is the X-ray unit address. From a round, `units` are
+     * roundView().units (several buildings give rows per building, the first building first). In
+     * X-ray, `apartments` ([{ key, level, ordinal }]) lists every apartment of the building in
+     * ordinal order and `states` is buildingStates(): an apartment no round offers is 'not-offered',
+     * and an offered unit the layout no longer has keeps a cell on its own floor.
+     */
+    function overviewRows({ units = [], apartments = null, states = null } = {}) {
+        let cells;
+        if (apartments) {
+            const offered = states || new Map();
+            const keys = new Set(apartments.map(apartment => apartment.key));
+            cells = [...apartments].sort((a, b) => (a.ordinal ?? 0) - (b.ordinal ?? 0)).map(apartment => {
+                const known = offered.get(apartment.key);
+                return { key: apartment.key, unitId: known?.unit.unitId ?? null, label: known?.unit.label ?? null, ordinal: apartment.ordinal ?? null,
+                    building: 1, floor: floorOf(apartment.level), state: known?.state ?? 'not-offered', reason: known?.reason ?? null };
+            });
+            for (const [key, known] of offered) {
+                if (!keys.has(key)) cells.push({ key, unitId: known.unit.unitId, label: known.unit.label, ordinal: null,
+                    building: 1, floor: floorOf(known.unit.level), state: known.state, reason: known.reason });
+            }
+        } else {
+            cells = units.map(unit => ({ key: unit.unit ?? null, unitId: unit.unitId, label: unit.label, ordinal: null,
+                building: unit.building ?? 1, floor: floorOf(unit.level), state: unit.state ?? null, reason: unit.reason ?? null }));
+        }
+        const rows = new Map();
+        for (const { building, ...cell } of cells) {
+            const id = `${building}:${cell.floor}`;
+            if (!rows.has(id)) rows.set(id, { building, floor: cell.floor, cells: [] });
+            rows.get(id).cells.push(cell);
+        }
+        return [...rows.values()].sort((a, b) => a.building - b.building
+            || (a.floor === null) - (b.floor === null) || (b.floor ?? 0) - (a.floor ?? 0));
+    }
+
+    /** The short visible label of an overview cell: its apartment number in X-ray, else the last word of its label. */
+    function cellText(cell) {
+        if (cell.ordinal !== null && cell.ordinal !== undefined) return String(cell.ordinal);
+        return String(cell.label || cell.unitId || '').split(/[\s·]+/).filter(Boolean).pop() || '';
+    }
+
+    const model = { STATES, unitState, levelOf, roundView, buildingStates, filterUnits, overviewRows, cellText };
     if (!root || !root.document) return { model };
 
     // ---- browser -------------------------------------------------------------------------------------
@@ -159,12 +204,13 @@
         return mark;
     }
 
-    /** The colour key of the X-ray's apartment states. */
-    function legendView(t) {
+    /** The key of the apartment states' colours and marks; `offeredOnly` leaves out Not offered (a round's own list). */
+    function legendView(t, { offeredOnly = false } = {}) {
         const list = el('ul', 'apartment-round-legend');
         list.setAttribute('aria-label', text(t, 'legend', 'Apartment states'));
-        for (const [state, label] of [['reserved', text(t, 'taken', 'Reserved')], ['available', text(t, 'available', 'Available')],
-            ['unavailable', text(t, 'notAvailable', 'Not available')], ['not-offered', text(t, 'notOffered', 'Not offered')]]) {
+        const states = [['reserved', text(t, 'taken', 'Reserved')], ['available', text(t, 'available', 'Available')],
+            ['unavailable', text(t, 'notAvailable', 'Not available')], ['not-offered', text(t, 'notOffered', 'Not offered')]];
+        for (const [state, label] of offeredOnly ? states.slice(0, 3) : states) {
             const item = el('li');
             item.append(swatch(state), doc.createTextNode(label));
             list.append(item);
@@ -233,6 +279,96 @@
             section.append(details);
         }
         return section;
+    }
+
+    /**
+     * The building overview (overviewRows): one row per floor, the top floor first, and one button
+     * per apartment in its state's colour and mark (css/agreement.css), named with its floor,
+     * apartment and state. The rows scroll inside the chart. One cell holds the Tab stop (`current`,
+     * else `selected`, else the first) and the arrow keys, Home and End move between cells.
+     * `selected` is marked as the current apartment; `onPick(cell)` runs when a cell is pressed.
+     */
+    function overviewView(rows, t, { buildings = 1, selected = null, current = null, onPick }) {
+        const section = el('section', 'apartment-round-overview');
+        section.dataset.apartmentOverview = '';
+        const title = el('h5', 'apartment-round-overview__title', text(t, 'overview', 'Building overview'));
+        title.id = `apartment-round-overview-${Math.random().toString(36).slice(2)}`;
+        section.setAttribute('aria-labelledby', title.id);
+        // Always shown, below the rows: revealing it on focus moved the cells under the pointer between
+        // press and release (a lost click). It is also the section's description for screen readers.
+        const keys = el('p', 'apartment-round-overview__keys', text(t, 'overviewKeys', 'Arrow keys move between apartments.'));
+        keys.id = `${title.id}-keys`;
+        section.setAttribute('aria-describedby', keys.id);
+        const floors = el('div', 'apartment-round-overview__floors');
+        floors.dataset.apartmentOverviewFloors = '';
+        // The model view's keyboard routing lets the arrow keys, Home and End through to this chart.
+        floors.dataset.arrowKeys = '';
+        const grid = [];
+        for (const row of rows) {
+            const line = el('div', 'apartment-round-overview__floor');
+            line.setAttribute('role', 'group');
+            const name = el('span', 'apartment-round-overview__level', row.floor === null ? text(t, 'overviewNoFloor', 'Floor unknown')
+                : floorLabel({ building: row.building, level: row.floor }, { buildings }, t));
+            name.id = `${title.id}-${grid.length}`;
+            line.setAttribute('aria-labelledby', name.id);
+            const cells = el('div', 'apartment-round-overview__cells');
+            const buttons = row.cells.map(cell => {
+                const button = el('button', `apartment-round-cell apartment-round-cell--${cell.state || 'unread'}`, model.cellText(cell));
+                button.type = 'button';
+                button.tabIndex = -1;
+                button.dataset.apartmentOverviewCell = cell.key ?? cell.unitId;
+                button.dataset.apartmentRoundFocus = `cell-${cell.key ?? cell.unitId}`;
+                button.dataset.apartmentState = cell.state || '';
+                const place = cell.ordinal !== null ? t('threeMode.controls.apartmentOption', `Floor ${cell.floor} · Apartment ${cell.ordinal}`,
+                    { level: cell.floor, number: cell.ordinal }) : name.textContent;
+                const label = [place, cell.label, cell.state ? stateLabel(cell, t) : null].filter(Boolean).join(' · ');
+                button.setAttribute('aria-label', label);
+                button.title = label;
+                if (selected !== null && button.dataset.apartmentOverviewCell === selected) button.setAttribute('aria-current', 'true');
+                button.addEventListener('click', () => onPick?.(cell));
+                return button;
+            });
+            cells.append(...buttons);
+            line.append(name, cells);
+            floors.append(line);
+            grid.push(buttons);
+        }
+        const all = grid.flat();
+        const stop = all.find(button => button.dataset.apartmentOverviewCell === current)
+            || all.find(button => button.hasAttribute('aria-current')) || all[0];
+        if (stop) stop.tabIndex = 0;
+        // Roving Tab stop: the cell last focused keeps it.
+        floors.addEventListener('focusin', event => {
+            if (!all.includes(event.target)) return;
+            all.forEach(button => { button.tabIndex = button === event.target ? 0 : -1; });
+        });
+        floors.addEventListener('keydown', event => {
+            const at = all.indexOf(event.target);
+            if (at < 0) return;
+            const rowAt = grid.findIndex(buttons => buttons.includes(event.target));
+            const column = grid[rowAt].indexOf(event.target);
+            const inRow = offset => grid[rowAt + offset]?.[Math.min(column, grid[rowAt + offset].length - 1)];
+            const next = { ArrowRight: all[at + 1], ArrowLeft: all[at - 1], ArrowUp: inRow(-1), ArrowDown: inRow(1),
+                Home: grid[rowAt][0], End: grid[rowAt].at(-1) }[event.key];
+            if (!(event.key in { ArrowRight: 1, ArrowLeft: 1, ArrowUp: 1, ArrowDown: 1, Home: 1, End: 1 })) return;
+            // The chart owns these keys: no page scroll, no map or camera shortcut.
+            event.preventDefault();
+            event.stopPropagation();
+            next?.focus();
+        });
+        section.append(title, floors, keys);
+        return section;
+    }
+
+    /** Scrolls the overview's rows (not the page) so `cell` shows, keeping `scrollTop` otherwise. */
+    function keepCellInView(section, cell, scrollTop = 0) {
+        const floors = section?.querySelector('[data-apartment-overview-floors]');
+        if (!floors) return;
+        floors.scrollTop = scrollTop;
+        if (!cell) return;
+        const box = floors.getBoundingClientRect(), place = cell.getBoundingClientRect();
+        if (place.top < box.top) floors.scrollTop -= box.top - place.top;
+        else if (place.bottom > box.bottom) floors.scrollTop += place.bottom - box.bottom;
     }
 
     /**
@@ -324,5 +460,5 @@
         return entry;
     }
 
-    return { model, stateLabel, stateBadge, stateColor, legendView, statsView, searchField, searchText, buildingRounds };
+    return { model, stateLabel, stateBadge, stateColor, legendView, statsView, overviewView, keepCellInView, searchField, searchText, buildingRounds };
 });

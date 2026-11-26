@@ -98,6 +98,64 @@ describe('ApartmentRound model', () => {
         expect(model.buildingStates([model.roundView({ funding, inventory: null })], TOWER).size).toBe(0);
     });
 
+    it('lays a round out as a building overview: top floor first, each floor in round order, units without a floor last', () => {
+        const mixed = { ...funding, apartments: { ...funding.apartments, units: [
+            unit('b-202', '2::B-202', '10000000'), unit('a-101', '1::A-101', '12500000'), unit('x-1', 'garage::X-1', '1000000'),
+            unit('b-201', '2::B-201', '10000000'), unit('a-102', '1::A-102', '12500000')] } };
+        const view = model.roundView({ funding: mixed, accepting: true,
+            inventory: [row('a-101', 'reserved', 'B'), row('a-102', 'available'), row('b-201', 'unlisted'), row('b-202', 'available'), row('x-1', 'available')] });
+        const rows = model.overviewRows({ units: view.units });
+        expect(rows.map(item => item.floor)).toEqual([2, 1, null]);
+        expect(rows.map(item => item.cells.map(cell => cell.unitId))).toEqual([['b-202', 'b-201'], ['a-101', 'a-102'], ['x-1']]);
+        expect(rows[1].cells[0]).toEqual({ key: '1::A-101', unitId: 'a-101', label: 'Apartment A-101', ordinal: null, floor: 1, state: 'reserved', reason: null });
+        expect(rows[0].cells[1]).toMatchObject({ state: 'unavailable', reason: 'unlisted' });
+        expect(rows.map(item => model.cellText(item.cells[0]))).toEqual(['B-202', 'A-101', 'X-1']);
+        expect(model.cellText({ label: 'Tower 2 · 201', ordinal: null })).toBe('201');
+    });
+
+    it('gives an empty round no overview rows, and a round over two buildings rows per building', () => {
+        expect(model.overviewRows({ units: [] })).toEqual([]);
+        expect(model.overviewRows({ apartments: [], states: new Map() })).toEqual([]);
+        const mixed = { ...funding, apartments: { ...funding.apartments, units: [unit('c-101', '1::C-101', '1', ANNEX), unit('a-101', '1::A-101', '1'), unit('a-201', '2::A-201', '1')] } };
+        const view = model.roundView({ funding: mixed, inventory: [row('c-101', 'available'), row('a-101', 'available'), row('a-201', 'reserved', 'B')], accepting: true });
+        // Buildings are numbered in the order the round lists them: the annex comes first here.
+        expect(model.overviewRows({ units: view.units }).map(item => [item.building, item.floor, item.cells.length])).toEqual([[1, 1, 1], [2, 2, 1], [2, 1, 1]]);
+    });
+
+    it('lays out every X-ray apartment of a building, unoffered ones as not offered, in apartment order', () => {
+        const view = model.roundView({ cid: 'new', funding, inventory, accepting: true });
+        const states = model.buildingStates([view], TOWER);
+        const apartments = [
+            { key: '2::B-202', level: 2, ordinal: 4 }, { key: '1::A-102', level: 1, ordinal: 2 }, { key: '1::A-101', level: 1, ordinal: 1 },
+            { key: '2::B-203', level: 2, ordinal: 5 }, { key: '3::C-301', level: 3, ordinal: 6 }
+        ];
+        const rows = model.overviewRows({ apartments, states });
+        expect(rows.map(item => item.floor)).toEqual([3, 2, 1]);
+        expect(rows.map(item => item.cells.map(cell => [cell.key, cell.state]))).toEqual([
+            [['3::C-301', 'not-offered']],
+            // B-201 is offered under an address this layout no longer has: it keeps a cell on its floor.
+            [['2::B-202', 'unavailable'], ['2::B-203', 'not-offered'], ['2::B-201::0123456789abcdef01234567', 'unavailable']],
+            [['1::A-101', 'reserved'], ['1::A-102', 'available']]
+        ]);
+        expect(rows[2].cells[0]).toEqual({ key: '1::A-101', unitId: 'a-101', label: 'Apartment A-101', ordinal: 1, floor: 1, state: 'reserved', reason: null });
+        expect(rows[0].cells[0]).toMatchObject({ unitId: null, label: null, ordinal: 6 });
+        expect(model.cellText(rows[2].cells[0])).toBe('1');
+        // Before any round is read every apartment is a not-offered cell.
+        expect(model.overviewRows({ apartments }).flatMap(item => item.cells).every(cell => cell.state === 'not-offered')).toBe(true);
+    });
+
+    it('keeps many apartments of one floor in one row, in order', () => {
+        const apartments = Array.from({ length: 48 }, (_, i) => ({ key: `7::U-${i}`, level: 7, ordinal: 48 - i }));
+        const rows = model.overviewRows({ apartments, states: new Map() });
+        expect(rows).toHaveLength(1);
+        expect(rows[0].floor).toBe(7);
+        expect(rows[0].cells.map(cell => cell.ordinal)).toEqual(Array.from({ length: 48 }, (_, i) => i + 1));
+        const tall = Array.from({ length: 20 * 6 }, (_, i) => ({ key: `${Math.floor(i / 6)}::U-${i}`, level: Math.floor(i / 6), ordinal: i + 1 }));
+        const floors = model.overviewRows({ apartments: tall });
+        expect(floors.map(item => item.floor)).toEqual(Array.from({ length: 20 }, (_, i) => 19 - i));
+        expect(floors.every(item => item.cells.length === 6)).toBe(true);
+    });
+
     it('finds units whose words contain the query from a word start, case-insensitively', () => {
         const items = [{ text: 'Tower 2 · 101 t2-101 Floor 1 Reserved' }, { text: 'Tower 2 · 201 t2-201 Floor 2 Available' },
             { text: 'Tower 2 · 302 t2-302 Floor 3 Reserved in another round' }];

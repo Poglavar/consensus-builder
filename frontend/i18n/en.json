@@ -8275,7 +8275,10 @@
                 "roundsLoading": "Reading apartment reservations from Solana…",
                 "roundsFailed": "Apartment reservations could not be read.",
                 "roundsPartlyFailed": "{{count}} crowdfunding round(s) could not be read.",
-                "roundSummary": "{{title}}: {{reserved}} of {{offered}} reserved · {{percent}}% of the target"
+                "roundSummary": "{{title}}: {{reserved}} of {{offered}} reserved · {{percent}}% of the target",
+                "overview": "Building overview",
+                "overviewKeys": "Arrow keys move between apartments.",
+                "overviewNoFloor": "Floor unknown"
             },
             "title": "Developer crowdfunding",
             "target": "Funding target (devnet USDC)",

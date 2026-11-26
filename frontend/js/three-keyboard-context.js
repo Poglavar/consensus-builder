@@ -22,13 +22,21 @@
         return tagName === 'BUTTON' || tagName === 'A';
     }
 
+    // A widget that moves focus between its own controls with the arrow keys, Home and End (a roving
+    // Tab stop, e.g. the Building overview in js/apartment-round.js) marks itself [data-arrow-keys].
+    function isWidgetNavigation(target, key) {
+        if (!/^(Arrow(Up|Down|Left|Right)|Home|End)$/.test(String(key || ''))) return false;
+        return typeof target?.closest === 'function' && target.closest('[data-arrow-keys]') !== null;
+    }
+
     function isBrowserNavigationKey(key) {
         return key === 'Tab' || /^F\d{1,2}$/.test(String(key || ''));
     }
 
     function classifyThreeModeKeydown(input = {}) {
         if (input.active !== true) return 'pass';
-        if (isTextEntryTarget(input.target) || isNativeControlActivation(input.target, input.key)) return 'pass';
+        if (isTextEntryTarget(input.target) || isNativeControlActivation(input.target, input.key)
+            || isWidgetNavigation(input.target, input.key)) return 'pass';
         // Focus traversal and browser function keys are native navigation, not 2D app shortcuts.
         if (isBrowserNavigationKey(input.key)) return 'pass';
         // A sheet, dialog or overlay open over the 3D view (Layers/Tools sheet, the AI render, a
@@ -45,7 +53,7 @@
         return 'block-2d';
     }
 
-    const api = { classifyThreeModeKeydown, isTextEntryTarget, isNativeControlActivation, isBrowserNavigationKey };
+    const api = { classifyThreeModeKeydown, isTextEntryTarget, isNativeControlActivation, isWidgetNavigation, isBrowserNavigationKey };
     if (typeof window !== 'undefined') window.__threeKeyboardContext = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

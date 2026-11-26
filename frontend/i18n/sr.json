@@ -8316,7 +8316,10 @@
                 "roundsLoading": "Читање резервација станова са Солане…",
                 "roundsFailed": "Резервације станова није могуће прочитати.",
                 "roundsPartlyFailed": "Број кругова групног финансирања које није могуће прочитати: {{count}}.",
-                "roundSummary": "{{title}}: резервисано {{reserved}} од {{offered}} · {{percent}}% циља"
+                "roundSummary": "{{title}}: резервисано {{reserved}} од {{offered}} · {{percent}}% циља",
+                "overview": "Преглед зграде",
+                "overviewKeys": "Стрелицама се крећете између станова.",
+                "overviewNoFloor": "Спрат непознат"
             },
             "title": "Grupno finansiranje projekta",
             "target": "Ciljni iznos (USDC, devnet)",

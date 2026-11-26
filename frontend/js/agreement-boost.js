@@ -132,14 +132,25 @@
         const round = root.ApartmentRound;
         const view = round.model.roundView({ cid: agreement.published?.cid || null, funding: agreement.funding,
             inventory: statuses.length ? statuses : null, accepting: active });
-        if (view.read) wrap.append(round.statsView(view, t));
-        const searchable = [];
         const list = el('div', 'agreement-apartment-inventory__list');
+        if (view.read) {
+            // The Building overview: the round's apartments by floor; a cell brings its row into view.
+            wrap.append(round.overviewView(round.model.overviewRows({ units: view.units }), t, { buildings: view.buildings, onPick: cell => {
+                const row = list.querySelector(`[data-agreement-apartment-unit="${CSS.escape(cell.unitId)}"]`);
+                const search = wrap.querySelector('[data-apartment-round-search]');
+                if (row?.hidden && search) { search.value = ''; search.dispatchEvent(new Event('input')); }
+                row?.focus();
+            } }), round.legendView(t, { offeredOnly: true }), round.statsView(view, t));
+        }
+        const searchable = [];
         for (const unit of agreement.funding.apartments.units) {
             const offer = statuses.find(item => item.unitId === unit.unitId);
             const shown = view.units.find(item => item.unitId === unit.unitId);
             const row = el('article', 'agreement-apartment-unit');
             row.dataset.agreementApartmentUnit = unit.unitId;
+            // Focused from the Building overview.
+            row.tabIndex = -1;
+            row.setAttribute('aria-label', unit.label);
             const place = el('div', 'agreement-apartment-unit__state');
             place.append(el('span', 'agreement-panel-meta', t('threeMode.controls.floorLevel', 'Floor {{level}}', shown)));
             if (shown.state) place.append(round.stateBadge(shown, t));
@@ -422,7 +433,8 @@
         const crowdfunding = context.crowdfunding;
         const active = doc.activeElement;
         const focusKey = slot.contains(active) && ['data-agreement-boost-action', 'data-agreement-list-unit', 'data-agreement-reserve-unit',
-            'data-agreement-schedule-unit', 'data-agreement-xray-unit', 'data-agreement-drawing-unit', 'data-apartment-round-search'].find(key => active.hasAttribute(key));
+            'data-agreement-schedule-unit', 'data-agreement-xray-unit', 'data-agreement-drawing-unit', 'data-apartment-round-search',
+            'data-apartment-overview-cell', 'data-agreement-apartment-unit'].find(key => active.hasAttribute(key));
         const query = slot.querySelector('[data-apartment-round-search]')?.value || '';
         const focusSelector = focusKey && `[${focusKey}="${CSS.escape(active.getAttribute(focusKey))}"]`;
         const section = el('div', 'agreement-boost');

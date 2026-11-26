@@ -1879,7 +1879,10 @@
                 "roundsLoading": "Lecture des réservations d’appartements sur Solana…",
                 "roundsFailed": "Les réservations d’appartements n’ont pas pu être lues.",
                 "roundsPartlyFailed": "{{count}} tour(s) de financement participatif n’ont pas pu être lus.",
-                "roundSummary": "{{title}} : {{reserved}} sur {{offered}} réservés · {{percent}} % de l’objectif"
+                "roundSummary": "{{title}} : {{reserved}} sur {{offered}} réservés · {{percent}} % de l’objectif",
+                "overview": "Vue d’ensemble du bâtiment",
+                "overviewKeys": "Les flèches passent d’un appartement à l’autre.",
+                "overviewNoFloor": "Étage inconnu"
             },
             "title": "Financement participatif du promoteur",
             "target": "Objectif de financement (USDC de devnet)",
