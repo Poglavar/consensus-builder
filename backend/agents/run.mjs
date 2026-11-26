@@ -545,8 +545,11 @@ export async function advancePick({
     if (stageIndex(until) < stageIndex('minted')) return {};
 
     // mint: create + fund in one transaction; the chain is read first, so a rerun signs nothing twice.
+    // Content before the mint (docs/blockchain-flows.md Flow 2): the server pins the agreement, its plan
+    // and designs and a provider confirms each CID, or nothing is signed. Pinning skips CIDs already pinned.
     if (!mints[key]) {
         const agreement = agreements[key];
+        await index.pinForMint(agreement.cid);
         const minted = await run({ type: 'mint', agreementCid: agreement.cid, lamports: agreement.lamports, lens: agreement.content.rule.lens, pickId: pick.pickId },
             () => mintImpl({
                 connection, sponsorKeypair: keypair, cid: agreement.cid, ...mintTermsOf(agreement.content),

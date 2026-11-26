@@ -64,7 +64,8 @@ function fakeIndex({ bound = [PARCEL_ID], coverage = 'complete' } = {}) {
             agreements.set(cid, content);
             return { cid, created, row: { cid, status: 'active' } };
         }),
-        recordOnchain: vi.fn(async (cid, body) => { journal.push('recordOnchain'); return { cid, onchain: { account: body.account } }; })
+        recordOnchain: vi.fn(async (cid, body) => { journal.push('recordOnchain'); return { cid, onchain: { account: body.account } }; }),
+        pinForMint: vi.fn(async cid => { journal.push('pinForMint'); return { objects: [{ kind: 'agreement', cid }], pinned: 1, alreadyPinned: 0 }; })
     };
 }
 
@@ -135,7 +136,7 @@ describe('the stages of one pick', () => {
         expect(h.saves.map(save => save.stage)).toEqual([null, 'designed', null, null, 'proposed', 'minted', 'recorded', 'staked']);
         // Each CID is checkpointed before the object leaves the machine; the sponsor never self-trades.
         expect(journal).toEqual(['save:-', 'publishDesign', 'save:designed', 'save:-', 'save:-', 'publishAgreement', 'save:proposed',
-            'save:minted', 'recordOnchain', 'save:recorded', 'save:staked']);
+            'pinForMint', 'save:minted', 'recordOnchain', 'save:recorded', 'save:staked']);
 
         const key = pick.candidateId;
         const design = h.state.designs[key];
@@ -280,6 +281,14 @@ describe('the stages of one pick', () => {
         await h.go();
         expect(h.saves.at(-1).stage).toBe('recorded');
         expect(h.fundStake).not.toHaveBeenCalled();
+    });
+    it('signs no mint when the server cannot pin the agreement\'s content first', async () => {
+        const h = harness();
+        index.pinForMint.mockRejectedValueOnce(new Error('pin the content: HTTP 502'));
+        await expect(h.go()).rejects.toThrow('HTTP 502');
+        expect(index.pinForMint).toHaveBeenCalledWith(h.state.agreements[pick.candidateId].cid);
+        expect(chain.transactions).toHaveLength(0);
+        expect(h.state.mints).toEqual({});
     });
 });
 
