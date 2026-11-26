@@ -22,6 +22,23 @@ Use the selected `marketAddress` for `ugt_buy_agreement_shares_on_account`,
 its configured keypair and spending limit. The hosted catalogue can be read without a signer.
 [Funded market terms and settlement](lmsr-market.md)
 
+## Chain steps a person takes with a wallet
+
+Everything a person signs in the app has a local signing tool, signed with the agent's own key behind
+`UGT_MCP_LIVE=1` and `confirm: true`; the hosted MCP never signs and offers `ugt_approval_link` instead.
+On an agreement (the agreement panel): `ugt_confirm_as_lens_member` (a lens member's own decision, as
+"Confirm as lens member": an owners' agreement's relayed signed decisions must pass its rule first, and
+the confirmation that completes the lens also executes, and for a round confirms the target and releases
+the contributions), `ugt_record_lens_decision`, `ugt_execute_agreement`, `ugt_cancel_agreement`,
+`ugt_expire_agreement` and `ugt_refund_contributions`. On a parcel (the Tools tab's Mint):
+`ugt_anchor_parcels`, with the panel's anchor id and metadata (`ParcelAnchor`). On a published property
+offer (the offer panel): `ugt_mint_property_offer`, `ugt_take_property_offer` (accept),
+`ugt_fund_property_offer`, `ugt_release_property_offer`, `ugt_cancel_property_offer` and
+`ugt_expire_property_offer`. The node adapters (`agents/chain-actions.js`, `agents/property-offer-signer.js`)
+build the browser's instructions from the same codecs and rules (`AgreementBridge.chainActions`,
+`AgreementDecisionPlan`, the pledge, parcel and property-offer clients), read the chain first, refuse
+before signing what the program would refuse, and sign nothing on a replay.
+
 ## Debug cost inspection
 
 With `CHAT_DEBUG_COSTS=1`, `ugt_chat_cost` reads the backend's configured token prices and conservative

@@ -35,8 +35,13 @@ import { createIndexClient } from './publication-client.js';
 import { canonicalBytes } from '../cid.js';
 import { AGREEMENT_SCHEMA, DESIGN_SCHEMA, agreementObject, cidOfObject, designObject, isCid } from './agreement-objects.js';
 import {
-    AGREEMENT_PROGRAM_ID, AGREEMENT_STATUS, agreementAccountOf, fundAgreement, mintAgreement, mintTermsOf, readAgreementAccount
+    AGREEMENT_PROGRAM_ID, AGREEMENT_STATUS, agreementAccountOf, executeAgreement, expireAgreement, fundAgreement, mintAgreement, mintTermsOf,
+    readAgreementAccount, recordAgreementDecision
 } from './agreement-minter.js';
+import { anchorParcels, cancelAgreement, confirmAsLensMember, refundContributions } from './chain-actions.js';
+import {
+    acceptOffer, cancelOffer, createOfferOnChain, createOnchainRecorder, expireOffer, fundOffer, releaseOffer
+} from './property-offer-signer.js';
 import {
     claimAgreementMarket, claimExternalMarket, confirmFunding, fulfillPledge, reclaimAgreementMarketSeed, refundDonation, releaseDonations, resolveAgreementMarket,
     resolveExternalMarket, revokePledge, voidPledge
@@ -45,6 +50,8 @@ import {
 const require = createRequire(import.meta.url);
 const agreementClient = require('../../frontend/js/solana/agreement-client.js');
 const agreementRecord = require('../../frontend/js/agreement-record.js');
+const parcelAnchor = require('../../frontend/js/parcels/parcel-anchor.js');
+const turfArea = feature => require('@turf/turf').area(feature);
 agreementClient.configure({ web3: require('@solana/web3.js') });
 
 const DEFAULT_API_BASE = 'https://api.urbangametheory.xyz';
@@ -263,6 +270,19 @@ export function createUrbanGameTheoryTools({
         mintAgreement,
         fundAgreement,
         readAgreementAccount,
+        executeAgreement,
+        expireAgreement,
+        recordAgreementDecision,
+        cancelAgreement,
+        confirmAsLensMember,
+        refundContributions,
+        anchorParcels,
+        createOfferOnChain,
+        acceptOffer,
+        fundOffer,
+        releaseOffer,
+        cancelOffer,
+        expireOffer,
         pinWithPinata: options => require('../../frontend/js/ipfs-own-key.js').pinWithPinata(options),
         ...dependencies
     };
@@ -314,6 +334,30 @@ export function createUrbanGameTheoryTools({
         const agreement = await index().getAgreement(agreementCid);
         if (!agreement) throw new Error(`agreement ${agreementCid} is not in the index; propose it first (ugt_propose_agreement)`);
         return agreement;
+    }
+
+    // A published property offer's chain step, as the offer panel takes it with a wallet: the offer as the
+    // index serves it (the signer checks its CID and the chain account against its terms), the service of
+    // the lens member it names, and the index write the panel makes after each confirmed transaction.
+    async function offerStep(operation, cid, extra = {}) {
+        const row = await companion.request(`/property-offers/${encodeURIComponent(cid)}`);
+        const { keypair, connection } = signer();
+        let lensServiceUrl;
+        if (operation === 'createOfferOnChain' || operation === 'acceptOffer') {
+            const member = (await impl.fetchLensMembers({ apiBase, fetchImpl })).find(row2 => row2.key === row.content?.lens);
+            if (!member?.serviceUrl) throw new Error(`the lens member ${row.content?.lens ?? '(none)'} this offer names has no registered decision service`);
+            lensServiceUrl = member.serviceUrl;
+        }
+        return impl[operation]({ connection, keypair, row: { cid: row.cid, content: row.content, onchain: row.onchain ?? null }, lensServiceUrl, fetchImpl,
+            recordOnchain: createOnchainRecorder({ apiBase, appOrigin, fetchImpl }), sendAndConfirm: impl.sendAndConfirmPolling, ...extra });
+    }
+
+    // An indexed binding agreement, checked against its CID, with the chain account its sponsor and CID derive.
+    async function chainAgreement(agreementCid) {
+        const agreement = verifiedRow(await indexedAgreement(agreementCid), agreementCid, 'agreement');
+        const sponsor = walletOf(agreement.content?.sponsor);
+        if (!sponsor) throw new Error(`agreement ${agreementCid} names no sponsor wallet, so it has no chain account`);
+        return { agreement, sponsor, account: agreementAccountOf(agreementCid, sponsor) };
     }
 
     const companion = createMcpReadTools({ apiBase, appOrigin, fetchImpl });
@@ -806,6 +850,87 @@ export function createUrbanGameTheoryTools({
                 sendAndConfirm: impl.sendAndConfirmPolling
             });
         },
+
+        // ---- an agreement's chain steps a person takes in the agreement panel ----------------------
+        // Execute (permissionless): the satisfied, funded agreement pays its escrow to its payout.
+        async executeAgreement({ agreementCid, confirm } = {}) {
+            requireLive(confirm);
+            const { account } = await chainAgreement(agreementCid);
+            const { keypair, connection } = signer();
+            return { agreementCid, account, ...await impl.executeAgreement({ connection, payerKeypair: keypair, account, sendAndConfirm: impl.sendAndConfirmPolling }) };
+        },
+
+        // Expire (permissionless) after the deadline: the escrow returns to the sponsor.
+        async expireAgreement({ agreementCid, confirm } = {}) {
+            requireLive(confirm);
+            const { account } = await chainAgreement(agreementCid);
+            const { keypair, connection } = signer();
+            return { agreementCid, account, ...await impl.expireAgreement({ connection, signerKeypair: keypair, account, sendAndConfirm: impl.sendAndConfirmPolling }) };
+        },
+
+        // Cancel, as the sponsor, before the lens's decision is recorded.
+        async cancelAgreement({ agreementCid, confirm } = {}) {
+            requireLive(confirm);
+            const { sponsor } = await chainAgreement(agreementCid);
+            const { keypair, connection } = signer();
+            if (keypair.publicKey.toBase58() !== sponsor) throw new Error(`only agreement ${agreementCid}'s sponsor ${sponsor} can cancel it, not this agent's wallet ${keypair.publicKey.toBase58()}`);
+            return { agreementCid, ...await impl.cancelAgreement({ connection, sponsorKeypair: keypair, cid: agreementCid, sendAndConfirm: impl.sendAndConfirmPolling }) };
+        },
+
+        // The agent's key is one of the agreement's lens members: state its decision, as "Confirm as lens
+        // member" does in the agreement panel. Owner agreements count the relayed signed decisions first.
+        async confirmAsLensMember({ agreementCid, confirm } = {}) {
+            requireLive(confirm);
+            const { agreement } = await chainAgreement(agreementCid);
+            const receipts = agreement.content.rule?.electorate === 'investors' ? null
+                : (await companion.request(`/agreements/${agreementCid}/decisions`)).decisions;
+            const { keypair, connection } = signer();
+            return { agreementCid, ...await impl.confirmAsLensMember({ connection, memberKeypair: keypair, agreement, receipts, sendAndConfirm: impl.sendAndConfirmPolling }) };
+        },
+
+        // Record (permissionless) a lens member's AgreementDecision-v1 attestation already on Solana.
+        async recordLensDecision({ agreementCid, attestation, confirm } = {}) {
+            requireLive(confirm);
+            const { account } = await chainAgreement(agreementCid);
+            const { keypair, connection } = signer();
+            return { agreementCid, account, ...await impl.recordAgreementDecision({ connection, payerKeypair: keypair, account, attestation, sendAndConfirm: impl.sendAndConfirmPolling }) };
+        },
+
+        // Take back this wallet's contributions to a cancelled or expired agreement (apartment deposits included).
+        async refundContributions({ agreementCid, confirm } = {}) {
+            requireLive(confirm);
+            const { agreement } = await chainAgreement(agreementCid);
+            const { keypair, connection } = signer();
+            return { agreementCid, ...await impl.refundContributions({ connection, donorKeypair: keypair, agreement, sendAndConfirm: impl.sendAndConfirmPolling }) };
+        },
+
+        // Anchor parcels on parcel_nft as the parcel panel's Mint does: the same anchor id and metadata
+        // (ParcelAnchor), the metadata stored through the same API (POST /metadata), one transaction each.
+        async anchorParcels({ city, parcelSourceId, parcelIds, confirm } = {}) {
+            requireLive(confirm);
+            const { features } = await companion.parcels({ city, parcelSourceId, parcelIds });
+            const { keypair, connection } = signer();
+            const minter = keypair.publicKey.toBase58();
+            const parcels = [];
+            for (const feature of features) {
+                const anchorId = parcelAnchor.anchorIdOf(feature);
+                if (!anchorId) throw new Error(`parcel ${feature.id ?? '(no id)'} has no anchor id`);
+                const metadata = parcelAnchor.anchorMetadata({ anchorId, minter, calculatedArea: turfArea(feature), geometry: feature.geometry });
+                parcels.push({ anchorId, metadata });
+            }
+            const anchors = await impl.anchorParcels({ connection, payerKeypair: keypair, sendAndConfirm: impl.sendAndConfirmPolling,
+                parcels: parcels.map(row => ({ anchorId: row.anchorId,
+                    metadataUri: async () => (await companion.request('/metadata', {}, { metadata: row.metadata, fileName: `parcel-${row.anchorId}.json` })).metadataUrl })) });
+            return { ...anchors, explorer: anchors.parcels.map(row => `https://explorer.solana.com/address/${row.anchor}?cluster=devnet`) };
+        },
+
+        // ---- a published property offer's chain steps (the offer panel's) -------------------------------
+        async mintPropertyOffer({ cid, confirm } = {}) { requireLive(confirm); return offerStep('createOfferOnChain', cid); },
+        async acceptPropertyOffer({ cid, candidate, confirm } = {}) { requireLive(confirm); return offerStep('acceptOffer', cid, { candidate }); },
+        async fundPropertyOffer({ cid, confirm } = {}) { requireLive(confirm); return offerStep('fundOffer', cid); },
+        async releasePropertyOffer({ cid, confirm } = {}) { requireLive(confirm); return offerStep('releaseOffer', cid); },
+        async cancelPropertyOffer({ cid, confirm } = {}) { requireLive(confirm); return offerStep('cancelOffer', cid); },
+        async expirePropertyOffer({ cid, confirm } = {}) { requireLive(confirm); return offerStep('expireOffer', cid); },
 
         // The market's opener takes back what its resolved market's payouts leave of the LMSR seed
         // (reclaim_seed), as the bet dialog's "Take back my stake" does for a wallet.

@@ -329,6 +329,63 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
         annotations: PAID_IDEMPOTENT
     }, handler(args => actions.reclaimSeed(args)));
 
+    // An agreement's chain steps a person takes in the agreement panel, signed with the agent's key.
+    server.registerTool('ugt_execute_agreement', {
+        title: 'Execute an agreement',
+        description: 'Permissionlessly execute a minted agreement whose lens decision is recorded as satisfied, whose escrow holds what it requires and whose deadline has not passed: the escrow goes to its payout. Executed already is a replay. Browser wallets use ugt_approval_link with action execute.',
+        inputSchema: z.object({ agreementCid, confirm: confirmation }), annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.executeAgreement(args)));
+
+    server.registerTool('ugt_expire_agreement', {
+        title: 'Expire an agreement',
+        description: 'Permissionlessly expire an Active agreement after its deadline: the escrow returns to the sponsor, contributors can take theirs back, and its market settles NO. Browser wallets use ugt_approval_link with action expire.',
+        inputSchema: z.object({ agreementCid, confirm: confirmation }), annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.expireAgreement(args)));
+
+    server.registerTool('ugt_cancel_agreement', {
+        title: 'Cancel an agreement',
+        description: 'As the agreement\'s sponsor (this agent\'s wallet), withdraw it before its lens decision is recorded: the escrow returns to the sponsor and contributors can take theirs back. Cancelled already is a replay. Browser wallets use ugt_approval_link with action cancel.',
+        inputSchema: z.object({ agreementCid, confirm: confirmation }), annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.cancelAgreement(args)));
+
+    server.registerTool('ugt_confirm_as_lens_member', {
+        title: 'Confirm as lens member',
+        description: 'When this agent\'s key is one of the agreement\'s lens members: state its decision on chain as the agreement panel\'s "Confirm as lens member" does (its AgreementDecision-v1 attestation, recorded with attest). An owners\' agreement is confirmed only once its relayed signed decisions pass the rule. When this confirmation completes the lens, the same transaction executes the agreement and, for a crowdfunding round, confirms the target and releases the contributions. Confirmed already is a replay. Browser wallets use ugt_approval_link with action confirm-member.',
+        inputSchema: z.object({ agreementCid, confirm: confirmation }), annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.confirmAsLensMember(args)));
+
+    server.registerTool('ugt_record_lens_decision', {
+        title: 'Record a lens decision',
+        description: 'Permissionlessly record a lens member\'s AgreementDecision-v1 attestation that is already on Solana on the agreement\'s account (attest). The program\'s checks run first; a decision already recorded or a member already confirmed is a replay.',
+        inputSchema: z.object({ agreementCid, attestation: pubkey.describe('The AgreementDecision-v1 attestation account (a lens member lists it at GET <service>/lens/attestations?kind=decision)'), confirm: confirmation }),
+        annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.recordLensDecision(args)));
+
+    server.registerTool('ugt_refund_contributions', {
+        title: 'Take back contributions',
+        description: 'Take back every contribution this wallet still has in a cancelled or expired agreement\'s USDC escrow, as the agreement panel\'s refund does: a reserved apartment\'s listing is cleared in the same transaction. A crowdfunding round refunds at most four positions per call; remaining says how many are left.',
+        inputSchema: z.object({ agreementCid, confirm: confirmation }), annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.refundContributions(args)));
+
+    server.registerTool('ugt_anchor_parcels', {
+        title: 'Anchor parcels on Solana',
+        description: 'Create parcel anchors on the parcel_nft program as the parcel panel\'s Mint does: an ownerless account per parcel, seeded by its anchor id (HR-<cadastral municipality>-<parcel number>, else the source parcel id), holding the URI of its metadata (name, minter, area, geometry; stored through the app API). This wallet pays rent and gains no rights. An existing anchor is reported, not minted again.',
+        inputSchema: z.object({ city: z.string().min(1), parcelSourceId: z.string().min(1), parcelIds: z.array(z.string().min(1)).min(1).max(10), confirm: confirmation }),
+        annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.anchorParcels(args)));
+
+    // A published property offer's chain steps, as the offer panel takes them with a wallet.
+    const offerCid = z.string().regex(CID).describe('Published property offer CID (ugt_publish_property_offer, ugt_list_property_offer)');
+    for (const [name, title, description, extra, method] of [
+        ['ugt_mint_property_offer', 'Create a property offer on Solana', 'As the offer\'s proposer (this agent\'s wallet), create the published offer\'s account on Solana devnet after the named lens answers its pre-mint check; an apartment offer also mints the apartment\'s ownerless anchor. The chain reference is recorded in the index. An existing account is a replay.', {}, 'mintPropertyOffer'],
+        ['ugt_take_property_offer', 'Accept (take) a property offer', 'Take the offer as its accepting counterparty (the buyer of a sell offer, the seller of a buy offer): sign the decision request, ask the named lens for its decision and record the acceptance on chain. candidate is the acceptance from ugt_prepare_property_offer or a shared acceptance (ugt_consent_property_offer get); a parcel offer needs every seller\'s consent in it, an apartment offer the lens\'s qualification of this wallet. Accepted already by these parties is a replay.', { candidate: z.object({}).passthrough() }, 'acceptPropertyOffer'],
+        ['ugt_fund_property_offer', 'Fund a property offer', 'As the accepted offer\'s buyer, deposit exactly its SOL price into its escrow. Funded already is a replay.', {}, 'fundPropertyOffer'],
+        ['ugt_release_property_offer', 'Release a property offer', 'Permissionlessly pay a funded, accepted offer\'s escrow to its scheduled recipients before its deadline. Settled already is a replay.', {}, 'releasePropertyOffer'],
+        ['ugt_cancel_property_offer', 'Cancel a property offer', 'As the proposer, withdraw an offer that is still open. Cancelled already is a replay.', {}, 'cancelPropertyOffer'],
+        ['ugt_expire_property_offer', 'Expire a property offer', 'Permissionlessly close an open or accepted offer after its deadline, refunding any escrow to the buyer. Expired already is a replay.', {}, 'expirePropertyOffer']
+    ]) server.registerTool(name, { title, description, inputSchema: z.object({ cid: offerCid, ...extra, confirm: confirmation }), annotations: PAID_IDEMPOTENT },
+        handler(args => actions[method](args)));
+
     server.registerTool('ugt_resolve_external_market', {
         title: 'Resolve an external-evidence market',
         description: 'Permissionlessly submit a matching SAS attestation to a recipe-bound external market after close.',

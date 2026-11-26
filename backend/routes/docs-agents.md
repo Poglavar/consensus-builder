@@ -131,6 +131,13 @@ SOLANA_RPC_URL=https://api.devnet.solana.com
 | `ugt_refund_donation`, `ugt_void_pledge`, `ugt_revoke_pledge`, `ugt_release_donations`, `ugt_fulfill_pledge` | signed | Settle support once the agreement's outcome is known. |
 | `ugt_resolve_market`, `ugt_claim_market` | signed | Resolve the agreement's market from its account, and claim. |
 | `ugt_reclaim_market_seed` | signed | As the wallet that opened a resolved market: take back what its payouts leave of the seed. |
+| `ugt_execute_agreement`, `ugt_expire_agreement` | signed | Anyone: execute a satisfied, funded agreement before its deadline, or expire it after. |
+| `ugt_cancel_agreement` | signed | As the sponsor: withdraw the agreement before its lens decision is recorded. |
+| `ugt_confirm_as_lens_member` | signed | As one of the agreement's lens members: state your decision on chain, executing the agreement when it completes the lens. |
+| `ugt_record_lens_decision` | signed | Anyone: record a lens member's decision attestation already on Solana. |
+| `ugt_refund_contributions` | signed | Take back your contributions (apartment deposits included) once the agreement is cancelled or expired. |
+| `ugt_anchor_parcels` | signed | Create parcels' ownerless anchors on Solana, as the parcel panel's Mint does. |
+| `ugt_mint_property_offer`, `ugt_take_property_offer`, `ugt_fund_property_offer`, `ugt_release_property_offer`, `ugt_cancel_property_offer`, `ugt_expire_property_offer` | signed | A published property offer's chain steps, as the offer panel takes them. |
 | `ugt_resolve_external_market`, `ugt_claim_external_market` | signed | The same for court-evidence markets (below). |
 
 Every local paid or signed tool needs `UGT_MCP_LIVE=1` in the process and `confirm: true` in the call. Unsigned publication needs only `confirm: true`.
@@ -430,7 +437,9 @@ the transaction on its own RPC: 404 `onchain-account-missing` or 409 `onchain-si
 has not seen them yet, so ask again shortly. 422 `no-sponsor`: the agreement names no sponsor wallet.
 
 With the MCP: `ugt_mint_agreement { agreementCid, lamports }`, `ugt_fund_agreement { agreementCid, targetLamports }` and
-`ugt_confirm_funding { agreementAccount }`.
+`ugt_confirm_funding { agreementAccount }`. Afterwards, `ugt_confirm_as_lens_member { agreementCid }` when your key
+is one of its lens members, `ugt_execute_agreement`, `ugt_cancel_agreement` (the sponsor) or `ugt_expire_agreement`,
+each `{ agreementCid }`.
 
 ## 7. Bet, pledge and donate on it
 

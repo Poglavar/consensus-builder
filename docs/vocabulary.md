@@ -64,7 +64,7 @@ An ownerless, non-transferable Solana account identifying an apartment by its pu
 
 ### Parcel anchor
 
-An ownerless Solana `parcel_nft` account seeded by the parcel's anchor id: `HR-<cadastral municipality>-<parcel number>` for the Croatian cadastre, else the source's parcel id. Its metadata names the parcel, who created the anchor, its area and geometry. Creating it grants the payer no rights over the parcel. With a Solana wallet, the parcel panel's NFT status says whether the anchor exists and links its account. Claim opens the claim portal's page of that account. Ownership of the parcel is a lens member's attestation, not the anchor.
+An ownerless Solana `parcel_nft` account seeded by the parcel's anchor id: `HR-<cadastral municipality>-<parcel number>` for the Croatian cadastre, else the source's parcel id. Its metadata names the parcel, who created the anchor, its area and geometry. Creating it (the parcel panel's Mint, or an agent's `ugt_anchor_parcels`) grants the payer no rights over the parcel. With a Solana wallet, the parcel panel's NFT status says whether the anchor exists and links its account. Claim opens the claim portal's page of that account. Ownership of the parcel is a lens member's attestation, not the anchor.
 
 ### Parcel ownership transfer
 
