@@ -225,7 +225,10 @@ test.describe('Worldwide publication and city routing @core', () => {
       await duplicate.locator('#workspace-retry').click();
       await expect.poll(() => duplicate.evaluate(() => (window as any).BrowserWorkspace?.status)).toBe('ready');
       await waitForMapReady(duplicate);
-      expect(new URL(duplicate.url()).pathname).toBe(`/designs/${cid}`);
+      // The link survives: still /designs/<cid>, or already handed to the selection it opened
+      // (?design=<cid>, selection-address.js), never dropped to a bare address.
+      const kept = (href: string) => { const url = new URL(href); return url.pathname === `/designs/${cid}` || url.searchParams.get('design') === cid ? cid : href; };
+      expect(kept(duplicate.url())).toBe(cid);
       expect(await duplicate.evaluate(() => (window as any).BrowserWorkspace.id)).toBe(workspace);
       await expect.poll(() => hasPublished(duplicate), { timeout: 30_000 })
         .toEqual({ city: 'zagreb', stored: true });
