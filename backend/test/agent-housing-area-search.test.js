@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { findHousingPlan } from '../agents/housing-area-search.js';
+import { findHousingPlan, readShrinkingWindow } from '../agents/housing-area-search.js';
 import { chooseHousingArea } from '../agents/housing-policy.js';
 
 const areas = [
@@ -55,5 +55,25 @@ describe('Affordabot bounded city search', () => {
             calls.push(area.city); throw new Error('source unavailable');
         })).rejects.toThrow(/exhausted 3 cities/);
         expect(calls).toHaveLength(3);
+    });
+});
+
+describe('Affordabot window over a source limit', () => {
+    const areaLimit = () => Object.assign(new Error('HTTP 400: Parcel query area is too large'), {code: 'parcel-source-area-limit'});
+    it('halves the window until the source answers and reports the size that answered', async () => {
+        const sizes = [];
+        const read = await readShrinkingWindow(async size => {
+            sizes.push(size);
+            if (size > 300) throw areaLimit();
+            return {collection: 'ok'};
+        }, 850);
+        expect(sizes).toEqual([850, 425, 212.5]);
+        expect(read).toEqual({collection: 'ok', sizeM: 212.5});
+    });
+    it('gives up below the smallest window and rethrows other failures at once', async () => {
+        await expect(readShrinkingWindow(async () => { throw areaLimit(); }, 850)).rejects.toThrow('too large');
+        const sizes = [];
+        await expect(readShrinkingWindow(async size => { sizes.push(size); throw new Error('HTTP 503'); }, 850)).rejects.toThrow('503');
+        expect(sizes).toEqual([850]);
     });
 });

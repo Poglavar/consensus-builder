@@ -62,7 +62,7 @@ import { findProposalPlan, contestParcels, parcelsFromSource, pickedParcelIds, r
 import { planCandidates } from './planner.js';
 import { cityMoney } from '../scripts/lib/frontend-city-money.mjs';
 import { planHousingCandidates, housingOutreach } from './housing-policy.js';
-import { findHousingPlan } from './housing-area-search.js';
+import { findHousingPlan, readShrinkingWindow } from './housing-area-search.js';
 import { fetchHousingScreen } from './housing-screen.js';
 import { markAgentRunFailed, markAgentRunFundingShort, safeFailureDiagnostic } from './run-failure.js';
 import { fetchSourceParcels } from './source-fetch.js';
@@ -393,9 +393,14 @@ async function parcelsForArea({ pool, apiBase, index, area, persona, runKey, day
         return { parcels: open.filter(parcel => parcel.city === city).slice(0, limit), city, where: `contest (${city}, ${open.length} open parcels)` };
     }
     if (persona.housingResearch) {
+        let sizeM = area.windowM ?? 850;
         for (let attempt = 0; attempt < 3; attempt++) {
-            const window = windowIn(area.bbox, `${runKey}:housing${attempt}`, persona.name, area.windowM ?? 850);
-            const collection = await fetchSourceParcels(apiBase, area.sourceId, window, { log });
+            const read = await readShrinkingWindow(async size => {
+                const window = windowIn(area.bbox, `${runKey}:housing${attempt}`, persona.name, size);
+                return { window, collection: await fetchSourceParcels(apiBase, area.sourceId, window, { log }) };
+            }, sizeM, { log });
+            const { window, collection } = read;
+            sizeM = read.sizeM;
             if (collection?.complete !== true) throw new Error('Affordabot requires a complete parcel source response');
             const parcels = fresh(parcelsFromSource(collection, { turf, place: area.label, minAreaM2: 1200, maxAreaM2: 20000 }));
             const screened = await fetchHousingScreen(parcels, turf.bbox(turf.buffer(turf.bboxPolygon(window), 0.85, { units: 'kilometers' })), { turf, area });
