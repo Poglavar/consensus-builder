@@ -41,6 +41,8 @@ function harness({ request = vi.fn(async () => ({ items: [], complete: true })),
     };
     const context = {
         window, console, THREE, turf, sunLayer: null,
+        // The height survey runs after a scene's buildings land; its own tests cover it.
+        measureSceneHeights: vi.fn(),
         isActive: true, isTransitioning3D: false, renderer: {}, scene: {}, camera: {},
         builtDisplay: 'ghost', realisticLayerActive: false,
         existingBuildingsGroup: new THREE.Group(), proposedBuildingsGroup: new THREE.Group(),

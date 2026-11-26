@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { cellsAround, cellsCovering, createCellLoader, coveredKeys } = require('../../frontend/js/building-cells.js');
+const { cellsAround, cellsCovering, createCellLoader, coveredKeys, layeredOut } = require('../../frontend/js/building-cells.js');
 
 // A WGS84 dataset (Bogotá's parcel grid is 0.0025°): easting = lng, northing = lat.
 const degrees = { toDataset: (lat, lng) => [lng, lat], toLatLng: (easting, northing) => [northing, easting] };
@@ -88,6 +88,52 @@ describe('cell loader', () => {
         expect(loader.isCached('near', ['city', 'osm'], 'edge')).toBe(false);
     });
 
+    it('merges every source of a city that combines them, each building tagged with the source that gave it', async () => {
+        const request = vi.fn(async ({ source, bbox }) => ({ items: [{ id: `${source}-1`, geometry: inside(bbox) }], complete: true }));
+        const loader = createCellLoader({ request, concurrency: 1 });
+        const results = [];
+        const summary = await loader.load({ kind: 'near', sources: ['national', 'osm', 'atlas'], combine: 'union', cells: [cell('a', 0)],
+            onCell: (_c, result) => results.push(result) });
+        expect(results[0].items.map(item => [item.id, item.source])).toEqual([['national-1', 'national'], ['osm-1', 'osm'], ['atlas-1', 'atlas']]);
+        expect(summary).toMatchObject({ loaded: 1, standIn: 0, failed: 0 });
+        expect(loader.isCached('near', ['national', 'osm', 'atlas'], 'a', 'union')).toBe(true);
+        // The same list loaded the usual way is a different answer: the first source's alone.
+        expect(loader.isCached('near', ['national', 'osm', 'atlas'], 'a')).toBe(false);
+        const first = [];
+        await loader.load({ kind: 'near', sources: ['national', 'osm', 'atlas'], cells: [cell('a', 0)], onCell: (_c, result) => first.push(...result.items) });
+        expect(first.map(item => [item.id, item.source])).toEqual([['national-1', 'national']]);
+    });
+
+    it('asks merged sources at once, so a slow source does not hold the others back', async () => {
+        let releaseNational;
+        const started = [];
+        const request = vi.fn(({ source, bbox }) => {
+            started.push(source);
+            if (source === 'national') return new Promise(resolve => { releaseNational = () => resolve({ unavailable: true, retryAfter: 30 }); });
+            return Promise.resolve({ items: [{ id: `${source}-1`, geometry: inside(bbox) }], complete: true });
+        });
+        const pending = createCellLoader({ request, concurrency: 1 }).load({ kind: 'near', sources: ['national', 'osm', 'atlas'], combine: 'union', cells: [cell('a', 0)] });
+        await Promise.resolve();
+        expect(started).toEqual(['national', 'osm', 'atlas']);
+        releaseNational();
+        expect(await pending).toMatchObject({ loaded: 1, standIn: 1 });
+    });
+
+    it('serves a merged cell without a source that is down, as an uncached stand-in answer, and fails it only when none answer', async () => {
+        const request = vi.fn(async ({ source, bbox }) => (source === 'national' ? { unavailable: true, retryAfter: 60 }
+            : { items: [{ id: `${source}-1`, geometry: inside(bbox) }], complete: true }));
+        const loader = createCellLoader({ request, concurrency: 1 });
+        const results = [];
+        const summary = await loader.load({ kind: 'footprints', sources: ['national', 'osm'], combine: 'union', cells: [cell('a', 0)],
+            onCell: (_c, result) => results.push(result) });
+        expect(results[0].items.map(item => item.source)).toEqual(['osm']);
+        expect(summary).toMatchObject({ loaded: 1, standIn: 1, failed: 0 });
+        expect(loader.isCached('footprints', ['national', 'osm'], 'a', 'union')).toBe(false);
+        request.mockImplementation(async () => ({ unavailable: true, retryAfter: 30 }));
+        const none = await createCellLoader({ request }).load({ kind: 'footprints', sources: ['national', 'osm'], combine: 'union', cells: [cell('a', 0)] });
+        expect(none).toMatchObject({ loaded: 0, failed: 1 });
+    });
+
     it('fails a cell our server refuses, with its status, instead of asking a stand-in', async () => {
         const request = vi.fn(async ({ source }) => { if (source === 'city') throw Object.assign(new Error('HTTP 405'), { status: 405 }); return { items: [{ id: 'osm', geometry: inside([0, 0]) }], complete: true }; });
         const summary = await createCellLoader({ request }).load({ kind: 'near', sources: ['city', 'osm'], cells: [cell('a', 0)] });
@@ -127,5 +173,23 @@ describe('covered keys', () => {
             { key: 'osm:elsewhere', geometry: square(0.01, 0.01, 0.001) }
         ];
         expect([...coveredKeys(items, shown, turf)]).toEqual(['osm:same']);
+    });
+});
+
+describe('layered sources', () => {
+    it('leaves out a building lying mostly under one kept from an earlier source of the list, whatever order they came in', async () => {
+        const turf = (await import('@turf/turf')).default ?? await import('@turf/turf');
+        const square = (x, y, size) => ({ type: 'Polygon', coordinates: [[[x, y], [x + size, y], [x + size, y + size], [x, y + size], [x, y]]] });
+        const items = [
+            { key: 'atlas:twin-of-osm', source: 'atlas', geometry: square(0.0101, 0, 0.001) },
+            { key: 'atlas:gap', source: 'atlas', geometry: square(0.05, 0, 0.001) },
+            { key: 'osm:under-national', source: 'osm', geometry: square(0.0001, 0, 0.0009) },
+            { key: 'osm:own', source: 'osm', geometry: square(0.01, 0, 0.001) },
+            { key: 'national:a', source: 'national', geometry: square(0, 0, 0.001) },
+            { key: 'other:unlisted', source: 'other', geometry: square(0.05, 0, 0.001) }
+        ];
+        const out = layeredOut(items, ['national', 'osm', 'atlas'], turf);
+        expect([...out].sort()).toEqual(['atlas:twin-of-osm', 'osm:under-national', 'other:unlisted']);
+        expect([...layeredOut([...items].reverse(), ['national', 'osm', 'atlas'], turf)].sort()).toEqual([...out].sort());
     });
 });

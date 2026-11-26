@@ -193,7 +193,12 @@ Other free reads:
   feature's `properties.parcelId`, `properties.calculated_area` (m²) and its geometry. Which of them a
   design actually binds is `POST $(base)/designs/binding`.
 - What may be built there: `GET $(base)/urban-rules?coordinates=<lng>,<lat>`.
-- Existing buildings: `POST $(base)/buildings/footprints` with a GeoJSON polygon.
+- Existing buildings: `POST $(base)/buildings/footprints` with a GeoJSON polygon and the city's building
+  `source`. A city that merges its sources (`buildings.combine: "union"` in its config, Kazakhstan's
+  cities) is read source by source in list order, keeping a later source's building only where no
+  earlier one covers more than half of it. `POST $(base)/buildings/near` and `/buildings/cell` take
+  `heightEstimates: "global-building-atlas"` for the satellite-predicted heights the city's config
+  names; buildings with a stated height or storeys keep them.
 - Designs already published: `GET $(base)/designs?city=zagreb&bbox=<minLng>,<minLat>,<maxLng>,<maxLat>&q=<text>&limit=5`.
 - Agreements over a parcel: `GET $(base)/agreements?parcel=<parcelId>`.
 

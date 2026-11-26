@@ -60,19 +60,29 @@
             return global.PlanningLoading ? global.PlanningLoading.track('existing', pending) : pending;
         }
         const config = configFor(global, { geometry: { type: 'Point', coordinates: [(bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2] } });
+        // A city may ask for the atlas's predicted heights for 3D buildings that state none.
         return askServer(global, '/buildings/cell', { kind, bbox, source,
-            ...(kind === 'near' && config.floorModels?.namespace ? { floorModelNamespace: config.floorModels.namespace } : {}) }, signal);
+            ...(kind === 'near' && config.floorModels?.namespace ? { floorModelNamespace: config.floorModels.namespace } : {}),
+            ...(kind === 'near' && config.buildings?.heightEstimates ? { heightEstimates: config.buildings.heightEstimates } : {}) }, signal);
     }
     // Every building of `kind` in the cells covering a WGS84 box [w, s, e, n], each cell from the sources
     // in use there (map-core.js buildingCellsFor), through the page's one cell loader.
     // → { items: [{ ...item, source }], failed, retryAfter }
     async function loadBox({ kind, box, signal }, { global = window } = {}) {
-        const { cells, sources } = global.buildingCellsFor(box);
+        const { cells, sources, combine } = global.buildingCellsFor(box);
         const items = [];
         if (!cells.length || !sources.length) return { items, failed: 0, retryAfter: null };
-        const summary = await global.BuildingCellLoader.load({ kind, sources, cells, signal, onCell: (_cell, result) => {
-            if (!result.failed) result.items.forEach(item => items.push({ ...item, source: result.source }));
+        const summary = await global.BuildingCellLoader.load({ kind, sources, combine, cells, signal, onCell: (_cell, result) => {
+            if (!result.failed) items.push(...result.items);
         } });
+        // Sources meeting over a cell line, or merged ones, are layered in list order (building-cells.js).
+        const turf = global.turf;
+        if (turf && global.BuildingCells && new Set(items.map(item => item.source)).size > 1) {
+            const footprintOf = item => item.geometry || global.buildingFootprintFromFaces?.(item.faces, turf)?.geometry || null;
+            const keyed = items.map((item, index) => ({ key: index, source: item.source, geometry: footprintOf(item) }));
+            const out = global.BuildingCells.layeredOut(keyed, sources, turf);
+            return { items: items.filter((_item, index) => !out.has(index)), failed: summary.failed, retryAfter: summary.retryAfter };
+        }
         return { items, failed: summary.failed, retryAfter: summary.retryAfter };
     }
     const api = { requestCell, requestPoint, loadBox };

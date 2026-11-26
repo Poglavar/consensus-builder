@@ -78,20 +78,6 @@ The wrapper schema is intentionally stable while `config` stays adapter-owned. F
 
 ### OpenStreetMap through our backend
 
-Alatau model previews can supplement OSM buildings with a local GlobalBuildingAtlas height snapshot.
-Download the [Alatau height tile](https://huggingface.co/datasets/zhu-xlab/GBA.LoD1/blob/main/LoD1/asiawest/e075_n45_e080_n40.json)
-and save complete `/buildings/osm?bbox=west,south,east,north` FeatureCollections for the intended
-areas. Run `node scripts/extract-alatau-gba-heights.mjs <height-tile.json> <footprints.geojson> [...]`
-and redirect the result to a local JSON file outside Git. Set `ALATAU_GBA_HEIGHTS_FILE` to its path
-in the preview backend and restart it. The atlas height data use [CC BY-NC 4.0](https://github.com/zhu-xlab/GlobalBuildingAtlas).
-
-The adapter accepts estimates from 2 to 30 metres for the low-rise trial. An OSM height or storey
-count takes precedence. `/buildings/cell` in `near` mode and `/buildings/near` keep OSM building
-identity and report `height_source: estimated` with `height_estimate_source: global-building-atlas`
-when an atlas estimate shapes the mesh. Footprint operations continue to return recorded heights
-and storeys only. Model mode credits the atlas when it draws an atlas estimate. The setting is
-backend configuration for a read-only source and adds no human or MCP editing action.
-
 OSM is read through one backend chain (`backend/buildings/osm-reference.js` `createOverpassCellSource`):
 our paid Tracestrack Overpass instance, with the public overpass-api.de only as a last resort. It is
 the default for every OSM-derived layer in every city; ingested tables (`osm_road`, `osm_decor`)
@@ -124,16 +110,44 @@ Each endpoint has one admission gate (`backend/buildings/overpass-gate.js`) shar
 
 Tracestrack bills 6 credits per Overpass call against the plan's monthly allowance.
 
-### Astana existing buildings
+### Kazakhstan existing buildings
 
-The configured Astana map area uses `kz-nsdi-buildings` first and OSM as the stand-in for
-unavailable or empty map cells. The Astana city entry covers the Esil preview area around its
-configured centre. Locations outside that entry use Explore's building list.
+Kazakhstan's cities (Almaty, Alatau, Astana, Aktobe, Shymkent) merge three building sources
+(`buildings.combine: 'union'`): `kz-nsdi-buildings`, then `osm`, then `global-building-atlas`. Every
+source answers each building cell, and a later source's building is drawn only where no earlier
+source's building covers more than half of it (`layeredOut` in `frontend/js/building-cells.js`). A
+source that is down leaves its buildings out of that cell, which is then not cached. Live OSM comes
+before the atlas because the atlas's copy of OSM is older and smaller; the atlas adds Microsoft's
+machine-learning footprints where neither earlier source has a building.
+
 The national WFS layer `openmap:buildings_a` supplies footprints and its integer `id` identifies
 each building as `KZ-NSDI-B-<id>`. The reader uses the recorded `levels` as storeys. Model mode
 extrudes at three metres per storey using the shared rules. The footprint endpoint reports the
-recorded storeys and a null measured height. Coverage is partial and the source is read-only.
-The source ID also works with the existing building reads used by MCP. [Dataset catalogue](https://map.gov.kz/api/v2/resources/1316)
+recorded storeys and a null measured height. Coverage is partial (central Astana) and the source is
+read-only. The source ID also works with the existing building reads used by MCP. [Dataset catalogue](https://map.gov.kz/api/v2/resources/1316)
+
+The Almaty Region geoportal (`map.almobl.kz`), which records storeys in Konaev, answers only requests
+from inside Kazakhstan, so our servers cannot read it.
+
+### GlobalBuildingAtlas
+
+`global-building-atlas` (`backend/buildings/global-building-atlas.js`) reads TU Munich's
+GlobalBuildingAtlas LoD1 on demand from its GeoParquet copy on Source Cooperative
+(`https://data.source.coop/tge-labs/globalbuildingatlas-lod1/<tile>.parquet`, 5° tiles). Each tile's
+row groups cover small areas; a read takes the tile's index once (about 5 s) and then only the row
+groups under the box (1–2 MB each), keeping recent ones in memory. Its buildings are the atlas's copy
+of OpenStreetMap (`GBA-osm-<way id>`) and Microsoft's footprints (`GBA-ms-<id>`), each extruded at its
+predicted height (`height_source: estimated`, `height_estimate_source: global-building-atlas`).
+Predictions under 2 m or over 500 m are not used.
+
+A 3D read (`/buildings/near`, `/buildings/cell` in `near` mode) may ask for the atlas's heights with
+`heightEstimates: 'global-building-atlas'`, which a city's config names. A building of any source
+that states neither a height nor storeys then takes the height of the atlas building of the same
+OSM way, else of the atlas building covering more than half of it. Stated heights and storeys always
+win. Footprint operations return recorded heights and storeys only. When the atlas cannot be read,
+the buildings keep the type estimate and the answer carries `heightEstimatesUnavailable`. Model mode
+credits the atlas when it draws an atlas height. The heights are CC BY-NC 4.0
+([GlobalBuildingAtlas](https://github.com/zhu-xlab/GlobalBuildingAtlas)).
 
 ### Kazakhstan state land layers
 

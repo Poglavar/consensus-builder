@@ -963,9 +963,9 @@
                 attribution: 'Almaty municipal land-cadastral map / GZK'
             },
             planning: { sourceIds: ['almaty-pdp-cadastre-2026-11-24'] },
-            buildings: {
-                sources: [{ id: 'osm' }]
-            },
+            // Merged in list order: the national survey's footprints and storeys, then OpenStreetMap's, then the atlas's
+            // (Microsoft's machine-learning footprints) where neither has one; the atlas's predicted heights for the rest.
+            buildings: { sources: [{ id: 'kz-nsdi-buildings', name: 'Kazakhstan NSDI buildings', attribution: 'Kazakhstan National Spatial Data Infrastructure' }, { id: 'osm' }, { id: 'global-building-atlas', name: 'GlobalBuildingAtlas footprints', attribution: 'GlobalBuildingAtlas, TU Munich (CC BY-NC 4.0)' }], combine: 'union', heightEstimates: 'global-building-atlas' },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
             },
@@ -5859,9 +5859,9 @@
                 liveRadiusKm: 8,
                 attribution: 'RGIS Aktobe / Aqtobe regional services portal · GZK cadastral parcels · bounded coverage; currentness and reuse terms unverified · adapted'
             },
-            buildings: {
-                sources: [{ id: 'osm' }]
-            },
+            // Merged in list order: the national survey's footprints and storeys, then OpenStreetMap's, then the atlas's
+            // (Microsoft's machine-learning footprints) where neither has one; the atlas's predicted heights for the rest.
+            buildings: { sources: [{ id: 'kz-nsdi-buildings', name: 'Kazakhstan NSDI buildings', attribution: 'Kazakhstan National Spatial Data Infrastructure' }, { id: 'osm' }, { id: 'global-building-atlas', name: 'GlobalBuildingAtlas footprints', attribution: 'GlobalBuildingAtlas, TU Munich (CC BY-NC 4.0)' }], combine: 'union', heightEstimates: 'global-building-atlas' },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
             },
@@ -11571,9 +11571,9 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://geo-shym.kz/">Shymkent RGIS / AISGZK cadastral parcels</a> · bounded coverage verified; currentness unestablished'
             },
-            buildings: {
-                sources: [{ id: 'osm' }]
-            },
+            // Merged in list order: the national survey's footprints and storeys, then OpenStreetMap's, then the atlas's
+            // (Microsoft's machine-learning footprints) where neither has one; the atlas's predicted heights for the rest.
+            buildings: { sources: [{ id: 'kz-nsdi-buildings', name: 'Kazakhstan NSDI buildings', attribution: 'Kazakhstan National Spatial Data Infrastructure' }, { id: 'osm' }, { id: 'global-building-atlas', name: 'GlobalBuildingAtlas footprints', attribution: 'GlobalBuildingAtlas, TU Munich (CC BY-NC 4.0)' }], combine: 'union', heightEstimates: 'global-building-atlas' },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
             },
@@ -18754,7 +18754,9 @@
                 // No source states a development charge here: the editable 0 assumption fills that metric only.
                 'scenario-assumptions'
             ] },
-            buildings: { sources: [{ id: 'kz-nsdi-buildings', name: 'Kazakhstan NSDI buildings', attribution: 'Kazakhstan National Spatial Data Infrastructure' }, { id: 'osm' }] },
+            // Merged in list order: the national survey's footprints and storeys, then OpenStreetMap's, then the atlas's
+            // (Microsoft's machine-learning footprints) where neither has one; the atlas's predicted heights for the rest.
+            buildings: { sources: [{ id: 'kz-nsdi-buildings', name: 'Kazakhstan NSDI buildings', attribution: 'Kazakhstan National Spatial Data Infrastructure' }, { id: 'osm' }, { id: 'global-building-atlas', name: 'GlobalBuildingAtlas footprints', attribution: 'GlobalBuildingAtlas, TU Munich (CC BY-NC 4.0)' }], combine: 'union', heightEstimates: 'global-building-atlas' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -18808,7 +18810,9 @@
                 // No source states a development charge here: the editable 0 assumption fills that metric only.
                 'scenario-assumptions'
             ] },
-            buildings: { sources: [{ id: 'osm' }] },
+            // Merged in list order: the national survey's footprints and storeys, then OpenStreetMap's, then the atlas's
+            // (Microsoft's machine-learning footprints) where neither has one; the atlas's predicted heights for the rest.
+            buildings: { sources: [{ id: 'kz-nsdi-buildings', name: 'Kazakhstan NSDI buildings', attribution: 'Kazakhstan National Spatial Data Infrastructure' }, { id: 'osm' }, { id: 'global-building-atlas', name: 'GlobalBuildingAtlas footprints', attribution: 'GlobalBuildingAtlas, TU Munich (CC BY-NC 4.0)' }], combine: 'union', heightEstimates: 'global-building-atlas' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },

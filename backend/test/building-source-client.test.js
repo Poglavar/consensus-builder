@@ -58,8 +58,9 @@ describe('building source client', () => {
 
     it('reads the cells over a box from the sources in use there, each item with its source', async () => {
         const cell = { key: 'c', bbox: [0, 0, 1, 1], distanceM: 0 };
+        // The cell loader tags each item with the list source that answered it (building-cells.js).
         const load = vi.fn(async ({ onCell }) => {
-            onCell(cell, { items: [{ id: 1 }], source: 'osm' });
+            onCell(cell, { items: [{ id: 1, source: 'osm' }], source: 'osm' });
             onCell(cell, { failed: true, items: [] });
             return { failed: 1, retryAfter: 30 };
         });
@@ -67,5 +68,29 @@ describe('building source client', () => {
         expect(await client.loadBox({ kind: 'near', box: [0, 0, 1, 1] }, { global }))
             .toEqual({ items: [{ id: 1, source: 'osm' }], failed: 1, retryAfter: 30 });
         expect(load.mock.calls[0][0]).toMatchObject({ kind: 'near', sources: ['gdi-3d', 'osm'], cells: [cell] });
+    });
+
+    it('layers the buildings of merged sources, and asks for the city\'s height estimates on 3D reads only', async () => {
+        const turf = require('@turf/turf');
+        const square = (x, y, d) => ({ type: 'Polygon', coordinates: [[[x, y], [x + d, y], [x + d, y + d], [x, y + d], [x, y]]] });
+        const cell = { key: 'c', bbox: [0, 0, 1, 1], distanceM: 0 };
+        const load = vi.fn(async ({ onCell }) => {
+            onCell(cell, { items: [{ id: 'w1', source: 'osm', geometry: square(0, 0, 0.001) },
+                { id: 'GBA-ms-1', source: 'atlas', geometry: square(0.0001, 0, 0.0009) },
+                { id: 'GBA-ms-2', source: 'atlas', geometry: square(0.01, 0, 0.001) }], source: 'osm' });
+            return { failed: 0, retryAfter: null };
+        });
+        const global = { turf, BuildingCells: require('../../frontend/js/building-cells.js'), BuildingCellLoader: { load },
+            buildingCellsFor: () => ({ cells: [cell], sources: ['osm', 'atlas'], combine: 'union' }) };
+        const loaded = await client.loadBox({ kind: 'footprints', box: [0, 0, 1, 1] }, { global });
+        expect(loaded.items.map(item => item.id)).toEqual(['w1', 'GBA-ms-2']);
+        expect(load.mock.calls[0][0]).toMatchObject({ combine: 'union' });
+
+        const calls = [];
+        const server = { getBackendBase: () => '', CityConfigManager: { getCityConfigAt: () => ({ buildings: { heightEstimates: 'global-building-atlas' } }) },
+            fetch: async (_url, init) => { calls.push(JSON.parse(init.body)); return { ok: true, json: async () => ({ items: [], complete: true }) }; } };
+        await client.requestCell({ kind: 'near', source: 'osm', bbox: [0, 0, 1, 1] }, { global: server });
+        await client.requestCell({ kind: 'footprints', source: 'osm', bbox: [0, 0, 1, 1] }, { global: server });
+        expect(calls.map(call => call.heightEstimates)).toEqual(['global-building-atlas', undefined]);
     });
 });

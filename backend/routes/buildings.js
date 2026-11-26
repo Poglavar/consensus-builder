@@ -13,6 +13,15 @@ import {
     carveRecordsBounds
 } from '../buildings/carve.js';
 
+// A 3D read may ask for outside height estimates (`heightEstimates: "global-building-atlas"`) for the
+// buildings its source gives neither a height nor storeys. An unknown name is a 400.
+function heightOptionsFor(buildingProviders) {
+    return body => {
+        const estimateHeights = buildingProviders.heightEstimator?.(body.heightEstimates) ?? null;
+        return estimateHeights ? { estimateHeights } : {};
+    };
+}
+
 // `proposals` may arrive as an array, a single id, or a comma-separated string.
 function parseProposalIds(value) {
     const raw = Array.isArray(value) ? value : String(value ?? '').split(',');
@@ -23,6 +32,7 @@ function parseProposalIds(value) {
 export function setupBuildingsRoute(app, pool, { publishedFloorModels, env = process.env } = {}) {
     // Named dataset services, selected explicitly by the caller.
     const buildingProviders = createBuildingProviders(pool, env);
+    const heightOptions = heightOptionsFor(buildingProviders);
     const floorModelOptions = (report = {}) => ({ ...(publishedFloorModels ? { published: publishedFloorModels } : {}), report });
 
     // GET /buildings?bbox=minX,minY,maxX,maxY[&source=gdi|dgu]  (HTRS96/TM EPSG:3765)
@@ -106,13 +116,14 @@ export function setupBuildingsRoute(app, pool, { publishedFloorModels, env = pro
                 return res.status(400).json({ error: 'Invalid floorModelNamespace.' });
             }
 
-            const result = await provider.near(geometry, bufferMeters);
+            const result = await provider.near(geometry, bufferMeters, heightOptions(body));
             const floorModelSource = nativeFloorModelSource(body.source, result.source);
             // OSM: how many heights are measured, storey-derived or estimated, and whether the
             // upstream answered only in part (Overpass throttling).
             const extra = { floorModelSource };
             if (result.heights !== undefined) extra.heights = result.heights;
             if (result.partial !== undefined) extra.partial = result.partial;
+            if (result.heightEstimatesUnavailable) extra.heightEstimatesUnavailable = true;
             // The upstream failed outright: the browser tells the person instead of drawing nothing.
             if (result.unavailable) Object.assign(extra, { unavailable: true, retryAfter: result.retryAfter ?? null });
             if (!proposalIds.length) {
@@ -360,20 +371,23 @@ export function setupBuildingsRoute(app, pool, { publishedFloorModels, env = pro
                 return res.status(400).json({ error: 'Invalid floorModelNamespace.' });
             }
             const provider = buildingProviders.forRequest({ source: body.source, geometry: boxPolygon(bbox) });
+            const estimates = kind === 'near' ? heightOptions(body) : {};
             const readFootprints = kind !== 'footprints' ? null
                 : typeof provider?.mapFootprints === 'function' ? provider.mapFootprints
                     : typeof provider?.footprints === 'function' ? provider.footprints : null;
             if (!provider || (kind === 'footprints' && !readFootprints)) {
                 return res.json({ supported: false, kind, bbox, items: [], complete: true, source: null });
             }
-            const key = JSON.stringify([body.source || null, kind, floorModelCity || null, bbox.map(value => value.toFixed(7))]);
+            const key = JSON.stringify([body.source || null, kind, floorModelCity || null, estimates.estimateHeights ? body.heightEstimates : null,
+                bbox.map(value => value.toFixed(7))]);
             const cached = cellCache.get(key);
             if (cached && cached.expires > Date.now()) return res.json(cached.answer);
 
-            let source = null, floorModelSource = null;
+            let source = null, floorModelSource = null, heightEstimatesUnavailable = false;
             const read = await splitRead(bbox, async box => {
-                const result = kind === 'near' ? await provider.near(boxPolygon(box), 0) : await readFootprints(boxPolygon(box));
+                const result = kind === 'near' ? await provider.near(boxPolygon(box), 0, estimates) : await readFootprints(boxPolygon(box));
                 source = result.source ?? source;
+                if (result.heightEstimatesUnavailable) heightEstimatesUnavailable = true;
                 if (result.unavailable) return { unavailable: true, retryAfter: result.retryAfter ?? null };
                 // A capped answer is split; a partial one (an upstream that answered in part) is not.
                 if (result.truncated === true && result.partial !== true) return { areaLimited: true };
@@ -389,9 +403,10 @@ export function setupBuildingsRoute(app, pool, { publishedFloorModels, env = pro
                 items = await attachNearbyFloorModelMarkers(floorModelCity, floorModelSource, items, floorModelOptions(floorModelReport));
             }
             const answer = { supported: true, kind, bbox, items, count: items.length, complete: read.complete, source,
-                ...(kind === 'near' ? { floorModelSource } : {}) };
-            // A cell whose floor-plan publication did not answer is served, not cached: the next read retries it.
-            if (read.complete && !floorModelReport.publishedUnavailable) {
+                ...(kind === 'near' ? { floorModelSource } : {}), ...(heightEstimatesUnavailable ? { heightEstimatesUnavailable } : {}) };
+            // A cell whose floor-plan publication or height estimates did not answer is served, not cached:
+            // the next read retries it.
+            if (read.complete && !floorModelReport.publishedUnavailable && !heightEstimatesUnavailable) {
                 if (cellCache.size >= CELL_CACHE_MAX) cellCache.delete(cellCache.keys().next().value);
                 cellCache.set(key, { expires: Date.now() + CELL_CACHE_TTL_MS, answer });
             }

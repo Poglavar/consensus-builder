@@ -7348,21 +7348,20 @@
             if (!current() || result.failed) return;
             for (const item of result.items) {
                 if (item?.object_id == null || !withinRadius(item)) continue;
-                const building = { ...item, source: result.source };
+                const building = item.source ? item : { ...item, source: result.source };
                 const key = threeBuildingKey(building);
                 if (!byId.has(key)) raw++;
                 byId.set(key, building);
             }
         };
-        // A stand-in's building duplicating, over a cell line, one of an earlier source is left out.
+        // Buildings of several sources (stand-ins meeting over a cell line, or a city's merged sources)
+        // are layered in list order: one lying mostly under an earlier source's building is left out.
         const settled = () => {
             const list = [...byId.values()];
-            const standIn = list.filter(building => sources.indexOf(building.source) > 0);
-            if (!standIn.length || typeof window.buildingFootprintFromFaces !== 'function') return dedupeCoincidentBuildings(list);
+            if (!list.some(building => sources.indexOf(building.source) > 0) || typeof window.buildingFootprintFromFaces !== 'function') return dedupeCoincidentBuildings(list);
             const footprint = building => window.buildingFootprintFromFaces(building.faces, turf)?.geometry || null;
-            const earlier = list.filter(building => sources.indexOf(building.source) === 0).map(building => ({ geometry: footprint(building) })).filter(entry => entry.geometry);
-            const covered = window.BuildingCells.coveredKeys(standIn.map(building => ({ key: threeBuildingKey(building), geometry: footprint(building) })), earlier, turf);
-            return dedupeCoincidentBuildings(list.filter(building => !covered.has(threeBuildingKey(building))));
+            const out = window.BuildingCells.layeredOut(list.map(building => ({ key: threeBuildingKey(building), source: building.source, geometry: footprint(building) })), sources, turf);
+            return dedupeCoincidentBuildings(list.filter(building => !out.has(threeBuildingKey(building))));
         };
         const progress = summary => {
             if (!current() || summary.done < nextRebuildAt) return;
@@ -7371,7 +7370,8 @@
             nearbyBuildingsRevision++;
             if (isActive && summary.done < summary.total) rebuild3DBuildingsOnly({ family: 'existing' });
         };
-        window.BuildingCellLoader.load({ kind: 'near', sources, cells, signal, onCell: landed, onProgress: progress })
+        const combine = manager.getBuildingCombine?.(anchor[1], anchor[0]) || 'first';
+        window.BuildingCellLoader.load({ kind: 'near', sources, combine, cells, signal, onCell: landed, onProgress: progress })
             .then(summary => {
                 if (!current()) return;
                 nearbyProposalBuildings = settled();
