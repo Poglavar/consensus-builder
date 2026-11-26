@@ -673,27 +673,14 @@
                 address: ''
             }));
         } else {
-            const chainAddress = typeof fetchParcelNftOwnerAddress === 'function'
-                ? await fetchParcelNftOwnerAddress(cacheKey)
-                : null;
+            // A parcel's chain anchor names no owner (docs/vocabulary.md, Parcel anchor), so the
+            // owner comes from the source alone.
             const existing = ownersList[0] || {};
-            const baseShare = existing.actualShareText || existing.ownership || existing.condoShare || '100%';
-            const displayShare = formatSharePercent(baseShare) || baseShare;
             const tParcelOwner = (typeof global !== 'undefined' && global.i18n && typeof global.i18n.t === 'function')
                 ? (fallback => global.i18n.t('panel.parcel.owner.single', fallback))
                 : (fallback => fallback);
             const singleOwnerLabel = tParcelOwner('Single owner');
-            if (chainAddress) {
-                ownersList = [{
-                    name: singleOwnerLabel,
-                    ownership: '1/1',
-                    condoShare: '',
-                    actualShareText: displayShare || '100%',
-                    shareDetail: existing.shareDetail || '',
-                    condoShareNumber: existing.condoShareNumber || '',
-                    address: chainAddress
-                }];
-            } else if (ownersList.length === 1) {
+            if (ownersList.length === 1) {
                 ownersList = [{
                     ...existing,
                     name: singleOwnerLabel,
