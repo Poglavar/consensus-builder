@@ -121,9 +121,10 @@ float cbCloudShadowAt(vec3 point) {
         return { near: near * scale, far: (near + HAZE_DEPTH_M) * scale };
     }
 
-    // Per frame drawn: the clock, the scene's scale, the sun's direction (z up, or null) and the
-    // colours of cloudColors(). Writes uniform values only.
-    function setState(state, { timeS, k, sunDirection, colors }) {
+    // Per frame drawn: the clock, the scene's scale, the sun's direction (z up, or null), the
+    // colours of cloudColors() and whether there are clouds at all (the sun sheet's switch; without
+    // them the sky, the water's reflection and the ground are clear). Writes uniform values only.
+    function setState(state, { timeS, k, sunDirection, colors, clouds = true }) {
         state.cbCloudTime.value = Number.isFinite(timeS) ? timeS : 0;
         state.cbCloudK.value = Number.isFinite(k) && k > 0 ? k : 1;
         if (sunDirection) Object.assign(state.cbCloudSun.value, { x: sunDirection.x, y: sunDirection.y, z: sunDirection.z });
@@ -133,6 +134,8 @@ float cbCloudShadowAt(vec3 point) {
             Object.assign(state.cbCloudShade.value, { r: sr, g: sg, b: sb });
             state.cbCloudShadow.value = sunDirection ? colors.shadow : 0;
         }
+        state.cbCloudCover.value = clouds ? CLOUD_COVER : 0;
+        if (!clouds) state.cbCloudShadow.value = 0;
     }
 
     const VERTEX_HEADER = 'varying vec3 vCbCloudWorld;';

@@ -5280,6 +5280,7 @@
         "sun": {
             "title": "Soleil et ombres",
             "enabled": "Afficher le soleil et les ombres",
+            "clouds": "Afficher les nuages",
             "when": "Quand",
             "time": "Heure de la journée",
             "date": "Date",

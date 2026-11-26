@@ -4302,7 +4302,9 @@
     function updateAtmosphere(sceneChanged) {
         const k = lifeMercatorK();
         const sun = window.__threeSun?.currentSun?.() || null;
-        const sunKey = sun ? `${sun.altitudeDeg.toFixed(2)}|${sun.azimuthRad.toFixed(3)}` : 'neutral';
+        const clouds = window.__threeSun?.state?.clouds !== false;
+        // Turning the clouds back on recomputes their colours and shadow like a sun change.
+        const sunKey = `${sun ? `${sun.altitudeDeg.toFixed(2)}|${sun.azimuthRad.toFixed(3)}` : 'neutral'}|${clouds}`;
         let colors = null, sunDirection = null;
         if (sunKey !== atmosphereSunKey) {
             atmosphereSunKey = sunKey;
@@ -4310,7 +4312,7 @@
             colors = atmosphere.cloudColors(skyApi.skyColors(sun ? sun.altitudeDeg : null), sun ? sun.altitudeDeg : null);
             sunDirection = sun ? skyApi.sunDirection(sun.altitudeDeg * Math.PI / 180, sun.azimuthRad) : null;
         }
-        atmosphere.setState(atmosphereState, { timeS: performance.now() / 1000, k, sunDirection, colors });
+        atmosphere.setState(atmosphereState, { timeS: performance.now() / 1000, k, sunDirection, colors, clouds });
         if (sceneChanged) atmosphereMaterials += atmosphere.configureTree(scene, atmosphereState);
         if (!scene.fog) return;
         if (window.PhotorealMode?.isActive?.()) {

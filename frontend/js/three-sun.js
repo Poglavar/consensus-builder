@@ -15,6 +15,7 @@
     'use strict';
 
     const STORAGE_KEY = 'cb_3d_sun_enabled';
+    const CLOUDS_KEY = 'cb_3d_clouds_enabled'; // the drifting clouds (three-atmosphere.js), on by default
     const FLAG_SWEEP_MS = 1000;          // meshes added without a scene change pick up shadow flags within a second
     const MIN_CASTER_HEIGHT_M = 0.3;     // flat ground receives shadows but does not cast them
     const DAY_CYCLE_MS = 60000;          // one full day of sun per minute while playing
@@ -37,19 +38,19 @@
 
     // What the person chose. date/minutes null mean "today" and "now" at the scene's place, resolved
     // when the sun is computed, so they follow the scene to another city. Reduced motion starts paused.
-    const state = { enabled: loadEnabled(), playing: !(root && root.__reducedMotion), dateISO: null, minutes: null };
+    const state = { enabled: loadEnabled(), clouds: loadEnabled(CLOUDS_KEY), playing: !(root && root.__reducedMotion), dateISO: null, minutes: null };
     let attached = null;
 
-    function loadEnabled() {
+    function loadEnabled(key = STORAGE_KEY) {
         try {
             const storage = root && root.PersistentStorage;
-            const value = storage ? storage.getItem(STORAGE_KEY) : null;
+            const value = storage ? storage.getItem(key) : null;
             return value !== '0';
         } catch (_) { return true; }
     }
 
-    function saveEnabled(enabled) {
-        try { root.PersistentStorage?.setItem(STORAGE_KEY, enabled ? '1' : '0'); } catch (_) { /* preference only */ }
+    function saveEnabled(enabled, key = STORAGE_KEY) {
+        try { root.PersistentStorage?.setItem(key, enabled ? '1' : '0'); } catch (_) { /* preference only */ }
     }
 
     // ---- Shadow flags ----
@@ -180,6 +181,7 @@
 
     function renderSheet() {
         write('enabled', el('sun-enabled'), (node, value) => { node.checked = value; }, state.enabled);
+        write('clouds', el('sun-clouds'), (node, value) => { node.checked = value; }, state.clouds);
         write('controls', el('sun-controls'), (node, value) => { node.disabled = value; }, !state.enabled);
         write('playing', el('sun-play'), (node, playing) => {
             node.setAttribute('aria-pressed', String(playing));
@@ -238,6 +240,13 @@
             state.enabled = !!event.target.checked;
             saveEnabled(state.enabled);
             changed();
+        });
+        // The clouds are weather, not light: the sun stays as it is, the next frame drawn clears the sky.
+        el('sun-clouds')?.addEventListener('change', event => {
+            state.clouds = !!event.target.checked;
+            saveEnabled(state.clouds, CLOUDS_KEY);
+            attached?.invalidate();
+            renderSheet();
         });
         // Taking the slider stops the day where it is put.
         el('sun-time')?.addEventListener('input', event => {

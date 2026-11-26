@@ -44,6 +44,20 @@ describe('clouds', () => {
         expect(state.cbCloudShadow.value).toBe(0);
     });
 
+    it('clear from the sky and the ground when switched off, and return with the next colours', () => {
+        const state = atmosphere.createState();
+        const colors = atmosphere.cloudColors(SkyColors.skyColors(30), 30);
+        const sunDirection = { x: 0, y: -0.5, z: 0.87 };
+        atmosphere.setState(state, { timeS: 1, k: 1, sunDirection, colors });
+        expect(state.cbCloudCover.value).toBe(atmosphere.CLOUD_COVER);
+        atmosphere.setState(state, { timeS: 2, k: 1, sunDirection: null, colors: null, clouds: false });
+        expect(state.cbCloudCover.value).toBe(0);
+        expect(state.cbCloudShadow.value).toBe(0);
+        atmosphere.setState(state, { timeS: 3, k: 1, sunDirection, colors, clouds: true });
+        expect(state.cbCloudCover.value).toBe(atmosphere.CLOUD_COVER);
+        expect(state.cbCloudShadow.value).toBeCloseTo(colors.shadow, 6);
+    });
+
     it('are drawn in the dome from the camera, with the weather uniforms shared', () => {
         expect(threeSky.DOME_FRAGMENT).toContain('float cbCloudField(');
         expect(threeSky.DOME_FRAGMENT).toContain('cbCloudSky(vec3(cameraPosition.xy / cbCloudK, cameraPosition.z), cbDir)');

@@ -35,6 +35,22 @@ test('sun controls set a date and time, pause playback, reset now and disable sh
   await expect.poll(() => page.evaluate(() => (window as any).PersistentStorage.getItem('cb_3d_sun_enabled'))).toBe('0');
   await sheet.locator('#sun-enabled').check();
   await expect(sheet.locator('#sun-time')).toBeEnabled();
+  // Clouds are on by default; switched off, the sky and the ground lose them at the next frame.
+  const cloudCover = () => page.evaluate(() => {
+    let cover: number | null = null;
+    (window as any).getThreeModeInternals().scene.traverse((object: any) => {
+      const value = object.material?.uniforms?.cbCloudCover?.value;
+      if (cover === null && typeof value === 'number') cover = value;
+    });
+    return cover;
+  });
+  await expect(sheet.locator('#sun-clouds')).toBeChecked();
+  await expect.poll(cloudCover).toBeGreaterThan(0);
+  await sheet.locator('#sun-clouds').uncheck();
+  await expect.poll(cloudCover).toBe(0);
+  await expect.poll(() => page.evaluate(() => (window as any).PersistentStorage.getItem('cb_3d_clouds_enabled'))).toBe('0');
+  await sheet.locator('#sun-clouds').check();
+  await expect.poll(cloudCover).toBeGreaterThan(0);
   await sheet.locator('[data-sheet-close]').click();
   await expect(sheet).toBeHidden();
   // The model's scenery switches sit in Layers → Scenery and sound, collapsed by default (fe088cad9).

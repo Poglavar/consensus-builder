@@ -5280,6 +5280,7 @@
         "sun": {
             "title": "Sol e sombras",
             "enabled": "Mostrar sol e sombras",
+            "clouds": "Mostrar nuvens",
             "when": "Quando",
             "time": "Hora do dia",
             "date": "Data",

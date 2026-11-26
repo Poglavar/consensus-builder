@@ -6845,6 +6845,7 @@
         "sun": {
             "title": "Sunce i senke",
             "enabled": "Prikaži sunce i senke",
+            "clouds": "Prikaži oblake",
             "when": "Kada",
             "time": "Doba dana",
             "date": "Datum",
