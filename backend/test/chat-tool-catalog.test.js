@@ -25,8 +25,10 @@ describe('chat tool catalog', () => {
             expect(CHAT_TOOL_ALLOWLIST.every(name => actual.some(tool => tool.name === name))).toBe(true);
             const tools = toModelTools(actual.filter(tool => CHAT_TOOL_ALLOWLIST.includes(tool.name)));
             expect(tools.slice(-RELAY_TOOLS.length).map(x => x.name)).toEqual(RELAY_TOOLS.map(x => x.name));
-            // The three agreement tools add 13,649 bytes to the 69,135-byte base catalogue.
-            expect(JSON.stringify(tools).length).toBeLessThan(90_000);
+            // The three agreement tools add 13,649 bytes to the 69,135-byte base catalogue. Street votes,
+            // apartment reservations and the agreement editors grew it to ~98 KB; the user chose to keep
+            // every chat ability and raise the budget to 100 KB (2026-11-26) rather than cut tools.
+            expect(JSON.stringify(tools).length).toBeLessThan(100_000);
         } finally {
             await client.close();
             await server.close();
