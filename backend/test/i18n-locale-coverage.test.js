@@ -25,6 +25,8 @@ const DYNAMIC_KEY_PREFIXES = [
     'hareCritic.',                 // the Hare labels riding coverage and the directional lane tiers
     'criticTour.',                 // each tour labels the current map target and route
     'sharedPlan.',
+    'readSource.',                 // chain/read-source.js labels each of its SOURCES (server, chain, both)
+    'readSource.describe.',        // ui/settings-panel.js describes each of the same SOURCES
     'structureEditor.tools.', // toolLabel's declared tool names are checked in every locale below
     'diagnostics.errors.',
     'diagnostics.ui.',

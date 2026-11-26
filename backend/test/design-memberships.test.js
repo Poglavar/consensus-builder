@@ -6,14 +6,16 @@ import vm from 'node:vm';
 import { describe, expect, it, vi } from 'vitest';
 import { dictionary, testI18n } from './helpers/i18n.js';
 import { makeDocument } from './helpers/fake-dom.js';
+import { readSource } from './helpers/read-source.js';
 
 const require = createRequire(import.meta.url);
 const { localAgreements, localPlans, mergeRows, fetchPage, createSession, inspect, createAgreementScope, mountSection } = require('../../frontend/js/design-memberships.js');
 const page = (kind, items = [], nextOffset = null) => Response.json({ [kind]: items, hasMore: nextOffset !== null, nextOffset });
 
-function fixture({ published = true, agreements = [], fetch = vi.fn(async url => page(new URL(url).pathname.slice(1))) } = {}) {
+function fixture({ published = true, agreements = [], fetch = vi.fn(async url => page(new URL(url).pathname.slice(1))), source = 'server' } = {}) {
     const win = {
         fetch, location: new URL('https://app.example/?backend=https%3A%2F%2Fapi.example'),
+        ReadSource: readSource(source),
         console: { warn: vi.fn() }, resolveBackendBaseUrl: () => 'https://api.example',
         DesignSync: { publishedCid: proposal => proposal.cid || null },
         AgreementStore: { list: () => agreements },
@@ -65,6 +67,23 @@ describe('design membership sessions', () => {
         const requestUrl = f.win.fetch.mock.calls.find(([url]) => url.includes('/plans?'))[0];
         expect(new URL(requestUrl).searchParams.get('design')).toBe('design-current');
         expect(f.win.fetch.mock.calls.some(([url]) => url.includes('/agreements?'))).toBe(false);
+    });
+
+    it('asks our server nothing when the chain alone is read: this browser\'s plans, and why there are no others', async () => {
+        const empty = fixture({ source: 'chain' });
+        const session = empty.session();
+        await session.ready;
+        expect(session.instances('plans', true).map(row => row.label)).toEqual(['The chain lists agreements only, not designs or plans.']);
+        expect(empty.win.fetch).not.toHaveBeenCalled();
+        const f = fixture({ source: 'chain', agreements: [{ id: 'a1', title: 'Own terms', designs: [{ proposalId: 'local-design' }],
+            plan: { cid: 'plan-one', content: { title: 'Own plan', designCids: ['design-current'] } } }] });
+        const own = f.session();
+        await own.ready;
+        expect(own.instances('plans').map(row => row.label)).toEqual(['Own plan']);
+        const updates = vi.fn(), scope = createAgreementScope(f.win, { getPlan: () => ({ cid: 'plan-one', draft: false }), onChange: updates });
+        await scope.sync(); await vi.waitFor(() => expect(updates).toHaveBeenCalled());
+        expect(updates.mock.lastCall[0].map(row => row.id)).toEqual(['a1']);
+        expect(f.win.fetch).not.toHaveBeenCalled(); scope.dispose();
     });
 
     it('keeps the known plan when the public lookup fails and retries only that list', async () => {

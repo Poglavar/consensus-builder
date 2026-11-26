@@ -210,9 +210,13 @@ A hash committing to a named, versioned projection of content. Agreement approva
 
 A service's searchable projection of published records, their derived bindings and observed chain metadata. Index metadata and observations are distinct from the immutable bytes identified by the record's CID.
 
+### Read source
+
+Where this browser reads published agreements, plans and designs from: **Our server** (the publication index; the default), **Chain** (the chain reader) or **Both**. It is one explicit app-wide choice, made in Settings or above the Lists and kept in the browser; a link's `readFrom` parameter applies to the page it opens. Neither source is a fallback for the other: an error from a chosen source is reported as that source's. With Both, lists hold the rows of either, each marked with the sources that hold it, and an object is taken from our server when it holds it, else from the chain, with which source served it shown. Publication is to our server whatever the read source ([blockchain-flows.md](blockchain-flows.md), Flow 1).
+
 ### Chain reader
 
-The browser's reading of minted agreements without the publication index ([blockchain-flows.md](blockchain-flows.md), Flow 1): the agreement program's accounts listed from the chain (the Agreements tab's Source: On chain), and agreement, plan and design objects read by CID from read gateways. The agreement, plan and design loaders ask the publication index first and use the chain reader when the index is unreachable or does not hold the object. A design read this way has no index binding; one is derived in the browser where it is applied. Only minted agreements and the plans and designs they name are pinned, so only those are expected to be readable this way.
+The browser's reading of minted agreements without the publication index ([blockchain-flows.md](blockchain-flows.md), Flow 1), used when the read source is Chain or Both: the agreement program's accounts listed from the chain, and agreement, plan and design objects read by CID from read gateways. A design read this way has no index binding; one is derived in the browser where it is applied. Only minted agreements and the plans and designs they name are pinned, so only those are expected to be readable this way. Designs and plans have no chain accounts to list.
 
 ### Qualified chain reference
 

@@ -792,12 +792,24 @@ async function handleSharedDesignRoute(cids, options = {}) {
         });
         const fetched = options.draftRows ? { rows: options.draftRows, missing: [] }
             : valid.length ? await window.DesignSync.fetchDesigns(valid, { forDisplay: true }) : { rows: new Map(), missing: [] };
+        // A missing design is reported as missing where it was looked for (chain/read-source.js).
+        const notFound = fetched.readFrom === 'chain' ? t('readSource.designNotOnChain', 'This design could not be read from IPFS.')
+            : fetched.readFrom === 'both' ? t('readSource.designNowhere', 'This design is not on our server and could not be read from IPFS.')
+            : t('proposals.share.errors.notFound', 'This design is not on the server.');
         fetched.missing.forEach(cid => {
-            result.failed.push({ id: cid, label: cid, reason: t('proposals.share.errors.notFound', 'This design is not on the server.') });
+            result.failed.push({ id: cid, label: cid, reason: notFound });
         });
+        if (fetched.readErrors?.server) {
+            showEphemeralMessage(t('readSource.unavailable', '{{source}} could not be read: {{reason}}',
+                { source: window.ReadSource.label('server'), reason: fetched.readErrors.server }), 8000, 'warning');
+        }
+        // Read from the chain, or both: the summary says which source served the designs.
+        const servedBy = fetched.readFrom === 'chain' || fetched.readFrom === 'both'
+            ? ` ${t('readSource.servedBy', 'Read from: {{sources}}.', { sources: [...new Set([...fetched.rows.values()].map(row => row.readFrom))]
+                .map(source => window.ReadSource.label(source)).join(', ') })}` : '';
         // Designs read from IPFS come without the index's binding: it is derived here
         // (ChainReader.withDerivedBindings), before the ground they need is chosen and loaded.
-        const fromIpfs = [...fetched.rows.values()].filter(row => row.source === 'ipfs' && !row.binding);
+        const fromIpfs = [...fetched.rows.values()].filter(row => row.readFrom === 'chain' && !row.binding);
         if (fromIpfs.length) {
             try {
                 (await window.ChainReader.withDerivedBindings(fromIpfs)).forEach((row, cid) => fetched.rows.set(cid, row));
@@ -1036,11 +1048,11 @@ async function handleSharedDesignRoute(cids, options = {}) {
                     actions: [{ label: t('modal.common.close', 'Close'), primary: true }]
                 });
             } else if (result.omitted.length) {
-                showEphemeralMessage(t('proposals.share.route.omitted', 'Opened the shared plan, skipping {{count}} conflicting designs.', { count: result.omitted.length }), 5000, 'info');
+                showEphemeralMessage(t('proposals.share.route.omitted', 'Opened the shared plan, skipping {{count}} conflicting designs.', { count: result.omitted.length }) + servedBy, 5000, 'info');
             } else if (result.applied.length) {
-                showEphemeralMessage(t('proposals.share.route.applied', 'Applied {{count}} shared designs.', { count: result.applied.length }), 5000, 'info');
+                showEphemeralMessage(t('proposals.share.route.applied', 'Applied {{count}} shared designs.', { count: result.applied.length }) + servedBy, 5000, 'info');
             } else if (result.skipped.length) {
-                showEphemeralMessage(t('proposals.share.route.alreadyApplied', 'These shared designs are already on the map.'), 4000, 'info');
+                showEphemeralMessage(t('proposals.share.route.alreadyApplied', 'These shared designs are already on the map.') + servedBy, 4000, 'info');
             }
         }
 

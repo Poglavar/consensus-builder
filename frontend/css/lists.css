@@ -18,6 +18,9 @@
 .lists-search-row input { flex: 1; }
 .lists-filter-toggle { flex: none; }
 .lists-map-row { display: flex; flex-wrap: wrap; gap: var(--cb-space-2); }
+/* Read from: the app-wide source choice, label beside its select (wrapping on a narrow sheet). */
+.lists-read-from { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cb-space-2); color: var(--cb-text-muted); font-size: .85rem; }
+.lists-read-from select { flex: 1 1 10rem; min-width: 0; }
 .lists-filter-panel:not([hidden]) { display: grid; gap: var(--cb-space-2); }
 .lists-rows { display: grid; gap: var(--cb-space-2); align-content: start; }
 #proposals-sheet #designs-plans { padding: 0; overflow: visible; flex: none; }

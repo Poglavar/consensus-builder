@@ -2,8 +2,9 @@
 // (docs/blockchain-flows.md, Flow 1): agreements listed from the agreement program's accounts on
 // Solana devnet, their agreement, plan and design objects read from public IPFS gateways and checked
 // against their CIDs (ipfs-read.js), and each agreement's chain state read from its account. Nothing
-// here asks our server, so a minted agreement opens while the backend is down. The loaders that ask
-// the server's index first (AgreementSync, NamedPlans, DesignSync) fall back to these reads.
+// here asks our server, so a minted agreement opens while the backend is down. The agreement, plan
+// and design loaders (AgreementSync, NamedPlans, DesignSync) use these reads when the person chose
+// the chain, or both, as where to read from (chain/read-source.js), never as a fallback.
 // window.ChainReader; the pure helpers are exported for node.
 (function (root, factory) {
     const api = factory(root);
@@ -23,26 +24,6 @@
     const warn = (message, extra) => console.warn(`[${new Date().toISOString()}] [ChainReader] ${message}`, ...(extra === undefined ? [] : [extra]));
     const failure = (code, message, extra = {}) => Object.assign(new Error(message), { code }, extra);
     const isObject = value => !!value && typeof value === 'object' && !Array.isArray(value);
-
-    /**
-     * The server's answer, or, when it fails (unreachable, or it does not hold the object), the
-     * chain/IPFS one. When both fail, the server's error is thrown with the fallback's attached as
-     * `fallbackError`, so the person sees the familiar message and the log has both.
-     */
-    async function withFallback(label, primary, fallback) {
-        try {
-            return await primary();
-        } catch (error) {
-            log(`${label}: the server did not answer (${(error && error.message) || error}); reading IPFS`);
-            try {
-                return await fallback();
-            } catch (fallbackError) {
-                warn(`${label}: IPFS did not answer either`, fallbackError);
-                if (error && typeof error === 'object') error.fallbackError = fallbackError;
-                throw error;
-            }
-        }
-    }
 
     /**
      * A decoded Agreement account (AgreementClient.readAgreement) as the agreement's `onchain`: where
@@ -71,7 +52,7 @@
             cid: account.cid,
             createdAt: account.createdAt ? new Date(account.createdAt * 1000).toISOString() : null,
             onchain: onchainOf(account, options),
-            source: 'chain'
+            readFrom: 'chain'
         };
     }
 
@@ -127,7 +108,7 @@
             const error = win.PlanRecord.validate(content);
             if (error) throw failure('invalid-plan', `Plan ${cid} is not a valid plan: ${error}`);
             log(`plan ${cid} read from ${gateway}`);
-            return { cid, content, source: 'ipfs', gateway };
+            return { cid, content, readFrom: 'chain', gateway };
         }
 
         /**
@@ -147,15 +128,24 @@
             }
             // Its status is the account's once minted; the index's other statuses are its own bookkeeping.
             return { cid, content, createdAt: null, status: onchain ? onchain.status : null, onchain, plan,
-                designCids: plan.content.designCids, source: 'ipfs', gateway };
+                designCids: plan.content.designCids, readFrom: 'chain', gateway };
         }
 
-        // design/v1 objects from IPFS as index rows ({ cid, content }, with no binding: handleSharedDesignRoute
-        // derives it where a design is applied). Resolves { rows: Map, missing: [cid] }.
+        // A design/v1 object from IPFS as an index row ({ cid, content }, with no binding:
+        // handleSharedDesignRoute derives it where a design is applied). Throws IpfsRead's error.
+        async function fetchDesign(cid) {
+            const { content, gateway } = await ipfs().fetchObject(cid, reading(win.DesignRecord.SCHEMA));
+            log(`design ${cid} read from ${gateway}`);
+            return { cid, content, readFrom: 'chain', gateway };
+        }
+
+        // Several designs as fetchDesign reads one. Resolves { rows: Map, missing: [cid] }; one
+        // unreadable design does not fail the others.
         async function fetchDesigns(cids) {
             const { rows, missing } = await ipfs().fetchObjects(cids, reading(win.DesignRecord.SCHEMA));
-            const designs = new Map([...rows].map(([cid, row]) => [cid, { cid, content: row.content, source: 'ipfs', gateway: row.gateway }]));
+            const designs = new Map([...rows].map(([cid, row]) => [cid, { cid, content: row.content, readFrom: 'chain', gateway: row.gateway }]));
             if (designs.size) log(`${designs.size} design(s) read from IPFS`);
+            if (missing.length) warn(`${missing.length} design(s) could not be read from IPFS`, missing);
             return { rows: designs, missing: missing.map(entry => entry.cid) };
         }
 
@@ -194,8 +184,8 @@
             return derived;
         }
 
-        return { cluster, listAgreements, agreementOnchain, fetchAgreement, fetchPlan, fetchDesigns, withDerivedBindings };
+        return { cluster, listAgreements, agreementOnchain, fetchAgreement, fetchPlan, fetchDesign, fetchDesigns, withDerivedBindings };
     }
 
-    return { CLUSTER, withFallback, onchainOf, chainRowOf, agreementContentError, browser };
+    return { CLUSTER, onchainOf, chainRowOf, agreementContentError, browser };
 });

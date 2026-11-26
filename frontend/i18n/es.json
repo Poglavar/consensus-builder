@@ -10312,13 +10312,33 @@
         "cannotStand": "{{title}} no puede estar junto a los diseños ya marcados, así que no se añade.",
         "loadMore": "Cargar más",
         "limited": "Se muestran hasta 1.000 diseños publicados.",
-        "source": "Fuente",
-        "sourceIndex": "Índice del servidor",
-        "sourceChain": "En la cadena (Solana {{cluster}})",
         "chainAgreement": "Acuerdo {{cid}}",
         "chainLoading": "Leyendo los acuerdos en la cadena…",
         "chainFailed": "No se pudieron leer los acuerdos en la cadena: {{reason}}"
     },
+  "readSource": {
+    "title": "Leer los registros publicados desde",
+    "short": "Leer desde",
+    "server": "Nuestro servidor",
+    "chain": "Cadena",
+    "both": "Ambos",
+    "describe": {
+      "server": "Los acuerdos, planes y diseños vienen del índice de nuestro servidor. No se lee nada de la cadena ni de IPFS.",
+      "chain": "Los acuerdos se listan desde el programa de acuerdos en Solana {{cluster}}; los acuerdos, planes y diseños se leen de pasarelas públicas de IPFS, cada uno comprobado con su CID. No se consulta a nuestro servidor.",
+      "both": "Se leen ambos: las listas muestran las filas de cualquiera de los dos, cada una marcada según dónde se encontró, y cada objeto se toma de quien lo tenga (la copia de nuestro servidor cuando lo tienen ambos)."
+    },
+    "fromLink": "Este enlace lo eligió para esta página; una elección hecha aquí se guarda en este navegador.",
+    "heldBy": "Encontrado en: {{source}}",
+    "readFrom": "Leído desde: {{source}}",
+    "gateway": "pasarela IPFS {{host}}",
+    "checking": "Leyendo desde {{source}}…",
+    "unavailable": "No se pudo leer {{source}}: {{reason}}",
+    "servedBy": "Leído desde: {{sources}}.",
+    "chainListsAgreementsOnly": "La cadena solo lista acuerdos, no diseños ni planes.",
+    "designNotOnChain": "No se pudo leer este diseño desde IPFS.",
+    "designNowhere": "Este diseño no está en nuestro servidor y no se pudo leer desde IPFS.",
+    "designsNotOnChain": "No se pudieron leer los diseños desde IPFS."
+  },
   "appUpdates": {
     "title": "Actualización de la aplicación",
     "build": "Versión {{number}}",

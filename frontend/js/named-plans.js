@@ -39,7 +39,9 @@
             return row;
         };
         // Local named snapshots exist independently of agreements, including unpublished layouts.
-        function remember(plan, memberIds = []) {
+        function remember(read, memberIds = []) {
+            // Where this page read it from (readFrom, its gateway, the other source's failure) is not kept.
+            const { readFrom: _readFrom, gateway: _gateway, readErrors: _readErrors, ...plan } = read;
             verify(plan, plan.cid);
             const stored = win.PersistentStorage.getItem?.(`plan:${plan.cid}`);
             const previous = stored ? JSON.parse(stored) : {};
@@ -69,16 +71,18 @@
             if (!response.ok) throw new Error(data.error || `HTTP ${response.status}`);
             return data;
         }
-        // The plan `cid` names: from the index, or, when the index cannot answer (unreachable, or it
-        // does not hold it), from IPFS (chain/chain-reader.js). Either answer must hash to `cid`.
-        async function fetchPlan(cid) {
+        // The plan `cid` names, from where the person chose to read (chain/read-source.js): the index,
+        // IPFS (chain/chain-reader.js) or both. Every answer must hash to `cid`; it is marked readFrom.
+        // `indexOnly` asks the index alone, as saving does to read back what it published there.
+        async function fetchPlan(cid, { indexOnly = false } = {}) {
             if (!win.Cid.isCid(cid)) throw new Error('Invalid plan link.');
-            const base = backend(), key = base + '/' + cid;
+            const base = backend(), source = indexOnly ? 'server' : win.ReadSource.get(), key = `${source}:${base}/${cid}`;
             const arrival = win.compactPlanArrival;
-            if (arrival?.record.cid === cid && arrival.base === base) return arrival.record;
+            if (arrival?.record.cid === cid && arrival.base === base && arrival.source === source) return arrival.record;
             if (!planReads.has(key)) {
                 const indexed = () => request('GET', `/plans/${cid}`);
-                const read = win.ChainReader ? win.ChainReader.withFallback(`plan ${cid}`, indexed, () => win.ChainReader.fetchPlan(cid)) : indexed();
+                const read = indexOnly ? indexed().then(row => ({ ...row, readFrom: 'server' }))
+                    : win.ReadSource.read({ server: indexed, chain: () => win.ChainReader.fetchPlan(cid) });
                 planReads.set(key, read.then(row => verify(row, cid)).catch(error => {
                     planReads.delete(key);
                     throw error;
@@ -99,7 +103,7 @@
             async resolveEntry() {
                 const record = await fetchPlan(routeCid);
                 win.history.replaceState(win.history.state, '', restoreUrl(arrivalHref, record.content.view, win.MapShare));
-                return { record, base: backend() };
+                return { record, base: backend(), source: win.ReadSource.get() };
             },
             remember,
             // An /agreements link arrives at its plan's saved view as a /plans link does: one reload when
@@ -131,8 +135,9 @@
                 const cid = win.Cid.cidOfObject(content);
                 observation.planKey = cid;
                 verify(await request('POST', '/plans', { content }), cid);
-                // Read back the durable record before presenting its link as saved.
-                current = await fetchPlan(cid);
+                // Read back the durable record from our server, where it was saved, before presenting
+                // its link as saved.
+                current = await fetchPlan(cid, { indexOnly: true });
                 remember(current);
                 return { ...current, link: link(cid) };
                 });

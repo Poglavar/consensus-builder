@@ -6,6 +6,7 @@
 import { describe, it, expect, beforeAll, afterEach, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
+import { readSource } from './helpers/read-source.js';
 
 const require = createRequire(import.meta.url);
 const DesignSync = require('../../frontend/js/proposals/design-sync.js');
@@ -240,12 +241,13 @@ function fakeServer({ answerCid = null, refuseDesigns = null } = {}) {
     return { fetch, calls, designs };
 }
 
-function fakeWindow({ records = [], server = fakeServer(), blocked = null, configs = {}, proposalStorage = null } = {}) {
+function fakeWindow({ records = [], server = fakeServer(), blocked = null, configs = {}, proposalStorage = null, source = 'server' } = {}) {
     const stored = new Map(records.map(record => [record.proposalId, record]));
     const imports = [];
     let saves = 0;
     const win = {
         fetch: server.fetch,
+        ReadSource: readSource(source),
         btoa: text => Buffer.from(text, 'binary').toString('base64'),
         resolveBackendBaseUrl: () => API,
         resolveFrontendBaseUrl: () => 'https://app.example.test',

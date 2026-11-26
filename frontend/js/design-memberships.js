@@ -81,7 +81,10 @@
                 ? [{ cid: knownPlan.cid, title: knownPlan.content.title, content: knownPlan.content,
                     designCids: knownPlan.content.designCids, publishedAt: knownPlan.publishedAt, draft: false }] : []) }
         };
-        for (const group of Object.values(groups)) Object.assign(group, { nextOffset: cid ? 0 : null, loading: !!cid, error: false });
+        // Read from the chain alone (chain/read-source.js), the index is not asked: plans have no
+        // chain accounts, so only this browser's plans are listed, and the list says why.
+        const fromIndex = win.ReadSource.reads('server');
+        for (const group of Object.values(groups)) Object.assign(group, { nextOffset: cid && fromIndex ? 0 : null, loading: !!cid && fromIndex, error: false, chainOnly: !fromIndex });
         const detailCache = new Map();
         const notify = () => { if (!controller.signal.aborted) onChange(session); };
         const session = { groups, cid, revision, proposalId: String(proposal.proposalId),
@@ -91,7 +94,7 @@
                 const items = state.items.map(row => ({ ...row, id: String(row.localId || row.cid), label: row.title || String(row.cid || row.localId),
                     membershipDesignCid: cid || revision, onParcel: true }));
                 if (!items.length && (state.loading || state.error || keepEmpty)) items.push({ id: `membership-${kind}`, membershipPlaceholder: true, onParcel: true,
-                    label: t(state.loading ? 'loading' : state.error ? 'failed' : 'empty') });
+                    label: state.chainOnly ? win.i18n.t('readSource.chainListsAgreementsOnly') : t(state.loading ? 'loading' : state.error ? 'failed' : 'empty') });
                 return items;
             },
             details(kind, instance) {
@@ -119,7 +122,7 @@
         }
         session.ready = Promise.resolve().then(() => {
             notify();
-            return cid ? Promise.all(Object.keys(groups).map(load)) : undefined;
+            return cid && fromIndex ? Promise.all(Object.keys(groups).map(load)) : undefined;
         });
         return session;
     }
@@ -217,7 +220,8 @@
                 const selected = getPlan();
                 if ((selected?.cid || null) === (plan?.cid || null)) return;
                 controller?.abort(); generation++; plan = selected?.membershipPlaceholder ? null : selected;
-                items = []; loading = false; failed = false; offset = plan && !plan.draft ? 0 : null;
+                // The index's agreements on the plan only when our server is read (chain/read-source.js).
+                items = []; loading = false; failed = false; offset = plan && !plan.draft && win.ReadSource.reads('server') ? 0 : null;
                 controller = new AbortController(); notify();
                 if (offset !== null) return load();
             },

@@ -7,6 +7,7 @@
 // link that keeps this device's mint.
 import { describe, it, expect, beforeAll, vi } from 'vitest';
 import { createRequire } from 'node:module';
+import { readSource } from './helpers/read-source.js';
 
 const require = createRequire(import.meta.url);
 const AgreementSync = require('../../frontend/js/agreement-sync.js');
@@ -250,11 +251,13 @@ function fakeServer({ rows = new Map(), designs = new Map(), onchain = null, min
     return { fetch, calls };
 }
 
-function fakeWindow({ blocked = null, applied = true, records = [layout(), road()], saved = [agreement()], server = fakeServer(), wallet = SPONSOR, plans = null } = {}) {
+function fakeWindow({ blocked = null, applied = true, records = [layout(), road()], saved = [agreement()], server = fakeServer(), wallet = SPONSOR, plans = null, source = 'server', chain = null } = {}) {
     const proposals = new Map(records.map(record => [record.proposalId, record]));
     const agreements = new Map(saved.map(row => [row.id, clone(row)]));
     const win = {
         fetch: server.fetch,
+        ReadSource: readSource(source),
+        ChainReader: chain,
         btoa: text => Buffer.from(text, 'binary').toString('base64'),
         resolveBackendBaseUrl: () => API,
         resolveFrontendBaseUrl: () => 'https://app.example.test',
@@ -472,6 +475,44 @@ describe('fetchAgreement and refusals', () => {
         expect(await thrown(() => sync.fetchAgreement(tamperedCid))).toMatchObject({ code: 'cid-mismatch' });
         expect(await thrown(() => sync.fetchAgreement(Cid.cidOfObject({ missing: true })))).toMatchObject({ code: 'agreement-not-found' });
         expect(await thrown(() => sync.fetchAgreement('ag-1'))).toMatchObject({ code: 'invalid-cid' });
+    });
+
+    it('reads only from the chosen source: never the chain for our server, never the index for the chain', async () => {
+        const content = AgreementRecord.published(agreement());
+        const cid = Cid.cidOfObject(content);
+        const plan = agreement().plan;
+        const absent = Cid.cidOfObject({ absent: true });
+        const fromChain = { cid, content, plan, status: 'active', gateway: 'https://gw.example/ipfs/' };
+        const chain = { fetchAgreement: vi.fn(async wanted => {
+            if (wanted !== cid) throw Object.assign(new Error(`${wanted} could not be read from IPFS`), { code: 'ipfs-unavailable' });
+            return clone(fromChain);
+        }) };
+        const indexed = () => fakeServer({ rows: new Map([[cid, { cid, content, plan, createdAt: '2026-10-21T12:00:00.000Z' }]]) });
+        const plans = new Map([[plan.cid, plan]]);
+
+        // Our server: the index's answer, and the index's own refusal when it does not hold the agreement.
+        const server = fakeWindow({ server: indexed(), plans, chain });
+        expect(await server.sync.fetchAgreement(cid)).toMatchObject({ readFrom: 'server', content });
+        expect(await thrown(() => server.sync.fetchAgreement(absent))).toMatchObject({ code: 'agreement-not-found' });
+        expect(chain.fetchAgreement).not.toHaveBeenCalled();
+
+        // Chain: IPFS and the account, the index never asked, its error its own.
+        const chained = fakeWindow({ server: indexed(), plans, chain, source: 'chain' });
+        expect(await chained.sync.fetchAgreement(cid)).toMatchObject({ readFrom: 'chain', content, gateway: fromChain.gateway });
+        expect(await thrown(() => chained.sync.fetchAgreement(absent))).toMatchObject({ code: 'ipfs-unavailable' });
+        expect(chained.server.calls).toEqual([]);
+
+        // Both: our server's answer when it has one, else the chain's with the server's reason kept;
+        // when neither has it, one error naming both.
+        chain.fetchAgreement.mockClear();
+        const both = fakeWindow({ server: indexed(), plans, chain, source: 'both' });
+        expect(await both.sync.fetchAgreement(cid)).toMatchObject({ readFrom: 'server', content });
+        const onlyOnChain = fakeWindow({ server: fakeServer({ rows: new Map() }), plans, chain, source: 'both' });
+        expect(await onlyOnChain.sync.fetchAgreement(cid)).toMatchObject({ readFrom: 'chain',
+            readErrors: { server: 'This agreement is not on the server.' } });
+        const nowhere = await thrown(() => onlyOnChain.sync.fetchAgreement(absent));
+        expect(nowhere).toMatchObject({ code: 'read-failed' });
+        expect(nowhere.message).toBe(`Our server: This agreement is not on the server. · Chain: ${absent} could not be read from IPFS`);
     });
 
     it('refuses a row without the exact plan snapshot', async () => {

@@ -2,14 +2,20 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { describe, it, expect } from 'vitest';
 import { makeDocument } from './helpers/fake-dom.js';
+import { readSource } from './helpers/read-source.js';
+import { testI18n } from './helpers/i18n.js';
+
+// Settings also shows where published records are read from (chain/read-source.js).
+const reading = (source = 'server') => ({ ReadSource: readSource(source), ChainReader: { cluster: () => 'devnet' }, addEventListener() {} });
 
 describe('Settings reference dialogs', () => {
     it('opens the current language guide from both Settings and the design starter', () => {
         const document = makeDocument();
         document.body.innerHTML = '<a data-user-guide></a><a data-user-guide></a>';
         let language = 'hr';
-        let changeLanguage;
-        const context = { document, i18n: { getLanguage: () => language, onChange: listener => { changeLanguage = listener; } } };
+        const languageListeners = [];
+        const changeLanguage = () => languageListeners.forEach(listener => listener());
+        const context = { document, ...reading(), i18n: { t: key => key, getLanguage: () => language, onChange: listener => { languageListeners.push(listener); } } };
         context.window = context;
         vm.runInNewContext(readFileSync(new URL('../../frontend/js/ui/settings-panel.js', import.meta.url), 'utf8'), context);
         const paths = () => Array.from(document.querySelectorAll('[data-user-guide]'), link => link.href);
@@ -23,7 +29,7 @@ describe('Settings reference dialogs', () => {
         const document = makeDocument();
         document.body.innerHTML = '<div hidden id="home"><div id="settings-reference-credits"><dl id="map-credits-details"></dl></div></div>';
         const original = document.getElementById('map-credits-details');
-        const context = { document, i18n: { t: key => key, getLanguage: () => 'en', onChange() {} }, CbDialog: { open(options) {
+        const context = { document, ...reading(), i18n: { t: key => key, getLanguage: () => 'en', onChange() {} }, CbDialog: { open(options) {
             const body = document.createElement('div'); document.body.appendChild(body); body.appendChild(options.body);
             return { body, close() { options.onClose(); body.remove(); } };
         } } };
@@ -37,6 +43,29 @@ describe('Settings reference dialogs', () => {
             expect(document.getElementById('home').querySelector('#map-credits-details')).toBe(original);
         }
         expect(context.SettingsPanel.openReference('unknown')).toBeNull();
+    });
+
+    it('chooses where published records are read from, keeps it in this browser, and describes the choice', () => {
+        const document = makeDocument();
+        document.body.innerHTML = ['server', 'chain', 'both'].map(source =>
+            `<button type="button" data-read-source-choice="${source}" aria-pressed="false"></button>`).join('') + '<p id="read-source-note"></p>';
+        const i18n = testI18n('en');
+        const stored = new Map();
+        const context = { document, ...reading(), ReadSource: readSource('chain', { stored }), i18n: { t: i18n.t, getLanguage: () => 'en', onChange() {} } };
+        context.window = context; vm.createContext(context);
+        vm.runInContext(readFileSync(new URL('../../frontend/js/ui/settings-panel.js', import.meta.url), 'utf8'), context);
+        const pressed = () => Array.from(document.querySelectorAll('[data-read-source-choice]'))
+            .filter(button => button.getAttribute('aria-pressed') === 'true').map(button => button.dataset.readSourceChoice);
+        const note = () => document.getElementById('read-source-note').textContent;
+        // A link chose the chain for this page: Settings says so, and keeps nothing yet.
+        expect(pressed()).toEqual(['chain']);
+        expect(note()).toContain('Agreements are listed from the agreement program on Solana devnet');
+        expect(note()).toContain('This link chose it for this page');
+        expect(stored.size).toBe(0);
+        // The fake document does not bubble to itself: the click reaches its listener as the page's would.
+        document.dispatchEvent({ type: 'click', target: document.querySelector('[data-read-source-choice="both"]') });
+        expect([context.ReadSource.get(), stored.get('cb.readFrom'), pressed()]).toEqual(['both', 'both', ['both']]);
+        expect(note()).toBe('Both are read: lists show the rows of either, each marked by where it was found, and an object is taken from whichever holds it (our server’s copy when both do).');
     });
 });
 

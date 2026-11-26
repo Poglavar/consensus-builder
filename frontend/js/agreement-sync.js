@@ -192,13 +192,12 @@
             return `${win.resolveFrontendBaseUrl()}${agreementPath(cid)}${query}`;
         }
 
-        // The agreement `cid` names, with its plan: from the index, or, when the index cannot answer
-        // (unreachable, or it does not hold it), from IPFS with its chain state read from its account
-        // (chain/chain-reader.js).
+        // The agreement `cid` names, with its plan, from where the person chose to read
+        // (chain/read-source.js): the index, IPFS with its chain state read from its account
+        // (chain/chain-reader.js), or both. The answer is marked readFrom.
         async function fetchAgreement(cid) {
             if (!cidApi().isCid(cid)) throw failure('invalid-cid', t('agreement.publish.errors.notACid', 'This is not an agreement link.'));
-            if (!win.ChainReader) return fetchIndexedAgreement(cid);
-            return win.ChainReader.withFallback(`agreement ${cid}`, () => fetchIndexedAgreement(cid), () => win.ChainReader.fetchAgreement(cid));
+            return win.ReadSource.read({ server: () => fetchIndexedAgreement(cid), chain: () => win.ChainReader.fetchAgreement(cid) });
         }
 
         // GET /agreements/:cid → the row, its content checked against the CID it is filed under.

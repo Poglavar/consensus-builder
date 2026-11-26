@@ -5,6 +5,7 @@ import express from 'express';
 import request from 'supertest';
 import { canonicalBytes, cidOf } from '../cid.js';
 import { setupPlansRoute } from '../routes/plans.js';
+import { readSource } from './helpers/read-source.js';
 const require = createRequire(import.meta.url);
 const PlanRecord = require('../../frontend/js/plan-record.js');
 const NamedPlans = require('../../frontend/js/named-plans.js');
@@ -198,12 +199,14 @@ describe('named plan browser transport', () => {
     });
     const client = fetch => NamedPlans.browser({ location: new URL('https://app.example/?backend=https%3A%2F%2Fapi.example'),
         PlanRecord, Cid, MapShare, fetch, PersistentStorage: { setItem: vi.fn(), forEach() {} }, resolveBackendBaseUrl: () => 'https://api.example', resolveFrontendBaseUrl: () => 'https://app.example' });
+    // Saving publishes to our server and reads it back from there, whatever the page reads from
+    // (the client window has no ReadSource: the read-back must not consult it).
     it('verifies a GET of the durable record before reporting a saved link', async () => {
         const fetch = vi.fn(async () => Response.json({ cid, content }));
         const api = client(fetch);
         expect((await api.save(content)).link).toBe(`https://app.example/plans/${cid}?backend=https%3A%2F%2Fapi.example`);
         expect(fetch.mock.calls.map(([, options]) => options.method)).toEqual(['POST', 'GET']);
-        expect(api.current).toEqual({ cid, content });
+        expect(api.current).toEqual({ cid, content, readFrom: 'server' });
     });
     it('does not claim success when read-back fails or content differs from the CID', async () => {
         const api = client(vi.fn().mockResolvedValueOnce(Response.json({ cid, content })).mockResolvedValueOnce(Response.json({ error: 'Not found' }, { status: 404 })));
@@ -214,13 +217,13 @@ describe('named plan browser transport', () => {
     it('restores a compact arrival in place and reuses its verified record in the app', async () => {
         const location = new URL(`https://app.example/plans/${cid}`);
         const history = { state: {}, replaceState: vi.fn() };
-        const win = { location, history, PlanRecord, Cid, MapShare, fetch: vi.fn(async () => Response.json({ cid, content })) };
+        const win = { location, history, PlanRecord, Cid, MapShare, ReadSource: readSource('server'), fetch: vi.fn(async () => Response.json({ cid, content })) };
         const api = NamedPlans.browser(win);
         expect(win.fetch).not.toHaveBeenCalled();
         win.resolveBackendBaseUrl = () => 'https://api.example';
         win.compactPlanArrival = await api.resolveEntry();
         expect(history.replaceState).toHaveBeenCalledWith(history.state, '', expect.stringContaining('city=birmingham'));
-        expect(await NamedPlans.browser(win).fetchPlan(cid)).toEqual({ cid, content });
+        expect(await NamedPlans.browser(win).fetchPlan(cid)).toEqual({ cid, content, readFrom: 'server' });
         expect(win.fetch).toHaveBeenCalledTimes(1);
         win.resolveBackendBaseUrl = () => 'https://second.example';
         await NamedPlans.browser(win).fetchPlan(cid);

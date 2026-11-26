@@ -509,6 +509,7 @@ describe('panel HTML', () => {
                 check: async () => ({ current: false, reasons: [] }), localHolders: () => () => null, areaOf: () => null
             },
             AgreementSync: { fetchAgreement: async () => ({ status: 'active' }) },
+            ReadSource: { get: () => 'server', label: () => 'Our server' },
             ProposalApprovalPanel: approval,
             ProposalBeforeAfter: { agreementKey: id => id, isActive: () => false },
             CbFormat: format,
@@ -550,6 +551,17 @@ describe('panel HTML', () => {
         expect(panel.remoteStatusOf({ error: 'offline' })).toEqual({ tone: 'warning', label: 'Server status unavailable: offline' });
         expect(panel.remoteStatusOf({ status: 'expired' })).toEqual({ tone: 'danger', label: 'Expired' });
         expect(panel.remoteStatusOf({ status: 'active' })).toEqual({ tone: 'success', label: 'Active' });
+    });
+
+    it('names the chosen source when it is not our server alone, and which source served the agreement', () => {
+        expect(panel.remoteStatusOf({ loading: true, sourceLabel: 'Chain' })).toEqual({ tone: 'neutral', label: 'Reading from Chain…' });
+        expect(panel.remoteStatusOf({ error: 'no gateway', sourceLabel: 'Chain' })).toEqual({ tone: 'warning', label: 'Chain could not be read: no gateway' });
+        // Our server alone: the panel reads as it always has.
+        expect(panel.readFromHtml({ status: 'active', readFrom: 'server', readFromLabel: 'Our server' })).toBe('');
+        const both = panel.readFromHtml({ status: 'active', sourceLabel: 'Both', readFrom: 'chain', readFromLabel: 'Chain',
+            gateway: 'ipfs.filebase.io', serverError: 'This agreement is not on the server.', serverLabel: 'Our server' });
+        expect(both).toContain('data-agreement-read-from="chain"');
+        expect(both).toContain('Read from: Chain (IPFS gateway ipfs.filebase.io) · Our server could not be read: This agreement is not on the server.');
     });
 
     it('shows a proposed agreement by its CID with its link and status, and where its parties decide', () => {

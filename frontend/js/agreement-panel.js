@@ -556,9 +556,13 @@
     }
 
     // The index's lifecycle, including terminal states, never an inferred title or payment state.
+    // Read from the chain, or both (chain/read-source.js), the reading names the chosen source
+    // (`remote.sourceLabel`) instead of our server.
     function remoteStatusOf(remote, tr = t) {
-        if (!remote || remote.loading) return { tone: 'neutral', label: tr('agreement.publish.statusChecking', 'Checking the server…') };
-        if (remote.error) return { tone: 'warning', label: tr('agreement.publish.statusUnavailable', 'Server status unavailable: {{reason}}', { reason: remote.error }) };
+        const via = remote && remote.sourceLabel;
+        if (!remote || remote.loading) return { tone: 'neutral', label: via ? tr('readSource.checking', 'Reading from {{source}}…', { source: via }) : tr('agreement.publish.statusChecking', 'Checking the server…') };
+        if (remote.error) return { tone: 'warning', label: via ? tr('readSource.unavailable', '{{source}} could not be read: {{reason}}', { source: via, reason: remote.error })
+            : tr('agreement.publish.statusUnavailable', 'Server status unavailable: {{reason}}', { reason: remote.error }) };
         if (remote.status === 'expired') return { tone: 'danger', label: tr('agreement.publish.statusExpired', 'Expired') };
         if (remote.status === 'executed') return { tone: 'executed', label: CHAIN_STATUS.Executed.text(tr) };
         if (remote.status === 'cancelled') return { tone: 'withdrawn', label: CHAIN_STATUS.Cancelled.text(tr) };
@@ -583,7 +587,18 @@
             + `<button type="button" class="btn btn-sm" data-agreement-action="share"><i class="fas fa-share-alt" aria-hidden="true"></i> ${esc(tr('panel.proposal.actions.share', 'Share'))}</button>`
             + `<span class="cb-badge cb-badge--${status.tone}" data-agreement-remote-status="${esc((remote && remote.status) || '')}">${esc(status.label)}</span>`
             + '</div>'
+            + readFromHtml(remote, tr)
             + decide);
+    }
+
+    // Read from the chain, or both: which source served the agreement (its IPFS gateway, when the
+    // chain did) and, under both, why our server did not.
+    function readFromHtml(remote, tr = t) {
+        if (!remote || remote.loading || !remote.sourceLabel || !remote.readFromLabel) return '';
+        const served = tr('readSource.readFrom', 'Read from: {{source}}', { source: remote.readFromLabel })
+            + (remote.gateway ? ` (${tr('readSource.gateway', 'IPFS gateway {{host}}', { host: remote.gateway })})` : '');
+        const other = remote.serverError ? ` · ${tr('readSource.unavailable', '{{source}} could not be read: {{reason}}', { source: remote.serverLabel, reason: remote.serverError })}` : '';
+        return `<p class="agreement-panel-note" data-agreement-read-from="${esc(remote.readFrom || '')}">${esc(served + other)}</p>`;
     }
 
     function designsHtml(rows, tr = t) {
@@ -1366,18 +1381,25 @@
             if (!cid || (!force && state.remote && state.remote.cid === cid)) return;
             const id = agreement.id;
             const readOnly = state.readOnlyAgreement === agreement;
-            state.remote = { cid, loading: true, status: null, error: null, onchain: null };
+            // Where it is read from (chain/read-source.js): named on the panel unless it is our server alone.
+            const reading = win.ReadSource;
+            const sourceLabel = reading.get() === 'server' ? null : reading.label();
+            state.remote = { cid, loading: true, status: null, error: null, onchain: null, sourceLabel };
             try {
                 const row = await win.AgreementSync.fetchAgreement(cid);
                 if (state.id !== id) return;
                 const onchain = row.onchain && typeof row.onchain === 'object' ? row.onchain : null;
+                let gateway = null;
+                try { gateway = row.gateway ? new URL(row.gateway).host : null; } catch (_) { gateway = row.gateway; }
                 state.remote = { cid, loading: false, status: row.status, error: null, onchain,
-                    screenshotPairUrl: row.screenshotPairUrl, screenshotUrl: row.screenshotUrl };
+                    screenshotPairUrl: row.screenshotPairUrl, screenshotUrl: row.screenshotUrl,
+                    sourceLabel, readFrom: row.readFrom, readFromLabel: reading.label(row.readFrom), gateway,
+                    serverError: row.readErrors?.server || null, serverLabel: reading.label('server') };
                 if (!readOnly) reconcileOnchain(id, onchain);
             } catch (error) {
                 if (state.id !== id) return;
-                console.warn(`[${new Date().toISOString()}] [AgreementPanel] the server status of ${cid} is unavailable`, error);
-                state.remote = { cid, loading: false, status: null, error: (error && error.message) || String(error), onchain: null };
+                console.warn(`[${new Date().toISOString()}] [AgreementPanel] the published copy of ${cid} could not be read from ${reading.get()}`, error);
+                state.remote = { cid, loading: false, status: null, error: (error && error.message) || String(error), onchain: null, sourceLabel };
             }
             if (win.ProposalApprovalPanel && !readOnly && agreement.rule?.electorate === 'owners') {
                 win.ProposalApprovalPanel.setStatus(id, observedRemote(state.remote, state.chain)?.status);
@@ -2231,7 +2253,7 @@
 
     return {
         titleOf, statusOf, landSummary, ownerOutcomes, allocationLines, ledgerRows, personRows, personsHtml, ruleSummary, ruleShort, designRows, groundIds, partyLabel,
-        statusHtml, actionsHtml, remoteStatusOf, observedRemote, publishedHtml, designsHtml, landHtml, piecesHtml, outcomesHtml, allocationHtml, ledgerHtml, ruleHtml,
+        statusHtml, actionsHtml, remoteStatusOf, observedRemote, publishedHtml, readFromHtml, designsHtml, landHtml, piecesHtml, outcomesHtml, allocationHtml, ledgerHtml, ruleHtml,
         inputsHtml, fundingTermsHtml, fundingAmountView, fundingCountdown, inspectionFeatures, tabbedHtml, compareTerms,
         shortKey, chainStatusText, mintReadiness, isBinding, chainHtml, nonBindingChainHtml, identityRows, signingSummaryHtml, recordHtml, browserPanel
     };

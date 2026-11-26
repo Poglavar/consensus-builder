@@ -407,17 +407,12 @@
             return { cid, row, alreadyPublished: false };
         }
 
-        // The design `cid` names: from the index, or, when the index cannot answer (unreachable, or it
-        // does not hold it), from IPFS (chain/chain-reader.js). A missing design throws code
-        // 'design-not-found'. A row read from IPFS has no binding (source 'ipfs').
+        // The design `cid` names, from where the person chose to read (chain/read-source.js): the
+        // index (a missing design throws code 'design-not-found'), IPFS (chain/chain-reader.js) or
+        // both. The row is marked readFrom; one read from IPFS has no binding.
         async function fetchDesign(cid) {
             if (!cidApi().isCid(cid)) throw failure('invalid-cid', `Not a design CID: ${cid}`);
-            if (!win.ChainReader) return fetchIndexedDesign(cid);
-            return win.ChainReader.withFallback(`design ${cid}`, () => fetchIndexedDesign(cid), async () => {
-                const read = await win.ChainReader.fetchDesigns([cid]);
-                if (!read.rows.has(cid)) throw failure('design-not-found', t('proposals.share.errors.notFound', 'This design is not on the server.'), { cid });
-                return read.rows.get(cid);
-            });
+            return win.ReadSource.read({ server: () => fetchIndexedDesign(cid), chain: () => win.ChainReader.fetchDesign(cid) });
         }
 
         // GET /designs/:cid → the index's row.
@@ -428,26 +423,43 @@
             return response.body;
         }
 
-        // The designs `cids` name → { rows: Map(cid → row), missing: cid[] }: from the index, and
-        // whatever it does not hold (every one when it does not answer) from IPFS
-        // (chain/chain-reader.js). Rows read from IPFS have no binding (source 'ipfs'). `indexOnly`
-        // asks what the index itself holds, as publishing does to learn which designs it must send.
+        /**
+         * The designs `cids` name, from where the person chose to read (chain/read-source.js) →
+         * { rows: Map(cid → row), missing: cid[], readFrom, readErrors }. Each row is marked readFrom;
+         * rows read from IPFS (chain/chain-reader.js) have no binding. 'both' asks the index for every
+         * design and IPFS for the ones the index does not hold (all of them when the index fails, its
+         * error kept as readErrors.server), so designs our server holds cost no gateway reads; when
+         * neither answers it throws naming both. `indexOnly` asks what the index itself holds, as
+         * publishing does to learn which designs it must send.
+         */
         async function fetchDesigns(cids, { indexOnly = false, ...options } = {}) {
             const wanted = sortedCids(cids);
-            if (indexOnly || !win.ChainReader || !wanted.length) return fetchIndexedDesigns(wanted, options);
-            let indexed;
+            const source = indexOnly ? 'server' : win.ReadSource.get();
+            const marked = (rows, readFrom) => new Map([...rows].map(([cid, row]) => [cid, { ...row, readFrom }]));
+            if (!wanted.length) return { rows: new Map(), missing: [], readFrom: source, readErrors: null };
+            if (source === 'server') {
+                const indexed = await fetchIndexedDesigns(wanted, options);
+                return { rows: marked(indexed.rows, 'server'), missing: indexed.missing, readFrom: source, readErrors: null };
+            }
+            if (source === 'chain') {
+                const read = await win.ChainReader.fetchDesigns(wanted);
+                return { rows: marked(read.rows, 'chain'), missing: read.missing, readFrom: source, readErrors: null };
+            }
+            let indexed, serverError = null;
             try {
                 indexed = await fetchIndexedDesigns(wanted, options);
             } catch (error) {
-                log(`the index did not answer for ${wanted.length} design(s) (${error.message}); reading IPFS`);
-                const read = await win.ChainReader.fetchDesigns(wanted);
-                if (!read.rows.size) throw error;
-                return read;
+                serverError = error;
+                indexed = { rows: new Map(), missing: wanted };
+                log(`our server did not answer for ${wanted.length} design(s): ${error.message}`);
             }
-            if (!indexed.missing.length) return indexed;
-            const read = await win.ChainReader.fetchDesigns(indexed.missing);
-            read.rows.forEach((row, cid) => indexed.rows.set(cid, row));
-            return { rows: indexed.rows, missing: read.missing };
+            const read = indexed.missing.length ? await win.ChainReader.fetchDesigns(indexed.missing) : { rows: new Map(), missing: [] };
+            if (serverError && !read.rows.size) {
+                throw win.ReadSource.bothFailed(serverError, new Error(t('readSource.designsNotOnChain', 'The designs could not be read from IPFS.')));
+            }
+            const rows = marked(indexed.rows, 'server');
+            marked(read.rows, 'chain').forEach((row, cid) => rows.set(cid, row));
+            return { rows, missing: read.missing, readFrom: source, readErrors: serverError ? { server: serverError.message } : null };
         }
 
         // POST /designs/batch in chunks of the index's limit → { rows: Map(cid → row), missing: cid[] }.
@@ -543,7 +555,7 @@
             if (existing) return existing;
             // A design read from IPFS is marked published at the gateway that served it, not at this
             // server, which may not hold it: Share then still offers to publish it here.
-            const record = localDesignFromRow(row, { apiBase: row && row.source === 'ipfs' && row.gateway ? row.gateway : currentApiBase() });
+            const record = localDesignFromRow(row, { apiBase: row && row.readFrom === 'chain' && row.gateway ? row.gateway : currentApiBase() });
             const stored = store.importProposal(record, { overwrite: true, deferSave: true });
             if (!stored) throw new Error(`Design ${row.cid} could not be stored locally.`);
             let cid = null;

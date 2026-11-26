@@ -54,8 +54,9 @@ flowchart LR
 
 ## Flow 1: read from the connected chain
 
-Lists gets a **From chain** source beside Browser and Published. It needs the wallet's chain and an
-RPC, not our server.
+The chain is one of the places the app reads published records from, chosen explicitly beside our
+server (or both together), never a fallback for it. Reading it needs the chain's RPC and IPFS
+gateways, not our server.
 
 1. **Enumerate.** Solana: `getProgramAccounts` on the record and agreement programs with a memcmp on
    the kind or status (the method-capable RPC routing in `solana/rpc-routing.js` already exists).
@@ -84,21 +85,45 @@ filters.
 
 **Built for Solana agreements** (`frontend/js/chain/`, R1 below):
 
-- **Lists → Agreements → Filters → Source** chooses **Server index** or **On chain (Solana devnet)**.
-  On chain lists every account of the agreement program (`AgreementClient.listAgreements`:
-  `getProgramAccounts` filtered by the account size, each account decoded by the shared codec and
-  kept only when it sits at the PDA its own sponsor and CID derive), newest first by the account's
-  `created_at`, with the account's status on the row. The rows carry no content, so a row is named
-  by this browser's copy, else by its CID, until it is opened. The read goes through the
-  genesis-checked devnet connection and the program-accounts RPC routing.
-- The agreement, plan and design loaders (`AgreementSync.fetchAgreement`, `NamedPlans.fetchPlan`,
-  `DesignSync.fetchDesign` / `fetchDesigns`) ask the index first. When it is unreachable, or does
-  not hold the object, they read it from the gateways in `IpfsRead` (`chain/ipfs-read.js`: Filebase,
-  Pinata's public gateway, dweb.link, ipfs.io, one at a time, 10 s each; `IPFS_READ_GATEWAYS`
-  overrides the list), accepting only bytes whose CID (`js/cid.js`) is the one requested; a gateway
-  that answers with other bytes is passed over. An agreement read this way gets its `onchain` from
-  its account. Publishing asks the index alone (`fetchDesigns(..., { indexOnly: true })`), so it
-  still sends every design the index lacks.
+- **Where published records are read from is one explicit choice** (`chain/read-source.js`,
+  `window.ReadSource`): **Our server** (the default), **Chain** (Solana devnet and IPFS) or **Both**.
+  It is made in **Settings → Read published records from** or in the **Read from** control above the
+  Lists (the same choice), kept in this browser (`cb.readFrom` in localStorage), and a link's
+  `?readFrom=server|chain|both` applies to the page it opens without changing the kept choice.
+  There is no fallback: with Our server nothing reads the chain or IPFS, with Chain nothing reads
+  the server's index for these objects, and an error from a chosen source is shown as that source's.
+- **Lists.** Our server lists every tab from the index. The chain lists agreements only: every
+  account of the agreement program (`AgreementClient.listAgreements`: `getProgramAccounts` filtered
+  by the account size, each account decoded by the shared codec and kept only when it sits at the
+  PDA its own sponsor and CID derive), newest first by the account's `created_at`, with the
+  account's status on the row. Its rows carry no content, so a row is named by this browser's copy,
+  else by its CID, until it is opened. Designs and plans have no chain accounts until R2, so with
+  Chain their tabs list this browser's own records and say why. With Both, each tab is the union of
+  the two (`ReadSource.unionRows`): one row per CID, badged with the source or sources that hold it,
+  the server's record with the chain's account state over the index's observation; a source that
+  fails is named in the list status while the other's rows stay. The chain reads go through the
+  genesis-checked devnet connection and the program-accounts RPC routing. The click stack's
+  membership lists (a design's plans, a plan's agreements; `design-memberships.js`) and Compare
+  plans' agreements ask the index only when our server is read; with Chain they list this
+  browser's own. The read source does not cover the map's published-design layer, Bets and markets,
+  or community vote tallies, which read our server.
+- **Objects.** The agreement, plan and design loaders (`AgreementSync.fetchAgreement`,
+  `NamedPlans.fetchPlan`, `DesignSync.fetchDesign` / `fetchDesigns`) read from the chosen source,
+  and mark what they return with `readFrom`. The chain reads come from the gateways in `IpfsRead`
+  (`chain/ipfs-read.js`: Filebase, Pinata's public gateway, dweb.link, ipfs.io, one at a time, 10 s
+  each; `IPFS_READ_GATEWAYS` overrides the list), accepting only bytes whose CID (`js/cid.js`) is
+  the one requested; a gateway that answers with other bytes is passed over. An agreement read this
+  way gets its `onchain` from its account. With Both, a single object is asked of both at once and
+  taken from our server when it holds it (equal CIDs are equal bytes; the server's row carries the
+  index binding), else from the chain with the server's failure kept (`readErrors`); a batch of
+  designs asks the index for all and IPFS for those the index lacks. When both fail, one error names
+  each source's reason. The agreement panel names the source that served it (and its gateway), and
+  a design link's summary says where its designs were read from, whenever the choice is not Our
+  server alone. Shareable links (`/agreements/<cid>`, `/plans/<cid>`, `/designs/<cid>`) are read
+  with the opener's choice unless they carry `readFrom`; the app does not add it to links it makes.
+- Publishing always goes to our server and reads its result back from there: `fetchDesigns(...,
+  { indexOnly: true })` finds every design the index lacks, and a saved plan is read back with
+  `fetchPlan(cid, { indexOnly: true })`, whatever the read choice.
 - A design read from IPFS has no binding. Where it is applied (`handleSharedDesignRoute`),
   `ChainReader.withDerivedBindings` derives one with the binder private plans use
   (`PlanAnalysis.bindPrivateRows`, whose parcel worker runs the server's own
@@ -180,8 +205,9 @@ the link today. With a wallet connected to a chain this app has programs on:
   the mint checklist (Flow 2, then Flow 3), and **Publish through the server** as the alternative;
 - with no wallet connected, publishing goes to the server without a choice, as today;
 - the share link is the same `/designs/<cid>`, `/plans/<cid>`, `/agreements/<cid>` link either way,
-  because the link names content, not where it was published. A reader that arrives at the link with
-  our server down falls back to Flow 1 for the content when a wallet or a public RPC is available.
+  because the link names content, not where it was published. A reader that arrives at the link
+  reads the content from the source they chose (or the link's `readFrom`); with Chain chosen that is
+  Flow 1, which needs no server.
 
 ## Chain contracts
 
@@ -236,7 +262,7 @@ so every account layout above is final at that deploy; devnet and testnet carry 
 - The mint checklist dialog on the shared dialog chrome (`js/ui/dialogs.js`), with busy controls on
   every step that signs or waits.
 - The Share dialog (its own plan) hosts Flow 4.
-- Lists: the From chain source, with the chain and cluster named in the source picker.
+- Lists and Settings: the Chain read source, with the chain and cluster named where it is described.
 - MCP parity: agents mint through the same adapters with the agent keypair. `ugt_mint_agreement`
   exists; `ugt_mint_design`, `ugt_mint_plan`, `ugt_anchor_parcels` and `ugt_chain_records` are added
   in the same milestone as the browser flow they mirror, and the discovery catalogue
@@ -248,7 +274,7 @@ Each milestone is code first, then its tests in one pass (unit tests for the pur
 parts in `backend/test/`, Anchor or Forge tests for programs, Playwright for the dialogs against the
 mock API and a local validator), then docs and the vocabulary entries it changes.
 
-1. **R1, Solana reader.** From chain in Lists for agreements, their plans and designs, on devnet,
+1. **R1, Solana reader.** The Chain read source for agreements, their plans and designs, on devnet,
    with the verify step and chain state on the records. No server involved. Done when a devnet
    agreement opens from a browser whose `backend` is unreachable. Built (Flow 1, "Built for Solana
    agreements"); design and plan records have no chain accounts to list until R2.
@@ -258,7 +284,7 @@ mock API and a local validator), then docs and the vocabulary entries it changes
    Flow 4 in the Share dialog; the MCP tools. Done when a design drawn in
    a browser with no `backend` is minted and later listed by the index.
 3. **R3, EVM anchors, registry and reader.** `ParcelAnchor`, `RecordRegistry`, the EVM adapter and
-   From chain on Base Sepolia; the ENS resolver repointed. Done when R1 and R2's checks pass with an
+   the Chain read source on Base Sepolia; the ENS resolver repointed. Done when R1 and R2's checks pass with an
    EVM wallet for designs and plans.
 4. **R4, EVM agreements.** The `Agreement` contract, EAS attestation by the lens, escrow, the
    agreement panel's actions on EVM. Done when an agreement proposed with an EVM wallet executes on
@@ -292,5 +318,5 @@ four days, R4 about a week; R4 is the only new money-holding contract.
 
 Publication (retrievability
 rather than our pin), Mint (a design or plan record as well as an agreement account), Parcel anchor
-(new entry; the EVM form stops being a transferable token), Lists (the From chain source), Share (the
+(new entry; the EVM form stops being a transferable token), Read source (Chain reads EVM too), Share (the
 chain-first publish step with a wallet connected).

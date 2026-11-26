@@ -59,9 +59,8 @@
     function browser(win) {
         const doc = win.document;
         const analysis = win.PlanAnalysisControls || require('./ui/plan-analysis-controls.js');
-        // source: where the Agreements tab lists from, the server's index ('index') or the agreement
-        // program's accounts on chain ('chain', chain/chain-reader.js), which needs no server.
-        const state = { tab: 'designs', search: '', publication: 'all', sort: 'newest', onMap: false, source: 'index',
+        // Where the rows are read from is the app-wide choice (chain/read-source.js), not a list filter.
+        const state = { tab: 'designs', search: '', publication: 'all', sort: 'newest', onMap: false,
             // selecting: the tab whose rows show checkboxes; purpose: what they are for ('compare', or
             // 'plan': the designs of a plan, ticked here with all of them shown on the map); planBase:
             // the plan whose revision they make, if any.
@@ -94,10 +93,14 @@
         }
         const city = () => win.normalizeCityCodeForApi(win.resolveCurrentCityCode());
         const area = () => state.tab === 'designs' ? win.getProposalCountAreaContext() : null;
-        const fromChain = () => state.tab === 'agreements' && state.source === 'chain' && !!win.ChainReader;
+        // Our server lists every kind; the chain lists agreements only (the agreement program's
+        // accounts, chain/chain-reader.js): designs and plans have no accounts to list.
+        const reads = which => win.ReadSource.reads(which);
+        const chainLists = () => state.tab === 'agreements' && reads('chain');
         const areaKey = () => {
-            if (fromChain()) return `chain:${win.ChainReader.cluster()}:agreements`;
-            const view = area(); return `${win.DesignSync.apiBase()}:${view?.explore ? view.key : city()}:${state.tab}`;
+            const view = area();
+            return [win.ReadSource.get(), reads('server') ? win.DesignSync.apiBase() : '', chainLists() ? win.ChainReader.cluster() : '',
+                view?.explore ? view.key : city(), state.tab].join(':');
         };
         const cacheKey = () => state.tab === 'designs' ? JSON.stringify([areaKey(), state.search.trim(), state.sort]) : areaKey();
         const host = () => doc.getElementById({ designs: 'proposal-list-host', plans: 'plan-list-host', agreements: 'agreement-list-host' }[state.tab]);
@@ -153,7 +156,7 @@
             const copies = kind === 'designs' ? index.byCid : new Map(local.map(row => [row.cid, row.local]));
             // A row listed from the chain carries no content until it is opened: this browser's copy
             // names it, else its CID does.
-            const untitled = record => record.source === 'chain'
+            const untitled = record => record.readFrom === 'chain'
                 ? copies.get(record.cid)?.title || t('lists.chainAgreement', { cid: win.AgreementSync.shortCid(record.cid) })
                 : t(kind === 'designs' ? 'planDialog.untitledDesign' : 'agreement.panel.untitled');
             return rows.map(record => ({ key: record.cid, propertyOffer: record.content?.schema === 'property-offer/v1', cid: record.cid || null, title: record.title || record.content?.title || untitled(record),
@@ -168,10 +171,14 @@
             if (previous && !more && !force) return Promise.resolve();
             const location = { city: city(), area: area(), search: state.search.trim(), sort: state.sort };
             const base = win.DesignSync.apiBase(), scope = areaKey();
-            const chain = fromChain();
-            const feeds = chain ? [['chain', 'agreements']]
-                : kind === 'agreements' ? [['agreements', 'agreements'], ['property-offers', 'propertyOffers']] : [[kind, kind]];
-            const page = more && previous ? previous : { scope, feeds: feeds.map(([path, field]) => ({ path, field, rows: [], next: 0 })) };
+            // One feed per source read (chain/read-source.js): each row is marked with the source that listed it.
+            const feeds = [
+                ...(!reads('server') ? [] : kind === 'agreements' ? [['agreements', 'agreements'], ['property-offers', 'propertyOffers']] : [[kind, kind]])
+                    .map(([path, field]) => [path, field, 'server']),
+                ...(chainLists() ? [['chain', 'agreements', 'chain']] : [])
+            ];
+            const page = more && previous ? previous : { scope, union: new Map(),
+                feeds: feeds.map(([path, field, readFrom]) => ({ path, field, readFrom, rows: [], next: 0 })) };
             state.remote.set(key, page);
             if (state.remote.size > 48) state.remote.delete(state.remote.keys().next().value);
             const redraw = () => { if (opened() && cacheKey() === key && state.remote.get(key) === page) renderRows(); };
@@ -181,7 +188,7 @@
                 try {
                     const offset = feed.next;
                     let result;
-                    if (chain) {
+                    if (feed.readFrom === 'chain') {
                         // Every account in one read: the chain has no pages, and its rows carry no content.
                         try { result = { agreements: await win.ChainReader.listAgreements(), hasMore: false }; }
                         catch (error) { throw new Error(t('lists.chainFailed', { reason: error.message || String(error) })); }
@@ -191,9 +198,13 @@
                         result = await response.json();
                         if (!response.ok || !Array.isArray(result[feed.field])) throw new Error(result.error || `HTTP ${response.status}`);
                     }
-                    feed.rows.push(...result[feed.field]);
+                    feed.rows.push(...result[feed.field].map(record => ({ ...record, readFrom: feed.readFrom })));
                     feed.next = result.hasMore && Number.isInteger(result.nextOffset) && result.nextOffset > offset ? result.nextOffset : null;
-                } catch (error) { feed.error = error.message; }
+                } catch (error) {
+                    // Under both sources, a failed feed names its source: the other's rows are still listed.
+                    feed.error = feed.readFrom === 'server' && reads('chain')
+                        ? t('readSource.unavailable', { source: win.ReadSource.label('server'), reason: error.message }) : error.message;
+                }
                 redraw();
             })).finally(() => { page.loading = false; page.pending = null; redraw(); });
             redraw();
@@ -477,9 +488,12 @@
             // Already-read cards can be filtered immediately while the full search is in flight.
             const fallback = kind === 'designs' && state.remote.get(JSON.stringify([areaKey(), '', 'newest']));
             const displayed = page && (!page.loading || page.feeds.some(feed => feed.rows.length)) ? page : fallback;
-            const remote = [...new Map((displayed?.feeds || []).flatMap(feed => feed.rows).map(record => [record.cid, record])).values()];
-            const rows = mergeRows(local, remoteRows(remote, kind, local, index))
-                .map(row => ({ ...row, applied: kind === 'designs' && appliedHere(row.local) }));
+            // Each record once, with the sources that hold it (heldBy; ReadSource.unionRows).
+            const union = displayed ? win.ReadSource.unionRows(displayed.feeds, displayed.union) : [];
+            const heldBy = new Map(union.map(({ record, heldBy }) => [record.cid, heldBy]));
+            const rows = mergeRows(local, remoteRows(union.map(entry => entry.record), kind, local, index))
+                .map(row => ({ ...row, applied: kind === 'designs' && appliedHere(row.local), heldBy: row.cid ? heldBy.get(row.cid) || null : null }));
+            const both = win.ReadSource.get() === 'both';
             const visible = filterRows(rows, { ...state, onMap: kind === 'designs' && state.onMap }), list = host();
             let cards = cardCaches.get(list);
             if (!cards) { cards = new Map(); cardCaches.set(list, cards); }
@@ -495,8 +509,10 @@
             const status = doc.getElementById('lists-status');
             const errors = (page?.feeds || []).map(feed => feed.error).filter(Boolean).join(' · ');
             const previewTitle = loadingPreview?.sequence === previewSequence ? loadingPreview.title : '';
-            status.textContent = [page?.loading || previewTitle ? t(page?.loading && fromChain() ? 'lists.chainLoading' : 'lists.loading') : '', previewTitle, errors,
-                visible.length ? t('lists.count', { count: Math.min(visible.length, shownLimit) }) : ''].filter(Boolean).join(' · ');
+            // Designs and plans have no chain accounts: read from the chain, they list this browser's own.
+            const chainNote = kind !== 'agreements' && reads('chain') ? t('readSource.chainListsAgreementsOnly') : '';
+            status.textContent = [page?.loading || previewTitle ? t(page?.loading && chainLists() && !reads('server') ? 'lists.chainLoading' : 'lists.loading') : '', previewTitle, errors,
+                chainNote, visible.length ? t('lists.count', { count: Math.min(visible.length, shownLimit) }) : ''].filter(Boolean).join(' · ');
             status.hidden = !status.textContent;
             list.setAttribute('aria-busy', String(!!page?.loading));
             const recordIds = visible.map(row => String(row.cid || row.key || '')).filter(Boolean);
@@ -506,7 +522,7 @@
                 const recordId = String(row.cid || row.key || '');
                 const recordLabel = win.RecordLabel.label(row.title, recordId, recordIds);
                 const signature = JSON.stringify([recordLabel, row.title, row.applied, row.published, row.onChain,
-                    timestampOf(row), state.selecting, state.purpose, win.i18n.getLocale?.(), row.local && win.proposalStorage.revision]);
+                    timestampOf(row), both && row.heldBy, state.selecting, state.purpose, win.i18n.getLocale?.(), row.local && win.proposalStorage.revision]);
                 const cached = cards.get(row.key);
                 if (cached && cached.signature === signature && cached.record === row.record && cached.local === row.local) {
                     cached.item.classList.toggle('is-selected', state.active === `${kind}:${row.key}`);
@@ -571,6 +587,14 @@
                 if (kind === 'agreements' && (row.record.onchain || row.record.status)) {
                     const status = row.record.onchain?.status || row.record.status;
                     badges.append(node('span', 'cb-badge', win.AgreementPanel.chainStatusText(status)));
+                }
+                // Read from both sources, a row says which of them hold it.
+                if (both && row.heldBy) {
+                    for (const source of row.heldBy) {
+                        const held = node('span', 'cb-badge cb-badge--neutral lists-item__held-by', win.ReadSource.label(source));
+                        held.dataset.heldBy = source; held.title = t('readSource.heldBy', { source: win.ReadSource.label(source) });
+                        badges.append(held);
+                    }
                 }
                 const timestamp = timestampOf(row);
                 if (Number.isFinite(timestamp)) {
@@ -721,17 +745,6 @@
                 const mapRow = node('div', 'lists-map-row');
                 mapRow.append(onMap, unapplyAll); box.append(mapRow);
             }
-            // Agreements list from the server's index or from the agreement program's accounts on chain.
-            if (state.tab === 'agreements' && win.ChainReader) {
-                const wrap = node('label', '', t('lists.source')), select = node('select');
-                for (const [value, text] of [['index', t('lists.sourceIndex')], ['chain', t('lists.sourceChain', { cluster: win.ChainReader.cluster() })]]) {
-                    const option = node('option', '', text); option.value = value; select.append(option);
-                }
-                select.dataset.listFilter = 'source';
-                select.value = state.source;
-                select.addEventListener('change', () => { state.source = select.value; queryChanged(); });
-                wrap.append(select); fields.append(wrap);
-            }
             for (const [key, label, options] of [
                 ['publication', 'modal.roadWidth.proposalList.filters.publication', stages],
                 ['sort', 'modal.roadWidth.proposalList.filters.sort', [['newest', 'lists.newest'], ['title', 'lists.byTitle']]]
@@ -745,9 +758,20 @@
             filters.append(fields);
             const actions = node('div', 'cb-actions');
             actions.append(button(t('modal.roadWidth.proposalList.filters.reset'), () => {
-                state.search = ''; state.publication = 'all'; state.sort = 'newest'; state.onMap = false; state.source = 'index'; controls(); queryChanged();
+                state.search = ''; state.publication = 'all'; state.sort = 'newest'; state.onMap = false; controls(); queryChanged();
             }, 'btn-quiet'));
             filters.append(actions); box.append(filters);
+            // Where every tab reads from: the app-wide choice of Settings (chain/read-source.js), shown
+            // here because it decides what the rows are. Changing it here changes it everywhere.
+            const readFrom = node('label', 'lists-read-from', t('readSource.short'));
+            const source = node('select');
+            for (const value of win.ReadSource.SOURCES) {
+                const option = node('option', '', win.ReadSource.label(value)); option.value = value; source.append(option);
+            }
+            source.dataset.listsReadFrom = '';
+            source.value = win.ReadSource.get();
+            source.addEventListener('change', () => win.ReadSource.set(source.value));
+            readFrom.append(source); box.append(readFrom);
             box.append(button(t('agreement.minted.refresh'), () => load({ force: true }), 'lists-refresh', 'arrows-rotate'));
         }
         function init() {
@@ -781,6 +805,8 @@
             // the Applied badges, the On the map count and Unapply all follow every map commit.
             win.LiveParcelFabric?.subscribe?.(() => { if (ready && opened()) renderRows(); });
             win.addEventListener('i18n:translationsLoaded', () => { if (opened()) { controls(); refresh(); } });
+            // Another source lists other rows, and a card's object is read again from it.
+            win.ReadSource.subscribe(() => { state.records.clear(); state.known.clear(); controls(); if (opened()) queryChanged(); });
             controls();
         }
         async function select(tab) {

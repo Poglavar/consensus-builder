@@ -10240,13 +10240,33 @@
         "cannotStand": "{{title}} cannot stand with the designs already ticked, so it is not added.",
         "loadMore": "Load more",
         "limited": "Showing up to 1,000 published designs.",
-        "source": "Source",
-        "sourceIndex": "Server index",
-        "sourceChain": "On chain (Solana {{cluster}})",
         "chainAgreement": "Agreement {{cid}}",
         "chainLoading": "Reading agreements on chain…",
         "chainFailed": "Agreements could not be read on chain: {{reason}}"
     },
+  "readSource": {
+    "title": "Read published records from",
+    "short": "Read from",
+    "server": "Our server",
+    "chain": "Chain",
+    "both": "Both",
+    "describe": {
+      "server": "Agreements, plans and designs come from our server’s index. Nothing is read from the chain or IPFS.",
+      "chain": "Agreements are listed from the agreement program on Solana {{cluster}}; agreements, plans and designs are read from public IPFS gateways, each checked against its CID. Our server is not asked for them.",
+      "both": "Both are read: lists show the rows of either, each marked by where it was found, and an object is taken from whichever holds it (our server’s copy when both do)."
+    },
+    "fromLink": "This link chose it for this page; a choice made here is kept in this browser.",
+    "heldBy": "Found on: {{source}}",
+    "readFrom": "Read from: {{source}}",
+    "gateway": "IPFS gateway {{host}}",
+    "checking": "Reading from {{source}}…",
+    "unavailable": "{{source}} could not be read: {{reason}}",
+    "servedBy": "Read from: {{sources}}.",
+    "chainListsAgreementsOnly": "The chain lists agreements only, not designs or plans.",
+    "designNotOnChain": "This design could not be read from IPFS.",
+    "designNowhere": "This design is not on our server and could not be read from IPFS.",
+    "designsNotOnChain": "The designs could not be read from IPFS."
+  },
   "appUpdates": {
     "title": "Application update",
     "build": "Build {{number}}",

@@ -10340,13 +10340,33 @@
         "cannotStand": "{{title}} ne može da stoji uz već označene dizajne pa nije dodat.",
         "loadMore": "Učitaj još",
         "limited": "Prikazuje se do 1.000 objavljenih dizajna.",
-        "source": "Izvor",
-        "sourceIndex": "Indeks servera",
-        "sourceChain": "Na lancu (Solana {{cluster}})",
         "chainAgreement": "Sporazum {{cid}}",
         "chainLoading": "Čitanje sporazuma sa lanca…",
         "chainFailed": "Sporazumi nisu mogli da se pročitaju sa lanca: {{reason}}"
     },
+  "readSource": {
+    "title": "Objavljene zapise čitaj sa",
+    "short": "Čitaj sa",
+    "server": "Naš server",
+    "chain": "Lanac",
+    "both": "Oba",
+    "describe": {
+      "server": "Sporazumi, planovi i dizajni dolaze iz indeksa našeg servera. Ništa se ne čita sa lanca ni sa IPFS-a.",
+      "chain": "Sporazumi se navode iz programa sporazuma na Solani {{cluster}}; sporazumi, planovi i dizajni čitaju se sa javnih IPFS mrežnih prolaza, svaki proveren prema svom CID-u. Naš server se za njih ne pita.",
+      "both": "Čitaju se oba: liste prikazuju redove iz bilo kog od njih, svaki označen prema tome gde je pronađen, a objekat se uzima od onog koji ga ima (kopija našeg servera kada ga imaju oba)."
+    },
+    "fromLink": "Ovaj izbor je za ovu stranicu napravio link; izbor napravljen ovde čuva se u ovom pregledaču.",
+    "heldBy": "Pronađeno na: {{source}}",
+    "readFrom": "Pročitano sa: {{source}}",
+    "gateway": "IPFS mrežni prolaz {{host}}",
+    "checking": "Čitanje sa izvora {{source}}…",
+    "unavailable": "Izvor {{source}} nije mogao da se pročita: {{reason}}",
+    "servedBy": "Pročitano sa: {{sources}}.",
+    "chainListsAgreementsOnly": "Lanac navodi samo sporazume, ne dizajne ni planove.",
+    "designNotOnChain": "Ovaj dizajn nije mogao da se pročita sa IPFS-a.",
+    "designNowhere": "Ovaj dizajn nije na našem serveru i nije mogao da se pročita sa IPFS-a.",
+    "designsNotOnChain": "Dizajni nisu mogli da se pročitaju sa IPFS-a."
+  },
   "appUpdates": {
     "title": "Ažuriranje aplikacije",
     "build": "Verzija {{number}}",
