@@ -342,18 +342,17 @@ test.describe('Remaining UI controls @features', () => {
     await expect(modal.locator('#am-list-no-match')).toBeVisible();
   });
 
-  test('mint parcel selection checkboxes determine which parcels are submitted', async ({ mockApi: page }) => {
-    await page.route('**/metadata', route => route.fulfill({ json: { metadataUrl: 'ipfs://e2e-selected-parcel.json' } }));
+  test('anchor dialog checkboxes determine which parcels are submitted', async ({ mockApi: page }) => {
     await openCity(page);
     await page.evaluate(() => {
       const w = window as any;
       w.solanaWalletManager = { getState: () => ({ status: 'connected', accounts: ['e2e-owner'], cluster: 'devnet' }) };
       w.resolveParcelNftAddressSolana = async () => '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1';
       w.__mintedParcelIds = [];
-      w.mintParcelSolana = async (parcelId: string) => {
-        w.__mintedParcelIds.push(parcelId);
-        return { txHash: 'e2e-parcel-mint' };
-      };
+      w.SolanaParcelAnchors = { anchorParcels: async (parcelIds: string[]) => {
+        w.__mintedParcelIds.push(...parcelIds);
+        return { anchoredParcelIds: parcelIds, transactions: [{ parcelIds, txHash: 'e2e-parcel-anchor' }], alreadyAnchored: [], skipped: [] };
+      } };
       const feature = (parcelId: string) => ({ type: 'Feature', properties: { parcelId }, geometry: null });
       void w.ParcelsUIClaim.openParcelMintModal({ parcels: [
         { parcelId: 'TEST-PARCEL-1', parcelName: 'Test Parcel One', feature: feature('TEST-PARCEL-1') },
@@ -368,8 +367,8 @@ test.describe('Remaining UI controls @features', () => {
     await expect(second).toBeChecked();
     await first.uncheck();
     await expect(first).not.toBeChecked();
-    await dialog.getByRole('button', { name: 'Mint', exact: true }).click();
-    await expect(dialog.getByRole('status')).toContainText('Mint successful');
+    await dialog.getByRole('button', { name: 'Anchor on chain', exact: true }).click();
+    await expect(dialog.getByRole('status')).toContainText('Some parcels are anchored');
     await expect.poll(() => page.evaluate(() => (window as any).__mintedParcelIds)).toEqual(['TEST-PARCEL-2']);
   });
 

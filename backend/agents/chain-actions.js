@@ -3,7 +3,7 @@
 // confirmation as the agreement panel's "Confirm as lens member" sends it (decision attestation, attest,
 // and execute or release when it completes the lens), taking back a wallet's contributions (with an
 // apartment's reservation cleared), an apartment buyer's qualification read from the round's lens, and
-// parcel anchors as the parcel panel's Mint creates them. Same codecs and rules as the browser
+// parcel anchors as the parcel panel's "Anchor on chain" creates them. Same codecs and rules as the browser
 // (agreement-bridge.js chainActions, AgreementDecisionPlan, SolanaPledgeClient, SolanaParcelClient);
 // every step reads the chain first, so a rerun signs nothing twice.
 import { createRequire } from 'node:module';
@@ -197,24 +197,30 @@ export async function apartmentQualification({ cid, sponsor, lenses, members, of
 }
 
 /**
- * Anchor parcels on parcel_nft as the parcel panel's Mint does, one transaction each: an ownerless PDA
- * ["parcel", anchorId] holding the metadata URI; the signer only pays rent. An existing anchor is
- * reported, not minted again, and its metadata is never stored. `parcels` are [{ anchorId, metadataUri }],
- * metadataUri a string or an async function giving one (called only for an anchor about to be minted).
+ * Anchor parcels on parcel_nft as the parcel panel's "Anchor on chain" does: an ownerless PDA
+ * ["parcel", anchorId] holding the parcel's page URI; the signer only pays rent. Existing anchors are
+ * reported and cost nothing, so a resumed batch signs only what is left; the rest go several to a
+ * transaction, packed by size (SolanaParcelClient.packMintParcelInstructions). `parcels` are
+ * [{ anchorId, metadataUri }]. A failed transaction throws with the results so far on `error.parcels`.
  */
 export async function anchorParcels({ connection, payerKeypair, parcels, programId = parcelClient.constants.PARCEL_NFT_PROGRAM_ID, sendAndConfirm = web3.sendAndConfirmTransaction } = {}) {
-    const results = [];
-    for (const { anchorId, metadataUri: source } of parcels) {
-        const [anchor] = parcelClient.getParcelPda(anchorId, programId);
-        if (await connection.getAccountInfo(anchor, 'confirmed')) {
-            results.push({ anchorId, anchor: anchor.toBase58(), alreadyAnchored: true, signature: null });
-            continue;
-        }
-        const metadataUri = typeof source === 'function' ? await source() : source;
-        if (typeof metadataUri !== 'string' || !metadataUri.trim()) throw coded(`parcel ${anchorId} has no metadata URI; nothing signed`, 'metadata-required');
-        const { instruction } = parcelClient.buildMintParcelIx({ parcelId: anchorId, metadataUri, payer: payerKeypair.publicKey, programId });
-        const signature = await send(connection, [instruction], payerKeypair, sendAndConfirm);
-        results.push({ anchorId, anchor: anchor.toBase58(), alreadyAnchored: false, signature });
+    for (const { anchorId, metadataUri } of parcels) {
+        if (typeof metadataUri !== 'string' || !metadataUri.trim()) throw coded(`parcel ${anchorId} has no anchor URI; nothing signed`, 'uri-required');
     }
-    return { parcels: results };
+    const missing = new Set(await parcelClient.missingParcelAnchors(connection, parcels.map(row => row.anchorId), { programId }));
+    const results = new Map(parcels.filter(row => !missing.has(row.anchorId)).map(({ anchorId }) => [anchorId,
+        { anchorId, anchor: parcelClient.getParcelPda(anchorId, programId)[0].toBase58(), alreadyAnchored: true, signature: null }]));
+    const batches = parcelClient.packMintParcelInstructions(parcels.filter(row => missing.has(row.anchorId)).map(row => ({ parcelId: row.anchorId, metadataUri: row.metadataUri })),
+        { payer: payerKeypair.publicKey, programId });
+    const ordered = () => parcels.map(row => results.get(row.anchorId)).filter(Boolean);
+    for (const batch of batches) {
+        let signature;
+        try {
+            signature = await send(connection, batch.map(row => row.instruction), payerKeypair, sendAndConfirm);
+        } catch (error) {
+            throw Object.assign(error, { parcels: ordered() });
+        }
+        batch.forEach(row => results.set(row.parcelId, { anchorId: row.parcelId, anchor: row.parcel.toBase58(), alreadyAnchored: false, signature }));
+    }
+    return { parcels: ordered(), transactions: batches.length };
 }

@@ -374,6 +374,8 @@
         pinningOwnKey: (tr, detail) => tr('agreement.chain.phase.pinningOwnKey', 'Pinning with your Pinata key: {{pinned}} of {{total}}…',
             { pinned: detail?.pinned ?? 0, total: detail?.total ?? '…' }),
         preparing: tr => tr('agreement.chain.phase.preparing', 'Preparing the transaction…'),
+        anchoring: (tr, detail) => tr('agreement.chain.phase.anchoring', 'Anchoring the input parcels: {{done}} of {{total}}…',
+            { done: detail?.done ?? 0, total: detail?.total ?? '…' }),
         awaiting_signature: tr => tr('agreement.chain.phase.awaitingSignature', 'Waiting for the wallet’s signature…'),
         submitted: tr => tr('agreement.chain.phase.submitted', 'Sent; waiting for confirmation…'),
         confirmed: tr => tr('agreement.chain.phase.confirmed', 'Confirmed.'),
@@ -1692,7 +1694,8 @@
 
         // Mint (the sponsor): the content goes on IPFS first, pinned by our server or, when it cannot, with
         // the sponsor's own Pinata key (askOwnKey); no wallet prompt until a provider confirmed every CID.
-        // Then create the account, mirror it into the index and keep it here.
+        // Then anchor the input parcels that have none and create the account (one wallet approval where
+        // the wallet signs several transactions at once), mirror it into the index and keep it here.
         async function mint() {
             const id = state.id;
             const agreement = state.agreement;
@@ -1718,7 +1721,10 @@
                 phase('indexing');
                 try {
                     await win.AgreementSync.recordOnchain(subject, { chain: 'solana', cluster: minted.cluster, account: minted.account, signature: minted.signature });
-                    notice(t('agreement.chain.minted', 'Agreement minted.'));
+                    // Input parcels whose id cannot seed an anchor are named; the mint itself went through.
+                    const skipped = (minted.inputAnchors?.skipped || []).map(row => row.parcelId);
+                    if (skipped.length) notice(t('agreement.chain.anchorsSkipped', 'Agreement minted. These input parcels could not be anchored, because their ids are longer than an anchor allows: {{parcels}}', { parcels: skipped.join(', ') }), 'warning', 9000);
+                    else notice(t('agreement.chain.minted', 'Agreement minted.'));
                 } catch (error) {
                     if (!error || !error.kept) throw error;
                     notice(t('agreement.chain.mintedNotIndexed', 'Agreement minted, but the server did not record it: {{reason}}', { reason: error.message }), 'warning', 9000);

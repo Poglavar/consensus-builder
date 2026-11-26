@@ -860,7 +860,7 @@
       ]
     },
     {
-      "feature": "parcel NFT status linking the minted EVM token or Solana anchor on its explorer, with Mint off once minted",
+      "feature": "parcel anchor status linking the minted EVM token or Solana anchor on its explorer, with \u201cAnchor on chain\u201d off once anchored",
       "specs": [
         "tests/parcel-nft-status.spec.ts"
       ]

@@ -33,8 +33,10 @@ the contributions), `ugt_record_lens_decision`, `ugt_execute_agreement`, `ugt_ca
 `ugt_expire_agreement` and `ugt_refund_contributions`. On an apartment round (the funding section):
 `ugt_list_apartments` (the developer lists every unit not yet listed) and `ugt_reserve_apartment` (a
 buyer the round's lens has qualified pays the unit's deposit and reserves it); `ugt_inspect_agreement`
-with `includeAvailability` reads the section's states and counts (`apartmentStats`). On a parcel (the Tools tab's Mint):
-`ugt_anchor_parcels`, with the panel's anchor id and metadata (`ParcelAnchor`). On a published property
+with `includeAvailability` reads the section's states and counts (`apartmentStats`). On a parcel (the Tools tab's "Anchor on chain"):
+`ugt_anchor_parcels`, with the panel's anchor id and URI (`ParcelAnchor`), several anchors per
+transaction; `ugt_mint_agreement` anchors the agreement's input parcels first, as the agreement panel's
+Mint does. On a published property
 offer (the offer panel): `ugt_mint_property_offer`, `ugt_take_property_offer` (accept),
 `ugt_fund_property_offer`, `ugt_release_property_offer`, `ugt_cancel_property_offer` and
 `ugt_expire_property_offer`. The node adapters (`agents/chain-actions.js`, `agents/apartment-actions.js`, `agents/property-offer-signer.js`)

@@ -1,7 +1,8 @@
-// A parcel's anchor on the parcel_nft program, as the parcel panel's Mint and an agent's
-// ugt_anchor_parcels make it: the id the anchor PDA ["parcel", id] is seeded with and the metadata its
-// URI points to. Pure, UMD: window.ParcelAnchor in the browser (parcels/blockchain.js,
-// parcels/ui/claim.js), module.exports for node (backend/agents/chain-actions.js).
+// A parcel's anchor on the parcel_nft program, as the parcel panel's "Anchor on chain", the agreement
+// mint and an agent's ugt_anchor_parcels make it: the id the anchor PDA ["parcel", id] is seeded with
+// and its URI, the parcel's page on the public site (nothing is pinned). Pure, UMD: window.ParcelAnchor
+// in the browser (parcels/blockchain.js, parcels/ui/claim.js, solana/parcel-mint.js), module.exports
+// for node (backend/agents/ugt-agent-tools.js).
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -30,25 +31,43 @@
         ) || parcelId || null;
     }
 
-    // The anchor's metadata JSON: its name, who minted it, the parcel's area (m², two decimals, when
-    // known) and geometry. `image` stays empty unless a rendered picture was uploaded with it.
-    function anchorMetadata({ anchorId, parcelName = null, minter, calculatedArea = null, geometry = null }) {
-        const areaSquareMeters = Number.isFinite(calculatedArea) && calculatedArea > 0 ? Math.round(calculatedArea * 100) / 100 : null;
-        const attributes = [
-            { trait_type: 'Parcel ID', value: anchorId },
-            { trait_type: 'Minted By', value: minter }
-        ];
-        if (areaSquareMeters !== null) attributes.push({ trait_type: 'Area (m²)', value: areaSquareMeters, display_type: 'number' });
-        return {
-            name: parcelName || `Parcel ${anchorId}`,
-            description: `Digitized cadastral parcel ${anchorId}. Minted by ${minter}.`,
-            image: '',
-            attributes,
-            parcelId: anchorId,
-            areaSquareMeters,
-            geometry: geometry || null
-        };
+    // The public site an anchor's URI names. Pinned, never the page's own origin: an anchor is written
+    // once and kept forever, so a localhost or preview origin must never reach the chain. The server
+    // passes its PUBLIC_BASE_URL instead (backend/agents/ugt-agent-tools.js).
+    const PUBLIC_SITE_URL = 'https://urbangametheory.xyz';
+    // parcel_nft's Parcel account reserves 4 + 256 bytes for metadata_uri, and the parcel id seeds the
+    // PDA, so it is at most 32 bytes (blockchain/solana/programs/parcel_nft/src/lib.rs).
+    const MAX_URI_BYTES = 256;
+    const MAX_ID_BYTES = 32;
+    const byteLength = value => new TextEncoder().encode(String(value)).length;
+
+    // The anchor's URI: the parcel's page, /parcel/<anchorId> (parcels/route.js opens it, switching to
+    // the parcel's city). Each path segment is encoded; the slash of a Croatian number (1234/2) stays.
+    function anchorUri(anchorId, { base = PUBLIC_SITE_URL } = {}) {
+        const id = text(anchorId);
+        if (!id) return null;
+        const origin = text(base).replace(/\/+$/, '') || PUBLIC_SITE_URL;
+        return `${origin}/parcel/${id.split('/').map(encodeURIComponent).join('/')}`;
     }
 
-    return { anchorIdOf, anchorMetadata };
+    // Parcel ids → what an anchor batch takes: [{ anchorId, metadataUri }], first occurrence kept, and
+    // the ids that cannot be anchored with the reason (an id over 32 bytes cannot seed the PDA; a URI
+    // over 256 bytes does not fit the account). A skipped id is reported, never fatal.
+    function anchorTargets(parcelIds, { base = PUBLIC_SITE_URL } = {}) {
+        const parcels = [];
+        const skipped = [];
+        const seen = new Set();
+        for (const raw of parcelIds || []) {
+            const anchorId = text(raw);
+            if (!anchorId || seen.has(anchorId)) continue;
+            seen.add(anchorId);
+            const metadataUri = anchorUri(anchorId, { base });
+            if (byteLength(anchorId) > MAX_ID_BYTES) skipped.push({ parcelId: anchorId, reason: 'id-too-long' });
+            else if (byteLength(metadataUri) > MAX_URI_BYTES) skipped.push({ parcelId: anchorId, reason: 'uri-too-long' });
+            else parcels.push({ anchorId, metadataUri });
+        }
+        return { parcels, skipped };
+    }
+
+    return { PUBLIC_SITE_URL, MAX_URI_BYTES, MAX_ID_BYTES, anchorIdOf, anchorUri, anchorTargets };
 });

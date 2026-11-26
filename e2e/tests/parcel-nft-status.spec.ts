@@ -1,5 +1,5 @@
-// The parcel panel's Tools tab reads the parcel's NFT status from the connected wallet's chain and
-// links the minted token or anchor on its explorer; Mint is off once it exists. There is no Claim:
+// The parcel panel's Tools tab reads the parcel's anchor from the connected wallet's chain and links
+// the minted token or anchor on its explorer; "Anchor on chain" is off once it exists. There is no Claim:
 // parcel anchors are ownerless, so nothing is claimed.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel } from '../helpers/runtime';
@@ -7,7 +7,7 @@ import { connectWalletByConnectorId, injectMockEvmWallet, injectMockSolanaWallet
 
 const CONTRACT = '0x1234567890abcdef1234567890abcdef12345678';
 
-test('with an EVM wallet, NFT status links the minted parcel token and Mint is off', async ({ mockApi: page }) => {
+test('with an EVM wallet, the anchor status links the minted parcel token and anchoring is off', async ({ mockApi: page }) => {
   await page.route('**/contracts/addresses.json', route => route.fulfill({
     status: 200,
     contentType: 'application/json',
@@ -28,14 +28,14 @@ test('with an EVM wallet, NFT status links the minted parcel token and Mint is o
   await connectWalletByConnectorId(page, 'metamask');
   await openParcel(page, 'tools');
   const status = page.locator('#parcelMintStatus');
-  const link = status.getByRole('link', { name: /NFT status: Minted/ });
+  const link = status.getByRole('link', { name: /Anchored on/ });
   await expect(link).toHaveAttribute('href', new RegExp(`^https://sepolia\\.basescan\\.org/nft/${CONTRACT}/7$`, 'i'), { timeout: 15000 });
   await expect(page.locator('#mintAndClaimButton')).toBeDisabled();
   await expect(page.locator('#tools-tab').getByRole('button', { name: /claim/i })).toHaveCount(0);
 });
 
 // A Solana wallet reads the parcel's ownerless parcel_nft anchor instead of an ERC-721 token.
-test('with a Solana wallet, NFT status links the parcel anchor account and Mint is off', async ({ mockApi: page }) => {
+test('with a Solana wallet, the anchor status links the parcel anchor account and anchoring is off', async ({ mockApi: page }) => {
   const ANCHOR = '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin';
   await injectMockSolanaWallet(page, { publicKey: 'Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W', providerName: 'phantom' });
   await openCity(page);
@@ -45,7 +45,7 @@ test('with a Solana wallet, NFT status links the parcel anchor account and Mint 
   await page.evaluate(() => { (window as any).ethers = undefined; });
   await openParcel(page, 'tools');
   const status = page.locator('#parcelMintStatus');
-  await expect(status.getByRole('link', { name: /NFT status: Minted/ })).toHaveAttribute('href', `https://explorer.solana.com/address/${ANCHOR}?cluster=devnet`);
+  await expect(status.getByRole('link', { name: 'Anchored on Solana' })).toHaveAttribute('href', `https://explorer.solana.com/address/${ANCHOR}?cluster=devnet`);
   await expect(page.locator('#mintAndClaimButton')).toBeDisabled();
   await expect(page.locator('#tools-tab').getByRole('button', { name: /claim/i })).toHaveCount(0);
 });

@@ -161,21 +161,22 @@ describe('local MCP chain actions', () => {
         await expect(tools(adapters(), { UGT_MCP_LIVE: '' }).reserveApartment({ agreementCid: cid, unitId: 'u1', confirm: true })).rejects.toThrow(/live actions are disabled/);
     });
 
-    it('anchors the selected parcels with the panel\'s anchor id and metadata, stored through the app API', async () => {
+    it('anchors the selected parcels with the panel\'s anchor id, the parcel page on the app as the URI and no upload', async () => {
         const geometry = { type: 'Polygon', coordinates: [[[15.97, 45.8], [15.9701, 45.8], [15.9701, 45.8001], [15.97, 45.8]]] };
-        const posted = [];
-        const fetchImpl = vi.fn(async (url, init = {}) => {
+        const fetchImpl = vi.fn(async url => {
             const { pathname } = new URL(url);
             if (pathname === '/parcels') return json({ type: 'FeatureCollection', features: [{ type: 'Feature', id: '123',
-                properties: { parcelId: '123', MATICNI_BROJ_KO: '335754', BROJ_CESTICE: '1234/2' }, geometry }] });
-            if (pathname === '/metadata') { posted.push(JSON.parse(init.body)); return json({ metadataUrl: 'https://api.test/metadata/parcel.json' }); }
+                properties: { parcelId: '123', MATICNI_BROJ_KO: '335754', BROJ_CESTICE: '1234/2' }, geometry },
+            { type: 'Feature', id: 'GB-HMLR-LONDON-0123456789-ABCDEFGH', properties: { parcelId: 'GB-HMLR-LONDON-0123456789-ABCDEFGH' }, geometry }] });
             throw new Error(`unexpected ${pathname}`);
         });
-        const anchorParcels = vi.fn(async ({ parcels }) => ({ parcels: await Promise.all(parcels.map(async row => ({ anchorId: row.anchorId, anchor: 'A', uri: await row.metadataUri() }))) }));
-        const result = await tools({ anchorParcels }, {}, fetchImpl).anchorParcels({ city: 'zagreb', parcelSourceId: 'oss-wfs', parcelIds: ['123'], confirm: true });
-        expect(result.parcels).toEqual([{ anchorId: 'HR-335754-1234/2', anchor: 'A', uri: 'https://api.test/metadata/parcel.json' }]);
-        expect(posted[0]).toMatchObject({ fileName: 'parcel-HR-335754-1234/2.json', metadata: { parcelId: 'HR-335754-1234/2', geometry,
-            attributes: [{ value: 'HR-335754-1234/2' }, { value: keypair.publicKey.toBase58() }, { trait_type: 'Area (m²)' }] } });
+        const anchorParcels = vi.fn(async ({ parcels }) => ({ parcels: parcels.map(row => ({ anchorId: row.anchorId, anchor: 'A', uri: row.metadataUri })), transactions: 1 }));
+        const result = await tools({ anchorParcels }, { UGT_APP_ORIGIN: 'https://app.test/' }, fetchImpl)
+            .anchorParcels({ city: 'zagreb', parcelSourceId: 'oss-wfs', parcelIds: ['123', 'GB-HMLR-LONDON-0123456789-ABCDEFGH'], confirm: true });
+        expect(result.parcels).toEqual([{ anchorId: 'HR-335754-1234/2', anchor: 'A', uri: 'https://app.test/parcel/HR-335754-1234/2' }]);
+        // An id over 32 bytes cannot seed the anchor PDA: reported, not fatal.
+        expect(result.skipped).toEqual([{ parcelId: 'GB-HMLR-LONDON-0123456789-ABCDEFGH', reason: 'id-too-long' }]);
+        expect(fetchImpl.mock.calls.map(([url]) => new URL(url).pathname)).toEqual(['/parcels']);
         await expect(tools({ anchorParcels }, {}, fetchImpl).anchorParcels({ city: 'zagreb', parcelSourceId: 'oss-wfs', parcelIds: ['123'] })).rejects.toThrow(/confirm/);
     });
 

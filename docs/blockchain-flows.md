@@ -121,10 +121,16 @@ hundred anchor accounts for the program to check, so the agreement commits to it
 its CID and a reader shows any input parcel that has no anchor. EVM could check anchors in a loop; it
 keeps the same rule so both chains read alike.
 
-Anchoring is batched (Solana: several `create_parcel` instructions per transaction, as the parcel
-panel's Mint (`parcel-mint.js`) does one at a time; EVM: `anchorBatch`). Each batch is one wallet
-approval; the checklist reports `k/N` anchored and resumes where it stopped after a refused
-signature.
+Anchoring is batched. Built on Solana (2026-11-27): as many `parcel_nft` `mint_parcel` instructions
+per transaction as fit its 1232 bytes (about eight), parcels already anchored skipped, so a resumed
+batch costs nothing for the done ones (`SolanaParcelClient.packMintParcelInstructions`, used by the
+parcel panel's "Anchor on chain" in `solana/parcel-mint.js`, the agreement mint in
+`agreement-bridge.js` and the agents' `chain-actions.js`). The agreement mint anchors its input
+parcels before the create; a wallet that signs several transactions at once (`signAllTransactions`)
+approves the anchors and the create together, others approve each. An id over 32 bytes cannot seed an
+anchor and is reported, not fatal. An anchor's URI is the parcel's page
+(`https://urbangametheory.xyz/parcel/<anchor id>`), so anchoring pins nothing. To build: EVM
+`anchorBatch`, and the checklist's `k/N` display.
 
 After a successful mint the browser mirrors the chain reference to the index when the server answers;
 otherwise the server's chain watcher will find it.

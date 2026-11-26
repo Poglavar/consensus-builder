@@ -863,7 +863,7 @@
                                 </label>
                                 <label>
                                     <input type="checkbox" id="markMintedCheckbox">
-                                    <span data-i18n-key="sidebar.parcels.markMinted">Mark minted</span>
+                                    <span data-i18n-key="sidebar.parcels.markMinted">Mark anchored</span>
                                 </label>
                         </div>
 
@@ -1719,22 +1719,22 @@
                     <div id="selected-parcels-content"></div>
                 </div>
 
-                <!-- Tools Tab: the parcel NFT first (its status line and Mint, the tab's one primary
-                     action; claim.js enables Mint while the parcel has no anchor and, while several
-                     parcels are selected, hides every .button-row but the status and Mint rows), then
+                <!-- Tools Tab: the parcel anchor first (its status line and "Anchor on chain", the tab's one
+                     primary action; claim.js enables it while the parcel has no anchor and, while several
+                     parcels are selected, hides every .button-row but the status and anchor rows), then
                      the inspection tools in two columns. Neighbors and Vertices are toggles
                      (aria-pressed). Parcel anchors are ownerless, so there is nothing to claim. -->
                 <div id="tools-tab" class="parcel-tab-content" role="tabpanel" aria-labelledby="parcel-tools-tab-button" hidden>
                     <div class="parcel-info-buttons">
                         <div class="button-row button-row-5">
                             <div id="parcelMintStatus" class="claim-status-indicator"
-                                data-i18n-key="panel.parcel.nftStatusDefault">NFT status: Not checked yet.</div>
+                                data-i18n-key="panel.parcel.nftStatusDefault">Anchor not checked yet.</div>
                         </div>
                         <div class="button-row button-row-claim cb-actions">
                             <button id="mintAndClaimButton" class="btn btn-primary" type="button"
                                 onclick="(window.Parcels?.uiClaim?.openParcelMintModal || window.openParcelMintModal || function(){})()"
-                                title="Mint the parcel NFT" disabled><i class="fas fa-stamp" aria-hidden="true"></i><span
-                                    data-i18n-key="panel.parcel.mintAndClaimButton">Mint</span></button>
+                                title="A parcel anchor is a public record of the parcel on the blockchain. Nobody owns it, and it doesn’t grant ownership." disabled><i class="fas fa-stamp" aria-hidden="true"></i><span
+                                    data-i18n-key="panel.parcel.mintAndClaimButton">Anchor on chain</span></button>
                         </div>
                         <div class="button-row button-row-1 cb-actions">
                             <button id="visualizeButton" class="btn" type="button"
@@ -2158,17 +2158,16 @@
             'js/tokenizario-links.js',
             'js/lens-service-client.js',
             'js/solana/chain-data-loader.js?v=20261022-agreement-chain',
-            'js/solana/parcel-client.js?v=20261022-agreement-chain',
+            'js/solana/parcel-client.js?v=20261127-anchor-batches',
             'js/solana/agreement-client.js?v=20261126-member-decision',
-            'js/solana/agreement-bridge.js?v=20261126-apartment-rounds',
+            'js/solana/agreement-bridge.js?v=20261127-anchor-inputs',
             'js/solana/property-offer-client.js',
             'js/solana/property-offer-bridge.js',
             'js/proposals/site-hash.js',
             'js/solana/market-client.js?v=20261020-verified-funding',
             'js/solana/lmsr-client.js?v=20261126-reclaim',
             'js/solana/market-bridge.js?v=20261126-reclaim',
-            'js/solana/parcel-mint.js?v=20261022-agreement-chain',
-            'js/asset-upload.js',
+            'js/solana/parcel-mint.js?v=20261127-anchor-batches',
             'js/contracts-loader.js',
             'js/chain-data-loader.js',
             'js/thumbnail-bbox.js',
@@ -2328,12 +2327,12 @@
             'js/parcels/ground-service.js?v=20261008-point-parcels',
             'js/parcels/point-map.js?v=20261008-point-parcels',
             'js/parcels/blocks.js',
-            'js/parcels/parcel-anchor.js?v=20261126-solana-claim',
+            'js/parcels/parcel-anchor.js?v=20261127-anchor-batches',
             'js/parcels/blockchain.js?v=20261126-no-claim',
             'js/browser-ownership-source.js',
             'js/parcels/ownership-ui.js?v=20261027-stack-semantics',
             'js/parcels/ui/visibility.js',
-            'js/parcels/ui/claim.js?v=20261126-no-claim',
+            'js/parcels/ui/claim.js?v=20261127-anchor-batches',
             'js/parcels/index.js?v=20261126-no-claim',
             'js/parcels/route.js?v=20261112-opened-address',
             'js/proposals/selection.js',
@@ -2504,7 +2503,7 @@
             'js/agreement-ground.js?v=20261028-abstract-parties',
             'js/agreement-store.js',
             'js/agreement-dialog.js?v=20261030-plan-preview-apply',
-            'js/agreement-panel.js?v=20261126-storey-numbering',
+            'js/agreement-panel.js?v=20261127-anchor-inputs',
             'js/agreement-list.js?v=20261027-agreement-tabs',
             'js/agreement-sync.js?v=20261112-arrival-path',
             'js/property-offer-record.js',
