@@ -542,13 +542,10 @@ export function setupAgreementsRoute(app, deps) {
     const decisions = createAgreementDecisionHandlers({
         store: deps.decisionStore || createAgreementDecisionStore(pool),
         loadAgreement: agreementCid => loadAgreement(pool, agreementCid),
-        now,
-        ...(deps.pinBytes ? { pinBytes: deps.pinBytes } : {})
+        now
     });
     app.get('/agreements/:cid/decisions', decisions.get);
     app.post('/agreements/:cid/decisions', decisions.post);
-    // Pinning spends the IPFS quota, so it shares the upload routes' per-client limit.
-    app.post('/agreements/:cid/decisions/bundle', deps.uploadRateLimiter || createUploadRateLimiter(), decisions.bundle);
 
     const communityReports = createCommunityReportHandlers({
         store: deps.reportStore || createCommunityReportStore(pool),

@@ -1,19 +1,16 @@
 // Receipt relay for owner decisions on published agreements (plan-design-agreement.md, M2 "Owner
-// decisions"): GET and POST /agreements/:cid/decisions, and POST …/bundle, which pins the canonical
-// bundle a wallet then anchors on chain. It replaces the proposal relay (/proposals/:id/owner-decisions),
+// decisions"): GET and POST /agreements/:cid/decisions. It replaces the proposal relay (/proposals/:id/owner-decisions),
 // re-keyed by the agreement's CID: a decision signs the agreement-decision/v1 statement naming that CID
 // (frontend/js/proposals/approval.js decisionContent), so it can never go stale. The server admits a
 // decision under the same rules the browser applies (frontend/js/proposals/approval-relay.js admit)
 // after re-verifying its three signatures, and stores it append-only; readers verify every decision
 // again, so the relay is never trusted.
 import { createRequire } from 'node:module';
-import { canonicalBytes, cidOf, isCid } from '../cid.js';
-import { pinBytes as defaultPinBytes } from '../storage/pinning.js';
+import { isCid } from '../cid.js';
 
 const require = createRequire(import.meta.url);
 const approval = require('../../frontend/js/proposals/approval.js');
 const relay = require('../../frontend/js/proposals/approval-relay.js');
-const anchors = require('../../frontend/js/proposals/approval-anchor.js');
 const agreementRecord = require('../../frontend/js/agreement-record.js');
 
 export const AGREEMENT_DECISION_TABLE = 'consensus.agreement_decision';
@@ -28,7 +25,7 @@ const log = message => console.log(`[${new Date().toISOString()}] [agreement-dec
 const LIFECYCLE_STATUS = Object.freeze({ active: 'Active', executed: 'Executed', cancelled: 'Cancelled', expired: 'Expired' });
 
 /**
- * The agreement-like object approval.js, approval-relay.js and approval-anchor.js take, for an indexed
+ * The agreement-like object approval.js and approval-relay.js take, for an indexed
  * agreement (routes/agreements.js serializeAgreementRow): the engine's subject of its published content
  * (AgreementRecord.approvalSubject: input parcels, rule, lens) under its CID, the lifecycle the relay
  * closes on, and its chain account once minted (agreements/onchain.js). The lens member counts
@@ -107,12 +104,10 @@ function storedReceipt(receipt) {
 
 /**
  * @param {{ loadAgreement: (cid: string) => Promise<object|null>, store: ReturnType<typeof createAgreementDecisionStore>,
- *   now?: () => number, pinBytes?: typeof defaultPinBytes }} options
+ *   now?: () => number }} options
  * loadAgreement returns the indexed agreement as GET /agreements/:cid serves it.
  */
-export function createAgreementDecisionHandlers({ loadAgreement, store, now = () => Date.now(), pinBytes = defaultPinBytes }) {
-    // Bundle CIDs this process has pinned: the same decisions are pinned once.
-    const pinned = new Set();
+export function createAgreementDecisionHandlers({ loadAgreement, store, now = () => Date.now() }) {
     async function indexed(req, res) {
         const cid = String(req.params.cid || '');
         if (!isCid(cid)) {
@@ -166,33 +161,6 @@ export function createAgreementDecisionHandlers({ loadAgreement, store, now = ()
             } catch (error) {
                 console.error(`[${new Date().toISOString()}] POST /agreements/${req.params.cid}/decisions failed:`, error);
                 res.status(500).json({ error: 'Internal server error' });
-            }
-        },
-        // Pins every applying decision on a minted agreement as one canonical bundle, under the CID of
-        // its bytes. The wallet then records the bundle's URI and hash on chain (approval-anchor.js
-        // anchor); readers re-hash and re-verify it. → { uri, cid, hash, subject, count }.
-        async bundle(req, res) {
-            try {
-                const agreement = await indexed(req, res);
-                if (!agreement) return;
-                const subject = decisionSubject(agreement);
-                if (!anchors.chainRef(subject)) return res.status(409).json({ error: 'This agreement is not minted on Solana.', code: 'not_minted' });
-                const bundle = anchors.bundleOf(subject, await store.list(agreement.cid));
-                if (!bundle.decisions.length) return res.status(409).json({ error: 'There is no decision to anchor.', code: 'nothing_to_anchor' });
-                const bytes = canonicalBytes(bundle);
-                const cid = cidOf(bytes);
-                if (!pinned.has(cid)) {
-                    await pinBytes({ bytes, name: `agreement-decisions-${cid}`, cid });
-                    if (pinned.size >= 1000) pinned.delete(pinned.values().next().value);
-                    pinned.add(cid);
-                    log(`pinned ${bundle.decisions.length} decision(s) on ${agreement.cid} as ${cid}`);
-                }
-                // The bundle's sha256 is the digest its CID carries: the same bytes, hashed once.
-                res.json({ uri: `ipfs://${cid}`, cid, hash: anchors.hashOf(bundle), subject: bundle.subject, count: bundle.decisions.length });
-            } catch (error) {
-                console.error(`[${new Date().toISOString()}] POST /agreements/${req.params.cid}/decisions/bundle failed:`, error);
-                if (error?.code === 'pinning-unconfigured') return res.status(503).json({ error: 'Pinning is not configured on this server.', code: 'pinning_unconfigured' });
-                res.status(502).json({ error: 'The bundle could not be pinned.', code: 'pin_failed' });
             }
         }
     };

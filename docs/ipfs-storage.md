@@ -13,8 +13,6 @@ valid and are not rewritten.
 
 Pinned on IPFS:
 
-- owner-decision bundles anchored on Solana (`POST /agreements/:cid/decisions/bundle`,
-  `approval-anchor.js`);
 - signed community reports, which the UI links on `ipfs.io`;
 - parcel NFT images and metadata (`/ipfs/upload`);
 - every binding agreement about to be minted on Solana, its plan and the plan's designs, by our server

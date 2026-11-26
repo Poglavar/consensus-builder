@@ -77,8 +77,8 @@ export const AGREEMENT_CID = Cid.cidOfObject(agreementContent());
 // The same land and rule under other terms: another object, so another CID.
 export const COUNTER_AGREEMENT_CID = Cid.cidOfObject(agreementContent({ title: 'Counter-agreement', money: { currency: 'EUR', lines: [{ ownerKey: `parcel-owner:${parcels[1].parcelId}`, amountCents: 50000 }] } }));
 
-// The agreement-like object the decision functions take (approval.js, approval-relay.js,
-// approval-anchor.js): the engine's subject plus the CID decisions sign and the lifecycle.
+// The agreement-like object the decision functions take (approval.js, approval-relay.js): the
+// engine's subject plus the CID decisions sign and the lifecycle.
 export const agreement = (overrides = {}) => JSON.parse(JSON.stringify({
     agreementCid: AGREEMENT_CID, lifecycleStatus: 'Active',
     cadastreParcelIds: PARCEL_IDS, approvalConfig, lens: [MEMBER], ...overrides

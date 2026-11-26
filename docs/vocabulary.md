@@ -188,7 +188,7 @@ The retention of canonical record bytes and their inclusion in the publication i
 
 ### Pinning provider
 
-The configured service retaining the content the application pins on IPFS: owner-decision bundles, community reports and parcel NFT images and metadata ([ipfs-storage.md](ipfs-storage.md)). Filebase is the current upload provider; Pinata remains selectable in reserve through `IPFS_PINNING_PROVIDER`. Provider adapters retain the application's CID scheme and verify the service's returned CID. An upload failure does not automatically publish through another provider.
+The configured service retaining the content the application pins on IPFS: community reports and parcel NFT images and metadata ([ipfs-storage.md](ipfs-storage.md)). Filebase is the current upload provider; Pinata remains selectable in reserve through `IPFS_PINNING_PROVIDER`. Provider adapters retain the application's CID scheme and verify the service's returned CID. An upload failure does not automatically publish through another provider.
 
 ### Read gateway
 

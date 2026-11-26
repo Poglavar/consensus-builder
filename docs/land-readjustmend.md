@@ -4,7 +4,7 @@
 
 Audit and follow-up review dates: **2026-10-11–12**. Filename follows the requested `land-readjustmend.md` spelling.
 The old implementation was selectively integrated and its local branch/worktree deleted.
-**§22 records the October 16 audit and the editor, owner-view and lineage work; §21 records the balanced money schedule; §20 records the chain anchor for minted approval setups; §19 records the receipt relay that shares signed owner decisions between browsers; §18 records the lens-backed owner authority and the owner's Accept review; §17 records shared validation, custom allocations and owner review; §16 records the implemented pluggable rights and approval setup; §15 records the agreed ownership
+**§22 records the October 16 audit and the editor, owner-view and lineage work; §21 records the balanced money schedule; §20 records minted approval setups; §19 records the receipt relay that shares signed owner decisions between browsers; §18 records the lens-backed owner authority and the owner's Accept review; §17 records shared validation, custom allocations and owner review; §16 records the implemented pluggable rights and approval setup; §15 records the agreed ownership
 abstraction; §14 the earlier consent/review increment; §13 the integration and §12 the review.**
 
 This is the working reference for land readjustment (LR): what exists, what is broken, prior
@@ -1441,20 +1441,19 @@ the time the relay received it; a unique `signature` makes storing idempotent. `
 - The relay is not deployed and its table does not exist on production. Applying
   `db/proposal-owner-decision-ddl.sql` is part of the next deploy.
 - The chain adapter is still next. Receipts already verify without the server, so a chain record
-  can carry the same receipts. **Done as an anchor in §20.**
+  can carry the same receipts. §20 mints approval setups; decisions stay on the relay.
 - Agents' local providers are not relayed.
 - There is no rate limit beyond the 32 KB receipt cap and the global body limit.
 - Only the lens member's current facts can be checked. A member that later revokes a wallet does
   not invalidate decisions already signed within their validity.
 
-## 20. Chain anchor for minted approval setups (2026-10-12)
+## 20. Minted approval setups (2026-10-12)
 
-User decision: **anchor now, contract later.** The other options were the existing contract, used
-only where a deal fits it, or a new program version. With no program change, a proposal with an
-approval setup can be minted on Solana, and its signed owner decisions can be recovered and
-recounted from chain + IPFS alone, without our server. The chain records the approval setup and the
-decisions. It does not count them, execute the proposal or pay anyone; that needs the program
-version described in §10.
+With no program change, a proposal with an approval setup can be minted on Solana. The chain
+records the approval setup; it does not count the owners' decisions, execute the proposal or pay
+anyone; that needs the program version described in §10. Signed decisions live on the receipt
+relay (§19), and every reader re-verifies them. (A Memo v1 anchor of decision bundles, with its
+pin route and card, was removed: nothing called it.)
 
 ### Why not the existing contract
 
@@ -1484,38 +1483,6 @@ Using that contract would execute a different deal from the one the owners signe
   - An approval setup is minted with **no escrow** and **no verdict execution**, and the bridge
     throws if a caller asks for either. Nothing the contract would distribute equally is ever
     locked.
-- **Anchoring** ([approval-anchor.js](../frontend/js/proposals/approval-anchor.js), pure apart from its
-  two I/O functions):
-  1. `POST /proposals/:id/owner-decisions/bundle` builds the canonical bundle
-     (`owner-decision-bundle/v1`: subject, context hash, and the decisions that apply in signing
-     order) from the decisions the relay has already verified. It pins the bundle to IPFS through
-     Pinata, once per hash per process, under the upload rate limit. It returns the `ipfs://` URI,
-     `sha256:` hash of the stable JSON, subject and count.
-  2. The connected wallet sends one **Memo v1** transaction:
-     `ugt-owner-decisions/1 <subject> <ipfs uri> sha256:<hash>`. Its only account is a read-only,
-     unsigned **lookup address**, the PDA of `["ugt-owner-decisions", proposal account]` under
-     the Memo v1 program id.
-     - Memo v1 ignores accounts, while v2 demands that every account sign. Both were checked on
-       devnet on 2026-10-12: v2 failed with "missing required signature".
-     - The fee is about 5,000 lamports, paid by whoever anchors. Anyone may anchor.
-- **Reading** needs no server. `getSignaturesForAddress(lookup address)` returns each memo's text.
-  - Pointers that do not name this subject, or are malformed, are ignored.
-  - Each bundle is fetched from public gateways (Pinata, then ipfs.io). It is rejected unless its
-    stable-JSON hash equals the memo hash, its subject matches and its schema is right.
-  - Pointers are keyed by URI and hash, so a bogus URI posted earlier under a genuine hash cannot
-    hide the genuine pointer. The first version keyed by hash alone, and the test caught it.
-  - At most 50 bundles are fetched, from the latest 1,000 memo transactions.
-  - Accepted decisions are folded in with the browser's own verifier (§19 `merge`), so a hostile
-    memo or gateway can add only noise.
-- **Card.** For a minted Solana proposal, the **Owner acceptance** card has an **On chain** block:
-  - the line *On chain: N of M decisions anchored.*, or *Reading…*, or a read-failure note;
-  - the scope note *The chain keeps the approval setup and the signed decisions so anyone can
-    recount them; it does not count or pay them.*;
-  - an **Anchor on chain** button when this browser holds decisions that are not yet anchored and
-    the proposal is published (pinning uses the relay);
-  - after anchoring, *Anchored N decisions.* and a **Latest anchor transaction** link.
-
-  Mounting the card reads the relay and then the chain.
 - **Nothing settles on the contract.** For a minted approval setup, Details leaves out the
   donate/pledge actions, the funding card and the prediction market (`chainSettlesProposal`). They
   settle on the contract's own execution, which never happens for these proposals. The lens card,
@@ -1523,47 +1490,9 @@ Using that contract would execute a different deal from the one the owners signe
 
 ### Verification
 
-- **Node:** `proposal-approval-anchor.test.js` (7 tests) covers:
-  - record commit and restore, with invalid setups refused;
-  - the chain subject, and off-chain decisions that do not carry over;
-  - memo parsing;
-  - order-independent bundles and hashes;
-  - the exact Memo v1 instruction, with the lookup address unsigned and read-only;
-  - recovery from chain + IPFS, rejecting a swapped bundle under a genuine hash posted first, a
-    foreign subject and a failed transaction, with the recovered decisions counted after
-    re-verification;
-  - the pin route, which pins once, refuses an unminted proposal or one with nothing to anchor, and
-    produces exactly what a reader accepts.
-
-  `proposal-panel-actions.test.js` now checks that a minted approval setup gets no
-  donate/pledge/market but keeps the lens card. The relay test's signing fixtures moved to
-  `test/helpers/approval-decisions.js`.
-
-  These mutations each turned tests red:
-  - dropping the hash check;
-  - keying pointers by hash alone;
-  - ignoring the chain in `subjectOf`;
-  - dropping the subject check;
-  - showing the funding cards for approval setups.
-
-  The related fast suites passed: 145 files and 2,067 tests, with 2 files skipped. The mint-guard
-  ordering test now asserts the new order: after wallet connection, before mint-record preparation
-  and before metadata upload.
-- **Real devnet, from Node:** the module anchored a bundle pointer, and a fresh reader recovered it
-  with `getSignaturesForAddress` and counted owners A, C and D.
-- **Headed, real devnet (`E2E_DEVNET=1`):**
-  - The test funds a test wallet with 0.01 SOL from the Solana CLI keypair (`SOLANA_KEYPAIR`
-    overrides it). The proposal is seeded as minted under a fresh account.
-  - Owners A and C accept; the decisions sign `solana:devnet:<account>`.
-  - Anchor on chain pins through the relay's real handlers and sends the memo from the mock wallet,
-    which now signs transactions. The card then reads *2 of 2 decisions anchored* and links the
-    transaction.
-  - A second browser whose relay answers 503 recovers 2 of 4 accepted from chain + IPFS.
-  - No funding or market card appears.
-- **Headed run:** the wider run of `proposal-approval-lens` (including the devnet scenario),
-  `land-readjustment-audit`, `-consent` and `-courtyard`, `proposal-approval` and `proposal-actions`
-  passed 34 scenarios. The screenshots were inspected. The button contract lists **Anchor on
-  chain**. Without `E2E_DEVNET` the devnet scenario is skipped. The full controls suite was not run.
+`proposal-panel-actions.test.js` checks that a minted approval setup gets no donate/pledge/market
+but keeps the lens card. The relay test's signing fixtures live in
+`test/helpers/approval-decisions.js`.
 
 ### Limits and next
 
@@ -1571,14 +1500,8 @@ Using that contract would execute a different deal from the one the owners signe
   final conflict check need a program version that commits the context and verifies these
   signatures (ed25519 precompile), as in §10. That needs the upgrade authority and the
   mainnet-readiness decisions.
-- **Pinning.** It goes through our server, which pins only decisions it has verified. The content
-  is addressed by hash, so anyone can re-pin or mirror it, and readers do not need our server.
-- **Spam.** Anyone can post memos to the lookup address. Readers bound the work (latest 1,000 memo
-  transactions, at most 50 bundles), so anchoring repeatedly or posting much noise can push older
-  anchors out of that window. A program-owned registry would remove this limit.
 - **Chain coverage.** EVM and Canton still refuse approval setups.
-- **Deploy.** Nothing is deployed. Production needs the §19 table and the Pinata keys already used
-  for minting.
+- **Deploy.** Production needs the §19 table.
 
 ## 21. Balanced money schedule (2026-10-12)
 
@@ -1803,7 +1726,7 @@ gone (`proposal-supersession.js` removed).
 
 ### Still open
 
-- Real-wallet acceptance on 879 (Phantom accounts 2–5), then mint and anchor.
+- Real-wallet acceptance on 879 (Phantom accounts 2–5), then mint.
 - **Regime presets (§8): built in §23** (schemes, leaseholders, public bodies, authorities, caps).
 - Touch drag of a whole segment is untested on a device (pointer events are wired).
 - Lineage for records published before this change stays unresolved where they named local ids.
@@ -1878,7 +1801,7 @@ every scheme of §7, from "everyone agrees" to "the authority decides and owners
 - **Lens member:** the registry lists leases, public bodies and the authorities competent for each
   parcel; it refuses a snapshot that differs in any of them (`leases_mismatch`,
   `public_body_mismatch`, `unknown_authority`, `authority_out_of_scope`) and names an authority
-  wallet's party like an owner's. Relay and chain anchor carry authority receipts unchanged.
+  wallet's party like an owner's. The relay carries authority receipts unchanged.
 
 ### Verification
 

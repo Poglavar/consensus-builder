@@ -262,6 +262,8 @@ describe('removed publication routes', () => {
         ['patch', '/proposals/41/screenshot'], ['patch', '/proposals/41/epoch'], ['patch', '/proposals/epochs'], ['patch', '/proposals/41/name'],
         ['get', '/proposals/41/binding-drift'], ['get', '/proposals/41/owner-decisions'], ['post', '/proposals/41/owner-decisions'],
         ['post', '/proposals/41/owner-decisions/bundle'],
+        // Nothing called the owner-decision bundle pin behind the removed Memo approval anchor.
+        ['post', '/agreements/bafkreigh2akiscaildcqabsyg3dfr6chu3fgpregiymsck7e7aqa4s52zy/decisions/bundle'],
         ['post', '/walrus/upload'], ['post', '/reparcellization/validate']
     ])('%s %s is gone', async (method, path) => {
         const pool = recordingPool();

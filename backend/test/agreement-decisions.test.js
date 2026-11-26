@@ -1,10 +1,9 @@
 // The server side of owner decisions on a published agreement (agreements/decisions.js,
 // plan-design-agreement.md M2): the subject it builds from the indexed agreement, the relay routes at
 // /agreements/:cid/decisions over its stores (re-verified with the browser's own rules, stored
-// append-only, under a per-agreement lock), and the bundle pinned under the CID of its bytes. The
+// append-only, under a per-agreement lock). The
 // relay rules themselves (admit, fold, two browsers) are covered in proposal-approval-relay.test.js.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import express from 'express';
 import request from 'supertest';
@@ -12,7 +11,7 @@ import * as web3 from '@solana/web3.js';
 import {
     AGREEMENT_DECISION_LOCK_NAMESPACE, createAgreementDecisionHandlers, createMemoryAgreementDecisionStore, decisionSubject
 } from '../agreements/decisions.js';
-import { canonicalBytes, cidOf, cidOfObject } from '../cid.js';
+import { cidOfObject } from '../cid.js';
 import { createMockPool } from './helpers/mock-pool.js';
 import { createContentApp } from './helpers/create-app.js';
 import { agreementRow } from './helpers/content-fixtures.js';
@@ -23,7 +22,6 @@ import {
 
 const require = createRequire(import.meta.url);
 const approval = require('../../frontend/js/proposals/approval.js');
-const anchors = require('../../frontend/js/proposals/approval-anchor.js');
 
 const OTHER_CID = COUNTER_AGREEMENT_CID;
 const ACCOUNT = web3.Keypair.generate().publicKey.toBase58();
@@ -163,67 +161,6 @@ describe('POST and GET /agreements/:cid/decisions', () => {
         expect(refused.status).toBe(404);
         expect(pool.getCalls().some(call => /INSERT INTO/.test(call.sql))).toBe(false);
         expect(pool.getCalls().map(call => call.sql.trim().split(/\s+/)[0]).at(-1)).toBe('COMMIT');
-    });
-});
-
-describe('POST /agreements/:cid/decisions/bundle', () => {
-    const mintedRows = () => [ownerDealRow(ownerDealContent(), { onchain: ONCHAIN })];
-    const pinner = () => vi.fn(async ({ cid }) => ({ cid, pinnedAt: '2026-10-21T10:00:00.000Z' }));
-
-    it('pins the applying decisions of a minted agreement once, under the CID of the bundle\'s bytes', async () => {
-        const pinBytes = pinner();
-        const { app } = relayApp({ rows: mintedRows(), pinBytes });
-        const bundlePath = `${decisionsPath()}/bundle`;
-        expect((await request(app).post(bundlePath)).body.code).toBe('nothing_to_anchor');
-        for (const receipt of [await decision(wallets.a, 'owner-a', { offset: 1 }), await decision(wallets.c, 'owner-c', { offset: 2 })]) {
-            expect((await request(app).post(decisionsPath()).send({ receipt })).status).toBe(201);
-        }
-        const first = await request(app).post(bundlePath);
-        expect(first.status).toBe(200);
-        expect(pinBytes).toHaveBeenCalledTimes(1);
-        const [{ bytes, cid, name }] = pinBytes.mock.calls[0];
-        const bundle = JSON.parse(Buffer.from(bytes).toString('utf8'));
-        expect(bundle).toMatchObject({ schema: anchors.BUNDLE_SCHEMA, subject: AGREEMENT_CID, contextHash: approval.contextHash(agreement()) });
-        expect(bundle.decisions.map(row => row.ownerId)).toEqual(['owner-a', 'owner-c']);
-        expect(Buffer.from(bytes).equals(canonicalBytes(bundle))).toBe(true);
-        expect(cid).toBe(cidOf(bytes));
-        expect(name).toBe(`agreement-decisions-${cid}`);
-        // The anchor hash is the digest the CID carries: the same bytes, hashed once.
-        expect(first.body).toEqual({ uri: `ipfs://${cid}`, cid, hash: `sha256:${createHash('sha256').update(bytes).digest('hex')}`,
-            subject: AGREEMENT_CID, count: 2 });
-        expect(first.body.hash).toBe(anchors.hashOf(bundle));
-
-        const again = await request(app).post(bundlePath);
-        expect(again.body).toEqual(first.body);
-        expect(pinBytes).toHaveBeenCalledTimes(1);
-    });
-
-    it('refuses an agreement that is not minted, and reports pinning failures', async () => {
-        const unminted = relayApp({ pinBytes: pinner() });
-        const notMinted = await request(unminted.app).post(`${decisionsPath()}/bundle`);
-        expect([notMinted.status, notMinted.body.code]).toEqual([409, 'not_minted']);
-        expect((await request(unminted.app).post(`${decisionsPath(OTHER_CID)}/bundle`)).status).toBe(404);
-
-        const error = vi.spyOn(console, 'error').mockImplementation(() => {});
-        for (const [thrown, status, code] of [
-            [Object.assign(new Error('unconfigured'), { code: 'pinning-unconfigured', status: 503 }), 503, 'pinning_unconfigured'],
-            [Object.assign(new Error('pinata down'), { code: 'pin-failed', status: 502 }), 502, 'pin_failed']
-        ]) {
-            const store = createMemoryAgreementDecisionStore();
-            const { app } = relayApp({ rows: mintedRows(), store, pinBytes: vi.fn(async () => { throw thrown; }) });
-            expect((await request(app).post(decisionsPath()).send({ receipt: await decision(wallets.a, 'owner-a') })).status).toBe(201);
-            const res = await request(app).post(`${decisionsPath()}/bundle`);
-            expect([res.status, res.body.code]).toEqual([status, code]);
-        }
-        expect(error).toHaveBeenCalled();
-    });
-
-    it('is behind the per-client upload limiter', async () => {
-        const pinBytes = pinner();
-        const { app } = relayApp({ rows: mintedRows(), pinBytes, uploadRateLimiter: (req, res) => res.status(429).json({ error: 'Too many uploads' }) });
-        expect((await request(app).post(`${decisionsPath()}/bundle`)).status).toBe(429);
-        // Decisions themselves are not uploads.
-        expect((await request(app).post(decisionsPath()).send({ receipt: await decision(wallets.a, 'owner-a') })).status).toBe(201);
     });
 });
 
