@@ -20,9 +20,11 @@ const botEnv = {
   AGENT_USDC_FUNDING_ENABLED: '1',
   SOLANA_RPC_MAX_ACCOUNTS: apiEnv.SOLANA_RPC_MAX_ACCOUNTS
 };
-// Scheduled jobs run slowly on purpose: one RPC request per second each (solana/rpc.js), never a burst. The lens
-// members are services that answer requests and stay unpaced.
-const jobEnv = { ...botEnv, SOLANA_RPC_MIN_INTERVAL_MS: '1000' };
+// Scheduled jobs run slowly on purpose: one RPC call per 1.25 s each (solana/rpc.js), never a burst. Public devnet
+// allows 10 calls of one method per 10 s per IP (x-ratelimit-method-limit, 2026-11-26), so exactly one per second
+// ran into a 429 and its 10 s Retry-After at about the tenth call of a method (every transaction-sync scan). The
+// lens members are services that answer requests and stay unpaced.
+const jobEnv = { ...botEnv, SOLANA_RPC_MIN_INTERVAL_MS: '1250' };
 const lensEnv = {
   ...botEnv,
   NODE_ENV: 'production',
