@@ -267,6 +267,8 @@ module.exports = {
     merge_logs: true,
     time: true
   }, {
+    // Daily, an hour and a half after the nightly court-oracle pipeline (22:15 UTC): the market waits
+    // weeks for post-close court evidence, which that pipeline records at most once a day.
     name: 'consensus-builder-prospective-resolver',
     script: 'blockchain/solana/scripts/prospective-external-market.mjs',
     args: '--settle --live',
@@ -274,7 +276,7 @@ module.exports = {
     exec_mode: 'fork',
     instances: 1,
     autorestart: false,
-    cron_restart: '45 * * * *',
+    cron_restart: '45 23 * * *',
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',

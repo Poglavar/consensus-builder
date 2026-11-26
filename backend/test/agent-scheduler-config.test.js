@@ -220,7 +220,7 @@ describe('algorithmic agent schedule', () => {
         expect(source).toContain('writeRunStatsAtomic');
     });
 
-    it('checks the live prospective market hourly with its original two signers', () => {
+    it('checks the live prospective market once a day, after the court-oracle pipeline, with its original two signers', () => {
         const resolver = apps.find(item => item.name === 'consensus-builder-prospective-resolver');
         expect(resolver).toMatchObject({
             script: 'blockchain/solana/scripts/prospective-external-market.mjs',
@@ -228,7 +228,7 @@ describe('algorithmic agent schedule', () => {
             cwd: repoRoot,
             instances: 1,
             autorestart: false,
-            cron_restart: '45 * * * *',
+            cron_restart: '45 23 * * *',
             merge_logs: true,
             env: {
                 SOLANA_KEYPAIR: path.join(solanaConfig, 'court-oracle.json'),

@@ -278,7 +278,7 @@ second. The first live V2 market is `Atps3gg4ZCvDMtbosTK5Evrb1PAwY2shUBvkzjihkaN
 were staked before its 2026-09-22 21:00 UTC close. The remaining step is necessarily temporal: wait
 for a matching court record officially published after it closes. The opt-in production schedules
 then run deterministic court interpretation and V2 attestation at 22:15 UTC and the idempotent
-resolver hourly at `:45`; each writes an atomic outcome record for the central monitor. The existing
+resolver daily at 23:45 UTC; each writes an atomic outcome record for the central monitor. The existing
 settled market remains an honest retrospective V1 integration proof until that later record exists.
 On successful prospective settlement, the resolver's mode-0600 run-stat file stores only the
 redacted public proof: outcome, evidence address/hash, first-attestation transaction, resolution,
