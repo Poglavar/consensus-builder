@@ -10,8 +10,11 @@
 // event time is the chain's own (executed_at from the account; cancelled_at or expired_at from the
 // program's event) and every event names the transaction that made the account terminal, found among
 // the account's newest signatures. Idempotent: event ids are deterministic, events are inserted once,
-// and an `onchain` write never replaces a later observation. Driven by land-event-job.js behind the
-// CLI agreement-lifecycle-job.mjs.
+// and an `onchain` write never replaces a later observation. A terminal agreement whose stored events
+// are complete (and whose `onchain` already records that end) is final: it is neither read nor
+// rewritten again. A terminal transaction that is not found is searched again only after a growing
+// wait, recorded on the row (`onchain.evidenceSearch`). Driven by land-event-job.js behind the CLI
+// agreement-lifecycle-job.mjs.
 
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
@@ -43,6 +46,11 @@ const TERMINAL_EVENTS = Object.freeze({
 // How many of an account's newest transactions are searched for the one that made it terminal. The
 // program writes nothing after that, so only plain transfers to the account can push it further back.
 export const TERMINAL_SEARCH_LIMIT = 50;
+// After a search that did not find (or could not use) the terminal transaction, the next waits this
+// long, doubling with each further miss up to TERMINAL_SEARCH_MAX_WAIT_MS: a lost transaction costs at
+// most one search a day instead of one every pass.
+export const TERMINAL_SEARCH_WAIT_MS = 15 * 60 * 1000;
+export const TERMINAL_SEARCH_MAX_WAIT_MS = 24 * 60 * 60 * 1000;
 // A progress line every this many agreements (and one per agreement that moved, failed or got events).
 const PROGRESS_EVERY = 25;
 
@@ -261,13 +269,14 @@ async function insertEvents(pool, events) {
 }
 
 // How many lifecycle and per-parcel events each account already has (an account whose events are
-// complete needs no transaction search) and, once it has its lifecycle event, when it ended: that
-// event's chain time.
+// complete needs no transaction search) and, once it has its lifecycle event, how and when it ended:
+// that event's outcome and chain time.
 async function storedEventCounts(pool, accounts) {
-    const counts = new Map(accounts.map(account => [account, { lifecycle: 0, parcels: 0, endedAt: null }]));
+    const counts = new Map(accounts.map(account => [account, { lifecycle: 0, parcels: 0, endedAt: null, outcome: null }]));
     if (!accounts.length) return counts;
     const { rows } = await pool.query(`
-        SELECT evidence->>'account' AS account, event_type, count(*)::int AS events, max(source_observed_at) AS ended_at
+        SELECT evidence->>'account' AS account, event_type, count(*)::int AS events, max(source_observed_at) AS ended_at,
+               max(outcome) AS outcome
         FROM consensus.land_event
         WHERE event_type = ANY($1::text[]) AND evidence->>'account' = ANY($2::text[])
         GROUP BY 1, 2`, [AGREEMENT_EVENT_TYPES, accounts]);
@@ -277,6 +286,7 @@ async function storedEventCounts(pool, accounts) {
         if (row.event_type === AGREEMENT_LIFECYCLE_EVENT_TYPE) {
             entry.lifecycle = row.events;
             entry.endedAt = row.ended_at ? new Date(row.ended_at).toISOString() : null;
+            entry.outcome = row.outcome ?? null;
         } else {
             entry.parcels = row.events;
         }
@@ -285,16 +295,37 @@ async function storedEventCounts(pool, accounts) {
 }
 
 /**
+ * Whether a terminal agreement is final in the index: its stored lifecycle event names the outcome its
+ * `onchain` records, with the end time, and an executed one has an entry for every input parcel. A
+ * terminal account never changes again, so such an agreement needs no read and no write.
+ */
+export function eventsComplete(onchain, stored, parcelCount) {
+    if (!stored?.lifecycle || !stored.outcome || !TERMINAL_STATUSES.includes(stored.outcome)) return false;
+    if (onchain?.status !== stored.outcome || !onchain.endedAt) return false;
+    return stored.outcome !== 'executed' || stored.parcels >= parcelCount;
+}
+
+/** When the terminal transaction of a row may next be searched (ms), or 0 when it has not been missed. */
+export function nextTerminalSearchAt(onchain) {
+    const misses = Number(onchain?.evidenceSearch?.misses);
+    const lastAt = Date.parse(onchain?.evidenceSearch?.lastAt || '');
+    if (!Number.isSafeInteger(misses) || misses < 1 || !Number.isFinite(lastAt)) return 0;
+    return lastAt + Math.min(TERMINAL_SEARCH_WAIT_MS * 2 ** (misses - 1), TERMINAL_SEARCH_MAX_WAIT_MS);
+}
+
+/**
  * One pass over the minted agreements of `chain.cluster` and `chain.programId` (agreements/onchain.js
  * createAgreementChain). Agreements minted under a superseded agreement program (the 2026-11-25
  * redeploy) read as unminted and are not scanned.
  * Dry run unless `apply`: then nothing is written, and the result says what would be. One agreement's
  * failure (an RPC or database error) is recorded and the pass goes on with the next.
- * @returns {Promise<{ scanned: number, reconciled: number, moved: number, terminal: number, events: object[],
+ * @returns {Promise<{ scanned: number, complete: number, reconciled: number, moved: number, terminal: number, events: object[],
  *   inserted: number, invalidAccounts: object[], missingEvidence: string[], failed: object[], dryRun: boolean }>}
- *   reconciled: `onchain` rows written; invalidAccounts: agreements whose account is missing or is not
- *   theirs; missingEvidence: terminal accounts whose terminal transaction was not found; failed:
- *   { cid, error } of agreements whose step threw
+ *   complete: terminal agreements whose events were already complete, so not read (counted in
+ *   terminal too); reconciled: `onchain` rows written; invalidAccounts: agreements whose account is
+ *   missing or is not theirs; missingEvidence: terminal accounts whose terminal transaction was not
+ *   found, including those waiting for their next search; failed: { cid, error } of agreements whose
+ *   step threw
  */
 export async function syncAgreementLifecycle({ pool, chain, apply = false, now = () => Date.now(), log = () => {} } = {}) {
     if (!pool || !chain) throw new Error('pool and chain are required');
@@ -305,23 +336,27 @@ export async function syncAgreementLifecycle({ pool, chain, apply = false, now =
         ORDER BY created_at, cid`, [chain.cluster, chain.programId]);
     const total = rows.length;
     log(`${total} minted agreement(s) on ${chain.cluster}${apply ? '' : ' (dry run: nothing is written)'}`);
-    const result = { scanned: total, reconciled: 0, moved: 0, terminal: 0, events: [], inserted: 0, invalidAccounts: [], missingEvidence: [], failed: [], dryRun: !apply };
+    const result = { scanned: total, complete: 0, reconciled: 0, moved: 0, terminal: 0, events: [], inserted: 0, invalidAccounts: [], missingEvidence: [], failed: [], dryRun: !apply };
     if (!total) return result;
 
-    const reads = await chain.readAccounts(rows.map(row => row.onchain.account));
     const counts = await storedEventCounts(pool, rows.map(row => row.onchain.account));
+    const open = rows.filter(row => !eventsComplete(row.onchain, counts.get(row.onchain.account), (row.input_parcel_ids || []).length));
+    result.complete = total - open.length;
+    result.terminal = result.complete;
+    if (result.complete) log(`${result.complete} terminal agreement(s) already have their events: not read again`);
+    const reads = open.length ? await chain.readAccounts(open.map(row => row.onchain.account)) : [];
     const observedAt = new Date(now()).toISOString();
-    for (let index = 0; index < total; index += 1) {
-        const row = rows[index];
-        const step = `${index + 1}/${total} ${row.cid}`;
+    for (let index = 0; index < open.length; index += 1) {
+        const row = open[index];
+        const step = `${index + 1}/${open.length} ${row.cid}`;
         try {
             await reconcileAgreement({ row, read: reads[index], stored: counts.get(row.onchain.account), step });
         } catch (error) {
             result.failed.push({ cid: row.cid, error: error.message });
             log(`${step}: FAILED ${error.stack || error.message}`);
         }
-        if ((index + 1) % PROGRESS_EVERY === 0 || index + 1 === total) {
-            log(`progress ${index + 1}/${total} · moved ${result.moved} · terminal ${result.terminal} · events ${result.events.length} · invalid ${result.invalidAccounts.length} · missing evidence ${result.missingEvidence.length} · failed ${result.failed.length}`);
+        if ((index + 1) % PROGRESS_EVERY === 0 || index + 1 === open.length) {
+            log(`progress ${index + 1}/${open.length} · moved ${result.moved} · terminal ${result.terminal} · events ${result.events.length} · invalid ${result.invalidAccounts.length} · missing evidence ${result.missingEvidence.length} · failed ${result.failed.length}`);
         }
     }
     return result;
@@ -355,14 +390,23 @@ export async function syncAgreementLifecycle({ pool, chain, apply = false, now =
         result.terminal += 1;
         const parcelIds = row.input_parcel_ids || [];
         if (stored.lifecycle > 0 && (fresh.status !== 'executed' || stored.parcels >= parcelIds.length)) return;
+        const retryAt = nextTerminalSearchAt(row.onchain);
+        if (retryAt > now()) {
+            result.missingEvidence.push(account.address);
+            log(`${step}: ${fresh.status}, terminal transaction missed ${row.onchain.evidenceSearch.misses} time(s); next search after ${new Date(retryAt).toISOString()}`);
+            return;
+        }
+        // A miss is recorded on the row, so the next search waits longer (nextTerminalSearchAt).
+        const missed = async reason => {
+            result.missingEvidence.push(account.address);
+            const misses = (Number(row.onchain.evidenceSearch?.misses) || 0) + 1;
+            log(`${step}: ${reason} (miss ${misses})`);
+            if (apply) await writeOnchain(pool, row.cid, { ...next, evidenceSearch: { misses, lastAt: new Date(now()).toISOString() } });
+        };
         const source = await findTerminalTransaction(await chain.connection(), {
             account: account.address, outcome: fresh.status, programId: chain.programId
         });
-        if (!source) {
-            result.missingEvidence.push(account.address);
-            log(`${step}: ${fresh.status}, but no ${TERMINAL_EVENTS[fresh.status].name} among the account's newest ${TERMINAL_SEARCH_LIMIT} transactions`);
-            return;
-        }
+        if (!source) return missed(`${fresh.status}, but no ${TERMINAL_EVENTS[fresh.status].name} among the account's newest ${TERMINAL_SEARCH_LIMIT} transactions`);
         let events;
         try {
             events = buildAgreementEvents({
@@ -370,11 +414,13 @@ export async function syncAgreementLifecycle({ pool, chain, apply = false, now =
                 account, accountData: read.data, cluster: chain.cluster, programId: chain.programId, source
             });
         } catch (error) {
-            result.missingEvidence.push(account.address);
-            log(`${step}: ${error.message}`);
-            return;
+            return missed(error.message);
         }
-        if (apply && !endedAt) await writeOnchain(pool, row.cid, { ...next, endedAt: events[0].observedAt });
+        if (apply && (!endedAt || next.evidenceSearch)) {
+            const found = { ...next, endedAt: endedAt ?? events[0].observedAt };
+            delete found.evidenceSearch;
+            await writeOnchain(pool, row.cid, found);
+        }
         result.events.push(...events);
         const inserted = apply ? await insertEvents(pool, events) : 0;
         result.inserted += inserted;

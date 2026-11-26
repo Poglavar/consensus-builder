@@ -17,7 +17,8 @@ import { agreementAccountBytes, agreementAccountInfo } from './fixtures/agreemen
 import { AGREEMENT_PROGRAM_ID, AgreementClient, DEVNET_GENESIS_HASH, agreementAccountOf, createAgreementChain } from '../agreements/onchain.js';
 import {
     AGREEMENT_EXECUTED_EVENT_TYPE, AGREEMENT_LIFECYCLE_EVENT_TYPE, LAND_EVENT_COLUMNS, TERMINAL_SEARCH_LIMIT,
-    buildAgreementEvents, decodeTerminalEvent, findTerminalTransaction, landEventParams, programDataLogs, syncAgreementLifecycle
+    buildAgreementEvents, decodeTerminalEvent, findTerminalTransaction, landEventParams, nextTerminalSearchAt, programDataLogs,
+    syncAgreementLifecycle
 } from '../oracle/agreement-lifecycle.js';
 
 const BACKEND = fileURLToPath(new URL('..', import.meta.url));
@@ -249,7 +250,7 @@ function indexFake(agreements) {
             const id = `${account}|${stored[1]}`;
             const previous = counts.get(id);
             const endedAt = previous?.ended_at && previous.ended_at > stored[7] ? previous.ended_at : stored[7];
-            counts.set(id, { account, event_type: stored[1], events: (previous?.events || 0) + 1, ended_at: endedAt });
+            counts.set(id, { account, event_type: stored[1], events: (previous?.events || 0) + 1, ended_at: endedAt, outcome: stored[4] });
         }
         return { rows: [...counts.values()] };
     });
@@ -271,9 +272,11 @@ function indexFake(agreements) {
 /** The chain: account infos by address, newest-first signatures by address, transactions by signature (an Error throws). */
 function chainFake({ accounts, signatures = new Map(), transactions = new Map(), slot = 900 }) {
     const searched = [];
+    const read = [];
     const connection = {
         async getGenesisHash() { return DEVNET_GENESIS_HASH; },
         async getMultipleAccountsInfoAndContext(keys) {
+            read.push(...keys.map(key => key.toBase58()));
             return { context: { slot }, value: keys.map(address => accounts.get(address.toBase58()) ?? null) };
         },
         async getSignaturesForAddress(address, options) {
@@ -286,7 +289,7 @@ function chainFake({ accounts, signatures = new Map(), transactions = new Map(),
             return tx ?? null;
         }
     };
-    return { chain: createAgreementChain({ connection, env: {} }), searched, accounts };
+    return { chain: createAgreementChain({ connection, env: {} }), searched, read, accounts };
 }
 
 const storedOnchain = (account, overrides = {}) => ({
@@ -387,6 +390,66 @@ describe('syncAgreementLifecycle', () => {
         expect(index.rows.get(CID_C).onchain.endedAt).toBe(iso(CANCELLED_AT));
     });
 
+    it('neither reads nor rewrites a terminal agreement whose stored events are complete', async () => {
+        const { index, fake, CID_B, ACC_B, CID_C, ACC_C } = threeAgreements();
+        await syncAgreementLifecycle({ pool: index.pool, chain: fake.chain, apply: true, now: NOW });
+        expect(fake.read).toEqual([ACC_A, ACC_B, ACC_C]);
+        fake.read.length = 0;
+        const writesBefore = index.writes().length;
+        const searches = fake.searched.length;
+        const later = () => Date.parse('2026-10-22T09:00:00.000Z');
+        const next = await syncAgreementLifecycle({ pool: index.pool, chain: fake.chain, apply: true, now: later });
+        // Only the active agreement is read and refreshed; A (executed, both parcels) and C (cancelled) are final.
+        expect(fake.read).toEqual([ACC_B]);
+        expect(fake.searched).toHaveLength(searches);
+        expect(index.writes().slice(writesBefore).map(call => call.params[0])).toEqual([CID_B]);
+        expect(next).toMatchObject({ scanned: 3, complete: 2, terminal: 2, events: [], missingEvidence: [], failed: [] });
+        expect(index.rows.get(CID_C).onchain.observedAt).toBe('2026-10-22T08:00:00.000Z');
+
+        // Judged by the stored events: a missing parcel entry, or an index row that does not record the
+        // end, brings the agreement back.
+        index.events.delete(`solana:devnet:agreement_executed:${ACC_A}:HR-1/2`);
+        delete index.rows.get(CID_C).onchain.endedAt;
+        fake.read.length = 0;
+        await syncAgreementLifecycle({ pool: index.pool, chain: fake.chain, apply: true, now: later });
+        expect(fake.read).toEqual([ACC_A, ACC_B, ACC_C]);
+        expect(index.events.size).toBe(4);
+        expect(index.rows.get(CID_C).onchain.endedAt).toBe(iso(CANCELLED_AT));
+    });
+
+    it('searches again for a missing terminal transaction only after a wait that doubles, recorded on the row', async () => {
+        const cid = agreementCid('lost transaction');
+        const account = agreementAccountOf(cid, SPONSOR);
+        const index = indexFake([{ cid, sponsor: SPONSOR, inputParcelIds: ['HR-6/1'], onchain: storedOnchain(account) }]);
+        const signatures = new Map([[account, [{ signature: 'lost-fund', slot: 880, err: null }]]]);
+        const transactions = new Map([['lost-fund', transaction(logsOf([fundedEvent({ agreement: account, cid })]))]]);
+        const fake = chainFake({ accounts: new Map([[account, agreementAccountInfo(fieldsA({ cid }))]]), signatures, transactions });
+        const at = minutes => () => Date.parse('2026-10-22T08:00:00.000Z') + minutes * 60000;
+        const pass = async minutes => syncAgreementLifecycle({ pool: index.pool, chain: fake.chain, apply: true, now: at(minutes) });
+
+        expect((await pass(0)).missingEvidence).toEqual([account]);
+        expect(fake.searched).toHaveLength(1);
+        expect(index.rows.get(cid).onchain.evidenceSearch).toEqual({ misses: 1, lastAt: '2026-10-22T08:00:00.000Z' });
+        // Still reported every pass, so the verdict keeps failing, but not searched before the wait ends.
+        expect((await pass(10)).missingEvidence).toEqual([account]);
+        expect(fake.searched).toHaveLength(1);
+        await pass(15);
+        expect(fake.searched).toHaveLength(2);
+        expect(index.rows.get(cid).onchain.evidenceSearch).toEqual({ misses: 2, lastAt: '2026-10-22T08:15:00.000Z' });
+        await pass(15 + 29);
+        expect(fake.searched).toHaveLength(2);
+        expect(nextTerminalSearchAt({ evidenceSearch: { misses: 40, lastAt: '2026-10-22T08:00:00.000Z' } }))
+            .toBe(Date.parse('2026-10-23T08:00:00.000Z'));
+
+        // Once the transaction turns up, the events are written and the miss record is dropped.
+        signatures.set(account, [{ signature: 'lost-exec', slot: 881, err: null }]);
+        transactions.set('lost-exec', transaction(logsOf([executedEvent({ agreement: account, cid })])));
+        const found = await pass(15 + 30);
+        expect(found).toMatchObject({ missingEvidence: [], inserted: 2 });
+        expect(index.rows.get(cid).onchain).not.toHaveProperty('evidenceSearch');
+        expect(index.rows.get(cid).onchain.endedAt).toBe(iso(EXECUTED_AT));
+    });
+
     it('completes an executed account whose parcel entries are missing, inserting only those', async () => {
         const { index, fake } = threeAgreements();
         await syncAgreementLifecycle({ pool: index.pool, chain: fake.chain, apply: true, now: NOW });
@@ -434,7 +497,9 @@ describe('syncAgreementLifecycle', () => {
         expect(result.inserted).toBe(2);
         // Nothing is written for an account that is not the agreement's.
         const updated = index.writes().filter(call => /^\s*UPDATE/.test(call.sql)).map(call => call.params[0]);
-        expect(updated).toEqual([noEvidence, rpcDown, badTime, healthy]);
+        // The two whose terminal transaction is missing are written again with the miss (evidenceSearch).
+        expect(updated).toEqual([noEvidence, noEvidence, rpcDown, badTime, badTime, healthy]);
+        expect(index.rows.get(noEvidence).onchain.evidenceSearch).toEqual({ misses: 1, lastAt: '2026-10-22T08:00:00.000Z' });
     });
 
     it('needs a pool and a chain, and reads nothing when nothing is minted', async () => {
