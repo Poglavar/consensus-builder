@@ -473,7 +473,9 @@ describe('agent quickstart docs', () => {
         const offerTools = [];
         registerPropertyOfferTools({ registerTool: name => offerTools.push(name) }, { handler: fn => fn, env: {} });
         expect(offerTools).toContain('ugt_publish_property_offer');
-        const registered = [...new Set([...registrations.matchAll(/(?:registerTool|add)\('(ugt_[a-z_]+)'/g)].map(match => match[1]).concat(offerTools))];
+        // The property-offer chain steps register in a loop over [name, title, …] rows (mcp-server.mjs).
+        const registered = [...new Set([...registrations.matchAll(/(?:registerTool|add)\('(ugt_[a-z_]+)'|^\s*\['(ugt_[a-z_]+_property_offer)', '/gm)]
+            .map(match => match[1] || match[2]).concat(offerTools))];
         expect(registered.length).toBeGreaterThan(32);
         const conditional = new Set([...MCP_DEBUG_TOOLS, ...MCP_SHARED_PLAN_TOOLS]);
         expect([...res.body.mcp.tools].sort()).toEqual(registered.filter(name => !conditional.has(name)).sort());
