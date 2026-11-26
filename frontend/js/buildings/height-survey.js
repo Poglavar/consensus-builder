@@ -333,8 +333,9 @@
         return { measure };
     }
 
-    // A building record with a measured height added where its own source had none: `height_m`
-    // (which the footprint pool and rule terms read as measured) and `height_survey`, the evidence.
+    // A building record with a survey's measured height in place of whatever height its own source gave
+    // (a tagged height, storeys × 3 m or an estimate): `height_m` (which the footprint pool and rule
+    // terms read as measured) and `height_survey`, the evidence. A stated storey count stays as it is.
     function withMeasuredHeight(record, result) {
         if (!finite(result?.heightM)) return record;
         const evidence = { id: result.survey?.id || null, name: result.survey?.name || null, eaveM: finite(result.eaveM) ? result.eaveM : null,
@@ -343,16 +344,18 @@
         return { ...record, height_m: result.heightM, height_source: 'measured', height_survey: evidence };
     }
 
-    // `records` with a measured height added to each one `known(record)` says lacks a height (rule-terms
-    // buildingHeight), in the same order. `idOf(record)` names a record; one measure() call covers all.
-    async function fillMissingHeights(measurer, records, { known, idOf, signal } = {}) {
-        const lacking = (records || []).filter(record => record?.geometry && !known(record));
+    // `records` with a survey's height on each one a survey measures, in the same order: the best
+    // measure available. A record the survey gives no height for (outside it, no building seen, not
+    // answering) keeps its own. `idOf(record)` names a record; one measure() call covers all.
+    const surveyed = record => Boolean((record?.properties || record)?.height_survey);
+    async function withSurveyedHeights(measurer, records, { idOf, signal } = {}) {
+        const lacking = (records || []).filter(record => record?.geometry && !surveyed(record));
         if (!lacking.length) return records;
         const ids = new Map(lacking.map((record, index) => [record, String(idOf?.(record) ?? record.id ?? record.properties?.id ?? `record-${index}`)]));
         const results = await measurer.measure(lacking.map(record => ({ id: ids.get(record), geometry: record.geometry })), { signal });
         return records.map(record => ids.has(record) ? withMeasuredHeight(record, results.get(ids.get(record))) : record);
     }
 
-    return { readGeoTiff, sample, percentile, estimate, coverageUrl, fetchPatiently, windowsFor, surveyAt, createMeasurer, withMeasuredHeight, fillMissingHeights,
+    return { readGeoTiff, sample, percentile, estimate, coverageUrl, fetchPatiently, windowsFor, surveyAt, createMeasurer, withMeasuredHeight, withSurveyedHeights,
         settings: Object.freeze({ RIDGE_PERCENTILE, EAVE_PERCENTILE, INSET_M, MIN_CELLS, MIN_ROOF_HEIGHT_M, MAX_ROOF_HEIGHT_M, MAX_WINDOW_M }) };
 });

@@ -231,7 +231,7 @@
     }
     function measureHeight(record, feature) {
         const client = root.HeightSurveyClient, survey = client?.surveyFor(feature);
-        if (!survey || client.known(feature)) return;
+        if (!survey) return;
         const named = { id: survey.id, name: survey.name };
         applyHeightSurvey(record, heightSurveys.get(record.id)?.status === 'measured' ? heightSurveys.get(record.id) : { status: 'measuring', survey: named });
         if (selected()?.id === record.id) renderInspector();

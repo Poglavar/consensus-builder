@@ -114,6 +114,23 @@ describe('height survey', () => {
         expect(terms.evaluate({ of: 'existingHeight', add: 1, addUnit: 'storeys' }, context, { storeyHeightM: 3 }).value).toBeCloseTo(12.16, 2);
     });
 
+    // The best measure available: the survey's height replaces a tagged height and storeys × 3 m (the
+    // house is 2 storeys in this entry, 6 m), keeps the storey count, and the source's height stands
+    // where the survey sees no building.
+    it('puts the survey\'s height in place of a tagged or storey height, and keeps the source\'s where it has none', async () => {
+        const storeys = { id: 'house', geometry: HOUSE.geometry, height_m: null, floors: 2 };
+        const tagged = { id: 'tagged', geometry: HOUSE.geometry, height_m: 12, floors: null };
+        const garden = { id: 'garden', geometry: GARDEN.geometry, height_m: null, floors: 2 };
+        expect(terms.buildingHeight(storeys)).toMatchObject({ known: true, source: 'levels', heightM: 6 });
+        const [house, tag, empty] = await survey.withSurveyedHeights(measurer(fixtureFetch()), [storeys, tagged, garden]);
+        expect(terms.buildingHeight(house)).toMatchObject({ known: true, source: 'measured', survey: { id: EA.id } });
+        expect(terms.buildingHeight(house).heightM).toBeCloseTo(9.16, 2);
+        expect(house.floors).toBe(2);
+        expect(terms.buildingHeight(tag).heightM).toBeCloseTo(9.16, 2);
+        expect(empty).toBe(garden);
+        expect(terms.buildingHeight(empty)).toMatchObject({ source: 'levels', heightM: 6 });
+    });
+
     // MCP parity: an agent's parcel context (backend/planning/restrictions.js) measures the same way.
     it('gives an agent the measured height in an English parcel\'s existing context', async () => {
         const serve = fixtureFetch();
@@ -124,7 +141,7 @@ describe('height survey', () => {
             return answer({ entities: [], links: {} });
         };
         const parcel = turf.buffer(turf.feature(HOUSE.geometry), 3, { units: 'meters' });
-        const result = await parcelRestrictions({ city: 'london', parcel, buildings: [{ id: 'way/31026824', geometry: HOUSE.geometry, height_m: null, floors: null }], fetchImpl });
+        const result = await parcelRestrictions({ city: 'london', parcel, buildings: [{ id: 'way/31026824', geometry: HOUSE.geometry, height_m: null, floors: 2 }], fetchImpl });
         expect(result.existing.heightM).toBeCloseTo(9.16, 2);
         expect(result.existing.buildings[0]).toMatchObject({ known: true, source: 'measured', survey: { id: EA.id, surveyedFrom: '2017-12-07' } });
     });

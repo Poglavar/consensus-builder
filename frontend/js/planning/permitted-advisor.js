@@ -106,9 +106,9 @@
         const [buildings, neighbours] = await measuredHeights(pool.filter(inside), setting.neighbours);
         return root.PlanningRuleTerms.existingContext({ parcel, buildings, street: setting.street, neighbours, geometryOps: turf });
     }
-    // The parcel's buildings and its neighbours with heights a height survey measured where their
-    // source has none (buildings/height-survey-client.js), in one request window. A survey that does
-    // not answer leaves those heights unknown, as before.
+    // The parcel's buildings and its neighbours with the heights a height survey measures in place of
+    // their source's (buildings/height-survey-client.js), in one request window. Where a survey gives
+    // none, each keeps its source's height.
     async function measuredHeights(buildings, neighbours) {
         const client = root.HeightSurveyClient, idOf = record => root.buildingPoolFeatureKey?.(record) || record.id;
         if (!client) return [buildings, neighbours];

@@ -348,8 +348,8 @@ describe('shared building and proposal representations', () => {
     });
 });
 
-// An observed building without a known height is measured from a height survey; the answer reaches
-// the card even when the inspector shows another record of the same building by then.
+// An observed building is measured from the height survey covering it, which replaces the height its
+// source gave (the best measure available); the answer reaches the card even when the inspector shows another record of the same building by then.
 describe('observed building height from a height survey', () => {
     const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');
     const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
@@ -357,11 +357,11 @@ describe('observed building height from a height survey', () => {
     const pieces = body.filter(node => (node.type === 'FunctionDeclaration' && ['applyHeightSurvey', 'measureHeight', 'heightSurveyLine'].includes(node.id.name))
         || (node.type === 'VariableDeclaration' && ['heightSurveys', 'HEIGHT_SURVEY_NONE'].includes(node.declarations[0].id.name))).map(slice).join('\n');
     const t = (key, params = {}) => `${key}(${Object.values(params).join('|')})`;
-    const record = () => ({ id: 'built:london:osm:w1', source: { recordId: 'osm:w1' }, metrics: { heightM: null } });
+    const record = (heightM = null) => ({ id: 'built:london:osm:w1', source: { recordId: 'osm:w1' }, metrics: { heightM } });
     const setup = ({ result, shown }) => {
         const renderInspector = vi.fn();
         let answer; const pending = new Promise(resolve => { answer = resolve; });
-        const client = { surveyFor: () => ({ id: 'gb-ea', name: 'EA LiDAR' }), known: () => false, measureOne: vi.fn(() => pending) };
+        const client = { surveyFor: () => ({ id: 'gb-ea', name: 'EA LiDAR' }), measureOne: vi.fn(() => pending) };
         const context = vm.createContext({ root: { HeightSurveyClient: client, CbFormat: { formatDate: d => d.toISOString().slice(0, 10), formatLength: v => `${v} m` } },
             selected: () => shown.current, renderInspector, t, console, Map, Number, Date });
         vm.runInContext(`${pieces}\nthis.api = { measureHeight, heightSurveyLine };`, context);
@@ -386,5 +386,18 @@ describe('observed building height from a height survey', () => {
         await card.answer();
         expect(first.metrics.heightM).toBeNull();
         expect(card.heightSurveyLine(first)).toBe('heightSurveyNoBuilding(EA LiDAR)');
+    });
+    // OpenStreetMap says 2 storeys (6 m); the survey measures 9.16 m. Without a survey height the 6 m stands.
+    it('replaces a height from stated storeys with the measured one, and keeps it where the survey gives none', async () => {
+        const storeys = record(6), shown = { current: storeys };
+        const card = setup({ shown, result: { heightM: 9.16, confidence: 'high' } });
+        card.measureHeight(storeys, { geometry: {} });
+        await card.answer();
+        expect(storeys.metrics.heightM).toBe(9.16);
+        const unseen = record(6); shown.current = unseen;
+        const none = setup({ shown, result: { rejection: 'no-building-seen' } });
+        none.measureHeight(unseen, { geometry: {} });
+        await none.answer();
+        expect(unseen.metrics.heightM).toBe(6);
     });
 });

@@ -30,12 +30,12 @@ const measurerFor = fetchImpl => {
     return measurers.get(fetchImpl);
 };
 const statesTerms = pairs => pairs.some(({ ruleSet }) => (ruleSet.policies || []).some(policy => (policy.constraints || []).some(constraint => constraint.term || constraint.when)));
-// The parcel's buildings and its neighbours with heights a height survey measured where their source
-// has none (frontend/js/buildings/height-survey.js), as the browser's Permitted check fills them.
-// A survey that does not answer leaves those heights unknown.
+// The parcel's buildings and its neighbours with the heights a height survey measures in place of their
+// source's (frontend/js/buildings/height-survey.js), as the browser's Permitted check fills them.
+// Where a survey gives none, each keeps its source's height (unknown when that was an estimate).
 async function measuredHeights(buildings, neighbours, fetchImpl) {
     const own = buildings?.length ?? 0, all = [...(buildings || []), ...(neighbours || [])];
-    const filled = await HeightSurvey.fillMissingHeights(measurerFor(fetchImpl), all, { known: record => RuleTerms.buildingHeight(record).known });
+    const filled = await HeightSurvey.withSurveyedHeights(measurerFor(fetchImpl), all);
     return [buildings ? filled.slice(0, own) : buildings, neighbours ? filled.slice(own) : neighbours];
 }
 
