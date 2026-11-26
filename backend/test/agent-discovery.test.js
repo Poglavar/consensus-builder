@@ -6,7 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { Keypair, PublicKey } from '@solana/web3.js';
 import { cidOfObject } from '../cid.js';
 import { AGREEMENT_PAGE, agreementSummary, discoverAgreements, isMinted, isOpen, readAgreementStatuses } from '../agents/discovery.js';
-import { agreementAccountOf } from '../agents/agreement-minter.js';
+import { AGREEMENT_PROGRAM_ID, OLD_AGREEMENT_PROGRAM_ID, agreementAccountOf } from '../agents/agreement-minter.js';
 import { selectSupportAction } from '../agents/supporter-picker.js';
 import { agreementAccountBytes, agreementAccountInfo } from './fixtures/agreement-account.js';
 
@@ -131,6 +131,24 @@ describe('readAgreementStatuses', () => {
         const unminted = [agreementSummary(row(3, { content: { ...row(3).content, sponsor: null } }))];
         expect(await readAgreementStatuses(unminted, connection)).toBe(unminted);
         expect(connection.getMultipleAccountsInfo).not.toHaveBeenCalled();
+    });
+
+    it('skips only agreements the index records on the old program; unrecorded and current ones are read', async () => {
+        const onchain = programId => ({ chain: 'solana', cluster: 'devnet', programId, status: 'active' });
+        const agreements = [
+            row(0, { onchain: onchain(OLD_AGREEMENT_PROGRAM_ID) }),
+            row(1, { onchain: onchain(AGREEMENT_PROGRAM_ID) }),
+            row(2)
+        ].map(agreementSummary);
+        expect(agreements.map(item => item.recordedProgramId)).toEqual([OLD_AGREEMENT_PROGRAM_ID, AGREEMENT_PROGRAM_ID, null]);
+        const connection = chain(new Map([
+            [agreements[1].account, info(agreements[1], 0)],
+            [agreements[2].account, info(agreements[2], 0)]
+        ]));
+        await readAgreementStatuses(agreements, connection);
+        expect(connection.getMultipleAccountsInfo.mock.calls.flatMap(([keys]) => keys.map(key => key.toBase58())))
+            .toEqual([agreements[1].account, agreements[2].account]);
+        expect(agreements.map(item => item.chainStatus)).toEqual([null, 'active', 'active']);
     });
 });
 

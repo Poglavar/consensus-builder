@@ -6,7 +6,7 @@
 import { createRequire } from 'node:module';
 import { PublicKey } from '@solana/web3.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
-import { AGREEMENT_PROGRAM_ID, agreementAccountOf } from './agreement-minter.js';
+import { AGREEMENT_PROGRAM_ID, OLD_AGREEMENT_PROGRAM_ID, agreementAccountOf } from './agreement-minter.js';
 
 const require = createRequire(import.meta.url);
 const agreementClient = require('../../frontend/js/solana/agreement-client.js');
@@ -30,6 +30,8 @@ export function agreementSummary(row) {
         author: row.author ?? content.author ?? null,
         sponsor,
         account,
+        // The program the index recorded the mint on (`onchain.programId`), or null when it recorded none.
+        recordedProgramId: row.onchain?.programId ?? null,
         createdAt: row.createdAt ?? content.createdAt ?? null,
         deadline: row.deadline ?? content.deadline ?? null,
         planCid: row.planCid ?? content.planCid ?? null,
@@ -60,9 +62,12 @@ export async function discoverAgreements({ index, cities, log = () => {} }) {
 /**
  * Set chainStatus on every agreement with an account, from one batched read of the accounts. An account
  * owned by another program, or holding another CID or sponsor, fails the whole read: nothing acts on it.
+ * An agreement the index records on the old program is not read: it is known not to be on this one, so
+ * it stays unminted (chainStatus null). One with no recorded mint is still read, since the chain, not
+ * the index, proves a mint.
  */
 export async function readAgreementStatuses(agreements, connection, { env = process.env, programId = AGREEMENT_PROGRAM_ID } = {}) {
-    const withAccount = (agreements || []).filter(agreement => agreement.account);
+    const withAccount = (agreements || []).filter(agreement => agreement.account && agreement.recordedProgramId !== OLD_AGREEMENT_PROGRAM_ID);
     if (!withAccount.length) return agreements;
     const infos = await getMultipleAccountsBatched(connection, withAccount.map(agreement => new PublicKey(agreement.account)), { batchSize: accountsPerRequest(env) });
     const program = new PublicKey(programId);

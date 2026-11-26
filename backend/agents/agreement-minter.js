@@ -15,6 +15,9 @@ const agreementRecord = require('../../frontend/js/agreement-record.js');
 agreementClient.configure({ web3 });
 
 export const AGREEMENT_PROGRAM_ID = agreementClient.constants.AGREEMENT_PROGRAM_ID;
+// The agreement program before the lens-set redeploy of 2026-11-25. Index rows whose `onchain.programId`
+// names it are known not to be on the current program (scripts/remint-agreements.mjs re-mints them).
+export const OLD_AGREEMENT_PROGRAM_ID = 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ';
 export const AGREEMENT_STATUS = Object.freeze({ active: 'Active', executed: 'Executed', cancelled: 'Cancelled', expired: 'Expired' });
 const SIGNATURE_PAGE = 1000;
 const ATTESTATION_READ_ATTEMPTS = 4;

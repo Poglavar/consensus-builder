@@ -13,6 +13,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
+import { OLD_AGREEMENT_PROGRAM_ID } from '../agents/agreement-minter.js';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(HERE, '../..');
@@ -20,7 +21,7 @@ const require = createRequire(import.meta.url);
 const ts = () => new Date().toISOString();
 const log = message => console.log(`[${ts()}] [remint] ${message}`);
 
-export const OLD_AGREEMENT_PROGRAM_ID = 'GtdgeRH89f2qLj4j4v6NcecWSr6RDPP9y4TMfPCGA5jQ';
+export { OLD_AGREEMENT_PROGRAM_ID };
 const DEFAULT_API = 'https://api.urbangametheory.xyz';
 const DEFAULT_ORIGIN = 'https://urbangametheory.xyz';
 const DEFAULT_STATE = path.join(REPO, 'tmp/remint-agreements/state.json');

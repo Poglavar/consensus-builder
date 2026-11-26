@@ -203,8 +203,10 @@ a clean no-picks result.
 newest first, at most 1000 per read; `["*"]` = one read over every city), derives each one's account
 from its sponsor and CID, and reads every account's status from the chain in batches
 (`readAgreementStatuses`; an account owned by another program, or holding another CID or sponsor,
-fails the read). Only the chain's word counts: minted = the account exists; open = Active on chain and
-before its deadline.
+fails the read). An agreement the index records on the old agreement program
+(`OLD_AGREEMENT_PROGRAM_ID`, before the 2026-11-25 redeploy) is not read and stays unminted; one with no
+recorded mint is still read. Only the chain's word counts: minted = the account exists; open = Active on
+chain and before its deadline.
 
 `support-run.mjs` (role `supporter`) chooses one open agreement by another actor with
 `supporter-picker.js` (a stable daily `$0` hash) and performs one pledge, donation or YES stake on it;
