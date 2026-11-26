@@ -668,6 +668,7 @@
         if (!window.PlanningViews) return false;
         const policy = window.PlanningViews.getPolicy();
         return window.PlanningViews.getItems().some(item => window.PlanningViews.getAppearance(item) !== 'off')
+            || policy.permitted !== 'off' && ['Polygon', 'MultiPolygon'].includes(window.PlanningViews.getSourceDescriptor?.()?.coverageGeometry?.type)
             || window.PlanningViews.getSelected()?.role === 'existing' && policy.existing !== 'off';
     }
     // The hatch over cells the Permitted layers could not load (planning/views.js getFailedCells):
@@ -711,6 +712,13 @@
         planningSourcesGroup.visible = hasVisiblePlanningRepresentations();
         if (!planningSourcesGroup.visible) { invalidateThreeView(); return; }
         const selectedId = window.PlanningViews.getState()?.selectedId;
+        const sourceGeometry = window.PlanningViews.getSourceDescriptor?.()?.coverageGeometry;
+        if (view.permitted !== 'off' && ['Polygon', 'MultiPolygon'].includes(sourceGeometry?.type)) {
+            const line = new THREE.LineBasicMaterial({ color: window.PlanningViews.color('permitted'), depthWrite: false });
+            const borders = polygonFeatureToBorderLines({ geometry: sourceGeometry }, line, 0.04);
+            if (!borders.length) line.dispose();
+            for (const border of borders) { markOwnedMaterial(border, line); border.renderOrder = 2; planningSourcesGroup.add(border); }
+        }
         for (const item of window.PlanningViews.getItems()) {
             const appearance = window.PlanningViews.getAppearance(item);
             if (appearance === 'off') continue;
@@ -729,6 +737,21 @@
                     const borders = polygonFeatureToBorderLines({ geometry: area.geometry }, line, 0.025);
                     if (!borders.length) line.dispose();
                     for (const border of borders) { markOwnedMaterial(border, line); planningSourcesGroup.add(border); }
+                }
+            }
+            // A source-rule item has site evidence but deliberately no massing. Lay it on the
+            // ground so unresolved preconditions remain discoverable in the model view too.
+            if (['source-rule-warning', 'source-rule-precondition'].includes(item.assessment?.meaning) && item.site?.type) {
+                const warning = item.assessment.reason === 'parcel-too-small';
+                const sourceColor = warning ? window.PlanningViews.warningColor() : color;
+                const material = new THREE.MeshBasicMaterial({ color: sourceColor, transparent: true,
+                    opacity: appearance === 'solid' ? (warning ? 0.32 : 0.16) : (warning ? 0.18 : 0.08), depthWrite: false, side: THREE.DoubleSide });
+                const sourceSite = window.PlanningEnvelopes.sourceSiteGeometry(item);
+                const meshes = polygonFeatureToMeshes({ type: 'Feature', geometry: sourceSite }, material, 0.03, 0);
+                if (!meshes.length) material.dispose();
+                for (const mesh of meshes) {
+                    markOwnedMaterial(mesh, material); mesh.userData.planningRepresentationId = item.id;
+                    mesh.userData.planningSeeThrough = true; mesh.renderOrder = 2; planningSourcesGroup.add(mesh);
                 }
             }
             // The outer bound behind a shown configuration is a faint hull; alone, it is the body.

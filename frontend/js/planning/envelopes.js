@@ -139,8 +139,23 @@
             return remaining === feature ? [feature] : [{ ...feature, geometry: remaining.geometry }];
         });
     }
+    // A cited candidate plot can sit within a cadastral parcel. Keep the cadastral site on the
+    // record, but draw an evidence-only result on that candidate rather than outside the plan unit.
+    function sourceSiteGeometry(item) {
+        const candidate = item?.sourceEvidence?.candidateBuildingPlotGeometry;
+        return ['Polygon', 'MultiPolygon'].includes(candidate?.type) ? candidate : item?.site;
+    }
     // The joined ground projection has one boundary. Height-part boundaries are an explicit detail.
     function mapFeatures(item, { detail = 'footprint', form = 'both', selection = {}, deps = null, realized } = {}) {
+        // A source can establish a parcel-level warning before it can supply a buildable volume.
+        // Keep its source geometry selectable and visible; it is not an envelope or a claim that
+        // the whole parcel is permanently unbuildable.
+        const sourceSite = sourceSiteGeometry(item);
+        if (!item?.volumes?.length && ['source-rule-warning', 'source-rule-precondition'].includes(item?.assessment?.meaning)
+            && ['Polygon', 'MultiPolygon'].includes(sourceSite?.type)) return [{ type: 'Feature', geometry: sourceSite,
+            properties: { representationId: item.id, role: item.role,
+                geometryRole: item.assessment.reason === 'parcel-too-small' ? 'source-warning' : 'source-evidence',
+                warning: item.assessment.reason === 'parcel-too-small' ? 'parcel-too-small' : null } }];
         if (item.areas?.length) return item.areas.map(area => ({ type: 'Feature', geometry: area.geometry,
             properties: { representationId: item.id, role: item.role, geometryRole: 'zoning-area' } }));
         const { bound, body } = realized || realize(item, { form, selection, deps });
@@ -153,5 +168,5 @@
         };
         return [...join(bound), ...join(body)];
     }
-    return { ANY_CONFIGURATION, forms, configurationFor, frontEdgeFor, edgeSide, volumeFeatures, permittedVolume, realize, outsideSites, mapFeatures };
+    return { ANY_CONFIGURATION, forms, configurationFor, frontEdgeFor, edgeSide, volumeFeatures, permittedVolume, realize, outsideSites, mapFeatures, sourceSiteGeometry };
 });

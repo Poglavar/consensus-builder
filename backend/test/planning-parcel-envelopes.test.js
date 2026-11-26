@@ -405,6 +405,30 @@ describe('configuration display logic', () => {
         expect(map.map(f => f.properties.geometryRole)).toEqual(['bound','body']);
         expect(map[1].properties.topM).toBeCloseTo(13.716, 6);
     });
+    it('keeps an undersized source parcel visible and selectable without inventing an envelope', () => {
+        const candidate = turf.bboxPolygon([-105.001,40,-105.00075,40.0004]).geometry;
+        const warning = { id: 'envelope:upu-b1:parcel-one', role: 'permitted', site: turf.bboxPolygon(bbox).geometry,
+            sourceEvidence: { candidateBuildingPlotGeometry: candidate }, volumes: [], assessment: { meaning: 'source-rule-warning', status: 'unresolved', reason: 'parcel-too-small' } };
+        expect(envelopes.realize(warning)).toEqual({ bound: [], body: [], configuration: null, frontEdge: null });
+        expect(envelopes.mapFeatures(warning).map(feature => [feature.geometry, feature.properties])).toEqual([[
+            candidate, { representationId: warning.id, role: 'permitted', geometryRole: 'source-warning', warning: 'parcel-too-small' }
+        ]]);
+        expect(turf.booleanPointInPolygon(turf.point([-105.0006, 40.0002]), turf.feature(envelopes.mapFeatures(warning)[0].geometry))).toBe(false);
+    });
+    it('keeps an unresolved source-rule site visible without mislabelling it as a parcel-size warning', () => {
+        const precondition = { id: 'envelope:upu-b1:parcel-one', role: 'permitted', site: turf.bboxPolygon(bbox).geometry,
+            volumes: [], assessment: { meaning: 'source-rule-precondition', status: 'unresolved', reason: 'requires-preparation' } };
+        expect(envelopes.mapFeatures(precondition).map(feature => feature.properties)).toEqual([{
+            representationId: precondition.id, role: 'permitted', geometryRole: 'source-evidence', warning: null
+        }]);
+    });
+    it('renders a conditional source-rule massing when the provider supplies an actual volume', () => {
+        const conditional = { id: 'envelope:upu-b1:parcel-one', role: 'permitted', site: turf.bboxPolygon(bbox).geometry,
+            spatialReference: { horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' },
+            volumes: [{ geometry: turf.bboxPolygon(bbox).geometry, baseM: 0, topM: 15 }],
+            assessment: { meaning: 'source-rule-precondition', status: 'unresolved' } };
+        expect(envelopes.mapFeatures(conditional).map(feature => feature.properties.geometryRole)).toEqual(['body']);
+    });
     it('keeps source limits and frontage while sampling inside the selected configuration', async () => {
         const derived = (await loadParcelEnvelopes(query,{...options(),streetProvider:{near:async () => streetData()}})).items[0];
         const parcelGeometry = derived.derivation.parcel;

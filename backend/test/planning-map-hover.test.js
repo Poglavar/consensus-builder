@@ -25,12 +25,12 @@ describe('planning 2D map hover behavior', () => {
             dispatchEvent() {} };
         const context = vm.createContext({ root, ready: true, selectionLayer: { clearLayers: vi.fn() }, layer,
             hitShapes: [], store: { get: () => state }, selected: () => null, items: [item], drawOverview() {},
-            appearance: () => 'solid', envelopes: { mapFeatures: vi.fn(() => [feature]) }, geometryDeps: () => ({}),
+            appearance: () => 'solid', envelopes: { mapFeatures: vi.fn(() => [feature]), sourceSiteGeometry: item => item?.site }, geometryDeps: () => ({}),
             proposedSiteIndex: () => null, permittedFeatures: () => ({ bound: [], body: [feature] }),
             color: () => '#fff', itemColor: () => '#fff', itemTitle: value => value.title, unbuildableZone: () => false,
             labels: { colourRole: value => value.role },
             select, t: key => key, lotNote: () => '', scenarioLabel: () => '',
-            rootMap: root.map, console, core: { roles: ['existing', 'permitted', 'proposed'] }, drawnItems: new Map(),
+            rootMap: root.map, console, core: { roles: ['existing', 'permitted', 'proposed'] }, drawnItems: new Map(), sourceBoundaryLayer: null, drawSourceBoundary() {},
             scenarioId: '', pins: {} });
 
         vm.runInContext(`${source.slice(drawItem.start, drawItem.end)}\n(${source.slice(drawMap.start, drawMap.end)})()`, context);

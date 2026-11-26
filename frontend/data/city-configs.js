@@ -13066,7 +13066,7 @@
                 { adapter: 'floor-plan-publication', buildingSource: 'osm-3d', city: 'zagreb', source: 'osm',
                     buildingIds: [{ match: '^w(\\d+)$', ref: 'way/$1' }, { match: '^r(\\d+)$', ref: 'relation/$1' }] }
             ] },
-            planning: { sourceIds: ['zagreb-gup-2025', 'zagreb-gup-2016'] },
+            planning: { sourceIds: ['zagreb-gup-2025', 'zagreb-gup-2016', 'zagreb-upu-staro-trnje-b1'] },
             sidebar: {
                 // No disabled sections for Zagreb - all sections enabled
                 // All features (including roadTools) are automatically enabled

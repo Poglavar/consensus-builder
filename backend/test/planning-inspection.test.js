@@ -84,6 +84,32 @@ describe('cache-only parcel inspection', () => {
 });
 
 describe('parcel panel evidence', () => {
+    it('renders a source calculation trace without turning assumptions or source links into a compliance verdict', () => {
+        const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');
+        const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
+        const declaration = name => body.find(node => node.type === 'FunctionDeclaration' && node.id.name === name);
+        const document = makeDocument();
+        const element = (tag, className, text) => {
+            const node = document.createElement(tag); if (className) node.className = className; if (text !== undefined) node.textContent = text; return node;
+        };
+        const labels = { calculationTraceTitle: 'Calculation breakdown', calculationTraceNote: 'Inputs and calculations', traceInputs: 'Inputs', traceResult: 'Result', traceLimit: 'Recorded limit', traceExpression: 'Expression',
+            'traceStatus.failed': 'Failed', 'traceStatus.not-evaluated': 'Not evaluated', 'traceBound.maximum': 'Maximum' };
+        const t = key => labels[key] || `planningViews.${key}`;
+        const context = vm.createContext({ document, element, t, URL, citationLabel: citation => citation.kind, traceLabel: row => row.id,
+            traceInputLabel: key => key, area: value => `${value} m²`, number: value => String(value),
+            root: { CbFormat: { formatLength: value => `${value} m`, formatNumber: value => String(value) } } });
+        vm.runInContext(source.slice(declaration('traceValue').start, declaration('traceValue').end), context);
+        vm.runInContext(source.slice(declaration('sourceLink').start, declaration('sourceLink').end), context);
+        vm.runInContext(source.slice(declaration('renderCalculationTrace').start, declaration('renderCalculationTrace').end), context);
+        const trace = vm.runInContext('renderCalculationTrace', context)({ sourceEvidence: { calculationTrace: [
+            { id: 'above-ground-far', quantity: 'floorAreaRatioAboveGround', status: 'failed', result: { value: 2.5, unit: 'ratio' }, limit: { value: 2.5, unit: 'ratio', bound: 'maximum' }, expression: '5000 / 2000', citations: [{ kind: 'provision', url: 'https://example.test/article' }, { kind: 'bad', url: 'javascript:alert(1)' }] },
+            { id: 'natural-terrain', quantity: 'naturalTerrain', status: 'not-evaluated', limit: { value: 0.2, unit: 'ratio', bound: 'maximum' } }
+        ] } });
+        expect(trace.textContent).toContain('Failed'); expect(trace.textContent).toContain('2.5'); expect(trace.textContent).not.toContain('250%');
+        expect(trace.textContent).toContain('20%'); expect(trace.textContent).toContain('Not evaluated');
+        expect(trace.textContent).not.toContain('undefined');
+        const links = trace.querySelectorAll('a'); expect(links).toHaveLength(1); expect(links[0].href).toBe('https://example.test/article');
+    });
     it('asks the cache for cadastral parcels only, never for a design-formed piece', async () => {
         const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');
         const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
@@ -176,8 +202,8 @@ describe('shared building and proposal representations', () => {
         const root = { i18n: { t: key => ({ 'clickStackNavigation.info': 'Info', 'planningViews.tabs.options': 'Options', 'proposalDrafts.approval.policyType': 'Rules' }[key] || key) },
             CbFormat: { formatLength: value => `${value} m`, formatNumber: value => String(value), formatArea: value => `${value} m²`, formatDate: value => String(value) } };
         const context = vm.createContext({ selected: () => item, inspector, root: { ...root, PlanningSourceProposal }, element, t, parcelOf: () => null,
-            inspectorBadgeKey: () => 'sourceEvidenceBadge', area: value => `${value} m²`, number: value => String(value), resultLabel: value => String(value),
-            permittedFeatures: () => ({ configuration: null }), renderConfigurations: () => element('section', 'planning-configurations'), scenarioLabel: value => value,
+            inspectorBadgeKey: () => 'sourceEvidenceBadge', isParcelTooSmall: () => false, area: value => `${value} m²`, number: value => String(value), resultLabel: value => String(value),
+            permittedFeatures: () => ({ configuration: null }), renderConfigurations: () => element('section', 'planning-configurations'), scenarioLabel: value => value, sourceConditionNotes: () => [], renderCalculationTrace: () => null,
             sourceRecord: async () => [], selectRecord() {}, select() {}, referenceStatus: null, document, itemTitle: value => value.title,
             labels, fullT: key => key, sourceText: text => element('q', 'planning-source-text', text), legendRows: () => [], sceneItems: () => [item], appearance: () => 'ghost' });
         for (const name of ['sourcePlanUrl', 'renderInspector']) vm.runInContext(source.slice(declaration(name).start, declaration(name).end), context);

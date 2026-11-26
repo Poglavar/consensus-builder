@@ -176,6 +176,32 @@ describe('MCP public source reads', () => {
         const asked = new URL(fetchImpl.mock.calls[0][0]);
         expect(Object.fromEntries(asked.searchParams)).toEqual({ city: 'alatau', parcel: 'P-1,P-2', goal: 'park,road-track', order: 'oldest', offset: '40', limit: '20' });
     });
+    it('reads selected permitted evidence without requiring a direct-dimensions study', async () => {
+        const representation = { id: 'zagreb-upu-staro-trnje-b1:HR-335550-1', sourceEvidence: { calculationTrace: [{
+            id: 'candidate-plot-area', quantity: 'lotArea', status: 'failed',
+            inputs: [{ key: 'candidateBuildingPlotAreaM2', value: 715, unit: 'm2' }],
+            limit: { value: 2000, unit: 'm2', bound: 'minimum' },
+            citations: [{ kind: 'provision', article: 27, url: 'https://example.org/plan' }]
+        }] } };
+        const fetchImpl = vi.fn(async url => {
+            const path = new URL(url).pathname;
+            return json(path === '/parcels' ? { features: [sourceFeature('HR-335550-1')] }
+                : path === '/planning/sources' ? { sources: [{ id: 'zagreb-upu-staro-trnje-b1', parcelStudy: false }] }
+                    : path === '/planning/parcel' ? { schemaVersion: 'planning-representations.v1', items: [representation] }
+                        : path === '/designs' ? { designs: [] }
+                            : path === '/agreements' ? { agreements: [], count: 0 } : { source: path });
+        });
+        const reads = createMcpReadTools({ apiBase: 'https://api.example', appOrigin: 'https://app.example', fetchImpl });
+        const result = await reads.parcelContext({ city: 'zagreb', parcelSourceId: 'oss-wfs', parcelId: 'HR-335550-1',
+            planningSourceIds: ['zagreb-upu-staro-trnje-b1'] });
+        expect(result.studies).toEqual([]);
+        expect(result.planningEvidence).toEqual([{ source: 'zagreb-upu-staro-trnje-b1', representations: expect.objectContaining({
+            items: [representation]
+        }) }]);
+        const requestUrl = new URL(fetchImpl.mock.calls.find(([url]) => new URL(url).pathname === '/planning/parcel')[0]);
+        expect(requestUrl.searchParams.get('source')).toBe('zagreb-upu-staro-trnje-b1');
+        expect(requestUrl.searchParams.get('parcel')).toBe('HR-335550-1');
+    });
     it('resolves exact cadastral map parts through their immutable source parent', async () => {
         const source = sourceFeature('P');
         const east = structuredClone(geometry.coordinates).map(r => r.map(([x,y]) => [x + 0.01, y]));

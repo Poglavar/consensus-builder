@@ -111,6 +111,42 @@ body:is([data-planning-proposed="solid"], [data-planning-proposed="ghost"]) .pla
 .planning-source-text { font-style: italic; }
 .planning-inspector__name { margin: var(--cb-space-1) 0 0; font-weight: var(--cb-weight-semibold); overflow-wrap: anywhere; }
 .planning-source-wording { margin: var(--cb-space-1) 0 0; font-size: var(--cb-text-sm); color: var(--cb-text-muted); overflow-wrap: anywhere; }
+.planning-source-citations { margin: var(--cb-space-2) 0 0; padding-inline-start: var(--cb-space-5); }
+.planning-calculation-trace { margin-top: var(--cb-space-4); border-top: 1px solid var(--cb-line); padding-top: var(--cb-space-3); }
+.planning-calculation-trace h3 { margin: 0; font-size: var(--cb-text-base); }
+.planning-calculation-trace__list { margin: var(--cb-space-2) 0 0; padding-inline-start: var(--cb-space-5); display: grid; gap: var(--cb-space-2); }
+.planning-calculation-trace__row details { border: 1px solid var(--cb-line); border-radius: var(--cb-radius-md); padding: var(--cb-space-2); }
+.planning-calculation-trace__row summary { cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: var(--cb-space-2); }
+.planning-calculation-trace__status { flex: 0 0 auto; }
+.planning-calculation-trace__status--failed { color: var(--cb-danger-soft-ink); }
+.planning-calculation-trace__status--pending, .planning-calculation-trace__status--not-evaluated { color: var(--cb-warning-soft-ink); }
+.planning-calculation-trace__expression { font-family: var(--cb-font-mono); overflow-wrap: anywhere; }
+.planning-calculation-trace__citations { display: flex; flex-wrap: wrap; gap: var(--cb-space-2); margin: var(--cb-space-2) 0 0; }
+.planning-source-boundary-label { display: grid; place-items: center; width: 48px; height: 24px; pointer-events: none; }
+.planning-source-boundary-label > span { padding: 2px 6px; border: 1px solid var(--cb-planning-permitted); border-radius: var(--cb-radius-sm); background: var(--cb-surface); color: var(--cb-text-strong); font-size: var(--cb-text-xs); font-weight: var(--cb-weight-bold); box-shadow: var(--cb-shadow-sm); }
+.planning-inspector__description--warning { color: var(--cb-danger-soft-ink); }
+.planning-parcel-warning-icon {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--cb-danger);
+    border-radius: 50%;
+    background: var(--cb-danger-soft);
+    color: var(--cb-danger-soft-ink);
+    font-size: 15px;
+    font-weight: var(--cb-weight-bold);
+    line-height: 1;
+    box-shadow: var(--cb-shadow-sm);
+    pointer-events: none;
+}
+.leaflet-tooltip.planning-parcel-warning-tooltip {
+    max-width: 20rem;
+    color: var(--cb-danger-soft-ink);
+    border-color: var(--cb-danger);
+    background: var(--cb-danger-soft);
+    font-weight: var(--cb-weight-semibold);
+}
 .planning-sources-pane { z-index: var(--cb-z-map-pane-site); }
 /* The zoning overview's canvas (js/planning/views.js drawOverview) covers the whole view; the pane takes
    clicks for its massing paths, so the canvas must let them through to everything below. */

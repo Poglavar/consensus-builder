@@ -258,14 +258,20 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
             ]);
             const urbanRules = result.parcelSourceId === 'oss-wfs'
                 ? await request('/urban-rules', { coordinates: turf.pointOnFeature(parcel).geometry.coordinates.join(',') }) : null;
-            const studies = await Promise.all((planning.sources || []).filter(s => s.parcelStudy && args.planningSourceIds?.includes(s.id)).map(async source => ({ source: source.id,
+            // A source with a permitted representation but no direct-dimensions study still has
+            // parcel evidence. Only an explicitly selected source is read, so discovery cannot
+            // fan out into every planning provider.
+            const selectedPlanningSources = (planning.sources || []).filter(source => args.planningSourceIds?.includes(source.id));
+            const studies = await Promise.all(selectedPlanningSources.filter(source => source.parcelStudy).map(async source => ({ source: source.id,
                 study: await request('/planning/study', { city: args.city, source: source.id, parcel: id }) })));
+            const planningEvidence = await Promise.all(selectedPlanningSources.filter(source => !source.parcelStudy).map(async source => ({ source: source.id,
+                representations: await request('/planning/parcel', { city: args.city, source: source.id, parcel: id }) })));
             // The Permitted restrictions stage, as the map and the Permitted check apply it: the
             // designations over the parcel, their effects, and the existing context relative limits read.
             const standing = buildings?.supported && !buildings.truncated && !buildings.unavailable ? buildings.regions?.[id] || [] : null;
             const setting = args.buildingSourceId && cityPlanningRuleSetIds(args.city).length ? await settingOf(parcel, id, result.parcelSourceId, args) : null;
             const restrictions = await parcelRestrictions({ city: args.city, parcel, buildings: standing, setting, fetchImpl });
-            return { parcel, parcelSourceId: result.parcelSourceId, areaM2: turf.area(parcel), designs, agreements, markets, buildings, history, planning, studies, restrictions, urbanRules,
+            return { parcel, parcelSourceId: result.parcelSourceId, areaM2: turf.area(parcel), designs, agreements, markets, buildings, history, planning, studies, planningEvidence, restrictions, urbanRules,
                 economics: cityEconomics(args.city, locationOf(parcel)), landEstimate: landEstimateOf(args.city, parcel), previewUrl: mapUrl(args.city, bbox) };
         },
         async planningAreas({ city, point, source }) {
