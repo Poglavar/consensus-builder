@@ -1346,7 +1346,7 @@
             "removeAddress": "Remover endereço",
             "links": {
                 "etherscan": "Etherscan",
-                "attestify": "Attestify"
+                "attestify": "Tokenizario"
             },
             "patternAria": "Pré-visualização do padrão da lente",
             "patternTitle": "Padrão da lente",
@@ -5917,8 +5917,8 @@
     "attestify": {
         "close": "Fechar",
         "title": "Registar alcunha",
-        "body": "Opcionalmente, pode associar a sua alcunha ao seu endereço na cadeia. Estes metadados adicionais facilitam as atestações avançadas. Não é obrigatório: tudo funciona sem esta associação, que pode fazer a qualquer momento. Se quiser fazê-la agora, avance para Attestify.Network.",
-        "proceed": "Avançar para Attestify.Network"
+        "body": "Opcionalmente, pode associar a sua alcunha ao seu endereço na cadeia. Estes metadados adicionais facilitam as atestações avançadas. Não é obrigatório: tudo funciona sem esta associação, que pode fazer a qualquer momento. Se quiser fazê-la agora, avance para Tokenizario.",
+        "proceed": "Avançar para Tokenizario"
     },
     "hud": {
         "statusLogClose": "Fechar",

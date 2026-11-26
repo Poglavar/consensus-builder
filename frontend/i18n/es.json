@@ -1339,8 +1339,8 @@
     },
     "attestify": {
         "title": "Registrar apodo",
-        "body": "Opcionalmente, puedes conectar tu apodo con tu dirección en la cadena. Estos metadatos adicionales facilitan las atestaciones avanzadas. No tienes que hacerlo; todo funciona sin ello, pero puedes hacerlo en cualquier momento. Si deseas hacerlo ahora, continúa a Attestify.Network.",
-        "proceed": "Ir a Attestify.Network",
+        "body": "Opcionalmente, puedes conectar tu apodo con tu dirección en la cadena. Estos metadatos adicionales facilitan las atestaciones avanzadas. No tienes que hacerlo; todo funciona sin ello, pero puedes hacerlo en cualquier momento. Si deseas hacerlo ahora, continúa a Tokenizario.",
+        "proceed": "Ir a Tokenizario",
         "close": "Cerrar"
     },
     "sidebar": {
@@ -2659,7 +2659,7 @@
             "removeAddress": "Eliminar dirección",
             "links": {
                 "etherscan": "Etherscan",
-                "attestify": "Attestify"
+                "attestify": "Tokenizario"
             },
             "patternAria": "Vista previa del patrón de la lente",
             "patternTitle": "Patrón de la lente",

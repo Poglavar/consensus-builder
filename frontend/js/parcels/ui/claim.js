@@ -19,7 +19,7 @@
 
     const PARCEL_CLAIM_PORTAL_URLS = Object.freeze({
         development: 'http://localhost:3001/',
-        production: 'https://attestify.network/'
+        production: 'https://tokenizario.app/'
     });
 
     const PARCEL_NFT_ABI_FRAGMENT = [

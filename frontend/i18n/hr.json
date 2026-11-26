@@ -1344,8 +1344,8 @@
     },
     "attestify": {
         "title": "Registriraj nadimak",
-        "body": "Opcionalno možete povezati svoj nadimak s adresom na lancu. Ovi dodatni metapodaci olakšavaju napredne atestacije. Ne morate to učiniti; sve radi i bez toga, ali možete u bilo kojem trenutku. Ako to želite sada, nastavite na Attestify.Network.",
-        "proceed": "Nastavi na Attestify.Network",
+        "body": "Opcionalno možete povezati svoj nadimak s adresom na lancu. Ovi dodatni metapodaci olakšavaju napredne atestacije. Ne morate to učiniti; sve radi i bez toga, ali možete u bilo kojem trenutku. Ako to želite sada, nastavite na Tokenizario.",
+        "proceed": "Nastavi na Tokenizario",
         "close": "Zatvori"
     },
     "sidebar": {
@@ -2654,7 +2654,7 @@
             "removeAddress": "Ukloni adresu",
             "links": {
                 "etherscan": "Etherscan",
-                "attestify": "Attestify"
+                "attestify": "Tokenizario"
             },
             "patternAria": "Pregled uzorka leće",
             "patternTitle": "Uzorak leće",

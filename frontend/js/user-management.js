@@ -10,7 +10,7 @@ const MAX_USER_AVATAR_COUNT = 16;
 
 const ATTESTIFY_BASE_URLS = Object.freeze({
     development: 'http://localhost:3000/',
-    production: 'https://attestify.network/'
+    production: 'https://tokenizario.app/'
 });
 
 function isProposalDeepLinkPath() {
@@ -1783,8 +1783,8 @@ function updateAgentDialogChainInfo() {
     }
 }
 
-// What registering a nickname on Attestify means, before leaving for it: a small shared dialog
-// whose one action opens Attestify in a new tab and closes the dialog.
+// What registering a nickname on Tokenizario means, before leaving for it: a small shared dialog
+// whose one action opens Tokenizario in a new tab and closes the dialog.
 function openAttestifyExplainer(attestUrl, attestTitle) {
     if (!attestUrl) return;
     if (cityTokenModalState.attestDialog) {
@@ -1794,9 +1794,9 @@ function openAttestifyExplainer(attestUrl, attestTitle) {
     const title = translateUM('attestify.title', 'Register nickname');
     const body = translateUM(
         'attestify.body',
-        'Optionally, you can connect your nickname with your address on chain. This additional metadata makes advanced attestations easier. You do not have to do it, everything works without it, but you can at any time. If you wish to do it now proceed to Attestify.Network.'
+        'Optionally, you can connect your nickname with your address on chain. This additional metadata makes advanced attestations easier. You do not have to do it, everything works without it, but you can at any time. If you wish to do it now proceed to Tokenizario.'
     );
-    const proceedLabel = translateUM('attestify.proceed', 'Proceed to Attestify.Network');
+    const proceedLabel = translateUM('attestify.proceed', 'Proceed to Tokenizario');
     const closeLabel = translateUM('attestify.close', 'Close');
 
     const text = document.createElement('p');

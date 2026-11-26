@@ -9,7 +9,7 @@
 
     const ATTESTIFY_BASE_URLS = Object.freeze({
         development: 'http://localhost:3000/',
-        production: 'https://attestify.network/'
+        production: 'https://tokenizario.app/'
     });
 
     function formatTemplate(template, params = {}) {
@@ -298,7 +298,7 @@
             const placeholderName = translateLens('modal.lens.placeholders.name', 'Friendly name');
             const removeLabel = translateLens('modal.lens.removeAddress', 'Remove address');
             const etherscanLabel = translateLens('modal.lens.links.etherscan', 'Etherscan');
-            const attestifyLabel = translateLens('modal.lens.links.attestify', 'Attestify');
+            const attestifyLabel = translateLens('modal.lens.links.attestify', 'Tokenizario');
 
             const header = document.createElement('div');
             header.className = 'lens-row-header';
@@ -389,7 +389,7 @@
             attestifyLink.target = '_blank';
             attestifyLink.rel = 'noopener noreferrer';
 
-            // An address with no explorer or Attestify page keeps its link, dimmed and inert.
+            // An address with no explorer or Tokenizario page keeps its link, dimmed and inert.
             function updateLinks(addressValue) {
                 const etherscanUrl = buildEtherscanAddressUrl(addressValue);
                 const attestifyUrl = buildAttestifyUrl(addressValue);

@@ -1338,8 +1338,8 @@
     },
     "attestify": {
         "title": "Register nickname",
-        "body": "Optionally, you can connect your nickname with your address on chain. This additional metadata makes advanced attestations easier. You do not have to do it, everything works without it, but you can at any time. If you wish to do it now proceed to Attestify.Network.",
-        "proceed": "Proceed to Attestify.Network",
+        "body": "Optionally, you can connect your nickname with your address on chain. This additional metadata makes advanced attestations easier. You do not have to do it, everything works without it, but you can at any time. If you wish to do it now proceed to Tokenizario.",
+        "proceed": "Proceed to Tokenizario",
         "close": "Close"
     },
     "sidebar": {
@@ -2632,7 +2632,7 @@
             "removeAddress": "Remove address",
             "links": {
                 "etherscan": "Etherscan",
-                "attestify": "Attestify"
+                "attestify": "Tokenizario"
             },
             "patternAria": "Lens pattern preview",
             "patternTitle": "Lens pattern",

@@ -1346,7 +1346,7 @@
             "removeAddress": "Supprimer l’adresse",
             "links": {
                 "etherscan": "Etherscan",
-                "attestify": "Attestify"
+                "attestify": "Tokenizario"
             },
             "patternAria": "Aperçu du motif du prisme",
             "patternTitle": "Motif du prisme",
@@ -5917,8 +5917,8 @@
     "attestify": {
         "close": "Fermer",
         "title": "Enregistrer un pseudonyme",
-        "body": "Vous pouvez, si vous le souhaitez, associer votre pseudonyme à votre adresse sur la blockchain. Ces métadonnées supplémentaires facilitent les attestations avancées. Cette étape est facultative : tout fonctionne sans elle, et vous pouvez l’effectuer à tout moment. Pour le faire maintenant, rendez-vous sur Attestify.Network.",
-        "proceed": "Accéder à Attestify.Network"
+        "body": "Vous pouvez, si vous le souhaitez, associer votre pseudonyme à votre adresse sur la blockchain. Ces métadonnées supplémentaires facilitent les attestations avancées. Cette étape est facultative : tout fonctionne sans elle, et vous pouvez l’effectuer à tout moment. Pour le faire maintenant, rendez-vous sur Tokenizario.",
+        "proceed": "Accéder à Tokenizario"
     },
     "hud": {
         "statusLogClose": "Fermer",
