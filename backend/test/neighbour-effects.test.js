@@ -268,3 +268,17 @@ describe('how far a plot is', () => {
         expect(far.distanceM).toBeCloseTo(Math.hypot(50, 2), 2);
     });
 });
+
+describe('first checks', () => {
+    it('leaves out a plot whose only change is a crossed first check its detailed reading answers', () => {
+        // A 0.2 m pole, 30 m tall, 20 m in front of the window at x = 3 on the north house's south wall:
+        // 51° above that window, but too thin to take any of the sky its wall sees (swept every 2°).
+        const pole = [{ id: 'pole', geometry: rect(2.9, 29.9, 3.1, 30.1), heightM: 30 }];
+        const guides = { angle: { degrees: 25, then: 'sky' }, sky: { percent: 27, ratio: 0.8 } };
+        const run = chosen => effects.assess({ site: [SITE], lots: [NORTH], existing: [NORTH_HOUSE], proposed: pole, sun: SUN, guides: chosen }).lots;
+        // Without a deciding reading the crossed test is beyond the guide, so the window does see it.
+        expect(run({ angle: { degrees: 25 } })[0].angle.status).toBe('fail');
+        // With the sky deciding and no sky lost, nothing is listed.
+        expect(run(guides)).toEqual([]);
+    });
+});

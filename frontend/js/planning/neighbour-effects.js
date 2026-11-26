@@ -596,9 +596,8 @@
             const walls = guides.sky || guides.distance || guides.angle || guides.splay || guides.sunlight ? wallReadings(lotBuildings, around, reachM, guides, year) : {};
             const readings = { garden, sky: walls.sky || null, sunlight: walls.sunlight || null, distance: walls.distance || null, angle: walls.angle || null, splay: walls.splay || null };
             let status = worst(KINDS.map(kind => readings[kind]?.status));
-            // A screening test crossed while the detailed reading still meets the guides: listed with
-            // the plots that meet them.
-            if (status === 'same' && KINDS.some(kind => readings[kind]?.status === 'screen')) status = 'minor';
+            // Only graded readings list a plot: a crossed first check whose detailed reading shows no
+            // change is answered by it, and the plot is left out.
             if (status === 'same') continue;
             // The drawings in lng/lat, heights kept.
             for (const kind of KINDS) {

@@ -40,7 +40,8 @@ a rule set's `neighbourGuides` in `frontend/data/planning-sources.json`, which a
   (the window lies under it).
 - `then` names the detailed reading a test is a first check for (England: BRE's 25° and 45° tests
   lead to the sky reading). A crossed test with its `then` reading measured is marked as a first
-  check, in the info colour, and grades nothing: the plot's group is that of its graded readings.
+  check, in the info colour, and grades nothing: the plot's group is that of its graded readings,
+  and a plot whose only change is a crossed first check (its detailed reading unchanged) is not listed.
   Without `then`, crossing the test is beyond the guide.
 - A reading left out is not measured or shown. `label` names the source and `note` what the
   standard says its grades mean, both in "What the guides are";
