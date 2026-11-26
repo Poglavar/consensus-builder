@@ -111,7 +111,10 @@
     // Whether the city has neighbour guides, as far as is known yet (false while they are read).
     function applies(city = root.CityConfigManager?.getCurrentCityId?.()) {
         const entry = known.get(city);
-        if (!entry) { guidesFor(city).catch(() => {}); return false; }
+        if (!entry) {
+            guidesFor(city).catch(error => console.error(`[${new Date().toISOString()}] [neighbour-effects] Neighbour guides of ${city} could not be read; effects on neighbours stay hidden`, error));
+            return false;
+        }
         return !(entry instanceof Promise) && !!entry.guides;
     }
 
