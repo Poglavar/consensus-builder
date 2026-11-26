@@ -9,8 +9,6 @@
 // back with the status from the chain once minted, else from the deadline; owner decisions are relayed at
 // /agreements/:cid/decisions (agreements/decisions.js); POST /agreements/:cid/onchain records the chain
 // account the agreement is minted as (M3, agreements/onchain.js), which the lifecycle oracle refreshes.
-// Agreement discovery (oracle/agreement-discovery.js) indexes and records agreements it finds on chain
-// through the same checks (indexAgreement, mintedAccountOf, accountRefusal).
 
 import { createRequire } from 'node:module';
 import { canonicalBytes, cidOf, isCid } from '../cid.js';
@@ -371,6 +369,15 @@ export function setupAgreementsRoute(app, deps) {
         return chains.get(cluster);
     });
 
+    const readPlan = async cid => (await pool.query(`SELECT cid, content FROM ${PLAN_TABLE} WHERE cid = $1`, [cid])).rows[0] || null;
+    const checkedPlan = (record, expectedCid) => {
+        if (!record || record.cid !== expectedCid || !isPlainObject(record.content)) return null;
+        if (validatePlanContent(record.content)) return null;
+        const bytes = canonicalBytes(record.content);
+        if (cidOf(bytes) !== expectedCid) return null;
+        return { cid: expectedCid, content: record.content };
+    };
+
     const previewRoute = '/agreements/:cid/model-preview';
     app.get([previewRoute, previewRoute + '/image.png'], async (req, res) => {
         try {
@@ -391,37 +398,7 @@ export function setupAgreementsRoute(app, deps) {
 
     // { cid, content, plan?: { cid, content }, designs?: [{ cid, content }] } → 201; 409 if already indexed.
     app.post('/agreements', async (req, res) => {
-        try {
-            const answer = await indexAgreement(pool, deps, req.body, { now });
-            return send(res, answer.status, answer.body);
-        } catch (error) {
-            if (error?.code === 'retired-agreement-format') return res.status(410).json({ error: error.message, code: error.code });
-            console.error(`[${new Date().toISOString()}] Error in POST /agreements:`, error);
-            return res.status(500).json({ error: 'Internal server error' });
-        }
-    });
-
-    registerAgreementRoutes(app, deps, { pool, now, agreementChain });
-}
-
-/**
- * Indexes one agreement/v1 as POST /agreements does, for the route and for agreement discovery
- * (oracle/agreement-discovery.js), which indexes agreements found on chain through exactly these
- * checks: the CID is the content's; the shape is agreement/v1 (validateAgreementContent, with the
- * deadline ahead of `now()`); its plan is indexed or carried and hashes to its CID; every design the
- * plan links is indexed or carried; its input parcels are exactly the parcels the designs take. Then
- * the plan, carried designs and agreement are written in one transaction and their thumbnails queued.
- * @param body { cid, content, plan?: { cid, content }, designs?: [{ cid, content, parcelSourceId? }] }
- * @param options now() the time the deadline must lie after; dryRun: every check, no write
- * @returns {Promise<{ status: number, body: object }>} 201 the row; 409 the row already indexed; 200
- *   { dryRun: true, … } when a dry run passed every check; any other status is a refusal { error, code, … }
- */
-export async function indexAgreement(pool, deps, body, { now = () => Date.now(), dryRun = false } = {}) {
-    // Every check answers send(res, status, body), as the route's handlers do; here that is the answer.
-    // (The checks keep the route handler's blocks and indentation, so their history reads unchanged.)
-    const res = null;
-    const send = (_res, status, payload) => ({ status, body: payload });
-    {
+        const body = req.body;
         if (!isPlainObject(body) || Object.keys(body).some(key => !['cid', 'content', 'plan', 'designs'].includes(key))) {
             return send(res, 400, { error: 'Body must be { cid, content, plan?, designs? }.', code: 'bad-request' });
         }
@@ -438,10 +415,10 @@ export async function indexAgreement(pool, deps, body, { now = () => Date.now(),
         const computedCid = cidOf(bytes);
         if (computedCid !== cid) return send(res, 400, { error: `The content is ${computedCid}, not ${cid}.`, code: 'cid-mismatch', cid, computedCid });
 
-        {
+        try {
             // The same CID is the same content, checked when it was indexed (even if its deadline has passed since).
             const existing = await loadAgreement(pool, cid);
-            if (existing) return send(res, 409, existing);
+            if (existing) return res.status(409).json(existing);
 
             if (!isCid(content.planCid)) return send(res, 400, { error: 'Agreement content must name a plan/v1 with planCid; inline designs are not accepted.', code: 'plan-required' });
             if (Object.hasOwn(content, 'designs') || Object.hasOwn(content, 'designCids')) return send(res, 400, { error: 'Agreement membership is declared by planCid; remove inline designs/designCids.', code: 'inline-designs-forbidden' });
@@ -455,7 +432,7 @@ export async function indexAgreement(pool, deps, body, { now = () => Date.now(),
                 carriedPlan = checkedPlan(body.plan, content.planCid);
                 if (!carriedPlan) return send(res, 400, { error: 'The carried plan is invalid or does not hash to its CID.', code: 'invalid-plan' });
             }
-            const storedPlanRow = await readPlan(pool, content.planCid);
+            const storedPlanRow = await readPlan(content.planCid);
             const storedPlan = checkedPlan(storedPlanRow, content.planCid);
             if (storedPlanRow && !storedPlan) return send(res, 500, { error: `Indexed plan ${content.planCid} is invalid; it was left unchanged.`, code: 'invalid-plan-record' });
             if (!carriedPlan && !storedPlan) return send(res, 422, { error: `Plan ${content.planCid} is not indexed; send its verified content in plan.`, code: 'plan-not-indexed', planCid: content.planCid });
@@ -512,11 +489,6 @@ export async function indexAgreement(pool, deps, body, { now = () => Date.now(),
                 });
             }
 
-            // A dry run (agreement discovery's) ends here: every check passed and nothing is written.
-            if (dryRun) {
-                return send(res, 200, { dryRun: true, cid, inputParcelIds: checked.inputParcelIds, designCids: planDesignCids,
-                    carriedPlan: Boolean(carriedPlan && !storedPlan), carriedDesigns: [...prepared.keys()] });
-            }
             const client = await pool.connect();
             const created = [];
             let row = null;
@@ -555,97 +527,17 @@ export async function indexAgreement(pool, deps, body, { now = () => Date.now(),
             }
             // Written after the commit, so the thumbnail's update finds the row.
             created.forEach(design => enqueueDesignThumbnail(pool, deps, design));
-            if (!row) return send(res, 409, await loadAgreement(pool, cid));
+            if (!row) return res.status(409).json(await loadAgreement(pool, cid));
             enqueueAgreementThumbnail(pool, deps, row, designs);
             log(`indexed ${cid} (${designs.length} design(s), ${created.length} indexed with it; ${checked.inputParcelIds.length} input parcel(s); ${row.city || 'no city'})`);
-            return send(res, 201, row);
+            return res.status(201).json(row);
+        } catch (error) {
+            if (error?.code === 'retired-agreement-format') return res.status(410).json({ error: error.message, code: error.code });
+            console.error(`[${new Date().toISOString()}] Error in POST /agreements:`, error);
+            return res.status(500).json({ error: 'Internal server error' });
         }
-    }
-}
+    });
 
-// The plan an agreement names, as the index holds it (null when it does not), and a plan record checked
-// to be a valid plan/v1 whose canonical bytes hash to `expectedCid` (null otherwise).
-const readPlan = async (pool, cid) => (await pool.query(`SELECT cid, content FROM ${PLAN_TABLE} WHERE cid = $1`, [cid])).rows[0] || null;
-function checkedPlan(record, expectedCid) {
-    if (!record || record.cid !== expectedCid || !isPlainObject(record.content)) return null;
-    if (validatePlanContent(record.content)) return null;
-    const bytes = canonicalBytes(record.content);
-    if (cidOf(bytes) !== expectedCid) return null;
-    return { cid: expectedCid, content: record.content };
-}
-
-/**
- * The chain account an indexed agreement is minted as: { sponsor, expected } (the PDA its sponsor and
- * CID derive under the current program), or { refusal: { status, body } } when it has none. Shared by
- * POST /agreements/:cid/onchain and agreement discovery (oracle/agreement-discovery.js).
- */
-export function mintedAccountOf(cid, content) {
-    const refuse = (status, body) => ({ refusal: { status, body } });
-    // Binding owners and investor-funding agreements use the same agreement account. Polls do not.
-    if (content?.rule?.binding !== true || !['owners', 'investors'].includes(content?.rule?.electorate)) {
-        return refuse(422, { error: 'Only a binding owners or investor-funding agreement is minted; this one does not bind.', code: 'not-binding' });
-    }
-    const sponsor = content?.sponsor ?? null;
-    const expected = agreementAccountOf(cid, sponsor);
-    if (!expected) {
-        return refuse(422, { error: 'The agreement names no sponsor wallet, so it has no chain account.', code: 'no-sponsor' });
-    }
-    return { sponsor, expected };
-}
-
-/**
- * Why the account read at `expected` (createAgreementChain's { account, problem } row) is not the
- * agreement's own mint, as { status, body }, or null when it is: it exists and is an agreement account,
- * stores this CID and the sponsor as authority, and an investor-funding agreement's payout, lens,
- * contribution target, deadline, escrow and ground are the content's. Shared by POST
- * /agreements/:cid/onchain and agreement discovery.
- */
-export function accountRefusal({ cid, content, read, expected, sponsor, cluster }) {
-    const refuse = (status, body) => ({ status, body });
-    if (read.problem === 'missing') {
-        return refuse(404, { error: `There is no account ${expected} on ${cluster} (yet).`, code: 'onchain-account-missing' });
-    }
-    if (read.problem) {
-        return refuse(409, { error: `Account ${expected} is not an agreement account (${read.problem}).`, code: 'onchain-not-agreement' });
-    }
-    if (read.account.cid !== cid) {
-        return refuse(409, { error: `Account ${expected} stores CID ${read.account.cid}.`, code: 'onchain-cid-mismatch', storedCid: read.account.cid });
-    }
-    if (read.account.authority !== sponsor) {
-        return refuse(409, { error: `Account ${expected} belongs to ${read.account.authority}, not the sponsor.`, code: 'onchain-sponsor-mismatch' });
-    }
-    if (content.rule?.electorate === 'investors') {
-        if (read.account.payout !== sponsor) {
-            return refuse(409, { error: `Account ${expected} pays ${read.account.payout}, not the agreement sponsor.`, code: 'onchain-payout-mismatch' });
-        }
-        const lenses = content.rule.lens;
-        const threshold = agreementRecord.lensThresholdOf(content.rule);
-        if (read.account.lenses.join() !== lenses.join() || read.account.lensThreshold !== threshold) {
-            return refuse(409, { error: `Account ${expected} names lens ${read.account.lenses.join(', ') || '(none)'} with threshold ${read.account.lensThreshold}, not the agreement lens ${lenses.join(', ') || '(none)'} with threshold ${threshold}.`, code: 'onchain-lens-mismatch' });
-        }
-        // The program checks the contribution target itself (confirm_funding): it must be the
-        // agreement's, in devnet USDC.
-        if (read.account.fundingMint !== apartmentClient.constants.USDC_DEVNET_MINT || read.account.requiredFunding !== BigInt(content.funding.targetUsdcAtomic)) {
-            return refuse(409, { error: `Account ${expected} has a different funding target from the agreement.`, code: 'onchain-funding-target-mismatch' });
-        }
-        // Decoded agreement deadlines are safe-integer Unix seconds and requiredLamports is a
-        // u64 BigInt. Investor funding is USDC-only: no native execution escrow or open ground.
-        const expectedDeadline = Math.floor(Date.parse(content.deadline) / 1000);
-        if (read.account.deadline !== expectedDeadline) {
-            return refuse(409, { error: `Account ${expected} has a different deadline from the agreement.`, code: 'onchain-deadline-mismatch' });
-        }
-        if (read.account.requiredLamports !== 0n) {
-            return refuse(409, { error: `Account ${expected} requires native execution lamports, but investor funding requires zero.`, code: 'onchain-native-escrow-mismatch' });
-        }
-        if (read.account.openGround !== false) {
-            return refuse(409, { error: `Account ${expected} records open ground, but investor funding is land-free.`, code: 'onchain-open-ground-mismatch' });
-        }
-    }
-    return null;
-}
-
-// The agreement routes after POST /agreements (setupAgreementsRoute registers them in this order).
-function registerAgreementRoutes(app, deps, { pool, now, agreementChain }) {
     // Signed owner decisions on an indexed agreement, re-verified before they are stored.
     const decisions = createAgreementDecisionHandlers({
         store: deps.decisionStore || createAgreementDecisionStore(pool),
@@ -728,9 +620,15 @@ function registerAgreementRoutes(app, deps, { pool, now, agreementChain }) {
         try {
             const row = await loadAgreement(pool, cid);
             if (!row) return send(res, 404, { error: 'Agreement not found', code: 'agreement-not-found' });
-            const mint = mintedAccountOf(cid, row.content);
-            if (mint.refusal) return send(res, mint.refusal.status, mint.refusal.body);
-            const { sponsor, expected } = mint;
+            // Binding owners and investor-funding agreements use the same agreement account. Polls do not.
+            if (row.content?.rule?.binding !== true || !['owners', 'investors'].includes(row.content?.rule?.electorate)) {
+                return send(res, 422, { error: 'Only a binding owners or investor-funding agreement is minted; this one does not bind.', code: 'not-binding' });
+            }
+            const sponsor = row.content?.sponsor ?? null;
+            const expected = agreementAccountOf(cid, sponsor);
+            if (!expected) {
+                return send(res, 422, { error: 'The agreement names no sponsor wallet, so it has no chain account.', code: 'no-sponsor' });
+            }
             if (body.account !== expected) {
                 return send(res, 400, {
                     error: `The agreement's account is ${expected} (its sponsor and CID), not ${body.account}.`,
@@ -753,8 +651,45 @@ function registerAgreementRoutes(app, deps, { pool, now, agreementChain }) {
                 console.error(`[${new Date().toISOString()}] POST /agreements/${cid}/onchain could not read ${body.cluster}:`, error);
                 return send(res, error?.code === 'rpc-wrong-cluster' ? 503 : 502, { error: `The ${body.cluster} RPC could not be read.`, code: 'chain-unavailable' });
             }
-            const refusal = accountRefusal({ cid, content: row.content, read, expected, sponsor, cluster: body.cluster });
-            if (refusal) return send(res, refusal.status, refusal.body);
+            if (read.problem === 'missing') {
+                return send(res, 404, { error: `There is no account ${expected} on ${body.cluster} (yet).`, code: 'onchain-account-missing' });
+            }
+            if (read.problem) {
+                return send(res, 409, { error: `Account ${expected} is not an agreement account (${read.problem}).`, code: 'onchain-not-agreement' });
+            }
+            if (read.account.cid !== cid) {
+                return send(res, 409, { error: `Account ${expected} stores CID ${read.account.cid}.`, code: 'onchain-cid-mismatch', storedCid: read.account.cid });
+            }
+            if (read.account.authority !== sponsor) {
+                return send(res, 409, { error: `Account ${expected} belongs to ${read.account.authority}, not the sponsor.`, code: 'onchain-sponsor-mismatch' });
+            }
+            if (row.content.rule?.electorate === 'investors') {
+                if (read.account.payout !== sponsor) {
+                    return send(res, 409, { error: `Account ${expected} pays ${read.account.payout}, not the agreement sponsor.`, code: 'onchain-payout-mismatch' });
+                }
+                const lenses = row.content.rule.lens;
+                const threshold = agreementRecord.lensThresholdOf(row.content.rule);
+                if (read.account.lenses.join() !== lenses.join() || read.account.lensThreshold !== threshold) {
+                    return send(res, 409, { error: `Account ${expected} names lens ${read.account.lenses.join(', ') || '(none)'} with threshold ${read.account.lensThreshold}, not the agreement lens ${lenses.join(', ') || '(none)'} with threshold ${threshold}.`, code: 'onchain-lens-mismatch' });
+                }
+                // The program checks the contribution target itself (confirm_funding): it must be the
+                // agreement's, in devnet USDC.
+                if (read.account.fundingMint !== apartmentClient.constants.USDC_DEVNET_MINT || read.account.requiredFunding !== BigInt(row.content.funding.targetUsdcAtomic)) {
+                    return send(res, 409, { error: `Account ${expected} has a different funding target from the agreement.`, code: 'onchain-funding-target-mismatch' });
+                }
+                // Decoded agreement deadlines are safe-integer Unix seconds and requiredLamports is a
+                // u64 BigInt. Investor funding is USDC-only: no native execution escrow or open ground.
+                const expectedDeadline = Math.floor(Date.parse(row.content.deadline) / 1000);
+                if (read.account.deadline !== expectedDeadline) {
+                    return send(res, 409, { error: `Account ${expected} has a different deadline from the agreement.`, code: 'onchain-deadline-mismatch' });
+                }
+                if (read.account.requiredLamports !== 0n) {
+                    return send(res, 409, { error: `Account ${expected} requires native execution lamports, but investor funding requires zero.`, code: 'onchain-native-escrow-mismatch' });
+                }
+                if (read.account.openGround !== false) {
+                    return send(res, 409, { error: `Account ${expected} records open ground, but investor funding is land-free.`, code: 'onchain-open-ground-mismatch' });
+                }
+            }
             if (touch === 'not-found') {
                 return send(res, 409, { error: `Transaction ${signature} is not visible on ${body.cluster} yet; send it again once confirmed, or leave it out.`, code: 'onchain-signature-not-found' });
             }

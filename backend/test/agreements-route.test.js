@@ -12,7 +12,7 @@ import { createContentApp } from './helpers/create-app.js';
 import {
     agreementContent as rawAgreementContent, agreementRow, bindingOf, cidOf, designContent, designRow, layoutContent, pieceHash, planForAgreement, scriptedCadastre, SPILL
 } from './helpers/content-fixtures.js';
-import { indexAgreement, validateAgreementContent, MAX_AGREEMENT_DESIGNS } from '../routes/agreements.js';
+import { validateAgreementContent, MAX_AGREEMENT_DESIGNS } from '../routes/agreements.js';
 const require = createRequire(import.meta.url);
 const AgreementRecord = require('../../frontend/js/agreement-record.js');
 
@@ -96,26 +96,6 @@ beforeEach(() => {
 afterEach(() => {
     vi.unstubAllEnvs();
     vi.restoreAllMocks();
-});
-
-describe('indexAgreement (POST /agreements\'s checks, shared with agreement discovery)', () => {
-    it('in a dry run runs every check, binding the carried layout, and writes nothing; judged at the time it is given', async () => {
-        const pool = indexPool();
-        const thumbnailQueue = { enqueue: vi.fn() };
-        const content = agreementContent([park, layout]);
-        const body = { cid: cidOf(content), content, plan: { cid: content.planCid, content: planForAgreement(content) }, designs: [{ cid: cidOf(layout), content: layout }] };
-        const answer = await indexAgreement(pool, { thumbnailQueue }, body, { now: () => NOW, dryRun: true });
-        expect(answer).toEqual({ status: 200, body: {
-            dryRun: true, cid: cidOf(content), inputParcelIds: ['HR-335649-100', 'HR-335649-101'], designCids: [cidOf(park), cidOf(layout)],
-            carriedPlan: true, carriedDesigns: [cidOf(layout)]
-        } });
-        expect(pool.getBindingCalls().length).toBeGreaterThan(0);
-        expect(writes(pool)).toEqual([]);
-        expect(thumbnailQueue.enqueue).not.toHaveBeenCalled();
-        // The deadline is judged against `now`: after it, the same content is refused.
-        const late = await indexAgreement(indexPool(), { thumbnailQueue }, body, { now: () => Date.parse('2099-06-01T00:00:00Z'), dryRun: true });
-        expect([late.status, late.body.code]).toEqual([422, 'deadline-past']);
-    });
 });
 
 describe('POST /agreements', () => {

@@ -29,44 +29,6 @@ export function buildLandOracleRunStats({ startedAt, endedAt, result = null, err
     };
 }
 
-// Agreement discovery (oracle/agreement-discovery-job.mjs): its run-stats file and its retry state, both
-// beside the land oracle's in logs/ (gitignored, so a deploy's git clean leaves them).
-export function agreementDiscoveryStatsPath(env = process.env) {
-    return env.AGREEMENT_DISCOVERY_RUN_STATS || path.resolve(process.cwd(), 'logs/agreement-discovery-stats.json');
-}
-
-export function agreementDiscoveryStatePath(env = process.env) {
-    return env.AGREEMENT_DISCOVERY_STATE || path.resolve(process.cwd(), 'logs/agreement-discovery-state.json');
-}
-
-export function buildAgreementDiscoveryRunStats({ startedAt, endedAt, result = null, error = null, dryRun = false } = {}) {
-    const count = list => (Array.isArray(list) ? list.length : 0);
-    return {
-        version: 1,
-        job: 'consensus-builder-agreement-discovery',
-        runStatus: error ? 'failed' : 'completed',
-        verdict: error ? 'failure' : 'success',
-        startedAt: startedAt || null,
-        endedAt: endedAt || null,
-        dryRun: Boolean(dryRun),
-        counters: {
-            listed: Number(result?.listed || 0),
-            known: Number(result?.known || 0),
-            imported: count(result?.imported),
-            indexed: Array.isArray(result?.imported) ? result.imported.filter(item => item.indexed).length : 0,
-            recordedElsewhere: count(result?.recordedElsewhere),
-            invalidAccounts: count(result?.invalidAccounts),
-            refused: count(result?.refused),
-            unavailable: count(result?.unavailable),
-            failed: count(result?.failed),
-            waiting: count(result?.waiting),
-            deferred: Number(result?.deferred || 0),
-            gatewayReads: Number(result?.fetches || 0)
-        },
-        error: error ? String(error.message || error) : null
-    };
-}
-
 export function writeRunStatsAtomic(file, value) {
     if (!file) throw new Error('run-stats file is required');
     fs.mkdirSync(path.dirname(file), { recursive: true });

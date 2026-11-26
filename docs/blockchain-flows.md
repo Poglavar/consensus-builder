@@ -38,12 +38,11 @@ Rules behind the table:
 - **First-create-wins is harmless for designs and plans.** The record carries no rights, so a second
   minter of the same CID is refused and nothing is lost. The agreement keeps its `PDA(sponsor, cid)`
   address because the sponsor funds and may cancel it.
-- **The index is a mirror.** The server's `consensus.design` / `.plan` / `.agreement` tables index what
-  is published; a chain watcher on the server imports records it finds on chain whose content it can
-  fetch from IPFS (chain → server), so content published without our server still reaches the index.
-  The browser mirrors a mint it performed (`POST /agreements/:cid/onchain` today) as a courtesy; a
-  failure to mirror never fails the mint. Built for Solana agreements (2026-11-26): agreement
-  discovery, below under "Browser and server pieces".
+- **The index holds what reached our server.** The server's `consensus.design` / `.plan` / `.agreement`
+  tables index what is published to it and the mints reported to it; the server never scans the chain
+  for records nobody reported (user, 2026-11-27). The chain is a separate source the browser reads
+  when the reader chooses it. The browser reports a mint it performed (`POST /agreements/:cid/onchain`)
+  as a courtesy; a failure to report never fails the mint.
 
 ```mermaid
 flowchart LR
@@ -169,8 +168,8 @@ anchor and is reported, not fatal. An anchor's URI is the parcel's page
 (`https://urbangametheory.xyz/parcel/<anchor id>`), so anchoring pins nothing. To build: EVM
 `anchorBatch`, and the checklist's `k/N` display.
 
-After a successful mint the browser mirrors the chain reference to the index when the server answers;
-otherwise the server's chain watcher will find it.
+After a successful mint the browser reports the chain reference to the index when the server answers;
+otherwise the index does not know of the mint, and the agreement is found by reading the chain.
 
 ## Flow 4: a connected wallet makes the chain the primary path
 
@@ -238,21 +237,6 @@ so every account layout above is final at that deploy; devnet and testnet carry 
   every step that signs or waits.
 - The Share dialog (its own plan) hosts Flow 4.
 - Lists: the From chain source, with the chain and cluster named in the source picker.
-- Server: a chain watcher in `backend/oracle/` importing records and agreements from both chains
-  into the index after fetching and verifying their content; the lifecycle oracle already observes
-  agreement status and is extended rather than duplicated.
-  Built for Solana agreements (2026-11-26) as **agreement discovery**
-  (`oracle/agreement-discovery.js`, PM2 job `consensus-builder-agreement-discovery`, every 30
-  minutes): one `getProgramAccounts` call lists the current agreement program's accounts (size and
-  discriminator filters), each kept only at the PDA of its own sponsor and CID. For an account whose
-  agreement the index lacks, or holds without `onchain`, the pass reads the agreement from IPFS
-  gateways (only bytes that hash to the account's CID; the plan and designs too when the index asks
-  for them), indexes it through `POST /agreements`'s own checks (`indexAgreement`, judged at the
-  account's creation time) and records `onchain` from the account through `POST
-  /agreements/:cid/onchain`'s checks. The account and the content are the proof; no signature is.
-  An agreement recorded on a retired program is left as it is. Failures are retried after 15 minutes,
-  doubling to a day; at most 10 imports and 60 gateway reads a pass. Not built: records, plans and
-  designs on their own, EVM.
 - MCP parity: agents mint through the same adapters with the agent keypair. `ugt_mint_agreement`
   exists; `ugt_mint_design`, `ugt_mint_plan`, `ugt_anchor_parcels` and `ugt_chain_records` are added
   in the same milestone as the browser flow they mirror, and the discovery catalogue
@@ -271,7 +255,7 @@ mock API and a local validator), then docs and the vocabulary entries it changes
 2. **R2, Solana records and the checklist.** The one program on devnet, replacing `parcel_nft` and
    `agreement` (R1's reader moves to its layout; devnet agreements are re-created); Flow 2's courier
    order and gate; the mint checklist for designs, plans and agreements including parcel anchoring;
-   Flow 4 in the Share dialog; the server chain watcher; the MCP tools. Done when a design drawn in
+   Flow 4 in the Share dialog; the MCP tools. Done when a design drawn in
    a browser with no `backend` is minted and later listed by the index.
 3. **R3, EVM anchors, registry and reader.** `ParcelAnchor`, `RecordRegistry`, the EVM adapter and
    From chain on Base Sepolia; the ENS resolver repointed. Done when R1 and R2's checks pass with an
@@ -306,7 +290,7 @@ four days, R4 about a week; R4 is the only new money-holding contract.
 
 ## Vocabulary entries this changes when implemented
 
-Index (becomes a mirror fed from the chain as well as from publication), Publication (retrievability
+Publication (retrievability
 rather than our pin), Mint (a design or plan record as well as an agreement account), Parcel anchor
 (new entry; the EVM form stops being a transferable token), Lists (the From chain source), Share (the
 chain-first publish step with a wallet connected).
