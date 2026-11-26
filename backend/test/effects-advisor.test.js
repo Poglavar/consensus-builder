@@ -46,7 +46,8 @@ describe('Effects section', () => {
         expect(text).toContain('neighbourEffects.estimated(2)');
         // Grouped, with what the guides mean a click away, and an icon per changed reading.
         expect(text).toContain('neighbourEffects.groupBeyond(1)');
-        expect(text).not.toContain('neighbourEffects.groupWithin');
+        expect(text).not.toContain('neighbourEffects.groupBelow');
+        expect(text).not.toContain('neighbourEffects.groupMinor');
         expect(text).toContain('neighbourEffects.guidesText(Test guides)');
         expect(text).toContain('neighbourEffects.guidesAdvice');
         const icons = [];
@@ -60,14 +61,14 @@ describe('Effects section', () => {
     it('shows only the plots where one kind of reading changed when its filter is pressed', () => {
         const advisor = load();
         const section = element('section');
-        const skyOnly = { ...AFFECTED.lots[0], id: 'b', status: 'worse', garden: null, distance: null, sky: { before: 30, after: 20, status: 'worse' } };
+        const skyOnly = { ...AFFECTED.lots[0], id: 'b', status: 'below', garden: null, distance: null, sky: { before: 30, after: 25, status: 'below' } };
         const result = { ...AFFECTED, lots: [AFFECTED.lots[0], skyOnly] };
         advisor.render(section, result);
         const filters = section.children.find(child => child.className === 'neighbour-effects__filters').children;
         expect(filters.map(textOf)).toEqual(['neighbourEffects.filterAll() (2)', ' neighbourEffects.kind.garden() (1)', ' neighbourEffects.kind.sky() (1)', ' neighbourEffects.kind.distance() (1)']);
         filters[2].onclick();
         const text = textOf(section);
-        expect(text).toContain('neighbourEffects.groupWithin(1)');
+        expect(text).toContain('neighbourEffects.groupBelow(1)');
         expect(text).not.toContain('neighbourEffects.groupBeyond');
         // The filter stays when a new result for the same section arrives.
         advisor.render(section, result);
@@ -119,8 +120,8 @@ describe('Plots in the list point at the map', () => {
             addTo() { return this; }, remove() {},
             eachLayer(visit) {
                 for (const feature of data.features) {
-                    const classes = new Set();
-                    const path = { feature, bringToFront: vi.fn(), getBounds: () => ({ getCenter: () => feature.properties.id }),
+                    const classes = new Set(), handlers = {};
+                    const path = { feature, handlers, on: (type, handler) => { handlers[type] = handler; }, bringToFront: vi.fn(), getBounds: () => ({ getCenter: () => feature.properties.id }),
                         getElement: () => ({ classList: { toggle: (name, on) => (on ? classes.add(name) : classes.delete(name)), contains: name => classes.has(name) } }) };
                     path.lit = () => classes.has('neighbour-effect--focus');
                     paths.push(path);
@@ -164,6 +165,11 @@ describe('Plots in the list point at the map', () => {
         names[0].onclick();
         expect(a.lit()).toBe(false);
         expect(advisor.plots().some(plot => plot.focus)).toBe(false);
+        // A click on the plot on the map selects it in the list too.
+        b.handlers.click();
+        expect(b.lit()).toBe(true);
+        expect(names[1].attributes['aria-pressed']).toBe('true');
+        expect(names[0].attributes['aria-pressed']).toBe('false');
         advisor.clear();
         expect(advisor.plots()).toEqual([]);
     });

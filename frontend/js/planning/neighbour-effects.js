@@ -266,8 +266,7 @@
         }
         if (!before.total || !after.total) return null;
         const share = { before: before.lit / before.total, after: after.lit / after.total };
-        const status = share.after < guide.share && share.after < guide.ratio * share.before - 1e-9 ? 'fail'
-            : changed(share.before, share.after, SAME.share) ? 'worse' : 'same';
+        const status = grade(share.before, share.after, guide.share, guide.ratio, SAME.share);
         return { areaM2: after.total * step * step, before: share.before, after: share.after, status };
     }
     // The worst facing wall of a lot's buildings: the sky it sees before and after, and the nearest
@@ -296,14 +295,21 @@
                 const stay = obstructions(byDistance, x, y, h0, directions);
                 const reading = { before: skyPercent(directions, stay.map((v, i) => Math.max(v, went[i]))),
                     after: skyPercent(directions, stay.map((v, i) => Math.max(v, come[i]))), buildingId: building.id };
-                reading.status = reading.after < guides.sky.percent - 1e-9 && reading.after < guides.sky.ratio * reading.before - 1e-9 ? 'fail'
-                    : changed(reading.before, reading.after, SAME.sky) ? 'worse' : 'same';
+                reading.status = grade(reading.before, reading.after, guides.sky.percent, guides.sky.ratio, SAME.sky);
                 if (!sky || rank(reading.status) > rank(sky.status) || (rank(reading.status) === rank(sky.status) && loss(reading) < loss(sky))) sky = reading;
             }
         }
         return { sky, distance };
     }
-    const RANK = { same: 0, worse: 1, fail: 2 };
+    // How a reading against a guide of a level and an allowance (after at least `level`, or at least
+    // `ratio` times before) grades: 'fail' beyond the guide; 'below' under the level but within the
+    // allowance; 'minor' a loss that still meets the level; 'same' no loss worth listing.
+    function grade(before, after, level, ratio, same) {
+        if (after < level - 1e-9 && after < ratio * before - 1e-9) return 'fail';
+        if (!changed(before, after, same)) return 'same';
+        return after < level - 1e-9 ? 'below' : 'minor';
+    }
+    const RANK = { same: 0, minor: 1, below: 2, fail: 3 };
     const rank = status => RANK[status] ?? 0;
     const worst = statuses => statuses.filter(Boolean).reduce((a, b) => rank(b) > rank(a) ? b : a, 'same');
 
@@ -370,14 +376,16 @@
     const harm = (lot, kind = null) => kind ? harmOf(lot, kind) : Math.max(...KINDS.map(each => harmOf(lot, each)));
     // The kinds of reading that changed on a plot, with their status: [{ kind, status }].
     const changes = lot => KINDS.filter(kind => lot[kind] && lot[kind].status !== 'same').map(kind => ({ kind, status: lot[kind].status }));
-    // Plots in two groups, those beyond a guide and those within the guides, each by its largest loss
-    // first. With `kind`, only the plots where that reading changed, by that reading's loss.
+    // Plots in three groups by their worst reading (or, with `kind`, that reading): beyond a guide,
+    // below a guide's level within its allowance, and minor losses; each by its largest loss first.
+    // With `kind`, only the plots where that reading changed, by that reading's loss.
+    const GRADES = ['fail', 'below', 'minor'];
     function arrange(lots, { kind = null } = {}) {
         const shown = kind ? lots.filter(lot => lot[kind] && lot[kind].status !== 'same') : lots;
         const order = list => list.slice().sort((a, b) => harm(b, kind) - harm(a, kind) || a.distanceM - b.distanceM);
-        const beyond = lot => (kind ? lot[kind]?.status : lot.status) === 'fail';
-        return [order(shown.filter(beyond)), order(shown.filter(lot => !beyond(lot)))];
+        const gradeOf = lot => kind ? lot[kind].status : lot.status;
+        return GRADES.map(each => order(shown.filter(lot => gradeOf(lot) === each)));
     }
 
-    return { MEASURE, KINDS, sunPath, skyComponent, assess, projector, harm, changes, arrange };
+    return { MEASURE, KINDS, GRADES, sunPath, skyComponent, assess, projector, harm, changes, arrange };
 });

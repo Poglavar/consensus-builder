@@ -8,7 +8,8 @@
     'use strict';
     const log = (...args) => console.log(`[${new Date().toISOString()}] [neighbour-effects]`, ...args);
     const SUN_SCRIPT = 'vendor/suncalc-1.9.0/suncalc.js';
-    const STATUS_CLASS = { fail: 'neighbour-effect--fail', worse: 'neighbour-effect--worse' };
+    // Red beyond a guide, orange under a guide's level within its allowance, green for a minor loss.
+    const STATUS_CLASS = { fail: 'neighbour-effect--fail', below: 'neighbour-effect--below', minor: 'neighbour-effect--minor' };
 
     // The assessment runs in a worker; answers are matched to requests by id.
     const WORKER_SCRIPT = 'js/planning/neighbour-effects-worker.js';
@@ -247,6 +248,8 @@
         const details = element('details', 'neighbour-effects__guides');
         details.append(element('summary', '', t('neighbourEffects.guidesTitle')),
             element('p', '', t('neighbourEffects.guidesText', { source: guides.label || '' })),
+            // What the standard itself says the grades mean, as configured with it.
+            ...(guides.note ? [element('p', 'neighbour-effects__note', guides.note)] : []),
             element('p', '', t(guides.binding ? 'neighbourEffects.guidesBinding' : 'neighbourEffects.guidesAdvice')));
         return details;
     }
@@ -285,9 +288,11 @@
             const fails = result.lots.filter(lot => lot.status === 'fail').length;
             container.append(element('p', 'neighbour-effects__headline', t('neighbourEffects.summary', { count: result.lots.length, fail: fails })),
                 filters(container, result, kind));
-            const [beyond, within] = root.NeighbourEffects.arrange(result.lots, { kind });
+            const [beyond, below, minor] = root.NeighbourEffects.arrange(result.lots, { kind });
             const beyondKey = result.guides.binding ? 'neighbourEffects.groupBeyondBinding' : 'neighbourEffects.groupBeyond';
-            for (const [lots, key, group] of [[beyond, beyondKey, 'beyond'], [within, 'neighbourEffects.groupWithin', 'within']]) {
+            // The list the map points into: a plot clicked on the map is selected here.
+            listed = container;
+            for (const [lots, key, group] of [[beyond, beyondKey, 'beyond'], [below, 'neighbourEffects.groupBelow', 'below'], [minor, 'neighbourEffects.groupMinor', 'minor']]) {
                 if (!lots.length) continue;
                 container.append(element('h4', `neighbour-effects__group neighbour-effects__group--${group}`, t(key, { count: lots.length })));
                 const list = element('ul', 'neighbour-effects__plots');
@@ -306,20 +311,43 @@
     let layer = null, shownOn = null, pinned = null;
     const plotLayers = new Map();
     function show(map, result) {
+        // A new result replaces the plots but keeps the list it was rendered into.
+        const list = listed;
         clear();
+        listed = list;
         if (!map || !result?.lots?.length) return;
         shownOn = map;
         layer = root.L.geoJSON({ type: 'FeatureCollection', features: result.lots.map(lot => ({ type: 'Feature',
             properties: { id: lot.id, status: lot.status }, geometry: result.geometries.get(lot.id) })).filter(feature => feature.geometry) }, {
-            interactive: false,
+            // A plot on the map points into the list as the list points at the map: hover lights
+            // both, a click selects it in both. The click stops here, so the map does not also
+            // open what lies under it.
+            interactive: true,
+            bubblingMouseEvents: false,
             style: feature => ({ className: `neighbour-effect ${STATUS_CLASS[feature.properties.status] || ''}` })
         }).addTo(map);
-        layer.eachLayer(path => plotLayers.set(path.feature.properties.id, path));
+        layer.eachLayer(path => {
+            const id = path.feature.properties.id;
+            plotLayers.set(id, path);
+            path.on('mouseover', () => { highlight(id, true); listItem(id)?.classList.add('is-pointed'); });
+            path.on('mouseout', () => { highlight(id, false); listItem(id)?.classList.remove('is-pointed'); });
+            path.on('click', () => {
+                if (!listed) return;
+                pin(id, listed);
+                const name = listItem(id)?.querySelector('.neighbour-effects__name');
+                name?.scrollIntoView?.({ block: 'nearest' });
+                name?.focus?.({ preventScroll: true });
+            });
+        });
         changed();
     }
+    // The list item of a plot in the list the map points into.
+    let listed = null;
+    const listItem = id => listed?.querySelector?.(`.neighbour-effects__name[data-plot-id="${root.CSS?.escape ? root.CSS.escape(id) : id}"]`)?.closest('.neighbour-effects__plot') || null;
     function clear() {
         if (layer) { layer.remove(); layer = null; }
         plotLayers.clear();
+        listed = null;
         shownOn = null;
         pinned = null;
         lit = null;

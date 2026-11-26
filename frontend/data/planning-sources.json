@@ -370,6 +370,7 @@
       "neighbourGuides": {
         "label": "BRE, Site layout planning for daylight and sunlight (BR 209, 2022); 21 m between facing windows in local design guides",
         "binding": false,
+        "note": "BRE: a reduction beyond a guide is likely to be noticeable; within it, unlikely. The guide is not mandatory and is to be applied flexibly.",
         "garden": { "date": "03-21", "hours": 2, "share": 0.5, "ratio": 0.8 },
         "sky": { "percent": 27, "ratio": 0.8 },
         "distance": { "metres": 21 }

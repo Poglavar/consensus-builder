@@ -242,9 +242,28 @@
         });
     }
 
+    // The editor's two tabs: Building (the drawing tools, the Permitted check) and Effects on
+    // neighbours, shown only where the city's rule sets state neighbour guides.
+    function bindSingleBuildingTabs() {
+        const list = document.querySelector('.single-building-tabs');
+        if (!list) return;
+        const select = name => {
+            for (const tab of list.querySelectorAll('[role="tab"]')) tab.setAttribute('aria-selected', String(tab.dataset.singleTab === name));
+            for (const panel of document.querySelectorAll('[data-single-panel]')) panel.hidden = panel.dataset.singlePanel !== name;
+            window.CbTabs?.sync(list);
+        };
+        list.addEventListener('click', event => {
+            const tab = event.target.closest('[role="tab"]');
+            if (tab) select(tab.dataset.singleTab);
+        });
+        window.CbTabs?.bind(list);
+        const effectsTab = document.getElementById('single-tab-effects');
+        window.NeighbourEffectsAdvisor?.guidesFor?.().then(guides => { effectsTab.hidden = !guides; }, () => {});
+    }
+
     // The neighbouring plots the design takes sunlight, sky or distance from (planning/effects-advisor.js),
     // listed under the Permitted check and coloured on the map. Advice only, like the check.
-    let singleEffectsShown = false;
+    let singleEffectsShown = false, finishEffectsTab = null;
     function scheduleSingleBuildingEffects(buildings) {
         const advisor = window.NeighbourEffectsAdvisor, container = document.getElementById('single-building-effects');
         // Only where the city's rule sets state neighbour guides (the assessment answers notApplicable
@@ -254,10 +273,21 @@
         // heading spins until the new one lands.
         if (singleEffectsShown) advisor.busy(container, true);
         else if (advisor.applies()) advisor.render(container, null);
+        // The Effects tab spins too, so the measuring shows from the Building tab.
+        const effectsTab = document.getElementById('single-tab-effects');
+        // One spin per pending measurement: a newer one ends the one it replaces.
+        finishEffectsTab?.();
+        if (advisor.applies()) window.BusyControl?.track(effectsTab, new Promise(resolve => { finishEffectsTab = resolve; }));
         void advisor.assess({ buildings }, result => {
-            if (!result || !singleSession) return;
+            if (!result) return;
+            finishEffectsTab?.();
+            finishEffectsTab = null;
+            if (!singleSession) return;
             singleEffectsShown = true;
             advisor.render(container, result);
+            // The tab says how many plots are affected while another tab is open.
+            const count = document.querySelector('.single-building-effects-count');
+            if (count) { count.textContent = String(result.lots?.length || 0); count.hidden = !result.lots?.length; }
             advisor.show(singleMap, result);
         });
     }
@@ -1224,6 +1254,8 @@
         singleUploadOnConfirm = null;
         singlePermittedResult = null;
         singleEffectsShown = false;
+        finishEffectsTab?.();
+        finishEffectsTab = null;
         window.NeighbourEffectsAdvisor?.clear();
         singleSession?.close();
         singleSession = null;
@@ -1451,13 +1483,17 @@
                     <button id="single-rotate-clockwise" class="btn" type="button" title="${modalText.rotateClockwiseLabel}" aria-label="${modalText.rotateClockwiseLabel}"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i> 5°</button>
                 `,
                 content: `
+                        <div class="cb-tabs cb-tabs--fill single-building-tabs" role="tablist" aria-label="${translateSingleBuildingText('modal.singleBuilding.tabsLabel', 'Freeform building views')}">
+                            <button type="button" role="tab" class="cb-tab" id="single-tab-building" aria-controls="single-panel-building" aria-selected="true" data-single-tab="building">${translateSingleBuildingText('modal.singleBuilding.tabBuilding', 'Building')}</button>
+                            <button type="button" role="tab" class="cb-tab" id="single-tab-effects" aria-controls="single-panel-effects" aria-selected="false" data-single-tab="effects" data-neighbour-effects-control hidden>${translateSingleBuildingText('neighbourEffects.title', 'Effects on neighbours')} <span class="cb-badge cb-badge--count single-building-effects-count" hidden></span></button>
+                        </div>
+                        <div role="tabpanel" id="single-panel-building" aria-labelledby="single-tab-building" data-single-panel="building">
                         <div class="on-map-building__height">
                             <label for="single-height-slider">${modalText.heightLabel} <strong id="single-height-value">${DEFAULT_HEIGHT_M}</strong></label>
                             <input type="range" id="single-height-slider" aria-label="${modalText.heightLabel}" min="3" max="250" step="1" value="${DEFAULT_HEIGHT_M}">
                         </div>
                         <div class="on-map-building__metrics"><span>${modalText.densityFootprint}</span><strong id="single-building-footprint-summary">—</strong></div>
                         <section id="single-building-permitted" class="permitted-check" role="status" aria-live="polite" hidden></section>
-                        <section id="single-building-effects" class="neighbour-effects" role="status" aria-live="polite" hidden></section>
                         <div class="on-map-building__fields">
                             <div class="parameter-group">
                                 <label for="single-building-use">${translateSingleBuildingText('modal.singleBuilding.useLabel', 'Building use')}</label>
@@ -1501,6 +1537,10 @@
                             </div>
                             <input id="single-building-geojson-input" type="file" accept=".geojson,.json,.gml,.xml,application/geo+json,application/json,application/gml+xml" hidden>
                         </div>
+                        </div>
+                        <div role="tabpanel" id="single-panel-effects" aria-labelledby="single-tab-effects" data-single-panel="effects" hidden>
+                            <section id="single-building-effects" class="neighbour-effects" role="status" aria-live="polite" hidden></section>
+                        </div>
 `,
                 footer: `
                         <button id="single-building-undo" type="button" class="btn btn-quiet" disabled>${translateSingleBuildingText('onMapEditor.undo', 'Undo')}</button>
@@ -1512,6 +1552,7 @@
             singleSession.tools.setAttribute('role', 'toolbar');
             singleSession.tools.setAttribute('aria-label', modalText.rotationLabel);
             singleBuildingDesignChanges().start(document);
+            bindSingleBuildingTabs();
             document.getElementById('single-building-confirm').addEventListener('click', event => {
                 if (!window.BusyControl.isBusy(event.currentTarget)) window.BusyControl.track(event.currentTarget, confirmSingleBuilding);
             });

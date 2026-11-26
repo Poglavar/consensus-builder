@@ -1896,7 +1896,8 @@
     }
 
     // Effects on neighbours (planning/effects-advisor.js): the affected plots outlined on the ground
-    // in the 2D map's red (beyond a guide) and amber (within the guides), from the palette's tokens;
+    // in the 2D map's red (beyond a guide), orange (below a guide's level) and green (minor), from
+    // the palette's tokens;
     // the plot the list points at in a wider line.
     let neighbourEffectsGroup = null;
     function syncNeighbourEffects3D() {
@@ -1909,7 +1910,8 @@
         const plots = window.NeighbourEffectsAdvisor?.plots?.() || [];
         if (!isActive || !scene || !plots.length) return;
         const style = getComputedStyle(document.documentElement);
-        const colours = { fail: style.getPropertyValue('--cb-danger').trim(), worse: style.getPropertyValue('--cb-warning').trim() };
+        const colours = { fail: style.getPropertyValue('--cb-danger').trim(), below: style.getPropertyValue('--cb-warning').trim(),
+            minor: style.getPropertyValue('--cb-success').trim() };
         neighbourEffectsGroup = new THREE.Group();
         neighbourEffectsGroup.name = 'neighbour-effects';
         const temporaryMaterial = new THREE.LineBasicMaterial();
@@ -1926,7 +1928,7 @@
             if (!segments.length) continue;
             const geometry = new THREE.LineSegmentsGeometry();
             geometry.setPositions(segments);
-            const material = new THREE.LineMaterial({ color: new THREE.Color(colours[plot.status] || colours.worse), linewidth: plot.focus ? 6 : 2.5,
+            const material = new THREE.LineMaterial({ color: new THREE.Color(colours[plot.status] || colours.below), linewidth: plot.focus ? 6 : 2.5,
                 transparent: true, opacity: plot.focus ? 1 : 0.85, depthTest: false, depthWrite: false, toneMapped: false });
             const outline = new THREE.LineSegments2(geometry, material);
             markOwnedGeometry(outline, geometry);

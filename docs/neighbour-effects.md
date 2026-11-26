@@ -12,6 +12,7 @@ a rule set's `neighbourGuides` in `frontend/data/planning-sources.json`, which a
 "neighbourGuides": {
   "label": "BRE, Site layout planning for daylight and sunlight (BR 209, 2022); 21 m between facing windows in local design guides",
   "binding": false,
+  "note": "BRE: a reduction beyond a guide is likely to be noticeable; within it, unlikely. …",
   "garden": { "date": "03-21", "hours": 2, "share": 0.5, "ratio": 0.8 },
   "sky": { "percent": 27, "ratio": 0.8 },
   "distance": { "metres": 21 }
@@ -23,37 +24,41 @@ a rule set's `neighbourGuides` in `frontend/data/planning-sources.json`, which a
 - `sky`: beyond the guide when the vertical sky component is under `percent`, and under `ratio`
   times before.
 - `distance`: beyond the guide when a facing wall comes closer than `metres` (and closer than before).
-- A reading left out is not measured or shown. `label` names the source in "What the guides are";
+- A reading left out is not measured or shown. `label` names the source and `note` what the
+  standard says its grades mean, both in "What the guides are";
   `binding: true` says a design beyond a guide is not permitted, otherwise the guides are advice.
 - Only `gb-eng-planning` (England) states guides today.
 
 ## Where it shows
 
-- **Freeform building editor:** an "Effects on neighbours" section under the Permitted check,
-  measured again whenever the building changes.
+- **Freeform building editor:** an "Effects on neighbours" tab beside the Building tab (drawing
+  tools and the Permitted check), measured again whenever the building changes; the tab shows the
+  number of affected plots and spins while it measures.
 - **A saved design:** an "Effects on neighbours" button in the map's Design card, and on its card
   in Lists → Designs. A design is measured as its one-member plan, as Compare designs does.
 - **A saved plan:** the same button on the plan's Stats and analysis page in the map's plan panel,
   and on its card in Lists → Plans.
 
-Each lists the affected plots in two groups, **beyond a guide** and **within the guides**, each by
-its largest loss first, named by compass direction and distance. A plot shows an icon per reading
-that changed (sun: garden sunlight, cloud: sky, arrows: facing distance), red beyond a guide and
-amber within, and the readings in words below. Filter buttons narrow the list to one kind of
+Each lists the affected plots in three groups, each by its largest loss first, named by compass
+direction and distance: **beyond a guide** (red: under both the guide's level and its allowance),
+**under a guide's level, within its allowance** (orange: within the guide) and **still meets the
+guides** (green). A plot shows an icon per reading that changed (sun: garden sunlight, cloud: sky,
+arrows: facing distance) in its grade's colour, and the readings in words below. Filter buttons narrow the list to one kind of
 reading, sorted by that reading's loss. A plot's name highlights it on the map while hovered or
-focused; a click keeps it highlighted and brings it into view. The heading spins while the section
+focused; a click keeps it highlighted and brings it into view. The other way round, a plot on the
+2D map lights its list entry while hovered and a click selects it in the list. The heading spins while the section
 measures; while it re-measures after an edit, the last result stays. "What the guides are" explains
-the groups. The plots are coloured on the map, red and amber the same way, and outlined on the ground
+the groups. The plots are coloured on the map, red, orange and green the same way, and outlined on the ground
 in the 3D model view (the pointed-at plot in a wider line); closing the click stack or the editor
 clears both. In 3D a click on a name keeps the highlight but does not move the camera.
 
 **Loss** is the share of a plot's sunlit garden or of its sky that it loses, or for a facing wall
 how far it now stands inside 21 m, as a share of 21 m.
 
-**What the groups mean.** Where the guides are advice (England's are: authorities apply them
-flexibly), beyond a guide the neighbour is likely to notice the loss and an authority will expect
-the design to justify it; within the guides, the loss does not count against the design, and no
-reading forbids a design. Where a place's guides are binding, beyond a guide reads "not permitted".
+**What the groups mean.** The groups state only what a guide defines. What the standard says a
+grade means is the guides' `note` in the configuration, shown under "What the guides are" (England:
+BRE counts a reduction beyond a guide as likely to be noticeable, within it as unlikely). Where a
+place's guides are binding, beyond a guide reads "not permitted".
 
 ## Readings
 
