@@ -50,7 +50,7 @@ git diff 3ee1855...colosseum-worlds-fair
 - [`docs/architecture.md`](architecture.md) — concise current architecture and deployment boundary
 - [`docs/hackathon-build.md`](hackathon-build.md) — checkout, install, test, local-view, and optional Solana build instructions
 - [`docs/protocol.md`](protocol.md) — program IDs, IDLs and schemas, evidence adapter contract, and security/trust assumptions
-- [`LICENSE`](../LICENSE) — Apache License 2.0
+- [`LICENSE`](../LICENSE) — MIT License
 
 ## Built for the hackathon
 

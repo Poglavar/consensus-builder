@@ -9,4 +9,4 @@ Remote endpoint: https://urbangametheory.xyz/mcp (Streamable HTTP). No authentic
 
 Feedback and security reports: https://urbangametheory.xyz/feedback.html
 
-Server source: https://github.com/Poglavar/consensus-builder/tree/colosseum-worlds-fair/backend/agents (Apache-2.0).
+Server source: https://github.com/Poglavar/consensus-builder/tree/colosseum-worlds-fair/backend/agents (MIT).

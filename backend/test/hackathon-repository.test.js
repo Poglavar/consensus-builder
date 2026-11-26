@@ -17,11 +17,11 @@ const PROGRAMS = [
 ];
 
 describe('hackathon repository documentation', () => {
-    it('ships a repository-level Apache-2.0 license', () => {
+    it('ships a repository-level MIT license', () => {
         const license = read('LICENSE');
-        expect(license).toContain('Apache License');
-        expect(license).toContain('Version 2.0, January 2004');
-        expect(license).toContain('Copyright 2026 Urban Game Theory contributors');
+        expect(license).toContain('MIT License');
+        expect(license).toContain('Permission is hereby granted, free of charge');
+        expect(license).toContain('Copyright (c) 2025-2026 Urban Game Theory contributors');
     });
 
     it('links the build, architecture, protocol, and scope from the root readme', () => {

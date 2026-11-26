@@ -59,6 +59,6 @@ Start with the [development guide](docs/development.md), check [test scope](docs
 
 ## License
 
-This branch is released under the [Apache License 2.0](LICENSE). Third-party code, imagery and datasets retain their own licences and attribution requirements.
+This branch is released under the [MIT License](LICENSE). Third-party code, imagery and datasets retain their own licences and attribution requirements.
 
 Novogradnje collection, reconstruction, private archive review and catalogue deployment are owned by the separate private [zagreb-novogradnje repository](https://github.com/Poglavar/zagreb-novogradnje). Consensus Builder retains the generic floor-plan renderers and the consumer of the shared floor-plan publication API.
