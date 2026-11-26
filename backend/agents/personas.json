@@ -87,7 +87,7 @@
       "policy": {
         "cities": ["*"],
         "amountUsdc": "0.05",
-        "minPledgeProbability": 0.6,
+        "minPledgeProbability": 0.5,
         "revokeBelowProbability": 0.5,
         "pledgeWithinDays": 3,
         "maxAgeDays": 7
