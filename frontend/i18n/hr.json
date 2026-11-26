@@ -52,7 +52,33 @@
         "noImports": "Na ovom uređaju nema uvezenih planova.",
         "preview": "„{{title}}”: {{count}} dizajna. Uvoz dodaje lokalne, neprimijenjene nacrte i sprema članove i pogled plana. Postojeći rad ostaje sačuvan. Sporazumi, vlasništvo i potpisi ne uvoze se.",
         "location": "Spremljena lokacija (širina, dužina, zum): {{at}}",
-        "importedBody": "Dizajni su spremljeni kao lokalni nacrti. Otvorite uvezeni plan za pregled članova, ponovno preuzimanje ili objavu poveznice."
+        "importedBody": "Dizajni su spremljeni kao lokalni nacrti. Otvorite uvezeni plan za pregled članova, ponovno preuzimanje ili objavu poveznice.",
+        "application": {
+            "entry": "Zahtjev za dozvolu ({{format}})",
+            "title": "Zahtjev za dozvolu",
+            "introDesign": "Ovo bi općina primila od ovog dizajna kao zahtjev za dozvolu u formatu {{format}}, koji koriste {{systems}}.",
+            "introPlan": "Ovo bi općina primila od ovog plana kao zahtjev za dozvolu u formatu {{format}}, koji koriste {{systems}}.",
+            "redLine": "Crvena linija (granica lokacije)",
+            "floorArea": "Nova bruto površina",
+            "homes": "Stanovi (procjena prema površini)",
+            "buildings": "Zgrade",
+            "tallest": "Najviša zgrada",
+            "openSpace": "Otvoreni prostor",
+            "notStated": "Dizajn to ne navodi",
+            "squareMetres": "{{value}} m²",
+            "noSite": "Lokacija nije nacrtana",
+            "storeys": "{{count}} etaža",
+            "attachments": "Priloženi nacrti",
+            "sitePlan": "Predložena situacija",
+            "visualisations": "3D prikazi dizajna",
+            "link": "Trajna poveznica, da službenici i javnost vide sam dizajn:",
+            "publishDesign": "Objavite dizajn kako bi zahtjev dobio trajnu poveznicu.",
+            "publishPlan": "Objavite plan kako bi zahtjev dobio trajnu poveznicu.",
+            "sending": "Izravno slanje općini uključuje se kad općina poveže svoj sustav.",
+            "contact": "Zatražite to za svoju općinu",
+            "downloadRedLine": "Preuzmi crvenu liniju (GeoJSON)",
+            "close": "Zatvori"
+        }
     },
     "workspace": {
         "blocked": {

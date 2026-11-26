@@ -52,7 +52,33 @@
         "noImports": "No se han importado planes en este dispositivo.",
         "preview": "«{{title}}»: {{count}} diseños. La importación añade borradores locales sin aplicar y guarda los miembros y la vista del plan. Se conserva el trabajo existente. No se importan acuerdos, propiedad ni firmas.",
         "location": "Ubicación guardada (latitud, longitud, zoom): {{at}}",
-        "importedBody": "Los diseños se guardaron como borradores locales. Abra el plan importado para revisar sus miembros, descargarlo de nuevo o publicar un enlace."
+        "importedBody": "Los diseños se guardaron como borradores locales. Abra el plan importado para revisar sus miembros, descargarlo de nuevo o publicar un enlace.",
+        "application": {
+            "entry": "Solicitud de licencia urbanística ({{format}})",
+            "title": "Solicitud de licencia urbanística",
+            "introDesign": "Esto es lo que el ayuntamiento recibiría de este diseño como solicitud de licencia urbanística en el formato {{format}}, que usan {{systems}}.",
+            "introPlan": "Esto es lo que el ayuntamiento recibiría de este plan como solicitud de licencia urbanística en el formato {{format}}, que usan {{systems}}.",
+            "redLine": "Línea roja (límite del solar)",
+            "floorArea": "Nueva superficie construida",
+            "homes": "Viviendas (estimadas por la superficie)",
+            "buildings": "Edificios",
+            "tallest": "Edificio más alto",
+            "openSpace": "Espacio libre",
+            "notStated": "El diseño no lo indica",
+            "squareMetres": "{{value}} m²",
+            "noSite": "Sin solar dibujado",
+            "storeys": "{{count}} plantas",
+            "attachments": "Planos adjuntos",
+            "sitePlan": "Plano de emplazamiento propuesto",
+            "visualisations": "Vistas 3D del diseño",
+            "link": "Enlace permanente, para que el personal técnico y el público vean el propio diseño:",
+            "publishDesign": "Publique el diseño para dar a la solicitud un enlace permanente.",
+            "publishPlan": "Publique el plan para dar a la solicitud un enlace permanente.",
+            "sending": "El envío directo al ayuntamiento se activa cuando el ayuntamiento conecta su sistema.",
+            "contact": "Solicítelo para su ayuntamiento",
+            "downloadRedLine": "Descargar línea roja (GeoJSON)",
+            "close": "Cerrar"
+        }
     },
     "workspace": {
         "blocked": {

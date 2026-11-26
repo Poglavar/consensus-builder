@@ -1508,6 +1508,13 @@ body.map-pick-highlighting .leaflet-pick-highlight-pane {
 
 .plan-file-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 0; }
 .plan-file-controls a { font-size: 0.85rem; }
+/* Planning application preview (plan-file-ui.js showApplication): the figures as a two-column list. */
+.plan-application-figures { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--cb-space-2) var(--cb-space-4); margin: var(--cb-space-3) 0; }
+.plan-application-figures dt { color: var(--cb-text-muted); }
+.plan-application-figures dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+.plan-application h3 { font-size: var(--cb-text-md); margin: var(--cb-space-4) 0 var(--cb-space-2); }
+.plan-application-attachments { margin: 0; padding-left: var(--cb-space-5); }
+.plan-application a { overflow-wrap: anywhere; }
 
 /* Map pick mode lockdown: while a surface picks on the map, the map is pan/zoom ONLY. The floating
    shell (its buttons, sheets, the search box and the selection tray) and the mode switches

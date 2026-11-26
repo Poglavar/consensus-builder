@@ -48,5 +48,10 @@
         });
         return root.PlanningRestrictions.restrictionsFor(reads, { buildings: near, geometryOps: turf });
     }
-    root.PlanningRestrictionFeed = { load, membership, resolve, ruleSetIds };
+    // The submission target of the city's jurisdiction (planning/application-preview.js), or null.
+    async function submissionTarget(city) {
+        const ids = ruleSetIds(city);
+        return ids.length ? root.PlanningApplicationPreview.targetFor(await config(), ids) : null;
+    }
+    root.PlanningRestrictionFeed = { load, membership, resolve, ruleSetIds, submissionTarget };
 })(window);

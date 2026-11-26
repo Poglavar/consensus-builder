@@ -52,7 +52,33 @@
         "noImports": "No plans have been imported on this device.",
         "preview": "“{{title}}”: {{count}} designs. Import adds local, unapplied drafts and saves this plan’s membership and view. Existing work stays in place. No agreement, ownership or signature is imported.",
         "location": "Saved location (latitude, longitude, zoom): {{at}}",
-        "importedBody": "The designs are saved as local drafts. Open the imported plan to review its members, download it again or publish a link."
+        "importedBody": "The designs are saved as local drafts. Open the imported plan to review its members, download it again or publish a link.",
+        "application": {
+            "entry": "Planning application ({{format}})",
+            "title": "Planning application",
+            "introDesign": "This is what the council would receive from this design as a planning application in the {{format}} format, used by {{systems}}.",
+            "introPlan": "This is what the council would receive from this plan as a planning application in the {{format}} format, used by {{systems}}.",
+            "redLine": "Red line (site boundary)",
+            "floorArea": "New floor area",
+            "homes": "Homes (estimated from floor area)",
+            "buildings": "Buildings",
+            "tallest": "Tallest building",
+            "openSpace": "Open space",
+            "notStated": "Not stated by the design",
+            "squareMetres": "{{value}} m²",
+            "noSite": "No site drawn",
+            "storeys": "{{count}} storeys",
+            "attachments": "Drawings attached",
+            "sitePlan": "Proposed site plan",
+            "visualisations": "3D views of the design",
+            "link": "Permanent link, so officers and the public see the design itself:",
+            "publishDesign": "Publish the design to give the application a permanent link.",
+            "publishPlan": "Publish the plan to give the application a permanent link.",
+            "sending": "Sending it to the council directly is switched on once the council connects its system.",
+            "contact": "Ask for it for your council",
+            "downloadRedLine": "Download red line (GeoJSON)",
+            "close": "Close"
+        }
     },
     "workspace": {
         "blocked": {

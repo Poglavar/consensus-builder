@@ -398,5 +398,16 @@
         }
       ]
     }
+  ],
+  "submissionTargets": [
+    {
+      "id": "gb-eng-odp-application",
+      "jurisdiction": "GB-ENG",
+      "format": "Open Digital Planning",
+      "systems": ["PlanX", "BOPS"],
+      "schemaUrl": "https://github.com/theopensystemslab/digital-planning-data-schemas",
+      "attachments": ["sitePlan.proposed", "visualisations"],
+      "sending": "council-token"
+    }
   ]
 }

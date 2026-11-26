@@ -198,15 +198,76 @@
             const icon = doc.createElement('i'); icon.className = `fas fa-${name}`;
             icon.setAttribute('aria-hidden', 'true'); button.prepend(icon);
         }
+        // ---- planning application: what the design or plan would send in its jurisdiction's format ----
+        const number = value => new Intl.NumberFormat(win.i18n?.getLocale?.() || 'en', { maximumFractionDigits: 0 }).format(value);
+        const ATTACHMENT_LABELS = { 'sitePlan.proposed': ['sitePlan', 'Proposed site plan'], visualisations: ['visualisations', '3D views of the design'] };
+        // The preview of `model` (PlanningApplicationPreview.preview) for the design or plan `title`.
+        function showApplication(model, title, { plan }) {
+            const at = key => `application.${key}`;
+            const body = doc.createElement('div'); body.className = 'plan-application';
+            const paragraph = (text, className = '') => { const p = doc.createElement('p'); p.textContent = text; if (className) p.className = className; body.appendChild(p); return p; };
+            paragraph(t(at(plan ? 'introPlan' : 'introDesign'), plan
+                ? 'This is what the council would receive from this plan as a planning application in the {{format}} format, used by {{systems}}.'
+                : 'This is what the council would receive from this design as a planning application in the {{format}} format, used by {{systems}}.',
+            { format: model.target.format, systems: (model.target.systems || []).join(', ') }));
+            const list = doc.createElement('dl'); list.className = 'plan-application-figures';
+            const row = (key, fallback, value) => {
+                const term = doc.createElement('dt'); term.textContent = t(at(key), fallback);
+                const detail = doc.createElement('dd'); detail.textContent = value; detail.dataset.applicationFigure = key;
+                list.append(term, detail);
+            };
+            const unknown = t(at('notStated'), 'Not stated by the design');
+            const m2 = value => value === null ? unknown : t(at('squareMetres'), '{{value}} m²', { value: number(value) });
+            row('redLine', 'Red line (site boundary)', model.redLine ? m2(model.redLine.areaM2) : t(at('noSite'), 'No site drawn'));
+            row('floorArea', 'New floor area', m2(model.figures.grossFloorAreaM2));
+            row('homes', 'Homes (estimated from floor area)', model.figures.homes === null ? unknown : number(model.figures.homes));
+            row('buildings', 'Buildings', number(model.figures.buildings));
+            row('tallest', 'Tallest building', model.figures.tallestStoreys === null ? unknown
+                : t(at('storeys'), '{{count}} storeys', { count: number(model.figures.tallestStoreys) }));
+            row('openSpace', 'Open space', model.figures.openSpaceM2 === null ? unknown : m2(model.figures.openSpaceM2));
+            body.appendChild(list);
+            const heading = doc.createElement('h3'); heading.textContent = t(at('attachments'), 'Drawings attached'); body.appendChild(heading);
+            const files = doc.createElement('ul'); files.className = 'plan-application-attachments';
+            model.attachments.forEach(id => { const item = doc.createElement('li'); item.textContent = ATTACHMENT_LABELS[id] ? t(at(ATTACHMENT_LABELS[id][0]), ATTACHMENT_LABELS[id][1]) : id; files.appendChild(item); });
+            body.appendChild(files);
+            if (model.link) {
+                const p = paragraph(t(at('link'), 'Permanent link, so officers and the public see the design itself:') + ' ');
+                const a = doc.createElement('a'); a.className = 'cb-link'; a.href = model.link; a.textContent = model.link; a.target = '_blank'; a.rel = 'noopener';
+                p.appendChild(a);
+            } else paragraph(t(at(plan ? 'publishPlan' : 'publishDesign'), plan ? 'Publish the plan to give the application a permanent link.' : 'Publish the design to give the application a permanent link.'));
+            const sending = paragraph(t(at('sending'), 'Sending it to the council directly is switched on once the council connects its system.') + ' ');
+            const contact = doc.createElement('a'); contact.className = 'cb-link'; contact.href = '/feedback.html';
+            contact.textContent = t(at('contact'), 'Ask for it for your council'); contact.target = '_blank'; contact.rel = 'noopener';
+            sending.appendChild(contact);
+            const boundary = win.PlanningApplicationPreview.boundaryFeature(model, title);
+            win.showSimpleShareModal({ title: t(at('title'), 'Planning application'), body, actions: [
+                ...(boundary ? [{ label: t(at('downloadRedLine'), 'Download red line (GeoJSON)'), keepOpen: true,
+                    onClick: () => download(JSON.stringify(boundary, null, 2) + '\n', `${fileStem(title)}.red-line.geojson`, 'application/geo+json') }] : []),
+                { label: t(at('close'), 'Close'), primary: true }
+            ] });
+        }
+        // The planning application entry, added once the city's jurisdiction has a submission target.
+        async function addApplicationEntry({ button, getRecords, getTitle, getCity, getLink, plan }) {
+            const target = await win.PlanningRestrictionFeed?.submissionTarget?.(getCity());
+            if (!target) return;
+            button(t('application.entry', 'Planning application ({{format}})', { format: target.format }), () => {
+                const unite = features => features.slice(1).reduce((union, feature) => win.__parcelArrangement.clipWith(win.turf, 'union', union, feature, { site: 'planning-application' }) || union, features[0]);
+                const model = win.PlanningApplicationPreview.preview({ records: structuredClone(getRecords()), target, link: getLink(),
+                    siteOf: record => win.__siteBinding.siteOf(record, { turf: win.turf }), unite, areaOf: geometry => win.__planYield.geometryAreaM2(geometry) });
+                showApplication(model, getTitle(), { plan });
+            }, 'planning-application', 'file-signature');
+        }
         // `extras`: further downloads, [{ label, hook, make: () => ({ text, name, type }) }].
-        function controls({ getRecords = null, getView = () => win.MapShare.capture(win), getTitle = () => 'My plan', getSources = () => ({}), getSchedule = () => null, extras = [] } = {}) {
+        // `getCity` and `getLink` (the permanent address, or null) feed the planning application entry.
+        function controls({ getRecords = null, getView = () => win.MapShare.capture(win), getTitle = () => 'My plan', getSources = () => ({}), getSchedule = () => null, extras = [],
+            getCity = () => win.CityConfigManager?.getCurrentCityId?.(), getLink = () => null, plan = false } = {}) {
             const group = doc.createElement('div'); group.className = 'plan-file-controls';
             let busy = false;
             const buttons = [];
-            const button = (label, action, hook) => {
+            const button = (label, action, hook, icon = 'download') => {
                 const b = doc.createElement('button'); b.type = 'button'; b.className = 'btn'; b.textContent = label;
                 b.dataset.planFileAction = hook;
-                actionIcon(b, 'download');
+                actionIcon(b, icon);
                 b.addEventListener('click', async () => {
                     if (busy) return;
                     busy = true; buttons.forEach(c => { c.disabled = true; });
@@ -229,6 +290,7 @@
                 }, 'cityjson');
             }
             extras.forEach(extra => button(extra.label, () => { const file = extra.make(); download(file.text, file.name, file.type); }, extra.hook));
+            if (getRecords) addApplicationEntry({ button, getRecords, getTitle, getCity, getLink, plan }).catch(e => error(e, 'plan-export-failed'));
             return group;
         }
         // Read one chosen file into this device: on the Plans tab a plan file (kept as an imported
@@ -289,7 +351,9 @@
         function planControls(row, { getRow = () => row } = {}) {
             return controls({ getRecords: () => win.PlanComposition.localRecords(getRow(), { apiBase: win.DesignSync.apiBase() }),
                 getView: () => getRow().content.view, getTitle: () => getRow().content.title, getSources: () => getRow().designSources || {},
-                getSchedule: () => getRow().content.schedule || null });
+                getSchedule: () => getRow().content.schedule || null, plan: true,
+                getCity: () => getRow().content.view?.city || win.CityConfigManager?.getCurrentCityId?.(),
+                getLink: () => getRow().published && getRow().cid ? `${win.location.origin}/plans/${getRow().cid}` : null });
         }
         // Download a plan ({ cid, content }, or a stored row) or a design as a file, from any surface.
         async function plan(record, members = []) {
@@ -303,7 +367,10 @@
             const title = () => record.title || 'My design';
             const extras = win.DesignFileExports.downloadsFor(record).map(file => ({ label: t(...EXTRA_LABELS[file.id]), hook: file.id,
                 make: () => ({ text: file.text, name: fileStem(title()) + file.suffix, type: file.type }) }));
-            win.showSimpleShareModal({ title: t('design', 'Download design'), body: controls({ getRecords: () => [record], getTitle: title, extras }), actions: [] });
+            const cid = () => win.DesignSync.publishedCid(record);
+            win.showSimpleShareModal({ title: t('design', 'Download design'), body: controls({ getRecords: () => [record], getTitle: title, extras,
+                getCity: () => record.city || win.CityConfigManager?.getCurrentCityId?.(),
+                getLink: () => cid() ? `${win.location.origin}/designs/${cid()}` : null }), actions: [] });
         }
         // ---- agreements: the terms with the plan file of their plan (agreement-file.js) ----------
         // Download one agreement, stored or published (`designs`: a published one's fetched designs).
