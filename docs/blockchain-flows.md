@@ -122,7 +122,7 @@ its CID and a reader shows any input parcel that has no anchor. EVM could check 
 keeps the same rule so both chains read alike.
 
 Anchoring is batched (Solana: several `create_parcel` instructions per transaction, as the parcel
-claim UI's `parcel-mint.js` does one at a time; EVM: `anchorBatch`). Each batch is one wallet
+panel's Mint (`parcel-mint.js`) does one at a time; EVM: `anchorBatch`). Each batch is one wallet
 approval; the checklist reports `k/N` anchored and resumes where it stopped after a refused
 signature.
 

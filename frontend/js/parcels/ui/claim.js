@@ -17,17 +17,9 @@
         return fallback || key || '';
     };
 
-    const PARCEL_CLAIM_PORTAL_URLS = Object.freeze({
-        development: 'http://localhost:3001/',
-        production: 'https://tokenizario.app/'
-    });
-
     const PARCEL_NFT_ABI_FRAGMENT = [
         'function tokenIdForParcelId(string parcelId) view returns (uint256)'
     ];
-
-    const MINT_DECLARE_DEFAULT_RIGHTS_TYPE = 'Ownership';
-    const MINT_DECLARE_DEFAULT_ASSET_TYPE = 'Real Estate';
 
     const resolveParcelId = (featureOrProps) => {
         if (!featureOrProps) return null;
@@ -132,10 +124,6 @@
             const keep = row.classList.contains('button-row-claim') || row.classList.contains('button-row-5');
             row.hidden = isMultiActive && !keep;
         });
-        const claimButton = global.document ? global.document.getElementById('claimButton') : null;
-        if (claimButton) {
-            claimButton.hidden = isMultiActive;
-        }
     }
 
     function isWalletConnected() {
@@ -175,46 +163,22 @@
         return parcels;
     }
 
-    // The Tools tab has one primary: Mint when the parcel can be minted, else Claim.
-    function setPrimaryClaimAction(mintAndClaimButton, claimButton, mintAvailable) {
-        if (mintAndClaimButton) mintAndClaimButton.classList.toggle('btn-primary', mintAvailable);
-        if (claimButton) claimButton.classList.toggle('btn-primary', !mintAvailable);
-    }
-
+    // Mint, the Tools tab's one primary action (btn-primary in index.html), is enabled while the
+    // selected parcel has no anchor, or while several parcels are selected and a wallet is connected.
     function setParcelClaimButtonsState(state = 'neutral') {
         const normalized = normalizeMintStatusState(state);
         const mintAndClaimButton = global.document ? global.document.getElementById('mintAndClaimButton') : null;
-        const claimButton = global.document ? global.document.getElementById('claimButton') : null;
 
         const multi = global.multiParcelSelection;
         const hasMultiMode = Boolean(multi && (multi.isActive || multi.selectedParcels?.size > 0));
         const multiCount = hasMultiMode && multi && multi.selectedParcels ? multi.selectedParcels.size : 0;
-        const walletConnected = isWalletConnected();
 
+        updateToolsButtonsVisibilityForMulti(hasMultiMode);
         if (hasMultiMode) {
-            updateToolsButtonsVisibilityForMulti(true);
-            const enableMintMulti = walletConnected && multiCount > 0;
-            setButtonEnabledState(mintAndClaimButton, enableMintMulti);
-            setButtonEnabledState(claimButton, false);
-            setPrimaryClaimAction(mintAndClaimButton, claimButton, enableMintMulti);
+            setButtonEnabledState(mintAndClaimButton, isWalletConnected() && multiCount > 0);
             return;
         }
-
-        updateToolsButtonsVisibilityForMulti(false);
-
-        const enableMintAndClaim = normalized === 'not-minted';
-        const enableClaim = normalized === 'minted';
-
-        if (!['not-minted', 'minted'].includes(normalized)) {
-            setButtonEnabledState(mintAndClaimButton, false);
-            setButtonEnabledState(claimButton, false);
-            setPrimaryClaimAction(mintAndClaimButton, claimButton, false);
-            return;
-        }
-
-        setButtonEnabledState(mintAndClaimButton, enableMintAndClaim);
-        setButtonEnabledState(claimButton, enableClaim);
-        setPrimaryClaimAction(mintAndClaimButton, claimButton, enableMintAndClaim);
+        setButtonEnabledState(mintAndClaimButton, normalized === 'not-minted');
     }
 
     function computeFeatureCenter(feature) {
@@ -633,64 +597,9 @@
         return triggerParcelToolsTabActivated(true);
     }
 
-    function resolveClaimPortalBaseUrl() {
-        const globalScope = typeof global !== 'undefined' ? global : (typeof self !== 'undefined' ? self : null);
-        if (!globalScope) {
-            return PARCEL_CLAIM_PORTAL_URLS.production;
-        }
-        if (typeof globalScope.CLAIM_PORTAL_BASE_URL === 'string' && globalScope.CLAIM_PORTAL_BASE_URL.trim()) {
-            return globalScope.CLAIM_PORTAL_BASE_URL.trim();
-        }
-        const hostname = (globalScope.location && typeof globalScope.location.hostname === 'string')
-            ? globalScope.location.hostname.toLowerCase()
-            : '';
-        const isLocalHost = hostname === 'localhost'
-            || hostname === '127.0.0.1'
-            || hostname === '0.0.0.0'
-            || hostname.endsWith('.local');
-        const env = globalScope.current_environment || (isLocalHost ? 'development' : 'production');
-        if (env === 'development') {
-            if (typeof globalScope.CLAIM_PORTAL_DEV_BASE_URL === 'string' && globalScope.CLAIM_PORTAL_DEV_BASE_URL.trim()) {
-                return globalScope.CLAIM_PORTAL_DEV_BASE_URL.trim();
-            }
-            return PARCEL_CLAIM_PORTAL_URLS.development;
-        }
-        if (typeof globalScope.CLAIM_PORTAL_PROD_BASE_URL === 'string' && globalScope.CLAIM_PORTAL_PROD_BASE_URL.trim()) {
-            return globalScope.CLAIM_PORTAL_PROD_BASE_URL.trim();
-        }
-        return PARCEL_CLAIM_PORTAL_URLS.production;
-    }
-
-    function resolveMintDeclareConfig() {
-        const globalScope = typeof global !== 'undefined' ? global : (typeof self !== 'undefined' ? self : null);
-        const candidateBaseUrls = [
-            globalScope && typeof globalScope.MINT_DECLARE_BASE_URL === 'string' ? globalScope.MINT_DECLARE_BASE_URL : null,
-            globalScope && typeof globalScope.MINT_DECLARE_URL === 'string' ? globalScope.MINT_DECLARE_URL : null,
-            globalScope && typeof globalScope.MINT_AND_DECLARE_BASE_URL === 'string' ? globalScope.MINT_AND_DECLARE_BASE_URL : null
-        ]
-            .filter(value => typeof value === 'string')
-            .map(value => value.trim())
-            .filter(Boolean);
-        const baseUrl = candidateBaseUrls.length > 0 ? candidateBaseUrls[0] : resolveClaimPortalBaseUrl();
-        const rightsTypeRaw = globalScope && globalScope.MINT_DECLARE_RIGHTS_TYPE ? globalScope.MINT_DECLARE_RIGHTS_TYPE : null;
-        const assetTypeRaw = globalScope && globalScope.MINT_DECLARE_ASSET_TYPE ? globalScope.MINT_DECLARE_ASSET_TYPE : null;
-        const rightsType = rightsTypeRaw && String(rightsTypeRaw).trim() ? String(rightsTypeRaw).trim() : MINT_DECLARE_DEFAULT_RIGHTS_TYPE;
-        const assetType = assetTypeRaw && String(assetTypeRaw).trim() ? String(assetTypeRaw).trim() : MINT_DECLARE_DEFAULT_ASSET_TYPE;
-        return { baseUrl, rightsType, assetType };
-    }
-
     function ensureArray(value) {
         if (value === undefined || value === null) return [];
         return Array.isArray(value) ? value : [value];
-    }
-
-    function escapeXml(value) {
-        return String(value)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
     }
 
     function parseGeoJsonGeometry(input) {
@@ -821,222 +730,6 @@
         ];
     }
 
-    function buildParcelSvg(feature, { parcelId, parcelName, width = 512, height = 512, paddingRatio = 0.08 } = {}) {
-        if (!feature) return null;
-        const geometrySource = feature.geometry || feature;
-        const polygons = extractPolygonCoordinateSets(geometrySource);
-        if (polygons.length === 0) {
-            return null;
-        }
-        const bounds = computeBoundingBox(polygons);
-        if (!bounds) {
-            return null;
-        }
-        const padding = Math.min(width, height) * paddingRatio;
-        const pathElements = [];
-
-        polygons.forEach(polygon => {
-            const commands = [];
-            ensureArray(polygon).forEach(ring => {
-                const sanitized = sanitizeRing(ring);
-                sanitized.forEach((coord, index) => {
-                    const projected = projectCoordinate(coord, bounds, width, height, padding);
-                    commands.push(`${index === 0 ? 'M' : 'L'}${projected[0].toFixed(2)} ${projected[1].toFixed(2)}`);
-                });
-                if (sanitized.length > 0) {
-                    commands.push('Z');
-                }
-            });
-            if (commands.length > 0) {
-                pathElements.push(
-                    `<path d="${commands.join(' ')}" fill="#facd55" fill-opacity="0.85" stroke="#f97316" stroke-width="12" stroke-linejoin="round" stroke-linecap="round" fill-rule="evenodd" />`
-                );
-            }
-        });
-
-        if (pathElements.length === 0) {
-            return null;
-        }
-
-        const primaryLabel = parcelId ? escapeXml(parcelId) : (parcelName ? escapeXml(parcelName) : null);
-        let cityName = null;
-        if (global.ParcelCityConfigManager && typeof global.ParcelCityConfigManager.getCurrentCityConfig === 'function') {
-            const cityConfig = global.ParcelCityConfigManager.getCurrentCityConfig();
-            if (cityConfig && cityConfig.label) {
-                const labelParts = cityConfig.label.split(',');
-                cityName = labelParts[0]?.trim() || null;
-            }
-        }
-        const secondaryLabel = cityName ? escapeXml(cityName) : null;
-        const labelElements = [];
-        if (primaryLabel) {
-            labelElements.push(
-                `<text x="50%" y="88%" text-anchor="middle" fill="#e5e7eb" font-size="40" font-family="'Inter','Helvetica Neue',Arial,sans-serif">${primaryLabel}</text>`
-            );
-        }
-        if (secondaryLabel) {
-            labelElements.push(
-                `<text x="50%" y="95%" text-anchor="middle" fill="#94a3b8" font-size="28" font-family="'Inter','Helvetica Neue',Arial,sans-serif">${secondaryLabel}</text>`
-            );
-        }
-
-        const svgParts = [
-            `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`,
-            `  <rect width="${width}" height="${height}" fill="#0b1120" rx="24" />`,
-            `  <g>${pathElements.join('\n    ')}</g>`,
-            labelElements.length > 0 ? `  <g>${labelElements.join('\n    ')}</g>` : '',
-            `</svg>`
-        ].filter(Boolean);
-
-        return svgParts.join('\n');
-    }
-
-    function encodeSvgToBase64(svgContent) {
-        if (typeof svgContent !== 'string' || !svgContent) {
-            return null;
-        }
-        try {
-            if (typeof global.btoa === 'function') {
-                return global.btoa(unescape(encodeURIComponent(svgContent)));
-            }
-        } catch (error) {
-            console.warn('Failed to encode SVG using btoa, falling back to Buffer if available.', error);
-        }
-        try {
-            if (typeof global.Buffer !== 'undefined') {
-                return global.Buffer.from(svgContent, 'utf8').toString('base64');
-            }
-        } catch (error) {
-            console.warn('Failed to encode SVG using Buffer', error);
-        }
-        return null;
-    }
-
-    function extractMunicipalityName(feature) {
-        if (!feature) return null;
-        const props = feature.properties || {};
-        const candidates = [
-            props.cadastralName,
-            props.CADASTRAL_NAME,
-            props.cadastralMunicipality && props.cadastralMunicipality.name,
-            props.cadastralMunicipality && props.cadastralMunicipality.naziv,
-            props.municipality,
-            props.MUNICIPALITY
-        ];
-        for (const candidate of candidates) {
-            if (candidate === undefined || candidate === null) continue;
-            const value = String(candidate).trim();
-            if (value) {
-                return value;
-            }
-        }
-        return null;
-    }
-
-    function buildMintDeclareDescription({ parcelId, parcelName, municipality }) {
-        if (parcelName && municipality) {
-            return `${parcelName} (${parcelId}) in ${municipality}.`;
-        }
-        if (parcelName) {
-            return `${parcelName} (${parcelId}).`;
-        }
-        if (parcelId && municipality) {
-            return `Digitized cadastral parcel ${parcelId} in ${municipality}.`;
-        }
-        if (parcelId) {
-            return `Digitized cadastral parcel ${parcelId}.`;
-        }
-        return 'Digitized cadastral parcel.';
-    }
-
-    function buildMintDeclareUrl({ feature, parcelId, parcelName, claimContext }) {
-        const config = resolveMintDeclareConfig();
-        if (!config.baseUrl) {
-            return null;
-        }
-        const svg = buildParcelSvg(feature, { parcelId, parcelName });
-        if (!svg) {
-            return null;
-        }
-        const svgBase64 = encodeSvgToBase64(svg);
-        if (!svgBase64) {
-            return null;
-        }
-
-        let urlObject;
-        const attemptAbsolute = (raw, fallback) => {
-            try {
-                return new URL(raw);
-            } catch (_) {
-                if (!fallback) {
-                    throw _;
-                }
-                return new URL(fallback);
-            }
-        };
-        try {
-            urlObject = attemptAbsolute(config.baseUrl);
-        } catch (_) {
-            const normalized = config.baseUrl.startsWith('http://') || config.baseUrl.startsWith('https://')
-                ? config.baseUrl
-                : `http://${config.baseUrl}`;
-            try {
-                urlObject = attemptAbsolute(normalized);
-            } catch (error) {
-                if (global.location) {
-                    urlObject = new URL(config.baseUrl, global.location.origin);
-                } else {
-                    console.warn('Unable to resolve Mint & Attest base URL:', config.baseUrl, error);
-                    return null;
-                }
-            }
-        }
-
-        urlObject.searchParams.set('attest', 'relationship');
-        urlObject.searchParams.set('parcelSvgB64', svgBase64);
-
-        const resolvedParcelName = parcelName || (parcelId ? `Parcel ${parcelId}` : 'Selected Parcel');
-        const municipality = extractMunicipalityName(feature);
-        const description = buildMintDeclareDescription({ parcelId, parcelName: resolvedParcelName, municipality });
-
-        urlObject.searchParams.set('assetName', resolvedParcelName);
-        urlObject.searchParams.set('assetDescription', description);
-        urlObject.searchParams.set('rightsType', config.rightsType);
-        urlObject.searchParams.set('assetType', config.assetType);
-
-        if (parcelId) {
-            urlObject.searchParams.set('parcelId', parcelId);
-        }
-        if (municipality) {
-            urlObject.searchParams.set('municipality', municipality);
-        }
-        if (claimContext && claimContext.contractAddress) {
-            urlObject.searchParams.set('contractAddress', claimContext.contractAddress);
-        }
-        if (claimContext && claimContext.chainId !== undefined && claimContext.chainId !== null) {
-            urlObject.searchParams.set('chainId', String(claimContext.chainId));
-        }
-
-        return urlObject.toString();
-    }
-
-    function openMintAttestFlow({ feature, parcelId, parcelName, claimContext }) {
-        const mintDeclareUrl = buildMintDeclareUrl({
-            feature,
-            parcelId,
-            parcelName,
-            claimContext
-        });
-        if (mintDeclareUrl) {
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus(tParcel('status.messages.parcel_not_minted_yet_opening_mint_attest_flow', {}, 'Parcel not minted yet. Opening Mint & Attest flow...'));
-            }
-            openExternalUrl(mintDeclareUrl);
-        } else if (typeof global.updateStatus === 'function') {
-            global.updateStatus(tParcel('status.messages.parcel_not_minted_yet_and_the_mint_attest_flow_couldn_t_be_prepared', {}, "Parcel not minted yet and the Mint & Attest flow couldn't be prepared."));
-        }
-    }
-
     function toStringSafe(value) {
         if (value === undefined || value === null) return '';
         if (typeof value === 'bigint') return value.toString();
@@ -1163,258 +856,6 @@
                 global.updateStatus(tParcel('status.messages.unable_to_open_parcel_builder_please_try_again', {}, 'Unable to open Parcel Builder. Please try again.'));
             }
             return false;
-        }
-    }
-
-    async function openClaimOnly() {
-        const parcelFeature = getCurrentLiveParcelFeature();
-        if (!parcelFeature) {
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus(tParcel('status.messages.select_a_parcel_before_attempting_to_claim_it', {}, 'Select a parcel before attempting to claim it.'));
-            }
-            return;
-        }
-
-        const parcelId = deriveParcelIdentifier(parcelFeature);
-        if (!parcelId) {
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus(tParcel('status.messages.unable_to_determine_parcel_identifier_for_claims', {}, 'Unable to determine parcel identifier for claims.'));
-            }
-            return;
-        }
-        const parcelName = `Parcel ${parcelId}`;
-        const baseUrl = resolveClaimPortalBaseUrl();
-        const ethersLib = global.ethers;
-        let claimContext = null;
-
-        try {
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus(tParcel('status.messages.resolving_parcel_claim_details', {}, 'Resolving parcel claim details...'));
-            }
-            currentParcelMintStatusParcelId = parcelId;
-            currentParcelMintStatusPromise = null;
-            setParcelMintStatusIndicator('Checking NFT status...', 'loading');
-
-            try {
-                claimContext = await resolveParcelClaimContext();
-            } catch (contextError) {
-                console.warn('Parcel claim context unavailable for claim-only flow.', contextError);
-                throw contextError;
-            }
-
-            // A Solana wallet: the parcel's parcel_nft anchor, read fresh, rather than an ERC-721 token.
-            if (claimContext && claimContext.chainType === 'solana') {
-                const anchor = await fetchParcelMintStatus(parcelId);
-                currentParcelMintStatusCache = { parcelId, result: anchor };
-                currentParcelMintStatusParcelId = parcelId;
-                applyParcelMintStatusResult(anchor);
-                if (!anchor.minted) {
-                    if (typeof global.updateStatus === 'function') {
-                        global.updateStatus(tParcel('status.messages.parcel_token_not_minted', {}, "Can't claim, the parcel token has not been minted yet."));
-                    }
-                    return;
-                }
-                if (typeof global.updateStatus === 'function') {
-                    global.updateStatus(tParcel('status.messages.opening_claim_portal', {}, 'Opening claim portal...'));
-                }
-                openExternalUrl(buildSolanaClaimUrl({ baseUrl, chainSlug: anchor.chainSlug, anchorAddress: anchor.tokenId }));
-                return;
-            }
-
-            if (!ethersLib) {
-                throw new Error('Blockchain library is not available.');
-            }
-            if (!claimContext || !claimContext.contractAddress || !claimContext.provider) {
-                throw new Error('Claim context is incomplete.');
-            }
-
-            const contract = new ethersLib.Contract(
-                claimContext.contractAddress,
-                PARCEL_NFT_ABI_FRAGMENT,
-                claimContext.provider
-            );
-
-            const cachedResult = currentParcelMintStatusCache && currentParcelMintStatusCache.parcelId === parcelId
-                ? currentParcelMintStatusCache.result
-                : null;
-
-            let mintedResult = null;
-            if (cachedResult && cachedResult.minted && cachedResult.tokenId) {
-                mintedResult = cachedResult;
-            } else {
-                const tokenIdRaw = await fetchParcelTokenId(contract, parcelId);
-                mintedResult = {
-                    minted: true,
-                    tokenId: toStringSafe(tokenIdRaw),
-                    chainId: claimContext.chainId,
-                    chainSlug: claimContext.chainSlug,
-                    contractAddress: claimContext.contractAddress
-                };
-                currentParcelMintStatusCache = { parcelId, result: mintedResult };
-            }
-
-            currentParcelMintStatusParcelId = parcelId;
-            applyParcelMintStatusResult(mintedResult);
-
-            const claimUrl = buildClaimUrl({
-                baseUrl,
-                chainSlug: mintedResult.chainSlug || claimContext.chainSlug,
-                contractAddress: mintedResult.contractAddress || claimContext.contractAddress,
-                tokenId: mintedResult.tokenId,
-                parcelName
-            });
-
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus(tParcel('status.messages.opening_claim_portal', {}, 'Opening claim portal...'));
-            }
-            openExternalUrl(claimUrl);
-        } catch (error) {
-            if (error && error.message === 'TOKEN_NOT_MINTED') {
-                const notMintedResult = {
-                    minted: false,
-                    chainId: claimContext?.chainId,
-                    chainSlug: claimContext?.chainSlug,
-                    contractAddress: claimContext?.contractAddress
-                };
-                currentParcelMintStatusCache = { parcelId, result: notMintedResult };
-                currentParcelMintStatusParcelId = parcelId;
-                applyParcelMintStatusResult(notMintedResult);
-                if (typeof global.updateStatus === 'function') {
-                    global.updateStatus(tParcel('status.messages.parcel_token_not_minted', {}, "Can't claim, the parcel token has not been minted yet."));
-                }
-                return;
-            }
-
-            console.error('Failed to open claim-only portal', error);
-            const chainSlug = currentParcelMintStatusCache?.result?.chainSlug || claimContext?.chainSlug || null;
-            setParcelMintStatusIndicator(
-                null,
-                'error',
-                chainSlug
-            );
-            currentParcelMintStatusCache = null;
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus(tParcel('status.messages.unable_to_open_claim_portal_please_try_again', {}, 'Unable to open claim portal. Please try again.'));
-            }
-        }
-    }
-
-    async function openClaimPortal() {
-        const parcelFeature = getCurrentLiveParcelFeature();
-        if (!parcelFeature) {
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus(tParcel('status.messages.select_a_parcel_before_attempting_to_claim_it', {}, 'Select a parcel before attempting to claim it.'));
-            }
-            return;
-        }
-        const parcelId = deriveParcelIdentifier(parcelFeature);
-        if (!parcelId) {
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus(tParcel('status.messages.unable_to_determine_parcel_identifier_for_claims', {}, 'Unable to determine parcel identifier for claims.'));
-            }
-            return;
-        }
-        const parcelName = `Parcel ${parcelId}`;
-
-        try {
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus(tParcel('status.messages.resolving_parcel_claim_details', {}, 'Resolving parcel claim details...'));
-            }
-            currentParcelMintStatusCache = null;
-            currentParcelMintStatusParcelId = parcelId;
-            currentParcelMintStatusPromise = null;
-            setParcelMintStatusIndicator('Checking NFT status...', 'loading');
-            let claimContext = null;
-            try {
-                claimContext = await resolveParcelClaimContext();
-            } catch (contextError) {
-                console.warn('Parcel claim context unavailable, defaulting to Mint & Attest flow.', contextError);
-            }
-            const baseUrl = resolveClaimPortalBaseUrl();
-            const ethersLib = global.ethers;
-            if (!ethersLib) {
-                throw new Error('Blockchain library is not available.');
-            }
-            if (!claimContext || !claimContext.contractAddress || !claimContext.provider) {
-                const fallbackResult = {
-                    minted: false,
-                    chainId: claimContext?.chainId,
-                    chainSlug: claimContext?.chainSlug,
-                    contractAddress: claimContext?.contractAddress
-                };
-                currentParcelMintStatusCache = { parcelId, result: fallbackResult };
-                currentParcelMintStatusParcelId = parcelId;
-                applyParcelMintStatusResult(fallbackResult);
-                openMintAttestFlow({ feature: parcelFeature, parcelId, parcelName, claimContext });
-                return;
-            }
-
-            const contract = new ethersLib.Contract(
-                claimContext.contractAddress,
-                PARCEL_NFT_ABI_FRAGMENT,
-                claimContext.provider
-            );
-
-            let tokenId;
-            try {
-                console.info('ParcelNFT lookup', {
-                    chainId: claimContext.chainId,
-                    chainSlug: claimContext.chainSlug,
-                    contractAddress: claimContext.contractAddress,
-                    parcelId
-                });
-                const tokenIdRaw = await fetchParcelTokenId(contract, parcelId);
-                tokenId = toStringSafe(tokenIdRaw);
-                const mintedResult = {
-                    minted: true,
-                    tokenId,
-                    chainId: claimContext.chainId,
-                    chainSlug: claimContext.chainSlug,
-                    contractAddress: claimContext.contractAddress
-                };
-                currentParcelMintStatusCache = { parcelId, result: mintedResult };
-                currentParcelMintStatusParcelId = parcelId;
-                applyParcelMintStatusResult(mintedResult);
-            } catch (error) {
-                if (error && error.message === 'TOKEN_NOT_MINTED') {
-                    const notMintedResult = {
-                        minted: false,
-                        chainId: claimContext.chainId,
-                        chainSlug: claimContext.chainSlug,
-                        contractAddress: claimContext.contractAddress
-                    };
-                    currentParcelMintStatusCache = { parcelId, result: notMintedResult };
-                    currentParcelMintStatusParcelId = parcelId;
-                    applyParcelMintStatusResult(notMintedResult);
-                    openMintAttestFlow({ feature: parcelFeature, parcelId, parcelName, claimContext });
-                    return;
-                }
-                throw error;
-            }
-
-            const claimUrl = buildClaimUrl({
-                baseUrl,
-                chainSlug: claimContext.chainSlug,
-                contractAddress: claimContext.contractAddress,
-                tokenId,
-                parcelName
-            });
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus(tParcel('status.messages.opening_claim_portal', {}, 'Opening claim portal...'));
-            }
-            openExternalUrl(claimUrl);
-        } catch (error) {
-            console.error('Failed to open claim portal', error);
-            const chainSlug = currentParcelMintStatusCache?.result?.chainSlug || claimContext?.chainSlug || null;
-            setParcelMintStatusIndicator(
-                null,
-                'error',
-                chainSlug
-            );
-            currentParcelMintStatusCache = null;
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus(tParcel('status.messages.unable_to_open_claim_portal_please_try_again', {}, 'Unable to open claim portal. Please try again.'));
-            }
         }
     }
 
@@ -2217,29 +1658,10 @@
 
     const deriveParcelIdentifier = global.Parcels?.blockchain?.deriveParcelIdentifier || global.deriveParcelIdentifier;
     const resolveParcelClaimContext = global.Parcels?.blockchain?.resolveParcelClaimContext || global.resolveParcelClaimContext;
-    const buildClaimUrl = global.Parcels?.blockchain?.buildClaimUrl || global.buildClaimUrl;
-    const buildSolanaClaimUrl = global.Parcels?.blockchain?.buildSolanaClaimUrl || global.buildSolanaClaimUrl;
     const isParcelTokenMissingError = global.Parcels?.blockchain?.isParcelTokenMissingError || global.isParcelTokenMissingError || (() => false);
     const resolveChainSlug = global.Parcels?.blockchain?.resolveChainSlug || global.resolveChainSlug;
     const normalizeChainIdValue = global.Parcels?.blockchain?.normalizeChainIdValue || global.normalizeChainIdValue;
     const resolveParcelNftAddress = global.Parcels?.blockchain?.resolveParcelNftAddress || global.resolveParcelNftAddress;
-    const openExternalUrl = global.openExternalUrl || ((targetUrl) => {
-        if (!targetUrl || !global.window) return;
-        const opened = global.window.open(targetUrl, '_blank', 'noopener,noreferrer');
-        if (opened) return;
-        if (!global.document || !global.document.body) {
-            global.window.location.href = targetUrl;
-            return;
-        }
-        const anchor = global.document.createElement('a');
-        anchor.href = targetUrl;
-        anchor.target = '_blank';
-        anchor.rel = 'noopener noreferrer';
-        anchor.style.display = 'none';
-        global.document.body.appendChild(anchor);
-        anchor.click();
-        global.document.body.removeChild(anchor);
-    });
 
     // index.html's Tools-tab buttons translate their text through data-i18n-key, but their tooltips
     // are plain title attributes; set those here, and re-render the status line (its text is set from
@@ -2248,8 +1670,7 @@
         const doc = global.document;
         if (!doc) return;
         const titles = [
-            ['mintAndClaimButton', 'panel.parcel.mintTooltip', 'Mint the parcel NFT'],
-            ['claimButton', 'panel.parcel.claimExistingTooltip', 'Claim existing parcel NFT']
+            ['mintAndClaimButton', 'panel.parcel.mintTooltip', 'Mint the parcel NFT']
         ];
         titles.forEach(([id, key, fallback]) => {
             const el = doc.getElementById(id);
@@ -2296,23 +1717,15 @@
         fetchParcelMintStatus,
         triggerParcelToolsTabActivated,
         recheckParcelMintStatus,
-        resolveClaimPortalBaseUrl,
-        resolveMintDeclareConfig,
-        buildMintDeclareUrl,
-        openMintAttestFlow,
         openParcelBuilder,
         isParcelBuilderAvailable,
         buildParcelBuilderUrl,
-        openClaimOnly,
-        openClaimPortal,
         openParcelMintModal,
         toStringSafe,
         fetchParcelTokenId
     };
 
     global.openParcelBuilder = openParcelBuilder;
-    global.openClaimOnly = openClaimOnly;
-    global.openClaimPortal = openClaimPortal;
     global.openParcelMintModal = openParcelMintModal;
     global.setParcelMintStatusIndicator = setParcelMintStatusIndicator;
     global.resetParcelMintStatusState = resetParcelMintStatusState;

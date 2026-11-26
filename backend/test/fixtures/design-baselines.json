@@ -350,7 +350,7 @@
     "js/measurement-tool.js": 5,
     "js/parcel-based.js": 2,
     "js/parcels/blocks.js": 5,
-    "js/parcels/ui/claim.js": 2,
+    "js/parcels/ui/claim.js": 1,
     "js/parcels/ui/locate.js": 1,
     "js/parcels/ui/visibility.js": 1,
     "js/proposals/apply/structures.js": 1,

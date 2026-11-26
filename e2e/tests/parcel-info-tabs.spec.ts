@@ -94,12 +94,17 @@ test.describe('Parcel info panel tabs @core', () => {
       .some((p: any) => p.published?.cid === cid), publishedCid)).toBe(true);
   });
 
-  test('the Tools icon tab shows claim controls', async ({ mockApi: page }) => {
+  // Parcel anchors are ownerless (soulbound), so the Tools tab offers Mint and no Claim.
+  test('the Tools icon tab shows NFT status and Mint, and no Claim', async ({ mockApi: page }) => {
     await openDetails(page);
     await parcelTab(page, 'tools-tab').click();
-    await expect(page.locator('#tools-tab')).toBeVisible();
-    await expect(page.locator('#claimButton')).toBeDisabled();
+    const tools = page.locator('#tools-tab');
+    await expect(tools).toBeVisible();
+    await expect(page.locator('#parcelMintStatus')).toContainText('NFT');
     await expect(page.locator('#mintAndClaimButton')).toBeDisabled();
+    await expect(page.locator('#mintAndClaimButton')).toHaveClass(/\bbtn-primary\b/);
+    await expect(page.locator('#claimButton')).toHaveCount(0);
+    await expect(tools.getByRole('button', { name: /claim/i })).toHaveCount(0);
   });
 
   test('switching back restores Info content', async ({ mockApi: page }) => {

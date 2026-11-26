@@ -79,12 +79,12 @@ test.describe('Proposal actions @features', () => {
       .toHaveAttribute('data-reference-state', 'available');
   });
 
-  test('claim tools keep minting unavailable until a wallet is connected', async ({ mockApi: page }) => {
+  test('parcel tools keep minting unavailable until a wallet is connected', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page, 'tools');
-    const claim = page.locator('#claimButton');
-    await expect(claim).toBeVisible();
-    await expect(claim).toBeDisabled();
+    const mint = page.locator('#mintAndClaimButton');
+    await expect(mint).toBeVisible();
+    await expect(mint).toBeDisabled();
   });
 
   test('parcel NFT status retries a failed read and restores its control', async ({ mockApi: page }) => {

@@ -1080,8 +1080,7 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     width: 100%;
 }
 
-.parcel-info-buttons .button-row[hidden],
-.parcel-info-buttons #claimButton[hidden] {
+.parcel-info-buttons .button-row[hidden] {
     display: none;
 }
 

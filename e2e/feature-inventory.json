@@ -860,9 +860,9 @@
       ]
     },
     {
-      "feature": "existing EVM parcel NFT claim portal handoff",
+      "feature": "parcel NFT status linking the minted EVM token or Solana anchor on its explorer, with Mint off once minted",
       "specs": [
-        "tests/parcel-claim-portal.spec.ts"
+        "tests/parcel-nft-status.spec.ts"
       ]
     },
     {
@@ -934,7 +934,7 @@
   ],
   "boundaries": [
     "HTTP and RPC dependencies use protocol fixtures; application geometry, rendering, storage, routing, instruction construction and UI handlers remain real.",
-    "External walking, cab simulator, Parcel Builder and NFT claim portal apps are verified at their navigation boundaries.",
+    "External walking, cab simulator and Parcel Builder apps are verified at their navigation boundaries.",
     "Screenshot-authoring utility capture-howto is opt-in and excluded from regression runs.",
     "Claims counts, area-monitor uploads and outlier visualization are unavailable controls; tests assert their supported disabled gates."
   ]

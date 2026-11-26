@@ -19,12 +19,6 @@
         devnet: 'https://api.devnet.solana.com',
         testnet: 'https://api.testnet.solana.com'
     };
-    const PARCEL_CLAIM_PORTAL_URLS = {
-        production: 'https://claim.consensus.land/',
-        staging: 'https://staging-claim.consensus.land/',
-        development: 'http://localhost:3001/'
-    };
-
     function isLocalHostname(hostname) {
         if (!hostname || typeof hostname !== 'string') return false;
         const lower = hostname.toLowerCase();
@@ -529,35 +523,6 @@
         return candidates.some(msg => msg.toLowerCase().includes('parcel does not exist'));
     }
 
-    function buildClaimUrl({ baseUrl, chainSlug, contractAddress, tokenId, parcelName }) {
-        const url = new URL(baseUrl || PARCEL_CLAIM_PORTAL_URLS.production);
-        url.searchParams.set('attest', 'ownership');
-        if (chainSlug) {
-            url.searchParams.set('chain', chainSlug);
-        }
-        if (contractAddress) {
-            url.searchParams.set('contract', contractAddress);
-        }
-        if (tokenId !== undefined && tokenId !== null) {
-            url.searchParams.set('tokenId', tokenId.toString());
-        }
-        if (parcelName) {
-            url.searchParams.set('parcel', parcelName);
-        }
-        return url.toString();
-    }
-
-    // On Solana a parcel's anchor is an ownerless parcel_nft account, not a token anyone holds, so the
-    // claim portal has no token to attest ownership of: Claim opens the portal's page of the anchor
-    // account on the anchor's network (Tokenizario /address/<account>?chain=solana-devnet).
-    function buildSolanaClaimUrl({ baseUrl, chainSlug, anchorAddress }) {
-        if (!anchorAddress) throw new Error('A Solana claim needs the parcel anchor account.');
-        const base = String(baseUrl || PARCEL_CLAIM_PORTAL_URLS.production);
-        const url = new URL(`address/${encodeURIComponent(anchorAddress)}`, base.endsWith('/') ? base : `${base}/`);
-        url.searchParams.set('chain', chainSlug || 'solana-devnet');
-        return url.toString();
-    }
-
     global.resolveParcelNftAddressSolana = resolveParcelNftAddressSolana;
     global.normalizeChainIdValue = normalizeChainIdValue;
     global.chainKeyVariants = chainKeyVariants;
@@ -569,6 +534,4 @@
     global.resolveParcelNftAddress = resolveParcelNftAddress;
     global.resolveParcelClaimContext = resolveParcelClaimContext;
     global.isParcelTokenMissingError = isParcelTokenMissingError;
-    global.buildClaimUrl = buildClaimUrl;
-    global.buildSolanaClaimUrl = buildSolanaClaimUrl;
 })(typeof window !== 'undefined' ? window : globalThis);

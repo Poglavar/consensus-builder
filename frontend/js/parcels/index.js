@@ -83,8 +83,7 @@
             deriveParcelDisplayName: global.deriveParcelDisplayName,
             resolveParcelNftAddress: global.resolveParcelNftAddress,
             resolveParcelClaimContext: global.resolveParcelClaimContext,
-            isParcelTokenMissingError: global.isParcelTokenMissingError,
-            buildClaimUrl: global.buildClaimUrl
+            isParcelTokenMissingError: global.isParcelTokenMissingError
         },
         ownership: {
             parseFraction: global.parseFraction,

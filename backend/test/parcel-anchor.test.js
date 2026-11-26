@@ -1,5 +1,5 @@
 // The parcel anchor's id and metadata (frontend/js/parcels/parcel-anchor.js), shared by the parcel
-// panel's Mint and the MCP's ugt_anchor_parcels, and the Solana Claim link (parcels/blockchain.js).
+// panel's Mint and the MCP's ugt_anchor_parcels, and by the page's deriveParcelIdentifier (parcels/blockchain.js).
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 
@@ -26,13 +26,5 @@ describe('parcel anchor', () => {
             parcelId: 'HR-1-7', areaSquareMeters: 123.46, geometry
         });
         expect(ParcelAnchor.anchorMetadata({ anchorId: 'p', parcelName: 'Named', minter: 'm' })).toMatchObject({ name: 'Named', areaSquareMeters: null, geometry: null, attributes: [{}, {}] });
-    });
-
-    it('opens the claim portal\'s page of a Solana anchor account on its network', () => {
-        expect(globalThis.buildSolanaClaimUrl({ baseUrl: 'https://tokenizario.app/', chainSlug: 'solana-devnet', anchorAddress: 'Anchor111' }))
-            .toBe('https://tokenizario.app/address/Anchor111?chain=solana-devnet');
-        expect(globalThis.buildSolanaClaimUrl({ baseUrl: 'http://claim-portal.e2e/claim', anchorAddress: 'A' }))
-            .toBe('http://claim-portal.e2e/claim/address/A?chain=solana-devnet');
-        expect(() => globalThis.buildSolanaClaimUrl({ baseUrl: 'https://tokenizario.app/' })).toThrow(/anchor account/);
     });
 });

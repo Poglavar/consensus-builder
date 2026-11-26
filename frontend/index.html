@@ -125,7 +125,7 @@
                 'css/base.css',
                 'css/layout.css',
                 'css/map.css?v=20261126-apartment-rounds',
-                'css/panels.css?v=20261027-panel-buttons',
+                'css/panels.css?v=20261126-no-claim',
                 'css/modals.css?v=20261113-share',
                 'css/parcel-sources.css',
                 'css/proposals.css?v=20261031-design-info',
@@ -1715,11 +1715,11 @@
                     <div id="selected-parcels-content"></div>
                 </div>
 
-                <!-- Tools Tab: the parcel NFT first (Mint is the tab's one primary action; claim.js
-                     enables Mint or Claim from the chain status and, while several parcels are
-                     selected, hides every .button-row but the claim rows), then the inspection tools
-                     in two columns. Neighbors and Vertices are toggles (aria-pressed). Mint is the
-                     primary while the parcel can be minted, Claim once it is (claim.js swaps it). -->
+                <!-- Tools Tab: the parcel NFT first (its status line and Mint, the tab's one primary
+                     action; claim.js enables Mint while the parcel has no anchor and, while several
+                     parcels are selected, hides every .button-row but the status and Mint rows), then
+                     the inspection tools in two columns. Neighbors and Vertices are toggles
+                     (aria-pressed). Parcel anchors are ownerless, so there is nothing to claim. -->
                 <div id="tools-tab" class="parcel-tab-content" role="tabpanel" aria-labelledby="parcel-tools-tab-button" hidden>
                     <div class="parcel-info-buttons">
                         <div class="button-row button-row-5">
@@ -1731,10 +1731,6 @@
                                 onclick="(window.Parcels?.uiClaim?.openParcelMintModal || window.openParcelMintModal || function(){})()"
                                 title="Mint the parcel NFT" disabled><i class="fas fa-stamp" aria-hidden="true"></i><span
                                     data-i18n-key="panel.parcel.mintAndClaimButton">Mint</span></button>
-                            <button id="claimButton" class="btn" type="button"
-                                onclick="(window.Parcels?.uiClaim?.openClaimOnly || window.openClaimOnly || function(){})()"
-                                title="Claim existing parcel NFT" disabled><i class="fas fa-hand-holding" aria-hidden="true"></i><span
-                                    data-i18n-key="panel.parcel.claimButton">Claim</span></button>
                         </div>
                         <div class="button-row button-row-1 cb-actions">
                             <button id="visualizeButton" class="btn" type="button"
@@ -2323,12 +2319,12 @@
             'js/parcels/point-map.js?v=20261008-point-parcels',
             'js/parcels/blocks.js',
             'js/parcels/parcel-anchor.js?v=20261126-solana-claim',
-            'js/parcels/blockchain.js?v=20261126-solana-claim',
+            'js/parcels/blockchain.js?v=20261126-no-claim',
             'js/browser-ownership-source.js',
             'js/parcels/ownership-ui.js?v=20261027-stack-semantics',
             'js/parcels/ui/visibility.js',
-            'js/parcels/ui/claim.js?v=20261126-solana-claim',
-            'js/parcels/index.js',
+            'js/parcels/ui/claim.js?v=20261126-no-claim',
+            'js/parcels/index.js?v=20261126-no-claim',
             'js/parcels/route.js?v=20261112-opened-address',
             'js/proposals/selection.js',
             // bundle:end map-ui
