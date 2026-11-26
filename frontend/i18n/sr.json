@@ -1764,6 +1764,7 @@
         "parcelLabel": "Parcela {{number}}",
         "proposalCount": {
             "one": "{{count}} dizajn",
+            "few": "{{count}} dizajna",
             "other": "{{count}} dizajna"
         },
         "logoutButton": "Odjava"
@@ -6396,15 +6397,18 @@
                 "activityCount": "Aktivnost ({{count}})",
                 "countActivity": {
                     "one": "{{count}} aktivnost",
-                    "many": "Aktivnosti: {{count}}"
+                    "few": "{{count}} aktivnosti",
+                    "other": "{{count}} aktivnosti"
                 },
                 "countAgreement": {
                     "one": "{{count}} sporazum",
-                    "many": "Sporazumi: {{count}}"
+                    "few": "{{count}} sporazuma",
+                    "other": "{{count}} sporazuma"
                 },
                 "countTransaction": {
                     "one": "{{count}} transakcija",
-                    "many": "Transakcije: {{count}}"
+                    "few": "{{count}} transakcije",
+                    "other": "{{count}} transakcija"
                 },
                 "modelCost": "Trošak modela: {{amount}}",
                 "noActors": "Nijedan akter ne odgovara filteru.",
@@ -10318,11 +10322,13 @@
     "working": "Радим…",
     "steps": {
       "one": "{{count}} корак",
+      "few": "{{count}} корака",
       "other": "{{count}} корака"
     },
     "stepFailed": "Корак није завршен.",
     "planUpdated": {
       "one": "Ажурирано у {{count}} кораку",
+      "few": "Ажурирано у {{count}} корака",
       "other": "Ажурирано у {{count}} корака"
     },
     "planApplied": "Измена је приказана на мапи.",

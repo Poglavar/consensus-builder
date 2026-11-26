@@ -5039,16 +5039,28 @@
                 "profilesAria": "ملفات الجهات الفاعلة",
                 "activityCount": "النشاط ({{count}})",
                 "countActivity": {
+                    "zero": "{{count}} نشاط",
                     "one": "نشاط واحد ({{count}})",
-                    "many": "{{count}} نشاطا"
+                    "two": "نشاطان ({{count}})",
+                    "few": "{{count}} أنشطة",
+                    "many": "{{count}} نشاطا",
+                    "other": "{{count}} نشاط"
                 },
                 "countAgreement": {
+                    "zero": "{{count}} اتفاق",
                     "one": "اتفاق واحد ({{count}})",
-                    "many": "{{count}} اتفاقا"
+                    "two": "اتفاقان ({{count}})",
+                    "few": "{{count}} اتفاقات",
+                    "many": "{{count}} اتفاقا",
+                    "other": "{{count}} اتفاق"
                 },
                 "countTransaction": {
+                    "zero": "{{count}} معاملة",
                     "one": "معاملة واحدة ({{count}})",
-                    "many": "{{count}} معاملة"
+                    "two": "معاملتان ({{count}})",
+                    "few": "{{count}} معاملات",
+                    "many": "{{count}} معاملة",
+                    "other": "{{count}} معاملة"
                 },
                 "modelCost": "تكلفة النموذج {{amount}}",
                 "noActors": "لا توجد جهات فاعلة تطابق هذا المرشح.",

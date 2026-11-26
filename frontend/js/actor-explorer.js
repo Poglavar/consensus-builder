@@ -390,9 +390,10 @@
                     : ` · ${controllerLabel(profile.actor.controller, t)}`;
                 body.append(text(doc, 'span', profile.actor.name, 'cb-option__title'), text(doc, 'span', `${actorType}${controller}`, 'cb-badge'));
                 if (!profile.retained) body.append(text(doc, 'span', [
-                    t(`gameDialogs.log.actors.countActivity.${profile.activityCount === 1 ? 'one' : 'many'}`, profile.activityCount === 1 ? '{{count}} activity' : '{{count}} activities', { count: profile.activityCount }),
-                    t(`gameDialogs.log.actors.countAgreement.${profile.agreementCids.length === 1 ? 'one' : 'many'}`, profile.agreementCids.length === 1 ? '{{count}} agreement' : '{{count}} agreements', { count: profile.agreementCids.length }),
-                    t(`gameDialogs.log.actors.countTransaction.${profile.transactionCount === 1 ? 'one' : 'many'}`, profile.transactionCount === 1 ? '{{count}} transaction' : '{{count}} transactions', { count: profile.transactionCount })
+                    // The dictionary picks the plural form from `count` (i18n.js lookupTemplate).
+                    t('gameDialogs.log.actors.countActivity', profile.activityCount === 1 ? '{{count}} activity' : '{{count}} activities', { count: profile.activityCount }),
+                    t('gameDialogs.log.actors.countAgreement', profile.agreementCids.length === 1 ? '{{count}} agreement' : '{{count}} agreements', { count: profile.agreementCids.length }),
+                    t('gameDialogs.log.actors.countTransaction', profile.transactionCount === 1 ? '{{count}} transaction' : '{{count}} transactions', { count: profile.transactionCount })
                 ].join(' · '), 'cb-option__desc'));
                 if (profile.actor.wallet) body.append(text(doc, 'code', short(profile.actor.wallet), 'ae-wallet'));
                 if (profile.modelCostUsd) body.append(text(doc, 'span', t('gameDialogs.log.actors.modelCost', '{{amount}} model cost', { amount: formatUsd(profile.modelCostUsd) }), 'cb-option__desc'));

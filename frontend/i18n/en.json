@@ -6363,15 +6363,15 @@
                 "activityCount": "Activity ({{count}})",
                 "countActivity": {
                     "one": "{{count}} activity",
-                    "many": "{{count}} activities"
+                    "other": "{{count}} activities"
                 },
                 "countAgreement": {
                     "one": "{{count}} agreement",
-                    "many": "{{count}} agreements"
+                    "other": "{{count}} agreements"
                 },
                 "countTransaction": {
                     "one": "{{count}} transaction",
-                    "many": "{{count}} transactions"
+                    "other": "{{count}} transactions"
                 },
                 "modelCost": "{{amount}} model cost",
                 "noActors": "No actors match this filter.",

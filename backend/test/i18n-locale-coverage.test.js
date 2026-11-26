@@ -43,9 +43,6 @@ const DYNAMIC_KEY_PREFIXES = [
     'gameDialogs.log.row.',
     'gameDialogs.log.actors.',      // actor-explorer.test.js checks the real locale dictionaries
     'gameDialogs.log.actors.runStatus.',
-    'gameDialogs.log.actors.countActivity.',
-    'gameDialogs.log.actors.countAgreement.',
-    'gameDialogs.log.actors.countTransaction.',
     'gameDialogs.log.actors.entity.',
     'activityPanel.',             // Activity controls and notices share a runtime prefix
     'agreement.funding.apartments.', // agreement-boost.js apartmentText(key) names the apartment round's labels

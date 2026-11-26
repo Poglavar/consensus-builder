@@ -6362,16 +6362,16 @@
                 "activityAria": "Қызмет түрі",
                 "activityCount": "Қызмет түрі ({{count}})",
                 "countActivity": {
-                    "one": "{{count}} шара",
-                    "many": "{{count}} іс-шара"
+                    "one": "{{count}} іс-шара",
+                    "other": "{{count}} іс-шара"
                 },
                 "countAgreement": {
                     "one": "{{count}} келісім",
-                    "many": "{{count}} келісімдер"
+                    "other": "{{count}} келісім"
                 },
                 "countTransaction": {
                     "one": "{{count}} операция",
-                    "many": "{{count}} операциялар"
+                    "other": "{{count}} операция"
                 },
                 "modelCost": "{{amount}} моделі",
                 "noActors": "Бұл сүзгіге бірде-бір актер сәйкес келмейді.",

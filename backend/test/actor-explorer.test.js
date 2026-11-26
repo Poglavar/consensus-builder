@@ -208,7 +208,10 @@ describe('actor explorer view', () => {
     it.each(['en', 'es', 'hr', 'sr'])('renders actor controls and run evidence with the real %s dictionary', async lang => {
         const dictionary = JSON.parse(readFileSync(new URL(`../../frontend/i18n/${lang}.json`, import.meta.url), 'utf8'));
         const translate = (key, fallback, params = {}) => {
-            const value = key.split('.').reduce((node, part) => node?.[part], dictionary);
+            const entry = key.split('.').reduce((node, part) => node?.[part], dictionary);
+            // A plural group takes the form the count selects, else `other` (i18n.js lookupTemplate).
+            const value = entry && typeof entry === 'object' && typeof params.count === 'number'
+                ? entry[new Intl.PluralRules(lang).select(params.count)] ?? entry.other : entry;
             expect(typeof value, `Missing ${lang} label: ${key}`).toBe('string');
             return value.replace(/\{\{(\w+)\}\}/g, (_match, name) => String(params[name] ?? ''));
         };

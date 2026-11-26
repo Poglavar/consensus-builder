@@ -6390,15 +6390,15 @@
                 "activityCount": "Actividad ({{count}})",
                 "countActivity": {
                     "one": "{{count}} actividad",
-                    "many": "{{count}} actividades"
+                    "other": "{{count}} actividades"
                 },
                 "countAgreement": {
                     "one": "{{count}} acuerdo",
-                    "many": "{{count}} acuerdos"
+                    "other": "{{count}} acuerdos"
                 },
                 "countTransaction": {
                     "one": "{{count}} transacción",
-                    "many": "{{count}} transacciones"
+                    "other": "{{count}} transacciones"
                 },
                 "modelCost": "Coste del modelo: {{amount}}",
                 "noActors": "Ningún actor coincide con este filtro.",

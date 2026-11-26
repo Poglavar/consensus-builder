@@ -6440,15 +6440,21 @@
                 "activityCount": "Вид деятельности ({{count}})",
                 "countActivity": {
                     "one": "{{count}} мероприятие",
-                    "many": "{{count}} мероприятий"
+                    "few": "{{count}} мероприятия",
+                    "many": "{{count}} мероприятий",
+                    "other": "{{count}} мероприятия"
                 },
                 "countAgreement": {
                     "one": "{{count}} соглашение",
-                    "many": "{{count}} соглашений"
+                    "few": "{{count}} соглашения",
+                    "many": "{{count}} соглашений",
+                    "other": "{{count}} соглашения"
                 },
                 "countTransaction": {
                     "one": "{{count}} операция",
-                    "many": "{{count}} операций"
+                    "few": "{{count}} операции",
+                    "many": "{{count}} операций",
+                    "other": "{{count}} операции"
                 },
                 "modelCost": "{{amount}} модель",
                 "noActors": "Ни один актер не подходит к этому фильтру.",
