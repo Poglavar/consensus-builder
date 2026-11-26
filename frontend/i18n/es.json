@@ -8874,6 +8874,7 @@
         "useFail": "No edificable: {{use}}",
         "useUnknown": "{{use}}: {{status}}",
         "source": "Fuente: {{source}}",
+        "heightsSource": "Alturas existentes: {{source}}",
         "status": {
             "note": "Dentro de los límites registrados; se aplican protecciones urbanísticas",
             "fail": "Supera un límite permitido",

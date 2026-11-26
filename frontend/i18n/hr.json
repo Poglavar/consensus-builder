@@ -8892,6 +8892,7 @@
         "useFail": "Nije za gradnju: {{use}}",
         "useUnknown": "{{use}}: {{status}}",
         "source": "Izvor: {{source}}",
+        "heightsSource": "Postojeće visine: {{source}}",
         "status": {
             "note": "Unutar zabilježenih granica; vrijede planska ograničenja",
             "fail": "Krši dopušteno ograničenje",

@@ -9025,6 +9025,7 @@
         "useFail": "Não edificável: {{use}}",
         "useUnknown": "{{use}}: {{status}}",
         "source": "Fonte: {{source}}",
+        "heightsSource": "Alturas existentes: {{source}}",
         "status": {
             "note": "Dentro dos limites registados; aplicam-se proteções urbanísticas",
             "fail": "Excede um limite permitido",

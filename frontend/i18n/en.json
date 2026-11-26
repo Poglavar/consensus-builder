@@ -8846,6 +8846,7 @@
         "useFail": "Not for building: {{use}}",
         "useUnknown": "{{use}}: {{status}}",
         "source": "Source: {{source}}",
+        "heightsSource": "Existing heights: {{source}}",
         "status": {
             "note": "Within the recorded limits; planning designations apply",
             "fail": "Breaks a permitted limit",

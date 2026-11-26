@@ -9025,6 +9025,7 @@
         "useFail": "Non constructible : {{use}}",
         "useUnknown": "{{use}} : {{status}}",
         "source": "Source : {{source}}",
+        "heightsSource": "Hauteurs existantes : {{source}}",
         "status": {
             "note": "Dans les limites connues ; des protections d’urbanisme s’appliquent",
             "fail": "Dépasse une limite autorisée",
