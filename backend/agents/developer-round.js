@@ -67,14 +67,16 @@ export function developerConfig(persona) {
 
 /** The rounds this persona has built in earlier runs: [{ runId, key, cid, deadline, units: Set of 'project/unit' }]. */
 export function earlierRounds(runs, personaName) {
+    const mine = (runs || []).filter(run => run?.persona === personaName);
+    // A round is settled in a later run's checkpoint (summary.settlements[account]), not the one that built it.
+    const settledCids = new Set(mine.flatMap(run => Object.values(run.summary?.settlements || {}).filter(row => row?.settled === true).map(row => row.cid)));
     const rounds = [];
-    for (const run of runs || []) {
-        if (run?.persona !== personaName) continue;
+    for (const run of mine) {
         for (const [key, agreement] of Object.entries(run.summary?.agreements || {})) {
             if (agreement?.content?.rule?.electorate !== 'investors') continue;
             const apartments = agreement.content.funding?.apartments;
             rounds.push({ runId: run.run_id, key, cid: agreement.cid, deadline: agreement.deadline ?? agreement.content.deadline ?? null,
-                minted: Boolean(run.summary?.mints?.[key]?.account), settled: Object.values(run.summary?.settlements || {}).some(row => row?.cid === agreement.cid && row.settled),
+                minted: Boolean(run.summary?.mints?.[key]?.account), settled: settledCids.has(agreement.cid),
                 units: new Set((apartments?.units || []).map(unit => `${apartments.projectId}/${unit.unitId}`)) });
         }
     }

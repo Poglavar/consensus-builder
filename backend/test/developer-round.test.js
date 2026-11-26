@@ -67,8 +67,10 @@ describe('planning a round', () => {
         expect(third.candidate).toMatchObject({ plain: true, units: [], lens: [], targetUsdcAtomic: '2000000' });
         const full = await planRound({ persona, runs: [pastRun(built), pastRun(built), pastRun(built)], runKey: 'a', ...readers });
         expect(full).toMatchObject({ candidate: null, reason: expect.stringMatching(/3 round\(s\) still open/) });
-        // A settled or past round no longer counts as open.
-        expect((await planRound({ persona, runs: [pastRun(built, { settled: true }), pastRun(built), pastRun(built, { deadline: '2020-01-01T00:00:00.000Z' })], runKey: 'a', ...readers })).candidate).not.toBeNull();
+        // A round settled (in a later run's checkpoint) or past its deadline no longer counts as open.
+        const settledLater = { persona: persona.name, run_id: 'r-later', summary: { settlements: { acct: { cid: 'bafk', settled: true } } } };
+        expect((await planRound({ persona, runs: [pastRun(built), pastRun(built), pastRun(built), settledLater], runKey: 'a', ...readers })).candidate).not.toBeNull();
+        expect((await planRound({ persona, runs: [pastRun(built), pastRun(built), pastRun(built, { deadline: '2020-01-01T00:00:00.000Z' })], runKey: 'a', ...readers })).candidate).not.toBeNull();
     });
 });
 
