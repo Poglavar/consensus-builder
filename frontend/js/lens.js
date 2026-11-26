@@ -233,14 +233,14 @@
             return `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='0' y='0' width='100' height='100' fill='#000' /><text x='50' y='55' fill='#777' font-size='12' text-anchor='middle'>${emptyLabel}</text></svg>`;
         }
 
+        // One stripe per key, split into two colours chosen by a hash of the whole key
+        // (lens-pattern.js), so the pattern tells lenses with different keys apart.
         const barWidth = 100 / filtered.length;
         const rects = filtered.map((entry, idx) => {
-            const raw = String(entry.address || '').trim();
-            const trimmed = raw.startsWith('0x') ? raw.slice(2, 8) : raw.slice(0, 6);
-            const hex = parseInt(trimmed || '0', 16);
-            const paletteIdx = Number.isFinite(hex) ? hex % COLOR_PALETTE.length : idx % COLOR_PALETTE.length;
+            const [top, bottom] = window.LensPattern.keyColorIndexes(entry.address, COLOR_PALETTE.length);
             const x = idx * barWidth;
-            return `<rect x='${x}' y='0' width='${barWidth}' height='100' fill='${COLOR_PALETTE[paletteIdx]}' />`;
+            return `<rect x='${x}' y='0' width='${barWidth}' height='50' fill='${COLOR_PALETTE[top]}' />`
+                + `<rect x='${x}' y='50' width='${barWidth}' height='50' fill='${COLOR_PALETTE[bottom]}' />`;
         }).join('');
 
         return `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='0' y='0' width='100' height='100' fill='#000' />${rects}</svg>`;
