@@ -201,7 +201,8 @@ test.describe('parcel-layout button controls @core', () => {
   test('the plot count re-slices equal plots and waits while another layout is chosen', async ({ mockApi: page }) => {
     const editor = await openLayoutEditor(page);
     const count = editor.locator('[data-parcel-layout-count]');
-    await expect(count).toHaveAttribute('min', '2');
+    // The count allows one plot (65b95b608), but a new layout still opens split in two.
+    await expect(count).toHaveAttribute('min', '1');
     await expect(count).toHaveValue('2');
     await setPlotCount(editor, 3);
     await expect(rows(editor)).toHaveCount(3);

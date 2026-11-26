@@ -1,5 +1,6 @@
 // Exercise the structure editor's visible file controls and its enclosure removal action.
 import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { test, expect } from '../helpers/fixtures';
 import { clickMapPoint, createSpace, openCity, showProposal } from '../helpers/runtime';
 import { selectNativeOption } from '../helpers/controls';
@@ -169,11 +170,12 @@ test('tree height controls stay inside the selected kind range and save the fina
   expect(decorations.trees).toEqual([{ coordinate: tree, kind: 'broadleaf', heightM: 13 }]);
 });
 
-test('a furniture model can be uploaded and removed from the square design', async ({ mockApi: page }) => {
-  let uploaded: any;
+// Furniture models stay on this device (0429fb09f): nothing is uploaded until the design is published.
+test('a furniture model can be imported and removed from the square design', async ({ mockApi: page }) => {
+  let uploads = 0;
   await page.route('**/models', async route => {
-    uploaded = route.request().postDataJSON();
-    await route.fulfill({ json: { modelUrl: '/uploads/models/editor-bench.glb' } });
+    uploads++;
+    await route.fulfill({ json: { modelUrl: '/uploads/models/never.glb' } });
   });
   const { proposalId, editor } = await openStructureEditor(page, 'square');
   const row = editor.locator('[data-furniture-kind="bench"]');
@@ -192,7 +194,14 @@ test('a furniture model can be uploaded and removed from the square design', asy
 
   const decorations = await page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.structureProposal?.decorationDesign, proposalId);
   expect(decorations).toBeDefined();
-  expect(uploaded.fileName).toBe('bench.glb');
-  expect(Buffer.from(uploaded.modelData.split(',')[1], 'base64')).toEqual(MODEL);
+  expect(uploads).toBe(0);
+  // The bytes are in this browser's IndexedDB under their hash, with the chosen file name.
+  const ref = `device-model:sha256-${createHash('sha256').update(MODEL).digest('hex')}`;
+  const kept = await page.evaluate(async ref => {
+    const row = await (window as any).DeviceModels.load(ref);
+    return row && { name: row.name, bytes: Array.from(new Uint8Array(await row.blob.arrayBuffer())) };
+  }, ref);
+  expect(kept?.name).toBe('bench.glb');
+  expect(Buffer.from(kept!.bytes)).toEqual(MODEL);
   expect(decorations.models?.bench).toBeUndefined();
 });
