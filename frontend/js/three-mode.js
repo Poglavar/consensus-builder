@@ -1898,7 +1898,9 @@
     // Effects on neighbours (planning/effects-advisor.js): the affected plots outlined on the ground
     // in the 2D map's red (beyond a guide), orange (below a guide's level) and green (minor), from
     // the palette's tokens;
-    // the plot the list points at in a wider line.
+    // the plot the list points at in a wider line, with its readings drawn (its marks): each guide's
+    // lines dashed and planes translucent, what the design does to them in solid lines, windows as
+    // markers and the garden's lost sun as dots.
     let neighbourEffectsGroup = null;
     function syncNeighbourEffects3D() {
         if (neighbourEffectsGroup) {
@@ -1911,7 +1913,8 @@
         if (!isActive || !scene || !plots.length) return;
         const style = getComputedStyle(document.documentElement);
         const colours = { fail: style.getPropertyValue('--cb-danger').trim(), below: style.getPropertyValue('--cb-warning').trim(),
-            minor: style.getPropertyValue('--cb-success').trim() };
+            minor: style.getPropertyValue('--cb-success').trim(), screen: style.getPropertyValue('--cb-info').trim(),
+            window: style.getPropertyValue('--cb-map-highlight').trim() };
         neighbourEffectsGroup = new THREE.Group();
         neighbourEffectsGroup.name = 'neighbour-effects';
         const temporaryMaterial = new THREE.LineBasicMaterial();
@@ -1937,10 +1940,47 @@
             outline.renderOrder = plot.focus ? 9996 : 9995;
             outline.raycast = () => {};
             neighbourEffectsGroup.add(outline);
+            for (const mark of plot.marks || []) addNeighbourEffectMark(mark, colours);
         }
         temporaryMaterial.dispose();
         scene.add(neighbourEffectsGroup);
         invalidateThreeView();
+    }
+    function addNeighbourEffectMark(mark, colours) {
+        const colour = new THREE.Color(colours[mark.status] || colours.below);
+        const at = ([lng, lat, z]) => { const [x, y] = coordsToXY([lng, lat]); return [x, y, z]; };
+        const points = mark.points.map(at);
+        let object;
+        if (mark.type === 'line') {
+            const geometry = new THREE.LineSegmentsGeometry();
+            geometry.setPositions(points.slice(1).flatMap((point, i) => [...points[i], ...point]));
+            const guide = mark.role === 'guide';
+            const material = new THREE.LineMaterial({ color: colour, linewidth: guide ? 2.5 : 4, dashed: guide, dashSize: 0.8, gapSize: 0.5,
+                transparent: true, depthTest: false, depthWrite: false, toneMapped: false });
+            object = new THREE.LineSegments2(geometry, material);
+            if (guide) object.computeLineDistances();
+        } else if (mark.type === 'plane') {
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(points.flat(), 3));
+            geometry.setIndex([0, 1, 2, 0, 2, 3]);
+            object = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: colour, transparent: true, opacity: 0.18,
+                side: THREE.DoubleSide, depthWrite: false, toneMapped: false }));
+        } else if (mark.role === 'window') {
+            object = new THREE.Mesh(new THREE.SphereGeometry(0.8, 12, 8), new THREE.MeshBasicMaterial({ color: new THREE.Color(colours.window),
+                depthTest: false, depthWrite: false, toneMapped: false }));
+            object.position.set(...points[0]);
+        } else {
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(points.flat(), 3));
+            object = new THREE.Points(geometry, new THREE.PointsMaterial({ color: colour, size: 6, sizeAttenuation: false,
+                depthWrite: false, toneMapped: false }));
+        }
+        markOwnedGeometry(object, object.geometry);
+        markOwnedMaterial(object, object.material);
+        object.userData.neighbourEffectMark = { kind: mark.kind, role: mark.role, type: mark.type };
+        object.renderOrder = 9997;
+        object.raycast = () => {};
+        neighbourEffectsGroup.add(object);
     }
     window.addEventListener('neighbourEffectsChanged', syncNeighbourEffects3D);
 

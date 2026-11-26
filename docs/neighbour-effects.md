@@ -1,7 +1,7 @@
 # Effects on neighbours
 
 What a design does to the plots around it: sunlight on their gardens, sky seen from their walls,
-and how close a facing wall comes, before the design and after it. The readings are advice, like
+the angle tests from their windows and how close a facing wall comes, before the design and after it. The readings are advice, like
 the [Permitted check](vocabulary.md#permitted-check): they never stop a design being saved.
 
 How a reading is measured is code; whether a place uses it and its thresholds are configuration:
@@ -15,6 +15,8 @@ a rule set's `neighbourGuides` in `frontend/data/planning-sources.json`, which a
   "note": "BRE: a reduction beyond a guide is likely to be noticeable; within it, unlikely. …",
   "garden": { "date": "03-21", "hours": 2, "share": 0.5, "ratio": 0.8 },
   "sky": { "percent": 27, "ratio": 0.8 },
+  "angle": { "degrees": 25, "then": "sky" },
+  "splay": { "degrees": 45, "then": "sky" },
   "distance": { "metres": 21 }
 }
 ```
@@ -24,6 +26,15 @@ a rule set's `neighbourGuides` in `frontend/data/planning-sources.json`, which a
 - `sky`: beyond the guide when the vertical sky component is under `percent`, and under `ratio`
   times before.
 - `distance`: beyond the guide when a facing wall comes closer than `metres` (and closer than before).
+- `angle`: crossed when the design rises more than `degrees` above the horizontal in front of a
+  window, in the section square to its wall (and higher than what it replaces).
+- `splay`: crossed when a building beside a window crosses both lines at `degrees`: in plan, from
+  the window to its wall; in elevation, falling from the building's top corner nearest the window
+  (the window lies under it).
+- `then` names the detailed reading a test is a first check for (England: BRE's 25° and 45° tests
+  lead to the sky reading). A crossed test with its `then` reading measured is marked as a first
+  check, in the info colour, and grades nothing: the plot's group is that of its graded readings.
+  Without `then`, crossing the test is beyond the guide.
 - A reading left out is not measured or shown. `label` names the source and `note` what the
   standard says its grades mean, both in "What the guides are";
   `binding: true` says a design beyond a guide is not permitted, otherwise the guides are advice.
@@ -42,8 +53,8 @@ a rule set's `neighbourGuides` in `frontend/data/planning-sources.json`, which a
 Each lists the affected plots in three groups, each by its largest loss first, named by compass
 direction and distance: **beyond a guide** (red: under both the guide's level and its allowance),
 **under a guide's level, within its allowance** (orange: within the guide) and **still meets the
-guides** (green). A plot shows an icon per reading that changed (sun: garden sunlight, cloud: sky,
-arrows: facing distance) in its grade's colour, and the readings in words below. Filter buttons narrow the list to one kind of
+guides** (green). A plot shows an icon per reading that changed (sun: garden sunlight, cloud: sky, chevron: angle,
+set square: splay, arrows: facing distance) in its grade's colour, and the readings in words below. Filter buttons narrow the list to one kind of
 reading, sorted by that reading's loss. A plot's name highlights it on the map while hovered or
 focused; a click keeps it highlighted and brings it into view. The other way round, a plot on the
 2D map lights its list entry while hovered and a click selects it in the list. The heading spins while the section
@@ -51,6 +62,15 @@ measures; while it re-measures after an edit, the last result stays. "What the g
 the groups. The plots are coloured on the map, red, orange and green the same way, and outlined on the ground
 in the 3D model view (the pointed-at plot in a wider line); closing the click stack or the editor
 clears both. In 3D a click on a name keeps the highlight but does not move the camera.
+
+**Drawings.** The plot pointed at (hovered, or else the one clicked) has its readings drawn, on the
+2D map as their ground trace and in 3D in place: the window each reading is taken at (a yellow dot);
+for the sky, rays from the window to the design's top edge where it now stands above all else; for
+the angle test, its plane rising from the wall at the guide's angle and the line from the window to
+the top of what the design puts in front of it; for the splay test, the plan line on the ground and
+the elevation line on the wall; for the facing distance, the line between the nearest points; for
+the garden, the points that lose their hours of sun. Guide lines are dashed, what the design does
+is solid, in the reading's colour.
 
 **Loss** is the share of a plot's sunlit garden or of its sky that it loses, or for a facing wall
 how far it now stands inside 21 m, as a share of 21 m.
@@ -66,12 +86,15 @@ place's guides are binding, beyond a guide reads "not permitted".
 |---|---|
 | Garden sunlight | the plot's land outside its buildings, on a grid of at most 200 points |
 | Sky from the facing wall | each wall of the plot's buildings that faces the design, 1.6 m up (CIE overcast sky) |
+| Angle from a facing window | windows every 3 m along those walls, 1.6 m up, square to the wall |
+| Splay beside a window | windows every 3 m along walls with the design in front of their plane, for buildings beside the window (not in front of it) starting within 3 m of the wall's plane |
 | Nearest facing wall | the same walls, to the nearest wall of the design |
 
 - "Before" is the buildings standing now; "after" takes away those on the design's parcels and adds
   the design's buildings.
-- Smaller changes than 1 percentage point of garden share or sky, or 0.5 m of distance, are not
-  listed. A wall against another building (a terrace's party wall) has no sky or distance reading.
+- Smaller changes than 1 percentage point of garden share or sky, 0.5 m of distance, 0.5° of
+  angle or 0.1 m of splay depth are not listed.
+- Window positions are not known: the angle tests take the worst of points every 3 m along a wall. A wall against another building (a terrace's party wall) has no sky or distance reading.
 - Plots are looked at within 4 times the tallest new or removed building, at least 30 m and at most
   200 m; shadows and sky are cast by buildings within 200 m of each plot.
 - The sun comes from SunCalc at 10-minute steps over the garden guide's day at the plot's latitude.

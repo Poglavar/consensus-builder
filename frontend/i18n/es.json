@@ -8821,6 +8821,8 @@
         "kind": {
             "garden": "Sol en el jardín",
             "sky": "Cielo desde la fachada enfrentada",
+            "angle": "Ángulo sobre una ventana enfrentada",
+            "splay": "Abanico junto a una ventana",
             "distance": "Distancia enfrentada"
         },
         "filterLabel": "Mostrar parcelas por lectura",
@@ -8840,6 +8842,9 @@
         "sky": "Cielo visto desde la fachada enfrentada: {{before}} → {{after}} (guía: {{percent}}, o {{ratio}} × antes)",
         "distance": "Fachada enfrentada más cercana: {{before}} → {{after}} (guía: {{metres}})",
         "distanceNew": "Fachada enfrentada más cercana: {{after}}, ninguna antes (guía: {{metres}})",
+        "angle": "Se eleva {{after}} sobre una ventana enfrentada, por encima de la línea de {{degrees}} (antes: {{before}})",
+        "splay": "Cruza las dos líneas de {{degrees}} junto a una ventana, por {{depth}}",
+        "screen": "Una primera comprobación: decide la lectura «{{reading}}».",
         "basis": "Cielo desde una ventana a 1,6 m; terreno plano. Alturas: {{heights}}.",
         "heightsSurvey": "medidas por {{source}}",
         "heightsSource": "de las fuentes de edificios",

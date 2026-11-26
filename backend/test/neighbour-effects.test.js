@@ -127,6 +127,67 @@ describe('effects on neighbouring plots', () => {
         expect(grade(1, 0)).toBe('below');
     });
 
+    it('takes the 25° test from windows facing the design, as a first check the sky reading then decides', () => {
+        // The slab's face is 22 m from the house's back wall and 30 m tall: about 52° above a window.
+        const slab = [{ id: 'slab', geometry: rect(-100, 2, 110, 28), heightM: 30 }];
+        const [north] = assess(slab).lots;
+        expect(north.angle.after).toBeCloseTo(Math.atan2(30 - 1.6, 22) * 180 / Math.PI, 0);
+        expect(north.angle.degrees).toBe(25);
+        // England names the sky reading as the detailed one: the crossed test grades nothing itself.
+        expect(north.angle.status).toBe('screen');
+        expect(north.status).toBe('fail');
+        // Without a sky guide to follow it, crossing the line is the finding.
+        expect(assess(slab, { angle: { degrees: 25 } }).lots[0].angle.status).toBe('fail');
+        // A two-storey block 22 m away stays under 25°: no reading listed.
+        expect(assess([{ id: 'low', geometry: rect(-100, 2, 110, 28), heightM: 8 }], { angle: { degrees: 25 } }).lots).toEqual([]);
+        // Drawn: the window 1.6 m up the wall, the guide's plane rising from it, the line to the slab's top.
+        const roles = north.angle.marks.map(mark => `${mark.type}:${mark.role}`);
+        expect(roles).toEqual(['point:window', 'plane:guide', 'line:guide', 'line:measured']);
+        const [window] = north.angle.marks[0].points;
+        expect(window[2]).toBeCloseTo(1.6, 5);
+        // On the back wall (y = 50), just off its face.
+        expect(window[1]).toBeCloseTo(lngLat([0, 49.95])[1], 6);
+        expect(north.angle.marks[3].points[1][2]).toBe(30);
+    });
+
+    it('takes the 45° test for an extension beside a window, in plan and elevation', () => {
+        // Two plots side by side; the neighbour's back wall faces south at y = 15. The design is a
+        // house next door with an extension 10 m deep along the shared side.
+        const neighbour = { id: 'neighbour', geometry: rect(0, 0, 10, 30) };
+        const site = rect(10, 0, 30, 30);
+        const house = { id: 'house', geometry: rect(0.5, 15, 9.5, 25), heightM: 7 };
+        const run = (heightM, guides) => effects.assess({ site: [site], lots: [neighbour], existing: [house],
+            proposed: [{ id: 'main', geometry: rect(11, 15, 21, 25), heightM: 7 }, { id: 'extension', geometry: rect(11, 5, 15, 15), heightM }], sun: SUN, guides }).lots;
+        // Two storeys: the nearest window (about 2.5 m from the extension) lies past both lines.
+        const [lot] = run(6, { splay: { degrees: 45 } });
+        expect(lot.splay.status).toBe('fail');
+        expect(lot.splay.after).toBeGreaterThan(0);
+        expect(lot.splay.marks.map(mark => `${mark.type}:${mark.role}`)).toEqual(['point:window', 'line:guide', 'line:guide', 'line:measured']);
+        // England names the sky reading as the detailed one.
+        expect(run(6, ENGLAND)[0].splay.status).toBe('screen');
+        // One storey: the elevation line from its top passes under the window.
+        expect(run(3, { splay: { degrees: 45 } })).toEqual([]);
+    });
+
+    it('keeps a crossed first check out of the harm and the grade groups', () => {
+        const lot = { id: 'a', distanceM: 5, status: 'minor', sky: { before: 39, after: 30, status: 'minor' },
+            angle: { before: 0, after: 40, degrees: 25, status: 'screen' } };
+        expect(effects.harm(lot)).toBeCloseTo(9 / 39, 5);
+        expect(effects.harm(lot, 'angle')).toBeCloseTo(15 / 65, 5);
+        expect(effects.arrange([lot], { kind: 'angle' }).map(group => group.length)).toEqual([0, 0, 1]);
+        expect(effects.changes(lot)).toEqual([{ kind: 'sky', status: 'minor' }, { kind: 'angle', status: 'screen' }]);
+    });
+
+    it('marks where a garden loses its hours of sun', () => {
+        const [north] = assess([{ id: 'slab', geometry: rect(-100, 2, 110, 28), heightM: 30 }]).lots;
+        const [lost] = north.garden.marks;
+        expect(lost.role).toBe('lost');
+        expect(lost.points.length).toBeGreaterThan(10);
+        // On the plot (x 0–10, y 30–60), on the ground.
+        const [w, s] = lngLat([0, 30]), [e, n] = lngLat([10, 60]);
+        expect(lost.points.every(([lng, lat, z]) => lng >= w && lng <= e && lat >= s && lat <= n && z < 1)).toBe(true);
+    });
+
     it('counts sun on 21 March only while the sun is up', () => {
         expect(SUN.positions.length * SUN.stepMin).toBeGreaterThan(11.5 * 60);
         expect(SUN.positions.length * SUN.stepMin).toBeLessThan(12.7 * 60);

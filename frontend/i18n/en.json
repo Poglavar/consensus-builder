@@ -8793,6 +8793,8 @@
         "kind": {
             "garden": "Garden sunlight",
             "sky": "Sky from facing wall",
+            "angle": "Angle above a facing window",
+            "splay": "Splay beside a window",
             "distance": "Facing distance"
         },
         "filterLabel": "Show plots by reading",
@@ -8812,6 +8814,9 @@
         "sky": "Sky seen from the facing wall: {{before}} → {{after}} (guide: {{percent}}, or {{ratio}} × before)",
         "distance": "Nearest facing wall: {{before}} → {{after}} (guide: {{metres}})",
         "distanceNew": "Nearest facing wall: {{after}}, none before (guide: {{metres}})",
+        "angle": "Rises {{after}} above a facing window, over the {{degrees}} line (before: {{before}})",
+        "splay": "Crosses both {{degrees}} lines beside a window, by {{depth}}",
+        "screen": "A first check: the “{{reading}}” reading decides.",
         "basis": "Sky from a window 1.6 m up; flat ground. Heights: {{heights}}.",
         "heightsSurvey": "measured by {{source}}",
         "heightsSource": "from the building sources",

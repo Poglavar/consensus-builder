@@ -8972,6 +8972,8 @@
         "kind": {
             "garden": "Soleil au jardin",
             "sky": "Ciel depuis le mur en vis-à-vis",
+            "angle": "Angle au-dessus d'une fenêtre en vis-à-vis",
+            "splay": "Éventail à côté d'une fenêtre",
             "distance": "Distance en vis-à-vis"
         },
         "filterLabel": "Afficher les parcelles par mesure",
@@ -8991,6 +8993,9 @@
         "sky": "Ciel vu du mur en vis-à-vis : {{before}} → {{after}} (repère : {{percent}}, ou {{ratio}} × avant)",
         "distance": "Mur en vis-à-vis le plus proche : {{before}} → {{after}} (repère : {{metres}})",
         "distanceNew": "Mur en vis-à-vis le plus proche : {{after}}, aucun avant (repère : {{metres}})",
+        "angle": "S'élève à {{after}} au-dessus d'une fenêtre en vis-à-vis, au-delà de la ligne de {{degrees}} (avant : {{before}})",
+        "splay": "Franchit les deux lignes de {{degrees}} à côté d'une fenêtre, de {{depth}}",
+        "screen": "Un premier contrôle : la mesure « {{reading}} » décide.",
         "basis": "Ciel depuis une fenêtre à 1,6 m ; terrain plat. Hauteurs : {{heights}}.",
         "heightsSurvey": "mesurées par {{source}}",
         "heightsSource": "issues des sources de bâtiments",

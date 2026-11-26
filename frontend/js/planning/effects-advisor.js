@@ -8,8 +8,9 @@
     'use strict';
     const log = (...args) => console.log(`[${new Date().toISOString()}] [neighbour-effects]`, ...args);
     const SUN_SCRIPT = 'vendor/suncalc-1.9.0/suncalc.js';
-    // Red beyond a guide, orange under a guide's level within its allowance, green for a minor loss.
-    const STATUS_CLASS = { fail: 'neighbour-effect--fail', below: 'neighbour-effect--below', minor: 'neighbour-effect--minor' };
+    // Red beyond a guide, orange under a guide's level within its allowance, green for a minor loss;
+    // a crossed first check (its detailed reading decides) in the info colour.
+    const STATUS_CLASS = { fail: 'neighbour-effect--fail', below: 'neighbour-effect--below', minor: 'neighbour-effect--minor', screen: 'neighbour-effect--screen' };
 
     // The assessment runs in a worker; answers are matched to requests by id.
     const WORKER_SCRIPT = 'js/planning/neighbour-effects-worker.js';
@@ -170,8 +171,9 @@
         return node;
     }
     // One icon per kind of reading, so a list can be read at a glance. Literal keys for the locale test.
-    const KIND_ICONS = { garden: 'fa-sun', sky: 'fa-cloud', distance: 'fa-left-right' };
-    const KIND_KEYS = { garden: 'neighbourEffects.kind.garden', sky: 'neighbourEffects.kind.sky', distance: 'neighbourEffects.kind.distance' };
+    const KIND_ICONS = { garden: 'fa-sun', sky: 'fa-cloud', angle: 'fa-angle-up', splay: 'fa-ruler-combined', distance: 'fa-left-right' };
+    const KIND_KEYS = { garden: 'neighbourEffects.kind.garden', sky: 'neighbourEffects.kind.sky', angle: 'neighbourEffects.kind.angle',
+        splay: 'neighbourEffects.kind.splay', distance: 'neighbourEffects.kind.distance' };
     function icon(kind, status) {
         const node = element('i', `fas ${KIND_ICONS[kind]} neighbour-effects__icon${status ? ` neighbour-effects__icon--${status}` : ''}`);
         node.setAttribute('aria-hidden', 'true');
@@ -181,9 +183,16 @@
     const dayOf = monthDay => new Intl.DateTimeFormat(format().currentLocale(), { day: 'numeric', month: 'long', timeZone: 'UTC' })
         .format(new Date(`2000-${monthDay}T12:00:00Z`));
     const ratio = value => format().formatNumber(value, { maxFractionDigits: 2 });
-    // A reading in words, with the place's guide for it.
+    const degrees = value => `${format().formatNumber(value, { maxFractionDigits: 0 })}°`;
+    // A reading in words, with the place's guide for it; a crossed first check says which reading decides.
     function readingText(lot, kind, guides) {
+        const text = kindText(lot, kind, guides);
+        return lot[kind].status === 'screen' ? `${text}. ${t('neighbourEffects.screen', { reading: t(KIND_KEYS[guides[kind].then]) })}` : text;
+    }
+    function kindText(lot, kind, guides) {
         const value = lot[kind];
+        if (kind === 'angle') return t('neighbourEffects.angle', { after: degrees(value.after), before: degrees(value.before), degrees: degrees(guides.angle.degrees) });
+        if (kind === 'splay') return t('neighbourEffects.splay', { depth: reading(value.after), degrees: degrees(guides.splay.degrees) });
         if (kind === 'garden') return t('neighbourEffects.garden', { hours: format().formatNumber(guides.garden.hours), date: dayOf(guides.garden.date),
             before: share(value.before), after: share(value.after), share: share(guides.garden.share), ratio: ratio(guides.garden.ratio) });
         if (kind === 'sky') return t('neighbourEffects.sky', { before: sky(value.before), after: sky(value.after),
@@ -308,8 +317,8 @@
 
     // The affected plots drawn on `map`, coloured by how badly each is affected; replaces the last.
     // Each plot's path is kept by its id, for the list to point at.
-    let layer = null, shownOn = null, pinned = null;
-    const plotLayers = new Map();
+    let layer = null, shownOn = null, pinned = null, marksLayer = null;
+    const plotLayers = new Map(), shownLots = new Map();
     function show(map, result) {
         // A new result replaces the plots but keeps the list it was rendered into.
         const list = listed;
@@ -317,6 +326,7 @@
         listed = list;
         if (!map || !result?.lots?.length) return;
         shownOn = map;
+        for (const lot of result.lots) shownLots.set(lot.id, lot);
         layer = root.L.geoJSON({ type: 'FeatureCollection', features: result.lots.map(lot => ({ type: 'Feature',
             properties: { id: lot.id, status: lot.status }, geometry: result.geometries.get(lot.id) })).filter(feature => feature.geometry) }, {
             // A plot on the map points into the list as the list points at the map: hover lights
@@ -347,6 +357,7 @@
     function clear() {
         if (layer) { layer.remove(); layer = null; }
         plotLayers.clear();
+        shownLots.clear();
         listed = null;
         shownOn = null;
         pinned = null;
@@ -356,11 +367,33 @@
     // The 3D model view draws the same plots (three-mode.js syncNeighbourEffects3D): it reads them
     // here and is told when they or the highlighted one change.
     let lit = null;
+    // Each plot, and for the one pointed at, its readings drawn (`marks`: the windows, each guide's
+    // lines and planes, and what the design does to them; points [lng, lat, metres up]).
     function plots() {
-        return [...plotLayers.entries()].map(([id, path]) => ({ id, geometry: path.feature.geometry,
-            status: path.feature.properties.status, focus: id === lit || id === pinned }));
+        return [...plotLayers.entries()].map(([id, path]) => {
+            const focus = id === (lit ?? pinned);
+            return { id, geometry: path.feature.geometry, status: path.feature.properties.status, focus: focus || id === pinned,
+                marks: focus ? marksOf(shownLots.get(id)) : [] };
+        });
     }
-    const changed = () => root.dispatchEvent?.(new CustomEvent('neighbourEffectsChanged'));
+    const marksOf = lot => !lot ? [] : root.NeighbourEffects.changes(lot)
+        .flatMap(({ kind, status }) => (lot[kind].marks || []).map(mark => ({ ...mark, kind, status })));
+    // The pointed-at plot's readings drawn on the 2D map: each line and plane as its ground trace,
+    // windows as dots, the garden's lost sun as small dots, in their reading's colour.
+    function drawMarks() {
+        marksLayer?.remove();
+        marksLayer = null;
+        const focused = lit ?? pinned;
+        if (!shownOn || !focused || !root.L) return;
+        const latLngs = mark => mark.points.map(([lng, lat]) => [lat, lng]);
+        const style = mark => ({ className: `neighbour-effect-mark neighbour-effect-mark--${mark.role} neighbour-effect-mark--${mark.type} ${STATUS_CLASS[mark.status] || ''}`, interactive: false });
+        marksLayer = root.L.layerGroup(marksOf(shownLots.get(focused)).flatMap(mark => {
+            if (mark.type === 'line') return [root.L.polyline(latLngs(mark), style(mark))];
+            if (mark.type === 'plane') return [root.L.polygon(latLngs(mark), style(mark))];
+            return latLngs(mark).map(point => root.L.circleMarker(point, { ...style(mark), radius: mark.role === 'window' ? 5 : 2.5 }));
+        })).addTo(shownOn);
+    }
+    const changed = () => { drawMarks(); root.dispatchEvent?.(new CustomEvent('neighbourEffectsChanged')); };
     // A plot stands out on the map while the list points at it; the pinned one stays out.
     function highlight(id, on) {
         const path = plotLayers.get(id);

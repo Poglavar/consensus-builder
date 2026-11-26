@@ -8839,6 +8839,8 @@
         "kind": {
             "garden": "Sunce u vrtu",
             "sky": "Nebo s nasuprotnog zida",
+            "angle": "Kut iznad nasuprotnog prozora",
+            "splay": "Lepeza uz prozor",
             "distance": "Udaljenost nasuprotnog zida"
         },
         "filterLabel": "Prikaži čestice po mjerenju",
@@ -8858,6 +8860,9 @@
         "sky": "Nebo s nasuprotnog zida: {{before}} → {{after}} (smjernica: {{percent}}, ili {{ratio}} × prije)",
         "distance": "Najbliži nasuprotni zid: {{before}} → {{after}} (smjernica: {{metres}})",
         "distanceNew": "Najbliži nasuprotni zid: {{after}}, prije nijedan (smjernica: {{metres}})",
+        "angle": "Diže se {{after}} iznad nasuprotnog prozora, preko crte od {{degrees}} (prije: {{before}})",
+        "splay": "Prelazi obje crte od {{degrees}} uz prozor, za {{depth}}",
+        "screen": "Prva provjera: odlučuje mjerenje „{{reading}}”.",
         "basis": "Nebo s prozora na 1,6 m; ravan teren. Visine: {{heights}}.",
         "heightsSurvey": "izmjerio {{source}}",
         "heightsSource": "iz izvora zgrada",

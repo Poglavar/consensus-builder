@@ -41,6 +41,8 @@
 .neighbour-effects__icon--fail { color: var(--cb-danger); }
 .neighbour-effects__icon--below { color: var(--cb-warning); }
 .neighbour-effects__icon--minor { color: var(--cb-success); }
+/* A crossed first check: its detailed reading decides, so it is information, not a grade. */
+.neighbour-effects__icon--screen { color: var(--cb-info); }
 .neighbour-effects__guides { margin: var(--cb-space-2) 0 0; font-size: var(--cb-text-xs); }
 .neighbour-effects__guides summary { cursor: pointer; font-weight: 600; }
 .neighbour-effects__guides p { margin: var(--cb-space-1) 0 0; }
@@ -52,6 +54,16 @@
 .neighbour-effect--below { stroke: var(--cb-warning); fill: var(--cb-warning); }
 .neighbour-effect--minor { stroke: var(--cb-success); fill: var(--cb-success); }
 .neighbour-effect--focus { stroke-width: 5px; fill-opacity: 0.6; }
+.neighbour-effect--screen { stroke: var(--cb-info); fill: var(--cb-info); }
+
+/* The pointed-at plot's readings drawn (effects-advisor.js drawMarks): the guide's lines dashed,
+   its planes as a light trace, what the design does solid, windows and lost garden sun as dots. */
+.neighbour-effect-mark { stroke-width: 2px; fill-opacity: 0; }
+.neighbour-effect-mark--guide { stroke-dasharray: 6 4; }
+.neighbour-effect-mark--plane { fill-opacity: 0.15; }
+.neighbour-effect-mark--measured { stroke-width: 3px; }
+.neighbour-effect-mark--window { stroke: var(--cb-map-highlight-ink); stroke-width: 2px; fill: var(--cb-map-highlight); fill-opacity: 1; }
+.neighbour-effect-mark--lost { stroke-width: 0; fill-opacity: 0.85; }
 
 /* The Effects button and section on a plan or design card (js/ui/plan-analysis-controls.js effects). */
 .plan-effects { margin-top: var(--cb-space-2); }

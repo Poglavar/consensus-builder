@@ -127,9 +127,15 @@ describe('Plots in the list point at the map', () => {
                     paths.push(path);
                     visit(path);
                 }
-            } }) };
+            } }),
+            // The pointed-at plot's readings: each drawn layer kept with its kind and class.
+            polyline: (latLngs, options) => ({ type: 'polyline', latLngs, options }),
+            polygon: (latLngs, options) => ({ type: 'polygon', latLngs, options }),
+            circleMarker: (latLng, options) => ({ type: 'circleMarker', latLngs: [latLng], options }),
+            layerGroup: layers => ({ layers, shown: false, addTo() { this.shown = true; drawn.push(this); return this; }, remove() { this.shown = false; } }) };
+        const drawn = [];
         const map = { panTo: vi.fn(), getBounds: () => ({ contains: () => false }) };
-        return { paths, map };
+        return { paths, map, drawn };
     }
     function loadWithWindow() {
         const window = { i18n: { t: (key, params = {}) => `${key}(${Object.values(params).join('|')})` }, CbFormat: format, NeighbourEffects };
@@ -172,6 +178,37 @@ describe('Plots in the list point at the map', () => {
         expect(names[0].attributes['aria-pressed']).toBe('false');
         advisor.clear();
         expect(advisor.plots()).toEqual([]);
+    });
+
+    it("draws the pointed-at plot's readings on the map and hands them to the 3D view", () => {
+        const { advisor, window } = loadWithWindow();
+        const { map, drawn } = withMap(advisor, window);
+        const marks = [{ type: 'point', role: 'window', points: [[1, 2, 1.6]] }, { type: 'plane', role: 'guide', points: [[1, 2, 1.6], [3, 2, 1.6], [3, 4, 5], [1, 4, 5]] },
+            { type: 'line', role: 'measured', points: [[1, 2, 1.6], [1, 3, 30]] }];
+        const lot = { ...AFFECTED.lots[0], angle: { before: 0, after: 40, degrees: 25, status: 'screen', marks },
+            garden: { ...AFFECTED.lots[0].garden, marks: [{ type: 'points', role: 'lost', points: [[5, 6, 0.15], [7, 8, 0.15]] }] } };
+        const result = { ...AFFECTED, guides: { ...GUIDES, angle: { degrees: 25, then: 'sky' } }, geometries: new Map([['a', { type: 'Polygon' }]]), lots: [lot] };
+        const section = element('section');
+        advisor.render(section, result);
+        advisor.show(map, result);
+        // Nothing drawn until a plot is pointed at.
+        expect(drawn.filter(group => group.shown)).toEqual([]);
+        expect(advisor.plots()[0].marks).toEqual([]);
+        advisor.highlight('a', true);
+        const [group] = drawn.filter(each => each.shown);
+        expect(group.layers.map(layer => layer.type)).toEqual(['circleMarker', 'circleMarker', 'circleMarker', 'polygon', 'polyline']);
+        // Leaflet takes [lat, lng]; the crossed first check in its own colour, the guide dashed by class.
+        expect(group.layers[3].latLngs[0]).toEqual([2, 1]);
+        expect(group.layers[3].options.className).toContain('neighbour-effect-mark--guide');
+        expect(group.layers[3].options.className).toContain('neighbour-effect--screen');
+        expect(group.layers[0].options.className).toContain('neighbour-effect--fail');
+        // The 3D view gets the same drawings, each with its reading's kind and status.
+        expect(advisor.plots()[0].marks.map(mark => `${mark.kind}:${mark.role}:${mark.status}`))
+            .toEqual(['garden:lost:fail', 'angle:window:screen', 'angle:guide:screen', 'angle:measured:screen']);
+        advisor.highlight('a', false);
+        expect(drawn.filter(each => each.shown)).toEqual([]);
+        // The angle line says which reading decides.
+        expect(textOf(section)).toContain('neighbourEffects.screen(neighbourEffects.kind.sky())');
     });
 });
 

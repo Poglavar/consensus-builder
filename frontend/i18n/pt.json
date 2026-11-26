@@ -8972,6 +8972,8 @@
         "kind": {
             "garden": "Sol no jardim",
             "sky": "Céu da parede fronteira",
+            "angle": "Ângulo acima de uma janela fronteira",
+            "splay": "Leque junto a uma janela",
             "distance": "Distância fronteira"
         },
         "filterLabel": "Mostrar lotes por medição",
@@ -8991,6 +8993,9 @@
         "sky": "Céu visto da parede fronteira: {{before}} → {{after}} (referência: {{percent}}, ou {{ratio}} × antes)",
         "distance": "Parede fronteira mais próxima: {{before}} → {{after}} (referência: {{metres}})",
         "distanceNew": "Parede fronteira mais próxima: {{after}}, nenhuma antes (referência: {{metres}})",
+        "angle": "Eleva-se a {{after}} acima de uma janela fronteira, além da linha de {{degrees}} (antes: {{before}})",
+        "splay": "Atravessa as duas linhas de {{degrees}} junto a uma janela, em {{depth}}",
+        "screen": "Uma primeira verificação: decide a medição «{{reading}}».",
         "basis": "Céu a partir de uma janela a 1,6 m; terreno plano. Alturas: {{heights}}.",
         "heightsSurvey": "medidas por {{source}}",
         "heightsSource": "das fontes de edifícios",

@@ -13,16 +13,21 @@
 
     // How the readings are taken, the same everywhere: a window's centre 1.6 m up a wall, walls from
     // 1.5 m long, plots within 4 times the tallest changed building (30–200 m), a garden grid of at
-    // most 200 points, the sky every 2° and the sun every 10 minutes.
+    // most 200 points, the sky every 2° and the sun every 10 minutes. The angle tests look from a
+    // window every 3 m along a wall (window positions are not known); the splay test is taken
+    // for a building beside a window's wall, starting within 3 m of its plane (an extension, not a
+    // building across the street, which the angle test covers).
     const MEASURE = {
         windowHeightM: 1.6, minWallM: 1.5,
         reachFactor: 4, minReachM: 30, maxReachM: 200,
-        maxGardenPoints: 200, skyStepDeg: 2, sunStepMin: 10
+        maxGardenPoints: 200, skyStepDeg: 2, sunStepMin: 10,
+        windowStepM: 3, adjoinM: 3
     };
     const finite = value => typeof value === 'number' && Number.isFinite(value);
-    // Less than this change is no change (garden share 0–1, sky in percentage points, metres): a
-    // fraction of a point is noise of the sampling, not a loss anyone would notice.
-    const SAME = { share: 0.01, sky: 1, distance: 0.5 };
+    // Less than this change is no change (garden share 0–1, sky in percentage points, metres,
+    // degrees): a fraction of a point is noise of the sampling, not a loss anyone would notice.
+    const SAME = { share: 0.01, sky: 1, distance: 0.5, angle: 0.5, splay: 0.1 };
+    const RAD = Math.PI / 180;
     // A wall this close to another building is a party wall: no window, so no sky or facing distance.
     const PARTY_WALL_M = 0.5;
 
@@ -109,22 +114,32 @@
         }
         return best;
     }
-    function segmentDistance(p, a, b) {
+    function onSegment(p, a, b) {
         const ex = b[0] - a[0], ey = b[1] - a[1], len2 = ex * ex + ey * ey;
         const t = len2 ? Math.max(0, Math.min(1, ((p[0] - a[0]) * ex + (p[1] - a[1]) * ey) / len2)) : 0;
-        return Math.hypot(p[0] - a[0] - t * ex, p[1] - a[1] - t * ey);
+        return [a[0] + t * ex, a[1] + t * ey];
     }
-    function segmentsDistance(a, b, c, d) {
+    // The nearest points of segments ab and cd: { distance, from (on ab), to (on cd) }.
+    function segmentsClosest(a, b, c, d) {
         const cross = (o, p, q) => (p[0] - o[0]) * (q[1] - o[1]) - (p[1] - o[1]) * (q[0] - o[0]);
-        if (Math.sign(cross(a, b, c)) !== Math.sign(cross(a, b, d)) && Math.sign(cross(c, d, a)) !== Math.sign(cross(c, d, b))) return 0;
-        return Math.min(segmentDistance(a, c, d), segmentDistance(b, c, d), segmentDistance(c, a, b), segmentDistance(d, a, b));
+        const abc = cross(a, b, c), abd = cross(a, b, d);
+        if (Math.sign(abc) !== Math.sign(abd) && Math.sign(cross(c, d, a)) !== Math.sign(cross(c, d, b))) {
+            const f = abc / (abc - abd), at = [c[0] + f * (d[0] - c[0]), c[1] + f * (d[1] - c[1])];
+            return { distance: 0, from: at, to: at };
+        }
+        let best = null;
+        for (const [from, to] of [[a, onSegment(a, c, d)], [b, onSegment(b, c, d)], [onSegment(c, a, b), c], [onSegment(d, a, b), d]]) {
+            const distance = Math.hypot(to[0] - from[0], to[1] - from[1]);
+            if (!best || distance < best.distance) best = { distance, from, to };
+        }
+        return best;
     }
-    // The nearest point of a solid's walls to segment ab: distance and the solid's nearest vertex/edge point.
-    function solidSegmentDistance(solid, a, b) {
-        let best = Infinity;
+    // The nearest point of a solid's walls to segment ab: { distance, from (on ab), to (on the solid) }.
+    function solidSegmentClosest(solid, a, b) {
+        let best = { distance: Infinity, from: null, to: null };
         for (const part of solid.parts) for (const ring of part.rings) for (let i = 0; i < ring.length - 1; i++) {
-            const distance = segmentsDistance(a, b, ring[i], ring[i + 1]);
-            if (distance < best) best = distance;
+            const closest = segmentsClosest(a, b, ring[i], ring[i + 1]);
+            if (closest.distance < best.distance) best = closest;
         }
         return best;
     }
@@ -163,19 +178,22 @@
         }
         return directions;
     }
-    // The elevation (radians) of the highest obstruction along each direction from (x, y) at height h0.
-    function obstructions(solids, x, y, h0, directions) {
+    // The highest obstruction along each direction from (x, y) at height h0: [{ elevation (radians),
+    // t (metres to it), heightM }], elevation 0 and t null where nothing rises above h0.
+    function obstructionsReach(solids, x, y, h0, directions) {
         return directions.map(({ dx, dy }) => {
-            let elevation = 0;
+            const top = { elevation: 0, t: null, heightM: null };
             for (const solid of solids) {
                 const rise = solid.heightM - h0;
-                if (rise <= 0 || Math.atan2(rise, boxDistance(solid.box, x, y)) <= elevation) continue;
+                if (rise <= 0 || Math.atan2(rise, boxDistance(solid.box, x, y)) <= top.elevation) continue;
                 const t = rayEntry(solid, x, y, dx, dy);
-                if (t < Infinity) elevation = Math.max(elevation, Math.atan2(rise, t));
+                if (t < Infinity && Math.atan2(rise, t) > top.elevation) Object.assign(top, { elevation: Math.atan2(rise, t), t, heightM: solid.heightM });
             }
-            return elevation;
+            return top;
         });
     }
+    // The elevation (radians) of the highest obstruction along each direction from (x, y) at height h0.
+    const obstructions = (solids, x, y, h0, directions) => obstructionsReach(solids, x, y, h0, directions).map(top => top.elevation);
     // Percent of an unobstructed horizontal plane's sky light that reaches the wall point, from the
     // obstruction elevations along `directions`: 39.6 with nothing in front of it.
     const skyPercent = (directions, elevations) => 100 * directions.reduce((sum, direction, i) =>
@@ -192,10 +210,11 @@
         return { id: record.id, parts, box: joinBoxes(parts.map(part => part.box)), heightM: record.heightM,
             estimated: !!record.estimated, point: pointIn(parts) };
     }
-    // The walls of a building that face towards the design: [{ a, b, mid, nx, ny }], each wall's outward
-    // normal pointing within 90° of the design's nearest point. A wall against another standing
-    // building (`others`, a terrace's party wall) is left out.
-    function facingWalls(solid, target, others = []) {
+    // The outside walls of a building that look out on some of the design: [{ a, b, mid, nx, ny, length,
+    // faces }], each with its outward normal and whether it faces the design (the normal within 90°
+    // of the design's nearest point). A wall against another standing building (`others`, a
+    // terrace's party wall) is left out, as is one with none of the design in front of its plane.
+    function outsideWalls(solid, target, others = []) {
         const walls = [];
         for (const part of solid.parts) {
             const ring = part.rings[0], outward = ringArea(ring) > 0 ? 1 : -1;
@@ -207,13 +226,62 @@
                 const mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
                 const to = nearestPoint(target, mid);
                 if (!to) continue;
-                if ((to[0] - mid[0]) * nx + (to[1] - mid[1]) * ny <= 0) continue;
+                const inFront = target.some(other => other.parts.some(p => p.rings[0].some(([x, y]) => (x - mid[0]) * nx + (y - mid[1]) * ny > 0.05)));
+                if (!inFront) continue;
                 const probe = [mid[0] + nx * PARTY_WALL_M, mid[1] + ny * PARTY_WALL_M];
                 if (others.some(other => other !== solid && inParts(other.parts, probe[0], probe[1]))) continue;
-                walls.push({ a, b, mid, nx, ny });
+                walls.push({ a, b, mid, nx, ny, length, faces: (to[0] - mid[0]) * nx + (to[1] - mid[1]) * ny > 0 });
             }
         }
         return walls;
+    }
+    // Window points along a wall, one every windowStepM, at least its middle; just off its face.
+    function windowPoints(wall) {
+        const count = Math.max(1, Math.floor(wall.length / MEASURE.windowStepM));
+        return Array.from({ length: count }, (_, i) => {
+            const f = (i + 0.5) / count;
+            return [wall.a[0] + f * (wall.b[0] - wall.a[0]) + wall.nx * 0.05, wall.a[1] + f * (wall.b[1] - wall.a[1]) + wall.ny * 0.05];
+        });
+    }
+
+    // ---- Angle tests from a window (screening tests: their place's guides say what follows) ----
+    // Facing: the steepest angle above the horizontal at which `solids` rise in front of a window,
+    // in the section square to its wall: { degrees, t (metres to it), heightM }, or null.
+    function facingAngle(solids, [x, y], nx, ny, h0) {
+        let best = null;
+        for (const solid of solids) {
+            if (solid.heightM <= h0) continue;
+            const t = rayEntry(solid, x, y, nx, ny);
+            if (t === Infinity) continue;
+            const degrees = Math.atan2(solid.heightM - h0, t) / RAD;
+            if (!best || degrees > best.degrees) best = { degrees, t, heightM: solid.heightM };
+        }
+        return best;
+    }
+    // Splay: a building beside a window's wall (not in front of the window, starting within adjoinM
+    // of the wall's plane) crosses the splay line in plan (a line from the window at `degrees` to the
+    // wall) and in elevation (the line falling at `degrees` from the building's top corner nearest
+    // the window, which passes above the window). Answers the building that reaches deepest past
+    // both lines: { depthM (how far the window lies under the elevation line, while the plan line
+    // is crossed), side (+1 along the wall from a to b, −1 back), lateralM, endM, heightM }, or null.
+    function splayAt(solids, [x, y], wall, h0, degrees) {
+        const tx = (wall.b[0] - wall.a[0]) / wall.length, ty = (wall.b[1] - wall.a[1]) / wall.length, tan = Math.tan(degrees * RAD);
+        let best = null;
+        for (const solid of solids) {
+            const local = solid.parts.flatMap(part => part.rings[0]).map(([px, py]) => [(px - x) * tx + (py - y) * ty, (px - x) * wall.nx + (py - y) * wall.ny]);
+            const us = local.map(p => p[0]), vs = local.map(p => p[1]);
+            const uMin = Math.min(...us), uMax = Math.max(...us), vMin = Math.min(...vs), vMax = Math.max(...vs);
+            if ((uMin < 0 && uMax > 0) || vMax <= 0.05 || vMin > MEASURE.adjoinM) continue;
+            const side = uMin >= 0 ? 1 : -1, lateralM = side > 0 ? uMin : -uMax;
+            // Plan: some of the building lies past the line v = |u|·tan from the window.
+            const plan = Math.max(...local.map(([u, v]) => v - Math.abs(u) * tan));
+            // Elevation: the window under the line falling from the top corner nearest it.
+            const elevation = solid.heightM - lateralM * tan - h0;
+            if (plan <= 0 || elevation <= 0) continue;
+            const depthM = Math.min(plan, elevation);
+            if (!best || depthM > best.depthM) best = { depthM, side, lateralM, endM: vMax, heightM: solid.heightM };
+        }
+        return best;
     }
     function nearestPoint(solids, p) {
         let best = null, distance = Infinity;
@@ -250,7 +318,7 @@
         const step = Math.max(1, Math.sqrt(areaOf(lot.parts) / MEASURE.maxGardenPoints));
         const need = Math.ceil(guide.hours * 60 / sun.stepMin);
         const covered = (solids, x, y) => solids.some(solid => inParts(solid.parts, x, y));
-        const before = { lit: 0, total: 0 }, after = { lit: 0, total: 0 };
+        const before = { lit: 0, total: 0 }, after = { lit: 0, total: 0 }, lost = [];
         for (let x = w + step / 2; x < e; x += step) for (let y = s + step / 2; y < n; y += step) {
             if (!inParts(lot.parts, x, y) || covered(kept, x, y)) continue;
             const open = { before: !covered(removed, x, y), after: !covered(design, x, y) };
@@ -263,32 +331,66 @@
             }
             if (open.before) { before.total++; if (hitsBefore >= need) before.lit++; }
             if (open.after) { after.total++; if (hitsAfter >= need) after.lit++; }
+            // Where the garden loses its hours of sun, for the drawing.
+            if (open.before && open.after && hitsBefore >= need && hitsAfter < need) lost.push([x, y]);
         }
         if (!before.total || !after.total) return null;
         const share = { before: before.lit / before.total, after: after.lit / after.total };
         const status = grade(share.before, share.after, guide.share, guide.ratio, SAME.share);
-        return { areaM2: after.total * step * step, before: share.before, after: share.after, status };
+        return { areaM2: after.total * step * step, before: share.before, after: share.after, status,
+            marks: [{ type: 'points', role: 'lost', points: lost.map(([x, y]) => [x, y, 0.15]) }] };
     }
-    // The worst facing wall of a lot's buildings: the sky it sees before and after, and the nearest
-    // facing wall of the design (and, before, of what the design replaces). Each only when the place
-    // has a guide for it (`guides.sky`, `guides.distance`).
+    // The worst wall of a lot's buildings for each reading the place has a guide for: the sky a wall
+    // facing the design sees before and after, the nearest facing wall of the design (and, before,
+    // of what the design replaces), the angle the design rises to in front of a window (`angle`) and
+    // whether a building beside a window crosses its splay lines (`splay`). Each reading carries
+    // `marks`, its drawing in local metres: the window, the guide's lines and planes, and what the
+    // design does to them.
     function wallReadings(lotBuildings, { kept, removed, design }, reachM, guides) {
-        let sky = null, distance = null;
+        let sky = null, distance = null, angle = null, splay = null;
         const loss = reading => reading.before ? reading.after / reading.before : 1;
+        const h0 = MEASURE.windowHeightM;
+        // A screening test whose place names the detailed reading that then decides ("then") is
+        // marked 'screen' when it is crossed: it says the detailed reading applies, and grades nothing.
+        const crossed = kind => guides[kind].then && guides[guides[kind].then] ? 'screen' : 'fail';
+        // Whether a reading is worse than the one kept so far: crossed before not, then deeper.
+        const crossing = reading => reading.status !== 'same';
+        const worse = (reading, than) => !than || (crossing(reading) !== crossing(than) ? crossing(reading) : reading.after > than.after);
         for (const building of lotBuildings) {
-            for (const wall of facingWalls(building, design, [...kept, ...removed])) {
-                const after = Math.min(...design.map(solid => solidSegmentDistance(solid, wall.a, wall.b)));
-                const was = removed.length ? Math.min(...removed.map(solid => solidSegmentDistance(solid, wall.a, wall.b))) : null;
+            for (const wall of outsideWalls(building, design, [...kept, ...removed])) {
+                if (guides.splay) for (const point of windowPoints(wall)) {
+                    const come = splayAt(design, point, wall, h0, guides.splay.degrees);
+                    if (!come) continue;
+                    const went = splayAt(removed, point, wall, h0, guides.splay.degrees);
+                    const reading = { before: went ? went.depthM : 0, after: come.depthM, degrees: guides.splay.degrees, heightM: come.heightM, buildingId: building.id };
+                    reading.status = reading.after > reading.before + SAME.splay ? crossed('splay') : 'same';
+                    if (worse(reading, splay)) splay = { ...reading, marks: splayMarks(point, wall, come, h0, guides.splay.degrees) };
+                }
+                if (!wall.faces) continue;
+                const closest = design.map(solid => solidSegmentClosest(solid, wall.a, wall.b)).reduce((a, b) => b.distance < a.distance ? b : a);
+                const after = closest.distance;
+                const was = removed.length ? Math.min(...removed.map(solid => solidSegmentClosest(solid, wall.a, wall.b).distance)) : null;
                 if (guides.distance) {
                     const near = { before: was, after, guideM: guides.distance.metres, buildingId: building.id };
                     // Only a wall brought within the guide counts; beyond it a closer wall is no effect.
                     near.status = near.after < near.guideM - 1e-9 && (near.before === null || near.after < near.before - SAME.distance) ? 'fail' : 'same';
-                    if (!distance || near.after < distance.after) distance = near;
+                    if (!distance || near.after < distance.after) distance = { ...near, marks: [
+                        { type: 'point', role: 'window', points: [[...closest.from, h0]] },
+                        { type: 'line', role: 'measured', points: [[...closest.from, h0], [...closest.to, h0]] }] };
+                }
+                if (guides.angle && after <= reachM) for (const point of windowPoints(wall)) {
+                    const come = facingAngle(design, point, wall.nx, wall.ny, h0);
+                    if (!come) continue;
+                    const went = facingAngle(removed, point, wall.nx, wall.ny, h0);
+                    const reading = { before: went ? went.degrees : 0, after: come.degrees, degrees: guides.angle.degrees, buildingId: building.id };
+                    reading.status = reading.after > guides.angle.degrees + 1e-9 && reading.after > reading.before + SAME.angle ? crossed('angle') : 'same';
+                    if (worse(reading, angle)) angle = { ...reading, marks: angleMarks(point, wall, come, h0, guides.angle.degrees) };
                 }
                 if (!guides.sky || after > reachM) continue;
-                const x = wall.mid[0] + wall.nx * 0.05, y = wall.mid[1] + wall.ny * 0.05, h0 = MEASURE.windowHeightM;
+                const x = wall.mid[0] + wall.nx * 0.05, y = wall.mid[1] + wall.ny * 0.05;
                 const directions = wallDirections(wall.nx, wall.ny);
-                const went = obstructions(removed, x, y, h0, directions), come = obstructions(design, x, y, h0, directions);
+                const reach = obstructionsReach(design, x, y, h0, directions);
+                const went = obstructions(removed, x, y, h0, directions), come = reach.map(top => top.elevation);
                 // A wall that sees neither the design nor what it replaces keeps its sky.
                 if (went.every(v => v === 0) && come.every(v => v === 0)) continue;
                 const byDistance = kept.map(solid => [boxDistance(solid.box, x, y), solid]).sort((a, b) => a[0] - b[0]).map(entry => entry[1]);
@@ -296,10 +398,44 @@
                 const reading = { before: skyPercent(directions, stay.map((v, i) => Math.max(v, went[i]))),
                     after: skyPercent(directions, stay.map((v, i) => Math.max(v, come[i]))), buildingId: building.id };
                 reading.status = grade(reading.before, reading.after, guides.sky.percent, guides.sky.ratio, SAME.sky);
-                if (!sky || rank(reading.status) > rank(sky.status) || (rank(reading.status) === rank(sky.status) && loss(reading) < loss(sky))) sky = reading;
+                if (!sky || rank(reading.status) > rank(sky.status) || (rank(reading.status) === rank(sky.status) && loss(reading) < loss(sky))) {
+                    // The sky the design takes: a ray from the window to the design's top edge in
+                    // every third direction where the design stands above all else.
+                    const rays = reach.map((top, i) => ({ top, i })).filter(({ top, i }) => i % 3 === 1 && top.t !== null && top.elevation > Math.max(stay[i], went[i]))
+                        .map(({ top, i }) => ({ type: 'line', role: 'measured', points: [[x, y, h0], [x + directions[i].dx * top.t, y + directions[i].dy * top.t, top.heightM]] }));
+                    sky = { ...reading, marks: [{ type: 'point', role: 'window', points: [[x, y, h0]] }, ...rays] };
+                }
             }
         }
-        return { sky, distance };
+        return { sky, distance, angle, splay };
+    }
+    // The angle test drawn: the window, the guide's plane rising from the wall at its angle, and the
+    // line from the window to the top of what the design puts in front of it.
+    function angleMarks([x, y], wall, come, h0, degrees) {
+        const far = Math.max(come.t + 5, 15), rise = h0 + far * Math.tan(degrees * RAD);
+        const out = ([px, py]) => [px + wall.nx * far, py + wall.ny * far];
+        return [
+            { type: 'point', role: 'window', points: [[x, y, h0]] },
+            { type: 'plane', role: 'guide', points: [[...wall.a, h0], [...wall.b, h0], [...out(wall.b), rise], [...out(wall.a), rise]] },
+            { type: 'line', role: 'guide', points: [[x, y, h0], [...out([x, y]), rise]] },
+            { type: 'line', role: 'measured', points: [[x, y, h0], [x + wall.nx * come.t, y + wall.ny * come.t, come.heightM]] }
+        ];
+    }
+    // The splay test drawn: the window, the plan line on the ground from below it at the guide's
+    // angle out to the building's end, and the elevation line on the wall falling at that angle
+    // from the building's top corner nearest the window, past the window, to the ground.
+    function splayMarks([x, y], wall, come, h0, degrees) {
+        const tx = (wall.b[0] - wall.a[0]) / wall.length * come.side, ty = (wall.b[1] - wall.a[1]) / wall.length * come.side;
+        const tan = Math.tan(degrees * RAD), cos = Math.cos(degrees * RAD), sin = Math.sin(degrees * RAD);
+        const length = come.endM / sin, along = u => [x + tx * u, y + ty * u];
+        // From the top corner (u = lateral, height h) down at the angle until the ground.
+        const toGround = come.lateralM - come.heightM / tan;
+        return [
+            { type: 'point', role: 'window', points: [[x, y, h0]] },
+            { type: 'line', role: 'guide', points: [[x, y, 0.1], [x + (tx * cos + wall.nx * sin) * length, y + (ty * cos + wall.ny * sin) * length, 0.1]] },
+            { type: 'line', role: 'guide', points: [[...along(come.lateralM), come.heightM], [...along(toGround), 0.1]] },
+            { type: 'line', role: 'measured', points: [[...along(come.lateralM), 0.1], [...along(come.lateralM), come.heightM]] }
+        ];
     }
     // How a reading against a guide of a level and an allowance (after at least `level`, or at least
     // `ratio` times before) grades: 'fail' beyond the guide; 'below' under the level but within the
@@ -349,11 +485,22 @@
             const near = solids => solids.filter(solid => boxesApart(solid.box, shape.box) <= MEASURE.maxReachM);
             const around = { kept: near(kept), removed: near(removed), design: near(design) };
             const garden = guides.garden && sun ? gardenReading(shape, around, sun, guides.garden) : null;
-            const { sky, distance } = guides.sky || guides.distance ? wallReadings(lotBuildings, around, reachM, guides) : {};
-            const status = worst([garden?.status, sky?.status, distance?.status]);
+            const walls = guides.sky || guides.distance || guides.angle || guides.splay ? wallReadings(lotBuildings, around, reachM, guides) : {};
+            const readings = { garden, sky: walls.sky || null, distance: walls.distance || null, angle: walls.angle || null, splay: walls.splay || null };
+            let status = worst(KINDS.map(kind => readings[kind]?.status));
+            // A screening test crossed while the detailed reading still meets the guides: listed with
+            // the plots that meet them.
+            if (status === 'same' && KINDS.some(kind => readings[kind]?.status === 'screen')) status = 'minor';
             if (status === 'same') continue;
+            // The drawings in lng/lat, heights kept.
+            for (const kind of KINDS) {
+                const reading = readings[kind];
+                if (!reading) continue;
+                if (reading.status === 'same') { readings[kind] = { ...reading, marks: undefined }; continue; }
+                reading.marks = (reading.marks || []).map(mark => ({ ...mark, points: mark.points.map(([x, y, z]) => [...projection.lngLat([x, y]), z]) }));
+            }
             const bearing = (Math.atan2(middle[0] - centre[0], middle[1] - centre[1]) * 180 / Math.PI + 360) % 360;
-            results.push({ id: lot.id, status, direction: COMPASS[Math.round(bearing / 45) % 8], distanceM: apart, garden, sky, distance,
+            results.push({ id: lot.id, status, direction: COMPASS[Math.round(bearing / 45) % 8], distanceM: apart, ...readings,
                 estimatedHeights: around.kept.filter(solid => solid.estimated).length });
         }
         return { lots: arrange(results).flat(), reachM, estimated: standing.filter(solid => solid.estimated).length };
@@ -361,7 +508,7 @@
     const COMPASS = ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'];
 
     // ---- Ranking ----
-    const KINDS = ['garden', 'sky', 'distance'];
+    const KINDS = ['garden', 'sky', 'angle', 'splay', 'distance'];
     // How much one reading of a plot takes, 0–1: the share of its sunlit garden or sky lost, or for a
     // facing wall how far it now stands inside its guide. 0 when the reading did not change.
     function harmOf(lot, kind) {
@@ -371,19 +518,26 @@
             const was = Math.min(finite(value.before) ? value.before : value.guideM, value.guideM);
             return Math.max(0, Math.min(1, (was - value.after) / value.guideM));
         }
+        // An angle: how far above the guide's angle (or what stood before) towards the vertical.
+        if (kind === 'angle') return Math.max(0, Math.min(1, (value.after - Math.max(value.before, value.degrees)) / (90 - value.degrees)));
+        // A splay: how far under the elevation line the window lies, as a share of the building's
+        // height above the window.
+        if (kind === 'splay') return Math.max(0, Math.min(1, (value.after - value.before) / Math.max(value.heightM - MEASURE.windowHeightM, 1)));
         return value.before > 0 ? Math.max(0, Math.min(1, (value.before - value.after) / value.before)) : 0;
     }
-    const harm = (lot, kind = null) => kind ? harmOf(lot, kind) : Math.max(...KINDS.map(each => harmOf(lot, each)));
+    // A plot's harm is its largest graded loss; a crossed screening test grades nothing.
+    const harm = (lot, kind = null) => kind ? harmOf(lot, kind) : Math.max(...KINDS.filter(each => lot[each]?.status !== 'screen').map(each => harmOf(lot, each)));
     // The kinds of reading that changed on a plot, with their status: [{ kind, status }].
     const changes = lot => KINDS.filter(kind => lot[kind] && lot[kind].status !== 'same').map(kind => ({ kind, status: lot[kind].status }));
-    // Plots in three groups by their worst reading (or, with `kind`, that reading): beyond a guide,
+    // Plots in three groups by their worst reading (or, with `kind`, that reading's grade): beyond a guide,
     // below a guide's level within its allowance, and minor losses; each by its largest loss first.
     // With `kind`, only the plots where that reading changed, by that reading's loss.
     const GRADES = ['fail', 'below', 'minor'];
     function arrange(lots, { kind = null } = {}) {
         const shown = kind ? lots.filter(lot => lot[kind] && lot[kind].status !== 'same') : lots;
         const order = list => list.slice().sort((a, b) => harm(b, kind) - harm(a, kind) || a.distanceM - b.distanceM);
-        const gradeOf = lot => kind ? lot[kind].status : lot.status;
+        // A screening test has no grade of its own: its plot stays in the plot's group.
+        const gradeOf = lot => kind && GRADES.includes(lot[kind].status) ? lot[kind].status : lot.status;
         return GRADES.map(each => order(shown.filter(lot => gradeOf(lot) === each)));
     }
 
