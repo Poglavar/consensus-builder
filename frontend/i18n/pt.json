@@ -10268,7 +10268,13 @@
         "takesGround": "{{title}} ocupa o terreno de {{others}}, por isso {{others}} deixou de estar marcado.",
         "cannotStand": "{{title}} não pode coexistir com os projetos já marcados, por isso não é adicionado.",
         "loadMore": "Carregar mais",
-        "limited": "São apresentados até 1.000 desenhos publicados."
+        "limited": "São apresentados até 1.000 desenhos publicados.",
+        "source": "Origem",
+        "sourceIndex": "Índice do servidor",
+        "sourceChain": "Na blockchain (Solana {{cluster}})",
+        "chainAgreement": "Acordo {{cid}}",
+        "chainLoading": "A ler os acordos na blockchain…",
+        "chainFailed": "Não foi possível ler os acordos na blockchain: {{reason}}"
     },
   "appUpdates": {
     "title": "Atualização da aplicação",

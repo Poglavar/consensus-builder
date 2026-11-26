@@ -795,6 +795,20 @@ async function handleSharedDesignRoute(cids, options = {}) {
         fetched.missing.forEach(cid => {
             result.failed.push({ id: cid, label: cid, reason: t('proposals.share.errors.notFound', 'This design is not on the server.') });
         });
+        // Designs read from IPFS come without the index's binding: it is derived here
+        // (ChainReader.withDerivedBindings), before the ground they need is chosen and loaded.
+        const fromIpfs = [...fetched.rows.values()].filter(row => row.source === 'ipfs' && !row.binding);
+        if (fromIpfs.length) {
+            try {
+                (await window.ChainReader.withDerivedBindings(fromIpfs)).forEach((row, cid) => fetched.rows.set(cid, row));
+            } catch (error) {
+                console.warn(`[${new Date().toISOString()}] [handleSharedDesignRoute] the bindings of ${fromIpfs.length} design(s) read from IPFS could not be derived`, error);
+                fromIpfs.forEach(row => {
+                    fetched.rows.delete(row.cid);
+                    result.failed.push({ id: row.cid, label: row.content?.title || row.cid, reason: (error && error.message) || String(error) });
+                });
+            }
+        }
 
         // A bound design may need another cadastral source at its geometry. City text is
         // descriptive metadata and cannot trigger a context switch or block a shared plan.

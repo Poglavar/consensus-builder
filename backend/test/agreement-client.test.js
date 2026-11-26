@@ -461,4 +461,31 @@ describe('fetching through a connection', () => {
         await expect(client.fetchDecisionAttestation(connection(new Map([[at, { owner: programKey, data: attestationBytes() }]])), at))
             .rejects.toThrow(/not a SAS attestation/);
     });
+
+    it('lists every agreement at its own PDA, newest first, skipping accounts that are not one', async () => {
+        const OTHER_CID = 'bafkreigh2akiscaildcqabsyg3dfr6chu3fgpregiymsck7e7aqa4s52zy';
+        const newer = client.getAgreementPda(OTHER_CID, OTHER)[0];
+        const garbled = agreementBytes({ cid: OTHER_CID });
+        garbled[0] ^= 1;
+        const accounts = [
+            { pubkey: new PublicKey(address), account: { data: agreementBytes() } },
+            { pubkey: newer, account: { data: agreementBytes({ cid: OTHER_CID, authority: OTHER, createdAt: NOW }) } },
+            // A decodable agreement at an address its sponsor and CID do not derive.
+            { pubkey: new PublicKey(keyOf(71)), account: { data: agreementBytes({ cid: OTHER_CID }) } },
+            { pubkey: new PublicKey(keyOf(72)), account: { data: garbled } },
+            { pubkey: new PublicKey(keyOf(73)), account: { data: agreementBytes({ lenses: Array.from({ length: 9 }, (_, i) => keyOf(80 + i)) }) } }
+        ];
+        const asked = [];
+        const chain = { getProgramAccounts: async (program, config) => { asked.push([program.toBase58(), config]); return accounts; } };
+        const warnings = [];
+        const warn = console.warn;
+        console.warn = message => warnings.push(String(message));
+        try {
+            const listed = await client.listAgreements(chain);
+            expect(listed.map(value => [value.address, value.cid])).toEqual([[newer.toBase58(), OTHER_CID], [address, CID]]);
+        } finally { console.warn = warn; }
+        expect(asked).toEqual([[C.AGREEMENT_PROGRAM_ID, { commitment: 'confirmed', filters: [{ dataSize: C.AGREEMENT_ACCOUNT_SPACE }] }]]);
+        expect(warnings).toHaveLength(3);
+        expect(warnings.join('\n')).toMatch(/not the PDA of/);
+    });
 });

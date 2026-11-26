@@ -407,18 +407,51 @@
             return { cid, row, alreadyPublished: false };
         }
 
-        // GET /designs/:cid → the row; a missing design throws code 'design-not-found'.
+        // The design `cid` names: from the index, or, when the index cannot answer (unreachable, or it
+        // does not hold it), from IPFS (chain/chain-reader.js). A missing design throws code
+        // 'design-not-found'. A row read from IPFS has no binding (source 'ipfs').
         async function fetchDesign(cid) {
             if (!cidApi().isCid(cid)) throw failure('invalid-cid', `Not a design CID: ${cid}`);
+            if (!win.ChainReader) return fetchIndexedDesign(cid);
+            return win.ChainReader.withFallback(`design ${cid}`, () => fetchIndexedDesign(cid), async () => {
+                const read = await win.ChainReader.fetchDesigns([cid]);
+                if (!read.rows.has(cid)) throw failure('design-not-found', t('proposals.share.errors.notFound', 'This design is not on the server.'), { cid });
+                return read.rows.get(cid);
+            });
+        }
+
+        // GET /designs/:cid → the index's row.
+        async function fetchIndexedDesign(cid) {
             const response = await request('GET', `/designs/${encodeURIComponent(cid)}`, undefined, { deadline: true });
             if (response.status === 404) throw failure('design-not-found', t('proposals.share.errors.notFound', 'This design is not on the server.'), { cid });
             if (!response.ok || !response.body) throw failure((response.body && response.body.code) || `http-${response.status}`, refusalMessage(response.status, response.body));
             return response.body;
         }
 
-        // POST /designs/batch in chunks of the index's limit → { rows: Map(cid → row), missing: cid[] }.
-        async function fetchDesigns(cids, { forDisplay = false } = {}) {
+        // The designs `cids` name → { rows: Map(cid → row), missing: cid[] }: from the index, and
+        // whatever it does not hold (every one when it does not answer) from IPFS
+        // (chain/chain-reader.js). Rows read from IPFS have no binding (source 'ipfs'). `indexOnly`
+        // asks what the index itself holds, as publishing does to learn which designs it must send.
+        async function fetchDesigns(cids, { indexOnly = false, ...options } = {}) {
             const wanted = sortedCids(cids);
+            if (indexOnly || !win.ChainReader || !wanted.length) return fetchIndexedDesigns(wanted, options);
+            let indexed;
+            try {
+                indexed = await fetchIndexedDesigns(wanted, options);
+            } catch (error) {
+                log(`the index did not answer for ${wanted.length} design(s) (${error.message}); reading IPFS`);
+                const read = await win.ChainReader.fetchDesigns(wanted);
+                if (!read.rows.size) throw error;
+                return read;
+            }
+            if (!indexed.missing.length) return indexed;
+            const read = await win.ChainReader.fetchDesigns(indexed.missing);
+            read.rows.forEach((row, cid) => indexed.rows.set(cid, row));
+            return { rows: indexed.rows, missing: read.missing };
+        }
+
+        // POST /designs/batch in chunks of the index's limit → { rows: Map(cid → row), missing: cid[] }.
+        async function fetchIndexedDesigns(wanted, { forDisplay = false } = {}) {
             const rows = new Map();
             const transfer = forDisplay && wanted.length ? win.PlanningLoading?.beginTransfer('proposed') : null;
             try {
@@ -508,7 +541,9 @@
             const store = options._parcelMutation.proposals;
             const existing = localCopyOf(row && row.cid, { store });
             if (existing) return existing;
-            const record = localDesignFromRow(row, { apiBase: currentApiBase() });
+            // A design read from IPFS is marked published at the gateway that served it, not at this
+            // server, which may not hold it: Share then still offers to publish it here.
+            const record = localDesignFromRow(row, { apiBase: row && row.source === 'ipfs' && row.gateway ? row.gateway : currentApiBase() });
             const stored = store.importProposal(record, { overwrite: true, deferSave: true });
             if (!stored) throw new Error(`Design ${row.cid} could not be stored locally.`);
             let cid = null;

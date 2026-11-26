@@ -313,6 +313,8 @@ The **Lists panel** contains **Designs**, **Plans**, and **Agreements** tabs. Ea
 server's published objects and this browser's drafts, one row per object (a browser's copy of a
 published object is its cache and joins that object's row). One **filters** section keeps the search,
 the stage filter (Draft, Published and, for agreements, On chain) and the ordering across tabs.
+For agreements it also keeps the **Source**: the server's index, or the agreement program's accounts
+on chain, which lists minted agreements without our server ([blockchain-flows.md](blockchain-flows.md), Flow 1).
 Each tab starts newest first, using the same timestamp shown on its rows. Published records use
 publication time when available, and drafts use their recorded creation time. Undated rows follow
 dated rows. The published plan browse endpoint applies timestamp order before pagination. The

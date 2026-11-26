@@ -717,6 +717,34 @@
         return value;
     }
 
+    // Every Agreement account of the program, decoded, newest first by the chain's created_at
+    // (blockchain-flows.md, Flow 1). The RPC filters by account size; an account that does not decode
+    // as an Agreement, or does not sit at the PDA its own sponsor and CID derive, is skipped with a
+    // warning, never listed. Needs a method-capable RPC (getProgramAccounts, solana/rpc-routing.js).
+    async function listAgreements(connection, { programId = constants.AGREEMENT_PROGRAM_ID } = {}) {
+        const accounts = await connection.getProgramAccounts(toKey(programId, 'programId'), {
+            commitment: 'confirmed', filters: [{ dataSize: constants.AGREEMENT_ACCOUNT_SPACE }]
+        });
+        const agreements = [];
+        for (const { pubkey, account } of accounts) {
+            const address = toKey(pubkey, 'pubkey').toBase58();
+            let value = null, problem = null;
+            try {
+                value = readAgreement(new Uint8Array(account.data), address);
+                if (!value) problem = 'not an Agreement account';
+                else if (getAgreementPda(value.cid, value.authority, programId)[0].toBase58() !== address) problem = `not the PDA of ${value.cid}`;
+            } catch (error) {
+                problem = (error && error.message) || String(error);
+            }
+            if (problem) {
+                console.warn(`[${new Date().toISOString()}] [AgreementClient] skipped ${address}: ${problem}`);
+                continue;
+            }
+            agreements.push(value);
+        }
+        return agreements.sort((a, b) => b.createdAt - a.createdAt || (a.address < b.address ? -1 : a.address > b.address ? 1 : 0));
+    }
+
     // The lens's AgreementDecision-v1 attestation at `address`, checked to be a SAS account. null when
     // the account is absent.
     async function fetchDecisionAttestation(connection, address) {
@@ -769,6 +797,7 @@
         buildCreateDecisionAttestationIx,
         checkDecisionForAttest,
         fetchAgreement,
+        listAgreements,
         fetchDecisionAttestation
     };
 

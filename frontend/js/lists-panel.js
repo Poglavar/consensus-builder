@@ -59,7 +59,9 @@
     function browser(win) {
         const doc = win.document;
         const analysis = win.PlanAnalysisControls || require('./ui/plan-analysis-controls.js');
-        const state = { tab: 'designs', search: '', publication: 'all', sort: 'newest', onMap: false,
+        // source: where the Agreements tab lists from, the server's index ('index') or the agreement
+        // program's accounts on chain ('chain', chain/chain-reader.js), which needs no server.
+        const state = { tab: 'designs', search: '', publication: 'all', sort: 'newest', onMap: false, source: 'index',
             // selecting: the tab whose rows show checkboxes; purpose: what they are for ('compare', or
             // 'plan': the designs of a plan, ticked here with all of them shown on the map); planBase:
             // the plan whose revision they make, if any.
@@ -92,7 +94,11 @@
         }
         const city = () => win.normalizeCityCodeForApi(win.resolveCurrentCityCode());
         const area = () => state.tab === 'designs' ? win.getProposalCountAreaContext() : null;
-        const areaKey = () => { const view = area(); return `${win.DesignSync.apiBase()}:${view?.explore ? view.key : city()}:${state.tab}`; };
+        const fromChain = () => state.tab === 'agreements' && state.source === 'chain' && !!win.ChainReader;
+        const areaKey = () => {
+            if (fromChain()) return `chain:${win.ChainReader.cluster()}:agreements`;
+            const view = area(); return `${win.DesignSync.apiBase()}:${view?.explore ? view.key : city()}:${state.tab}`;
+        };
         const cacheKey = () => state.tab === 'designs' ? JSON.stringify([areaKey(), state.search.trim(), state.sort]) : areaKey();
         const host = () => doc.getElementById({ designs: 'proposal-list-host', plans: 'plan-list-host', agreements: 'agreement-list-host' }[state.tab]);
         const opened = () => win.MapShell?.isOpen('proposals-sheet');
@@ -145,7 +151,12 @@
         }
         function remoteRows(rows, kind, local, index) {
             const copies = kind === 'designs' ? index.byCid : new Map(local.map(row => [row.cid, row.local]));
-            return rows.map(record => ({ key: record.cid, propertyOffer: record.content?.schema === 'property-offer/v1', cid: record.cid || null, title: record.title || record.content?.title || t(kind === 'designs' ? 'planDialog.untitledDesign' : 'agreement.panel.untitled'),
+            // A row listed from the chain carries no content until it is opened: this browser's copy
+            // names it, else its CID does.
+            const untitled = record => record.source === 'chain'
+                ? copies.get(record.cid)?.title || t('lists.chainAgreement', { cid: win.AgreementSync.shortCid(record.cid) })
+                : t(kind === 'designs' ? 'planDialog.untitledDesign' : 'agreement.panel.untitled');
+            return rows.map(record => ({ key: record.cid, propertyOffer: record.content?.schema === 'property-offer/v1', cid: record.cid || null, title: record.title || record.content?.title || untitled(record),
                 // The design, agreement and offer indexes call their first publication time createdAt.
                 author: record.author, publishedAt: record.publishedAt ?? record.createdAt,
                 createdAt: record.content?.createdAt ?? record.content?.authoredAt, published: true, onChain: !!record.onchain, record,
@@ -157,7 +168,9 @@
             if (previous && !more && !force) return Promise.resolve();
             const location = { city: city(), area: area(), search: state.search.trim(), sort: state.sort };
             const base = win.DesignSync.apiBase(), scope = areaKey();
-            const feeds = kind === 'agreements' ? [['agreements', 'agreements'], ['property-offers', 'propertyOffers']] : [[kind, kind]];
+            const chain = fromChain();
+            const feeds = chain ? [['chain', 'agreements']]
+                : kind === 'agreements' ? [['agreements', 'agreements'], ['property-offers', 'propertyOffers']] : [[kind, kind]];
             const page = more && previous ? previous : { scope, feeds: feeds.map(([path, field]) => ({ path, field, rows: [], next: 0 })) };
             state.remote.set(key, page);
             if (state.remote.size > 48) state.remote.delete(state.remote.keys().next().value);
@@ -168,7 +181,11 @@
                 try {
                     const offset = feed.next;
                     let result;
-                    if (kind === 'designs') result = await win.DesignSync.listPage({ ...location, offset, force });
+                    if (chain) {
+                        // Every account in one read: the chain has no pages, and its rows carry no content.
+                        try { result = { agreements: await win.ChainReader.listAgreements(), hasMore: false }; }
+                        catch (error) { throw new Error(t('lists.chainFailed', { reason: error.message || String(error) })); }
+                    } else if (kind === 'designs') result = await win.DesignSync.listPage({ ...location, offset, force });
                     else {
                         const response = await win.fetch(`${base}/${feed.path}?${indexQuery(kind, { ...location, offset })}`, { cache: 'no-store', signal: AbortSignal.timeout(30000) });
                         result = await response.json();
@@ -213,7 +230,9 @@
         // stored agreement has no plan yet.
         async function agreementPlanOf(row) {
             if (row.propertyOffer) return null;
-            return row.local ? row.local.plan : win.NamedPlans.fetchPlan(row.record.content.planCid);
+            if (row.local) return row.local.plan;
+            // A row listed from the chain has only its CID: the agreement is read for its plan.
+            return row.record.content ? win.NamedPlans.fetchPlan(row.record.content.planCid) : (await win.AgreementSync.fetchAgreement(row.key)).plan;
         }
         // An agreement as Compare agreements reads it: its terms (a published one not held here is
         // fetched, not stored), its plan measured under the agreement's title, and its side on the
@@ -476,7 +495,7 @@
             const status = doc.getElementById('lists-status');
             const errors = (page?.feeds || []).map(feed => feed.error).filter(Boolean).join(' · ');
             const previewTitle = loadingPreview?.sequence === previewSequence ? loadingPreview.title : '';
-            status.textContent = [page?.loading || previewTitle ? t('lists.loading') : '', previewTitle, errors,
+            status.textContent = [page?.loading || previewTitle ? t(page?.loading && fromChain() ? 'lists.chainLoading' : 'lists.loading') : '', previewTitle, errors,
                 visible.length ? t('lists.count', { count: Math.min(visible.length, shownLimit) }) : ''].filter(Boolean).join(' · ');
             status.hidden = !status.textContent;
             list.setAttribute('aria-busy', String(!!page?.loading));
@@ -702,6 +721,17 @@
                 const mapRow = node('div', 'lists-map-row');
                 mapRow.append(onMap, unapplyAll); box.append(mapRow);
             }
+            // Agreements list from the server's index or from the agreement program's accounts on chain.
+            if (state.tab === 'agreements' && win.ChainReader) {
+                const wrap = node('label', '', t('lists.source')), select = node('select');
+                for (const [value, text] of [['index', t('lists.sourceIndex')], ['chain', t('lists.sourceChain', { cluster: win.ChainReader.cluster() })]]) {
+                    const option = node('option', '', text); option.value = value; select.append(option);
+                }
+                select.dataset.listFilter = 'source';
+                select.value = state.source;
+                select.addEventListener('change', () => { state.source = select.value; queryChanged(); });
+                wrap.append(select); fields.append(wrap);
+            }
             for (const [key, label, options] of [
                 ['publication', 'modal.roadWidth.proposalList.filters.publication', stages],
                 ['sort', 'modal.roadWidth.proposalList.filters.sort', [['newest', 'lists.newest'], ['title', 'lists.byTitle']]]
@@ -715,7 +745,7 @@
             filters.append(fields);
             const actions = node('div', 'cb-actions');
             actions.append(button(t('modal.roadWidth.proposalList.filters.reset'), () => {
-                state.search = ''; state.publication = 'all'; state.sort = 'newest'; state.onMap = false; controls(); queryChanged();
+                state.search = ''; state.publication = 'all'; state.sort = 'newest'; state.onMap = false; state.source = 'index'; controls(); queryChanged();
             }, 'btn-quiet'));
             filters.append(actions); box.append(filters);
             box.append(button(t('agreement.minted.refresh'), () => load({ force: true }), 'lists-refresh', 'arrows-rotate'));

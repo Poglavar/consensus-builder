@@ -75,6 +75,35 @@ whose plan commits to its CID, which the reader resolves from the plans it has f
 agreements are the ones whose content names it. Both are reads over fetched content, not chain
 filters.
 
+**Built for Solana agreements** (`frontend/js/chain/`, R1 below):
+
+- **Lists → Agreements → Filters → Source** chooses **Server index** or **On chain (Solana devnet)**.
+  On chain lists every account of the agreement program (`AgreementClient.listAgreements`:
+  `getProgramAccounts` filtered by the account size, each account decoded by the shared codec and
+  kept only when it sits at the PDA its own sponsor and CID derive), newest first by the account's
+  `created_at`, with the account's status on the row. The rows carry no content, so a row is named
+  by this browser's copy, else by its CID, until it is opened. The read goes through the
+  genesis-checked devnet connection and the program-accounts RPC routing.
+- The agreement, plan and design loaders (`AgreementSync.fetchAgreement`, `NamedPlans.fetchPlan`,
+  `DesignSync.fetchDesign` / `fetchDesigns`) ask the index first. When it is unreachable, or does
+  not hold the object, they read it from the gateways in `IpfsRead` (`chain/ipfs-read.js`: Filebase,
+  Pinata's public gateway, dweb.link, ipfs.io, one at a time, 10 s each; `IPFS_READ_GATEWAYS`
+  overrides the list), accepting only bytes whose CID (`js/cid.js`) is the one requested; a gateway
+  that answers with other bytes is passed over. An agreement read this way gets its `onchain` from
+  its account. Publishing asks the index alone (`fetchDesigns(..., { indexOnly: true })`), so it
+  still sends every design the index lacks.
+- A design read from IPFS has no binding. Where it is applied (`handleSharedDesignRoute`),
+  `ChainReader.withDerivedBindings` derives one with the binder private plans use
+  (`PlanAnalysis.bindPrivateRows`, whose parcel worker runs the server's own
+  `computeSourceBindings` over `site-binding.js` `bindingFromParcels`); with the map continuing
+  without parcels, or no cadastre at the place, the site is open ground. A parcel source only our
+  API holds (the Croatian cadastre, the imported cities) still needs the API, so with the API down
+  such a design opens read-only but cannot be applied. An imported design is marked published at
+  the gateway that served it, so Share still offers to publish it to the index.
+- Only minted agreements and the plans and designs they name are pinned (Flow 2's gate), so only
+  those are expected on IPFS. A CID held nowhere costs up to one gateway timeout per gateway before
+  it is reported missing.
+
 ## Flow 2: get the content onto IPFS
 
 Content must be retrievable before anything references it on chain. The courier order, each step
@@ -209,7 +238,8 @@ mock API and a local validator), then docs and the vocabulary entries it changes
 
 1. **R1, Solana reader.** From chain in Lists for agreements, their plans and designs, on devnet,
    with the verify step and chain state on the records. No server involved. Done when a devnet
-   agreement opens from a browser whose `backend` is unreachable.
+   agreement opens from a browser whose `backend` is unreachable. Built (Flow 1, "Built for Solana
+   agreements"); design and plan records have no chain accounts to list until R2.
 2. **R2, Solana records and the checklist.** The one program on devnet, replacing `parcel_nft` and
    `agreement` (R1's reader moves to its layout; devnet agreements are re-created); Flow 2's courier
    order and gate; the mint checklist for designs, plans and agreements including parcel anchoring;

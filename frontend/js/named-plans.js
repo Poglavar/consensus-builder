@@ -69,13 +69,17 @@
             if (!response.ok) throw new Error(data.error || `HTTP ${response.status}`);
             return data;
         }
+        // The plan `cid` names: from the index, or, when the index cannot answer (unreachable, or it
+        // does not hold it), from IPFS (chain/chain-reader.js). Either answer must hash to `cid`.
         async function fetchPlan(cid) {
             if (!win.Cid.isCid(cid)) throw new Error('Invalid plan link.');
             const base = backend(), key = base + '/' + cid;
             const arrival = win.compactPlanArrival;
             if (arrival?.record.cid === cid && arrival.base === base) return arrival.record;
             if (!planReads.has(key)) {
-                planReads.set(key, request('GET', `/plans/${cid}`).then(row => verify(row, cid)).catch(error => {
+                const indexed = () => request('GET', `/plans/${cid}`);
+                const read = win.ChainReader ? win.ChainReader.withFallback(`plan ${cid}`, indexed, () => win.ChainReader.fetchPlan(cid)) : indexed();
+                planReads.set(key, read.then(row => verify(row, cid)).catch(error => {
                     planReads.delete(key);
                     throw error;
                 }));
