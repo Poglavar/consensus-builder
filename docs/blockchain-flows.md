@@ -200,8 +200,8 @@ adapter, and the agreement can check anchors and records it owns without cross-p
   `create_record(kind, cid)` is refused when the account exists.
 - **`Agreement`**: the current program's account and lifecycle, with `plan_cid_hash` (sha256 of the
   plan CID passed to `create`, the sponsor's claim) at byte 512, so memcmp finds the agreements of a
-  plan without fetching every agreement. Built in the `agreement` program (612-byte account; its new
-  address and those of `proposal_market` and `proposal_pledge` await their devnet deploy). Anchoring
+  plan without fetching every agreement. Built in the `agreement` program (612-byte account; it and `proposal_market` and
+  `proposal_pledge` are at new devnet addresses since 2026-11-27). Anchoring
   stays the browser's guard, as in Flow 3; the account records `input_count` from the content for
   readers.
 - `proposal_nft`, the separate `parcel_nft` and the separate `agreement` program are retired.

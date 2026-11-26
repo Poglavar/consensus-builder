@@ -13,9 +13,9 @@ escrow. JS codec:
 `window.AgreementClient` in the browser, `require` in node); the browser drives it through
 `frontend/js/solana/agreement-bridge.js`.
 
-**Status: the plan-CID layout (612-byte account) is built, not yet deployed**: its id below is a new
-address, and `proposal_market` and `proposal_pledge` move to new addresses with it. Until the deploy,
-devnet holds only the earlier programs (`frontend/js/solana/program-ids.js` lists them as retired);
+**Status: the plan-CID layout (612-byte account) is deployed on devnet (2026-11-27)** at the id below, a
+new address, and `proposal_market` and `proposal_pledge` moved to new addresses with it. The earlier
+programs stay deployed (`frontend/js/solana/program-ids.js` lists them as retired);
 agreements minted under a retired program are not read by this codec and are recreated. A lens member's `AgreementDecision-v1` may come from its service or
 from its own wallet: the browser builds the member's SAS credential, schema and attestation
 (`agreement-client.js` `buildCreateLensCredentialIx`, `buildCreateDecisionSchemaIx`,
@@ -193,8 +193,8 @@ decision: schemaDefinition(
 
 ## Program id
 
-`6X5ihiKNpsF39eYzWGaw7swgYa6vouZ8gT1LHB5H86Cb` (the plan-CID layout, not yet deployed; the deployer
-wallet `~/.config/solana/id.json` will hold the upgrade authority), in `declare_id!`, both `Anchor.toml`
+`6X5ihiKNpsF39eYzWGaw7swgYa6vouZ8gT1LHB5H86Cb` (the plan-CID layout, deployed on devnet 2026-11-27; the deployer
+wallet `~/.config/solana/id.json` holds the upgrade authority), in `declare_id!`, both `Anchor.toml`
 sections, `frontend/js/solana/program-ids.js` (with the retired ids) and `idl/agreement.json`. The
 program keypair is kept outside the repo (`~/.config/solana/program-keys/`). `proposal_market` and
 `proposal_pledge` compile this id in (they read agreement accounts), and this program compiles

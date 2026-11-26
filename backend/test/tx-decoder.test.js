@@ -23,9 +23,6 @@ const SYSTEM_PROGRAM = '11111111111111111111111111111111';
 const MARKET_PROGRAM = '79dH9KGrbffN37Hv1mbyUWdbHAVcCt6o2Z1VZ3c745Bn';
 const PLEDGE_PROGRAM = 'DY4zKtE1hucUHsQGDhQmBaH3ZdAaeusnmj9HzVtpmYnK';
 const PROPOSAL_PROGRAM = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
-// The proposal_market deploy recorded in fixtures/solana-tx/proposal-market-deploy.json, retired since
-// the plan-CID layout moved the market to a new address: the book no longer names it.
-const RETIRED_MARKET_PROGRAM = '9S7jXSkWyDYF1W95E8JYDwjpqR9tfXZiMKc6L3NGgJ71';
 
 // Deterministic PDAs standing in for market accounts that do not exist on devnet yet. SUBJECT is the
 // agreement account a market or pledge is about (the account their IDLs still call `proposal`).
@@ -520,16 +517,15 @@ describe('decodeParsedTransaction: program deploy (recorded devnet tx)', () => {
     const decoded = decode(fixture('proposal-market-deploy'));
 
     it('names the deploy rather than the system createAccount that precedes it', () => {
-        expect(decoded.summary).toBe('program 9S7j…gJ71 deployed by treasury wallet');
+        expect(decoded.summary).toBe('program proposal_market deployed by treasury wallet');
     });
 
     it('decodes the BPF upgradeable loader instruction', () => {
         const loader = decoded.instructions.find((instruction) => instruction.program.name === 'bpf-upgradeable-loader');
         expect(loader.action).toBe('deployWithMaxDataLen');
         expect(loader.program.label).toBe('BPF Upgradeable Loader');
-        expect(loader.args.programAccount).toBe(RETIRED_MARKET_PROGRAM);
-        // An unlabelled address: the book names only the current programs.
-        expect(loader.accounts.find((account) => account.role === 'programAccount').label).toBeNull();
+        expect(loader.args.programAccount).toBe(MARKET_PROGRAM);
+        expect(loader.accounts.find((account) => account.role === 'programAccount').label).toBe('proposal_market program');
     });
 });
 
