@@ -111,7 +111,8 @@
     // none, each keeps its source's height.
     async function measuredHeights(buildings, neighbours) {
         const client = root.HeightSurveyClient, idOf = record => root.buildingPoolFeatureKey?.(record) || record.id;
-        if (!client) return [buildings, neighbours];
+        // Heights chosen as the building source's (Built → Heights) are not measured.
+        if (!client || !client.usesSurvey()) return [buildings, neighbours];
         const own = buildings.length, all = [...buildings, ...(neighbours || [])];
         try {
             const filled = await client.fillHeights(all, { idOf });

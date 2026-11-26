@@ -6770,6 +6770,8 @@
             "viewAngleTouch": "Drag with two fingers to change the view angle"
         },
         "buildingsSource": {
+            "surveying": "measuring heights: {{done}} of {{total}}",
+            "surveyed": "{{count}} of {{total}} heights measured",
             "osm": "OpenStreetMap buildings",
             "overture": "Overture Maps buildings",
             "estimated": "{{count}} of {{total}} heights estimated",
@@ -9086,6 +9088,9 @@
         "openModel": "Open 3D model view",
         "displayLabel": "{{role}} appearance",
         "existingScope": "Built building selection",
+        "existingHeights": "Heights",
+        "survey": "Height survey",
+        "source": "Building source",
         "proposedForm": "Proposed representation",
         "permittedMap": "Permitted massing on the map",
         "footprint": "Footprint",

@@ -6852,6 +6852,8 @@
             "viewAngleTouch": "Двигай двумя пальцами, чтобы изменить угол обзора"
         },
         "buildingsSource": {
+            "surveying": "измерение высот: {{done}} из {{total}}",
+            "surveyed": "измерено высот: {{count}} из {{total}}",
             "osm": "OpenStreetMap здание",
             "overture": "Здания карт",
             "estimated": "{{count}} из {{total}} расчетных высоты",
@@ -9200,6 +9202,9 @@
         "openModel": "Открытая модель 3D",
         "displayLabel": "{{role}} внешний вид",
         "existingScope": "Выбор здания",
+        "existingHeights": "Высоты",
+        "survey": "Съёмка высот",
+        "source": "Источник зданий",
         "proposedForm": "Предлагаемое представительство",
         "permittedMap": "Разрешено наносить масса на карту",
         "footprint": "Отпечаток",

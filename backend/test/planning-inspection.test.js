@@ -284,7 +284,7 @@ describe('shared building and proposal representations', () => {
             sceneWork: { forEach: async (items, fn) => items.forEach(fn) },
             buildingDisplayPolicy: { resolveBuildingRenderParts: () => ({ detailed: true, remainder: true, demolished: true }) },
             appendBuildingFloorPlans: () => false, building3DHeightMeters: () => 8, buildMeshFromBuilding3D: mesh,
-            polygonFeatureToMeshes: () => [mesh()], tagBuildingStoreys() {}, ensureNearbyProposalBuildings() {}, console
+            polygonFeatureToMeshes: () => [mesh()], tagBuildingStoreys() {}, scaleToChosenHeight() {}, ensureNearbyProposalBuildings() {}, console
         });
         vm.runInContext(source.slice(declaration.start, declaration.end), context);
         await context.buildNearbyProposalBuildings3D(group, {});
@@ -354,18 +354,18 @@ describe('observed building height from a height survey', () => {
     const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');
     const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
     const slice = node => source.slice(node.start, node.end);
-    const pieces = body.filter(node => (node.type === 'FunctionDeclaration' && ['applyHeightSurvey', 'measureHeight', 'heightSurveyLine'].includes(node.id.name))
+    const pieces = body.filter(node => (node.type === 'FunctionDeclaration' && ['applyHeightSurvey', 'dropHeightSurvey', 'measureHeight', 'heightSurveyLine'].includes(node.id.name))
         || (node.type === 'VariableDeclaration' && ['heightSurveys', 'HEIGHT_SURVEY_NONE'].includes(node.declarations[0].id.name))).map(slice).join('\n');
     const t = (key, params = {}) => `${key}(${Object.values(params).join('|')})`;
     const record = (heightM = null) => ({ id: 'built:london:osm:w1', source: { recordId: 'osm:w1' }, metrics: { heightM } });
-    const setup = ({ result, shown }) => {
+    const setup = ({ result, shown, heights = 'survey' }) => {
         const renderInspector = vi.fn();
         let answer; const pending = new Promise(resolve => { answer = resolve; });
-        const client = { surveyFor: () => ({ id: 'gb-ea', name: 'EA LiDAR' }), measureOne: vi.fn(() => pending) };
+        const client = { surveyFor: () => ({ id: 'gb-ea', name: 'EA LiDAR' }), usesSurvey: () => heights === 'survey', measureOne: vi.fn(() => pending) };
         const context = vm.createContext({ root: { HeightSurveyClient: client, CbFormat: { formatDate: d => d.toISOString().slice(0, 10), formatLength: v => `${v} m` } },
             selected: () => shown.current, renderInspector, t, console, Map, Number, Date });
-        vm.runInContext(`${pieces}\nthis.api = { measureHeight, heightSurveyLine };`, context);
-        return { ...context.api, renderInspector, answer: () => { answer(result); return pending.then(() => new Promise(resolve => setImmediate(resolve))); } };
+        vm.runInContext(`${pieces}\nthis.api = { measureHeight, dropHeightSurvey, heightSurveyLine };`, context);
+        return { ...context.api, client, renderInspector, answer: () => { answer(result); return pending.then(() => new Promise(resolve => setImmediate(resolve))); } };
     };
     it('shows measuring, then the measured height on the record now shown, with survey, flight date and eave', async () => {
         const first = record(), shown = { current: first };
@@ -399,5 +399,20 @@ describe('observed building height from a height survey', () => {
         none.measureHeight(unseen, { geometry: {} });
         await none.answer();
         expect(unseen.metrics.heightM).toBe(6);
+    });
+    // Built → Heights set to the building source: nothing is measured, and a measured card goes back.
+    it('measures nothing when heights come from the building source, and gives a measured card its source height back', async () => {
+        const storeys = record(6), shown = { current: storeys };
+        const off = setup({ shown, result: { heightM: 9.16 }, heights: 'source' });
+        off.measureHeight(storeys, { geometry: {} });
+        expect(off.client.measureOne).not.toHaveBeenCalled();
+        expect(storeys.heightSurvey).toBeUndefined();
+        const on = setup({ shown, result: { heightM: 9.16, confidence: 'high' } });
+        on.measureHeight(storeys, { geometry: {} });
+        await on.answer();
+        expect(storeys.metrics.heightM).toBe(9.16);
+        on.dropHeightSurvey(storeys);
+        expect(storeys.metrics.heightM).toBe(6);
+        expect(storeys.heightSurvey).toBeUndefined();
     });
 });

@@ -5390,6 +5390,8 @@
             "viewAngleTouch": "اسحب بإصبعين لتغيير زاوية العرض"
         },
         "buildingsSource": {
+            "surveying": "قياس الارتفاعات: {{done}} من {{total}}",
+            "surveyed": "تم قياس {{count}} من {{total}} ارتفاعًا",
             "osm": "مباني OpenStreetMap",
             "overture": "مباني Overture Maps",
             "estimated": "تم تقدير {{count}} من أصل {{total}} من الارتفاعات",
@@ -9537,6 +9539,9 @@
         "openModel": "فتح عرض النموذج ثلاثي الأبعاد",
         "displayLabel": "مظهر {{role}}",
         "existingScope": "تحديد المباني القائمة",
+        "existingHeights": "الارتفاعات",
+        "survey": "مسح الارتفاعات",
+        "source": "مصدر المباني",
         "proposedForm": "التمثيل المقترح",
         "permittedMap": "الكتل البنائية المسموحة على الخريطة",
         "footprint": "البصمة الأرضية",

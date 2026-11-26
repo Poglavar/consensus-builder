@@ -6770,6 +6770,8 @@
             "viewAngleTouch": "Шолу бұрышын өзгерту үшін екі саусақпен қозғал."
         },
         "buildingsSource": {
+            "surveying": "биіктіктер өлшенуде: {{done}} / {{total}}",
+            "surveyed": "{{total}} биіктіктің {{count}} өлшенді",
             "osm": "OpenStreetMap ғимарат",
             "overture": "Карта ғимараттары",
             "estimated": "{{count}} {{total}} есептік биіктіктен",
@@ -9086,6 +9088,9 @@
         "openModel": "Ашық үлгі 3D",
         "displayLabel": "{{role}} сыртқы түрі",
         "existingScope": "Ғимаратты таңдау",
+        "existingHeights": "Биіктіктер",
+        "survey": "Биіктік түсірілімі",
+        "source": "Ғимараттар көзі",
         "proposedForm": "Ұсынылатын өкілдік",
         "permittedMap": "Картаға масса салуға рұқсат етілген",
         "footprint": "Басып шығару",

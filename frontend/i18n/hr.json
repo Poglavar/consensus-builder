@@ -6804,6 +6804,8 @@
             "viewAngleTouch": "Povuci s dva prsta za promjenu kuta pogleda"
         },
         "buildingsSource": {
+            "surveying": "mjerenje visina: {{done}} od {{total}}",
+            "surveyed": "izmjereno {{count}} od {{total}} visina",
             "osm": "OpenStreetMap zgrade",
             "overture": "Overture Maps zgrade",
             "estimated": "{{count}} od {{total}} visina procijenjeno",
@@ -9137,6 +9139,9 @@
         "openModel": "Otvori 3D model",
         "displayLabel": "Prikaz: {{role}}",
         "existingScope": "Odabir postojećih zgrada",
+        "existingHeights": "Visine",
+        "survey": "Snimka visina",
+        "source": "Izvor zgrada",
         "proposedForm": "Oblik prikaza dizajna",
         "permittedMap": "Dopušteni volumen na karti",
         "footprint": "Tlocrt",

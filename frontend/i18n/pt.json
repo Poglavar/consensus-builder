@@ -5213,6 +5213,8 @@
             "viewAngleTouch": "Arraste com dois dedos para alterar o ângulo de visão"
         },
         "buildingsSource": {
+            "surveying": "a medir alturas: {{done}} de {{total}}",
+            "surveyed": "{{count}} de {{total}} alturas medidas",
             "osm": "Edifícios do OpenStreetMap",
             "overture": "Edifícios do Overture Maps",
             "estimated": "{{count}} de {{total}} alturas estimadas",
@@ -9266,6 +9268,9 @@
         "openModel": "Abrir vista do modelo 3D",
         "displayLabel": "Aspeto de {{role}}",
         "existingScope": "Seleção de edifícios existentes",
+        "existingHeights": "Alturas",
+        "survey": "Levantamento de alturas",
+        "source": "Fonte dos edifícios",
         "proposedForm": "Representação proposta",
         "permittedMap": "Volumetria permitida no mapa",
         "footprint": "Área de implantação",

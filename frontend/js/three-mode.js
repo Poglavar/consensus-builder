@@ -6549,6 +6549,7 @@
                             const facts = inspectionFeature?.properties || {};
                             tagBuildingStoreys(mesh, { use: facts.use ?? bld.use },
                                 { floors: facts.floors ?? bld.floors, heightM: building3DHeightMeters(bld) });
+                            scaleToChosenHeight(mesh, bld);
                             targetGroup.add(mesh);
                         };
                         const carve = carving.carveOf(threeBuildingKey(bld), () => buildingFootprintPolygon(bld)?.geometry || null);
@@ -6992,6 +6993,116 @@
 
     // Sources and height evidence for the current set of nearby building models.
     let nearbyBuildingsProvenance = null;
+
+    // --- Heights from a height survey (buildings/height-survey-client.js) ---
+    // An extruded block (a record with `height_source`: footprint × height, not a city model's own
+    // roofs) shows the height chosen under Built → Heights: the survey's measurement where it has one,
+    // else its source's. A block's mesh keeps its source geometry and shows the chosen height as its
+    // vertical scale, so rebuilding a scene never needs the survey again. Answers arrive window by
+    // window, nearest the view's centre first, and the blocks grow to them (buildings/height-growth.js).
+    const surveyedHeights = new Map();
+    const heightSurveyAsked = new Set();
+    const heightGrowth = window.HeightGrowth.create();
+    let heightGrowthFrame = null, heightGrowthCentre = null, heightSurveyRun = null;
+    let lastHeightsMode = heightsMode();
+    function heightsMode() { return window.PlanningViews?.getState?.()?.existingHeights || 'survey'; }
+    function chosenHeight(key, sourceM) {
+        return window.HeightGrowth.targetHeight({ sourceM, measuredM: surveyedHeights.get(key), mode: heightsMode() });
+    }
+    function scaleToChosenHeight(mesh, bld) {
+        if (!bld?.height_source) return;
+        const builtM = building3DHeightMeters(bld);
+        if (!(builtM > 0)) return;
+        const key = threeBuildingKey(bld);
+        mesh.userData.heightKey = key;
+        mesh.userData.builtHeightM = builtM;
+        mesh.scale.z = (heightGrowth.heightOf(key, performance.now()) ?? chosenHeight(key, builtM)) / builtM;
+    }
+    // Metres from the growth's centre to a mesh's footprint: the ripple's delay.
+    function growthDistanceM(mesh) {
+        const at = mesh.userData.footprintLatLng, centre = heightGrowthCentre;
+        if (!at || !centre) return 0;
+        return Math.hypot((at[0] - centre[0]) * 111320 * Math.cos(centre[1] * Math.PI / 180), (at[1] - centre[1]) * 110540);
+    }
+    // Blocks (`keys`, or every block) ease to their chosen heights, nearer ones first.
+    function growBuildingsTo(keys = null) {
+        if (!existingBuildingsGroup) return;
+        const now = performance.now(), seen = new Set();
+        existingBuildingsGroup.traverse(node => {
+            const key = node.userData?.heightKey;
+            if (!key || seen.has(key) || (keys && !keys.has(key))) return;
+            seen.add(key);
+            const builtM = node.userData.builtHeightM;
+            heightGrowth.grow(key, node.scale.z * builtM, chosenHeight(key, builtM), window.__reducedMotion ? 0 : growthDistanceM(node), window.__reducedMotion ? now - 1e6 : now);
+        });
+        if (!heightGrowthFrame) heightGrowthFrame = requestAnimationFrame(stepHeightGrowth);
+    }
+    function stepHeightGrowth() {
+        heightGrowthFrame = null;
+        if (!existingBuildingsGroup) return;
+        const heights = heightGrowth.step(performance.now());
+        if (heights.size) {
+            existingBuildingsGroup.traverse(node => {
+                const key = node.userData?.heightKey;
+                if (key && heights.has(key)) node.scale.z = heights.get(key) / node.userData.builtHeightM;
+            });
+            invalidateThreeView();
+        }
+        if (heightGrowth.active) heightGrowthFrame = requestAnimationFrame(stepHeightGrowth);
+    }
+    // Measures the shown blocks the survey has not answered for yet, nearest the camera's target first.
+    function measureSceneHeights() {
+        const client = window.HeightSurveyClient;
+        if (!client?.usesSurvey() || !Array.isArray(nearbyProposalBuildings)) return;
+        const view = getGeoCameraView();
+        heightGrowthCentre = view ? [view.targetLng, view.targetLat] : heightGrowthCentre;
+        const observed = new Map((window.buildingFeaturePool || []).map(feature => [String(window.buildingPoolFeatureKey(feature)), feature]));
+        const asks = [];
+        for (const bld of nearbyProposalBuildings) {
+            if (!bld.height_source) continue;
+            const key = threeBuildingKey(bld);
+            if (heightSurveyAsked.has(key)) continue;
+            // The 2D footprint where the pool has it; the hull of the block's faces otherwise.
+            const geometry = observed.get(key)?.geometry || buildingFootprintPolygon(bld)?.geometry;
+            if (!geometry || !client.surveyFor({ geometry })) continue;
+            heightSurveyAsked.add(key);
+            asks.push({ id: key, geometry });
+        }
+        if (!asks.length) return;
+        const survey = client.surveyFor(asks[0]);
+        const run = heightSurveyRun = { survey, asked: asks.length, answered: 0, started: performance.now() };
+        updateBuildingsSourceNote();
+        client.measureAround(asks, {
+            around: heightGrowthCentre,
+            onWindow: results => {
+                const changed = new Set();
+                for (const [key, result] of results) {
+                    if (typeof result?.heightM === 'number' && Number.isFinite(result.heightM)) { surveyedHeights.set(key, result.heightM); changed.add(key); }
+                    // A survey that did not answer is asked again the next time the scene loads.
+                    else if (result?.rejection === 'survey-unavailable') heightSurveyAsked.delete(key);
+                }
+                run.answered += results.size;
+                if (changed.size && client.usesSurvey()) growBuildingsTo(changed);
+                if (heightSurveyRun === run) updateBuildingsSourceNote();
+            }
+        }).then(() => {
+            console.log(`[${new Date().toISOString()}] [3D] Height survey answered for ${run.asked} blocks in ${Math.round(performance.now() - run.started)} ms`);
+        }).catch(error => {
+            asks.forEach(ask => heightSurveyAsked.delete(ask.id));
+            console.warn(`[${new Date().toISOString()}] [3D] Building heights could not be measured`, error);
+        });
+    }
+    // Built → Heights changed: the blocks grow or shrink to the newly chosen heights.
+    window.addEventListener('planningviewchange', () => {
+        const mode = heightsMode();
+        if (mode === lastHeightsMode) return;
+        lastHeightsMode = mode;
+        const view = getGeoCameraView();
+        if (view) heightGrowthCentre = [view.targetLng, view.targetLat];
+        growBuildingsTo();
+        if (mode === 'survey') measureSceneHeights();
+        updateBuildingsSourceNote();
+    });
     let buildingsSourceNoteEl = null;
 
     function updateBuildingsSourceNote() {
@@ -7002,11 +7113,19 @@
             buildingsSourceNoteEl.hidden = true;
             return;
         }
-        const heights = info.heights || { measured: 0, levels: 0, estimated: 0 };
+        const heights = { ...(info.heights || { measured: 0, levels: 0, estimated: 0 }) };
         const total = heights.measured + heights.levels + heights.estimated;
         const parts = info.sources.map(id => id === 'osm'
             ? threeI18n('threeMode.buildingsSource.osm', 'OpenStreetMap buildings')
             : (info.sourceNames.get(id) || id));
+        const run = heightsMode() === 'survey' ? heightSurveyRun : null;
+        const surveyed = run ? (nearbyProposalBuildings || []).filter(bld => bld.height_source && surveyedHeights.has(threeBuildingKey(bld))) : [];
+        if (run && run.answered < run.asked) {
+            parts.push(threeI18n('threeMode.buildingsSource.surveying', 'measuring heights: {{done}} of {{total}}', { done: run.answered, total: run.asked }));
+        } else if (surveyed.length) {
+            parts.push(threeI18n('threeMode.buildingsSource.surveyed', '{{count}} of {{total}} heights measured', { count: surveyed.length, total }));
+            heights.estimated -= surveyed.filter(bld => bld.height_source === 'estimated').length;
+        }
         if (heights.estimated > 0) {
             parts.push(threeI18n('threeMode.buildingsSource.estimated', '{{count}} of {{total}} heights estimated',
                 { count: heights.estimated, total }).replace('{{count}}', heights.estimated).replace('{{total}}', total));
@@ -7017,6 +7136,15 @@
             const credit = document.createElement('a');
             credit.href = 'https://github.com/zhu-xlab/GlobalBuildingAtlas';
             credit.textContent = 'GlobalBuildingAtlas (CC BY-NC 4.0)';
+            buildingsSourceNoteEl.append(' · ', credit);
+        }
+        // The survey's attribution its licence asks for, linked to the dataset.
+        if (run?.survey && (surveyed.length || run.answered < run.asked)) {
+            const credit = document.createElement('a');
+            credit.href = run.survey.url;
+            credit.target = '_blank'; credit.rel = 'noopener noreferrer';
+            credit.textContent = run.survey.name;
+            credit.title = run.survey.attribution || '';
             buildingsSourceNoteEl.append(' · ', credit);
         }
         buildingsSourceNoteEl.hidden = false;
@@ -7154,6 +7282,7 @@
                 rebuildProposalGrounds3D();
                 refreshLifeSurface();
                 updateBuildingsLoader();
+                measureSceneHeights();
             })
             .catch(err => {
                 if (!current() || err.name === 'AbortError') return;

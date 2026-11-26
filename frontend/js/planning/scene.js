@@ -15,10 +15,12 @@
         permittedScope: ['all', 'surviving'],
         proposedForm: ['massing', 'buildout', 'both'],
         permittedForm: ['bound', 'configuration', 'both'],
-        permittedMap: ['footprint', 'steps'], zoningAreas: ['off', 'ghost']
+        permittedMap: ['footprint', 'steps'], zoningAreas: ['off', 'ghost'],
+        // Existing buildings' heights: a height survey's measurement where one covers them, or their source's.
+        existingHeights: ['survey', 'source']
     });
     const defaults = Object.freeze({ existing: 'off', permitted: 'ghost', proposed: 'solid',
-        existingScope: 'all', permittedScope: 'all', proposedForm: 'both', permittedForm: 'both', permittedMap: 'footprint', zoningAreas: 'off' });
+        existingScope: 'all', permittedScope: 'all', proposedForm: 'both', permittedForm: 'both', permittedMap: 'footprint', zoningAreas: 'off', existingHeights: 'survey' });
     function settings(input = {}) {
         return Object.fromEntries(Object.entries(defaults).map(([key, value]) =>
             [key, choices[key].includes(input[key]) ? input[key] : value]));

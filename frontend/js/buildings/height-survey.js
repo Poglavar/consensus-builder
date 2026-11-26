@@ -206,8 +206,15 @@
     const timeoutError = ms => Object.assign(new Error(`No answer within ${ms / 1000} s`), { code: 'hang' });
     // A survey service answers in about a second, but now and then a request hangs for a minute.
     // Each attempt is given `attemptMs`; a hang, a network error or a 5xx is retried at once, up to
-    // `attempts` times. A 4xx is the request's fault and is not retried.
-    async function fetchPatiently(url, { fetchImpl = fetch, attemptMs = 6000, attempts = 6, signal, as = 'arrayBuffer', log = () => {} } = {}) {
+    // `attempts` times. A 4xx is the request's fault and is not retried. A hang is asked again at once;
+    // a request that fails outright (a network error, a 5xx) is asked again after a pause that doubles
+    // from `backoffMs`, since an immediate repeat fails the same way.
+    const pause = (ms, signal) => new Promise((resolve, reject) => {
+        if (signal?.aborted) return reject(signal.reason || new Error('Aborted'));
+        const timer = setTimeout(resolve, ms);
+        signal?.addEventListener('abort', () => { clearTimeout(timer); reject(signal.reason || new Error('Aborted')); }, { once: true });
+    });
+    async function fetchPatiently(url, { fetchImpl = fetch, attemptMs = 6000, attempts = 6, backoffMs = 500, signal, as = 'arrayBuffer', log = () => {} } = {}) {
         let last;
         for (let attempt = 1; attempt <= attempts; attempt++) {
             if (signal?.aborted) throw signal.reason || new Error('Aborted');
@@ -227,16 +234,20 @@
                 clearTimeout(timer);
                 signal?.removeEventListener('abort', stop);
             }
+            if (attempt < attempts && last?.code !== 'hang' && backoffMs > 0) await pause(backoffMs * 2 ** (attempt - 1), signal);
         }
         throw Object.assign(new Error(`The height survey did not answer after ${attempts} attempts: ${last?.message}`), { code: 'unavailable' });
     }
 
-    // Buildings grouped so no window is wider than MAX_WINDOW_M: by the grid cell of their first vertex.
+    // Buildings grouped so no window is wider than MAX_WINDOW_M: by the grid cell of their first vertex,
+    // the grid anchored at the group's own south-west corner (so a group that fits is one window).
     function windowsFor(entries) {
+        const size = MAX_WINDOW_M, firsts = entries.map(entry => polygonsOf(entry.metric)[0][0][0]);
+        const x0 = Math.min(...firsts.map(([x]) => x)), y0 = Math.min(...firsts.map(([, y]) => y));
         const groups = new Map();
-        for (const entry of entries) {
-            const [x, y] = polygonsOf(entry.metric)[0][0][0];
-            const key = `${Math.floor(x / MAX_WINDOW_M)}:${Math.floor(y / MAX_WINDOW_M)}`;
+        for (const [index, entry] of entries.entries()) {
+            const [x, y] = firsts[index];
+            const key = `${Math.floor((x - x0) / size)}:${Math.floor((y - y0) / size)}`;
             if (!groups.has(key)) groups.set(key, []);
             groups.get(key).push(entry);
         }
@@ -247,6 +258,19 @@
             }
             return { members, box: [Math.floor(minx - PAD_M), Math.floor(miny - PAD_M), Math.ceil(maxx + PAD_M), Math.ceil(maxy + PAD_M)] };
         });
+    }
+    // Few windows that still fill a view from its centre outwards: a `coreM` square around `centre`
+    // (metric [x, y]) first, then the rest as four strips (north, south, east, west of the core), each
+    // cut by windowsFor where it is wider than MAX_WINDOW_M. A survey service limits how often it may
+    // be asked, so a view costs about five windows, not a grid of small ones.
+    function windowsAround(entries, centre, coreM) {
+        const half = coreM / 2, groups = { core: [], north: [], south: [], east: [], west: [] };
+        for (const entry of entries) {
+            const [x, y] = polygonsOf(entry.metric)[0][0][0], dx = x - centre[0], dy = y - centre[1];
+            const side = Math.abs(dx) <= half && Math.abs(dy) <= half ? 'core' : dy > half ? 'north' : dy < -half ? 'south' : dx > 0 ? 'east' : 'west';
+            groups[side].push(entry);
+        }
+        return Object.values(groups).filter(group => group.length).flatMap(group => windowsFor(group));
     }
     const mapCoords = (geometry, fn) => ({ type: geometry.type, coordinates: geometry.type === 'Polygon'
         ? geometry.coordinates.map(ring => ring.map(fn)) : geometry.coordinates.map(poly => poly.map(ring => ring.map(fn))) });
@@ -277,19 +301,22 @@
     // a Map id → result: { heightM, eaveM, confidence, survey, surveyedFrom, surveyedTo } when
     // measured, or { rejection } when not (`outside-surveys` where no survey covers the building,
     // `survey-unavailable` when its service never answered).
-    function createMeasurer({ surveys, proj4, fetchImpl = (...args) => fetch(...args), log = () => {}, attemptMs, attempts }) {
-        const patience = { fetchImpl, log, ...(attemptMs ? { attemptMs } : {}), ...(attempts ? { attempts } : {}) };
+    function createMeasurer({ surveys, proj4, fetchImpl = (...args) => fetch(...args), log = () => {}, attemptMs, attempts, backoffMs }) {
+        const patience = { fetchImpl, log, ...(attemptMs ? { attemptMs } : {}), ...(attempts ? { attempts } : {}), ...(backoffMs !== undefined ? { backoffMs } : {}) };
         if (!proj4) throw new TypeError('A height measurer needs proj4.');
         const cache = new Map(), projections = new Map();
         const projectorOf = survey => {
             if (!projections.has(survey.id)) projections.set(survey.id, proj4('EPSG:4326', survey.proj4));
             return projections.get(survey.id);
         };
-        async function measureWindow(survey, window, signal) {
-            const [surfaceBuffer, terrainBuffer, dates] = await Promise.all([
-                fetchPatiently(coverageUrl(survey.surface, window.box), { ...patience, signal }),
-                fetchPatiently(coverageUrl(survey.terrain, window.box), { ...patience, signal }),
-                datesFor(survey, window.members, { ...patience, signal })]);
+        async function measureWindow(survey, window, datesRead, signal) {
+            // One map failing for good makes the other useless: it stops asking too.
+            const pair = new AbortController(), stop = () => pair.abort(signal.reason);
+            signal?.addEventListener('abort', stop, { once: true });
+            const read = layer => fetchPatiently(coverageUrl(layer, window.box), { ...patience, signal: pair.signal })
+                .catch(error => { pair.abort(error); throw error; });
+            const [surfaceBuffer, terrainBuffer, dates] = await Promise.all([read(survey.surface), read(survey.terrain), datesRead])
+                .finally(() => signal?.removeEventListener('abort', stop));
             const surface = readGeoTiff(surfaceBuffer), terrain = readGeoTiff(terrainBuffer);
             const results = new Map();
             for (const entry of window.members) {
@@ -301,20 +328,42 @@
             }
             return results;
         }
-        async function measure(buildings, { signal } = {}) {
-            const out = new Map(), pending = new Map();
+        // Options for a view that fills in as answers arrive: `around` ([lng, lat]) reads the windows
+        // nearest it first, and with `coreM` cuts them as a core and four strips (windowsAround); at
+        // most `concurrency` windows are read at once, and `onWindow(results)` gets each window's Map
+        // as it lands (first the buildings already known, in one call). The flight dates are read once
+        // per survey for the whole call.
+        async function measure(buildings, { signal, around = null, coreM = null, concurrency = 2, onWindow = null } = {}) {
+            const out = new Map(), pending = new Map(), known = [];
             for (const building of buildings || []) {
                 const id = String(building.id), point = building.geometry && firstPoint(building.geometry);
                 const survey = point && surveyAt(surveys, point);
-                if (!survey) { out.set(id, { rejection: 'outside-surveys' }); continue; }
+                if (!survey) { out.set(id, { rejection: 'outside-surveys' }); known.push(id); continue; }
                 const key = `${survey.id}:${id}`;
-                if (cache.has(key)) { out.set(id, cache.get(key)); continue; }
+                if (cache.has(key)) { out.set(id, cache.get(key)); known.push(id); continue; }
                 const projector = projectorOf(survey);
                 if (!pending.has(survey.id)) pending.set(survey.id, { survey, entries: [] });
                 pending.get(survey.id).entries.push({ id, key, geometry: building.geometry, metric: mapCoords(building.geometry, c => projector.forward([c[0], c[1]])) });
             }
-            for (const { survey, entries } of pending.values()) for (const window of windowsFor(entries)) {
-                const read = measureWindow(survey, window, signal);
+            const windows = [];
+            for (const { survey, entries } of pending.values()) {
+                const datesRead = datesFor(survey, entries, { ...patience, signal });
+                const centre = around ? projectorOf(survey).forward(around) : null;
+                for (const window of centre && coreM ? windowsAround(entries, centre, coreM) : windowsFor(entries)) {
+                    const [minx, miny, maxx, maxy] = window.box;
+                    windows.push({ survey, window, datesRead, distance: centre ? Math.hypot((minx + maxx) / 2 - centre[0], (miny + maxy) / 2 - centre[1]) : 0 });
+                }
+            }
+            windows.sort((a, b) => a.distance - b.distance);
+            const reported = onWindow ? Promise.all(known.map(id => out.get(id))).then(values => onWindow(new Map(known.map((id, index) => [id, values[index]])))) : null;
+            // A window waits for a free slot (`concurrency` reading at once), nearest first.
+            let running = 0;
+            const waiting = [];
+            const slot = () => running < concurrency ? (running++, Promise.resolve()) : new Promise(resolve => waiting.push(resolve));
+            const release = () => { const next = waiting.shift(); if (next) next(); else running--; };
+            const landed = [];
+            for (const { survey, window, datesRead } of windows) {
+                const read = slot().then(() => measureWindow(survey, window, datesRead, signal)).finally(release);
                 for (const entry of window.members) {
                     const one = read.then(results => results.get(entry.id), error => {
                         cache.delete(entry.key);
@@ -325,7 +374,10 @@
                     cache.set(entry.key, one);
                     out.set(entry.id, one);
                 }
+                if (onWindow) landed.push(Promise.all(window.members.map(entry => out.get(entry.id)))
+                    .then(values => reported.then(() => onWindow(new Map(window.members.map((entry, index) => [entry.id, values[index]]))))));
             }
+            await Promise.all(landed);
             const settled = new Map();
             for (const [id, value] of out) settled.set(id, await value);
             return settled;
@@ -356,6 +408,6 @@
         return records.map(record => ids.has(record) ? withMeasuredHeight(record, results.get(ids.get(record))) : record);
     }
 
-    return { readGeoTiff, sample, percentile, estimate, coverageUrl, fetchPatiently, windowsFor, surveyAt, createMeasurer, withMeasuredHeight, withSurveyedHeights,
+    return { readGeoTiff, sample, percentile, estimate, coverageUrl, fetchPatiently, windowsFor, windowsAround, surveyAt, createMeasurer, withMeasuredHeight, withSurveyedHeights,
         settings: Object.freeze({ RIDGE_PERCENTILE, EAVE_PERCENTILE, INSET_M, MIN_CELLS, MIN_ROOF_HEIGHT_M, MAX_ROOF_HEIGHT_M, MAX_WINDOW_M }) };
 });

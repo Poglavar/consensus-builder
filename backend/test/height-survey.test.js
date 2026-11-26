@@ -79,11 +79,17 @@ describe('height survey', () => {
     it('stops after the last attempt and reports the survey unavailable, without caching the failure', async () => {
         let calls = 0;
         const down = async url => { calls++; return url.includes('ogc/features') ? answer({ features: [] }) : answer(Buffer.from(''), 503); };
-        const heights = measurer(down, { attempts: 3 });
+        const heights = measurer(down, { attempts: 3, backoffMs: 20 });
+        const started = Date.now();
         expect((await heights.measure([HOUSE])).get('house')).toMatchObject({ rejection: 'survey-unavailable' });
-        expect(calls).toBe(3 + 3 + 1);
+        // A failure, unlike a hang, is asked again after a doubling pause: 20 ms, then 40 ms.
+        expect(Date.now() - started).toBeGreaterThanOrEqual(60);
+        // The surface's 3 attempts and the date index; the terrain stops when the surface gives up.
+        expect(calls).toBeGreaterThanOrEqual(3 + 1);
+        expect(calls).toBeLessThanOrEqual(3 + 3 + 1);
+        const first = calls;
         await heights.measure([HOUSE]);
-        expect(calls).toBeGreaterThan(7);
+        expect(calls).toBeGreaterThan(first);
     });
 
     it('does not retry a request the service refuses', async () => {
@@ -91,6 +97,33 @@ describe('height survey', () => {
         const refusing = async () => { calls++; return answer(Buffer.from(''), 400); };
         await expect(survey.fetchPatiently('https://example.test/wcs', { fetchImpl: refusing, attempts: 5 })).rejects.toMatchObject({ code: 'refused' });
         expect(calls).toBe(1);
+    });
+
+    // The 3D view's progressive read: a core window around the view's centre first, then the strips
+    // around it, each reported as it lands, the flight dates read once for the whole call.
+    it('reads the core window around the centre first, one slot at a time, and reports each as it lands', async () => {
+        const calls = [], reports = [];
+        const centre = HOUSE.geometry.coordinates[0][0];
+        await measurer(fixtureFetch(calls)).measure([GARDEN, HOUSE], { around: centre, coreM: 10, concurrency: 1, onWindow: results => reports.push([...results.keys()]) });
+        expect(reports).toEqual([[], ['house'], ['garden']]);
+        const surfaces = calls.filter(url => url.includes(EA.surface.coverageId)).map(url => new URL(url).searchParams.getAll('subset')[0]);
+        // The house's window (its corners project to x 531348–531361, less the 3 m padding), then the
+        // garden's, in the strip west of the core.
+        expect(surfaces).toEqual(['E(531345,531364)', 'E(531338,531352)']);
+        expect(calls.filter(url => url.includes('ogc/features'))).toHaveLength(1);
+    });
+
+    it('cuts a view into a core and at most four strips, not a grid of small windows', () => {
+        const project = proj4('EPSG:4326', EA.proj4);
+        const entries = [];
+        for (let i = -6; i <= 6; i++) for (let j = -6; j <= 6; j++) {
+            const x = 531350 + i * 45, y = 184600 + j * 45;
+            entries.push({ id: `${i}:${j}`, metric: { type: 'Polygon', coordinates: [[[x, y], [x + 8, y], [x + 8, y + 8], [x, y + 8], [x, y]]] } });
+        }
+        const windows = survey.windowsAround(entries, [531350, 184600], 250);
+        expect(windows).toHaveLength(5);
+        expect(windows[0].members.every(entry => entry.metric.coordinates[0][0].every((v, k) => Math.abs(v - [531350, 184600][k]) <= 125))).toBe(true);
+        expect(project).toBeTruthy();
     });
 
     it('measures each building once per session', async () => {
