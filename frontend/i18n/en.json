@@ -8517,6 +8517,8 @@
         },
         "dialog": {
             "titleCreate": "Create agreement",
+            "mapRestored": "The map is back as it was before this agreement.",
+            "mapRestoreFailed": "The map could not be put back as it was before this agreement: unapply the plan's designs in Lists.",
             "titleEdit": "Edit agreement",
             "titleCounter": "Counter-agreement",
             "counterTitle": "Counter to {{title}}",

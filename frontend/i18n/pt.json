@@ -2414,6 +2414,8 @@
         },
         "dialog": {
             "titleCreate": "Criar acordo",
+            "mapRestored": "O mapa voltou a estar como antes deste acordo.",
+            "mapRestoreFailed": "Não foi possível repor o mapa como estava antes deste acordo: retire do mapa os projetos do plano em Listas.",
             "titleEdit": "Editar acordo",
             "titleCounter": "Contraproposta de acordo",
             "counterTitle": "Contraproposta a {{title}}",

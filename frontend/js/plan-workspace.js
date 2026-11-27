@@ -210,6 +210,22 @@
         });
         return outcome;
     }
+    // The designs applied here, by id: what an action that applies a plan for a moment can put back.
+    function appliedIds() {
+        return win.proposalStorage.getAllProposals().filter(record => win.isApplied(record)).map(record => String(record.proposalId));
+    }
+    // Puts the map back as it was when `before` (appliedIds()) was taken, in one change: what was
+    // applied since comes off, and what it stood down stands again. False when nothing changed.
+    async function restoreApplied(before) {
+        const was = new Set(before), now = new Set(appliedIds());
+        const added = [...now].filter(id => !was.has(id)), stoodDown = [...was].filter(id => !now.has(id));
+        if (!added.length && !stoodDown.length) return false;
+        if (await win.ProposalManager.applyProposalPlan(stoodDown, { releaseProposalIds: added }) === false) {
+            throw new Error(win.i18n.t('agreement.dialog.mapRestoreFailed'));
+        }
+        win.ProposalManager._refreshUIAfterProposalChange?.(null);
+        return true;
+    }
     // A copied address opens a plan as a preview, unapplied. An action that reads the plan's land
     // (an agreement, the rooster) asks once, applies it and goes on; false when the visitor declines.
     async function ensureApplied(plan) {
@@ -219,5 +235,5 @@
             title: win.i18n.t('planDialog.applyTitle', { title }), okText: win.i18n.t('planDialog.applyAndContinue') });
         return confirmed && !(await applyFromUi(plan)).blocked;
     }
-    win.PlanWorkspace = Object.freeze({ save, list, resolve, publish, publication, appliedMembers, standingMembers, apply, applyFromUi, ensureApplied, trial });
+    win.PlanWorkspace = Object.freeze({ save, list, resolve, publish, publication, appliedMembers, standingMembers, apply, applyFromUi, ensureApplied, appliedIds, restoreApplied, trial });
 })(window);

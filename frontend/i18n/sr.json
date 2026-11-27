@@ -8563,6 +8563,8 @@
         },
         "dialog": {
             "titleCreate": "Napravi sporazum",
+            "mapRestored": "Mapa je vraćena kakva je bila pre ovog sporazuma.",
+            "mapRestoreFailed": "Mapu nije bilo moguće vratiti kakva je bila pre ovog sporazuma: uklonite dizajne plana sa mape u Listama.",
             "titleEdit": "Uredi sporazum",
             "titleCounter": "Protivpredlog sporazuma",
             "counterTitle": "Protivpredlog za {{title}}",

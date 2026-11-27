@@ -253,6 +253,12 @@ test('a previewed private plan asks to apply its unpublished members before agre
   await expect(agreementEditor(page).locator('[data-agreement-input]')).toHaveCount(1);
   await expect(editorSave(agreementEditor(page))).toBeEnabled();
   expect(await agreementEditor(page).locator('[data-agreement-plan]').inputValue()).toBe(planCid);
+  const applied = () => page.evaluate(id => (window as any).isApplied((window as any).proposalStorage.getProposal(id)), layoutId);
+  expect(await applied()).toBe(true);
+  // Cancelled, the agreement leaves the map as it found it: the plan it applied comes off again.
+  await agreementEditor(page).locator('.panel-header [data-agreement-action="cancel"]').click();
+  await expect(page.locator('#ephemeral-message-container')).toContainText('The map is back as it was before this agreement.');
+  await expect.poll(applied).toBe(false);
 });
 
 test('phone layout shows tabs without horizontal overflow and requires a saved plan', async ({ mockApi: page }, testInfo) => {

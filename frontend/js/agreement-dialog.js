@@ -1087,7 +1087,9 @@
         const requestedPlan = base?.plan || plan || null;
         let initialPlan = plans.find(row => row.cid === requestedPlan?.cid) || requestedPlan;
         const crowdfunding = base?.rule?.electorate === 'investors' || electorate === 'investors';
-        // A plan opened from a copied address is a preview: its land exists once it is applied.
+        // A plan opened from a copied address is a preview: its land exists once it is applied. What
+        // the map held before is kept, so cancelling the agreement puts it back (finish).
+        const appliedBefore = initialPlan && !crowdfunding ? root.PlanWorkspace.appliedIds() : null;
         if (initialPlan && !crowdfunding && !await root.PlanWorkspace.ensureApplied(initialPlan)) return null;
         // Crowdfunding commits the saved plan revision, rather than the map application of it. Bind
         // its carried members without applying or deriving cadastral land.
@@ -1579,6 +1581,13 @@
             parent.appendChild(panel); modal.remove();
             const reopen = preserveContext ? null : result?.id || replaced;
             if (reopen) Promise.resolve(panels.open(reopen)).catch(report);
+            // Cancelled: the plan this editor applied for its land (on opening or by Apply plan designs)
+            // comes off the map again, and what it stood down stands again.
+            if (!result && appliedBefore) {
+                root.PlanWorkspace.restoreApplied(appliedBefore).then(restored => {
+                    if (restored) root.showEphemeralMessage?.(t('agreement.dialog.mapRestored', 'The map is back as it was before this agreement.'), 6000, 'info');
+                }).catch(report);
+            }
             resolveClosed(result || null);
         }
         function report(error) {

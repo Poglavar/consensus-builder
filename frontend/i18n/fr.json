@@ -2414,6 +2414,8 @@
         },
         "dialog": {
             "titleCreate": "Créer un accord",
+            "mapRestored": "La carte est revenue à son état d’avant cet accord.",
+            "mapRestoreFailed": "La carte n’a pas pu revenir à son état d’avant cet accord : retirez les projets du plan de la carte dans Listes.",
             "titleEdit": "Modifier l’accord",
             "titleCounter": "Contre-proposition d’accord",
             "counterTitle": "Contre-proposition à {{title}}",
