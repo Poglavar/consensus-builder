@@ -77,6 +77,12 @@ member, whose key the developer's runner holds, states each round buyer as the f
 the seller as holder; the bots trade only flats it states a holder for, and an offer it does not
 confirm expires and its escrow returns.
 
+They trade plots the same way. `backend/agents/plot-market.json` lists, per city, the plots and the
+lens member for them (Alatau: six house plots near the city centre, lifecycle-01). That member states
+as each plot's first holder the sole owner its devnet owner registry gives (basis registry), in the
+same run as its flat duties, and confirms plot sales by the same rule. Homebuyers are made a plot's
+registry owner with `scripts/seed-lens-owners.mjs --parcel ID --persona NAME`.
+
 ## Open: double sale and multi-parcel offers
 
 Unresolved as of 2026-11-27. The single-plot and single-apartment case is being built first; this

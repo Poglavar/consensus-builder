@@ -47,7 +47,7 @@ describe('gathering the open rounds', () => {
         discovery.discoverAgreements.mockResolvedValueOnce(rows.map(({ cid }) => ({ cid, name: cid, city: 'alatau', account: '11111111111111111111111111111111', rule: { electorate: 'investors' }, chainStatus: 'active' })));
         const index = { getAgreement: vi.fn(async cid => rows.find(row => row.cid === cid)) };
         const log = vi.fn();
-        const { rounds } = await gatherHomes({ index, persona: { name: 'homebuyer-t', policy: { cities: ['alatau'] } }, connection: {}, wallet: null, offerTools: null, log });
+        const { rounds } = await gatherHomes({ index, persona: { name: 'homebuyer-t', policy: { cities: ['alatau'] } }, connection: {}, wallet: null, offerTools: null, markets: [], log });
         expect(rounds.map(round => round.cid)).toEqual([current.cid]);
         expect(rounds[0].units).toHaveLength(2);
         expect(log).toHaveBeenCalledWith(expect.stringMatching(/round bafretired skipped: Each apartment needs a unique unit ID/));

@@ -33,7 +33,7 @@ function usage(code) {
         '  --day YYYY-MM-DD   The picks of that day\'s runs (consensus.agent_run checkpoints; run with',
         '                     agents/run.mjs --live --until chosen first when the picks are new)',
         '  --slot LABEL       Only the runs of that slot (run ids <day>-<slot>-<persona>); default every run of the day',
-        '  --persona NAME     Only this proposer persona (required with --parcel)',
+        '  --persona NAME     Only this proposer persona (required with --parcel, which also takes a homebuyer)',
         '  --parcel ID        Register this one parcel to --persona instead of reading picks',
         '  --apply            Write the registry. Without it the script prints what it would register (dry run)',
         '  --env-file PATH    The .env holding DATABASE_URL (default backend/.env)',
@@ -72,14 +72,17 @@ function parseArgs(argv) {
     return args;
 }
 
-/** The proposer personas of a personas.json document by name (agents/personas.json by default). */
+/**
+ * The personas that hold land in the registry, by name (agents/personas.json by default): proposers,
+ * and homebuyers, which trade the plots of agents/plot-market.json (registered with --parcel).
+ */
 export function proposerPersonas(file = JSON.parse(fs.readFileSync(path.join(BACKEND_ROOT, 'agents', 'personas.json'), 'utf8'))) {
-    return new Map((file.personas || []).filter(p => (p.role || 'proposer') === 'proposer').map(p => [p.name, p]));
+    return new Map((file.personas || []).filter(p => ['proposer', 'homebuyer'].includes(p.role || 'proposer')).map(p => [p.name, p]));
 }
 
 function walletOf(personas, name) {
     const persona = personas.get(name);
-    if (!persona) throw new Error(`no proposer persona named ${name} in agents/personas.json`);
+    if (!persona) throw new Error(`no proposer or homebuyer persona named ${name} in agents/personas.json`);
     if (!persona.wallet) throw new Error(`persona ${name} has no wallet yet`);
     return persona.wallet;
 }

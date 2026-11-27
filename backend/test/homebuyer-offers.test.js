@@ -8,6 +8,7 @@ import { readFileSync } from 'node:fs';
 import { Keypair, PublicKey } from '@solana/web3.js';
 import { executeHomeAction, homeActivityEntity, homeOffer, readFlatOffers, readFlats } from '../agents/homebuyer-chain.js';
 import { client, termsHashOf } from '../property-offers/onchain.js';
+import { plotAssets } from '../agents/plot-market.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
@@ -49,6 +50,19 @@ describe('flats of executed rounds', () => {
             { asset: flatAsset(2), holder: null }
         ]);
     });
+    it('reads a plot-market plot\'s holder the same way, in the same batch', async () => {
+        const [plot] = plotAssets({ cities: ['alatau'], personas: [{ name: 'lifecycle-01', role: 'lens-member', wallet: LENS }],
+            markets: [{ city: 'alatau', lens: 'lifecycle-01', sourceId: 'kz-alatau-pkk', plots: [{ id: 'KZ-ALATAU-PKK-1', at: '43.61,77.02,18', label: 'Plot 1' }] }] });
+        expect(plot).toMatchObject({ lens: LENS, asset: { kind: 'parcel', sourceId: 'kz-alatau-pkk', id: 'KZ-ALATAU-PKK-1', at: '43.61,77.02,18' } });
+        const held = Statements.holdingAddress(LENS, plot.assetHash).toBase58();
+        const connection = {
+            getMultipleAccountsInfo: vi.fn(async keys => keys.map(key => key.toBase58() === held ? { data: holdingData(plot.asset, OTHER) } : null)),
+            getAccountInfo: vi.fn(async () => null)
+        };
+        const flats = await readFlats({ connection, executed: [], plots: [plot], readInventory: vi.fn() });
+        expect(connection.getMultipleAccountsInfo).toHaveBeenCalledOnce();
+        expect(flats).toMatchObject([{ roundCid: null, roundTitle: 'Plot 1', title: 'Plot 1', city: 'alatau', asset: plot.asset, holder: OTHER, holding: held }]);
+    });
 });
 
 describe('a homebuyer\'s offer terms', () => {
@@ -88,8 +102,9 @@ describe('offers on those flats', () => {
         const offerTools = { list: vi.fn(async query => ({ propertyOffers: query.maker ? [bid] : [listing, elsewhere, { ...listing, cid: 'bafkreiforged' }] })) };
         const offers = await readFlatOffers({ connection, offerTools, cities: ['alatau'], wallet: ME, flats });
         expect(offerTools.list.mock.calls.map(([query]) => query)).toEqual([
-            { city: 'alatau', kind: 'flat', currency: 'USDC', status: 'open,committed', limit: 100 },
-            { maker: ME, kind: 'flat', currency: 'USDC', status: 'unminted,open,committed', limit: 100 }]);
+            // No kind: flat and plot offers both (the hashes keep only known assets).
+            { city: 'alatau', currency: 'USDC', status: 'open,committed', limit: 100 },
+            { maker: ME, currency: 'USDC', status: 'unminted,open,committed', limit: 100 }]);
         expect(offers).toMatchObject([
             { cid: listing.cid, assetHash: Offer.assetHash(flatAsset(1)), chain: { status: 'Open', maker: OTHER, seller: OTHER, buyer: null, price: '2000000', escrow: '0' } },
             { cid: bid.cid, chain: null }]);

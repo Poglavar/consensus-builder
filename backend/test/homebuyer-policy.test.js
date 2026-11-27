@@ -61,6 +61,16 @@ describe('flat offers (USDC)', () => {
         chain: chain ? { status, maker: proposer, buyer, seller: direction === 'sell' ? proposer : null, price, escrow, deadline: String(Date.parse(expiresAt) / 1000) } : null });
     const homes = (flats, offers = []) => ({ rounds: [], refunds: [], flats, offers });
 
+    it('trades a plot-market plot as it trades a flat: lists the plot it holds, bids for one another holds', () => {
+        const plot = (id, holder) => ({ roundCid: null, roundTitle: `Plot ${id}`, title: `Plot ${id}`, city: 'alatau', label: `Plot ${id}`,
+            asset: { kind: 'parcel', sourceId: 'kz-alatau-pkk', id: `KZ-${id}`, at: '43.61,77.02,18' }, assetHash: `hash-p${id}`, lens: LENS, holder, holding: `first-p${id}`, pending: null, stale: false });
+        const sell = run(homes([plot('1', ME)]), only('offerSell')).action;
+        expect(sell).toMatchObject({ type: 'make-offer', direction: 'sell', agreementCid: null, offerTitle: 'Plot 1', lens: null, usdc: 0,
+            asset: { kind: 'parcel', id: 'KZ-1' } });
+        const bid = run(homes([plot('2', OTHER)]), only('offerBuy')).action;
+        expect(bid).toMatchObject({ type: 'make-offer', direction: 'buy', lens: LENS, asset: { kind: 'parcel', id: 'KZ-2' } });
+        expect(bid.usdc).toBeGreaterThan(0);
+    });
     it('ends its own offer past the deadline first, then creates a published one, then accepts a bid, then takes a listing', () => {
         const flats = [flat('1', ME), flat('2', OTHER), flat('3', ME), flat('4', OTHER)];
         const expired = offer('o-exp', { id: '3', proposer: ME, expiresAt: '2026-11-25T12:00:00.000Z' });

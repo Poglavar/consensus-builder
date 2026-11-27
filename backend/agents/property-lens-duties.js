@@ -1,7 +1,8 @@
 // A round's lens member's property duties, signed by the proposer runner (run.mjs) with the lens
 // member's own key (personas.json service.confirmsFundedRounds, key file on the host): for each
 // executed apartment round of a developer it serves, state each buyer as the first holder of its flat
-// (PropertyHolding-v1, basis developer), and, as the buyer's lens of committed property offers,
+// (PropertyHolding-v1, basis developer); for each plot of its plot markets (plot-market.json), state the
+// sole owner its devnet owner registry gives as first holder (basis registry); and, as the buyer's lens of committed property offers,
 // confirm those whose seller its own statements name as holder (property-offer-signer.js confirmSale,
 // the browser's check; the confirmation that completes both lenses pays out in the same transaction).
 // Nothing else is confirmed: an offer it cannot confirm waits and expires. Every item is read before
@@ -11,6 +12,7 @@ import { discoverAgreements, readAgreementStatuses } from './discovery.js';
 import { readRoundInventory } from './apartment-actions.js';
 import { confirmSale, stateHolding } from './property-offer-signer.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
+import { loadPlotMarkets, plotsOfMember } from './plot-market.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
@@ -109,6 +111,46 @@ export async function stateRoundHolders({ connection, memberKeypair, rounds, bud
 }
 
 /**
+ * State, once, the sole owner its devnet owner registry gives each plot of its plot markets as that
+ * plot's first holder (PropertyHolding-v1, basis registry). A plot the registry gives no sole owner is
+ * skipped; a statement already naming someone else is reported, never replaced. Later sales are its
+ * confirmations, so the first statement stays as it is. `readOwners(ids)` → Map(id → [{ owner, ownerCount }]).
+ * → { stated: [{ plot, holder, signature }], already, unowned, deferred, conflicts: [...], failures: [...] }
+ */
+export async function statePlotHolders({ connection, memberKeypair, plots, readOwners, budget, sendAndConfirm, env = process.env,
+    deps = {}, log = () => {} }) {
+    const act = { stateHolding, ...deps };
+    const member = memberKeypair.publicKey.toBase58();
+    const result = { stated: [], already: 0, unowned: 0, deferred: 0, conflicts: [], failures: [] };
+    if (!plots.length) return result;
+    const owners = await readOwners(plots.map(plot => plot.asset.id));
+    const addresses = plots.map(plot => Statements.holdingAddress(member, plot.assetHash));
+    const infos = await getMultipleAccountsBatched(connection, addresses, { batchSize: accountsPerRequest(env) });
+    for (const [i, plot] of plots.entries()) {
+        try {
+            const set = owners.get(plot.asset.id) || [];
+            const holder = set.length === 1 && set[0].ownerCount === 1 ? set[0].owner : null;
+            if (!holder) { result.unowned += 1; continue; }
+            if (infos[i]) {
+                const stated = Statements.readHolding(new Uint8Array(infos[i].data));
+                if (stated?.fields.holder === holder) { result.already += 1; continue; }
+                result.conflicts.push(`${plot.asset.id}: this lens member already states ${stated?.fields.holder ?? 'an unreadable holder'} first holds it, not the registry's owner ${holder}`);
+                continue;
+            }
+            if (budget.left <= 0) { result.deferred += 1; continue; }
+            const done = await act.stateHolding({ connection, keypair: memberKeypair, asset: plot.asset, city: plot.city, holder, basis: 'registry',
+                evidence: `devnet-registry:${plot.asset.id}`, sendAndConfirm });
+            if (done.signature) budget.left -= 1;
+            result.stated.push({ plot: plot.asset.id, holder, signature: done.signature });
+            log(`stated ${holder} first holder of ${plot.label} ${done.signature ?? '(already)'}`);
+        } catch (error) {
+            result.failures.push(`${plot.asset.id}: ${error.message}`);
+        }
+    }
+    return result;
+}
+
+/**
  * Confirm, as the buyer's lens, the committed offers waiting for this member (GET
  * /property-offers/awaiting) whose seller its own statements name as holder. A refusal (no holder
  * stated, another holder, another sale of the holding open) leaves the offer waiting; it expires
@@ -147,8 +189,8 @@ export async function confirmAwaitingSales({ connection, memberKeypair, offerToo
  * first holders, then confirm waiting sales, within AGENT_PROPERTY_LENS_MAX_PER_RUN transactions.
  * Problems go to `failures` (the run's verdict); a summary line per member to `report`.
  */
-export async function propertyLensStage({ connection, index, personas, developers, memberSigners, offerTools, recordOnchain, failures, report,
-    env = process.env, sendAndConfirm, deps = {}, log = () => {} }) {
+export async function propertyLensStage({ connection, index, personas, developers, memberSigners, offerTools, recordOnchain, readOwners, failures, report,
+    env = process.env, sendAndConfirm, deps = {}, log = () => {}, markets = loadPlotMarkets() }) {
     const members = lensMembersOfDevelopers(personas, developers, Object.keys(memberSigners));
     for (const [member, serving] of members) {
         const name = personas.find(p => p.wallet === member)?.name ?? member;
@@ -164,14 +206,21 @@ export async function propertyLensStage({ connection, index, personas, developer
         } catch (error) {
             failures.push(`${name} property lens: first holders: ${error.message}`);
         }
+        let plotHolders = { stated: [], already: 0, unowned: 0, deferred: 0, conflicts: [], failures: [] };
+        try {
+            plotHolders = await statePlotHolders({ connection, memberKeypair: keypair, plots: plotsOfMember({ member, personas, markets }), readOwners,
+                budget, sendAndConfirm, env, deps, log: say });
+        } catch (error) {
+            failures.push(`${name} property lens: plot holders: ${error.message}`);
+        }
         try {
             sales = await confirmAwaitingSales({ connection, memberKeypair: keypair, offerTools, recordOnchain, budget, sendAndConfirm, deps, log: say });
         } catch (error) {
             failures.push(`${name} property lens: confirmations: ${error.message}`);
         }
-        for (const problem of [...holders.conflicts, ...holders.failures, ...sales.failures]) failures.push(`${name} property lens ${problem}`);
+        for (const problem of [...holders.conflicts, ...holders.failures, ...plotHolders.conflicts, ...plotHolders.failures, ...sales.failures]) failures.push(`${name} property lens ${problem}`);
         for (const item of sales.waiting) say(`offer ${item.cid} waits: ${item.reason}`);
-        const deferred = holders.deferred + sales.deferred;
-        report.push(`${name}: ${holders.stated.length} first holder(s) stated (${holders.already} already) · ${sales.confirmed.length} sale(s) confirmed · ${sales.waiting.length} waiting${deferred ? ` · ${deferred} deferred (cap ${propertyLensCap(env)})` : ''}`);
+        const deferred = holders.deferred + plotHolders.deferred + sales.deferred;
+        report.push(`${name}: ${holders.stated.length} flat first holder(s) stated (${holders.already} already) · ${plotHolders.stated.length} plot first holder(s) stated (${plotHolders.already} already, ${plotHolders.unowned} without a sole registry owner) · ${sales.confirmed.length} sale(s) confirmed · ${sales.waiting.length} waiting${deferred ? ` · ${deferred} deferred (cap ${propertyLensCap(env)})` : ''}`);
     }
 }

@@ -21,6 +21,7 @@ import { createPropertyOfferTools } from './mcp-property-offers.js';
 import { commitOffer, createOfferOnChain, createOnchainRecorder, expireOffer, memberView } from './property-offer-signer.js';
 import { client as offerClient, validateOfferAccount } from '../property-offers/onchain.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
+import { loadPlotMarkets, plotAssets } from './plot-market.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
@@ -52,12 +53,13 @@ export function loadPersonas(file = new URL('./personas.json', import.meta.url))
  * { rounds: [{ cid, account, sponsor, title, planTitle, city, deadline, chainStatus, plain, targetUsdcAtomic, donatedByMe,
  *   units: [{ unitId, label, xrayBuilding, unit, at, priceUsdcAtomic, depositUsdcAtomic, status, buyer }] }],
  *   refunds: [{ cid, account, title, chainStatus, amount }],
- *   flats: [{ roundCid, roundTitle, title, city, label, asset, assetHash, lens, holder, holding, pending, stale }],
+ *   flats: [{ roundCid, roundTitle, title, city, label, asset, assetHash, lens, holder, holding, pending, stale }]: the flats
+ *     of executed rounds and the plots of its cities' plot markets (roundCid null, roundTitle the plot's label),
  *   offers: [{ cid, assetHash, content, chain: null | { status, maker, buyer, seller, price, escrow, deadline } }] }
  * `offerTools` (mcp-property-offers.js createPropertyOfferTools) reads the offer index.
  */
 export async function gatherHomes({ index, persona, connection, wallet, apiBase, appOrigin = DEFAULT_APP_ORIGIN,
-    offerTools = apiBase ? createPropertyOfferTools({ apiBase, appOrigin }) : null, log = () => {} }) {
+    offerTools = apiBase ? createPropertyOfferTools({ apiBase, appOrigin }) : null, personas = loadPersonas(), markets = loadPlotMarkets(), log = () => {} }) {
     const cities = persona.policy?.cities?.length ? persona.policy.cities.filter(city => city !== '*') : [];
     if (!cities.length) throw new Error(`${persona.name}: a homebuyer names its cities (policy.cities)`);
     const { tradeRounds } = policyConfig(persona);
@@ -104,10 +106,13 @@ export async function gatherHomes({ index, persona, connection, wallet, apiBase,
             })
         });
     }
-    const flats = await readFlats({ connection, executed, log: message => log(`${persona.name}: ${message}`) });
+    // The plots of its cities' plot markets (plot-market.json) trade beside the flats, held as their lens member states.
+    const plots = plotAssets({ cities, personas, markets });
+    const flats = await readFlats({ connection, executed, plots, log: message => log(`${persona.name}: ${message}`) });
     const offers = offerTools && flats.length ? await readFlatOffers({ connection, offerTools, cities, wallet, flats, log: message => log(`${persona.name}: ${message}`) }) : [];
     log(`${persona.name}: ${rounds.length} open round(s) (${rounds.reduce((sum, round) => sum + round.units.filter(unit => unit.status === 'available').length, 0)} apartment(s) available), ${refunds.length} deposit(s) to take back, `
-        + `${flats.length} flat(s) of ${executed.length} executed round(s) (${flats.filter(flat => flat.holder).length} with a stated holder, ${flats.filter(flat => flat.holder === wallet).length} held by this wallet), ${offers.length} USDC flat offer(s)`);
+        + `${flats.filter(flat => flat.asset.kind === 'flat').length} flat(s) of ${executed.length} executed round(s) and ${flats.filter(flat => flat.asset.kind === 'parcel').length} plot(s) `
+        + `(${flats.filter(flat => flat.holder).length} with a stated holder, ${flats.filter(flat => flat.holder === wallet).length} held by this wallet), ${offers.length} USDC offer(s)`);
     return { rounds, refunds, flats, offers };
 }
 
@@ -116,7 +121,7 @@ export async function gatherHomes({ index, persona, connection, wallet, apiBase,
  * (property-holders.js viewOf over its statements). The first-holder statements are read in one batch;
  * the sales each lens member confirmed are followed per flat. A flat that cannot be read is logged and left out.
  */
-export async function readFlats({ connection, executed, env = process.env, readInventory = readRoundInventory, log = () => {} }) {
+export async function readFlats({ connection, executed, plots = [], env = process.env, readInventory = readRoundInventory, log = () => {} }) {
     const flats = [];
     for (const { summary, row, content } of executed) {
         const lens = content.rule?.lens?.[0];
@@ -130,6 +135,8 @@ export async function readFlats({ connection, executed, env = process.env, readI
                 label: unit.label, asset, assetHash: Offer.assetHash(asset), lens, buyer: item.buyer });
         }
     }
+    // Plots (plot-market.js plotAssets) have no round: their key and label stand in for it.
+    for (const plot of plots) flats.push({ roundCid: null, roundTitle: plot.label, title: plot.title, city: plot.city, label: plot.label, asset: plot.asset, assetHash: plot.assetHash, lens: plot.lens });
     const firsts = flats.map(flat => Statements.holdingAddress(flat.lens, flat.assetHash));
     const infos = await getMultipleAccountsBatched(connection, firsts, { batchSize: accountsPerRequest(env) });
     const known = new Map(firsts.map((address, i) => [address.toBase58(), infos[i]?.data ? new Uint8Array(infos[i].data) : null]));
@@ -141,7 +148,7 @@ export async function readFlats({ connection, executed, env = process.env, readI
             const view = await memberView({ connection, member: flat.lens, asset: flat.asset, getAccount });
             out.push({ ...flat, holder: view.holder, holding: view.holding, pending: view.pending?.offer ?? null, stale: Boolean(view.stale || view.invalid) });
         } catch (error) {
-            log(`flat ${flat.title} (${flat.roundCid}) unreadable (${error.message}); left out`);
+            log(`${flat.asset.kind === 'parcel' ? 'plot' : 'flat'} ${flat.title} (${flat.roundCid ?? flat.asset.id}) unreadable (${error.message}); left out`);
         }
     }
     return out;
@@ -155,13 +162,13 @@ export async function readFlats({ connection, executed, env = process.env, readI
 export async function readFlatOffers({ connection, offerTools, cities, wallet, flats, env = process.env, log = () => {} }) {
     const hashes = new Set(flats.map(flat => flat.assetHash));
     const rows = new Map();
-    const pages = [...cities.map(city => ({ city, kind: 'flat', currency: 'USDC', status: 'open,committed', limit: MAX_OFFERS })),
-        ...(wallet ? [{ maker: wallet, kind: 'flat', currency: 'USDC', status: 'unminted,open,committed', limit: MAX_OFFERS }] : [])];
+    const pages = [...cities.map(city => ({ city, currency: 'USDC', status: 'open,committed', limit: MAX_OFFERS })),
+        ...(wallet ? [{ maker: wallet, currency: 'USDC', status: 'unminted,open,committed', limit: MAX_OFFERS }] : [])];
     for (const query of pages) {
         const page = await offerTools.list(query);
-        if (page.hasMore) log(`read the newest ${MAX_OFFERS} flat offers for ${query.city || 'this wallet'} (more exist)`);
+        if (page.hasMore) log(`read the newest ${MAX_OFFERS} offers for ${query.city || 'this wallet'} (more exist)`);
         for (const row of page.propertyOffers || []) {
-            if (rows.has(row.cid) || row.content?.asset?.kind !== 'flat') continue;
+            if (rows.has(row.cid) || !['flat', 'parcel'].includes(row.content?.asset?.kind)) continue;
             const assetHash = Offer.assetHash(row.content.asset);
             if (!hashes.has(assetHash)) continue;
             if (Offer.cid(row.content) !== row.cid) { log(`offer ${row.cid} does not match its CID; left out`); continue; }
@@ -283,7 +290,10 @@ export function homeActivityMessage(persona, action) {
     }
 }
 
-/** The entity an action's activity names: the property offer, or the round (also for a new offer). */
+/** The entity an action's activity names: the property offer, the round (also for a new flat offer) or the plot. */
 export function homeActivityEntity(action) {
-    return ['mint-offer', 'take-offer', 'expire-offer'].includes(action.type) ? { type: 'property-offer', id: action.offerCid } : { type: 'agreement', id: action.agreementCid };
+    if (['mint-offer', 'take-offer', 'expire-offer'].includes(action.type)) return { type: 'property-offer', id: action.offerCid };
+    // A new offer on a plot has no round: it names the plot.
+    if (action.type === 'make-offer' && action.asset?.kind === 'parcel') return { type: 'parcel', id: action.asset.id };
+    return { type: 'agreement', id: action.agreementCid };
 }

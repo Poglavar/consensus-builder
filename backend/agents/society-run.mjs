@@ -444,7 +444,7 @@ async function main() {
                         console.log(JSON.stringify(action, null, 2));
                         simulated.push(action);
                         spent.actions += action.signedActions; spent.usdc += action.usdc;
-                        report.push(`${label}: would ${action.type}${action.side ? ` ${action.side.toUpperCase()}` : ''}${action.resolveFirst ? ' (resolve first)' : ''} ${action.agreementCid}`);
+                        report.push(`${label}: would ${action.type}${action.side ? ` ${action.side.toUpperCase()}` : ''}${action.resolveFirst ? ' (resolve first)' : ''} ${action.agreementCid ?? action.asset?.id}`);
                     } else {
                         report.push(`${label}: ${decision?.capped ? 'cap reached' : 'no action'}`);
                         if (decision?.capped) break;
@@ -487,8 +487,8 @@ async function main() {
                 const used = societyTurnSpent(summary);
                 spent.actions += used.actions; spent.usdc += used.usdc;
                 report.push(acted
-                    ? `${label}: ${action.type}${action.side ? ` ${action.side.toUpperCase()}` : ''}${action.amount ? ` ${action.amount} USDC` : ''}${action.payout ? ` (${action.payout} USDC back)` : ''} on ${action.agreementCid}`
-                    : `${label}: ${action.agreementCid} already in that state on-chain; no new transaction`);
+                    ? `${label}: ${action.type}${action.side ? ` ${action.side.toUpperCase()}` : ''}${action.amount ? ` ${action.amount} USDC` : ''}${action.payout ? ` (${action.payout} USDC back)` : ''} on ${action.agreementCid ?? action.asset?.id}`
+                    : `${label}: ${action.agreementCid ?? action.asset?.id} already in that state on-chain; no new transaction`);
             } catch (error) {
                 // The shared funding wallet is short: record it and go on (a later turn may need no USDC).
                 if (runStarted && isFundingSourceShort(error)) {

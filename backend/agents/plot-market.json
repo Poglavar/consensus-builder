@@ -1,0 +1,18 @@
+{
+  "_comment": "Plots the homebuyer bots trade in USDC property offers (agents/plot-market.js). Each market names its city, the lens member that states who first holds each plot (from its devnet owner registry, consensus.lens_devnet_owner, basis registry) and confirms sales, and the plots as their parcel source gives them: id, an interior point (at) and a label. Who holds a plot is the registry's and then the lens member's word, never this file's; homebuyers are registered as owners with scripts/seed-lens-owners.mjs --parcel ID --persona NAME.",
+  "markets": [
+    {
+      "city": "alatau",
+      "lens": "lifecycle-01",
+      "sourceId": "kz-alatau-pkk",
+      "plots": [
+        { "id": "KZ-ALATAU-PKK-03046033514-g7191505", "at": "43.613658,77.024539,18", "label": "Plot 03046033514 (600 m²)" },
+        { "id": "KZ-ALATAU-PKK-03046209646-g7187238", "at": "43.613025,77.025004,18", "label": "Plot 03046209646 (606 m²)" },
+        { "id": "KZ-ALATAU-PKK-03046209647-g7201144", "at": "43.611902,77.025081,18", "label": "Plot 03046209647 (648 m²)" },
+        { "id": "KZ-ALATAU-PKK-03046209029-g7203256", "at": "43.612653,77.022282,18", "label": "Plot 03046209029 (652 m²)" },
+        { "id": "KZ-ALATAU-PKK-03046209729-g7188903", "at": "43.613224,77.024697,18", "label": "Plot 03046209729 (655 m²)" },
+        { "id": "KZ-ALATAU-PKK-03046033537-g7626567", "at": "43.614011,77.023997,18", "label": "Plot 03046033537 (748 m²)" }
+      ]
+    }
+  ]
+}

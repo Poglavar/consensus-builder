@@ -267,7 +267,9 @@ member's own key (`property-lens-duties.js`, at most `AGENT_PROPERTY_LENS_MAX_PE
 for each of the newest executed apartment rounds it states each reserved unit's buyer as first holder of
 the flat (`PropertyHolding-v1`, basis `developer`, evidence `agreement:<round CID>`, asset = the flat's
 v2 identity), reading the statements first so a repeat signs nothing, and reporting a statement that
-names someone else instead of replacing it. Then it lists the committed offers waiting for the member
+names someone else instead of replacing it. For each plot of its plot markets (`plot-market.json`) it
+states the sole owner its devnet owner registry gives as first holder (basis `registry`, evidence
+`devnet-registry:<parcel id>`), skipping a plot with no sole owner. Then it lists the committed offers waiting for the member
 (`GET /property-offers/awaiting`) and confirms, as the buyer's lens, only those whose seller its own
 statements name as holder (`property-offer-signer.js` `confirmSale`, the browser's check, at the
 per-holding address); the confirmation that completes both lenses executes the payout in the same
@@ -279,7 +281,8 @@ the run's verdict.
 inventory, their own deposits in rounds that ended unexecuted, the flats of the `tradeRounds` newest
 executed rounds with who holds each according to the round's lens member (`property-holders.js`
 `viewOf`), and those flats' USDC `property-offer/v2` offers from the index, each read from its chain
-account. Each turn takes one action. Obligations first, in this order: take back deposits
+account. The plots of their cities' plot markets join those flats (no round; held as the market's
+lens member states). Each turn takes one action. Obligations first, in this order: take back deposits
 (`refundMyDonations`); end its own offer, or one whose escrow it paid, past the deadline
 (`expire-offer`, the escrow returns to the buyer); create on chain an offer it published but did not
 mint (`mint-offer`); accept a bid on a flat it holds whose buyer's lens is the round's lens member

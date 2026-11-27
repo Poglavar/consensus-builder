@@ -1,5 +1,7 @@
 // Homebuyer policy (homebuyer-01…): a household agent in a developer's crowdfunding rounds and in the
-// USDC property-offer market for the flats of executed rounds. Pure: input = `homes`
+// USDC property-offer market for the flats of executed rounds and the plots of its cities' plot markets
+// (plot-market.json; held as their lens member states from its devnet owner registry; a plot has no
+// round, roundCid null). Pure: input = `homes`
 // (homebuyer-chain.js gatherHomes: open rounds with their apartment inventory, its own deposits in
 // rounds that ended unexecuted, the flats of executed rounds with who holds each according to the
 // round's lens member, and the flats' USDC offers with their chain state), the persona, seed, wallet
@@ -112,8 +114,8 @@ export function decide({ persona, seed, now = Date.now(), wallet = null, homes =
     let draw = stableNumber(`${seed}:${persona.name}:kind`) % total;
     const kind = kinds.find(item => (draw -= config.weights[item]) < 0) || kinds[0];
     const ofKind = choices.filter(choice => choice.kind === kind)
-        .sort((a, b) => stableNumber(`${seed}:${persona.name}:${a.agreementCid}:${a.action.unitId || a.action.asset?.unit || ''}`)
-            - stableNumber(`${seed}:${persona.name}:${b.agreementCid}:${b.action.unitId || b.action.asset?.unit || ''}`));
+        .sort((a, b) => stableNumber(`${seed}:${persona.name}:${a.agreementCid}:${a.action.unitId || a.action.asset?.unit || a.action.asset?.id || ''}`)
+            - stableNumber(`${seed}:${persona.name}:${b.agreementCid}:${b.action.unitId || b.action.asset?.unit || b.action.asset?.id || ''}`));
     const ordered = [...ofKind, ...choices.filter(choice => choice.kind !== kind)];
     const { chosen, capped } = firstFitting(ordered, budget);
     return {

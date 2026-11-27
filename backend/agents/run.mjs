@@ -941,14 +941,15 @@ async function main() {
             plannedActions: executionPlan.actionCount, failures, report, memberSigners
         });
         // A developer's round lens member, with its own key: first holders of the flats its executed
-        // rounds sold, and its confirmations of committed flat offers (property-lens-duties.js).
+        // rounds sold and of its plot markets' plots (its devnet owner registry), and its confirmations
+        // of committed flat and plot offers (property-lens-duties.js).
         const developers = entries.map(entry => entry.persona).filter(persona => persona.role === 'developer');
         if (developers.length) {
             const appOrigin = process.env.AGENT_APP_ORIGIN || DEFAULT_APP_ORIGIN;
             await propertyLensStage({
                 connection, index, personas: allPersonas, developers, memberSigners, failures, report, log,
                 offerTools: createPropertyOfferTools({ apiBase, appOrigin }), recordOnchain: createOnchainRecorder({ apiBase, appOrigin }),
-                sendAndConfirm: sendAndConfirmPolling
+                readOwners: ids => readParcelOwners(pool, ids), sendAndConfirm: sendAndConfirmPolling
             });
         }
         for (const e of entries.filter(entry => entry.run?.summary?.picks?.length)) {
