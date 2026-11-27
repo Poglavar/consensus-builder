@@ -167,7 +167,10 @@ live page shape and carries `x-parcel-snapshot: <saved time>`, and the relay nev
 Cloudflare cache it. Copies are `u_view-district-<id>.geojson.gz` in `KZ_PKK_SNAPSHOT_DIR`
 (`/root/data/kz-pkk-copies` on prod), written by
 [`snapshot-kazakhstan-pkk.mjs`](../backend/scripts/snapshot-kazakhstan-pkk.mjs) (paced, resumable,
-one district's failure never stops the others). A copy reads area edges strictly, where the live
+one district's failure never stops the others; districts already saved are skipped). Valhalla's
+`kz-pkk-archive.service` keeps copies of the districts of Alatau, Astana, Almaty, Shymkent and
+nineteen other cities; the district ids are features of `egkn:districts`, and several cities also have
+older ids that hold no parcels. A copy reads area edges strictly, where the live
 server includes parcels up to about half a metre outside the box. A district without a copy fails
 as before.
 
