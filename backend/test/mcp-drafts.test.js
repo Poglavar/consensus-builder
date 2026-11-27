@@ -381,3 +381,45 @@ describe('MCP Based on existing buildings draft', () => {
         expect(accepts({ rule: 'exact', buildingSources: ['osm'], height: 9 })).toBe(false);
     });
 });
+
+// ugt_modify_design on a Based on existing buildings design keeps its buildings and saved parameters
+// in step, as the editor rebuilds from the parameters on reopen.
+describe('MCP modify of a Based on existing buildings design', () => {
+    const house = west => ({ id: 'way/1', height_m: 9, floors: null, geometry: { type: 'Polygon',
+        coordinates: [[[west, 51.5002], [west + 0.0002, 51.5002], [west + 0.0002, 51.5004], [west, 51.5004], [west, 51.5002]]] } });
+    const read = { siteOfDesign: design => design.site,
+        parcels: async () => { throw new Error('an outline reads no parcels'); },
+        request: async (path, _query, body) => {
+            if (path === '/designs/binding') return { parcelSourceId: 'test-source', binding: { coverage: 'complete', parcels: [{ parcelId: 'A' }] } };
+            if (path === '/buildings/under') return { supported: true, truncated: false, regions: { site: [house(-0.0998)] } };
+            throw new Error(`Unexpected route ${path}`);
+        } };
+    const draft = async existing => createMcpDraftTools({ appOrigin: 'https://app.example', read })
+        .draftBuilding({ city: 'london', outline: site, typology: 'block', floorHeightM: 3.5, roof: 'mansard', existing: { ...existing, buildingSources: ['osm'] } });
+
+    it('redraws the storeys of an exact design and its saved parameters together', async () => {
+        const tools = createMcpDraftTools({ appOrigin: 'https://app.example', read });
+        const { design } = await draft({ rule: 'exact', floors: 4 });
+        const result = await tools.modifyDesign({ design, changes: [{ type: 'set_floors', value: 5 }] });
+        expect(result.design.buildingProposal.parameters).toMatchObject({ mode: 'existing', rule: 'exact', proposedHeightFloors: 5, floorHeightM: 3.5, roof: 'mansard' });
+        expect(result.design.geometry.buildings.map(building => building.properties)).toEqual([expect.objectContaining({
+            basedOnExisting: true, sourceBuildingId: 'osm:way/1', existingHeight: 9, height: 17.5, floorHeightM: 3.5, roof: 'mansard' })]);
+        expect(result.design.geometry.buildings[0].properties).not.toHaveProperty('floors');
+        expect(result.design.geometry.buildings[0].geometry).toEqual(design.geometry.buildings[0].geometry);
+        expect(result.design.origin).toEqual({ cid: cidOfObject(design) });
+        expect(validateDesignContent(result.design)).toMatchObject({ ok: true });
+    });
+
+    it('refuses changes that would part the buildings from their parameters or footprints, naming the redraft', async () => {
+        const tools = createMcpDraftTools({ appOrigin: 'https://app.example', read });
+        const exact = (await draft({ rule: 'exact', floors: 4 })).design;
+        const additional = (await draft({ rule: 'additional', additionalFloors: 0 })).design;
+        for (const [design, change] of [[exact, { type: 'set_height', value: 20 }], [exact, { type: 'set_floors', value: 5, buildingIndex: 0 }],
+            [exact, { type: 'move', eastM: 2, northM: 0 }], [exact, { type: 'set_floors', value: 21 }], [additional, { type: 'set_floors', value: 5 }]]) {
+            await expect(tools.modifyDesign({ design, changes: [change] }), change.type).rejects.toMatchObject({
+                code: change.value === 21 ? 'invalid-construction-parameter' : 'existing-buildings-redraft' });
+        }
+        await expect(tools.modifyDesign({ design: exact, changes: [{ type: 'set_floors', value: 21 }] })).rejects.toMatchObject({ field: 'value' });
+        await expect(tools.modifyDesign({ design: exact, changes: [{ type: 'move', eastM: 2, northM: 0 }] })).rejects.toThrow(/replaceDesignCid/);
+    });
+});

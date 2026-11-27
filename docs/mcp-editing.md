@@ -163,9 +163,11 @@ allowed), with `floorHeightM` and `roof` (`flat`, `pitched` or `mansard`). The e
 constructor build the buildings and the saved `parameters` with the same module
 (`frontend/js/raised-existing-buildings.js`), so the result is the design the editor saves: no
 land taken, no urban rule, each building extended rather than replaced, and `ugt_compare` counts
-it as Plan stats does. Other massing, use and rule fields are refused. To change the rule, storeys
-or roof, draft again with `replaceDesignCid`, as reopening the editor regenerates from the
-parameters.
+it as Plan stats does. Other massing, use and rule fields are refused. `ugt_modify_design`
+`set_floors` for the whole design of an exact rule redraws every building and its saved
+`proposedHeightFloors` together; every other building change on such a design is refused. To
+change the rule, roof or buildings, draft again with `replaceDesignCid`, as reopening the editor
+regenerates from the parameters.
 
 `ugt_inspect_agreement` reports the electorate and binding rule. Owner agreements have allocation
 and cash ledgers. Community polls return `communityPosition` with allocations and cash transfers

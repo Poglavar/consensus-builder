@@ -5,7 +5,7 @@ import { createMcpComparison } from './mcp-compare.js';
 import { previewArtifact } from './mcp-preview.js';
 import { parcelSourceIdOf } from './mcp-read-tools.js';
 import { editedDesign, valueAt } from './mcp-edit.js';
-import { buildTypedDesign, validateTrackDesign } from './mcp-constructors.js';
+import { buildTypedDesign, modifyRaisedExisting, validateTrackDesign } from './mcp-constructors.js';
 import { trustedMetadata } from './mcp-results.js';
 import { cityDrivingSide } from '../scripts/lib/frontend-city-money.mjs';
 import { MAX_SOURCE_BINDING_PARCELS } from '../parcels/source-binding.js';
@@ -292,7 +292,10 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference, re
             parcelSourceId ||= resolved.parcelSourceId;
             let modified = original;
             for (const change of changes) {
-                if (change.type === 'fit_to_permitted') {
+                // A design based on existing buildings stays in step with its saved parameters.
+                const raised = modifyRaisedExisting(modified, change);
+                if (raised) modified = raised;
+                else if (change.type === 'fit_to_permitted') {
                     if (!modified.buildingProposal) throw fail('invalid-change', 'Only a building can fit a permitted envelope.', { action: 'Choose a building design.' });
                     if (!change.planningSource) throw fail('planning-source-required', 'Choose the planning source for this fit.');
                     const buildings = modified.geometry.buildings;
