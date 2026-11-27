@@ -555,6 +555,8 @@ The exact ground a design consumes. A Freeform design's `geometry.landTake` can 
 
 What the applied designs do to the source buildings shown: razed, cut (the rest stands) or passed under by a road tunnel. It is derived from each design's land (a road's footprint; a block, row or rule design's site and its footprints, its footprints alone when it has no site; a Freeform building's land take, else its footprints; a structure's body) against the buildings of the sources in use, against the union of every design's land, so the order of the designs does not matter: under 2 m² of overlap a building is untouched, and when under 10 m² or 15 % of its footprint is left it is razed. Nothing is stored on a design; a change to a design derives again the buildings under its old and new land, and a source switch derives everything again.
 
+It shows the plan fully built out: the buildings that give way if everything on its land is built as designed. A design does not order a building's demolition, and an urban rule only bounds what a replacement may be, so the app says **replaced** (the building card's "Replaced by", Compare plans' "Existing buildings replaced", the model view's Surviving and Removed states), never "demolished". A building rebuilt on its own, or raised by storeys, is its own design.
+
 ### Building tunnel
 
 A span of a road's centre line (an edge, from one portal to the other) along which the road passes under buildings. The record is the span; which buildings it passes under is derived from it against the buildings shown, at the road's width along that span.

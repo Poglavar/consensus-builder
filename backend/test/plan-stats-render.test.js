@@ -623,7 +623,7 @@ describe('Compare plans as a decision sheet', () => {
         // Two 5-storey blocks over the same land: twice the land in floor area per storey.
         expect(row(window, 'Floor-area ratio')[2]).toBe('10.00');
         expect(row(window, 'Site coverage')[2]).toContain('100');
-        expect(row(window, 'Existing buildings demolished')[2]).toMatch(/^1 whole, 0 in part · /);
+        expect(row(window, 'Existing buildings replaced')[2]).toMatch(/^1 whole, 0 in part · /);
         expect(row(window, 'Build-out by period')[2]).toBe('2030–2032 · 2 periods');
         expect(row(window, 'Permitted limits')[2]).toMatch(/^1 of 2 buildings break limits \(/);
         expect(row(window, 'Green area')[2]).toBe('0');

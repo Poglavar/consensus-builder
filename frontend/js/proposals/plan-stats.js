@@ -242,7 +242,7 @@
     // demolishes, its build-out, its Permitted limits and the agreements backing it, grouped by topic.
     const DECISION_ROWS = {
         'parcels-taken': { i18nKey: 'planCompare.rows.parcelsTaken', label: 'Existing parcels taken' },
-        demolished: { i18nKey: 'planCompare.rows.demolished', label: 'Existing buildings demolished (footprint, floor area)' },
+        demolished: { i18nKey: 'planCompare.rows.demolished', label: 'Existing buildings replaced (footprint, floor area)' },
         height: { i18nKey: 'planCompare.rows.height', label: 'New buildings: maximum height · most storeys' },
         far: { i18nKey: 'planCompare.rows.far', label: 'Floor-area ratio (gross floor area ÷ land)' },
         coverage: { i18nKey: 'planCompare.rows.coverage', label: 'Site coverage (buildings ÷ land)' },

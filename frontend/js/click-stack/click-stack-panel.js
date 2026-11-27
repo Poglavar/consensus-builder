@@ -223,7 +223,7 @@
         if (section.kind === 'built' && instance.demolition) {
             const by = instance.demolition.proposalKey || instance.demolition.proposalId;
             const design = by ? global.proposalStorage?.getProposal?.(by) : null;
-            return design ? t('demolishedBy', 'Demolished by {{design}}', { design: design.title || by }) : t('demolished', 'Demolished');
+            return design ? t('demolishedBy', 'Replaced by {{design}}', { design: design.title || by }) : t('demolished', 'Replaced');
         }
         if (section.kind === 'ground') return '';
         if (section.kind === 'parcels' || section.kind === 'formed') return parcelReference(instance);
