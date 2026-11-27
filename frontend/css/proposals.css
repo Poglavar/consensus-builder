@@ -1417,7 +1417,9 @@ textarea.proposal-description-input {
 }
 
 /* Why a parcel layout has no Share yet: it leaves the device with its agreement (M2). */
-.proposal-publish-later {
+/* A note under a disabled action: why it is unavailable and what makes it available. */
+.proposal-publish-later,
+.proposal-action-note {
     flex-basis: 100%;
     margin: 4px 0;
     font-size: 0.85em;

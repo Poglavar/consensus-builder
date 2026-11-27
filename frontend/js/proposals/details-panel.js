@@ -519,7 +519,17 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     `
         : '';
 
-    const geometryEditable = proposalKey && !crossSectionButtonHtml
+    // An unapplied road keeps the action in view, disabled, with what makes it available.
+    const crossSectionApplyFirst = !crossSectionButtonHtml && roadActionFacts
+        && window.RoadActionsModel?.unavailableReason?.('crossSection', roadActionFacts) === 'not-applied';
+    const crossSectionApplyFirstHtml = crossSectionApplyFirst
+        ? `
+        <button type="button" class="btn btn-quiet btn-cross-section" disabled aria-disabled="true" aria-describedby="proposal-cross-section-note">
+            <i class="fas fa-road" aria-hidden="true"></i> ${tProposal('panel.road.crossSectionButton', 'Edit cross-section')}
+        </button>
+    `
+        : '';
+    const geometryEditable = proposalKey && !crossSectionButtonHtml && !crossSectionApplyFirst
         && typeof canEditProposalGeometry === 'function'
         && typeof editProposalGeometry === 'function'
         && canEditProposalGeometry(fullProposal || proposal);
@@ -591,7 +601,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     `
         : '';
-    const additionalActionsHtml = crossSectionButtonHtml + editGeometryButtonHtml + courtyardLayoutButtonHtml + convertToFreeformButtonHtml + compareButtonHtml + driveButtonHtml;
+    const additionalActionsHtml = crossSectionButtonHtml + crossSectionApplyFirstHtml + editGeometryButtonHtml + courtyardLayoutButtonHtml + convertToFreeformButtonHtml + compareButtonHtml + driveButtonHtml;
     // Map actions remain available in the compact card and the reader. Details is an explicit
     // transition into the reader; Fork and the contextual design editors keep distinct labels.
     const primaryActionsHtml = `
@@ -607,6 +617,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             ${additionalActionsHtml}
             ${effectsButtonHtml}
             ${shareRefusalNote ? `<p class="proposal-publish-later" id="proposal-publish-later-note">${safeAgentText(shareRefusalNote)}</p>` : ''}
+            ${crossSectionApplyFirst ? `<p class="proposal-action-note" id="proposal-cross-section-note">${safeAgentText(tProposal('panel.road.crossSectionApplyFirst', 'Apply this road to the map to edit its lanes and widths.'))}</p>` : ''}
         </div>
         ${effectsButtonHtml ? '<section class="neighbour-effects" data-design-effects role="status" aria-live="polite" hidden></section>' : ''}
         ${mapActionFailureHtml}

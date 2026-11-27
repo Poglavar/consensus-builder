@@ -2387,6 +2387,7 @@
             "importShapefile": "Shapefile",
             "importShapefileHint": "Ose ulica kao Esri shapefile (.zip sa .shp, .shx i .dbf).",
             "crossSectionHint": "Uredi trake i širine ovog puta. Izmena objavljenog puta čuva se kao alternativni dizajn; objavljena verzija ostaje nepromenjena.",
+            "crossSectionApplyFirst": "Primenite ovaj put na mapu da biste uređivali njegove trake i širine.",
             "finishButton": "Završi put (F)",
             "cancelButton": "Otkaži put (Esc)",
             "widthLabel": "Širina puta:",

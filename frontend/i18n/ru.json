@@ -2400,6 +2400,7 @@
             "importShapefile": "Shapefile",
             "importShapefileHint": "Осевые линии дорог в формате Esri Shapefile (.zip с файлами .shp, .shx и .dbf).",
             "crossSectionHint": "Измените полосы и ширину этой дороги. Изменение опубликованной дороги сохраняется как альтернативный проект; опубликованная версия не меняется.",
+            "crossSectionApplyFirst": "Примените эту дорогу на карте, чтобы изменить её полосы и ширину.",
             "finishButton": "Завершить дорогу (F)",
             "cancelButton": "Отменить дорогу (Esc)",
             "widthLabel": "Ширина дороги:",

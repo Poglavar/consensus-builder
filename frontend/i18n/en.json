@@ -2372,6 +2372,7 @@
             "importShapefile": "Shapefile",
             "importShapefileHint": "Road centrelines as an Esri shapefile (.zip holding .shp, .shx and .dbf).",
             "crossSectionHint": "Edit this road's lanes and widths. An edit of a published road is saved as a alternative design; the published version stays unchanged.",
+            "crossSectionApplyFirst": "Apply this road to the map to edit its lanes and widths.",
             "finishButton": "Finish road (F)",
             "cancelButton": "Cancel road (Esc)",
             "widthLabel": "Road width:",

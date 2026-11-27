@@ -4122,6 +4122,7 @@
             "importShapefile": "Shapefile",
             "importShapefileHint": "خطوط محاور الطرق بصيغة Esri shapefile (ملف .zip يحتوي على .shp و.shx و.dbf).",
             "crossSectionHint": "حرر حارات هذا الطريق وعروضها. يحفظ تعديل الطريق المنشور كتصميم بديل؛ وتبقى النسخة المنشورة دون تغيير.",
+            "crossSectionApplyFirst": "طبّق هذا الطريق على الخريطة لتعديل حاراته وعروضه.",
             "finishButton": "إنهاء الطريق (F)",
             "cancelButton": "إلغاء الطريق (Esc)",
             "widthLabel": "عرض الطريق:",

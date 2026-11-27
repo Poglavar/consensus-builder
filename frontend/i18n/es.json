@@ -2395,6 +2395,7 @@
             "importShapefile": "Shapefile",
             "importShapefileHint": "Ejes de calles como shapefile de Esri (.zip con .shp, .shx y .dbf).",
             "crossSectionHint": "Edita los carriles y anchos de esta calle. El cambio de una calle publicada se guarda como diseño alternativo; la versión publicada no cambia.",
+            "crossSectionApplyFirst": "Aplica esta calle al mapa para editar sus carriles y anchos.",
             "finishButton": "Terminar carretera (F)",
             "cancelButton": "Cancelar carretera (Esc)",
             "widthLabel": "Ancho de la carretera:",

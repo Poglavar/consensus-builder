@@ -34,9 +34,19 @@
         }
     }
 
+    // Why a road-only action is not offered, when the person can do something about it: 'not-applied'
+    // for a road with a cross-section that is not on the map (Apply to map makes it available), else
+    // null. The card shows the action disabled with that reason instead of leaving it out.
+    function unavailableReason(action, facts) {
+        const f = facts || {};
+        if (isActionAvailable(action, f) || typeof f.proposalKey !== 'string' || f.proposalKey === '') return null;
+        if (action === 'crossSection' && f.hasEditableCorridor === true && f.applied === false && f.drawing !== true) return 'not-applied';
+        return null;
+    }
+
     function availableActions(facts) {
         return ACTIONS.filter(action => isActionAvailable(action, facts));
     }
 
-    return { ACTIONS, isActionAvailable, availableActions };
+    return { ACTIONS, isActionAvailable, unavailableReason, availableActions };
 });

@@ -2387,6 +2387,7 @@
             "importShapefile": "Shapefile",
             "importShapefileHint": "Osi cesta kao Esri shapefile (.zip sa .shp, .shx i .dbf).",
             "crossSectionHint": "Uredi trake i širine ove ceste. Izmjena objavljene ceste sprema se kao alternativni dizajn; objavljena verzija ostaje nepromijenjena.",
+            "crossSectionApplyFirst": "Primijenite ovu cestu na kartu da biste uređivali njezine trake i širine.",
             "finishButton": "Završi cestu (F)",
             "cancelButton": "Otkaži cestu (Esc)",
             "widthLabel": "Širina ceste:",

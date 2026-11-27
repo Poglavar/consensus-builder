@@ -25,6 +25,22 @@ test.describe('Corridor drawing @features', () => {
     await expect.poll(async () => (await proposalState(page, id)).applied).toBe(false);
     await expect.poll(() => page.evaluate(id => (window as any).LiveParcelFabric.producedBy(id).length, id)).toBe(0);
   });
+  test('an unapplied road keeps Edit cross-section in view, disabled, with what makes it available', async ({ mockApi: page }) => {
+    await openCity(page);
+    const id = await drawCorridor(page, 'road');
+    await page.evaluate(id => (window as any).ProposalManager.unapplyProposal(id), id);
+    await expect.poll(async () => (await proposalState(page, id)).applied).toBe(false);
+    await showProposal(page, id);
+    const details = page.locator('#proposal-details-panel');
+    const crossSection = details.locator('.btn-cross-section');
+    await expect(crossSection).toBeDisabled();
+    await expect(crossSection).toHaveAccessibleDescription('Apply this road to the map to edit its lanes and widths.');
+    await expect(details.locator('#proposal-cross-section-note')).toBeVisible();
+    await details.getByRole('button', { name: 'Apply to map' }).click();
+    await expect.poll(async () => (await proposalState(page, id)).applied).toBe(true);
+    await expect(details.locator('.btn-cross-section')).toBeEnabled();
+    await expect(details.locator('#proposal-cross-section-note')).toHaveCount(0);
+  });
   test('an applied road cross-section edits the existing corridor and persists after reload', async ({ mockApi: page }) => {
     await openCity(page);
     const id = await drawCorridor(page, 'road');

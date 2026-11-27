@@ -25,6 +25,15 @@ describe('road action availability', () => {
         expect(Model.isActionAvailable('crossSection', road({ proposalKey: null }))).toBe(false);
     });
 
+    it('says an unapplied road with a cross-section needs applying, and gives no reason otherwise', () => {
+        expect(Model.unavailableReason('crossSection', road({ applied: false }))).toBe('not-applied');
+        expect(Model.unavailableReason('crossSection', road())).toBe(null);
+        expect(Model.unavailableReason('crossSection', road({ applied: false, hasEditableCorridor: false }))).toBe(null);
+        expect(Model.unavailableReason('crossSection', road({ applied: false, drawing: true }))).toBe(null);
+        expect(Model.unavailableReason('crossSection', road({ applied: false, proposalKey: '' }))).toBe(null);
+        expect(Model.unavailableReason('crossSection', road({ applied: undefined }))).toBe(null);
+    });
+
     it('treats missing facts as unavailable, and unknown actions as unavailable', () => {
         expect(Model.availableActions({ proposalKey: 'p-road' })).toEqual([]);
         expect(Model.availableActions(null)).toEqual([]);

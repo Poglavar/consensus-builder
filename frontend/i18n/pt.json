@@ -3998,6 +3998,7 @@
             "importShapefile": "Shapefile",
             "importShapefileHint": "Eixos de estradas como shapefile da Esri (.zip com .shp, .shx e .dbf).",
             "crossSectionHint": "Edite as vias de trânsito e as larguras desta estrada. A edição de uma estrada publicada é guardada como um projeto alternativo; a versão publicada mantém-se inalterada.",
+            "crossSectionApplyFirst": "Aplique esta estrada ao mapa para editar as suas faixas e larguras.",
             "finishButton": "Concluir estrada (F)",
             "cancelButton": "Cancelar estrada (Esc)",
             "widthLabel": "Largura da estrada:",

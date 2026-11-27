@@ -3998,6 +3998,7 @@
             "importShapefile": "Shapefile",
             "importShapefileHint": "Axes de routes sous forme de fichier shapefile Esri (.zip contenant .shp, .shx et .dbf).",
             "crossSectionHint": "Modifiez les voies et les largeurs de cette route. La modification d’une route publiée est enregistrée comme projet alternatif ; la version publiée reste inchangée.",
+            "crossSectionApplyFirst": "Appliquez cette route à la carte pour modifier ses voies et largeurs.",
             "finishButton": "Terminer la route (F)",
             "cancelButton": "Annuler la route (Esc)",
             "widthLabel": "Largeur de la route :",
