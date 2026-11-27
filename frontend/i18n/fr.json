@@ -9508,13 +9508,29 @@
                 "storeys": "Niveaux",
                 "built": "Construit",
                 "roof_shape": "Forme du toit",
-                "parapet": "Acrotère"
+                "parapet": "Acrotère",
+                "heritage": "Protection patrimoniale"
             },
             "builtBefore": "avant {{year}}",
             "builtAfter": "{{year}} ou après",
             "builtBetween": "{{from}}–{{to}}",
             "parapetYes": "Oui",
-            "parapetNo": "Non"
+            "parapetNo": "Non",
+            "heritageListed": "Classé, grade {{grade}}",
+            "heritageListedNoGrade": "Classé ; le registre n’indique pas le grade",
+            "heritageNotListed": "Non classé",
+            "heritageEntry": "Notice {{reference}}",
+            "heritageRegister": "Registre du patrimoine",
+            "heritageUnknown": {
+                "noRegister": "Aucun registre du patrimoine n’est lu pour ce lieu",
+                "noRegion": "L’emplacement du bâtiment n’a pas pu être lu",
+                "noOutline": "Le contour du bâtiment n’est pas lu : le registre ne peut pas lui être rapporté",
+                "rowUncertain": "Une notice classée de cette rangée peut couvrir cette maison",
+                "numberAmbiguous": "Les numéros d’une notice classée incluent peut-être cette maison, peut-être pas",
+                "outlineUncertain": "Un contour classé bien plus grand que le bâtiment le couvre",
+                "registerIncomplete": "Trop de notices autour de ces bâtiments pour une seule lecture",
+                "registerUnavailable": "Le registre du patrimoine n’a pas répondu ; vérifiez plus tard"
+            }
         },
         "eligibility": {
             "set": {
@@ -9531,6 +9547,7 @@
                 "unknown": "Inconnu",
                 "unchecked": "Non vérifié par l’application"
             },
+            "withGrade": "{{status}}, grade {{grade}}",
             "test": {
                 "built": "Construit après 1700 et avant 1918",
                 "parapet": "Acrotère sur toute la façade sur rue",
@@ -10138,7 +10155,7 @@
         },
         "eligibility": {
             "title": "Maisons couvertes",
-            "hint": "Ce vote de rue ne peut couvrir que des maisons remplissant les conditions de la règle. Leurs données sont lues dans OpenStreetMap : ajoutez-y celles qui manquent, puis vérifiez à nouveau.",
+            "hint": "Ce vote de rue ne peut couvrir que des maisons remplissant les conditions de la règle. Leurs données sont lues dans OpenStreetMap et leur classement dans le registre du patrimoine : ajoutez dans OpenStreetMap celles qui manquent, puis vérifiez à nouveau.",
             "checking": "Vérification des maisons couvertes…",
             "failed": "La vérification n’a pas pu aboutir : {{error}}",
             "summary": "{{eligible}} maisons couvertes sur {{total}} admissibles",

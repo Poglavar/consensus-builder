@@ -9791,13 +9791,29 @@
                 "storeys": "عدد الطوابق",
                 "built": "سنة البناء",
                 "roof_shape": "شكل السقف",
-                "parapet": "الدروة"
+                "parapet": "الدروة",
+                "heritage": "الحماية التراثية"
             },
             "builtBefore": "قبل {{year}}",
             "builtAfter": "{{year}} أو بعده",
             "builtBetween": "{{from}}–{{to}}",
             "parapetYes": "نعم",
-            "parapetNo": "لا"
+            "parapetNo": "لا",
+            "heritageListed": "مُدرج، الدرجة {{grade}}",
+            "heritageListedNoGrade": "مُدرج؛ لا يذكر السجل الدرجة",
+            "heritageNotListed": "غير مُدرج",
+            "heritageEntry": "القيد {{reference}}",
+            "heritageRegister": "سجل التراث",
+            "heritageUnknown": {
+                "noRegister": "لا يُقرأ سجل تراث لهذا المكان",
+                "noRegion": "تعذّرت قراءة موقع المبنى",
+                "noOutline": "لا يُقرأ مخطط المبنى، لذا لا يمكن مطابقة السجل معه",
+                "rowUncertain": "قد يشمل قيدٌ مُدرج في هذا الصف هذا المنزل",
+                "numberAmbiguous": "قد تشمل أرقام قيدٍ مُدرج هذا المنزل وقد لا تشمله",
+                "outlineUncertain": "يغطي المبنى مخططٌ مُدرج أكبر منه بكثير",
+                "registerIncomplete": "حول هذه المباني قيود في السجل أكثر مما تتسع له قراءة واحدة",
+                "registerUnavailable": "لم يستجب سجل التراث؛ تحقّق لاحقًا"
+            }
         },
         "eligibility": {
             "set": {
@@ -9814,6 +9830,7 @@
                 "unknown": "غير معروف",
                 "unchecked": "لا يتحقق منه التطبيق"
             },
+            "withGrade": "{{status}}، الدرجة {{grade}}",
             "test": {
                 "built": "بُني بعد 1700 وقبل 1918",
                 "parapet": "دروة على طول الواجهة المطلة على الشارع",
@@ -10425,7 +10442,7 @@
         },
         "eligibility": {
             "title": "المنازل المشمولة",
-            "hint": "لا يجوز لتصويت الشارع هذا أن يشمل إلا المنازل المستوفية لشروط القاعدة. تُقرأ بياناتها من OpenStreetMap: أضف الناقص منها هناك ثم تحقّق مجددًا.",
+            "hint": "لا يجوز لتصويت الشارع هذا أن يشمل إلا المنازل المستوفية لشروط القاعدة. تُقرأ بياناتها من OpenStreetMap والإدراج من سجل التراث: أضف الناقص منها في OpenStreetMap ثم تحقّق مجددًا.",
             "checking": "جارٍ التحقق من المنازل المشمولة…",
             "failed": "تعذّر إكمال التحقق: {{error}}",
             "summary": "{{eligible}} من {{total}} منزلًا مشمولًا مؤهَّلة",

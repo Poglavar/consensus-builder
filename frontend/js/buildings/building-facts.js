@@ -1,6 +1,6 @@
 // Building facts for the building card: what the shared API's building-facts contract
 // (GET /api/building-facts) knows about a building — storeys, when it was built, roof shape,
-// parapet — each with its source, and where to add a missing one. The app knows only the contract;
+// parapet, heritage listing — each with its source, and where to add a missing one. The app knows only the contract;
 // which source answers (OpenStreetMap today) is the shared API's business.
 (function (root, factory) {
     const api = factory();
@@ -11,7 +11,9 @@
     const API_ROOT = 'https://zagreb.lol/api';
     // The facts the card lists, in order (the contract also answers height_m, which the card's
     // height line already covers).
-    const CARD_FIELDS = Object.freeze(['storeys', 'built', 'roof_shape', 'parapet']);
+    const CARD_FIELDS = Object.freeze(['storeys', 'built', 'roof_shape', 'parapet', 'heritage']);
+    // Facts that come from a register rather than the editable map: no key to add them under.
+    const REGISTER_FIELDS = Object.freeze(['heritage']);
     const OSM_ID = /^(?:osm:)?([wr])([1-9][0-9]{0,15})$/;
 
     // The contract's id for a building the map drew: OSM buildings carry their element id
@@ -64,22 +66,42 @@
         return null;
     }
 
+    // A heritage listing in words: listed with the grade the register states, or not listed.
+    function heritageWords(value, t) {
+        if (!value.listed) return t('heritageNotListed');
+        return value.grade ? t('heritageListed', { grade: value.grade }) : t('heritageListedNoGrade');
+    }
     // A roof shape is shown in the source's own word (OSM's roof:shape values).
     function valueWords(field, value, t) {
         if (field === 'built') return builtWords(value, t);
         if (field === 'parapet') return value ? t('parapetYes') : t('parapetNo');
+        if (field === 'heritage') return heritageWords(value, t);
         return String(value);
+    }
+    const UNKNOWN_REASONS = Object.freeze(['no-register', 'no-region', 'no-outline', 'row-uncertain', 'number-ambiguous', 'outline-uncertain', 'register-incomplete', 'register-unavailable']);
+    // Where a register fact was read: the register entry that lists the building, the register
+    // itself for "not listed", or the entry that may cover it while it is unknown.
+    function registerLink(field, building, t) {
+        const fact = building.facts[field];
+        if (fact?.value?.url) return { url: fact.value.url, text: fact.value.reference ? t('heritageEntry', { reference: fact.value.reference }) : t('heritageRegister') };
+        const entry = building.unknown_reasons?.[field]?.entries?.[0];
+        return entry?.url ? { url: entry.url, text: entry.reference ? t('heritageEntry', { reference: entry.reference }) : t('heritageRegister') } : null;
     }
 
     // The card's rows: each field's label, its value in words (null when unknown), and the source's
-    // key (where it was read, or where to add it when missing) with the raw text behind it.
+    // key (where it was read, or where to add it when missing) with the raw text behind it. A
+    // register fact has no key to add it under; it carries a link to its register entry instead, and
+    // when unknown, the reason the source gives (in words, by its code).
     function cardRows(building, t) {
         return CARD_FIELDS.map(field => {
             const fact = building.facts[field];
-            return { field, label: t(`field.${field}`), text: fact ? valueWords(field, fact.value, t) : null,
-                key: fact?.key || building.edit?.keys?.[field] || null, raw: fact?.raw ?? null };
+            const row = { field, label: t(`field.${field}`), text: fact ? valueWords(field, fact.value, t) : null,
+                key: fact?.key || (REGISTER_FIELDS.includes(field) ? null : building.edit?.keys?.[field] || null), raw: fact?.raw ?? null };
+            if (!REGISTER_FIELDS.includes(field)) return row;
+            const code = building.unknown_reasons?.[field]?.code;
+            return { ...row, link: registerLink(field, building, t), reason: !fact && UNKNOWN_REASONS.includes(code) ? t(`heritageUnknown.${code.replace(/-(\w)/g, (_, c) => c.toUpperCase())}`) : null };
         });
     }
 
-    return { API_ROOT, CARD_FIELDS, factIdOf, apiRoot, read, readMany, builtWords, cardRows };
+    return { API_ROOT, CARD_FIELDS, factIdOf, apiRoot, read, readMany, builtWords, heritageWords, cardRows };
 });

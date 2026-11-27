@@ -9508,13 +9508,29 @@
                 "storeys": "Pisos",
                 "built": "Construído",
                 "roof_shape": "Forma da cobertura",
-                "parapet": "Platibanda"
+                "parapet": "Platibanda",
+                "heritage": "Proteção patrimonial"
             },
             "builtBefore": "antes de {{year}}",
             "builtAfter": "{{year}} ou depois",
             "builtBetween": "{{from}}–{{to}}",
             "parapetYes": "Sim",
-            "parapetNo": "Não"
+            "parapetNo": "Não",
+            "heritageListed": "Classificado, grau {{grade}}",
+            "heritageListedNoGrade": "Classificado; o registo não indica o grau",
+            "heritageNotListed": "Não classificado",
+            "heritageEntry": "Registo {{reference}}",
+            "heritageRegister": "Registo do património",
+            "heritageUnknown": {
+                "noRegister": "Nenhum registo do património é lido para este lugar",
+                "noRegion": "Não foi possível ler onde fica o edifício",
+                "noOutline": "O contorno do edifício não é lido, por isso o registo não lhe pode ser associado",
+                "rowUncertain": "Um registo classificado nesta banda pode abranger esta casa",
+                "numberAmbiguous": "Os números de um registo classificado podem ou não incluir esta casa",
+                "outlineUncertain": "Cobre-o um contorno classificado muito maior do que o edifício",
+                "registerIncomplete": "Há registos a mais à volta destes edifícios para uma só leitura",
+                "registerUnavailable": "O registo do património não respondeu; verifique mais tarde"
+            }
         },
         "eligibility": {
             "set": {
@@ -9531,6 +9547,7 @@
                 "unknown": "Desconhecido",
                 "unchecked": "Não verificado pela aplicação"
             },
+            "withGrade": "{{status}}, grau {{grade}}",
             "test": {
                 "built": "Construído depois de 1700 e antes de 1918",
                 "parapet": "Platibanda ao longo de toda a fachada para a rua",
@@ -10138,7 +10155,7 @@
         },
         "eligibility": {
             "title": "Casas abrangidas",
-            "hint": "Esta votação de rua só pode abranger casas que cumpram as condições da regra. Os dados são lidos do OpenStreetMap: acrescente lá os que faltam e verifique de novo.",
+            "hint": "Esta votação de rua só pode abranger casas que cumpram as condições da regra. Os dados são lidos do OpenStreetMap e a classificação do registo do património: acrescente no OpenStreetMap os que faltam e verifique de novo.",
             "checking": "A verificar as casas abrangidas…",
             "failed": "Não foi possível concluir a verificação: {{error}}",
             "summary": "{{eligible}} de {{total}} casas abrangidas elegíveis",

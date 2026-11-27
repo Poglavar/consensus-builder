@@ -332,7 +332,10 @@
         for (const test of result.tests) {
             const row = element('li', 'planning-eligibility__test');
             row.setAttribute('data-status', test.status);
-            row.append(element('span', '', `${test.cite} ${t(`eligibility.test.${test.id}`)}`), element('span', 'planning-eligibility__status', t(`eligibility.status.${test.status}`)));
+            // A listing test names the grade it was judged on ("No, Grade II*").
+            const status = t(`eligibility.status.${test.status}`);
+            row.append(element('span', '', `${test.cite} ${t(`eligibility.test.${test.id}`)}`),
+                element('span', 'planning-eligibility__status', test.grade ? t('eligibility.withGrade', { status, grade: test.grade }) : status));
             list.append(row);
         }
         const source = element('a', 'cb-link cb-link--external', set.source.label);
@@ -354,6 +357,13 @@
             for (const row of rows) {
                 const entry = element('div'), value = element('dd', '', row.text ?? t('buildingFactUnknown'));
                 if (row.text !== null && row.key) value.title = `${row.key}=${row.raw}`;
+                // A register fact (heritage): why it is unknown, and the register entry it rests on.
+                if (row.reason) value.append(element('span', 'planning-building-facts__reason', ` · ${row.reason}`));
+                if (row.link) {
+                    const link = element('a', 'cb-link cb-link--external planning-building-facts__source', row.link.text);
+                    link.href = row.link.url; link.target = '_blank'; link.rel = 'noopener';
+                    value.append(' · ', link);
+                }
                 entry.append(element('dt', '', row.label), value);
                 list.append(entry);
             }

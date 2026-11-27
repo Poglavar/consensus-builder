@@ -989,7 +989,7 @@
             const judged = eligibility.judged || [];
             const eligibleCount = judged.filter(house => house.id && house.result.verdict === 'eligible').length;
             eligibilityNode.innerHTML = `<h4>${esc(t('voting.eligibility.title', 'Covered houses'))}</h4>`
-                + `<p class="agreement-hint">${esc(t('voting.eligibility.hint', 'This street vote may cover only houses that meet the rule’s eligibility conditions. Their facts are read from OpenStreetMap: add missing ones there, then check again.'))}</p>`
+                + `<p class="agreement-hint">${esc(t('voting.eligibility.hint', 'This street vote may cover only houses that meet the rule’s eligibility conditions. Their facts are read from OpenStreetMap and their listing from the heritage register: add missing facts in OpenStreetMap, then check again.'))}</p>`
                 + (eligibility.busy ? `<p role="status">${esc(t('voting.eligibility.checking', 'Checking the covered houses…'))}</p>`
                     : eligibility.error ? `<p role="alert">${esc(t('voting.eligibility.failed', 'The check could not be completed: {{error}}', { error: eligibility.error }))}</p>`
                         : judged.length ? `<p role="status">${esc(t('voting.eligibility.summary', '{{eligible}} of {{total}} covered houses eligible', { eligible: eligibleCount, total: judged.length }))}</p>`
