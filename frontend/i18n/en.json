@@ -1461,6 +1461,7 @@
                 "salesValue": "Sales value of the floor area",
                 "constructionSuffix": "{{currency}} per m² construction cost",
                 "profit": "Profit on the new floor area",
+                "profitShare": "Profit as a share of the new floor area's sales value (England's planning guidance tests plans at 15–20%)",
                 "noteProfitUnmeasured": "The profit is not known: {{n}} of the existing buildings the plan clears state no height.",
                 "allInCost": "All-in cost of the new floor area",
                 "landSuffix": "{{currency}} per m² of land",

@@ -82,7 +82,9 @@
     // When the construction cost includes that tax on its inputs (`constructionTaxIncluded`, from the
     // rate's `taxIncluded`), the developer reclaims it from the tax on the sale: the all-in cost is less
     // `taxReclaimed` (construction × saleTax ÷ (1 + saleTax)); otherwise nothing is reclaimed (0).
-    // Profit is value − all-in cost. Annual rent is floor area × monthly rent × 12, and its yield is
+    // Profit is value − all-in cost, and `profitShare` is profit ÷ value: the developer's return on the
+    // sales value, the measure England's viability guidance tests plans by (15–20%, PPG Viability
+    // para 10-019); unknown while either is, or when nothing is sold. Annual rent is floor area × monthly rent × 12, and its yield is
     // on the construction, development charge and acquisition: a landlord who charges no tax on the rent and
     // reclaims none. A missing price or area, or a plot whose land or replaced floor area is unknown,
     // keeps every amount that depends on it unknown (null), never 0; no `plots` at all is an unknown
@@ -116,9 +118,10 @@
         const taxed = sum([buildCost, saleTax, taxReclaimed]);
         const totalCost = taxed === null ? null : buildCost + saleTax - taxReclaimed;
         const profit = value === null || totalCost === null ? null : value - totalCost;
+        const profitShare = profit === null || value === null || value <= 0 ? null : profit / value;
         const annualRent = area === null || rent === null ? null : area * rent * 12;
         const rentYieldOnCost = annualRent === null || buildCost === null || buildCost <= 0 ? null : annualRent / buildCost;
-        return { builtFloorAreaM2: area, value, constructionCost, devCharge, acquisitionCost, saleTax, taxReclaimed, totalCost, profit, annualRent, rentYieldOnCost };
+        return { builtFloorAreaM2: area, value, constructionCost, devCharge, acquisitionCost, saleTax, taxReclaimed, totalCost, profit, profitShare, annualRent, rentYieldOnCost };
     }
 
     // Parcel and road estimates retain the selected observation, including its unit and provenance.

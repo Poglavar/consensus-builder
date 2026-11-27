@@ -126,7 +126,7 @@ const comparedMoney = z.object({ currency: z.string().regex(/^[A-Z]{3}$/), unit:
     prices: z.object({ sale: object.nullable(), construction: object.nullable(), land: object.nullable(), saleTax: object.nullable(), rent: object.nullable() }),
     floorAreaM2: amount, keptFloorAreaM2: amount.optional(), builtFloorAreaM2: amount.optional(),
     plots: z.array(z.object({ landAreaM2: amount, replacedFloorAreaM2: amount })).nullable(), value: amount, constructionCost: amount, acquisitionCost: amount,
-    saleTax: amount, taxReclaimed: amount, totalCost: amount, profit: amount, annualRent: amount, rentYieldOnCost: amount });
+    saleTax: amount, taxReclaimed: amount, totalCost: amount, profit: amount, profitShare: amount, annualRent: amount, rentYieldOnCost: amount });
 assign(['ugt_compare'], mcpResultSchema.extend({ alternatives: z.array(z.object({ cid, areaBasis: z.literal('authored-geometry'), measurementErrors: z.array(object),
     money: comparedMoney.nullable() }).passthrough()).min(2), warnings: z.array(z.union([z.string(), object])) }));
 

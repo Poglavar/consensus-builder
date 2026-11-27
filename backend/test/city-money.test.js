@@ -148,6 +148,13 @@ describe('new floor area: value, all-in cost, profit and rent', () => {
         expect(money.saleTax).toBeCloseTo(4000000 * 0.25 / 1.25);
         expect(money.totalCost).toBeCloseTo(2000000 + 800000 + 800000);
         expect(money.profit).toBeCloseTo(4000000 - money.totalCost);
+        expect(money.profitShare).toBeCloseTo(money.profit / 4000000);
+    });
+
+    it('gives the profit as a share of the sales value, unknown while the profit is or when nothing is sold', () => {
+        expect(newBuildMoney({ ...base, saleTaxShare: 0 }).profitShare).toBeCloseTo((4000000 - 2000000 - 800000) / 4000000);
+        expect(newBuildMoney({ ...base, landPerM2: null }).profitShare).toBeNull();
+        expect(newBuildMoney({ ...base, salePerM2: 0 }).profitShare).toBeNull();
     });
 
     it('buys a plot at its land value when that is higher than what stands on it', () => {

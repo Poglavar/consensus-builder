@@ -1661,6 +1661,7 @@
                 "salesValue": "Valor de venta de la superficie",
                 "constructionSuffix": "{{currency}} por m² coste de construcción",
                 "profit": "Beneficio de la nueva superficie",
+                "profitShare": "Beneficio como parte del valor de venta de la nueva superficie (la guía de planeamiento de Inglaterra evalúa los planes con un 15–20 %)",
                 "noteProfitUnmeasured": "El beneficio no se conoce: {{n}} de los edificios existentes que el plan derriba no indican altura.",
                 "allInCost": "Coste total de la nueva superficie",
                 "landSuffix": "{{currency}} por m² de suelo",

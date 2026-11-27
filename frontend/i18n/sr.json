@@ -1449,6 +1449,7 @@
                 "salesValue": "Prodajna vrednost površine",
                 "constructionSuffix": "{{currency}} po m² trošak gradnje",
                 "profit": "Dobit na novoj površini",
+                "profitShare": "Dobit kao udeo u prodajnoj vrednosti nove površine (engleske smernice za planiranje proveravaju planove na 15–20 %)",
                 "noteProfitUnmeasured": "Dobit nije poznata: {{n}} postojećih zgrada koje plan uklanja nema navedenu visinu.",
                 "allInCost": "Ukupni trošak nove površine",
                 "landSuffix": "{{currency}} po m² zemljišta",

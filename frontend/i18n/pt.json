@@ -418,6 +418,7 @@
                 "salesValue": "Valor de venda da área de construção",
                 "constructionSuffix": "{{currency}} por m² custo de construção",
                 "profit": "Lucro na nova área",
+                "profitShare": "Lucro como parte do valor de venda da nova área (as orientações de planeamento de Inglaterra testam os planos a 15–20 %)",
                 "noteProfitUnmeasured": "O lucro não é conhecido: {{n}} dos edifícios existentes que o plano demole não têm altura indicada.",
                 "allInCost": "Custo total da nova área",
                 "landSuffix": "{{currency}} por m² de terreno",

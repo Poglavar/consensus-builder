@@ -418,6 +418,7 @@
                 "salesValue": "Valeur de vente de la surface de plancher",
                 "constructionSuffix": "{{currency}} par m² coût de construction",
                 "profit": "Bénéfice sur la nouvelle surface",
+                "profitShare": "Bénéfice en part de la valeur de vente de la nouvelle surface (le guide d’urbanisme anglais évalue les plans à 15–20 %)",
                 "noteProfitUnmeasured": "Le bénéfice n’est pas connu : la hauteur de {{n}} bâtiments existants que le plan démolit n’est pas renseignée.",
                 "allInCost": "Coût complet de la nouvelle surface",
                 "landSuffix": "{{currency}} par m² de terrain",

@@ -419,7 +419,7 @@ describe('comparing plans', () => {
         const added = rows.find(row => row[0].startsWith('of which new'));
         expect([remaining[1], remaining[2]].map(digits)).toEqual([3, 1]);
         expect([added[1], added[2], added[3]].map(digits)).toEqual([0, 2, 1]);
-        expect(rows).toHaveLength(1 + 28);
+        expect(rows).toHaveLength(1 + 29);
         expect(rows.find(row => row[0].startsWith('Public land')).slice(1, 3)).toEqual(['300', '1,200']);
         expect(rows.find(row => row[0].startsWith('Private land')).slice(1, 3)).toEqual(['600', '3,400']);
 
@@ -428,7 +428,7 @@ describe('comparing plans', () => {
         expect(swap.getAttribute('aria-pressed')).toBe('true');
         rows = rowsOf(tableOf(window));
         expect(rows).toHaveLength(1 + 4);
-        expect(rows[0]).toHaveLength(1 + 28);
+        expect(rows[0]).toHaveLength(1 + 29);
         expect(rows[0][0]).toBe('Plan');
         expect(rows[1][0]).toBe('Present state');
         expect(rows[2][0]).toBe('Two blocks');
@@ -784,6 +784,7 @@ describe('the all-in cost and profit in Plan stats', () => {
         expect(slot(window, 'cost-acquisition')).toBe(eur(landM2 * 133));
         expect(slot(window, 'cost-tax')).toBe(eur(0));
         expect(slot(window, 'profit')).toBe(eur(gfa() * 4000 - total));
+        expect(slot(window, 'profit-share')).toBe(window.CbFormat.formatPercent((gfa() * 4000 - total) / (gfa() * 4000), { maxFractionDigits: 1 }));
     });
 
     it('moves the figures with each price slider, the tax as a share of the sale price', async () => {

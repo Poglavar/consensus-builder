@@ -265,6 +265,7 @@
         { key: 'sales-value', i18nKey: 'sidebar.proposals.planStats.salesValue', label: 'Sales value of the floor area' },
         { key: 'total-cost', i18nKey: 'sidebar.proposals.planStats.allInCost', label: 'All-in cost of the new floor area' },
         { key: 'profit', i18nKey: 'sidebar.proposals.planStats.profit', label: 'Profit on the new floor area' },
+        { key: 'profit-share', i18nKey: 'sidebar.proposals.planStats.profitShare', label: 'Profit as a share of the new floor area\'s sales value (England\'s planning guidance tests plans at 15–20%)' },
         { key: 'annual-rent', i18nKey: 'sidebar.proposals.planStats.annualRent', label: 'Annual rent of the new floor area' },
         { key: 'rent-yield', i18nKey: 'sidebar.proposals.planStats.rentYield', label: 'Rent yield on cost (annual rent ÷ construction, development charge and acquisition)' }
     ];
@@ -285,7 +286,7 @@
     };
     const COMPARE_ORDER = ['plan-area', 'resulting-parcels', 'parcels-taken', 'buildings', 'buildings-remaining', 'buildings-new',
         'buildings-extended', 'demolished', 'height', 'floor-area', 'far', 'coverage', 'open-space', 'green-area', 'road-area', 'public-land', 'private-land',
-        'apartments', 'people', 'jobs', 'build-out', 'permitted', 'sales-value', 'total-cost', 'profit', 'annual-rent', 'rent-yield', 'backing'];
+        'apartments', 'people', 'jobs', 'build-out', 'permitted', 'sales-value', 'total-cost', 'profit', 'profit-share', 'annual-rent', 'rent-yield', 'backing'];
     const COMPARE_ROWS = COMPARE_ORDER.map(key => ({ key, ...(DECISION_ROWS[key] || SUMMARY_ROWS.find(row => row.key === key)) }));
 
     // The parts of the all-in cost (CityMoney.newBuildMoney), listed under Cost details.
@@ -700,6 +701,7 @@
             // Taken off the all-in cost, so written as a deduction.
             'cost-reclaimed': (money.taxReclaimed > 0 ? '−' : '') + formatSalesValue(money.taxReclaimed),
             profit: formatSalesValue(money.profit),
+            'profit-share': CbFormat.formatPercent(money.profitShare, { maxFractionDigits: 1, missing: '—' }),
             'annual-rent': formatSalesValue(money.annualRent),
             'rent-yield': CbFormat.formatPercent(money.rentYieldOnCost, { maxFractionDigits: 1, missing: '—' })
         };
@@ -756,6 +758,7 @@
         const taxIncluded = salesPrice().constructionTaxIncluded === true;
         modal.querySelectorAll('[data-cost-part="cost-reclaimed"]').forEach(node => { node.hidden = !taxIncluded; });
         set('profit', figures.profit);
+        set('profit-share', figures['profit-share']);
         set('annual-rent', figures['annual-rent']);
         set('rent-yield', figures['rent-yield']);
 

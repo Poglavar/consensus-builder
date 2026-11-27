@@ -150,6 +150,7 @@ describe('MCP comparison money', () => {
         expect(built.money.acquisitionCost).toBeCloseTo(siteM2 * land);
         expect(built.money.totalCost).toBeCloseTo(built.floorAreaM2 * (cost + levy) + siteM2 * land);
         expect(built.money.profit).toBeCloseTo(built.floorAreaM2 * sale - built.money.totalCost);
+        expect(built.money.profitShare).toBeCloseTo(built.money.profit / built.money.value);
         expect(built.money.annualRent).toBeCloseTo(built.floorAreaM2 * rent * 12);
         expect(built.money.rentYieldOnCost).toBeCloseTo(built.money.annualRent / built.money.totalCost);
         // The park builds nothing: it still buys the plot it clears.
