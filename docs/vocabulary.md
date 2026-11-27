@@ -680,6 +680,13 @@ buildings are answered from OpenStreetMap through Overpass, a few minutes behind
 needs it (`building:parapet=yes|no` for a parapet along the whole street front). Croatian
 cadastre buildings are to join the same contract.
 
+**A building register** gives a fact OpenStreetMap lacks: when a building has no readable
+`start_date`, its build date comes from a register's record linked to it (the register's own OSM
+link, else its point inside the outline), such as Colouring Britain (formerly Colouring London,
+ODbL). The fact names the register and links the record, which is the attribution its licence asks
+for; several records on one outline widen the span rather than pick one. A `start_date` added in
+OpenStreetMap wins over the register.
+
 **Adding a fact** from the app (the building card, an agreement's covered houses) saves it to
 OpenStreetMap as the person's own edit: they sign in with their OSM account ("Sign in with
 OpenStreetMap"), choose a value for each unknown parapet, roof shape or storey count, and the tags
