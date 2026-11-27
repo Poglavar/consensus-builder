@@ -145,6 +145,13 @@ describe('Strong Suburbs street code', () => {
         // Half the street already over 3+1: the existing total applies, which is not measured.
         expect(StreetCode.historicLimit(set, { street, near: near(10, old, 5) })).toMatchObject({ value: null, reason: 'existingTotal' });
     });
+    // A row's houses, a single building and a parcel-based one are buildings like a block's: each is judged.
+    it('judges the buildings of every typology, not only blocks', () => {
+        const typed = type => ({ ...house(), properties: { ...house().properties, type } });
+        const designs = [{ geometry: { buildings: ['proposedBuilding', 'proposedRowHouse', 'proposedBuildingSingle', 'proposedParcelBasedBuilding'].map(typed) } }];
+        expect(StreetCode.planBuildings(designs)).toHaveLength(4);
+        expect(StreetCode.planBuildings([{ geometry: { buildings: [typed('tree')] } }])).toHaveLength(0);
+    });
     it('explains a failing derived fact with the cap and the area it came from', async () => {
         const outcome = await run();
         const t = (key, params = {}) => `${key}(${Object.values(params).join('|')})`;

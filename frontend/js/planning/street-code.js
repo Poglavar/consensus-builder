@@ -106,7 +106,8 @@
             const features = Y.buildingFeaturesOf(design);
             features.forEach((feature, index) => {
                 const p = feature.properties || {};
-                if (p.type && p.type !== 'proposedBuilding' && p.type !== 'building') return;
+                // Every building a design draws counts: proposedBuilding, proposedBuildingSingle, proposedRowHouse, …
+                if (p.type && p.type !== 'building' && !String(p.type).startsWith('proposed')) return;
                 const rule = bp?.parameters?.rule && typeof bp.parameters.rule === 'object' ? bp.parameters.rule : null;
                 const measured = Y.measureBuilding(feature, bp, null, features);
                 const statedFloors = positive(p.floors) ?? positive(p.storeys);
