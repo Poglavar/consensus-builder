@@ -968,7 +968,7 @@
             const work = async () => {
                 const designs = draft().designs.map(design => root.proposalStorage.getProposal(design.proposalId)).filter(Boolean);
                 const houses = root.BuildingEligibility.coveredHouses(set, designs);
-                eligibility.judged = await root.BuildingEligibility.check(set, houses, ids => root.BuildingFacts.readMany(ids));
+                eligibility.judged = await root.BuildingEligibility.check(set, houses, ids => root.BuildingFacts.readMany(ids, { fresh: Boolean(control) }));
                 eligibility.evidence = houses.length ? root.BuildingEligibility.evidence(set, eligibility.judged, new Date().toISOString()) : null;
                 state.values.voting = { ...state.values.voting };
                 delete state.values.voting.eligibility;

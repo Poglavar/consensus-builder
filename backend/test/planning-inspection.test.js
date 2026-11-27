@@ -471,7 +471,7 @@ describe('building facts on the card', () => {
         const reading = card.readFacts(first, { id: 'w1', properties: {} });
         expect(first.buildingFacts).toMatchObject({ status: 'reading', id: 'osm:way/1' });
         await reading;
-        expect(card.read).toHaveBeenCalledWith('osm:way/1');
+        expect(card.read).toHaveBeenCalledWith('osm:way/1', {});
         const section = card.renderFacts(first);
         expect(text(section)).toContain('buildingFact.field.storeys()3');
         expect(text(section)).toContain('buildingFact.field.parapet()buildingFactUnknown()');
@@ -481,6 +481,7 @@ describe('building facts on the card', () => {
         section.querySelector('button').listeners.get('click').forEach(fn => fn());
         await new Promise(resolve => setImmediate(resolve));
         expect(card.read).toHaveBeenCalledTimes(2);
+        expect(card.read).toHaveBeenLastCalledWith('osm:way/1', { fresh: true });
         expect(text(card.renderFacts(first))).toContain('buildingFact.field.parapet()buildingFact.parapetYes()');
     });
     // London plans under English rules, so the card adds Living Tradition's tests for the house:

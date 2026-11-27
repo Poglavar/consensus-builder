@@ -29,6 +29,9 @@ describe('building facts client', () => {
         const fetchFn = vi.fn(async () => new Response(JSON.stringify(answer(house))));
         const building = await facts.read('osm:way/123', { fetchFn, base: 'https://example.test/api' });
         expect(fetchFn).toHaveBeenCalledWith('https://example.test/api/building-facts?ids=osm%3Away%2F123', { cache: 'no-store' });
+        // Check again asks the API to read the source again rather than answer from its 5-minute cache.
+        await facts.read('osm:way/123', { fetchFn, base: 'https://example.test/api', fresh: true });
+        expect(fetchFn).toHaveBeenLastCalledWith('https://example.test/api/building-facts?ids=osm%3Away%2F123&fresh=1', { cache: 'no-store' });
         expect(building.facts.storeys.value).toBe(3);
         await expect(facts.read('osm:way/123', { fetchFn: async () => new Response('busy', { status: 502 }) })).rejects.toThrow('HTTP 502');
         await expect(facts.read('osm:way/9', { fetchFn: async () => new Response(JSON.stringify(answer(house))) })).rejects.toThrow('Invalid');

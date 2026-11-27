@@ -39,7 +39,7 @@ export async function votingWithEligibility(consultation, designContents, { read
     return { ...consultation, voting: { ...voting, eligibility: Eligibility.evidence(set, judged, new Date().toISOString()) } };
 }
 
-export function createMcpAgreementTools({ read, drafts, appOrigin, readFacts = ids => BuildingFacts.readMany(ids, { base: process.env.BUILDING_FACTS_API || BuildingFacts.API_ROOT }) }) {
+export function createMcpAgreementTools({ read, drafts, appOrigin, readFacts = ids => BuildingFacts.readMany(ids, { base: process.env.BUILDING_FACTS_API || BuildingFacts.API_ROOT, fresh: true }) }) {
     let resolvePlan;
     const setPlanResolver = resolver => { resolvePlan = resolver; };
     async function resolveDesigns(values, parcelSourceId) {

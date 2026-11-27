@@ -307,8 +307,8 @@
         record.buildingFacts = factReads.get(record.id) || { status: 'reading', id };
         return readFactsOf(record, id);
     }
-    function readFactsOf(record, id) {
-        const read = root.BuildingFacts.read(id).then(building => ({ status: 'read', id, building }), error => {
+    function readFactsOf(record, id, options = {}) {
+        const read = root.BuildingFacts.read(id, options).then(building => ({ status: 'read', id, building }), error => {
             console.error(`[${new Date().toISOString()}] [planning] Building facts could not be read for ${id}`, error);
             return { status: 'failed', id };
         }).then(state => {
@@ -377,7 +377,7 @@
         again.disabled = state.status === 'reading';
         again.addEventListener('click', () => {
             const record = selected();
-            if (record?.buildingFacts) root.BusyControl.track(again, () => readFactsOf(record, record.buildingFacts.id));
+            if (record?.buildingFacts) root.BusyControl.track(again, () => readFactsOf(record, record.buildingFacts.id, { fresh: true }));
         });
         section.append(again);
         return section;

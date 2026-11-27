@@ -32,13 +32,13 @@
         return local && /^http:\/\/(localhost|127\.0\.0\.1):\d+\/api$/.test(local) ? local : API_ROOT;
     }
 
-    // Several buildings' facts, read live (the contract reads its source on every request), as a Map
-    // id → building; at most 200 per request, as the contract allows.
-    async function readMany(ids, { fetchFn = fetch, base = apiRoot() } = {}) {
+    // Several buildings' facts as a Map id → building; at most 200 per request, as the contract
+    // allows. The API keeps a read 5 minutes; fresh asks the source again ("Check again" after an edit).
+    async function readMany(ids, { fetchFn = fetch, base = apiRoot(), fresh = false } = {}) {
         const found = new Map();
         for (let i = 0; i < ids.length; i += 200) {
             const batch = ids.slice(i, i + 200);
-            const response = await fetchFn(`${base}/building-facts?ids=${batch.map(encodeURIComponent).join(',')}`, { cache: 'no-store' });
+            const response = await fetchFn(`${base}/building-facts?ids=${batch.map(encodeURIComponent).join(',')}${fresh ? '&fresh=1' : ''}`, { cache: 'no-store' });
             if (!response.ok) throw new Error(`Building facts HTTP ${response.status}`);
             const answer = await response.json();
             for (const id of batch) {
