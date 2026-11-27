@@ -160,8 +160,9 @@ export function createMcpNavigation({ read, random = Math.random }) {
         const label = end => ({ kind: end.kind, ...(end.names ? { names: end.names } : {}), ...(end.name ? { name: end.name } : {}), ...(end.houseNumber ? { houseNumber: end.houseNumber } : {}), id: end.id });
         const street = { name: found.street.name, official: found.street.official, lengthM: found.street.lengthM, complete: found.street.complete, coverage: found.coverage,
             segments: found.segments.map((row, index) => ({ index, lengthM: row.lengthM, from: label(row.from), to: label(row.to),
-                sides: StreetSegments.sideCompass(row.coordinates), numbers: row.numbers.map(n => `${n.houseNumber} (${n.side})`), ...(row.official ? { official: row.official } : {}) })),
-            points: found.points.map(row => ({ id: row.id, kind: row.kind, ...(row.names ? { names: row.names } : {}), ...(row.houseNumber ? { houseNumber: row.houseNumber, side: row.side } : {}), point: row.point })) };
+                sides: StreetSegments.sideCompass(row.coordinates), numbers: row.numbers.map(n => `${n.houseNumber} (${n.side})`), ...(row.official ? { official: row.official } : {}),
+                ...(row.undevelopable ? { undevelopable: row.undevelopable } : {}) })),
+            points: found.points.map(row => ({ id: row.id, kind: row.kind, ...(row.names ? { names: row.names } : {}), ...(row.houseNumber ? { houseNumber: row.houseNumber } : {}), ...(row.side ? { side: row.side } : {}), point: row.point })) };
         const current = input.selection || {};
         const kept = { parcelSourceId: sourceId, focusParcelId: idOf(current.focusParcelId), parcelIds: [...new Set((current.parcelIds || []).map(idOf).filter(Boolean))], active: current.active === true };
         if (segment == null && from == null) return { selection: kept, street };

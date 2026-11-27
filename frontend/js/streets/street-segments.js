@@ -5,9 +5,10 @@
 // A street is the connected set of road ways sharing one name, branches included. Its segments
 // lie between referable points: an end, a branching (another road, or a branch of the street
 // itself), a bend of 30° or more measured over 20 m chords on both sides, a bridge longer than
-// 3 m along it or one wider than 3 m over it, and a gap over 50 m between buildings. House numbers
-// are referable points too; they name segment ends and bound a selection between two points, but
-// do not cut the offered segments.
+// 3 m along it or one wider than 3 m over it, and a gap over 50 m between buildings on one side
+// where it faces a stretch of the other side over 50 m without buildings (Strong Suburbs para 8).
+// House numbers and the edges of every such gap are referable points too; they name segment ends
+// and bound a selection between two points, but do not cut the offered segments.
 //
 // Geometry runs in a local ground-metre frame about an anchor (equirectangular on turf's sphere,
 // R = 6378137 m), which is exact enough over a street's few kilometres.
@@ -207,7 +208,8 @@
      *   buildings  GeoJSON Polygon/MultiPolygon features near the street (for gaps), or null when unknown;
      *   numbers    [{ number, street, point: [lng, lat] }] house numbers near it.
      * Returns { name, wayIds, lengthM, points, segments }. Each segment: { id, chain, fromM, toM,
-     * lengthM, coordinates, wayIds, from, to, numbers }; each end: a referable point.
+     * lengthM, coordinates, wayIds, from, to, numbers, undevelopable? ([{ side, fromM, toM }], its
+     * gaps over 50 m between buildings) }; each end: a referable point.
      */
     function segmentStreet({ ways = [], street = [], buildings = null, numbers = [] } = {}) {
         if (!street.length) fail('The street has no ways.');
@@ -376,23 +378,44 @@
                     if (t != null) found.push({ m: cumul[i] + t * (cumul[i + 1] - cumul[i]), kind: 'overpass', name: way.name || null, ...(way.railway ? { railway: true } : {}) });
                 }
             }
-            // Gaps over BUILDING_GAP_M between the buildings fronting the chain.
+            // Gaps over BUILDING_GAP_M without buildings on each side (Strong Suburbs para 8), from
+            // one building to the next or to the chain's end, where the next building stands on the
+            // street beyond the junction. Every gap is not developable by a street vote and its edges
+            // are referable points; it ends a voting unit only where it faces a gap of the other side,
+            // cut at both edges of the part facing it. (A road joining opposite is a branching, which
+            // ends the segment anyway.)
+            const gaps = [], gapPoints = [];
             if (buildingRings && buildingRings.length) {
-                const spans = [];
+                const spans = { left: [], right: [] };
                 for (const ring of buildingRings) {
                     const hits = ring.map(p => projectOnLine(pts, cumul, p));
                     if (Math.min(...hits.map(h => h.distance)) > BUILDING_REACH_M) continue;
-                    const measures = hits.filter(h => h.distance <= BUILDING_REACH_M * 1.5).map(h => h.measure);
-                    spans.push([Math.min(...measures), Math.max(...measures)]);
+                    const near = hits.filter(h => h.distance <= BUILDING_REACH_M * 1.5);
+                    const measures = near.map(h => h.measure);
+                    spans[near.reduce((sum, h) => sum + h.side, 0) >= 0 ? 'left' : 'right'].push([Math.min(...measures), Math.max(...measures)]);
                 }
-                spans.sort((a, b) => a[0] - b[0]);
-                let end = null;
-                for (const [from, to] of spans) {
-                    if (end != null && from - end > BUILDING_GAP_M) {
-                        found.push({ m: end, kind: 'gap-start' });
-                        found.push({ m: from, kind: 'gap-end' });
+                // A side's gaps: [[from, to]] along the chain.
+                const openOf = list => {
+                    const sorted = list.slice().sort((a, b) => a[0] - b[0]), open = [];
+                    let end = 0;
+                    for (const [from, to] of sorted) {
+                        if (from - end > BUILDING_GAP_M) open.push([end, from]);
+                        end = Math.max(end, to);
                     }
-                    end = end == null ? to : Math.max(end, to);
+                    if (total - end > BUILDING_GAP_M) open.push([end, total]);
+                    return open;
+                };
+                const open = { left: openOf(spans.left), right: openOf(spans.right) };
+                for (const [side, other] of [['left', 'right'], ['right', 'left']]) {
+                    for (const [from, to] of open[side]) {
+                        gaps.push({ side, from, to });
+                        gapPoints.push({ m: from, kind: 'gap-start', side }, { m: to, kind: 'gap-end', side });
+                        for (const [a, b] of open[other]) {
+                            const start = Math.max(from, a), end = Math.min(to, b);
+                            if (end - start <= 0) continue;
+                            found.push({ m: start, kind: 'gap-start' }, { m: end, kind: 'gap-end' });
+                        }
+                    }
                 }
             }
             // Referable points, structural first; nearby duplicates fold into the higher priority.
@@ -406,7 +429,9 @@
             cuts.sort((a, b) => a.m - b.m);
             const numbersHere = numberPoints.filter(row => row.chain === chainIndex).map(row => ({ row, hit: row.hit }))
                 .map(({ row, hit }) => ({ m: hit.measure, kind: 'number', houseNumber: row.number, side: hit.side > 0 ? 'left' : 'right' }));
-            const all = [...cuts, ...numbersHere].sort((a, b) => a.m - b.m);
+            // Gap edges that cut nothing stay referable points, like house numbers.
+            const gapsHere = gapPoints.filter(point => !cuts.some(cut => Math.abs(cut.m - point.m) < MERGE_M));
+            const all = [...cuts, ...gapsHere, ...numbersHere].sort((a, b) => a.m - b.m);
             const register = point => {
                 const out = { id: `p${points.length}`, chain: chainIndex, measureM: Math.round(point.m * 10) / 10, kind: point.kind,
                     point: f.toLL(pointAt(pts, cumul, point.m).point) };
@@ -424,9 +449,13 @@
             function describe(chain, fromM, toM, from, to) {
                 const wayIds = [...new Set(wayOfEdge.filter((edge, i) => cumul[i + 1] > fromM + 1e-6 && cumul[i] < toM - 1e-6).map(edge => edge.wayId))].sort();
                 const inside = numbersHere.filter(row => row.m >= fromM && row.m <= toM).sort((a, b) => a.m - b.m);
+                // The gaps over 50 m between buildings within it, by side: not developable by a street vote (para 8).
+                const undevelopable = gaps.filter(gap => gap.to > fromM + 1e-6 && gap.from < toM - 1e-6)
+                    .map(gap => ({ side: gap.side, fromM: Math.round(Math.max(gap.from, fromM) * 10) / 10, toM: Math.round(Math.min(gap.to, toM) * 10) / 10 }));
                 return { id: `${chain}.${segments.length}`, chain, fromM: Math.round(fromM * 10) / 10, toM: Math.round(toM * 10) / 10,
                     lengthM: Math.round(toM - fromM), coordinates: slice(pts, cumul, fromM, toM).map(f.toLL), wayIds, from, to,
-                    numbers: inside.map(row => ({ houseNumber: row.houseNumber, side: row.side, measureM: Math.round(row.m * 10) / 10 })) };
+                    numbers: inside.map(row => ({ houseNumber: row.houseNumber, side: row.side, measureM: Math.round(row.m * 10) / 10 })),
+                    ...(undevelopable.length ? { undevelopable } : {}) };
             }
             chains[chainIndex] = { keys, pts, cumul, describe };
         });
