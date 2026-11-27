@@ -19,14 +19,14 @@
     "ProposalNFT": "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg",
     "ProposalMarket": "79dH9KGrbffN37Hv1mbyUWdbHAVcCt6o2Z1VZ3c745Bn",
     "ProposalPledge": "DY4zKtE1hucUHsQGDhQmBaH3ZdAaeusnmj9HzVtpmYnK",
-    "PropertyOffer": "BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp"
+    "PropertyOffer": "HrK4gvMqpYNvYSidaMLywy9mknQUatMig2fnWcG2UVyH"
   },
   "solana-devnet": {
     "ParcelNFT": "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1",
     "ProposalNFT": "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg",
     "ProposalMarket": "79dH9KGrbffN37Hv1mbyUWdbHAVcCt6o2Z1VZ3c745Bn",
     "ProposalPledge": "DY4zKtE1hucUHsQGDhQmBaH3ZdAaeusnmj9HzVtpmYnK",
-    "PropertyOffer": "BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp"
+    "PropertyOffer": "HrK4gvMqpYNvYSidaMLywy9mknQUatMig2fnWcG2UVyH"
   },
   "solana-mainnet-beta": {}
 }

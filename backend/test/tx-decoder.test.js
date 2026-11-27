@@ -201,7 +201,7 @@ describe('loadIdls', () => {
         expect(idls.byAddress.get(AGREEMENT_PROGRAM_ID).name).toBe('agreement');
         expect(idls.byAddress.get(MARKET_PROGRAM).name).toBe('proposal_market');
         expect(idls.byAddress.get('4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1').name).toBe('parcel_nft');
-        expect(idls.byAddress.get('BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp').name).toBe('property_offer');
+        expect(idls.byAddress.get('HrK4gvMqpYNvYSidaMLywy9mknQUatMig2fnWcG2UVyH').name).toBe('property_offer');
         // Designs are not minted: the proposal program's instructions are no longer decoded.
         expect(idls.byAddress.has(PROPOSAL_PROGRAM)).toBe(false);
     });

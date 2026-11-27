@@ -16,7 +16,7 @@ export const OUR_PROGRAMS = Object.freeze([
     { address: '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1', name: 'parcel_nft', label: 'parcel_nft program' },
     { address: MARKET_PROGRAM_ID, name: 'proposal_market', label: 'proposal_market program' },
     { address: PLEDGE_PROGRAM_ID, name: 'proposal_pledge', label: 'proposal_pledge program' },
-    { address: 'BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp', name: 'property_offer', label: 'property_offer program' },
+    { address: 'HrK4gvMqpYNvYSidaMLywy9mknQUatMig2fnWcG2UVyH', name: 'property_offer', label: 'property_offer program' },
     { address: AGREEMENT_PROGRAM_ID, name: 'agreement', label: 'agreement program' }
 ]);
 
