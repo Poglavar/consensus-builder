@@ -44,6 +44,13 @@ describe('parcel menu actions', () => {
         expect(Model.availableActions(baseFacts({ blocksEnabled: undefined }))).not.toContain('detectBlock');
     });
 
+    it('offers Street here on a road parcel only, where the street picker is loaded', () => {
+        expect(Model.availableActions(baseFacts({ isRoad: true, streetsEnabled: true }))).toContain('street');
+        expect(Model.availableActions(baseFacts({ streetsEnabled: true }))).not.toContain('street');
+        expect(Model.availableActions(baseFacts({ isRoad: true }))).not.toContain('street');
+        expect(Model.isActionAvailable('street', { parcelId: 'HR-1-1', isRoad: true, streetsEnabled: true, isGround: true })).toBe(false);
+    });
+
     it('does not duplicate the mode buttons, and leaves History out without a parcel uid', () => {
         expect(Model.availableActions(baseFacts({ can3d: true }))).not.toContain('view3d');
         expect(Model.availableActions(baseFacts({ historyIds: [] }))).not.toContain('history');

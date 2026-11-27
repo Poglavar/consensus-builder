@@ -1,0 +1,181 @@
+// Streets, segments and plots along a side (frontend/js/streets/street-segments.js) on OSM-shaped
+// fixtures in /osm-road's feature shape: a T-junction, a sharp bend against a gentle curve, a bridge
+// and bridges over the street, a gap between buildings, the plots on each side, and house numbers.
+import { describe, expect, it } from 'vitest';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const S = require('../../frontend/js/streets/street-segments.js');
+
+// A London-like anchor; fixtures are drawn in metres east (x) and north (y) of it.
+const LNG0 = -0.1, LAT0 = 51.5, M_PER_DEG = Math.PI * 6378137 / 180;
+const ll = ([x, y]) => [LNG0 + x / (M_PER_DEG * Math.cos(LAT0 * Math.PI / 180)), LAT0 + y / M_PER_DEG];
+let nextId = 1000;
+function way(name, points, tags = {}, highway = 'residential') {
+    const id = nextId++;
+    return { type: 'Feature', geometry: { type: 'LineString', coordinates: points.map(ll) },
+        properties: { osm_id: id, name, highway_type: tags.railway ? null : highway, railway_type: tags.railway || null, tags: { ...(name ? { name } : {}), ...tags }, source: 'osm_road' } };
+}
+const box = (x0, y0, x1, y1, id) => ({ id, type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]].map(ll)] } });
+const line = (x0, x1, y = 0, step = 25) => { const out = []; for (let x = x0; x < x1; x += step) out.push([x, y]); out.push([x1, y]); return out; };
+function cut(features, opts = {}) {
+    const ways = S.normaliseWays(features);
+    const seed = ways.find(w => w.name === (opts.name || 'Hughes Road'));
+    const street = S.streetWays(ways, { seedWayId: seed.id });
+    return S.segmentStreet({ ways, street, buildings: opts.buildings ?? null, numbers: opts.numbers || [] });
+}
+
+describe('streets', () => {
+    it('finds the street at a point and groups its ways by name and connectivity, branches included', () => {
+        const a = way('Hughes Road', line(0, 150)), b = way('Hughes Road', line(150, 300));
+        const branch = way('Hughes Road', [[150, 0], [150, -80]]);
+        const far = way('Hughes Road', line(2000, 2100));
+        const other = way('Cross Road', [[150, 0], [150, 100]]);
+        const ways = S.normaliseWays([a, b, branch, far, other]);
+        const at = S.streetAt(ways, ll([60, 8]));
+        expect(at).toMatchObject({ name: 'Hughes Road', wayId: String(a.properties.osm_id) });
+        expect(at.distanceM).toBeCloseTo(8, 0);
+        expect(S.streetAt(ways, ll([60, 80]))).toBeNull();
+        const street = S.streetWays(ways, { seedWayId: at.wayId }).map(w => w.id).sort();
+        expect(street).toEqual([a, b, branch].map(f => String(f.properties.osm_id)).sort());
+        expect(S.normaliseName('  Hughes   Rd. ')).toBe(S.normaliseName('hughes rd'));
+    });
+});
+
+describe('segments', () => {
+    it('cuts at a T-junction and names the branching road', () => {
+        const result = cut([way('Hughes Road', line(0, 300)), way('Cross Road', [[150, 0], [150, 120]])]);
+        expect(result.segments).toHaveLength(2);
+        const [first, second] = result.segments;
+        expect(first.from.kind).toBe('end');
+        expect(first.to).toMatchObject({ kind: 'branch', names: ['Cross Road'] });
+        expect(second.from).toMatchObject({ kind: 'branch', names: ['Cross Road'] });
+        expect(first.lengthM + second.lengthM).toBe(300);
+        expect(result.lengthM).toBe(300);
+    });
+
+    it('a footway or an unnamed drive meeting the street is no branching; a branch of the street itself is', () => {
+        const result = cut([way('Hughes Road', line(0, 300)), way(null, [[100, 0], [100, 30]], {}, 'footway'), way(null, [[200, 0], [200, -30]], {}, 'service')]);
+        expect(result.segments).toHaveLength(1);
+        const forked = cut([way('Hughes Road', line(0, 300)), way('Hughes Road', [[150, 0], [150, 90]])]);
+        expect(forked.segments).toHaveLength(3);
+        expect(forked.points.filter(p => p.kind === 'branch').every(p => p.own === true)).toBe(true);
+    });
+
+    it('cuts at a bend of 30° or more over a 20 m baseline, not along a gentle curve', () => {
+        const sharp = cut([way('Hughes Road', [...line(0, 150), [150, 25], [150, 50], [150, 75], [150, 100], [150, 125], [150, 150]])]);
+        expect(sharp.segments).toHaveLength(2);
+        expect(sharp.segments[0].to).toMatchObject({ kind: 'bend' });
+        expect(sharp.points.find(p => p.kind === 'bend').degrees).toBeGreaterThanOrEqual(80);
+        // A quarter circle of radius 150 m sampled every 5 m: about 7.6° per 20 m chord pair.
+        const arc = [];
+        for (let a = 0; a <= 90; a += 2) arc.push([150 * Math.sin(a * Math.PI / 180), 150 - 150 * Math.cos(a * Math.PI / 180)]);
+        const gentle = cut([way('Hughes Road', arc)]);
+        expect(gentle.segments).toHaveLength(1);
+        expect(gentle.points.some(p => p.kind === 'bend')).toBe(false);
+        // A tight 90° corner drawn with many vertices (radius 20 m) still counts once.
+        const tight = [...line(0, 100)];
+        for (let a = 0; a <= 90; a += 10) tight.push([100 + 20 * Math.sin(a * Math.PI / 180), 20 - 20 * Math.cos(a * Math.PI / 180)]);
+        tight.push([120, 60], [120, 120]);
+        const corner = cut([way('Hughes Road', tight)]);
+        expect(corner.points.filter(p => p.kind === 'bend')).toHaveLength(1);
+    });
+
+    it('cuts at both ends of a bridge longer than 3 m, not at a 2 m culvert', () => {
+        const bridged = cut([way('Hughes Road', line(0, 100)), way('Hughes Road', [[100, 0], [120, 0]], { bridge: 'yes' }), way('Hughes Road', line(120, 250))]);
+        expect(bridged.segments.map(s => [s.from.kind, s.to.kind])).toEqual([['end', 'bridge-start'], ['bridge-start', 'bridge-end'], ['bridge-end', 'end']]);
+        const culvert = cut([way('Hughes Road', line(0, 100)), way('Hughes Road', [[100, 0], [102, 0]], { bridge: 'yes' }), way('Hughes Road', line(102, 250))]);
+        expect(culvert.segments).toHaveLength(1);
+    });
+
+    it('cuts under a railway bridge but not under a footbridge', () => {
+        const result = cut([way('Hughes Road', line(0, 300)),
+            way(null, [[200, -50], [200, 50]], { railway: 'rail', bridge: 'yes' }),
+            way(null, [[80, -20], [80, 20]], { bridge: 'yes' }, 'footway')]);
+        expect(result.segments).toHaveLength(2);
+        expect(result.segments[0].to).toMatchObject({ kind: 'overpass', railway: true });
+        expect(result.segments[0].lengthM).toBe(200);
+    });
+
+    it('cuts at both edges of a gap over 50 m between the buildings along it', () => {
+        const buildings = [];
+        for (let x = 0; x <= 90; x += 15) buildings.push(box(x, 12, x + 10, 22));
+        for (let x = 170; x <= 290; x += 15) buildings.push(box(x, -22, x + 10, -12));
+        const result = cut([way('Hughes Road', line(0, 300))], { buildings });
+        expect(result.segments.map(s => [s.from.kind, s.to.kind])).toEqual([['end', 'gap-start'], ['gap-start', 'gap-end'], ['gap-end', 'end']]);
+        expect(result.segments[1].fromM).toBeCloseTo(100, 0);
+        expect(result.segments[1].toM).toBeCloseTo(170, 0);
+        // A 40 m gap is no referable point; unknown buildings cut nothing.
+        const close = buildings.filter(b => b).concat();
+        close.push(box(130, 12, 140, 22));
+        expect(cut([way('Hughes Road', line(0, 300))], { buildings: close }).segments).toHaveLength(1);
+        expect(cut([way('Hughes Road', line(0, 300))]).buildingsKnown).toBe(false);
+    });
+
+    it('keeps house numbers as referable points that name ends and bound a selection, without cutting', () => {
+        const numbers = [
+            { number: '2', street: 'Hughes Road', point: ll([20, 15]) },
+            { number: '40', street: 'Hughes Road', point: ll([120, 15]) },
+            { number: '7', street: 'Other Street', point: ll([60, 15]) }
+        ];
+        const result = cut([way('Hughes Road', line(0, 300)), way('Cross Road', [[200, 0], [200, 90]])], { numbers });
+        expect(result.segments).toHaveLength(2);
+        expect(result.segments[0].numbers.map(n => [n.houseNumber, n.side])).toEqual([['2', 'left'], ['40', 'left']]);
+        const two = result.points.find(p => p.houseNumber === '2'), branch = result.points.find(p => p.kind === 'branch');
+        const part = result.between(two.id, branch.id);
+        expect(part.lengthM).toBe(180);
+        expect(part.from).toMatchObject({ kind: 'number', houseNumber: '2' });
+        expect(() => result.between(two.id, 'p999')).toThrow(/referable points/);
+    });
+});
+
+describe('plots along a side', () => {
+    // Hughes Road runs west→east, so its left side is north. A road parcel holds the centreline.
+    const road = box(-10, -6, 310, 6, 'road');
+    const north = [0, 1, 2].map(i => box(i * 20, 6, i * 20 + 20, 40, `n${i}`));
+    const south = [0, 1].map(i => box(i * 30, -40, i * 30 + 30, -6, `s${i}`));
+    const back = box(0, 40, 60, 80, 'back');
+    const sidewalk = box(100, 6, 160, 9, 'walk');
+    const behindWalk = box(100, 9, 160, 40, 'behind');
+    const parcels = [road, ...north, ...south, back, sidewalk, behindWalk].map(f => ({ id: f.id, geometry: f.geometry }));
+    const coordinates = line(0, 200).map(ll);
+
+    it('selects the plots fronting the left, the right or both sides, never the plots behind them', () => {
+        expect(S.sideCompass(coordinates)).toEqual({ left: 'north', right: 'south' });
+        const left = S.plotsAlong({ coordinates, parcels, side: 'left' }).map(p => p.id);
+        expect(left).toEqual(['n0', 'n1', 'n2', 'walk']);
+        const right = S.plotsAlong({ coordinates, parcels, side: 'right' });
+        expect(right.map(p => p.id)).toEqual(['s0', 's1']);
+        expect(right.every(p => p.side === 'right' && p.frontageM >= 3)).toBe(true);
+        const both = S.plotsAlong({ coordinates, parcels, side: 'both' }).map(p => p.id).sort();
+        expect(both).toEqual(['n0', 'n1', 'n2', 's0', 's1', 'walk']);
+        expect(both).not.toContain('back');
+        expect(both).not.toContain('road');
+    });
+
+    it('looks through road parcels named transparent, such as a separate pavement', () => {
+        const left = S.plotsAlong({ coordinates, parcels, side: 'left', transparent: ['walk'] }).map(p => p.id);
+        expect(left).toEqual(['n0', 'n1', 'n2', 'behind']);
+    });
+
+    it('is cut by the segment: plots beyond its ends are not along it', () => {
+        const short = line(0, 30).map(ll);
+        expect(S.plotsAlong({ coordinates: short, parcels, side: 'left' }).map(p => p.id)).toEqual(['n0', 'n1']);
+    });
+});
+
+describe('the street reference a vote records', () => {
+    it('names the street, its OSM ways, the segment ends and the side, and rejects anything else', () => {
+        const result = cut([way('Hughes Road', line(0, 300)), way('Cross Road', [[150, 0], [150, 120]])]);
+        const ref = S.reference(result, result.segments[1], 'left', { scheme: 'GB-USRN', id: 12345678 });
+        expect(ref).toMatchObject({ name: 'Hughes Road', part: 'segment', side: 'left', official: { scheme: 'GB-USRN', id: '12345678' },
+            from: { kind: 'branch', names: ['Cross Road'] }, to: { kind: 'end' } });
+        expect(ref.osmWayIds).toEqual(result.segments[1].wayIds);
+        expect(S.normaliseReference(JSON.parse(JSON.stringify(ref)))).toEqual(ref);
+        const whole = S.reference(result, null, 'both');
+        expect(whole).toEqual({ name: 'Hughes Road', osmWayIds: result.wayIds, part: 'street', side: 'both' });
+        expect(() => S.normaliseReference({ ...whole, extra: 1 })).toThrow(/unknown fields/);
+        expect(() => S.normaliseReference({ ...whole, side: 'north' })).toThrow(/side/);
+        expect(() => S.normaliseReference({ ...whole, osmWayIds: ['w12'] })).toThrow(/OSM way ids/);
+        expect(() => S.normaliseReference({ ...ref, from: undefined })).toThrow(/end/);
+    });
+});

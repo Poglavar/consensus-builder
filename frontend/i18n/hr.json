@@ -1,4 +1,53 @@
 {
+    "streets": {
+        "end": {
+            "fork": "račvanje",
+            "sideRoad": "sporedna cesta",
+            "loop": "petlja",
+            "end": "kraj ulice",
+            "bend": "zavoj",
+            "bridge": "most",
+            "railwayBridge": "željeznički most",
+            "overpass": "nadvožnjak",
+            "gap": "praznina među zgradama",
+            "number": "br. {{number}}"
+        },
+        "picker": {
+            "between": "{{from}} – {{to}}",
+            "notFound": "Ovdje ne prolazi imenovana ulica. Kliknite na samu ulicu.",
+            "failed": "Ulicu nije bilo moguće učitati.",
+            "official": "Službena oznaka {{id}}",
+            "osmOnly": "Iz OpenStreetMapa",
+            "partial": "Učitan je samo dio u blizini",
+            "part": "Dio ulice",
+            "whole": "Cijela ulica",
+            "side": "Strana",
+            "select": "Odaberi čestice",
+            "selecting": "Tražim čestice uz nju…",
+            "none": "Uz taj dio s te strane ne prolazi granica nijedne čestice.",
+            "selected": {
+                "one": "Odabrana je {{count}} čestica uz ulicu {{street}}: {{where}}, {{side}}.",
+                "few": "Odabrane su {{count}} čestice uz ulicu {{street}}: {{where}}, {{side}}.",
+                "other": "Odabrano je {{count}} čestica uz ulicu {{street}}: {{where}}, {{side}}."
+            },
+            "incomplete": "Neke čestice ovdje još nisu učitane; provjerite kartu.",
+            "selectFailed": "Čestice nije bilo moguće odabrati: {{error}}",
+            "cityChanged": "Grad se promijenio."
+        },
+        "side": {
+            "north": "Sjeverna strana",
+            "northeast": "Sjeveroistočna strana",
+            "east": "Istočna strana",
+            "southeast": "Jugoistočna strana",
+            "south": "Južna strana",
+            "southwest": "Jugozapadna strana",
+            "west": "Zapadna strana",
+            "northwest": "Sjeverozapadna strana",
+            "both": "Obje strane",
+            "left": "Lijeva strana",
+            "right": "Desna strana"
+        }
+    },
     "deviceModels": {
         "publishTitle": "Modeli samo na ovom uređaju",
         "publishMessage": "Uvezeni 3D modeli u onome što objavljujete čuvaju se samo na ovom uređaju. Učitajte ih da ih drugi vide ili objavite bez njih, pa drugi vide jednostavan blok. Učitani model je javan: svatko s poveznicom na projekt može ga preuzeti.",
@@ -7389,6 +7438,7 @@
             "other": "{{count}} vlasnika"
         },
         "actions": {
+            "street": "Ulica ovdje",
             "propose": "Predloži ovdje",
             "selectMore": "Odaberi više",
             "details": "Detalji",
@@ -7510,6 +7560,7 @@
         },
         "notLoaded": "Čestice ovdje još nisu učitane — približite kartu ili pričekajte da se učitaju.",
         "actions": {
+            "street": "Ulica ovdje",
             "drawSite": "Nacrtaj česticu"
         }
     },
@@ -10183,6 +10234,14 @@
         }
     },
     "voting": {
+        "streetCovered": "Ulica: {{street}}",
+        "street": {
+            "title": "Ulica",
+            "include": "Navedi ulicu koju glasanje obuhvaća: {{street}}",
+            "hint": "Odabrano naredbom Ulica ovdje na karti. Zapis čuva naziv, puteve iz OpenStreetMapa, krajeve i stranu.",
+            "named": "Glasanje navodi ulicu {{street}}.",
+            "unnamed": "Glasanje ne navodi ulicu."
+        },
         "support": "Podržavam",
         "oppose": "Protivim se",
         "abstain": "Suzdržan/a",

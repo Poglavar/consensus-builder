@@ -53,6 +53,7 @@ export const MCP_FEATURES = Object.freeze([
     { feature: 'community-code-voting', prepare: 'ugt_draft_agreement', edit: 'ugt_edit_agreement', inspect: 'ugt_voting_status', vote: 'ugt_cast_community_vote',
         eligibility: 'Fixed code hashes in consultation.voting (community-voting/v2); generate codes and retain contact assignments locally. Changing eligibility creates a new agreement without transferring votes.',
         households: 'Optional consultation.voting.households: a partition of codeHashes, one code per resident grouped by household. Household labels stay local.',
+        street: 'Optional consultation.voting.street: the street, or a segment of it by side, whose residents vote. Pick it with ugt_select_parcels action street (point or street name), which selects the plots along it and returns streetReference to pass unchanged.',
         ballotRules: BallotRules.list().map(rule => ({ rule: { id: rule.id, version: rule.version }, name: rule.text.name, tests: rule.tests, source: rule.text.source, links: rule.sources,
             ...(rule.requires ? { requires: rule.requires } : {}) })),
         ownerSignOff: 'A ballot rule counts residents only. Owners sign off in a separate owner-vote or owner-deal agreement on the same plan; ugt_list_agreements by one of the plan’s designs finds both, and ugt_get_agreement shows each one’s rule and planCid.' },

@@ -434,9 +434,11 @@
         // What the panel does not offer: shown as the parcel section's buttons.
         parcelCommand('compare', { labelKey: 'parcelMenu.actions.compare', fallbackLabel: 'Compare designs', icon: 'fas fa-code-compare' }),
         parcelCommand('useAsSite', { surfaces: [], modes: ['2d'], labelKey: 'parcelMenu.actions.useAsSite', fallbackLabel: 'Custom site', icon: 'fas fa-draw-polygon' }),
+        parcelCommand('street', { modes: ['2d'], labelKey: 'parcelMenu.actions.street', fallbackLabel: 'Street here', icon: 'fas fa-road' }),
 
         // ---- Ground menu (a click where there is no parcel), in menu order ----
         groundCommand('drawSite', { labelKey: 'groundMenu.actions.drawSite', fallbackLabel: 'Draw a parcel', icon: 'fas fa-draw-polygon' }),
+        groundCommand('street', { labelKey: 'groundMenu.actions.street', fallbackLabel: 'Street here', icon: 'fas fa-road' }),
         groundCommand('road', { labelKey: 'panel.parcel.build.road', fallbackLabel: 'Road', icon: 'fas fa-road' }),
         groundCommand('track', { labelKey: 'panel.parcel.build.track', fallbackLabel: 'Track', icon: 'cb-icon-track' }),
         groundCommand('roadStation', { labelKey: 'panel.parcel.build.roadStation', fallbackLabel: 'Road station', icon: 'fas fa-bus' }),
