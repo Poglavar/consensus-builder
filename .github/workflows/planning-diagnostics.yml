@@ -18,7 +18,7 @@ permissions:
   contents: read
 jobs:
   diagnostics:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     services:
       postgres:
@@ -44,16 +44,13 @@ jobs:
             backend/package-lock.json
             e2e/package-lock.json
       - name: Install locked dependencies
-        run: npm ci --ignore-scripts
+        run: npm ci
         working-directory: backend
       - name: Privacy, semantics, bounds, HTTP, UI recovery and PostgreSQL checks
         run: node --test test/planning-diagnostics*.node.test.js
         working-directory: backend
         env:
           UGT_DIAGNOSTIC_TEST_DB: postgres://postgres@127.0.0.1:5432/postgres
-      - name: Build existing canvas dependency for MCP imports
-        run: npm rebuild canvas
-        working-directory: backend
       - name: Existing authoring, publication, import/export and MCP regressions
         run: >-
           npx vitest run

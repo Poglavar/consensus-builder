@@ -16,13 +16,13 @@ import { POINTS_POOL, UGT_DIVISOR } from '../markets/city-token-rewards.js';
 import { settleBoosts } from '../markets/city-token-ledger.js';
 import { transaction } from '../markets/points-ledger.js';
 
-const enabled = process.env.POINTS_DB_TEST === '1';
+const skip = process.env.POINTS_DB_TEST !== '1' && 'requires POINTS_DB_TEST=1 and a local geodata database with the points and city-token tables';
 const BACKEND_DIR = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const AGREEMENT = '11111111111111111111111111111115';
 const BOOSTED = '11111111111111111111111111111116';
 const SPONSOR = 'SysvarRent111111111111111111111111111111111';
 
-test('city token awards on points resolve', { skip: !enabled, timeout: 60_000 }, async () => {
+test('city token awards on points resolve', { skip, timeout: 60_000 }, async () => {
     dotenv.config({ path: resolve(BACKEND_DIR, '.env'), quiet: true });
     if (!database.isLocalDatabase() || database.describeDatabase().database !== 'geodata') {
         throw new Error('Refusing city token integration test: DATABASE_URL must target local geodata.');

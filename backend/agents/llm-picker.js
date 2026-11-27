@@ -7,8 +7,7 @@
 // repo's, so the request builder and the parser below are pure and tested, and the layer instance
 // is passed in so no test touches the network.
 
-import { computeCost } from '../../../agents/lib/llm-cost/index.mjs';
-import { createLlm } from '../../../agents/lib/llm-cost/llm.mjs';
+import { createRequire } from 'node:module';
 import { isEligible } from './algorithmic-picker.js';
 import { buildingBaseline } from './building-baseline.js';
 
@@ -21,6 +20,8 @@ const MAX_NAME_CHARS = 60;
 
 // Anthropic's own rule of thumb; only used for the pre-flight estimate, never for billing.
 const CHARS_PER_TOKEN = 4;
+
+const require = createRequire(import.meta.url);
 
 export const PICK_SCHEMA = {
     type: 'object',
@@ -52,6 +53,8 @@ export const PICK_SCHEMA = {
  * @param {Object} [args.meta]  ledger meta, e.g. { runId }
  */
 export function createAgentLlm({ client, meta = {} }) {
+    // Algorithmic agents run without the operator's sibling checkout. A paid run requires it.
+    const { createLlm } = require('../../../agents/lib/llm-cost/llm.cjs');
     return createLlm({ client, repo: LEDGER_REPO, script: LEDGER_SCRIPT, meta });
 }
 
@@ -230,10 +233,11 @@ export function parsePicks(text, candidates, maxPicks) {
  * which no pick answer does. The real spend is what the shared layer ledgers per item as it arrives.
  * Batch is priced at half the online rate by the shared table.
  */
-export function estimateBatchCostUsd(requests) {
-    const list = Array.isArray(requests) ? requests : [];
+export function estimateBatchCostUsd(requests, { computeCost: injectedComputeCost } = {}) {
+    if (!Array.isArray(requests) || !requests.length) return 0;
+    const computeCost = injectedComputeCost ?? require('../../../agents/lib/llm-cost/index.cjs').computeCost;
     let total = 0;
-    for (const request of list) {
+    for (const request of requests) {
         const params = request && request.params ? request.params : {};
         const chars = String(params.system ?? '').length
             + JSON.stringify(params.messages ?? []).length;

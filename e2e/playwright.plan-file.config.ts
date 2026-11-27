@@ -5,5 +5,7 @@ export default defineConfig({
   testMatch: 'plan-file.spec.ts',
   workers: 1,
   reporter: 'list',
-  use: { headless: true },
+  // Relative navigation and uploads resolve against the same secure loopback origin in every test.
+  // The fixture intercepts navigation before it reaches a server.
+  use: { headless: true, baseURL: 'http://127.0.0.1' },
 });

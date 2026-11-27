@@ -24,7 +24,7 @@ test.beforeEach(async ({ page }) => {
   for (const file of ['js/app-diagnostics.js', 'vendor/noble-hashes-1.8.0/sha256.js', 'vendor/ipfs-file-cid/ipfs-file-cid.js', 'js/cid.js',
     'js/proposals/authored-record.js', 'js/proposals/formation-depth.js', 'js/design-record.js', 'js/plan-record.js', 'js/plan-composition.js',
     'js/plan-file.js', 'js/optional-tools-loader.js', 'js/data-source.js', 'js/device-models.js', 'js/ui/busy-control.js', 'js/ui/file-download.js', 'js/ui/modal-escape.js', 'js/ui/dialogs.js', 'js/ui/record-label.js', 'js/proposals/dialog-share.js']) {
-    await page.addScriptTag({ url: `/${file}` });
+    await page.addScriptTag({ path: path.join(root, file) });
   }
   await page.evaluate(() => {
     const w = window as any;
@@ -50,7 +50,7 @@ test.beforeEach(async ({ page }) => {
     w.PlanWorkspace = { resolve: async (plan: any, members: any[]) => ({ ...plan, members }) };
     w.PlanDialog = { details: (plan: any) => { w.opened = plan; } };
   });
-  await page.addScriptTag({ url: '/js/plan-file-ui.js' });
+  await page.addScriptTag({ path: path.join(root, 'js/plan-file-ui.js') });
   await page.addStyleTag({ content: '.cb-dialog-backdrop{position:fixed;inset:0;background:#fff}.cb-dialog{background:white;padding:20px}.cb-dialog button{margin:5px}' });
 });
 
@@ -219,7 +219,7 @@ async function loadDiagnosticLanguages(page: any) {
     return route.fulfill({ contentType: 'application/json', body: readFileSync(path.join(root, 'i18n', name), 'utf8') });
   });
   // Keep the real startup order and asynchronous dictionary loading.
-  for (const file of ['js/i18n.js', 'js/i18n-loader.js']) await page.addScriptTag({ url: `/${file}` });
+  for (const file of ['js/i18n.js', 'js/i18n-loader.js']) await page.addScriptTag({ path: path.join(root, file) });
   await page.evaluate(() => (window as any).i18n.translationsReady);
 }
 
@@ -250,7 +250,7 @@ test('optional diagnostic sending localizes confirmation and outcomes and keeps 
       w.finishDiagnosticSend = () => resolve({ ok: true, json: async () => ({ accepted: JSON.parse(options.body).entries.length }) });
     }) : fetch(url, options);
   });
-  for (const file of ['js/app-diagnostics.js', 'js/ui/busy-control.js', 'js/ui/file-download.js']) await page.addScriptTag({ url: `/${file}` });
+  for (const file of ['js/app-diagnostics.js', 'js/ui/busy-control.js', 'js/ui/file-download.js']) await page.addScriptTag({ path: path.join(root, file) });
   await loadDiagnosticLanguages(page);
   await page.evaluate(() => {
     const w = window as any; w.i18n.setLanguage('hr', { persist: false });

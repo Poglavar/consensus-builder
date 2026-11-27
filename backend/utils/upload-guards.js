@@ -3,6 +3,7 @@
 // floor for uploads stored on the API host.
 
 import fs from 'fs';
+import path from 'node:path';
 import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 
 // Per IP, per window, on top of the global write limiter.
@@ -22,6 +23,16 @@ function uploadClientKey(req) {
 // fills at most the headroom above the floor, never the disk.
 export const UPLOAD_MIN_FREE_BYTES = Number(process.env.UPLOAD_MIN_FREE_BYTES || 10 * 1024 ** 3);
 
+function uploadFilesystem(dir, statfs) {
+    try {
+        return statfs(dir);
+    } catch (error) {
+        if (error.code !== 'ENOENT') throw error;
+        // On the first upload the route creates uploads/ inside this existing directory.
+        return statfs(path.dirname(dir));
+    }
+}
+
 /**
  * Middleware refusing an upload (507) when the filesystem holding `dir` has less than `minFreeBytes`
  * free. `statfs` is injectable for tests.
@@ -30,7 +41,7 @@ export function requireUploadDiskHeadroom(dir, { minFreeBytes = UPLOAD_MIN_FREE_
     return (req, res, next) => {
         let free;
         try {
-            const stats = statfs(dir);
+            const stats = uploadFilesystem(dir, statfs);
             free = Number(stats.bavail) * Number(stats.bsize);
         } catch (error) {
             console.error(`[${new Date().toISOString()}] Upload disk check failed for ${dir}:`, error);

@@ -226,6 +226,7 @@ describe('rehoused sidebar controls', () => {
                 if (tagName === 'button' && attr(tag, 'data-app-update-reload') !== null) continue;
                 if (tagName === 'button' && attr(tag, 'data-activity-view') !== null) continue; // Activity panel tabs
                 if (tagName === 'button' && attr(tag, 'data-agent-city-source') !== null) continue; // Agent city source switch
+                if (tagName === 'button' && attr(tag, 'data-read-source-choice') !== null) continue; // Parcel source mode segmented control
                 if (tagName === 'button' && commands.some(c => c.id === attr(tag, 'data-command'))) continue;
                 if (tagName === 'button' && attr(tag, 'data-site-intro-open') !== null) {
                     if (commands.some(c => c.id === 'settings.siteIntro')) continue;
@@ -525,7 +526,7 @@ describe('the floating shell', () => {
     it('wires every shell button to a sheet that exists', () => {
         const sheets = new Set(openingTags(shellHtml, 'section')
             .filter(tag => (attr(tag, 'class') || '').split(/\s+/).includes('map-sheet')).map(tag => attr(tag, 'id')));
-        expect([...sheets].sort()).toEqual(['activity-sheet', 'bets-sheet', 'chat-sheet', 'layers-sheet', 'measurement-sheet', 'planning-views', 'proposals-sheet', 'settings-sheet', 'sun-sheet']);
+        expect([...sheets].sort()).toEqual(['activity-sheet', 'bets-sheet', 'chat-sheet', 'layers-sheet', 'market-sheet', 'measurement-sheet', 'planning-views', 'proposals-sheet', 'settings-sheet', 'sun-sheet']);
         const triggers = openingTags(shellHtml, 'button').filter(tag => attr(tag, 'data-sheet-target') !== null);
         expect(new Set(triggers.map(tag => attr(tag, 'data-sheet-target')))).toEqual(sheets);
         for (const tag of triggers) {
@@ -672,7 +673,7 @@ describe('editing a design locks the controls that start another task', () => {
 
     it('locks the shell controls agreed for editing and leaves Layers, Buildings and massing and Measure', () => {
         expect([...MapShell.EDIT_LOCKED_CONTROLS].sort()).toEqual(
-            ['activity-button', 'bets-button', 'proposals-button', 'settings-button', 'shareAppliedProposalsButton', 'username-display']);
+            ['activity-button', 'bets-button', 'market-button', 'proposals-button', 'settings-button', 'shareAppliedProposalsButton', 'username-display']);
         for (const id of ['layers-button', 'planning-views-button', 'measurement-button']) {
             expect(MapShell.EDIT_LOCKED_CONTROLS).not.toContain(id);
         }

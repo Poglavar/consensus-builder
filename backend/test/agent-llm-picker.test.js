@@ -9,6 +9,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
+import { createRequire } from 'node:module';
 
 // The shared ledger path is fixed when the layer is first loaded, so point it at a temp dir before
 // any import can load it. The guard below refuses to run the real-layer tests if it landed anywhere else.
@@ -28,12 +29,16 @@ import {
     PICK_SCHEMA,
     pickCustomId } from '../agents/llm-picker.js';
 import { buildChoiceRequest } from '../agents/society-llm.js';
-import { DEFAULTS } from '../../../agents/lib/llm-cost/llm.mjs';
-import { LEDGER } from '../../../agents/lib/llm-cost/index.mjs';
+const require = createRequire(import.meta.url);
+const shared = fs.existsSync(new URL('../../../agents/lib/llm-cost/', import.meta.url))
+    ? { ...require('../../../agents/lib/llm-cost/index.cjs'), ...require('../../../agents/lib/llm-cost/llm.cjs') }
+    : null;
+const DEFAULTS = shared?.DEFAULTS;
+const LEDGER = shared?.LEDGER;
 
 // The model every call must run on: the shared layer's default, never one named in this repo.
-const LAYER_MODEL = DEFAULTS.providers.anthropic.model;
-const LAYER_EFFORT = DEFAULTS.providers.anthropic.effort;
+const LAYER_MODEL = DEFAULTS?.providers.anthropic.model || 'shared-default-unavailable';
+const LAYER_EFFORT = DEFAULTS?.providers.anthropic.effort;
 
 // A fake Anthropic SDK client: records what was submitted, answers with canned batch results.
 function fakeAnthropic({ status = 'ended', results = [] } = {}) {
@@ -51,7 +56,17 @@ function fakeAnthropic({ status = 'ended', results = [] } = {}) {
     };
 }
 
-const LLM = createAgentLlm({ client: fakeAnthropic(), meta: { runId: 'test' } });
+const captureBatchRequest = (customId, params) => ({ custom_id: customId, params: {
+    model: LAYER_MODEL,
+    max_tokens: params.maxTokens,
+    system: params.system,
+    messages: [{ role: 'user', content: [{ type: 'text', text: params.content }] }],
+    output_config: { format: { type: 'json_schema', schema: params.schema }, effort: LAYER_EFFORT }
+} });
+const LLM = shared ? createAgentLlm({ client: fakeAnthropic(), meta: { runId: 'test' } })
+    : { batchRequest: vi.fn(captureBatchRequest) };
+const testCost = (_, usage) => usage.input_tokens * 0.001 + usage.output_tokens * 0.002;
+const estimateForTest = requests => estimateBatchCostUsd(requests, { computeCost: testCost });
 
 const PERSONA = {
     name: 'densifier-01',
@@ -287,27 +302,27 @@ describe('estimateBatchCostUsd', () => {
     const entry = n => ({ persona: PERSONA, candidates: Array.from({ length: n }, (_, i) => candidate(i + 1)) });
 
     it('is a positive number for a real batch', () => {
-        const cost = estimateBatchCostUsd(buildPickRequests({ llm: LLM, runId: RUN_ID, day: DAY, entries: [entry(5)] }));
+        const cost = estimateForTest(buildPickRequests({ llm: LLM, runId: RUN_ID, day: DAY, entries: [entry(5)] }));
         expect(cost).toBeGreaterThan(0);
         expect(Number.isFinite(cost)).toBe(true);
     });
 
     it('rises with the number of candidates', () => {
-        const small = estimateBatchCostUsd(buildPickRequests({ llm: LLM, runId: RUN_ID, day: DAY, entries: [entry(2)] }));
-        const large = estimateBatchCostUsd(buildPickRequests({ llm: LLM, runId: RUN_ID, day: DAY, entries: [entry(20)] }));
+        const small = estimateForTest(buildPickRequests({ llm: LLM, runId: RUN_ID, day: DAY, entries: [entry(2)] }));
+        const large = estimateForTest(buildPickRequests({ llm: LLM, runId: RUN_ID, day: DAY, entries: [entry(20)] }));
         expect(large).toBeGreaterThan(small);
     });
 
     it('rises with the number of personas', () => {
-        const one = estimateBatchCostUsd(buildPickRequests({ llm: LLM, runId: RUN_ID, day: DAY, entries: [entry(4)] }));
+        const one = estimateForTest(buildPickRequests({ llm: LLM, runId: RUN_ID, day: DAY, entries: [entry(4)] }));
         // Same-length name, so the two prompts are the same size and the doubling is exact.
-        const two = estimateBatchCostUsd(buildPickRequests({ llm: LLM, runId: RUN_ID, day: DAY, entries: [entry(4), { ...entry(4), persona: { ...PERSONA, name: 'densifier-02' } }] }));
+        const two = estimateForTest(buildPickRequests({ llm: LLM, runId: RUN_ID, day: DAY, entries: [entry(4), { ...entry(4), persona: { ...PERSONA, name: 'densifier-02' } }] }));
         expect(two).toBeGreaterThan(one);
         expect(two).toBeCloseTo(one * 2, 6);
     });
 
-    it('is half the online price — batch is priced at 50% by the shared table', async () => {
-        const { computeCost } = await import('../../../agents/lib/llm-cost/index.mjs');
+    it.skipIf(!shared)('is half the online price — batch is priced at 50% by the shared table', async () => {
+        const { computeCost } = shared;
         const requests = buildPickRequests({ llm: LLM, runId: RUN_ID, day: DAY, entries: [entry(3)] });
         const params = requests[0].params;
         const chars = params.system.length + JSON.stringify(params.messages).length;
@@ -325,7 +340,9 @@ describe('estimateBatchCostUsd', () => {
     it('throws on an unpriced model rather than reporting a guessed number', () => {
         const [request] = buildPickRequests({ llm: LLM, runId: RUN_ID, day: DAY, entries: [entry(1)] });
         const unpriced = { ...request, params: { ...request.params, model: 'claude-imaginary-9' } };
-        expect(() => estimateBatchCostUsd([unpriced])).toThrow(/no rate for model/);
+        const computeCost = vi.fn(() => { throw new Error('no rate for model'); });
+        expect(() => estimateBatchCostUsd([unpriced], { computeCost })).toThrow('no rate for model');
+        expect(computeCost).toHaveBeenCalledWith(unpriced.params.model, expect.any(Object), { batch: true });
     });
 });
 
@@ -416,7 +433,7 @@ describe('runPickBatch', () => {
 
 // End to end through the REAL shared layer: what reaches the Batches API, and what is ledgered.
 // Deleting the layer's default (or re-pinning a model in this repo) fails these.
-describe('runPickBatch through the shared layer', () => {
+describe.skipIf(!shared)('runPickBatch through the shared layer (requires optional shared llm-cost package)', () => {
     it('writes its ledger rows to the throwaway dir, never the real ledger', () => {
         expect(LEDGER.startsWith(ledgerDir)).toBe(true);
     });
@@ -443,7 +460,7 @@ describe('runPickBatch through the shared layer', () => {
         expect(out.done).toBe(true);
         expect(out.results[0]).toMatchObject({ customId, model: LAYER_MODEL, error: null });
         // Batch is half the online rate: (1000 × input + 500 × output) / 1e6 / 2.
-        const { computeCost } = await import('../../../agents/lib/llm-cost/index.mjs');
+        const { computeCost } = shared;
         expect(out.results[0].costUsd).toBeCloseTo(computeCost(LAYER_MODEL, { input_tokens: 1000, output_tokens: 500 }) / 2, 12);
         expect(parsePicks(out.results[0].text, [candidate(1)], 3).picks).toHaveLength(1);
 
@@ -470,14 +487,15 @@ describe('runPickBatch through the shared layer', () => {
         expect(request.params.output_config.effort).toBe(LAYER_EFFORT);
     });
 
-    it('no agent source names a model id — the default lives in the shared layer only', () => {
-        const dir = path.join(path.dirname(new URL(import.meta.url).pathname), '..', 'agents');
-        for (const file of ['llm-picker.js', 'society-llm.js', 'run.mjs', 'society-run.mjs']) {
-            const src = fs.readFileSync(path.join(dir, file), 'utf8');
-            expect(src, file).not.toMatch(/['"`]claude-[a-z0-9-]+['"`]/);
-            expect(src, file).not.toMatch(/AGENT_LLM_MODEL|DEFAULT_MODEL/);
-        }
-    });
+});
+
+it('no agent source names a model id — the default lives in the shared layer only', () => {
+    const dir = new URL('../agents/', import.meta.url);
+    for (const file of ['llm-picker.js', 'society-llm.js', 'run.mjs', 'society-run.mjs']) {
+        const src = fs.readFileSync(new URL(file, dir), 'utf8');
+        expect(src, file).not.toMatch(/['"`]claude-[a-z0-9-]+['"`]/);
+        expect(src, file).not.toMatch(/AGENT_LLM_MODEL|DEFAULT_MODEL/);
+    }
 });
 
 it('uses declared design weights and preserves control provenance in the LLM request', () => {

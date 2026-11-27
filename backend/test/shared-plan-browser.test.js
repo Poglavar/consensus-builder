@@ -274,7 +274,7 @@ describe('shared plan browser client', () => {
     it('recomposes sharing from applied successors while retaining an absent carried member and its schedule', () => {
         const plan = {
             ...row,
-            content: { ...row.content, designCids: ['design-cid', 'second-cid'], view: { mode: '2d', at: '45,16,17' },
+            content: { ...row.content, designCids: ['design-cid', 'second-cid'], view: { mode: '2d', at: '45,16,17' }, codes: { street: 'create-mews' },
                 schedule: { 'design-cid': { start: '2030-01', end: '2030-02' }, 'second-cid': { start: '2031-01', end: '2031-02' } } },
             designs: [...row.designs, { cid: 'second-cid', content: { schema: 'design/v1', title: 'Square' } }],
             memberIds: ['bench-local', 'plan-member-second-cid']
@@ -292,7 +292,7 @@ describe('shared plan browser client', () => {
         expect(runtime.PlanComposition.create).toHaveBeenCalledWith('Park', members, plan.content.view, {
             'revision-2': { start: '2030-01', end: '2030-02' },
             'second-cid': { start: '2031-01', end: '2031-02' }
-        });
+        }, plan.content.codes);
     });
 
     it('keeps ordinary local plan revisions connected through a refresh until explicit shared save', async () => {

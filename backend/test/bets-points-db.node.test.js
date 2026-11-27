@@ -12,7 +12,7 @@ import database from '../db/connection.cjs';
 import { LMSR, B, SEED, walletChallengeMessage } from '../markets/points-ledger.js';
 import { setupBetsPointsRoutes } from '../routes/bets-points.js';
 
-const enabled = process.env.POINTS_DB_TEST === '1';
+const skip = process.env.POINTS_DB_TEST !== '1' && 'requires POINTS_DB_TEST=1 and a local geodata database with the points and city-token tables';
 const BACKEND_DIR = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const MARKET_CANCEL = '11111111111111111111111111111111';
 const MARKET_YES = '11111111111111111111111111111112';
@@ -25,7 +25,7 @@ function keypairPrivateKey(pair) {
     return createPrivateKey({ key: Buffer.concat([prefix, seed]), format: 'der', type: 'pkcs8' });
 }
 
-test('points ledger transactions against local PostgreSQL', { skip: !enabled, timeout: 120_000 }, async t => {
+test('points ledger transactions against local PostgreSQL', { skip, timeout: 120_000 }, async t => {
     dotenv.config({ path: resolve(BACKEND_DIR, '.env'), quiet: true });
     const target = database.describeDatabase();
     if (!database.isLocalDatabase() || target.database !== 'geodata') {
@@ -200,11 +200,11 @@ test('points ledger transactions against local PostgreSQL', { skip: !enabled, ti
             await assertVaultCoversObligation(MARKET_YES);
         });
 
-        await t.test('stale quote rejects and void claims settle each side independently', async () => {
-            const account = await createAccount('void');
+        await t.test('stale quote rejects and cancellation settles the NO side', async () => {
+            const account = await createAccount('cancelled');
             const market = await fetchMarket(MARKET_CANCEL);
             const staleCost = LMSR.buyCost(B, BigInt(market.qYes), BigInt(market.qNo), 'yes', 500_000n);
-            const other = await createAccount('void-other-trader');
+            const other = await createAccount('cancelled-other-trader');
             const competitorBuyShares = 20_000_000n;
             const competitorMarket = await fetchMarket(MARKET_CANCEL);
             const competitorCost = LMSR.buyCost(B, BigInt(competitorMarket.qYes), BigInt(competitorMarket.qNo), 'yes', competitorBuyShares);
@@ -227,14 +227,16 @@ test('points ledger transactions against local PostgreSQL', { skip: !enabled, ti
             const resolve = await request(app).post('/bets/points/resolve').set(account.auth)
                 .send({ requestId: randomUUID(), agreementAccount: MARKET_CANCEL, simulationRun: run }).expect(200);
             assert.equal(resolve.body.receipt.action, 'resolve');
-            const yesClaim = await request(app).post('/bets/points/claim').set(account.auth)
-                .send({ requestId: randomUUID(), agreementAccount: MARKET_CANCEL, simulationRun: run, side: 'yes' }).expect(200);
+            assert.equal(resolve.body.receipt.outcome, 'no');
+            const lost = await request(app).post('/bets/points/claim').set(account.auth)
+                .send({ requestId: randomUUID(), agreementAccount: MARKET_CANCEL, simulationRun: run, side: 'yes' }).expect(409);
+            assert.equal(lost.body.error, 'zero_claim_entitlement');
             const noClaim = await request(app).post('/bets/points/claim').set(account.auth)
                 .send({ requestId: randomUUID(), agreementAccount: MARKET_CANCEL, simulationRun: run, side: 'no' }).expect(200);
-            assert.equal(yesClaim.body.receipt.awardedAmount, String(yesShares / 2n));
-            assert.equal(noClaim.body.receipt.awardedAmount, String(noShares / 2n));
-            await request(app).post('/bets/points/claim').set(account.auth)
-                .send({ requestId: randomUUID(), agreementAccount: MARKET_CANCEL, simulationRun: run, side: 'yes' }).expect(409);
+            assert.equal(noClaim.body.receipt.awardedAmount, String(noShares));
+            const duplicate = await request(app).post('/bets/points/claim').set(account.auth)
+                .send({ requestId: randomUUID(), agreementAccount: MARKET_CANCEL, simulationRun: run, side: 'no' }).expect(409);
+            assert.equal(duplicate.body.error, 'nothing_claimable_on_this_side');
             await assertVaultCoversObligation(MARKET_CANCEL);
         });
 

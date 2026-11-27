@@ -19,6 +19,20 @@ const routes = [
 ];
 
 describe('upload budget per route', () => {
+    it('checks the parent disk before the first upload creates the upload directory', async () => {
+        const missing = Object.assign(new Error('missing upload directory'), { code: 'ENOENT' });
+        const statfs = vi.fn().mockImplementationOnce(() => { throw missing; }).mockImplementation(full);
+        const write = vi.spyOn(fsp, 'writeFile').mockResolvedValue(undefined);
+        vi.spyOn(console, 'error').mockImplementation(() => undefined);
+        const app = createRouteApp(setupFileStorageRoutes, {
+            diskHeadroom: requireUploadDiskHeadroom('/srv/uploads', { statfs, minFreeBytes: 1024 ** 3 })
+        });
+        const res = await request(app).post('/images').send({ imageData: PNG_DATA_URL });
+        expect(statfs.mock.calls).toEqual([['/srv/uploads'], ['/srv']]);
+        expect(res.status).toBe(507);
+        expect(write).not.toHaveBeenCalled();
+    });
+
     for (const [route, setup, body] of routes) {
         it(`${route} refuses the request after the per-IP limit`, async () => {
             vi.spyOn(fsp, 'writeFile').mockResolvedValue(undefined);

@@ -145,9 +145,9 @@ describe('whole-block fresh-proposal suggestion', () => {
 
     it('opens an offer on exactly the selected parcel, never asking for the whole block', async () => {
         const open = vi.fn(), askScope = vi.fn();
-        const window = loadActions({ currentParcel: { id: 'parcel-1' }, PropertyOfferDialog: { open }, CbDialog: { choice: askScope } });
+        const window = loadActions({ currentParcel: { id: 'parcel-1' }, PropertyOfferDialog: { open, plotAsset: id => ({ parcelId: id }) }, PropertyAssetDialog: { open: vi.fn() }, CbDialog: { choice: askScope } });
         await window.startPropertyOffer('sell');
-        expect(open).toHaveBeenCalledWith({ direction: 'sell', parcelIds: ['parcel-1'] });
+        expect(open).toHaveBeenCalledWith({ direction: 'sell', asset: { parcelId: 'parcel-1' } });
         expect(askScope).not.toHaveBeenCalled();
     });
 

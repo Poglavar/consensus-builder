@@ -1,5 +1,4 @@
-# Runs the backend Vitest suite, the PostgreSQL integration suites that need only repository DDL,
-# and the Solana programs' Rust unit tests on every push and pull request to the main branches.
+# Runs the backend Vitest and native Node suites, PostgreSQL integrations, and Solana Rust unit tests.
 name: Backend tests
 on:
   push:
@@ -22,16 +21,21 @@ jobs:
         with:
           node-version: '24'
           cache: npm
-          cache-dependency-path: backend/package-lock.json
+          cache-dependency-path: |
+            backend/package-lock.json
+            blockchain/solana/package-lock.json
       - name: Install locked dependencies
         run: npm ci
         working-directory: backend
+      - name: Install the locked Solana client fixtures used by Vitest
+        run: npm ci
+        working-directory: blockchain/solana
       - name: Vitest
         run: npx vitest run --maxWorkers=2
         working-directory: backend
 
   postgres:
-    name: PostgreSQL integration suites
+    name: Native Node tests and PostgreSQL integrations
     runs-on: ubuntu-latest
     timeout-minutes: 15
     # Suites that need real cadastral, road or planning-rule data (proposal-binding-db, osm-road-db,
@@ -84,6 +88,23 @@ jobs:
         working-directory: backend
         env:
           SHARED_PLAN_PG_TESTS: '1'
+      - name: Prepare the points and city-token tables in the disposable database
+        run: >-
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1
+          -c 'CREATE SCHEMA IF NOT EXISTS consensus'
+          -f sql/points-ledger.sql -f sql/city-token.sql
+        working-directory: backend
+      - name: Native Node suite, including PostGIS, diagnostics, points and city-token checks
+        run: npm run test:node
+        working-directory: backend
+        env:
+          TEST_DATABASE_URL: ${{ env.DATABASE_URL }}
+          UGT_DIAGNOSTIC_TEST_DB: ${{ env.DATABASE_URL }}
+          POINTS_DB_TEST: '1'
+      - name: Report checks that need the populated source database
+        if: always()
+        run: |
+          echo 'Live cadastral, road and planning assertions in proposal-binding-db, osm-road-db and agent-parcel-source require populated source tables. Those assertions are skipped on this runner.' >> "$GITHUB_STEP_SUMMARY"
 
   solana-rust:
     name: Solana programs (Rust unit tests)

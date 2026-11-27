@@ -16,7 +16,7 @@ const wings = { type: 'MultiPolygon', coordinates: [
     box(15.9813, 45.813, 15.9814, 45.8131).coordinates
 ] };
 
-describe('GDI mesh footprints in PostGIS', { skip: !process.env.TEST_DATABASE_URL }, () => {
+describe('GDI mesh footprints in PostGIS', { skip: !process.env.TEST_DATABASE_URL && 'requires TEST_DATABASE_URL with PostGIS' }, () => {
     let client, provider;
     before(async () => {
         client = new pg.Client({ connectionString: process.env.TEST_DATABASE_URL });

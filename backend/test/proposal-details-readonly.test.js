@@ -24,8 +24,8 @@ describe('proposal details authoring contract', () => {
         expect(detailsSource).toContain('canEditProposalGeometry(fullProposal || proposal)');
         // The edit action is a secondary `btn` (docs/design-language.md) with its hook class.
         expect(detailsSource).toMatch(/class="btn[^"]*btn-edit-geometry"/);
+        expect(detailsSource).toMatch(/const additionalActionsHtml = [^;]*\bcrossSectionButtonHtml\b[^;]*\beditGeometryButtonHtml\b/);
         expect(detailsSource).toContain('onclick="editProposalGeometry(${inlineJsArg(proposalKey)})"');
-        expect(detailsSource).toContain('crossSectionButtonHtml + editGeometryButtonHtml');
     });
 
     // The one in-place geometry action is a road's cross-section — the same rule as its node

@@ -10688,7 +10688,9 @@
                 neighbours: suggestedPlanContext.neighbourPool(feature, proposed, pool, turf),
                 accessOverride: suggestedAccess
             }) : null);
-            state.queue = run.catch(() => {});
+            state.queue = run.catch(() => {
+                // The awaiting caller handles this building's error. Let the next queued building start.
+            });
             const planned = await run;
             if (!planned) return settle(null);
             for (const slice of planned.slices) {

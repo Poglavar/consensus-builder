@@ -39,7 +39,7 @@
 /* A lens: one segment per lens member, filled once that member has confirmed. */
 .lens-badge { display: flex; gap: 2px; height: 0.4rem; max-width: 12rem; }
 .lens-badge__segment { flex: 1 1 0; border-radius: var(--cb-radius-sm); background: var(--cb-line); }
-.lens-badge__segment.is-confirmed { background: var(--cb-accent); }
+.lens-badge__segment.is-confirmed { background: var(--cb-success); }
 .property-offer-panel__head { display: grid; gap: var(--cb-space-1); }
 .property-offer-panel__head h3 { margin: 0; overflow-wrap: anywhere; }
 .property-offer-panel__members { display: grid; gap: var(--cb-space-1); list-style: none; margin: 0; padding: 0; }

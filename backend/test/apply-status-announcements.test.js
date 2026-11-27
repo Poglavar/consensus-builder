@@ -127,7 +127,7 @@ describe('the existing-buildings fetch', () => {
         expect(mapCore).not.toContain('buildBuildingRequestParams');
         expect(mapCore).toContain('return fetchBuildingCells(bounds, { announce });');
         const loader = mapCore.slice(mapCore.indexOf('async function fetchBuildingCells(bounds'), mapCore.indexOf('// A building load whose upstream failed'));
-        expect(loader).toContain("loader.load({ kind: 'footprints', sources, cells");
+        expect(loader).toContain("loader.load({ kind: 'footprints', sources, combine, cells");
         // The cells serve WGS84: converting them as if they were EPSG:3765 would put every
         // footprint in the sea.
         expect(loader).not.toContain('convertGeoJSON');

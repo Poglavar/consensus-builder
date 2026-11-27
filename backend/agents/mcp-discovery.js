@@ -106,11 +106,22 @@ function documentSection(name, heading) {
     return content.slice(bodyStart, next < 0 ? content.length : next).trim();
 }
 const bounded = (value, maximum = 400) => typeof value === 'string' ? value.slice(0, maximum) : value;
+// The first response indexes ballot choices and their eligibility. Workflow help includes the
+// decision tests and sources for every choice.
+const capabilitySteps = [
+    'Use ugt_help topic app or app/parcel-layout for app controls. Find a place with ugt_find_place and inspect sources with ugt_list_sources.',
+    'Draft and inspect a plan with ugt_draft_plan and ugt_inspect_plan. Pass the returned draftRef and expectedCid to edits.',
+    'Validate, compare and render the plan. Publish the exact reviewed reference with confirmation. Use ugt_help topic workflow for the full workflow and voting rules.'
+];
+const capabilityFeatures = MCP_FEATURES.map(feature => feature.ballotRules ? {
+    ...feature,
+    ballotRules: feature.ballotRules.map(({ tests, source, links, ...choice }) => choice)
+} : feature);
 
 export function createMcpDiscoveryTools({ read, contracts = new Map(), mode = 'hosted', appOrigin = 'https://urbangametheory.xyz' }) {
     function capabilities() {
-        return { version: '0.4.0', mode, endpoint: `${appOrigin}/mcp`, workflow: steps,
-            features: MCP_FEATURES.filter(item => (item.feature !== 'shared-plan-session' || contracts.has('ugt_inspect_shared_plan')) &&
+        return { version: '0.4.0', mode, endpoint: `${appOrigin}/mcp`, workflow: capabilitySteps,
+            features: capabilityFeatures.filter(item => (item.feature !== 'shared-plan-session' || contracts.has('ugt_inspect_shared_plan')) &&
                 (item.feature !== 'chat-cost' || contracts.has('ugt_chat_cost'))), tools: (contracts.size ? [...contracts.values()] : (mode === 'hosted' ? MCP_HOSTED_TOOLS : MCP_LOCAL_TOOLS).map(name => ({ name })))
                 .map(({ name, title, annotations }) => trustedMetadata({ name, ...(title ? { title } : {}), ...(annotations ? { readOnly: annotations.readOnlyHint === true } : {}) })),
             coordinates: 'GeoJSON WGS84 [longitude, latitude]; distances metres; areas square metres. Missing measurements stay null.',

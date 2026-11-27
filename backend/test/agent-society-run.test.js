@@ -4,7 +4,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { MAX_SOCIETY_TURNS, societyBudget, societyPolicy, societySlot, societyTurnSpent, societyTurns } from '../agents/run-policy.js';
 import { buildChoiceRequest, parseChoice } from '../agents/society-llm.js';
-import { createAgentLlm } from '../agents/llm-picker.js';
 import { activityMessage, discoveryCities, execute, loadSocietyPersona, readAccounts } from '../agents/society-run.mjs';
 import { lensMemberCommand, loadLensMemberPersona } from '../agents/lens-member-run.mjs';
 
@@ -235,7 +234,11 @@ describe('optional LLM choice among policy options', () => {
     ];
 
     it('builds one request listing only the options', () => {
-        const llm = createAgentLlm({ client: { messages: { create() { throw new Error('no network in tests'); } } } });
+        const llm = { batchRequest: (customId, params) => ({ custom_id: customId, params: {
+            system: params.system,
+            messages: [{ role: 'user', content: [{ type: 'text', text: params.content }] }],
+            max_tokens: params.maxTokens
+        } }) };
         const request = buildChoiceRequest({ llm, runId: '2026-10-01-preservationist-01-t2', persona: { name: 'preservationist-01' }, role: 'contrarian', seed: '2026-10-01:t2', options });
         expect(request.custom_id).toBe('2026-10-01-preservationist-01-t2_preservationist-01');
         const listed = JSON.parse(request.params.messages[0].content[0].text).options;

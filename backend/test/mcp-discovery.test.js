@@ -17,7 +17,7 @@ function fixture() {
 
 describe('tool-only MCP discovery', () => {
     it('describes every exposed authoring family without fetching a giant upstream manifest', () => {
-        const tools = fixture(), result = markUntrusted(tools.capabilities());
+        const tools = fixture(), result = markUntrusted(tools.capabilities()), detailed = tools.help({ topic: 'workflow' });
         expect(tools.read.request).not.toHaveBeenCalled();
         expect(result.tools.map(tool => tool.name)).toEqual(MCP_HOSTED_TOOLS);
         expect(result.features.find(row => row.feature === 'stations')).toMatchObject({
@@ -41,6 +41,10 @@ describe('tool-only MCP discovery', () => {
             furnitureKinds: ['bench', 'statue', 'fountain', 'stall', 'tree', 'lamp', 'swing', 'seesaw', 'slide'], furnitureLimits: { maxTriangles: 5000, maxTextureSize: 1024, maxBytes: 4 * 1024 * 1024 } });
         expect(result.features.find(row => row.feature === 'public-spaces')).toMatchObject({ furnitureKinds: { park: ['bench', 'stall', 'tree', 'lamp', 'swing', 'seesaw', 'slide'] },
             furniture: expect.stringMatching(/lamps.*stalls.*models.*enclosures/), enclosures: { fences: ['rail', 'mesh', 'iron', 'plinth'], uses: ['none', 'dog', 'play'] } });
+        const fullRule = detailed.features.find(row => row.feature === 'community-code-voting').ballotRules[0];
+        expect(fullRule.tests.length).toBeGreaterThan(0);
+        expect(fullRule.links.length).toBeGreaterThan(0);
+        expect(fullRule.source).toBeTruthy();
         expect(result.next.tool).toBe('ugt_help');
         expect(JSON.stringify(result).length).toBeLessThan(16_000);
     });

@@ -7,7 +7,8 @@ import { createRequire } from 'node:module';
 import { createDiagnosticStore, validateDiagnosticReport, MAX_ROWS } from '../operations/planning-diagnostics.js';
 import { readPlanningUsage } from '../operations/planning-usage.js';
 const D = createRequire(import.meta.url)('../../frontend/js/app-diagnostics.js');
-test('PostgreSQL enforces atomic dedupe/conflict, row/age bounds and aggregate semantics', { skip: !process.env.UGT_DIAGNOSTIC_TEST_DB }, async () => {
+const skip = !process.env.UGT_DIAGNOSTIC_TEST_DB && 'requires UGT_DIAGNOSTIC_TEST_DB';
+test('PostgreSQL enforces atomic dedupe/conflict, row/age bounds and aggregate semantics', { skip }, async () => {
     const { default: pg } = await import('pg');
     const pool = new pg.Pool({ connectionString: process.env.UGT_DIAGNOSTIC_TEST_DB, max: 3, statement_timeout: 10000 });
     try {
@@ -52,7 +53,7 @@ test('PostgreSQL enforces atomic dedupe/conflict, row/age bounds and aggregate s
     } finally { await pool.end(); }
 });
 
-test('PostgreSQL funnel report counts reach, furthest stage and failures per browser session', { skip: !process.env.UGT_DIAGNOSTIC_TEST_DB }, async () => {
+test('PostgreSQL funnel report counts reach, furthest stage and failures per browser session', { skip }, async () => {
     const { default: pg } = await import('pg');
     const pool = new pg.Pool({ connectionString: process.env.UGT_DIAGNOSTIC_TEST_DB, max: 3, statement_timeout: 10000 });
     try {

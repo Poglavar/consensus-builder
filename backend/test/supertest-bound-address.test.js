@@ -8,15 +8,14 @@ import request from 'supertest';
 describe('supertest requests', () => {
     it('reach the server they started even when 127.0.0.1 holds the same port', async () => {
         const app = express().get('/who', (req, res) => res.json({ who: 'app' }));
-        const server = app.listen(0);
+        // Keep the IPv4 port available for the decoy on Linux as well as macOS.
+        const server = app.listen({ port: 0, host: '::1', ipv6Only: true });
         await once(server, 'listening');
-        const { port, address } = server.address();
-        // Only a dual-stack wildcard bind can collide this way; elsewhere there is nothing to prove.
-        if (!String(address).includes(':')) { server.close(); return; }
+        const { port } = server.address();
         const decoy = createServer((req, res) => { res.statusCode = 401; res.end(); });
-        decoy.listen(port, '127.0.0.1');
-        await once(decoy, 'listening');
         try {
+            decoy.listen(port, '127.0.0.1');
+            await once(decoy, 'listening');
             const res = await request(server).get('/who');
             expect([res.status, res.body]).toEqual([200, { who: 'app' }]);
         } finally {

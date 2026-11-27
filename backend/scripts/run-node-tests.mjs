@@ -8,6 +8,7 @@ import { readdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { stripVTControlCharacters } from 'node:util';
 
 const require = createRequire(import.meta.url);
 const ledger = require('../../scripts/lib/test-run-ledger.cjs');
@@ -37,8 +38,9 @@ if (name) {
 // Counts from the spec reporter's closing summary ("ℹ pass 12").
 function testCounts(output) {
     const counts = {};
+    const text = stripVTControlCharacters(output);
     for (const key of ['pass', 'fail', 'cancelled', 'skipped', 'todo']) {
-        const match = output.match(new RegExp(`^ℹ ${key} (\\d+)$`, 'm'));
+        const match = text.match(new RegExp(`^ℹ ${key} (\\d+)$`, 'm'));
         if (match && Number(match[1])) counts[key] = Number(match[1]);
     }
     return counts;
