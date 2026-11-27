@@ -669,6 +669,10 @@
         const built = (count, floorArea) => `${formatNumber(count)} (${formatSquareMetres(floorArea)})`;
         const remaining = stats.remainingYield ? stats.remainingYield.total : null;
         const noParcels = !finiteNumber(stats.parcelCount);
+        // A plan that builds nothing has no cost, profit or rent "of the new floor area": its cost is
+        // the acquisition alone, which Cost details still shows.
+        const noNewFloorArea = money.builtFloorAreaM2 === 0;
+        const ofNewFloorArea = text => (noNewFloorArea ? tPlanStats('sidebar.proposals.planStats.noNewFloorArea', 'No new floor area') : text);
         const avgParcel = !noParcels && stats.parcelMeasuredCount > 0 ? stats.parcelMeasuredArea / stats.parcelMeasuredCount : null;
         return {
             'plan-area': measured(stats.planAreaM2),
@@ -692,7 +696,7 @@
             people: stats.unitsCounting ? tPlanStats('sidebar.proposals.planStats.countingUnits', 'Counting…') : formatNumber(total.people),
             jobs: formatNumber(total.jobs),
             'sales-value': formatSalesValue(finiteNumber(price.sale) ? total.grossFloorAreaM2 * price.sale : null),
-            'total-cost': formatSalesValue(money.totalCost),
+            'total-cost': ofNewFloorArea(formatSalesValue(money.totalCost)),
             // The all-in cost's parts (Cost details in Plan stats).
             'cost-construction': formatSalesValue(money.constructionCost),
             'cost-dev-charge': formatSalesValue(money.devCharge),
@@ -700,10 +704,10 @@
             'cost-tax': formatSalesValue(money.saleTax),
             // Taken off the all-in cost, so written as a deduction.
             'cost-reclaimed': (money.taxReclaimed > 0 ? '−' : '') + formatSalesValue(money.taxReclaimed),
-            profit: formatSalesValue(money.profit),
-            'profit-share': CbFormat.formatPercent(money.profitShare, { maxFractionDigits: 1, missing: '—' }),
-            'annual-rent': formatSalesValue(money.annualRent),
-            'rent-yield': CbFormat.formatPercent(money.rentYieldOnCost, { maxFractionDigits: 1, missing: '—' })
+            profit: ofNewFloorArea(formatSalesValue(money.profit)),
+            'profit-share': ofNewFloorArea(CbFormat.formatPercent(money.profitShare, { maxFractionDigits: 1, missing: '—' })),
+            'annual-rent': ofNewFloorArea(formatSalesValue(money.annualRent)),
+            'rent-yield': ofNewFloorArea(CbFormat.formatPercent(money.rentYieldOnCost, { maxFractionDigits: 1, missing: '—' }))
         };
     }
 

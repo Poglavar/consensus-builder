@@ -1664,6 +1664,7 @@
                 "profitShare": "Beneficio como parte del valor de venta de la nueva superficie (la guía de planeamiento de Inglaterra evalúa los planes con un 15–20 %)",
                 "noteProfitUnmeasured": "El beneficio no se conoce: {{n}} de los edificios existentes que el plan derriba no indican altura.",
                 "allInCost": "Coste total de la nueva superficie",
+                "noNewFloorArea": "Sin nueva superficie construida",
                 "landSuffix": "{{currency}} por m² de suelo",
                 "saleTaxSuffix": "% de impuesto en el precio",
                 "costDetails": "Detalle del coste",

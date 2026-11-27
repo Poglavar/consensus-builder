@@ -421,6 +421,7 @@
                 "profitShare": "Bénéfice en part de la valeur de vente de la nouvelle surface (le guide d’urbanisme anglais évalue les plans à 15–20 %)",
                 "noteProfitUnmeasured": "Le bénéfice n’est pas connu : la hauteur de {{n}} bâtiments existants que le plan démolit n’est pas renseignée.",
                 "allInCost": "Coût complet de la nouvelle surface",
+                "noNewFloorArea": "Aucune nouvelle surface de plancher",
                 "landSuffix": "{{currency}} par m² de terrain",
                 "saleTaxSuffix": "% de taxe dans le prix",
                 "costDetails": "Détail du coût",

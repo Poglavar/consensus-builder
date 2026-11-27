@@ -44,6 +44,16 @@ describe('building density statistics', () => {
         expect(stats.kin).toBeCloseTo(2, 4);
     });
 
+    it('counts whole storeys from a height, as Plan stats does: 10 m at 3 m a storey is 3, not 3.33', () => {
+        const parcel = turf.polygon([[[0, 0], [0.002, 0], [0.002, 0.002], [0, 0.002], [0, 0]]]);
+        const building = turf.polygon([[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]], { height: 10 });
+        const stats = summarizeDensity({ parcelFeature: parcel, buildings: [building], turf, floorHeightM: 3, preferHeight: true });
+        expect(stats.aboveGroundGbpM2).toBeCloseTo(stats.summedFootprintAreaM2 * 3, 6);
+        const low = turf.polygon([[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]], { height: 1 });
+        expect(summarizeDensity({ parcelFeature: parcel, buildings: [low], turf, floorHeightM: 3 }).aboveGroundGbpM2)
+            .toBeCloseTo(stats.summedFootprintAreaM2, 6);
+    });
+
     it('counts overlapping footprint only once for site coverage', () => {
         const parcel = turf.polygon([[[0, 0], [0.002, 0], [0.002, 0.002], [0, 0.002], [0, 0]]]);
         const building = turf.polygon([[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]], {

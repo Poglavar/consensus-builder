@@ -921,6 +921,9 @@
             try { ledger = recordApi().ledger(agreement); } catch (_) { /* its money and land rows stay — */ }
             const rule = agreement && agreement.rule ? agreement.rule : null;
             const owners = !!rule && rule.electorate === 'owners';
+            // A community vote allocates no land (agreement-record.js refuses its allocations): its land
+            // rows do not apply, so they read —, not 0 m².
+            const allocates = !!rule && rule.electorate !== 'community';
             const summary = ruleSummary(rule, tr, summaryText);
             const land = landSummary(agreement);
             // Money moves only under an owners' rule.
@@ -944,9 +947,9 @@
                 deadline: [agreement && agreement.deadline ? format().formatDate(agreement.deadline) : tr('agreement.chain.noDeadline', 'None')],
                 inputs: [`${format().formatInteger(land.parcels)} · ${area(land.areaM2)}`],
                 pieces: [format().formatInteger(land.pieces)],
-                toOwners: [ledger ? area(ledger.parties.reduce((sum, party) => sum + party.assignedM2, 0)) : NO_VALUE],
-                toPublic: [ledger ? area(ledger.publicM2) : NO_VALUE],
-                toProposer: [ledger ? area(ledger.proposerM2) : NO_VALUE],
+                toOwners: [allocates && ledger ? area(ledger.parties.reduce((sum, party) => sum + party.assignedM2, 0)) : NO_VALUE],
+                toPublic: [allocates && ledger ? area(ledger.publicM2) : NO_VALUE],
+                toProposer: [allocates && ledger ? area(ledger.proposerM2) : NO_VALUE],
                 ownersWithout: [owners ? format().formatInteger(ownerOutcomes(agreement, tr).none.length) : NO_VALUE],
                 paid: [cash(money && money.payInCents)],
                 received: [cash(money && money.payOutCents)],

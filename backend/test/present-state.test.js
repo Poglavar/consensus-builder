@@ -123,6 +123,18 @@ describe('existing buildings as freeform buildings', () => {
         expect(result.total.unmeasuredBuildings).toBe(1);
         expect(result.total.grossFloorAreaM2).toBeCloseTo(inside * 4, 0);
     });
+
+    it('leaves out a neighbour that only grazes the parcels, so a sliver is not counted as a whole building', () => {
+        const parcels = new Map([['A', box(15.9, 45.8, 0.001, { parcelId: 'A' })]]);
+        // Starts 0.0000005° (about 4 cm) inside A's east edge: a sliver of under 1 m² of a 22 m building.
+        const neighbour = { id: 'n1', geometry: box(15.9009995, 45.8004, 0.0002).geometry, height_m: 18, floors: null };
+        const own = { id: 'o1', geometry: box(15.9001, 45.8001, 0.0002).geometry, height_m: 9, floors: null };
+        const sliver = ops.areaOf(turf.intersect(turf.feature(neighbour.geometry), parcels.get('A')));
+        expect(sliver).toBeGreaterThan(0);
+        expect(sliver).toBeLessThan(2);
+        const records = State.builtRecords({ regions: new Map([['A', [neighbour, own]]]), parcelsById: parcels, ops });
+        expect(records.map(r => r.proposalId)).toEqual(['built:o1']);
+    });
 });
 
 describe('existing buildings a plan leaves standing', () => {

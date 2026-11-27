@@ -1452,6 +1452,7 @@
                 "profitShare": "Dobit kao udeo u prodajnoj vrednosti nove površine (engleske smernice za planiranje proveravaju planove na 15–20 %)",
                 "noteProfitUnmeasured": "Dobit nije poznata: {{n}} postojećih zgrada koje plan uklanja nema navedenu visinu.",
                 "allInCost": "Ukupni trošak nove površine",
+                "noNewFloorArea": "Nema nove bruto površine",
                 "landSuffix": "{{currency}} po m² zemljišta",
                 "saleTaxSuffix": "% poreza u ceni",
                 "costDetails": "Detalji troška",

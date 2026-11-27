@@ -787,6 +787,15 @@ describe('the all-in cost and profit in Plan stats', () => {
         expect(slot(window, 'profit-share')).toBe(window.CbFormat.formatPercent((gfa() * 4000 - total) / (gfa() * 4000), { maxFractionDigits: 1 }));
     });
 
+    it('gives no cost, profit or rent of the new floor area when the plan builds none, and keeps the land it buys under Cost details', async () => {
+        const park = { applied: true, proposalId: 'd-park', cadastreParcelIds: ['HR-330264-628'],
+            structureProposal: { kind: 'park', structureType: 'park', geometry: land.geometry } };
+        const window = openDialog([park], { city: { currency: { code: 'EUR' } } });
+        await window.showPlanStatsModal({ content: { title: 'Park' }, cleared: [], landFeature: land });
+        ['total-cost', 'profit', 'profit-share', 'annual-rent', 'rent-yield'].forEach(key => expect(slot(window, key)).toBe('No new floor area'));
+        expect(slot(window, 'cost-acquisition')).toBe(eur(landM2 * 133));
+    });
+
     it('moves the figures with each price slider, the tax as a share of the sale price', async () => {
         const window = await openOn();
         slide(window, 'plan-stats-sale-tax', 25);

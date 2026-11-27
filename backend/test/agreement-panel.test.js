@@ -898,7 +898,7 @@ describe('compareTerms', () => {
         expect(same.settlement.values[0]).toBe('Balance land differences in money');
     });
 
-    it('marks the terms two agreements over the same land differ in, and leaves a community vote\'s money —', () => {
+    it('marks the terms two agreements over the same land differ in, and leaves a community vote\'s money and land allocation —', () => {
         const owners = agreement();
         const contribution = agreement({ id: 'ag-2', deadline: '2027-03-01T00:00:00.000Z',
             rule: { electorate: 'owners', binding: false, approvalConfig: null, lens: [], settlement: { method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 1500 } } });
@@ -907,7 +907,9 @@ describe('compareTerms', () => {
         const differing = Object.values(compared).filter(row => row.differs).map(row => row.key);
         expect(differing).toEqual(expect.arrayContaining(['rule', 'settlement', 'contribution', 'deadline', 'ownersWithout', 'paid', 'received', 'sponsor']));
         expect(differing).not.toContain('inputs');
-        expect(differing).not.toContain('toPublic');
+        // A community vote allocates no land: its allocation reads —, never 0 m² (nor the fixture's own).
+        expect([compared.toOwners.values[2], compared.toPublic.values[2], compared.toProposer.values[2]]).toEqual(['—', '—', '—']);
+        expect(compared.toPublic.values[0]).toBe(compared.toPublic.values[1]);
         expect(compared.rule.values).toEqual(['Decided by the owners · Binding', 'Decided by the owners · Non-binding', 'Decided by a community vote · Non-binding']);
         expect(compared.contribution.values).toEqual(['0%', '15%', '—']);
         expect(compared.deadline.values[0]).toBe('None');

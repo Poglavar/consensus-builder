@@ -24,6 +24,9 @@
     const OVERPASS_TIMEOUT_S = 60;
     // Design pieces that are public land: plan-yield's open-space kinds.
     const PUBLIC_STRUCTURES = new Set(['park', 'square', 'lake']);
+    // An overlap smaller than this is a graze, not a building on the land or a cut into one (the
+    // demolition scan's threshold, corridor-tunnel.js splitDemolitionFootprint).
+    const GRAZE_M2 = 2;
     // The largest box asked of Overpass in one go (≈ 5 km); a plan wider than this is refused.
     const MAX_SPAN_DEG = 0.05;
 
@@ -175,6 +178,8 @@
      * Existing buildings as freeform building records: one per building, its footprint clipped to the
      * parcels it was found on. regions: Map parcelId → [{ id, geometry, height_m, floors }].
      * A building with neither height nor floors keeps no height, so plan-yield counts it unmeasured.
+     * A neighbour that only grazes the parcels (under GRAZE_M2 on them) is not one of their buildings:
+     * counted, a sliver of it read as a whole building at its full height.
      */
     function builtRecords({ regions, parcelsById, ops, floorHeightM = 3 }) {
         const byBuilding = new Map();
@@ -187,14 +192,15 @@
                 const piece = ops.intersect(footprint, parcel);
                 if (!piece || !piece.geometry) return;
                 const key = String(building.id);
-                const entry = byBuilding.get(key) || { building, polygons: [] };
+                const entry = byBuilding.get(key) || { building, polygons: [], areaM2: 0 };
+                entry.areaM2 += ops.areaOf(piece);
                 const g = piece.geometry;
                 if (g.type === 'Polygon') entry.polygons.push(g.coordinates);
                 else if (g.type === 'MultiPolygon') entry.polygons.push(...g.coordinates);
                 byBuilding.set(key, entry);
             });
         });
-        return [...byBuilding.entries()].map(([id, { building, polygons }]) => {
+        return [...byBuilding.entries()].filter(([, entry]) => entry.areaM2 >= GRAZE_M2).map(([id, { building, polygons }]) => {
             const properties = { type: 'proposedBuilding', floorHeightM };
             const height = measuredNumber(building.height_m), floors = measuredNumber(building.floors);
             if (height !== null) properties.height = height;
@@ -254,7 +260,7 @@
         let feature = footprint, extended = false;
         for (const region of regions) {
             const clip = ops.intersect(feature, region);
-            if (!clip || ops.areaOf(clip) < 2) continue;
+            if (!clip || ops.areaOf(clip) < GRAZE_M2) continue;
             // The ground of a design that redraws existing buildings (properties.extending) clears
             // nothing: the building at least half under it is extended (demolition-derive.js).
             if (region.properties && region.properties.extending === true) {

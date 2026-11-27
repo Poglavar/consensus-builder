@@ -41,9 +41,12 @@
         );
         const floorHeightM = positiveNumber(options.floorHeightM) || DEFAULT_FLOOR_HEIGHT_M;
 
-        if (options.preferHeight === true && height) return height / floorHeightM;
+        // Whole storeys, at least one, as Plan stats counts them (plan-yield.js measureBuilding): 10 m at
+        // 3 m a storey is 3 storeys, not 3.33 of floor area.
+        const storeysOf = heightM => Math.max(1, Math.round(heightM / floorHeightM));
+        if (options.preferHeight === true && height) return storeysOf(height);
         if (explicit) return explicit;
-        return height ? height / floorHeightM : 0;
+        return height ? storeysOf(height) : 0;
     }
 
     function safeArea(turfApi, feature) {
