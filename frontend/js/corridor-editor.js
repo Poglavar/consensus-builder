@@ -2045,12 +2045,19 @@ function corridorEditorBindBody(body) {
     });
 
     body.querySelectorAll('.corridor-lane-width').forEach(input => {
-        input.addEventListener('change', () => {
+        // Committed on change and again on leaving the field: a value set without a native change
+        // (an assistive tool or a browser agent filling the field) showed in the input but never
+        // reached the profile, so Save kept the old width. Unchanged widths are not applied twice.
+        const commitWidth = () => {
             const index = Number(input.dataset.laneIndex);
             const width = Number(input.value);
+            const strip = normalizeCorridorProfile(corridorEditorState.profile)?.strips?.[index];
+            if (strip && Math.abs(strip.width - width) < 1e-6) return;
             corridorEditorState.selected = index;
             corridorEditorApply(profile => withLaneWidth(profile, index, width), { op: 'width', index, width });
-        });
+        };
+        input.addEventListener('change', commitWidth);
+        input.addEventListener('blur', commitWidth);
     });
 
     body.querySelectorAll('.corridor-lane-paving').forEach(select => {

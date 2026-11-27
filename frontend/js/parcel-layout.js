@@ -595,8 +595,11 @@
         state.activeModeEl = root.querySelector('[data-reparcel-active-mode]');
         state.countEl = root.querySelector('[data-parcel-layout-count]');
         // A typed count takes effect when it is committed (Enter, leaving the field, the arrows),
-        // not on every keystroke: "12" must not lay out one plot first.
+        // not on every keystroke: "12" must not lay out one plot first. Leaving the field commits too,
+        // for a value set without a native change (an assistive tool or a browser agent filling it);
+        // setPlotCount ignores a count it already has.
         state.countEl.addEventListener('change', () => setPlotCount(state.countEl.value));
+        state.countEl.addEventListener('blur', () => setPlotCount(state.countEl.value));
         updateCountField();
 
         const commitBtns = Array.from(root.querySelectorAll('[data-reparcel-commit]'));

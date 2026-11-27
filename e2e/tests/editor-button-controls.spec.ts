@@ -554,6 +554,21 @@ test.describe('Editor button effects @features', () => {
     const editedWidth = Number(await laneWidth.inputValue());
     await rows.nth(1).locator('.corridor-lane-standard--reset').click();
     await expect.poll(async () => Number(await laneWidth.inputValue())).not.toBe(editedWidth);
+    // A width set without a native change (an assistive tool or browser agent filling the field)
+    // commits when the field is left: it reached the input but not the profile before.
+    const standardWidth = Number(await laneWidth.inputValue());
+    const filledWidth = String(standardWidth + 0.25);
+    await laneWidth.evaluate((node, value) => {
+      const input = node as HTMLInputElement;
+      input.focus();
+      input.value = value;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.blur();
+    }, filledWidth);
+    await expect(rows.nth(1).locator('.corridor-lane-standard--reset')).toBeVisible();
+    await expect(rows.nth(1).locator('.corridor-lane-width')).toHaveValue(filledWidth);
+    await rows.nth(1).locator('.corridor-lane-standard--reset').click();
+    await expect.poll(async () => Number(await laneWidth.inputValue())).toBe(standardWidth);
     const beforeOrder = await rows.locator('.corridor-lane-type').evaluateAll(nodes => nodes.map(node => (node as HTMLSelectElement).value));
     await rows.first().getByRole('button', { name: 'Move inward' }).click();
     await expect.poll(() => rows.locator('.corridor-lane-type').evaluateAll(nodes => nodes.map(node => (node as HTMLSelectElement).value))).not.toEqual(beforeOrder);

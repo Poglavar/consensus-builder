@@ -148,6 +148,22 @@ describe('equal plots', () => {
         expect([w.state.slices.length, count.value]).toEqual([5, '5']);
     });
 
+    it('a count set without a native change (a filled field) commits when the field is left', async () => {
+        const w = world();
+        await w.editor.openParcelLayoutEditor();
+        const count = w.$('[data-parcel-layout-count]');
+        count.value = '4';
+        count.dispatchEvent({ type: 'input', bubbles: true });
+        expect(w.state.slices).toHaveLength(2);
+        count.dispatchEvent({ type: 'blur' });
+        expect(w.state.plotCount).toBe(4);
+        expect(w.state.newPlotsListEl.querySelectorAll('tr.reparcel-newplot-row')).toHaveLength(4);
+        // Leaving the field again with the same count is no second undo step.
+        count.dispatchEvent({ type: 'blur' });
+        w.key('z', { ctrlKey: true });
+        expect(w.state.slices).toHaveLength(2);
+    });
+
     it('the count stays within 1 and 64; one plot merges the pool', async () => {
         const w = world();
         await w.editor.openParcelLayoutEditor();
