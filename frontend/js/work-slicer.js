@@ -23,20 +23,21 @@
     //   1. scheduler.postTask background priority (Chromium, Firefox): timers, input, network replies
     //      and rendering all run first. scheduler.yield() is deliberately NOT used: its continuation
     //      outranks ordinary tasks, which is what starved timers and fetch replies during the replay.
-    //   2. MessageChannel: an ordinary task, queued behind those already waiting (Safari).
-    //   3. setTimeout(0): last resort for a runtime with neither (it is clamped to 4 ms when nested).
+    //   2. setImmediate (Node): runs after waiting I/O and, unlike a MessageChannel message, keeps the
+    //      process alive until it fires (an unref'd port let a command-line run exit mid-yield).
+    //   3. MessageChannel: an ordinary task, queued behind those already waiting (Safari).
+    //   4. setTimeout(0): last resort for a runtime with none of these (it is clamped to 4 ms when nested).
     function backgroundYield(runtime = root) {
         const scheduler = runtime && runtime.scheduler;
         if (scheduler && typeof scheduler.postTask === 'function') {
             return () => scheduler.postTask(() => undefined, { priority: 'background' });
         }
+        if (runtime && typeof runtime.setImmediate === 'function') return () => new Promise(resolve => runtime.setImmediate(resolve));
         const Channel = runtime && runtime.MessageChannel;
         if (typeof Channel === 'function') {
             const channel = new Channel();
             const waiting = [];
             channel.port1.onmessage = () => { const resolve = waiting.shift(); if (resolve) resolve(); };
-            // Node keeps a port with a listener alive; the browser has no such notion.
-            if (typeof channel.port1.unref === 'function') channel.port1.unref();
             return () => new Promise(resolve => {
                 waiting.push(resolve);
                 channel.port2.postMessage(0);

@@ -3,6 +3,7 @@
 // cancellation stops the work at the next pause, and the one-shot driver gives the same answer.
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
+import { spawnSync } from 'node:child_process';
 
 const require = createRequire(import.meta.url);
 const workSlicer = require('../../frontend/js/work-slicer.js');
@@ -133,6 +134,13 @@ describe('backgroundYield', () => {
         await yieldNow();
         expect(postTask).toHaveBeenCalledWith(expect.any(Function), { priority: 'background' });
         expect(schedulerYield).not.toHaveBeenCalled();
+    });
+
+    // A command-line run (the area estimate) with nothing else pending must not exit while a slice yields.
+    it('in Node, keeps the process alive until the yield returns', () => {
+        const slicerPath = require.resolve('../../frontend/js/work-slicer.js');
+        const run = spawnSync(process.execPath, ['-e', `require(${JSON.stringify(slicerPath)}).backgroundYield(globalThis)().then(() => console.log('yielded'))`], { encoding: 'utf8' });
+        expect(run.stdout.trim()).toBe('yielded');
     });
 
     it('falls back to a MessageChannel task where postTask is missing', async () => {
