@@ -79,6 +79,11 @@ describe('building facts client', () => {
         expect(rows[4]).toMatchObject({ reason: 'heritageUnknown.rowUncertain()', link: { url: 'https://historicengland.org.uk/listing/the-list/list-entry/1195683', text: 'heritageEntry(1195683)' } });
         const parapet = { ...house, facts: { ...house.facts, parapet: { value: true, source: 'osm', key: 'building:parapet', raw: 'yes' } } };
         expect(facts.cardRows(parapet, t)[3].text).toBe('parapetYes()');
+        // A build date from a building register links its record (the licence's attribution) and has no OSM key.
+        const registered = { ...house, facts: { ...house.facts, built: { value: { from: 1920, to: 1939 }, source: 'colouring-britain', key: 'date_year',
+            raw: '1930 (1920–1939), Historical map [5]', label: 'Colouring Britain (Colouring London)', url: 'https://colouringbritain.org/view/age/5' } } };
+        expect(facts.cardRows(registered, t)[1]).toMatchObject({ text: 'builtBetween(1920|1939)', key: null,
+            link: { url: 'https://colouringbritain.org/view/age/5', text: 'Colouring Britain (Colouring London)' } });
     });
     it('puts a heritage listing in words with the grade as the register states it, and links its entry or register', () => {
         const value = (listed, grade, extra = {}) => ({ value: { listed, grade, register: 'National Heritage List for England', reference: listed ? '1195683' : null, name: null,

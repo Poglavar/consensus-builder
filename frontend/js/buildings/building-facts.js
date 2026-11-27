@@ -133,7 +133,9 @@
         const fact = building.facts[field];
         const row = { field, label: t(`field.${field}`), text: fact ? valueWords(field, fact.value, t) : null,
             key: fact?.key || (REGISTER_FIELDS.includes(field) ? null : building.edit?.keys?.[field] || null), raw: fact?.raw ?? null };
-        if (!REGISTER_FIELDS.includes(field)) return row;
+        // A fact a building register gives (a build date from Colouring Britain) links its record, which is also
+        // the attribution its licence asks for; it has no OSM key (adding start_date in OSM would override it).
+        if (!REGISTER_FIELDS.includes(field)) return fact?.url && fact?.label ? { ...row, key: null, link: { url: fact.url, text: fact.label } } : row;
         const code = building.unknown_reasons?.[field]?.code;
         return { ...row, link: registerLink(field, building, t), reason: !fact && UNKNOWN_REASONS.includes(code) ? t(`heritageUnknown.${code.replace(/-(\w)/g, (_, c) => c.toUpperCase())}`) : null };
     }
