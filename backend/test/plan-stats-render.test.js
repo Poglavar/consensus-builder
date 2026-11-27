@@ -780,9 +780,9 @@ describe('the all-in cost and profit in Plan stats', () => {
         const total = gfa() * 2000 + landM2 * 133;
         expect(slot(window, 'total-cost')).toBe(eur(total));
         expect(slot(window, 'cost-construction')).toBe(eur(gfa() * 2000));
-        expect(slot(window, 'cost-land')).toBe(eur(landM2 * 133));
+        // Nothing stands on the land: it is bought at its land value.
+        expect(slot(window, 'cost-acquisition')).toBe(eur(landM2 * 133));
         expect(slot(window, 'cost-tax')).toBe(eur(0));
-        expect(slot(window, 'cost-replaced')).toBe(eur(0));
         expect(slot(window, 'profit')).toBe(eur(gfa() * 4000 - total));
     });
 
@@ -808,11 +808,38 @@ describe('the all-in cost and profit in Plan stats', () => {
         expect(slot(window, 'profit')).toBe(eur(gfa() * 4000 - (gfa() * 2040 + landM2 * 133)));
     });
 
-    it('charges the value of the existing buildings the plan clears', async () => {
+    it('buys land the plan clears a building from at the building\'s value when that is higher, not the land as well', async () => {
         const window = await openOn({ cleared: [{ before: existing(), after: null }] });
         const replaced = gfaOf([existing()]) * 4000;
-        expect(slot(window, 'cost-replaced')).toBe(eur(replaced));
-        expect(slot(window, 'profit')).toBe(eur(gfa() * 4000 - (gfa() * 2000 + landM2 * 133 + replaced)));
+        expect(replaced).toBeGreaterThan(landM2 * 133);
+        expect(slot(window, 'cost-acquisition')).toBe(eur(replaced));
+        expect(slot(window, 'profit')).toBe(eur(gfa() * 4000 - (gfa() * 2000 + replaced)));
+    });
+
+    it('buys land the plan clears a building from at its land value when that is higher', async () => {
+        const window = await openOn({ cleared: [{ before: existing(), after: null }] });
+        const replaced = gfaOf([existing()]) * 4000;
+        const input = window.document.getElementById('plan-stats-land');
+        input.value = '30000';
+        input.listeners.input.forEach(fn => fn());
+        expect(landM2 * 30000).toBeGreaterThan(replaced);
+        expect(slot(window, 'cost-acquisition')).toBe(eur(landM2 * 30000));
+        expect(slot(window, 'profit')).toBe(eur(gfa() * 4000 - (gfa() * 2000 + landM2 * 30000)));
+    });
+
+    it('buys each parcel on its own: the vacant one at its land, the built one at the higher of the two', async () => {
+        // The land split into a west and an east parcel; a 2-storey building stands in the east one.
+        const parcel = (id, coordinates) => ({ type: 'Feature', id, properties: { parcelId: id }, geometry: { type: 'Polygon', coordinates } });
+        const west = parcel('W', rect(15.8850, 43.7350, 15.8860, 43.7365)), east = parcel('E', rect(15.8860, 43.7350, 15.8870, 43.7365));
+        const small = { ...existing(), buildingProposal: { buildings: [{ type: 'Feature', properties: { type: 'proposedBuilding', height: 7 },
+            geometry: { type: 'Polygon', coordinates: rect(15.8862, 43.7352, 15.8866, 43.7356) } }] } };
+        const window = await openOn({ parcels: [west, east], cleared: [{ before: small, after: null }] });
+        const replaced = gfaOf([small]) * 4000;
+        const eastM2 = planYield.geometryAreaM2(east), westM2 = planYield.geometryAreaM2(west);
+        expect(replaced).toBeGreaterThan(eastM2 * 133);
+        // West at its land value, east at the building's; not the whole land plus the building.
+        expect(slot(window, 'cost-acquisition')).toBe(eur(westM2 * 133 + replaced));
+        expect(westM2 * 133 + replaced).toBeLessThan(landM2 * 133 + replaced - 1);
     });
 
     it('charges a design that extends existing buildings for what it adds: no land, nothing replaced', async () => {
@@ -827,8 +854,7 @@ describe('the all-in cost and profit in Plan stats', () => {
         expect(digits(slot(window, 'buildings-extended'))).toBe(1);
         expect(slot(window, 'buildings-extended')).toContain(CbFormat.formatNumber(Math.round(added)));
         expect(slot(window, 'cost-construction')).toBe(eur(added * 2000));
-        expect(slot(window, 'cost-land')).toBe(eur(0));
-        expect(slot(window, 'cost-replaced')).toBe(eur(0));
+        expect(slot(window, 'cost-acquisition')).toBe(eur(0));
         expect(slot(window, 'profit')).toBe(eur(added * 4000 - added * 2000));
         // Without a stated existing height the kept floor area is unknown, and so is the money.
         delete raised.buildingProposal.buildings[0].properties.existingHeight;
@@ -873,11 +899,11 @@ describe('the all-in cost and profit in Plan stats', () => {
         // A pound city with no authority rate has no land price.
         const window = await openOn({}, 'GBP');
         expect(window.document.getElementById('plan-stats-land').value).toBe('');
-        expect([slot(window, 'total-cost'), slot(window, 'profit'), slot(window, 'cost-land')]).toEqual(['—', '—', '—']);
+        expect([slot(window, 'total-cost'), slot(window, 'profit'), slot(window, 'cost-acquisition')]).toEqual(['—', '—', '—']);
         expect(slot(window, 'cost-construction')).not.toBe('—');
         expect(slot(window, 'notes')).toContain('No land price for this place');
         slide(window, 'plan-stats-land', 300);
-        expect(slot(window, 'cost-land')).toBe(CbFormat.formatMoney(landM2 * 300, 'GBP', { maxFractionDigits: 0 }));
+        expect(slot(window, 'cost-acquisition')).toBe(CbFormat.formatMoney(landM2 * 300, 'GBP', { maxFractionDigits: 0 }));
         expect(slot(window, 'profit')).not.toBe('—');
         expect(slot(window, 'notes')).not.toContain('No land price');
     });

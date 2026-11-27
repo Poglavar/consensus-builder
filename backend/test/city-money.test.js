@@ -135,22 +135,40 @@ describe('offer currencies', () => {
 
 describe('new floor area: value, all-in cost, profit and rent', () => {
     const { newBuildMoney } = CityMoney;
-    // 1,000 m² of floor on 500 m² of land, replacing 200 m²: sale 4,000, construction 2,000, land 300.
-    const base = { floorAreaM2: 1000, replacedFloorAreaM2: 200, landAreaM2: 500, salePerM2: 4000, constructionPerM2: 2000,
+    // 1,000 m² of floor on one plot of 500 m² of land, replacing 200 m²: sale 4,000, construction 2,000, land 300.
+    const plot = (landAreaM2, replacedFloorAreaM2) => ({ landAreaM2, replacedFloorAreaM2 });
+    const base = { floorAreaM2: 1000, plots: [plot(500, 200)], salePerM2: 4000, constructionPerM2: 2000,
         landPerM2: 300, saleTaxShare: 0.25, rentPerM2Month: 15 };
 
-    it('charges construction, the land, the sale tax inside the value and the value it replaces', () => {
+    it('charges construction, the sale tax inside the value and the plot at its standing value when that is higher', () => {
+        // The 200 m² standing are worth 800,000, its 500 m² of land 150,000: the plot is bought once,
+        // at 800,000, not at 950,000 (land plus the building on it).
         const money = newBuildMoney(base);
-        expect(money).toMatchObject({ value: 4000000, constructionCost: 2000000, landCost: 150000, replacedValue: 800000 });
+        expect(money).toMatchObject({ value: 4000000, constructionCost: 2000000, acquisitionCost: 800000 });
         expect(money.saleTax).toBeCloseTo(4000000 * 0.25 / 1.25);
-        expect(money.totalCost).toBeCloseTo(2000000 + 150000 + 800000 + 800000);
+        expect(money.totalCost).toBeCloseTo(2000000 + 800000 + 800000);
         expect(money.profit).toBeCloseTo(4000000 - money.totalCost);
     });
 
+    it('buys a plot at its land value when that is higher than what stands on it', () => {
+        // 20 m² standing are worth 80,000; the 500 m² of land 150,000. Not 230,000.
+        expect(newBuildMoney({ ...base, plots: [plot(500, 20)] }).acquisitionCost).toBe(150000);
+        // Vacant land is its land value.
+        expect(newBuildMoney({ ...base, plots: [plot(500, 0)] }).acquisitionCost).toBe(150000);
+    });
+
+    it('buys each plot on its own: a vacant one at its land, a built one at the higher of the two', () => {
+        // 300 m² vacant (90,000) and 200 m² under 200 m² of floor (60,000 against 800,000): 890,000.
+        // Summed as one plot first, the land would hide under the building: 950,000 or 800,000.
+        const money = newBuildMoney({ ...base, plots: [plot(300, 0), plot(200, 200)] });
+        expect(money.acquisitionCost).toBe(90000 + 800000);
+        expect(money.totalCost).toBeCloseTo(2000000 + 890000 + 800000);
+    });
+
     it('builds, sells and taxes only what an extended building gains: its own floor area is kept', () => {
-        // 800 of the 1,000 m² stood already; nothing is replaced and no land is bought.
-        const money = newBuildMoney({ ...base, keptFloorAreaM2: 800, replacedFloorAreaM2: 0, landAreaM2: 0 });
-        expect(money).toMatchObject({ builtFloorAreaM2: 200, value: 800000, constructionCost: 400000, landCost: 0, replacedValue: 0 });
+        // 800 of the 1,000 m² stood already; nothing is replaced and no land is bought: the plot costs nothing.
+        const money = newBuildMoney({ ...base, keptFloorAreaM2: 800, plots: [plot(0, 0)] });
+        expect(money).toMatchObject({ builtFloorAreaM2: 200, value: 800000, constructionCost: 400000, acquisitionCost: 0 });
         expect(money.saleTax).toBeCloseTo(800000 * 0.25 / 1.25);
         expect(money.profit).toBeCloseTo(800000 - 400000 - money.saleTax);
         expect(money.annualRent).toBe(200 * 15 * 12);
@@ -163,19 +181,22 @@ describe('new floor area: value, all-in cost, profit and rent', () => {
     it('rents it by the month and yields the rent on the cost without the sale tax', () => {
         const money = newBuildMoney(base);
         expect(money.annualRent).toBe(1000 * 15 * 12);
-        expect(money.rentYieldOnCost).toBeCloseTo(180000 / (2000000 + 150000 + 800000));
+        expect(money.rentYieldOnCost).toBeCloseTo(180000 / (2000000 + 800000));
         // Nothing spent: no yield, rather than an infinite one.
-        expect(newBuildMoney({ ...base, replacedFloorAreaM2: 0, constructionPerM2: 0, landPerM2: 0 }).rentYieldOnCost).toBeNull();
+        expect(newBuildMoney({ ...base, plots: [plot(500, 0)], constructionPerM2: 0, landPerM2: 0 }).rentYieldOnCost).toBeNull();
     });
 
     it('keeps what depends on a missing price or area unknown instead of counting it as zero', () => {
         const noLand = newBuildMoney({ ...base, landPerM2: null });
-        expect(noLand).toMatchObject({ value: 4000000, constructionCost: 2000000, landCost: null, totalCost: null, profit: null, rentYieldOnCost: null });
+        expect(noLand).toMatchObject({ value: 4000000, constructionCost: 2000000, acquisitionCost: null, totalCost: null, profit: null, rentYieldOnCost: null });
         expect(noLand.annualRent).toBe(180000);
         expect(newBuildMoney({ ...base, saleTaxShare: null })).toMatchObject({ saleTax: null, totalCost: null, profit: null });
         expect(newBuildMoney({ ...base, saleTaxShare: null }).rentYieldOnCost).not.toBeNull();
-        expect(newBuildMoney({ ...base, landAreaM2: null }).totalCost).toBeNull();
-        expect(newBuildMoney({ ...base, replacedFloorAreaM2: null }).profit).toBeNull();
+        expect(newBuildMoney({ ...base, plots: [plot(null, 200)] }).totalCost).toBeNull();
+        expect(newBuildMoney({ ...base, plots: [plot(500, null)] }).profit).toBeNull();
+        // One unknown plot leaves the whole acquisition unknown; no plots at all is no acquisition known.
+        expect(newBuildMoney({ ...base, plots: [plot(300, 0), plot(200, null)] }).acquisitionCost).toBeNull();
+        expect(newBuildMoney({ ...base, plots: undefined }).acquisitionCost).toBeNull();
         expect(newBuildMoney({ ...base, floorAreaM2: null })).toMatchObject({ value: null, constructionCost: null, annualRent: null, profit: null });
         expect(newBuildMoney({ ...base, salePerM2: -1 }).value).toBeNull();
         // A tax share of 1 or more is no tax share.
@@ -186,7 +207,7 @@ describe('new floor area: value, all-in cost, profit and rent', () => {
         const money = newBuildMoney({ ...base, devChargePerM2: 40 });
         expect(money.devCharge).toBe(40000);
         expect(money.totalCost).toBeCloseTo(newBuildMoney(base).totalCost + 40000);
-        expect(money.rentYieldOnCost).toBeCloseTo(180000 / (2000000 + 40000 + 150000 + 800000));
+        expect(money.rentYieldOnCost).toBeCloseTo(180000 / (2000000 + 40000 + 800000));
         expect(newBuildMoney({ ...base, devChargePerM2: null })).toMatchObject({ devCharge: null, totalCost: null, profit: null });
         // Not given at all is no charge.
         expect(newBuildMoney(base).devCharge).toBe(0);
