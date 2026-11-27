@@ -4879,6 +4879,7 @@
                 "loading": "Chargement des bâtiments existants…",
                 "notAvailable": "Les données sur les bâtiments existants ne sont pas encore disponibles pour cette ville.",
                 "noneFound": "Aucun bâtiment existant trouvé sur les parcelles sélectionnées.",
+                "outsideParcels": "Bâtiments qui dépassent des parcelles sélectionnées : {{count}}, {{area}} m² en dehors (en rouge). Terminé garde le projet en brouillon, mais il ne pourra aller sur la carte qu’une fois les parcelles situées dessous ajoutées.",
                 "loadFailed": "Impossible de charger les bâtiments existants. Réessayez.",
                 "summary": "Surélévation de {{count}} parmi {{existingBuildings}}.",
                 "buildingCount": {

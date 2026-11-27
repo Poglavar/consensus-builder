@@ -301,6 +301,7 @@ describe('block and row massing persistence', () => {
             ...blockBindings({ mode: 'existing' }, window, { getElementById: () => null }), ...sliders,
             existingFootprints: RaisedExistingBuildings.footprintsOnSite(stock, solid, turf), generatedBuildingFeatures: null,
             getBlockifyDisplayName: () => 'Garden row', displayBuildingsInModal() {}, setBlockifyInfo() {},
+            setBlockifyFitWarning() {}, showExistingBuildingsOutsideSite() {},
             CbFormat: { formatNumber: String }, setPendingBuildingProposalContext: context => { editor.saved = clone(context); },
             confirmBlockSizeIfOversized: async () => true, closeBlockifyModal() {}, updateStatus() {}, translateBuildingText: (_key, fallback) => fallback
         };

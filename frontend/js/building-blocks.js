@@ -602,6 +602,21 @@ function setBlockifyFitWarning(visible) {
     if (warning) warning.hidden = !visible;
 }
 
+// Raised existing buildings that reach beyond the parcels (RaisedExistingBuildings.outsideSite):
+// said in the preview, with the parts outside drawn in red, so the apply refusal after Done is no
+// surprise. An empty list hides the banner.
+function setBlockifyOutsideWarning(outside) {
+    const warning = document.getElementById('blockify-outside-warning');
+    if (!warning) return;
+    const list = Array.isArray(outside) ? outside : [];
+    warning.hidden = !list.length;
+    if (!list.length) { warning.textContent = ''; return; }
+    const area = list.reduce((sum, item) => sum + item.areaM2, 0);
+    warning.textContent = translateBuildingText('blockify.modal.existing.outsideParcels',
+        'Buildings reaching beyond the selected parcels: {{count}}, {{area}} m² outside (in red). Done keeps the design as a draft, but it can go on the map only once the parcels under them are added.',
+        { count: list.length, area: CbFormat.formatNumber(area, { maxFractionDigits: 0 }) });
+}
+
 // --- Geometry utilities to improve robustness ---
 // Robust footprint geometry (sanitizePolygonFeature, robustNegativeBuffer, robustUnion,
 // toSingleLargestPolygon, the selective chamfer + incrementalInsetPolygon, and the GEOM_* consts)
@@ -1753,6 +1768,7 @@ function addWingsToBuilding(...args) { return window.BuildingRuleGeometry.addWin
 
 function generateBuildingInModal() {
     setBlockifyFitWarning(false);
+    setBlockifyOutsideWarning([]);
     // Existing-buildings mode derives geometry from fetched footprints, not the sliders.
     if (blockifyMode === 'existing') { generateExistingBuildingsInModal(); return; }
     // In manual mode the outline is user-edited, not slider-derived — route to the manual builder.
@@ -2648,7 +2664,10 @@ function generateExistingBuildingsInModal() {
 
     generatedBuildingFeatures = features;
     generatedBuildingFeature = null;
+    // A warning from the parametric sliders says nothing about these buildings.
+    setBlockifyFitWarning(false);
     displayBuildingsInModal(features);
+    showExistingBuildingsOutsideSite(features);
     if (existingRule === 'additional') {
         setBlockifyInfo('blockify.modal.existing.summary', 'Existing buildings: {{total}} · raising: {{count}}', {
             count: features.length,
@@ -2663,6 +2682,26 @@ function generateExistingBuildingsInModal() {
     }
     const doneButton = document.getElementById('btn-blockify-done');
     if (doneButton) doneButton.disabled = features.length === 0;
+}
+
+// The parts of raised buildings outside the design's land, by the rule the apply check uses, in red
+// over the preview and counted in the banner above the summary.
+function showExistingBuildingsOutsideSite(features) {
+    blockifyExcludedLayers.forEach(layer => { if (layer && blockifyMap) { try { blockifyMap.removeLayer(layer); } catch (_) { } } });
+    blockifyExcludedLayers = [];
+    const site = blockifyDesignBoundary();
+    const ground = window.GeometryTolerances;
+    const outside = site?.geometry && ground && typeof turf !== 'undefined'
+        ? window.RaisedExistingBuildings.outsideSite(features, site, turf, ground, ground.designToleranceM(null))
+        : [];
+    if (outside.length && blockifyMap) {
+        blockifyExcludedLayers = [L.geoJSON({ type: 'FeatureCollection', features: outside.map(item => ({ type: 'Feature', properties: {}, geometry: item.geometry })) }, {
+            pane: blockifyModal?.pane,
+            style: { color: '#c62828', weight: 2, fillColor: '#c62828', fillOpacity: 0.45 },
+            interactive: false
+        }).addTo(blockifyMap)];
+    }
+    setBlockifyOutsideWarning(outside);
 }
 
 // Array flavour of displayBuildingInModal: draw all proposed buildings at once (existing mode).

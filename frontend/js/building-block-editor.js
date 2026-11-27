@@ -191,6 +191,7 @@ function showBlockifyModalEditor() {
         <div id="blockify-controls" class="cb-dialog__footer">
             <p id="blockify-fit-warning" class="cb-banner cb-banner--warning" role="status" hidden
                 data-i18n-key="blockify.modal.messages.siteTooSmall">${translateBuildingText('blockify.modal.messages.siteTooSmall', 'This land is too small for the requested block settings. Detect the whole block or add parcels, or reduce the setback, building depth or minimum plot size.')}</p>
+            <p id="blockify-outside-warning" class="cb-banner cb-banner--warning" role="status" hidden></p>
             <div id="blockify-info" data-i18n-attr="text" role="status" aria-live="polite"></div>
             <div id="blockify-buttons">
                 <button type="button" class="btn" id="btn-blockify-regenerate" hidden data-i18n-key="blockify.modal.regenerate" data-i18n-attr="text">Illustrate</button>

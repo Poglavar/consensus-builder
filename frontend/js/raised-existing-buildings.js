@@ -91,6 +91,21 @@
         return features;
     }
 
+    // The buildings that would stop the design going on the map: for each raised building, the part
+    // of it outside `site` when that part is ground under the shared rule the apply check uses
+    // (`ground` is geometry-tolerances.js). A building at least half inside is kept by
+    // footprintsOnSite, so a straddling one is redrawn whole and must be shown before Done.
+    function outsideSite(features, site, turf, ground, toleranceM = 0) {
+        const cover = { type: 'Feature', properties: {}, geometry: site && site.type === 'Feature' ? site.geometry : site };
+        const outside = [];
+        (features || []).forEach((feature, index) => {
+            const rest = ground.uncoveredBy(turf, feature, [cover], { site: 'raised-existing-buildings.outsideSite' });
+            if (!rest || !ground.isGround(turf, rest, toleranceM)) return;
+            outside.push({ index, areaM2: turf.area(rest), geometry: rest.geometry });
+        });
+        return outside;
+    }
+
     // The design's saved parameters, from which the editor reopens it.
     function parameters(settings) {
         return {
@@ -105,5 +120,5 @@
         };
     }
 
-    return { RULES, ROOFS, LIMITS, DEFAULTS, footprintsOnSite, existingHeightOf, heightsKnown, proposedHeightOf, raise, parameters };
+    return { RULES, ROOFS, LIMITS, DEFAULTS, footprintsOnSite, existingHeightOf, heightsKnown, proposedHeightOf, raise, outsideSite, parameters };
 });

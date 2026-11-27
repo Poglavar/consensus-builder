@@ -21,6 +21,24 @@ describe('raised existing buildings', () => {
         expect(kept[0]).toMatchObject({ source: 'osm', height_m: 9, geometry: inside.geometry });
     });
 
+    it('names each raised building that reaches beyond the site by the rule the apply check uses, with the part outside', () => {
+        const ground = require('../../frontend/js/geometry-tolerances.js');
+        // About 22 m square: one inside, one a third outside (kept by footprintsOnSite, refused on apply).
+        const inside = square(16.0001, 45.0001, 0.0002, { id: 1, source: 'osm', height_m: 9 });
+        const straddling = square(16.00087, 45.0001, 0.0002, { id: 2, source: 'osm', height_m: 9 });
+        const footprints = Raised.footprintsOnSite([inside, straddling], site, turf);
+        expect(footprints.map(footprint => footprint.id)).toEqual(['osm:1', 'osm:2']);
+        const raised = Raised.raise(footprints, settings());
+        const outside = Raised.outsideSite(raised, site, turf, ground, ground.designToleranceM(null));
+        expect(outside.map(item => item.index)).toEqual([1]);
+        // 0.00007° of its 0.0002° width lies east of the site's edge at 16.001.
+        const expected = 0.35 * turf.area(straddling);
+        expect(outside[0].areaM2).toBeCloseTo(expected, 0);
+        expect(outside[0].areaM2).toBeGreaterThan(50);
+        expect(turf.booleanWithin(turf.centroid(turf.feature(outside[0].geometry)), turf.feature(site))).toBe(false);
+        expect(Raised.outsideSite(Raised.raise([footprints[0]], settings()), site, turf, ground, 0)).toEqual([]);
+    });
+
     it('redraws each footprint at the stated storeys, with its storey height, roof and the building it extends', () => {
         const footprints = [{ id: 'osm:1', height_m: 9, geometry: square(16, 45, 0.0001).geometry },
             { id: 'osm:2', floors: 2, geometry: square(16.0002, 45, 0.0001).geometry }];

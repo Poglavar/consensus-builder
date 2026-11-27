@@ -3606,6 +3606,7 @@
                 "loading": "Učitavanje postojećih zgrada…",
                 "notAvailable": "Podaci o postojećim zgradama još nisu dostupni za ovaj grad.",
                 "noneFound": "Na izabranim parcelama nisu pronađene postojeće zgrade.",
+                "outsideParcels": "Zgrade koje izlaze van izabranih parcela: {{count}}, {{area}} m² van njih (crveno). Gotovo čuva dizajn kao skicu, ali na mapu može tek kad se dodaju parcele ispod njih.",
                 "loadFailed": "Učitavanje postojećih zgrada nije uspelo. Pokušajte ponovo.",
                 "summary": "Povisuje se {{count}} od {{existingBuildings}}.",
                 "buildingCount": {

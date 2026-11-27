@@ -3573,6 +3573,7 @@
                 "loading": "Loading existing buildings…",
                 "notAvailable": "Existing building data is not available for this city yet.",
                 "noneFound": "No existing buildings found on the selected parcels.",
+                "outsideParcels": "Buildings reaching beyond the selected parcels: {{count}}, {{area}} m² outside (in red). Done keeps the design as a draft, but it can go on the map only once the parcels under them are added.",
                 "loadFailed": "Could not load existing buildings. Try again.",
                 "summary": "Raising {{count}} of {{existingBuildings}}.",
                 "buildingCount": {

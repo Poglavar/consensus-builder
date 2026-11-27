@@ -4879,6 +4879,7 @@
                 "loading": "A carregar edifícios existentes…",
                 "notAvailable": "Os dados dos edifícios existentes ainda não estão disponíveis para esta cidade.",
                 "noneFound": "Não foram encontrados edifícios existentes nas parcelas selecionadas.",
+                "outsideParcels": "Edifícios que ultrapassam as parcelas selecionadas: {{count}}, {{area}} m² de fora (a vermelho). Concluído guarda o projeto como rascunho, mas só pode ir para o mapa depois de adicionadas as parcelas por baixo deles.",
                 "loadFailed": "Não foi possível carregar os edifícios existentes. Tente novamente.",
                 "summary": "A aumentar a altura de {{count}} de {{existingBuildings}}.",
                 "buildingCount": {
