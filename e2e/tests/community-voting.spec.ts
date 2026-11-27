@@ -273,6 +273,84 @@ test('a Living Tradition street vote waits until every covered house is eligible
   expect(reads.at(-1)).toBe('osm:way/101,osm:way/102');
 });
 
+// The author adds a covered house's missing parapet in the editor itself: signs in with their
+// OpenStreetMap account in a popup, the tag is saved in one changeset as their edit, and the house
+// counts as eligible at once, though the shared API's copy of OSM has not caught up yet.
+test('an author saves a covered house\'s missing parapet to OpenStreetMap and the vote can start at once', async ({ mockApi: page }) => {
+  test.setTimeout(180_000);
+  await stubBasemapTiles(page);
+  const fact = (value: unknown) => ({ value, source: 'osm', key: 'k', raw: String(value) });
+  const notListed = { value: { listed: false, grade: null, register: 'National Heritage List for England', reference: null, name: null, url: 'https://www.planning.data.gov.uk/dataset/listed-building', basis: 'none' }, source: 'gb-eng-nhle', key: 'listed-building', raw: 'no entry' };
+  const georgian = { storeys: fact(3), built: fact({ from: 1828, to: 1830 }), roof_shape: fact('flat'), parapet: fact(true), height_m: null, footprint_m2: fact(45.6), row_size: fact(20), heritage: notListed };
+  // The shared API keeps answering No. 102 without a parapet at version 2: its OSM copy lags.
+  await page.route('https://zagreb.lol/api/building-facts*', route => {
+    const ids = new URL(route.request().url()).searchParams.get('ids')!.split(',');
+    route.fulfill({ json: { fields: [], sources: [], buildings: ids.map(id => ({ id, found: true,
+      facts: { ...georgian, parapet: id === 'osm:way/102' ? null : fact(true) }, unknown_reasons: {},
+      edit: { url: `https://www.openstreetmap.org/edit?editor=id&way=${id.split('/')[1]}`, source: 'OpenStreetMap', keys: { parapet: 'building:parapet', roof_shape: 'roof:shape', storeys: 'building:levels' } },
+      source_version: { version: 2, changed: '2026-11-27T15:00:00Z' } })) } });
+  });
+  // OpenStreetMap: sign-in (the popup returns to our callback page), the account, and the edit.
+  const osm: string[] = [];
+  const context = page.context();
+  await context.route('https://www.openstreetmap.org/oauth2/authorize*', route => {
+    const state = new URL(route.request().url()).searchParams.get('state');
+    osm.push('authorize');
+    route.fulfill({ status: 302, headers: { location: `${new URL(page.url()).origin}/osm-callback.html?code=the-code&state=${state}` } });
+  });
+  await context.route('https://www.openstreetmap.org/oauth2/token', route => { osm.push(`token ${route.request().postData()?.includes('code=the-code')}`); route.fulfill({ json: { access_token: 'tok' } }); });
+  await context.route('https://api.openstreetmap.org/api/0.6/**', route => {
+    const request = route.request(), path = new URL(request.url()).pathname.replace('/api/0.6/', '');
+    osm.push(`${request.method()} ${path}`);
+    if (path === 'user/details.json') return route.fulfill({ json: { user: { id: 7, display_name: 'mapper' } } });
+    if (path === 'ways.json') return route.fulfill({ json: { elements: [{ type: 'way', id: 102, version: 2, nodes: [1, 2, 3, 1], tags: { building: 'terrace' } }] } });
+    if (path === 'changeset/create') return route.fulfill({ body: '901' });
+    if (path === 'changeset/901/upload') {
+      osm.push(request.postData()!.includes('<tag k="building:parapet" v="yes"/>') ? 'parapet uploaded' : 'no parapet');
+      return route.fulfill({ body: '<diffResult><way old_id="102" new_id="102" new_version="3"/></diffResult>' });
+    }
+    return route.fulfill({ body: '' });
+  });
+  const { layoutId } = await applyLayout(page);
+  await page.evaluate(id => {
+    const w = window as any;
+    const design = w.proposalStorage.getProposal(id);
+    const raised = (source: string) => ({ type: 'Feature', geometry: null, properties: { type: 'proposedBuilding', basedOnExisting: true, sourceBuildingId: source, roof: 'mansard' } });
+    design.geometry = { ...(design.geometry || {}), buildings: [raised('w101'), raised('w102')] };
+    const plan = w.PlanComposition.create('Mansard street', [design], w.MapShare.capture(w));
+    w.PlanWorkspace.save(plan); w.PlanDialog.details(plan);
+  }, layoutId);
+  await page.getByRole('button', { name: 'Create agreement', exact: true }).click();
+  const editor = agreementEditor(page), roster = editor.locator('[data-voting-roster]'), covered = editor.locator('.voting-eligibility');
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  await editor.locator('[data-agreement-electorate][value="community"]').check();
+  await roster.locator('[data-roster-count]').fill('2');
+  await roster.locator('[data-roster-action="generate"]').click();
+  await roster.getByLabel('Ballot rule').selectOption({ label: 'Street vote — Living Tradition mansards' });
+  await expect(covered).toContainText('1 of 2 covered houses eligible');
+  // Only No. 102 is offered, and only its unknown fact.
+  const facts = covered.locator('.voting-eligibility__facts');
+  await expect(facts.getByRole('heading', { name: 'Add the missing facts' })).toBeVisible();
+  await expect(facts.locator('[data-fact-house]')).toHaveCount(1);
+  await facts.getByLabel('Building way/102: Parapet').selectOption('yes');
+  await expect(facts).toContainText('You sign in with your OpenStreetMap account first.');
+  const popup = page.waitForEvent('popup');
+  await facts.getByRole('button', { name: 'Save to OpenStreetMap' }).click();
+  await (await popup).waitForEvent('close');
+  await expect(covered).toContainText('2 of 2 covered houses eligible');
+  await expect(covered.getByRole('link', { name: 'Changeset 901' })).toHaveAttribute('href', 'https://www.openstreetmap.org/changeset/901');
+  expect(osm).toEqual(['authorize', 'token true', 'GET user/details.json', 'GET ways.json', 'PUT changeset/create', 'POST changeset/901/upload', 'parapet uploaded', 'PUT changeset/901/close']);
+  const downloaded = page.waitForEvent('download');
+  await roster.locator('[data-roster-action="save"]').click();
+  await downloaded;
+  await expect(editorSave(editor)).toBeEnabled();
+  await editorSave(editor).click();
+  await editorClosed(page);
+  const [saved] = await storedAgreements(page);
+  // The record keeps the version the author's edit made.
+  expect(saved.consultation.voting.eligibility.houses.find((house: any) => house.id === 'osm:way/102')).toMatchObject({ verdict: 'eligible', sourceVersion: { version: 3 } });
+});
+
 // A street vote names its street: Street here picks a segment of a street and a side, the parcels
 // along it become the selection, and the agreement editor offers that street for the vote record.
 test('a street vote names the street segment picked with Street here', async ({ mockApi: page }) => {

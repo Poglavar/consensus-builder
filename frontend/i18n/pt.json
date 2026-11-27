@@ -9631,6 +9631,20 @@
         "buildingFactsAgain": "Verificar de novo",
         "buildingFactsWaiting": "O OpenStreetMap mostra uma edição um ou dois minutos depois de guardada: a verificar a cada 30 segundos…",
         "buildingFactsUnchanged": "O {{source}} ainda não mostra alterações. Se guardou uma edição, verifique de novo daqui a um minuto.",
+        "factEdit": {
+            "title": "Acrescente os dados em falta",
+            "hint": "Acrescente só o que sabe por ver o edifício, no local ou em fotos que possa usar no OpenStreetMap. Fica guardado no OpenStreetMap como uma edição pública sua.",
+            "choose": "Escolha…",
+            "save": "Guardar no {{source}}",
+            "as": "A guardar como {{name}} no OpenStreetMap.",
+            "signInNote": "Primeiro inicia sessão com a sua conta do OpenStreetMap.",
+            "signOut": "Terminar sessão no OpenStreetMap",
+            "saved": "Guardado no {{source}}.",
+            "changeset": "Conjunto de alterações {{changeset}}",
+            "failed": "Não guardado: {{error}}",
+            "all": "Todas as casas:",
+            "allOf": "{{fact}}, todas as casas"
+        },
         "buildingFact": {
             "field": {
                 "storeys": "Pisos",

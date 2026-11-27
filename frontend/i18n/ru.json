@@ -9572,6 +9572,20 @@
         "buildingFactsAgain": "Проверить снова",
         "buildingFactsWaiting": "OpenStreetMap показывает правку через минуту-две после сохранения: проверка каждые 30 секунд…",
         "buildingFactsUnchanged": "{{source}} пока не показывает изменений. Если вы сохранили правку, проверьте снова через минуту.",
+        "factEdit": {
+            "title": "Добавьте недостающие сведения",
+            "hint": "Добавляйте только то, что знаете, глядя на здание — на месте или на фото, которые можно использовать для OpenStreetMap. Это сохраняется в OpenStreetMap как ваша собственная публичная правка.",
+            "choose": "Выберите…",
+            "save": "Сохранить в {{source}}",
+            "as": "Сохранение от имени {{name}} в OpenStreetMap.",
+            "signInNote": "Сначала вы входите со своей учётной записью OpenStreetMap.",
+            "signOut": "Выйти из OpenStreetMap",
+            "saved": "Сохранено в {{source}}.",
+            "changeset": "Пакет правок {{changeset}}",
+            "failed": "Не сохранено: {{error}}",
+            "all": "Все дома:",
+            "allOf": "{{fact}}, все дома"
+        },
         "buildingFact": {
             "field": {
                 "storeys": "Этажность",

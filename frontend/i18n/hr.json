@@ -9506,6 +9506,20 @@
         "buildingFactsAgain": "Provjeri ponovno",
         "buildingFactsWaiting": "OpenStreetMap prikazuje izmjenu minutu-dvije nakon spremanja: provjeravam svakih 30 sekundi…",
         "buildingFactsUnchanged": "{{source}} još ne prikazuje promjenu. Ako ste spremili izmjenu, provjerite ponovno za minutu.",
+        "factEdit": {
+            "title": "Dodajte podatke koji nedostaju",
+            "hint": "Dodajte samo ono što znate gledajući zgradu, na licu mjesta ili na fotografijama koje smijete koristiti za OpenStreetMap. Sprema se u OpenStreetMap kao vaša javna izmjena.",
+            "choose": "Odaberite…",
+            "save": "Spremi u {{source}}",
+            "as": "Spremate kao {{name}} na OpenStreetMapu.",
+            "signInNote": "Najprije se prijavljujete svojim računom na OpenStreetMapu.",
+            "signOut": "Odjava s OpenStreetMapa",
+            "saved": "Spremljeno u {{source}}.",
+            "changeset": "Skup izmjena {{changeset}}",
+            "failed": "Nije spremljeno: {{error}}",
+            "all": "Sve kuće:",
+            "allOf": "{{fact}}, sve kuće"
+        },
         "buildingFact": {
             "field": {
                 "storeys": "Broj etaža",

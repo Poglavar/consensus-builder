@@ -447,8 +447,8 @@ describe('building facts on the card', () => {
     const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');
     const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
     const slice = node => source.slice(node.start, node.end);
-    const pieces = body.filter(node => (node.type === 'FunctionDeclaration' && ['readFacts', 'readFactsOf', 'renderFacts', 'renderEligibility', 'element'].includes(node.id.name))
-        || (node.type === 'VariableDeclaration' && node.declarations[0].id.name === 'factReads')).map(slice).join('\n');
+    const pieces = body.filter(node => (node.type === 'FunctionDeclaration' && ['readFacts', 'showFacts', 'readFactsOf', 'renderFacts', 'renderFactForm', 'renderEligibility', 'element'].includes(node.id.name))
+        || (node.type === 'VariableDeclaration' && ['factReads', 'factDrafts'].includes(node.declarations[0].id.name))).map(slice).join('\n');
     const client = require('../../frontend/js/buildings/building-facts.js');
     const t = (key, params = {}) => `${key}(${Object.values(params).join('|')})`;
     const KEYS = { storeys: 'building:levels', built: 'start_date', roof_shape: 'roof:shape', parapet: 'building:parapet' };
@@ -516,6 +516,32 @@ describe('building facts on the card', () => {
         await same.again(first, async () => {});
         expect(same.read).toHaveBeenCalledTimes(8);
         expect(text(same.renderFacts(first))).toContain('buildingFactsUnchanged(OpenStreetMap)');
+    });
+    // Adding the missing facts on the card: a choice per missing fact, saved to OpenStreetMap as the
+    // person's edit (osm/osm-fact-edits.js), then the saved facts and the changeset.
+    it('offers the missing facts, saves the chosen ones to OpenStreetMap and shows them with the changeset', async () => {
+        const first = record(), shown = { current: first };
+        const factEdits = require('../../frontend/js/osm/osm-fact-edits.js');
+        const save = vi.fn(async entries => ({ changeset: 555, buildings: new Map([['osm:way/1', factEdits.withSaved(entries[0].building, entries[0].values, 3, 'now')]]) }));
+        const card = setup([{ ...building(false), source_version: { version: 2 } }], shown, {
+            OsmFactEdits: { ...factEdits, save },
+            OsmAccount: { SITE: 'https://www.openstreetmap.org', redirectUri: () => 'http://127.0.0.1:5611/osm-callback.html', user: () => null, signOut: vi.fn() } });
+        await card.readFacts(first, { id: 'w1', properties: {} });
+        const form = card.renderFacts(first).querySelector('.planning-fact-form');
+        // Storeys are known (3); parapet and roof shape are not.
+        expect(form.querySelectorAll('label').map(text)).toEqual(['buildingFact.field.parapet()', 'buildingFact.field.roof_shape()']);
+        expect(text(form)).toContain('factEdit.signInNote()');
+        const parapet = form.querySelectorAll('select').find(select => select.id === 'planning-fact-parapet');
+        parapet.value = 'yes';
+        parapet.listeners.get('change').forEach(fn => fn());
+        form.querySelector('button').listeners.get('click').forEach(fn => fn());
+        await new Promise(resolve => setImmediate(resolve));
+        expect(save.mock.calls[0][0][0].values).toEqual({ parapet: 'yes' });
+        expect(save.mock.calls[0][1].comment).toBe('Add building:parapet to 1 building');
+        const after = card.renderFacts(first);
+        expect(text(after)).toContain('buildingFact.field.parapet()buildingFact.parapetYes()');
+        expect(text(after)).toContain('factEdit.saved(OpenStreetMap) factEdit.changeset(555)');
+        expect(after.querySelectorAll('a').map(a => a.href)).toContain('https://www.openstreetmap.org/changeset/555');
     });
     // London plans under English rules, so the card adds Living Tradition's tests for the house:
     // a parapet now stated, its row and footprint from the source's geometry, its roof shape unknown.

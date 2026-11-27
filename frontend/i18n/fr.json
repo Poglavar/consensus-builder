@@ -9631,6 +9631,20 @@
         "buildingFactsAgain": "Vérifier à nouveau",
         "buildingFactsWaiting": "OpenStreetMap affiche une modification une ou deux minutes après son enregistrement : vérification toutes les 30 secondes…",
         "buildingFactsUnchanged": "{{source}} n’affiche encore aucun changement. Si vous avez enregistré une modification, vérifiez à nouveau dans une minute.",
+        "factEdit": {
+            "title": "Ajoutez les données manquantes",
+            "hint": "N’ajoutez que ce que vous savez en voyant le bâtiment, sur place ou sur des photos utilisables pour OpenStreetMap. C’est enregistré dans OpenStreetMap comme votre propre modification publique.",
+            "choose": "Choisir…",
+            "save": "Enregistrer dans {{source}}",
+            "as": "Enregistrement en tant que {{name}} sur OpenStreetMap.",
+            "signInNote": "Vous vous connectez d’abord avec votre compte OpenStreetMap.",
+            "signOut": "Se déconnecter d’OpenStreetMap",
+            "saved": "Enregistré dans {{source}}.",
+            "changeset": "Groupe de modifications {{changeset}}",
+            "failed": "Non enregistré : {{error}}",
+            "all": "Toutes les maisons :",
+            "allOf": "{{fact}}, toutes les maisons"
+        },
         "buildingFact": {
             "field": {
                 "storeys": "Niveaux",

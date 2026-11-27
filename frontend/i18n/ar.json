@@ -9918,6 +9918,20 @@
         "buildingFactsAgain": "تحقّق مجددًا",
         "buildingFactsWaiting": "يعرض OpenStreetMap التعديل بعد دقيقة أو دقيقتين من حفظه: جارٍ التحقق كل 30 ثانية…",
         "buildingFactsUnchanged": "لا يعرض {{source}} أي تغيير بعد. إن حفظت تعديلًا فتحقّق مجددًا بعد دقيقة.",
+        "factEdit": {
+            "title": "أضف البيانات الناقصة",
+            "hint": "أضف فقط ما تعرفه من رؤية المبنى، في الموقع أو في صور يجوز استخدامها في OpenStreetMap. يُحفظ في OpenStreetMap تعديلًا عامًا باسمك.",
+            "choose": "اختر…",
+            "save": "احفظ في {{source}}",
+            "as": "الحفظ باسم {{name}} على OpenStreetMap.",
+            "signInNote": "تسجّل الدخول أولًا بحسابك على OpenStreetMap.",
+            "signOut": "تسجيل الخروج من OpenStreetMap",
+            "saved": "حُفظ في {{source}}.",
+            "changeset": "مجموعة التغييرات {{changeset}}",
+            "failed": "لم يُحفظ: {{error}}",
+            "all": "كل المنازل:",
+            "allOf": "{{fact}}، كل المنازل"
+        },
         "buildingFact": {
             "field": {
                 "storeys": "عدد الطوابق",

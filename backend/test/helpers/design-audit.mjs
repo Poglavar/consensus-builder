@@ -222,7 +222,7 @@ export function flattenJson(obj, prefix = '', out = {}) {
 }
 
 const PROTECTED_WORDS = new Set(['OSM', 'DGU', 'GUP', 'GDI', 'NFT', 'AI', '2D', '3D', 'USDC', 'USDT', 'ETH', 'SOL', 'EUR', 'IPFS',
-    'URL', 'JSON', 'GeoJSON', 'CityGML', 'CityJSON', 'glTF', 'API', 'ID', 'GPS', 'HR', 'EN', 'ES', 'SR', 'X', 'YES', 'NO', 'OK', 'I', 'A', 'Schelling', 'Solana', 'Hyperstition', 'Hippodamus',
+    'URL', 'JSON', 'GeoJSON', 'CityGML', 'CityJSON', 'glTF', 'API', 'ID', 'GPS', 'HR', 'EN', 'ES', 'SR', 'X', 'YES', 'NO', 'OK', 'I', 'A', 'Schelling', 'Solana', 'Hyperstition', 'Hippodamus', 'OpenStreetMap',
     // The Burning Man plan's proper names: the festival, its Man and its Esplanade.
     'Burning', 'Man', 'Esplanade',
     // The plan critics' names ("How the Dog measures").

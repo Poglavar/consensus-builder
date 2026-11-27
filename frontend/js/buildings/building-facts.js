@@ -34,6 +34,21 @@
         return local && /^http:\/\/(localhost|127\.0\.0\.1):\d+\/api$/.test(local) ? local : API_ROOT;
     }
 
+    // Buildings this page saved to the source (osm/osm-fact-edits.js), as the saved tags state them:
+    // Overpass and the API's cache show the new version a few minutes later, and until a read
+    // reaches that version the saved one answers instead. Kept for this page's life.
+    const saved = new Map();
+    function remember(building) {
+        saved.set(building.id, building);
+    }
+    const versionNumber = building => (Number.isInteger(building?.source_version?.version) ? building.source_version.version : -1);
+    function newest(building) {
+        const mine = saved.get(building.id);
+        if (!mine) return building;
+        if (versionNumber(building) >= versionNumber(mine)) { saved.delete(building.id); return building; }
+        return mine;
+    }
+
     // Several buildings' facts as a Map id → building; at most 200 per request, as the contract
     // allows. The API keeps a read 5 minutes; fresh asks the source again ("Check again" after an edit).
     async function readMany(ids, { fetchFn = fetch, base = apiRoot(), fresh = false } = {}) {
@@ -46,7 +61,7 @@
             for (const id of batch) {
                 const building = (answer.buildings || []).find(item => item.id === id);
                 if (!building || typeof building.facts !== 'object') throw new Error('Invalid building facts response');
-                found.set(id, { ...building, sources: answer.sources || [] });
+                found.set(id, newest({ ...building, sources: answer.sources || [] }));
             }
         }
         return found;
@@ -127,5 +142,5 @@
         return CARD_FIELDS.map(field => factRow(building, field, t));
     }
 
-    return { API_ROOT, CARD_FIELDS, factIdOf, apiRoot, read, readMany, readUntilChanged, builtWords, heritageWords, factRow, cardRows };
+    return { API_ROOT, CARD_FIELDS, factIdOf, apiRoot, read, readMany, remember, readUntilChanged, builtWords, heritageWords, factRow, cardRows };
 });

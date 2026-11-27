@@ -310,13 +310,14 @@
     // Check again (fresh) keeps reading until the source shows a change, since an OpenStreetMap
     // edit reaches Overpass a minute or two after it is saved (BuildingFacts.readUntilChanged); the
     // card says it is waiting meanwhile, and says so when nothing changed.
+    function showFacts(record, state) {
+        factReads.set(record.id, state);
+        record.buildingFacts = state;
+        const shown = selected();
+        if (shown?.id === record.id) { shown.buildingFacts = state; renderInspector(); }
+    }
     function readFactsOf(record, id, options = {}) {
-        const showState = state => {
-            factReads.set(record.id, state);
-            record.buildingFacts = state;
-            const shown = selected();
-            if (shown?.id === record.id) { shown.buildingFacts = state; renderInspector(); }
-        };
+        const showState = state => showFacts(record, state);
         const before = factReads.get(record.id);
         const waitFor = options.fresh && before?.status === 'read'
             ? root.BuildingFacts.readUntilChanged([id], new Map([[id, before.building]]), async ids => new Map([[id, await root.BuildingFacts.read(ids[0], options)]]), {
@@ -383,6 +384,8 @@
             if (edit?.url) {
                 if (missing.length && state.building.found) section.append(element('p', 'planning-inspector__description',
                     t('buildingFactsMissing', { source: edit.source, tags: missing.map(row => row.key).join(', ') })));
+                const form = renderFactForm(item, state);
+                if (form) section.append(form);
                 const link = element('a', 'cb-link cb-link--external', t('buildingFactsEdit', { source: edit.source }));
                 link.href = edit.url; link.target = '_blank'; link.rel = 'noopener';
                 section.append(link);
@@ -409,6 +412,89 @@
         });
         section.append(again);
         return section;
+    }
+    // Adding the missing facts here (osm/osm-fact-edits.js): a choice per fact the person can state,
+    // saved to OpenStreetMap as their own edit after signing in with their OSM account. The choices
+    // are kept per building while the card redraws; after a save the card shows the saved facts and
+    // the changeset.
+    const factDrafts = new Map();
+    function renderFactForm(item, state) {
+        const edits = root.OsmFactEdits, account = root.OsmAccount;
+        const fields = edits && account ? edits.missingEditable(state.building) : [];
+        let savedLine = null;
+        if (state.saved) {
+            const line = savedLine = element('p', 'planning-inspector__description', t('factEdit.saved', { source: state.building.edit.source }));
+            line.setAttribute('role', 'status');
+            if (state.saved.changeset) {
+                const link = element('a', 'cb-link cb-link--external', t('factEdit.changeset', { changeset: state.saved.changeset }));
+                link.href = `${account.SITE}/changeset/${state.saved.changeset}`; link.target = '_blank'; link.rel = 'noopener';
+                line.append(' ', link);
+            }
+            if (!fields.length) return line;
+        }
+        if (!fields.length || !account.redirectUri()) return savedLine;
+        const draft = factDrafts.get(item.id) || {};
+        const form = element('div', 'planning-fact-form');
+        if (savedLine) form.append(savedLine);
+        form.append(element('strong', '', t('factEdit.title')), element('p', 'planning-inspector__description', t('factEdit.hint')));
+        for (const field of fields) {
+            const id = `planning-fact-${field}`, label = element('label', '', t(`buildingFact.field.${field}`));
+            label.htmlFor = id;
+            const def = edits.EDITABLE[field];
+            let control;
+            if (def.integer) {
+                control = element('input', 'planning-fact-form__control');
+                control.type = 'number'; control.min = def.integer.min; control.max = def.integer.max; control.step = 1;
+            } else {
+                control = element('select', 'planning-fact-form__control');
+                const choose = element('option', '', t('factEdit.choose'));
+                choose.value = '';
+                control.append(choose, ...def.choices.map(choice => {
+                    const option = element('option', '', field === 'parapet' ? t(choice.value ? 'buildingFact.parapetYes' : 'buildingFact.parapetNo') : choice.tag);
+                    option.value = choice.tag;
+                    return option;
+                }));
+            }
+            control.id = id;
+            control.value = draft[field] ?? '';
+            control.addEventListener('change', () => factDrafts.set(item.id, { ...(factDrafts.get(item.id) || {}), [field]: control.value }));
+            const row = element('div', 'planning-fact-form__row');
+            row.append(label, control);
+            form.append(row);
+        }
+        const who = account.user();
+        form.append(element('p', 'planning-inspector__description', who ? t('factEdit.as', { name: who.name }) : t('factEdit.signInNote')));
+        if (state.saveError) {
+            const error = element('p', 'planning-fact-form__error', t('factEdit.failed', { error: state.saveError }));
+            error.setAttribute('role', 'alert');
+            form.append(error);
+        }
+        const save = element('button', 'btn btn-primary planning-fact-form__save', t('factEdit.save', { source: state.building.edit.source }));
+        save.type = 'button';
+        save.disabled = Boolean(state.waiting);
+        save.addEventListener('click', () => {
+            const record = selected(), current = record && factReads.get(record.id);
+            if (!current || current.status !== 'read') return;
+            const entries = [{ building: current.building, values: factDrafts.get(record.id) || {} }];
+            root.BusyControl.track(save, async () => {
+                try {
+                    const result = await edits.save(entries, { comment: edits.commentFor(entries) });
+                    factDrafts.delete(record.id);
+                    showFacts(record, { status: 'read', id: current.id, building: result.buildings.get(current.id) || current.building, saved: { changeset: result.changeset } });
+                } catch (error) {
+                    console.error(`[${new Date().toISOString()}] [planning] Building facts could not be saved for ${current.id}`, error);
+                    showFacts(record, { ...current, saveError: error.message });
+                }
+            });
+        });
+        form.append(save);
+        if (who) {
+            const out = element('button', 'btn btn-quiet btn-sm planning-fact-form__sign-out', t('factEdit.signOut'));
+            out.type = 'button';
+            out.addEventListener('click', () => { account.signOut(); renderInspector(); });
+            form.append(out);
+        }
+        return form;
     }
     // A built record whose source has no known height (rule-terms buildingHeight) is measured from
     // the height survey covering it (buildings/height-survey-client.js): the card says so meanwhile,

@@ -1133,7 +1133,7 @@
         eligibilityNode.className = 'voting-eligibility';
         eligibilityNode.hidden = true;
         part('[data-voting-roster]')?.after(eligibilityNode);
-        const eligibility = { key: null, evidence: null, judged: null, busy: false, error: null };
+        const eligibility = { key: null, evidence: null, judged: null, busy: false, error: null, factDrafts: new Map(), saved: null, saveError: null };
         const requiredSet = value => {
             const rule = value?.rule ? root.CommunityBallotRules?.get(value.rule.id, value.rule.version) : null;
             const required = rule?.requires?.eligibility;
@@ -1237,6 +1237,72 @@
                 + '</li>').join('');
             return items ? `<ul class="voting-eligibility__tests" aria-label="${esc(t('voting.eligibility.testsOf', 'Tests not passed by {{house}}', { house: name }))}">${items}</ul>` : '';
         }
+        // Adding the covered houses' missing facts here (osm/osm-fact-edits.js), saved to OpenStreetMap
+        // in one changeset as the author's own edit: a choice per house and fact, and an "all houses"
+        // choice per fact that fills every house's. Only facts behind an unknown test are offered.
+        function editableFacts(set, house) {
+            if (!house.id || !house.building || !root.OsmFactEdits) return [];
+            const unknown = house.result.tests.filter(test => test.status === 'unknown').map(test => set.tests.find(def => def.id === test.id)?.fact).filter(Boolean);
+            return root.OsmFactEdits.missingEditable(house.building, unknown);
+        }
+        function factSelect(field, value, attrs, label) {
+            const def = root.OsmFactEdits.EDITABLE[field];
+            if (def.integer) return `<input type="number" class="voting-eligibility__fact-control" min="${def.integer.min}" max="${def.integer.max}" step="1" value="${esc(value ?? '')}" aria-label="${esc(label)}" ${attrs}>`;
+            const options = def.choices.map(choice => `<option value="${esc(choice.tag)}"${value === choice.tag ? ' selected' : ''}>${esc(field === 'parapet' ? cardText(choice.value ? 'buildingFact.parapetYes' : 'buildingFact.parapetNo') : choice.tag)}</option>`).join('');
+            return `<select class="voting-eligibility__fact-control" aria-label="${esc(label)}" ${attrs}><option value="">${esc(t('planningViews.factEdit.choose', 'Choose…'))}</option>${options}</select>`;
+        }
+        function renderFactEdits(set, judged) {
+            const houses = judged.map(house => ({ house, fields: editableFacts(set, house) })).filter(entry => entry.fields.length);
+            const savedLine = eligibility.saved ? `<p role="status">${esc(t('planningViews.factEdit.saved', 'Saved to {{source}}.', { source: 'OpenStreetMap' }))}`
+                + (eligibility.saved.changeset ? ` <a class="cb-link cb-link--external" href="${esc(`${root.OsmAccount.SITE}/changeset/${eligibility.saved.changeset}`)}" target="_blank" rel="noopener">${esc(t('planningViews.factEdit.changeset', 'Changeset {{changeset}}', { changeset: eligibility.saved.changeset }))}</a>` : '') + '</p>' : '';
+            if (!houses.length || !root.OsmAccount?.redirectUri()) return savedLine ? `<div class="voting-eligibility__facts">${savedLine}</div>` : '';
+            const fields = [...new Set(houses.flatMap(entry => entry.fields))];
+            const fieldLabel = field => cardText(`buildingFact.field.${field}`);
+            const all = fields.map(field => `<label class="voting-eligibility__fact">${esc(fieldLabel(field))} `
+                + factSelect(field, null, `data-fact-all="${esc(field)}"`, t('planningViews.factEdit.allOf', '{{fact}}, all houses', { fact: fieldLabel(field) })) + '</label>').join('');
+            const rows = houses.map(({ house, fields: own }) => {
+                const name = t('voting.eligibility.house', 'Building {{id}}', { id: house.id.replace(/^osm:/, '') });
+                const draft = eligibility.factDrafts.get(house.id) || {};
+                return `<li><span>${esc(name)}</span>` + own.map(field => ` <label class="voting-eligibility__fact">${esc(fieldLabel(field))} `
+                    + factSelect(field, draft[field], `data-fact-house="${esc(house.id)}" data-fact-field="${esc(field)}"`, `${name}: ${fieldLabel(field)}`) + '</label>').join('') + '</li>';
+            }).join('');
+            const who = root.OsmAccount.user();
+            return `<div class="voting-eligibility__facts"><h5>${esc(t('planningViews.factEdit.title', 'Add the missing facts'))}</h5>`
+                + `<p class="agreement-hint">${esc(t('planningViews.factEdit.hint', 'Add only what you know from looking at the building, on site or in photos you may use for OpenStreetMap. It is saved to OpenStreetMap as your own public edit.'))}</p>`
+                + (houses.length > 1 ? `<div class="voting-eligibility__fact-all">${esc(t('planningViews.factEdit.all', 'All houses:'))} ${all}</div>` : '')
+                + `<ul class="voting-eligibility__fact-houses">${rows}</ul>`
+                + `<p class="agreement-hint">${esc(who ? t('planningViews.factEdit.as', 'Saving as {{name}} on OpenStreetMap.', { name: who.name }) : t('planningViews.factEdit.signInNote', 'You sign in with your OpenStreetMap account first.'))}</p>`
+                + (eligibility.saveError ? `<p role="alert">${esc(t('planningViews.factEdit.failed', 'Not saved: {{error}}', { error: eligibility.saveError }))}</p>` : '') + savedLine
+                + `<button type="button" class="btn btn-primary" data-voting-eligibility-save${eligibility.busy ? ' disabled' : ''}>${esc(t('planningViews.factEdit.save', 'Save to {{source}}', { source: 'OpenStreetMap' }))}</button>`
+                + (who ? ` <button type="button" class="btn btn-quiet btn-sm" data-voting-eligibility-sign-out>${esc(t('planningViews.factEdit.signOut', 'Sign out of OpenStreetMap'))}</button>` : '') + '</div>';
+        }
+        function wireFactEdits() {
+            const setDraft = (id, field, value) => eligibility.factDrafts.set(id, { ...(eligibility.factDrafts.get(id) || {}), [field]: value });
+            eligibilityNode.querySelectorAll('[data-fact-house]').forEach(control => control.addEventListener('change', () => setDraft(control.dataset.factHouse, control.dataset.factField, control.value)));
+            eligibilityNode.querySelectorAll('[data-fact-all]').forEach(control => control.addEventListener('change', () => {
+                eligibilityNode.querySelectorAll(`[data-fact-field="${control.dataset.factAll}"]`).forEach(own => { own.value = control.value; setDraft(own.dataset.factHouse, own.dataset.factField, control.value); });
+            }));
+            eligibilityNode.querySelector('[data-voting-eligibility-sign-out]')?.addEventListener('click', () => { root.OsmAccount.signOut(); renderEligibility(); });
+            eligibilityNode.querySelector('[data-voting-eligibility-save]')?.addEventListener('click', event => saveFacts(event.currentTarget));
+        }
+        async function saveFacts(control) {
+            const entries = (eligibility.judged || []).filter(house => house.id && eligibility.factDrafts.has(house.id))
+                .map(house => ({ building: house.building, values: eligibility.factDrafts.get(house.id) }));
+            let saved = false;
+            await root.BusyControl.track(control, async () => {
+                try {
+                    const result = await root.OsmFactEdits.save(entries, { comment: root.OsmFactEdits.commentFor(entries, 'for a Living Tradition mansard street vote') });
+                    eligibility.saved = { changeset: result.changeset }; eligibility.saveError = null; eligibility.factDrafts.clear(); saved = true;
+                } catch (error) {
+                    eligibility.saveError = error.message;
+                    console.error(`[${new Date().toISOString()}] [AgreementEditor] building facts could not be saved`, error);
+                }
+            });
+            if (state.closed) return;
+            renderEligibility();
+            // The saved facts answer the next read (BuildingFacts.remember) until OSM's copy catches up.
+            if (saved) await checkEligibility();
+        }
         const VERDICT_TEXT = { eligible: () => t('voting.eligibility.verdict.eligible', 'Eligible'),
             ineligible: () => t('voting.eligibility.verdict.ineligible', 'Not eligible'), unknown: () => t('voting.eligibility.verdict.unknown', 'Unknown') };
         function renderEligibility() {
@@ -1266,8 +1332,10 @@
                         + (edit && verdict !== 'eligible' ? ` <a class="cb-link cb-link--external" href="${esc(edit)}" target="_blank" rel="noopener">${esc(t('voting.eligibility.edit', 'Edit in {{source}}', { source: house.building.edit.source }))}</a>` : '')
                         + (house.id && verdict !== 'eligible' ? eligibilityTests(set, house, name) : '') + '</li>';
                 }).join('')}</ul>` : '')
+                + renderFactEdits(set, judged)
                 + `<button type="button" class="btn btn-secondary" data-voting-eligibility-check${eligibility.busy ? ' disabled' : ''}>${esc(eligibility.judged ? t('voting.eligibility.again', 'Check again') : t('voting.eligibility.check', 'Check eligibility'))}</button>`;
             eligibilityNode.querySelector('[data-voting-eligibility-check]').addEventListener('click', event => checkEligibility(event.currentTarget));
+            wireFactEdits();
         }
         renderEligibility();
         renderStreet();

@@ -676,6 +676,13 @@ buildings are answered from OpenStreetMap through Overpass, a few minutes behind
 needs it (`building:parapet=yes|no` for a parapet along the whole street front). Croatian
 cadastre buildings are to join the same contract.
 
+**Adding a fact** from the app (the building card, an agreement's covered houses) saves it to
+OpenStreetMap as the person's own edit: they sign in with their OSM account ("Sign in with
+OpenStreetMap"), choose a value for each unknown parapet, roof shape or storey count, and the tags
+go up in one changeset. The app then shows the saved facts at the version the edit made until the
+contract reaches that version. Only people add facts; agents read them (OSM treats AI-agent edits
+as automated edits needing community approval).
+
 **Heritage** is the protection the country's heritage register gives the building: listed or not,
 the grade as the register states it (England: I, II*, II), the entry's reference and page, and the
 basis of the match. Each register is a source of the contract that declares the places it covers;

@@ -9406,6 +9406,20 @@
         "buildingFactsAgain": "Check again",
         "buildingFactsWaiting": "OpenStreetMap shows an edit a minute or two after it is saved: checking every 30 seconds…",
         "buildingFactsUnchanged": "{{source}} shows no change yet. If you saved an edit, check again in a minute.",
+        "factEdit": {
+            "title": "Add the missing facts",
+            "hint": "Add only what you know from looking at the building, on site or in photos you may use for OpenStreetMap. It is saved to OpenStreetMap as your own public edit.",
+            "choose": "Choose…",
+            "save": "Save to {{source}}",
+            "as": "Saving as {{name}} on OpenStreetMap.",
+            "signInNote": "You sign in with your OpenStreetMap account first.",
+            "signOut": "Sign out of OpenStreetMap",
+            "saved": "Saved to {{source}}.",
+            "changeset": "Changeset {{changeset}}",
+            "failed": "Not saved: {{error}}",
+            "all": "All houses:",
+            "allOf": "{{fact}}, all houses"
+        },
         "buildingFact": {
             "field": {
                 "storeys": "Storeys",
