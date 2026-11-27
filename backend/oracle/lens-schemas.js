@@ -50,6 +50,16 @@ export const LENS_SCHEMAS = Object.freeze({
     propertyOffer: schemaDefinition('propertyOffer', 'PropertyOfferDecision',
         'The lens selected for an open offer qualifies its counterparty for the exact terms and payouts.',
         'string cid, string offer, string termsHash, string payoutsHash, string buyer, string seller, uint8 counterpartyQualified, int64 sourceObservedAt', 2),
+    // A lens member's statement of who first holds a plot or a flat; its address is fixed by the asset
+    // (frontend/js/solana/property-statements.js), so one lens member states one first holder per asset.
+    holding: schemaDefinition('holding', 'PropertyHolding',
+        'A lens member states who first holds a plot or a flat, and on what basis.',
+        'string assetHash, string asset, string holder, string basis, string evidence, int64 observedAt'),
+    // property_offer v2 reads it: role 0 from the buyer's lens (the seller holds the asset, at an
+    // address fixed by the holding it sells), role 1 from the seller's lens (the buyer qualifies).
+    offerConfirmation: schemaDefinition('offerConfirmation', 'PropertyOfferConfirmation',
+        'A lens member confirms, for one property offer, that the seller holds the asset (role 0) or that the buyer qualifies (role 1).',
+        'string cid, string offer, string termsHash, string payoutsHash, string buyer, string seller, uint8 role, string assetHash, string holding, int64 observedAt'),
     // One schema for every milestone market source: the member's adapter reads the source (a permits
     // dataset, legislation records, a gazette) and states which outcome text it supports and when.
     evidence: schemaDefinition(
