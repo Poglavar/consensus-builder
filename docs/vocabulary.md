@@ -56,23 +56,31 @@ An arrangement with a decision rule for exactly one immutable plan revision. Dep
 
 ### Property offer
 
-An immutable offer to buy or sell one exact apartment or a bundle of cadastral parcels for a price in SOL. The maker specifies the lens, expiry and property in `property-offer/v1`. A listing commits the payout schedule at publication. A bid binds the schedule when accepted. For an apartment, the named lens qualifies the accepting buyer or seller for the exact terms. The reference parcel policy also requires consent from the parcel owners.
+An immutable offer to buy or sell one plot or one flat (`property-offer/v2`): the plot as its parcel source gives it (source and id), or the flat by its flat address; a price in SOL or devnet USDC; a deadline; and the maker's side lens. A sale offer (listing) commits its payout schedule; a buy offer (bid) gets its schedule from the seller who takes it. The other side names its own lens when it takes the offer. The buyer's lens (one to eight lens members and how many must confirm) states that the seller holds the asset; the seller's lens, which may be empty, states that the buyer qualifies. The buyer's money is held in escrow from the moment the buyer acts. The offer then waits: nothing approves by default, and an offer its lenses have not confirmed by the deadline expires and the escrow returns to the buyer. The `property_offer` program checks the confirmations and pays the schedule; it does not know what is sold or who holds it. Offers for several plots at once are an open question ([property offers](property-offers.md#open-double-sale-and-multi-parcel-offers)).
 
-### Apartment anchor
+### Flat address
 
-An ownerless, non-transferable Solana account identifying an apartment by its published or fingerprinted X-ray building and unit address. Different bids and listings share the same anchor. Creating it grants the payer no rights over the apartment. Its identity is independent of the developer’s inventory IDs used for crowdfunding reservations.
+The one identity of a flat for every use (X-ray, links, offers, lens statements): its building (a source building `city::source::id`, or a published design's building `design::<cid>::<id>`), its storey level and its number on that storey (`level::flat`, numbered from 1 in the order of the layout). Its identity hash is the SHA-256 of `["flat/v1", building, level, flat]`. An estimated layout that is redrawn keeps its flats' numbers, though their walls may move.
+
+### First holder statement
+
+A lens member's `PropertyHolding-v1` attestation of who first holds a plot or a flat, and on what basis: as the developer of a new building, the holder's own declaration that the lens member checked, or an official register. Its address is fixed by the lens member and the asset, so a lens member states one first holder per asset at a time and must withdraw it to state another. A person asks lens members for one with a signed self-declaration request; nothing happens until a lens member states it.
+
+### Sale confirmation
+
+A lens member's `PropertyOfferConfirmation-v1` attestation for one property offer: from the buyer's lens, that the seller holds the asset; from the seller's lens, that the buyer qualifies. A confirmation that the seller holds the asset sits at an address fixed by the lens member, the asset and the holding it sells (the first holder statement or the settled offer the seller bought through), so the same lens member cannot confirm two sales of one holding; a confirmation of a sale that did not complete must be withdrawn before that lens member can confirm another. Across lenses, a conflict is for readers to see and judge.
+
+### Holder according to a lens
+
+Who holds a plot or a flat as a reader's lens members state it: each lens member's first holder statement followed through the sales it confirmed whose offers settled on chain. When the lens members who state anything name different holders, the reader sees the conflict. It is read from the chain alone and proves who stated what, not legal title, which stays with the land or property register.
+
+### Market
+
+The sheet listing property offers: for sale or wanted, flats or plots, in the map area or the whole city, from the offer index. Each offer opens its offer sheet; a plot or a flat opens its own sheet with its holder according to the reader's lens and its offers.
 
 ### Parcel anchor
 
-A public record of a parcel on the blockchain: an ownerless Solana `parcel_nft` account seeded by the parcel's anchor id, `HR-<cadastral municipality>-<parcel number>` for the Croatian cadastre, else the source's parcel id (at most 32 bytes; a longer id cannot be anchored and is reported). Its URI is the parcel's page on the public site, `https://urbangametheory.xyz/parcel/<anchor id>`; nothing is pinned for it. Anchors created earlier keep the IPFS metadata URI they were created with (there is no update instruction), and those created before `parcel_nft` v2 (2026-10-01) also a wallet in their old owner field; that field confers nothing. Anyone may create an anchor and pays only its rent: the parcel panel's "Mint anchor", an agent's `ugt_anchor_parcels`, and the mint of an agreement, which first anchors every input parcel that has none. Anchors go several to a transaction, and parcels already anchored are skipped. Nobody owns an anchor and it grants no rights: a wallet's anchors are at most listed as anchored with it, never counted or valued as its parcels. Ownership of the parcel is a lens member's attestation. In the interface it is an anchor, never an NFT.
-
-### Parcel ownership transfer
-
-Seller-signed evidence linking source-qualified parcels and their previous ownership evidence to the buyer named in a finalized property offer. A lens recognizes successor ownership by following validated transfers from roots it trusts. The anchor remains fixed, and registered title comes from the land registry.
-
-### Shared property-offer acceptance
-
-An immutable candidate binding a property offer to a buyer, seller representative and exact payout schedule. Its ID hashes these terms; each seller’s wallet signature is collected separately. The owner union comes from the selected lens, and every owner must consent before on-chain acceptance. A stored shared candidate is not itself an accepted offer.
+A public record of a parcel on the blockchain: an ownerless Solana `parcel_nft` account seeded by the parcel's anchor id, `HR-<cadastral municipality>-<parcel number>` for the Croatian cadastre, else the source's parcel id (at most 32 bytes, Solana's limit for one address seed; a longer id cannot be anchored and is reported). Its URI is the parcel's page on the public site, `https://urbangametheory.xyz/parcel/<anchor id>`; nothing is pinned for it. Anchors created earlier keep the IPFS metadata URI they were created with (there is no update instruction), and those created before `parcel_nft` v2 (2026-10-01) also a wallet in their old owner field; that field confers nothing. Anyone may create an anchor and pays only its rent: the parcel panel's "Mint anchor", an agent's `ugt_anchor_parcels`, and the mint of an agreement, which first anchors every input parcel that has none. Anchors go several to a transaction, and parcels already anchored are skipped. Nobody owns an anchor and it grants no rights: a wallet's anchors are at most listed as anchored with it, never counted or valued as its parcels. Ownership of the parcel is a lens member's attestation. In the interface it is an anchor, never an NFT.
 
 ### Counter-agreement
 
