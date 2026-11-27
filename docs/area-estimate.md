@@ -25,6 +25,10 @@ Every building in the area is judged; nothing is sampled.
   floor area is the redrawn floor area less what the building has. A building whose height the
   facts do not give is counted as unmeasured. `--assume-storeys N` also reports them at N storeys,
   as a stated assumption beside the measured figures.
+  - Each building is taken at the tallest height up to the cap that fails no test: one failing only
+    tests that depend on height (storeys, the setback plane, the light planes, the historic cap) is
+    checked a storey lower, down to its own storeys plus the mansard; one failing at every height
+    keeps its result at the cap. Its storeys are recorded with it.
   - The light planes (paras 35 and 52) read the plots around each street from the city's parcel
     source (`--parcel-source`, else its default), one 0.01° cell a read, the last few cells kept;
     streets are taken in cell order so a cell is read about once.

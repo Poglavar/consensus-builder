@@ -1,7 +1,7 @@
 // Area estimate (backend/area-estimate/estimate.js): cells, street fronting, the mansard a house gains, and the
 // sums by verdict tier.
 import { describe, it, expect } from 'vitest';
-import { cellsOf, centreOf, streetsOf, judgeEligibility, mansardAddedM2, homesIn, summarize, factIdOf, existingHeightOf, plotReader } from '../area-estimate/estimate.js';
+import { cellsOf, centreOf, streetsOf, judgeEligibility, mansardAddedM2, homesIn, summarize, factIdOf, existingHeightOf, plotReader, tallestPassing } from '../area-estimate/estimate.js';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const Eligibility = require('../../frontend/js/planning/eligibility.js');
@@ -56,6 +56,20 @@ describe('area estimate', () => {
         expect(sum.unmeasured).toEqual({ eligible: 0, possible: 1, withWaivers: 1 });
         expect(sum.failingTests).toEqual({ built: 1, ssLightPlanes: 1 });
         expect(homesIn(195)).toBe(2);
+    });
+    it('takes each building at the tallest height that passes, stepping down only for tests that depend on height', async () => {
+        // Building 0 passes at 4; 1 clears its plane only at 2; 2 is excluded (pre-1918) at any height; 3 fails a
+        // plane at every height down to its own 3 storeys, so it keeps its result at the cap.
+        const judge = async walls => walls.map((w, i) => ({ w, failing: i === 1 && w > 2 ? ['ssLightPlanes'] : i === 2 ? ['ssPre1918', 'ssLightPlanes'] : i === 3 ? ['ssDetached'] : [] }));
+        const seen = [];
+        const { buildings, calls } = await tallestPassing({ cap: 4, minWalls: [1, 1, 1, 3], heightTests: ['ssLightPlanes', 'ssDetached', 'ssStoreys'],
+            judge: async walls => { seen.push(walls); return judge(walls); } });
+        expect(buildings.map(b => b.walls)).toEqual([4, 2, 4, 4]);
+        expect(buildings[1].result.failing).toEqual([]);
+        expect(buildings[3].result).toMatchObject({ w: 4, failing: ['ssDetached'] });
+        expect(calls).toBe(3);
+        // A building that gave up stands at the cap again for the others' next check.
+        expect(seen).toEqual([[4, 4, 4, 4], [4, 3, 4, 3], [4, 2, 4, 4]]);
     });
     it('reads ids and existing heights from the facts contract, never inventing one', () => {
         expect(factIdOf({ properties: { osm_id: 'w42' } })).toBe('osm:way/42');

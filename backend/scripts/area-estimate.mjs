@@ -20,7 +20,7 @@ import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { createOverpassCellSource, PRIORITY } from '../buildings/osm-reference.js';
 import { moneyOf } from '../agents/mcp-compare.js';
-import { cellsOf, centreOf, inGeometry, factIdOf, judgeEligibility, existingHeightOf, extendedFeature, streetsOf, summarize, plotReader } from '../area-estimate/estimate.js';
+import { cellsOf, centreOf, inGeometry, factIdOf, judgeEligibility, existingHeightOf, extendedFeature, streetsOf, summarize, plotReader, tallestPassing } from '../area-estimate/estimate.js';
 
 const require = createRequire(import.meta.url);
 const Eligibility = require('../../frontend/js/planning/eligibility.js');
@@ -61,6 +61,8 @@ const FLOOR_H = 3.5;
 // can settle: 3.5 m storeys leave a 2.5 m ceiling under any ordinary floor, and the setback storey's ceiling is set
 // within its roof. An estimate counts them as met and says so.
 const DESIGN_DETAILS = ['ssCeilingMin', 'ssSetbackCeiling'];
+// Tests whose result depends on the height proposed: a building failing only these is tried a storey lower.
+const HEIGHT_TESTS = ['ssStoreys', 'ssSetbackPlane', 'ssLightPlanes', 'ssDetached', 'ssHistoric'];
 const LT = Eligibility.get('gb-living-tradition-mansards', '2026-11-27');
 const SS = Eligibility.get('gb-strong-suburbs-street-code', '2021');
 const cityConfig = require(`../../frontend/data/cities/${city}.js`) && globalThis.__cityConfigs?.[city];
@@ -151,11 +153,15 @@ async function main() {
         const file = path.join(out, 'cells', `${cell.key}.json`);
         if (fs.existsSync(file)) { skipped++; continue; }
         const pad = 0.0006;
-        const fc = await fetchCell([cell.bbox[0] - pad, cell.bbox[1] - pad, cell.bbox[2] + pad, cell.bbox[3] + pad]);
-        if (fc.partial || fc.truncated) { log(`cell ${cell.key}: the read was ${fc.partial ? 'partial' : 'truncated'}; left for a rerun`); continue; }
-        const buildings = fc.features.filter(f => f.properties.kind === 'building');
-        const mine = buildings.filter(f => { const c = centreOf(f.geometry); return c && c[0] >= cell.bbox[0] && c[0] < cell.bbox[2] && c[1] >= cell.bbox[1] && c[1] < cell.bbox[3] && inArea(c); });
-        const contracts = await readFacts(mine.map(factIdOf).filter(Boolean));
+        // One cell's failed read never stops the run: the cell is left without a file, counted as missing, and a rerun reads it.
+        let fc, mine, contracts;
+        try {
+            fc = await fetchCell([cell.bbox[0] - pad, cell.bbox[1] - pad, cell.bbox[2] + pad, cell.bbox[3] + pad]);
+            if (fc.partial || fc.truncated) { log(`cell ${cell.key}: the read was ${fc.partial ? 'partial' : 'truncated'}; left for a rerun`); continue; }
+            const buildings = fc.features.filter(f => f.properties.kind === 'building');
+            mine = buildings.filter(f => { const c = centreOf(f.geometry); return c && c[0] >= cell.bbox[0] && c[0] < cell.bbox[2] && c[1] >= cell.bbox[1] && c[1] < cell.bbox[3] && inArea(c); });
+            contracts = await readFacts(mine.map(factIdOf).filter(Boolean));
+        } catch (err) { log(`cell ${cell.key}: the read failed (${err.message}); left for a rerun`); continue; }
         const rows = mine.map(f => {
             const id = factIdOf(f), contract = contracts.get(id), at = centreOf(f.geometry);
             const row = { id, at, footprint: f.geometry, existingHeightM: existingHeightOf(contract, FLOOR_H), built: contract?.facts?.built?.value ?? null,
@@ -235,22 +241,32 @@ async function main() {
                 const walls = cap.value ?? cap.bound;
                 if (!walls) { result = { name, cap, buildings: list.map(f => ({ id: f.id, verdict: 'unknown', reason: 'no storey cap' })) }; }
                 else {
-                    const design = { buildingProposal: { typologyType: 'block', parameters: { mode: 'existing', roof: 'mansard' } },
-                        geometry: { buildings: list.map(f => extendedFeature(f, { walls, floorHeightM: FLOOR_H, existingHeightM: rowById.get(f.id)?.existingHeightM ?? null })) } };
-                    const outcome = await StreetCode.check(SS, { designs: [design], street: lines, read });
-                    const measured = design.geometry.buildings.map(b => PlanYield.measureBuilding(b, design.buildingProposal, {}, design.geometry.buildings));
-                    result = { name, walls, cap: outcome.cap, historic: outcome.historic, errors: outcome.errors,
-                        buildings: outcome.buildings.map((b, i) => {
+                    // Every building at the given walls with one setback storey (a mansard), checked and measured together.
+                    let outcome = null;
+                    const judge = async wallsOf => {
+                        const design = { buildingProposal: { typologyType: 'block', parameters: { mode: 'existing', roof: 'mansard' } },
+                            geometry: { buildings: list.map((f, i) => extendedFeature(f, { walls: wallsOf[i], floorHeightM: FLOOR_H, existingHeightM: rowById.get(f.id)?.existingHeightM ?? null })) } };
+                        outcome = await StreetCode.check(SS, { designs: [design], street: lines, read });
+                        const measured = design.geometry.buildings.map(b => PlanYield.measureBuilding(b, design.buildingProposal, {}, design.geometry.buildings));
+                        return outcome.buildings.map((b, i) => {
                             const m = measured[i];
                             const kept = m.keptGfaM2, assumedKept = assumeStoreys ? m.footprintM2 * Math.min(m.floors, assumeStoreys) : null;
                             return { id: list[i].id, verdict: b.result.verdict, failing: b.result.tests.filter(t => t.status === 'fail').map(t => t.id),
                                 unknown: b.result.tests.filter(t => t.status === 'unknown').map(t => t.id),
+                                // Each failing test as the check gives it (a plane's clearance in metres, below zero when crossed, and its plots).
+                                why: b.result.tests.filter(t => t.status === 'fail').map(t => JSON.stringify(t).slice(0, 400)),
                                 addedM2: typeof kept === 'number' ? Math.max(0, m.gfaM2 - kept) : null,
                                 assumedAddedM2: kept === null && assumedKept !== null ? Math.max(0, m.gfaM2 - assumedKept) : null };
-                        }) };
+                        });
+                    };
+                    // Each building at the tallest height up to the cap that fails nothing, down to its own storeys.
+                    const minWalls = list.map(f => { const h = rowById.get(f.id)?.existingHeightM; return typeof h === 'number' && h > 0 ? Math.max(1, Math.round(h / FLOOR_H)) : 1; });
+                    const stepped = await tallestPassing({ cap: walls, minWalls, judge, heightTests: HEIGHT_TESTS });
+                    result = { name, walls, checks: stepped.calls, cap: outcome.cap, historic: outcome.historic, errors: outcome.errors,
+                        buildings: stepped.buildings.map(b => ({ ...b.result, walls: b.walls })) };
                 }
                 fs.writeFileSync(file, JSON.stringify(result));
-                log(`street ${n}/${grouped.size} ${name}: ${list.length} buildings, cap ${walls ?? 'unknown'}`);
+                log(`street ${n}/${grouped.size} ${name}: ${list.length} buildings, cap ${walls ?? 'unknown'}${result.checks ? `, ${result.checks} checks` : ''}`);
             }
             for (const b of result.buildings) {
                 const at = rowById.get(b.id)?.at;

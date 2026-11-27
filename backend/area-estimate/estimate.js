@@ -52,6 +52,30 @@ export function extendedFeature(feature, { walls, floorHeightM = 3.5, existingHe
             existingHeight: existingHeightM, height: walls * floorHeightM, floors: walls, floorHeightM, roof } };
 }
 
+// A street code that caps height leaves each building's height to the proposal, up to the cap. Each building is
+// taken at the tallest storey count, from the cap down, at which it fails no test, stepping down only while every
+// test it fails depends on height (heightTests) and it is above minWalls[i] (its own storeys). One that fails at
+// every height keeps its result at the cap. judge(walls) → one result ({ failing: [ids], … }) per building, with
+// every building at walls[i]. Resolves [{ walls, result }] per building and the number of judge calls.
+export async function tallestPassing({ cap, minWalls, judge, heightTests }) {
+    const walls = minWalls.map(() => cap), final = minWalls.map(() => null), atCap = [];
+    let calls = 0;
+    for (let w = cap; ; w--) {
+        const results = await judge(walls.slice());
+        calls++;
+        let pending = 0;
+        results.forEach((result, i) => {
+            if (final[i]) return;
+            if (w === cap) atCap[i] = result;
+            const failing = result.failing || [];
+            if (!failing.length) final[i] = { walls: w, result };
+            else if (failing.every(id => heightTests.includes(id)) && w > minWalls[i]) { walls[i] = w - 1; pending++; }
+            else { final[i] = { walls: cap, result: atCap[i] }; walls[i] = cap; }
+        });
+        if (!pending) return { buildings: final, calls };
+    }
+}
+
 // The existing height a building's facts give, in metres: its height, else its storeys at the storey height.
 export function existingHeightOf(contract, floorHeightM = 3.5) {
     const facts = contract?.facts || {};
