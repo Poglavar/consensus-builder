@@ -246,7 +246,7 @@ const ADAPTERS = { fundBotAction, buyAgreementShares, sellAgreementShares, readA
 export async function execute({ action, connection, keypair, caps, pool, persona, runId, resumed = false, adapters = {}, homes = null }) {
     const act = { ...ADAPTERS, ...adapters };
     if (action.usdc > caps.maxUsdc + 1e-9) throw new Error(`${action.type} of ${action.amount} USDC exceeds AGENT_SOCIETY_USDC_CAP ${caps.maxUsdc}`);
-    // A homebuyer's rounds and apartment offers (policies/homebuyer.js, homebuyer-chain.js).
+    // A homebuyer's rounds (policies/homebuyer.js, homebuyer-chain.js).
     if (HOME_ACTIONS.has(action.type)) {
         return (act.executeHomeAction || executeHomeAction)({ action, connection, keypair, pool, persona, ...homes,
             maxUsdcAtomic: usdcToAtomic(String(caps.maxUsdc)), sendAndConfirm: sendAndConfirmPolling });
@@ -405,7 +405,7 @@ async function main() {
                 let decision = null;
                 if (!action) {
                     const inputs = await gatherInputs({ index, persona, needs: policy.NEEDS, connection, wallet });
-                    const homes = policy.NEEDS.homes ? await gatherHomes({ index, persona, connection, wallet, apiBase, log }) : null;
+                    const homes = policy.NEEDS.homes ? await gatherHomes({ index, persona, connection, wallet, log }) : null;
                     const runs = live ? await listPersonaRuns(pool, persona.name) : [];
                     const history = societyHistory({ runs, chain: inputs.chain, simulated });
                     // A claim the persona is owed comes first; otherwise the role's own policy decides.
@@ -474,7 +474,7 @@ async function main() {
                     source: 'live',
                     action: { type: action.type, agreementCid: action.agreementCid, account: action.account, amount: action.amount, side: action.side || null },
                     execute: async () => ({
-                        ...(await execute({ action, connection, keypair, caps, pool, persona, runId: turn.runId, resumed, homes: { index, apiBase } })),
+                        ...(await execute({ action, connection, keypair, caps, pool, persona, runId: turn.runId, resumed, homes: { index } })),
                         entity: HOME_ACTIONS.has(action.type) ? homeActivityEntity(action) : { type: 'agreement', id: action.agreementCid }, message: activityMessage(persona, action)
                     })
                 });

@@ -503,6 +503,43 @@ describe('decodeParsedTransaction: agreement instructions (built with the codec)
     });
 });
 
+// property_offer v2 args carry IDL-defined types: the OfferSide enum and a vec of Payout structs.
+describe('decodeParsedTransaction: property offer v2 instructions (built with the codec)', () => {
+    it('decodes a sell create with its payouts and lens, and the buyer’s commit to it', async () => {
+        const { createRequire } = await import('node:module');
+        const require = createRequire(import.meta.url);
+        const client = require('../../frontend/js/solana/property-offer-client.js').configure({ web3: require('@solana/web3.js') });
+        const cid = 'bafkrei' + 'a'.repeat(52);
+        const BUYER = keyOf(31);
+        const offerTx = (instruction, payer) => {
+            const keys = new Map([[payer, key(payer, { signer: true, writable: true })]]);
+            for (const meta of instruction.keys) {
+                const address = meta.pubkey.toBase58();
+                if (!keys.has(address)) keys.set(address, key(address, { signer: meta.isSigner, writable: meta.isWritable }));
+            }
+            return buildTx({ accountKeys: [...keys.values()], instructions: [{
+                accounts: instruction.keys.map((meta) => meta.pubkey.toBase58()), data: encodeBase58(Buffer.from(instruction.data)), programId: instruction.programId.toBase58(), stackHeight: 1 }] });
+        };
+
+        const { offer, instructions } = client.buildCreateIxs({ maker: SPONSOR, currency: 'SOL', cid, side: 'sell', termsHash: 'ab'.repeat(32), price: '900', deadline: 1_900_000_000,
+            payouts: [{ recipient: SPONSOR, amount: '600' }, { recipient: TREASURY, amount: '300' }], lens: [LENS], lensThreshold: 1 });
+        expect(instructions).toHaveLength(1);
+        const create = decode(offerTx(instructions[0], SPONSOR));
+        expect(create.actions).toEqual(['create']);
+        expect(create.instructions[0].argsError).toBeUndefined();
+        expect(create.instructions[0].args).toEqual({
+            cid, side: 'Sell', terms_hash: 'ab'.repeat(32), price: '900', deadline: '1900000000',
+            payouts: [{ recipient: SPONSOR, amount: '600' }, { recipient: TREASURY, amount: '300' }], lens: [LENS], lens_threshold: 1
+        });
+
+        const [commitIx] = client.buildCommitIxs({ offer: offer.toBase58(), counterparty: BUYER, currency: 'SOL', side: 'sell', lens: [ATTESTATION, CREDENTIAL], lensThreshold: 2 });
+        const commit = decode(offerTx(commitIx, BUYER));
+        expect(commit.actions).toEqual(['commit']);
+        expect(commit.instructions[0].argsError).toBeUndefined();
+        expect(commit.instructions[0].args).toEqual({ payouts: [], lens: [ATTESTATION, CREDENTIAL], lens_threshold: 2 });
+    });
+});
+
 describe('loadIdls: legacy interfaces', () => {
     it('lists each current IDL first, then the legacy interfaces of the same program', () => {
         const versions = (name) => idls.byName.get(name).versions.map((version) => version.idlVersion);

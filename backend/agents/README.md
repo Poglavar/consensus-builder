@@ -264,18 +264,14 @@ expires; its buyers take their deposits back. Then resolve and reclaim the marke
 
 `homebuyer` personas (`homebuyer-01…03`) run on `society-run.mjs` with `policies/homebuyer.js`.
 `homebuyer-chain.js` gathers the developer rounds of their `policy.cities` with their apartment
-inventory, their own deposits in rounds that ended unexecuted, and the cities' apartment offers with
-their accounts. Each turn takes one action. Obligations come first, in this order: take back
-deposits (`refundMyDonations`), fund and release an accepted offer it buys (`settle-offer`), accept
-another agent's open offer it can take (`accept-offer`). Otherwise it makes one seed-stable, weighted
+inventory and their own deposits in rounds that ended unexecuted. Each turn takes one action. Taking
+back deposits (`refundMyDonations`) comes first. Otherwise it makes one seed-stable, weighted
 choice: reserve an available apartment (`reserve-apartment`, one per round, at most
-`maxReservations` in open rounds, deposits up to `maxDepositUsdc`), list a held apartment for resale
-(`make-offer` sell), bid on an apartment another wallet holds (`make-offer` buy) or contribute
-`donationUsdc` to a plain round (`donate`). Offers are priced in SOL between `offerMinSol` and
-`offerMaxSol`, run `offerDays` and name `offerLens`. The lens member of the round or offer qualifies
-the bot counterparty through its operator token (the variable its persona's `service.operatorTokenEnv`
-names), as the lens operator would for a person's qualification request. The chain steps are the
-shared signers: `apartment-actions.js`, `chain-actions.js` and `property-offer-signer.js`.
+`maxReservations` in open rounds, deposits up to `maxDepositUsdc`) or contribute `donationUsdc` to a
+plain round (`donate`). The round's lens member qualifies the bot buyer through its operator token
+(the variable its persona's `service.operatorTokenEnv` names), as the lens operator would for a
+person's qualification request. The chain steps are the shared signers `apartment-actions.js` and
+`chain-actions.js`. The bots do not trade standalone property offers.
 
 The bettors and the supporter read every city but act on `policy.focusCities` / `support.focusCities`
 (`alatau`) first. A speculator pledges only behind a market at ≥ `minPledgeProbability` YES, so it

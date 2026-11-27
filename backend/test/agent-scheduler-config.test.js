@@ -184,7 +184,8 @@ describe('algorithmic agent schedule', () => {
             const entry = apps.find(item => item.args?.includes(`--persona ${name}`));
             expect(entry).toMatchObject({ script: 'agents/society-run.mjs', autorestart: false, env: { SOLANA_RPC_MIN_INTERVAL_MS: '1250' } });
             const homebuyer = personas.find(item => item.name === name);
-            expect(homebuyer).toMatchObject({ role: 'homebuyer', policy: { cities: ['alatau'], offerLens: 'lifecycle-01' } });
+            expect(homebuyer).toMatchObject({ role: 'homebuyer', policy: { cities: ['alatau'] } });
+            expect(homebuyer.policy).not.toHaveProperty('offerLens');
             expect(Number(homebuyer.policy.maxDepositUsdc)).toBeLessThanOrEqual(Number(entry.env.AGENT_SOCIETY_USDC_CAP));
             expect(Number(entry.env.AGENT_SOCIETY_ACTION_CAP)).toBeGreaterThanOrEqual(2);
         }
