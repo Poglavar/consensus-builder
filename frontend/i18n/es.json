@@ -9183,6 +9183,7 @@
         "minimumBuildingPlotArea": "Superficie mínima de parcela edificable",
         "candidateBuildingPlotArea": "Parcela edificable dentro de {{block}}",
         "assumedStoreyHeight": "Altura de planta supuesta",
+        "storeys": "Plantas",
         "calculationTraceTitle": "Desglose del cálculo",
         "calculationTraceNote": "Entradas, cálculos, supuestos y requisitos pendientes de este resultado.",
         "traceInputs": "Entradas",

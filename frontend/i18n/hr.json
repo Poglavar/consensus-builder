@@ -9205,6 +9205,7 @@
         "minimumBuildingPlotArea": "Najmanja površina građevne čestice",
         "candidateBuildingPlotArea": "Građevna čestica unutar {{block}}",
         "assumedStoreyHeight": "Pretpostavljena visina etaže",
+        "storeys": "Broj etaža",
         "calculationTraceTitle": "Raščlamba izračuna",
         "calculationTraceNote": "Ulazni podaci, izračuni, pretpostavke i preostali zahtjevi za ovaj rezultat.",
         "traceInputs": "Ulazni podaci",

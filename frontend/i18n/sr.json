@@ -9205,6 +9205,7 @@
         "minimumBuildingPlotArea": "Najmanja površina građevinske parcele",
         "candidateBuildingPlotArea": "Građevinska parcela unutar {{block}}",
         "assumedStoreyHeight": "Pretpostavljena visina etaže",
+        "storeys": "Broj etaža",
         "calculationTraceTitle": "Raščlamba proračuna",
         "calculationTraceNote": "Ulazi, proračuni, pretpostavke i preostali zahtevi za ovaj rezultat.",
         "traceInputs": "Ulazi",

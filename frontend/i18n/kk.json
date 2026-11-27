@@ -9155,6 +9155,7 @@
         "minimumBuildingPlotArea": "Құрылыс учаскесінің ең аз ауданы",
         "candidateBuildingPlotArea": "{{block}} ішіндегі құрылыс учаскесі",
         "assumedStoreyHeight": "Қабылданған қабат биіктігі",
+        "storeys": "Қабат саны",
         "calculationTraceTitle": "Есептеу барысы",
         "calculationTraceNote": "Осы нәтиженің бастапқы деректері, есептеулері, болжамдары және орындалмаған талаптары.",
         "traceInputs": "Бастапқы деректер",

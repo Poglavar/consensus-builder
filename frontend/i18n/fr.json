@@ -9337,6 +9337,7 @@
         "minimumBuildingPlotArea": "Surface minimale de la parcelle constructible",
         "candidateBuildingPlotArea": "Parcelle constructible dans {{block}}",
         "assumedStoreyHeight": "Hauteur d’étage supposée",
+        "storeys": "Étages",
         "calculationTraceTitle": "Détail du calcul",
         "calculationTraceNote": "Entrées, calculs, hypothèses et exigences restantes pour ce résultat.",
         "traceInputs": "Entrées",

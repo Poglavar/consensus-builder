@@ -9265,6 +9265,7 @@
         "minimumBuildingPlotArea": "Минимальная площадь участка под застройку",
         "candidateBuildingPlotArea": "Участок под застройку в пределах {{block}}",
         "assumedStoreyHeight": "Принятая высота этажа",
+        "storeys": "Этажность",
         "calculationTraceTitle": "Ход расчёта",
         "calculationTraceNote": "Исходные данные, расчёты, допущения и невыполненные требования для этого результата.",
         "traceInputs": "Исходные данные",

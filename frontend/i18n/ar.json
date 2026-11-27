@@ -9600,6 +9600,7 @@
         "minimumBuildingPlotArea": "الحد الأدنى لمساحة قطعة البناء",
         "candidateBuildingPlotArea": "قطعة البناء ضمن {{block}}",
         "assumedStoreyHeight": "ارتفاع الطابق المفترض",
+        "storeys": "عدد الطوابق",
         "calculationTraceTitle": "تفصيل الحساب",
         "calculationTraceNote": "المدخلات والحسابات والافتراضات والمتطلبات المتبقية لهذه النتيجة.",
         "traceInputs": "المدخلات",

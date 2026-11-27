@@ -9337,6 +9337,7 @@
         "minimumBuildingPlotArea": "Área mínima do lote de construção",
         "candidateBuildingPlotArea": "Lote de construção dentro de {{block}}",
         "assumedStoreyHeight": "Altura de piso assumida",
+        "storeys": "Pisos",
         "calculationTraceTitle": "Detalhe do cálculo",
         "calculationTraceNote": "Entradas, cálculos, pressupostos e requisitos pendentes deste resultado.",
         "traceInputs": "Entradas",

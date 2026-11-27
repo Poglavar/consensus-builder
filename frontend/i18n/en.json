@@ -9155,6 +9155,7 @@
         "minimumBuildingPlotArea": "Minimum building-plot area",
         "candidateBuildingPlotArea": "Building plot within {{block}}",
         "assumedStoreyHeight": "Assumed storey height",
+        "storeys": "Storeys",
         "calculationTraceTitle": "Calculation breakdown",
         "calculationTraceNote": "Inputs, calculations, assumptions and outstanding requirements for this result.",
         "traceInputs": "Inputs",

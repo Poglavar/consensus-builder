@@ -886,6 +886,8 @@
         const displayedMetrics = [];
         if (item.metrics.floorAreaM2 != null) displayedMetrics.push([t('floorArea'), area(item.metrics.floorAreaM2)]);
         if (item.metrics.heightM != null) displayedMetrics.push([t(item.parcelEnvelope ? 'envelopeHeight' : 'height'), root.CbFormat.formatLength(item.metrics.heightM, { maxFractionDigits: 1 })]);
+        // An existing building's stated storey count (representations.js built).
+        if (item.role === 'existing' && item.metrics.storeys != null) displayedMetrics.push([t('storeys'), number(item.metrics.storeys)]);
         // An incentive's extra height is listed with its condition, apart from what the rules grant.
         if (item.metrics.conditional?.heightM != null) {
             const condition = labels.condition(item.metrics.conditional, fullT);
