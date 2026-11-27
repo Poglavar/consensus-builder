@@ -37,9 +37,9 @@ with `includeAvailability` reads the section's states and counts (`apartmentStat
 `ugt_anchor_parcels`, with the panel's anchor id and URI (`ParcelAnchor`), several anchors per
 transaction; `ugt_mint_agreement` anchors the agreement's input parcels first, as the agreement panel's
 Mint does. On a published property
-offer (the offer panel): `ugt_mint_property_offer`, `ugt_take_property_offer` (accept),
-`ugt_fund_property_offer`, `ugt_release_property_offer`, `ugt_cancel_property_offer` and
-`ugt_expire_property_offer`. The node adapters (`agents/chain-actions.js`, `agents/apartment-actions.js`, `agents/property-offer-signer.js`)
+offer (the offer panel): `ugt_mint_property_offer`, `ugt_take_property_offer` (commit),
+`ugt_confirm_property_offer` (as a lens member), `ugt_execute_property_offer`, `ugt_cancel_property_offer` and
+`ugt_expire_property_offer`; a lens member states a first holder with `ugt_state_holding`. The node adapters (`agents/chain-actions.js`, `agents/apartment-actions.js`, `agents/property-offer-signer.js`)
 build the browser's instructions from the same codecs and rules (`AgreementBridge.chainActions`,
 `AgreementDecisionPlan`, the pledge, parcel and property-offer clients), read the chain first, refuse
 before signing what the program would refuse, and sign nothing on a replay.
@@ -188,7 +188,7 @@ for a minted agreement. A private draft returns `unverified`.
 After minting, the developer opens `ugt_approval_link` with `action: "list-apartment"` and
 `params.unitId` to sign a listing. The buyer uses `action: "reserve"` with the same permanent
 unit ID to review availability, download the documents and sign the deposit after the named lens qualifies the buyer.
-For independent SOL bids or listings use `ugt_draft_property_offer` with one `apartment`. Pass its exact `xrayBuilding`, `unit` and `at`, and set the proposer’s `lens`. `ugt_list_property_offer` accepts the same unit and city. Preparing an apartment acceptance requires the buyer, seller and payout terms. The chosen lens qualifies the counterparty. [Property offers](property-offers.md)
+For independent bids or listings of one plot or one flat use `ugt_draft_property_offer` (`property-offer/v2`) with its `asset` and the maker’s `lens`. `ugt_list_property_offer` finds offers by asset hash, place and lens member. Lens members confirm from their wallets; without their confirmations an offer expires. [Property offers](property-offers.md)
 
 Draft and edit tools that accept `plan` can resolve an unpublished member by its CID within that
 exact plan revision. Pass the plan's private `draftRef` or canonical artifact, then use the member

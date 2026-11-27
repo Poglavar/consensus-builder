@@ -8,20 +8,13 @@ import { timingSafeEqual, createHash } from 'node:crypto';
 import cors from 'cors';
 import express from 'express';
 import { PublicKey } from '@solana/web3.js';
-import { isCid, canonicalBytes } from '../cid.js';
+import { isCid } from '../cid.js';
 import { LENS_SCHEMA_KINDS } from '../oracle/lens-schemas.js';
 import { countAgreementDecisions, planAgreementDecision } from './agreement-decision.js';
 import { LensError, lensLog } from './errors.js';
 import { systemClock } from './member.js';
-import { planPropertyOfferDecision } from './property-offer-decision.js';
 import { planApartmentReservationQualification } from './apartment-reservation-qualification.js';
-import { readOwnership } from '../property-offers/ownership.js';
-import { ownershipTransferBasis } from '../property-offers/ownership-transfers.js';
 import rateLimit from 'express-rate-limit';
-import { createRequire } from 'node:module';
-import { verifyWalletSignature } from './identity/devnet-registry.js';
-const PropertyOfferConsent = createRequire(import.meta.url)('../../frontend/js/property-offer-consent.js');
-const PropertyOfferRecord = createRequire(import.meta.url)('../../frontend/js/property-offer-record.js');
 import { LENS_OWNERSHIP_PATH, describePricing } from './pricing.js';
 
 export const OPERATOR_TOKEN_HEADER = 'x-lens-operator-token';
@@ -83,7 +76,7 @@ const wrap = handler => (req, res, next) => Promise.resolve(handler(req, res, ne
  *   decisions its relay admitted (lens/run.mjs builds it over DATABASE_URL); without it agreement
  *   decisions answer 503.
  */
-export function createLensMemberApp({ member, pricing, operatorToken = null, corsOrigin = '*', approvalAttester = null, agreements = null, propertyOffers = null, fundingChain = null, clock = systemClock }) {
+export function createLensMemberApp({ member, pricing, operatorToken = null, corsOrigin = '*', approvalAttester = null, agreements = null, fundingChain = null, clock = systemClock }) {
     if (!member) throw new Error('createLensMemberApp: member is required');
     if (!pricing) throw new Error('createLensMemberApp: pricing is required');
     // One member, one key: approval facts must be signed by the key agreements list in their lens.
@@ -113,57 +106,6 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
             approval: approvalAttester ? await approvalAttester.status() : null,
             decisions: { operatorToken: Boolean(operatorToken), agreementIndex: Boolean(agreements) }
         });
-    }));
-
-    // Pre-mint check for the named member and its property policy. The browser checks the on-chain
-    // credential/schema account with RPC before publishing or minting anything.
-    app.post('/lens/property-offers/check', rateLimit({ windowMs: 60000, limit: 10, standardHeaders: 'draft-7', legacyHeaders: false }), wrap(async (req, res) => {
-        if (!propertyOffers?.load || !propertyOffers?.account) throw new LensError(503, 'property_offers_not_configured', 'This lens needs a property-offer index and chain reader.');
-        const status = await member.status();
-        if (status?.dryRun === true) throw new LensError(503, 'dry_run_member', 'A dry-run lens member cannot preflight property offers.');
-        if (!member.credential || !member.schemas?.propertyOffer) throw new LensError(503, 'property_offer_schema_not_configured', 'This lens member has no property-offer credential or schema identifier.');
-        if (!req.body || Object.keys(req.body).length !== 1 || !Object.hasOwn(req.body, 'content')) throw new LensError(400, 'bad_request', 'Supply exactly one canonical content object.');
-        const content = req.body.content;
-        const invalid = (code, message, details) => { throw new LensError(422, code, message, details); };
-        const validation = PropertyOfferRecord.validate(content);
-        if (validation) invalid('invalid_offer', validation.message);
-        let canonical;
-        try { canonical = PropertyOfferRecord.published(content); }
-        catch (error) { invalid('invalid_offer', error.message); }
-        if (!Buffer.from(canonicalBytes(canonical)).equals(Buffer.from(canonicalBytes(content)))) invalid('noncanonical_offer', 'Offer content must exactly match property-offer/v1 canonical form.');
-        if (Date.parse(content.expiresAt) <= clock.nowSeconds() * 1000) invalid('expired_offer', 'Offer expiry must be in the future.');
-        if (content.lens !== member.authority) invalid('wrong_lens', 'The offer names another lens.');
-        if (content.apartment) {
-            return res.json({ key: member.authority, credential: member.credential, schema: member.schemas.propertyOffer, qualification: 'selected-lens' });
-        }
-        if (!identity?.ownerSets || propertyOffers.parcelDecisions === false) throw new LensError(503, 'property_offers_not_configured', 'This lens is not configured for parcel offers.');
-        const sets = await readOwnership(content.parcels, identity);
-        const observedOwners = new Set();
-        const parcels = [];
-        const missing = [], incomplete = [];
-        for (const ref of content.parcels) {
-            const rows = sets.get(PropertyOfferRecord.parcelUid(ref)) || [];
-            if (!rows.length) { missing.push(ref); parcels.push({ ref, owners: [] }); continue; }
-            const distinct = new Set(rows.map(row => row.owner));
-            const valid = rows.every(row => isPubkey(row.owner) && Number.isSafeInteger(row.ownerCount)
-                && row.ownerCount === rows.length && Number.isSafeInteger(row.establishedAt)
-                && row.establishedAt >= 0 && row.establishedAt <= clock.nowSeconds());
-            if (!valid || distinct.size !== rows.length) incomplete.push({ ref, rowCount: rows.length, declaredOwnerCounts: [...new Set(rows.map(row => row.ownerCount))] });
-            rows.forEach(row => observedOwners.add(row.owner));
-            parcels.push({ ref, owners: rows.map(({ owner, ownerCount, establishedAt }) => ({ owner, ownerCount, establishedAt })) });
-        }
-        if (missing.length) invalid('ownership_missing', 'No ownership evidence exists for one or more parcels.', { parcels: missing });
-        if (incomplete.length) invalid('ownership_incomplete', 'The registry does not contain a valid complete distinct owner set for every parcel.', { parcels: incomplete });
-        if (observedOwners.size > PropertyOfferRecord.MAX_PAYOUTS) invalid('too_many_owners', 'The offer exceeds the supported payout-recipient limit.', { ownerCount: observedOwners.size, limit: PropertyOfferRecord.MAX_PAYOUTS });
-        if (content.direction === 'sell') {
-            if (!observedOwners.has(content.proposer)) invalid('seller_not_owner', 'The sale proposer must be one of the current owners.');
-            const recipients = new Set(content.payouts.map(row => row.recipient));
-            if (recipients.size !== observedOwners.size || [...observedOwners].some(owner => !recipients.has(owner))) {
-                invalid('payout_ownership_mismatch', 'Sale payout recipients must exactly match the current owner set.', { owners: [...observedOwners], recipients: [...recipients] });
-            }
-        }
-        const { ownershipHash } = ownershipTransferBasis(content.parcels, sets, propertyOffers.transfers?.network);
-        res.json({ key: member.authority, credential: member.credential, schema: member.schemas?.propertyOffer, parcels, ownershipHash });
     }));
 
     app.post('/lens/challenge', wrap(async (req, res) => {
@@ -254,63 +196,6 @@ export function createLensMemberApp({ member, pricing, operatorToken = null, cor
         const record = await member.findPropertyOfferQualification(fields);
         if (!record) throw new LensError(409, 'qualification_pending', 'The selected lens has yet to qualify this counterparty for these terms.');
         res.json({ ...publicRecord(record), reused: true });
-    }));
-
-    async function loadOfferForDecision(cid) {
-        if (!propertyOffers?.load || !propertyOffers?.account) throw new LensError(503, 'property_offers_not_configured', 'This lens needs a property-offer index and chain reader.');
-        if (!isCid(cid)) throw new LensError(400, 'bad_request', 'cid must be a property offer CID');
-        const offer = await propertyOffers.load(cid);
-        if (!offer) throw new LensError(404, 'property_offer_not_found', `property offer ${cid} is not in the index`);
-        if (offer.content.lens !== member.authority) throw new LensError(422, 'wrong_lens', 'The offer names another lens.');
-        return offer;
-    }
-    async function propertyDecision(offer, candidate) {
-        const account = await propertyOffers.account(offer), nowSeconds = clock.nowSeconds();
-        if (offer.content.apartment) return { fields: await planPropertyOfferDecision({ offer, account, candidate, nowSeconds }) };
-        if (!identity?.ownerSets || propertyOffers.parcelDecisions === false) throw new LensError(503, 'property_offers_not_configured', 'This lens is not configured for parcel offers.');
-        const sets = await readOwnership(offer.content.parcels, identity);
-        const basis = ownershipTransferBasis(offer.content.parcels, sets, propertyOffers.transfers?.network);
-        const fields = await planPropertyOfferDecision({ offer, account, candidate, nowSeconds, ownerSets: async () => sets, ownershipHash: basis.ownershipHash });
-        return { fields, basis };
-    }
-
-    // The operator expresses this member's qualification under its own policy, for precisely these terms.
-    app.post('/lens/property-offers/:cid/qualify', wrap(async (req, res) => {
-        requireOperator(req, operatorToken, 'Only this lens operator can qualify an apartment counterparty.');
-        const offer = await loadOfferForDecision(req.params.cid);
-        if (!offer.content.apartment) throw new LensError(422, 'apartment_offer_required', 'Choose an apartment offer.');
-        if (!req.body || Object.keys(req.body).some(k => !['buyer', 'seller', 'payouts'].includes(k))) throw new LensError(400, 'bad_request', 'Supply the buyer, seller and payout schedule.');
-        const { fields } = await propertyDecision(offer, req.body);
-        const existing = await member.findPropertyOfferQualification(fields);
-        const record = existing || await member.attestPropertyOfferDecision({ ...fields, counterpartyQualified: 1, sourceObservedAt: clock.nowSeconds() });
-        res.status(existing || record.reused ? 200 : 201).json({ ...publicRecord(record), reused: Boolean(existing || record.reused) });
-    }));
-    app.post('/lens/property-offers/:cid/decision', rateLimit({ windowMs: 60000, limit: 5, standardHeaders: 'draft-7', legacyHeaders: false }), wrap(async (req, res) => {
-        const offer = await loadOfferForDecision(req.params.cid);
-        const { fields, basis } = await propertyDecision(offer, req.body || {});
-        const requester = offer.content.direction === 'buy' ? fields.seller : fields.buyer;
-        const message = PropertyOfferConsent.requestMessage({ ...fields, consents: req.body.consents });
-        if (req.body.requester !== requester || !verifyWalletSignature({ owner: requester, message, signature: req.body.signature })) {
-            throw new LensError(401, 'invalid_request_signature', 'The accepting counterparty must sign this exact decision request.');
-        }
-        if (offer.content.apartment) {
-            const record = await member.findPropertyOfferQualification(fields);
-            if (!record) throw new LensError(409, 'qualification_pending', 'The selected lens has yet to qualify this counterparty for these terms.');
-            return res.json({ ...publicRecord(record), reused: true });
-        }
-        const beforeIssue = propertyOffers.transfers && (decision => propertyOffers.transfers.reserve({
-            offer, fields, basis, identity, consents: req.body.consents, decision
-        }));
-        const record = await member.attestPropertyOfferDecision(fields, { beforeIssue });
-        res.status(record.reused ? 200 : 201).json({ ...publicRecord(record), reused: record.reused });
-    }));
-
-    app.get('/lens/property-offers/:cid/transfer', rateLimit({ windowMs: 60000, limit: 30, standardHeaders: 'draft-7', legacyHeaders: false }), wrap(async (req, res) => {
-        if (!isCid(req.params.cid)) throw new LensError(400, 'bad_request', 'cid must be a property offer CID');
-        if (!propertyOffers?.transfers) throw new LensError(503, 'transfers_not_configured', 'This lens does not publish ownership transfers.');
-        const evidence = await propertyOffers.transfers.evidence(req.params.cid);
-        if (!evidence) throw new LensError(404, 'transfer_not_final', 'No finalized ownership transfer is available for this offer.');
-        res.json(evidence);
     }));
 
     // Operator-only, like agreement decisions: the operator runs a source adapter

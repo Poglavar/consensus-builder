@@ -180,9 +180,9 @@ describe('local MCP chain actions', () => {
         await expect(tools({ anchorParcels }, {}, fetchImpl).anchorParcels({ city: 'zagreb', parcelSourceId: 'oss-wfs', parcelIds: ['123'] })).rejects.toThrow(/confirm/);
     });
 
-    it('takes a published property offer\'s chain steps with the named lens member\'s service and records them in the index', async () => {
-        const cid = cidOfObject({ offer: 1 }), lens = Keypair.generate().publicKey.toBase58();
-        const row = { cid, content: { schema: 'property-offer/v1', lens, proposer: keypair.publicKey.toBase58() }, onchain: null };
+    it('takes a published property offer\'s chain steps with this wallet and records them in the index', async () => {
+        const cid = cidOfObject({ offer: 1 });
+        const row = { cid, content: { schema: 'property-offer/v2', proposer: keypair.publicKey.toBase58() }, onchain: null };
         const recorded = [];
         const fetchImpl = vi.fn(async (url, init = {}) => {
             const { pathname } = new URL(url);
@@ -190,18 +190,20 @@ describe('local MCP chain actions', () => {
             if (pathname === `/property-offers/${cid}/onchain`) { recorded.push({ body: JSON.parse(init.body), origin: init.headers.Origin }); return json({ cid }); }
             throw new Error(`unexpected ${pathname}`);
         });
-        const fetchLensMembers = vi.fn(async () => [{ key: Keypair.generate().publicKey.toBase58(), serviceUrl: 'https://other.lens' }, { key: lens, serviceUrl: 'https://named.lens' }]);
-        const step = name => vi.fn(async options => { await options.recordOnchain({ account: 'A', status: 'open' }, options.row.cid); return { step: name, ...options }; });
-        const adapters = { createOfferOnChain: step('create'), acceptOffer: step('accept'), fundOffer: step('fund'), releaseOffer: step('release'), cancelOffer: step('cancel'), expireOffer: step('expire') };
-        const live = tools({ ...adapters, fetchLensMembers }, {}, fetchImpl);
-        const candidate = { buyer: 'b', seller: 's' };
-        expect(await live.acceptPropertyOffer({ cid, candidate, confirm: true })).toMatchObject({ step: 'accept', lensServiceUrl: 'https://named.lens', candidate, row: { cid, content: row.content } });
-        expect((await live.mintPropertyOffer({ cid, confirm: true })).lensServiceUrl).toBe('https://named.lens');
-        for (const method of ['fundPropertyOffer', 'releasePropertyOffer', 'cancelPropertyOffer', 'expirePropertyOffer']) await live[method]({ cid, confirm: true });
-        expect(adapters.fundOffer.mock.calls[0][0].keypair.publicKey.toBase58()).toBe(keypair.publicKey.toBase58());
-        expect(fetchLensMembers).toHaveBeenCalledTimes(2);
+        const step = name => vi.fn(async options => { await options.recordOnchain({ account: 'A' }, options.row.cid); return { step: name, ...options }; });
+        const adapters = { createOfferOnChain: step('create'), commitOffer: step('commit'), confirmOffer: step('confirm'), executeOffer: step('execute'), cancelOffer: step('cancel'), expireOffer: step('expire'),
+            stateHolding: vi.fn(async options => ({ step: 'holding', ...options })) };
+        const live = tools(adapters, {}, fetchImpl);
+        const lens = { members: [Keypair.generate().publicKey.toBase58()], threshold: 1 };
+        expect(await live.takePropertyOffer({ cid, lens, confirm: true })).toMatchObject({ step: 'commit', lens, row: { cid, content: row.content } });
+        expect(await live.confirmPropertyOffer({ cid, role: 0, holding: 'H', confirm: true })).toMatchObject({ step: 'confirm', role: 0, holding: 'H' });
+        for (const method of ['mintPropertyOffer', 'executePropertyOffer', 'cancelPropertyOffer', 'expirePropertyOffer']) await live[method]({ cid, confirm: true });
+        expect(adapters.executeOffer.mock.calls[0][0].keypair.publicKey.toBase58()).toBe(keypair.publicKey.toBase58());
         expect(recorded).toHaveLength(6);
-        expect(recorded[0]).toEqual({ body: { account: 'A', status: 'open' }, origin: 'https://urbangametheory.xyz' });
+        expect(recorded[0]).toEqual({ body: { account: 'A' }, origin: 'https://urbangametheory.xyz' });
+        const asset = { kind: 'flat', xrayBuilding: 'zagreb::gdi-3d::1', unit: '2::3', at: '45.8,15.9,19' };
+        expect(await live.stateHolding({ asset, holder: lens.members[0], basis: 'declared', confirm: true })).toMatchObject({ step: 'holding', asset, basis: 'declared' });
         await expect(live.cancelPropertyOffer({ cid })).rejects.toThrow(/confirm must be true/);
+        await expect(live.stateHolding({ asset, holder: lens.members[0], basis: 'declared' })).rejects.toThrow(/confirm must be true/);
     });
 });

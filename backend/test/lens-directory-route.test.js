@@ -58,6 +58,8 @@ describe('GET /lenses/schemas', () => {
             ['ParcelOwnership-v1', 'ParcelOwnership', 1],
             ['AgreementDecision-v1', 'AgreementDecision', 1],
             ['PropertyOfferDecision-v2', 'PropertyOfferDecision', 2],
+            ['PropertyHolding-v1', 'PropertyHolding', 1],
+            ['PropertyOfferConfirmation-v1', 'PropertyOfferConfirmation', 1],
             ['MarketEvidence-v1', 'MarketEvidence', 1]
         ]);
         expect(res.body.schemas[0].fields).toContainEqual({ name: 'ownerCount', type: 'uint8' });

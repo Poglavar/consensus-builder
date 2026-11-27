@@ -14,12 +14,7 @@ import { parseArgs } from 'node:util';
 import dotenv from 'dotenv';
 import { createPool } from '../db/connection.cjs';
 import { Connection, Keypair } from '@solana/web3.js';
-import { createRequire } from 'node:module';
 import { loadAgreement } from '../routes/agreements.js';
-import { loadPropertyOffer } from '../routes/property-offers.js';
-import { readOfferAnchor } from '../property-offers/onchain.js';
-import { createOwnershipTransfers } from '../property-offers/ownership-transfers.js';
-import { createTransferStore } from '../property-offers/transfer-store.js';
 import { createAgreementDecisionStore } from '../agreements/decisions.js';
 import { createLensMember, DEFAULT_CREDENTIAL_NAME, LENS_MEMBER_KINDS, systemClock } from './member.js';
 import { createDevnetRegistryIdentity } from './identity/devnet-registry.js';
@@ -33,8 +28,6 @@ import { createInvestorFundingChain } from './investor-funding-chain.js';
 import { createApprovalAttester, devnetOwnerRegistry, fileRegistry } from './approval.js';
 import { lensLog } from './errors.js';
 import { retryWithBackoff } from './retry.js';
-const require = createRequire(import.meta.url);
-const PropertyOfferClient = require('../../frontend/js/solana/property-offer-client.js');
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const CLUSTERS = {
@@ -159,27 +152,10 @@ async function main() {
             () => loadSasIssuer({ keypair, rpcUrl: values.rpc || process.env.SOLANA_RPC_URL || CLUSTERS[values.cluster] }), STARTUP_RETRY);
 
     const rpcUrl = values.rpc || process.env.SOLANA_RPC_URL || CLUSTERS[values.cluster];
-    const offerConnection = new Connection(rpcUrl, 'confirmed');
     // Apartment buyers are qualified from finalized Agreement + donation-vault state, never from index
     // projections or caller-provided totals (the funding target itself is the program's confirm_funding).
     // The adapter is read-only and shared by the member.
     const fundingChain = createInvestorFundingChain({ connection: new Connection(rpcUrl, 'finalized') });
-    const loadOffer = cid => loadPropertyOffer(pool, cid);
-    const transfers = !dryRun && pool && values.identity === 'devnet-registry'
-        ? createOwnershipTransfers({ store: createTransferStore(pool), authority,
-            network: await retryWithBackoff('reading the property offer network failed', () => offerConnection.getGenesisHash(), STARTUP_RETRY),
-            loadOffer,
-            async readFinalized(offer) {
-                const address = PropertyOfferClient.getOfferPda(offer.cid, offer.content.proposer)[0];
-                const { context, value } = await offerConnection.getAccountInfoAndContext(address, 'finalized');
-                if (!value) return null;
-                if (value.owner.toBase58() !== PropertyOfferClient.constants.PROPERTY_OFFER_PROGRAM_ID) throw new Error('The offer account belongs to another program.');
-                const account = PropertyOfferClient.readPropertyOffer(value.data, address.toBase58());
-                if (!account) throw new Error('The offer account does not decode.');
-                const observedAt = ['Settled', 'Cancelled', 'Expired'].includes(account.status) ? await offerConnection.getBlockTime(context.slot) : null;
-                return { account, observedAt };
-            }
-        }) : null;
 
     let identity;
     if (values.identity === 'certilia') {
@@ -187,8 +163,7 @@ async function main() {
         identity.assertReady();
     } else if (values.identity === 'devnet-registry') {
         const source = values.owners ? { rows: readOwners(values.owners) } : { pool };
-        identity = createDevnetRegistryIdentity({ ...source, clock, authority,
-            resolveOwnerSets: transfers && (roots => transfers.resolve(roots)) });
+        identity = createDevnetRegistryIdentity({ ...source, clock, authority });
     } else {
         throw new Error(`unknown --identity ${values.identity}`);
     }
@@ -224,12 +199,7 @@ async function main() {
     // relay admitted, in the same database the API writes (routes/agreements.js, agreements/decisions.js).
     const decisionStore = pool ? createAgreementDecisionStore(pool) : null;
     const agreements = pool ? { load: cid => loadAgreement(pool, cid), decisions: cid => decisionStore.list(cid) } : null;
-    const propertyOffers = pool ? {
-        load: loadOffer, transfers, parcelDecisions: dryRun || Boolean(transfers),
-        account: async offer => readOfferAnchor(offerConnection, offer,
-            await PropertyOfferClient.fetchPropertyOffer(offerConnection, { cid: offer.cid, maker: offer.content.proposer }), 'finalized')
-    } : null;
-    const app = createLensMemberApp({ member, pricing, operatorToken, approvalAttester, agreements, propertyOffers, fundingChain, clock });
+    const app = createLensMemberApp({ member, pricing, operatorToken, approvalAttester, agreements, fundingChain, clock });
 
     const status = await retryWithBackoff('reading the member status failed', () => member.status(), STARTUP_RETRY);
     lensLog(`${dryRun ? 'DRY RUN' : 'LIVE'} lens member ${status.key}${status.ephemeralKey ? ' (ephemeral key)' : ''}, kind ${status.kind}`);

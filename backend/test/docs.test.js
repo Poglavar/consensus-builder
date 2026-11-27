@@ -482,7 +482,7 @@ describe('agent quickstart docs', () => {
         expect(res.body.lens).toMatchObject({
             ruleField: 'rule.lens',
             schemas: 'https://api.example.test/lenses/schemas',
-            attestations: ['ParcelOwnership-v1', 'AgreementDecision-v1', 'PropertyOfferDecision-v2', 'MarketEvidence-v1'],
+            attestations: ['ParcelOwnership-v1', 'AgreementDecision-v1', 'PropertyOfferDecision-v2', 'PropertyHolding-v1', 'PropertyOfferConfirmation-v1', 'MarketEvidence-v1'],
             memberKinds: ['owner-consent', 'court', 'permit', 'imagery', 'osm', 'lifecycle']
         });
         expect(res.body.lens.memberFields).toContain('serviceUrl');
