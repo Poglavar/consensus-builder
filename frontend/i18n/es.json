@@ -9104,6 +9104,8 @@
         "placeUnnamed": "{{designation}}",
         "placeBuilding": "{{designation}} «{{name}}»",
         "sourceLink": "(fuente: {{source}})",
+        "gpdoClass": "Parte {{part}} Clase {{letters}}",
+        "gpdoPart": "Parte {{part}}",
         "restriction": {
             "prohibit": "En {{place}}: aquí no se permite nueva edificación",
             "keep": "{{place}} debe conservarse: un edificio nuevo no puede sustituirlo",
@@ -9128,7 +9130,8 @@
             "greenBelt": "la nueva edificación no procede salvo circunstancias muy especiales",
             "floodZone3": "alta probabilidad de inundación; se aplican las pruebas de riesgo de inundación",
             "worldHeritageSite": "el valor patrimonial del sitio pesa en toda decisión",
-            "treePreservation": "los árboles protegidos requieren autorización antes de cualquier trabajo"
+            "treePreservation": "los árboles protegidos requieren autorización antes de cualquier trabajo",
+            "rightsUnused": "solo retira derechos de desarrollo permitido que un diseño no usa ({{rights}})"
         },
         "condition": {
             "noHarmToCharacter": "si no daña el carácter general de la zona"

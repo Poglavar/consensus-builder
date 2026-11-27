@@ -96,18 +96,52 @@ describe('segments', () => {
         expect(result.segments[0].lengthM).toBe(200);
     });
 
-    it('cuts at both edges of a gap over 50 m between the buildings along it', () => {
-        const buildings = [];
-        for (let x = 0; x <= 90; x += 15) buildings.push(box(x, 12, x + 10, 22));
-        for (let x = 170; x <= 290; x += 15) buildings.push(box(x, -22, x + 10, -12));
+    // Strong Suburbs para 8: a stretch over 50 m between one building and the next is not developable
+    // by a street vote, and ends a voting unit only if it faces another such stretch.
+    const row = (from, to, y0, y1) => { const out = []; for (let x = from; x <= to; x += 15) out.push(box(x, y0, x + 10, y1)); return out; };
+    it('cuts at a gap over 50 m between buildings where it faces a stretch without buildings across the street', () => {
+        // North: buildings to 100 m, then from 170 m. South: buildings to 115 m, then from 175 m.
+        const buildings = [...row(0, 90, 12, 22), ...row(170, 290, 12, 22), ...row(0, 105, -22, -12), ...row(175, 295, -22, -12)];
         const result = cut([way('Hughes Road', line(0, 300))], { buildings });
         expect(result.segments.map(s => [s.from.kind, s.to.kind])).toEqual([['end', 'gap-start'], ['gap-start', 'gap-end'], ['gap-end', 'end']]);
-        expect(result.segments[1].fromM).toBeCloseTo(100, 0);
+        // The cut is the part of the north gap (100–170 m) that faces the south one (115–175 m).
+        expect(result.segments[1].fromM).toBeCloseTo(115, 0);
         expect(result.segments[1].toM).toBeCloseTo(170, 0);
-        // A 40 m gap is no referable point; unknown buildings cut nothing.
-        const close = buildings.filter(b => b).concat();
-        close.push(box(130, 12, 140, 22));
-        expect(cut([way('Hughes Road', line(0, 300))], { buildings: close }).segments).toHaveLength(1);
+        expect(result.segments[1].undevelopable).toEqual([{ side: 'left', fromM: 115, toM: 170 }, { side: 'right', fromM: 115, toM: 170 }]);
+        expect(result.segments[0].undevelopable).toEqual([{ side: 'left', fromM: 100, toM: 115 }]);
+        expect(result.segments[2].undevelopable).toEqual([{ side: 'right', fromM: 170, toM: 175 }]);
+        // A gap runs to the chain's end when the next building is beyond the junction: north's
+        // buildings stop at 100 m and south's start at 170 m, so 100–170 m faces a gap on both sides.
+        const handover = cut([way('Hughes Road', line(0, 300))], { buildings: [...row(0, 90, 12, 22), ...row(170, 290, -22, -12)] });
+        expect(handover.segments.map(s => [s.fromM, s.toM])).toEqual([[0, 100], [100, 170], [170, 300]]);
+        expect(handover.segments[2].undevelopable).toEqual([{ side: 'left', fromM: 170, toM: 300 }]);
+        // Gaps that face each other for only part of their length still leave a buffer: cut where they
+        // face (the south gap 145–215 m faces the north one for 25 m).
+        const staggered = cut([way('Hughes Road', line(0, 300))], { buildings: [...row(0, 90, 12, 22), ...row(170, 290, 12, 22), ...row(0, 135, -22, -12), ...row(215, 290, -22, -12)] });
+        expect(staggered.segments.map(s => [s.fromM, s.toM])).toEqual([[0, 145], [145, 170], [170, 300]]);
+        // Facing a gap of 45 m only (buildings from 160 m), the north gap cuts nothing.
+        const narrow = cut([way('Hughes Road', line(0, 300))], { buildings: [...row(0, 90, 12, 22), ...row(170, 290, 12, 22), ...row(0, 105, -22, -12), ...row(160, 295, -22, -12)] });
+        expect(narrow.segments).toHaveLength(1);
+        // A stretch of the other side without any building (a park) faces it too.
+        const park = cut([way('Hughes Road', line(0, 300))], { buildings: [...row(0, 90, 12, 22), ...row(170, 290, 12, 22)] });
+        expect(park.segments.map(s => [s.fromM, s.toM])).toEqual([[0, 100], [100, 170], [170, 300]]);
+    });
+
+    it('keeps a gap over 50 m that faces buildings inside the segment, as a stretch no street vote develops and a referable point', () => {
+        const buildings = [...row(0, 90, 12, 22), ...row(170, 290, 12, 22), ...row(0, 295, -22, -12)];
+        const result = cut([way('Hughes Road', line(0, 300))], { buildings });
+        expect(result.segments).toHaveLength(1);
+        expect(result.segments[0].undevelopable).toEqual([{ side: 'left', fromM: 100, toM: 170 }]);
+        // Its edges stay referable points an agent may cut at explicitly.
+        const start = result.points.find(p => p.kind === 'gap-start'), end = result.points.find(p => p.kind === 'gap-end');
+        expect([start.measureM, end.measureM, start.side]).toEqual([100, 170, 'left']);
+        expect(result.between(start.id, end.id)).toMatchObject({ fromM: 100, toM: 170, from: { kind: 'gap-start' }, to: { kind: 'gap-end' },
+            undevelopable: [{ side: 'left', fromM: 100, toM: 170 }] });
+        // A 40 m gap is no gap; unknown buildings give none.
+        const close = cut([way('Hughes Road', line(0, 300))], { buildings: [...buildings, box(130, 12, 140, 22)] });
+        expect(close.segments).toHaveLength(1);
+        expect(close.segments[0].undevelopable).toBeUndefined();
+        expect(close.points.some(p => p.kind === 'gap-start')).toBe(false);
         expect(cut([way('Hughes Road', line(0, 300))]).buildingsKnown).toBe(false);
     });
 
@@ -195,5 +229,54 @@ describe('lines of a recorded street', () => {
         const numbered = { ...segmentRef, to: { kind: 'number', houseNumber: '12', point: ll([60, 0]) } };
         expect(S.linesFor(numbered, answer)).toEqual({ lines: [[numbered.from.point, numbered.to.point]], approximate: true });
         expect(S.linesFor(segmentRef, { street: { name: 'Cross Road' }, segments: result.segments })).toBeNull();
+    });
+});
+
+describe('corner plots', () => {
+    // A suburban T-junction drawn like an English one (no road parcels: HM Land Registry titles stop
+    // at the highway): Hughes Road runs west→east, Cross Road leaves it north at x = 150. The two
+    // corner plots are chamfered at the junction (Strong Suburbs para 80.5); behind the west corner
+    // plot, c1 fronts Cross Road only.
+    const poly = (points, id) => ({ id, geometry: { type: 'Polygon', coordinates: [[...points, points[0]].map(ll)] } });
+    const parcels = [
+        poly([[60, 5], [95, 5], [95, 45], [60, 45]], 'h1'),
+        poly([[95, 5], [125, 5], [125, 45], [95, 45]], 'h2'),
+        poly([[125, 5], [140, 5], [145, 10], [145, 45], [125, 45]], 'corner-west'),
+        poly([[105, 45], [145, 45], [145, 80], [105, 80]], 'c1'),
+        poly([[155, 10], [160, 5], [190, 5], [190, 45], [155, 45]], 'corner-east'),
+        poly([[155, 45], [190, 45], [190, 80], [155, 80]], 'c2')
+    ];
+    const features = () => [way('Hughes Road', line(0, 300)), way('Cross Road', [[150, 0], [150, 60], [150, 120]])];
+    const along = (result, index, side) => S.plotsAlong({ coordinates: result.segments[index].coordinates, parcels, side, arms: S.armsOf(result.segments[index]) });
+
+    it('a corner plot is along each street its boundary runs along, and is marked with the other street', () => {
+        const hughes = cut(features());
+        expect(hughes.segments[0].to).toMatchObject({ kind: 'branch', names: ['Cross Road'] });
+        expect(hughes.segments[0].to.arms.map(arm => arm.name)).toEqual(['Cross Road']);
+        const west = along(hughes, 0, 'left');
+        expect(west.map(plot => plot.id)).toEqual(['h1', 'h2', 'corner-west']);
+        expect(west.find(plot => plot.id === 'corner-west').corner).toEqual({ streets: ['Cross Road'] });
+        // Plots beside it and behind it are not corners: the corner plot stands between them and Cross Road.
+        expect(west.filter(plot => plot.corner).map(plot => plot.id)).toEqual(['corner-west']);
+        expect(along(hughes, 1, 'left').filter(plot => plot.corner).map(plot => [plot.id, plot.corner.streets])).toEqual([['corner-east', ['Cross Road']]]);
+
+        const cross = cut(features(), { name: 'Cross Road' });
+        const both = along(cross, 0, 'both');
+        expect(both.map(plot => plot.id).sort()).toEqual(['c1', 'c2', 'corner-east', 'corner-west']);
+        expect(both.filter(plot => plot.corner).map(plot => [plot.id, plot.corner.streets]).sort())
+            .toEqual([['corner-east', ['Hughes Road']], ['corner-west', ['Hughes Road']]]);
+        // Without the ends' other roads nothing is marked, as before.
+        expect(S.plotsAlong({ coordinates: cross.segments[0].coordinates, parcels, side: 'both' }).some(plot => plot.corner)).toBe(false);
+    });
+
+    it('the street reference records the corner plots with their other streets, and rejects malformed ones', () => {
+        const hughes = cut(features());
+        const corners = along(hughes, 0, 'left').filter(plot => plot.corner).map(plot => ({ parcelId: plot.id, streets: plot.corner.streets }));
+        const ref = S.reference(hughes, hughes.segments[0], 'left', null, corners);
+        expect(ref.corners).toEqual([{ parcelId: 'corner-west', streets: ['Cross Road'] }]);
+        expect(S.normaliseReference(JSON.parse(JSON.stringify(ref)))).toEqual(ref);
+        expect(S.reference(hughes, hughes.segments[0], 'left')).not.toHaveProperty('corners');
+        expect(() => S.normaliseReference({ ...ref, corners: [{ parcelId: 'x' }] })).toThrow(/corner plot/);
+        expect(() => S.normaliseReference({ ...ref, corners: [...ref.corners, ...ref.corners] })).toThrow(/once/);
     });
 });

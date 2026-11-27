@@ -9523,6 +9523,8 @@
         "placeUnnamed": "{{designation}}",
         "placeBuilding": "{{designation}} «{{name}}»",
         "sourceLink": "(المصدر: {{source}})",
+        "gpdoClass": "الجزء {{part}} الفئة {{letters}}",
+        "gpdoPart": "الجزء {{part}}",
         "restriction": {
             "prohibit": "داخل {{place}}: لا يُسمح ببناء جديد هنا",
             "keep": "{{place}} يجب الإبقاء عليه: لا يجوز أن يحل محله مبنى جديد",
@@ -9547,7 +9549,8 @@
             "greenBelt": "البناء الجديد غير مناسب إلا في ظروف خاصة جدًا",
             "floodZone3": "احتمال فيضان مرتفع؛ تُطبّق اختبارات خطر الفيضان",
             "worldHeritageSite": "قيمة الموقع التراثية تؤثر في أي قرار",
-            "treePreservation": "الأشجار المحمية تحتاج إلى موافقة قبل أي عمل عليها"
+            "treePreservation": "الأشجار المحمية تحتاج إلى موافقة قبل أي عمل عليها",
+            "rightsUnused": "يلغي فقط حقوق التطوير المسموح التي لا يستخدمها التصميم ({{rights}})"
         },
         "condition": {
             "noHarmToCharacter": "إذا لم يضر بالطابع العام للمنطقة"

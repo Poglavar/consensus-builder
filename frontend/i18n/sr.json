@@ -9127,6 +9127,8 @@
         "placeUnnamed": "{{designation}}",
         "placeBuilding": "{{designation}} „{{name}}”",
         "sourceLink": "(izvor: {{source}})",
+        "gpdoClass": "Deo {{part}}, klasa {{letters}}",
+        "gpdoPart": "Deo {{part}}",
         "restriction": {
             "prohibit": "{{place}}: nova gradnja ovde nije dozvoljena",
             "keep": "{{place}} mora se zadržati: nova zgrada ne sme da je zameni",
@@ -9151,7 +9153,8 @@
             "greenBelt": "nova gradnja nije primerena osim u vrlo posebnim okolnostima",
             "floodZone3": "velika verovatnoća poplave; primenjuju se provere rizika od poplava",
             "worldHeritageSite": "značaj baštine utiče na svaku odluku",
-            "treePreservation": "za radove na zaštićenim stablima potrebna je saglasnost"
+            "treePreservation": "za radove na zaštićenim stablima potrebna je saglasnost",
+            "rightsUnused": "ukida samo prava dozvoljene gradnje koja projekat ne koristi ({{rights}})"
         },
         "condition": {
             "noHarmToCharacter": "ako ne šteti ukupnom karakteru područja"

@@ -354,9 +354,10 @@
     // a waiver with no payment yet, to be set by the sponsor. A plot built over beyond a street code's
     // boundary guide whose effect is compensation (Strong Suburbs para. 54: over 30° from its boundary)
     // is owed compensation instead, unless it lies on the street the plan is for (`onStreet`): those
-    // neighbours consent (paras 51–52), they are not compensated.
-    function affectedEntry(snapshot, { compensated = false, onStreet = false } = {}) {
-        const owed = compensated && !onStreet && Array.isArray(snapshot.readings) && snapshot.readings.some(reading => reading.kind === 'boundary' && reading.grade === 'fail');
+    // neighbours consent (paras 51–52), they are not compensated. A corner plot of that street
+    // (`corner`, also on another street) is compensated as a house not on the street (para 80.3).
+    function affectedEntry(snapshot, { compensated = false, onStreet = false, corner = false } = {}) {
+        const owed = compensated && (!onStreet || corner) && Array.isArray(snapshot.readings) && snapshot.readings.some(reading => reading.kind === 'boundary' && reading.grade === 'fail');
         return { parcelId: idOf(snapshot.parcelId), effect: owed ? 'compensation' : 'waiver', rights: Array.isArray(snapshot.rights) ? snapshot.rights.slice() : [],
             note: null, readings: Array.isArray(snapshot.readings) ? snapshot.readings.slice() : [], loss: null, considerationCents: 0 };
     }
@@ -1809,11 +1810,15 @@
             if (button.dataset.agreementAction === 'neighbours-add-ticked' && state.neighbours.result) {
                 const ticked = state.neighbours.result.lots.filter(lot => state.neighbours.ticked.has(idOf(lot.id)));
                 const inputs = new Set(state.land.inputs.parcels.map(parcel => idOf(parcel.parcelId)));
-                // Plots along the street last picked with Street here are on the plan's own street.
-                const street = new Set((root.StreetPicker?.lastPick?.()?.cadastreIds || []).map(idOf));
+                // Plots along the street last picked with Street here are on the plan's own street;
+                // its corner plots are on another street too.
+                const pick = root.StreetPicker?.lastPick?.() || null;
+                const street = new Set((pick?.cadastreIds || []).map(idOf));
+                const corners = new Set((pick?.reference?.corners || []).map(row => idOf(row.parcelId)));
                 const compensated = state.neighbours.result.guides?.boundary?.effect === 'compensation';
                 const added = addAffected(ticked.filter(lot => !inputs.has(idOf(lot.id)))
-                    .map(lot => affectedEntry(root.NeighbourEffects.snapshot(lot, state.neighbours.result.guides), { compensated, onStreet: street.has(idOf(lot.id)) })));
+                    .map(lot => affectedEntry(root.NeighbourEffects.snapshot(lot, state.neighbours.result.guides),
+                        { compensated, onStreet: street.has(idOf(lot.id)), corner: corners.has(idOf(lot.id)) })));
                 // Said in the candidates' live region; focus goes to the first added parcel's terms.
                 part('[data-agreement-neighbour-candidates]').insertAdjacentHTML('afterbegin', `<p class="agreement-hint" role="status" data-agreement-neighbours-added>${esc(t('agreement.neighbours.addedCount', 'Added {{count}} neighbouring parcel(s): set each one’s terms below.', { count: added.length }))}</p>`);
                 (added.length ? part(`[data-agreement-affected="${root.CSS.escape(added[0].parcelId)}"] [data-affected-field="effect"]`) : null)?.focus();
