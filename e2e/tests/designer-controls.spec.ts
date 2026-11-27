@@ -297,9 +297,35 @@ test.describe('Designer controls persist their edits @features', () => {
     await page.locator('.parcel-build-btn--buildings').click();
     await resolveParcelScopePrompt(page, page.locator('#btn-blockify-done'), false);
     await expect(page.locator('#btn-blockify-done')).toBeEnabled({ timeout: 20_000 });
+    // A warning the parametric sliders raised says nothing about the existing buildings.
+    await page.evaluate(() => (window as any).setBlockifyFitWarning(true));
+    await expect(page.locator('#blockify-fit-warning')).toBeVisible();
     await page.locator('#blockify-existing-toggle').check();
     await expect.poll(() => page.locator('#additional-floors-slider').isEnabled()).toBe(true);
     await expect(page.locator('#proposed-height-slider')).toBeVisible();
+    await expect(page.locator('#blockify-fit-warning')).toBeHidden();
+    await expect(page.locator('#blockify-outside-warning')).toBeHidden();
+    // A building over the parcel's edge is redrawn whole, so the preview says it will not go on the
+    // map before Done, by the apply check's rule, and stops saying so once it is gone.
+    await page.evaluate(() => {
+      const w = window as any;
+      const ring = w.turf.getCoords(w.turf.flatten(w.blockifyDesignBoundary()).features[0])[0];
+      const [x, y] = ring.reduce((east: number[], point: number[]) => (point[0] > east[0] ? point : east));
+      const d = 0.0001;
+      // The editor's fetched footprints, a top-level let of building-blocks.js (not a window property).
+      eval('existingFootprints').push({ id: 'fixture:straddling', height_m: 9,
+        geometry: { type: 'Polygon', coordinates: [[[x - d, y - d], [x + d, y - d], [x + d, y + d], [x - d, y + d], [x - d, y - d]]] } });
+      w.generateExistingBuildingsInModal();
+    });
+    await expect(page.locator('#blockify-outside-warning')).toBeVisible();
+    await expect(page.locator('#blockify-outside-warning')).toContainText('Buildings reaching beyond the selected parcels: 1');
+    await page.evaluate(() => {
+      const w = window as any;
+      const footprints = eval('existingFootprints');
+      footprints.splice(footprints.findIndex((item: any) => item.id === 'fixture:straddling'), 1);
+      w.generateExistingBuildingsInModal();
+    });
+    await expect(page.locator('#blockify-outside-warning')).toBeHidden();
 
     await page.locator('#blockify-rule-additional').check();
     const floors = page.locator('#additional-floors-slider');

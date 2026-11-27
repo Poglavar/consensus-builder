@@ -190,7 +190,9 @@ export async function installLayerDatasets(page: Page): Promise<void> {
   } }));
   await page.route('https://services8.arcgis.com/**', route => route.fulfill({ json: { type: 'FeatureCollection', features: [line] } }));
   // Local development builds request the same GUP centreline data through the backend streets API.
-  await page.route('**/streets**', route => route.fulfill({ json: { type: 'FeatureCollection', features: [line] } }));
+  // Only the API: the app's own js/streets/*.js scripts share the path and must load as scripts.
+  await page.route('**/streets**', route => (isApiDataRequest(route.request().url(), route.request().resourceType(), 'streets')
+    ? route.fulfill({ json: { type: 'FeatureCollection', features: [line] } }) : route.continue()));
   await page.route('https://oss.uredjenazemlja.hr/OssWebServices/wfs**', route => route.fulfill({ json: surveyResponse([roadArea]) }));
   // The development data source reads planned roads from the backend route, not the static plan
   // catalog. Both the planned-road API and survey APIs explicitly return EPSG:3765.
