@@ -85,6 +85,17 @@ describe('agent street votes on a plan claiming a street code', async () => {
         expect(report.notChecked.map(row => row.cite)).toEqual(expect.arrayContaining(['51']));
         expect(report.notChecked.map(row => row.cite)).not.toContain('35');
     });
+    // The light planes read every plot around the plan from the designs' parcel source, which the
+    // read client needs named: without it no plot is read and every plane test is unknown.
+    it('reads the plots around from the parcel source of the plan\'s designs', async () => {
+        const { serverReaders } = await import('../agents/mcp-ground.js');
+        const asked = [];
+        const read = { parcels: async query => { asked.push(query); if (!query.parcelSourceId) throw new Error('Supply an explicit parcelSourceId.');
+            return { complete: true, features: [{ id: 'P1', geometry: box(0, 0, 10, 10), properties: {} }] }; } };
+        const plots = serverReaders(read, async () => new Map(), 'gb-hmlr-browser-v1')(plan).plots;
+        expect(await plots({ bbox: [-0.21, 51.49, -0.19, 51.51] })).toEqual([{ id: 'P1', geometry: box(0, 0, 10, 10) }]);
+        expect(asked[0]).toMatchObject({ city: 'london', parcelSourceId: 'gb-hmlr-browser-v1' });
+    });
     it('checks nothing when the plan claims no code or the ballot rule carries none', async () => {
         expect(await streetCodeCheck(voting(STRONG_SUBURBS), { ...plan, codes: undefined }, [], { readers })).toBeNull();
         expect(await streetCodeCheck(voting(LIVING_TRADITION), plan, [], { readers })).toBeNull();

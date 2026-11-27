@@ -101,18 +101,18 @@ export async function streetCodeCheck(consultation, plan, designContents, { read
 
 // The place's readers on the agents' server: the app's own routes through the MCP read client, the
 // shared API's density and building facts, and the publisher's designations, as the browser reads them.
-function serverReaders(read, readFacts) {
+export function serverReaders(read, readFacts, parcelSourceId = null) {
     const appFetch = async (url, init) => {
         if (!url.startsWith('/')) return fetch(url, init);
         const parsed = new URL(url, 'http://app.invalid');
         const data = await read.request(parsed.pathname, Object.fromEntries(parsed.searchParams));
         return { ok: true, status: 200, json: async () => data };
     };
-    // Plots from the city's parcel source: by id (a vote's block) or every plot in a box.
+    // Plots from the plan's parcel source (the designs'): by id (a vote's block) or every plot in a box.
     const readPlots = plan => async query => {
         const city = plan?.view?.city;
         const answer = query.parcelIds ? await read.parcels({ city, parcelSourceId: query.parcelSourceId, parcelIds: query.parcelIds })
-            : await read.parcels({ city, geometry: { type: 'Polygon', coordinates: [[[query.bbox[0], query.bbox[1]], [query.bbox[2], query.bbox[1]], [query.bbox[2], query.bbox[3]], [query.bbox[0], query.bbox[3]], [query.bbox[0], query.bbox[1]]]] } });
+            : await read.parcels({ city, parcelSourceId, geometry: { type: 'Polygon', coordinates: [[[query.bbox[0], query.bbox[1]], [query.bbox[2], query.bbox[1]], [query.bbox[2], query.bbox[3]], [query.bbox[0], query.bbox[3]], [query.bbox[0], query.bbox[1]]]] } });
         if (answer.truncated || !Array.isArray(answer.features) || (query.bbox && answer.complete !== true)) throw new Error('The plots could not all be read.');
         const idOf = feature => feature?.id ?? feature?.properties?.parcelId ?? feature?.properties?.parcel_id ?? feature?.properties?.id;
         return answer.features.filter(feature => idOf(feature) != null).map(feature => ({ id: String(idOf(feature)), geometry: feature.geometry }));
@@ -207,7 +207,7 @@ export function createMcpAgreementTools({ read, drafts, appOrigin, readFacts = i
             if (rule.electorate === 'community') rule.settlement = null;
             if (rule.electorate === 'community') consultation = await votingWithEligibility(consultation, designs.map(d => d.content), { readFacts });
             const { recorded: streetCodeRecord, ...streetCode } = rule.electorate === 'community'
-                ? await streetCodeCheck(consultation, selected.plan, designs.map(d => d.content), { readers: serverReaders(read, readFacts), planCid: selected.cid }) || {} : {};
+                ? await streetCodeCheck(consultation, selected.plan, designs.map(d => d.content), { readers: serverReaders(read, readFacts, resolved.parcelSourceId), planCid: selected.cid }) || {} : {};
             if (streetCodeRecord) consultation = { ...consultation, voting: { ...consultation.voting, streetCode: streetCodeRecord } };
             const { land, source, ids } = await groundFor({ ...resolved, designs });
             const plan = { cid: selected.cid, content: selected.plan };
