@@ -9387,6 +9387,34 @@
             "parapetYes": "Da",
             "parapetNo": "Ne"
         },
+        "eligibility": {
+            "set": {
+                "gb-living-tradition-mansards": "Mansarde po Living Tradition"
+            },
+            "verdict": {
+                "eligible": "Ispunjava svaki uslov koji aplikacija može da proveri",
+                "ineligible": "Ne ispunjava uslove",
+                "unknown": "Još nije poznato: nedostaju neki podaci"
+            },
+            "status": {
+                "pass": "Da",
+                "fail": "Ne",
+                "unknown": "Nepoznato",
+                "unchecked": "Aplikacija ne proverava"
+            },
+            "test": {
+                "built": "Izgrađena posle 1700. i pre 1918.",
+                "parapet": "Atika duž celog uličnog pročelja",
+                "frontGable": "Bez zabata ili polukrovnih prozora na pročelju",
+                "noMansard": "Bez postojećeg mansardnog sprata",
+                "storeys": "Najmanje dva sprata",
+                "attached": "Dvojna kuća ili u nizu od najmanje tri",
+                "footprint": "Osnova najviše 100 m²",
+                "originalUse": "Izgrađena kao kuća ili radnja sa prostorijama iznad",
+                "listing": "Nije zaštićena stepena I ni II*",
+                "topWindows": "Prozori najvišeg sprata visoki najmanje 80 cm"
+            }
+        },
         "survey": "Snimanje visina",
         "source": "Izvor zgrada",
         "proposedForm": "Oblik prikaza dizajna",

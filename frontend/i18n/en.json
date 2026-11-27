@@ -9288,6 +9288,34 @@
             "parapetYes": "Yes",
             "parapetNo": "No"
         },
+        "eligibility": {
+            "set": {
+                "gb-living-tradition-mansards": "Mansard eligibility"
+            },
+            "verdict": {
+                "eligible": "Eligible on every condition the app can check",
+                "ineligible": "Not eligible",
+                "unknown": "Not known yet: some facts are missing"
+            },
+            "status": {
+                "pass": "Yes",
+                "fail": "No",
+                "unknown": "Unknown",
+                "unchecked": "Not checked by the app"
+            },
+            "test": {
+                "built": "Built after 1700 and before 1918",
+                "parapet": "Parapet along the whole street front",
+                "frontGable": "No front gable or half-dormers",
+                "noMansard": "No existing mansard storey",
+                "storeys": "At least two storeys",
+                "attached": "Semi-detached, or in a terrace of at least three",
+                "footprint": "Footprint of at most 100 m²",
+                "originalUse": "Built as a house, or a shop with rooms above",
+                "listing": "Not Grade I or II* listed",
+                "topWindows": "Top-storey windows at least 80 cm tall"
+            }
+        },
         "survey": "Height survey",
         "source": "Building source",
         "proposedForm": "Proposed representation",

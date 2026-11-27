@@ -447,7 +447,7 @@ describe('building facts on the card', () => {
     const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');
     const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
     const slice = node => source.slice(node.start, node.end);
-    const pieces = body.filter(node => (node.type === 'FunctionDeclaration' && ['readFacts', 'readFactsOf', 'renderFacts', 'element'].includes(node.id.name))
+    const pieces = body.filter(node => (node.type === 'FunctionDeclaration' && ['readFacts', 'readFactsOf', 'renderFacts', 'renderEligibility', 'element'].includes(node.id.name))
         || (node.type === 'VariableDeclaration' && node.declarations[0].id.name === 'factReads')).map(slice).join('\n');
     const client = require('../../frontend/js/buildings/building-facts.js');
     const t = (key, params = {}) => `${key}(${Object.values(params).join('|')})`;
@@ -456,10 +456,10 @@ describe('building facts on the card', () => {
         facts: { storeys: { value: 3, source: 'osm', key: 'building:levels', raw: '3' }, built: null, roof_shape: null,
             parapet: parapet ? { value: true, source: 'osm', key: 'building:parapet', raw: 'yes' } : null } });
     const record = () => ({ id: 'built:london:w1', source: { recordId: 'w1' } });
-    const setup = (reads, shown) => {
+    const setup = (reads, shown, extra = {}) => {
         const renderInspector = vi.fn(), read = vi.fn(async () => reads.shift());
         const document = makeDocument();
-        const context = vm.createContext({ root: { BuildingFacts: { ...client, read }, BusyControl: { track: (_button, work) => work() } },
+        const context = vm.createContext({ root: { BuildingFacts: { ...client, read }, BusyControl: { track: (_button, work) => work() }, ...extra },
             document, selected: () => shown.current, renderInspector, t, console, Map, Date });
         vm.runInContext(`${pieces}\nthis.api = { readFacts, renderFacts };`, context);
         return { ...context.api, read, renderInspector };
@@ -482,6 +482,22 @@ describe('building facts on the card', () => {
         await new Promise(resolve => setImmediate(resolve));
         expect(card.read).toHaveBeenCalledTimes(2);
         expect(text(card.renderFacts(first))).toContain('buildingFact.field.parapet()buildingFact.parapetYes()');
+    });
+    // London plans under English rules, so the card adds Living Tradition's tests for the house:
+    // a parapet now stated, its terrace from the buildings loaded around it, its roof shape unknown.
+    it('shows the city\'s eligibility tests for the house, from its facts and the loaded neighbours', async () => {
+        const turf = require('@turf/turf');
+        const box = x => turf.polygon([[[x, 51.539], [x + 0.0001, 51.539], [x + 0.0001, 51.5391], [x, 51.5391], [x, 51.539]]]);
+        const row = [box(-0.1062), box(-0.1061), box(-0.1060)];
+        const house = { ...record(), site: row[1].geometry, source: { recordId: 'w1', city: 'london' } }, shown = { current: house };
+        const card = setup([{ ...building(true), facts: { ...building(true).facts, built: { value: { from: 1828, to: 1830 }, source: 'osm', key: 'start_date', raw: '1828..1830' } } }], shown, {
+            BuildingEligibility: require('../../frontend/js/planning/eligibility.js'), turf, buildingFeaturePool: row,
+            CityConfigManager: { getCityConfig: city => (city === 'london' ? { planning: { ruleSetIds: ['gb-eng-planning'] } } : null) } });
+        await card.readFacts(house, { id: 'w1', properties: {} });
+        const block = card.renderFacts(house).querySelector('.planning-eligibility');
+        expect(block.getAttribute('data-eligibility')).toBe('unknown');
+        const status = cite => block.querySelectorAll('li').find(row => text(row).startsWith(`${cite} `)).getAttribute('data-status');
+        expect(['17.1', '17.2', '17.4', '17.5', '17.6', '17.7', '17.9'].map(status)).toEqual(['pass', 'pass', 'unknown', 'pass', 'pass', 'pass', 'unchecked']);
     });
     it('reads nothing for a building the contract does not answer, and says so when the read fails', async () => {
         const gdi = { id: 'built:zagreb:4711', source: { recordId: '4711' } }, shown = { current: gdi };

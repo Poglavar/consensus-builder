@@ -9514,6 +9514,34 @@
             "parapetYes": "Oui",
             "parapetNo": "Non"
         },
+        "eligibility": {
+            "set": {
+                "gb-living-tradition-mansards": "Mansardes selon Living Tradition"
+            },
+            "verdict": {
+                "eligible": "Remplit toutes les conditions que l’application peut vérifier",
+                "ineligible": "Non admissible",
+                "unknown": "Pas encore connu : des données manquent"
+            },
+            "status": {
+                "pass": "Oui",
+                "fail": "Non",
+                "unknown": "Inconnu",
+                "unchecked": "Non vérifié par l’application"
+            },
+            "test": {
+                "built": "Construit après 1700 et avant 1918",
+                "parapet": "Acrotère sur toute la façade sur rue",
+                "frontGable": "Ni pignon ni demi-lucarnes en façade",
+                "noMansard": "Pas d’étage mansardé existant",
+                "storeys": "Au moins deux niveaux",
+                "attached": "Jumelé, ou dans une rangée d’au moins trois",
+                "footprint": "Emprise de 100 m² au plus",
+                "originalUse": "Construit comme maison, ou boutique avec logement au-dessus",
+                "listing": "Non classé grade I ou II*",
+                "topWindows": "Fenêtres du dernier étage d’au moins 80 cm de haut"
+            }
+        },
         "survey": "Relevé des hauteurs",
         "source": "Source des bâtiments",
         "proposedForm": "Représentation proposée",

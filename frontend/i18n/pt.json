@@ -9514,6 +9514,34 @@
             "parapetYes": "Sim",
             "parapetNo": "Não"
         },
+        "eligibility": {
+            "set": {
+                "gb-living-tradition-mansards": "Mansardas segundo Living Tradition"
+            },
+            "verdict": {
+                "eligible": "Cumpre todas as condições que a aplicação consegue verificar",
+                "ineligible": "Não elegível",
+                "unknown": "Ainda não se sabe: faltam dados"
+            },
+            "status": {
+                "pass": "Sim",
+                "fail": "Não",
+                "unknown": "Desconhecido",
+                "unchecked": "Não verificado pela aplicação"
+            },
+            "test": {
+                "built": "Construído depois de 1700 e antes de 1918",
+                "parapet": "Platibanda ao longo de toda a fachada para a rua",
+                "frontGable": "Sem empena nem meias-trapeiras na fachada",
+                "noMansard": "Sem piso de mansarda existente",
+                "storeys": "Pelo menos dois pisos",
+                "attached": "Geminado, ou numa banda de pelo menos três",
+                "footprint": "Implantação de no máximo 100 m²",
+                "originalUse": "Construído como casa, ou loja com divisões por cima",
+                "listing": "Não classificado de grau I nem II*",
+                "topWindows": "Janelas do último piso com pelo menos 80 cm de altura"
+            }
+        },
         "survey": "Levantamento de alturas",
         "source": "Fonte dos edifícios",
         "proposedForm": "Representação proposta",

@@ -320,6 +320,30 @@
         if (selected()?.id === record.id) renderInspector();
         return read;
     }
+    // A rule set's conditions on what the building is (planning/eligibility.js), test by test, from
+    // its facts, its footprint and the buildings loaded around it.
+    function renderEligibility(set, item, facts) {
+        const pool = root.buildingFeaturePool;
+        const result = root.BuildingEligibility.evaluate(set, {
+            facts, footprint: item.site ? { type: 'Feature', properties: {}, geometry: item.site } : null,
+            neighbours: Array.isArray(pool) && pool.length ? pool : null,
+        }, root.BuildingEligibility.turfOps(root.turf));
+        const block = element('div', 'planning-eligibility');
+        block.setAttribute('data-eligibility', result.verdict);
+        block.append(element('strong', '', t(`eligibility.set.${set.id}`)),
+            element('p', 'planning-inspector__description', t(`eligibility.verdict.${result.verdict}`)));
+        const list = element('ul', 'planning-eligibility__tests');
+        for (const test of result.tests) {
+            const row = element('li', 'planning-eligibility__test');
+            row.setAttribute('data-status', test.status);
+            row.append(element('span', '', `${test.cite} ${t(`eligibility.test.${test.id}`)}`), element('span', 'planning-eligibility__status', t(`eligibility.status.${test.status}`)));
+            list.append(row);
+        }
+        const source = element('a', 'cb-link cb-link--external', set.source.label);
+        source.href = set.source.url; source.target = '_blank'; source.rel = 'noopener';
+        block.append(list, source);
+        return block;
+    }
     function renderFacts(item) {
         const state = item.buildingFacts, section = element('section', 'planning-building-facts');
         section.setAttribute('aria-label', t('buildingFacts'));
@@ -348,6 +372,9 @@
                 section.append(link);
             }
             if (!state.building.found) section.append(element('p', 'planning-inspector__description', t('buildingFactsNotFound', { source: edit?.source || '' })));
+            for (const set of root.BuildingEligibility?.forCity(root.CityConfigManager?.getCityConfig(item.source.city)?.planning?.ruleSetIds || []) || []) {
+                section.append(renderEligibility(set, item, state.building.facts));
+            }
         }
         const again = element('button', 'btn planning-building-facts__again', t('buildingFactsAgain'));
         again.type = 'button';
