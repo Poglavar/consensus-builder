@@ -1,6 +1,7 @@
 ## Copilot Instructions for `consensus-builder`
 
-- Scope: Thin Express/PostGIS API (`backend`), static Leaflet front-end (`frontend`), and Solidity NFTs (`blockchain`) on the deployed `colosseum-worlds-fair` branch. Check the current checkout before reproducing an issue; `main` is the frozen comparison branch.
+- The deployed `colosseum-worlds-fair` branch includes the Express/PostGIS API, the Leaflet frontend, and EVM and Solana contracts. Check the current checkout when reproducing a live issue.
+- Follow the [project instructions](../AGENTS.md) and use the [feature ownership table](../docs/development.md#where-to-change-a-feature) to find the implementation and focused tests.
 
 ### Runbook
 
@@ -26,7 +27,7 @@
 - Parcel flow (`js/parcels.js` + helpers) fetches 500 m grid cells via `data-source.js`, merges into `parcelCache.grid`, and mirrors to `localStorage` (`parcel_${id}_*`, `modified_parcels`). Ownership highlighting comes from backend ownership summaries.
 - Proposals & roads: `proposal-manager.js` derives child parcels via `_computeExistingMaxSubnumber`; `proposals.js` persists to `proposalStorage` and exposes `addProposal` / `updateProposalStatus`. Road tooling (`road-drawing.js`, `road-detection.js`, `road-analysis.js`) assumes ProposalManager persistence.
 - Persistent UI state: wait for `PersistentStorage.ready` before touching storage-backed modules; use `updateStatus` and existing CustomEvents instead of direct calls. Never use `!important` in CSS.
-- Frontend behavior is covered by targeted Playwright specs in `e2e/tests/`; run the relevant spec for a changed browser flow. Do not claim a full frontend suite when only a targeted spec was run.
+- Verify a changed browser flow with its Playwright spec in `e2e/tests/`.
 - Frontend should work off a single data interface, and any new data source needs to adapt to that, not the other way around (we should not adapt frontend to different data source idiosyncrasies). Just add adapters in the data source layer, if needed.
 
 ### Blockchain patterns

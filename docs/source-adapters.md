@@ -42,42 +42,28 @@ The Permitted layer composes cadastral parcels, government-plan lots and applied
 6. Validate limits and security at the reader boundary: endpoint protocol/host policy, pagination, response bytes, features, geometry validity, bbox/area and timeout. Never embed tokens or credentials in endpoint URLs or source descriptors; use a server-side secret mechanism when a provider requires authentication. A DB-backed source is repository-owned: do not expose a custom SQL/table adapter or mark it user-configurable.
 7. Include a small sanitized fixture and an example descriptor with the preparation. Check the adapter's output against the operation schema and its consumer, including empty, partial, malformed and over-limit responses. Document how attribution reaches the UI.
 
-### Registration procedure
+### Register a parcel provider
 
-Use this order when a prepared source is ready to enter the application. The runtime registry is
-the executable allowlist; contract metadata and the catalog are its discoverable description.
-
-1. Add or extend the adapter in the owning runtime table. Parcel sources belong in
-   [`backend/parcels/sources.js`](../backend/parcels/sources.js); buildings in
-   [`backend/buildings/index.js`](../backend/buildings/index.js); planning in
-   [`backend/planning/sources.js`](../backend/planning/sources.js); and other shared readers in
-   the abstraction-specific module named in this guide. Register it with `SourceRuntime.createRegistry`,
-   declare required methods, and construct sources with `SourceRuntime.source`. Keep provider
-   clients and credentials in runtime context.
-2. Add the adapter's public operation metadata to
-   [`frontend/js/source-contracts.js`](../frontend/js/source-contracts.js). Keep operation names,
-   argument records, output schema/runtime type, units, null meanings and provenance in step with
-   the reader. This file is the contract catalog, not a second reader or validator.
-3. For a configured parcel/building source, add the public descriptor to
-   [`frontend/data/source-catalog.json`](../frontend/data/source-catalog.json), including stable
-   `id`, adapter, coverage/city scope, transport, limits and attribution. Database-owned sources
-   use its `databaseSources` entry; do not expose SQL or credentials as custom config. Other
-   abstractions use their owning configuration file (for example `frontend/js/city-config.js`).
-4. For a parcel source, qualify the frozen candidate with
-   [`scripts/run-parcel-qualification.py`](../scripts/run-parcel-qualification.py). Its bounded
-   direct/text-scanning path invokes [`scripts/prepare-parcel-qualification.mjs`](../scripts/prepare-parcel-qualification.mjs),
-   [`scripts/qualify-parcel-source.mjs`](../scripts/qualify-parcel-source.mjs) and
-   [`scripts/parcel-qualification-metric.py`](../scripts/parcel-qualification-metric.py), writing
-   only to the requested state/attempt directory. `technical-qualified` is evidence for review,
-   not automatic catalog admission.
-5. Start with the narrow checks [`backend/test/source-contracts.test.js`](../backend/test/source-contracts.test.js),
-   [`backend/test/source-runtime.test.js`](../backend/test/source-runtime.test.js), and the
-   relevant catalog/reader test such as [`backend/test/parcel-catalog-startup.test.js`](../backend/test/parcel-catalog-startup.test.js),
-   [`backend/test/browser-source-readers.test.js`](../backend/test/browser-source-readers.test.js),
-   or [`backend/test/database-source-dispatch.test.js`](../backend/test/database-source-dispatch.test.js).
-   Add the focused route or browser spec when its consumer changes. Discovery metadata is assembled
-   by [`backend/routes/source-system.js`](../backend/routes/source-system.js), so verify it when
-   metadata changes.
+1. Find a source with the same transport and identity rules in the [source catalog](../frontend/data/source-catalog.json).
+   If its adapter already supports the candidate, reuse it and start with qualification below.
+2. For a new adapter, implement the parcel operations it supports and register its factory in
+   [the server registry](../backend/parcels/sources.js). A provider read directly by the map also
+   needs a browser-safe factory in [the browser registry](../backend/parcels/browser-source-runtime.js).
+   Rebuild that worker with `npm run build:parcels:browser` from `backend/`. Describe the adapter's
+   operations, arguments and outputs in [the source contracts](../frontend/js/source-contracts.js).
+3. Use [the qualification runner](../scripts/run-parcel-qualification.py) with the candidate and
+   its bounded test area. The [staging resolver](../scripts/lib/parcel_source_stage.py) locates the adapter
+   through its known module map, a candidate's explicit `adapterModule` filename, or a text scan of
+   named imports and factory entries in `backend/parcels/sources.js`. A dynamically registered
+   factory can run successfully while the staging resolver still needs that explicit filename.
+4. Add the qualified public descriptor to `sources` in the catalog, or to `databaseSources` for
+   database-owned data. Include its stable ID, coverage, attribution and limits. For a city default,
+   update [the city definitions](../frontend/data/city-configs.js) and regenerate the city files with
+   [the existing build script](../scripts/build-city-files.mjs).
+5. Check bounds reads and ID lookups in the reader's own tests. Verify registration with
+   [source contracts](../backend/test/source-contracts.test.js), [browser reads](../backend/test/browser-source-readers.test.js)
+   or [database dispatch](../backend/test/database-source-dispatch.test.js), as applicable.
+   The [source-system route](../backend/routes/source-system.js) supplies the metadata used by `ugt_list_sources`.
 
 ## Existing contracts and preparation notes
 

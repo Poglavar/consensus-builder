@@ -9,6 +9,10 @@ in the document that raised it until an explicit decision and implementation res
 
 ## Documentation
 
+Find a feature's implementation, MCP tools and focused tests in the
+[feature ownership table](docs/development.md#where-to-change-a-feature). For a parcel source,
+follow the [provider registration guide](docs/source-adapters.md#register-a-parcel-provider).
+
 All documents live in `docs/` (`docs/README.md` is the index; only `readme.md`, `AGENTS.md`,
 `MEMORY.md` and `tables-used.md` stay in the root because tooling reads them there). A document
 describes a current contract, a plan that is still open, or research; it carries no chronology,

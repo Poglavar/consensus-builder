@@ -9,8 +9,8 @@ Production runs the [colosseum-worlds-fair branch](https://github.com/Poglavar/c
 
 ## Where to change a feature
 
-Use this compact map to find the owner of a high-value flow before editing. The browser and MCP
-columns identify the parity surface; the persisted record column names durable state when one exists.
+Use the same record and editing operations in the browser and MCP. For parcel sources, see
+[how to register a provider](source-adapters.md#register-a-parcel-provider).
 
 | Flow | Owner | Browser surface | MCP surface | Persisted record | Behavior test |
 | --- | --- | --- | --- | --- | --- |
@@ -136,6 +136,20 @@ potentially expensive run; choose it deliberately rather than treating it as a q
 | EVM contracts | Foundry in `blockchain/forge-test/` (Hardhat tooling remains but holds no regression coverage) | | `cd blockchain && forge test` |
 | Solana programs | Anchor and TypeScript in `blockchain/solana/tests/`, against a local validator | | `cd blockchain/solana && yarn test`, plus the [real SAS lifecycle test](../blockchain/solana/README.md#localnet-tests) |
 | Production parcel smoke | `backend/scripts/smoke-production-bbox.mjs`, read-only | `cd backend && npm run smoke:prod:parcels` | |
+
+### GitHub Actions
+
+The [backend workflow](../.github/workflows/backend-tests.yml) runs Vitest, the native Node tests
+and the Solana Rust unit tests. Vitest also uses the existing lockfile in `blockchain/solana`
+for Anchor fixtures. The native tests use a disposable PostGIS database for mesh footprints,
+planning diagnostics, points and city-token transactions. The workflow summary identifies the
+live source-data checks that need a populated geodata database. Tests of the operator's shared
+LLM pricing and ledger run where the sibling `agents/lib/llm-cost` checkout is present.
+
+The [portable plan files](../.github/workflows/portable-plan-files.yml) and
+[planning diagnostics](../.github/workflows/planning-diagnostics.yml) workflows run focused
+regressions and Chromium file-handling checks. The workflows use the dependencies already locked
+in this repository.
 
 ### Resumable test runs
 
