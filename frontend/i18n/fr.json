@@ -9503,6 +9503,8 @@
         "buildingFactsEdit": "Ajouter ou corriger dans {{source}}",
         "buildingFactsNotFound": "{{source}} n’a plus ce bâtiment.",
         "buildingFactsAgain": "Vérifier à nouveau",
+        "buildingFactsWaiting": "OpenStreetMap affiche une modification une ou deux minutes après son enregistrement : vérification toutes les 30 secondes…",
+        "buildingFactsUnchanged": "{{source}} n’affiche encore aucun changement. Si vous avez enregistré une modification, vérifiez à nouveau dans une minute.",
         "buildingFact": {
             "field": {
                 "storeys": "Niveaux",
@@ -10157,6 +10159,8 @@
             "title": "Maisons couvertes",
             "hint": "Ce vote de rue ne peut couvrir que des maisons remplissant les conditions de la règle. Leurs données sont lues dans OpenStreetMap et leur classement dans le registre du patrimoine : ajoutez dans OpenStreetMap celles qui manquent, puis vérifiez à nouveau.",
             "checking": "Vérification des maisons couvertes…",
+            "waiting": "En attente d’OpenStreetMap : une modification apparaît ici une ou deux minutes après son enregistrement. Vérification toutes les 30 secondes…",
+            "unchanged": "OpenStreetMap n’affiche encore aucun changement. Si vous avez enregistré une modification, vérifiez à nouveau dans une minute.",
             "failed": "La vérification n’a pas pu aboutir : {{error}}",
             "summary": "{{eligible}} maisons couvertes sur {{total}} admissibles",
             "none": "Le plan ne surélève aucun bâtiment existant d’une mansarde.",

@@ -9277,6 +9277,8 @@
         "buildingFactsEdit": "Add or correct in {{source}}",
         "buildingFactsNotFound": "{{source}} no longer has this building.",
         "buildingFactsAgain": "Check again",
+        "buildingFactsWaiting": "OpenStreetMap shows an edit a minute or two after it is saved: checking every 30 seconds…",
+        "buildingFactsUnchanged": "{{source}} shows no change yet. If you saved an edit, check again in a minute.",
         "buildingFact": {
             "field": {
                 "storeys": "Storeys",
@@ -10106,6 +10108,8 @@
             "title": "Covered houses",
             "hint": "This street vote may cover only houses that meet the rule’s eligibility conditions. Their facts are read from OpenStreetMap and their listing from the heritage register: add missing facts in OpenStreetMap, then check again.",
             "checking": "Checking the covered houses…",
+            "waiting": "Waiting for OpenStreetMap: an edit shows here a minute or two after it is saved. Checking every 30 seconds…",
+            "unchanged": "OpenStreetMap shows no change yet. If you saved an edit, check again in a minute.",
             "failed": "The check could not be completed: {{error}}",
             "summary": "{{eligible}} of {{total}} covered houses eligible",
             "none": "The plan raises no existing building with a mansard.",

@@ -38,6 +38,31 @@ describe('building facts client', () => {
         await expect(facts.read('osm:way/123', { fetchFn: async () => new Response('busy', { status: 502 }) })).rejects.toThrow('HTTP 502');
         await expect(facts.read('osm:way/9', { fetchFn: async () => new Response(JSON.stringify(answer(house))) })).rejects.toThrow('Invalid');
     });
+    // OpenStreetMap shows an edit on Overpass a minute or two after it is saved: Check again keeps
+    // reading until a building's version moves, and gives up after its last attempt.
+    it('after an edit, reads again until the source shows a change', async () => {
+        const at = version => ({ id: 'osm:way/1', found: true, facts: {}, source_version: { version } });
+        const shown = new Map([['osm:way/1', at(5)], ['osm:way/2', at(1)]]);
+        const versions = [5, 5, 6];
+        const read = vi.fn(async ids => new Map(ids.map(id => [id, id === 'osm:way/1' ? at(versions.shift()) : at(1)])));
+        const waits = [], waiting = [];
+        const result = await facts.readUntilChanged(['osm:way/1', 'osm:way/2'], shown, read, { wait: async ms => { waits.push(ms); }, onWaiting: attempt => waiting.push(attempt) });
+        expect(result.changed).toBe(true);
+        expect(result.answer.get('osm:way/1').source_version.version).toBe(6);
+        expect(read).toHaveBeenCalledTimes(3);
+        expect(waits).toEqual([30_000, 30_000]);
+        expect(waiting).toEqual([1, 2]);
+        // Nothing changes: seven reads, about three minutes, then it says so.
+        const still = vi.fn(async ids => new Map(ids.map(id => [id, at(id === 'osm:way/1' ? 5 : 1)])));
+        expect((await facts.readUntilChanged(['osm:way/1', 'osm:way/2'], shown, still, { wait: async () => {} })).changed).toBe(false);
+        expect(still).toHaveBeenCalledTimes(7);
+        // The card closed: it stops after the wait instead of reading again.
+        const closed = vi.fn(async ids => new Map(ids.map(id => [id, at(5)])));
+        await facts.readUntilChanged(['osm:way/1'], shown, closed, { wait: async () => {}, stillWanted: () => false });
+        expect(closed).toHaveBeenCalledTimes(1);
+        // A building first found (none shown before) counts as a change.
+        expect((await facts.readUntilChanged(['osm:way/1'], new Map(), still, { wait: async () => {} })).changed).toBe(true);
+    });
     it('puts spans of years in words', () => {
         expect(facts.builtWords({ from: 1890, to: 1890 }, t)).toBe('1890');
         expect(facts.builtWords({ from: null, to: 1912 }, t)).toBe('builtBefore(1913)');

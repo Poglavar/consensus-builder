@@ -9503,6 +9503,8 @@
         "buildingFactsEdit": "Adicionar ou corrigir no {{source}}",
         "buildingFactsNotFound": "O {{source}} já não tem este edifício.",
         "buildingFactsAgain": "Verificar de novo",
+        "buildingFactsWaiting": "O OpenStreetMap mostra uma edição um ou dois minutos depois de guardada: a verificar a cada 30 segundos…",
+        "buildingFactsUnchanged": "O {{source}} ainda não mostra alterações. Se guardou uma edição, verifique de novo daqui a um minuto.",
         "buildingFact": {
             "field": {
                 "storeys": "Pisos",
@@ -10157,6 +10159,8 @@
             "title": "Casas abrangidas",
             "hint": "Esta votação de rua só pode abranger casas que cumpram as condições da regra. Os dados são lidos do OpenStreetMap e a classificação do registo do património: acrescente no OpenStreetMap os que faltam e verifique de novo.",
             "checking": "A verificar as casas abrangidas…",
+            "waiting": "À espera do OpenStreetMap: uma edição aparece aqui um ou dois minutos depois de guardada. A verificar a cada 30 segundos…",
+            "unchanged": "O OpenStreetMap ainda não mostra alterações. Se guardou uma edição, verifique de novo daqui a um minuto.",
             "failed": "Não foi possível concluir a verificação: {{error}}",
             "summary": "{{eligible}} de {{total}} casas abrangidas elegíveis",
             "none": "O plano não eleva nenhum edifício existente com uma mansarda.",

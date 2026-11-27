@@ -964,11 +964,21 @@
         async function checkEligibility(control = null) {
             const set = requiredSet(state.values.voting);
             if (!set || eligibility.busy) return;
-            eligibility.busy = true; eligibility.error = null; renderEligibility();
+            eligibility.busy = true; eligibility.error = null; eligibility.unchanged = false; renderEligibility();
             const work = async () => {
                 const designs = draft().designs.map(design => root.proposalStorage.getProposal(design.proposalId)).filter(Boolean);
                 const houses = root.BuildingEligibility.coveredHouses(set, designs);
-                eligibility.judged = await root.BuildingEligibility.check(set, houses, ids => root.BuildingFacts.readMany(ids, { fresh: Boolean(control) }));
+                // Check again after an edit keeps reading until OpenStreetMap shows a change (it
+                // publishes edits a minute or two after they are saved), saying it is waiting.
+                const shown = new Map((eligibility.judged || []).filter(house => house.id && house.building).map(house => [house.id, house.building]));
+                const read = !control || !shown.size ? ids => root.BuildingFacts.readMany(ids, { fresh: Boolean(control) })
+                    : async ids => {
+                        const { answer, changed } = await root.BuildingFacts.readUntilChanged(ids, shown, more => root.BuildingFacts.readMany(more, { fresh: true }), {
+                            onWaiting: () => { eligibility.waiting = true; if (!state.closed) renderEligibility(); }, stillWanted: () => !state.closed });
+                        eligibility.unchanged = !changed;
+                        return answer;
+                    };
+                eligibility.judged = await root.BuildingEligibility.check(set, houses, read);
                 eligibility.evidence = houses.length ? root.BuildingEligibility.evidence(set, eligibility.judged, new Date().toISOString()) : null;
                 state.values.voting = { ...state.values.voting };
                 delete state.values.voting.eligibility;
@@ -977,7 +987,7 @@
             try { await (control ? root.BusyControl.track(control, work) : work()); } catch (error) {
                 eligibility.error = error.message;
                 console.error(`[${new Date().toISOString()}] [AgreementEditor] eligibility check failed`, error);
-            } finally { eligibility.busy = false; if (!state.closed) { renderEligibility(); issues(); } }
+            } finally { eligibility.busy = false; eligibility.waiting = false; if (!state.closed) { renderEligibility(); issues(); } }
         }
         // Literal keys, so the locale coverage test sees each one.
         const VERDICT_TEXT = { eligible: () => t('voting.eligibility.verdict.eligible', 'Eligible'),
@@ -990,9 +1000,11 @@
             const eligibleCount = judged.filter(house => house.id && house.result.verdict === 'eligible').length;
             eligibilityNode.innerHTML = `<h4>${esc(t('voting.eligibility.title', 'Covered houses'))}</h4>`
                 + `<p class="agreement-hint">${esc(t('voting.eligibility.hint', 'This street vote may cover only houses that meet the rule’s eligibility conditions. Their facts are read from OpenStreetMap and their listing from the heritage register: add missing facts in OpenStreetMap, then check again.'))}</p>`
-                + (eligibility.busy ? `<p role="status">${esc(t('voting.eligibility.checking', 'Checking the covered houses…'))}</p>`
+                + (eligibility.waiting ? `<p role="status">${esc(t('voting.eligibility.waiting', 'Waiting for OpenStreetMap: an edit shows here a minute or two after it is saved. Checking every 30 seconds…'))}</p>`
+                    : eligibility.busy ? `<p role="status">${esc(t('voting.eligibility.checking', 'Checking the covered houses…'))}</p>`
                     : eligibility.error ? `<p role="alert">${esc(t('voting.eligibility.failed', 'The check could not be completed: {{error}}', { error: eligibility.error }))}</p>`
                         : judged.length ? `<p role="status">${esc(t('voting.eligibility.summary', '{{eligible}} of {{total}} covered houses eligible', { eligible: eligibleCount, total: judged.length }))}</p>`
+                            + (eligibility.unchanged ? `<p class="agreement-hint">${esc(t('voting.eligibility.unchanged', 'OpenStreetMap shows no change yet. If you saved an edit, check again in a minute.'))}</p>` : '')
                             : eligibility.judged ? `<p role="status">${esc(t('voting.eligibility.none', 'The plan raises no existing building with a mansard.'))}</p>` : '')
                 + (judged.length ? `<ul class="voting-eligibility__houses">${judged.map(house => {
                     const verdict = house.id ? house.result.verdict : 'unknown';

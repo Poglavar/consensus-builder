@@ -221,7 +221,8 @@ test('a Living Tradition street vote waits until every covered house is eligible
     route.fulfill({ json: { fields: [], sources: [], buildings: ids.map(id => ({ id, found: true,
       facts: { ...georgian, parapet: parapetTagged.has(id) ? fact(true) : null },
       edit: { url: `https://www.openstreetmap.org/edit?editor=id&way=${id.split('/')[1]}`, source: 'OpenStreetMap', keys: { parapet: 'building:parapet' } },
-      source_version: { version: 2, changed: '2026-11-27T15:00:00Z' } })) } });
+      // Tagging the parapet is an OpenStreetMap edit, so it raises the building's version.
+      source_version: { version: parapetTagged.has(id) ? 3 : 2, changed: '2026-11-27T15:00:00Z' } })) } });
   });
   const { layoutId } = await applyLayout(page);
   await page.evaluate(id => {
