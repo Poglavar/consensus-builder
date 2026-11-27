@@ -1,4 +1,4 @@
-//! Lens members' property decisions: PropertyOfferDecision-v3 for property offers, and v2 for
+//! Lens members' property decisions: PropertyOfferConfirmation-v1 for property offers, and v2 for
 //! apartment deposits in developer rounds (proposal_pledge).
 use super::{
     parse_attestation, parse_credential_authority, parse_pubkey_string, schema_address,
@@ -41,7 +41,7 @@ fn digest(bytes: &[u8]) -> Option<[u8; 32]> {
     Some(result)
 }
 
-/// What a PropertyOfferDecision-v3 confirms: role 0, from a member of the buyer's lens, that the
+/// What a PropertyOfferConfirmation-v1 confirms: role 0, from a member of the buyer's lens, that the
 /// seller holds the asset (and, by its address, which holding it sells); role 1, from a member of
 /// the seller's lens, that the buyer qualifies.
 pub struct OfferDecision<'a> {
@@ -55,7 +55,7 @@ pub struct OfferDecision<'a> {
     pub role: u8,
 }
 
-/// Read a lens member's PropertyOfferDecision-v3. Payload (borsh): cid, offer, termsHash,
+/// Read a lens member's PropertyOfferConfirmation-v1. Payload (borsh): cid, offer, termsHash,
 /// payoutsHash (hex), buyer, seller, role u8, asset (hex identity hash), holding (the statement or
 /// offer through which the seller holds the asset; empty for role 1), observedAt i64. The program
 /// checks the binding to the offer; asset and holding are for readers, and the attestation's
@@ -82,7 +82,7 @@ pub fn offer_decision<'a>(
     if authority != att.authority {
         return Err(Account);
     }
-    if att.schema != schema_address(credential.key, b"PropertyOfferDecision", 3) {
+    if att.schema != schema_address(credential.key, b"PropertyOfferConfirmation", 1) {
         return Err(Schema);
     }
     let mut r = PayloadReader::new(att.payload);

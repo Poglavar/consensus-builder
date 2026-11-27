@@ -1,5 +1,5 @@
 // Local-validator lifecycle of property_offer v2: each side names its lens, the buyer's money is
-// escrowed when the buyer acts, the offer waits for its lens members' PropertyOfferDecision-v3
+// escrowed when the buyer acts, the offer waits for its lens members' PropertyOfferConfirmation-v1
 // confirmations, then pays the schedule in SOL or devnet USDC; cancel and expiry refund the buyer.
 // The mock SAS genesis program and the local USDC mint are configured in Anchor.toml.
 import * as anchor from '@coral-xyz/anchor';
@@ -39,12 +39,12 @@ describe('property_offer v2 lifecycle', () => {
     }
     const offerPda = (maker: PublicKey, offerCid: string) => PublicKey.findProgramAddressSync([Buffer.from('property-offer'), maker.toBuffer(), hash(Buffer.from(offerCid))], program.programId)[0];
 
-    /** A lens member's PropertyOfferDecision-v3, at an address derived from the asset and holding. */
-    async function confirmAs(member: LensMember, offer: PublicKey, o: { cid: string; terms: Buffer; payouts: { recipient: PublicKey; amount: number }[]; buyer: PublicKey; seller: PublicKey }, role: 0 | 1, version = 3) {
+    /** A lens member's PropertyOfferConfirmation-v1, at an address derived from the asset and holding. */
+    async function confirmAs(member: LensMember, offer: PublicKey, o: { cid: string; terms: Buffer; payouts: { recipient: PublicKey; amount: number }[]; buyer: PublicKey; seller: PublicKey }, role: 0 | 1, version = 1) {
         const payload = Buffer.concat([borshBytes(o.cid), borshBytes(offer.toBase58()), borshBytes(o.terms.toString('hex')), borshBytes(payoutHash(o.payouts).toString('hex')),
             borshBytes(o.buyer.toBase58()), borshBytes(o.seller.toBase58()), Buffer.from([role]), borshBytes(hash(Buffer.from('["parcel/v1","test-source","P-1"]')).toString('hex')),
             borshBytes(role === 0 ? 'first-holding' : ''), i64((await chainNow(connection)) - 1)]);
-        const attestation = await writeSasAccount(provider, attestationBytes({ credential: member.credential, schema: schemaPda(member.credential, 'PropertyOfferDecision', version), payload, authority: member.publicKey }));
+        const attestation = await writeSasAccount(provider, attestationBytes({ credential: member.credential, schema: schemaPda(member.credential, version === 1 ? 'PropertyOfferConfirmation' : 'PropertyOfferDecision', version), payload, authority: member.publicKey }));
         return program.methods.confirm().accountsStrict({ offer, attestation, credential: member.credential }).rpc();
     }
 

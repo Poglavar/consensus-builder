@@ -125,7 +125,7 @@
     {
       "name": "confirm",
       "docs": [
-        "Record one lens member's PropertyOfferDecision-v3 for this committed offer. Anyone may submit",
+        "Record one lens member's PropertyOfferConfirmation-v1 for this committed offer. Anyone may submit",
         "it; the attestation's signer must be a member of the lens its role belongs to, and each",
         "member counts once."
       ],

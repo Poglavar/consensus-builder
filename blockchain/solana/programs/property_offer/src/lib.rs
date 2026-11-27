@@ -9,7 +9,7 @@
 //! Lifecycle: create → commit → confirm* → execute, or cancel (the maker, while Open) or expire
 //! (anyone, after the deadline; the buyer gets the escrow back). The buyer's money is escrowed when
 //! the buyer acts: at create for a buy offer, at commit for a sell offer. Once both sides are
-//! committed the offer waits for its lens members; each confirmation is a PropertyOfferDecision-v3
+//! committed the offer waits for its lens members; each confirmation is a PropertyOfferConfirmation-v1
 //! SAS attestation by that member, recorded by `confirm`, and `execute` pays the fixed payout
 //! schedule once both lenses are met. A lens never decides by default: an unconfirmed offer expires.
 
@@ -146,7 +146,7 @@ pub mod property_offer {
         Ok(())
     }
 
-    /// Record one lens member's PropertyOfferDecision-v3 for this committed offer. Anyone may submit
+    /// Record one lens member's PropertyOfferConfirmation-v1 for this committed offer. Anyone may submit
     /// it; the attestation's signer must be a member of the lens its role belongs to, and each
     /// member counts once.
     pub fn confirm(ctx: Context<Confirm>) -> Result<()> {
