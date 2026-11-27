@@ -1900,7 +1900,7 @@
                 "outlook": "Vista e céu",
                 "garden": "Limite do jardim",
                 "privacy": "Privacidade e devassamento",
-                "other": "Outro direito (indique qual na nota)"
+                "another": "Outro direito (indique qual na nota)"
             },
             "note": "Nota (que direito, se for outro)",
             "readings": "Medições ao adicionar",

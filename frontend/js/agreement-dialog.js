@@ -295,7 +295,8 @@
         outlook: () => t('agreement.neighbours.right.outlook', 'Outlook and sky'),
         garden: () => t('agreement.neighbours.right.garden', 'Garden limit'),
         privacy: () => t('agreement.neighbours.right.privacy', 'Privacy and overlooking'),
-        other: () => t('agreement.neighbours.right.other', 'Another right (say which in the note)')
+        // The key is "another", not "other": i18n reads a trailing ".other" as a plural form.
+        other: () => t('agreement.neighbours.right.another', 'Another right (say which in the note)')
     };
     const EFFECT_TEXT = {
         waiver: () => t('agreement.neighbours.effect.waiver', 'Waiver: they give the right and must approve'),

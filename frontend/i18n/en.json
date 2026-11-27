@@ -8324,7 +8324,7 @@
                 "outlook": "Outlook and sky",
                 "garden": "Garden limit",
                 "privacy": "Privacy and overlooking",
-                "other": "Another right (say which in the note)"
+                "another": "Another right (say which in the note)"
             },
             "note": "Note (which right, if another)",
             "readings": "Readings when added",

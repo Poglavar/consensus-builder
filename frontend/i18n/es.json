@@ -8351,7 +8351,7 @@
                 "outlook": "Vistas y cielo",
                 "garden": "Límite del jardín",
                 "privacy": "Privacidad y vistas sobre la parcela",
-                "other": "Otro derecho (indica cuál en la nota)"
+                "another": "Otro derecho (indica cuál en la nota)"
             },
             "note": "Nota (qué derecho, si es otro)",
             "readings": "Mediciones al añadirla",

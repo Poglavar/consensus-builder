@@ -8370,7 +8370,7 @@
                 "outlook": "Pogled i nebo",
                 "garden": "Ograničenje bašte",
                 "privacy": "Privatnost i pogled na parcelu",
-                "other": "Drugo pravo (navedite koje u belešci)"
+                "another": "Drugo pravo (navedite koje u belešci)"
             },
             "note": "Beleška (koje pravo, ako je drugo)",
             "readings": "Očitavanja pri dodavanju",
