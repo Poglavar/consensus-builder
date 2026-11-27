@@ -68,6 +68,7 @@
 
     const recordApi = () => root.AgreementRecord || (typeof require === 'function' ? require('./agreement-record.js') : null);
     const personsApi = () => root.AgreementPersons || (typeof require === 'function' ? require('./agreement-persons.js') : null);
+    const groundApi = () => root.AgreementGround || (typeof require === 'function' ? require('./agreement-ground.js') : null);
 
     // The abstract party standing for an input parcel's owner(s) (AgreementRecord.partyKey).
     function partyLabel(parcelId) {
@@ -104,36 +105,6 @@
         const goals = root.ProposalDesignGoals;
         const key = goals && typeof goals.keyOf === 'function' ? goals.keyOf(record) : null;
         return key && typeof root.formatProposalTypeLabel === 'function' ? root.formatProposalTypeLabel(key) : '';
-    }
-
-    // The cadastral ids the designs take: what each declares plus the cadastral ids of the pieces the
-    // fabric says it produced, read as AgreementGround.derive reads them. Sorted, so the same designs
-    // always ask for the same ground.
-    function inputParcelIds(designs, fabric) {
-        const ids = new Set();
-        const addAll = list => (Array.isArray(list) ? list : []).forEach(id => { if (idOf(id)) ids.add(idOf(id)); });
-        (Array.isArray(designs) ? designs : []).forEach(design => {
-            if (!design) return;
-            addAll(design.cadastreParcelIds);
-            const pieces = fabric && typeof fabric.producedBy === 'function' ? fabric.producedBy(design.proposalId) : [];
-            (pieces || []).forEach(piece => addAll(piece && piece.properties && piece.properties.cadastreParcelIds));
-        });
-        return Array.from(ids).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-    }
-
-    // The original cadastral features (CadastralParcelRepository.ensureIds(...).features) by id, as
-    // AgreementGround.derive looks them up. `featureIdOf` is the fabric's id rule when there is one.
-    function originalsById(features, featureIdOf) {
-        const identify = typeof featureIdOf === 'function' ? featureIdOf : feature => {
-            const props = (feature && feature.properties) || {};
-            return props.parcelId ?? props.parcel_id ?? props.PARCEL_ID ?? props.id;
-        };
-        const byId = new Map();
-        (Array.isArray(features) ? features : []).forEach(feature => {
-            const id = idOf(identify(feature));
-            if (id && !byId.has(id)) byId.set(id, feature);
-        });
-        return byId;
     }
 
     // ---- land, allocation, money -----------------------------------------------------------------
@@ -1847,10 +1818,10 @@
                     state.designs = selected;
                     state.fingerprints = new Map(selected.map(record => [idOf(record.proposalId), root.DesignRecord.cidOf(record)]));
                     const repository = root.CadastralParcelRepository;
-                    const loaded = await repository.ensureIds(inputParcelIds(selected, root.LiveParcelFabric), { retainOnly: true });
+                    const loaded = await repository.ensureIds(groundApi().inputParcelIds(selected, root.LiveParcelFabric), { retainOnly: true });
                     if (state.closed || sequence !== state.sequence) return;
                     state.land = root.AgreementGround.derive({ designs: selected, fabric: root.LiveParcelFabric,
-                        originals: originalsById(loaded.features, root.LiveParcelFabric.featureId) });
+                        originals: groundApi().originalsById(loaded.features, root.LiveParcelFabric.featureId) });
                     reconcileAllocations();
                     const ownerOf = localOwners();
                     state.approvalConfig = ruleConfigAfterDerive(state.approvalConfig, state.land.inputs, inputs => api.rightsFromInputs(inputs, ownerOf, state.values.affected));
@@ -2251,7 +2222,7 @@
         return closed;
     }
     return {
-        open, SCHEMA, LOCAL_RIGHTS_PROVIDER, appliedDesigns, designTitle, inputParcelIds, originalsById,
+        open, SCHEMA, LOCAL_RIGHTS_PROVIDER, appliedDesigns, designTitle,
         partiesOf, allocationOptions, allocationValue, allocationTo, allocationMode, randomAllocations, allocationSpread,
         allocationSummaryHtml, tabLabel, tabCounts, cashCents, cashInputText, termsOf, lensSummaryHtml, lensThresholdOptionsHtml, lensRule,
         keptTerms, sponsorLine, ruleConfigAfterDerive, deadlineFromDate, dateFromDeadline, recordFromForm,

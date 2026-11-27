@@ -11,9 +11,9 @@ test('the Rules tab opens the scheme guide and drafts a counter-agreement from t
     const w = window as any, design = w.proposalStorage.getProposal(layoutId);
     const snapshot = w.PlanComposition.create('Allocation plan', [design], w.MapShare.capture(w)); w.PlanWorkspace.save(snapshot);
     const ground = w.AgreementGround, fabric = w.LiveParcelFabric;
-    const ids = w.AgreementDialog.inputParcelIds([design], fabric);
+    const ids = ground.inputParcelIds([design], fabric);
     const originals = (await w.CadastralParcelRepository.ensureIds(ids, { retainOnly: true })).features;
-    const land = ground.derive({ designs: [design], fabric, originals: w.AgreementDialog.originalsById(originals, fabric.featureId),
+    const land = ground.derive({ designs: [design], fabric, originals: ground.originalsById(originals, fabric.featureId),
       area: (feature: any) => w.turf.area(feature) });
     // The input parcel is its owners' abstract party; the agreement names no people.
     const ownerKey = w.AgreementRecord.partyKey(land.inputs.parcels[0].parcelId);

@@ -488,7 +488,7 @@
         async function deriveLand(records) {
             const fabric = win.LiveParcelFabric;
             const ground = win.AgreementGround;
-            const ids = win.AgreementDialog.inputParcelIds(records, fabric);
+            const ids = ground.inputParcelIds(records, fabric);
             let features = [];
             if (ids.length && !win.ParcelGroundFallback?.isWithoutParcels?.()) {
                 const result = await win.CadastralParcelRepository.ensureIds(ids, { retainOnly: true });
@@ -496,7 +496,7 @@
             }
             return ground.derive({
                 designs: records, fabric,
-                originals: win.AgreementDialog.originalsById(features, fabric && fabric.featureId),
+                originals: ground.originalsById(features, fabric && fabric.featureId),
                 area: ground.areaOf
             });
         }

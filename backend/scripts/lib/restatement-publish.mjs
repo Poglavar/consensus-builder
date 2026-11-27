@@ -311,7 +311,7 @@ export function capturePageScript(config) {
         const designs = records.map((record, index) => ({ cid: config.cids[index], here: window.DesignRecord.cidOf(record) }));
         note('deriving the land');
         const fabric = window.LiveParcelFabric;
-        const ids = window.AgreementDialog.inputParcelIds(records, fabric);
+        const ids = window.AgreementGround.inputParcelIds(records, fabric);
         let features = [];
         if (ids.length && !(window.ParcelGroundFallback && window.ParcelGroundFallback.isWithoutParcels && window.ParcelGroundFallback.isWithoutParcels())) {
             const loaded = await window.CadastralParcelRepository.ensureIds(ids, { retainOnly: true });
@@ -320,7 +320,7 @@ export function capturePageScript(config) {
         const derived = window.AgreementGround.derive({
             designs: records,
             fabric,
-            originals: window.AgreementDialog.originalsById(features, fabric && fabric.featureId),
+            originals: window.AgreementGround.originalsById(features, fabric && fabric.featureId),
             area: feature => window.turf.area(feature)
         });
         const outputs = derived.outputs.map(output => {

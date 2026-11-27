@@ -73,10 +73,10 @@
             const records = [...applied.localIds.values()].map(id => root.proposalStorage.getProposal(id));
             let derived = null;
             if (content.rule.electorate !== 'investors') {
-                const ids = root.AgreementDialog.inputParcelIds(records, root.LiveParcelFabric);
+                const ids = root.AgreementGround.inputParcelIds(records, root.LiveParcelFabric);
                 const originals = await root.CadastralParcelRepository.ensureIds(ids, { retainOnly: true });
                 derived = root.AgreementGround.derive({ designs: records, fabric: root.LiveParcelFabric,
-                    originals: root.AgreementDialog.originalsById(originals.features, root.LiveParcelFabric.featureId),
+                    originals: root.AgreementGround.originalsById(originals.features, root.LiveParcelFabric.featureId),
                     ownerOf: () => [] });
                 if (derived.outputs.length !== content.outputs.length || derived.outputs.some(o => !content.outputs.some(expected => expected.hash === o.hash))) throw new Error('Draft agreement ground differs here. Review the designs before creating the agreement.');
             }

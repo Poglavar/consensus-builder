@@ -63,6 +63,35 @@
     const sortedUnique = list => Array.from(new Set(list)).sort(numeric);
     const sameSet = (a, b) => a.size === b.size && Array.from(a).every(item => b.has(item));
 
+    // The cadastral ids a set of designs takes, including ids carried by pieces the live fabric
+    // says those designs produced. Keep this beside derive so every agreement consumer uses the
+    // same normalization and deterministic ordering.
+    function inputParcelIds(designs, fabric) {
+        const ids = [];
+        (Array.isArray(designs) ? designs : []).forEach(design => {
+            if (!design) return;
+            ids.push(...idsOf(design.cadastreParcelIds));
+            if (design.proposalId == null || typeof fabric?.producedBy !== 'function') return;
+            const pieces = fabric.producedBy(design.proposalId);
+            if (Array.isArray(pieces)) pieces.forEach(piece => ids.push(...idsOf(piece?.properties?.cadastreParcelIds)));
+        });
+        return sortedUnique(ids);
+    }
+
+    // Index original cadastral features by the fabric's id rule (or the common repository fields).
+    function originalsById(features, featureIdOf) {
+        const identify = typeof featureIdOf === 'function' ? featureIdOf : feature => {
+            const props = feature?.properties || {};
+            return props.parcelId ?? props.parcel_id ?? props.PARCEL_ID ?? props.id;
+        };
+        const byId = new Map();
+        (Array.isArray(features) ? features : []).forEach(feature => {
+            const id = idsOf([identify(feature)])[0];
+            if (id && !byId.has(id)) byId.set(id, feature);
+        });
+        return byId;
+    }
+
     // A layout's own role wins; then the fabric's corridor test (live-fabric.js isCorridor), then a
     // split part; anything else is a whole parcel.
     function roleOf(props) {
@@ -108,10 +137,7 @@
 
         // Each design's declared parcels and the cadastral anchors of every piece it produced: the
         // parcels the land comes from, as the designs' bindings name them.
-        const parcelIds = sortedUnique(designs.flatMap(design => [
-            ...idsOf(design.cadastreParcelIds),
-            ...(fabric.producedBy(design.proposalId) || []).flatMap(piece => idsOf(piece && piece.properties && piece.properties.cadastreParcelIds))
-        ]));
+        const parcelIds = inputParcelIds(designs, fabric);
         const openGround = openGroundOption || openGroundApi();
         const siteBinding = siteBindingOption || siteBindingApi();
         const turf = turfOption || turfApi();
@@ -386,5 +412,5 @@
         };
     }
 
-    return { derive, check, localHolders, areaOf };
+    return { derive, check, localHolders, areaOf, inputParcelIds, originalsById };
 });

@@ -112,10 +112,10 @@ export async function proposeOverPark(page: Page, { title, author = 'Fixture aut
     w.DesignSync.markPublished(design, { cid: designCid, publishedAt: createdAt, apiBase });
     const fabric = w.LiveParcelFabric;
     const ground = w.AgreementGround;
-    const ids = w.AgreementDialog.inputParcelIds([design], fabric);
+    const ids = w.AgreementGround.inputParcelIds([design], fabric);
     const originals = (await w.CadastralParcelRepository.ensureIds(ids, { retainOnly: true })).features || [];
     const land = ground.derive({
-      designs: [design], fabric, originals: w.AgreementDialog.originalsById(originals, fabric.featureId),
+      designs: [design], fabric, originals: w.AgreementGround.originalsById(originals, fabric.featureId),
       area: (feature: any) => w.turf.area(feature),
     });
     const record = {

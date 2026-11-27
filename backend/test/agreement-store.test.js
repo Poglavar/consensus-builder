@@ -9,6 +9,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const Store = require('../../frontend/js/agreement-store.js');
 const Dialog = require('../../frontend/js/agreement-dialog.js');
+const Ground = require('../../frontend/js/agreement-ground.js');
 const Panel = require('../../frontend/js/agreement-panel.js');
 const Record = require('../../frontend/js/agreement-record.js');
 // The real money schedule the agreement ledger hands back (AgreementRecord.ledger(...).money).
@@ -180,13 +181,18 @@ describe('choosing the designs', () => {
             ] : [])
         };
         const designs = [{ proposalId: 'road', cadastreParcelIds: ['336', '', null, '335/2'] }, { proposalId: 'layout' }];
-        expect(Dialog.inputParcelIds(designs, fabric)).toEqual(['335/2', '335/10', '336']);
+        expect(Ground.inputParcelIds(designs, fabric)).toEqual(['335/2', '335/10', '336']);
+        const incompleteFabric = { producedBy: vi.fn(() => null) };
+        expect(Ground.inputParcelIds(null, incompleteFabric)).toEqual([]);
+        expect(Ground.inputParcelIds([null, { cadastreParcelIds: [' A '] }], incompleteFabric)).toEqual(['A']);
+        expect(incompleteFabric.producedBy).not.toHaveBeenCalled();
+        expect(Ground.inputParcelIds(designs, incompleteFabric)).toEqual(['335/2', '336']);
     });
 
     it('indexes the original cadastral features by id, with the fabric\'s id rule when given', () => {
         const features = [{ properties: { parcelId: '335/2' } }, { properties: { id: 7 } }, { properties: {} }];
-        expect(Array.from(Dialog.originalsById(features).keys())).toEqual(['335/2', '7']);
-        const byOwnRule = Dialog.originalsById(features, feature => feature.properties.parcelId);
+        expect(Array.from(Ground.originalsById(features).keys())).toEqual(['335/2', '7']);
+        const byOwnRule = Ground.originalsById(features, feature => feature.properties.parcelId);
         expect(Array.from(byOwnRule.keys())).toEqual(['335/2']);
     });
 });

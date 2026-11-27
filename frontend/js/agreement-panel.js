@@ -23,6 +23,7 @@
 
     const format = () => root.CbFormat || (typeof require === 'function' ? require('./format.js') : null);
     const dialogApi = () => root.AgreementDialog || (typeof require === 'function' ? require('./agreement-dialog.js') : null);
+    const groundApi = () => root.AgreementGround || (typeof require === 'function' ? require('./agreement-ground.js') : null);
     const recordApi = () => root.AgreementRecord || (typeof require === 'function' ? require('./agreement-record.js') : null);
     const personsApi = () => root.AgreementPersons || (typeof require === 'function' ? require('./agreement-persons.js') : null);
     const bridgeApi = () => root.AgreementBridge || (typeof require === 'function' ? require('./solana/agreement-bridge.js') : null);
@@ -294,11 +295,11 @@
     }
 
     // The cadastral ids whose original features the ground check reads: the stored inputs, and what
-    // the designs held here take now (AgreementDialog.inputParcelIds, the ids AgreementGround.derive
+    // the designs held here take now (AgreementGround.inputParcelIds, the ids AgreementGround.derive
     // looks up).
     function groundIds(agreement, records, fabric) {
         const ids = new Set(((agreement && agreement.inputs && agreement.inputs.parcels) || []).map(parcel => idOf(parcel && parcel.parcelId)).filter(Boolean));
-        dialogApi().inputParcelIds(records, fabric).forEach(id => ids.add(id));
+        groundApi().inputParcelIds(records, fabric).forEach(id => ids.add(id));
         return Array.from(ids).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
     }
 
@@ -1044,7 +1045,7 @@
                 isApplied: win.isApplied,
                 fingerprintOf: record => win.DesignRecord.cidOf(record),
                 fabric,
-                originals: dialogApi().originalsById(features, fabric && fabric.featureId),
+                originals: groundApi().originalsById(features, fabric && fabric.featureId),
                 area: win.AgreementGround.areaOf
             });
         }
