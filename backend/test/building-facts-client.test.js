@@ -20,6 +20,8 @@ describe('building facts client', () => {
         expect(facts.factIdOf({ id: 'w123', properties: {} })).toBe('osm:way/123');
         expect(facts.factIdOf({ properties: { osm_id: 'r45' } })).toBe('osm:relation/45');
         expect(facts.factIdOf({ properties: {} }, 'osm:w7')).toBe('osm:way/7');
+        // A 2D pool building: its id is in properties, its key is `osm:<id>`.
+        expect(facts.factIdOf({ properties: { id: 'w31025114', source: 'osm' } })).toBe('osm:way/31025114');
         expect(facts.factIdOf({ id: 4711, properties: { object_id: 4711 } }, '4711')).toBeNull();
         expect(facts.factIdOf({ id: 'n9', properties: {} })).toBeNull();
     });

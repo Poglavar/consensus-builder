@@ -18,7 +18,7 @@
     // ('w123', 'r45'). Null for buildings of other sources, which the contract does not yet answer.
     function factIdOf(feature, key) {
         const p = feature?.properties || {};
-        for (const candidate of [feature?.id, p.osm_id, key]) {
+        for (const candidate of [feature?.id, p.osm_id, p.object_id, p.id, key]) {
             const match = OSM_ID.exec(String(candidate ?? ''));
             if (match) return `osm:${match[1] === 'w' ? 'way' : 'relation'}/${match[2]}`;
         }
