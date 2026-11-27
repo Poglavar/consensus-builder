@@ -71,6 +71,11 @@ describe('planning a round', () => {
         const settledLater = { persona: persona.name, run_id: 'r-later', summary: { settlements: { acct: { cid: 'bafk', settled: true } } } };
         expect((await planRound({ persona, runs: [pastRun(built), pastRun(built), pastRun(built), settledLater], runKey: 'a', ...readers })).candidate).not.toBeNull();
         expect((await planRound({ persona, runs: [pastRun(built), pastRun(built), pastRun(built, { deadline: '2020-01-01T00:00:00.000Z' })], runKey: 'a', ...readers })).candidate).not.toBeNull();
+        // Nor does one the record check now refuses (a flat address in a retired form): it takes no reservations.
+        const units = built.content.funding.apartments.units.map(unit => ({ ...unit, unit: 'storey 4 flat 2' }));
+        const retired = { ...built, content: { ...built.content, funding: { ...built.content.funding, apartments: { ...built.content.funding.apartments, units } } } };
+        expect(agreementRecord.crowdfundingError(retired.content)).toMatch(/unique unit ID/);
+        expect((await planRound({ persona, runs: [pastRun(built), pastRun(built), pastRun(retired)], runKey: 'a', ...readers })).candidate).not.toBeNull();
     });
 });
 

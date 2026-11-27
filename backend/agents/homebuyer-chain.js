@@ -71,8 +71,12 @@ export async function gatherHomes({ index, persona, connection, wallet, apiBase,
         if (!content?.funding) continue;
         const apartments = content.funding.apartments;
         const plain = !apartments;
+        // A round the app's record check now refuses (built before a contract change) can take no
+        // reservation or offer: only deposits on it are taken back, and the other rounds are still served.
+        const recordError = agreementRecord.crowdfundingError(content);
+        if (recordError && ['active', 'executed'].includes(summary.chainStatus)) log(`${persona.name}: round ${summary.cid} skipped: ${recordError}`);
         // The newest executed apartment rounds (discovery is newest first): their flats are traded.
-        if (summary.chainStatus === 'executed' && apartments && executed.length < tradeRounds) executed.push({ summary, row, content });
+        if (!recordError && summary.chainStatus === 'executed' && apartments && executed.length < tradeRounds) executed.push({ summary, row, content });
         const owner = wallet ? new web3.PublicKey(wallet) : null;
         if (owner && ['expired', 'cancelled'].includes(summary.chainStatus)) {
             const positions = plain ? await pledge.listDonationPositions(connection, summary.account, owner)
@@ -81,7 +85,7 @@ export async function gatherHomes({ index, persona, connection, wallet, apiBase,
             const owed = positions.filter(item => !item.refunded && item.amount > 0n).reduce((sum, item) => sum + item.amount, 0n);
             if (owed > 0n) refunds.push({ cid: summary.cid, account: summary.account, title: summary.name, chainStatus: summary.chainStatus, amount: String(owed) });
         }
-        if (summary.chainStatus !== 'active') continue;
+        if (summary.chainStatus !== 'active' || recordError) continue;
         const inventory = plain ? [] : await readRoundInventory(connection, { account: summary.account, content });
         const byId = new Map((apartments?.units || []).map(unit => [unit.unitId, unit]));
         let donatedByMe = false;
