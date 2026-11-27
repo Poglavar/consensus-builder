@@ -47,12 +47,13 @@
     const SCHEMA = 'community-voting/v2';
     const rules = () => root.CommunityBallotRules || (typeof require === 'function' ? require('./ballot-rules.js') : null);
     const eligibility = () => root.BuildingEligibility || (typeof require === 'function' ? require('../planning/eligibility.js') : null);
+    const streets = () => root.StreetSegments || (typeof require === 'function' ? require('../streets/street-segments.js') : null);
     function configuration(raw) {
         if (raw == null) return null;
         const v1 = raw?.schema === 'community-voting/v1';
         const keys = raw && typeof raw === 'object' ? Object.keys(raw) : [];
         if (!(v1 ? exact(raw, ['schema', 'id', 'codeHashes']) : raw?.schema === SCHEMA
-            && ['schema', 'id', 'codeHashes'].every(key => keys.includes(key)) && keys.every(key => ['schema', 'id', 'codeHashes', 'households', 'rule', 'eligibility'].includes(key)))
+            && ['schema', 'id', 'codeHashes'].every(key => keys.includes(key)) && keys.every(key => ['schema', 'id', 'codeHashes', 'households', 'rule', 'eligibility', 'street'].includes(key)))
             || !UUID.test(raw.id)
             || !Array.isArray(raw.codeHashes) || !raw.codeHashes.length || raw.codeHashes.length > MAX_ENTRIES
             || raw.codeHashes.some(hash => typeof hash !== 'string' || !HASH.test(hash))
@@ -83,6 +84,11 @@
             const recorded = eligibility().normalizeEvidence(raw.eligibility);
             if (recorded.set.id !== required.id || recorded.set.version !== required.version) fail('The eligibility check is for another rule set.');
             result.eligibility = recorded;
+        }
+        // The street (or one segment of it, by side) whose residents vote: its name, OSM ways, the
+        // segment's ends and its official id where there is one (streets/street-segments.js).
+        if (raw.street != null) {
+            try { result.street = streets().normaliseReference(raw.street); } catch (error) { fail(error.message); }
         }
         return result;
     }

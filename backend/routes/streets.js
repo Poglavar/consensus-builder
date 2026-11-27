@@ -30,8 +30,9 @@ export function setupStreetsRoute(app, pool, options = {}) {
         }
     });
 
-    // GET /streets/segments?point=lng,lat, or ?name=…&bbox=west,south,east,north (WGS84, at most 0.04°).
-    // { street, points, segments, coverage }; 404 when no named street is there.
+    // GET /streets/segments?point=lng,lat, or ?name=…&bbox=west,south,east,north (WGS84, at most 0.04°),
+    // optionally &from=p3&to=p9 (referable point ids). { street, points, segments, range?, coverage };
+    // 404 when no named street is there.
     app.get('/streets/segments', async (req, res) => {
         const numbers = raw => String(raw || '').split(',').map(v => (v.trim() === '' ? NaN : Number(v)));
         const point = req.query.point ? numbers(req.query.point) : null;
@@ -43,7 +44,8 @@ export function setupStreetsRoute(app, pool, options = {}) {
             return res.status(400).json({ error: 'Give point=lng,lat, or name and a bbox=west,south,east,north no larger than 0.04°.', code: 'street-target-required' });
         }
         try {
-            res.json(await segments.read(point ? { point } : { name, bbox }));
+            const range = /^p\d{1,5}$/.test(String(req.query.from || '')) && /^p\d{1,5}$/.test(String(req.query.to || '')) ? { from: req.query.from, to: req.query.to } : {};
+            res.json(await segments.read({ ...(point ? { point } : { name, bbox }), ...range }));
         } catch (err) {
             const status = err && err.status ? err.status : 500;
             if (status >= 500) console.error(`[${new Date().toISOString()}] Error in /streets/segments:`, err);

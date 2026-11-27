@@ -157,10 +157,11 @@ export function createStreetSegments(pool, options = {}) {
     }
 
     /**
-     * { point: [lng, lat] } or { name, bbox } → the street, its referable points and segments.
+     * { point: [lng, lat] } or { name, bbox } → the street, its referable points and segments; with
+     * `from` and `to` referable point ids also `range`, the part of the street between them.
      * Throws 404 street-not-found, 400 for bad input; partial coverage is reported, never hidden.
      */
-    async function read({ point = null, name = null, bbox = null } = {}) {
+    async function read({ point = null, name = null, bbox = null, from = null, to = null } = {}) {
         if (!point && !(name && bbox)) throw fail(400, 'street-target-required', 'Give a point, or a street name with a bbox.');
         const centre = point || [(bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2];
         let box = point ? boxAround(point, START_HALF_DEG) : capped(bbox, centre);
@@ -197,10 +198,14 @@ export function createStreetSegments(pool, options = {}) {
             const own = await officialOf(result.name, street.filter(way => segment.wayIds.includes(way.id)), around);
             segments.push({ ...segment, ...(own.official ? { official: own.official } : {}) });
         }
+        let range;
+        if (from && to) {
+            try { range = result.between(from, to); } catch (error) { throw fail(400, 'street-range-invalid', error.message); }
+        }
         log(`${result.name}: ${street.length} ways, ${segments.length} segments, ${numbers.length} numbers near, buildings ${buildings ? buildings.length : 'unknown'} (${loaded.source})`);
         return {
             street: { name: result.name, wayIds: result.wayIds, lengthM: result.lengthM, official: identityAll.official, officialIds: identityAll.officialIds, complete },
-            points: result.points, segments,
+            points: result.points, segments, ...(range ? { range } : {}),
             coverage: { ways: loaded.source, waysComplete: complete, buildings: buildings ? 'osm' : 'unavailable', numbers: addresses ? (addresses.partial ? 'partial' : 'osm') : 'unavailable' }
         };
     }

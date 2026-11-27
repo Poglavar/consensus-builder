@@ -9,6 +9,7 @@ const blockModel = require('../../frontend/js/urban-blocks-model.js');
 const blockDetection = require('../../frontend/js/parcels/block-detection.js');
 const topology = require('../../frontend/js/parcels/block-topology.js');
 const { cadastralParts } = require('../../frontend/js/parcels/live-fabric.js');
+const StreetSegments = require('../../frontend/js/streets/street-segments.js');
 const sourcePieces = features => features.flatMap(cadastralParts);
 // Block detection stops at the map's own block limit; a selection holds as many parcels as the
 // server binds for one design (the map's manual selection has no limit of its own).
@@ -132,13 +133,73 @@ export function createMcpNavigation({ read, random = Math.random }) {
         return { view: nextView, ...(parcelIdsVisible == null ? {} : { parcelIdsVisible }), ...(roadTracksVisible == null ? {} : { roadTracksVisible }) };
     }
 
+    // A street at a point (or by name in a bbox): list its segments and referable points; with a
+    // segment (an index or 'whole') or from/to referable points, select the plots along it on the
+    // chosen side, as the map's street picker does (streets/street-segments.js).
+    async function selectStreet(input, sourceId) {
+        const { city, point, street: name, bbox } = input;
+        const side = input.side ?? 'both';
+        // segment: an index, 'whole', or 'p3-p9' (between two referable point ids on one stretch).
+        const range = typeof input.segment === 'string' && /^p\d{1,5}-p\d{1,5}$/.test(input.segment) ? input.segment.split('-') : null;
+        const segment = range ? null : input.segment;
+        if (typeof segment === 'string' && segment !== 'whole') throw fail('street-segment-not-found', 'segment is an index, whole, or two point ids such as p3-p9.', 'List the street first, then choose.');
+        const [from, to] = range || [null, null];
+        if (['parcelId', 'parcelNumber', 'landmark', 'relation', 'direction', 'distance', 'radiusM', 'maxDistanceM', 'visibleParcels'].some(key => input[key] != null))
+            throw fail('invalid-parcel-action', 'Street selection takes a point or a street name with bbox, then segment and side, or from and to.', 'Remove the other selection arguments.');
+        if ((point == null) === (name == null) || (name != null && bbox == null) || (point != null && bbox != null))
+            throw fail('street-target-required', 'Give a point on the street, or a street name with a bbox no larger than 0.04°.', 'Find the street with ugt_find_place, then pass a point on it.');
+        let found;
+        try {
+            found = await read.request('/streets/segments', { ...(point != null ? { point: normalizeCenter(point).join(',') } : { name, bbox: bbox.join(',') }), ...(from != null ? { from, to } : {}) });
+        } catch (error) {
+            const said = typeof error.upstream?.error === 'string' ? error.upstream.error : null;
+            if (error.status === 404) throw fail('street-not-found', said || 'No named street there.', 'Pass a point on the street’s centreline, or check the name and bbox.');
+            if (error.status === 400 && error.upstream?.code === 'street-range-invalid') throw fail('street-point-not-found', said, 'Use two ids from street.points on one stretch of the street.');
+            throw error;
+        }
+        const label = end => ({ kind: end.kind, ...(end.names ? { names: end.names } : {}), ...(end.name ? { name: end.name } : {}), ...(end.houseNumber ? { houseNumber: end.houseNumber } : {}), id: end.id });
+        const street = { name: found.street.name, official: found.street.official, lengthM: found.street.lengthM, complete: found.street.complete, coverage: found.coverage,
+            segments: found.segments.map((row, index) => ({ index, lengthM: row.lengthM, from: label(row.from), to: label(row.to),
+                sides: StreetSegments.sideCompass(row.coordinates), numbers: row.numbers.map(n => `${n.houseNumber} (${n.side})`), ...(row.official ? { official: row.official } : {}) })),
+            points: found.points.map(row => ({ id: row.id, kind: row.kind, ...(row.names ? { names: row.names } : {}), ...(row.houseNumber ? { houseNumber: row.houseNumber, side: row.side } : {}), point: row.point })) };
+        const current = input.selection || {};
+        const kept = { parcelSourceId: sourceId, focusParcelId: idOf(current.focusParcelId), parcelIds: [...new Set((current.parcelIds || []).map(idOf).filter(Boolean))], active: current.active === true };
+        if (segment == null && from == null) return { selection: kept, street };
+        let parts;
+        if (segment === 'whole') parts = found.segments;
+        else if (segment != null) {
+            if (!found.segments[segment]) throw fail('street-segment-not-found', `The street has ${found.segments.length} segments (0–${found.segments.length - 1}).`, 'Choose a listed segment index or whole.');
+            parts = [found.segments[segment]];
+        } else {
+            if (!found.range) throw fail('street-point-not-found', 'from and to must be referable point ids on one stretch of this street.', 'Use ids from street.points.');
+            parts = [found.range];
+        }
+        const lines = parts.map(row => row.coordinates);
+        const area = turf.buffer(turf.multiLineString(lines), 45, { units: 'meters' }).geometry;
+        const ground = await read.parcels({ city, parcelSourceId: sourceId, geometry: area });
+        if (ground.complete !== true || ground.truncated || !Array.isArray(ground.features)) throw fail('parcel-coverage-incomplete', 'The plots along the street need complete parcel coverage.', 'Retry when the parcel source returns complete coverage.');
+        const roads = sourceId === 'oss-wfs' ? await read.request('/road-parcels', { bbox: turf.bbox(area).join(',') }) : { ids: [] };
+        const pieces = sourcePieces(ground.features).map(feature => ({ id: parcelIdOf(feature), geometry: feature.geometry })).filter(row => row.id);
+        const ids = [];
+        for (const part of parts) for (const plot of StreetSegments.plotsAlong({ coordinates: part.coordinates, parcels: pieces, side, transparent: roads.ids || [] })) if (!ids.includes(plot.id)) ids.push(plot.id);
+        if (!ids.length) throw fail('street-plots-not-found', 'No plot boundary runs along that part of the street on that side.', 'Try the other side, both sides or the whole street.');
+        if (ids.length > MAX_SELECTION_PARCELS) throw fail('parcel-selection-limit', `The street has more than ${MAX_SELECTION_PARCELS} plots along it.`, 'Choose a segment or one side.');
+        const whole = segment === 'whole';
+        const chosen = whole ? null : parts[0];
+        const official = (chosen && chosen.official) || found.street.official || null;
+        const streetReference = StreetSegments.reference({ name: found.street.name, wayIds: found.street.wayIds }, chosen, side, official);
+        return { selection: { parcelSourceId: sourceId, focusParcelId: ids[0], parcelIds: ids, active: false }, street, streetReference };
+    }
+
     async function selectParcels(input = {}) {
         const { city, parcelSourceId, selection, action, parcelId, parcelNumber, point, landmark, relation, direction, distance, unit = 'm' } = input;
         const radiusM = input.radiusM ?? 250;
         const sourceId = idOf(parcelSourceId);
         if (!sourceId) throw fail('parcel-source-required', 'Supply an explicit parcelSourceId.', 'Use ugt_list_sources to choose a parcel source.');
         if (!idOf(city)) throw fail('city-required', 'Supply a city for parcel navigation.', 'Choose a city.');
-        if (!['select', 'near', 'step', 'random', 'add', 'remove', 'block', 'clear', 'begin', 'finish'].includes(action)) throw fail('invalid-selection-action', 'Unsupported parcel selection action.', 'Use select, near, step, random, add, remove, block, clear, begin or finish.');
+        if (!['select', 'near', 'step', 'random', 'add', 'remove', 'block', 'street', 'clear', 'begin', 'finish'].includes(action)) throw fail('invalid-selection-action', 'Unsupported parcel selection action.', 'Use select, near, step, random, add, remove, block, street, clear, begin or finish.');
+        if (action !== 'street' && ['street', 'segment', 'side'].some(key => input[key] != null)) throw fail('invalid-parcel-action', 'street, segment and side apply only to action street.', 'Use action street to pick a street or a segment of it.');
+        if (action === 'street') return selectStreet(input, sourceId);
         if (action !== 'select' && parcelNumber != null) throw fail('invalid-parcel-action', 'parcelNumber applies only to select.', 'Use action select for an exact displayed parcel number.');
         if (action !== 'near' && (landmark != null || relation != null || input.maxDistanceM != null)) throw fail('invalid-parcel-action', 'Landmark relations apply only to near.', 'Use action near with a landmark reference.');
         if (action === 'near' && (!landmark || !['edge', 'end', 'corner', 'beside'].includes(relation) || parcelId != null || parcelNumber != null || point != null || distance != null))
