@@ -37,6 +37,9 @@ module.exports = {
       // GUP engine (cadastre-data zagreb-api on this host; docs/permitted-plan-parcels.md).
       ZAGREB_PLOT_SOLVER: 'true',
       ZAGREB_PLOT_SOLVER_URL: 'http://127.0.0.1:3001/api/build-envelope/solve-geometry',
+      // Saved copies of Kazakhstan cadastre districts, answered when the live view fails
+      // (parcels/kazakhstan-pkk-snapshot.js; outside the checkout so deploys keep them).
+      KZ_PKK_SNAPSHOT_DIR: '/root/data/kz-pkk-copies',
       // Upload provider and read gateway are independent. Retain Pinata credentials in .env
       // and select it explicitly when needed; failed uploads do not silently switch providers.
       IPFS_PINNING_PROVIDER: process.env.IPFS_PINNING_PROVIDER || 'filebase',

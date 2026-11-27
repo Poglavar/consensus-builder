@@ -149,6 +149,35 @@ the buildings keep the type estimate and the answer carries `heightEstimatesUnav
 credits the atlas when it draws an atlas height. The heights are CC BY-NC 4.0
 ([GlobalBuildingAtlas](https://github.com/zhu-xlab/GlobalBuildingAtlas)).
 
+### Kazakhstan cadastre access and saved copies
+
+The public cadastral map (EGKN PKK, `map.gov4c.kz`) has no published API terms, and it narrows
+outside access without notice. On 2026-11-27 it began answering 403 at `/geoserver/wfs`,
+`/geoserver/ows` and the `egkn` workspace addresses to every client, in every country. Its layer-scoped
+addresses still answer: `https://map.gov4c.kz/geoserver/egkn/<layer>/wfs` for `u_view` (parcels),
+`freelands_view`, `reqland_view` and `districts`. They refuse a non-browser User-Agent and headless
+Chrome, so the parcel source, the relay and the copy script send `User-Agent: Mozilla/5.0` with the
+viewer as Referer. The server omits its Sectigo DV R36 intermediate certificate, which
+`backend/parcels/certificates/` supplies.
+
+When the live parcel view fails (refused, unreachable, or no answer within 8 s), the backend source
+and the relay answer the same `u_view` read from a saved copy of the district
+([`kazakhstan-pkk-snapshot.js`](../backend/parcels/kazakhstan-pkk-snapshot.js)). The answer has the
+live page shape and carries `x-parcel-snapshot: <saved time>`, and the relay never lets browsers or
+Cloudflare cache it. Copies are `u_view-district-<id>.geojson.gz` in `KZ_PKK_SNAPSHOT_DIR`
+(`/root/data/kz-pkk-copies` on prod), written by
+[`snapshot-kazakhstan-pkk.mjs`](../backend/scripts/snapshot-kazakhstan-pkk.mjs) (paced, resumable,
+one district's failure never stops the others). A copy reads area edges strictly, where the live
+server includes parcels up to about half a metre outside the box. A district without a copy fails
+as before.
+
+If the layer addresses close too, the map's image service (`/geoserver/egkn/wms`, which the viewer
+itself uses) still answered on 2026-11-27: `GetFeatureInfo` with `INFO_FORMAT=application/json`
+returns full parcel outlines with gid and cadastral number (a tiny image with a pixel buffer covers an
+area, but parcels under a pixel are skipped), `GetMap` as `application/json;type=utfgrid` returns
+every parcel record of an area without outlines, and `GetMap` as `image/svg+xml` returns outlines
+without ids. Each needs `viewparams=district_id:<id>`, `CRS=EPSG:10946` and native coordinates.
+
 ### Kazakhstan state land layers
 
 A city whose configuration has `stateLand: { provider: 'kazakhstan-pkk', relaySourceId, districtId,

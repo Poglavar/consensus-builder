@@ -12,7 +12,7 @@ const GET_HEADERS = Object.freeze({ referer: 'Referer', accept: 'Accept', 'accep
 const CACHEABLE = 'public, max-age=3600, s-maxage=86400';
 const RESPONSE_HEADERS = new Set(['content-type', 'content-disposition', 'content-encoding', 'etag', 'last-modified',
     'retry-after', 'x-parcel-upstream-cookies']);
-const EXPOSED_HEADERS = 'Content-Length, Content-Encoding, ETag, Last-Modified, Location, Retry-After, X-Parcel-Upstream-Cookies, X-Parcel-Upstream-Status, X-Parcel-Upstream-Location';
+const EXPOSED_HEADERS = 'Content-Length, Content-Encoding, ETag, Last-Modified, Location, Retry-After, X-Parcel-Upstream-Cookies, X-Parcel-Upstream-Status, X-Parcel-Upstream-Location, X-Parcel-Snapshot';
 
 function sendError(res, error) {
     const status = Number.isInteger(error?.status) && error.status >= 400 && error.status <= 599 ? error.status : 502;
@@ -45,8 +45,10 @@ async function streamResponse(upstream, res, maxBytes, controller, { manualRedir
     // Only a plain successful read without session state is shared. One cached copy serves every
     // site, so it allows any origin; the read carries no credentials.
     const shared = cacheable && upstream.status === 200 && !upstream.headers.has('x-parcel-upstream-cookies')
-        && !upstream.headers.has('set-cookie');
+        && !upstream.headers.has('set-cookie') && !upstream.headers.has('x-parcel-snapshot');
     res.setHeader('cache-control', shared ? CACHEABLE : 'no-store');
+    // An answer from a saved copy says when the copy was saved.
+    if (upstream.headers.has('x-parcel-snapshot')) res.setHeader('x-parcel-snapshot', upstream.headers.get('x-parcel-snapshot'));
     if (shared) res.setHeader('access-control-allow-origin', '*');
     res.setHeader('access-control-expose-headers', EXPOSED_HEADERS);
     if (!upstream.body) return res.end();

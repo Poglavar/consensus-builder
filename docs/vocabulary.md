@@ -279,6 +279,8 @@ A parcel ID qualified by its source and, when available, snapshot. Equal unquali
 
 An identified captured state or release of a provider's data. A null `snapshotId` means the snapshot is unknown, not that two observations necessarily describe the same release.
 
+A **saved copy** is our own complete capture of one provider view, answered only when the live view fails (Kazakhstan cadastre districts). Its answers carry the capture time (`x-parcel-snapshot`); parcel identity is the same as the live view's.
+
 ### Parcel set
 
 A canonical sorted set of parcel IDs with its parcel-source descriptor. Its `setHash` commits to the IDs and normalized source identity, not to current geometry, ownership or legal authority.
