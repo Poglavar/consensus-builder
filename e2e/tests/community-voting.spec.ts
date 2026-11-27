@@ -33,8 +33,9 @@ test('organiser generates and restores local assignments while the agreement sto
   await roster.locator('[data-roster-labels]').fill('local-only-resident@example.test\nLocal resident B');
   await roster.getByLabel('Household for these people (optional)').fill('12 Acacia Avenue');
   await roster.locator('[data-roster-action="generate"]').click();
-  await roster.getByLabel('Ballot rule').selectOption({label:'Street vote — Strong Suburbs'});
-  await expect(roster.locator('[data-roster-rule-source]')).toContainText('at least 60% of votes cast');
+  // The plan claims no street code, so the rule is one held on any plan (Strong Suburbs needs its code).
+  await roster.getByLabel('Ballot rule').selectOption({label:'Street vote — 2023 government consultation'});
+  await expect(roster.locator('[data-roster-rule-source]')).toContainText('at least 60% of those eligible');
   await expect(roster).toContainText('2 eligible codes prepared');
   await expect(editorSave(editor)).toBeDisabled();
   const downloaded=page.waitForEvent('download');
@@ -61,7 +62,7 @@ test('organiser generates and restores local assignments while the agreement sto
   expect(saved.consultation.voting.codeHashes).toHaveLength(2);
   // One household of two residents and the pinned rule; the household label itself stays local.
   expect(saved.consultation.voting).toMatchObject({schema:'community-voting/v2',households:[saved.consultation.voting.codeHashes],
-    rule:{id:'gb-street-vote-strong-suburbs',version:'2026-11-25'}});
+    rule:{id:'gb-street-vote-consultation-2023',version:'2026-11-25'}});
   expect(JSON.stringify(saved)).not.toContain('Acacia');
   expect(JSON.stringify(saved)).not.toContain(local.entries[0].code);
   expect(JSON.stringify(saved)).not.toContain(local.entries[0].label);
@@ -391,7 +392,8 @@ test('a street vote names the street segment picked with Street here', async ({ 
   await editor.locator('[data-agreement-electorate][value="community"]').check();
   await roster.locator('[data-roster-count]').fill('2');
   await roster.locator('[data-roster-action="generate"]').click();
-  await roster.getByLabel('Ballot rule').selectOption({ label: 'Street vote — Strong Suburbs' });
+  // The plan claims no street code, so the rule is one held on any plan (Strong Suburbs needs its code).
+  await roster.getByLabel('Ballot rule').selectOption({ label: 'Street vote — 2023 government consultation' });
   const box = named.getByRole('checkbox', { name: /Acacia Avenue · Between Mill Lane and its end · North side/ });
   await expect(box).toBeChecked();
   const downloaded = page.waitForEvent('download');
@@ -408,6 +410,8 @@ test('a street vote names the street segment picked with Street here', async ({ 
 
 // A plan claiming the Strong Suburbs street code, under the Strong Suburbs ballot rule: the editor
 // checks every building of the plan against the code and shows each rule it breaks, with the facts.
+// The vote is held only on a complying plan (para 2): a building that breaks the code holds Save
+// back, one not known yet does not, and the record keeps the check.
 test('a Strong Suburbs street vote checks the plan against the street code it claims', async ({ mockApi: page }) => {
   test.setTimeout(180_000);
   await stubBasemapTiles(page);
@@ -422,9 +426,10 @@ test('a Strong Suburbs street vote checks the plan against the street code it cl
   const { layoutId } = await applyLayout(page);
   const centre = await page.evaluate(() => { const c = (window as any).map.getCenter(); return [c.lng, c.lat]; });
   const d = 0.0001, box = (r: number) => ({ type: 'Polygon', coordinates: [[[centre[0] - r, centre[1] - r], [centre[0] + r, centre[1] - r], [centre[0] + r, centre[1] + r], [centre[0] - r, centre[1] + r], [centre[0] - r, centre[1] - r]]] });
+  let densityPerHa = 45;
   await page.route('https://zagreb.lol/api/population/small-areas*', route => {
     densityReads.push(route.request().url());
-    route.fulfill({ json: { areas: [{ scheme: 'GB-MSOA-2021', code: 'E02000001', name: 'Test 001', population: 4500, populationYear: 2024, landAreaHa: 100, densityPerHa: 45, geometry: box(0.01) }], sources: [] } });
+    route.fulfill({ json: { areas: [{ scheme: 'GB-MSOA-2021', code: 'E02000001', name: 'Test 001', population: 4500, populationYear: 2024, landAreaHa: 100, densityPerHa, geometry: box(0.01) }], sources: [] } });
   });
   await page.evaluate(({ id, footprint }) => {
     const w = window as any;
@@ -448,12 +453,30 @@ test('a Strong Suburbs street vote checks the plan against the street code it cl
   await roster.locator('[data-roster-action="generate"]').click();
   await expect(code).toBeHidden();
   await roster.getByLabel('Ballot rule').selectOption({ label: 'Street vote — Strong Suburbs' });
+  await expect(roster.locator('[data-roster-rule-code]')).toContainText('Held only on a plan that claims the Strong Suburbs street code');
   await expect(code).toContainText('Street code: Strong Suburbs street code');
   await expect(code).toContainText('0 of 1 buildings meet the code, 1 break it');
-  const building = code.locator('li[data-verdict="ineligible"]');
+  const building = code.locator('li[data-verdict="breaks"]');
   await expect(building).toContainText('Building way/201');
   // Four storeys and a mansard over the cap of 3 that the area under the house sets, without a named street.
   await expect(building.locator('li[data-status="fail"]').first()).toContainText("30 Storeys within the density cap: No 4 storeys proposed · The vote names no street: the cap is at most 3");
   await expect(code.locator('details')).toContainText('35 Under the light planes from plots on other streets');
   expect(densityReads.length).toBeGreaterThan(0);
+  const downloaded = page.waitForEvent('download');
+  await roster.locator('[data-roster-action="save"]').click();
+  await downloaded;
+  // The breaking building holds Save back, named with the rule it breaks.
+  await expect(editorSave(editor)).toBeDisabled();
+  await expect(editor.locator('[data-agreement-errors]')).toContainText('These buildings break it or are excluded by it: Building way/201 — Breaks the code: 30 Storeys within the density cap');
+  // A denser area under the house lifts the bound to 5: without a named street four storeys are not known to break it, which does not hold the vote.
+  densityPerHa = 130;
+  await code.getByRole('button', { name: 'Check again' }).click();
+  await expect(code).toContainText('0 of 1 buildings meet the code, 0 break it, 1 not known yet');
+  await expect(editorSave(editor)).toBeEnabled();
+  await editorSave(editor).click();
+  await editorClosed(page);
+  const [saved] = await storedAgreements(page);
+  expect(saved.consultation.voting.rule).toEqual({ id: 'gb-street-vote-strong-suburbs', version: '2026-11-27' });
+  expect(saved.consultation.voting.streetCode).toMatchObject({ set: { id: 'gb-strong-suburbs-street-code', version: '2021' }, planCid: saved.plan.cid, street: null,
+    buildings: [{ factId: 'osm:way/201', verdict: 'unknown', failing: [], excluded: [] }] });
 });

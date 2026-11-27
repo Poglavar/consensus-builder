@@ -274,5 +274,84 @@
         return blocked.length ? [{ code: 'eligibility-failed', houses: blocked }] : [];
     }
 
-    return { RULE_SETS, get, latest, forCity, codesForBallot, evaluate, explain, coveredHouses, check, evidence, normalizeEvidence, evidenceIssues };
+    // ── a street code a street vote requires (community/ballot-rules.js `requires.streetCode`) ──
+    const cidApi = () => (root && root.Cid) || require('../cid.js');
+    const streetsApi = () => (root && root.StreetSegments) || require('../streets/street-segments.js');
+    // A building's verdict under a street code, by its failing tests' effect: 'excluded' when a test
+    // whose failure takes it out of what a street vote may change fails, 'breaks' when another fails,
+    // 'unknown' while a test is unknown, else 'meets'. The first two hold the vote back.
+    const CODE_VERDICTS = ['meets', 'breaks', 'excluded', 'unknown'];
+    const CODE_BLOCKING = ['breaks', 'excluded'];
+    const effectOf = (set, id) => set.tests.find(test => test.id === id)?.effect || null;
+    function codeLists(set, result) {
+        const ids = status => result.tests.filter(test => test.status === status).map(test => test.id);
+        const failed = ids('fail');
+        return { failing: failed.filter(id => effectOf(set, id) !== 'excluded'), excluded: failed.filter(id => effectOf(set, id) === 'excluded'), unknown: ids('unknown') };
+    }
+    const verdictOfLists = ({ failing, excluded, unknown }) => (excluded.length ? 'excluded' : failing.length ? 'breaks' : unknown.length ? 'unknown' : 'meets');
+    const codeVerdict = (set, result) => verdictOfLists(codeLists(set, result));
+    // The street a check read, as the record keys it: the CID of the vote's street reference without
+    // its corner plots, which the check does not read; null when the vote names no street.
+    function streetKey(street) {
+        if (!street) return null;
+        const { corners: _corners, ...read } = streetsApi().normaliseReference(street);
+        return cidApi().cidOfObject(read);
+    }
+    /**
+     * What a street vote records of its street code check (planning/street-code.js check()): the code,
+     * when, the plan (its CID) and street it read, and each building of the plan with its verdict and
+     * the ids of the tests it breaks, is excluded by or leaves unknown.
+     */
+    function codeEvidence(set, outcome, { planCid, street = null }, checkedAt) {
+        return { set: { id: set.id, version: set.version }, checkedAt, planCid, street: streetKey(street),
+            buildings: outcome.buildings.map(building => {
+                const lists = codeLists(set, building.result);
+                return { design: building.design, index: building.index, factId: building.factId || null, kind: building.kind, verdict: verdictOfLists(lists), ...lists };
+            }) };
+    }
+    const exactKeys = (value, names) => value && typeof value === 'object' && !Array.isArray(value)
+        && Object.keys(value).length === names.length && names.every(name => Object.hasOwn(value, name));
+    // A recorded street code check, checked for shape; a verdict must follow from its test lists.
+    function normalizeCodeEvidence(raw) {
+        const fail = message => { throw new Error(message); };
+        if (!exactKeys(raw, ['set', 'checkedAt', 'planCid', 'street', 'buildings'])) fail('The street code check is malformed.');
+        const set = raw.set && get(raw.set.id, raw.set.version);
+        if (!set || set.kind !== 'street-code') fail('The street code check names an unknown street code.');
+        if (typeof raw.checkedAt !== 'string' || !Number.isFinite(Date.parse(raw.checkedAt))) fail('The street code check needs its time.');
+        if (!cidApi().isCid(raw.planCid)) fail('The street code check names the plan it read by CID.');
+        if (raw.street !== null && !cidApi().isCid(raw.street)) fail('The street code check names the street it read by CID, or none.');
+        if (!Array.isArray(raw.buildings) || raw.buildings.length > 500) fail('The street code check lists at most 500 buildings.');
+        const testIds = new Set(set.tests.map(test => test.id));
+        const buildings = raw.buildings.map(building => {
+            const lists = ['failing', 'excluded', 'unknown'];
+            if (!exactKeys(building, ['design', 'index', 'factId', 'kind', 'verdict', ...lists])
+                || !Number.isInteger(building.design) || building.design < 0 || building.design > 999
+                || !Number.isInteger(building.index) || building.index < 0 || building.index > 99999
+                || (building.factId !== null && !HOUSE_ID.test(String(building.factId))) || !['existing', 'new'].includes(building.kind)
+                || !CODE_VERDICTS.includes(building.verdict)
+                || !lists.every(name => Array.isArray(building[name]) && building[name].length <= set.tests.length && building[name].every(id => testIds.has(id)))
+                || !building.excluded.every(id => effectOf(set, id) === 'excluded') || building.failing.some(id => effectOf(set, id) === 'excluded')
+                || verdictOfLists(building) !== building.verdict) {
+                fail('A street code building entry is malformed.');
+            }
+            return { design: building.design, index: building.index, factId: building.factId, kind: building.kind, verdict: building.verdict,
+                failing: [...building.failing], excluded: [...building.excluded], unknown: [...building.unknown] };
+        });
+        return { set: { id: set.id, version: set.version }, checkedAt: new Date(Date.parse(raw.checkedAt)).toISOString(), planCid: raw.planCid, street: raw.street, buildings };
+    }
+    /**
+     * Why a recorded street code check does not let the vote start: [] when the plan claims the code,
+     * the check read this plan and street, and no building breaks the code or is excluded by it.
+     * Unknown and not-checked rules do not hold it back. `plan`: { cid, content } or null.
+     */
+    function codeIssues(set, recorded, { plan, street = null }) {
+        if (plan && !(plan.content?.codes || []).some(code => code.id === set.id && code.version === set.version)) return [{ code: 'street-code-unclaimed' }];
+        if (!recorded || recorded.set.id !== set.id || recorded.set.version !== set.version) return [{ code: 'street-code-missing' }];
+        if ((plan && recorded.planCid !== plan.cid) || recorded.street !== streetKey(street)) return [{ code: 'street-code-stale' }];
+        const blocked = recorded.buildings.filter(building => CODE_BLOCKING.includes(building.verdict));
+        return blocked.length ? [{ code: 'street-code-failed', buildings: blocked }] : [];
+    }
+
+    return { RULE_SETS, get, latest, forCity, codesForBallot, evaluate, explain, coveredHouses, check, evidence, normalizeEvidence, evidenceIssues,
+        CODE_VERDICTS, CODE_BLOCKING, codeVerdict, codeLists, streetKey, codeEvidence, normalizeCodeEvidence, codeIssues };
 });

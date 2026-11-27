@@ -17,6 +17,9 @@
         const Rules=()=>root.CommunityBallotRules;
         const ruleOf=key=>key?Rules().get(...key.split('@')):null;
         const ruleText=(rule,field)=>t(`ballotRules.${rule.id}.${field}`,rule.text[field]);
+        // A street code's name in the building card's words (planningViews.eligibility.set.*).
+        const codeName=({id,version})=>{const key=`planningViews.eligibility.set.${id}`,value=root.i18n?.t?.(key);
+            return value && value!==key?value:root.BuildingEligibility?.get(id,version)?.text.name || id;};
         // The published voting record: every code, its households (from the local entries, or kept from
         // a reopened draft whose voter list is not open) and the chosen ballot rule.
         function configure(codeHashes) {
@@ -56,9 +59,11 @@
             const rule=ruleOf(local.rule);
             return `<label class="proposal-editor-field"><span>${esc(t('rule','Ballot rule'))}</span><select data-roster-rule>`
                 + `<option value="">${esc(t('ruleNone','None — show the totals only'))}</option>`
-                + Rules().list().concat(rule && !Rules().list().includes(rule)?[rule]:[]).map(row=>`<option value="${esc(`${row.id}@${row.version}`)}"${`${row.id}@${row.version}`===local.rule?' selected':''}>${esc(ruleText(row,'name'))}</option>`).join('')
+                + Rules().list().concat(rule && !Rules().list().includes(rule)?[rule]:[]).map(row=>`<option value="${esc(`${row.id}@${row.version}`)}"${`${row.id}@${row.version}`===local.rule?' selected':''}>${esc(Rules().latest(row.id)===row?ruleText(row,'name'):t('ruleVersion','{{name}} (version of {{version}})',{name:ruleText(row,'name'),version:row.version}))}</option>`).join('')
                 + '</select></label>'
-                + (rule?`<p class="agreement-hint" data-roster-rule-source>${esc(ruleText(rule,'source'))} ${rule.sources.map(source=>`<a class="cb-link" href="${esc(source.url)}" target="_blank" rel="noopener">${esc(source.label)}</a>`).join(' · ')}</p>`:'');
+                + (rule?`<p class="agreement-hint" data-roster-rule-source>${esc(ruleText(rule,'source'))} ${rule.sources.map(source=>`<a class="cb-link" href="${esc(source.url)}" target="_blank" rel="noopener">${esc(source.label)}</a>`).join(' · ')}</p>`:'')
+                // A rule held only on a plan that complies with a street code (requires.streetCode).
+                + (rule?.requires?.streetCode?`<p class="agreement-hint" data-roster-rule-code>${esc(t('ruleRequiresCode','Held only on a plan that claims the {{code}} and whose check finds no building that breaks it or that it excludes.',{code:codeName(rule.requires.streetCode)}))}</p>`:'');
         }
         function progress(done,total) {const node=slot.querySelector('[data-roster-progress]');if(node)node.textContent=t('progress','Preparing codes: {{done}} / {{total}}',{done,total});}
         async function run(control,work) {

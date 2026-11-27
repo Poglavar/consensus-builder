@@ -107,3 +107,48 @@ describe('Strong Suburbs street code', () => {
         expect(StreetCode.unchecked(set).map(test => test.cite)).toEqual(['14', '35', '36.2', '39', '41', '42', '51', '52']);
     });
 });
+
+// What a Strong Suburbs street vote records of its check (ballot rule requires.streetCode,
+// Eligibility.codeEvidence / normalizeCodeEvidence / codeIssues): breaking and excluded buildings
+// hold the vote back, buildings the app cannot judge yet do not.
+describe('the street code check a street vote records', () => {
+    const Cid = require('../../frontend/js/cid.js');
+    const PLAN_CID = Cid.cidOfObject({ schema: 'plan/v1', title: 'Acacia Avenue' });
+    const plan = { cid: PLAN_CID, content: { codes: [{ id: set.id, version: set.version }] } };
+    const reference = { name: 'Acacia Avenue', osmWayIds: ['36', '12'], part: 'street', side: 'both' };
+    const record = outcome => Eligibility.codeEvidence(set, outcome, { planCid: PLAN_CID, street: reference }, '2026-11-27T15:00:00.000Z');
+    it('tells a building the code excludes from one that breaks it and one not known yet', async () => {
+        const breaks = record(await run());
+        expect(breaks.buildings).toEqual([{ design: 0, index: 0, factId: 'osm:way/36', kind: 'existing', verdict: 'breaks', failing: ['ssStoreys'], excluded: [], unknown: ['ssCeilingMin', 'ssSetbackCeiling'] }]);
+        const listed = record(await run({ contract: contract({ heritage: { ...notListed, value: { listed: true, grade: 'II' } } }) }));
+        expect(listed.buildings[0]).toMatchObject({ verdict: 'excluded', excluded: ['ssListed'], failing: ['ssStoreys'] });
+        const unknown = record(await run({ street: null }));
+        expect(unknown.buildings[0]).toMatchObject({ verdict: 'unknown', failing: [], excluded: [] });
+        // The record keys the street it read by CID; its corner plots are not read, so they do not change it.
+        expect(breaks.street).toBe(Eligibility.streetKey({ ...reference, osmWayIds: ['12', '36'], corners: [{ parcelId: 'p1', streets: ['Elm Road'] }] }));
+        expect(Eligibility.normalizeCodeEvidence(breaks)).toEqual(breaks);
+    });
+    it('holds the vote on a building that breaks the code or that it excludes, never on an unknown one', async () => {
+        const issues = (recorded, options = {}) => Eligibility.codeIssues(set, recorded, { plan, street: reference, ...options }).map(issue => issue.code);
+        const breaks = record(await run());
+        expect(Eligibility.codeIssues(set, breaks, { plan, street: reference })).toEqual([{ code: 'street-code-failed', buildings: breaks.buildings }]);
+        expect(issues(record(await run({ contract: contract({ built: fact({ from: null, to: 1912 }) }), areas: [area('A', 130, areas[0].geometry)] })))).toEqual(['street-code-failed']);
+        expect(issues(record(await run({ street: null })))).toEqual([]);
+        expect(issues(record(await run({ areas: [area('A', 130, areas[0].geometry)] })))).toEqual([]);
+        expect(issues(null)).toEqual(['street-code-missing']);
+        // A check of another plan revision or another street is stale; a plan that does not claim the code is refused first.
+        const passed = record(await run({ street: null }));
+        expect(issues(passed, { plan: { ...plan, cid: Cid.cidOfObject({ other: true }) } })).toEqual(['street-code-stale']);
+        expect(issues(passed, { street: null })).toEqual(['street-code-stale']);
+        expect(issues(passed, { plan: { ...plan, content: {} } })).toEqual(['street-code-unclaimed']);
+    });
+    it('refuses a recorded verdict its own test lists do not support', async () => {
+        const breaks = record(await run());
+        const edit = change => ({ ...breaks, buildings: [{ ...breaks.buildings[0], ...change }] });
+        expect(() => Eligibility.normalizeCodeEvidence(edit({ verdict: 'meets' }))).toThrow('malformed');
+        expect(() => Eligibility.normalizeCodeEvidence(edit({ verdict: 'unknown', failing: [], excluded: ['ssStoreys'] }))).toThrow('malformed');
+        expect(() => Eligibility.normalizeCodeEvidence(edit({ failing: ['ssNoSuchTest'] }))).toThrow('malformed');
+        expect(() => Eligibility.normalizeCodeEvidence({ ...breaks, planCid: 'not-a-cid' })).toThrow('by CID');
+        expect(() => Eligibility.normalizeCodeEvidence({ ...breaks, note: 'x' })).toThrow('malformed');
+    });
+});

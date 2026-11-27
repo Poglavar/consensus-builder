@@ -2489,6 +2489,10 @@
             "eligibilityMissing": "Vérifiez l’admissibilité des maisons couvertes avant de créer ce vote de rue.",
             "eligibilityStale": "Le plan couvre d’autres maisons que la dernière vérification : vérifiez à nouveau.",
             "eligibilityFailed": "On ne sait pas encore si chaque maison couverte est admissible : voir Maisons couvertes.",
+            "streetCodeMissing": "Vérifiez le plan au regard du code de rue avant de créer ce vote de rue.",
+            "streetCodeStale": "Le plan ou la rue a changé depuis la dernière vérification du code de rue : vérifiez à nouveau.",
+            "streetCodeUnclaimed": "Cette règle de vote ne permet le vote que sur un plan qui déclare respecter le {{code}}. Ajoutez-le aux codes de rue du plan avec Modifier le plan.",
+            "streetCodeFailed": "Le vote n’a lieu que sur un plan conforme au {{code}}. Ces bâtiments l’enfreignent ou en sont exclus : {{buildings}}",
             "communityAllocations": "Un accord communautaire non contraignant ne peut pas attribuer de terrains.",
             "communityMoney": "Un accord communautaire non contraignant ne peut pas inclure de paiements monétaires.",
             "noDesigns": "Choisissez au moins un projet.",
@@ -10328,6 +10332,8 @@
         "refreshResults": "Actualiser les résultats",
         "rule": "Règle de vote",
         "ruleNone": "Aucune — afficher seulement les totaux",
+        "ruleVersion": "{{name}} (version du {{version}})",
+        "ruleRequiresCode": "Tenu seulement sur un plan qui déclare respecter le {{code}} et dont la vérification ne trouve aucun bâtiment qui l’enfreint ou qu’il exclut.",
         "householdBatch": "Foyer de ces personnes (facultatif)",
         "householdHint": "Les personnes qui vivent ensemble partagent une étiquette de foyer. Un code sans étiquette compte comme un foyer à lui seul. Les étiquettes restent sur cet appareil ; l’accord n’enregistre que les codes qui partagent un foyer.",
         "importCsv": "Générer des codes depuis un CSV d’habitants",
@@ -10406,8 +10412,11 @@
             "verdict": {
                 "eligible": "Respecte le code",
                 "ineligible": "Enfreint le code",
+                "excluded": "Exclu par le code",
                 "unknown": "Pas encore connu"
             },
+            "unclaimed": "Cette règle de vote ne permet le vote que sur un plan qui déclare respecter ce code, et ce plan ne le déclare pas. Ajoutez-le aux codes de rue du plan avec Modifier le plan, ou choisissez une autre règle de vote.",
+            "required": "Cette règle de vote ne permet le vote que sur un plan conforme au code : un bâtiment qui l’enfreint ou qu’il exclut empêche d’enregistrer cet accord. Les règles encore inconnues ou non vérifiées ne l’empêchent pas. Le vote enregistre cette vérification.",
             "noBuildings": "Le plan n’a aucun bâtiment à vérifier.",
             "unchecked": "Règles que l’application ne vérifie pas",
             "check": "Vérifier le code"

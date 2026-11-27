@@ -8653,6 +8653,10 @@
             "eligibilityMissing": "Provjerite uvjete za obuhvaćene kuće prije stvaranja ovog glasanja.",
             "eligibilityStale": "Plan obuhvaća druge kuće nego zadnja provjera: provjerite ponovno.",
             "eligibilityFailed": "Još se ne zna ispunjava li svaka obuhvaćena kuća uvjete: vidi Obuhvaćene kuće.",
+            "streetCodeMissing": "Provjerite plan prema uličnom kodu prije stvaranja ovog uličnog glasanja.",
+            "streetCodeStale": "Plan ili ulica promijenili su se od zadnje provjere uličnog koda: provjerite ponovno.",
+            "streetCodeUnclaimed": "Ovo pravilo glasanja dopušta glasanje samo za plan koji tvrdi da poštuje {{code}}. Dodajte ga uličnim kodovima plana s Uredi plan.",
+            "streetCodeFailed": "Glasanje se održava samo za plan koji poštuje {{code}}. Ove ga zgrade krše ili ih on isključuje: {{buildings}}",
             "communityAllocations": "Neobvezujući sporazum sa zajednicom ne može dodjeljivati zemljište.",
             "communityMoney": "Neobvezujući sporazum sa zajednicom ne može uključivati novčane isplate.",
             "noDesigns": "Odaberite barem jedan dizajn.",
@@ -10378,6 +10382,8 @@
         "refreshResults": "Osvježi rezultate",
         "rule": "Pravilo glasanja",
         "ruleNone": "Bez pravila — prikaži samo zbrojeve",
+        "ruleVersion": "{{name}} (verzija od {{version}})",
+        "ruleRequiresCode": "Održava se samo za plan koji tvrdi da poštuje {{code}} i čija provjera ne nađe zgradu koja ga krši ili koju on isključuje.",
         "householdBatch": "Kućanstvo ovih osoba (neobavezno)",
         "householdHint": "Osobe koje žive zajedno dijele oznaku kućanstva. Kod bez oznake računa se kao zasebno kućanstvo. Oznake kućanstava ostaju lokalno; sporazum bilježi samo koji kodovi dijele kućanstvo.",
         "importCsv": "Generiraj kodove iz CSV-a stanovnika",
@@ -10456,8 +10462,11 @@
             "verdict": {
                 "eligible": "Poštuje kod",
                 "ineligible": "Krši kod",
+                "excluded": "Kod je isključuje",
                 "unknown": "Još se ne zna"
             },
+            "unclaimed": "Ovo pravilo glasanja dopušta glasanje samo za plan koji tvrdi da poštuje ovaj kod, a ovaj plan to ne tvrdi. Dodajte ga uličnim kodovima plana s Uredi plan ili odaberite drugo pravilo glasanja.",
+            "required": "Ovo pravilo glasanja dopušta glasanje samo za plan koji poštuje kod: zgrada koja ga krši ili koju on isključuje sprječava spremanje ovog sporazuma. Pravila koja se još ne znaju ili se ne provjeravaju ne sprječavaju. Glasanje bilježi ovu provjeru.",
             "noBuildings": "Plan nema zgrada za provjeru.",
             "unchecked": "Pravila koja aplikacija ne provjerava",
             "check": "Provjeri kod"

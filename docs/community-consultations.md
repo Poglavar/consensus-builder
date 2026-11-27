@@ -178,10 +178,11 @@ The Ballot rule select pins one dated rule from `frontend/js/community/ballot-ru
 
 | Rule | Tests | Source |
 | --- | --- | --- |
-| Street vote — Strong Suburbs (`gb-street-vote-strong-suburbs@2026-11-25`) | ≥ 3/5 of votes cast support; residents of ≥ 1/2 of households vote; ≥ 1/2 of voting households have a Support vote | [Policy Exchange, Strong Suburbs (2021), p. 39](https://policyexchange.org.uk/wp-content/uploads/2022/10/Strong-Suburbs.pdf) |
+| Street vote — Strong Suburbs (`gb-street-vote-strong-suburbs@2026-11-27`) | ≥ 3/5 of votes cast support; residents of ≥ 1/2 of households vote; ≥ 1/2 of voting households have a Support vote. Held only on a plan that claims the Strong Suburbs street code and in which no building breaks the code or is excluded by it (para. 2); buildings not known yet do not hold it back | [Policy Exchange, Strong Suburbs (2021), paras 2 and 4, p. 39](https://policyexchange.org.uk/wp-content/uploads/2022/10/Strong-Suburbs.pdf) |
+| Street vote — Strong Suburbs (`gb-street-vote-strong-suburbs@2026-11-25`, earlier version) | The same tests, with the street code check as advice only. Kept readable for the votes that pinned it; new votes take `@2026-11-27` | [Policy Exchange, Strong Suburbs (2021), p. 39](https://policyexchange.org.uk/wp-content/uploads/2022/10/Strong-Suburbs.pdf) |
 | Street vote — 2023 government consultation (`gb-street-vote-consultation-2023@2026-11-25`) | ≥ 3/5 of eligible voters support; ≥ 1/2 of voting households have a Support vote | [Street vote development orders consultation, para. 69](https://www.gov.uk/government/consultations/street-vote-development-orders-consultation/street-vote-development-orders) |
 
-Both are proposals: the street vote provisions of the Levelling-up and Regeneration Act 2023 have
+All are proposals: the street vote provisions of the Levelling-up and Regeneration Act 2023 have
 not been commenced. Abstain counts as a vote cast. A test with an empty total (no household has
 voted) is not met. `GET /agreements/:cid/voting` adds `households { eligible, voted, supporting }`
 when the list has households or a rule, and `rule { id, version, tests[{ measure, count, total,
@@ -198,6 +199,16 @@ MCP: `ugt_draft_agreement` and `ugt_edit_agreement` accept the v2 voting record,
 `ugt_edit_agreement` accepts `rulePreset: 'community-vote'`, which clears owner allocations, cash and
 valuation. `ugt_voting_status` returns the richer summary. `ugt_capabilities` lists the shipped
 ballot rules under `community-code-voting`.
+
+Strong Suburbs `@2026-11-27` is held only on a complying plan. The editor's Street code section
+checks every building of the plan against the Strong Suburbs street code it claims and keeps the
+check in the voting record (`streetCode`). While a building breaks the code or the code excludes it,
+Save stays disabled and the errors name each such building with the rules it breaks or is excluded
+by; Check again reads the facts afresh. A plan that does not claim the code is refused with the
+advice to add it with Edit plan. Buildings not known yet, and the rules the app does not check, do
+not hold the vote back. `ugt_draft_agreement` runs the same check on the server and refuses with
+`street-code-unclaimed` or `street-code-failed` (each blocking building and rule in
+`constraints.streetCode`), or records the check in the draft.
 
 The public Voting progress card shows turnout against the fixed eligible-code count, remaining
 unvoted codes, and Support / Oppose / Abstain counts with percentages of votes cast. Abstentions

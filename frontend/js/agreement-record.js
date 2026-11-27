@@ -1046,6 +1046,25 @@
                     add(errors, 'consultation', `voting-${issue.code}`, message, issue.houses ? { houses: issue.houses.map(house => house.id) } : undefined);
                 }
             }
+            // A ballot rule held only on a plan that complies with a street code (Strong Suburbs para 2):
+            // the plan claims the code, and the recorded check read this plan and street and found no
+            // building that breaks the code or that it excludes. Unknown rules do not hold the vote back.
+            const requiredCode = voting?.rule ? rules.get(voting.rule.id, voting.rule.version)?.requires?.streetCode : null;
+            if (requiredCode && agreement.plan) {
+                const E = root.BuildingEligibility || (typeof require === 'function' ? require('./planning/eligibility.js') : null);
+                const set = E.get(requiredCode.id, requiredCode.version);
+                for (const issue of E.codeIssues(set, voting.streetCode || null, { plan: agreement.plan, street: voting.street || null })) {
+                    const blocked = (issue.buildings || []).map(building => `${building.factId || `design ${building.design + 1}, building ${building.index + 1}`} `
+                        + `(${building.verdict}: ${[...building.excluded, ...building.failing].map(id => `${set.tests.find(test => test.id === id).cite} ${id}`).join(', ')})`).join('; ');
+                    const message = {
+                        'street-code-unclaimed': `This ballot rule holds the vote only on a plan that claims the street code ${set.id}@${set.version}: add it to the plan's codes.`,
+                        'street-code-missing': 'Check the plan against the street code before creating this street vote.',
+                        'street-code-stale': 'The plan or the street changed since the last street code check: check again.',
+                        'street-code-failed': `These buildings break the street code or are excluded by it: ${blocked}.`,
+                    }[issue.code];
+                    add(errors, 'consultation', `voting-${issue.code}`, message, { set: { id: set.id, version: set.version }, ...(issue.buildings ? { buildings: issue.buildings } : {}) });
+                }
+            }
         }
 
         const { deadline } = agreement;

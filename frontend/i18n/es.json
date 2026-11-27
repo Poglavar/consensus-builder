@@ -8634,6 +8634,10 @@
             "eligibilityMissing": "Compruebe las condiciones de las casas incluidas antes de crear esta votación.",
             "eligibilityStale": "El plan incluye otras casas que la última comprobación: vuelva a comprobar.",
             "eligibilityFailed": "Aún no se sabe si todas las casas incluidas cumplen: vea Casas incluidas.",
+            "streetCodeMissing": "Compruebe el plan frente al código de calle antes de crear esta votación de calle.",
+            "streetCodeStale": "El plan o la calle han cambiado desde la última comprobación del código de calle: vuelva a comprobarlo.",
+            "streetCodeUnclaimed": "Esta regla de votación solo permite la votación sobre un plan que declara cumplir el {{code}}. Añádalo a los códigos de calle del plan con Editar plan.",
+            "streetCodeFailed": "La votación solo se celebra sobre un plan que cumple el {{code}}. Estos edificios lo incumplen o quedan excluidos por él: {{buildings}}",
             "communityAllocations": "Un acuerdo comunitario no vinculante no puede asignar terrenos.",
             "communityMoney": "Un acuerdo comunitario no vinculante no puede incluir pagos en efectivo.",
             "noDesigns": "Elige al menos un diseño.",
@@ -10349,6 +10353,8 @@
         "refreshResults": "Actualizar resultados",
         "rule": "Regla de votación",
         "ruleNone": "Ninguna: mostrar solo los totales",
+        "ruleVersion": "{{name}} (versión del {{version}})",
+        "ruleRequiresCode": "Solo se celebra sobre un plan que declara cumplir el {{code}} y cuya comprobación no encuentra ningún edificio que lo incumpla o que quede excluido por él.",
         "householdBatch": "Hogar de estas personas (opcional)",
         "householdHint": "Las personas que viven juntas comparten una etiqueta de hogar. Un código sin etiqueta cuenta como un hogar propio. Las etiquetas de hogar quedan en este equipo; el acuerdo solo registra qué códigos comparten hogar.",
         "importCsv": "Generar códigos desde un CSV de residentes",
@@ -10427,8 +10433,11 @@
             "verdict": {
                 "eligible": "Cumple el código",
                 "ineligible": "Incumple el código",
+                "excluded": "Excluido por el código",
                 "unknown": "Aún no se sabe"
             },
+            "unclaimed": "Esta regla de votación solo permite la votación sobre un plan que declara cumplir este código, y este plan no lo declara. Añádalo a los códigos de calle del plan con Editar plan, o elija otra regla de votación.",
+            "required": "Esta regla de votación solo permite la votación sobre un plan que cumple el código: un edificio que lo incumple o que queda excluido por él impide guardar este acuerdo. Las reglas aún desconocidas o no comprobadas no lo impiden. La votación registra esta comprobación.",
             "noBuildings": "El plan no tiene edificios que comprobar.",
             "unchecked": "Reglas que la aplicación no comprueba",
             "check": "Comprobar el código"

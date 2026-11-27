@@ -26,6 +26,11 @@ describe('shipped ballot rules', () => {
                 { measure: 'household-turnout', numerator: 1, denominator: 2, strict: false },
                 { measure: 'household-support', numerator: 1, denominator: 2, strict: false }],
             sources: ['https://policyexchange.org.uk/wp-content/uploads/2022/10/Strong-Suburbs.pdf'] },
+            { key: 'gb-street-vote-strong-suburbs@2026-11-27', tests: [
+                { measure: 'cast-support', numerator: 3, denominator: 5, strict: false },
+                { measure: 'household-turnout', numerator: 1, denominator: 2, strict: false },
+                { measure: 'household-support', numerator: 1, denominator: 2, strict: false }],
+            sources: ['https://policyexchange.org.uk/wp-content/uploads/2022/10/Strong-Suburbs.pdf'] },
             { key: 'gb-street-vote-consultation-2023@2026-11-25', tests: [
                 { measure: 'eligible-support', numerator: 3, denominator: 5, strict: false },
                 { measure: 'household-support', numerator: 1, denominator: 2, strict: false }],
@@ -36,7 +41,14 @@ describe('shipped ballot rules', () => {
                 { measure: 'household-support', numerator: 1, denominator: 2, strict: false }],
             sources: ['https://www.createstreets.com/wp-content/uploads/2025/07/Living-Tradition.pdf'] }
         ]);
-        expect(Rules.list()).toEqual(Rules.RULES);
+        // A new vote chooses the newest version of each rule; the 2026-11-25 Strong Suburbs version
+        // stays readable for the records that pinned it.
+        expect(Rules.list().map(rule => `${rule.id}@${rule.version}`)).toEqual(['gb-street-vote-strong-suburbs@2026-11-27',
+            'gb-street-vote-consultation-2023@2026-11-25', 'gb-street-vote-living-tradition@2026-11-27']);
+        expect(Rules.get('gb-street-vote-strong-suburbs', '2026-11-25')).toBe(SS);
+        // Para 2: the 2026-11-27 version is held only on a plan that complies with the Strong Suburbs street code.
+        expect(Rules.latest('gb-street-vote-strong-suburbs').requires).toEqual({ streetCode: { id: 'gb-strong-suburbs-street-code', version: '2021' } });
+        expect(SS.requires).toBeUndefined();
         for (const rule of Rules.RULES) rule.tests.forEach(test => expect(Rules.MEASURES).toContain(test.measure));
     });
 });
@@ -102,6 +114,19 @@ describe('voting record v2', () => {
         // Published v1 records keep validating, with their exact v1 keys only.
         expect(V.configuration({ schema: 'community-voting/v1', id: ID, codeHashes: [h(2), h(1)] })).toEqual({ schema: 'community-voting/v1', id: ID, codeHashes: [h(1), h(2)] });
         expect(() => V.configuration({ schema: 'community-voting/v1', id: ID, codeHashes: [h(1)], rule: { id: SS.id, version: SS.version } })).toThrow();
+    });
+
+    it('keeps a street code check only under a rule that requires that code, in its canonical form', () => {
+        const Cid = require('../../frontend/js/cid.js');
+        const SS2 = Rules.latest('gb-street-vote-strong-suburbs');
+        const check = { set: { id: 'gb-strong-suburbs-street-code', version: '2021' }, checkedAt: '2026-11-27T15:00:00Z', planCid: Cid.cidOfObject({ plan: 1 }), street: null,
+            buildings: [{ design: 0, index: 0, factId: null, kind: 'new', verdict: 'unknown', failing: [], excluded: [], unknown: ['ssStoreys'] }] };
+        const base = { schema: 'community-voting/v2', id: ID, codeHashes: [1, 2].map(h) };
+        expect(V.configuration({ ...base, rule: { id: SS2.id, version: SS2.version }, streetCode: check }).streetCode)
+            .toEqual({ ...check, checkedAt: '2026-11-27T15:00:00.000Z' });
+        expect(() => V.configuration({ ...base, rule: { id: SS.id, version: SS.version }, streetCode: check })).toThrow('requires a street code');
+        expect(() => V.configuration({ ...base, streetCode: check })).toThrow('requires a street code');
+        expect(() => V.configuration({ ...base, rule: { id: SS2.id, version: SS2.version }, streetCode: { ...check, set: { id: 'gb-living-tradition-mansards', version: '2026-11-27' } } })).toThrow('unknown street code');
     });
 
     it('derives households from local labels and reads resident CSVs and saved files with households', async () => {

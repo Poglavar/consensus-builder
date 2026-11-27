@@ -73,8 +73,9 @@ describe('agent street votes on a plan claiming a street code', async () => {
         designations: async () => [], buildingsNear: async () => [] });
     it('reports each building against the claimed code, with what it could not read', async () => {
         const report = await streetCodeCheck(voting(STRONG_SUBURBS), plan, [{ geometry: { buildings: [house] } }], { readers });
-        expect(report).toMatchObject({ code: CODE, summary: { buildings: 1, break: 1 }, storeyCap: { value: null, bound: 2, reason: 'noStreet' } });
-        expect(report.buildings[0]).toMatchObject({ building: 'osm:way/36', verdict: 'ineligible' });
+        expect(report).toMatchObject({ code: CODE, required: false, summary: { buildings: 1, break: 1, excluded: 0 }, storeyCap: { value: null, bound: 2, reason: 'noStreet' } });
+        expect(report.buildings[0]).toMatchObject({ building: 'osm:way/36', verdict: 'breaks' });
+        expect(report.recorded).toBeUndefined();
         expect(report.buildings[0].tests[0]).toMatchObject({ cite: '30', status: 'fail', label: 'Storeys within the density cap' });
         expect(report.buildings[0].tests[0].text).toContain('3 storeys');
         expect(report.notChecked.map(row => row.cite)).toContain('35');
@@ -82,5 +83,34 @@ describe('agent street votes on a plan claiming a street code', async () => {
     it('checks nothing when the plan claims no code or the ballot rule carries none', async () => {
         expect(await streetCodeCheck(voting(STRONG_SUBURBS), { ...plan, codes: undefined }, [], { readers })).toBeNull();
         expect(await streetCodeCheck(voting(LIVING_TRADITION), plan, [], { readers })).toBeNull();
+    });
+
+    // Strong Suburbs para 2, the 2026-11-27 rule: the vote is held only on a plan that complies.
+    const REQUIRED = { id: 'gb-street-vote-strong-suburbs', version: '2026-11-27' };
+    const Cid = (await import('../../frontend/js/cid.js')).default;
+    const planCid = Cid.cidOfObject(plan);
+    it('refuses a plan that does not claim the code the rule requires', async () => {
+        const error = await streetCodeCheck(voting(REQUIRED), { ...plan, codes: undefined }, [], { readers, planCid }).catch(e => e);
+        expect(error).toMatchObject({ code: 'street-code-unclaimed' });
+        expect(error.message).toContain('gb-strong-suburbs-street-code@2021');
+        expect(error.next.action).toContain('ugt_edit_plan');
+    });
+    it('refuses a plan with a building that breaks the code or that it excludes, naming the building and rule', async () => {
+        const error = await streetCodeCheck(voting(REQUIRED), plan, [{ geometry: { buildings: [house] } }], { readers, planCid }).catch(e => e);
+        expect(error.code).toBe('street-code-failed');
+        expect(error.message).toContain('osm:way/36: breaks the code [30 Storeys within the density cap (');
+        expect(error.constraints.streetCode.summary).toMatchObject({ break: 1, excluded: 0 });
+        const listed = () => ({ ...readers(), facts: async ids => new Map(ids.map(id => [id, { found: true, facts: { built: fact({ from: 1931, to: 1931 }),
+            heritage: { ...notListed, value: { ...notListed.value, listed: true, grade: 'II' } } } }])) });
+        const excluded = await streetCodeCheck(voting(REQUIRED), plan, [{ geometry: { buildings: [{ ...house, properties: { ...house.properties, height: 6, floorHeightM: 3 } }] } }], { readers: listed, planCid }).catch(e => e);
+        expect(excluded.code).toBe('street-code-failed');
+        expect(excluded.message).toContain('osm:way/36: excluded by the code [12 ');
+    });
+    it('records the check when no building breaks the code, however many are not known yet', async () => {
+        // Two storeys with no mansard under the bound of 2: the cap passes; ceilings stay unknown.
+        const low = { ...house, properties: { ...house.properties, height: 6, floorHeightM: 3, roof: 'flat' } };
+        const report = await streetCodeCheck(voting(REQUIRED), plan, [{ geometry: { buildings: [low] } }], { readers, planCid });
+        expect(report).toMatchObject({ required: true, summary: { buildings: 1, break: 0, excluded: 0, unknown: 1 } });
+        expect(report.recorded).toMatchObject({ set: CODE, planCid, street: null, buildings: [{ factId: 'osm:way/36', verdict: 'unknown', failing: [], excluded: [] }] });
     });
 });
