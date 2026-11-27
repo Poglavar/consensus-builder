@@ -98,6 +98,32 @@ function pointSegment([px, py], [ax, ay], [bx, by]) {
 // The named street each building fronts: the nearest named street line within `maxM` of its footprint's
 // centre. streets: [{ name, lines: [[lng, lat]...] }]. Returns Map name → [feature]; buildings fronting none
 // are under ''.
+// The plots in a box ({ bbox } → [{ id, geometry }]), for the street code's light planes, read a cell at a time
+// with readCell(cellBbox) and the last `keep` cells kept: a parcel source answers a cell in tens of seconds, and
+// streets taken in cell order ask for the same few cells again and again.
+export function plotReader(readCell, { size = 0.01, keep = 12 } = {}) {
+    const cells = new Map();
+    const boxOfGeometry = geometry => {
+        const pts = ringsOf(geometry).flat(2);
+        return [Math.min(...pts.map(p => p[0])), Math.min(...pts.map(p => p[1])), Math.max(...pts.map(p => p[0])), Math.max(...pts.map(p => p[1]))];
+    };
+    async function cell({ key, bbox }) {
+        if (cells.has(key)) { const rows = cells.get(key); cells.delete(key); cells.set(key, rows); return rows; }
+        const rows = (await readCell(bbox)).map(row => ({ ...row, box: boxOfGeometry(row.geometry) }));
+        cells.set(key, rows);
+        if (cells.size > keep) cells.delete(cells.keys().next().value);
+        return rows;
+    }
+    return async query => {
+        if (!query?.bbox) throw new Error('The area estimate reads plots by box only.');
+        const [w, s, e, n] = query.bbox, found = new Map();
+        for (const c of cellsOf(query.bbox, size)) {
+            for (const row of await cell(c)) if (row.box[0] <= e && row.box[2] >= w && row.box[1] <= n && row.box[3] >= s) found.set(row.id, { id: row.id, geometry: row.geometry });
+        }
+        return [...found.values()];
+    };
+}
+
 export function streetsOf(features, streets, maxM = 40) {
     const out = new Map();
     for (const feature of features) {

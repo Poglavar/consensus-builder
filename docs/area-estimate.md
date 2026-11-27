@@ -25,6 +25,9 @@ Every building in the area is judged; nothing is sampled.
   floor area is the redrawn floor area less what the building has. A building whose height the
   facts do not give is counted as unmeasured. `--assume-storeys N` also reports them at N storeys,
   as a stated assumption beside the measured figures.
+  - The light planes (paras 35 and 52) read the plots around each street from the city's parcel
+    source (`--parcel-source`, else its default), one 0.01° cell a read, the last few cells kept;
+    streets are taken in cell order so a cell is read about once.
   - The two ceiling tests (2.5 m minimum, 3 m in the setback storey) are about what the designer
     chooses, not about the site, so the estimate takes them as met and says so.
 - **Money:** `moneyOf`, the rule of Plan stats and `ugt_compare`: value, all-in cost and profit of

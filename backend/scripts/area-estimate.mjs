@@ -20,7 +20,7 @@ import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { createOverpassCellSource, PRIORITY } from '../buildings/osm-reference.js';
 import { moneyOf } from '../agents/mcp-compare.js';
-import { cellsOf, centreOf, inGeometry, factIdOf, judgeEligibility, existingHeightOf, extendedFeature, streetsOf, summarize } from '../area-estimate/estimate.js';
+import { cellsOf, centreOf, inGeometry, factIdOf, judgeEligibility, existingHeightOf, extendedFeature, streetsOf, summarize, plotReader } from '../area-estimate/estimate.js';
 
 const require = createRequire(import.meta.url);
 const Eligibility = require('../../frontend/js/planning/eligibility.js');
@@ -43,8 +43,9 @@ const USAGE = `Usage: node scripts/area-estimate.mjs --city <id> (--bbox w,s,e,n
   --out DIR           where cells, streets and the summary go (default tmp/area-estimate/<slug> in the repo)
   --max-cells N       only the first N cells (a test run)
   --assume-storeys N  also report Strong Suburbs with buildings of unknown height taken as N storeys (stated in the output)
+  --parcel-source ID  the plots for the street code's light planes (default: the city's default parcel source)
   Reads: Overpass (Tracestrack per backend/.env) for buildings and streets, the shared API for building facts and
-  densities, the planning constraint source for designations.`;
+  densities, the planning constraint source for designations, the app's parcel source for plots (one 0.01° cell a read).`;
 if (args.includes('--help') || args.includes('-h') || !opt('--city') || !(box(opt('--bbox')) || (opt('--small-areas') && box(opt('--search'))))) {
     console.log(USAGE);
     process.exit(args.includes('--help') || args.includes('-h') ? 0 : 1);
@@ -195,12 +196,33 @@ async function main() {
             const answer = await readers.density(tile.bbox);
             for (const a of answer.areas) densityAreas.set(`${a.scheme}:${a.code}`, a);
         }
-        const read = { ...readers,
+        // The plots around each street (the light planes, paras 35 and 52), from the city's parcel source a cell at a time.
+        const sources = (await json(`${APP_API}/parcel-sources`)).sources || [];
+        const parcelSourceId = opt('--parcel-source') || sources.find(s => (s.cityIds || []).includes(city) && s.defaultForCity)?.id;
+        if (!parcelSourceId) throw new Error(`No parcel source for ${city}; pass --parcel-source.`);
+        const plots = plotReader(async ([w, s, e, n]) => {
+            for (let attempt = 1; ; attempt++) {
+                try {
+                    const answer = await json(`${APP_API}/parcel-sources/${encodeURIComponent(parcelSourceId)}?bbox=${w},${s},${e},${n}`);
+                    if (answer.complete !== true || !Array.isArray(answer.features)) throw new Error('the plots read was incomplete');
+                    return answer.features.filter(f => f.id != null && f.geometry).map(f => ({ id: String(f.id), geometry: f.geometry }));
+                } catch (err) {
+                    if (attempt >= 4) throw err;
+                    log(`plots read failed (${err.message}); retry ${attempt}/3 in ${20 * attempt} s`);
+                    await new Promise(resolve => setTimeout(resolve, 20000 * attempt)); // backoff before the next request
+                }
+            }
+        });
+        log(`plots from ${parcelSourceId}`);
+        const read = { ...readers, plots,
             density: async () => ({ areas: [...densityAreas.values()], sources: [] }),
             // The area's buildings are already read: the ones near a street come from them (outside the area, none).
             buildingsNear: async ([w, s, e, n]) => allBuildings.filter(f => { const c = centreOf(f.geometry); return c[0] >= w && c[0] <= e && c[1] >= s && c[1] <= n; }) };
+        // Streets in the order of the cell their first building is in, so the plots read for a cell serve its streets.
+        const cellOf = f => { const [x, y] = centreOf(f.geometry); return [Math.floor(y / CELL_DEG), Math.floor(x / CELL_DEG)]; };
+        const ordered = [...grouped].sort(([, a], [, b]) => { const [ay, ax] = cellOf(a[0]), [by, bx] = cellOf(b[0]); return ay - by || ax - bx; });
         let n = 0;
-        for (const [name, list] of grouped) {
+        for (const [name, list] of ordered) {
             n++;
             if (!name) continue;
             const file = path.join(out, 'streets', `${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.json`);

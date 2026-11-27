@@ -1,7 +1,7 @@
 // Area estimate (backend/area-estimate/estimate.js): cells, street fronting, the mansard a house gains, and the
 // sums by verdict tier.
 import { describe, it, expect } from 'vitest';
-import { cellsOf, centreOf, streetsOf, judgeEligibility, mansardAddedM2, homesIn, summarize, factIdOf, existingHeightOf } from '../area-estimate/estimate.js';
+import { cellsOf, centreOf, streetsOf, judgeEligibility, mansardAddedM2, homesIn, summarize, factIdOf, existingHeightOf, plotReader } from '../area-estimate/estimate.js';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const Eligibility = require('../../frontend/js/planning/eligibility.js');
@@ -60,5 +60,23 @@ describe('area estimate', () => {
         expect(existingHeightOf({ facts: { height_m: { value: 9 } } })).toBe(9);
         expect(existingHeightOf({ facts: { storeys: { value: 2 } } }, 3.5)).toBe(7);
         expect(existingHeightOf({ facts: { storeys: null, height_m: null } })).toBeNull();
+    });
+    it('reads the plots of a box a cell at a time, each cell once while it is kept, a plot across cells once', async () => {
+        const plot = (id, w, s, e, n) => ({ id, geometry: { type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] } });
+        const across = plot('X', 0.009, 0.001, 0.011, 0.002), far = plot('F', 0.005, 0.008, 0.006, 0.009);
+        const reads = [];
+        const readCell = async bbox => { reads.push(bbox.join()); return bbox[0] < 0.005 ? [across, far] : [across]; };
+        const plots = plotReader(readCell, { keep: 2 });
+        expect((await plots({ bbox: [0.008, 0.0005, 0.012, 0.003] })).map(row => row.id)).toEqual(['X']);
+        expect(reads).toHaveLength(2);
+        await plots({ bbox: [0.0085, 0.001, 0.0095, 0.002] });
+        expect(reads).toHaveLength(2);
+        // A third cell pushes out the least recently used (the second), which is read again when asked for.
+        await plots({ bbox: [0.021, 0.001, 0.022, 0.002] });
+        await plots({ bbox: [0.0085, 0.001, 0.0095, 0.002] });
+        expect(reads).toHaveLength(3);
+        await plots({ bbox: [0.015, 0.001, 0.016, 0.002] });
+        expect(reads).toHaveLength(4);
+        await expect(plots({ parcelIds: ['A'] })).rejects.toThrow('by box only');
     });
 });
