@@ -11,6 +11,13 @@ const require = createRequire(import.meta.url);
 const BallotRules = require('../../frontend/js/community/ballot-rules.js');
 const Eligibility = require('../../frontend/js/planning/eligibility.js');
 const BuildingFacts = require('../../frontend/js/buildings/building-facts.js');
+const EN = require('../../frontend/i18n/en.json');
+// The building card's English words (planningViews.*), so a refusal gives an agent the reasons and
+// links a person sees in the app.
+const cardText = (key, params = {}) => {
+    const value = key.split('.').reduce((node, part) => node?.[part], EN.planningViews);
+    return typeof value === 'string' ? value.replace(/\{\{\s*(\w+)\s*\}\}/g, (_, name) => String(params[name] ?? '')) : key;
+};
 const fail = (code, message) => Object.assign(new Error(message), { code, next: { action: 'Review these designs and their ground in the app before proposing an agreement.' } });
 export const deriveAgreementGround = deriveWithApp;
 
@@ -28,13 +35,18 @@ export async function votingWithEligibility(consultation, designContents, { read
     const judged = await Eligibility.check(set, houses, readFacts);
     const blocked = judged.filter(house => !house.id || house.result.verdict !== 'eligible');
     if (blocked.length) {
-        const why = house => {
-            const cites = status => house.result.tests.filter(test => test.status === status).map(test => test.cite).join(', ');
-            return `${house.id || `building ${house.sourceBuildingId} (no facts source)`}: ${house.id ? house.result.verdict : 'unknown'}`
-                + (cites('fail') ? `, fails ${cites('fail')}` : '') + (cites('unknown') ? `, unknown ${cites('unknown')}` : '');
-        };
-        throw Object.assign(new Error(`Not every covered house is eligible yet (${blocked.map(why).join('; ')}). Add the missing facts in OpenStreetMap and draft again; a heritage listing (17.9) comes from the country's heritage register, not OpenStreetMap.`),
-            { code: 'eligibility-failed', next: { action: 'Read each house with the building facts (edit links per building) and fill the missing ones in OpenStreetMap; for an unknown heritage listing, unknown_reasons.heritage says why (adding addr:street and addr:housenumber can let a terrace entry match by house number).' } });
+        // Each blocked house with every failing or unknown test, in the building card's words and
+        // links (Eligibility.explain): the fact's value, a register's reason and entry link, or the
+        // OpenStreetMap key to add on the building's edit page.
+        const houses = blocked.map(house => ({ id: house.id, sourceBuildingId: house.id ? undefined : house.sourceBuildingId ?? null,
+            verdict: house.id ? house.result.verdict : 'unknown', edit: house.building?.edit?.url || null,
+            tests: house.id ? Eligibility.explain(set, house.result, house.building, cardText) : [] }));
+        const testWords = test => `${test.cite} ${test.label}: ${test.statusText}` + (test.text ? ` (${test.text})` : '') + (test.reason ? ` — ${test.reason}` : '')
+            + (test.link ? ` — ${test.link.text}: ${test.link.url}` : '') + (test.add ? ` — add ${test.add.key} in ${test.add.source}: ${test.add.url}` : '');
+        const why = house => `${house.id || `building ${house.sourceBuildingId} (no facts source)`}: ${house.verdict}` + (house.tests.length ? ` [${house.tests.map(testWords).join('; ')}]` : '');
+        throw Object.assign(new Error(`Not every covered house is eligible yet (${houses.map(why).join(' | ')}). Add the missing facts in OpenStreetMap and draft again; a heritage listing (17.9) comes from the country's heritage register, not OpenStreetMap.`),
+            { code: 'eligibility-failed', constraints: { eligibility: houses },
+                next: { action: 'For each house in constraints.eligibility, add the missing facts under the named OpenStreetMap keys on its edit page, or read the heritage register entry linked; adding addr:street and addr:housenumber can let a terrace entry match by house number. Then draft again.' } });
     }
     return { ...consultation, voting: { ...voting, eligibility: Eligibility.evidence(set, judged, new Date().toISOString()) } };
 }

@@ -9509,7 +9509,9 @@
                 "built": "Construit",
                 "roof_shape": "Forme du toit",
                 "parapet": "Acrotère",
-                "heritage": "Protection patrimoniale"
+                "heritage": "Protection patrimoniale",
+                "footprint_m2": "Emprise",
+                "row_size": "Rangée"
             },
             "builtBefore": "avant {{year}}",
             "builtAfter": "{{year}} ou après",
@@ -10165,6 +10167,8 @@
             "house": "Bâtiment {{id}}",
             "unanswered": "Un bâtiment sans source de données ({{id}})",
             "edit": "Modifier dans {{source}}",
+            "addKey": "Ajoutez {{key}} dans {{source}}",
+            "testsOf": "Conditions non remplies par {{house}}",
             "again": "Vérifier à nouveau",
             "check": "Vérifier l’admissibilité",
             "verdict": {

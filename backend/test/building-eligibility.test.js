@@ -48,6 +48,27 @@ describe('Living Tradition eligibility', () => {
         expect(listingTest(null).status).toBe('unknown');
         expect(eligibility.evaluate(set, { ...georgian, heritage: null }).verdict).toBe('unknown');
     });
+    it('explains each failing or unknown test in the building card\'s words, with the register link, its reason or the key to add', () => {
+        const t = (key, params = {}) => `${key}(${Object.values(params).join('|')})`;
+        const edit = { url: 'https://www.openstreetmap.org/edit?editor=id&way=37', source: 'OpenStreetMap', keys: { parapet: 'building:parapet', storeys: 'building:levels' } };
+        const entry = { reference: '1195683', name: 'NUMBERS 26 TO 50', grade: 'II', url: 'https://historicengland.org.uk/listing/the-list/list-entry/1195683' };
+        const rowUncertain = { found: true, edit, facts: { ...georgian, parapet: null, heritage: null },
+            unknown_reasons: { heritage: { code: 'row-uncertain', message: 'x', entries: [entry] } } };
+        const explained = eligibility.explain(set, eligibility.evaluate(set, rowUncertain.facts), rowUncertain, t);
+        expect(explained.map(test => test.cite)).toEqual(['17.2', '17.9']);
+        expect(explained[0]).toMatchObject({ status: 'unknown', label: 'eligibility.test.parapet()', statusText: 'eligibility.status.unknown()', text: null,
+            add: { key: 'building:parapet', source: 'OpenStreetMap', url: edit.url }, link: null });
+        expect(explained[1]).toMatchObject({ status: 'unknown', reason: 'buildingFact.heritageUnknown.rowUncertain()', add: null,
+            link: { url: entry.url, text: 'buildingFact.heritageEntry(1195683)' } });
+        // A Grade II* listing fails with its grade and links its list entry.
+        const starred = { found: true, edit, facts: { ...georgian, heritage: listing('II*') }, unknown_reasons: {} };
+        const [fails] = eligibility.explain(set, eligibility.evaluate(set, starred.facts), starred, t);
+        expect(fails).toMatchObject({ cite: '17.9', status: 'fail', statusText: 'eligibility.withGrade(eligibility.status.fail()|II*)',
+            text: 'buildingFact.heritageListed(II*)', link: { url: entry.url } });
+        // A failing OSM fact names its value; nothing to add.
+        const flat = { found: true, edit, facts: { ...georgian, storeys: fact(1) }, unknown_reasons: {} };
+        expect(eligibility.explain(set, eligibility.evaluate(set, flat.facts), flat, t)).toMatchObject([{ cite: '17.5', status: 'fail', text: '1', add: null }]);
+    });
     it('reads dates as spans: "before 1913" passes, a span across 1918 is unknown', () => {
         const built = span => statuses(eligibility.evaluate(set, { ...georgian, built: fact(span) }))['17.1'];
         expect(built({ from: null, to: 1912 })).toBe('pass');

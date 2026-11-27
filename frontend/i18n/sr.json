@@ -9382,7 +9382,9 @@
                 "built": "Izgrađena",
                 "roof_shape": "Oblik krova",
                 "parapet": "Atika",
-                "heritage": "Zaštićeno nasleđe"
+                "heritage": "Zaštićeno nasleđe",
+                "footprint_m2": "Osnova",
+                "row_size": "Niz"
             },
             "builtBefore": "pre {{year}}.",
             "builtAfter": "{{year}}. ili kasnije",
@@ -10214,6 +10216,8 @@
             "house": "Zgrada {{id}}",
             "unanswered": "Zgrada bez izvora podataka ({{id}})",
             "edit": "Uredi u {{source}}",
+            "addKey": "Dodajte {{key}} u {{source}}",
+            "testsOf": "Uslovi koje {{house}} ne ispunjava",
             "again": "Proveri ponovo",
             "check": "Proveri uslove",
             "verdict": {

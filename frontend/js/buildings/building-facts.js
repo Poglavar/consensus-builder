@@ -88,20 +88,22 @@
         return entry?.url ? { url: entry.url, text: entry.reference ? t('heritageEntry', { reference: entry.reference }) : t('heritageRegister') } : null;
     }
 
-    // The card's rows: each field's label, its value in words (null when unknown), and the source's
-    // key (where it was read, or where to add it when missing) with the raw text behind it. A
-    // register fact has no key to add it under; it carries a link to its register entry instead, and
-    // when unknown, the reason the source gives (in words, by its code).
+    // One fact as the card and the street-vote check show it: its label, its value in words (null
+    // when unknown), and the source's key (where it was read, or where to add it when missing) with
+    // the raw text behind it. A register fact has no key to add it under; it carries a link to its
+    // register entry instead, and when unknown, the reason the source gives (in words, by its code).
+    function factRow(building, field, t) {
+        const fact = building.facts[field];
+        const row = { field, label: t(`field.${field}`), text: fact ? valueWords(field, fact.value, t) : null,
+            key: fact?.key || (REGISTER_FIELDS.includes(field) ? null : building.edit?.keys?.[field] || null), raw: fact?.raw ?? null };
+        if (!REGISTER_FIELDS.includes(field)) return row;
+        const code = building.unknown_reasons?.[field]?.code;
+        return { ...row, link: registerLink(field, building, t), reason: !fact && UNKNOWN_REASONS.includes(code) ? t(`heritageUnknown.${code.replace(/-(\w)/g, (_, c) => c.toUpperCase())}`) : null };
+    }
+    // The card's rows, one per card field.
     function cardRows(building, t) {
-        return CARD_FIELDS.map(field => {
-            const fact = building.facts[field];
-            const row = { field, label: t(`field.${field}`), text: fact ? valueWords(field, fact.value, t) : null,
-                key: fact?.key || (REGISTER_FIELDS.includes(field) ? null : building.edit?.keys?.[field] || null), raw: fact?.raw ?? null };
-            if (!REGISTER_FIELDS.includes(field)) return row;
-            const code = building.unknown_reasons?.[field]?.code;
-            return { ...row, link: registerLink(field, building, t), reason: !fact && UNKNOWN_REASONS.includes(code) ? t(`heritageUnknown.${code.replace(/-(\w)/g, (_, c) => c.toUpperCase())}`) : null };
-        });
+        return CARD_FIELDS.map(field => factRow(building, field, t));
     }
 
-    return { API_ROOT, CARD_FIELDS, factIdOf, apiRoot, read, readMany, builtWords, heritageWords, cardRows };
+    return { API_ROOT, CARD_FIELDS, factIdOf, apiRoot, read, readMany, builtWords, heritageWords, factRow, cardRows };
 });

@@ -9792,7 +9792,9 @@
                 "built": "سنة البناء",
                 "roof_shape": "شكل السقف",
                 "parapet": "الدروة",
-                "heritage": "الحماية التراثية"
+                "heritage": "الحماية التراثية",
+                "footprint_m2": "المساحة المبنية",
+                "row_size": "الصف"
             },
             "builtBefore": "قبل {{year}}",
             "builtAfter": "{{year}} أو بعده",
@@ -10452,6 +10454,8 @@
             "house": "المبنى {{id}}",
             "unanswered": "مبنى بلا مصدر بيانات ({{id}})",
             "edit": "حرّر في {{source}}",
+            "addKey": "أضف {{key}} في {{source}}",
+            "testsOf": "الشروط التي لا يستوفيها {{house}}",
             "again": "تحقّق مجددًا",
             "check": "تحقّق من الأهلية",
             "verdict": {

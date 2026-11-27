@@ -9509,7 +9509,9 @@
                 "built": "Construído",
                 "roof_shape": "Forma da cobertura",
                 "parapet": "Platibanda",
-                "heritage": "Proteção patrimonial"
+                "heritage": "Proteção patrimonial",
+                "footprint_m2": "Implantação",
+                "row_size": "Banda"
             },
             "builtBefore": "antes de {{year}}",
             "builtAfter": "{{year}} ou depois",
@@ -10165,6 +10167,8 @@
             "house": "Edifício {{id}}",
             "unanswered": "Um edifício sem fonte de dados ({{id}})",
             "edit": "Editar no {{source}}",
+            "addKey": "Acrescente {{key}} no {{source}}",
+            "testsOf": "Condições não cumpridas por {{house}}",
             "again": "Verificar de novo",
             "check": "Verificar elegibilidade",
             "verdict": {

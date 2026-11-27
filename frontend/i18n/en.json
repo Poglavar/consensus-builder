@@ -9283,7 +9283,9 @@
                 "built": "Built",
                 "roof_shape": "Roof shape",
                 "parapet": "Parapet",
-                "heritage": "Heritage listing"
+                "heritage": "Heritage listing",
+                "footprint_m2": "Footprint",
+                "row_size": "Row"
             },
             "builtBefore": "before {{year}}",
             "builtAfter": "{{year}} or later",
@@ -10114,6 +10116,8 @@
             "house": "Building {{id}}",
             "unanswered": "A building with no facts source ({{id}})",
             "edit": "Edit in {{source}}",
+            "addKey": "Add {{key}} in {{source}}",
+            "testsOf": "Tests not passed by {{house}}",
             "again": "Check again",
             "check": "Check eligibility",
             "verdict": {
