@@ -322,6 +322,9 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
         // (the parcel relay among them) answer while a large block is being drawn.
         await new Promise(resolve => setImmediate(resolve));
         try {
+            // A plan lot over the study limit is unsupported whatever zones it touches; overlaying them
+            // first cost one 7 km² Alatau zone of 12,849 vertices 6 s in every display cell it crossed.
+            if (zone && turf.area(parcel) > STUDY_MAX_PARCEL_M2) fail('unsupported-parcel-shape');
             // A parcel wholly under land-forming zoning areas gets no envelope: those areas stand for
             // its land. Where the provider reads its rules under the lot, the zones are known later.
             let found = provider.parcelRecords ? null : parcelZones(parcel, zonesByScenario[scenarios[0]]);
