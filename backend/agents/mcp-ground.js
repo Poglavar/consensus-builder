@@ -79,13 +79,13 @@ export function createMcpAgreementTools({ read, drafts, appOrigin, readFacts = i
             const result = await groundFor(await resolveDesigns(designs, parcelSourceId));
             return result.land;
         },
-        async draftAgreement({ plan: value, rulePreset = 'owner-vote', rule: ruleOverride, rights, lenses = [], lensThreshold = null, allocations, settlement, valuation = null, currency = null, deadline = null, sponsor = null, title = null, author = null, createdAt = null, consultation = null, includeGround = false, targetUsdcAtomic = null, contract = null, apartments = null }) {
+        async draftAgreement({ plan: value, rulePreset = 'owner-vote', rule: ruleOverride, rights, lenses = [], lensThreshold = null, allocations, settlement, valuation = null, affected = null, neighbourCompensation, currency = null, deadline = null, sponsor = null, title = null, author = null, createdAt = null, consultation = null, includeGround = false, targetUsdcAtomic = null, contract = null, apartments = null }) {
             if (!resolvePlan) throw fail('plan-resolver-unavailable', 'Named plan resolution is unavailable.');
             // Funding refers to the published member CIDs. Only newly carried designs need authoring checks.
             const selected = await resolvePlan(value, { referenceMembers: rulePreset === 'crowdfunding' });
             if (rulePreset === 'crowdfunding') {
-                if (ruleOverride || rights || allocations || settlement || valuation != null || consultation != null) {
-                    throw fail('crowdfunding-terms-invalid', 'Crowdfunding has one fixed investor rule and no land, allocation, settlement, valuation or consultation terms.');
+                if (ruleOverride || rights || allocations || settlement || valuation != null || consultation != null || affected != null || neighbourCompensation != null) {
+                    throw fail('crowdfunding-terms-invalid', 'Crowdfunding has one fixed investor rule and no land, allocation, settlement, valuation, affected neighbour or consultation terms.');
                 }
                 if (typeof deadline !== 'string' || !Number.isFinite(Date.parse(deadline)) || Date.parse(deadline) % 1000 !== 0) {
                     throw fail('crowdfunding-deadline-invalid', 'Supply a funding deadline on a whole second.');
@@ -119,6 +119,9 @@ export function createMcpAgreementTools({ read, drafts, appOrigin, readFacts = i
             if (rights && rule.electorate === 'owners') rule.approvalConfig = { ...(rule.approvalConfig || { schema: 'proposal-approval/v1', policy: { type: 'unanimous' } }), rights };
             if (rule.electorate !== 'community' && !rule.settlement) rule.settlement = { method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 0 };
             if (settlement) rule.settlement = settlement;
+            // The multiple of a neighbour's stated loss: given here, or in the rule; null removes it (1×).
+            if (neighbourCompensation === null) delete rule.neighbourCompensation;
+            else if (neighbourCompensation) rule.neighbourCompensation = neighbourCompensation;
             if (rule.electorate === 'community') rule.settlement = null;
             if (rule.electorate === 'community') consultation = await votingWithEligibility(consultation, designs.map(d => d.content), { readFacts });
             const { land, source, ids } = await groundFor({ ...resolved, designs });
@@ -129,7 +132,7 @@ export function createMcpAgreementTools({ read, drafts, appOrigin, readFacts = i
             const published = agreementObject({ title, author, sponsor, city, createdAt, plan,
                 designs: designs.map(d => ({ cid: d.cid, goal: d.content.goal, title: d.content.title })),
                 parcels, openGroundM2: land.inputs.openGroundM2, outputs: land.outputs, allocations: finalAllocations,
-                money: { currency, lines: [] }, valuation: rule.electorate === 'community' ? null : valuation, rule, deadline, consultation });
+                money: { currency, lines: [] }, valuation: rule.electorate === 'community' ? null : valuation, affected, rule, deadline, consultation });
             const ruleRights = published.content.rule.approvalConfig?.rights;
             return { agreement: published.content, cid: published.cid, parcelSourceId: source.parcelSourceId, takes: [...ids], groundEffects,
                 persons: ruleRights ? personPositions(published.content, ruleRights) : null, ...(includeGround ? { ground: land } : {}), warnings: ['This agreement references the existing named plan. Review its derived ground and terms before publishing.',

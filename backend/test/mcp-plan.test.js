@@ -241,6 +241,38 @@ describe('agreement MCP editing surface', () => {
         expect(draft.safeParse({ plan: namedPlan.plan, settlement: { method: 'worth', rateCentsPerM2: 0, contributionBasisPoints: 0 } }).success).toBe(false);
     });
 
+    it('adds, edits and removes affected neighbours through MCP, deriving their cash and reporting them on inspection', async () => {
+        const { tools, namedPlan } = await runtime();
+        const strongSuburbs = { multipleBasisPoints: 15000, preset: { id: 'gb-strong-suburbs', version: '2026-11-27' } };
+        const waiver = { parcelId: 'B', effect: 'waiver', rights: ['daylight'], readings: [{ kind: 'sky', before: 30, after: 21, guide: 27, grade: 'fail' }], considerationCents: 250000 };
+        const compensation = { parcelId: 'C', effect: 'compensation', rights: ['garden'], loss: { amountCents: 100000, statedBy: 'sponsor' } };
+        const drafted = await tools.draftAgreement({ plan: namedPlan.draftArtifact, rulePreset: 'owner-vote', affected: [waiver, compensation], neighbourCompensation: strongSuburbs,
+            settlement: { method: 'none', rateCentsPerM2: 0, contributionBasisPoints: 0 } });
+        expect(drafted.agreement.affected.map(entry => [entry.parcelId, entry.effect, entry.considerationCents])).toEqual([['B', 'waiver', 250000], ['C', 'compensation', 150000]]);
+        expect(drafted.agreement.money.lines).toEqual([{ ownerKey: 'parcel-owner:B', amountCents: 250000 }, { ownerKey: 'parcel-owner:C', amountCents: 150000 }]);
+        expect(drafted.agreement.rule.neighbourCompensation).toEqual(strongSuburbs);
+        const inspected = await tools.inspectAgreement({ plan: drafted.draftArtifact });
+        expect(inspected.affected.map(entry => entry.parcelId)).toEqual(['B', 'C']);
+        expect(inspected.neighbourCompensation).toEqual(strongSuburbs);
+        expect(inspected.parties.filter(party => party.affected).map(party => [party.ownerKey, party.cashCents])).toEqual([['parcel-owner:B', 250000], ['parcel-owner:C', 150000]]);
+        expect(inspected.cashSchedule.sponsorCents).toBe(-400000);
+        // Removing the waiver and the multiple: the list is replaced, compensation falls back to 1× its loss.
+        const edited = await tools.editAgreement({ plan: drafted.draftArtifact, expectedCid: drafted.cid, terms: { affected: [compensation], neighbourCompensation: null } });
+        expect(edited.agreement.affected.map(entry => [entry.parcelId, entry.considerationCents])).toEqual([['C', 100000]]);
+        expect(edited.agreement.rule).not.toHaveProperty('neighbourCompensation');
+        const cleared = await tools.editAgreement({ plan: edited.draftArtifact, expectedCid: edited.cid, terms: { affected: null } });
+        expect(cleared.agreement).not.toHaveProperty('affected');
+        expect(cleared.agreement.money.lines).toEqual([]);
+        // An input parcel is no neighbour; compensation under a multiple needs a stated loss.
+        await expect(tools.editAgreement({ plan: edited.draftArtifact, expectedCid: edited.cid, terms: { affected: [{ ...waiver, parcelId: 'A' }] } }))
+            .rejects.toThrow(/input parcel/);
+        await expect(tools.editAgreement({ plan: edited.draftArtifact, expectedCid: edited.cid, terms: { affected: [{ parcelId: 'C', effect: 'compensation', rights: ['garden'] }], neighbourCompensation: strongSuburbs } }))
+            .rejects.toThrow(/stated loss/);
+        const edit = schemas().get('ugt_edit_agreement');
+        expect(edit.safeParse({ plan: namedPlan.plan, expectedCid: drafted.cid, terms: { affected: [{ ...waiver, rights: ['view'] }] } }).success).toBe(false);
+        expect(edit.safeParse({ plan: namedPlan.plan, expectedCid: drafted.cid, terms: { affected: [waiver], neighbourCompensation: strongSuburbs } }).success).toBe(true);
+    });
+
     it('preserves explicit currency when terms select another existing named plan', async () => {
         const { tools, park, namedPlan } = await runtime();
         const other = await tools.draftPlan({ designs: [park.design], title: 'Another existing plan' });

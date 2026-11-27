@@ -169,6 +169,11 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
             valuation: plan.agreement.valuation ?? null, valued: ledger?.valued ?? null, contributedValueCents: ledger?.contributedValueCents ?? null,
             distributableValueCents: ledger?.distributableValueCents ?? null, publicValueCents: ledger?.publicValueCents ?? null, proposerValueCents: ledger?.proposerValueCents ?? null,
             scheme: community || crowdfunding ? null : schemeReport(plan.agreement),
+            // Neighbours who give a right and no land: a waiver's owners must approve, compensation is
+            // paid without consent; each party's consideration is in parties and cashSchedule.
+            affected: community || crowdfunding ? null : plan.agreement.affected ?? [],
+            neighbourCompensation: community || crowdfunding ? null : { multipleBasisPoints: AgreementRecord.lossMultipleOf(plan.agreement.rule),
+                preset: plan.agreement.rule.neighbourCompensation?.preset ?? null },
             cashSchedule: ledger?.money ?? null,
             total: matched.length, offset, truncated: offset + limit < matched.length,
             selectionBasis: 'References belong to this immutable plan CID. Compass selection requires the whole object bbox beyond the reference bbox; crossing objects are excluded.',
@@ -222,6 +227,9 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
                 rights, currency: previous.money.currency,
                 ...lensTerms(terms, previous.rule), allocations: terms.allocations,
                 settlement: terms.settlement ?? previous.rule.settlement, valuation: terms.valuation ?? null,
+                // Affected neighbours and the compensation multiple carry over unless restated (null removes).
+                affected: Object.hasOwn(terms, 'affected') ? terms.affected : previous.affected ?? null,
+                neighbourCompensation: Object.hasOwn(terms, 'neighbourCompensation') ? terms.neighbourCompensation : previous.rule.neighbourCompensation ?? null,
                 title: terms.title ?? previous.title, author: terms.author ?? previous.author,
                 sponsor: terms.sponsor ?? previous.sponsor, deadline: terms.deadline ?? previous.deadline,
                 consultation: rule.electorate === 'community' ? terms.consultation ?? previous.consultation : null });
@@ -245,9 +253,14 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
         }
         const rule = withLens(terms.rule ? structuredClone(terms.rule) : structuredClone(previous.rule), terms);
         if (terms.settlement) rule.settlement = terms.settlement;
-        // A community vote has no owner rule, land allocation or cash: the preset clears them, like a
-        // new draft with that preset. Owners keep deciding in their own agreement on the same plan.
-        if (terms.rulePreset === 'community-vote') Object.assign(rule, communityRule(rule.lens), { settlement: null });
+        // The multiple of an affected neighbour's stated loss; null removes it (1×).
+        if (Object.hasOwn(terms, 'neighbourCompensation')) {
+            if (terms.neighbourCompensation === null) delete rule.neighbourCompensation;
+            else rule.neighbourCompensation = terms.neighbourCompensation;
+        }
+        // A community vote has no owner rule, land allocation, cash or affected neighbours: the preset
+        // clears them, like a new draft with that preset. Owners keep deciding in their own agreement on the same plan.
+        if (terms.rulePreset === 'community-vote') { Object.assign(rule, communityRule(rule.lens), { settlement: null }); delete rule.neighbourCompensation; }
         else if (terms.rulePreset) {
             rule.electorate = 'owners'; rule.binding = terms.rulePreset === 'owner-deal';
             if (terms.rights) rule.approvalConfig = { schema: 'proposal-approval/v1', rights: terms.rights, policy: { type: 'unanimous' } };
@@ -262,6 +275,8 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
             allocations: community ? [] : terms.allocations ?? previous.allocations,
             money: community ? { ...previous.money, lines: [] } : previous.money, rule,
             valuation: community ? null : Object.hasOwn(terms, 'valuation') ? terms.valuation : previous.valuation ?? null,
+            // terms.affected replaces the whole list (add, change or remove entries); null removes them all.
+            affected: community ? null : Object.hasOwn(terms, 'affected') ? terms.affected : previous.affected ?? null,
             ...Object.fromEntries(['title', 'author', 'sponsor', 'deadline', 'consultation'].filter(key => Object.hasOwn(terms, key)).map(key => [key, terms[key]])),
             consultation: rule.electorate === 'community' ? terms.consultation ?? previous.consultation : null, createdAt: new Date().toISOString() });
         return { agreement: checked.content, cid: checked.cid, previousCid: original.cid, plan: original.plan,
