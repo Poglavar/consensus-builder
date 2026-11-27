@@ -1,6 +1,6 @@
 // The designs restating one district of Alatau's general plan (Decree No. 727, 2025; README.md), built
-// from the committed data only: data/zones.geojson (the plan's zones in the district) and
-// data/district.geojson (the district outline). One parcel layout whose plots are the plan's zones, one
+// from the committed zones, district outline and published street centreline coordinates.
+// One parcel layout whose plots are the plan's zones, one
 // road placed in the street ground (road-in-parcel), one park per green or parks zone. Parks and the
 // road come from the app's own intent builder (frontend/js/intent-design.js, as MCP drafts them); the
 // layout's plots are the zone polygons, checked with the app's layout validation. No network.
@@ -119,15 +119,26 @@ function intentRecord(intent, index) {
 }
 
 function roadDesign(plot, index) {
-    return {
-        key: 'streets',
-        record: intentRecord({
-            kind: 'road', bounded: true, site: plot.geometry, drivingSide: cityDrivingSide(CITY),
-            title: 'Alatau general plan · streets around block 479341',
-            description: `The street ground of the plan's road zone ${plot.zoneId} in the district, to the centrelines of its bounding streets;`
-                + ` lanes fitted to each street's width with pavements and verges to the block edges. ${SOURCE_NOTE}`
-        }, index)
-    };
+    const record = intentRecord({
+        kind: 'road', bounded: true, site: plot.geometry, drivingSide: cityDrivingSide(CITY),
+        title: 'Alatau general plan · streets around block 479341',
+        description: `The street ground of the plan's road zone ${plot.zoneId} in the district, to the centrelines of its bounding streets;`
+            + ` lanes fitted to each street's width with pavements and verges to the block edges. ${SOURCE_NOTE}`
+    }, index);
+
+    // The fit checks the source geometry and derives the lanes and topology. Its inverse
+    // projection can differ by a final binary digit across CPUs. Hash the published coordinates.
+    const coordinates = data('street-nodes.json');
+    const nodes = record.roadProposal.definition.osm.elements.filter(element => element.type === 'node');
+    if (nodes.length !== Object.keys(coordinates).length) throw new Error('The fitted street node count changed.');
+    for (const node of nodes) {
+        const point = coordinates[node.id];
+        if (!point || !(Math.abs(node.lon - point[0]) <= 1e-12 && Math.abs(node.lat - point[1]) <= 1e-12)) {
+            throw new Error(`Fitted street node ${node.id} differs from the published centreline.`);
+        }
+        [node.lon, node.lat] = point;
+    }
+    return { key: 'streets', record };
 }
 
 function parkDesign(plot, index) {

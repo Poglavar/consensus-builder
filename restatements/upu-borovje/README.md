@@ -57,6 +57,11 @@ The six GeoJSON files above are committed in this folder as the canonical recons
 corrections (`cadastral-snap.json`, `street-footprints.json`, `streets-fit.json`) are committed beside
 them, keyed by the design keys of `borovje-designs.mjs`.
 
+The [published building footprints](data/published-fitted-buildings.json) contain the eleven
+fitted rings whose design IDs are recorded in [the captured ground](ground/upu-borovje.json).
+The builder checks the fit to within 1e-12 degrees and writes the recorded coordinates into
+the designs. This preserves their content IDs across CPU architectures.
+
 ## What gets created in the app
 
 The official plan, **UPU Borovje – zona jug**, is 22 designs (all dated 23 June 2026, the plan's public

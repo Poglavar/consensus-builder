@@ -57,7 +57,9 @@ decree as author:
    are geometry; their names (use and zone id, in English) travel in the description, in plot order.
 2. **Streets**: one bounded road placed in the street plot ([road in a parcel](../../docs/road-in-parcel.md)),
    drafted by the app's intent builder with automatic lanes per street width. The district edge cuts
-   the boundary streets at their centrelines, so those are half streets.
+   the boundary streets at their centrelines, so those are half streets. The fit is checked against
+   the [18 published centreline nodes](data/street-nodes.json). Their stored WGS84 coordinates
+   give the street design the same content ID across CPU architectures.
 3. **Eight parks**, one per green or parks zone, on its plot, from the same builder with its
    default planting (no trees or furniture).
 

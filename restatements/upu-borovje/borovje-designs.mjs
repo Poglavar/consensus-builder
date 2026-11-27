@@ -245,10 +245,18 @@ function layoutDesign(layout) {
 // of the eleven plots, so each building is shortened along its length to the cap (flat-plan.mjs
 // fitToFloorAreaLimit). The rest of the plot is green ground: the plan's plots are landscaped around
 // the slabs, and the old ground and trees on them do not stay.
-function buildingDesign(building, plot) {
+function buildingDesign(building, plot, publishedRing) {
     const rule = PP_RULES[building.pp] || {};
     const height = Math.round(building.floors * FLOOR_HEIGHT_M * 10) / 10;
     const fit = fitToFloorAreaLimit({ name: building.name, geometry: building.geometry, plot: plot.geometry, floors: building.floors, kisn: rule.kisn }, turf);
+    const [fittedRing] = fit.geometry.coordinates;
+    const matchesFootprint = fit.geometry.type === 'Polygon' && fit.geometry.coordinates.length === 1
+        && publishedRing?.length === fittedRing.length
+        && fittedRing.every((point, i) => point.length === publishedRing[i].length
+            && point.every((value, axis) => Math.abs(value - publishedRing[i][axis]) <= 1e-12));
+    if (!matchesFootprint) {
+        throw new Error(`${building.name}: fitted geometry differs from its published ring beyond roundoff`);
+    }
     const footprintM2 = Math.round(fit.footprintM2);
     return {
         key: building.key,
@@ -272,7 +280,7 @@ function buildingDesign(building, plot) {
                 buildings: [{
                     type: 'Feature',
                     properties: { type: 'proposedBuildingSingle', height, rotation: 0, block: `UPU Borovje ${building.name}` },
-                    geometry: structuredClone(fit.geometry)
+                    geometry: { type: 'Polygon', coordinates: [structuredClone(publishedRing)] }
                 }],
                 surroundings: { treatment: 'green', polygon: structuredClone(plot.geometry) }
             },
@@ -353,7 +361,7 @@ function urbanBlockDesigns(state) {
 
 /** The official plan at the current version: two streets, three parcel layouts, eleven buildings, six parks. */
 export async function officialPlan() {
-    const state = await borovjeState();
+    const [state, published] = await Promise.all([borovjeState(), data('published-fitted-buildings.json')]);
     return {
         key: PLAN_KEYS.official,
         title: 'UPU Borovje – zona jug',
@@ -365,7 +373,7 @@ export async function officialPlan() {
         designs: [
             ...state.roads.map(roadDesign),
             ...state.layouts.map(layoutDesign),
-            ...state.buildings.map(building => buildingDesign(building, plotOf(state, building.key))),
+            ...state.buildings.map(building => buildingDesign(building, plotOf(state, building.key), published.buildings[building.name])),
             ...state.parks.map(parkDesign)
         ]
     };
