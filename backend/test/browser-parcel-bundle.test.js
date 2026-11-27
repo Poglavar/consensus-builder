@@ -1,8 +1,8 @@
 // Guards deployable browser assets against Node dependencies and stale generated code.
 import { describe, expect, it } from 'vitest';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join, basename, resolve } from 'node:path';
+import { join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash, webcrypto } from 'node:crypto';
 import { build } from 'esbuild';
@@ -53,10 +53,14 @@ describe('static browser parcel adapters', () => {
             expect(Object.keys(build.metafile.outputs).some(path => path.endsWith('.gsb'))).toBe(false);
             expect(Object.keys(build.metafile.inputs).some(input => input.endsWith('hmlr-browser-source.js'))).toBe(true);
             expect(Object.keys(build.metafile.inputs).some(input => input.endsWith('disk-geojson-snapshot-source.js'))).toBe(false);
+            const emittedNames = build.outputFiles.map(file => relative(outdir, file.path));
+            const shipped = await readdir(deployed, { recursive: true, withFileTypes: true });
+            const shippedNames = shipped.filter(entry => !entry.isDirectory())
+                .map(entry => relative(deployed, join(entry.parentPath, entry.name)));
+            expect(shippedNames.sort()).toEqual(emittedNames.sort());
             for (const [path, output] of Object.entries(build.metafile.outputs)) {
                 expect(output.imports.some(item => item.external)).toBe(false);
-                const name = path.includes('/chunks/') ? `chunks/${basename(path)}` : basename(path);
-                expect(resolve(projectRoot, path)).toBe(resolve(outdir, name));
+                const name = relative(outdir, resolve(projectRoot, path));
                 const generated = await readFile(join(outdir, name));
                 expect(createHash('sha256').update(await readFile(join(deployed, name))).digest('hex')).toBe(createHash('sha256').update(generated).digest('hex'));
                 if (name.endsWith('.js')) {
@@ -64,6 +68,20 @@ describe('static browser parcel adapters', () => {
                     expect(generated.includes(gridBytes)).toBe(false);
                 }
             }
+        } finally { await rm(outdir, { recursive: true, force: true }); }
+    }, 180000);
+    it('retires stale generated files without touching unrelated assets', async () => {
+        const outdir = await mkdtemp(join(tmpdir(), 'parcel-browser-dirty-'));
+        try {
+            const chunks = join(outdir, 'chunks');
+            await mkdir(chunks, { recursive: true });
+            await writeFile(join(chunks, 'new-provider-DEADBEEF.js'), 'stale');
+            await writeFile(join(chunks, 'new-provider-DEADBEEF.js.LEGAL.txt'), 'stale');
+            await writeFile(join(chunks, 'notes.txt'), 'keep');
+            await buildBrowserParcels({ outdir });
+            await expect(readFile(join(chunks, 'new-provider-DEADBEEF.js'))).rejects.toMatchObject({ code: 'ENOENT' });
+            await expect(readFile(join(chunks, 'new-provider-DEADBEEF.js.LEGAL.txt'))).rejects.toMatchObject({ code: 'ENOENT' });
+            expect(await readFile(join(chunks, 'notes.txt'), 'utf8')).toBe('keep');
         } finally { await rm(outdir, { recursive: true, force: true }); }
     }, 180000);
     it('runs the compiled WebAssembly geometry engine without Node globals', async () => {
