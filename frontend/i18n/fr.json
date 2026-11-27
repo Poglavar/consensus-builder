@@ -9493,6 +9493,27 @@
         "displayLabel": "Apparence de {{role}}",
         "existingScope": "Sélection des bâtiments existants",
         "existingHeights": "Hauteurs",
+        "buildingFacts": "Données du bâtiment",
+        "buildingFactsReading": "Lecture des données du bâtiment…",
+        "buildingFactsFailed": "Les données du bâtiment n’ont pas pu être lues.",
+        "buildingFactUnknown": "Inconnu",
+        "buildingFactsMissing": "Les données manquantes peuvent être ajoutées dans {{source}} : {{tags}}",
+        "buildingFactsEdit": "Ajouter ou corriger dans {{source}}",
+        "buildingFactsNotFound": "{{source}} n’a plus ce bâtiment.",
+        "buildingFactsAgain": "Vérifier à nouveau",
+        "buildingFact": {
+            "field": {
+                "storeys": "Niveaux",
+                "built": "Construit",
+                "roof_shape": "Forme du toit",
+                "parapet": "Acrotère"
+            },
+            "builtBefore": "avant {{year}}",
+            "builtAfter": "{{year}} ou après",
+            "builtBetween": "{{from}}–{{to}}",
+            "parapetYes": "Oui",
+            "parapetNo": "Non"
+        },
         "survey": "Relevé des hauteurs",
         "source": "Source des bâtiments",
         "proposedForm": "Représentation proposée",

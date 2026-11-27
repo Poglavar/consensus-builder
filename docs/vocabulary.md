@@ -647,6 +647,17 @@ ground context for inspection. An explicit design impact can link it to an affec
 spatial overlap alone does not establish that relationship. Current agreements allocate land and
 money and do not create a separate transfer of a source-building record.
 
+### Building facts
+
+What is known about a source building beside its shape: storeys, when it was built, roof shape
+and parapet (and height). The shared API's building-facts contract answers them for any city;
+this app reads only that contract, never a source's own format. Each fact names its source, the
+source's key and raw value; an unknown fact is unknown, never a default. "Built" is a span of
+years, so a date known only as "before 1913" still decides a rule about 1918. OpenStreetMap
+buildings are answered live from OpenStreetMap, and a missing fact is added there by whoever
+needs it (`building:parapet=yes|no` for a parapet along the whole street front). Croatian
+cadastre buildings are to join the same contract.
+
 ### Proposed building
 
 Authored building geometry, parameters and optional architectural evidence belonging to a design. Its representation proposes a building rather than asserting an existing surveyed object.

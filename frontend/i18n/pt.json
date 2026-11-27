@@ -9493,6 +9493,27 @@
         "displayLabel": "Aspeto de {{role}}",
         "existingScope": "Seleção de edifícios existentes",
         "existingHeights": "Alturas",
+        "buildingFacts": "Dados do edifício",
+        "buildingFactsReading": "A ler os dados do edifício…",
+        "buildingFactsFailed": "Não foi possível ler os dados do edifício.",
+        "buildingFactUnknown": "Desconhecido",
+        "buildingFactsMissing": "Os dados em falta podem ser adicionados no {{source}}: {{tags}}",
+        "buildingFactsEdit": "Adicionar ou corrigir no {{source}}",
+        "buildingFactsNotFound": "O {{source}} já não tem este edifício.",
+        "buildingFactsAgain": "Verificar de novo",
+        "buildingFact": {
+            "field": {
+                "storeys": "Pisos",
+                "built": "Construído",
+                "roof_shape": "Forma da cobertura",
+                "parapet": "Platibanda"
+            },
+            "builtBefore": "antes de {{year}}",
+            "builtAfter": "{{year}} ou depois",
+            "builtBetween": "{{from}}–{{to}}",
+            "parapetYes": "Sim",
+            "parapetNo": "Não"
+        },
         "survey": "Levantamento de alturas",
         "source": "Fonte dos edifícios",
         "proposedForm": "Representação proposta",

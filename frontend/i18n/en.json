@@ -9267,6 +9267,27 @@
         "displayLabel": "{{role}} appearance",
         "existingScope": "Built building selection",
         "existingHeights": "Heights",
+        "buildingFacts": "Building facts",
+        "buildingFactsReading": "Reading building facts…",
+        "buildingFactsFailed": "Building facts could not be read.",
+        "buildingFactUnknown": "Unknown",
+        "buildingFactsMissing": "Missing facts can be added in {{source}}: {{tags}}",
+        "buildingFactsEdit": "Add or correct in {{source}}",
+        "buildingFactsNotFound": "{{source}} no longer has this building.",
+        "buildingFactsAgain": "Check again",
+        "buildingFact": {
+            "field": {
+                "storeys": "Storeys",
+                "built": "Built",
+                "roof_shape": "Roof shape",
+                "parapet": "Parapet"
+            },
+            "builtBefore": "before {{year}}",
+            "builtAfter": "{{year}} or later",
+            "builtBetween": "{{from}}–{{to}}",
+            "parapetYes": "Yes",
+            "parapetNo": "No"
+        },
         "survey": "Height survey",
         "source": "Building source",
         "proposedForm": "Proposed representation",

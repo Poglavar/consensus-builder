@@ -1,0 +1,55 @@
+// The building card's facts client (frontend/js/buildings/building-facts.js): which buildings the
+// shared API's facts contract answers, the live read, and the card's rows in words.
+import { describe, expect, it, vi } from 'vitest';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const facts = require('../../frontend/js/buildings/building-facts.js');
+
+const t = (key, params = {}) => `${key}(${Object.values(params).join('|')})`;
+const answer = building => ({ buildings: [building], fields: ['storeys', 'built', 'roof_shape', 'parapet', 'height_m'], sources: [{ id: 'osm' }] });
+const KEYS = { storeys: 'building:levels', built: 'start_date', roof_shape: 'roof:shape', parapet: 'building:parapet', height_m: 'height' };
+const house = {
+    id: 'osm:way/123', found: true,
+    facts: { storeys: { value: 3, source: 'osm', key: 'building:levels', raw: '3' }, built: { value: { from: null, to: 1912 }, source: 'osm', key: 'start_date', raw: 'before 1913' },
+        roof_shape: null, parapet: null, height_m: null },
+    edit: { url: 'https://www.openstreetmap.org/edit?editor=id&way=123', source: 'OpenStreetMap', keys: KEYS },
+};
+
+describe('building facts client', () => {
+    it('names OSM ways and relations as the contract does, and nothing else', () => {
+        expect(facts.factIdOf({ id: 'w123', properties: {} })).toBe('osm:way/123');
+        expect(facts.factIdOf({ properties: { osm_id: 'r45' } })).toBe('osm:relation/45');
+        expect(facts.factIdOf({ properties: {} }, 'osm:w7')).toBe('osm:way/7');
+        expect(facts.factIdOf({ id: 4711, properties: { object_id: 4711 } }, '4711')).toBeNull();
+        expect(facts.factIdOf({ id: 'n9', properties: {} })).toBeNull();
+    });
+    it('reads one building live from the contract, and fails loudly on a bad answer', async () => {
+        const fetchFn = vi.fn(async () => new Response(JSON.stringify(answer(house))));
+        const building = await facts.read('osm:way/123', { fetchFn, base: 'https://example.test/api' });
+        expect(fetchFn).toHaveBeenCalledWith('https://example.test/api/building-facts?ids=osm%3Away%2F123', { cache: 'no-store' });
+        expect(building.facts.storeys.value).toBe(3);
+        await expect(facts.read('osm:way/123', { fetchFn: async () => new Response('busy', { status: 502 }) })).rejects.toThrow('HTTP 502');
+        await expect(facts.read('osm:way/9', { fetchFn: async () => new Response(JSON.stringify(answer(house))) })).rejects.toThrow('Invalid');
+    });
+    it('puts spans of years in words', () => {
+        expect(facts.builtWords({ from: 1890, to: 1890 }, t)).toBe('1890');
+        expect(facts.builtWords({ from: null, to: 1912 }, t)).toBe('builtBefore(1913)');
+        expect(facts.builtWords({ from: 1823, to: null }, t)).toBe('builtAfter(1823)');
+        expect(facts.builtWords({ from: 1860, to: 1869 }, t)).toBe('builtBetween(1860|1869)');
+    });
+    it('lists each card fact in words, unknown ones as null with the key to add them under', () => {
+        const rows = facts.cardRows(house, t);
+        expect(rows.map(row => [row.field, row.text, row.key])).toEqual([
+            ['storeys', '3', 'building:levels'], ['built', 'builtBefore(1913)', 'start_date'],
+            ['roof_shape', null, 'roof:shape'], ['parapet', null, 'building:parapet'],
+        ]);
+        const parapet = { ...house, facts: { ...house.facts, parapet: { value: true, source: 'osm', key: 'building:parapet', raw: 'yes' } } };
+        expect(facts.cardRows(parapet, t)[3].text).toBe('parapetYes()');
+    });
+    it('uses a local shared API only on a local page that asks for one', () => {
+        const at = (hostname, search) => ({ hostname, search });
+        expect(facts.apiRoot(at('localhost', '?sharedApi=http://localhost:3201/api'))).toBe('http://localhost:3201/api');
+        expect(facts.apiRoot(at('localhost', '?sharedApi=https://evil.test/api'))).toBe(facts.API_ROOT);
+        expect(facts.apiRoot(at('urbangametheory.xyz', '?sharedApi=http://localhost:3201/api'))).toBe(facts.API_ROOT);
+    });
+});

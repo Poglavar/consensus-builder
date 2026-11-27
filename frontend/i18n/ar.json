@@ -9776,6 +9776,27 @@
         "displayLabel": "مظهر {{role}}",
         "existingScope": "تحديد المباني القائمة",
         "existingHeights": "الارتفاعات",
+        "buildingFacts": "بيانات المبنى",
+        "buildingFactsReading": "جارٍ قراءة بيانات المبنى…",
+        "buildingFactsFailed": "تعذّرت قراءة بيانات المبنى.",
+        "buildingFactUnknown": "غير معروف",
+        "buildingFactsMissing": "يمكن إضافة البيانات الناقصة في {{source}}: {{tags}}",
+        "buildingFactsEdit": "أضف أو صحّح في {{source}}",
+        "buildingFactsNotFound": "لم يعد هذا المبنى موجودًا في {{source}}.",
+        "buildingFactsAgain": "تحقّق مجددًا",
+        "buildingFact": {
+            "field": {
+                "storeys": "عدد الطوابق",
+                "built": "سنة البناء",
+                "roof_shape": "شكل السقف",
+                "parapet": "الدروة"
+            },
+            "builtBefore": "قبل {{year}}",
+            "builtAfter": "{{year}} أو بعده",
+            "builtBetween": "{{from}}–{{to}}",
+            "parapetYes": "نعم",
+            "parapetNo": "لا"
+        },
         "survey": "مسح الارتفاعات",
         "source": "مصدر المباني",
         "proposedForm": "التمثيل المقترح",

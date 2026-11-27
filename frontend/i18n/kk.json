@@ -9311,6 +9311,27 @@
         "displayLabel": "Көрініс түрі: {{role}}",
         "existingScope": "Салынған ғимараттарды таңдау",
         "existingHeights": "Биіктіктер",
+        "buildingFacts": "Ғимарат деректері",
+        "buildingFactsReading": "Ғимарат деректері оқылуда…",
+        "buildingFactsFailed": "Ғимарат деректерін оқу мүмкін болмады.",
+        "buildingFactUnknown": "Белгісіз",
+        "buildingFactsMissing": "Жетіспейтін деректерді {{source}} ішінде қосуға болады: {{tags}}",
+        "buildingFactsEdit": "{{source}} ішінде қосу немесе түзету",
+        "buildingFactsNotFound": "{{source}} ішінде бұл ғимарат енді жоқ.",
+        "buildingFactsAgain": "Қайта тексеру",
+        "buildingFact": {
+            "field": {
+                "storeys": "Қабат саны",
+                "built": "Салынған",
+                "roof_shape": "Шатыр пішіні",
+                "parapet": "Парапет"
+            },
+            "builtBefore": "{{year}} жылға дейін",
+            "builtAfter": "{{year}} немесе кейін",
+            "builtBetween": "{{from}}–{{to}}",
+            "parapetYes": "Иә",
+            "parapetNo": "Жоқ"
+        },
         "survey": "Биіктік түсірілімі",
         "source": "Ғимараттар көзі",
         "proposedForm": "Ұсынылғанды бейнелеу",

@@ -442,3 +442,59 @@ describe('observed building height from a height survey', () => {
         expect(storeys.heightSurvey).toBeUndefined();
     });
 });
+
+describe('building facts on the card', () => {
+    const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');
+    const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
+    const slice = node => source.slice(node.start, node.end);
+    const pieces = body.filter(node => (node.type === 'FunctionDeclaration' && ['readFacts', 'readFactsOf', 'renderFacts', 'element'].includes(node.id.name))
+        || (node.type === 'VariableDeclaration' && node.declarations[0].id.name === 'factReads')).map(slice).join('\n');
+    const client = require('../../frontend/js/buildings/building-facts.js');
+    const t = (key, params = {}) => `${key}(${Object.values(params).join('|')})`;
+    const KEYS = { storeys: 'building:levels', built: 'start_date', roof_shape: 'roof:shape', parapet: 'building:parapet' };
+    const building = parapet => ({ id: 'osm:way/1', found: true, edit: { url: 'https://www.openstreetmap.org/edit?editor=id&way=1', source: 'OpenStreetMap', keys: KEYS },
+        facts: { storeys: { value: 3, source: 'osm', key: 'building:levels', raw: '3' }, built: null, roof_shape: null,
+            parapet: parapet ? { value: true, source: 'osm', key: 'building:parapet', raw: 'yes' } : null } });
+    const record = () => ({ id: 'built:london:w1', source: { recordId: 'w1' } });
+    const setup = (reads, shown) => {
+        const renderInspector = vi.fn(), read = vi.fn(async () => reads.shift());
+        const document = makeDocument();
+        const context = vm.createContext({ root: { BuildingFacts: { ...client, read }, BusyControl: { track: (_button, work) => work() } },
+            document, selected: () => shown.current, renderInspector, t, console, Map, Date });
+        vm.runInContext(`${pieces}\nthis.api = { readFacts, renderFacts };`, context);
+        return { ...context.api, read, renderInspector };
+    };
+    const text = node => node.textContent;
+    it('reads the facts, lists them with the missing ones to add at the source, and reads again on Check again', async () => {
+        const first = record(), shown = { current: first };
+        const card = setup([building(false), building(true)], shown);
+        const reading = card.readFacts(first, { id: 'w1', properties: {} });
+        expect(first.buildingFacts).toMatchObject({ status: 'reading', id: 'osm:way/1' });
+        await reading;
+        expect(card.read).toHaveBeenCalledWith('osm:way/1');
+        const section = card.renderFacts(first);
+        expect(text(section)).toContain('buildingFact.field.storeys()3');
+        expect(text(section)).toContain('buildingFact.field.parapet()buildingFactUnknown()');
+        expect(text(section)).toContain('buildingFactsMissing(OpenStreetMap|start_date, roof:shape, building:parapet)');
+        expect(section.querySelector('a').getAttribute?.('href') ?? section.querySelector('a').href).toBe('https://www.openstreetmap.org/edit?editor=id&way=1');
+        // The author tagged the parapet; Check again reads the source once more and the card shows it.
+        section.querySelector('button').listeners.get('click').forEach(fn => fn());
+        await new Promise(resolve => setImmediate(resolve));
+        expect(card.read).toHaveBeenCalledTimes(2);
+        expect(text(card.renderFacts(first))).toContain('buildingFact.field.parapet()buildingFact.parapetYes()');
+    });
+    it('reads nothing for a building the contract does not answer, and says so when the read fails', async () => {
+        const gdi = { id: 'built:zagreb:4711', source: { recordId: '4711' } }, shown = { current: gdi };
+        const card = setup([], shown);
+        expect(card.readFacts(gdi, { id: 4711, properties: { object_id: 4711 } })).toBeNull();
+        expect(gdi.buildingFacts).toBeUndefined();
+        const failing = setup([], shown);
+        failing.read.mockImplementation(async () => { throw new Error('HTTP 502'); });
+        const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const osm = record(); shown.current = osm;
+        await failing.readFacts(osm, { id: 'w1', properties: {} });
+        expect(osm.buildingFacts.status).toBe('failed');
+        expect(text(failing.renderFacts(osm))).toContain('buildingFactsFailed()');
+        error.mockRestore();
+    });
+});

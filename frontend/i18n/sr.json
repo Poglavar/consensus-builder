@@ -9366,6 +9366,27 @@
         "displayLabel": "Prikaz: {{role}}",
         "existingScope": "Izbor postojećih zgrada",
         "existingHeights": "Visine",
+        "buildingFacts": "Podaci o zgradi",
+        "buildingFactsReading": "Čitam podatke o zgradi…",
+        "buildingFactsFailed": "Podaci o zgradi nisu mogli da se pročitaju.",
+        "buildingFactUnknown": "Nepoznato",
+        "buildingFactsMissing": "Podatke koji nedostaju možete dodati u {{source}}: {{tags}}",
+        "buildingFactsEdit": "Dodaj ili ispravi u {{source}}",
+        "buildingFactsNotFound": "{{source}} više nema ovu zgradu.",
+        "buildingFactsAgain": "Proveri ponovo",
+        "buildingFact": {
+            "field": {
+                "storeys": "Broj spratova",
+                "built": "Izgrađena",
+                "roof_shape": "Oblik krova",
+                "parapet": "Atika"
+            },
+            "builtBefore": "pre {{year}}.",
+            "builtAfter": "{{year}}. ili kasnije",
+            "builtBetween": "{{from}}.–{{to}}.",
+            "parapetYes": "Da",
+            "parapetNo": "Ne"
+        },
         "survey": "Snimanje visina",
         "source": "Izvor zgrada",
         "proposedForm": "Oblik prikaza dizajna",

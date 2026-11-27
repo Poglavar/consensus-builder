@@ -294,8 +294,70 @@
             city: root.CityConfigManager.getCurrentCityId(), footprintM2: feature.geometry ? root.turf.area(feature) : null,
             title: root.ClickStackHits?.buildingLabel?.(feature) || null,
             sourceName: root.CityConfigManager.getBuildingSources?.().find(source => source.id === feature.properties?.source)?.name || null });
-        if (record) { selectRecord(record); measureHeight(record, feature); return true; }
+        if (record) { selectRecord(record); measureHeight(record, feature); readFacts(record, feature); return true; }
         return false;
+    }
+    // Building facts (buildings/building-facts.js, the shared API's contract): read when the card
+    // opens and again on "Check again", so facts just added at the source show at once. Kept per
+    // building (record id) like the height survey.
+    const factReads = new Map();
+    function readFacts(record, feature) {
+        const id = root.BuildingFacts?.factIdOf(feature, record.source.recordId);
+        if (!id) return null;
+        record.buildingFacts = factReads.get(record.id) || { status: 'reading', id };
+        return readFactsOf(record, id);
+    }
+    function readFactsOf(record, id) {
+        const read = root.BuildingFacts.read(id).then(building => ({ status: 'read', id, building }), error => {
+            console.error(`[${new Date().toISOString()}] [planning] Building facts could not be read for ${id}`, error);
+            return { status: 'failed', id };
+        }).then(state => {
+            factReads.set(record.id, state);
+            record.buildingFacts = state;
+            const shown = selected();
+            if (shown?.id === record.id) { shown.buildingFacts = state; renderInspector(); }
+        });
+        if (selected()?.id === record.id) renderInspector();
+        return read;
+    }
+    function renderFacts(item) {
+        const state = item.buildingFacts, section = element('section', 'planning-building-facts');
+        section.setAttribute('aria-label', t('buildingFacts'));
+        section.append(element('h4', 'planning-building-facts__title', t('buildingFacts')));
+        if (state.status !== 'read') {
+            const line = element('p', 'planning-inspector__description', t(state.status === 'failed' ? 'buildingFactsFailed' : 'buildingFactsReading'));
+            line.setAttribute('role', 'status');
+            section.append(line);
+        } else {
+            const rows = root.BuildingFacts.cardRows(state.building, (key, params) => t(`buildingFact.${key}`, params));
+            const list = element('dl', 'planning-metrics');
+            for (const row of rows) {
+                const entry = element('div'), value = element('dd', '', row.text ?? t('buildingFactUnknown'));
+                if (row.text !== null && row.key) value.title = `${row.key}=${row.raw}`;
+                entry.append(element('dt', '', row.label), value);
+                list.append(entry);
+            }
+            section.append(list);
+            const missing = rows.filter(row => row.text === null && row.key);
+            const edit = state.building.edit;
+            if (edit?.url) {
+                if (missing.length && state.building.found) section.append(element('p', 'planning-inspector__description',
+                    t('buildingFactsMissing', { source: edit.source, tags: missing.map(row => row.key).join(', ') })));
+                const link = element('a', 'cb-link cb-link--external', t('buildingFactsEdit', { source: edit.source }));
+                link.href = edit.url; link.target = '_blank'; link.rel = 'noopener';
+                section.append(link);
+            }
+            if (!state.building.found) section.append(element('p', 'planning-inspector__description', t('buildingFactsNotFound', { source: edit?.source || '' })));
+        }
+        const again = element('button', 'btn planning-building-facts__again', t('buildingFactsAgain'));
+        again.type = 'button';
+        again.disabled = state.status === 'reading';
+        again.addEventListener('click', () => {
+            const record = selected();
+            if (record?.buildingFacts) root.BusyControl.track(again, () => readFactsOf(record, record.buildingFacts.id));
+        });
+        section.append(again);
+        return section;
     }
     // A built record whose source has no known height (rule-terms buildingHeight) is measured from
     // the height survey covering it (buildings/height-survey-client.js): the card says so meanwhile,
@@ -829,6 +891,7 @@
             line.setAttribute('role', 'status');
             info.append(line);
         }
+        if (item.buildingFacts) info.append(renderFacts(item));
         const heights = [...new Set(item.volumes.map(volume => volume.topM))].sort((a, b) => a - b);
         if (heights.length > 1) info.append(element('p', 'planning-inspector__description', t('heightParts', { heights: heights.map(height => root.CbFormat.formatLength(height)).join(' · ') })));
         const realization = permittedFeatures(item), shown = realization.configuration;

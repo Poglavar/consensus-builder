@@ -9431,6 +9431,27 @@
         "displayLabel": "Отображение: {{role}}",
         "existingScope": "Выбор построенных зданий",
         "existingHeights": "Высоты",
+        "buildingFacts": "Сведения о здании",
+        "buildingFactsReading": "Чтение сведений о здании…",
+        "buildingFactsFailed": "Не удалось прочитать сведения о здании.",
+        "buildingFactUnknown": "Неизвестно",
+        "buildingFactsMissing": "Недостающие сведения можно добавить в {{source}}: {{tags}}",
+        "buildingFactsEdit": "Добавить или исправить в {{source}}",
+        "buildingFactsNotFound": "В {{source}} этого здания больше нет.",
+        "buildingFactsAgain": "Проверить снова",
+        "buildingFact": {
+            "field": {
+                "storeys": "Этажность",
+                "built": "Построено",
+                "roof_shape": "Форма крыши",
+                "parapet": "Парапет"
+            },
+            "builtBefore": "до {{year}}",
+            "builtAfter": "{{year}} или позже",
+            "builtBetween": "{{from}}–{{to}}",
+            "parapetYes": "Да",
+            "parapetNo": "Нет"
+        },
         "survey": "Съёмка высот",
         "source": "Источник зданий",
         "proposedForm": "Отображение предложенного",

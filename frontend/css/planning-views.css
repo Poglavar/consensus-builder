@@ -183,6 +183,10 @@ body[data-planning-existing-scope="removed"] .leaflet-observedReferences-pane { 
 .planning-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: var(--cb-space-4); padding: var(--cb-space-4) 0; margin: var(--cb-space-3) 0; border-block: 1px solid var(--cb-line); }
 .planning-metrics dt { color: var(--cb-text-muted); font-size: var(--cb-text-sm); margin-bottom: var(--cb-space-1); }
 .planning-metrics dd { margin: 0; font-size: var(--cb-text-base); font-weight: var(--cb-weight-semibold); color: var(--cb-text-strong); }
+/* Building facts on a built building's card (planning/views.js renderFacts): the facts, where to add missing ones, Check again. */
+.planning-building-facts { display: grid; gap: var(--cb-space-2); justify-items: start; margin-block: var(--cb-space-3); }
+.planning-building-facts .planning-metrics { justify-self: stretch; margin: 0; }
+.planning-building-facts__title { margin: 0; font-size: var(--cb-text-base); font-weight: var(--cb-weight-semibold); color: var(--cb-text-strong); }
 .planning-assessment { padding: var(--cb-space-3); background: var(--cb-warning-soft); border-radius: var(--cb-radius-md); color: var(--cb-warning-soft-ink); font-size: var(--cb-text-sm); line-height: var(--cb-leading); }
 .planning-assessment p { margin: var(--cb-space-1) 0 0; }
 .planning-limits { display: grid; grid-template-columns: 1fr auto; gap: var(--cb-space-2); font-size: var(--cb-text-sm); margin: var(--cb-space-4) 0; }
