@@ -8607,6 +8607,10 @@
             "eligibilityMissing": "Check the covered houses’ eligibility before creating this street vote.",
             "eligibilityStale": "The plan covers other houses than the last eligibility check: check again.",
             "eligibilityFailed": "Not every covered house is known to be eligible yet: see Covered houses.",
+            "streetCodeMissing": "Check the plan against the street code before creating this street vote.",
+            "streetCodeStale": "The plan or the street changed since the last street code check: check again.",
+            "streetCodeUnclaimed": "This ballot rule holds the vote only on a plan that claims the {{code}}. Add it to the plan’s street codes with Edit plan.",
+            "streetCodeFailed": "The vote is held only on a plan that complies with the {{code}}. These buildings break it or are excluded by it: {{buildings}}",
             "communityAllocations": "A nonbinding community agreement cannot allocate land.",
             "communityMoney": "A nonbinding community agreement cannot include cash payments.",
             "noDesigns": "Choose at least one design.",
@@ -10277,6 +10281,8 @@
         "refreshResults": "Refresh results",
         "rule": "Ballot rule",
         "ruleNone": "None — show the totals only",
+        "ruleVersion": "{{name}} (version of {{version}})",
+        "ruleRequiresCode": "Held only on a plan that claims the {{code}} and whose check finds no building that breaks it or that it excludes.",
         "householdBatch": "Household for these people (optional)",
         "householdHint": "People who live together share a household label. A code without one counts as a household of its own. Household labels stay local; the agreement records only which codes share a household.",
         "importCsv": "Generate codes from a resident CSV",
@@ -10355,8 +10361,11 @@
             "verdict": {
                 "eligible": "Meets the code",
                 "ineligible": "Breaks the code",
+                "excluded": "Excluded by the code",
                 "unknown": "Not known yet"
             },
+            "unclaimed": "This ballot rule holds the vote only on a plan that claims this code, and the plan does not. Add it to the plan’s street codes with Edit plan, or choose another ballot rule.",
+            "required": "This ballot rule holds the vote only on a plan that complies with the code: a building that breaks it or that it excludes keeps this agreement from being saved. Rules not known yet or not checked do not. The vote records this check.",
             "noBuildings": "The plan has no buildings to check.",
             "unchecked": "Rules the app does not check",
             "check": "Check the code"

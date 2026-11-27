@@ -37,6 +37,20 @@
             }
         },
         {
+            // Para 2: the vote is held only "if the proposal complies with the rules applying to street
+            // votes". The plan must claim the Strong Suburbs street code and the voting record keeps the
+            // check of each of its buildings (planning/street-code.js); a building that breaks the code
+            // or that the code excludes holds the vote back, one the app cannot judge yet does not.
+            id: 'gb-street-vote-strong-suburbs', version: '2026-11-27', country: 'GB',
+            tests: [test('cast-support', atLeast(3, 5)), test('household-turnout', atLeast(1, 2)), test('household-support', atLeast(1, 2))],
+            requires: { streetCode: { id: 'gb-strong-suburbs-street-code', version: '2021' } },
+            sources: [{ label: 'Policy Exchange, Strong Suburbs (2021), paras 2 and 4, p. 39', url: 'https://policyexchange.org.uk/wp-content/uploads/2022/10/Strong-Suburbs.pdf' }],
+            text: {
+                name: 'Street vote — Strong Suburbs',
+                source: 'Proposed in Policy Exchange’s Strong Suburbs (2021): at least 60% of votes cast in favour, residents of at least half the households voting, and a yes from a resident in at least half of the voting households.'
+            }
+        },
+        {
             id: 'gb-street-vote-consultation-2023', version: CHECKED, country: 'GB',
             tests: [test('eligible-support', atLeast(3, 5)), test('household-support', atLeast(1, 2))],
             sources: [{ label: 'Street vote development orders consultation (22 December 2023), para. 69', url: 'https://www.gov.uk/government/consultations/street-vote-development-orders-consultation/street-vote-development-orders' }],

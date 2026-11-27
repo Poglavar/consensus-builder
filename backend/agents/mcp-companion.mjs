@@ -29,7 +29,7 @@ const voting = z.union([
         households: z.array(z.array(codeHash).min(1)).min(1).max(10000).optional()
             .describe('Partition of codeHashes by household, each code exactly once. Omit when every household has one code.'),
         rule: z.object({ id: z.enum([...new Set(BallotRules.RULES.map(rule => rule.id))]), version: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) }).strict().optional()
-            .describe('Ballot rule by id and version (ugt_capabilities community-code-voting lists them). gb-street-vote-living-tradition drafts only when every existing building the plan raises with a mansard is eligible (para. 17) by the shared building facts; the server records the check, and a refusal names each house with its failing or undecided tests.'),
+            .describe('Ballot rule by id and version (ugt_capabilities community-code-voting lists them). gb-street-vote-living-tradition drafts only when every existing building the plan raises with a mansard is eligible (para. 17) by the shared building facts; gb-street-vote-strong-suburbs@2026-11-27 drafts only on a plan claiming the Strong Suburbs street code in which no building breaks it or is excluded by it (para. 2; unknown rules do not refuse). The server records each check, and a refusal names each house or building with its blocking tests.'),
         street: streetReference.optional() }).strict()
 ]);
 const consultation = z.object({ organiser: z.string().max(2048).nullable(), participationUrl: z.string().max(2048).nullable(), voting: voting.optional() }).strict().nullable().optional();

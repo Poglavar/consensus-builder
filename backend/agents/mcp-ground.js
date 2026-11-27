@@ -55,23 +55,42 @@ export async function votingWithEligibility(consultation, designContents, { read
 
 // A street vote whose ballot rule carries a street code the plan claims (plan-record.js `codes`;
 // Strong Suburbs): every building of the plan is checked against the code as the app's agreement
-// editor checks it (planning/street-code.js), and the outcome is returned beside the draft, advice
-// that is not kept in the record. `read` gives the place's readers (StreetCode.readers).
-export async function streetCodeCheck(consultation, plan, designContents, { readers }) {
+// editor checks it (planning/street-code.js), and the outcome is returned beside the draft. Under a
+// rule that only advises (no `requires.streetCode`) the outcome is not kept in the record. Under one
+// held only on a complying plan (Strong Suburbs para 2) the draft is refused when the plan does not
+// claim the code or a building breaks it or is excluded by it; otherwise the check goes into the
+// voting record (`recorded`). Unknown and not-checked rules never refuse it. `read` gives the place's
+// readers (StreetCode.readers); `planCid` is the plan's CID the check is recorded against.
+export async function streetCodeCheck(consultation, plan, designContents, { readers, planCid = null }) {
     const voting = consultation?.voting;
     const rule = voting?.rule ? BallotRules.get(voting.rule.id, voting.rule.version) : null;
+    const required = rule?.requires?.streetCode ? Eligibility.get(rule.requires.streetCode.id, rule.requires.streetCode.version) : null;
     const carried = Eligibility.codesForBallot(rule);
-    const set = StreetCode.claimedCodes(plan).find(code => carried.includes(code));
-    if (!set) return null;
+    const set = StreetCode.claimedCodes(plan).find(code => carried.includes(code) && (!required || code === required));
+    if (!set) {
+        if (!required) return null;
+        throw Object.assign(new Error(`This ballot rule (${rule.id}@${rule.version}) holds the vote only on a plan that claims the street code ${required.id}@${required.version}; the plan claims ${(plan?.codes || []).map(code => `${code.id}@${code.version}`).join(', ') || 'no code'}.`),
+            { code: 'street-code-unclaimed', next: { action: `Add { id: '${required.id}', version: '${required.version}' } to the plan's codes with ugt_edit_plan, then draft again.` } });
+    }
     const outcome = await StreetCode.checkPlan(set, { designs: designContents, reference: voting.street || null, read: readers(plan) });
     const words = (key, params) => cardText(key, params);
-    const count = verdict => outcome.buildings.filter(building => building.result.verdict === verdict).length;
-    return { code: { id: set.id, version: set.version, source: set.source }, claimed: true,
-        summary: { buildings: outcome.buildings.length, meet: count('eligible'), break: count('ineligible'), unknown: count('unknown') },
+    const count = verdict => outcome.buildings.filter(building => Eligibility.codeVerdict(set, building.result) === verdict).length;
+    const report = { code: { id: set.id, version: set.version, source: set.source }, claimed: true, required: Boolean(required),
+        summary: { buildings: outcome.buildings.length, meet: count('meets'), break: count('breaks'), excluded: count('excluded'), unknown: count('unknown') },
         storeyCap: { value: outcome.cap.value, bound: outcome.cap.bound, reason: outcome.cap.reason, areas: outcome.cap.areas, streetApproximate: outcome.streetApproximate },
-        historic: outcome.historic, buildings: StreetCode.describe(set, outcome, words),
+        historic: outcome.historic, buildings: StreetCode.describe(set, outcome, words).map((row, index) => ({ ...row, verdict: Eligibility.codeVerdict(set, outcome.buildings[index].result) })),
         notChecked: StreetCode.unchecked(set).map(test => ({ cite: test.cite, rule: words(`eligibility.test.${test.id}`), why: words(`eligibility.notChecked.${test.reason}`) })),
         unread: outcome.errors };
+    if (!required) return report;
+    const blocked = report.buildings.filter(row => Eligibility.CODE_BLOCKING.includes(row.verdict));
+    if (blocked.length) {
+        // Each blocking building with the tests it breaks or is excluded by, in the building card's words.
+        const why = row => `${row.building}: ${row.verdict === 'excluded' ? 'excluded by the code' : 'breaks the code'} [${row.tests.filter(test => test.status === 'fail').map(test => `${test.cite} ${test.label}` + (test.text ? ` (${test.text})` : '')).join('; ')}]`;
+        throw Object.assign(new Error(`The vote is held only on a plan that complies with ${set.id}@${set.version}, and ${blocked.length} of the plan's ${report.buildings.length} buildings do not (${blocked.map(why).join(' | ')}). Rules the app cannot judge yet do not hold the vote back.`),
+            { code: 'street-code-failed', constraints: { streetCode: report },
+                next: { action: 'Revise the buildings in constraints.streetCode that break the code (storeys, setback storeys, storey heights) with ugt_edit_design or ugt_edit_plan, or leave out the ones the code excludes, then draft again.' } });
+    }
+    return { ...report, recorded: Eligibility.codeEvidence(set, outcome, { planCid, street: voting.street || null }, new Date().toISOString()) };
 }
 
 // The place's readers on the agents' server: the app's own routes through the MCP read client, the
@@ -172,7 +191,9 @@ export function createMcpAgreementTools({ read, drafts, appOrigin, readFacts = i
             else if (neighbourCompensation) rule.neighbourCompensation = neighbourCompensation;
             if (rule.electorate === 'community') rule.settlement = null;
             if (rule.electorate === 'community') consultation = await votingWithEligibility(consultation, designs.map(d => d.content), { readFacts });
-            const streetCode = rule.electorate === 'community' ? await streetCodeCheck(consultation, selected.plan, designs.map(d => d.content), { readers: serverReaders(read, readFacts) }) : null;
+            const { recorded: streetCodeRecord, ...streetCode } = rule.electorate === 'community'
+                ? await streetCodeCheck(consultation, selected.plan, designs.map(d => d.content), { readers: serverReaders(read, readFacts), planCid: selected.cid }) || {} : {};
+            if (streetCodeRecord) consultation = { ...consultation, voting: { ...consultation.voting, streetCode: streetCodeRecord } };
             const { land, source, ids } = await groundFor({ ...resolved, designs });
             const plan = { cid: selected.cid, content: selected.plan };
             // Each input parcel is its owners' abstract party; the rights snapshot stays in the rule.
@@ -187,8 +208,8 @@ export function createMcpAgreementTools({ read, drafts, appOrigin, readFacts = i
                 persons: ruleRights ? personPositions(published.content, ruleRights) : null, ...(includeGround ? { ground: land } : {}), warnings: ['This agreement references the existing named plan. Review its derived ground and terms before publishing.',
                 ...(roadCutWarning(groundEffects) ? [roadCutWarning(groundEffects)] : []),
                 ...(!effectiveRights && rule.electorate !== 'community' ? ['No rights snapshot was supplied, so no owner decision can be counted and no person positions can be derived from the parcel parties.'] : []),
-                ...(streetCode && (streetCode.summary.break || streetCode.summary.unknown) ? [`The plan claims ${streetCode.code.id}@${streetCode.code.version}, but ${streetCode.summary.break} of its ${streetCode.summary.buildings} buildings break it and ${streetCode.summary.unknown} are not known yet: see streetCode.`] : [])],
-                ...(streetCode ? { streetCode } : {}),
+                ...(streetCode.summary && (streetCode.summary.break || streetCode.summary.excluded || streetCode.summary.unknown) ? [`The plan claims ${streetCode.code.id}@${streetCode.code.version}, but ${streetCode.summary.break} of its ${streetCode.summary.buildings} buildings break it, ${streetCode.summary.excluded} are excluded by it and ${streetCode.summary.unknown} are not known yet: see streetCode.`] : [])],
+                ...(streetCode.summary ? { streetCode } : {}),
                 ...await previewArtifact({ origin: appOrigin, agreement: published.content, plan, designs: designs.map(d => d.content), parcelSourceId: source.parcelSourceId }),
                 plan, designs: designs.map(d => ({ cid: d.cid, content: d.content })) };
         }

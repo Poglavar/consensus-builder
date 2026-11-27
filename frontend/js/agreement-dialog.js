@@ -614,6 +614,8 @@
         'voting-eligibility-missing': () => t('agreement.errors.eligibilityMissing', 'Check the covered houses’ eligibility before creating this street vote.'),
         'voting-eligibility-stale': () => t('agreement.errors.eligibilityStale', 'The plan covers other houses than the last eligibility check: check again.'),
         'voting-eligibility-failed': () => t('agreement.errors.eligibilityFailed', 'Not every covered house is known to be eligible yet: see Covered houses.'),
+        'voting-street-code-missing': () => t('agreement.errors.streetCodeMissing', 'Check the plan against the street code before creating this street vote.'),
+        'voting-street-code-stale': () => t('agreement.errors.streetCodeStale', 'The plan or the street changed since the last street code check: check again.'),
         'rule-invalid': reason => t('agreement.errors.ruleInvalid', 'The decision rule is incomplete: {{reason}}', { reason }),
         'rule-community-binding': () => t('agreement.errors.ruleCommunityBinding', 'A community vote cannot be binding.'),
         'deadline-invalid': () => t('agreement.errors.deadlineInvalid', 'The deadline must be a date in the future.'),
@@ -646,10 +648,32 @@
 
     // An error or warning of AgreementRecord.validate ({ code, message, reason? }) in the UI language.
     // A code this dialog does not know shows the validator's own message.
+    // A street vote held only on a plan that complies with a street code (AgreementRecord.validate
+    // 'voting-street-code-unclaimed' and '-failed'): the code by name, and each building that breaks
+    // it or that it excludes, with the rules it breaks or is excluded by.
+    function streetCodeIssueText(issue) {
+        const E = root.BuildingEligibility || (typeof require === 'function' ? require('./planning/eligibility.js') : null);
+        const set = issue.set && E ? E.get(issue.set.id, issue.set.version) : null;
+        if (!set) return idOf(issue.message) || idOf(issue.code);
+        const codeName = t(`planningViews.eligibility.${`set.${set.id}`}`, set.text.name);
+        if (issue.code === 'voting-street-code-unclaimed') {
+            return t('agreement.errors.streetCodeUnclaimed', 'This ballot rule holds the vote only on a plan that claims the {{code}}. Add it to the plan’s street codes with Edit plan.', { code: codeName });
+        }
+        const buildings = (issue.buildings || []).map(building => {
+            const name = building.factId ? t('voting.eligibility.house', 'Building {{id}}', { id: building.factId.replace(/^osm:/, '') })
+                : t('voting.streetCode.newBuilding', 'New building {{index}} of design {{design}}', { index: building.index + 1, design: building.design + 1 });
+            const verdict = building.verdict === 'excluded' ? t('voting.streetCode.verdict.excluded', 'Excluded by the code') : t('voting.streetCode.verdict.ineligible', 'Breaks the code');
+            const rules = [...building.excluded, ...building.failing].map(id => `${set.tests.find(test => test.id === id)?.cite || ''} ${t(`planningViews.eligibility.${`test.${id}`}`, id)}`.trim());
+            return `${name} — ${verdict}: ${rules.join(', ')}`;
+        });
+        return t('agreement.errors.streetCodeFailed', 'The vote is held only on a plan that complies with the {{code}}. These buildings break it or are excluded by it: {{buildings}}', { code: codeName, buildings: buildings.join('; ') });
+    }
+
     function issueText(issue) {
         const code = idOf(issue && issue.code);
         const word = ISSUE_TEXT[code];
         if (code.startsWith('scheme-')) return word(schemeIssueText(issue));
+        if (code === 'voting-street-code-unclaimed' || code === 'voting-street-code-failed') return streetCodeIssueText(issue);
         if (!word) return idOf(issue && issue.message) || code;
         if (!NEEDS_REASON.has(code)) return word();
         // The engine's readiness code when there is one (rule-not-ready), else the validator's own
@@ -1171,7 +1195,19 @@
             const { street: _old, ...rest } = value;
             return street.included === true && street.reference ? { ...rest, street: street.reference } : rest;
         };
-        const withEligibility = value => withStreet(value && requiredSet(value) && eligibility.evidence ? { ...value, eligibility: eligibility.evidence } : value);
+        // A ballot rule held only on a plan that complies with a street code (Strong Suburbs para 2)
+        // keeps the code's check in the voting record (`streetCode`), like eligibility above.
+        const requiredCode = value => {
+            const rule = value?.rule ? root.CommunityBallotRules?.get(value.rule.id, value.rule.version) : null;
+            const required = rule?.requires?.streetCode;
+            return required ? root.BuildingEligibility.get(required.id, required.version) : null;
+        };
+        const withCode = value => {
+            if (!value) return value;
+            const { streetCode: _old, ...rest } = value;
+            return requiredCode(rest) && code.evidence ? { ...rest, streetCode: code.evidence } : rest;
+        };
+        const withEligibility = value => withCode(withStreet(value && requiredSet(value) && eligibility.evidence ? { ...value, eligibility: eligibility.evidence } : value));
         function renderStreet() {
             streetNode.hidden = !street.reference || !state.values.voting;
             if (streetNode.hidden) { streetNode.replaceChildren(); return; }
@@ -1194,12 +1230,14 @@
         // carries its check (Strong Suburbs): every building of the plan is checked against it
         // (planning/street-code.js) when the rule or plan is chosen, the street named, and on Check
         // again; each failing or unknown test is shown with the facts it read. The claim is never
-        // taken on trust; the check advises and is not kept in the record.
+        // taken on trust. Under a rule that only carries the code the check advises; under one that
+        // requires it (requiredCode) the check is kept in the voting record, and a building that
+        // breaks the code or that it excludes holds Save back (AgreementRecord.validate).
         const codeNode = doc.createElement('section');
         codeNode.className = 'voting-street-code';
         codeNode.hidden = true;
         streetNode.after(codeNode);
-        const code = { key: null, outcome: null, busy: false, error: null };
+        const code = { key: null, outcome: null, evidence: state.values.voting?.streetCode || null, busy: false, error: null };
         // The building card's words (planningViews.*), as cardText below gives them; literal prefixes for the locale test.
         const planningText = (key, params = {}) => (key.startsWith('buildingFact.')
             ? t(`planningViews.buildingFact.${key.slice('buildingFact.'.length)}`, key, params)
@@ -1207,14 +1245,28 @@
         const claimedCode = () => {
             const rule = state.values.voting?.rule ? root.CommunityBallotRules?.get(state.values.voting.rule.id, state.values.voting.rule.version) : null;
             const carried = root.BuildingEligibility?.codesForBallot(rule) || [];
-            return (root.StreetCode?.claimedCodes(state.plan?.content) || []).find(set => carried.includes(set)) || null;
+            const required = requiredCode(state.values.voting);
+            return (root.StreetCode?.claimedCodes(state.plan?.content) || []).find(set => carried.includes(set) && (!required || set === required)) || null;
         };
-        const codeKey = () => { const set = claimedCode(); return set ? `${set.id}@${set.version}|${state.plan?.cid}|${street.included === true ? JSON.stringify(street.reference) : ''}` : null; };
+        const codeKey = () => {
+            const set = claimedCode();
+            return set ? `${set.id}@${set.version}|${state.plan?.cid}|${street.included === true ? JSON.stringify(street.reference) : ''}|${requiredCode(state.values.voting) ? 'required' : 'advice'}` : null;
+        };
         function codeChanged() {
             const key = codeKey();
-            if (key === code.key) return;
+            // No code to check: the section still says when the rule needs one the plan does not claim.
+            if (key === code.key) { if (!key) renderCode(); return; }
+            // A recorded check is kept only for the plan and street it read (the record's planCid and
+            // street); any other key checks again.
+            const recorded = code.evidence;
+            const reopened = recorded && code.key === null && key && recorded.planCid === state.plan?.cid;
             code.key = key; code.outcome = null; code.error = null;
+            if (!reopened) setEvidence(null);
             if (key) checkCode(); else renderCode();
+        }
+        function setEvidence(evidence) {
+            code.evidence = evidence;
+            if (state.values.voting) state.values.voting = withCode(state.values.voting);
         }
         async function checkCode(control = null) {
             const set = claimedCode();
@@ -1226,17 +1278,21 @@
                 const read = root.StreetCode.readers({ fetch: (url, init) => root.fetch(url, init), backendBase: String(root.getBackendBase?.() || '').replace(/\/$/, ''),
                     sharedApi: root.BuildingFacts.apiRoot(), config: await root.PlanningRestrictionFeed.config(), ruleSetIds: root.PlanningRestrictionFeed.ruleSetIds(city),
                     readFacts: ids => root.BuildingFacts.readMany(ids, { fresh: Boolean(control) }) });
-                code.outcome = await root.StreetCode.checkPlan(set, { designs, reference: street.included === true ? street.reference : null, read });
+                const reference = street.included === true ? street.reference : null;
+                code.outcome = await root.StreetCode.checkPlan(set, { designs, reference, read });
                 for (const error of code.outcome.errors) console.warn(`[${new Date().toISOString()}] [AgreementEditor] street code: ${error.read} not read: ${error.message}`);
+                setEvidence(requiredCode(state.values.voting) && state.plan?.cid
+                    ? root.BuildingEligibility.codeEvidence(set, code.outcome, { planCid: state.plan.cid, street: reference }, new Date().toISOString()) : null);
             };
             try { await (control ? root.BusyControl.track(control, work) : work()); } catch (error) {
                 code.error = error.message;
+                setEvidence(null);
                 console.error(`[${new Date().toISOString()}] [AgreementEditor] street code check failed`, error);
-            } finally { code.busy = false; if (!state.closed) renderCode(); }
+            } finally { code.busy = false; if (!state.closed) { renderCode(); issues(); } }
         }
         // Literal keys, so the locale coverage test sees each one.
-        const CODE_VERDICT = { eligible: () => t('voting.streetCode.verdict.eligible', 'Meets the code'), ineligible: () => t('voting.streetCode.verdict.ineligible', 'Breaks the code'),
-            unknown: () => t('voting.streetCode.verdict.unknown', 'Not known yet') };
+        const CODE_VERDICT = { meets: () => t('voting.streetCode.verdict.eligible', 'Meets the code'), breaks: () => t('voting.streetCode.verdict.ineligible', 'Breaks the code'),
+            excluded: () => t('voting.streetCode.verdict.excluded', 'Excluded by the code'), unknown: () => t('voting.streetCode.verdict.unknown', 'Not known yet') };
         function codePlaceHtml(outcome) {
             const cap = outcome.cap, historic = outcome.historic;
             const capText = Number.isFinite(cap.value) ? t('voting.streetCode.cap', 'Storey cap {{cap}} (para 30): lowest density {{density}} people/ha, in {{area}}.', { cap: cap.value, density: Math.round(cap.lowest.densityPerHa), area: cap.lowest.name || cap.lowest.code })
@@ -1247,9 +1303,15 @@
             return `<ul class="voting-street-code__place"><li>${esc(capText)}${outcome.streetApproximate ? ` ${esc(t('voting.streetCode.approximate', '(the street is drawn straight between its ends)'))}` : ''}</li><li>${esc(historicText)}</li></ul>`;
         }
         function renderCode() {
-            const set = claimedCode();
-            codeNode.hidden = !set;
-            if (!set) { codeNode.replaceChildren(); return; }
+            const set = claimedCode(), required = requiredCode(state.values.voting);
+            codeNode.hidden = !set && !required;
+            if (codeNode.hidden) { codeNode.replaceChildren(); return; }
+            if (!set) {
+                // The rule needs a code the plan does not claim: Save stays held (street-code-unclaimed).
+                codeNode.innerHTML = `<h4>${esc(t('voting.streetCode.title', 'Street code: {{code}}', { code: planningText(`eligibility.set.${required.id}`) }))}</h4>`
+                    + `<p role="alert">${esc(t('voting.streetCode.unclaimed', 'This ballot rule holds the vote only on a plan that claims this code, and the plan does not. Add it to the plan’s street codes with Edit plan, or choose another ballot rule.'))}</p>`;
+                return;
+            }
             const outcome = code.outcome, judged = outcome?.buildings || [];
             const count = verdict => judged.filter(building => building.result.verdict === verdict).length;
             const name = building => building.factId ? t('voting.eligibility.house', 'Building {{id}}', { id: building.factId.replace(/^osm:/, '') })
@@ -1257,13 +1319,14 @@
             const unchecked = root.StreetCode.unchecked(set).map(test => `<li>${esc(`${test.cite} ${planningText(`eligibility.test.${test.id}`)}: ${planningText(`eligibility.notChecked.${test.reason}`)}`)}</li>`).join('');
             codeNode.innerHTML = `<h4>${esc(t('voting.streetCode.title', 'Street code: {{code}}', { code: planningText(`eligibility.set.${set.id}`) }))}</h4>`
                 + `<p class="agreement-hint">${esc(t('voting.streetCode.hint', 'The plan claims to respect this code. Each of its buildings is checked here, rule by rule, from the design, the place and the building facts; a claim alone is not taken as met.'))}</p>`
+                + (required ? `<p class="agreement-hint">${esc(t('voting.streetCode.required', 'This ballot rule holds the vote only on a plan that complies with the code: a building that breaks it or that it excludes keeps this agreement from being saved. Rules not known yet or not checked do not. The vote records this check.'))}</p>` : '')
                 + (code.busy ? `<p role="status">${esc(t('voting.streetCode.checking', 'Checking the plan against the code…'))}</p>`
                     : code.error ? `<p role="alert">${esc(t('voting.eligibility.failed', 'The check could not be completed: {{error}}', { error: code.error }))}</p>`
                         : outcome ? `<p role="status">${esc(t('voting.streetCode.summary', '{{eligible}} of {{total}} buildings meet the code, {{ineligible}} break it, {{unknown}} not known yet', { eligible: count('eligible'), total: judged.length, ineligible: count('ineligible'), unknown: count('unknown') }))}</p>`
                             + codePlaceHtml(outcome)
                             + (outcome.errors.length ? `<ul class="voting-street-code__errors">${outcome.errors.map(error => `<li>${esc(t('voting.streetCode.unread', 'Not read: {{what}} ({{error}})', { what: error.read, error: error.message }))}</li>`).join('')}</ul>` : '') : '')
                 + (judged.length ? `<ul class="voting-eligibility__houses">${judged.map(building => {
-                    const verdict = building.result.verdict;
+                    const verdict = root.BuildingEligibility.codeVerdict(set, building.result);
                     const items = root.BuildingEligibility.explain(set, building.result, building.contract, cardText, building.facts).map(test => `<li data-status="${esc(test.status)}">`
                         + `<span>${esc(`${test.cite} ${test.label}: ${test.statusText}`)}</span>` + (test.text ? ` <span>${esc(test.text)}</span>` : '')
                         + (test.reason ? ` <span class="agreement-hint">${esc(test.reason)}</span>` : '')
@@ -1477,7 +1540,7 @@
                 }
                 // A scheme rule the plan breaks or a land value that is missing follows a choice the
                 // person made, so it is shown at once; the rest waits for a save attempt.
-                part('[data-agreement-errors]').innerHTML = issuesHtml(checked.errors.filter(row => state.attempted || /^(scheme|valuation|affected|neighbour)-/.test(row.code)));
+                part('[data-agreement-errors]').innerHTML = issuesHtml(checked.errors.filter(row => state.attempted || /^(scheme|valuation|affected|neighbour)-|^voting-street-code-(unclaimed|failed)$/.test(row.code)));
                 // Advanced ownership/lens readiness lives behind its own controls.
                 part('[data-agreement-warnings]').innerHTML = issuesHtml(checked.warnings.filter(row => row.section === 'land'));
                 const pending = state.values.electorate === 'community' && rosterPending;
