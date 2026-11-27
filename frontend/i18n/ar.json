@@ -9691,6 +9691,8 @@
             "restricted": "استخدام خاص ومقيد"
         },
         "tabs": {
+            "facts": "المعطيات",
+            "eligibility": "الأهلية",
             "display": "العرض",
             "compare": "مقارنة",
             "options": "الخيارات"
@@ -9942,6 +9944,8 @@
         "buildingFactsEdit": "أضف أو صحّح في {{source}}",
         "buildingFactsNotFound": "لم يعد هذا المبنى موجودًا في {{source}}.",
         "buildingFactsAgain": "تحقّق مجددًا",
+        "eligibilityChoose": "التحقق وفق",
+        "eligibilityNone": "لا توجد مجموعة قواعد في قواعد التخطيط لهذه المدينة تفحص مبنى.",
         "buildingFactsWaiting": "يعرض OpenStreetMap التعديل بعد دقيقة أو دقيقتين من حفظه: جارٍ التحقق كل 30 ثانية…",
         "buildingFactsUnchanged": "لا يعرض {{source}} أي تغيير بعد. إن حفظت تعديلًا فتحقّق مجددًا بعد دقيقة.",
         "factEdit": {
@@ -9990,6 +9994,7 @@
             }
         },
         "eligibility": {
+            "verdictCode": { "eligible": "غير مستبعد وفق شروط المبنى نفسه؛ ويُفحص الباقي على الخطة عند إعداد التصويت", "ineligible": "مستبعد وفق شروط المبنى نفسه", "unknown": "غير معروف بعد: بعض المعطيات ناقصة" },
             "set": {
                 "gb-living-tradition-mansards": "سقوف المانسارد وفق Living Tradition",
                 "gb-strong-suburbs-street-code": "قانون الشارع لـ Strong Suburbs",
@@ -10001,6 +10006,7 @@
                 "unknown": "غير معروف بعد: تنقص بعض البيانات"
             },
             "status": {
+                "onPlan": "يُفحص على الخطة",
                 "pass": "نعم",
                 "fail": "لا",
                 "unknown": "غير معروف",

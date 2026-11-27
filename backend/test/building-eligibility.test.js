@@ -129,3 +129,21 @@ describe('a street vote\'s eligibility check', () => {
         expect(() => eligibility.normalizeEvidence({ ...good, houses: [] })).toThrow('1–500');
     });
 });
+
+// The building card's Eligibility page judges one building against any set the city carries: a building
+// set whole, a street or block code only by its tests about the building as it stands.
+describe('a building judged against a chosen set', () => {
+    const SS = eligibility.latest('gb-strong-suburbs-street-code');
+    const interwar = { built: fact({ from: 1931, to: 1931 }), heritage: fact({ listed: false, grade: null }), storeys: fact(2) };
+    it('judges a building set as evaluate does', () => {
+        expect(eligibility.onBuilding(set, georgian)).toMatchObject({ kind: 'building', verdict: eligibility.evaluate(set, georgian).verdict });
+    });
+    it('judges a street code by the listing and build date only, leaving the rest to a plan', () => {
+        const result = eligibility.onBuilding(SS, interwar);
+        expect(result).toMatchObject({ kind: 'street-code', verdict: 'eligible' });
+        expect(statuses(result)).toMatchObject({ 12: 'pass', 13: 'pass', 30: 'onPlan', 35: 'onPlan', 39: 'unchecked' });
+        // A Victorian house is excluded (para 13); a building of unknown date is not known yet.
+        expect(eligibility.onBuilding(SS, { ...interwar, built: fact({ from: 1890, to: 1899 }) }).verdict).toBe('ineligible');
+        expect(eligibility.onBuilding(SS, { heritage: interwar.heritage }).verdict).toBe('unknown');
+    });
+});

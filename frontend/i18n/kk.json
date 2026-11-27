@@ -9244,6 +9244,8 @@
             "restricted": "Арнайы және шектеулі пайдалану"
         },
         "tabs": {
+            "facts": "Деректер",
+            "eligibility": "Сәйкестік",
             "display": "Көрсету",
             "compare": "Салыстыру",
             "options": "Параметрлер"
@@ -9474,6 +9476,8 @@
         "buildingFactsEdit": "{{source}} ішінде қосу немесе түзету",
         "buildingFactsNotFound": "{{source}} ішінде бұл ғимарат енді жоқ.",
         "buildingFactsAgain": "Қайта тексеру",
+        "eligibilityChoose": "Тексеру негізі",
+        "eligibilityNone": "Бұл қаланың жоспарлау ережелерінде ғимаратты тексеретін ережелер жинағы жоқ.",
         "buildingFactsWaiting": "OpenStreetMap өзгерісті сақталғаннан кейін бір-екі минутта көрсетеді: әр 30 секунд сайын тексерілуде…",
         "buildingFactsUnchanged": "{{source}} әзірге өзгеріс көрсетпейді. Өзгерісті сақтасаңыз, бір минуттан кейін қайта тексеріңіз.",
         "factEdit": {
@@ -9522,6 +9526,7 @@
             }
         },
         "eligibility": {
+            "verdictCode": { "eligible": "Ғимараттың өз шарттары бойынша шығарылмаған; қалғаны дауыс беруді дайындағанда жоспарда тексеріледі", "ineligible": "Ғимараттың өз шарттары бойынша шығарылған", "unknown": "Әзірге белгісіз: кейбір деректер жоқ" },
             "set": {
                 "gb-living-tradition-mansards": "Living Tradition бойынша мансардалар",
                 "gb-strong-suburbs-street-code": "Strong Suburbs көше кодексі",
@@ -9533,6 +9538,7 @@
                 "unknown": "Әзірге белгісіз: кейбір деректер жоқ"
             },
             "status": {
+                "onPlan": "Жоспарда тексеріледі",
                 "pass": "Иә",
                 "fail": "Жоқ",
                 "unknown": "Белгісіз",

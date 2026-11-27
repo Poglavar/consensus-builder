@@ -9356,6 +9356,8 @@
             "restricted": "Режимные и специальные территории"
         },
         "tabs": {
+            "facts": "Данные",
+            "eligibility": "Соответствие",
             "display": "Отображение",
             "compare": "Сравнить",
             "options": "Параметры"
@@ -9596,6 +9598,8 @@
         "buildingFactsEdit": "Добавить или исправить в {{source}}",
         "buildingFactsNotFound": "В {{source}} этого здания больше нет.",
         "buildingFactsAgain": "Проверить снова",
+        "eligibilityChoose": "Проверить по",
+        "eligibilityNone": "Ни один набор правил градостроительства этого города не проверяет здание.",
         "buildingFactsWaiting": "OpenStreetMap показывает правку через минуту-две после сохранения: проверка каждые 30 секунд…",
         "buildingFactsUnchanged": "{{source}} пока не показывает изменений. Если вы сохранили правку, проверьте снова через минуту.",
         "factEdit": {
@@ -9644,6 +9648,7 @@
             }
         },
         "eligibility": {
+            "verdictCode": { "eligible": "Не исключено по условиям самого здания; остальное проверяется в плане при подготовке голосования", "ineligible": "Исключено по условиям самого здания", "unknown": "Пока неизвестно: не хватает некоторых данных" },
             "set": {
                 "gb-living-tradition-mansards": "Мансарды по Living Tradition",
                 "gb-strong-suburbs-street-code": "Уличный кодекс Strong Suburbs",
@@ -9655,6 +9660,7 @@
                 "unknown": "Пока неизвестно: не хватает сведений"
             },
             "status": {
+                "onPlan": "Проверяется в плане",
                 "pass": "Да",
                 "fail": "Нет",
                 "unknown": "Неизвестно",

@@ -726,6 +726,11 @@ verdict. The verdict is ineligible when a test fails, unknown while one is unkno
 dated like a ballot rule and applies where a city plans under its planning rule set. The first is
 Living Tradition's paragraph 17 for mansards under English planning (`gb-eng-planning`).
 
+The building card's Eligibility page checks one building against a set the person chooses among
+every set the city's planning rules carry: building sets whole, and each [street code](#street-code)
+by its tests about the building as it stands (listing and build date). Its other tests read a plan,
+its street or block, and show as checked on a plan, when a vote is drafted.
+
 ### Street code
 
 A rule set of `kind: 'street-code'` in the building-eligibility evaluator (`frontend/js/planning/eligibility.js`):

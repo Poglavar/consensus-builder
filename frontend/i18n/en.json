@@ -9244,6 +9244,8 @@
             "restricted": "Special and restricted use"
         },
         "tabs": {
+            "facts": "Facts",
+            "eligibility": "Eligibility",
             "display": "Display",
             "compare": "Compare",
             "options": "Options"
@@ -9430,6 +9432,8 @@
         "buildingFactsEdit": "Add or correct in {{source}}",
         "buildingFactsNotFound": "{{source}} no longer has this building.",
         "buildingFactsAgain": "Check again",
+        "eligibilityChoose": "Check against",
+        "eligibilityNone": "No rule set in this city's planning rules checks a building.",
         "buildingFactsWaiting": "OpenStreetMap shows an edit a minute or two after it is saved: checking every 30 seconds…",
         "buildingFactsUnchanged": "{{source}} shows no change yet. If you saved an edit, check again in a minute.",
         "factEdit": {
@@ -9478,8 +9482,9 @@
             }
         },
         "eligibility": {
+            "verdictCode": { "eligible": "Not excluded by the building's own tests; the rest is checked on a plan, when a vote is drafted", "ineligible": "Excluded by the building's own tests", "unknown": "Not known yet: some facts are missing" },
             "set": {
-                "gb-living-tradition-mansards": "Mansard eligibility",
+                "gb-living-tradition-mansards": "Mansard storey (Living Tradition)",
                 "gb-strong-suburbs-street-code": "Strong Suburbs street code",
                 "gb-create-mews-block-code": "Create Mews block plan code"
             },
@@ -9489,6 +9494,7 @@
                 "unknown": "Not known yet: some facts are missing"
             },
             "status": {
+                "onPlan": "Checked on a plan",
                 "pass": "Yes",
                 "fail": "No",
                 "unknown": "Unknown",

@@ -9295,6 +9295,8 @@
             "restricted": "Posebna namjena"
         },
         "tabs": {
+            "facts": "Podaci",
+            "eligibility": "Prihvatljivost",
             "display": "Prikaz",
             "compare": "Usporedba",
             "options": "Opcije"
@@ -9530,6 +9532,8 @@
         "buildingFactsEdit": "Dodaj ili ispravi u {{source}}",
         "buildingFactsNotFound": "{{source}} više nema ovu zgradu.",
         "buildingFactsAgain": "Provjeri ponovno",
+        "eligibilityChoose": "Provjeri prema",
+        "eligibilityNone": "Nijedan skup pravila u planskim pravilima ovog grada ne provjerava zgradu.",
         "buildingFactsWaiting": "OpenStreetMap prikazuje izmjenu minutu-dvije nakon spremanja: provjeravam svakih 30 sekundi…",
         "buildingFactsUnchanged": "{{source}} još ne prikazuje promjenu. Ako ste spremili izmjenu, provjerite ponovno za minutu.",
         "factEdit": {
@@ -9578,6 +9582,7 @@
             }
         },
         "eligibility": {
+            "verdictCode": { "eligible": "Nije isključena po vlastitim uvjetima zgrade; ostalo se provjerava na planu, kad se priprema glasanje", "ineligible": "Isključena po vlastitim uvjetima zgrade", "unknown": "Još nije poznato: nedostaju neki podaci" },
             "set": {
                 "gb-living-tradition-mansards": "Mansarde po Living Tradition",
                 "gb-strong-suburbs-street-code": "Ulični kod Strong Suburbs",
@@ -9589,6 +9594,7 @@
                 "unknown": "Još nije poznato: nedostaju neki podaci"
             },
             "status": {
+                "onPlan": "Provjerava se na planu",
                 "pass": "Da",
                 "fail": "Ne",
                 "unknown": "Nepoznato",

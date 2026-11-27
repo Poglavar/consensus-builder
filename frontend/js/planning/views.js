@@ -334,11 +334,11 @@
     // A rule set's conditions on what the building is (planning/eligibility.js), test by test, from
     // its building facts.
     function renderEligibility(set, facts) {
-        const result = root.BuildingEligibility.evaluate(set, facts);
+        // A street or block code is judged here only by its tests about the building as it stands.
+        const result = root.BuildingEligibility.onBuilding(set, facts);
         const block = element('div', 'planning-eligibility');
         block.setAttribute('data-eligibility', result.verdict);
-        block.append(element('strong', '', t(`eligibility.set.${set.id}`)),
-            element('p', 'planning-inspector__description', t(`eligibility.verdict.${result.verdict}`)));
+        block.append(element('p', 'planning-inspector__description', t(`eligibility.${result.kind === 'building' ? 'verdict' : 'verdictCode'}.${result.verdict}`)));
         const list = element('ul', 'planning-eligibility__tests');
         for (const test of result.tests) {
             const row = element('li', 'planning-eligibility__test');
@@ -391,9 +391,6 @@
                 section.append(link);
             }
             if (!state.building.found) section.append(element('p', 'planning-inspector__description', t('buildingFactsNotFound', { source: edit?.source || '' })));
-            for (const set of root.BuildingEligibility?.forCity(root.CityConfigManager?.getCityConfig(item.source.city)?.planning?.ruleSetIds || []) || []) {
-                section.append(renderEligibility(set, state.building.facts));
-            }
         }
         // Beside the button that started it: waiting for the source to show an edit, or no change.
         if (state.status === 'read' && (state.waiting || state.unchanged)) {
@@ -411,6 +408,41 @@
             if (record?.buildingFacts) root.BusyControl.track(again, () => readFactsOf(record, record.buildingFacts.id, { fresh: true }));
         });
         section.append(again);
+        return section;
+    }
+    // The Eligibility page: what the building is checked against, one rule set at a time, chosen from
+    // every set the city's planning rules carry (a mansard storey, a street or block code). The choice
+    // holds while the page is open, from building to building.
+    let eligibilityChoice = null;
+    function renderEligibilityChoice(item) {
+        const state = item.buildingFacts, section = element('section', 'planning-eligibility-choice');
+        if (state.status !== 'read') {
+            const line = element('p', 'planning-inspector__description', t(state.status === 'failed' ? 'buildingFactsFailed' : 'buildingFactsReading'));
+            line.setAttribute('role', 'status');
+            section.append(line);
+            return section;
+        }
+        const ids = root.CityConfigManager?.getCityConfig(item.source.city)?.planning?.ruleSetIds || [];
+        const E = root.BuildingEligibility;
+        const sets = E ? [...E.forCity(ids), ...E.forCity(ids, { kind: 'street-code' })] : [];
+        if (!sets.length) { section.append(element('p', 'planning-inspector__description', t('eligibilityNone'))); return section; }
+        const chosen = sets.find(set => set.id === eligibilityChoice) || sets[0];
+        const row = element('div', 'planning-fact-form__row');
+        const label = element('label', '', t('eligibilityChoose')), control = element('select', 'planning-fact-form__control');
+        label.htmlFor = control.id = 'planning-eligibility-set';
+        for (const set of sets) {
+            const option = element('option', '', t(`eligibility.set.${set.id}`));
+            option.value = set.id; option.selected = set === chosen;
+            control.append(option);
+        }
+        let shown = renderEligibility(chosen, state.building.facts);
+        control.addEventListener('change', () => {
+            eligibilityChoice = control.value;
+            const next = renderEligibility(sets.find(set => set.id === control.value), state.building.facts);
+            shown.after(next); shown.remove(); shown = next;
+        });
+        row.append(label, control);
+        section.append(row, shown);
         return section;
     }
     // Adding the missing facts here (osm/osm-fact-edits.js): a choice per fact the person can state,
@@ -1039,7 +1071,11 @@
             line.setAttribute('role', 'status');
             info.append(line);
         }
-        if (item.buildingFacts) info.append(renderFacts(item));
+        // A building's facts and what it is eligible for are pages of their own beside Info.
+        if (item.buildingFacts) {
+            page('facts', t('tabs.facts')).append(renderFacts(item));
+            page('eligibility', t('tabs.eligibility')).append(renderEligibilityChoice(item));
+        }
         const heights = [...new Set(item.volumes.map(volume => volume.topM))].sort((a, b) => a - b);
         if (heights.length > 1) info.append(element('p', 'planning-inspector__description', t('heightParts', { heights: heights.map(height => root.CbFormat.formatLength(height)).join(' · ') })));
         const realization = permittedFeatures(item), shown = realization.configuration;

@@ -243,6 +243,20 @@
         return { set: { id: set.id, version: set.version }, verdict: has('fail') ? 'ineligible' : has('unknown') ? 'unknown' : 'eligible', tests };
     }
 
+    // A set judged on one existing building from its own facts, for the building card: a building set
+    // whole, a street code only by its tests about the building as it stands (listing, build date), its
+    // other tests ('onPlan') read a plan, its street or block and are checked when a vote is drafted
+    // (those the app never checks stay 'unchecked').
+    // Verdict: 'eligible', 'ineligible' or 'unknown' over the tests judged here.
+    const BUILDING_CHECKS = ['notListed', 'builtFrom', 'builtBetween'];
+    function onBuilding(set, facts) {
+        if ((set.kind || 'building') === 'building') return { ...evaluate(set, facts), kind: 'building' };
+        const own = test => test.applies === 'existing' && BUILDING_CHECKS.includes(test.check);
+        const judged = evaluate({ ...set, tests: set.tests.filter(own) }, { ...facts, kind: { value: 'existing' } });
+        const byId = new Map(judged.tests.map(test => [test.id, test]));
+        return { ...judged, kind: set.kind, tests: set.tests.map(test => byId.get(test.id) || { id: test.id, cite: test.cite, status: test.check === 'unchecked' ? 'unchecked' : 'onPlan' }) };
+    }
+
     // The fact a test reads (the date tests read `built`).
     const factOf = test => test.fact || (['builtBetween', 'builtFrom'].includes(test.check) ? 'built' : null);
     // Why a house is not eligible, test by test, in the words and links the building card uses
@@ -431,6 +445,6 @@
         return blocked.length ? [{ code: 'street-code-failed', buildings: blocked }] : [];
     }
 
-    return { RULE_SETS, get, latest, forCity, codesForBallot, evaluate, explain, coveredHouses, check, evidence, normalizeEvidence, evidenceIssues,
+    return { RULE_SETS, get, latest, forCity, codesForBallot, evaluate, onBuilding, explain, coveredHouses, check, evidence, normalizeEvidence, evidenceIssues,
         CODE_VERDICTS, CODE_BLOCKING, codeVerdict, codeLists, waiverPlots, streetKey, blockKey, codeEvidence, normalizeCodeEvidence, codeIssues };
 });

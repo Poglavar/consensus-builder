@@ -451,8 +451,8 @@ describe('building facts on the card', () => {
     const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');
     const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
     const slice = node => source.slice(node.start, node.end);
-    const pieces = body.filter(node => (node.type === 'FunctionDeclaration' && ['readFacts', 'showFacts', 'readFactsOf', 'renderFacts', 'renderFactForm', 'renderEligibility', 'element'].includes(node.id.name))
-        || (node.type === 'VariableDeclaration' && ['factReads', 'factDrafts'].includes(node.declarations[0].id.name))).map(slice).join('\n');
+    const pieces = body.filter(node => (node.type === 'FunctionDeclaration' && ['readFacts', 'showFacts', 'readFactsOf', 'renderFacts', 'renderFactForm', 'renderEligibility', 'renderEligibilityChoice', 'element'].includes(node.id.name))
+        || (node.type === 'VariableDeclaration' && ['factReads', 'factDrafts', 'eligibilityChoice'].includes(node.declarations[0].id.name))).map(slice).join('\n');
     const client = require('../../frontend/js/buildings/building-facts.js');
     const t = (key, params = {}) => `${key}(${Object.values(params).join('|')})`;
     const KEYS = { storeys: 'building:levels', built: 'start_date', roof_shape: 'roof:shape', parapet: 'building:parapet' };
@@ -465,7 +465,7 @@ describe('building facts on the card', () => {
         const document = makeDocument();
         const context = vm.createContext({ root: { BuildingFacts: { ...client, read }, BusyControl: { track: (_button, work) => Promise.resolve(typeof work === 'function' ? work() : work) }, ...extra },
             document, selected: () => shown.current, renderInspector, t, console, Map, Date });
-        vm.runInContext(`${pieces}\nthis.api = { readFacts, readFactsOf, renderFacts };`, context);
+        vm.runInContext(`${pieces}\nthis.api = { readFacts, readFactsOf, renderFacts, renderEligibilityChoice };`, context);
         // Check again with the wait between reads stubbed (the real one sleeps 30 s).
         const again = (record, wait) => {
             const realWait = client.readUntilChanged;
@@ -547,9 +547,10 @@ describe('building facts on the card', () => {
         expect(text(after)).toContain('factEdit.saved(OpenStreetMap) factEdit.changeset(555)');
         expect(after.querySelectorAll('a').map(a => a.href)).toContain('https://www.openstreetmap.org/changeset/555');
     });
-    // London plans under English rules, so the card adds Living Tradition's tests for the house:
-    // a parapet now stated, its row and footprint from the source's geometry, its roof shape unknown.
-    it('shows the city\'s eligibility tests for the house, from its facts', async () => {
+    // London plans under English rules: the card's Eligibility page checks the house against the set
+    // chosen among the city's sets, Living Tradition first (a parapet now stated, its row and footprint
+    // from the source's geometry, its roof shape unknown); the facts page lists no eligibility.
+    it('shows the eligibility tests of the set chosen for the house, from its facts', async () => {
         const house = { ...record(), source: { recordId: 'w1', city: 'london' } }, shown = { current: house };
         const geometry = (value, raw) => ({ value, source: 'osm', key: 'geometry', raw });
         const card = setup([{ ...building(true), facts: { ...building(true).facts, built: { value: { from: 1828, to: 1830 }, source: 'osm', key: 'start_date', raw: '1828..1830' },
@@ -559,13 +560,26 @@ describe('building facts on the card', () => {
             BuildingEligibility: require('../../frontend/js/planning/eligibility.js'),
             CityConfigManager: { getCityConfig: city => (city === 'london' ? { planning: { ruleSetIds: ['gb-eng-planning'] } } : null) } });
         await card.readFacts(house, { id: 'w1', properties: {} });
-        const block = card.renderFacts(house).querySelector('.planning-eligibility');
+        expect(card.renderFacts(house).querySelector('.planning-eligibility')).toBeNull();
+        const page = card.renderEligibilityChoice(house), choice = page.querySelector('select');
+        expect(choice.querySelectorAll('option').map(option => option.value)).toEqual(['gb-living-tradition-mansards', 'gb-strong-suburbs-street-code', 'gb-create-mews-block-code']);
+        const block = page.querySelector('.planning-eligibility');
         // A Grade II* listing fails 17.9, and the test names the grade it was judged on.
         expect(block.getAttribute('data-eligibility')).toBe('ineligible');
         const row = cite => block.querySelectorAll('li').find(item => text(item).startsWith(`${cite} `));
         const status = cite => row(cite).getAttribute('data-status');
         expect(['17.1', '17.2', '17.4', '17.5', '17.6', '17.7', '17.9', '17.10'].map(status)).toEqual(['pass', 'pass', 'unknown', 'pass', 'pass', 'pass', 'fail', 'unchecked']);
         expect(text(row('17.9'))).toContain('eligibility.withGrade(eligibility.status.fail()|II*)');
+        // Choosing Strong Suburbs judges the house by its own tests: a Grade II* listing excludes it (para 12),
+        // and the tests about a plan are left to it. The choice holds for the next building's page.
+        choice.value = 'gb-strong-suburbs-street-code';
+        choice.listeners.get('change').forEach(fn => fn());
+        const code = page.querySelector('.planning-eligibility');
+        expect(code.getAttribute('data-eligibility')).toBe('ineligible');
+        expect(text(code)).toContain('eligibility.verdictCode.ineligible()');
+        expect(code.querySelectorAll('li').find(item => text(item).startsWith('30 ')).getAttribute('data-status')).toBe('onPlan');
+        expect(page.querySelectorAll('.planning-eligibility')).toHaveLength(1);
+        expect(card.renderEligibilityChoice(house).querySelectorAll('option').find(option => option.selected).value).toBe('gb-strong-suburbs-street-code');
         // The facts list shows the listing with a link to its register entry.
         const section = card.renderFacts(house);
         expect(text(section)).toContain('buildingFact.field.heritage()buildingFact.heritageListed(II*) · buildingFact.heritageEntry(1195683)');

@@ -9424,6 +9424,8 @@
             "restricted": "Usage spécial et restreint"
         },
         "tabs": {
+            "facts": "Données",
+            "eligibility": "Éligibilité",
             "display": "Affichage",
             "compare": "Comparer",
             "options": "Options"
@@ -9655,6 +9657,8 @@
         "buildingFactsEdit": "Ajouter ou corriger dans {{source}}",
         "buildingFactsNotFound": "{{source}} n’a plus ce bâtiment.",
         "buildingFactsAgain": "Vérifier à nouveau",
+        "eligibilityChoose": "Vérifier selon",
+        "eligibilityNone": "Aucun ensemble de règles d'urbanisme de cette ville ne vérifie un bâtiment.",
         "buildingFactsWaiting": "OpenStreetMap affiche une modification une ou deux minutes après son enregistrement : vérification toutes les 30 secondes…",
         "buildingFactsUnchanged": "{{source}} n’affiche encore aucun changement. Si vous avez enregistré une modification, vérifiez à nouveau dans une minute.",
         "factEdit": {
@@ -9703,6 +9707,7 @@
             }
         },
         "eligibility": {
+            "verdictCode": { "eligible": "Non exclu par les critères du bâtiment lui-même ; le reste est vérifié sur un plan, lors de la préparation d'un vote", "ineligible": "Exclu par les critères du bâtiment lui-même", "unknown": "Pas encore connu : certaines données manquent" },
             "set": {
                 "gb-living-tradition-mansards": "Mansardes selon Living Tradition",
                 "gb-strong-suburbs-street-code": "Code de rue Strong Suburbs",
@@ -9714,6 +9719,7 @@
                 "unknown": "Pas encore connu : des données manquent"
             },
             "status": {
+                "onPlan": "Vérifié sur un plan",
                 "pass": "Oui",
                 "fail": "Non",
                 "unknown": "Inconnu",
