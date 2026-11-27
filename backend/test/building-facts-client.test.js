@@ -11,7 +11,9 @@ const KEYS = { storeys: 'building:levels', built: 'start_date', roof_shape: 'roo
 const house = {
     id: 'osm:way/123', found: true,
     facts: { storeys: { value: 3, source: 'osm', key: 'building:levels', raw: '3' }, built: { value: { from: null, to: 1912 }, source: 'osm', key: 'start_date', raw: 'before 1913' },
-        roof_shape: null, parapet: null, height_m: null },
+        roof_shape: null, parapet: null, height_m: null, heritage: null },
+    unknown_reasons: { heritage: { code: 'row-uncertain', message: 'A listed entry on this row may cover this house.',
+        entries: [{ reference: '1195683', name: 'NUMBERS 26 TO 50', grade: 'II', url: 'https://historicengland.org.uk/listing/the-list/list-entry/1195683' }] } },
     edit: { url: 'https://www.openstreetmap.org/edit?editor=id&way=123', source: 'OpenStreetMap', keys: KEYS },
 };
 
@@ -46,10 +48,23 @@ describe('building facts client', () => {
         const rows = facts.cardRows(house, t);
         expect(rows.map(row => [row.field, row.text, row.key])).toEqual([
             ['storeys', '3', 'building:levels'], ['built', 'builtBefore(1913)', 'start_date'],
-            ['roof_shape', null, 'roof:shape'], ['parapet', null, 'building:parapet'],
+            ['roof_shape', null, 'roof:shape'], ['parapet', null, 'building:parapet'], ['heritage', null, null],
         ]);
+        // A register fact has no OpenStreetMap key: its row names why it is unknown and links the entry in question.
+        expect(rows[4]).toMatchObject({ reason: 'heritageUnknown.rowUncertain()', link: { url: 'https://historicengland.org.uk/listing/the-list/list-entry/1195683', text: 'heritageEntry(1195683)' } });
         const parapet = { ...house, facts: { ...house.facts, parapet: { value: true, source: 'osm', key: 'building:parapet', raw: 'yes' } } };
         expect(facts.cardRows(parapet, t)[3].text).toBe('parapetYes()');
+    });
+    it('puts a heritage listing in words with the grade as the register states it, and links its entry or register', () => {
+        const value = (listed, grade, extra = {}) => ({ value: { listed, grade, register: 'National Heritage List for England', reference: listed ? '1195683' : null, name: null,
+            url: listed ? 'https://historicengland.org.uk/listing/the-list/list-entry/1195683' : 'https://www.planning.data.gov.uk/dataset/listed-building', basis: listed ? 'outline' : 'none', ...extra }, source: 'gb-eng-nhle', key: 'listed-building', raw: 'x' });
+        const row = heritage => facts.cardRows({ ...house, unknown_reasons: {}, facts: { ...house.facts, heritage } }, t)[4];
+        expect(row(value(true, 'II*'))).toMatchObject({ text: 'heritageListed(II*)', reason: null, link: { text: 'heritageEntry(1195683)' } });
+        expect(row(value(true, null)).text).toBe('heritageListedNoGrade()');
+        expect(row(value(false, null))).toMatchObject({ text: 'heritageNotListed()', link: { url: 'https://www.planning.data.gov.uk/dataset/listed-building', text: 'heritageRegister()' } });
+        // Outside every register: unknown, with the reason and no link.
+        const outside = facts.cardRows({ ...house, unknown_reasons: { heritage: { code: 'no-register', message: 'x' } } }, t)[4];
+        expect(outside).toMatchObject({ text: null, reason: 'heritageUnknown.noRegister()', link: null });
     });
     it('uses a local shared API only on a local page that asks for one', () => {
         const at = (hostname, search) => ({ hostname, search });

@@ -9284,13 +9284,29 @@
                 "storeys": "Storeys",
                 "built": "Built",
                 "roof_shape": "Roof shape",
-                "parapet": "Parapet"
+                "parapet": "Parapet",
+                "heritage": "Heritage listing"
             },
             "builtBefore": "before {{year}}",
             "builtAfter": "{{year}} or later",
             "builtBetween": "{{from}}–{{to}}",
             "parapetYes": "Yes",
-            "parapetNo": "No"
+            "parapetNo": "No",
+            "heritageListed": "Listed, grade {{grade}}",
+            "heritageListedNoGrade": "Listed; the register states no grade",
+            "heritageNotListed": "Not listed",
+            "heritageEntry": "List entry {{reference}}",
+            "heritageRegister": "Heritage register",
+            "heritageUnknown": {
+                "noRegister": "No heritage register is read for this place",
+                "noRegion": "Where the building lies could not be read",
+                "noOutline": "The building’s outline is not read, so the register cannot be matched to it",
+                "rowUncertain": "A listed entry on this row may cover this house",
+                "numberAmbiguous": "A listed entry’s house numbers may or may not include this house",
+                "outlineUncertain": "A listed outline much larger than the building covers it",
+                "registerIncomplete": "Too many register entries around these buildings to read at once",
+                "registerUnavailable": "The heritage register did not answer; check again later"
+            }
         },
         "eligibility": {
             "set": {
@@ -9307,6 +9323,7 @@
                 "unknown": "Unknown",
                 "unchecked": "Not checked by the app"
             },
+            "withGrade": "{{status}}, grade {{grade}}",
             "test": {
                 "built": "Built after 1700 and before 1918",
                 "parapet": "Parapet along the whole street front",
@@ -10089,7 +10106,7 @@
         },
         "eligibility": {
             "title": "Covered houses",
-            "hint": "This street vote may cover only houses that meet the rule’s eligibility conditions. Their facts are read from OpenStreetMap: add missing ones there, then check again.",
+            "hint": "This street vote may cover only houses that meet the rule’s eligibility conditions. Their facts are read from OpenStreetMap and their listing from the heritage register: add missing facts in OpenStreetMap, then check again.",
             "checking": "Checking the covered houses…",
             "failed": "The check could not be completed: {{error}}",
             "summary": "{{eligible}} of {{total}} covered houses eligible",

@@ -490,14 +490,23 @@ describe('building facts on the card', () => {
         const house = { ...record(), source: { recordId: 'w1', city: 'london' } }, shown = { current: house };
         const geometry = (value, raw) => ({ value, source: 'osm', key: 'geometry', raw });
         const card = setup([{ ...building(true), facts: { ...building(true).facts, built: { value: { from: 1828, to: 1830 }, source: 'osm', key: 'start_date', raw: '1828..1830' },
-            footprint_m2: geometry(45.6, '45.6 m² outline'), row_size: geometry(20, '20 buildings joined by party walls') } }], shown, {
+            footprint_m2: geometry(45.6, '45.6 m² outline'), row_size: geometry(20, '20 buildings joined by party walls'),
+            heritage: { value: { listed: true, grade: 'II*', register: 'National Heritage List for England', reference: '1195683', name: 'NUMBERS 26 TO 50', url: 'https://historicengland.org.uk/listing/the-list/list-entry/1195683', basis: 'house-number' },
+                source: 'gb-eng-nhle', key: 'listed-building', raw: 'NUMBERS 26 TO 50, Grade II* (matched by house number)' } } }], shown, {
             BuildingEligibility: require('../../frontend/js/planning/eligibility.js'),
             CityConfigManager: { getCityConfig: city => (city === 'london' ? { planning: { ruleSetIds: ['gb-eng-planning'] } } : null) } });
         await card.readFacts(house, { id: 'w1', properties: {} });
         const block = card.renderFacts(house).querySelector('.planning-eligibility');
-        expect(block.getAttribute('data-eligibility')).toBe('unknown');
-        const status = cite => block.querySelectorAll('li').find(row => text(row).startsWith(`${cite} `)).getAttribute('data-status');
-        expect(['17.1', '17.2', '17.4', '17.5', '17.6', '17.7', '17.9'].map(status)).toEqual(['pass', 'pass', 'unknown', 'pass', 'pass', 'pass', 'unchecked']);
+        // A Grade II* listing fails 17.9, and the test names the grade it was judged on.
+        expect(block.getAttribute('data-eligibility')).toBe('ineligible');
+        const row = cite => block.querySelectorAll('li').find(item => text(item).startsWith(`${cite} `));
+        const status = cite => row(cite).getAttribute('data-status');
+        expect(['17.1', '17.2', '17.4', '17.5', '17.6', '17.7', '17.9', '17.10'].map(status)).toEqual(['pass', 'pass', 'unknown', 'pass', 'pass', 'pass', 'fail', 'unchecked']);
+        expect(text(row('17.9'))).toContain('eligibility.withGrade(eligibility.status.fail()|II*)');
+        // The facts list shows the listing with a link to its register entry.
+        const section = card.renderFacts(house);
+        expect(text(section)).toContain('buildingFact.field.heritage()buildingFact.heritageListed(II*) · buildingFact.heritageEntry(1195683)');
+        expect(section.querySelectorAll('a').map(a => a.href)).toContain('https://historicengland.org.uk/listing/the-list/list-entry/1195683');
     });
     it('reads nothing for a building the contract does not answer, and says so when the read fails', async () => {
         const gdi = { id: 'built:zagreb:4711', source: { recordId: '4711' } }, shown = { current: gdi };

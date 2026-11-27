@@ -34,7 +34,9 @@
             { id: 'attached', cite: '17.6', check: 'row', fact: 'row_size', minRow: 3, pairPasses: true },
             { id: 'footprint', cite: '17.7', check: 'factAtMost', fact: 'footprint_m2', max: 100 },
             { id: 'originalUse', cite: '17.8', check: 'unchecked' },
-            { id: 'listing', cite: '17.9', check: 'unchecked' },
+            // "Not listed Grade I or II*": the heritage fact (the country's register). Grade II passes;
+            // a listing whose grade the register does not state is unknown.
+            { id: 'listing', cite: '17.9', check: 'gradeNotIn', fact: 'heritage', grades: ['I', 'II*'] },
             { id: 'topWindows', cite: '17.10', check: 'unchecked' },
         ],
     }];
@@ -66,6 +68,12 @@
             case 'factIsNot': return value === null ? result('unknown') : result(value === test.value ? 'fail' : 'pass', value);
             case 'factAtLeast': return !finite(value) ? result('unknown') : result(value >= test.min ? 'pass' : 'fail', value);
             case 'factAtMost': return !finite(value) ? result('unknown') : result(value <= test.max ? 'pass' : 'fail', value);
+            case 'gradeNotIn': {
+                if (!value || typeof value.listed !== 'boolean') return result('unknown');
+                if (!value.listed) return result('pass', 'not listed');
+                if (!value.grade) return result('unknown');
+                return { ...result(test.grades.includes(value.grade) ? 'fail' : 'pass', value.grade), grade: value.grade };
+            }
             case 'row': return !finite(value) ? result('unknown')
                 : result(value >= test.minRow || (test.pairPasses && value === 2) ? 'pass' : 'fail', value);
             default: return result('unchecked');

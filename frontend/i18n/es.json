@@ -9356,13 +9356,29 @@
                 "storeys": "Plantas",
                 "built": "Construido",
                 "roof_shape": "Forma de la cubierta",
-                "parapet": "Pretil"
+                "parapet": "Pretil",
+                "heritage": "Protección patrimonial"
             },
             "builtBefore": "antes de {{year}}",
             "builtAfter": "{{year}} o después",
             "builtBetween": "{{from}}–{{to}}",
             "parapetYes": "Sí",
-            "parapetNo": "No"
+            "parapetNo": "No",
+            "heritageListed": "Catalogado, grado {{grade}}",
+            "heritageListedNoGrade": "Catalogado; el registro no indica el grado",
+            "heritageNotListed": "No catalogado",
+            "heritageEntry": "Ficha {{reference}}",
+            "heritageRegister": "Registro de patrimonio",
+            "heritageUnknown": {
+                "noRegister": "No se consulta ningún registro de patrimonio para este lugar",
+                "noRegion": "No se pudo leer dónde está el edificio",
+                "noOutline": "No se lee el contorno del edificio, así que el registro no se puede asociar a él",
+                "rowUncertain": "Una ficha catalogada de esta hilera puede incluir esta casa",
+                "numberAmbiguous": "Los números de una ficha catalogada pueden incluir o no esta casa",
+                "outlineUncertain": "Lo cubre un contorno catalogado mucho mayor que el edificio",
+                "registerIncomplete": "Hay demasiadas fichas alrededor de estos edificios para leerlas de una vez",
+                "registerUnavailable": "El registro de patrimonio no respondió; vuelva a comprobar más tarde"
+            }
         },
         "eligibility": {
             "set": {
@@ -9379,6 +9395,7 @@
                 "unknown": "Desconocido",
                 "unchecked": "La aplicación no lo comprueba"
             },
+            "withGrade": "{{status}}, grado {{grade}}",
             "test": {
                 "built": "Construido después de 1700 y antes de 1918",
                 "parapet": "Pretil a lo largo de toda la fachada a la calle",
@@ -10161,7 +10178,7 @@
         },
         "eligibility": {
             "title": "Casas incluidas",
-            "hint": "Esta votación de calle solo puede incluir casas que cumplan las condiciones de la regla. Sus datos se leen de OpenStreetMap: añada allí los que falten y vuelva a comprobar.",
+            "hint": "Esta votación de calle solo puede incluir casas que cumplan las condiciones de la regla. Sus datos se leen de OpenStreetMap y su catalogación del registro de patrimonio: añada en OpenStreetMap los que falten y vuelva a comprobar.",
             "checking": "Comprobando las casas incluidas…",
             "failed": "No se pudo completar la comprobación: {{error}}",
             "summary": "{{eligible}} de {{total}} casas incluidas cumplen",

@@ -9383,13 +9383,29 @@
                 "storeys": "Broj etaža",
                 "built": "Izgrađena",
                 "roof_shape": "Oblik krova",
-                "parapet": "Atika"
+                "parapet": "Atika",
+                "heritage": "Zaštićena baština"
             },
             "builtBefore": "prije {{year}}.",
             "builtAfter": "{{year}}. ili kasnije",
             "builtBetween": "{{from}}.–{{to}}.",
             "parapetYes": "Da",
-            "parapetNo": "Ne"
+            "parapetNo": "Ne",
+            "heritageListed": "Zaštićena, stupanj {{grade}}",
+            "heritageListedNoGrade": "Zaštićena; registar ne navodi stupanj",
+            "heritageNotListed": "Nije zaštićena",
+            "heritageEntry": "Upis {{reference}}",
+            "heritageRegister": "Registar baštine",
+            "heritageUnknown": {
+                "noRegister": "Za ovo mjesto ne čita se registar baštine",
+                "noRegion": "Nije pročitano gdje se zgrada nalazi",
+                "noOutline": "Obris zgrade nije pročitan pa se registar ne može povezati s njom",
+                "rowUncertain": "Zaštićeni upis u ovom nizu možda obuhvaća i ovu kuću",
+                "numberAmbiguous": "Kućni brojevi zaštićenog upisa možda obuhvaćaju ovu kuću, a možda ne",
+                "outlineUncertain": "Zgradu pokriva zaštićeni obris mnogo veći od nje",
+                "registerIncomplete": "Oko ovih zgrada ima previše upisa u registru za jedno čitanje",
+                "registerUnavailable": "Registar baštine nije odgovorio; provjerite kasnije"
+            }
         },
         "eligibility": {
             "set": {
@@ -9406,6 +9422,7 @@
                 "unknown": "Nepoznato",
                 "unchecked": "Aplikacija ne provjerava"
             },
+            "withGrade": "{{status}}, stupanj {{grade}}",
             "test": {
                 "built": "Izgrađena nakon 1700. i prije 1918.",
                 "parapet": "Atika duž cijelog uličnog pročelja",
@@ -10189,7 +10206,7 @@
         },
         "eligibility": {
             "title": "Obuhvaćene kuće",
-            "hint": "Ovo glasanje ulice smije obuhvatiti samo kuće koje ispunjavaju uvjete pravila. Podaci se čitaju iz OpenStreetMapa: dodajte one koji nedostaju ondje, pa provjerite ponovno.",
+            "hint": "Ovo glasanje ulice smije obuhvatiti samo kuće koje ispunjavaju uvjete pravila. Podaci se čitaju iz OpenStreetMapa, a zaštita iz registra baštine: dodajte podatke koji nedostaju u OpenStreetMap, pa provjerite ponovno.",
             "checking": "Provjeravam obuhvaćene kuće…",
             "failed": "Provjera nije dovršena: {{error}}",
             "summary": "{{eligible}} od {{total}} obuhvaćenih kuća ispunjava uvjete",

@@ -660,11 +660,24 @@ buildings are answered from OpenStreetMap through Overpass, a few minutes behind
 needs it (`building:parapet=yes|no` for a parapet along the whole street front). Croatian
 cadastre buildings are to join the same contract.
 
+**Heritage** is the protection the country's heritage register gives the building: listed or not,
+the grade as the register states it (England: I, II*, II), the entry's reference and page, and the
+basis of the match. Each register is a source of the contract that declares the places it covers;
+England's is the National Heritage List, read from planning.data.gov.uk (`listed-building-outline`
+and `listed-building`). A building is matched by an outline over it, by the entry's point inside
+it, or by the entry's house numbers against its `addr:street` and `addr:housenumber` (a terrace is
+often one entry with one point, "Numbers 26 to 50"). Where a register covers the place, a building
+no entry reaches is not listed. Heritage is unknown outside every register, where an entry on the
+building's shared-wall row or just beside it may cover it, where a range may or may not include its
+number, and while the register does not answer; the contract then says why.
+
 ### Building eligibility
 
 Whether a source building meets a rule set's conditions on what it is, test by test, judged only
 from its building facts, so the app and the agents' server judge it alike. A test passes, fails, is
-unknown while its fact is, or is unchecked when no source states it (listed, not assumed). The
+unknown while its fact is, or is unchecked when no source states it (listed, not assumed). Living
+Tradition's "not listed Grade I or II*" reads the heritage fact: not listed or Grade II passes,
+Grade I or II* fails, and a listing whose grade the register does not state is unknown. The
 verdict is ineligible when a test fails, unknown while one is unknown, else eligible. A rule set is
 dated like a ballot rule and applies where a city plans under its planning rule set. The first is
 Living Tradition's paragraph 17 for mansards under English planning (`gb-eng-planning`).
