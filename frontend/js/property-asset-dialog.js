@@ -22,11 +22,20 @@
         if (!response.ok) throw new Error(result.error || result.message || `HTTP ${response.status}`);
         return result;
     }
+    // Literal keys, so the locale coverage test sees each badge.
+    function statusLabel(status) {
+        const labels = {
+            unminted: () => t('status.unminted', 'Not on Solana yet'), open: () => t('status.open', 'Open'),
+            committed: () => t('status.committed', 'Sale in progress'), settled: () => t('status.settled', 'Sold'),
+            cancelled: () => t('status.cancelled', 'Withdrawn'), expired: () => t('status.expired', 'Expired')
+        };
+        return labels[status]?.() || status || '';
+    }
     function offerRow(row, onOpen) {
         const item = el('li', 'property-market__row');
         const c = row.content;
         const text = el('span', 'property-market__text', `${c.direction === 'sell' ? t('forSale', 'For sale') : t('wanted', 'Wanted')} · ${D().money(c.price, c.currency)}`);
-        const state = el('span', 'cb-badge', t(`status.${row.status}`, row.status || ''));
+        const state = el('span', 'cb-badge', statusLabel(row.status));
         const open = el('button', 'btn btn-quiet', t('open', 'Open')); open.type = 'button';
         open.addEventListener('click', () => onOpen(row));
         item.append(text, state, open);

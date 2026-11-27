@@ -101,6 +101,11 @@ const DYNAMIC_KEY_PREFIXES = [
 const PREFIXING_HELPERS = {
     'js/structure-geometry-editor.js': { fn: 't', prefix: 'structureEditor.' },
     'js/shared-plan-session.js': { fn: 't', prefix: 'sharedPlan.' },
+    'js/property-asset-dialog.js': { fn: 't', prefix: 'propertyOffer.' },
+    'js/property-offer-dialog.js': { fn: 't', prefix: 'propertyOffer.' },
+    'js/property-offer-panel.js': { fn: 't', prefix: 'propertyOffer.' },
+    'js/property-market.js': { fn: 't', prefix: 'propertyOffer.' },
+    'js/solana/property-offer-bridge.js': { fn: 't', prefix: 'propertyOffer.' },
 };
 
 // Call names that take a dotted string first but are not translation lookups.

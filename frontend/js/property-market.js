@@ -76,7 +76,7 @@
         }
         body.append(toggles);
         const status = el('p', 'property-market__status'); status.setAttribute('role', 'status');
-        status.textContent = state.loading ? t('reading', 'Loading…') : state.error || (state.rows.length ? t('market.count', '{{count}} shown', { count: state.rows.length }) : t('market.empty', 'Nothing here yet. Move the map, change the filters, or put something up for sale from a plot or a flat.'));
+        status.textContent = state.loading ? (root.i18n?.t?.('common.busy.loading') || 'Loading…') : state.error || (state.rows.length ? t('market.count', '{{count}} shown', { count: state.rows.length }) : t('market.empty', 'Nothing here yet. Move the map, change the filters, or put something up for sale from a plot or a flat.'));
         body.append(status);
         const list = el('ul', 'property-market__list');
         state.rows.forEach(offer => list.append(row(offer)));

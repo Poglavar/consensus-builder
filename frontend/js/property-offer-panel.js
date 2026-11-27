@@ -143,7 +143,7 @@
             actions.append(share, refresh);
             body.append(actions);
             if (chain) {
-                const account = el('a', 'cb-link cb-link--external property-offer-panel__account', t('onSolana', 'See it on Solana Explorer'));
+                const account = el('a', 'cb-link cb-link--external property-offer-panel__account', t('onSolana', 'See it on Solana explorer'));
                 account.href = `https://explorer.solana.com/address/${encodeURIComponent(chain.address)}?cluster=devnet`; account.target = '_blank'; account.rel = 'noopener noreferrer';
                 body.append(account);
             }
