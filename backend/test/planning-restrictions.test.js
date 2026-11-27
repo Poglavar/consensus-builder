@@ -240,3 +240,81 @@ describe('England end to end (recorded planning.data.gov.uk answer)', () => {
         expect(result.checks.find(entry => entry.rule === 'restrictionsPartial')).toMatchObject({ status: 'unknown' });
     });
 });
+
+describe('Article 4 directions by the rights they remove', () => {
+    // Rows as planning.data.gov.uk publishes them (2026-11-27): the rights are on the area, as GPDO
+    // Schedule 2 codes, free text or nothing; the direction an area names may describe them.
+    const a4 = (fields, extra = {}) => ({ ...area('article-4-direction-area', square(-0.001, 50.999, 0.003).geometry, fields), ...extra });
+    const effectOf = designation => restrictions.restrictionsFor(read([designation]), { geometryOps: turf }).restrictions[0];
+    const building = { id: 'b', heightM: 9, footprint: square(0.0001, 51.0001, 0.0001) };
+    const lineOf = list => checker.check({ items: [], restrictions: list, baseRule: 'unknown', buildings: [building], geometryOps: turf })
+        .checks.find(entry => entry.rule === 'restriction');
+
+    it('reads rights as GPDO codes, from a list or from parts and classes, and nothing else', () => {
+        expect(restrictions.rightCodes('1A;1B;1C;1D;1E;1F;1G;1H;2A;2B')).toEqual(['1A', '1B', '1C', '1D', '1E', '1F', '1G', '1H', '2A', '2B']);
+        expect(restrictions.rightCodes('3MA;20ZA')).toEqual(['3MA', '20ZA']);
+        expect(restrictions.rightCodes('Schedule 2 Part 1 Class A, Class B, Class C, Class D and Class F, Part 2 Class A and Class C, Part 11 Class C'))
+            .toEqual(['1A', '1B', '1C', '1D', '1F', '2A', '2C', '11C']);
+        expect(restrictions.rightCodes('Part 3')).toEqual(['3']);
+        for (const unreadable of ['', 'None given', 'CodeUnknown', 'Permitted development rights removed', '11500146;11500007', 'Class e',
+            'Ground Floor 3M;Ground Floor 3MA;Other Floors MA', 'Article 4 (1)']) expect(restrictions.rightCodes(unreadable)).toBeNull();
+    });
+    it('a borough-wide change of use direction (Brent\'s small HMOs, Class L) is a note, not a restriction, for building works', () => {
+        const hmo = effectOf(a4({ name: 'Article 4 for HMOs', 'permitted-development-rights': '3L', 'article-4-direction': 'A4D_HMO' }));
+        expect(hmo).toMatchObject({ effect: 'note', reasonCode: 'article-4-direction', requirement: null, removedRights: { codes: ['3L'], actions: [], unlisted: [] } });
+        expect(lineOf([hmo])).toMatchObject({ status: 'note', removedRights: { codes: ['3L'] } });
+        expect(effectOf(a4({ name: 'Remainder of Borough', 'permitted-development-rights': '3MA' })).effect).toBe('note');
+        expect(effectOf(a4({ name: 'Whole of the London Borough of Hackney', 'permitted-development-rights': '3PA' })).effect).toBe('note');
+    });
+    it('a direction removing extensions, roof works or new storeys restricts, naming the design actions it covers', () => {
+        const conservation = effectOf(a4({ 'permitted-development-rights': '1A;1B;1C;1D;1E;1F;1G;1H;2A;2B' }));
+        expect(conservation).toMatchObject({ effect: 'restrict', requirement: 'planning-permission' });
+        expect(conservation.removedRights.actions).toEqual(['enlarge', 'roof-addition', 'roof-alteration', 'outbuilding']);
+        expect(lineOf([conservation])).toMatchObject({ status: 'conditional', requirement: 'planning-permission' });
+        expect(effectOf(a4({ 'permitted-development-rights': '1AA;20AA' })).removedRights.actions).toEqual(['add-storeys', 'new-dwellings']);
+        expect(effectOf(a4({ 'permitted-development-rights': '2C;11B' })).removedRights.actions).toEqual(['demolish']);
+    });
+    it('unknown is never fine: unstated, unreadable or unlisted rights keep the restriction', () => {
+        expect(effectOf(a4({ 'permitted-development-rights': 'None given' }))).toMatchObject({ effect: 'restrict', removedRights: { codes: null } });
+        expect(effectOf(a4({}))).toMatchObject({ effect: 'restrict', requirement: 'planning-permission' });
+        // Part 6 (agriculture) is not in England's table: it counts as building works.
+        expect(effectOf(a4({ 'permitted-development-rights': '6A;6B' }))).toMatchObject({ effect: 'restrict', removedRights: { unlisted: ['6A', '6B'] } });
+        // Enfield's conservation-area directions publish only "Permitted development rights removed".
+        expect(effectOf(a4({ name: 'Bush Hill Park', 'permitted-development-rights': 'Permitted development rights removed', description: 'Bush Hill park Conservation area',
+            notes: 'The London Borough of Enfield Council (Enfield Borough Conservation Areas) Article 4(1) Direction 2003' })).effect).toBe('restrict');
+    });
+    it('rights stated only in words are read from the area\'s texts, unless they speak of other works too (Enfield borough-wide)', () => {
+        const enfield = effectOf(a4({ name: 'Borough wide', reference: 'AD17', 'permitted-development-rights': 'Permitted development rights removed',
+            description: 'Direction relating to HMO\'S', notes: 'Direction relating to houses in multiple occupation (HMOs)' }));
+        expect(enfield).toMatchObject({ effect: 'note', removedRights: { codes: ['3L'] } });
+        expect(effectOf(a4({ notes: 'HMOs and rear extensions' })).effect).toBe('restrict');
+    });
+    it('rights a direction describes are read through the direction the area names, by reference within its organisation (Bexley)', async () => {
+        const bexleyArea = { entity: 7010010956, dataset: 'article-4-direction-area', name: 'Borough Wide Article 4 Direction 2017 (Part 1 Of 5)',
+            reference: 'D_43_BEX_ART4_00013', 'article-4-direction': 'D_43_BEX_ART4_00013', 'organisation-entity': 43, 'end-date': '' };
+        const bexleyDirection = { entity: 6103777, dataset: 'article-4-direction', name: 'Borough Wide Article 4 Direction 2017 (Part 1 Of 5)',
+            reference: 'D_43_BEX__ART4_00013', 'organisation-entity': 43,
+            description: 'The Direction relates to development comprising of a change of use from a use falling within Class C3 (dwellinghouse) to a use falling within Class C4 (house in multiple occupation), and removes Permitted Development rights for this type of development.' };
+        const asked = [];
+        const fetchWith = (directions, organisation = 43) => async url => {
+            asked.push(url);
+            const query = new URL(url).searchParams;
+            if (query.get('dataset') === 'article-4-direction') return directions;
+            if (query.getAll('entity').length) return respond({ entities: [{ entity: organisation, name: 'London Borough of Bexley' }] });
+            return respond({ entities: [{ ...bexleyArea, 'organisation-entity': organisation }], links: {} });
+        };
+        const footprint = square(0.1, 51.45, 0.0001).geometry;
+        const named = async fetch => {
+            const reads = await sources.createLoader({ config, scene, fetch }).membership(['gb-eng-planning'], footprint, { effects: ['restrict', 'note'] });
+            return restrictions.membershipRestrictions([{ buildingId: 'b', reads }], { geometryOps: turf }).restrictions[0];
+        };
+        const read = await named(fetchWith(respond({ entities: [bexleyDirection], links: {} })));
+        expect(read).toMatchObject({ effect: 'note', removedRights: { codes: ['3L'] } });
+        const lookup = new URL(asked.find(url => new URL(url).searchParams.get('dataset') === 'article-4-direction'));
+        expect(lookup.searchParams.get('organisation_entity')).toBe('43');
+        // The direction cannot be read: what it says stays unread, and the restriction stays.
+        // (Another organisation: directions are kept per organisation for the session.)
+        const failing = await named(fetchWith({ ok: false, status: 503, json: async () => ({}) }, 9043));
+        expect(failing).toMatchObject({ effect: 'restrict', removedRights: { codes: null } });
+    });
+});

@@ -2,7 +2,9 @@
 // Permitted item, the planning designations over it (planning/constraint-sources.js) act on it with
 // one of three effects, which the place's rule set assigns per dataset: `prohibit` removes the
 // designated area from the envelope, `restrict` keeps the envelope and attaches a requirement, and
-// `note` only gives the Permitted check a reason line. Where no base rule exists the stage still
+// `note` only gives the Permitted check a reason line. An entry may make its effect depend on the
+// permitted development rights a direction removes (`removedRights`): rights no design uses turn it
+// into its `otherwise` effect, unknown rights keep it. Where no base rule exists the stage still
 // runs: Permitted is then "unknown base, known designations" (unknownBaseItems). Pure: geometry
 // operations (turf 6) are passed in, so the browser and node (MCP) run the same code.
 (function (root, factory) {
@@ -27,6 +29,63 @@
             return entry;
         }
         return null;
+    }
+    // Permitted development rights as codes: a part and a class ("1A", "3L", "20ZA"; England's GPDO
+    // Schedule 2), or a whole part ("3"). Read from a list ("1A;1B;2C"), or from "Part 1 Class A,
+    // Class B and Part 11 Class C". Null when any of the text is not such a code: unreadable is
+    // unknown, never a shorter list.
+    const RIGHTS_TOKEN = /\s+|[,;&.()]|AND\b|SCHEDULE\s*2\b|PART\s*(\d{1,2})\b|CLASS(?:ES)?\s+([A-Z]{1,2})\b|(\d{1,2})([A-Z]{1,2})\b/y;
+    function rightCodes(text) {
+        if (typeof text !== 'string' || !text.trim()) return null;
+        const upper = text.toUpperCase(), codes = [];
+        let part = null, partClasses = 0;
+        const closePart = () => { if (part && !partClasses) codes.push(part); };
+        for (let at = 0; at < upper.length;) {
+            RIGHTS_TOKEN.lastIndex = at;
+            const match = RIGHTS_TOKEN.exec(upper);
+            if (!match || !match[0].length) return null;
+            at = RIGHTS_TOKEN.lastIndex;
+            if (match[1]) { closePart(); part = match[1]; partClasses = 0; }
+            else if (match[2]) { if (!part) return null; codes.push(part + match[2]); partClasses++; }
+            else if (match[3]) codes.push(match[3] + match[4]);
+        }
+        closePart();
+        return codes.length ? [...new Set(codes)] : null;
+    }
+    // The rights an area's direction removes, as its rule-set entry's `removedRights` says to read
+    // them: the codes in the area's `field`, else in its linked record's (constraint-sources.js
+    // withLinked), else the `described` patterns over their texts (`texts`, and the name), unless
+    // a text also matches `unless` (it speaks of other works too). Null when unstated or unreadable.
+    function removedRightsOf(area, spec) {
+        const linked = area.linked || null;
+        const codes = rightCodes(area.fields?.[spec.field]) || (linked ? rightCodes(linked[spec.field]) : null);
+        if (codes) return codes;
+        const texts = [area.fields?.[spec.field], area.name, ...(spec.texts || []).map(name => area.fields?.[name]),
+            ...(linked ? [linked[spec.field], linked.name, ...(spec.texts || []).map(name => linked[name])] : [])]
+            .filter(text => typeof text === 'string' && text.trim());
+        if (!texts.length || (spec.unless && texts.some(text => new RegExp(spec.unless, 'i').test(text)))) return null;
+        const described = new Set();
+        for (const entry of spec.described || []) {
+            if (texts.some(text => new RegExp(entry.pattern, 'i').test(text))) entry.rights.forEach(code => described.add(code));
+        }
+        return described.size ? [...described] : null;
+    }
+    // What an area's removed rights do to its effect: the design actions they cover (`actions`, by
+    // code, else by its part; an empty list is a right no design here uses). A right the table does
+    // not list counts as covering one. When none is covered the effect is `otherwise`; when the
+    // rights are unknown it stays the entry's. Returns { effect, removedRights }.
+    function rightsEffect(entry, area) {
+        const spec = entry.removedRights;
+        if (!spec) return { effect: entry.effect, removedRights: undefined };
+        if (!EFFECTS.includes(spec.otherwise)) throw new Error(`Rule set entry ${entry.dataset} gives removed rights an unknown effect: ${spec.otherwise}`);
+        const codes = removedRightsOf(area, spec);
+        if (!codes) return { effect: entry.effect, removedRights: { codes: null, actions: [], unlisted: [] } };
+        const actions = new Set(), unlisted = [];
+        for (const code of codes) {
+            const covered = spec.actions?.[code] ?? spec.actions?.[code.match(/^\d+/)[0]];
+            if (!covered) unlisted.push(code); else covered.forEach(action => actions.add(action));
+        }
+        return { effect: actions.size || unlisted.length ? entry.effect : spec.otherwise, removedRights: { codes, actions: [...actions], unlisted } };
     }
     // The footprint of an existing building containing a point, from the building sources the view
     // or the server holds: `buildings` are GeoJSON features. Null when none contains it.
@@ -70,11 +129,13 @@
                     if (found) { geometry = found.geometry; footprint = 'building'; building = { id: buildingIdOf(found), source: found.properties?.source ?? null }; }
                     else footprint = 'unknown';
                 }
+                const { effect, removedRights } = rightsEffect(entry, area);
                 restrictions.push({
                     id: area.id, ruleSetId: ruleSet.id, sourceId: source.id, dataset: area.dataset, entity: area.entity,
                     reference: area.reference, name: area.name, organisation: area.organisation,
-                    effect: entry.effect, reasonCode: entry.reasonCode, requirement: entry.requirement || null,
+                    effect, reasonCode: entry.reasonCode, requirement: effect === entry.effect ? entry.requirement || null : null,
                     subject: entry.subject || 'land', geometry, footprint, building, fields: area.fields, links: area.links,
+                    ...(removedRights ? { removedRights } : {}),
                     source: { id: source.id, label: source.label, licence: source.licence || null, attribution: source.attribution || null }
                 });
             }
@@ -86,7 +147,7 @@
     const refOf = (restriction, extra = {}) => ({ id: restriction.id, effect: restriction.effect, reasonCode: restriction.reasonCode,
         requirement: restriction.requirement, subject: restriction.subject, dataset: restriction.dataset, name: restriction.name,
         organisation: restriction.organisation?.name || null, footprint: restriction.footprint, links: restriction.links,
-        sourceLabel: restriction.source?.label || null, ...extra });
+        sourceLabel: restriction.source?.label || null, ...(restriction.removedRights ? { removedRights: restriction.removedRights } : {}), ...extra });
     function geometriesOf(item) {
         return [...(item.areas || []).map(area => area.geometry), ...(item.volumes || []).map(volume => volume.geometry),
             ...(item.configurations || []).flatMap(configuration => (configuration.volumes || []).map(volume => volume.geometry))].filter(polygonal);
@@ -237,5 +298,5 @@
         }
         return { restrictions: [...byId.values()], partial };
     }
-    return { EFFECTS, MIN_M2, classify, restrictionsFor, applyToItems, unknownBaseItems, restrictionsUnder, cutGeometry, membershipRestrictions };
+    return { EFFECTS, MIN_M2, classify, rightCodes, rightsEffect, restrictionsFor, applyToItems, unknownBaseItems, restrictionsUnder, cutGeometry, membershipRestrictions };
 });

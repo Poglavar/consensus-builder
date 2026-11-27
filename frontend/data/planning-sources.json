@@ -403,7 +403,26 @@
         { "dataset": "listed-building-outline", "effect": "prohibit", "subject": "existing-building", "reasonCode": "listed-building" },
         { "dataset": "listed-building", "effect": "prohibit", "subject": "existing-building", "reasonCode": "listed-building",
           "sameAs": { "dataset": "listed-building-outline", "field": "listed-building" } },
-        { "dataset": "article-4-direction-area", "effect": "restrict", "reasonCode": "article-4-direction", "requirement": "planning-permission" },
+        { "dataset": "article-4-direction-area", "effect": "restrict", "reasonCode": "article-4-direction", "requirement": "planning-permission",
+          "removedRights": {
+            "note": "GPDO 2015 Schedule 2 classes a direction removes, by the design actions each would have permitted. Building works: Part 1 Class A enlargement, AA additional storeys, B roof additions, C other roof alterations, E outbuildings; Part 11 Class B demolition; Part 20 new dwellings on or in place of buildings. An empty list is a right no design uses (porches, hard surfaces, chimneys and antennas, minor operations, changes of use, temporary uses, telecoms). A class not listed counts as building works, as do unstated or unreadable rights.",
+            "field": "permitted-development-rights",
+            "texts": ["description", "notes"],
+            "linked": { "dataset": "article-4-direction", "field": "article-4-direction" },
+            "described": [
+              { "pattern": "\\bHMO|multiple occupation|\\bC3\\b[^.;]*\\bC4\\b", "rights": ["3L"] },
+              { "pattern": "change of use[^.;]*\\bto\\b[^.;]*\\b(residential|dwelling)", "rights": ["3"] }
+            ],
+            "unless": "extension|enlarg|roof|storey|demoli|alteration|porch|outbuilding|conservation|window|door|chimney|dormer|elevation|fence|wall|gate|paint|hard surfac|building operation",
+            "actions": {
+              "1A": ["enlarge"], "1AA": ["add-storeys"], "1B": ["roof-addition"], "1C": ["roof-alteration"], "1E": ["outbuilding"],
+              "1D": [], "1F": [], "1G": [], "1H": [],
+              "2": [], "3": [], "4": [], "24": [],
+              "11B": ["demolish"], "11C": [],
+              "20ZA": ["replace", "new-dwellings"], "20A": ["new-dwellings"], "20AA": ["new-dwellings"], "20AB": ["new-dwellings"], "20AC": ["new-dwellings"], "20AD": ["new-dwellings"]
+            },
+            "otherwise": "note"
+          } },
         { "dataset": "conservation-area", "effect": "restrict", "reasonCode": "conservation-area", "requirement": "design-scrutiny" },
         { "dataset": "green-belt", "effect": "note", "reasonCode": "green-belt" },
         { "dataset": "flood-risk-zone", "where": { "field": "flood-risk-level", "in": ["3"] }, "effect": "note", "reasonCode": "flood-zone-3" },
