@@ -29,6 +29,13 @@ const URBAN_RULE_FIELDS = {
     detached: new Set(['setbackM', 'minFootprintAreaM2', 'minFloors', 'frontSetbackM', 'rearSetbackM', 'setbackHeightRatio',
         'maxHeightM', 'minFrontageM', 'coverage', 'minNaturalGround', 'maxFloorAreaRatio', 'maxFootprintAreaM2'])
 };
+// Based on existing buildings takes only its site, the existing rule, the storey height and the
+// roof, as the Block editor's mode shows only those controls.
+const EXISTING_UNSUPPORTED_FIELDS = ['floors', 'height', 'use', 'access', 'coverage', 'footprint', 'setbackM', 'depthM', 'lengthM', 'simplifyM', 'chamferM',
+    'gapPositions', 'gapWidthM', 'wingPositions', 'wingLengthM', 'offsetEastM', 'offsetNorthM', 'rotationDegrees', 'ruleKind', 'minHeightM', 'minDepthM',
+    'minFloors', 'minPlotAreaM2', 'minFootprintAreaM2', 'frontSetbackM', 'rearSetbackM', 'setbackHeightRatio', 'maxHeightM', 'minFrontageM',
+    'minNaturalGround', 'maxFloorAreaRatio', 'maxFootprintAreaM2', 'balconyDepthM', 'seed', 'permitted', 'planningSource'];
+
 function urbanRuleIntent(args) {
     const rule = args?.rule;
     if (!rule || typeof rule !== 'object' || Array.isArray(rule)) throw fail('urban-rule-required', 'Supply an urban rule with a supported typology.', { action: 'Set rule.typology to block, row or detached, and include floors or height.' });
@@ -188,8 +195,9 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference, re
                 intent.height = items[0].metrics.heightM;
             }
         }
+        const existingBuildings = kind === 'building' && args.existing != null ? await existingStock(args, intent.site) : null;
         const design = ['building', 'station', 'track'].includes(kind)
-            ? buildTypedDesign(intent, { parcels: parcelFeatures }) : builder.build(intent, { turf });
+            ? buildTypedDesign(intent, { parcels: parcelFeatures, existingBuildings }) : builder.build(intent, { turf });
         const checked = designObject({ ...design, ...(intent.sourceReferences ? { sourceReferences: intent.sourceReferences } : {}), createdAt: design.authoredAt });
         // Roads join the roads of the plan the caller places them in (agent-working-plan.md), not here.
         const drafted = await result(checked.content, intent.parcelSourceId || args.parcelSourceId);
@@ -198,6 +206,27 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference, re
         if (kind === 'building' && (args.typology ?? 'freeform') === 'freeform' && !intent.footprint && args.coverage == null)
             drafted.warnings.push('The building is the default 20 x 20 m footprint inside the site; pass footprint (the building outline) or coverage to shape it.');
         return drafted;
+    }
+    // The existing buildings under a Based on existing buildings site, as the Block editor loads
+    // them (demolition-index.js stockUnder): from the named building sources in order, the first
+    // that answers the whole site completely, each as a source footprint (properties.id, .source,
+    // .height_m, .floors). An incomplete answer never reads as a site without buildings.
+    async function existingStock(args, site) {
+        const existing = args.existing;
+        if ((args.typology ?? 'freeform') !== 'block') throw fail('existing-needs-block', 'Based on existing buildings is a Block design.', { action: 'Set typology to block.' });
+        const extra = EXISTING_UNSUPPORTED_FIELDS.filter(key => args[key] != null);
+        if (extra.length) throw fail('unsupported-existing-parameter', `Based on existing buildings takes no ${extra.join(', ')}.`,
+            { action: 'Use existing.rule with existing.floors or existing.additionalFloors, floorHeightM and roof only.' });
+        const sources = Array.isArray(existing?.buildingSources) ? existing.buildingSources.filter(Boolean) : [];
+        if (!sources.length) throw fail('building-source-required', 'Name the building sources to read the existing buildings from.',
+            { action: 'Pass existing.buildingSources, the city\'s building sources in order (e.g. ["gdi-3d"] or ["building.…", "osm"]).' });
+        for (const source of sources) {
+            const answer = await read.request('/buildings/under', {}, { source, regions: [{ key: 'site', geometry: site }] });
+            if (answer?.supported !== true || answer.truncated || answer.unavailable || !Array.isArray(answer.regions?.site)) continue;
+            return answer.regions.site.map(({ geometry, ...properties }) => ({ type: 'Feature', properties: { ...properties, source }, geometry }));
+        }
+        throw fail('building-coverage-incomplete', 'No building source answered this site completely; its existing buildings are unknown.',
+            { action: 'Retry, or name another building source for this place in existing.buildingSources.' });
     }
     // A station's named corridor designs, resolved as immutable references.
     async function roadCorridors(inputs = [], plan) {

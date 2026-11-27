@@ -310,9 +310,13 @@ describe('building-family rules stay on their parcels', () => {
         const source = readFileSync(new URL('../../frontend/js/building-blocks.js', import.meta.url), 'utf8');
         const autosave = source.slice(source.indexOf('function autosaveBlockifyDraft('), source.indexOf('// Function to display the building in the modal'));
         const save = source.slice(source.indexOf('async function saveBlockifyDesignForProposal()'));
-        expect(autosave.match(/typology: 'block'/g)).toHaveLength(2);
-        expect(save.match(/typology: 'block'/g)).toHaveLength(2);
+        // The generated modes state it here; Based on existing buildings saves the shared builder's
+        // parameters, which state it too (raised-existing-buildings.test.js).
+        expect(autosave.match(/typology: 'block'/g)).toHaveLength(1);
+        expect(save.match(/typology: 'block'/g)).toHaveLength(1);
+        expect(require('../../frontend/js/raised-existing-buildings.js').parameters({}).typology).toBe('block');
         [autosave, save].forEach(text => {
+            expect(text).toContain('window.RaisedExistingBuildings.parameters(currentExistingSettings())');
             expect(text).toContain('placement: { free: false, site: blockifyClone(blockifyDesignBoundary()) }');
             expect(text).not.toContain('free: true');
             expect(text).not.toContain('placementBaseSite');
