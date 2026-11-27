@@ -18,6 +18,18 @@
         return count ? { key: 'chat.greetingParcels', params: { count } } : { key: 'chat.greeting', params: {} };
     }
 
+    // What he suggests asking, matching his greeting: about the open tool (chat leaves its draft alone,
+    // so only help), about the selected parcels, or a first step anywhere in the city.
+    const SUGGESTIONS = Object.freeze({
+        tool: ['explain', 'options', 'save'],
+        parcels: ['whatAllowed', 'park', 'apartments', 'rowHouses'],
+        city: ['whatCanYouDo', 'centre', 'firstBuilding', 'tramLine']
+    });
+    function suggestions({ toolOpen = false, parcelCount = 0 } = {}) {
+        const context = toolOpen ? 'tool' : Number.isInteger(parcelCount) && parcelCount > 0 ? 'parcels' : 'city';
+        return SUGGESTIONS[context].map(name => `chat.tips.${context}.${name}`);
+    }
+
     // While a turn runs he thinks; afterwards he shows the turn's reaction (a smile when a plan reached
     // the map, a frown on an error) until its animation ends, and otherwise idles.
     function mood({ pending = false, reaction = null } = {}) {
@@ -36,5 +48,5 @@
         return { x: dx * scale, y: dy * scale };
     }
 
-    return Object.freeze({ MOODS, greeting, mood, gaze });
+    return Object.freeze({ MOODS, greeting, suggestions, mood, gaze });
 });

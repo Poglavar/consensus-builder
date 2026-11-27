@@ -10925,13 +10925,24 @@
     "greetingTool": "Imate otvoren alat „{{tool}}”. Da vam objasnim kako radi?",
     "greetingToolUnnamed": "Imate otvoren alat. Da vam objasnim kako radi?",
     "tips": {
-      "title": "Pokušajte pitati",
-      "design": "Osmisli park na odabranim česticama ili pomakni zgradu 50 m prema sjeveru.",
-      "agreement": "Pripremi privatni sporazum za trenutačni plan.",
-      "feedback": "Pošalji povratnu informaciju o značajci koja bi pomogla.",
-      "sources": "Koji su izvori čestica i zgrada dostupni u ovom gradu?",
-      "affordableHousing": "Istraži čestice blizu javnog prijevoza za priuštivo stanovanje.",
-      "tools": "Objasni mi otvoreni alat i kako koristiti njegove opcije."
+        "title": "Pokušajte pitati",
+        "tool": {
+            "explain": "Objasni mi ovaj alat.",
+            "options": "Čemu služi koja opcija?",
+            "save": "Kako da spremim promjene?"
+        },
+        "parcels": {
+            "whatAllowed": "Što se ovdje smije graditi?",
+            "park": "Napravi mali park s drvećem.",
+            "apartments": "Izgradi stambenu zgradu s četiri etaže.",
+            "rowHouses": "Podijeli zemljište na čestice za kuće u nizu."
+        },
+        "city": {
+            "whatCanYouDo": "U čemu mi možeš pomoći?",
+            "centre": "Pokaži mi središte grada.",
+            "firstBuilding": "Nađi česticu i skiciraj malu stambenu zgradu.",
+            "tramLine": "Skiciraj tramvajsku prugu kroz ovaj dio grada."
+        }
     },
     "reviewAgreement": "Pregledaj sporazum",
     "agreementStale": "Ovaj je sporazum za stariju verziju plana. Zatražite novi sporazum za trenutačni plan.",

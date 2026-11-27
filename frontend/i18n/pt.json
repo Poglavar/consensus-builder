@@ -10874,13 +10874,24 @@
     "greetingTool": "A ferramenta «{{tool}}» está aberta. Quer que explique como funciona?",
     "greetingToolUnnamed": "Tem uma ferramenta aberta. Quer que explique como funciona?",
     "tips": {
-      "title": "Experimente perguntar",
-      "design": "Desenhe um parque nos lotes selecionados ou mova um edifício 50 m para norte.",
-      "agreement": "Prepare um acordo privado para o plano atual.",
-      "feedback": "Envie comentários sobre uma funcionalidade que seria útil.",
-      "sources": "Que fontes de lotes e edifícios estão disponíveis nesta cidade?",
-      "affordableHousing": "Explore lotes perto do transporte público para habitação acessível.",
-      "tools": "Explique a ferramenta que tenho aberta e como usar as opções dela."
+        "title": "Experimente perguntar",
+        "tool": {
+            "explain": "Explique esta ferramenta.",
+            "options": "Para que serve cada opção?",
+            "save": "Como guardo as minhas alterações?"
+        },
+        "parcels": {
+            "whatAllowed": "O que se pode construir aqui?",
+            "park": "Faça um pequeno parque com árvores.",
+            "apartments": "Construa um edifício de habitação de quatro pisos.",
+            "rowHouses": "Divida o terreno em lotes para casas em banda."
+        },
+        "city": {
+            "whatCanYouDo": "Em que me pode ajudar?",
+            "centre": "Mostre-me o centro da cidade.",
+            "firstBuilding": "Encontre um lote e esboce um pequeno edifício de habitação.",
+            "tramLine": "Esboce uma linha de elétrico nesta parte da cidade."
+        }
     },
     "reviewAgreement": "Rever acordo",
     "agreementStale": "Este acordo corresponde a uma versão anterior do plano. Peça um novo acordo para o plano atual.",

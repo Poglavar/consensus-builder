@@ -10823,13 +10823,24 @@
     "greetingTool": "You have “{{tool}}” open. Shall I explain how it works?",
     "greetingToolUnnamed": "You have a tool open. Shall I explain how it works?",
     "tips": {
-      "title": "Try asking",
-      "design": "Design a park on the selected parcels or move a building 50 m north.",
-      "agreement": "Prepare a private agreement for the current plan.",
-      "feedback": "Send feedback about a feature that would help.",
-      "sources": "Which parcel and building sources are available in this city?",
-      "affordableHousing": "Explore parcels near transit for affordable housing.",
-      "tools": "Explain the tool I have open and how to use its options."
+        "title": "Try asking",
+        "tool": {
+            "explain": "Explain this tool.",
+            "options": "What does each option do?",
+            "save": "How do I save my changes?"
+        },
+        "parcels": {
+            "whatAllowed": "What may be built here?",
+            "park": "Make a small park with trees.",
+            "apartments": "Build a four-storey apartment block.",
+            "rowHouses": "Split the land into plots for row houses."
+        },
+        "city": {
+            "whatCanYouDo": "What can you help me with?",
+            "centre": "Show me the city centre.",
+            "firstBuilding": "Find a parcel and sketch a small apartment building.",
+            "tramLine": "Sketch a tram line through this part of town."
+        }
     },
     "reviewAgreement": "Review agreement",
     "agreementStale": "This agreement is for an earlier version of the plan. Ask for a new agreement for the current plan.",

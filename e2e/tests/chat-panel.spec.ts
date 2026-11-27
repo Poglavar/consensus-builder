@@ -44,17 +44,19 @@ test('chat panel sends a turn and announces the streamed reply @core', async ({ 
   await expect(sheet).toBeVisible();
   const chatHeading = sheet.getByRole('heading', { name: 'Ask Hippodamus' });
   await expect(chatHeading).toBeVisible();
-  await expect(chatHeading.locator('.cb-avatar-hippodamus')).toHaveAttribute('aria-hidden', 'true');
+  // One portrait in the open panel: the greeting's, not a second one in the heading.
+  await expect(chatHeading.locator('.cb-avatar-hippodamus')).toHaveCount(0);
+  await expect(sheet.locator('.cb-avatar-hippodamus')).toHaveCount(1);
   const composer = sheet.locator('.chat-input');
   // Hippodamus greets with his question and the suggestions to ask, no fold to open first.
   await expect(sheet.locator('.chat-greeting__question')).toHaveText('How can I help you design a good city today?');
   const tips = sheet.getByRole('group', { name: 'Try asking' });
-  await expect(tips.getByRole('button')).toHaveCount(6);
-  const designTip = sheet.getByRole('button', { name: 'Design a park on the selected parcels or move a building 50 m north.' });
+  await expect(tips.getByRole('button')).toHaveCount(4);
+  const designTip = sheet.getByRole('button', { name: 'Find a parcel and sketch a small apartment building.' });
   await designTip.focus();
   await designTip.press('Enter');
   await expect(composer).toBeFocused();
-  await expect(composer).toHaveValue('Design a park on the selected parcels or move a building 50 m north.');
+  await expect(composer).toHaveValue('Find a parcel and sketch a small apartment building.');
   expect(sent).toHaveLength(0);
   await composer.fill('Add a park');
   await composer.press('Enter');
@@ -101,7 +103,7 @@ test('chat panel sends a turn and announces the streamed reply @core', async ({ 
   await sheet.getByRole('button', { name: 'Copier la conversation' }).click();
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe('Vous: Add a park\n\nHippodamos: Which direction?\nOptions: Move it north\n\nVous: Move it north\n\nHippodamos: I updated the working plan.');
   await expect(sheet.locator('.chat-status')).toBeEmpty();
-  await expect(sheet.getByRole('button', { name: 'Concevez un parc sur les parcelles sélectionnées ou déplacez un bâtiment de 50 m vers le nord.' })).toBeVisible();
+  await expect(sheet.getByRole('button', { name: 'Trouvez une parcelle et esquissez un petit immeuble de logements.' })).toBeVisible();
   await expect(sheet.getByRole('button', { name: 'Nouvelle conversation' })).toBeEnabled();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   const close = sheet.getByRole('button', { name: 'Fermer', exact: true });
@@ -329,18 +331,18 @@ test('chat applies a private plan revision and undo removes its first draft @cor
   await expect(restoredSheet.locator('.chat-agreement-status')).toHaveText('This agreement is for an earlier version of the plan. Ask for a new agreement for the current plan.');
   // The greeting scrolls with the transcript, above any messages, and the composer stays in view.
   const restoredGreeting = restoredSheet.locator('.chat-transcript > .chat-greeting');
-  await expect(restoredGreeting.getByRole('group', { name: 'Try asking' }).getByRole('button')).toHaveCount(6);
+  await expect(restoredGreeting.getByRole('group', { name: 'Try asking' }).getByRole('button')).toHaveCount(4);
   const greetingLayout = await restoredSheet.evaluate(element => {
     const transcript = element.querySelector('.chat-transcript')!;
     return { greetingFirst: transcript.firstElementChild!.classList.contains('chat-greeting'),
       composerVisible: element.querySelector('.chat-input')!.getBoundingClientRect().bottom <= element.getBoundingClientRect().bottom + 1 };
   });
   expect(greetingLayout).toEqual({ greetingFirst: true, composerVisible: true });
-  const agreementTip = restoredSheet.getByRole('button', { name: 'Prepare a private agreement for the current plan.' });
-  await agreementTip.focus();
-  await agreementTip.press('Enter');
+  const centreTip = restoredSheet.getByRole('button', { name: 'Show me the city centre.' });
+  await centreTip.focus();
+  await centreTip.press('Enter');
   await expect(restoredSheet.getByRole('textbox')).toBeFocused();
-  await expect(restoredSheet.getByRole('textbox')).toHaveValue('Prepare a private agreement for the current plan.');
+  await expect(restoredSheet.getByRole('textbox')).toHaveValue('Show me the city centre.');
   expect(turnCount).toBe(1);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   expect(turnCount).toBe(1);

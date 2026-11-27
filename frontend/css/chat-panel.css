@@ -1,7 +1,5 @@
 /* The Ask Hippodamus sheet (js/chat/chat-panel.js): his greeting with suggestions to ask, the
    conversation as speech bubbles, then the composer and the conversation's controls. */
-.chat-sheet .map-sheet-title { display: flex; align-items: center; gap: var(--cb-space-2); }
-.chat-sheet .map-sheet-title .cb-avatar-hippodamus { width: 2em; height: 2em; }
 .chat-sheet__body {
     display: flex;
     flex-direction: column;

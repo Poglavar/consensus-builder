@@ -10874,13 +10874,24 @@
     "greetingTool": "L’outil « {{tool}} » est ouvert. Voulez-vous que je vous explique son fonctionnement ?",
     "greetingToolUnnamed": "Un outil est ouvert. Voulez-vous que je vous explique son fonctionnement ?",
     "tips": {
-      "title": "Essayez de demander",
-      "design": "Concevez un parc sur les parcelles sélectionnées ou déplacez un bâtiment de 50 m vers le nord.",
-      "agreement": "Préparez un accord privé pour le plan actuel.",
-      "feedback": "Envoyez un commentaire sur une fonctionnalité utile.",
-      "sources": "Quelles sources de parcelles et de bâtiments sont disponibles dans cette ville ?",
-      "affordableHousing": "Explorez les parcelles près des transports en commun pour du logement abordable.",
-      "tools": "Expliquez-moi l’outil ouvert et comment utiliser ses options."
+        "title": "Essayez de demander",
+        "tool": {
+            "explain": "Expliquez-moi cet outil.",
+            "options": "À quoi sert chaque option ?",
+            "save": "Comment enregistrer mes modifications ?"
+        },
+        "parcels": {
+            "whatAllowed": "Que peut-on construire ici ?",
+            "park": "Aménagez un petit parc arboré.",
+            "apartments": "Construisez un immeuble de logements de quatre niveaux.",
+            "rowHouses": "Découpez le terrain en lots pour des maisons en bande."
+        },
+        "city": {
+            "whatCanYouDo": "En quoi pouvez-vous m’aider ?",
+            "centre": "Montrez-moi le centre-ville.",
+            "firstBuilding": "Trouvez une parcelle et esquissez un petit immeuble de logements.",
+            "tramLine": "Esquissez une ligne de tramway dans ce quartier."
+        }
     },
     "reviewAgreement": "Examiner l’accord",
     "agreementStale": "Cet accord concerne une version antérieure du plan. Demandez un nouvel accord pour le plan actuel.",

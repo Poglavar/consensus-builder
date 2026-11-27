@@ -7,11 +7,7 @@
     // until its animation ends, and the pointer his eyes follow.
     let moodHost = null, reaction = null, portraitSource = null, faceCount = 0, gazePoint = null, gazeFrame = 0;
     const t = (key, values) => win.i18n?.t?.(key, values) || key;
-    let host, scroller, greetingText, tipsTitle, tipButtons = [], messages, status, agreementStatus, agreementLink, total, input, sendButton, undoButton, newButton, conversationCopyButton, state = transcript.initial(), lastSynced = null, turnBaseRow = null, turnBaseCaptured = false, resetAfterTurn = false, operation = false;
-    const TIPS = [
-        { key: 'chat.tips.design' }, { key: 'chat.tips.agreement' }, { key: 'chat.tips.feedback' },
-        { key: 'chat.tips.sources' }, { key: 'chat.tips.affordableHousing' }, { key: 'chat.tips.tools' }
-    ];
+    let host, scroller, greetingText, tipsTitle, tipList, tipButtons = [], tipKeys = '', messages, status, agreementStatus, agreementLink, total, input, sendButton, undoButton, newButton, conversationCopyButton, state = transcript.initial(), lastSynced = null, turnBaseRow = null, turnBaseCaptured = false, resetAfterTurn = false, operation = false;
     const records = () => win.proposalStorage?.getAllProposals?.() || win.proposals || win.currentProposals || [];
     const currentCity = () => win.CityConfigManager?.getCurrentCityId?.() || win.currentCityId || win.currentCity;
     const activeEditor = () => {
@@ -98,6 +94,24 @@
         if (editor) build.activeEditor = editor;
         return build;
     }
+    // The suggestions under his greeting; rebuilt only when the moment calls for another set. Choosing
+    // one fills the composer without sending it.
+    function showSuggestions(keys) {
+        if (keys.join() === tipKeys) return;
+        tipKeys = keys.join();
+        const hadFocus = tipButtons.includes(doc.activeElement);
+        tipButtons = keys.map(key => {
+            const button = node('button', 'btn btn-quiet chat-tip', t(key)); button.type = 'button'; button.dataset.chatTipKey = key;
+            button.addEventListener('click', () => {
+                input.value = t(key);
+                input.focus();
+                input.setSelectionRange(input.value.length, input.value.length);
+            });
+            return button;
+        });
+        tipList.replaceChildren(...tipButtons);
+        if (hadFocus) tipButtons[0]?.focus({ preventScroll: true });
+    }
     function mount(root) {
         if (!root) return;
         if (host === root) { render(); return; }
@@ -114,21 +128,10 @@
         const bubble = node('div', 'chat-greeting__bubble');
         greetingText = node('p', 'chat-greeting__question', t('chat.greeting'));
         tipsTitle = node('p', 'chat-greeting__kicker', t('chat.tips.title')); tipsTitle.id = 'chat-tips-title';
-        const tipList = node('div', 'chat-tips'); tipList.setAttribute('role', 'group'); tipList.setAttribute('aria-labelledby', tipsTitle.id);
-        tipButtons = TIPS.map(tip => {
-            const button = node('button', 'btn btn-quiet chat-tip', t(tip.key)); button.type = 'button';
-            button.addEventListener('click', () => {
-                input.value = t(tip.key);
-                input.focus();
-                input.setSelectionRange(input.value.length, input.value.length);
-            });
-            tipList.append(button); return button;
-        });
+        tipList = node('div', 'chat-tips'); tipList.setAttribute('role', 'group'); tipList.setAttribute('aria-labelledby', tipsTitle.id);
+        tipButtons = []; tipKeys = '';
         bubble.append(greetingText, tipsTitle, tipList); greeting.append(portrait, bubble);
-        const headerPortrait = moodHost.querySelector('.map-sheet-title .cb-avatar-hippodamus');
-        [[portrait, 'chat-greeting__face'], [headerPortrait, 'chat-header-face']].forEach(([target, cls]) => {
-            if (target) livenPortrait(target, cls).catch(error => win.console?.warn(`[${new Date().toISOString()}] [chat] Hippodamus stays a still portrait:`, error));
-        });
+        livenPortrait(portrait, 'chat-greeting__face').catch(error => win.console?.warn(`[${new Date().toISOString()}] [chat] Hippodamus stays a still portrait:`, error));
         scroller = node('div', 'chat-transcript');
         messages = node('div', 'chat-log'); messages.setAttribute('role', 'log'); messages.setAttribute('aria-live', 'polite'); messages.setAttribute('aria-label', t('chat.title'));
         status = node('div', 'chat-status'); status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
@@ -146,9 +149,9 @@
         root.append(scroller, status, agreementStatus, agreementLink, total, composer, controls);
         const saved = win.ChatClient.conversation(); if (saved) dispatch({ type: 'conversation', conversation: saved }); else render();
     }
-    // The greeting's and the header's portraits are the same artwork inlined, so chat-panel.css can move
-    // his eyes, brows and mouth; with reduced motion they stay the still image. Each copy gets its own
-    // clip id, as ids must be unique in the page.
+    // The greeting's portrait is the artwork inlined, so chat-panel.css can move his eyes, brows and
+    // mouth; with reduced motion it stays the still image. Each copy gets its own clip id, as ids must
+    // be unique in the page.
     async function livenPortrait(target, cls) {
         if (win.__reducedMotion) return;
         portraitSource ||= win.fetch(new URL('assets/avatars/hippodamus.svg', doc.baseURI)).then(response => {
@@ -353,9 +356,11 @@
         });
         // An empty conversation shows the greeting from its question down; otherwise the latest message.
         scroller.scrollTop = state.messages.length ? scroller.scrollHeight : 0;
-        const opening = persona.greeting({ toolOpen: !!activeEditor(), toolTitle: win.OnMapEditor?.getTitle?.(),
-            parcelCount: win.ChatNavigation?.capture?.()?.parcelIds?.length || 0 });
+        const moment = { toolOpen: !!activeEditor(), toolTitle: win.OnMapEditor?.getTitle?.(),
+            parcelCount: win.ChatNavigation?.capture?.()?.parcelIds?.length || 0 };
+        const opening = persona.greeting(moment);
         greetingText.textContent = t(opening.key, opening.params);
+        showSuggestions(persona.suggestions(moment));
         showMood();
         if (focused) [...messages.querySelectorAll('.chat-option')].find(button => button.dataset.chatOptionKey === focused)?.focus({ preventScroll: true });
         // While a turn runs, the pending reply's sketch says so (its label is read out from the log).
@@ -403,7 +408,7 @@
     win.addEventListener('i18n:translationsLoaded', () => {
         if (!host) return;
         tipsTitle.textContent = t('chat.tips.title');
-        tipButtons.forEach((button, index) => { button.textContent = t(TIPS[index].key); });
+        tipButtons.forEach(button => { button.textContent = t(button.dataset.chatTipKey); });
         input.placeholder = t('chat.placeholder'); input.setAttribute('aria-label', t('chat.placeholder'));
         sendButton.textContent = t('chat.send'); undoButton.textContent = t('chat.undo'); newButton.textContent = t('chat.newConversation'); agreementLink.textContent = t('chat.reviewAgreement');
         conversationCopyButton.setAttribute('aria-label', t('chat.copyConversation')); conversationCopyButton.title = t('chat.copyConversation');

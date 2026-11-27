@@ -3,7 +3,7 @@ import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, PARCEL_ID, stubBasemapTiles, answerBlockScope } from '../helpers/runtime';
 import { selectors } from '../helpers/selectors';
 
-const editorTip = 'Explain the tool I have open and how to use its options.';
+const editorTip = 'Explain this tool.';
 const expiresAt = () => new Date(Date.now() + 60_000).toISOString();
 const doneEvent = (turns: number) => `event: done\ndata: ${JSON.stringify({ turns, conversationSpentUsd: turns / 1000 })}\n\n`;
 

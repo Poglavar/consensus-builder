@@ -105,8 +105,11 @@ describe('Hippodamus in the panel', () => {
     it('offers to explain the open tool, then asks his general question once it closes', () => {
         const { root, setEditor } = panel();
         expect(root.querySelector('.chat-greeting__question').textContent).toBe('chat.greetingToolUnnamed');
+        const tips = () => [...root.querySelectorAll('.chat-tip')].map(button => button.textContent);
+        expect(tips()).toEqual(['chat.tips.tool.explain', 'chat.tips.tool.options', 'chat.tips.tool.save']);
         setEditor(null);
         expect(root.querySelector('.chat-greeting__question').textContent).toBe('chat.greeting');
+        expect(tips()).toEqual(['chat.tips.city.whatCanYouDo', 'chat.tips.city.centre', 'chat.tips.city.firstBuilding', 'chat.tips.city.tramLine']);
     });
 
     it('sketches and thinks while a turn runs, then frowns when it fails', async () => {

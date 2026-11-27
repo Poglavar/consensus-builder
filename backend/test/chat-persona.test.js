@@ -21,6 +21,23 @@ describe('chat persona greeting', () => {
     });
 });
 
+describe('chat persona suggestions', () => {
+    it('suggests help with the open tool, whatever is selected', () => {
+        expect(persona.suggestions({ toolOpen: true, parcelCount: 3 }))
+            .toEqual(['chat.tips.tool.explain', 'chat.tips.tool.options', 'chat.tips.tool.save']);
+    });
+    it('suggests what to do with selected parcels, else a first step in the city', () => {
+        expect(persona.suggestions({ parcelCount: 2 })).toEqual(['chat.tips.parcels.whatAllowed', 'chat.tips.parcels.park', 'chat.tips.parcels.apartments', 'chat.tips.parcels.rowHouses']);
+        expect(persona.suggestions()).toEqual(['chat.tips.city.whatCanYouDo', 'chat.tips.city.centre', 'chat.tips.city.firstBuilding', 'chat.tips.city.tramLine']);
+        expect(persona.suggestions({ parcelCount: null })).toEqual(persona.suggestions());
+    });
+    it('has an English string for every suggestion', () => {
+        const en = require('../../frontend/i18n/en.json');
+        const keys = [{ toolOpen: true }, { parcelCount: 1 }, {}].flatMap(moment => persona.suggestions(moment));
+        keys.forEach(key => expect(typeof key.split('.').reduce((node, part) => node?.[part], en), key).toBe('string'));
+    });
+});
+
 describe('chat persona mood', () => {
     it('thinks while a turn runs, whatever the last reaction', () => {
         expect(persona.mood({ pending: true, reaction: 'frown' })).toBe('thinking');
