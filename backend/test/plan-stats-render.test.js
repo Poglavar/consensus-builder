@@ -99,7 +99,7 @@ function makeWindow(proposals, { city = null } = {}) {
             if (!plan) throw new Error('Choose a plan.');
             if (plan.failure) throw new Error(plan.failure);
             return { plan, records: (plan.records || proposals).map(p => ({ ...p, applied: true })), materializedFeatures: [], cadastralFeatures: plan.parcels || [],
-                landFeature: plan.landFeature || null };
+                landFeature: plan.landFeature || null, extendedLandFeature: plan.extendedLandFeature || null };
         } },
         CbDialog: { open: options => { window.openedDialog = options; return options; } },
         // Land split and present state: real arithmetic is in present-state.test.js; here the figures
@@ -419,7 +419,7 @@ describe('comparing plans', () => {
         const added = rows.find(row => row[0].startsWith('of which new'));
         expect([remaining[1], remaining[2]].map(digits)).toEqual([3, 1]);
         expect([added[1], added[2], added[3]].map(digits)).toEqual([0, 2, 1]);
-        expect(rows).toHaveLength(1 + 27);
+        expect(rows).toHaveLength(1 + 28);
         expect(rows.find(row => row[0].startsWith('Public land')).slice(1, 3)).toEqual(['300', '1,200']);
         expect(rows.find(row => row[0].startsWith('Private land')).slice(1, 3)).toEqual(['600', '3,400']);
 
@@ -428,7 +428,7 @@ describe('comparing plans', () => {
         expect(swap.getAttribute('aria-pressed')).toBe('true');
         rows = rowsOf(tableOf(window));
         expect(rows).toHaveLength(1 + 4);
-        expect(rows[0]).toHaveLength(1 + 27);
+        expect(rows[0]).toHaveLength(1 + 28);
         expect(rows[0][0]).toBe('Plan');
         expect(rows[1][0]).toBe('Present state');
         expect(rows[2][0]).toBe('Two blocks');
@@ -813,6 +813,29 @@ describe('the all-in cost and profit in Plan stats', () => {
         const replaced = gfaOf([existing()]) * 4000;
         expect(slot(window, 'cost-replaced')).toBe(eur(replaced));
         expect(slot(window, 'profit')).toBe(eur(gfa() * 4000 - (gfa() * 2000 + landM2 * 133 + replaced)));
+    });
+
+    it('charges a design that extends existing buildings for what it adds: no land, nothing replaced', async () => {
+        // The block redrawn from a 10.5 m building: 3 of its 5 storeys stood already.
+        const raised = block('d-1');
+        raised.buildingProposal.parameters = { mode: 'existing', rule: 'additional', additionalFloors: 2, floorHeightM: 3.5 };
+        Object.assign(raised.buildingProposal.buildings[0].properties, { basedOnExisting: true, existingHeight: 10.5, floorHeightM: 3.5 });
+        const window = openDialog([raised], { city: { currency: { code: 'EUR' } } });
+        await window.showPlanStatsModal({ content: { title: 'Plan' }, cleared: [], landFeature: land, extendedLandFeature: land });
+        const added = gfa() * 2 / 5;
+        expect(slot(window, 'buildings-new')).toMatch(/^0 /);
+        expect(digits(slot(window, 'buildings-extended'))).toBe(1);
+        expect(slot(window, 'buildings-extended')).toContain(CbFormat.formatNumber(Math.round(added)));
+        expect(slot(window, 'cost-construction')).toBe(eur(added * 2000));
+        expect(slot(window, 'cost-land')).toBe(eur(0));
+        expect(slot(window, 'cost-replaced')).toBe(eur(0));
+        expect(slot(window, 'profit')).toBe(eur(added * 4000 - added * 2000));
+        // Without a stated existing height the kept floor area is unknown, and so is the money.
+        delete raised.buildingProposal.buildings[0].properties.existingHeight;
+        const unknown = openDialog([raised], { city: { currency: { code: 'EUR' } } });
+        await unknown.showPlanStatsModal({ content: { title: 'Plan' }, cleared: [], landFeature: land, extendedLandFeature: land });
+        expect(slot(unknown, 'profit')).toBe('—');
+        expect(slot(unknown, 'buildings-extended')).toBe('1 (—)');
     });
 
     it('rents the new floor area by the month and yields it on the cost without the sale tax', async () => {

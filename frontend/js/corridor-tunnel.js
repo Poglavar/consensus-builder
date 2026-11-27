@@ -1040,10 +1040,11 @@
     // The persistent 2D outcome of a building given the applied carve + tunnel state. A demolition
     // record without a remainder is a full raze; with a remainder it's a cut; a tunnelled id is a
     // tunnel; anything else is untouched. Priority raze > cut > tunnel (a razed building stays razed).
+    // A record marked `extended` is a kept building its design redraws: drawn as an untouched one.
     function classifyBuildingOutcome(id, { demolishedById, tunnelledIds } = {}) {
         const key = String(id);
         const record = (demolishedById && typeof demolishedById.get === 'function') ? demolishedById.get(key) : null;
-        if (record) return record.remainder ? 'cut' : 'destroyed';
+        if (record) return record.extended ? 'extended' : record.remainder ? 'cut' : 'destroyed';
         if (tunnelledIds && typeof tunnelledIds.has === 'function' && tunnelledIds.has(key)) return 'tunnelled';
         return null;
     }

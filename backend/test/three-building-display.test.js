@@ -255,3 +255,16 @@ describe('passageIntervals', () => {
         expect(passageIntervals([0, 0], [40, 0], 2, [])).toEqual([]);
     });
 });
+
+describe('an extended building in the 3D Built states', () => {
+    const extended = { remainder: null, demolished: {}, extended: true };
+    const parts = selection => resolveBuildingRenderParts(extended, resolveBuiltDisplayPolicy('solid', selection));
+
+    it('is drawn as it stands in All, is nothing the plan removes, and gives way to its redrawn design in Surviving', () => {
+        expect(parts('all')).toEqual({ detailed: true, remainder: false, demolished: false });
+        expect(parts('removed')).toEqual({ detailed: false, remainder: false, demolished: false });
+        expect(parts('surviving')).toEqual({ detailed: false, remainder: false, demolished: false });
+        // A razed building, by contrast, is what Removed shows.
+        expect(resolveBuildingRenderParts({ remainder: null, demolished: {} }, resolveBuiltDisplayPolicy('solid', 'removed')).detailed).toBe(true);
+    });
+});

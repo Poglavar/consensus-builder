@@ -53,6 +53,19 @@ describe('computeParcelMetrics', () => {
         expect(m.builtFloorArea).toBeCloseTo(m.builtVolume / 3.5, 6);
     });
 
+    it('keeps what a proposed building redrawn from an existing one already had, and charges its ground no land', () => {
+        const ring = [[[15.9005, 45.8005], [15.9009, 45.8005], [15.9009, 45.8009], [15.9005, 45.8009], [15.9005, 45.8005]]];
+        const raised = turf.polygon(ring, { height: 14, basedOnExisting: true, existingHeight: 10.5 });
+        const m = computeParcelMetrics(parcel, [], [raised], opts);
+        expect(m.keptFloorArea / m.proposedFloorArea).toBeCloseTo(10.5 / 14, 6);
+        expect(m).toMatchObject({ keptUnknown: false, acquiredLandM2: 0 });
+        // A new building beside it takes land again; one with no stated height leaves the kept area unknown.
+        const fresh = turf.polygon([[[15.901, 45.801], [15.9014, 45.801], [15.9014, 45.8014], [15.901, 45.8014], [15.901, 45.801]]], { height: 14 });
+        expect(computeParcelMetrics(parcel, [], [raised, fresh], opts).acquiredLandM2).toBeCloseTo(m.landM2, 6);
+        expect(computeParcelMetrics(parcel, [], [fresh], opts)).toMatchObject({ keptFloorArea: 0, keptUnknown: false });
+        expect(computeParcelMetrics(parcel, [], [turf.polygon(ring, { height: 14, basedOnExisting: true })], opts).keptUnknown).toBe(true);
+    });
+
     it('accumulates proposed volume from proposed features × their height', () => {
         const proposed = [turf.polygon(
             [[[15.9005, 45.8005], [15.9009, 45.8005], [15.9009, 45.8009], [15.9005, 45.8009], [15.9005, 45.8005]]],
@@ -135,6 +148,19 @@ describe('computeValueComparison', () => {
             saleTax: 0, replacedValue: 400000, totalCost: 1300000, profit: 300000 });
         expect(c.columns.proposed).toMatchObject({ available: true, value: 1200000, constructionCost: 600000, totalCost: 1100000, profit: 100000 });
         expect(c.currency).toBe('GBP');
+    });
+
+    it('charges an extension for what it adds: no land, no construction on the floor area it keeps', () => {
+        // The 100 m² that stand are kept and 200 m² are added; the ground pays for no land.
+        const c = computeValueComparison({ floorAreas: { built: 100, planned: null, proposed: 300 }, ...prices, keptFloorAreaM2: 100, acquiredLandAreaM2: 0 });
+        // Shown whole (300 m² × 4,000 against the 400,000 that stands); 200 m² × 2,000 is built.
+        expect(c.columns.proposed).toMatchObject({ value: 1200000, constructionCost: 400000, landCost: 0, replacedValue: 400000, totalCost: 800000, profit: 400000 });
+        // The same floor areas as a replacement: construction on all of it, the land too.
+        expect(computeValueComparison({ floorAreas: { built: 100, planned: null, proposed: 300 }, ...prices }).columns.proposed)
+            .toMatchObject({ constructionCost: 600000, landCost: 100000, profit: 100000 });
+        // An existing height nobody states leaves the money unknown.
+        expect(computeValueComparison({ floorAreas: { built: 100, planned: null, proposed: 300 }, ...prices, keptFloorAreaM2: null }).columns.proposed)
+            .toMatchObject({ value: null, profit: null });
     });
 
     it('takes the sale tax out of the value it is inside', () => {

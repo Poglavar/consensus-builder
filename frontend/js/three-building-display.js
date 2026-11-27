@@ -23,6 +23,9 @@
         if (carve.remainder) {
             return { detailed: false, remainder: showSurviving, demolished: showDemolished };
         }
+        // An extended building is kept: it is nothing the plan removes, and in the after-the-plan
+        // state its design's redrawn building stands for it.
+        if (carve.extended) return { detailed: showSurviving && showDemolished, remainder: false, demolished: false };
         return { detailed: showDemolished, remainder: false, demolished: false };
     }
 

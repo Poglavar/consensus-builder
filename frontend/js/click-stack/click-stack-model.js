@@ -299,5 +299,15 @@
         return !inside || Math.max(box.right - box.left, box.bottom - box.top) < minPx;
     }
 
-    return Object.freeze({ ORDER, permittedKind, permittedTitle, framingNeeded, summarizeSelection, buildSelectionStack, buildClickStack, clickAction, expand, selectInstance, selectedInstance, visibleSections, contextFor });
+    // What a design does to the existing building under it, as the building's row says it: the
+    // translation key and its English. A building its design redraws taller is kept (the derived
+    // record's `extended`): extended, not replaced. `hasDesign`: the design is known by name.
+    function builtOutcomeLabel(demolition, hasDesign) {
+        if (demolition && demolition.extended) {
+            return hasDesign ? { key: 'extendedBy', fallback: 'Extended by {{design}}' } : { key: 'extended', fallback: 'Extended' };
+        }
+        return hasDesign ? { key: 'demolishedBy', fallback: 'Replaced by {{design}}' } : { key: 'demolished', fallback: 'Replaced' };
+    }
+
+    return Object.freeze({ ORDER, builtOutcomeLabel, permittedKind, permittedTitle, framingNeeded, summarizeSelection, buildSelectionStack, buildClickStack, clickAction, expand, selectInstance, selectedInstance, visibleSections, contextFor });
 });

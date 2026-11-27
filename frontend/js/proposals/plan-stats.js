@@ -125,10 +125,11 @@
     const geometryByRecords = new WeakMap();
     async function measureGeometry(snapshot, signal) {
         signal.throwIfAborted();
-        const { records, materializedFeatures, cadastralFeatures, landFeature } = snapshot;
+        const { records, materializedFeatures, cadastralFeatures, landFeature, extendedLandFeature = null } = snapshot;
         const previous = geometryByRecords.get(records);
         if (previous && previous.materializedFeatures === materializedFeatures
-            && previous.cadastralFeatures === cadastralFeatures && previous.landFeature === landFeature) {
+            && previous.cadastralFeatures === cadastralFeatures && previous.landFeature === landFeature
+            && previous.extendedLandFeature === extendedLandFeature) {
             return { ...snapshot, ...previous.measurements };
         }
         const api = yieldApi();
@@ -168,17 +169,21 @@
         // open ground included, never the untouched rest of the parcels they stand on.
         const landM2 = landFeature ? api.geometryAreaM2(landFeature) : null;
         const planAreaM2 = finiteNumber(landM2) ? landM2 : null;
+        // The land the new floor area pays for: the plan's land less the land of the designs that
+        // extend existing buildings (PlanAnalysis.prepare extendedLandFeature), which nobody buys.
+        const acquiredLandM2 = planAreaM2 === null ? null
+            : Math.max(0, planAreaM2 - (extendedLandFeature ? api.geometryAreaM2(extendedLandFeature) : 0));
         const parcelFigures = {
             parcelCount: noParcels ? null : resultingCount,
             parcelProduced: noParcels ? null : parcels.produced.length,
             parcelConsumed: noParcels ? null : parcels.consumed.length,
             parcelMeasuredCount: noParcels ? null : measuredCount,
             parcelMeasuredArea: noParcels ? null : measuredArea,
-            openGroundM2: ground && finiteNumber(ground.openGroundM2) ? ground.openGroundM2 : null, planAreaM2
+            openGroundM2: ground && finiteNumber(ground.openGroundM2) ? ground.openGroundM2 : null, planAreaM2, acquiredLandM2
         };
         const measurements = { parcelFigures, openSpaceAreaOf: proposal =>
             areas.get(proposal.proposalId)?.get(proposal.structureProposal?.kind) ?? null };
-        geometryByRecords.set(records, { materializedFeatures, cadastralFeatures, landFeature, measurements });
+        geometryByRecords.set(records, { materializedFeatures, cadastralFeatures, landFeature, extendedLandFeature, measurements });
         return { ...snapshot, ...measurements };
     }
 
@@ -224,6 +229,7 @@
         { key: 'buildings', i18nKey: 'sidebar.proposals.planStats.buildings', label: 'Buildings (footprint m²)' },
         { key: 'buildings-remaining', i18nKey: 'sidebar.proposals.planStats.buildingsRemaining', label: 'of which existing that remain (floor area m²)' },
         { key: 'buildings-new', i18nKey: 'sidebar.proposals.planStats.buildingsNew', label: 'of which new (floor area m²)' },
+        { key: 'buildings-extended', i18nKey: 'sidebar.proposals.planStats.buildingsExtended', label: 'of which existing, extended (floor area added m²)' },
         { key: 'floor-area', i18nKey: 'sidebar.proposals.planStats.floorArea', label: 'Gross floor area (m²)' },
         { key: 'open-space', i18nKey: 'sidebar.proposals.planStats.openSpace', label: 'Open space — parks, squares, water (m²)' },
         { key: 'public-land', i18nKey: 'sidebar.proposals.planStats.publicLand', label: 'Public land — roads, parks, squares (m²)' },
@@ -253,7 +259,7 @@
         backing: { i18nKey: 'planCompare.rows.backing', label: 'Agreements backing the plan' }
     };
     const COMPARE_ORDER = ['plan-area', 'resulting-parcels', 'parcels-taken', 'buildings', 'buildings-remaining', 'buildings-new',
-        'demolished', 'height', 'floor-area', 'far', 'coverage', 'open-space', 'green-area', 'road-area', 'public-land', 'private-land',
+        'buildings-extended', 'demolished', 'height', 'floor-area', 'far', 'coverage', 'open-space', 'green-area', 'road-area', 'public-land', 'private-land',
         'apartments', 'people', 'jobs', 'build-out', 'permitted', 'sales-value', 'total-cost', 'profit', 'annual-rent', 'rent-yield', 'backing'];
     const COMPARE_ROWS = COMPARE_ORDER.map(key => ({ key, ...(DECISION_ROWS[key] || SUMMARY_ROWS.find(row => row.key === key)) }));
 
@@ -620,10 +626,15 @@
     function summaryTexts(stats, price) {
         // The new floor area at these prices, by the 3D panel's rule (CityMoney.newBuildMoney): its
         // all-in cost (construction, development charge, land, sale tax, the existing floor area it clears), profit and rent.
-        // The land is the plan's land (planAreaM2): the ground its designs take, streets and parks too.
+        // The land is the plan's land (planAreaM2): the ground its designs take, streets and parks too,
+        // less the land of designs that extend existing buildings (acquiredLandM2). An extended
+        // building's own floor area is kept: not built, sold or replaced; unknown while any states no
+        // existing height.
         // Whether the construction cost includes the tax on its inputs is the city's rate's, not typed.
-        const money = window.CityMoney.newBuildMoney({ floorAreaM2: stats.yield.total.grossFloorAreaM2,
-            replacedFloorAreaM2: stats.cleared ? stats.cleared.floorAreaM2 : null, landAreaM2: stats.planAreaM2,
+        const designs = stats.yield.total;
+        const keptFloorAreaM2 = designs.extendedUnmeasured > 0 ? null : (designs.keptFloorAreaM2 || 0);
+        const money = window.CityMoney.newBuildMoney({ floorAreaM2: designs.grossFloorAreaM2, keptFloorAreaM2,
+            replacedFloorAreaM2: stats.cleared ? stats.cleared.floorAreaM2 : null, landAreaM2: stats.acquiredLandM2 ?? stats.planAreaM2,
             salePerM2: price.sale, constructionPerM2: price.construction, landPerM2: price.land,
             saleTaxShare: price.saleTax, constructionTaxIncluded: salesPrice().constructionTaxIncluded === true,
             rentPerM2Month: price.rent, devChargePerM2: price.devCharge });
@@ -640,7 +651,11 @@
                 : avgParcel === null ? formatNumber(stats.parcelCount) : `${formatNumber(stats.parcelCount)} (${formatSquareMetres(avgParcel)})`,
             buildings: `${formatNumber(total.buildings)} (${formatSquareMetres(total.footprintM2)})`,
             'buildings-remaining': remaining ? built(remaining.buildings, remaining.grossFloorAreaM2) : '—',
-            'buildings-new': built(stats.yield.total.buildings, stats.yield.total.grossFloorAreaM2),
+            // An extended building is an existing one: new are the rest, and it adds only what it gains.
+            'buildings-new': built(designs.buildings - (designs.extendedBuildings || 0), designs.grossFloorAreaM2 - (designs.extendedGrossM2 || 0)),
+            'buildings-extended': !(designs.extendedBuildings > 0) ? built(0, 0)
+                : designs.extendedUnmeasured > 0 ? `${formatNumber(designs.extendedBuildings)} (—)`
+                : built(designs.extendedBuildings, Math.max(0, designs.extendedGrossM2 - designs.keptFloorAreaM2)),
             'floor-area': formatNumber(total.grossFloorAreaM2),
             'open-space': formatNumber(total.openSpaceM2),
             'public-land': measured(stats.publicLandM2),
@@ -699,6 +714,7 @@
         set('buildings', figures.buildings);
         set('buildings-remaining', figures['buildings-remaining']);
         set('buildings-new', figures['buildings-new']);
+        set('buildings-extended', figures['buildings-extended']);
         set('floor-area', figures['floor-area']);
         set('open-space', figures['open-space']);
         set('public-land', figures['public-land']);

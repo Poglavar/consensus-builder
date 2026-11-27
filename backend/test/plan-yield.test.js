@@ -428,3 +428,41 @@ describe('a mansard roof holds a storey', () => {
         expect(mansard - flat).toBeCloseTo((5 + 2 * (5 - 0.38)) * (9 - 0.76), 0);
     });
 });
+
+describe('a building redrawn from an existing one is that building, extended', () => {
+    const LAT = 51.5, R = 6378137;
+    const kx = Math.cos(LAT * Math.PI / 180) * R * Math.PI / 180, ky = R * Math.PI / 180;
+    const house = properties => ({ type: 'Feature', properties: { basedOnExisting: true, ...properties },
+        geometry: { type: 'Polygon', coordinates: [[[0, LAT], [5 / kx, LAT], [5 / kx, LAT + 9 / ky], [0, LAT + 9 / ky], [0, LAT]]] } });
+
+    it('keeps the floor area it had: one storey added counts one storey', () => {
+        const raised = measureBuilding(house({ existingHeight: 9, height: 12 }), null, {});
+        expect(raised).toMatchObject({ extended: true, floors: 4 });
+        expect(raised.keptGfaM2).toBeCloseTo(3 * 45, 1);
+        expect(raised.gfaM2 - raised.keptGfaM2).toBeCloseTo(45, 1);
+    });
+
+    it('counts a mansard as what it adds, and a lowered building as adding nothing', () => {
+        const mansard = measureBuilding(house({ existingHeight: 9, height: 9, roof: 'mansard' }), null, {});
+        expect(mansard.gfaM2 - mansard.keptGfaM2).toBeCloseTo(mansard.mansardFloorAreaM2, 6);
+        const lowered = measureBuilding(house({ existingHeight: 15, height: 9 }), null, {});
+        expect(lowered.keptGfaM2).toBeCloseTo(lowered.gfaM2, 6);
+    });
+
+    it('leaves the kept floor area unknown, never zero, without an existing height', () => {
+        expect(measureBuilding(house({ height: 12 }), null, {})).toMatchObject({ extended: true, keptGfaM2: null });
+        expect(measureBuilding(house({ existingHeight: 9 }), null, {})).toMatchObject({ extended: true, keptGfaM2: null, gfaM2: null });
+        expect(measureBuilding({ ...house({ height: 12 }), properties: { height: 12 } }, null, {}).extended).toBeUndefined();
+    });
+
+    it('totals extended buildings apart from new ones', () => {
+        const plain = { ...house({}), properties: { height: 12 } };
+        const total = planYield([{ proposalId: 'p', buildingProposal: {}, geometry: { buildings: [house({ existingHeight: 9, height: 12 }), plain] } }]).total;
+        expect(total).toMatchObject({ buildings: 2, extendedBuildings: 1, extendedUnmeasured: 0 });
+        expect(total.keptFloorAreaM2).toBeCloseTo(135, 1);
+        expect(total.extendedGrossM2).toBeCloseTo(180, 1);
+        expect(total.grossFloorAreaM2).toBeCloseTo(360, 1);
+        const unknown = planYield([{ proposalId: 'p', buildingProposal: {}, geometry: { buildings: [house({ height: 12 })] } }]).total;
+        expect(unknown).toMatchObject({ extendedBuildings: 1, extendedUnmeasured: 1, keptFloorAreaM2: 0 });
+    });
+});

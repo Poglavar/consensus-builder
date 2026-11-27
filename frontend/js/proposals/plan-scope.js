@@ -82,11 +82,13 @@
         const id = keyOf(parcel);
         const { land, remaining, units, groundError, unitsCounting, ...rest } = snapshot;
         const landPart = snapshot.landFeature ? ops.intersect(snapshot.landFeature, parcel) : null;
+        const extendedPart = snapshot.extendedLandFeature ? ops.intersect(snapshot.extendedLandFeature, parcel) : null;
         const records = (snapshot.records || [])
             .filter(record => (record.cadastreParcelIds || []).map(String).includes(id))
             .map(record => recordOn(record, parcel, ops));
         return { ...rest, records, scopeParcelId: id,
             landFeature: landPart?.geometry && ops.areaOf(landPart) > 0 ? landPart : null,
+            extendedLandFeature: extendedPart?.geometry && ops.areaOf(extendedPart) > 0 ? extendedPart : null,
             cadastralFeatures: (snapshot.cadastralFeatures || []).filter(feature => keyOf(feature) === id),
             materializedFeatures: clipAll(snapshot.materializedFeatures, parcel, ops),
             corridorFeatures: clipAll(snapshot.corridorFeatures, parcel, ops) };

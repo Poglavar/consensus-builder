@@ -49,7 +49,11 @@
             }
             const sub = proposal.structureProposal || proposal.buildingProposal;
             const region = appliedRegions.get(String(id));
-            if (sub && region && (!appliedOnly || isAppliedSub(proposal, sub))) takers.push({ proposalId: String(id), region, tunnels: [] });
+            if (sub && region && (!appliedOnly || isAppliedSub(proposal, sub))) {
+                // A design that redraws existing buildings extends them and replaces none.
+                const extending = !!proposal.buildingProposal && root.__demolitionPrefetch?.extendsExisting(proposal) === true;
+                takers.push(extending ? { proposalId: String(id), region, tunnels: [], extending: true } : { proposalId: String(id), region, tunnels: [] });
+            }
         }
         return takers;
     }
@@ -57,7 +61,7 @@
     // A taker's land by a cheap digest of its coordinates (same land, same answer), with the boxes of
     // its polygon parts, so a long road changed at one end re-derives only the buildings near it.
     function landOf(taker) {
-        const text = JSON.stringify([taker.region, taker.tunnels]);
+        const text = JSON.stringify([taker.region, taker.tunnels, taker.extending === true]);
         let hash = 0;
         for (let i = 0; i < text.length; i += 1) hash = (hash * 31 + text.charCodeAt(i)) | 0;
         const region = taker.region?.type === 'MultiPolygon'
@@ -140,7 +144,7 @@
         derived.tunnelled.forEach((entry, key) => tunnelled.set(key, entry));
         state = { records, tunnelled, stock, takers: lands, sourceKey, takerIds: idsOf(takers),
             incomplete: loaded.failed > 0, version: state.version + 1 };
-        log(`${records.size} demolished or cut, ${tunnelled.size} passed under, by ${takers.length} designs; ${whole ? 'all' : `${changed.length} changed designs,`} ${affected.length} of ${stock.size} buildings measured in ${Date.now() - started} ms${loaded.failed ? `; ${loaded.failed} areas did not load` : ''}`);
+        log(`${records.size} replaced, cut or extended, ${tunnelled.size} passed under, by ${takers.length} designs; ${whole ? 'all' : `${changed.length} changed designs,`} ${affected.length} of ${stock.size} buildings measured in ${Date.now() - started} ms${loaded.failed ? `; ${loaded.failed} areas did not load` : ''}`);
         return true;
     }
 
@@ -182,7 +186,8 @@
     // The carve of a set of applied designs (every applied one by default; the build-out timeline
     // shows fewer): { records: Map<key, record>, carveOf(key, footprint) }. `carveOf` answers like
     // corridor-carve.js carveBuildingByObjectId — null untouched, { remainder: null, demolished } razed,
-    // { remainder, demolished } cut — and measures a building the stock does not hold (a 3D mesh
+    // { remainder, demolished } cut; an extended building (kept, redrawn by its design) answers like
+    // a razed one with `extended: true`, since the design's building stands for it — and measures a building the stock does not hold (a 3D mesh
     // with no footprint of its own) by `footprint()`, its outline as drawn.
     function carveRecords(proposals = null) {
         const takers = takersOf(proposals || allProposals());
@@ -199,6 +204,7 @@
                 record = late.get(key);
             }
             if (!record) return null;
+            if (record.extended) return { remainder: null, demolished: record.geometry || null, extended: true };
             return record.remainder ? { remainder: record.remainder, demolished: record.demolishedPart || null }
                 : { remainder: null, demolished: record.geometry || null };
         };

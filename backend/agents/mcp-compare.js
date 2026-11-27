@@ -25,7 +25,9 @@ const union = features => features.reduce((out, feature) => out ? turf.union(out
 const fail = (code, message) => Object.assign(new Error(message), { code, next: { action: 'Review the alternative and its current parcel source in the app.' } });
 
 export function authoredAreas(designs) {
-    let floorAreaM2 = 0;
+    // keptFloorAreaM2: what the existing buildings the designs extend already had (plan-yield
+    // measureBuilding keptGfaM2), null while one states no existing height.
+    let floorAreaM2 = 0, keptFloorAreaM2 = 0, buildingsExtended = 0;
     for (const design of designs) {
         const buildings = planYield.buildingFeaturesOf(design);
         if (design.buildingProposal && !buildings.length) floorAreaM2 = null;
@@ -34,9 +36,12 @@ export function authoredAreas(designs) {
         const measured = planYield.measureProposal(design, {});
         if (measured.unmeasuredBuildings > 0) floorAreaM2 = null;
         else if (floorAreaM2 !== null) floorAreaM2 += measured.grossFloorAreaM2;
+        buildingsExtended += measured.extendedBuildings;
+        if (measured.extendedUnmeasured > 0) keptFloorAreaM2 = null;
+        else if (keptFloorAreaM2 !== null) keptFloorAreaM2 += measured.keptFloorAreaM2;
     }
     // Parks and road corridors by Compare plans' rule (plan-decision.js roadAndGreen).
-    return { floorAreaM2, ...planDecision.roadAndGreen(designs, { turf }) };
+    return { floorAreaM2, keptFloorAreaM2, buildingsExtended, ...planDecision.roadAndGreen(designs, { turf }) };
 }
 
 // The designs' new buildings against the Permitted limits where they stand, as Compare plans checks
@@ -104,7 +109,9 @@ export function existingFloorArea(geometry, building) {
 // (`at`, [lng, lat], EconomicSources.locationOf of its designs' sites, as the 3D panel and Plan stats
 // locate theirs) or at the prices the caller gives, which are scenario assumptions. Each price keeps its source under `prices`; a given
 // construction price keeps the tax basis (taxIncluded) of the city's rate, as the slider does.
-export function moneyOf({ city, floorAreaM2, replacedFloorAreaM2, landAreaM2, at = null, prices = {} }) {
+// keptFloorAreaM2: the floor area extended buildings already had, which is not built, sold or replaced
+// (builtFloorAreaM2 is the rest); the land is then the land of the designs that extend none.
+export function moneyOf({ city, floorAreaM2, keptFloorAreaM2 = 0, replacedFloorAreaM2, landAreaM2, at = null, prices = {} }) {
     const { currency, rates, unavailable, reason } = cityEconomics(city, at);
     if (unavailable) throw fail('city-money-unavailable', reason);
     const price = (metric, given) => (finite(given) && given >= 0
@@ -115,8 +122,8 @@ export function moneyOf({ city, floorAreaM2, replacedFloorAreaM2, landAreaM2, at
         land: price('land', prices.landPerM2), saleTax: price('saleTax', prices.saleTaxShare), rent: price('rent', prices.rentPerM2Month),
         devCharge: price('devCharge', prices.devChargePerM2) };
     const amountOf = metric => (used[metric] ? used[metric].amount : null);
-    return { currency, unit: 'm2-floor', prices: used, floorAreaM2, replacedFloorAreaM2, landAreaM2,
-        ...cityMoney(city).newBuildMoney({ floorAreaM2, replacedFloorAreaM2, landAreaM2, salePerM2: amountOf('sale'),
+    return { currency, unit: 'm2-floor', prices: used, floorAreaM2, keptFloorAreaM2, replacedFloorAreaM2, landAreaM2,
+        ...cityMoney(city).newBuildMoney({ floorAreaM2, keptFloorAreaM2, replacedFloorAreaM2, landAreaM2, salePerM2: amountOf('sale'),
             constructionPerM2: amountOf('construction'), landPerM2: amountOf('land'), saleTaxShare: amountOf('saleTax'),
             constructionTaxIncluded: used.construction?.taxIncluded === true, rentPerM2Month: amountOf('rent'),
             devChargePerM2: amountOf('devCharge') }) };
@@ -244,7 +251,9 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
                         const region = design.roadProposal ? read.siteOfDesign(design)
                             : demolition.demolitionRegionOf(design, { normalizeGoalKey: route.normalizeGoalKey });
                         const tunnels = design.roadProposal?.definition ? DemolitionDerive.tunnelRegionsOf(design.roadProposal.definition) : [];
-                        return region ? { proposalId: row.cid, region, tunnels } : null;
+                        // A design that redraws existing buildings extends them and replaces none.
+                        const extending = !design.roadProposal && demolition.extendsExisting(design);
+                        return region ? { proposalId: row.cid, region, tunnels, ...(extending ? { extending: true } : {}) } : null;
                     }).filter(Boolean);
                     if (!takers.length) { buildingsRemoved = 0; buildingsCut = 0; removedFootprintM2 = 0; removedFloorAreaM2 = 0; }
                     else {
@@ -270,7 +279,7 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
                         const { records } = DemolitionDerive.derive({ takers, buildings: [...byKey.values()] }, turf);
                         // Totalled by Compare plans' rule (plan-decision.js demolitionTotals): a removed
                         // building the source gives no height leaves the removed floor area unknown.
-                        const totals = planDecision.demolitionTotals([...records].map(([key, record]) => {
+                        const totals = planDecision.demolitionTotals([...records].filter(([, record]) => !record.extended).map(([key, record]) => {
                             const part = record.remainder ? record.demolishedPart : record.geometry;
                             return { whole: !record.remainder, footprintM2: turf.area(turf.feature(part)), floorAreaM2: existingFloorArea(part, stated.get(key)) };
                         }));
@@ -290,8 +299,8 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
             try {
                 const city = designs.find(design => typeof design?.city === 'string' && design.city)?.city;
                 if (!city) throw fail('city-unknown', 'No design names its city, so its money is unknown.');
-                money = moneyOf({ city, floorAreaM2: areas.floorAreaM2, replacedFloorAreaM2: removedFloorAreaM2,
-                    landAreaM2: landAreaOf(designs, design => read.siteOfDesign(design)),
+                money = moneyOf({ city, floorAreaM2: areas.floorAreaM2, keptFloorAreaM2: areas.keptFloorAreaM2, replacedFloorAreaM2: removedFloorAreaM2,
+                    landAreaM2: landAreaOf(designs.filter(design => !demolition.extendsExisting(design)), design => read.siteOfDesign(design)),
                     at: locationOf(designs.map(design => read.siteOfDesign(design)).filter(Boolean)), prices: prices || {} });
             } catch (error) {
                 measurementErrors.push({ code: error.code || 'money-unavailable', message: error.message,

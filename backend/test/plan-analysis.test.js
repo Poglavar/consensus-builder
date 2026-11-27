@@ -71,6 +71,21 @@ describe('a plan\'s land', () => {
         expect(planLand([], [parcel], { siteOf: () => null, unite })).toBeNull();
     });
 
+    it('sets apart the land of designs that extend existing buildings, which nobody buys', async () => {
+        const deps = ports();
+        const terrace = square(15.905, 45.805, 0.001).geometry;
+        const block = square(15.91, 45.81, 0.001).geometry;
+        deps.resolve.mockResolvedValue({ ...snapshot, designs: [
+            { cid: 'raise', content: { title: 'Mansards', site: terrace, extends: true } },
+            { cid: 'block', content: { title: 'Block', site: block } }] });
+        const result = await prepare(snapshot, { ...deps, extending: content => content.extends === true });
+        expect(result.extendedLandFeature).toEqual({ type: 'Feature', properties: {}, geometry: terrace });
+        // The plan's land still holds both designs' sites.
+        expect(deps.unite.mock.calls.map(([features]) => features.length)).toEqual([2, 1]);
+        // No such design, or no rule given: none.
+        expect((await prepare(snapshot, deps)).extendedLandFeature).toBeNull();
+    });
+
     it('comes with the prepared plan, from each saved member\'s own site', async () => {
         const deps = ports();
         const site = square(15.901, 45.801, 0.001).geometry;

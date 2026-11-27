@@ -51,6 +51,10 @@ describe('a plan narrowed to one parcel', () => {
         expect(onA.cadastralFeatures.map(f => f.properties.parcelId)).toEqual(['A']);
         // The plan's land and its formed pieces stop at the parcel's edge.
         expect(ops.areaOf(onA.landFeature)).toBeCloseTo(ops.areaOf(turf.intersect(whole.landFeature, parcelA)), 0);
+        // So does the land of designs that extend existing buildings.
+        expect(onA.extendedLandFeature).toBeNull();
+        const extendedOnA = Scope.toParcel({ ...whole, extendedLandFeature: whole.landFeature }, parcelA, ops);
+        expect(ops.areaOf(extendedOnA.extendedLandFeature)).toBeCloseTo(ops.areaOf(onA.landFeature), 0);
         expect(ops.areaOf(onA.materializedFeatures[0])).toBeCloseTo(ops.areaOf(whole.materializedFeatures[0]) / 2, -1);
         // What was measured over the whole plan is not carried into the parcel's figures.
         for (const key of ['land', 'remaining', 'units', 'groundError', 'unitsCounting']) expect(onA).not.toHaveProperty(key);

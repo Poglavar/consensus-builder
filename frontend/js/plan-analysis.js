@@ -103,7 +103,9 @@
         return shapes.length ? unite(shapes) : null;
     }
 
-    async function prepare(plan, { resolve, bindAll, parcels, materialize, declared = () => null, inside = null, siteOf, unite, signal, onProgress }) {
+    // extending(content): whether a design extends existing buildings (demolition-prefetch.js
+    // extendsExisting); the land of those designs is `extendedLandFeature`, which nobody buys.
+    async function prepare(plan, { resolve, bindAll, parcels, materialize, declared = () => null, inside = null, siteOf, unite, extending = () => false, signal, onProgress }) {
         const snapshot = await resolve(plan);
         const designs = [];
         const sources = new Map();
@@ -139,7 +141,9 @@
         const corridorFeatures = result.fabric.entriesForCadastre(ids, { includeCorridors: true })
             .filter(f => !pieceIds.has(String(f.properties?.parcelId ?? f.id)));
         const landFeature = await planLand(designs, cadastralFeatures, { siteOf, unite });
-        return { plan: snapshot, records: result.records, cadastralFeatures, materializedFeatures, corridorFeatures, landFeature };
+        const extendingDesigns = designs.filter(design => extending(design.content) === true);
+        const extendedLandFeature = extendingDesigns.length ? await planLand(extendingDesigns, cadastralFeatures, { siteOf, unite }) : null;
+        return { plan: snapshot, records: result.records, cadastralFeatures, materializedFeatures, corridorFeatures, landFeature, extendedLandFeature };
     }
     function browser(win) {
         async function request(path, body, signal) {
@@ -224,6 +228,7 @@
                 resolve: row => row, signal, onProgress, bindAll: bind,
                 parcels: (source, ids) => parcels(source, ids, snapshot.content.view?.city, signal),
                 siteOf: siteFor,
+                extending: content => win.__demolitionPrefetch.extendsExisting(content),
                 unite: async features => {
                     let union = features[0], slice = Date.now();
                     for (let i = 1; i < features.length; i++) {

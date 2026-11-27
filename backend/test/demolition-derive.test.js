@@ -68,3 +68,41 @@ describe('demolition derive', () => {
         expect(result.failures.map(failure => failure.key)).toEqual(['osm:bad']);
     });
 });
+
+describe('a design that redraws existing buildings extends them', () => {
+    const house = at(0, 0), neighbour = at(0.0001, 0);
+    const extension = { proposalId: 'mansards', region: house, extending: true };
+
+    it('marks the building under it extended, with no remainder, and leaves the neighbour alone', () => {
+        const { records, tunnelled } = derive({ takers: [extension], buildings: [
+            { key: 'osm:house', geometry: house }, { key: 'osm:neighbour', geometry: neighbour }] }, turf);
+        expect([...records.keys()]).toEqual(['osm:house']);
+        expect(records.get('osm:house')).toMatchObject({ extended: true, proposalId: 'mansards', proposalIds: ['mansards'] });
+        expect(records.get('osm:house').remainder).toBeUndefined();
+        expect(tunnelled.size).toBe(0);
+    });
+
+    it('replaces nothing it only overlaps in part: under half a building is no extension and no cut', () => {
+        // The redrawn footprint reaches 30 % into another building.
+        const reaching = { ...extension, region: box(16.00007, 46, 16.00017, 46.0001) };
+        const { records } = derive({ takers: [reaching], buildings: [{ key: 'osm:house', geometry: house }] }, turf);
+        expect(records.size).toBe(0);
+    });
+
+    it('gives way to a design that really takes the building', () => {
+        const road = { proposalId: 'road', region: box(15.9999, 46, 16.0003, 46.00006) };
+        const cut = derive({ takers: [extension, road], buildings: [{ key: 'osm:house', geometry: house }] }, turf).records.get('osm:house');
+        expect(cut.extended).toBeUndefined();
+        expect(cut.proposalIds).toEqual(['road']);
+        expect(cut.remainder).toBeTruthy();
+        const same = { proposalId: 'block', region: house };
+        const razed = derive({ takers: [same, extension], buildings: [{ key: 'osm:house', geometry: house }] }, turf).records.get('osm:house');
+        expect(razed.extended).toBeUndefined();
+        expect(razed.remainder).toBeUndefined();
+    });
+
+    it('is a plain raze without the mark', () => {
+        const { records } = derive({ takers: [{ proposalId: 'mansards', region: house }], buildings: [{ key: 'osm:house', geometry: house }] }, turf);
+        expect(records.get('osm:house').extended).toBeUndefined();
+    });
+});

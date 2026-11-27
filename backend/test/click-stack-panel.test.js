@@ -881,3 +881,12 @@ describe('click stack panel: a surface picking designs', () => {
         expect(h.context.MapPick.pick).toHaveBeenCalledWith('d1');
     });
 });
+
+describe('what a design does to the existing building under it', () => {
+    it('says extended for a building its design redraws taller, replaced otherwise', () => {
+        expect(model.builtOutcomeLabel({ extended: true, proposalId: 'd' }, true)).toEqual({ key: 'extendedBy', fallback: 'Extended by {{design}}' });
+        expect(model.builtOutcomeLabel({ extended: true }, false)).toEqual({ key: 'extended', fallback: 'Extended' });
+        expect(model.builtOutcomeLabel({ proposalId: 'd' }, true)).toEqual({ key: 'demolishedBy', fallback: 'Replaced by {{design}}' });
+        expect(model.builtOutcomeLabel({ remainder: {} }, false)).toEqual({ key: 'demolished', fallback: 'Replaced' });
+    });
+});

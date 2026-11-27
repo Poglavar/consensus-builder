@@ -124,7 +124,7 @@ assign(['ugt_render_preview'], mcpResultSchema.extend({ ready: z.literal(true), 
 const amount = z.number().finite().nullable();
 const comparedMoney = z.object({ currency: z.string().regex(/^[A-Z]{3}$/), unit: z.literal('m2-floor'),
     prices: z.object({ sale: object.nullable(), construction: object.nullable(), land: object.nullable(), saleTax: object.nullable(), rent: object.nullable() }),
-    floorAreaM2: amount, replacedFloorAreaM2: amount, landAreaM2: amount, value: amount, constructionCost: amount, landCost: amount,
+    floorAreaM2: amount, keptFloorAreaM2: amount.optional(), builtFloorAreaM2: amount.optional(), replacedFloorAreaM2: amount, landAreaM2: amount, value: amount, constructionCost: amount, landCost: amount,
     saleTax: amount, taxReclaimed: amount, replacedValue: amount, totalCost: amount, profit: amount, annualRent: amount, rentYieldOnCost: amount });
 assign(['ugt_compare'], mcpResultSchema.extend({ alternatives: z.array(z.object({ cid, areaBasis: z.literal('authored-geometry'), measurementErrors: z.array(object),
     money: comparedMoney.nullable() }).passthrough()).min(2), warnings: z.array(z.union([z.string(), object])) }));

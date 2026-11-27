@@ -141,7 +141,9 @@
             builtVolume += a * h;
         }
 
-        let proposedVolume = 0;
+        // Proposed buildings redrawn from existing ones (basedOnExisting) extend them: the volume
+        // they already had is kept, unknown when one states no existing height.
+        let proposedVolume = 0, keptVolume = 0, keptUnknown = false, proposedCount = 0, extendedCount = 0;
         const proposed = Array.isArray(proposedFeatures) ? proposedFeatures : [];
         for (const feat of proposed) {
             if (!feat || !feat.geometry) continue;
@@ -158,13 +160,24 @@
             let a = 0;
             try { a = turf.area(inter); } catch (_) { a = 0; }
             proposedVolume += a * h;
+            if (!(a > 0)) continue;
+            proposedCount += 1;
+            if (feat.properties && feat.properties.basedOnExisting === true) {
+                extendedCount += 1;
+                const was = Number(feat.properties.existingHeight);
+                if (Number.isFinite(was) && was > 0) keptVolume += a * Math.min(h, was);
+                else keptUnknown = true;
+            }
         }
 
         const builtFloorArea = builtVolume / floorHeightM;
         const proposedFloorArea = proposedVolume / floorHeightM;
         // The land measured: what a new building here pays for (computeValueComparison landAreaM2).
         const landM2 = turf.area(parcelFeature);
-        return { builtVolume, proposedVolume, builtFloorArea, proposedFloorArea, landM2 };
+        // Ground whose every proposed building extends an existing one pays for no land.
+        const acquiredLandM2 = proposedCount > 0 && extendedCount === proposedCount ? 0 : landM2;
+        return { builtVolume, proposedVolume, builtFloorArea, proposedFloorArea, landM2,
+            keptFloorArea: keptVolume / floorHeightM, keptUnknown, acquiredLandM2 };
     }
 
     // The modeled figures for the panel apply a user-selected rate per m² of gross floor area, in
@@ -195,13 +208,14 @@
         return { gain, currentValue, hasProposed, avg, model };
     }
 
-    const METRIC_KEYS = ['builtVolume', 'proposedVolume', 'builtFloorArea', 'proposedFloorArea', 'landM2'];
+    const METRIC_KEYS = ['builtVolume', 'proposedVolume', 'builtFloorArea', 'proposedFloorArea', 'landM2', 'keptFloorArea', 'acquiredLandM2'];
 
     function sumMetrics(list) {
         const out = {};
         METRIC_KEYS.forEach(key => {
             out[key] = list.reduce((total, m) => total + ((typeof m[key] === 'number' && Number.isFinite(m[key])) ? m[key] : 0), 0);
         });
+        out.keptUnknown = list.some(m => m.keptUnknown === true);
         return out;
     }
 
@@ -234,7 +248,8 @@
             source: useSite ? 'site' : 'parcels',
             parcelCount: unbound ? null : parcels.length,
             parcelFloorAreas: (useSite && parcels.length)
-                ? { built: parcelTotals.builtFloorArea, proposed: parcelTotals.proposedFloorArea, land: parcelTotals.landM2 }
+                ? { built: parcelTotals.builtFloorArea, proposed: parcelTotals.proposedFloorArea, land: parcelTotals.landM2,
+                    kept: parcelTotals.keptUnknown ? null : parcelTotals.keptFloorArea, acquiredLand: parcelTotals.acquiredLandM2 }
                 : null,
             siteM2: ground ? finiteOrNull(ground.siteM2) : null,
             openGroundM2: (ground && (unbound || ground.partial)) ? finiteOrNull(ground.openGroundM2) : null
@@ -252,6 +267,10 @@
     //   on a tax-inclusive construction cost (`constructionTaxIncluded`), and the built value they
     //   replace; profit = value − all-in cost. Unknown while any of those is. Proposed with no
     //   massing is not available.
+    // - Proposed buildings that extend existing ones keep `keptFloorAreaM2` of the built floor area
+    //   (null: unknown): construction and the development charge are on the rest, and their ground
+    //   pays for no land (`acquiredLandAreaM2`, the land less that ground). The column still shows
+    //   the whole proposed value against the whole built value, so the two rows read alike.
     // `avgProfitPerParcel` divides the proposed profit over the bound parcels (`parcelFloorAreas`, with
     // their land, when the totals also cover open ground), null without parcels or proposed massing.
     const finite = value => typeof value === 'number' && Number.isFinite(value);
@@ -260,8 +279,8 @@
     const UNAVAILABLE = Object.freeze({ available: false, floorArea: null, value: null, constructionCost: null, devCharge: null, landCost: null,
         saleTax: null, taxReclaimed: null, replacedValue: null, totalCost: null, profit: null });
 
-    function computeValueComparison({ floorAreas = {}, landAreaM2 = null, salePerM2, constructionPerM2, landPerM2 = null, saleTaxShare = null,
-        constructionTaxIncluded = false, devChargePerM2 = 0, currency, parcelCount = null, parcelFloorAreas = null } = {}) {
+    function computeValueComparison({ floorAreas = {}, landAreaM2 = null, keptFloorAreaM2 = 0, acquiredLandAreaM2 = undefined, salePerM2, constructionPerM2,
+        landPerM2 = null, saleTaxShare = null, constructionTaxIncluded = false, devChargePerM2 = 0, currency, parcelCount = null, parcelFloorAreas = null } = {}) {
         if (typeof currency !== 'string' || !currency) throw new Error('computeValueComparison needs the currency its prices are in.');
         // A source may have no usable rate for one metric. Missing prices keep their dependent
         // amounts unknown; they do not prevent the geometry or the other metric from being shown.
@@ -270,25 +289,37 @@
         const area = value => (finite(value) && value >= 0 ? value : null);
         const builtArea = area(floorAreas.built);
         const builtValue = builtArea === null || sale === null ? null : builtArea * sale;
-        const money = (floorArea, replaced, land) => cityMoney().newBuildMoney({ floorAreaM2: floorArea, replacedFloorAreaM2: replaced,
-            landAreaM2: land, salePerM2: sale, constructionPerM2: cost, landPerM2, saleTaxShare, constructionTaxIncluded, devChargePerM2 });
-        const newBuild = (floorArea, available) => {
+        // kept: floor area of the built stock the new floor area keeps (0 for new construction, null unknown).
+        const money = (floorArea, built, land, kept = 0) => {
+            const replaced = built === null || kept === null ? null : Math.max(0, built - kept);
+            const figures = cityMoney().newBuildMoney({ floorAreaM2: floorArea, keptFloorAreaM2: kept, replacedFloorAreaM2: replaced,
+                landAreaM2: land, salePerM2: sale, constructionPerM2: cost, landPerM2, saleTaxShare, constructionTaxIncluded, devChargePerM2 });
+            // Shown whole: the kept floor area's value on both sides, which leaves the profit as it is.
+            const keptValue = kept === null || sale === null ? null : kept * sale;
+            const plus = amount => (amount === null || keptValue === null ? null : amount + keptValue);
+            return kept === 0 ? figures : { ...figures, value: plus(figures.value), replacedValue: plus(figures.replacedValue), totalCost: plus(figures.totalCost) };
+        };
+        const newBuild = (floorArea, available, land = area(landAreaM2), kept = 0) => {
             if (!available) return UNAVAILABLE;
-            const { value, constructionCost, devCharge, landCost, saleTax, taxReclaimed, replacedValue, totalCost, profit } = money(floorArea, builtArea, area(landAreaM2));
+            const { value, constructionCost, devCharge, landCost, saleTax, taxReclaimed, replacedValue, totalCost, profit } = money(floorArea, builtArea, land, kept);
             return { available: true, floorArea, value, constructionCost, devCharge, landCost, saleTax, taxReclaimed, replacedValue, totalCost, profit };
         };
+        const kept = keptFloorAreaM2 === null ? null : (area(keptFloorAreaM2) ?? 0);
+        const acquiredLand = acquiredLandAreaM2 === undefined ? area(landAreaM2) : area(acquiredLandAreaM2);
         const plannedArea = area(floorAreas.planned);
         const proposedArea = area(floorAreas.proposed);
         const columns = {
             built: builtArea === null ? UNAVAILABLE
                 : { ...UNAVAILABLE, available: true, floorArea: builtArea, value: builtValue },
             planned: newBuild(plannedArea, plannedArea !== null),
-            proposed: newBuild(proposedArea, proposedArea !== null && proposedArea > 0)
+            proposed: newBuild(proposedArea, proposedArea !== null && proposedArea > 0, acquiredLand, kept)
         };
         let avgProfitPerParcel = null;
         if (columns.proposed.available && columns.proposed.profit !== null && typeof parcelCount === 'number' && parcelCount > 0) {
             const profit = parcelFloorAreas
-                ? money(area(parcelFloorAreas.proposed), area(parcelFloorAreas.built), area(parcelFloorAreas.land)).profit
+                ? money(area(parcelFloorAreas.proposed), area(parcelFloorAreas.built),
+                    area(parcelFloorAreas.acquiredLand === undefined ? parcelFloorAreas.land : parcelFloorAreas.acquiredLand),
+                    parcelFloorAreas.kept === null ? null : (area(parcelFloorAreas.kept) ?? 0)).profit
                 : columns.proposed.profit;
             if (profit !== null) avgProfitPerParcel = profit / parcelCount;
         }

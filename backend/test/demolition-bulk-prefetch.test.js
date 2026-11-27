@@ -94,6 +94,11 @@ describe('collecting the regions', () => {
         const regions = prefetchApi.collectDemolitionRegions([raise]);
         expect(regions).toHaveLength(1);
         expect(regions[0].geometry.coordinates).toHaveLength(2);
+        // It redraws existing buildings: its ground extends them and replaces none.
+        expect(regions[0].extending).toBe(true);
+        expect(prefetchApi.extendsExisting(raise)).toBe(true);
+        expect(prefetchApi.extendsExisting(block())).toBe(false);
+        expect(prefetchApi.collectDemolitionRegions([block()])[0]).not.toHaveProperty('extending');
     });
 
     it('a structure member asks the resolver, so the canonical fallback stays in one place', () => {

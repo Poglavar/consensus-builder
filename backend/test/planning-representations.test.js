@@ -366,6 +366,11 @@ describe('shared planning scene', () => {
         expect(scene.builtGeometry(geometry, record, 'surviving')).toBe(remainder);
         expect(scene.builtGeometry(geometry, record, 'removed')).toBe(demolishedPart);
         expect(scene.builtGeometry(geometry, null, 'removed')).toBeNull();
+        // An extended building is kept: all of it in All, none removed, and its redrawn design stands for it after.
+        const extended = { geometry, extended: true };
+        expect(scene.builtGeometry(geometry, extended, 'all')).toBe(geometry);
+        expect(scene.builtGeometry(geometry, extended, 'removed')).toBeNull();
+        expect(scene.builtGeometry(geometry, extended, 'surviving')).toBeNull();
         expect(scene.builtGeometry(geometry, { geometry }, 'surviving')).toBeNull();
         expect(record).toEqual({ remainder, demolishedPart, geometry });
     });

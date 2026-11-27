@@ -321,6 +321,11 @@ test.describe('Designer controls persist their edits @features', () => {
       .find((proposal: any) => proposal.applied && proposal.buildingProposal?.parameters?.mode === 'existing'));
     expect(saved.buildingProposal.parameters).toMatchObject({ mode: 'existing', rule: 'additional', additionalFloors: original + 1, floorHeightM: floorHeight, roof: 'mansard' });
     expect(saved.geometry.buildings.every((building: any) => building.properties.roof === 'mansard')).toBe(true);
+    // The buildings it redraws are kept: its derived records say extended, never replaced or cut.
+    await expect.poll(() => page.evaluate(id => {
+      const records = (window as any).DemolitionIndex.records().filter((record: any) => record.proposalId === id);
+      return records.length > 0 && records.every((record: any) => record.extended === true && !record.remainder);
+    }, saved.proposalId), { timeout: 20_000 }).toBe(true);
     expect(saved.geometry.buildings.length).toBeGreaterThan(0);
     expect(saved.geometry.buildings.every((building: any) => Number(building.properties.height) > 12)).toBe(true);
     await expect.poll(() => page.evaluate(id => (window as any).proposedBuildings

@@ -55,7 +55,7 @@
         for (const region of collectRegions(rows) || []) {
             const key = String(region.key);
             if (!scanned.has(key)) scanned.set(key, []);
-            scanned.get(key).push({ type: 'Feature', properties: {}, geometry: region.geometry });
+            scanned.get(key).push({ type: 'Feature', properties: region.extending ? { extending: true } : {}, geometry: region.geometry });
         }
         const clearing = rows.map(row => {
             const id = String(row.proposalId);

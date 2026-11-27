@@ -223,7 +223,8 @@
         if (section.kind === 'built' && instance.demolition) {
             const by = instance.demolition.proposalKey || instance.demolition.proposalId;
             const design = by ? global.proposalStorage?.getProposal?.(by) : null;
-            return design ? t('demolishedBy', 'Replaced by {{design}}', { design: design.title || by }) : t('demolished', 'Replaced');
+            const { key, fallback } = model.builtOutcomeLabel(instance.demolition, !!design);
+            return design ? t(key, fallback, { design: design.title || by }) : t(key, fallback);
         }
         if (section.kind === 'ground') return '';
         if (section.kind === 'parcels' || section.kind === 'formed') return parcelReference(instance);

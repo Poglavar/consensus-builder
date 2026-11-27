@@ -200,3 +200,30 @@ describe('where parks and squares are read', () => {
         expect(fetch.mock.calls[1][0]).toMatch(/^https:\/\/overpass-api\.de\/api\/interpreter\?data=/);
     });
 });
+
+describe('existing buildings a design extends', () => {
+    const record = (id, feature) => ({ proposalId: `built:${id}`, applied: true,
+        buildingProposal: { buildings: [{ ...feature, properties: { type: 'proposedBuilding', height: 9, floorHeightM: 3 } }] } });
+    const house = record('house', box(15.9, 45.8, 0.0002));
+    const neighbour = record('neighbour', box(15.9002, 45.8, 0.0002));
+    const footprint = item => item.buildingProposal.buildings[0];
+    const extending = box(15.9, 45.8, 0.0002, { extending: true });
+
+    it('is neither one that remains beside the designs nor one they clear', () => {
+        const { remaining, cleared, extended } = State.clearanceSplit({ built: [house, neighbour], regions: [extending], ops });
+        expect(remaining).toEqual([neighbour]);
+        expect(cleared).toEqual([]);
+        expect(extended).toEqual([{ before: house }]);
+        expect(State.clearance(footprint(house), [extending], ops)).toEqual({ outcome: 'extended', feature: null });
+    });
+
+    it('needs at least half the building under the redrawn footprint, and yields to a design that takes it', () => {
+        const third = box(15.90014, 45.8, 0.0002, { extending: true });
+        expect(State.clearance(footprint(house), [third], ops).outcome).toBe('kept');
+        expect(State.clearance(footprint(house), [extending, box(15.8999, 45.7999, 0.0004)], ops).outcome).toBe('gone');
+        const halfTaken = State.clearance(footprint(house), [extending, box(15.9001, 45.7999, 0.0004)], ops);
+        expect(halfTaken.outcome).toBe('cut');
+        // The same ground without the mark clears it.
+        expect(State.clearance(footprint(house), [box(15.9, 45.8, 0.0002)], ops).outcome).toBe('gone');
+    });
+});

@@ -52,14 +52,22 @@
      * Returns { land } (a geometry, or null for the footprints alone).
      */
     function buildingLandOf(proposal, helpers = {}) {
-        const sub = (proposal && proposal.buildingProposal) || {};
-        if (sub.parameters && sub.parameters.mode === 'existing') return { land: null };
+        if (extendsExisting(proposal)) return { land: null };
         if (goalKeyOf(proposal, helpers) === 'single') {
             const take = proposal.geometry && proposal.geometry.landTake;
             return { land: take ? (take.type === 'Feature' ? take.geometry : take) : null };
         }
         const site = proposal.site && proposal.site.type === 'Feature' ? proposal.site.geometry : proposal.site;
         return { land: site && (site.type === 'Polygon' || site.type === 'MultiPolygon') ? site : null };
+    }
+
+    /**
+     * Whether a design redraws existing buildings on their own footprints (the Block editor's Based
+     * on existing buildings). Such a design extends those buildings: they are kept, not replaced.
+     */
+    function extendsExisting(proposal) {
+        const sub = (proposal && (proposal.buildingProposal || proposal.building_proposal)) || {};
+        return !!(sub.parameters && sub.parameters.mode === 'existing');
     }
 
     /**
@@ -103,7 +111,10 @@
         return null;
     }
 
-    /** Every scanning member's region, keyed by the proposalId the apply path will look up. */
+    /**
+     * Every scanning member's region, keyed by the proposalId the apply path will look up. A design
+     * that extends existing buildings is marked `extending`: its region replaces nothing.
+     */
     function collectDemolitionRegions(appliedList, helpers = {}) {
         const regions = [];
         const seen = new Set();
@@ -114,12 +125,12 @@
             const geometry = demolitionRegionOf(proposal, helpers);
             if (!geometry) return;
             seen.add(key);
-            regions.push({ key, geometry });
+            regions.push(extendsExisting(proposal) ? { key, geometry, extending: true } : { key, geometry });
         });
         return regions;
     }
 
-    const api = { demolitionRegionOf, collectDemolitionRegions, buildingLandOf, buildingDemolitionGeometry };
+    const api = { demolitionRegionOf, collectDemolitionRegions, buildingLandOf, buildingDemolitionGeometry, extendsExisting };
 
     // Namespaced only — a bare global here could shadow a top-level function in the classic
     // scripts loaded alongside this file.

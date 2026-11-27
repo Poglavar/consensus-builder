@@ -199,6 +199,10 @@
      * `heightM` is the height of the walls. A mansard roof adds its storey: one more in `floors`,
      * its floor area in `gfaM2`, and `topHeightM` (the walls plus the roof's rise, `roofRiseM`).
      * `siblings` (the design's buildings) default to the building proposal's own list.
+     * A building redrawn from an existing one (`basedOnExisting`, the Block editor's Based on existing
+     * buildings) is that building, extended: `extended` is true and `keptGfaM2` is the floor area it
+     * already has, measured as the new one is (its existing height over the same storey height, never
+     * more than the walls now hold), or null when its existing height is not stated.
      */
     function measureBuilding(feature, bp, assumptions, siblings) {
         const opts = { ...DEFAULTS, ...(assumptions || {}) };
@@ -216,11 +220,18 @@
             ?? DEFAULTS.floorHeightM;
         if (heightM === null && statedFloors !== null) heightM = statedFloors * floorHeightM;
 
+        const extended = props.basedOnExisting === true;
         if (heightM === null) {
-            return { footprintM2, heightM: null, floorHeightM, floors: null, gfaM2: null, rule };
+            return { footprintM2, heightM: null, floorHeightM, floors: null, gfaM2: null, rule, ...(extended ? { extended, keptGfaM2: null } : {}) };
         }
         const floors = statedFloors !== null ? Math.max(1, Math.round(statedFloors)) : Math.max(1, Math.round(heightM / floorHeightM));
         const measured = { footprintM2, heightM, floorHeightM, floors, gfaM2: footprintM2 * floors, rule };
+        if (extended) {
+            const existingHeightM = positive(props.existingHeight);
+            measured.extended = true;
+            measured.keptGfaM2 = existingHeightM === null ? null
+                : footprintM2 * Math.min(floors, Math.max(1, Math.round(existingHeightM / floorHeightM)));
+        }
         if (((rule && rule.roof) || props.roof) === 'mansard') {
             const others = siblings || ((bp && Array.isArray(bp.buildings)) ? bp.buildings.map(entry => (entry && entry.feature) || entry) : []);
             const mansard = mansardStorey(feature, others);
@@ -240,6 +251,12 @@
             freeformProposals: 0,
             buildings: 0,
             unmeasuredBuildings: 0,
+            // Existing buildings the designs extend (measureBuilding `extended`): how many, their floor
+            // area after, the floor area they already had, and how many state no existing height.
+            extendedBuildings: 0,
+            extendedGrossM2: 0,
+            keptFloorAreaM2: 0,
+            extendedUnmeasured: 0,
             footprintM2: 0,
             grossFloorAreaM2: 0,
             housingFloorAreaM2: 0,
@@ -321,6 +338,11 @@
             const measured = measureBuilding(feature, bp, opts, features);
             bucket.buildings += 1;
             bucket.footprintM2 += measured.footprintM2;
+            if (measured.extended) {
+                bucket.extendedBuildings += 1;
+                if (measured.keptGfaM2 === null || measured.gfaM2 === null) bucket.extendedUnmeasured += 1;
+                else { bucket.keptFloorAreaM2 += measured.keptGfaM2; bucket.extendedGrossM2 += measured.gfaM2; }
+            }
             if (measured.gfaM2 === null) bucket.unmeasuredBuildings += 1;
             else {
                 bucket.grossFloorAreaM2 += measured.gfaM2;

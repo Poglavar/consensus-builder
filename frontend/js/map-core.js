@@ -683,7 +683,7 @@ function currentBuildingOutcomeState() {
 function buildingOutcomeSignature(state, id) {
     const record = state.demolishedById.get(id);
     if (!record) return 'tunnelled';
-    const kind = record.remainder ? 'cut' : 'destroyed';
+    const kind = record.extended ? 'extended' : record.remainder ? 'cut' : 'destroyed';
     return JSON.stringify([kind, record.geometry || null, record.demolishedPart || null, record.remainder || null]);
 }
 
@@ -697,7 +697,7 @@ function buildingFeatureWithOutcome(feature, state) {
     const classify = (typeof window.classifyBuildingOutcome === 'function') ? window.classifyBuildingOutcome : null;
     const outcome = classify
         ? classify(id, state)
-        : (record ? (record.remainder ? 'cut' : 'destroyed') : (state.tunnelledIds.has(id) ? 'tunnelled' : null));
+        : (record ? (record.extended ? 'extended' : record.remainder ? 'cut' : 'destroyed') : (state.tunnelledIds.has(id) ? 'tunnelled' : null));
     const geometry = window.PlanningScene.builtGeometry(feature.geometry, record, window.PlanningViews?.getState()?.existingScope);
     return { ...feature, geometry, properties: { ...(feature.properties || {}), __outcome: outcome } };
 }

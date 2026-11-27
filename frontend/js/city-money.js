@@ -81,12 +81,16 @@
     // on the construction, development charge, land and replaced value: a landlord who charges no tax on the rent and
     // reclaims none. A missing price or area keeps every amount that depends on it unknown (null),
     // never 0. The 3D panel (gain.js), Plan stats and the MCP comparison count with this.
-    function newBuildMoney({ floorAreaM2, replacedFloorAreaM2 = null, landAreaM2 = null, salePerM2, constructionPerM2,
+    function newBuildMoney({ floorAreaM2, keptFloorAreaM2 = 0, replacedFloorAreaM2 = null, landAreaM2 = null, salePerM2, constructionPerM2,
         landPerM2 = null, saleTaxShare = null, constructionTaxIncluded = false, rentPerM2Month = null, devChargePerM2 = 0 } = {}) {
         const amount = value => (typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null);
         const times = (a, b) => (a === null || b === null ? null : a * b);
         const sum = parts => (parts.some(part => part === null) ? null : parts.reduce((total, part) => total + part, 0));
-        const area = amount(floorAreaM2), replaced = amount(replacedFloorAreaM2), landArea = amount(landAreaM2);
+        // The floor area built: the designs' floor area less what extended buildings already had
+        // (`keptFloorAreaM2`, which is neither built nor sold nor replaced). Unknown while either is.
+        const whole = amount(floorAreaM2), kept = keptFloorAreaM2 === 0 ? 0 : amount(keptFloorAreaM2);
+        const area = whole === null || kept === null ? null : Math.max(0, whole - kept);
+        const replaced = amount(replacedFloorAreaM2), landArea = amount(landAreaM2);
         const sale = amount(salePerM2), cost = amount(constructionPerM2), land = amount(landPerM2), rent = amount(rentPerM2Month);
         const charge = amount(devChargePerM2);
         const tax = amount(saleTaxShare) !== null && saleTaxShare < 1 ? saleTaxShare : null;
@@ -104,7 +108,7 @@
         const profit = value === null || totalCost === null ? null : value - totalCost;
         const annualRent = area === null || rent === null ? null : area * rent * 12;
         const rentYieldOnCost = annualRent === null || buildCost === null || buildCost <= 0 ? null : annualRent / buildCost;
-        return { value, constructionCost, devCharge, landCost, saleTax, taxReclaimed, replacedValue, totalCost, profit, annualRent, rentYieldOnCost };
+        return { builtFloorAreaM2: area, value, constructionCost, devCharge, landCost, saleTax, taxReclaimed, replacedValue, totalCost, profit, annualRent, rentYieldOnCost };
     }
 
     // Parcel and road estimates retain the selected observation, including its unit and provenance.

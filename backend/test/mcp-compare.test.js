@@ -86,6 +86,21 @@ describe('MCP comparison measurements', () => {
         expect(authoredAreas([park, park]).greenAreaM2).toBeCloseTo(turf.area(parcel));
     });
 
+    it('keeps the floor area of buildings a design extends, and prices only what it adds', () => {
+        const raise = structuredClone(building);
+        raise.buildingProposal.parameters = { ...(raise.buildingProposal.parameters || {}), mode: 'existing' };
+        raise.geometry.buildings.forEach(item => { item.properties = { ...item.properties, floors: 4, height: 12, basedOnExisting: true, existingHeight: 9 }; });
+        const areas = authoredAreas([raise]);
+        expect(areas.buildingsExtended).toBe(raise.geometry.buildings.length);
+        expect(areas.keptFloorAreaM2 / areas.floorAreaM2).toBeCloseTo(0.75, 6);
+        expect(authoredAreas([building])).toMatchObject({ keptFloorAreaM2: 0, buildingsExtended: 0 });
+        raise.geometry.buildings[0].properties.existingHeight = null;
+        expect(authoredAreas([raise]).keptFloorAreaM2).toBeNull();
+        const money = moneyOf({ city: 'london', floorAreaM2: 400, keptFloorAreaM2: 300, replacedFloorAreaM2: 0, landAreaM2: 0,
+            prices: { salePerM2: 8000, constructionPerM2: 3000, landPerM2: 4000, saleTaxShare: 0, devChargePerM2: 0 } });
+        expect(money).toMatchObject({ keptFloorAreaM2: 300, builtFloorAreaM2: 100, value: 800000, constructionCost: 300000, landCost: 0, profit: 500000 });
+    });
+
     it('counts floor area by Plan stats\' rule, so an agent and a person read the same number', () => {
         const planYield = require('../../frontend/js/proposals/plan-yield.js');
         const shaped = properties => ({ ...building, geometry: { ...building.geometry,

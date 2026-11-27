@@ -147,6 +147,19 @@ describe('new floor area: value, all-in cost, profit and rent', () => {
         expect(money.profit).toBeCloseTo(4000000 - money.totalCost);
     });
 
+    it('builds, sells and taxes only what an extended building gains: its own floor area is kept', () => {
+        // 800 of the 1,000 m² stood already; nothing is replaced and no land is bought.
+        const money = newBuildMoney({ ...base, keptFloorAreaM2: 800, replacedFloorAreaM2: 0, landAreaM2: 0 });
+        expect(money).toMatchObject({ builtFloorAreaM2: 200, value: 800000, constructionCost: 400000, landCost: 0, replacedValue: 0 });
+        expect(money.saleTax).toBeCloseTo(800000 * 0.25 / 1.25);
+        expect(money.profit).toBeCloseTo(800000 - 400000 - money.saleTax);
+        expect(money.annualRent).toBe(200 * 15 * 12);
+        // Unknown kept floor area leaves the money unknown; none kept is the plain new building.
+        expect(newBuildMoney({ ...base, keptFloorAreaM2: null })).toMatchObject({ value: null, constructionCost: null, profit: null });
+        expect(newBuildMoney({ ...base, keptFloorAreaM2: 0 }).value).toBe(newBuildMoney(base).value);
+        expect(newBuildMoney(base).builtFloorAreaM2).toBe(1000);
+    });
+
     it('rents it by the month and yields the rent on the cost without the sale tax', () => {
         const money = newBuildMoney(base);
         expect(money.annualRent).toBe(1000 * 15 * 12);

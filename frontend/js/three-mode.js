@@ -587,6 +587,10 @@
     // The land under the panel's figures (the parcel, or the design's parcels or site), m²: a new
     // building's all-in cost pays for it at the land price.
     let lastLandM2 = null;
+    // The built floor area the proposed buildings keep where they extend existing ones (null:
+    // unknown), and the land they pay for (the land less the ground of pure extensions).
+    let lastKeptFloorAreaM2 = 0;
+    let lastAcquiredLandM2 = null;
     // Where that land is ([lng, lat], EconomicSources.locationOf): rates published per area (an English
     // authority's land value, a London value band) are that place's.
     let lastLocation = null;
@@ -1041,6 +1045,8 @@
         const comparison = window.ProposalGain.computeValueComparison({
             floorAreas: lastFloorAreas || {},
             landAreaM2: lastLandM2,
+            keptFloorAreaM2: lastKeptFloorAreaM2,
+            acquiredLandAreaM2: lastAcquiredLandM2 ?? undefined,
             salePerM2: prices.sale.perSqm,
             constructionPerM2: prices.construction.perSqm,
             landPerM2: prices.land.perSqm,
@@ -1243,6 +1249,8 @@
         lastParcelCount = null; // single parcel — no per-parcel average
         lastParcelFloorAreas = null;
         lastLandM2 = m.landM2;
+        lastKeptFloorAreaM2 = m.keptUnknown ? null : m.keptFloorArea;
+        lastAcquiredLandM2 = m.acquiredLandM2;
         lastLocation = window.EconomicSources.locationOf(getParcelFeatureById(parcelId));
 
         const L = panelLabels();
@@ -1310,6 +1318,8 @@
         lastParcelCount = summary.parcelCount;
         lastParcelFloorAreas = summary.parcelFloorAreas;
         lastLandM2 = summary.landM2;
+        lastKeptFloorAreaM2 = summary.keptUnknown ? null : summary.keptFloorArea;
+        lastAcquiredLandM2 = summary.acquiredLandM2;
         // The design's site, as ugt_compare locates it; else the parcels it stands on.
         lastLocation = window.EconomicSources.locationOf(proposalSiteFeature(proposal) || [...idSet].map(getParcelFeatureById).filter(Boolean));
 
@@ -6648,7 +6658,7 @@
             const meshDedupeState = nearbyBuildingGeometryCache.beginPass({
                 buildings: nearbyProposalBuildings,
                 // Which buildings are razed or cut, and how: a changed carve rebuilds the pass.
-                carveRecords: [...carveRecords.entries()].map(([key, record]) => [key, record.remainder ? JSON.stringify(record.remainder).length : 0]).sort(),
+                carveRecords: [...carveRecords.entries()].map(([key, record]) => [key, record.remainder ? JSON.stringify(record.remainder).length : 0, record.extended === true]).sort(),
                 // Where passages open the buildings.
                 passages: passages.map(passage => [passage.id, passage.ring]),
                 visibility,
@@ -6710,10 +6720,11 @@
                             return;
                         }
                         if (!renderParts.detailed) return;
-                        const mesh = buildMeshFromBuilding3D(bld, demolishedMaterial, meshDedupeState);
+                        // An extended building is kept, so it keeps its own material and its click.
+                        const mesh = buildMeshFromBuilding3D(bld, carve.extended ? buildingMaterial : demolishedMaterial, meshDedupeState);
                         // A condemned volume gives a click to the design that takes its place
                         // (three-click-plan.js subjectHit), as the 2D map and the photo view do.
-                        if (mesh) { mesh.userData.condemned = true; addObserved(mesh); }
+                        if (mesh) { if (!carve.extended) mesh.userData.condemned = true; addObserved(mesh); }
                     } catch (e) {
                         failures++;
                         console.warn('Failed to build 3D mesh for building', bld && bld.object_id, e);

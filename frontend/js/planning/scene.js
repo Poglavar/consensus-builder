@@ -75,7 +75,8 @@
     function builtGeometry(geometry, record, scope = 'all') {
         if (scope === 'all') return geometry;
         if (scope === 'surviving') return record ? (record.remainder || null) : geometry;
-        if (scope === 'removed') return record ? (record.demolishedPart || record.geometry || geometry) : null;
+        // An extended building is kept: nothing of it is removed.
+        if (scope === 'removed') return record && !record.extended ? (record.demolishedPart || record.geometry || geometry) : null;
         return geometry;
     }
     function queryKey(city, bbox) { return `${city}:${bbox.map(value => Number(value).toFixed(5)).join(',')}`; }

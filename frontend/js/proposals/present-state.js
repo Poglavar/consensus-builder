@@ -229,16 +229,19 @@
      * Plan stats counts the floor area a plan clears by the same plan-yield rules as what it adds.
      */
     function clearanceSplit({ built, regions, ops }) {
-        const remaining = [], cleared = [];
+        const remaining = [], cleared = [], extended = [];
         built.forEach(record => {
             const original = record.buildingProposal.buildings[0];
             const { outcome, feature } = clearance(original, regions, ops);
             if (outcome === 'kept') { remaining.push(record); return; }
+            // An extended building is kept, and counted as its design's redrawn building: neither
+            // one that remains beside the designs nor one they clear.
+            if (outcome === 'extended') { extended.push({ before: record }); return; }
             const after = outcome === 'gone' ? null : { ...record, buildingProposal: { buildings: [feature] } };
             if (after) remaining.push(after);
             cleared.push({ before: record, after });
         });
-        return { remaining, cleared };
+        return { remaining, cleared, extended };
     }
 
     /**
@@ -248,15 +251,22 @@
      */
     function clearance(footprint, regions, ops) {
         const footprintM2 = ops.areaOf(footprint);
-        let feature = footprint;
+        let feature = footprint, extended = false;
         for (const region of regions) {
             const clip = ops.intersect(feature, region);
             if (!clip || ops.areaOf(clip) < 2) continue;
+            // The ground of a design that redraws existing buildings (properties.extending) clears
+            // nothing: the building at least half under it is extended (demolition-derive.js).
+            if (region.properties && region.properties.extending === true) {
+                if (ops.areaOf(clip) >= footprintM2 * 0.5) extended = true;
+                continue;
+            }
             const rest = ops.difference(feature, region);
             const restM2 = rest ? ops.areaOf(rest) : 0;
             if (!rest || restM2 < Math.max(10, footprintM2 * 0.15)) return { outcome: 'gone', feature: null };
             feature = { ...feature, geometry: rest.geometry };
         }
+        if (feature === footprint && extended) return { outcome: 'extended', feature: null };
         return { outcome: feature === footprint ? 'kept' : 'cut', feature };
     }
 
@@ -333,7 +343,8 @@
                 normalizeGoalKey: goal => win.__applyRoute.normalizeGoalKey(goal),
                 structureGeometry: proposal => proposal.structureProposal && proposal.structureProposal.geometry
             });
-            return [...regions.map(region => ({ type: 'Feature', properties: {}, geometry: region.geometry })), ...(snapshot.corridorFeatures || [])];
+            return [...regions.map(region => ({ type: 'Feature', properties: region.extending ? { extending: true } : {}, geometry: region.geometry })),
+                ...(snapshot.corridorFeatures || [])];
         }
 
         // Our server's Overpass chain (GET /osm-public-spaces) first; null when it cannot answer
@@ -404,16 +415,16 @@
         async function groundOf(snapshot, { floorHeightM = 3, signal } = {}) {
             signal?.throwIfAborted();
             const landFeature = snapshot.landFeature;
-            if (!landFeature) return { land: { publicLandM2: null, privateLandM2: null }, remaining: [], cleared: [] };
+            if (!landFeature) return { land: { publicLandM2: null, privateLandM2: null }, remaining: [], cleared: [], extended: [] };
             const box = bboxOf([landFeature]);
             const parcels = clipToLand(snapshot.cadastralFeatures, landFeature, ops);
             const [spaces, isRoad, existing] = await Promise.all([publicSpaces(box), roadTest(box), existingOn(parcels, floorHeightM)]);
             signal?.throwIfAborted();
             const land = splitLand({ pieces: clipToLand(snapshot.materializedFeatures, landFeature, ops),
                 corridors: clipToLand(snapshot.corridorFeatures, landFeature, ops), cadastral: parcels, isRoad, spaces, ops });
-            const { remaining, cleared } = clearanceSplit({ built: existing, regions: demolitionGround(snapshot), ops });
-            log(`${snapshot.plan?.content?.title || 'plan'}: ${remaining.length} of ${existing.length} existing buildings remain, ${cleared.length} cleared in whole or part`);
-            return { land, remaining, cleared };
+            const { remaining, cleared, extended } = clearanceSplit({ built: existing, regions: demolitionGround(snapshot), ops });
+            log(`${snapshot.plan?.content?.title || 'plan'}: ${remaining.length} of ${existing.length} existing buildings remain, ${cleared.length} cleared in whole or part, ${extended.length} extended`);
+            return { land, remaining, cleared, extended };
         }
 
         /**

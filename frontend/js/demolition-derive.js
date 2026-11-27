@@ -15,6 +15,8 @@
     const MIN_TAKEN_M2 = 2;
     const MIN_REMAINDER_M2 = 10;
     const MIN_REMAINDER_FRACTION = 0.15;
+    // A design that redraws existing buildings extends the one at least half under its footprints.
+    const MIN_EXTENDED_FRACTION = 0.5;
 
     const fromGlobalOrRequire = (name, path, key = name) => (typeof global[name] === 'function' ? global[name] : require(path)[key]);
     const feature = geometry => ({ type: 'Feature', properties: {}, geometry });
@@ -93,17 +95,21 @@
     }
 
     /**
-     * takers:   [{ proposalId, region: Polygon|MultiPolygon, tunnels?: [Polygon] }] — the land each
-     *           applied design takes; a road's building tunnels take nothing.
+     * takers:   [{ proposalId, region: Polygon|MultiPolygon, tunnels?: [Polygon], extending?: true }] — the
+     *           land each applied design takes; a road's building tunnels take nothing. An `extending`
+     *           taker redraws existing buildings on their own footprints: it replaces and cuts nothing.
      * buildings: [{ key, geometry }] — the buildings shown (key = `<source>:<id>`).
      * → { records: Map<key, { id, geometry, demolishedPart?, remainder?, proposalId, proposalIds }>,
      *     tunnelled: Map<key, { proposalIds }>, failures: [{ key, error }] }
      * A record without `remainder` is a raze; with one, a cut. Order of the takers does not matter:
-     * a building is cut against the union of what every taker clips from it.
+     * a building is cut against the union of what every taker clips from it. A building no taker
+     * clears, at least half under an extending taker, gets a record with `extended: true` instead:
+     * it is kept, and the design's redrawn building stands for it.
      */
     function derive({ takers, buildings }, turf) {
         const prepared = (takers || []).map(taker => ({
             proposalId: taker.proposalId == null ? null : String(taker.proposalId),
+            extending: taker.extending === true,
             parts: partsOf(taker.region),
             tunnels: (taker.tunnels || []).map(geometry => ({ geometry, bbox: bboxOf(geometry) })),
             bbox: bboxOf(taker.region)
@@ -133,6 +139,7 @@
         let taken = null;
         const takenBy = [];
         const tunnelledBy = [];
+        const extendedBy = [];
         for (const taker of takers) {
             let clip = null;
             for (const part of taker.parts) {
@@ -142,6 +149,10 @@
                 clip = clip ? turf.union(clip, piece) : piece;
             }
             if (!clip) continue;
+            if (taker.extending) {
+                if (area(turf, clip) >= Math.max(MIN_TAKEN_M2, footprintArea * MIN_EXTENDED_FRACTION)) extendedBy.push(taker.proposalId);
+                continue;
+            }
             for (const tunnel of taker.tunnels) {
                 if (!overlaps(tunnel.bbox, box) || !clip) continue;
                 const under = turf.intersect(clip, feature(tunnel.geometry));
@@ -153,7 +164,14 @@
             takenBy.push(taker.proposalId);
             taken = taken ? turf.union(clean(turf, taken), clean(turf, clip)) : clip;
         }
-        if (!taken) return tunnelledBy.length ? { tunnelledBy } : null;
+        if (!taken) {
+            const extenders = extendedBy.filter(id => id !== null);
+            if (extendedBy.length) {
+                return { record: { id: building.key, geometry: building.geometry, proposalId: extenders[extenders.length - 1] ?? null,
+                    proposalIds: extenders, extended: true } };
+            }
+            return tunnelledBy.length ? { tunnelledBy } : null;
+        }
         const remainder = turf.difference(footprint, clean(turf, taken));
         const proposalIds = takenBy.filter(id => id !== null);
         const base = { id: building.key, geometry: building.geometry, proposalId: proposalIds[proposalIds.length - 1] ?? null, proposalIds };
@@ -161,5 +179,5 @@
         return { record: { ...base, demolishedPart: taken.geometry, remainder: remainder.geometry } };
     }
 
-    return { MIN_TAKEN_M2, MIN_REMAINDER_M2, MIN_REMAINDER_FRACTION, TUNNEL_CLEARANCE_M, derive, tunnelSpansOf, tunnelRegionsOf, bboxOf };
+    return { MIN_TAKEN_M2, MIN_REMAINDER_M2, MIN_REMAINDER_FRACTION, MIN_EXTENDED_FRACTION, TUNNEL_CLEARANCE_M, derive, tunnelSpansOf, tunnelRegionsOf, bboxOf };
 });
