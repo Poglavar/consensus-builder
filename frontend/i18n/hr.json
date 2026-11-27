@@ -10592,7 +10592,7 @@
 ,
   "chat": {
     "title": "Pitajte Hipodama",
-    "intro": "Opišite promjenu plana na kojem radite.",
+    "greeting": "Kako vam danas mogu pomoći osmisliti dobar grad?",
     "tips": {
       "title": "Pokušajte pitati",
       "design": "Osmisli park na odabranim česticama ili pomakni zgradu 50 m prema sjeveru.",

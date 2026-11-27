@@ -1,3 +1,7 @@
+/* The Ask Hippodamus sheet (js/chat/chat-panel.js): his greeting with suggestions to ask, the
+   conversation as speech bubbles, then the composer and the conversation's controls. */
+.chat-sheet .map-sheet-title { display: flex; align-items: center; gap: var(--cb-space-2); }
+.chat-sheet .map-sheet-title .cb-avatar-hippodamus { width: 2em; height: 2em; }
 .chat-sheet__body {
     display: flex;
     flex-direction: column;
@@ -5,35 +9,139 @@
     overflow: hidden;
     gap: var(--cb-space-2);
 }
-.chat-intro,
 .chat-cost,
 .chat-status,
 .chat-agreement-status { margin: 0; color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
-.chat-tips { flex: 0 1 auto; max-height: 8.5rem; }
-.chat-tips[open] { overflow-y: auto; }
-.chat-tips__summary { position: sticky; top: 0; z-index: var(--cb-z-local-1); cursor: pointer; color: var(--cb-text-muted); font-size: var(--cb-text-sm); font-weight: 600; background: var(--cb-surface); }
-.chat-tips__list { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cb-space-1); }
-.chat-tip { max-width: 100%; white-space: normal; text-align: start; }
 .chat-status:empty,
 .chat-agreement-status:empty { display: none; }
 .chat-agreement-link { align-self: flex-start; }
+
+/* The greeting and the messages scroll together, so the suggestions stay above the conversation. */
 .chat-transcript {
     flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: var(--cb-space-2);
-    padding: var(--cb-space-1);
+    gap: var(--cb-space-3);
+    padding-block: var(--cb-space-1);
 }
-.chat-message { overflow-wrap: anywhere; padding: var(--cb-space-2); border-radius: var(--cb-radius-md); background: var(--cb-surface-2); }
-.chat-message--user { background: var(--cb-primary-soft); color: var(--cb-primary-soft-ink); }
-.chat-message--agent { background: var(--cb-surface); color: var(--cb-text); }
-.chat-message p { margin: var(--cb-space-1) 0 0; }
+.chat-log { display: flex; flex-direction: column; gap: var(--cb-space-3); }
+.chat-log:empty { display: none; }
+
+.chat-greeting { display: flex; align-items: flex-start; gap: var(--cb-space-3); }
+.chat-greeting__portrait.cb-avatar-hippodamus {
+    width: 72px;
+    height: 72px;
+    box-shadow: 0 0 0 2px var(--cb-surface), 0 0 0 3px var(--cb-line);
+}
+.chat-greeting__portrait.is-animated { background: none; }
+.chat-greeting__face { display: block; width: 100%; height: 100%; }
+.chat-greeting__bubble,
+.chat-message {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
+    background: var(--cb-surface-2);
+    color: var(--cb-text);
+    line-height: 1.5;
+}
+/* A bubble's corner nearest its speaker is the sharp one. */
+.chat-greeting__bubble,
+.chat-message--agent { border-start-start-radius: var(--cb-radius-sm); }
+.chat-greeting__bubble { flex: 1 1 auto; padding-block: var(--cb-space-3); }
+.chat-greeting__question {
+    margin: 0;
+    font-size: var(--cb-text-lg);
+    font-weight: var(--cb-weight-semibold);
+    line-height: 1.35;
+}
+.chat-greeting__kicker {
+    margin: var(--cb-space-3) 0 var(--cb-space-2);
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-medium);
+}
+.chat-tips { display: flex; flex-direction: column; gap: var(--cb-space-1); }
+.chat-tip {
+    justify-content: flex-start;
+    width: 100%;
+    min-height: var(--cb-control-height-sm);
+    white-space: normal;
+    text-align: start;
+}
+
+.chat-message { max-width: 92%; }
+.chat-message--user {
+    align-self: flex-end;
+    border-color: transparent;
+    border-end-end-radius: var(--cb-radius-sm);
+    background: var(--cb-primary-soft);
+    color: var(--cb-primary-soft-ink);
+}
+.chat-message--agent { align-self: flex-start; }
+.chat-message p { margin: var(--cb-space-1) 0 0; white-space: pre-line; }
 /* Who wrote the message; the assistant's portrait stands before its name. */
-.chat-message__author { display: inline-flex; align-items: center; gap: var(--cb-space-1); }
+.chat-message__author {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+}
+.chat-message--agent .chat-message__author { color: var(--cb-text-muted); }
+.chat-message__author .cb-avatar-hippodamus { width: 24px; height: 24px; }
 .chat-copy-button { flex: 0 0 auto; margin-top: var(--cb-space-1); }
 .chat-options,
 .chat-controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cb-space-1); }
-.chat-composer { display: flex; align-items: flex-end; gap: var(--cb-space-2); padding-bottom: env(safe-area-inset-bottom, 0px); }
-.chat-input { flex: 1 1 auto; min-width: 0; min-height: 2.75rem; max-height: 35vh; resize: vertical; }
+.chat-options { margin-top: var(--cb-space-2); }
+.chat-composer { display: flex; align-items: flex-end; gap: var(--cb-space-2); }
+.chat-controls { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.chat-input { flex: 1 1 auto; min-width: 0; min-height: 2.75rem; max-height: 35vh; resize: vertical; font-size: var(--cb-text-base); }
+
+@media (max-width: 480px) {
+    .chat-greeting__portrait.cb-avatar-hippodamus { width: 56px; height: 56px; }
+}
+
+/* Now and then the greeting's Hippodamus smiles, raises his brows or frowns, and he blinks; the
+   two cycles have different lengths so they do not fall into step. */
+.chat-greeting__face :is(.hippodamus-eye, .hippodamus-brow) { transform-box: fill-box; transform-origin: center; }
+.chat-greeting__face .hippodamus-eye { animation: hippodamus-blink 5.3s infinite; }
+.chat-greeting__face .hippodamus-brow--left { animation: hippodamus-brow-left 19s ease-in-out infinite; }
+.chat-greeting__face .hippodamus-brow--right { animation: hippodamus-brow-right 19s ease-in-out infinite; }
+.chat-greeting__face .hippodamus-mouth--rest { animation: hippodamus-mouth-rest 19s infinite; }
+.chat-greeting__face .hippodamus-mouth--smile { animation: hippodamus-mouth-smile 19s infinite; }
+.chat-greeting__face .hippodamus-mouth--frown { animation: hippodamus-mouth-frown 19s infinite; }
+@keyframes hippodamus-blink {
+    0%, 93%, 100% { transform: scaleY(1); }
+    95%, 96% { transform: scaleY(0.1); }
+}
+@keyframes hippodamus-brow-left {
+    0%, 10%, 32%, 46%, 58%, 72%, 86%, 100% { transform: none; }
+    14%, 28% { transform: translateY(-1.2px); }
+    49%, 55% { transform: translateY(-3.4px); }
+    75%, 83% { transform: translateY(1.2px) rotate(20deg); }
+}
+@keyframes hippodamus-brow-right {
+    0%, 10%, 32%, 46%, 58%, 72%, 86%, 100% { transform: none; }
+    14%, 28% { transform: translateY(-1.2px); }
+    49%, 55% { transform: translateY(-3.4px); }
+    75%, 83% { transform: translateY(1.2px) rotate(-20deg); }
+}
+@keyframes hippodamus-mouth-rest {
+    0%, 12%, 31%, 74%, 85%, 100% { opacity: 1; }
+    14%, 29%, 76%, 83% { opacity: 0; }
+}
+@keyframes hippodamus-mouth-smile {
+    0%, 12%, 31%, 100% { opacity: 0; }
+    14%, 29% { opacity: 1; }
+}
+@keyframes hippodamus-mouth-frown {
+    0%, 74%, 85%, 100% { opacity: 0; }
+    76%, 83% { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .chat-greeting__face :is(.hippodamus-eye, .hippodamus-brow, .hippodamus-mouth) { animation: none; }
+}

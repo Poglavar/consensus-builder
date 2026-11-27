@@ -10543,7 +10543,7 @@
 ,
   "chat": {
     "title": "Pergunte a Hipódamo",
-    "intro": "Descreva uma alteração para o seu plano de trabalho.",
+    "greeting": "Como posso ajudar a projetar uma boa cidade hoje?",
     "tips": {
       "title": "Experimente perguntar",
       "design": "Desenhe um parque nos lotes selecionados ou mova um edifício 50 m para norte.",

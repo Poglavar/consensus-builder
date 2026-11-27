@@ -10543,7 +10543,7 @@
 ,
   "chat": {
     "title": "Demander à Hippodamos",
-    "intro": "Décrivez une modification de votre plan de travail.",
+    "greeting": "Comment puis-je vous aider à concevoir une bonne ville aujourd’hui ?",
     "tips": {
       "title": "Essayez de demander",
       "design": "Concevez un parc sur les parcelles sélectionnées ou déplacez un bâtiment de 50 m vers le nord.",

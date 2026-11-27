@@ -3,7 +3,7 @@
     // Loaded on the chat sheet's first open; the transcript outlives other sheets closing it.
     const transcript = win.__chatTranscript, context = win.__chatContext;
     const t = (key, values) => win.i18n?.t?.(key, values) || key;
-    let host, introNode, tips, tipButtons = [], messages, status, agreementStatus, agreementLink, total, input, sendButton, undoButton, newButton, conversationCopyButton, state = transcript.initial(), lastSynced = null, turnBaseRow = null, turnBaseCaptured = false, resetAfterTurn = false, operation = false;
+    let host, scroller, greetingText, tipsTitle, tipButtons = [], messages, status, agreementStatus, agreementLink, total, input, sendButton, undoButton, newButton, conversationCopyButton, state = transcript.initial(), lastSynced = null, turnBaseRow = null, turnBaseCaptured = false, resetAfterTurn = false, operation = false;
     const TIPS = [
         { key: 'chat.tips.design' }, { key: 'chat.tips.agreement' }, { key: 'chat.tips.feedback' },
         { key: 'chat.tips.sources' }, { key: 'chat.tips.affordableHousing' }, { key: 'chat.tips.tools' }
@@ -98,12 +98,16 @@
         if (!root) return;
         if (host === root) { render(); return; }
         host = root; root.replaceChildren();
-        introNode = node('p', 'chat-intro', t('chat.intro')); root.append(introNode);
-        tips = node('details', 'chat-tips');
-        const tipsTitle = node('summary', 'chat-tips__summary', t('chat.tips.title')); tips.append(tipsTitle);
-        const tipList = node('div', 'chat-tips__list');
+        // Hippodamus opens the conversation: his portrait, his question and what to ask him, at the
+        // top of the scrolling transcript so it stays reachable above the messages.
+        const greeting = node('section', 'chat-greeting');
+        const portrait = node('span', 'chat-greeting__portrait cb-avatar-hippodamus'); portrait.setAttribute('aria-hidden', 'true');
+        const bubble = node('div', 'chat-greeting__bubble');
+        greetingText = node('p', 'chat-greeting__question', t('chat.greeting'));
+        tipsTitle = node('p', 'chat-greeting__kicker', t('chat.tips.title')); tipsTitle.id = 'chat-tips-title';
+        const tipList = node('div', 'chat-tips'); tipList.setAttribute('role', 'group'); tipList.setAttribute('aria-labelledby', tipsTitle.id);
         tipButtons = TIPS.map(tip => {
-            const button = node('button', 'btn btn-quiet btn-sm chat-tip', t(tip.key)); button.type = 'button';
+            const button = node('button', 'btn btn-quiet chat-tip', t(tip.key)); button.type = 'button';
             button.addEventListener('click', () => {
                 input.value = t(tip.key);
                 input.focus();
@@ -111,8 +115,10 @@
             });
             tipList.append(button); return button;
         });
-        tips.append(tipList); root.append(tips);
-        messages = node('div', 'chat-transcript'); messages.setAttribute('role', 'log'); messages.setAttribute('aria-live', 'polite'); messages.setAttribute('aria-label', t('chat.title'));
+        bubble.append(greetingText, tipsTitle, tipList); greeting.append(portrait, bubble);
+        livenPortrait(portrait).catch(error => console.warn(`[${new Date().toISOString()}] [chat] Hippodamus stays a still portrait:`, error));
+        scroller = node('div', 'chat-transcript');
+        messages = node('div', 'chat-log'); messages.setAttribute('role', 'log'); messages.setAttribute('aria-live', 'polite'); messages.setAttribute('aria-label', t('chat.title'));
         status = node('div', 'chat-status'); status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
         agreementStatus = node('p', 'chat-agreement-status'); agreementStatus.setAttribute('role', 'status'); agreementStatus.setAttribute('aria-live', 'polite');
         agreementLink = node('a', 'btn btn-quiet btn-sm chat-agreement-link', t('chat.reviewAgreement')); agreementLink.target = '_blank'; agreementLink.rel = 'noopener noreferrer'; agreementLink.hidden = true;
@@ -124,8 +130,20 @@
         const composer = node('div', 'chat-composer'); input = node('textarea', 'chat-input'); input.rows = 2; input.enterKeyHint = 'send'; input.placeholder = t('chat.placeholder'); input.setAttribute('aria-label', t('chat.placeholder'));
         sendButton = actionButton('chat.send', 'btn btn-primary btn-sm', () => send(input.value));
         input.addEventListener('keydown', event => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); win.BusyControl.track(sendButton, () => send(input.value)).catch(showError); } });
-        composer.append(input, sendButton); root.append(messages, status, agreementStatus, agreementLink, total, controls, composer);
+        composer.append(input, sendButton); scroller.append(greeting, messages);
+        root.append(scroller, status, agreementStatus, agreementLink, total, composer, controls);
         const saved = win.ChatClient.conversation(); if (saved) dispatch({ type: 'conversation', conversation: saved }); else render();
+    }
+    // The greeting's portrait is the same artwork inlined, so chat-panel.css can move his eyes, brows
+    // and mouth; with reduced motion it stays the still image.
+    async function livenPortrait(target) {
+        if (win.__reducedMotion) return;
+        const response = await fetch(new URL('assets/avatars/hippodamus.svg', doc.baseURI));
+        if (!response.ok) throw new Error(`HTTP ${response.status} for the portrait`);
+        const svg = new DOMParser().parseFromString(await response.text(), 'image/svg+xml').documentElement;
+        if (svg.localName !== 'svg') throw new Error('The portrait is not an SVG document.');
+        svg.setAttribute('focusable', 'false'); svg.classList.add('chat-greeting__face');
+        target.replaceChildren(doc.importNode(svg, true)); target.classList.add('is-animated');
     }
     function showError(error) { dispatch({ type: 'turn:failed', code: error?.code || 'stream_error', status: error?.status }); }
     async function send(text) {
@@ -281,7 +299,8 @@
             if (message.role === 'agent' && message.text?.trim()) article.append(copyButton('chat.copyReply', () => message.text));
             messages.append(article);
         });
-        messages.scrollTop = messages.scrollHeight;
+        // An empty conversation shows the greeting from its question down; otherwise the latest message.
+        scroller.scrollTop = state.messages.length ? scroller.scrollHeight : 0;
         if (focused) [...messages.querySelectorAll('.chat-option')].find(button => button.dataset.chatOptionKey === focused)?.focus({ preventScroll: true });
         status.textContent = state.pending ? t('chat.working') : state.error ? t(state.error.key || transcript.errorKey(state.error.code, state.error.status)) : '';
         total.hidden = state.conversation?.debugCosts !== true || !state.totals.turns;
@@ -325,8 +344,8 @@
     doc.addEventListener('proposalCreated', render);
     win.addEventListener('i18n:translationsLoaded', () => {
         if (!host) return;
-        introNode.textContent = t('chat.intro');
-        tips.querySelector('.chat-tips__summary').textContent = t('chat.tips.title');
+        greetingText.textContent = t('chat.greeting');
+        tipsTitle.textContent = t('chat.tips.title');
         tipButtons.forEach((button, index) => { button.textContent = t(TIPS[index].key); });
         input.placeholder = t('chat.placeholder'); input.setAttribute('aria-label', t('chat.placeholder'));
         sendButton.textContent = t('chat.send'); undoButton.textContent = t('chat.undo'); newButton.textContent = t('chat.newConversation'); agreementLink.textContent = t('chat.reviewAgreement');

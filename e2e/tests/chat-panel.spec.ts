@@ -46,11 +46,10 @@ test('chat panel sends a turn and announces the streamed reply @core', async ({ 
   await expect(chatHeading).toBeVisible();
   await expect(chatHeading.locator('.cb-avatar-hippodamus')).toHaveAttribute('aria-hidden', 'true');
   const composer = sheet.locator('.chat-input');
-  const tips = sheet.locator('details.chat-tips');
-  const tipsSummary = tips.locator('summary');
-  await tipsSummary.focus();
-  await tipsSummary.press('Enter');
-  await expect(tips).toHaveAttribute('open', '');
+  // Hippodamus greets with his question and the suggestions to ask, no fold to open first.
+  await expect(sheet.locator('.chat-greeting__question')).toHaveText('How can I help you design a good city today?');
+  const tips = sheet.getByRole('group', { name: 'Try asking' });
+  await expect(tips.getByRole('button')).toHaveCount(6);
   const designTip = sheet.getByRole('button', { name: 'Design a park on the selected parcels or move a building 50 m north.' });
   await designTip.focus();
   await designTip.press('Enter');
@@ -75,7 +74,7 @@ test('chat panel sends a turn and announces the streamed reply @core', async ({ 
   await option.click();
   await expect(sheet.getByText('I updated the working plan.')).toBeVisible();
   await expect(steps).toHaveAttribute('open', '');
-  await expect(tips).toHaveAttribute('open', '');
+  await expect(sheet.locator('.chat-greeting__question')).toHaveText('Comment puis-je vous aider à concevoir une bonne ville aujourd’hui ?');
   await expect(composer).toBeFocused();
   expect(sent[0].text).toBe('Add a park');
   expect(sent[1].text).toBe('Move it north');
@@ -328,21 +327,15 @@ test('chat applies a private plan revision and undo removes its first draft @cor
   const restoredSheet = page.locator(selectors.chatSheet);
   await expect(restoredSheet.getByRole('link', { name: 'Review agreement' })).toBeVisible();
   await expect(restoredSheet.locator('.chat-agreement-status')).toHaveText('This agreement is for an earlier version of the plan. Ask for a new agreement for the current plan.');
-  const restoredTips = restoredSheet.locator('details.chat-tips');
-  const restoredSummary = restoredTips.locator('summary');
-  await restoredSummary.focus();
-  await restoredSummary.press('Enter');
-  await expect(restoredTips).toHaveAttribute('open', '');
-  const tipLayout = await restoredTips.evaluate(element => {
-    const summary = element.querySelector('summary')!;
-    const top = summary.getBoundingClientRect().top;
-    element.scrollTop = element.scrollHeight;
-    return { maxHeight: Number.parseFloat(getComputedStyle(element).maxHeight), listScrolls: element.scrollHeight > element.clientHeight,
-      summaryStayedVisible: Math.abs(summary.getBoundingClientRect().top - top) < 1 && summary.getBoundingClientRect().bottom > 0 };
+  // The greeting scrolls with the transcript, above any messages, and the composer stays in view.
+  const restoredGreeting = restoredSheet.locator('.chat-transcript > .chat-greeting');
+  await expect(restoredGreeting.getByRole('group', { name: 'Try asking' }).getByRole('button')).toHaveCount(6);
+  const greetingLayout = await restoredSheet.evaluate(element => {
+    const transcript = element.querySelector('.chat-transcript')!;
+    return { greetingFirst: transcript.firstElementChild!.classList.contains('chat-greeting'),
+      composerVisible: element.querySelector('.chat-input')!.getBoundingClientRect().bottom <= element.getBoundingClientRect().bottom + 1 };
   });
-  expect(tipLayout.maxHeight).toBeLessThanOrEqual(136);
-  expect(tipLayout.listScrolls).toBe(true);
-  expect(tipLayout.summaryStayedVisible).toBe(true);
+  expect(greetingLayout).toEqual({ greetingFirst: true, composerVisible: true });
   const agreementTip = restoredSheet.getByRole('button', { name: 'Prepare a private agreement for the current plan.' });
   await agreementTip.focus();
   await agreementTip.press('Enter');

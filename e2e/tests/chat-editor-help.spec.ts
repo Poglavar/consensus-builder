@@ -36,10 +36,7 @@ async function openChatByKeyboard(page: any) {
   await page.keyboard.press('Enter');
   const sheet = page.locator(selectors.chatSheet);
   await expect(sheet).toBeVisible();
-  const tips = sheet.locator('details.chat-tips');
-  await tips.locator('summary').focus();
-  await page.keyboard.press('Enter');
-  const tip = sheet.getByRole('button', { name: editorTip, exact: true });
+  const tip = sheet.getByRole('group', { name: 'Try asking' }).getByRole('button', { name: editorTip, exact: true });
   await tip.focus();
   await page.keyboard.press('Enter');
   const composer = sheet.locator('.chat-input');

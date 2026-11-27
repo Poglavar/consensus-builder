@@ -10492,7 +10492,7 @@
 ,
   "chat": {
     "title": "Ask Hippodamus",
-    "intro": "Tell Hippodamus what you want to change.",
+    "greeting": "How can I help you design a good city today?",
     "tips": {
       "title": "Try asking",
       "design": "Design a park on the selected parcels or move a building 50 m north.",

@@ -76,8 +76,11 @@ from browser selection and current service health. Chat currently connects to th
 fixed MCP worker; a source catalogue is not an external MCP connection manager. Public parcel,
 building and imagery URL sources remain editable through the existing source settings.
 
-The localized **Try asking** section fills the composer with a prompt for design work, agreements,
-feedback, available sources or parcels near transit. Choosing a tip does not send it. The transit
+Hippodamus opens the panel with a greeting: his animated portrait (he blinks, and now and then smiles,
+raises his brows or frowns; still under reduced motion), the question "How can I help you design a
+good city today?" and, under **Try asking**, localized suggestions that fill the composer with a
+prompt for design work, agreements, feedback, available sources, parcels near transit or the open
+tool. The greeting scrolls with the transcript above the messages. Choosing a suggestion does not send it. The transit
 suggestion does not claim land is cheap or available: those conclusions require dated price and
 availability evidence as well as source-qualified parcels and transit access data.
 

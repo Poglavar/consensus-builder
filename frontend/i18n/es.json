@@ -10564,7 +10564,7 @@
 ,
   "chat": {
     "title": "Pregúntale a Hipódamo",
-    "intro": "Describe un cambio para tu plan de trabajo.",
+    "greeting": "¿Cómo puedo ayudarte hoy a diseñar una buena ciudad?",
     "tips": {
       "title": "Prueba a pedir",
       "design": "Diseña un parque en las parcelas seleccionadas o mueve un edificio 50 m al norte.",
