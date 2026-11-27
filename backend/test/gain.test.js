@@ -5,7 +5,7 @@ import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
 
 const require = createRequire(import.meta.url);
-const { dedupeCoincidentBuildings, computeParcelMetrics, computeGain, computeValueComparison } = require('../../frontend/js/proposals/gain.js');
+const { dedupeCoincidentBuildings, computeParcelMetrics, computeGain, computeValueComparison, summarizeProposalGround } = require('../../frontend/js/proposals/gain.js');
 
 // A small square building footprint at (lng,lat) with side ~ degrees, as a faces[] mesh entry.
 function meshBuilding(lng, lat, zmin, zmax, side = 0.0005) {
@@ -137,80 +137,101 @@ describe('computeGain', () => {
 
 // The 3D panel's Built / Planned / Proposed comparison at a sale price and a construction cost.
 describe('computeValueComparison', () => {
-    // 200 m² of land at 500 a m², no sale tax unless a test sets one.
-    const prices = { salePerM2: 4000, constructionPerM2: 2000, landPerM2: 500, saleTaxShare: 0, landAreaM2: 200, currency: 'GBP' };
+    // One plot: 200 m² of land at 500 a m² (100,000) under `built` m² of floor; no sale tax unless a test sets one.
+    const plot = (built, extra = {}) => ({ landM2: 200, acquiredLandM2: 200, builtFloorArea: built, keptFloorArea: 0, ...extra });
+    const prices = { salePerM2: 4000, constructionPerM2: 2000, landPerM2: 500, saleTaxShare: 0, currency: 'GBP' };
+    const compare = (floorAreas, extra = {}) => computeValueComparison({ floorAreas, plots: [plot(floorAreas.built)], ...prices, ...extra });
 
-    it('values every column and charges new building its all-in cost: construction, land, tax and the built value', () => {
-        const c = computeValueComparison({ floorAreas: { built: 100, planned: 400, proposed: 300 }, ...prices });
+    it('values every column and charges new building its all-in cost: construction, the plot, tax', () => {
+        const c = compare({ built: 100, planned: 400, proposed: 300 });
         expect(c.columns.built).toMatchObject({ available: true, floorArea: 100, value: 400000, totalCost: null, profit: null });
-        // 400 m² × 4,000 − (400 m² × 2,000 + 200 m² × 500 + the 400,000 the built floor area is worth)
-        expect(c.columns.planned).toMatchObject({ available: true, value: 1600000, constructionCost: 800000, landCost: 100000,
-            saleTax: 0, replacedValue: 400000, totalCost: 1300000, profit: 300000 });
-        expect(c.columns.proposed).toMatchObject({ available: true, value: 1200000, constructionCost: 600000, totalCost: 1100000, profit: 100000 });
+        // 400 m² × 4,000 − (400 m² × 2,000 + the plot at the higher of its land, 200 m² × 500, and
+        // the 400,000 the built floor area is worth)
+        expect(c.columns.planned).toMatchObject({ available: true, value: 1600000, constructionCost: 800000, acquisitionCost: 400000,
+            saleTax: 0, totalCost: 1200000, profit: 400000 });
+        expect(c.columns.proposed).toMatchObject({ available: true, value: 1200000, constructionCost: 600000, totalCost: 1000000, profit: 200000 });
         expect(c.currency).toBe('GBP');
+    });
+
+    it('buys a plot at its land value when that is higher than the floor area standing on it', () => {
+        // 10 m² standing are worth 40,000, the land 100,000: the plot costs 100,000, not 140,000.
+        const c = compare({ built: 10, planned: null, proposed: 300 });
+        expect(c.columns.proposed).toMatchObject({ acquisitionCost: 100000, totalCost: 700000, profit: 500000 });
+    });
+
+    it('buys each parcel on its own: a vacant one at its land, a built one at the higher of the two', () => {
+        // Two 100 m² parcels (50,000 of land each), 100 m² of floor (400,000) standing on the second.
+        const parcels = [{ landM2: 100, builtFloorArea: 0, proposedFloorArea: 150 }, { landM2: 100, builtFloorArea: 100, proposedFloorArea: 150 }];
+        const summary = summarizeProposalGround({ parcelMetrics: parcels });
+        expect(summary.plots).toHaveLength(2);
+        const c = computeValueComparison({ floorAreas: { built: summary.builtFloorArea, proposed: summary.proposedFloorArea }, plots: summary.plots, ...prices });
+        expect(c.columns.proposed).toMatchObject({ acquisitionCost: 50000 + 400000, profit: 1200000 - 600000 - 450000 });
     });
 
     it('charges an extension for what it adds: no land, no construction on the floor area it keeps', () => {
         // The 100 m² that stand are kept and 200 m² are added; the ground pays for no land.
-        const c = computeValueComparison({ floorAreas: { built: 100, planned: null, proposed: 300 }, ...prices, keptFloorAreaM2: 100, acquiredLandAreaM2: 0 });
-        // Shown whole (300 m² × 4,000 against the 400,000 that stands); 200 m² × 2,000 is built.
-        expect(c.columns.proposed).toMatchObject({ value: 1200000, constructionCost: 400000, landCost: 0, replacedValue: 400000, totalCost: 800000, profit: 400000 });
-        // The same floor areas as a replacement: construction on all of it, the land too.
-        expect(computeValueComparison({ floorAreas: { built: 100, planned: null, proposed: 300 }, ...prices }).columns.proposed)
-            .toMatchObject({ constructionCost: 600000, landCost: 100000, profit: 100000 });
+        const c = computeValueComparison({ floorAreas: { built: 100, planned: null, proposed: 300 }, ...prices,
+            plots: [plot(100, { acquiredLandM2: 0, keptFloorArea: 100 })] });
+        // Shown whole (300 m² × 4,000 against the 400,000 that stands, as acquired); 200 m² × 2,000 is built.
+        expect(c.columns.proposed).toMatchObject({ value: 1200000, constructionCost: 400000, acquisitionCost: 400000, totalCost: 800000, profit: 400000 });
+        // The same floor areas as a replacement: construction on all of it, the plot at its standing value.
+        expect(compare({ built: 100, planned: null, proposed: 300 }).columns.proposed)
+            .toMatchObject({ constructionCost: 600000, acquisitionCost: 400000, profit: 200000 });
         // An existing height nobody states leaves the money unknown.
-        expect(computeValueComparison({ floorAreas: { built: 100, planned: null, proposed: 300 }, ...prices, keptFloorAreaM2: null }).columns.proposed)
+        expect(computeValueComparison({ floorAreas: { built: 100, planned: null, proposed: 300 }, ...prices, plots: [plot(100, { keptFloorArea: null })] }).columns.proposed)
             .toMatchObject({ value: null, profit: null });
     });
 
     it('takes the sale tax out of the value it is inside', () => {
-        const c = computeValueComparison({ floorAreas: { built: 0, proposed: 300 }, ...prices, saleTaxShare: 0.25 });
+        const c = compare({ built: 0, proposed: 300 }, { saleTaxShare: 0.25 });
         // 1,200,000 includes 25 % tax: 240,000 of it is tax.
         expect(c.columns.proposed.saleTax).toBeCloseTo(240000);
         expect(c.columns.proposed.profit).toBeCloseTo(1200000 - 600000 - 100000 - 240000);
     });
 
     it('takes off the tax reclaimed on a construction cost that includes it', () => {
-        const c = computeValueComparison({ floorAreas: { built: 0, proposed: 300 }, ...prices, saleTaxShare: 0.25, constructionTaxIncluded: true });
+        const c = compare({ built: 0, proposed: 300 }, { saleTaxShare: 0.25, constructionTaxIncluded: true });
         // The 600,000 of construction includes 25 % tax: 120,000 of it comes back off the 240,000 owed.
         expect(c.columns.proposed.taxReclaimed).toBeCloseTo(120000);
         expect(c.columns.proposed.profit).toBeCloseTo(1200000 - 600000 - 100000 - 240000 + 120000);
-        expect(computeValueComparison({ floorAreas: { built: 0, proposed: 300 }, ...prices }).columns.proposed.taxReclaimed).toBe(0);
+        expect(compare({ built: 0, proposed: 300 }).columns.proposed.taxReclaimed).toBe(0);
     });
 
     it('greys out what is not there: no permitted massing, no proposed massing', () => {
-        const c = computeValueComparison({ floorAreas: { built: 100, planned: null, proposed: 0 }, ...prices });
+        const c = compare({ built: 100, planned: null, proposed: 0 });
         expect(c.columns.planned).toMatchObject({ available: false, floorArea: null, value: null, totalCost: null, profit: null });
         expect(c.columns.proposed.available).toBe(false);
         expect(c.columns.built.available).toBe(true);
     });
 
     it('keeps a profit unknown while the built value, the land or its price is', () => {
-        const noBuilt = computeValueComparison({ floorAreas: { built: null, planned: 400, proposed: 300 }, ...prices });
+        const noBuilt = compare({ built: null, planned: 400, proposed: 300 });
         expect(noBuilt.columns.built.available).toBe(false);
         expect(noBuilt.columns.proposed).toMatchObject({ available: true, value: 1200000, profit: null });
-        const noLandPrice = computeValueComparison({ floorAreas: { built: 0, proposed: 300 }, ...prices, landPerM2: null });
-        expect(noLandPrice.columns.proposed).toMatchObject({ constructionCost: 600000, landCost: null, totalCost: null, profit: null });
-        const noLand = computeValueComparison({ floorAreas: { built: 0, proposed: 300 }, ...prices, landAreaM2: null });
+        const noLandPrice = compare({ built: 0, proposed: 300 }, { landPerM2: null });
+        expect(noLandPrice.columns.proposed).toMatchObject({ constructionCost: 600000, acquisitionCost: null, totalCost: null, profit: null });
+        const noLand = compare({ built: 0, proposed: 300 }, { plots: [plot(0, { landM2: null, acquiredLandM2: null })] });
         expect(noLand.columns.proposed.profit).toBeNull();
+        expect(compare({ built: 0, proposed: 300 }, { plots: null }).columns.proposed.profit).toBeNull();
     });
 
     it('can lose money when building costs more than the floor area adds', () => {
-        const c = computeValueComparison({ floorAreas: { built: 300, proposed: 320 }, ...prices });
-        expect(c.columns.proposed.profit).toBe(320 * 2000 - 200 * 500 - 300 * 4000);
+        // The 300 m² standing (1,200,000) are worth more than their 100,000 of land: the plot costs 1,200,000.
+        const c = compare({ built: 300, proposed: 320 });
+        expect(c.columns.proposed.profit).toBe(320 * 2000 - 300 * 4000);
     });
 
     it('averages the proposed profit over the bound parcels and their land only', () => {
-        const c = computeValueComparison({ floorAreas: { built: 0, proposed: 400 }, ...prices, parcelCount: 2,
-            parcelFloorAreas: { built: 0, proposed: 200, land: 100 } });
+        const c = compare({ built: 0, proposed: 400 }, { parcelCount: 2,
+            parcelFloorAreas: { built: 0, proposed: 200, plots: [plot(0, { landM2: 100, acquiredLandM2: 100 })] } });
         expect(c.columns.proposed.profit).toBe(400 * 2000 - 200 * 500);
         expect(c.avgProfitPerParcel).toBe((200 * 2000 - 100 * 500) / 2);
-        expect(computeValueComparison({ floorAreas: { built: 0, proposed: 400 }, ...prices, parcelCount: null }).avgProfitPerParcel).toBeNull();
+        expect(compare({ built: 0, proposed: 400 }, { parcelCount: null }).avgProfitPerParcel).toBeNull();
     });
 
     it('charges the development charge on the new floor area of Planned and Proposed, never on Built', () => {
-        const c = computeValueComparison({ floorAreas: { built: 100, planned: 200, proposed: 300 }, ...prices, devChargePerM2: 40 });
-        const without = computeValueComparison({ floorAreas: { built: 100, planned: 200, proposed: 300 }, ...prices });
+        const c = compare({ built: 100, planned: 200, proposed: 300 }, { devChargePerM2: 40 });
+        const without = compare({ built: 100, planned: 200, proposed: 300 });
         expect(c.columns.proposed.devCharge).toBe(300 * 40);
         expect(c.columns.planned.devCharge).toBe(200 * 40);
         expect(c.columns.built.devCharge).toBeNull();
@@ -222,11 +243,12 @@ describe('computeValueComparison', () => {
     });
 
     it('keeps amounts dependent on missing source prices unknown without hiding floor area', () => {
-        const withoutSale = computeValueComparison({ floorAreas: { built: 100, proposed: 300 }, ...prices, salePerM2: null, parcelCount: 2 });
+        const withoutSale = compare({ built: 100, proposed: 300 }, { salePerM2: null, parcelCount: 2 });
         expect(withoutSale.columns.built.value).toBeNull();
-        expect(withoutSale.columns.proposed).toMatchObject({ available: true, floorArea: 300, value: null, constructionCost: 600000, landCost: 100000, profit: null });
+        // Without a sale price the 100 m² standing have no value, so which is higher is not known either.
+        expect(withoutSale.columns.proposed).toMatchObject({ available: true, floorArea: 300, value: null, constructionCost: 600000, acquisitionCost: null, profit: null });
         expect(withoutSale.avgProfitPerParcel).toBeNull();
-        const withoutCost = computeValueComparison({ floorAreas: { built: 100, proposed: 300 }, ...prices, constructionPerM2: null });
+        const withoutCost = compare({ built: 100, proposed: 300 }, { constructionPerM2: null });
         expect(withoutCost.columns.proposed).toMatchObject({ value: 1200000, constructionCost: null, profit: null });
     });
 });

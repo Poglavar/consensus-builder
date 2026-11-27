@@ -8,7 +8,8 @@ const eligibility = require('../../frontend/js/planning/eligibility.js');
 const set = eligibility.latest('gb-living-tradition-mansards');
 const fact = (value, key = 'k') => ({ value, source: 'osm', key, raw: String(value) });
 const georgian = { built: fact({ from: 1828, to: 1830 }), parapet: fact(true), storeys: fact(3), roof_shape: fact('flat'),
-    footprint_m2: fact(45.6), row_size: fact(20) };
+    footprint_m2: fact(45.6), row_size: fact(20), heritage: { value: { listed: false, grade: null, register: 'National Heritage List for England', reference: null, name: null, url: 'https://www.planning.data.gov.uk/dataset/listed-building', basis: 'none' }, source: 'gb-eng-nhle', key: 'listed-building', raw: 'no entry' } };
+const listing = (grade, listed = true) => ({ value: { listed, grade, register: 'National Heritage List for England', reference: '1195683', name: 'NUMBERS 26 TO 50', url: 'https://historicengland.org.uk/listing/the-list/list-entry/1195683', basis: 'house-number' }, source: 'gb-eng-nhle', key: 'listed-building', raw: 'x' });
 const statuses = result => Object.fromEntries(result.tests.map(test => [test.cite, test.status]));
 
 describe('Living Tradition eligibility', () => {
@@ -16,7 +17,7 @@ describe('Living Tradition eligibility', () => {
         const result = eligibility.evaluate(set, georgian);
         expect(result.verdict).toBe('eligible');
         expect(statuses(result)).toEqual({ '17.1': 'pass', '17.2': 'pass', '17.3': 'unchecked', '17.4': 'pass', '17.5': 'pass',
-            '17.6': 'pass', '17.7': 'pass', '17.8': 'unchecked', '17.9': 'unchecked', '17.10': 'unchecked' });
+            '17.6': 'pass', '17.7': 'pass', '17.8': 'unchecked', '17.9': 'pass', '17.10': 'unchecked' });
     });
     it('is unknown while a fact is, and never guesses one', () => {
         const result = eligibility.evaluate(set, { ...georgian, parapet: null, roof_shape: null, row_size: null });
@@ -34,6 +35,18 @@ describe('Living Tradition eligibility', () => {
         }
         // A semi-detached pair passes 17.6.
         expect(statuses(eligibility.evaluate(set, { ...georgian, row_size: fact(2) }))['17.6']).toBe('pass');
+    });
+    it('judges 17.9 from the heritage register: Grade II passes, Grade I and II* fail with the grade, an unknown listing or grade is unknown', () => {
+        const listingTest = heritage => eligibility.evaluate(set, { ...georgian, heritage }).tests.find(test => test.cite === '17.9');
+        expect(listingTest(listing('II'))).toMatchObject({ status: 'pass', grade: 'II' });
+        expect(listingTest(listing('II*'))).toMatchObject({ status: 'fail', grade: 'II*' });
+        expect(listingTest(listing('I'))).toMatchObject({ status: 'fail', grade: 'I' });
+        expect(eligibility.evaluate(set, { ...georgian, heritage: listing('II*') }).verdict).toBe('ineligible');
+        // Listed, but the register states no grade (an outline without its entry): unknown, never a pass.
+        expect(listingTest(listing(null)).status).toBe('unknown');
+        // No register covers the place, or an entry on the row may cover the house: the fact is null.
+        expect(listingTest(null).status).toBe('unknown');
+        expect(eligibility.evaluate(set, { ...georgian, heritage: null }).verdict).toBe('unknown');
     });
     it('reads dates as spans: "before 1913" passes, a span across 1918 is unknown', () => {
         const built = span => statuses(eligibility.evaluate(set, { ...georgian, built: fact(span) }))['17.1'];

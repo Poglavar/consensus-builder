@@ -71,17 +71,23 @@
 
     // What new floor area is worth, and costs, in one currency. Value is floor area × sale price (the
     // price as quoted, tax included). The all-in cost is the construction (floor area × construction
-    // cost), the development charge (floor area × the place's charge per m² of new floor area), the land
-    // (land area × land price per m² of land), the sale tax inside the value (value × saleTax ÷ (1 +
-    // saleTax)) and the value of the existing floor area it replaces at the sale price.
+    // cost), the development charge (floor area × the place's charge per m² of new floor area), the
+    // acquisition of the plots it is built on, and the sale tax inside the value (value × saleTax ÷
+    // (1 + saleTax)). A developer buys each plot once, at the higher of what its land is worth for
+    // development (land area × land price per m² of land) and what the existing floor area it replaces
+    // there is worth as it stands (that floor area × the sale price): `plots` lists them, each
+    // { landAreaM2, replacedFloorAreaM2 }; vacant land is its land value, and an extended building's plot
+    // (no land acquired, nothing replaced) costs nothing. The land under a replaced building is not
+    // paid for again on top of the building.
     // When the construction cost includes that tax on its inputs (`constructionTaxIncluded`, from the
     // rate's `taxIncluded`), the developer reclaims it from the tax on the sale: the all-in cost is less
     // `taxReclaimed` (construction × saleTax ÷ (1 + saleTax)); otherwise nothing is reclaimed (0).
     // Profit is value − all-in cost. Annual rent is floor area × monthly rent × 12, and its yield is
-    // on the construction, development charge, land and replaced value: a landlord who charges no tax on the rent and
-    // reclaims none. A missing price or area keeps every amount that depends on it unknown (null),
-    // never 0. The 3D panel (gain.js), Plan stats and the MCP comparison count with this.
-    function newBuildMoney({ floorAreaM2, keptFloorAreaM2 = 0, replacedFloorAreaM2 = null, landAreaM2 = null, salePerM2, constructionPerM2,
+    // on the construction, development charge and acquisition: a landlord who charges no tax on the rent and
+    // reclaims none. A missing price or area, or a plot whose land or replaced floor area is unknown,
+    // keeps every amount that depends on it unknown (null), never 0; no `plots` at all is an unknown
+    // acquisition. The 3D panel (gain.js), Plan stats and the MCP comparison count with this.
+    function newBuildMoney({ floorAreaM2, keptFloorAreaM2 = 0, plots = null, salePerM2, constructionPerM2,
         landPerM2 = null, saleTaxShare = null, constructionTaxIncluded = false, rentPerM2Month = null, devChargePerM2 = 0 } = {}) {
         const amount = value => (typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null);
         const times = (a, b) => (a === null || b === null ? null : a * b);
@@ -90,25 +96,29 @@
         // (`keptFloorAreaM2`, which is neither built nor sold nor replaced). Unknown while either is.
         const whole = amount(floorAreaM2), kept = keptFloorAreaM2 === 0 ? 0 : amount(keptFloorAreaM2);
         const area = whole === null || kept === null ? null : Math.max(0, whole - kept);
-        const replaced = amount(replacedFloorAreaM2), landArea = amount(landAreaM2);
         const sale = amount(salePerM2), cost = amount(constructionPerM2), land = amount(landPerM2), rent = amount(rentPerM2Month);
         const charge = amount(devChargePerM2);
         const tax = amount(saleTaxShare) !== null && saleTaxShare < 1 ? saleTaxShare : null;
         const value = times(area, sale);
         const constructionCost = times(area, cost);
         const devCharge = times(area, charge);
-        const landCost = times(landArea, land);
+        // Each plot at the higher of its land value and its standing value; unknown while either is.
+        const acquisitionOf = plot => {
+            const landValue = times(amount(plot && plot.landAreaM2), land);
+            const standingValue = times(amount(plot && plot.replacedFloorAreaM2), sale);
+            return landValue === null || standingValue === null ? null : Math.max(landValue, standingValue);
+        };
+        const acquisitionCost = Array.isArray(plots) ? sum(plots.map(acquisitionOf)) : null;
         const saleTax = value === null || tax === null ? null : value * tax / (1 + tax);
-        const replacedValue = times(replaced, sale);
         const taxReclaimed = constructionTaxIncluded !== true ? 0
             : constructionCost === null || tax === null ? null : constructionCost * tax / (1 + tax);
-        const buildCost = sum([constructionCost, devCharge, landCost, replacedValue]);
+        const buildCost = sum([constructionCost, devCharge, acquisitionCost]);
         const taxed = sum([buildCost, saleTax, taxReclaimed]);
         const totalCost = taxed === null ? null : buildCost + saleTax - taxReclaimed;
         const profit = value === null || totalCost === null ? null : value - totalCost;
         const annualRent = area === null || rent === null ? null : area * rent * 12;
         const rentYieldOnCost = annualRent === null || buildCost === null || buildCost <= 0 ? null : annualRent / buildCost;
-        return { builtFloorAreaM2: area, value, constructionCost, devCharge, landCost, saleTax, taxReclaimed, replacedValue, totalCost, profit, annualRent, rentYieldOnCost };
+        return { builtFloorAreaM2: area, value, constructionCost, devCharge, acquisitionCost, saleTax, taxReclaimed, totalCost, profit, annualRent, rentYieldOnCost };
     }
 
     // Parcel and road estimates retain the selected observation, including its unit and provenance.

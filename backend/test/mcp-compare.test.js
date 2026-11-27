@@ -96,9 +96,9 @@ describe('MCP comparison measurements', () => {
         expect(authoredAreas([building])).toMatchObject({ keptFloorAreaM2: 0, buildingsExtended: 0 });
         raise.geometry.buildings[0].properties.existingHeight = null;
         expect(authoredAreas([raise]).keptFloorAreaM2).toBeNull();
-        const money = moneyOf({ city: 'london', floorAreaM2: 400, keptFloorAreaM2: 300, replacedFloorAreaM2: 0, landAreaM2: 0,
+        const money = moneyOf({ city: 'london', floorAreaM2: 400, keptFloorAreaM2: 300, plots: [{ landAreaM2: 0, replacedFloorAreaM2: 0 }],
             prices: { salePerM2: 8000, constructionPerM2: 3000, landPerM2: 4000, saleTaxShare: 0, devChargePerM2: 0 } });
-        expect(money).toMatchObject({ keptFloorAreaM2: 300, builtFloorAreaM2: 100, value: 800000, constructionCost: 300000, landCost: 0, profit: 500000 });
+        expect(money).toMatchObject({ keptFloorAreaM2: 300, builtFloorAreaM2: 100, value: 800000, constructionCost: 300000, acquisitionCost: 0, profit: 500000 });
     });
 
     it('counts floor area by Plan stats\' rule, so an agent and a person read the same number', () => {
@@ -121,7 +121,7 @@ describe('MCP comparison money', () => {
     const standing = { id: 'b-1', geometry: stock.geometry, height_m: 9 };
     const siteM2 = turf.area(site);
 
-    it('charges the new floor area its all-in cost at the city rates: construction, land, sale tax, what it removes', async () => {
+    it('charges the new floor area its all-in cost at the city rates: construction, the plot at its land value when higher, sale tax', async () => {
         const { tools } = toolsFor({ stockBuilding: standing });
         const result = await tools.compare({ buildingSources: ['osm'], targets: [park, { design: building }], parcelSourceId: 'test' });
         const built = result.alternatives[1];
@@ -140,14 +140,20 @@ describe('MCP comparison money', () => {
             devCharge: { amount: levy, unit: 'm2-floor', basis: 'statutory', sourceId: 'uk-building-safety-levy', landCategory: 'previously-developed',
                 scope: expect.stringMatching(/^E09000028 · Southwark: previously developed land; 56\.93 on other land/) } } });
         expect(built.money.devCharge).toBeCloseTo(built.floorAreaM2 * levy);
-        expect(built.money.landAreaM2).toBeCloseTo(siteM2);
-        expect(built.money.landCost).toBeCloseTo(siteM2 * land);
-        expect(built.money.totalCost).toBeCloseTo(built.floorAreaM2 * (cost + levy) + siteM2 * land + removed * sale);
+        // One plot, parcel A, all of it the site, with the removed building on it. Its land (5,385 a m²)
+        // is worth more than the small building standing on it, so the plot is bought at its land value
+        // and the building is not paid for on top.
+        expect(built.money.plots).toHaveLength(1);
+        expect(built.money.plots[0].landAreaM2).toBeCloseTo(siteM2);
+        expect(built.money.plots[0].replacedFloorAreaM2).toBeCloseTo(removed);
+        expect(siteM2 * land).toBeGreaterThan(removed * sale);
+        expect(built.money.acquisitionCost).toBeCloseTo(siteM2 * land);
+        expect(built.money.totalCost).toBeCloseTo(built.floorAreaM2 * (cost + levy) + siteM2 * land);
         expect(built.money.profit).toBeCloseTo(built.floorAreaM2 * sale - built.money.totalCost);
         expect(built.money.annualRent).toBeCloseTo(built.floorAreaM2 * rent * 12);
         expect(built.money.rentYieldOnCost).toBeCloseTo(built.money.annualRent / built.money.totalCost);
-        // The park builds nothing: it still pays for its land and what it clears.
-        expect(result.alternatives[0].money.profit).toBeCloseTo(-(siteM2 * land + removed * sale));
+        // The park builds nothing: it still buys the plot it clears.
+        expect(result.alternatives[0].money.profit).toBeCloseTo(-(siteM2 * land));
         expect(result.warnings.some(text => text.startsWith('Money is a model'))).toBe(true);
     });
 
@@ -160,12 +166,16 @@ describe('MCP comparison money', () => {
         expect(money.prices.land.amount).toBe(100);
         expect(money.saleTax).toBeCloseTo(floorAreaM2 * 5000 * 0.2 / 1.2);
         expect(money.prices.devCharge).toEqual({ amount: 50, currency: 'GBP', basis: 'assumption', sourceId: 'caller' });
-        expect(money.profit).toBeCloseTo(floorAreaM2 * 5000 - (floorAreaM2 * 3050 + siteM2 * 100 + money.saleTax + removedFloorAreaM2 * 5000));
+        // At 100 a m² of land the building standing on the plot is worth more than its land: the plot
+        // is bought at its standing value, its land not again on top.
+        expect(removedFloorAreaM2 * 5000).toBeGreaterThan(siteM2 * 100);
+        expect(money.acquisitionCost).toBeCloseTo(removedFloorAreaM2 * 5000);
+        expect(money.profit).toBeCloseTo(floorAreaM2 * 5000 - (floorAreaM2 * 3050 + money.saleTax + removedFloorAreaM2 * 5000));
         expect(money.annualRent).toBeCloseTo(floorAreaM2 * 25 * 12);
     });
 
     it('reclaims the VAT inside a city construction cost that includes it, also at a construction price the caller gives', () => {
-        const area = { floorAreaM2: 1000, replacedFloorAreaM2: 0, landAreaM2: 500 };
+        const area = { floorAreaM2: 1000, plots: [{ landAreaM2: 500, replacedFloorAreaM2: 0 }] };
         const money = moneyOf({ city: 'astana', ...area });
         expect(money.prices.construction).toMatchObject({ amount: 297900, taxIncluded: true });
         expect(money.taxReclaimed).toBeCloseTo(1000 * 297900 * 0.16 / 1.16);

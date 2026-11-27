@@ -376,14 +376,13 @@
                 "saleTaxSuffix": "% de imposto no preço",
                 "costDetails": "Detalhe do custo",
                 "costConstruction": "Construção",
-                "costLand": "Terreno (terreno do plano × preço do terreno)",
+                "costAcquisition": "Aquisição (cada lote ao valor do terreno ou ao valor dos edifícios demolidos nele, o maior)",
                 "costTax": "Imposto incluído no valor de venda da nova área",
                 "costReclaimed": "Menos o imposto recuperado na construção",
-                "costReplaced": "Edifícios existentes demolidos, ao preço de venda",
                 "noteNoLandPrice": "Não há preço do terreno para este local: indique um para ver o custo total e o lucro.",
                 "rentSuffix": "{{currency}} por m² de renda por mês",
                 "annualRent": "Renda anual da nova área",
-                "rentYield": "Rendimento da renda sobre o custo (renda anual ÷ construção, taxa de construção, terreno e valor demolido)",
+                "rentYield": "Rendimento da renda sobre o custo (renda anual ÷ construção, taxa de construção e aquisição)",
                 "assumptionsLabel": "Pressupostos",
                 "efficiencySuffix": "% de área útil face à área bruta",
                 "apartmentSizeSuffix": "m² por apartamento",
@@ -5163,13 +5162,12 @@
             "value": "Valor",
             "constructionCost": "Custo de construção",
             "profit": "Lucro",
-            "profitNote": "Lucro = valor − custo total: construção, taxa de construção, terreno, imposto de venda menos o recuperado na construção, e valor construído substituído",
+            "profitNote": "Lucro = valor − custo total: construção, taxa de construção, aquisição (cada lote ao valor do terreno ou ao do que nele existe, o maior) e imposto de venda menos o recuperado na construção",
             "allInCost": "Custo total",
             "costDetails": "Detalhe do custo",
-            "landCost": "Terreno",
+            "acquisitionCost": "Aquisição (terreno ou edifícios, o maior)",
             "saleTaxCost": "Imposto de venda",
             "taxReclaimed": "Imposto recuperado na construção",
-            "replacedValue": "Valor construído substituído",
             "landPriceUnset": "Preço do terreno não definido: mova o controlo",
             "landPrice": "Terreno {{price}}/m² de terreno",
             "saleTax": "Imposto de venda {{share}} do preço",
@@ -9587,13 +9585,29 @@
                 "storeys": "Pisos",
                 "built": "Construído",
                 "roof_shape": "Forma da cobertura",
-                "parapet": "Platibanda"
+                "parapet": "Platibanda",
+                "heritage": "Proteção patrimonial"
             },
             "builtBefore": "antes de {{year}}",
             "builtAfter": "{{year}} ou depois",
             "builtBetween": "{{from}}–{{to}}",
             "parapetYes": "Sim",
-            "parapetNo": "Não"
+            "parapetNo": "Não",
+            "heritageListed": "Classificado, grau {{grade}}",
+            "heritageListedNoGrade": "Classificado; o registo não indica o grau",
+            "heritageNotListed": "Não classificado",
+            "heritageEntry": "Registo {{reference}}",
+            "heritageRegister": "Registo do património",
+            "heritageUnknown": {
+                "noRegister": "Nenhum registo do património é lido para este lugar",
+                "noRegion": "Não foi possível ler onde fica o edifício",
+                "noOutline": "O contorno do edifício não é lido, por isso o registo não lhe pode ser associado",
+                "rowUncertain": "Um registo classificado nesta banda pode abranger esta casa",
+                "numberAmbiguous": "Os números de um registo classificado podem ou não incluir esta casa",
+                "outlineUncertain": "Cobre-o um contorno classificado muito maior do que o edifício",
+                "registerIncomplete": "Há registos a mais à volta destes edifícios para uma só leitura",
+                "registerUnavailable": "O registo do património não respondeu; verifique mais tarde"
+            }
         },
         "eligibility": {
             "set": {
@@ -9610,6 +9624,7 @@
                 "unknown": "Desconhecido",
                 "unchecked": "Não verificado pela aplicação"
             },
+            "withGrade": "{{status}}, grau {{grade}}",
             "test": {
                 "built": "Construído depois de 1700 e antes de 1918",
                 "parapet": "Platibanda ao longo de toda a fachada para a rua",
@@ -10217,7 +10232,7 @@
         },
         "eligibility": {
             "title": "Casas abrangidas",
-            "hint": "Esta votação de rua só pode abranger casas que cumpram as condições da regra. Os dados são lidos do OpenStreetMap: acrescente lá os que faltam e verifique de novo.",
+            "hint": "Esta votação de rua só pode abranger casas que cumpram as condições da regra. Os dados são lidos do OpenStreetMap e a classificação do registo do património: acrescente no OpenStreetMap os que faltam e verifique de novo.",
             "checking": "A verificar as casas abrangidas…",
             "failed": "Não foi possível concluir a verificação: {{error}}",
             "summary": "{{eligible}} de {{total}} casas abrangidas elegíveis",

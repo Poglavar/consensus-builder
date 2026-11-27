@@ -95,6 +95,31 @@
         return { floorAreaM2: totals.removedFloorAreaM2, unmeasured: totals.unmeasured, totals };
     }
 
+    // The plots the plan's money buys (plan-decision.js acquisitionPlots), as CityMoney.newBuildMoney
+    // takes them: each parcel the plan stands on, with its part of the plan's land less the land of the
+    // designs that only extend (acquiredLandM2), and the plan's land on no parcel; each with the floor
+    // area the plan clears there (null while a cleared building states no height). null until the
+    // ground is read.
+    function acquiredPlots(snapshot, assumptions) {
+        if (!Array.isArray(snapshot.cleared)) return null;
+        const ops = window.PresentState.ops;
+        const { landFeature, extendedLandFeature } = snapshot;
+        const onLand = (feature, land) => {
+            if (!land) return 0;
+            const piece = ops.intersect(feature, land);
+            return piece ? ops.areaOf(piece) : 0;
+        };
+        const parcels = [];
+        (snapshot.cadastralFeatures || []).forEach(feature => {
+            const m2 = onLand(feature, landFeature);
+            if (m2 > 0) parcels.push({ feature, landM2: Math.max(0, m2 - onLand(feature, extendedLandFeature)) });
+        });
+        const rows = snapshot.cleared.map(entry => ({ footprint: entry.before.buildingProposal.buildings[0], entry }));
+        return decisionApi().acquisitionPlots({ parcels, landM2: snapshot.parcelFigures?.acquiredLandM2 ?? null, rows, ops })
+            .map(plot => ({ landAreaM2: plot.landM2,
+                replacedFloorAreaM2: clearedFloorArea(plot.rows.map(row => row.entry), assumptions).floorAreaM2 }));
+    }
+
     // The assumption inputs of Plan stats (ids plan-stats-*) or Compare plans (prefix plan-compare).
     function readAssumptionsFromModal(modal, { normalizeInput = null, prefix = 'plan-stats' } = {}) {
         const api = yieldApi();
@@ -211,8 +236,8 @@
             remainingYield: Array.isArray(snapshot.remaining) ? api.planYield(snapshot.remaining, { ...assumptions, unitsOf: units?.standing?.unitsOf }) : null,
             unitsCounting: snapshot.unitsCounting === true, unitsError: units?.error || null,
             groundError: snapshot.groundError || null,
-            // The existing floor area the plan clears, for the profit on what it builds.
-            cleared: clearedFloorArea(snapshot.cleared, assumptions) };
+            // The existing floor area the plan clears, and the plots the profit on what it builds buys.
+            cleared: clearedFloorArea(snapshot.cleared, assumptions), plots: acquiredPlots(snapshot, assumptions) };
     }
 
     // Looks live in css/modals.css (.plan-stats-*) and css/primitives.css, never inline.
@@ -241,7 +266,7 @@
         { key: 'total-cost', i18nKey: 'sidebar.proposals.planStats.allInCost', label: 'All-in cost of the new floor area' },
         { key: 'profit', i18nKey: 'sidebar.proposals.planStats.profit', label: 'Profit on the new floor area' },
         { key: 'annual-rent', i18nKey: 'sidebar.proposals.planStats.annualRent', label: 'Annual rent of the new floor area' },
-        { key: 'rent-yield', i18nKey: 'sidebar.proposals.planStats.rentYield', label: 'Rent yield on cost (annual rent ÷ construction, development charge, land and cleared value)' }
+        { key: 'rent-yield', i18nKey: 'sidebar.proposals.planStats.rentYield', label: 'Rent yield on cost (annual rent ÷ construction, development charge and acquisition)' }
     ];
 
     // Compare plans reads as a decision sheet: the summary figures with the built form, what the plan
@@ -267,11 +292,10 @@
     const COST_PARTS = [
         { key: 'cost-construction', i18nKey: 'sidebar.proposals.planStats.costConstruction', label: 'Construction' },
         { key: 'cost-dev-charge', i18nKey: 'sidebar.proposals.planStats.costDevCharge', label: 'Development charge (new floor area × the charge per m²)' },
-        { key: 'cost-land', i18nKey: 'sidebar.proposals.planStats.costLand', label: 'Land (the plan\'s land × the land price)' },
+        { key: 'cost-acquisition', i18nKey: 'sidebar.proposals.planStats.costAcquisition', label: 'Acquisition (each plot at its land value or the value of the buildings it clears there, whichever is higher)' },
         { key: 'cost-tax', i18nKey: 'sidebar.proposals.planStats.costTax', label: 'Sale tax inside the sales value of the new floor area' },
         // Listed only where the construction cost includes the tax on its inputs (the rate's taxIncluded).
-        { key: 'cost-reclaimed', i18nKey: 'sidebar.proposals.planStats.costReclaimed', label: 'Less the tax reclaimed on construction', taxIncludedOnly: true },
-        { key: 'cost-replaced', i18nKey: 'sidebar.proposals.planStats.costReplaced', label: 'Existing buildings cleared, at the sale price' }
+        { key: 'cost-reclaimed', i18nKey: 'sidebar.proposals.planStats.costReclaimed', label: 'Less the tax reclaimed on construction', taxIncludedOnly: true }
     ];
 
     const ASSUMPTION_INPUTS = [
@@ -625,16 +649,16 @@
     // currency (priceIn), each null when not given.
     function summaryTexts(stats, price) {
         // The new floor area at these prices, by the 3D panel's rule (CityMoney.newBuildMoney): its
-        // all-in cost (construction, development charge, land, sale tax, the existing floor area it clears), profit and rent.
-        // The land is the plan's land (planAreaM2): the ground its designs take, streets and parks too,
-        // less the land of designs that extend existing buildings (acquiredLandM2). An extended
+        // all-in cost (construction, development charge, the acquisition of its plots, sale tax), profit and rent.
+        // The plots (acquiredPlots) are the plan's land: the ground its designs take, streets and parks
+        // too, less the land of designs that extend existing buildings, each bought at the higher of
+        // its land value and the value of the existing floor area the plan clears on it. An extended
         // building's own floor area is kept: not built, sold or replaced; unknown while any states no
         // existing height.
         // Whether the construction cost includes the tax on its inputs is the city's rate's, not typed.
         const designs = stats.yield.total;
         const keptFloorAreaM2 = designs.extendedUnmeasured > 0 ? null : (designs.keptFloorAreaM2 || 0);
-        const money = window.CityMoney.newBuildMoney({ floorAreaM2: designs.grossFloorAreaM2, keptFloorAreaM2,
-            replacedFloorAreaM2: stats.cleared ? stats.cleared.floorAreaM2 : null, landAreaM2: stats.acquiredLandM2 ?? stats.planAreaM2,
+        const money = window.CityMoney.newBuildMoney({ floorAreaM2: designs.grossFloorAreaM2, keptFloorAreaM2, plots: stats.plots || null,
             salePerM2: price.sale, constructionPerM2: price.construction, landPerM2: price.land,
             saleTaxShare: price.saleTax, constructionTaxIncluded: salesPrice().constructionTaxIncluded === true,
             rentPerM2Month: price.rent, devChargePerM2: price.devCharge });
@@ -671,11 +695,10 @@
             // The all-in cost's parts (Cost details in Plan stats).
             'cost-construction': formatSalesValue(money.constructionCost),
             'cost-dev-charge': formatSalesValue(money.devCharge),
-            'cost-land': formatSalesValue(money.landCost),
+            'cost-acquisition': formatSalesValue(money.acquisitionCost),
             'cost-tax': formatSalesValue(money.saleTax),
             // Taken off the all-in cost, so written as a deduction.
             'cost-reclaimed': (money.taxReclaimed > 0 ? '−' : '') + formatSalesValue(money.taxReclaimed),
-            'cost-replaced': formatSalesValue(money.replacedValue),
             profit: formatSalesValue(money.profit),
             'annual-rent': formatSalesValue(money.annualRent),
             'rent-yield': CbFormat.formatPercent(money.rentYieldOnCost, { maxFractionDigits: 1, missing: '—' })
@@ -727,12 +750,11 @@
         set('total-cost', figures['total-cost']);
         set('cost-construction', figures['cost-construction']);
         set('cost-dev-charge', figures['cost-dev-charge']);
-        set('cost-land', figures['cost-land']);
+        set('cost-acquisition', figures['cost-acquisition']);
         set('cost-tax', figures['cost-tax']);
         set('cost-reclaimed', figures['cost-reclaimed']);
         const taxIncluded = salesPrice().constructionTaxIncluded === true;
         modal.querySelectorAll('[data-cost-part="cost-reclaimed"]').forEach(node => { node.hidden = !taxIncluded; });
-        set('cost-replaced', figures['cost-replaced']);
         set('profit', figures.profit);
         set('annual-rent', figures['annual-rent']);
         set('rent-yield', figures['rent-yield']);

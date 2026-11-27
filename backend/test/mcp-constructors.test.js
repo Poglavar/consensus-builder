@@ -511,3 +511,59 @@ describe('canonical typed building constructor output', () => {
         }
     );
 });
+
+// The Block editor's Based on existing buildings, drafted by an agent: the same buildings and saved
+// parameters the editor builds (raised-existing-buildings.js), counted by Compare as Plan stats does.
+describe('MCP Based on existing buildings', () => {
+    const Raised = require('../../frontend/js/raised-existing-buildings.js');
+    const planYield = require('../../frontend/js/proposals/plan-yield.js');
+    const demolition = require('../../frontend/js/proposals/demolition-prefetch.js');
+    const box = (west, south, size, properties) => ({ type: 'Feature', properties,
+        geometry: { type: 'Polygon', coordinates: [[[west, south], [west + size, south], [west + size, south + size], [west, south + size], [west, south]]] } });
+    // Two houses on the site, one with no stated height, and a neighbour mostly outside it.
+    const stock = [box(15.0002, 45.0002, 0.0002, { id: 1, source: 'osm', height_m: 9 }), box(15.0006, 45.0002, 0.0002, { id: 2, source: 'osm', height_m: null, floors: null }),
+        box(15.00195, 45.0002, 0.0002, { id: 3, source: 'osm', height_m: 9 })];
+    const intent = { kind: 'building', typology: 'block', site, city: 'london', title: 'Mansards', authoredAt: common.authoredAt };
+
+    it('redraws the existing buildings on the site with the editor\'s builder and parameters', () => {
+        const design = buildTypedDesign({ ...intent, existing: { rule: 'exact', floors: 4 }, floorHeightM: 3.5, roof: 'mansard' }, { ...options, existingBuildings: stock });
+        const settings = { rule: 'exact', proposedHeightFloors: 4, additionalFloors: 1, floorHeightM: 3.5, roof: 'mansard' };
+        expect(design).toMatchObject({ schema: 'design/v1', goal: 'buildings', site,
+            buildingProposal: { typologyType: 'block', parameters: Raised.parameters(settings) } });
+        // As published: the record drops the editor's runtime buildingIndex, as it does for a saved design.
+        const { cleanFeature } = require('../../frontend/js/proposals/authored-record.js');
+        expect(design.geometry).toEqual({ buildings: Raised.raise(Raised.footprintsOnSite(stock, site, turf), settings, { blockName: 'Mansards' }).map(cleanFeature) });
+        expect(design.geometry.buildings.map(building => building.properties.sourceBuildingId)).toEqual(['osm:1', 'osm:2']);
+        expect(DesignRecord.validate(design).valid).toBe(true);
+        expect(demolition.extendsExisting(design)).toBe(true);
+    });
+
+    it('adds storeys only where a height is known, and allows none under a mansard', () => {
+        const design = buildTypedDesign({ ...intent, existing: { rule: 'additional', additionalFloors: 0 }, floorHeightM: 3, roof: 'mansard' }, { ...options, existingBuildings: stock });
+        expect(design.geometry.buildings.map(building => [building.properties.sourceBuildingId, building.properties.height, building.properties.roof]))
+            .toEqual([['osm:1', 9, 'mansard']]);
+        expect(design.buildingProposal.parameters).toMatchObject({ rule: 'additional', additionalFloors: 0, roof: 'mansard' });
+    });
+
+    it('counts the floor area it keeps and adds the same way in Compare and in Plan stats', async () => {
+        const { authoredAreas } = await import('../agents/mcp-compare.js');
+        const design = buildTypedDesign({ ...intent, existing: { rule: 'exact', floors: 5 }, floorHeightM: 3 }, { ...options, existingBuildings: [stock[0]] });
+        const areas = authoredAreas([design]);
+        const stats = planYield.planYield([{ ...design, applied: true, proposalId: 'p' }], { appliedOnly: true }).total;
+        expect(areas).toMatchObject({ buildingsExtended: 1, floorAreaM2: stats.grossFloorAreaM2, keptFloorAreaM2: stats.keptFloorAreaM2 });
+        // 9 m at 3 m storeys was 3 storeys; it now has 5, so it keeps three fifths and adds two.
+        expect(areas.keptFloorAreaM2 / areas.floorAreaM2).toBeCloseTo(3 / 5, 6);
+    });
+
+    it('refuses what the editor cannot make', () => {
+        const draft = (overrides, existingBuildings = stock) => () => buildTypedDesign({ ...intent, existing: { rule: 'exact' }, ...overrides }, { ...options, existingBuildings });
+        expect(draft({ typology: 'row' })).toThrow(expect.objectContaining({ code: 'existing-needs-block' }));
+        expect(draft({}, null)).toThrow(expect.objectContaining({ code: 'building-source-required' }));
+        expect(draft({}, [stock[2]])).toThrow(expect.objectContaining({ code: 'no-existing-buildings' }));
+        expect(draft({ existing: { rule: 'additional' } }, [stock[1]])).toThrow(expect.objectContaining({ code: 'existing-heights-unknown' }));
+        expect(draft({ existing: { rule: 'taller' } })).toThrow(expect.objectContaining({ code: 'invalid-existing-rule' }));
+        expect(draft({ existing: { rule: 'exact', floors: 21 } })).toThrow(expect.objectContaining({ field: 'existing.floors' }));
+        expect(draft({ floorHeightM: 6 })).toThrow(expect.objectContaining({ field: 'floorHeightM' }));
+        expect(draft({ roof: 'gabled' })).toThrow(expect.objectContaining({ code: 'invalid-roof' }));
+    });
+});

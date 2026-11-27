@@ -186,6 +186,9 @@ body[data-planning-existing-scope="removed"] .leaflet-observedReferences-pane { 
 /* Building facts on a built building's card (planning/views.js renderFacts): the facts, where to add missing ones, Check again. */
 .planning-building-facts { display: grid; gap: var(--cb-space-2); justify-items: start; margin-block: var(--cb-space-3); }
 .planning-building-facts .planning-metrics { justify-self: stretch; margin: 0; }
+/* A register fact's reason when unknown and its register entry link, beside the value. */
+.planning-building-facts__reason, .planning-building-facts__source { font-size: var(--cb-text-sm); font-weight: var(--cb-weight-normal); }
+.planning-building-facts__reason { color: var(--cb-text-muted); }
 .planning-eligibility { display: grid; gap: var(--cb-space-1); justify-self: stretch; padding-top: var(--cb-space-2); border-top: 1px solid var(--cb-line); }
 .planning-eligibility__tests { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--cb-space-1); font-size: var(--cb-text-sm); }
 .planning-eligibility__test { display: flex; justify-content: space-between; gap: var(--cb-space-3); }

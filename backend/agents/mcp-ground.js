@@ -33,8 +33,8 @@ export async function votingWithEligibility(consultation, designContents, { read
             return `${house.id || `building ${house.sourceBuildingId} (no facts source)`}: ${house.id ? house.result.verdict : 'unknown'}`
                 + (cites('fail') ? `, fails ${cites('fail')}` : '') + (cites('unknown') ? `, unknown ${cites('unknown')}` : '');
         };
-        throw Object.assign(new Error(`Not every covered house is eligible yet (${blocked.map(why).join('; ')}). Add the missing facts in OpenStreetMap and draft again.`),
-            { code: 'eligibility-failed', next: { action: 'Read each house with the building facts (edit links per building) and fill the missing ones in OpenStreetMap.' } });
+        throw Object.assign(new Error(`Not every covered house is eligible yet (${blocked.map(why).join('; ')}). Add the missing facts in OpenStreetMap and draft again; a heritage listing (17.9) comes from the country's heritage register, not OpenStreetMap.`),
+            { code: 'eligibility-failed', next: { action: 'Read each house with the building facts (edit links per building) and fill the missing ones in OpenStreetMap; for an unknown heritage listing, unknown_reasons.heritage says why (adding addr:street and addr:housenumber can let a terrace entry match by house number).' } });
     }
     return { ...consultation, voting: { ...voting, eligibility: Eligibility.evidence(set, judged, new Date().toISOString()) } };
 }

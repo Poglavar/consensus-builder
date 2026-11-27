@@ -200,10 +200,11 @@ and sale-tax sliders can set a price no source gives.
 
 The 3D panel, Plan stats (with Compare plans) and the MCP comparison count new floor area with one
 function, `CityMoney.newBuildMoney` (the vocabulary's "Profit on the new floor area"): value, the
-all-in cost (construction, the development charge, land, the sale tax inside the value less the tax reclaimed on a
-tax-inclusive construction cost, the value of the floor area it replaces), profit, annual rent and the
-rent's yield on the construction, development charge, land and replaced value: a landlord who charges no tax on the rent
-and reclaims none. The land is the
+all-in cost (construction, the development charge, the acquisition, the sale tax inside the value less the tax
+reclaimed on a tax-inclusive construction cost), profit, annual rent and the rent's yield on the construction,
+development charge and acquisition: a landlord who charges no tax on the rent and reclaims none. The acquisition
+buys each plot once, at the higher of its land value (land × land price) and the value of the floor area it
+replaces there at the sale price. The land is the
 plan's land in Plan stats, the parcel or the design's parcels or site in the 3D panel, and the union of
 the designs' sites in `ugt_compare`; each takes its rates at that land's location. Compare plans uses
 one set of prices for every column, at the first plan's land. A price the visitor slides or types is

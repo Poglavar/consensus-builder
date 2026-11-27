@@ -210,7 +210,9 @@ test('a Living Tradition street vote waits until every covered house is eligible
   test.setTimeout(180_000);
   await stubBasemapTiles(page);
   const fact = (value: unknown) => ({ value, source: 'osm', key: 'k', raw: String(value) });
-  const georgian = { storeys: fact(3), built: fact({ from: 1828, to: 1830 }), roof_shape: fact('flat'), parapet: fact(true), height_m: null, footprint_m2: fact(45.6), row_size: fact(20) };
+  // Not listed: the heritage register (England's National Heritage List) has no entry reaching them.
+  const notListed = { value: { listed: false, grade: null, register: 'National Heritage List for England', reference: null, name: null, url: 'https://www.planning.data.gov.uk/dataset/listed-building', basis: 'none' }, source: 'gb-eng-nhle', key: 'listed-building', raw: 'no entry' };
+  const georgian = { storeys: fact(3), built: fact({ from: 1828, to: 1830 }), roof_shape: fact('flat'), parapet: fact(true), height_m: null, footprint_m2: fact(45.6), row_size: fact(20), heritage: notListed };
   const parapetTagged = new Set(['osm:way/101']);
   const reads: string[] = [];
   await page.route('https://zagreb.lol/api/building-facts*', route => {

@@ -1406,14 +1406,13 @@
                 "saleTaxSuffix": "% poreza u ceni",
                 "costDetails": "Detalji troška",
                 "costConstruction": "Gradnja",
-                "costLand": "Zemljište (zemljište plana × cena zemljišta)",
+                "costAcquisition": "Otkup (svaka parcela po vrednosti zemljišta ili vrednosti zgrada koje se na njoj uklanjaju, šta je više)",
                 "costTax": "Porez sadržan u prodajnoj vrednosti nove površine",
                 "costReclaimed": "Umanjeno za prethodni porez sadržan u gradnji",
-                "costReplaced": "Uklonjene postojeće zgrade, po prodajnoj ceni",
                 "noteNoLandPrice": "Za ovo mesto nema cene zemljišta: postavite je da biste videli ukupni trošak i dobit.",
                 "rentSuffix": "{{currency}} po m² zakupnina mesečno",
                 "annualRent": "Godišnja zakupnina nove površine",
-                "rentYield": "Prinos od zakupa na trošak (godišnja zakupnina ÷ gradnja, doprinos za gradnju, zemljište i vrednost uklonjenog)",
+                "rentYield": "Prinos od zakupa na trošak (godišnja zakupnina ÷ gradnja, doprinos za gradnju i otkup)",
                 "assumptionsLabel": "Pretpostavke",
                 "efficiencySuffix": "% neto od bruto",
                 "apartmentSizeSuffix": "m² po stanu",
@@ -6782,13 +6781,12 @@
             "value": "Vrednost",
             "constructionCost": "Trošak gradnje",
             "profit": "Dobit",
-            "profitNote": "Dobit = vrednost − ukupni trošak: gradnja, doprinos za gradnju, zemljište, porez na prodaju umanjen za prethodni porez na gradnju i zamenjena izgrađena vrednost",
+            "profitNote": "Dobit = vrednost − ukupni trošak: gradnja, doprinos za gradnju, otkup (svaka parcela po vrednosti zemljišta ili onoga što na njoj stoji, šta je više) i porez na prodaju umanjen za prethodni porez na gradnju",
             "allInCost": "Ukupni trošak",
             "costDetails": "Detalji troška",
-            "landCost": "Zemljište",
+            "acquisitionCost": "Otkup (zemljište ili zgrade, šta je više)",
             "saleTaxCost": "Porez na prodaju",
             "taxReclaimed": "Prethodni porez na gradnju, odbijen",
-            "replacedValue": "Zamenjena izgrađena vrednost",
             "landPriceUnset": "Cena zemljišta nije postavljena: pomerite klizač",
             "landPrice": "Zemljište {{price}}/m² zemljišta",
             "saleTax": "Porez na prodaju {{share}} cene",
@@ -9460,13 +9458,29 @@
                 "storeys": "Broj spratova",
                 "built": "Izgrađena",
                 "roof_shape": "Oblik krova",
-                "parapet": "Atika"
+                "parapet": "Atika",
+                "heritage": "Zaštićeno nasleđe"
             },
             "builtBefore": "pre {{year}}.",
             "builtAfter": "{{year}}. ili kasnije",
             "builtBetween": "{{from}}.–{{to}}.",
             "parapetYes": "Da",
-            "parapetNo": "Ne"
+            "parapetNo": "Ne",
+            "heritageListed": "Zaštićena, stepen {{grade}}",
+            "heritageListedNoGrade": "Zaštićena; registar ne navodi stepen",
+            "heritageNotListed": "Nije zaštićena",
+            "heritageEntry": "Upis {{reference}}",
+            "heritageRegister": "Registar nasleđa",
+            "heritageUnknown": {
+                "noRegister": "Za ovo mesto se ne čita registar nasleđa",
+                "noRegion": "Nije pročitano gde se zgrada nalazi",
+                "noOutline": "Obris zgrade nije pročitan pa se registar ne može povezati s njom",
+                "rowUncertain": "Zaštićeni upis u ovom nizu možda obuhvata i ovu kuću",
+                "numberAmbiguous": "Kućni brojevi zaštićenog upisa možda obuhvataju ovu kuću, a možda ne",
+                "outlineUncertain": "Zgradu pokriva zaštićeni obris mnogo veći od nje",
+                "registerIncomplete": "Oko ovih zgrada ima previše upisa u registru za jedno čitanje",
+                "registerUnavailable": "Registar nasleđa nije odgovorio; proverite kasnije"
+            }
         },
         "eligibility": {
             "set": {
@@ -9483,6 +9497,7 @@
                 "unknown": "Nepoznato",
                 "unchecked": "Aplikacija ne proverava"
             },
+            "withGrade": "{{status}}, stepen {{grade}}",
             "test": {
                 "built": "Izgrađena posle 1700. i pre 1918.",
                 "parapet": "Atika duž celog uličnog pročelja",
@@ -10266,7 +10281,7 @@
         },
         "eligibility": {
             "title": "Obuhvaćene kuće",
-            "hint": "Ovo glasanje ulice sme da obuhvati samo kuće koje ispunjavaju uslove pravila. Podaci se čitaju iz OpenStreetMapa: dodajte one koji nedostaju tamo, pa proverite ponovo.",
+            "hint": "Ovo glasanje ulice sme da obuhvati samo kuće koje ispunjavaju uslove pravila. Podaci se čitaju iz OpenStreetMapa, a zaštita iz registra nasleđa: dodajte podatke koji nedostaju u OpenStreetMap, pa proverite ponovo.",
             "checking": "Proveravam obuhvaćene kuće…",
             "failed": "Provera nije završena: {{error}}",
             "summary": "{{eligible}} od {{total}} obuhvaćenih kuća ispunjava uslove",
