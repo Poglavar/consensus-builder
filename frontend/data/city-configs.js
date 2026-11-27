@@ -5850,14 +5850,15 @@
             },
             parcels: {
                 strategy: 'grid',
-                gridSize: 0.001,
+                gridSize: 0.0025,
                 source: 'parcel-source',
-                sourceId: 'kz-aktobe-eaqtobe-gzk-features',
-                idPrefix: 'kz-aktobe-eaqtobe-gzk-features:',
+                // The national cadastre's Aktobe view: the city GZK layer (eaqtobe.kz) disabled its WFS on 2026-11-27.
+                sourceId: 'kz-aktobe-pkk',
+                idPrefix: 'KZ-AKTOBE-PKK-',
                 requiresBackend: true,
                 ownership: false,
                 liveRadiusKm: 8,
-                attribution: 'RGIS Aktobe / Aqtobe regional services portal · GZK cadastral parcels · bounded coverage; currentness and reuse terms unverified · adapted'
+                attribution: '<a href="https://map.gov4c.kz/egkn/">Kazakhstan EGKN public cadastral map</a> · Aktobe city district · native cadastral numbers; ownership and boundary update dates unestablished'
             },
             // Merged in list order: the national survey's footprints and storeys, then OpenStreetMap's, then the atlas's
             // (Microsoft's machine-learning footprints) where neither has one; the atlas's predicted heights for the rest.
@@ -11562,14 +11563,16 @@
             },
             parcels: {
                 strategy: 'grid',
-                gridSize: 0.001,
+                gridSize: 0.0025,
                 source: 'parcel-source',
-                sourceId: 'kz-shymkent-rgis-aisgzk-merge1',
-                idPrefix: 'KZ-SHYMKENT-AISGZK:',
+                // The national cadastre's five Shymkent district views: the city RGIS layer (geo-shym.kz)
+                // disabled its WFS on 2026-11-27.
+                sourceId: 'kz-shymkent-pkk',
+                idPrefix: 'KZ-SHYMKENT-PKK-',
                 requiresBackend: true,
                 ownership: false,
                 liveRadiusKm: 8,
-                attribution: '<a href="https://geo-shym.kz/">Shymkent RGIS / AISGZK cadastral parcels</a> · bounded coverage verified; currentness unestablished'
+                attribution: '<a href="https://map.gov4c.kz/egkn/">Kazakhstan EGKN public cadastral map</a> · Shymkent’s five district views · native cadastral numbers; ownership and boundary update dates unestablished'
             },
             // Merged in list order: the national survey's footprints and storeys, then OpenStreetMap's, then the atlas's
             // (Microsoft's machine-learning footprints) where neither has one; the atlas's predicted heights for the rest.

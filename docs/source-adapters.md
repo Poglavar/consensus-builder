@@ -160,6 +160,12 @@ Chrome, so the parcel source, the relay and the copy script send `User-Agent: Mo
 viewer as Referer. The server omits its Sectigo DV R36 intermediate certificate, which
 `backend/parcels/certificates/` supplies.
 
+A `kazakhstan-pkk` source lists its district views in the catalog (`districts: [{ id, bbox }]`, the
+feature numbers of `egkn:districts` with their WGS84 extents) and names their Gauss–Krüger zone
+(`projection: 'KZ-GK-<zone>'`). An area is read from the districts whose extent touches it, ids from
+every district. Alatau (364) and Astana Esil (254) have one district each; Shymkent has five (241, 259,
+260, 261, 270) and Aktobe one (42), replacing their city layers, whose WFS was disabled on 2026-11-27.
+
 Parcels are always read live. Complete copies of the Kazakh sources the app reads are kept as backups
 and are not served, written by
 [`archive-kazakhstan-sources.mjs`](../backend/scripts/archive-kazakhstan-sources.mjs) (paced,

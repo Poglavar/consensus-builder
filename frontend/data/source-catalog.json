@@ -4574,7 +4574,17 @@
       "endpoint": "https://map.gov4c.kz/geoserver/egkn/u_view/wfs",
       "browserTransport": "relay",
       "featureType": "egkn:u_view",
-      "districtId": 254,
+      "districts": [
+        {
+          "id": 254,
+          "bbox": [
+            71.3771,
+            50.9443,
+            71.6111,
+            51.1528
+          ]
+        }
+      ],
       "projection": "KZ-GK-12",
       "idField": "kad_nomer",
       "idType": "string",
@@ -4619,7 +4629,17 @@
       "endpoint": "https://map.gov4c.kz/geoserver/egkn/u_view/wfs",
       "browserTransport": "relay",
       "featureType": "egkn:u_view",
-      "districtId": 364,
+      "districts": [
+        {
+          "id": 364,
+          "bbox": [
+            76.7804,
+            43.3559,
+            77.2627,
+            43.8644
+          ]
+        }
+      ],
       "projection": "KZ-GK-13",
       "idField": "kad_nomer",
       "idType": "string",
@@ -4654,6 +4674,149 @@
         "Since 2026-11-27 the shared /geoserver/wfs address answers 403 to every client; the layer-scoped /geoserver/egkn/u_view/wfs address answers the same requests. It refuses a non-browser User-Agent.",
         "No CORS Access-Control-Allow-Origin header: browsers read it through the production provider relay. A direct attempt took about 5 s to fail and pushed first loads past the 15-second deadline.",
         "Topology (overlaps between parcels) has not been audited for Alatau; Almaty's district view is held for material overlaps."
+      ]
+    },
+    {
+      "id": "kz-shymkent-pkk",
+      "name": "Kazakhstan EGKN PKK — Shymkent",
+      "adapter": "kazakhstan-pkk",
+      "endpoint": "https://map.gov4c.kz/geoserver/egkn/u_view/wfs",
+      "browserTransport": "relay",
+      "featureType": "egkn:u_view",
+      "districts": [
+        {
+          "id": 241,
+          "bbox": [
+            69.3556,
+            42.3266,
+            69.6378,
+            42.48
+          ]
+        },
+        {
+          "id": 259,
+          "bbox": [
+            69.5221,
+            42.1082,
+            69.6599,
+            42.3485
+          ]
+        },
+        {
+          "id": 260,
+          "bbox": [
+            69.5873,
+            42.1898,
+            69.9235,
+            42.3479
+          ]
+        },
+        {
+          "id": 261,
+          "bbox": [
+            69.6172,
+            42.2763,
+            69.9378,
+            42.4513
+          ]
+        },
+        {
+          "id": 270,
+          "bbox": [
+            69.3006,
+            42.1087,
+            69.6302,
+            42.3777
+          ]
+        }
+      ],
+      "projection": "KZ-GK-12",
+      "idField": "kad_nomer",
+      "idType": "string",
+      "objectIdField": "gid",
+      "idPrefix": "KZ-SHYMKENT-PKK-",
+      "parcelNumberField": "kad_nomer",
+      "outFields": [
+        "gid",
+        "kad_nomer"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "maxConcurrentQueries": 6,
+      "maxResponseBytes": 4194304,
+      "maxTotalResponseBytes": 25165824,
+      "caCertificate": "./certificates/sectigo-public-server-authentication-ca-dv-r36.pem",
+      "countryCode": "KZ",
+      "metricSrid": 32642,
+      "cityIds": [
+        "shymkent"
+      ],
+      "scope": "Official national public cadastral map, the provider's five Shymkent district views (Abay 241, Al-Farabi 259, Enbekshi 260, Karatau 261, Turan 270; 256,205 parcels on 2026-11-27). Native cadastral numbers are supplied. Currentness, ownership and completeness are not established.",
+      "attribution": "Government for Citizens — EGKN public cadastral map. Shymkent; native cadastral numbers, adapted to WGS84. Ownership and currentness unestablished.",
+      "catalogueUrl": "https://map.gov4c.kz/egkn/",
+      "licenceNote": "Source conditions are informational. No named reuse licence was identified on the inspected public map.",
+      "caveats": [
+        "A parcel is its kad_nomer plus its row gid (<kad_nomer>-g<gid>).",
+        "The views store 6-degree Gauss–Krüger zone 12 coordinates on GRS80 with the zone number prefixed to the easting, report EPSG:404000 and ignore srsName. Native envelopes are queried and geometry is transformed to WGS84.",
+        "The server omits its published Sectigo intermediate. Source-scoped CA supplementation preserves ordinary certificate and hostname verification.",
+        "Since 2026-11-27 the shared /geoserver/wfs address answers 403 to every client; the layer-scoped /geoserver/egkn/u_view/wfs address answers the same requests. It refuses a non-browser User-Agent.",
+        "No CORS Access-Control-Allow-Origin header: browsers read it through the production provider relay. A direct attempt took about 5 s to fail and pushed first loads past the 15-second deadline.",
+        "Replaces the city RGIS/AISGZK layer (geo-shym.kz), whose WFS answers \"Service WFS is disabled\" since 2026-11-27.",
+        "An area is read from the district views whose extent touches it; topology between neighbouring districts has not been audited."
+      ]
+    },
+    {
+      "id": "kz-aktobe-pkk",
+      "name": "Kazakhstan EGKN PKK — Aktobe",
+      "adapter": "kazakhstan-pkk",
+      "endpoint": "https://map.gov4c.kz/geoserver/egkn/u_view/wfs",
+      "browserTransport": "relay",
+      "featureType": "egkn:u_view",
+      "districts": [
+        {
+          "id": 42,
+          "bbox": [
+            56.8586,
+            50.1189,
+            57.7784,
+            50.5843
+          ]
+        }
+      ],
+      "projection": "KZ-GK-10",
+      "idField": "kad_nomer",
+      "idType": "string",
+      "objectIdField": "gid",
+      "idPrefix": "KZ-AKTOBE-PKK-",
+      "parcelNumberField": "kad_nomer",
+      "outFields": [
+        "gid",
+        "kad_nomer"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "maxConcurrentQueries": 6,
+      "maxResponseBytes": 4194304,
+      "maxTotalResponseBytes": 25165824,
+      "caCertificate": "./certificates/sectigo-public-server-authentication-ca-dv-r36.pem",
+      "countryCode": "KZ",
+      "metricSrid": 32640,
+      "cityIds": [
+        "aktobe"
+      ],
+      "scope": "Official national public cadastral map, the provider's Aktobe city district view (district_id:42, 118,232 parcels on 2026-11-27). Native cadastral numbers are supplied. Currentness, ownership and completeness are not established.",
+      "attribution": "Government for Citizens — EGKN public cadastral map. Aktobe; native cadastral numbers, adapted to WGS84. Ownership and currentness unestablished.",
+      "catalogueUrl": "https://map.gov4c.kz/egkn/",
+      "licenceNote": "Source conditions are informational. No named reuse licence was identified on the inspected public map.",
+      "caveats": [
+        "A parcel is its kad_nomer plus its row gid (<kad_nomer>-g<gid>).",
+        "The views store 6-degree Gauss–Krüger zone 10 coordinates on GRS80 with the zone number prefixed to the easting, report EPSG:404000 and ignore srsName. Native envelopes are queried and geometry is transformed to WGS84.",
+        "The server omits its published Sectigo intermediate. Source-scoped CA supplementation preserves ordinary certificate and hostname verification.",
+        "Since 2026-11-27 the shared /geoserver/wfs address answers 403 to every client; the layer-scoped /geoserver/egkn/u_view/wfs address answers the same requests. It refuses a non-browser User-Agent.",
+        "No CORS Access-Control-Allow-Origin header: browsers read it through the production provider relay. A direct attempt took about 5 s to fail and pushed first loads past the 15-second deadline.",
+        "Replaces the city GZK layer (eaqtobe.kz), whose WFS answers \"Service WFS is disabled\" since 2026-11-27."
       ]
     },
     {
@@ -18563,59 +18726,6 @@
       "defaultForCity": true
     },
     {
-      "id": "kz-shymkent-rgis-aisgzk-merge1",
-      "name": "Shymkent RGIS AISGZK cadastral parcels",
-      "adapter": "wfs",
-      "endpoint": "https://geo-shym.kz/geoserver/gis_shymkent/ows",
-      "catalogueUrl": "https://geo-shym.kz/",
-      "viewerUrl": "https://geo-shym.kz/map/",
-      "version": "1.1.0",
-      "featureType": "gis_shymkent:aisgzk_shymkent_merge1",
-      "geometryField": "geom",
-      "idField": "cad_number",
-      "idType": "string",
-      "idPrefix": "KZ-SHYMKENT-AISGZK:",
-      "idPattern": "^[0-9]+$",
-      "parcelNumberField": "cad_number",
-      "outFields": [
-        "cad_number"
-      ],
-      "requestProperties": true,
-      "pageSize": 200,
-      "maxFeatures": 3000,
-      "maxBboxKm2": 2,
-      "maxResponseBytes": 1048576,
-      "timeoutMs": 30000,
-      "maxConcurrentQueries": 2,
-      "browserTransport": "relay",
-      "countryCode": "KZ",
-      "metricSrid": 32642,
-      "cityIds": [
-        "shymkent"
-      ],
-      "capabilities": {
-        "bbox": true,
-        "exactId": true,
-        "areaEnumeration": true,
-        "geometry": "full-wgs84"
-      },
-      "operator": "Shymkent Regional GIS / AISGZK",
-      "attribution": "<a href=\"https://geo-shym.kz/\">Shymkent RGIS / AISGZK cadastral parcels</a> · bounded coverage verified; currentness unestablished",
-      "scope": "Public AISGZK cadastral parcel layer in Shymkent. Three central sample parcels and a bounded central bbox are verified; neither layer extent nor samples establish municipal completeness.",
-      "licenceNote": "Anonymous public HTTPS reads work. Explicit reuse licence and currentness are unestablished; confirm with custodian during second-pass review.",
-      "discovery": {
-        "jurisdiction": {
-          "countryCode": "KZ",
-          "basis": "First-party Shymkent RGIS cadastral layer and native cad_number schema; national NSDI publishes this GeoServer.",
-          "evidence": [
-            "https://geo-shym.kz/map/",
-            "https://map.gov.kz/services/"
-          ]
-        }
-      },
-      "defaultForCity": true
-    },
-    {
       "id": "it-comune-torino-catasto-urbano",
       "name": "Comune di Torino Catasto Urbano 1:1500",
       "adapter": "shapefile-snapshot",
@@ -23878,55 +23988,6 @@
       "attribution": "Punjab PULSE / Punjab Land Records Authority; indicative cadastral reference polygons",
       "scope": "Gujranwala layer 8; bounded Kamonki Zarai parcel availability near the unchanged Kamoke locator. Municipal and citywide completeness unverified. Mussavie-based indicative property lines, not legal boundaries.",
       "licenceNote": "Public viewer offers anonymous parcel-reference geometry. No explicit open-data reuse licence established; licence, currentness, survey accuracy and long-term OBJECTID continuity remain review follow-ups. Personal attributes and public reader tokens are excluded."
-    },
-    {
-      "id": "kz-aktobe-eaqtobe-gzk-features",
-      "name": "RGIS Aktobe / Eaqtobe GZK cadastral parcels",
-      "adapter": "wfs",
-      "endpoint": "https://eaqtobe.kz/geoserver/wfs",
-      "featureType": "gis_aqtobe:gzk_features",
-      "version": "1.0.0",
-      "idField": "cad_number",
-      "idType": "string",
-      "idPrefix": "kz-aktobe-eaqtobe-gzk-features:",
-      "parcelNumberField": "cad_number",
-      "outFields": [
-        "cad_number"
-      ],
-      "geometryField": "geom",
-      "requestProperties": true,
-      "responseSrid": 3857,
-      "boundsSrid": 3857,
-      "paginationIdentity": "native-id",
-      "filterBoundsGeometry": true,
-      "pageSize": 256,
-      "idBatchSize": 20,
-      "maxFeatures": 2000,
-      "maxBboxKm2": 4,
-      "maxResponseBytes": 1048576,
-      "timeoutMs": 30000,
-      "maxConcurrentQueries": 2,
-      "countryCode": "KZ",
-      "metricSrid": 32640,
-      "cityIds": [
-        "aktobe"
-      ],
-      "scope": "Bounded central Aktobe cadastral observations only. Citywide completeness, source currency and historic/current semantics are unverified.",
-      "attribution": "RGIS Aktobe / Aqtobe regional services portal · GZK cadastral parcels · bounded coverage; currentness and reuse terms unverified · adapted",
-      "catalogueUrl": "https://eaqtobe.kz/map/",
-      "operator": "Aqtobe regional public-services portal / Regional GIS of Aktobe",
-      "licenceNote": "Anonymous public access; no explicit reuse licence established in inspected first-party materials.",
-      "capabilities": {
-        "areaEnumeration": true
-      },
-      "caveats": [
-        "Request cad_number and geom only; preserve native ID strings including leading zeroes. GeoServer transport feature IDs are not stable parcel identities.",
-        "Native EPSG:3857 is transformed to WGS84 without coordinate rounding, offsets or geometry repair. Requested geographic output was previously rounded to integer degrees.",
-        "Do not use resultType=hits: discovery recorded inconsistent zero counts. Runtime validates feature-response match counts and pages completely or fails.",
-        "BBOX can match feature envelopes; complete returned polygons are tested for intersection, never clipped.",
-        "Bounded observations do not establish full-city distribution, uniqueness, historic/current semantics or reuse rights."
-      ],
-      "defaultForCity": true
     },
     {
       "id": "br-sp-cati-sigef-brasil-sp3",

@@ -11,6 +11,7 @@ const SOURCE_CRS_URN = 'urn:ogc:def:crs:EPSG::404000';
 const CENTER = [71.4304, 51.1282];
 const CENTER_METRIC = proj4('EPSG:4326', SOURCE_CRS, CENTER);
 const BOUNDS = [71.4302, 51.1280, 71.4306, 51.1284];
+const ESIL = { districts: [{ id: 254, bbox: [71.3771, 50.9443, 71.6111, 51.1528] }], projection: 'KZ-GK-12' };
 
 function geometryAt([x, y] = CENTER_METRIC, size = 5) {
     const ring = [[x - size, y - size], [x + size, y - size], [x + size, y + size], [x - size, y + size], [x - size, y - size]];
@@ -32,7 +33,7 @@ function makeSource(pages, override = {}) {
     const fetchImpl = vi.fn();
     for (const item of pages) fetchImpl.mockResolvedValueOnce(item);
     const descriptor = { id: 'astana-egkn-pkk', endpoint: ENDPOINT, featureType: 'egkn:u_view',
-        districtId: 254, idPrefix: PREFIX, idField: 'kad_nomer', outFields: ['gid', 'kad_nomer'],
+        ...ESIL, idPrefix: PREFIX, idField: 'kad_nomer', outFields: ['gid', 'kad_nomer'],
         pageSize: 2, maxFeatures: 10, maxBboxKm2: 2, ...override };
     return { source: createKazakhstanPkkSource(descriptor, { fetchImpl }), fetchImpl };
 }
@@ -231,7 +232,7 @@ describe('Astana official PKK parcel source', () => {
         // A bare number no longer names one plot.
         await expect(invalid.source.queryIds([`${PREFIX}21320072529`])).rejects.toMatchObject({ status: 400 });
         expect(invalid.fetchImpl).not.toHaveBeenCalled();
-        const descriptor = { id: 'astana-timeout', endpoint: ENDPOINT, featureType: 'egkn:u_view', districtId: 254,
+        const descriptor = { id: 'astana-timeout', endpoint: ENDPOINT, featureType: 'egkn:u_view', ...ESIL,
             idPrefix: PREFIX, pageSize: 2, maxFeatures: 10 };
         const fetchImpl = vi.fn().mockRejectedValue(new DOMException('timed out', 'TimeoutError'));
         const timedOut = createKazakhstanPkkSource(descriptor, { fetchImpl });
@@ -252,7 +253,7 @@ describe('Almaty official PKK district projection', () => {
     const center = [76.909491597618, 43.2612968331175];
     const metric = proj4('EPSG:4326', almatyCrs, center);
     const almatyBounds = [center[0] - 0.0002, center[1] - 0.0002, center[0] + 0.0002, center[1] + 0.0002];
-    const override = { id: 'almaty-egkn-pkk', districtId: 244, idPrefix: almatyPrefix, projection: 'KZ-GK-13' };
+    const override = { id: 'almaty-egkn-pkk', districts: [{ id: 244, bbox: [76.85, 43.2, 76.95, 43.3] }], idPrefix: almatyPrefix, projection: 'KZ-GK-13' };
     const crs = { type: 'name', properties: { name: SOURCE_CRS_URN } };
 
     it('uses the published Almaty district SRS for bounds and fresh exact reference reads', async () => {
@@ -283,11 +284,16 @@ describe('Almaty official PKK district projection', () => {
         await expect(source.queryBounds(almatyBounds)).rejects.toMatchObject({ status: 502 });
     });
 
-    it('requires a verified district/projection/namespace combination before network access', () => {
-        expect(() => makeSource([], { ...override, projection: 'KZ-GK-12' })).toThrow(/descriptor/);
+    it('requires districts with extents, a Gauss–Krüger zone and a cadastre namespace before network access', () => {
         expect(() => makeSource([], { ...override, projection: 'EPSG:32643' })).toThrow(/descriptor/);
-        expect(() => makeSource([], { ...override, idPrefix: PREFIX })).toThrow(/descriptor/);
-        expect(() => makeSource([], { ...override, districtId: 999 })).toThrow(/descriptor/);
+        expect(() => makeSource([], { ...override, projection: 'KZ-GK-30' })).toThrow(/descriptor/);
+        expect(() => makeSource([], { ...override, projection: undefined })).toThrow(/descriptor/);
+        expect(() => makeSource([], { ...override, idPrefix: 'almaty:' })).toThrow(/descriptor/);
+        expect(() => makeSource([], { ...override, districts: [] })).toThrow(/descriptor/);
+        expect(() => makeSource([], { ...override, districts: [{ id: 244 }] })).toThrow(/descriptor/);
+        expect(() => makeSource([], { ...override, districts: [{ id: 244, bbox: [77, 43.3, 76.9, 43.2] }] })).toThrow(/descriptor/);
+        expect(() => makeSource([], { ...override, districts: [...override.districts, ...override.districts] })).toThrow(/descriptor/);
+        expect(() => makeSource([], { ...override, districtId: 244, districts: undefined })).toThrow(/descriptor/);
     });
 
     it('rejects references belonging to the other configured city before network access', async () => {
@@ -299,7 +305,7 @@ describe('Almaty official PKK district projection', () => {
 
 describe('Alatau official PKK district view', () => {
     const alatauPrefix = 'KZ-ALATAU-PKK-';
-    const override = { id: 'kz-alatau-pkk', districtId: 364, idPrefix: alatauPrefix, projection: 'KZ-GK-13' };
+    const override = { id: 'kz-alatau-pkk', districts: [{ id: 364, bbox: [76.7804, 43.3559, 77.2627, 43.8644] }], idPrefix: alatauPrefix, projection: 'KZ-GK-13' };
     const crs = { type: 'name', properties: { name: SOURCE_CRS_URN } };
     const center = [76.970, 43.412];
 
@@ -312,7 +318,6 @@ describe('Alatau official PKK district view', () => {
         expect(lon).toBeCloseTo(center[0], 3);
         expect(lat).toBeCloseTo(center[1], 3);
         expect(new URL(fetchImpl.mock.calls[0][0]).searchParams.get('viewparams')).toBe('district_id:364');
-        expect(() => makeSource([], { ...override, idPrefix: 'KZ-ALMATY-PKK-' })).toThrow(/descriptor/);
     });
 
     it('passes the browser relay with the adapter\'s own request headers, and only the viewer referrer', async () => {
@@ -326,5 +331,43 @@ describe('Alatau official PKK district view', () => {
         expect(() => validateParcelProviderRelayRequest(descriptor.id, { url, method: 'GET', headers }, { sources: [descriptor] })).not.toThrow();
         expect(() => validateParcelProviderRelayRequest(descriptor.id, { url, method: 'GET', headers: { ...headers, Referer: 'https://example.com/' } },
             { sources: [descriptor] })).toThrow();
+    });
+});
+
+describe('a city of several PKK district views (Shymkent)', () => {
+    const prefix = 'KZ-SHYMKENT-PKK-';
+    const zone12 = kazakhstanPkkProjection(12).definition;
+    const crs = { type: 'name', properties: { name: SOURCE_CRS_URN } };
+    // Two neighbouring districts whose extents meet at 69.60° E.
+    const descriptor = { id: 'kz-shymkent-pkk', projection: 'KZ-GK-12', idPrefix: prefix,
+        districts: [{ id: 241, bbox: [69.50, 42.30, 69.60, 42.40] }, { id: 261, bbox: [69.60, 42.30, 69.70, 42.40] }] };
+    const at = (lon, lat) => geometryAt(proj4('EPSG:4326', zone12, [lon, lat]));
+    const districtOf = call => new URL(call[0]).searchParams.get('viewparams');
+
+    it('reads an area only from the districts whose extent touches it', async () => {
+        const { source, fetchImpl } = makeSource([response([row(11, '19001', at(69.55, 42.35))], 1, { crs })], descriptor);
+        const result = await source.queryBounds([69.5498, 42.3498, 69.5502, 42.3502]);
+        expect(fetchImpl.mock.calls.map(districtOf)).toEqual(['district_id:241']);
+        expect(result.features.map(feature => feature.id)).toEqual([`${prefix}19001-g11`]);
+    });
+
+    it('joins an area across a district line, each parcel once, and finds ids in any district', async () => {
+        const west = row(11, '19001', at(69.59995, 42.35)), east = row(12, '19002', at(69.60005, 42.35));
+        const { source, fetchImpl } = makeSource([
+            response([west, east], 2, { crs }), response([east], 1, { crs }),
+            response([], 0, { crs: null, numberReturned: 0 }), response([east], 1, { crs })], descriptor);
+        const area = await source.queryBounds([69.5998, 42.3498, 69.6002, 42.3502]);
+        expect(fetchImpl.mock.calls.map(districtOf)).toEqual(['district_id:241', 'district_id:261']);
+        expect(area.features.map(feature => feature.id).sort()).toEqual([`${prefix}19001-g11`, `${prefix}19002-g12`]);
+        const byId = await source.queryIds([`${prefix}19002-g12`]);
+        expect(fetchImpl.mock.calls.slice(2).map(districtOf)).toEqual(['district_id:241', 'district_id:261']);
+        expect(byId.features.map(feature => feature.id)).toEqual([`${prefix}19002-g12`]);
+        expect(byId.absentIds).toEqual([]);
+    });
+
+    it('asks no district for an area outside all of them', async () => {
+        const { source, fetchImpl } = makeSource([], descriptor);
+        expect((await source.queryBounds([69.80, 42.35, 69.8004, 42.3504])).features).toEqual([]);
+        expect(fetchImpl).not.toHaveBeenCalled();
     });
 });

@@ -15,15 +15,28 @@ export const kazakhstanPkkLayerEndpoint = typename => `https://map.gov4c.kz/geos
 const ENDPOINT = kazakhstanPkkLayerEndpoint('egkn:u_view');
 const VIEWER = 'https://map.gov4c.kz/egkn/';
 const FEATURE_TYPE = 'egkn:u_view';
-const DISTRICT_ID = 254;
 const NATIVE_CRS_URN = 'urn:ogc:def:crs:EPSG::404000';
-// District view ids are the feature numbers of egkn:districts (Astana Esil 254,
-// Almaty Almaly 244, Alatau city 364); each lies in one Gauss–Krüger zone.
-const DISTRICTS = new Map([
-    [254, { zone: 12, idPrefix: 'KZ-ASTANA-PKK-' }],
-    [244, { zone: 13, idPrefix: 'KZ-ALMATY-PKK-' }],
-    [364, { zone: 13, idPrefix: 'KZ-ALATAU-PKK-' }]
-]);
+// A source names its district views in the catalog: `districts: [{ id, bbox }]`, the feature numbers of
+// egkn:districts (Alatau 364, Astana Esil 254, Shymkent 241, 259, 260, 261, 270, Aktobe 42) with their
+// WGS84 extents, all in the one Gauss–Krüger zone its `projection` (KZ-GK-<zone>) names.
+const MAX_DISTRICTS = 12;
+const ID_PREFIX_PATTERN = /^KZ-[A-Z]{2,20}-PKK-$/;
+
+function districtsOf(descriptor) {
+    const districts = descriptor?.districts;
+    const valid = Array.isArray(districts) && districts.length > 0 && districts.length <= MAX_DISTRICTS
+        && districts.every(district => Number.isSafeInteger(district?.id) && district.id > 0 && Array.isArray(district.bbox)
+            && district.bbox.length === 4 && district.bbox.every(Number.isFinite)
+            && district.bbox[0] < district.bbox[2] && district.bbox[1] < district.bbox[3])
+        && new Set(districts.map(district => district.id)).size === districts.length;
+    return valid ? districts : null;
+}
+
+function zoneOf(descriptor) {
+    const match = /^KZ-GK-([0-9]{1,2})$/.exec(descriptor?.projection ?? '');
+    const zone = match ? Number(match[1]) : NaN;
+    return zone >= 8 && zone <= 15 ? zone : null;
+}
 
 export function kazakhstanPkkProjection(zone) {
     return {
@@ -104,10 +117,9 @@ function projectBounds(bounds, toMetric) {
 
 export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
     const { id, idPrefix } = descriptor || {};
-    const districtId = descriptor?.districtId ?? DISTRICT_ID;
-    const district = DISTRICTS.get(districtId);
-    const projection = district ? kazakhstanPkkProjection(district.zone) : undefined;
-    const sourceCrs = projection?.name;
+    const districts = districtsOf(descriptor);
+    const zone = zoneOf(descriptor);
+    const projection = zone ? kazakhstanPkkProjection(zone) : undefined;
     const pageSize = descriptor?.pageSize ?? 1000;
     const maxFeatures = descriptor?.maxFeatures ?? 10000;
     const maxResponseBytes = descriptor?.maxResponseBytes ?? 4 * 1024 * 1024;
@@ -117,11 +129,10 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
     const timeoutMs = descriptor?.timeoutMs ?? 15000;
     if (!descriptor || typeof descriptor !== 'object' || typeof id !== 'string' || !id
         || descriptor.endpoint !== ENDPOINT || descriptor.featureType !== FEATURE_TYPE
-        || !district || typeof idPrefix !== 'string' || idPrefix !== district.idPrefix
+        || !districts || !projection || typeof idPrefix !== 'string' || !ID_PREFIX_PATTERN.test(idPrefix)
         || (descriptor.idField !== undefined && descriptor.idField !== 'kad_nomer')
         || (descriptor.outFields !== undefined && (!Array.isArray(descriptor.outFields)
             || stableJson([...descriptor.outFields].sort()) !== stableJson([...OUT_FIELDS].sort())))
-        || (descriptor.projection !== undefined && descriptor.projection !== sourceCrs)
         || !Number.isSafeInteger(pageSize) || pageSize < 1 || pageSize > 1000
         || !Number.isSafeInteger(maxFeatures) || maxFeatures < pageSize || maxFeatures > 20000
         || !Number.isSafeInteger(maxResponseBytes) || maxResponseBytes < 1024 || maxResponseBytes > 8 * 1024 * 1024
@@ -166,7 +177,7 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
         catch { throw upstreamError('Kazakhstan PKK returned invalid GeoJSON.'); }
     }
 
-    function makeUrl({ bbox, filter, startIndex }) {
+    function makeUrl({ districtId, bbox, filter, startIndex }) {
         const params = new URLSearchParams({
             service: 'WFS', version: '2.0.0', request: 'GetFeature', typename: FEATURE_TYPE,
             outputFormat: 'application/json', propertyname: 'gid,kad_nomer,geom',
@@ -178,11 +189,24 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
         return `${ENDPOINT}?${params}`;
     }
 
+    // An area is read from the districts whose extent touches it; ids from every district. One
+    // deadline and byte budget cover the whole read.
     async function query({ bbox, codes, keys, operationSignal, operationState }) {
-        const metricBounds = bbox ? projectBounds(bbox, toMetric) : undefined;
-        const filter = codes ? idFilter(codes) : undefined;
         const state = operationState ?? { totalBytes: 0 };
         const signal = operationSignal ?? AbortSignal.timeout(timeoutMs);
+        const touched = bbox ? districts.filter(({ bbox: extent }) => extent[0] <= bbox[2] && extent[2] >= bbox[0]
+            && extent[1] <= bbox[3] && extent[3] >= bbox[1]) : districts;
+        const byKey = new Map();
+        for (const { id: districtId } of touched) {
+            for (const [key, item] of await queryDistrict(districtId, { bbox, codes, keys, signal, state })) byKey.set(key, item);
+            if (byKey.size > maxFeatures) throw upstreamError('Kazakhstan PKK query exceeds its match or parcel limit.');
+        }
+        return [...byKey.values()].filter(item => item.intersectsBounds).map(item => item.canonical);
+    }
+
+    async function queryDistrict(districtId, { bbox, codes, keys, signal, state }) {
+        const metricBounds = bbox ? projectBounds(bbox, toMetric) : undefined;
+        const filter = codes ? idFilter(codes) : undefined;
         const byKey = new Map();
         const seenGids = new Set();
         let startIndex = 0;
@@ -192,7 +216,7 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
             if (++pageCount > maxPages) throw upstreamError('Kazakhstan PKK exceeded the page limit.');
             let payload;
             try {
-                const response = await fetchImpl(makeUrl({ bbox: metricBounds, filter, startIndex }), { signal, redirect: 'error', headers: {
+                const response = await fetchImpl(makeUrl({ districtId, bbox: metricBounds, filter, startIndex }), { signal, redirect: 'error', headers: {
                     Accept: 'application/json', Referer: VIEWER, 'User-Agent': USER_AGENT
                 } });
                 if (response.status !== 200 || !response.ok) throw providerHttpError(response);
@@ -246,7 +270,7 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
             if (startIndex === matched) break;
             if (page.length === 0) throw upstreamError('Kazakhstan PKK returned an empty page before completion.');
         }
-        return [...byKey.values()].filter(item => item.intersectsBounds).map(item => item.canonical);
+        return byKey;
     }
 
     const result = (features, extra = {}) => ({ type: 'FeatureCollection', features,
