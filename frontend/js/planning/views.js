@@ -736,7 +736,7 @@
                             const point = root.turf.pointOnFeature(feature).geometry.coordinates;
                             latlng = root.L.latLng(point[1], point[0]);
                         } catch (_) { /* Bounds centre is the safe fallback. */ }
-                        if (latlng && root.ClickStack?.handleClick) root.ClickStack.handleClick(latlng, { allowUrbanBlocks: true });
+                        if (latlng && root.ClickStack?.handleClick) root.ClickStack.handleClick(latlng, { allowUrbanBlocks: true, shape: true });
                         else inspect();
                     }
                 });

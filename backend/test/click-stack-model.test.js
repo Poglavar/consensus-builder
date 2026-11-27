@@ -261,3 +261,20 @@ it('frames an object opened from a list or link only when it is out of view or t
     expect(model.framingNeeded({ left: NaN, top: 0, right: 1, bottom: 1 }, view)).toBe(false);
     expect(model.framingNeeded(null, view)).toBe(false);
 });
+
+it('opens the parcel first under a zoning outline drawn only as context, and keeps the zone one row away', () => {
+    const zone = { id: 'zone', item: { role: 'permitted', assessment: { meaning: 'zoning-area' } } };
+    const hits = { permittedArea: [zone], parcels: [{ id: 'p1' }] };
+    // Permitted on: the zone is on top and opens.
+    const shown = model.buildClickStack(hits);
+    expect([shown.expanded, shown.topRef]).toEqual(['permittedArea', 'permittedArea:zone']);
+    // Permitted off: the same hits, the parcel opens; the zone is still a row just above it.
+    const context = model.buildClickStack(hits, { background: ['permitted', 'permittedArea'] });
+    expect(kinds(context)).toEqual(['permittedArea', 'parcels']);
+    expect([context.expanded, context.topRef]).toEqual(['parcels', 'parcels:p1']);
+    expect(model.visibleSections(context).map(section => section.kind)).toEqual(['permittedArea', 'parcels']);
+    expect(model.selectInstance(context, 'permittedArea', 'zone').topRef).toBe('parcels:p1');
+    // A repeat click on the same spot keeps the parcel open; with only the zone there, the zone opens.
+    expect(model.clickAction(context.topRef, model.buildClickStack(hits, { background: ['permittedArea'] }))).toBe('retain');
+    expect(model.buildClickStack({ permittedArea: [zone] }, { background: ['permittedArea'] }).expanded).toBe('permittedArea');
+});
