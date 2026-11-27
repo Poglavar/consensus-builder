@@ -1,8 +1,8 @@
 // proposals/plan-decision.js — the decision-sheet figures of Compare plans (plan-stats.js) that MCP
 // ugt_compare (backend/agents/mcp-compare.js) reads by the same rules: built form (tallest new
 // building, site coverage, floor-area ratio), road and green area, the totals of what a plan
-// demolishes, its build-out periods in brief, its Permitted-limit verdict and the agreements backing
-// it. Pure: features and records in, figures out; geometry operations (turf) come from the caller.
+// demolishes, the plots its money buys, its build-out periods in brief, its Permitted-limit verdict and
+// the agreements backing it. Pure: features and records in, figures out; geometry operations (turf) come from the caller.
 // A figure that cannot be measured is null with its reason, never 0. window.__planDecision.
 (function (root, factory) {
     const api = factory(root);
@@ -109,6 +109,54 @@
         });
     }
 
+    // The lng/lat box of a feature or geometry, [w, s, e, n], or null.
+    function boxOf(value) {
+        const box = [Infinity, Infinity, -Infinity, -Infinity];
+        const walk = node => {
+            if (!Array.isArray(node)) return;
+            if (typeof node[0] === 'number') {
+                box[0] = Math.min(box[0], node[0]); box[1] = Math.min(box[1], node[1]);
+                box[2] = Math.max(box[2], node[0]); box[3] = Math.max(box[3], node[1]);
+            } else node.forEach(walk);
+        };
+        walk((value && value.geometry ? value.geometry : value)?.coordinates);
+        return box[0] <= box[2] ? box : null;
+    }
+
+    /**
+     * The plots a plan buys (CityMoney.newBuildMoney plots): each input parcel's part of the land
+     * the plan acquires, with the existing buildings it clears there, and the acquired land on no
+     * parcel (open ground) with the buildings on none. A cleared building belongs whole to the parcel
+     * that holds most of its footprint. A developer buys each plot once, so its money is the higher
+     * of its land value and the value of what stands on it.
+     *   parcels: [{ feature, landM2 }], landM2 the parcel's acquired land;
+     *   landM2: all the acquired land (null: unknown, and so is the open-ground plot);
+     *   rows: [{ footprint, ... }], footprint a Feature;
+     *   ops: { intersect(a, b), areaOf(feature) }.
+     * Returns [{ landM2, rows }]; the open-ground plot only when it has land or buildings, or is the
+     * only plot (land an extension takes is bought for nothing, at a land price that must be known).
+     */
+    function acquisitionPlots({ parcels = [], landM2 = null, rows = [], ops }) {
+        const plots = parcels.map(parcel => ({ landM2: parcel.landM2, rows: [], box: boxOf(parcel.feature) }));
+        const rest = { landM2: null, rows: [] };
+        for (const row of rows) {
+            const box = boxOf(row.footprint);
+            let best = null, bestM2 = 0;
+            parcels.forEach((parcel, index) => {
+                const other = plots[index].box;
+                if (box && other && (box[2] < other[0] || other[2] < box[0] || box[3] < other[1] || other[3] < box[1])) return;
+                const part = row.footprint ? ops.intersect(row.footprint, parcel.feature) : null;
+                const m2 = part ? ops.areaOf(part) : 0;
+                if (m2 > bestM2) { best = plots[index]; bestM2 = m2; }
+            });
+            (best || rest).rows.push(row);
+        }
+        const onParcels = plots.reduce((sum, plot) => sum + plot.landM2, 0);
+        rest.landM2 = finite(landM2) ? Math.max(0, landM2 - onParcels) : null;
+        const out = plots.map(({ landM2: m2, rows: on }) => ({ landM2: m2, rows: on }));
+        return rest.landM2 === 0 && !rest.rows.length && out.length ? out : [...out, rest];
+    }
+
     /**
      * A plan's build-out in brief, from plan-yield's periods: { first, last, periods, unscheduled }
      * (years; unscheduled designs), or null when no member is scheduled.
@@ -196,5 +244,5 @@
         return rows.map(row => row.map(cell).join(',')).join('\r\n') + '\r\n';
     }
 
-    return { roadAndGreen, builtForm, demolitionTotals, clearedRows, periodSummary, permittedBuildings, permittedSummary, backingOf, csvOf };
+    return { roadAndGreen, builtForm, demolitionTotals, clearedRows, acquisitionPlots, periodSummary, permittedBuildings, permittedSummary, backingOf, csvOf };
 });

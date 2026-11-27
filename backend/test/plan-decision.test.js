@@ -94,6 +94,26 @@ describe('demolition totals', () => {
     });
 });
 
+describe('the plots a plan buys', () => {
+    const ops = { intersect: (a, b) => turf.intersect(a, b), areaOf: feature => turf.area(feature) };
+    const west = square(15.885, 43.735, 15.886, 43.7365), east = square(15.886, 43.735, 15.887, 43.7365);
+    const parcels = [{ feature: west, landM2: 600 }, { feature: east, landM2: 500 }];
+
+    it('puts each cleared building whole on the parcel holding most of it, and the rest of the land on open ground', () => {
+        // Mostly in the east parcel, a little over the line into the west one.
+        const straddling = { footprint: square(15.8859, 43.7352, 15.8866, 43.7356), id: 'a' };
+        const off = { footprint: square(15.89, 43.735, 15.8905, 43.7355), id: 'b' };
+        const plots = decision.acquisitionPlots({ parcels, landM2: 1300, rows: [straddling, off], ops });
+        expect(plots.map(plot => [plot.landM2, plot.rows.map(row => row.id)])).toEqual([[600, []], [500, ['a']], [200, ['b']]]);
+    });
+
+    it('leaves out an empty open-ground plot, keeps it as the only plot, and leaves its land unknown while the land is', () => {
+        expect(decision.acquisitionPlots({ parcels, landM2: 1100, rows: [], ops })).toHaveLength(2);
+        expect(decision.acquisitionPlots({ parcels: [], landM2: 0, rows: [], ops })).toEqual([{ landM2: 0, rows: [] }]);
+        expect(decision.acquisitionPlots({ parcels, landM2: null, rows: [], ops }).at(-1)).toEqual({ landM2: null, rows: [] });
+    });
+});
+
 describe('build-out in brief', () => {
     it('gives the first and last period and the unscheduled designs, or null', () => {
         expect(decision.periodSummary({ byPeriod: [{ year: 2031 }, { year: 2028 }], unassigned: { proposals: 2 } }))
