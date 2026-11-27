@@ -27,7 +27,11 @@
             // bound keeps out pre-Georgian buildings, and a terrace that old would be dated.
             { id: 'built', cite: '17.1', check: 'builtBetween', after: 1700, before: 1918, openStartPasses: true },
             { id: 'parapet', cite: '17.2', check: 'factIs', fact: 'parapet', value: true },
-            { id: 'frontGable', cite: '17.3', check: 'unchecked' },
+            // "No front gable or half-dormers": a parapet along the whole street front (17.2, the
+            // building:parapet tag's meaning) leaves no room for either, so it passes. Without one the
+            // front may show plain eaves, a gable or a half-dormer, which no source tells apart: not
+            // checked, so this test never changes a house's verdict, only shows what 17.2 settles.
+            { id: 'frontGable', cite: '17.3', check: 'passWhenFact', fact: 'parapet', value: true },
             { id: 'noMansard', cite: '17.4', check: 'factIsNot', fact: 'roof_shape', value: 'mansard' },
             { id: 'storeys', cite: '17.5', check: 'factAtLeast', fact: 'storeys', min: 2 },
             // A terrace of at least three, or a semi-detached pair (17.6: a pair adds mansards together).
@@ -117,7 +121,8 @@
     // factAtMost, atMostFact (a fact against a limit fact; a limit of false means no limit),
     // boundAtMost and boundBelowFails (the fact is an upper bound of what the rule limits: a bound
     // within the maximum passes, one under the minimum fails, else unknown), gradeNotIn, notListed,
-    // notInAreas (the designation datasets a building lies in), row and unchecked.
+    // notInAreas (the designation datasets a building lies in), passWhenFact (passes when a fact
+    // that implies the condition holds, else unchecked), row and unchecked.
     function runTest(test, facts) {
         const result = (status, value) => ({ id: test.id, cite: test.cite, status, ...(value === undefined ? {} : { value }) });
         if (!applies(test, facts)) return result('notApplicable');
@@ -152,6 +157,7 @@
                 const afterKept = finite(from) ? from > test.after : test.openStartPasses === true;
                 return result(finite(to) && to < test.before && afterKept ? 'pass' : 'unknown', span);
             }
+            case 'passWhenFact': return value === test.value ? result('pass', value) : result('unchecked');
             case 'factIs': return value === null ? result('unknown') : result(value === test.value ? 'pass' : 'fail', value);
             case 'factIsNot': return value === null ? result('unknown') : result(value === test.value ? 'fail' : 'pass', value);
             case 'factAtLeast': return !finite(value) ? result('unknown') : result(value >= test.min ? 'pass' : 'fail', value);

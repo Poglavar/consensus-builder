@@ -704,8 +704,10 @@ Whether a source building meets a rule set's conditions on what it is, test by t
 from its building facts, so the app and the agents' server judge it alike. A test passes, fails, is
 unknown while its fact is, or is unchecked when no source states it (listed, not assumed). Living
 Tradition's "not listed Grade I or II*" reads the heritage fact: not listed or Grade II passes,
-Grade I or II* fails, and a listing whose grade the register does not state is unknown. The
-verdict is ineligible when a test fails, unknown while one is unknown, else eligible. A rule set is
+Grade I or II* fails, and a listing whose grade the register does not state is unknown. Its "no
+front gable or half-dormers" passes when the building has a parapet along its whole street front
+(the parapet fact), which leaves room for neither; otherwise it is unchecked, so it never changes a
+verdict. The verdict is ineligible when a test fails, unknown while one is unknown, else eligible. A rule set is
 dated like a ballot rule and applies where a city plans under its planning rule set. The first is
 Living Tradition's paragraph 17 for mansards under English planning (`gb-eng-planning`).
 

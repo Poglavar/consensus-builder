@@ -16,8 +16,18 @@ describe('Living Tradition eligibility', () => {
     it('passes a parapeted Georgian terrace house, listing what it cannot check', () => {
         const result = eligibility.evaluate(set, georgian);
         expect(result.verdict).toBe('eligible');
-        expect(statuses(result)).toEqual({ '17.1': 'pass', '17.2': 'pass', '17.3': 'unchecked', '17.4': 'pass', '17.5': 'pass',
+        expect(statuses(result)).toEqual({ '17.1': 'pass', '17.2': 'pass', '17.3': 'pass', '17.4': 'pass', '17.5': 'pass',
             '17.6': 'pass', '17.7': 'pass', '17.8': 'unchecked', '17.9': 'pass', '17.10': 'unchecked' });
+    });
+    it('passes 17.3 (no front gable or half-dormers) only on a full street parapet, and never changes a verdict by it', () => {
+        const gable = parapet => eligibility.evaluate(set, { ...georgian, parapet }).tests.find(test => test.cite === '17.3');
+        expect(gable(fact(true))).toMatchObject({ status: 'pass', value: true });
+        // No parapet, or not known: plain eaves, a gable and a half-dormer look alike to the sources.
+        expect(gable(fact(false)).status).toBe('unchecked');
+        expect(gable(null).status).toBe('unchecked');
+        const noParapet = eligibility.evaluate(set, { ...georgian, parapet: fact(false) });
+        expect(noParapet.verdict).toBe('ineligible');
+        expect(noParapet.tests.filter(test => test.status === 'fail').map(test => test.cite)).toEqual(['17.2']);
     });
     it('is unknown while a fact is, and never guesses one', () => {
         const result = eligibility.evaluate(set, { ...georgian, parapet: null, roof_shape: null, row_size: null });
