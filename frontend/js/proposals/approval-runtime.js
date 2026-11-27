@@ -31,13 +31,14 @@
             return { ready: false, reason: 'invalid-rights', ownerIds: [], leaseholderIds: [], authorityIds: [], partyIds: [], publicIds: [], parcels: [], missingParcelIds: [], error };
         }
     }
-    // "Owner A", "Leaseholder A" or "Authority", translated. Takes the agreement's inspect() state, or
+    // "Owner A", "Leaseholder A", "Neighbour A" (who waives a right) or "Authority", translated. Takes the agreement's inspect() state, or
     // a plain owner id list where only owners are named.
     function label(id, idsOrState) {
         const state = Array.isArray(idsOrState) ? { ownerIds: idsOrState, leaseholderIds: [], authorityIds: [] } : idsOrState;
         const party = api().partyOf(id, state) || { kind: 'owner', letter: '' };
         const key = party.kind === 'authority' ? (party.letter ? 'proposalApproval.authorityLabelLettered' : 'proposalApproval.authorityLabel')
-            : party.kind === 'leaseholder' ? 'proposalApproval.leaseholderLabel' : 'proposalApproval.ownerLabel';
+            : party.kind === 'leaseholder' ? 'proposalApproval.leaseholderLabel'
+                : party.kind === 'neighbour' ? 'proposalApproval.neighbourLabel' : 'proposalApproval.ownerLabel';
         const translated = root.i18n?.t?.(key, { label: party.letter });
         return translated && translated !== key ? translated : api().partyLabel(id, state);
     }

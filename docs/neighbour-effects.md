@@ -62,6 +62,11 @@ a rule set's `neighbourGuides` in `frontend/data/planning-sources.json`, which a
   in Lists → Designs. A design is measured as its one-member plan, as Compare designs does.
 - **A saved plan:** the same button on the plan's Stats and analysis page in the map's plan panel,
   and on its card in Lists → Plans.
+- **An agreement:** the agreement editor's Neighbours tab measures the agreement's plan the same
+  way and adds ticked plots as affected parcels, each with a snapshot of its changed readings
+  (`NeighbourEffects.snapshot`: kind, before, after, the guide's value, grade) and the rights they
+  are evidence of (garden → garden limit, sunlight → sunlight, sky, no-sky line, angle and splay →
+  daylight, facing distance → privacy). See [agreement-editor.md](agreement-editor.md#affected-neighbours).
 
 Each lists the affected plots in three groups, each by its largest loss first, named by compass
 direction and distance: **beyond a guide** (red: under both the guide's level and its allowance),
@@ -159,6 +164,4 @@ heights.
 
 - **Effects of this plan on a clicked plot:** the affected plot's own panel shows the same readings
   (approved design, step 2).
-- **Affected neighbours as parties:** a button in the agreement that adds the affected plots' owners
-  as parties with compensation lines (approved design, step 3).
 - **Agents:** MCP has no effects tool yet; agents can read Permitted context but not these readings.

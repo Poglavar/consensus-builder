@@ -36,16 +36,19 @@
     }
 
     // Effects on neighbours of a plan (getPlan) into `section`: its new buildings against the
-    // neighbouring plots (planning/effects-advisor.js), listed there and coloured on the map.
+    // neighbouring plots (planning/effects-advisor.js), listed there and coloured on the map. Answers
+    // the assessment (the agreement editor adds its plots as affected parcels), or undefined when a
+    // newer one replaced it.
     async function runEffects(win, getPlan, section) {
         const advisor = win.NeighbourEffectsAdvisor;
         advisor.render(section, null);
         const prepared = await win.PlanAnalysis.prepare(await getPlan(), {});
         const buildings = win.__planDecision.permittedBuildings(prepared.records);
         const result = await new Promise(resolve => advisor.assess({ buildings }, resolve));
-        if (!result) return;
+        if (!result) return undefined;
         advisor.render(section, result);
         advisor.show(win.map, result);
+        return result;
     }
 
     // The Effects on neighbours button and its section, for a plan or a design's one-member plan.

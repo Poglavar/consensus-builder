@@ -2812,6 +2812,76 @@
       "markup": "doc.createElement(tag)"
     },
     {
+      "id": "control-1281677941076a-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"checkbox\" data-agreement-neighbour-candidate=\"${esc(id)}\"${ticked.has(id) && !taken ? ' checked' : ''}${taken ? ' disabled' : ''}>"
+    },
+    {
+      "id": "control-a2cd0a6a5199aa-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<button type=\"button\" class=\"btn btn-primary\" data-agreement-action=\"neighbours-add-ticked\"${count ? '' : ' disabled'}>"
+    },
+    {
+      "id": "control-2a3fe58083137f-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<select data-affected-field=\"${name}\">"
+    },
+    {
+      "id": "control-94fe416a32cc20-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"checkbox\" data-affected-right=\"${right}\"${given.has(right) ? ' checked' : ''}>"
+    },
+    {
+      "id": "control-af9956778e2b0e-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"text\" data-affected-field=\"note\" value=\"${esc(entry.note || '')}\" autocomplete=\"off\">"
+    },
+    {
+      "id": "control-b37123383b45d5-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"number\" min=\"0\" step=\"0.01\" data-affected-field=\"loss\" value=\"${esc(loss ? centsText(loss.amountCents) : '')}\">"
+    },
+    {
+      "id": "control-02a521c8aa0d84-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"text\" data-affected-field=\"valuerRef\" value=\"${esc(loss && loss.valuerRef || '')}\" autocomplete=\"off\">"
+    },
+    {
+      "id": "control-a4d6c584525d1d-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"number\" min=\"0\" step=\"0.01\" data-affected-field=\"consideration\" value=\"${esc(centsText(entry.considerationCents))}\"${derived ? ' readonly aria-readonly=\"true\"' : ''}>"
+    },
+    {
+      "id": "control-c6677c806d3dd4-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm\" data-affected-remove=\"${esc(id)}\">"
+    },
+    {
+      "id": "control-9dc7bedc810aa1-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"text\" data-agreement-neighbour-id autocomplete=\"off\">"
+    },
+    {
+      "id": "control-274929fe913d16-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-agreement-action=\"neighbour-add\">"
+    },
+    {
+      "id": "control-b1f708e1554c36-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<select data-agreement-neighbour-preset>"
+    },
+    {
+      "id": "control-6abf17576802b1-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"number\" min=\"0.01\" step=\"0.01\" data-agreement-neighbour-multiple value=\"${esc(terms ? String(terms.multipleBasisPoints / 10000) : '')}\">"
+    },
+    {
+      "id": "control-f415352d4e3fa3-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<button type=\"button\" class=\"btn\" data-agreement-action=\"neighbours-measure\">"
+    },
+    {
       "id": "control-5e79f4bc9789f7-1",
       "source": "js/agreement-dialog.js",
       "markup": "<button type=\"button\" class=\"cb-option agreement-object-row\" data-agreement-inspect=\"${kind}\" data-agreement-object-id=\"${esc(item.id)}\" aria-pressed=\"false\">"

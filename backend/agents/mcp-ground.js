@@ -11,6 +11,13 @@ const require = createRequire(import.meta.url);
 const BallotRules = require('../../frontend/js/community/ballot-rules.js');
 const Eligibility = require('../../frontend/js/planning/eligibility.js');
 const BuildingFacts = require('../../frontend/js/buildings/building-facts.js');
+const EN = require('../../frontend/i18n/en.json');
+// The building card's English words (planningViews.*), so a refusal gives an agent the reasons and
+// links a person sees in the app.
+const cardText = (key, params = {}) => {
+    const value = key.split('.').reduce((node, part) => node?.[part], EN.planningViews);
+    return typeof value === 'string' ? value.replace(/\{\{\s*(\w+)\s*\}\}/g, (_, name) => String(params[name] ?? '')) : key;
+};
 const fail = (code, message) => Object.assign(new Error(message), { code, next: { action: 'Review these designs and their ground in the app before proposing an agreement.' } });
 export const deriveAgreementGround = deriveWithApp;
 
@@ -28,13 +35,18 @@ export async function votingWithEligibility(consultation, designContents, { read
     const judged = await Eligibility.check(set, houses, readFacts);
     const blocked = judged.filter(house => !house.id || house.result.verdict !== 'eligible');
     if (blocked.length) {
-        const why = house => {
-            const cites = status => house.result.tests.filter(test => test.status === status).map(test => test.cite).join(', ');
-            return `${house.id || `building ${house.sourceBuildingId} (no facts source)`}: ${house.id ? house.result.verdict : 'unknown'}`
-                + (cites('fail') ? `, fails ${cites('fail')}` : '') + (cites('unknown') ? `, unknown ${cites('unknown')}` : '');
-        };
-        throw Object.assign(new Error(`Not every covered house is eligible yet (${blocked.map(why).join('; ')}). Add the missing facts in OpenStreetMap and draft again; a heritage listing (17.9) comes from the country's heritage register, not OpenStreetMap.`),
-            { code: 'eligibility-failed', next: { action: 'Read each house with the building facts (edit links per building) and fill the missing ones in OpenStreetMap; for an unknown heritage listing, unknown_reasons.heritage says why (adding addr:street and addr:housenumber can let a terrace entry match by house number).' } });
+        // Each blocked house with every failing or unknown test, in the building card's words and
+        // links (Eligibility.explain): the fact's value, a register's reason and entry link, or the
+        // OpenStreetMap key to add on the building's edit page.
+        const houses = blocked.map(house => ({ id: house.id, sourceBuildingId: house.id ? undefined : house.sourceBuildingId ?? null,
+            verdict: house.id ? house.result.verdict : 'unknown', edit: house.building?.edit?.url || null,
+            tests: house.id ? Eligibility.explain(set, house.result, house.building, cardText) : [] }));
+        const testWords = test => `${test.cite} ${test.label}: ${test.statusText}` + (test.text ? ` (${test.text})` : '') + (test.reason ? ` — ${test.reason}` : '')
+            + (test.link ? ` — ${test.link.text}: ${test.link.url}` : '') + (test.add ? ` — add ${test.add.key} in ${test.add.source}: ${test.add.url}` : '');
+        const why = house => `${house.id || `building ${house.sourceBuildingId} (no facts source)`}: ${house.verdict}` + (house.tests.length ? ` [${house.tests.map(testWords).join('; ')}]` : '');
+        throw Object.assign(new Error(`Not every covered house is eligible yet (${houses.map(why).join(' | ')}). Add the missing facts in OpenStreetMap and draft again; a heritage listing (17.9) comes from the country's heritage register, not OpenStreetMap.`),
+            { code: 'eligibility-failed', constraints: { eligibility: houses },
+                next: { action: 'For each house in constraints.eligibility, add the missing facts under the named OpenStreetMap keys on its edit page, or read the heritage register entry linked; adding addr:street and addr:housenumber can let a terrace entry match by house number. Then draft again.' } });
     }
     return { ...consultation, voting: { ...voting, eligibility: Eligibility.evidence(set, judged, new Date().toISOString()) } };
 }
@@ -79,13 +91,13 @@ export function createMcpAgreementTools({ read, drafts, appOrigin, readFacts = i
             const result = await groundFor(await resolveDesigns(designs, parcelSourceId));
             return result.land;
         },
-        async draftAgreement({ plan: value, rulePreset = 'owner-vote', rule: ruleOverride, rights, lenses = [], lensThreshold = null, allocations, settlement, valuation = null, currency = null, deadline = null, sponsor = null, title = null, author = null, createdAt = null, consultation = null, includeGround = false, targetUsdcAtomic = null, contract = null, apartments = null }) {
+        async draftAgreement({ plan: value, rulePreset = 'owner-vote', rule: ruleOverride, rights, lenses = [], lensThreshold = null, allocations, settlement, valuation = null, affected = null, neighbourCompensation, currency = null, deadline = null, sponsor = null, title = null, author = null, createdAt = null, consultation = null, includeGround = false, targetUsdcAtomic = null, contract = null, apartments = null }) {
             if (!resolvePlan) throw fail('plan-resolver-unavailable', 'Named plan resolution is unavailable.');
             // Funding refers to the published member CIDs. Only newly carried designs need authoring checks.
             const selected = await resolvePlan(value, { referenceMembers: rulePreset === 'crowdfunding' });
             if (rulePreset === 'crowdfunding') {
-                if (ruleOverride || rights || allocations || settlement || valuation != null || consultation != null) {
-                    throw fail('crowdfunding-terms-invalid', 'Crowdfunding has one fixed investor rule and no land, allocation, settlement, valuation or consultation terms.');
+                if (ruleOverride || rights || allocations || settlement || valuation != null || consultation != null || affected != null || neighbourCompensation != null) {
+                    throw fail('crowdfunding-terms-invalid', 'Crowdfunding has one fixed investor rule and no land, allocation, settlement, valuation, affected neighbour or consultation terms.');
                 }
                 if (typeof deadline !== 'string' || !Number.isFinite(Date.parse(deadline)) || Date.parse(deadline) % 1000 !== 0) {
                     throw fail('crowdfunding-deadline-invalid', 'Supply a funding deadline on a whole second.');
@@ -119,6 +131,9 @@ export function createMcpAgreementTools({ read, drafts, appOrigin, readFacts = i
             if (rights && rule.electorate === 'owners') rule.approvalConfig = { ...(rule.approvalConfig || { schema: 'proposal-approval/v1', policy: { type: 'unanimous' } }), rights };
             if (rule.electorate !== 'community' && !rule.settlement) rule.settlement = { method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 0 };
             if (settlement) rule.settlement = settlement;
+            // The multiple of a neighbour's stated loss: given here, or in the rule; null removes it (1×).
+            if (neighbourCompensation === null) delete rule.neighbourCompensation;
+            else if (neighbourCompensation) rule.neighbourCompensation = neighbourCompensation;
             if (rule.electorate === 'community') rule.settlement = null;
             if (rule.electorate === 'community') consultation = await votingWithEligibility(consultation, designs.map(d => d.content), { readFacts });
             const { land, source, ids } = await groundFor({ ...resolved, designs });
@@ -129,7 +144,7 @@ export function createMcpAgreementTools({ read, drafts, appOrigin, readFacts = i
             const published = agreementObject({ title, author, sponsor, city, createdAt, plan,
                 designs: designs.map(d => ({ cid: d.cid, goal: d.content.goal, title: d.content.title })),
                 parcels, openGroundM2: land.inputs.openGroundM2, outputs: land.outputs, allocations: finalAllocations,
-                money: { currency, lines: [] }, valuation: rule.electorate === 'community' ? null : valuation, rule, deadline, consultation });
+                money: { currency, lines: [] }, valuation: rule.electorate === 'community' ? null : valuation, affected, rule, deadline, consultation });
             const ruleRights = published.content.rule.approvalConfig?.rights;
             return { agreement: published.content, cid: published.cid, parcelSourceId: source.parcelSourceId, takes: [...ids], groundEffects,
                 persons: ruleRights ? personPositions(published.content, ruleRights) : null, ...(includeGround ? { ground: land } : {}), warnings: ['This agreement references the existing named plan. Review its derived ground and terms before publishing.',

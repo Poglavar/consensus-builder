@@ -1,7 +1,7 @@
 // UI boundaries: identities remain local; shared ballots expose revision and private history.
 import fs from 'node:fs';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, stubBasemapTiles } from '../helpers/runtime';
+import { openCity, stubBasemapTiles, PARCEL_ID } from '../helpers/runtime';
 import { applyLayout, agreementEditor, editorSave, editorClosed, storedAgreements, proposeOverPark, openAgreementDecision, agreementPanel } from '../helpers/agreements';
 import { fileAgreement, pageIndex } from '../helpers/mocks/shared-server';
 
@@ -214,12 +214,16 @@ test('a Living Tradition street vote waits until every covered house is eligible
   const notListed = { value: { listed: false, grade: null, register: 'National Heritage List for England', reference: null, name: null, url: 'https://www.planning.data.gov.uk/dataset/listed-building', basis: 'none' }, source: 'gb-eng-nhle', key: 'listed-building', raw: 'no entry' };
   const georgian = { storeys: fact(3), built: fact({ from: 1828, to: 1830 }), roof_shape: fact('flat'), parapet: fact(true), height_m: null, footprint_m2: fact(45.6), row_size: fact(20), heritage: notListed };
   const parapetTagged = new Set(['osm:way/101']);
+  // No. 102 shares its row with a listed entry the register cannot place until its address is mapped.
+  const entry = { reference: '1195683', name: 'NUMBERS 26 TO 50', grade: 'II', url: 'https://historicengland.org.uk/listing/the-list/list-entry/1195683' };
+  const rowUncertain = new Set(['osm:way/102']);
   const reads: string[] = [];
   await page.route('https://zagreb.lol/api/building-facts*', route => {
     const ids = new URL(route.request().url()).searchParams.get('ids')!.split(',');
     reads.push(ids.join(','));
     route.fulfill({ json: { fields: [], sources: [], buildings: ids.map(id => ({ id, found: true,
-      facts: { ...georgian, parapet: parapetTagged.has(id) ? fact(true) : null },
+      facts: { ...georgian, parapet: parapetTagged.has(id) ? fact(true) : null, heritage: rowUncertain.has(id) ? null : notListed },
+      unknown_reasons: rowUncertain.has(id) ? { heritage: { code: 'row-uncertain', message: 'A listed entry on this row may cover this house.', entries: [entry] } } : {},
       edit: { url: `https://www.openstreetmap.org/edit?editor=id&way=${id.split('/')[1]}`, source: 'OpenStreetMap', keys: { parapet: 'building:parapet' } },
       // Tagging the parapet is an OpenStreetMap edit, so it raises the building's version.
       source_version: { version: parapetTagged.has(id) ? 3 : 2, changed: '2026-11-27T15:00:00Z' } })) } });
@@ -242,15 +246,22 @@ test('a Living Tradition street vote waits until every covered house is eligible
   await roster.locator('[data-roster-action="generate"]').click();
   await roster.getByLabel('Ballot rule').selectOption({ label: 'Street vote — Living Tradition mansards' });
   await expect(covered).toContainText('1 of 2 covered houses eligible');
-  await expect(covered.locator('li[data-verdict="unknown"]')).toContainText('unknown 17.2');
-  await expect(covered.locator('li[data-verdict="unknown"] a')).toHaveAttribute('href', 'https://www.openstreetmap.org/edit?editor=id&way=102');
+  const blocked = covered.locator('li[data-verdict="unknown"]');
+  await expect(blocked).toContainText('unknown 17.2, 17.9');
+  await expect(blocked.getByRole('link', { name: 'Edit in OpenStreetMap' })).toHaveAttribute('href', 'https://www.openstreetmap.org/edit?editor=id&way=102');
+  // Each test it does not pass, in the building card's words: the key to add, the register's reason and its entry.
+  const tests = blocked.getByRole('list', { name: 'Tests not passed by Building way/102' });
+  await expect(tests.locator('li[data-status="unknown"]').first()).toContainText('17.2 Parapet along the whole street front: Unknown Add building:parapet in OpenStreetMap');
+  await expect(tests.locator('li').nth(1)).toContainText('17.9 Not Grade I or II* listed: Unknown A listed entry on this row may cover this house');
+  await expect(tests.getByRole('link', { name: 'List entry 1195683' })).toHaveAttribute('href', entry.url);
   const downloaded = page.waitForEvent('download');
   await roster.locator('[data-roster-action="save"]').click();
   await downloaded;
   await expect(editorSave(editor)).toBeDisabled();
   await expect(editor.locator('[data-agreement-waiting]')).toContainText('Not every covered house is known to be eligible yet');
-  // The author tags No. 102's parapet in OpenStreetMap and checks again.
+  // The author tags No. 102's parapet and address in OpenStreetMap (the register then matches it, not listed) and checks again.
   parapetTagged.add('osm:way/102');
+  rowUncertain.delete('osm:way/102');
   await covered.getByRole('button', { name: 'Check again' }).click();
   await expect(covered).toContainText('2 of 2 covered houses eligible');
   await expect(editorSave(editor)).toBeEnabled();
@@ -260,4 +271,59 @@ test('a Living Tradition street vote waits until every covered house is eligible
   expect(saved.consultation.voting.rule).toEqual({ id: 'gb-street-vote-living-tradition', version: '2026-11-27' });
   expect(saved.consultation.voting.eligibility.houses.map((house: any) => [house.id, house.verdict])).toEqual([['osm:way/101', 'eligible'], ['osm:way/102', 'eligible']]);
   expect(reads.at(-1)).toBe('osm:way/101,osm:way/102');
+});
+
+// A street vote names its street: Street here picks a segment of a street and a side, the parcels
+// along it become the selection, and the agreement editor offers that street for the vote record.
+test('a street vote names the street segment picked with Street here', async ({ mockApi: page }) => {
+  test.setTimeout(180_000);
+  await stubBasemapTiles(page);
+  const { layoutId } = await applyLayout(page);
+  // A street running west to east 6 m south of the laid-out parcel, so the parcel is on its north side.
+  const street = await page.evaluate(id => {
+    const w = window as any, fabric = w.LiveParcelFabric;
+    const pieces = fabric.peekBounds(w.map.getBounds()).filter((f: any) => fabric.explicitCadastreIds(f).map(String).includes(id));
+    const [west, south, east] = w.turf.bbox({ type: 'FeatureCollection', features: pieces });
+    const lat = south - 6 / 111320, pad = 20 / (111320 * Math.cos(lat * Math.PI / 180));
+    return { coordinates: [[west - pad, lat], [east + pad, lat]], point: [(west + east) / 2, lat] };
+  }, PARCEL_ID);
+  const [start, end] = street.coordinates;
+  await page.route('**/streets/segments?**', route => route.fulfill({ json: {
+    street: { name: 'Acacia Avenue', wayIds: ['101'], lengthM: 120, official: { scheme: 'GB-USRN', id: '21000001' }, officialIds: [], complete: true },
+    points: [], coverage: { ways: 'overpass', waysComplete: true, buildings: 'osm', numbers: 'osm' },
+    segments: [{ id: '0.0', chain: 0, fromM: 0, toM: 120, lengthM: 120, coordinates: street.coordinates, wayIds: ['101'], numbers: [],
+      from: { id: 'p0', kind: 'branch', names: ['Mill Lane'], point: start }, to: { id: 'p1', kind: 'end', point: end } }] } }));
+  await page.evaluate(point => { (window as any).StreetPicker.open({ lng: point[0], lat: point[1] }); }, street.point);
+  const picker = page.getByRole('dialog', { name: 'Acacia Avenue' });
+  await expect(picker.getByRole('radio', { name: /Between Mill Lane and its end/ })).toBeChecked();
+  await picker.getByText('North side', { exact: true }).click();
+  await expect(picker.getByRole('radio', { name: 'North side' })).toBeChecked();
+  await picker.getByRole('button', { name: 'Select parcels' }).click();
+  await expect(picker).toHaveCount(0);
+  const selected: string[] = await page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].map(String));
+  expect(selected.length).toBeGreaterThan(0);
+  await page.evaluate(id => {
+    const w = window as any;
+    const plan = w.PlanComposition.create('Acacia Avenue plan', [w.proposalStorage.getProposal(id)], w.MapShare.capture(w));
+    w.PlanWorkspace.save(plan); w.PlanDialog.details(plan);
+  }, layoutId);
+  await page.getByRole('button', { name: 'Create agreement', exact: true }).click();
+  const editor = agreementEditor(page), roster = editor.locator('[data-voting-roster]'), named = editor.locator('.voting-street');
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  await editor.locator('[data-agreement-electorate][value="community"]').check();
+  await roster.locator('[data-roster-count]').fill('2');
+  await roster.locator('[data-roster-action="generate"]').click();
+  await roster.getByLabel('Ballot rule').selectOption({ label: 'Street vote — Strong Suburbs' });
+  const box = named.getByRole('checkbox', { name: /Acacia Avenue · Between Mill Lane and its end · North side/ });
+  await expect(box).toBeChecked();
+  const downloaded = page.waitForEvent('download');
+  await roster.locator('[data-roster-action="save"]').click();
+  await downloaded;
+  await expect(editorSave(editor)).toBeEnabled();
+  await editorSave(editor).click();
+  await editorClosed(page);
+  const [saved] = await storedAgreements(page);
+  expect(saved.consultation.voting.street).toEqual({ name: 'Acacia Avenue', osmWayIds: ['101'], part: 'segment', side: 'left',
+    official: { scheme: 'GB-USRN', id: '21000001' }, from: { kind: 'branch', names: ['Mill Lane'], point: start.map((v: number) => Math.round(v * 1e7) / 1e7) },
+    to: { kind: 'end', point: end.map((v: number) => Math.round(v * 1e7) / 1e7) } });
 });

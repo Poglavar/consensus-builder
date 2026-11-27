@@ -100,6 +100,9 @@
         'frontage-streets': { near: operation(obj({ bbox }), featureCollection, 'EPSG:4326 frontage-eligible street centrelines only; this is not the complete road network.', ['bbox']) },
         'block-barriers': { readBarriers: operation(obj({ bbox }), featureCollection, 'EPSG:4326 OSM highway, railway, waterway and shore boundaries; preserves tags and declares complete/partial/truncated coverage.', ['bbox']) },
         'street-register': { readStreets: operation(obj({ bbox: projectedBbox }), featureCollection, 'Input bbox is EPSG:3765; output line geometries are transformed to EPSG:4326.', ['bboxParts']) },
+        'street-identity': { identify: operation(obj({ street: obj({ name: string('The street name from OSM.'), ways: array(obj({}, [], true), 'Normalised OSM ways with tags.'), bbox }, ['name', 'ways', 'bbox']) }),
+            obj({ official: { oneOf: [obj({ scheme: string('Identifier scheme.'), id: string('Official identifier.') }), { type: 'null' }] }, ids: array(string('Every official identifier seen.')) }, ['official', 'ids']),
+            'An official identity for an OSM-grouped street: one identifier when the source names exactly one, else null with every identifier seen. Unknown is null, never a guess.', ['street']) },
         'planned-roads': { readReservations: operation(obj({ bbox: projectedBbox }), array(obj({ props: obj({}, [], true), geometry }, ['props', 'geometry'])), 'Reader returns raw rows whose reservation geometry remains in EPSG:3765; route applies display properties and wraps the output separately.', ['client [runtime context]', 'bboxParts']) },
         'road-classification': { readIds: operation(obj({ bbox }), array(obj({ parcel_id: string('Stable parcel id classified as road.') }, ['parcel_id'])), 'Returns rows with parcel_id only; classification does not create parcel geometry.', ['bbox']) },
         trees: {
@@ -166,19 +169,19 @@
         planning: ['gup', 'nyc-pilot', 'atlas-url', 'bogota-pot', 'alatau-genplan'], economics: ['rate-table', 'area-rates', 'scenario-assumptions'],
         imagery: ['xyz', 'wms', 'xyz-basemap', 'maptiler-basemap'], geocoding: ['photon'], 'transit-alignments': ['static-geojson'],
         'terrain-profile': ['dgu-dtm-20m'], 'road-network': ['osm-road-network'], 'frontage-streets': ['osm-street-frontage'],
-        'block-barriers': ['overpass-block-roads'], 'street-register': ['postgis-street-register'],
+        'block-barriers': ['overpass-block-roads'], 'street-register': ['postgis-street-register'], 'street-identity': ['osm-tag-ref', 'postgis-street-register-match'],
         'planned-roads': ['postgis-road-reservations'], 'road-classification': ['postgis-road-classification'],
         trees: ['osm-decor-trees'], water: ['openfreemap-water'], ownership: ['http', 'hr-oss', 'ar-caba', 'rs-bg', 'us-nyc', 'si-gurs', 'hr-oss-public-fallback'],
         'building-details': ['floor-plan-publication'], 'reality-mesh': ['cesium-ion-3dtiles']
     };
     const nativeOnly = new Set(['cesium-ion-3dtiles','oss-wfs', 'parcel-ba', 'parcel-bg', 'parcel-lj', 'parcel-nyc', 'dgu-live', 'gdi-map', 'dgu-map', 'osm-reference', 'hr-oss-public-fallback','wien-lod2','nl-3dbag','nrw-lod2','nyc-3d','berlin-lod2','hamburg-lod2','bw-lod2','sachsen-lod2','gdi-3d', 'dgu', 'nyc-arcgis', 'nyc-socrata', 'osm', 'gup', 'nyc-pilot', 'bogota-pot', 'alatau-genplan', 'gla-lpvs-2026', 'scenario-assumptions',
-        'osm-road-network', 'osm-street-frontage', 'postgis-street-register', 'postgis-road-reservations', 'postgis-road-classification', 'osm-decor-trees',
+        'osm-road-network', 'osm-street-frontage', 'postgis-street-register', 'osm-tag-ref', 'postgis-street-register-match', 'postgis-road-reservations', 'postgis-road-classification', 'osm-decor-trees',
         'floor-plan-publication', 'hr-oss', 'ar-caba', 'rs-bg', 'us-nyc', 'si-gurs', 'kz-nsdi-buildings', 'global-building-atlas']);
     const requiredMethods = {
         parcels: ['queryBounds', 'queryIds', 'queryGeometry'], buildings: ['near', 'footprints', 'footprintsUnder'],
         planning: ['query', 'record'], economics: ['rates'], imagery: ['tileUrl', 'basemap'], geocoding: ['search'],
         'transit-alignments': ['load'], 'terrain-profile': ['profile', 'url'], 'road-network': ['readNetwork', 'readLiveNetwork'], 'frontage-streets': ['near'],
-        'block-barriers': ['readBarriers'], 'street-register': ['readStreets'], 'planned-roads': ['readReservations'],
+        'block-barriers': ['readBarriers'], 'street-register': ['readStreets'], 'street-identity': ['identify'], 'planned-roads': ['readReservations'],
         'road-classification': ['readIds'], trees: ['near'], water: ['near'], ownership: ['lookup'], 'building-details': ['fetchFloorModels', 'fetchFloorModelMarkers'], 'reality-mesh': ['authentication']
     };
 

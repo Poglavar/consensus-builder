@@ -122,7 +122,7 @@ An immutable `community-result/v1` record containing the agreement CID, organise
 
 ### Code electorate
 
-A community agreement's optional `consultation.voting` record commits a random list identifier and a sorted, unique set of voting-code verifiers. New lists are `community-voting/v2`, which can also commit a household partition and a ballot rule; published `community-voting/v1` lists (identifier and verifiers only) stay valid because published agreements are immutable. Eligibility is fixed by that agreement's CID. Changing the list creates a new agreement with separate ballots; votes never transfer automatically. An organiser assigns and distributes the codes and is trusted to determine eligibility. Names, contact details and their code assignments stay in the organiser's browser or local voter-list file.
+A community agreement's optional `consultation.voting` record commits a random list identifier and a sorted, unique set of voting-code verifiers (and, for a [street vote](#street-vote), may name its street). New lists are `community-voting/v2`, which can also commit a household partition and a ballot rule; published `community-voting/v1` lists (identifier and verifiers only) stay valid because published agreements are immutable. Eligibility is fixed by that agreement's CID. Changing the list creates a new agreement with separate ballots; votes never transfer automatically. An organiser assigns and distributes the codes and is trusted to determine eligibility. Names, contact details and their code assignments stay in the organiser's browser or local voter-list file.
 
 ### Voting code
 
@@ -142,7 +142,7 @@ A dated threshold set a code electorate can pin as `consultation.voting.rule = {
 
 ### Street vote
 
-A community code vote of the residents of one street on a plan for it, decided by a street-vote ballot rule. Three rules ship, all proposals for England that are not in force: Policy Exchange's Strong Suburbs (2021), the government's December 2023 street vote development orders consultation, and Samuel Hughes's Living Tradition (Create Streets, 2021) for mansards. A rule can require [building eligibility](#building-eligibility): Living Tradition's covers only the houses the plan raises with a mansard, and its agreement cannot be created until each one is eligible; the voting record keeps that check (each house, its verdict, the failing or unknown tests and the source version read). Owner sign-off is not part of the street vote: owners decide in a separate owners' agreement on the same plan, and the community agreement's voting panel lists those agreements beside the resident result without reading or changing their records.
+A community code vote of the residents of one street on a plan for it, decided by a street-vote ballot rule. Three rules ship, all proposals for England that are not in force: Policy Exchange's Strong Suburbs (2021), the government's December 2023 street vote development orders consultation, and Samuel Hughes's Living Tradition (Create Streets, 2021) for mansards. A rule can require [building eligibility](#building-eligibility): Living Tradition's covers only the houses the plan raises with a mansard, and its agreement cannot be created until each one is eligible; the voting record keeps that check (each house, its verdict, the failing or unknown tests and the source version read). Owner sign-off is not part of the street vote: owners decide in a separate owners' agreement on the same plan, and the community agreement's voting panel lists those agreements beside the resident result without reading or changing their records. The voting record can name the [street](#street) it covers (`consultation.voting.street`): the street's name, its OSM way ids, whole street or one [segment](#segment) with each end (its kind, the roads branching there or the house number, and its point), the [side](#side), and the official id where a source gives one. It comes from the street picked with Street here (or `ugt_select_parcels` action `street`), offered in the agreement editor while its parcels are among the plan's land; the person can leave it out. A plan or design never names a street.
 
 ### Agreement input
 
@@ -391,6 +391,22 @@ A shared same-level centerline node and its incident street arms, with the cross
 A level is a discrete topology label, with omitted levels treated as ground level zero; it is not an elevation in metres. Editing a participating road refreshes the affected neighbouring arm definitions. Drawing a road that joins an existing one, or editing a participating road, updates a neighbour that is still the author's own unpublished design in place; a published neighbour is immutable, so its updated junction is saved as a new revision that names it by CID and replaces it on the map, and the person is told which roads were revised. The junction owns its shared visible surface, including during drawing previews, so participating road strips do not paint over that surface.
 
 An MCP road draft, import or edit is joined to the roads and tracks of the agent's working plan, by the same junction planning as the map editor; a neighbour whose junctions change is replaced in the plan by a revised design naming it by `origin.cid`. Agreement drafting does not revise designs. Reading, applying or comparing published records does not rewrite their topology.
+
+### Street
+
+User decision, 2026-11-27: "A street is the road, branches included, carrying one official name (only numbers and monikers differ), from the official source where one exists (England: OS Open USRN / OS Open Names)."
+
+Implemented as the connected OSM road ways (any road class; a service way only when named) that carry one name, compared without case, full stops or apostrophe variants, branches included; ways whose ends lie within 20 m join. Its official identity comes from a `street-identity` source: OS USRNs that OSM ways carry as `ref:GB:usrn` (an identity only when every way of the street or segment carries the same one), or a street register in geodata (`public.street`, Zagreb) matched by name inside its coverage. Elsewhere a street has no official id and is named by its OSM ways. `GET /streets/segments` reads one at a point or by name; the shared road vocabulary (`cadastre-data/roads.md`) also defines Street. A street is a selection aid and a reference a street vote records, never a design.
+
+### Segment
+
+User decision, 2026-11-27: "A segment is the part of a street between two referable points: its start, its end, a bend of 30° or more (measured over a baseline of tens of metres, not adjacent vertices), a branching (major or minor road), a bridge wider than 3 m, a gap over 50 m between buildings, or a house number (official numbers where published, OSM as the fallback)." Hughes's street (Strong Suburbs; Living Tradition para. 1) is a segment between two branchings.
+
+Implemented in `frontend/js/streets/street-segments.js`. Referable points are: an end; a branching, where any other road (not a footway, path, cycleway, track or unnamed service way) or a branch of the street itself meets it; a bend whose 20 m chords on both sides of a vertex turn 30° or more, the sharpest within 20 m counting once; both ends of a bridge carrying the street for more than 3 m; a bridge over it (another way tagged `bridge`) wider than 3 m by its `width` tag, else 5 m for a railway, 2–2.5 m for a footway, path or cycleway and 6 m for a road; both edges of a gap over 50 m between the OSM buildings within 40 m of it (none when the buildings could not be read); and a house number within 50 m whose `addr:street` is the street's name (OSM; no open official numbers are read). Points within 5 m are one. The offered segments lie between consecutive referable points other than house numbers; house numbers name ends and bound a selection between any two points on one stretch. A segment is not the road vocabulary's connectivity stretch (`road_stretch`), which breaks at every junction only.
+
+### Side
+
+The left, right or both sides of a segment, relative to its direction: a segment runs west to east, or south to north when it runs more north–south. The UI names a side by compass ("north side"). A parcel is along a side when a perpendicular ray from the centreline, cast every 2 m up to 40 m, reaches that parcel's boundary first for at least 3 m of the segment; parcels containing the centreline and road parcels are looked through. For the whole street, each segment's own sides are used.
 
 ### Map share
 
@@ -812,7 +828,7 @@ The comparison of a design's buildings with the Permitted items under them, rule
 
 ### Effects on neighbours
 
-What a design does to each neighbouring plot, before and after it: the share of the plot's garden with a number of hours of sun on a given day, the sky a wall facing the design sees (vertical sky component), the share of the year's probable sunlight hours a window facing the noon sun gets (sun positions weighted by the place's sunshine records, `frontend/data/sunshine-records.json`; no records, no reading), the share of each room's working plane that sees sky (the no-sky line, measured on demand per plot in the suggested layouts of its buildings), the angle tests from its windows and the distance to the nearest facing wall, each against the place's guide for it. An angle test can be a first check for a detailed reading (its guide's `then`): crossing it then says that reading decides, and grades nothing. The guides (which readings apply, their thresholds, whether they bind) are a rule set's `neighbourGuides`; a place whose rule sets state none has no effects readings. "Before" is the buildings standing now; "after" removes those on the design's parcels and adds the design's. Neighbours' heights are the height survey's where it covers them. A plot is listed only when a reading changes; it is beyond a guide, or loses something within the guides. Advice, like the Permitted check. See [neighbour-effects.md](neighbour-effects.md).
+What a design does to each neighbouring plot, before and after it: the share of the plot's garden with a number of hours of sun on a given day, the sky a wall facing the design sees (vertical sky component), the share of the year's probable sunlight hours a window facing the noon sun gets (sun positions weighted by the place's sunshine records, `frontend/data/sunshine-records.json`; no records, no reading), the share of each room's working plane that sees sky (the no-sky line, measured on demand per plot in the suggested layouts of its buildings), the angle tests from its windows and the distance to the nearest facing wall, each against the place's guide for it. An angle test can be a first check for a detailed reading (its guide's `then`): crossing it then says that reading decides, and grades nothing. The guides (which readings apply, their thresholds, whether they bind) are a rule set's `neighbourGuides`; a place whose rule sets state none has no effects readings. "Before" is the buildings standing now; "after" removes those on the design's parcels and adds the design's. Neighbours' heights are the height survey's where it covers them. A plot is listed only when a reading changes; it is beyond a guide, or loses something within the guides. Advice, like the Permitted check. The agreement editor's Neighbours tab measures the same readings for the agreement's plan and adds ticked plots as [affected parcels](#affected-parcel) with a snapshot of their readings. See [neighbour-effects.md](neighbour-effects.md).
 
 ### Planning designation
 
@@ -987,7 +1003,19 @@ The source-qualified building footprints considered by an operation, with any kn
 
 ### Allocation party
 
-Each input parcel of an agreement is exactly one allocation party, `parcel-owner:<parcelId>`, displayed as “Owner(s) of parcel X”. Allocations name no persons: input parcels carry no holders, and allocations and money lines name a parcel party, the proposer or the public. The parcel party is the owner group of that parcel whoever its members are; it is not verified ownership.
+Each input parcel of an agreement is exactly one allocation party, `parcel-owner:<parcelId>`, displayed as “Owner(s) of parcel X”. Allocations name no persons: input parcels carry no holders, and allocations and money lines name a parcel party, the proposer or the public. The parcel party is the owner group of that parcel whoever its members are; it is not verified ownership. An [affected parcel](#affected-parcel) is a party under the same key: it receives a money line but never an allocation, since it gives no land.
+
+### Affected parcel
+
+A parcel outside an owners' agreement's input land whose owners give a right the plan affects and no land: a neighbour. Its party is `parcel-owner:<parcelId>`, the same party concept as an input parcel's, and a parcel is never both. The agreement's `affected` list records, per affected parcel, the right(s) it gives (daylight, sunlight, outlook, garden, privacy, or other with a note), whether it is a [waiver](#waiver) or [compensation](#compensation), the [Effects on neighbours](#effects-on-neighbours) readings it rests on as a snapshot (kind, before, after, guide, grade), an optional stated loss and its [consideration](#consideration). The list is part of the published object and its CID; an agreement without one carries no `affected` field. Affected parcels count in no land balance, scheme cap or owners' test.
+
+### Waiver
+
+An affected parcel's owners giving up a right, possibly for a consideration. Each waiver parcel's owners are parties to the decision (`waiverParcelIds` in the approval context) whom no owners' test counts: the agreement passes only when all of them approve, whatever the tally of the input owners. A lens member checks a waiver parcel's rights like an input parcel's.
+
+### Compensation
+
+What an owners' agreement pays an affected parcel's owners without their consent, for a loss it causes them. It is a multiple of a stated loss in market value: the rule's `neighbourCompensation.multipleBasisPoints` (10000 is 1×, the default when none is set; a preset such as Strong Suburbs' 150%, marked unverified until its citation is checked, fixes it). The loss is stated by the sponsor or a valuer (with an optional reference), never derived from the readings. Under a multiple other than 1× compensation needs a stated loss; under 1× without one its amount is stated directly. Not the land settlement's area or value compensation.
 
 ### Persons
 
@@ -1159,7 +1187,7 @@ A stated cash amount assigned to a party under an agreement, with its currency a
 
 ### Consideration
 
-The payment or other value proposed in exchange for an agreement's land or rights effects. An offered amount is distinct from a funded escrow balance and an actual payment.
+The payment or other value proposed in exchange for an agreement's land or rights effects. An offered amount is distinct from a funded escrow balance and an actual payment. An affected parcel's consideration (`considerationCents`, whole cents in the agreement's currency) is a money line to its party that the sponsor pays, whatever the land settlement: a waiver's is stated freely (it may be 0); a compensation's is the rule's multiple of its stated loss.
 
 ### Contribution
 

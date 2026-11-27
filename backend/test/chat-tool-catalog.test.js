@@ -28,7 +28,13 @@ describe('chat tool catalog', () => {
             // The three agreement tools add 13,649 bytes to the 69,135-byte base catalogue. Street votes,
             // apartment reservations and the agreement editors grew it to ~98 KB; the user chose to keep
             // every chat ability and raise the budget to 100 KB (2026-11-26) rather than cut tools.
-            expect(JSON.stringify(tools).length).toBeLessThan(100_000);
+            // Street segments and affected neighbours took it to ~110 KB; the user chose both remedies
+            // (2026-11-27): ugt_edit_agreement's terms point to ugt_draft_agreement's schemas in the
+            // chat's copy, and the budget is 110 KB for headroom.
+            expect(JSON.stringify(tools).length).toBeLessThan(110_000);
+            const terms = tools.find(tool => tool.name === 'ugt_edit_agreement').input_schema.properties.terms;
+            expect(terms.properties.affected).toEqual({ type: ['array', 'null'] });
+            expect(terms.description).toContain('ugt_draft_agreement');
         } finally {
             await client.close();
             await server.close();

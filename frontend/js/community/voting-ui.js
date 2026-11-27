@@ -52,7 +52,9 @@
         const turnout=t('turnoutCount','{{votes}} of {{eligible}} voted · {{percent}}',{
             votes:root.CbFormat.formatNumber(votes),eligible:root.CbFormat.formatNumber(eligible),percent:percent(votes,eligible)});
         return `<section class="voting-tally" aria-label="${esc(t('results','Voting progress'))}">`
-            + `<h4>${esc(t('results','Voting progress'))}</h4><div class="voting-meter-head"><span>${esc(t('turnout','Turnout'))}</span><strong>${esc(turnout)}</strong></div>`
+            + `<h4>${esc(t('results','Voting progress'))}</h4>`
+            + (summary.street && root.StreetPicker?`<p class="voting-tally-note" data-voting-street>${esc(t('streetCovered','Street: {{street}}',{street:root.StreetPicker.referenceLabel(summary.street)}))}</p>`:'')
+            + `<div class="voting-meter-head"><span>${esc(t('turnout','Turnout'))}</span><strong>${esc(turnout)}</strong></div>`
             + `<progress class="voting-meter" data-voting-meter="turnout" value="${esc(votes)}" max="${Math.max(1,eligible)}" aria-label="${esc(t('turnout','Turnout'))}" aria-valuetext="${esc(turnout)}"></progress>`
             + `<p class="voting-tally-note">${esc(t('remaining','Not yet voted: {{count}}',{count:root.CbFormat.formatNumber(eligible-votes)}))}</p>`
             + (summary.households?`<p class="voting-tally-note" data-voting-households>${esc(t('householdsVoted','Households voted: {{voted}} of {{eligible}}',{

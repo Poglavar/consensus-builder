@@ -99,7 +99,7 @@ restore and distribution CSV exports run in the browser; names and contact detai
 to the API. Save the voter-list JSON before saving the draft. The organiser distributes codes using
 its own channels and retains that file for recovery. There is no email or SMS delivery service.
 
-Only `consultation.voting = { schema: 'community-voting/v2', id, codeHashes, households?, rule? }` enters the agreement.
+Only `consultation.voting = { schema: 'community-voting/v2', id, codeHashes, households?, rule?, eligibility?, street? }` enters the agreement; `street` names the street or segment and side the vote covers (vocabulary: Street, Segment, Side).
 Published `community-voting/v1` lists (without households or rule) remain valid; new lists are written as v2.
 The identifier is a random UUIDv4; hashes are sorted, unique PBKDF2-HMAC-SHA256 verifiers with
 600,000 iterations and salt `ugt-voting-code/v1\n<id>`. The raw credential has 15 uniformly sampled

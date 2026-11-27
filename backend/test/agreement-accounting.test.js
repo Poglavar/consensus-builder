@@ -110,7 +110,8 @@ describe('plan-first agreement accounting', () => {
     });
     it('counts input parcels, output parcels and persons on the tabs', () => {
         const record = fixture();
-        expect(Dialog.tabCounts(record)).toEqual({ inputs: 2, outputs: 2, persons: 2 });
+        expect(Dialog.tabCounts(record)).toEqual({ inputs: 2, outputs: 2, persons: 2, neighbours: 0 });
+        expect(Dialog.tabCounts(record, [{ parcelId: 'n1' }]).neighbours).toBe(1);
         expect(Dialog.tabLabel('outputs', { outputs: 5 })).toBe('Output parcels (5)');
         expect(Dialog.tabLabel('rules', { outputs: 5 })).toBe('Rules');
         expect(Dialog.bodyHtml({ plans: [], values: {}, counts: { inputs: 3 } })).toContain('data-agreement-tab="inputs">Input parcels (3)</button>');

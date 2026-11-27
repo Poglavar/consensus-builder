@@ -24,7 +24,7 @@ test('creation belongs to the saved plan; four tabs preserve exact membership an
   await showProposal(page, layoutId);
   await expect(page.locator('#proposal-details-panel .btn-create-agreement')).toHaveCount(0);
   const editor = await create(page, layoutId);
-  await expect(editor.locator('[role="tab"]')).toHaveText(['Rules', /^Input parcels \(\d+\)$/, /^Output parcels \(\d+\)$/, /^Persons \(\d+\)$/]);
+  await expect(editor.locator('[role="tab"]')).toHaveText(['Rules', /^Input parcels \(\d+\)$/, /^Output parcels \(\d+\)$/, /^Persons \(\d+\)$/, 'Neighbours (0)']);
   await expect(editor.locator('[data-agreement-design]')).toHaveCount(0);
   const planCid = await editor.locator('[data-agreement-plan]').inputValue();
   await editor.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
@@ -443,4 +443,101 @@ test('a chosen scheme is checked against the plan, and settlement by value value
   await expect(editor).toBeVisible();
   await editor.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
   await expect(pieceValues.first()).toHaveValue('300');
+});
+
+test('Find affected neighbours ticks the plots beyond a guide and adds them as waivers with their readings', async ({ mockApi: page }) => {
+  const { layoutId } = await applyLayout(page);
+  const editor = await create(page, layoutId);
+  // The measurement itself (Effects on neighbours, unit-tested) is replaced by its answer for this plan.
+  await page.evaluate(parcelId => {
+    const w = window as any;
+    const lot = (id: string, status: string) => ({ id, status, direction: 'n', distanceM: 12, sky: { status, before: 31.2, after: 22.4 } });
+    w.PlanAnalysisControls.runEffects = async (_win: unknown, getPlan: () => Promise<unknown>, section: HTMLElement) => {
+      if (!(await getPlan())) throw new Error('no plan');
+      section.textContent = 'measured';
+      return { status: 'affected', lots: [lot('n-1', 'fail'), lot('n-2', 'below'), lot(parcelId, 'fail')], guides: { sky: { percent: 27, ratio: 0.8 } } };
+    };
+  }, PARCEL_ID);
+  await editor.getByRole('tab', { name: 'Neighbours (0)' }).click();
+  await editor.getByRole('button', { name: 'Find affected neighbours' }).click();
+  await expect(editor.locator('[data-agreement-neighbour-candidate="n-1"]')).toBeChecked();
+  await expect(editor.locator('[data-agreement-neighbour-candidate="n-2"]')).not.toBeChecked();
+  // An input parcel is never offered as a neighbour.
+  await expect(editor.locator(`[data-agreement-neighbour-candidate="${PARCEL_ID}"]`)).toBeDisabled();
+  await editor.locator('[data-agreement-neighbour-candidate="n-2"]').check();
+  await editor.getByRole('button', { name: 'Add ticked plots (2)' }).click();
+  await expect(editor.locator('[data-agreement-neighbours-added]')).toContainText('Added 2');
+  await expect(editor.locator('[data-agreement-affected="n-1"] [data-affected-field="effect"]')).toBeFocused();
+  await expect(editor.locator('[data-agreement-affected="n-1"]')).toContainText('Sky from facing wall: 31.2% → 22.4% (guide 27%), beyond a guide');
+  await expect(editor.locator('[data-agreement-affected="n-1"]').getByLabel('Daylight')).toBeChecked();
+  await expect(editor.locator('[data-agreement-neighbour-candidate="n-1"]')).toBeDisabled();
+  await expect(editor.getByRole('tab', { name: 'Neighbours (2)' })).toBeVisible();
+  await editorSave(editor).click();
+  await expect(editor).toBeHidden();
+  const [saved] = await storedAgreements(page);
+  expect(saved.affected.map((entry: any) => [entry.parcelId, entry.effect, entry.rights, entry.readings])).toEqual([
+    ['n-1', 'waiver', ['daylight'], [{ kind: 'sky', before: 31.2, after: 22.4, guide: 27, grade: 'fail' }]],
+    ['n-2', 'waiver', ['daylight'], [{ kind: 'sky', before: 31.2, after: 22.4, guide: 27, grade: 'below' }]]]);
+  // A waiver's owners are parties to the decision: the approval subject names their parcels.
+  expect(await page.evaluate(id => (window as any).AgreementRecord.approvalSubject((window as any).AgreementStore.get(id)).waiverParcelIds, saved.id)).toEqual(['n-1', 'n-2']);
+});
+
+test('a neighbour added by parcel id is compensated at the Strong Suburbs multiple of a stated loss, by keyboard, on a phone', async ({ mockApi: page }, testInfo) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const { layoutId } = await applyLayout(page);
+  const editor = await create(page, layoutId);
+  // The tabs' arrow keys reach Neighbours after Persons.
+  const persons = editor.getByRole('tab', { name: /^Persons \(\d+\)$/ });
+  await persons.focus();
+  await page.keyboard.press('ArrowRight');
+  const neighboursTab = editor.getByRole('tab', { name: 'Neighbours (0)' });
+  await expect(neighboursTab).toBeFocused();
+  await expect(neighboursTab).toHaveAttribute('aria-selected', 'true');
+  await expect(editor.getByRole('button', { name: 'Find affected neighbours' })).toBeEnabled();
+  // Enter in the id field adds the parcel and does not save the agreement.
+  const id = editor.getByLabel('Add a neighbouring parcel by its id');
+  await id.fill('n-42');
+  await id.press('Enter');
+  await expect(editor).toBeVisible();
+  const row = editor.locator('[data-agreement-affected="n-42"]');
+  await expect(row).toBeVisible();
+  await expect(editor.getByRole('tab', { name: 'Neighbours (1)' })).toBeVisible();
+  // Without a right it cannot be saved; the error names the fix at once.
+  await expect(editor.locator('[data-agreement-issue="affected-rights"]')).toBeVisible();
+  await expect(editorSave(editor)).toBeDisabled();
+  await row.getByLabel('Garden limit').check();
+  await selectNativeOption(row.getByLabel('Case'), { value: 'compensation' });
+  await row.getByLabel(/^Stated loss in market value/).fill('1000');
+  await expect(row.getByLabel(/^Payment to them/)).toHaveValue('1000');
+  // Rules: Strong Suburbs' 150 % applies to the stated loss.
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  await selectNativeOption(editor.getByLabel('Compensation to neighbours'), { value: 'gb-strong-suburbs@2026-11-27' });
+  await expect(editor.locator('[data-agreement-neighbour-source] a')).toContainText('Strong Suburbs');
+  await editor.getByRole('tab', { name: 'Neighbours (1)' }).click();
+  const payment = row.getByLabel(/^Payment to them/);
+  await expect(payment).toHaveValue('1500');
+  await expect(payment).toHaveAttribute('readonly', '');
+  await editor.getByRole('tab', { name: /^Persons \(\d+\)$/ }).click();
+  await expect(editor.locator('[data-agreement-neighbour-party]')).toHaveCount(1);
+  await editor.getByRole('tab', { name: 'Neighbours (1)' }).click();
+  expect(await editor.evaluate(e => e.scrollWidth <= e.clientWidth)).toBe(true);
+  const screenshot = testInfo.outputPath('phone-neighbours.png');
+  await editor.screenshot({ path: screenshot });
+  await testInfo.attach('phone neighbours', { path: screenshot, contentType: 'image/png' });
+  await expect(editorSave(editor)).toBeEnabled();
+  await editorSave(editor).click();
+  await expect(editor).toBeHidden();
+  const [saved] = await storedAgreements(page);
+  expect(saved.affected).toEqual([{ parcelId: 'n-42', effect: 'compensation', rights: ['garden'], note: null, readings: [],
+    loss: { amountCents: 100000, statedBy: 'sponsor', valuerRef: null }, considerationCents: 150000 }]);
+  expect(saved.money.lines).toContainEqual({ ownerKey: 'parcel-owner:n-42', amountCents: 150000 });
+  expect(saved.rule.neighbourCompensation).toEqual({ multipleBasisPoints: 15000, preset: { id: 'gb-strong-suburbs', version: '2026-11-27' } });
+  // Reopened, the terms are as saved; removing the neighbour keeps focus in the tab.
+  await page.evaluate(agreementId => { void (window as any).AgreementDialog.open({ agreementId }); }, saved.id);
+  await expect(editor).toBeVisible();
+  await editor.getByRole('tab', { name: 'Neighbours (1)' }).click();
+  await expect(row.getByLabel(/^Payment to them/)).toHaveValue('1500');
+  await row.getByRole('button', { name: 'Remove n-42 from the agreement' }).click();
+  await expect(editor.getByRole('tab', { name: 'Neighbours (0)' })).toBeVisible();
+  await expect(editor.getByLabel('Add a neighbouring parcel by its id')).toBeFocused();
 });
