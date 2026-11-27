@@ -656,7 +656,7 @@ source's key and raw value; an unknown fact is unknown, never a default. "Built"
 years, so a date known only as "before 1913" still decides a rule about 1918. Footprint area and
 row size (how many buildings are joined to it by shared walls of at least 1.5 m) come from the
 source's geometry. OpenStreetMap
-buildings are answered live from OpenStreetMap, and a missing fact is added there by whoever
+buildings are answered from OpenStreetMap through Overpass, a few minutes behind edits, and a missing fact is added there by whoever
 needs it (`building:parapet=yes|no` for a parapet along the whole street front). Croatian
 cadastre buildings are to join the same contract.
 
