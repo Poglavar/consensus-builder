@@ -160,10 +160,15 @@ Chrome, so the parcel source, the relay and the copy script send `User-Agent: Mo
 viewer as Referer. The server omits its Sectigo DV R36 intermediate certificate, which
 `backend/parcels/certificates/` supplies.
 
-Parcels are always read live. Complete copies of the district views are kept as backups and are not
-served: `u_view-district-<id>.geojson.gz` (the provider's own features, gzipped), written by
-[`snapshot-kazakhstan-pkk.mjs`](../backend/scripts/snapshot-kazakhstan-pkk.mjs) (paced, resumable,
-one district's failure never stops the others; districts already saved are skipped). Valhalla's
+Parcels are always read live. Complete copies of the Kazakh sources the app reads are kept as backups
+and are not served, written by
+[`archive-kazakhstan-sources.mjs`](../backend/scripts/archive-kazakhstan-sources.mjs) (paced,
+resumable, one item's failure never stops the others; items already saved are skipped): the
+cadastre's district views as `<layer>-district-<id>.geojson.gz` (`u_view`, `freelands_view`,
+`reqland_view`) and catalogued ArcGIS parcel layers as `<source id>.geojson.gz` (Esri JSON). Fields
+naming or identifying people (owners, sellers, customers, buyers, IIN/BIN) and free-text notes are
+never archived. The general plans of Alatau, Astana and Almaty are committed snapshots in
+`backend/planning/data/`. Valhalla's
 `kz-pkk-archive.service` writes them to `/root/data/kz-pkk-copies` for the districts of Alatau,
 Astana, Almaty, Shymkent and nineteen other cities, and they are archived on the Storage Box under
 `source-archive/kz-pkk-copies/<date>/`. The district ids are features of `egkn:districts`; several
