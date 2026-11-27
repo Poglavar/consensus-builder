@@ -43,15 +43,18 @@ describe('area estimate', () => {
         expect(unknown.verdict).toBe('unknown');
         expect(unknown.unknown).toContain('parapet');
     });
-    it('sums the eligible and the possible, counting unmeasured and unprofitable apart', () => {
+    it('sums the eligible, the possible and those possible with waivers, counting unmeasured and unprofitable apart', () => {
         const money = profit => ({ value: 100, totalCost: 100 - profit, profit });
         const sum = summarize([{ verdict: 'eligible', addedM2: 65, money: money(10) }, { verdict: 'unknown', addedM2: 130, money: money(-5), unknown: ['parapet'] },
-            { verdict: 'unknown', addedM2: null, money: null }, { verdict: 'ineligible', addedM2: 0, failing: ['built'] }]);
-        expect(sum.byVerdict).toEqual({ eligible: 1, unknown: 2, ineligible: 1 });
+            { verdict: 'unknown', addedM2: null, money: null }, { verdict: 'ineligible', addedM2: 0, failing: ['built'] },
+            { verdict: 'ineligible', waivable: true, addedM2: 65, money: money(20), failing: ['ssLightPlanes'] }]);
+        expect(sum.byVerdict).toEqual({ eligible: 1, unknown: 2, ineligible: 2 });
         expect(sum.tiers.eligible).toMatchObject({ buildings: 1, addedM2: 65, homes: 0, profit: 10, viable: { buildings: 1 } });
         expect(sum.tiers.possible).toMatchObject({ buildings: 3, addedM2: 195, homes: homesIn(195), profit: 5, viable: { buildings: 1, addedM2: 65 } });
-        expect(sum.unmeasured).toEqual({ eligible: 0, possible: 1 });
-        expect(sum.failingTests).toEqual({ built: 1 });
+        // A building failing only waivable tests counts with the neighbours' waivers, never as possible.
+        expect(sum.tiers.withWaivers).toMatchObject({ buildings: 4, addedM2: 260, profit: 25, viable: { buildings: 2, addedM2: 130 } });
+        expect(sum.unmeasured).toEqual({ eligible: 0, possible: 1, withWaivers: 1 });
+        expect(sum.failingTests).toEqual({ built: 1, ssLightPlanes: 1 });
         expect(homesIn(195)).toBe(2);
     });
     it('reads ids and existing heights from the facts contract, never inventing one', () => {

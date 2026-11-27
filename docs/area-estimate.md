@@ -38,10 +38,12 @@ Every building in the area is judged; nothing is sampled.
 ## Output
 
 `summary.json` gives each rule set's counts by verdict and its tests that fail or are unknown,
-building by building. It gives two tiers:
+building by building. It gives three tiers:
 
 - **eligible:** every test met;
-- **possible:** no test fails, some fact unknown.
+- **possible:** no test fails, some fact unknown;
+- **with waivers:** as possible, or failing only tests the protected neighbours may waive (the
+  light planes), so buildable if those owners agree.
 
 Each tier has its added floor area, homes, value, cost, profit and the viable part (profit above
 zero). The per-cell and per-street files keep each building's verdict and figures. A rerun resumes

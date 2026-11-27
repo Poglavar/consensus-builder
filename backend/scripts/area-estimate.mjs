@@ -257,7 +257,9 @@ async function main() {
                 // Ceiling heights are the design's to state, not the site's: a building whose only unknown tests are
                 // those counts as eligible here (DESIGN_DETAILS, stated in the summary).
                 const verdict = b.verdict === 'unknown' && !(b.failing || []).length && (b.unknown || []).every(id => DESIGN_DETAILS.includes(id)) ? 'eligible' : b.verdict;
-                ssRows.push({ ...b, verdict, street: name, money: moneyAt(b.addedM2, at), assumedMoney: moneyAt(b.assumedAddedM2, at) });
+                // Fails only tests a protected neighbour may waive (light planes): possible with the neighbours' waivers.
+                const waivable = (b.failing || []).length > 0 && b.failing.every(id => SS.tests.find(test => test.id === id)?.effect === 'waivable');
+                ssRows.push({ ...b, verdict, waivable, street: name, money: moneyAt(b.addedM2, at), assumedMoney: moneyAt(b.assumedAddedM2, at) });
             }
         }
     }

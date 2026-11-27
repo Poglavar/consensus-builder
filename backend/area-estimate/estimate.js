@@ -147,7 +147,9 @@ export function streetsOf(features, streets, maxM = 40) {
 // Sums of judged buildings: counts by verdict and, for the eligible and for the eligible plus the possible
 // (no failing test, some fact unknown), the floor area added, its homes and the money rows' totals.
 export function summarize(rows) {
+    // withWaivers: also the buildings that fail only tests the protected neighbours may waive (r.waivable).
     const tiers = { eligible: r => r.verdict === 'eligible', possible: r => r.verdict === 'eligible' || r.verdict === 'unknown' };
+    tiers.withWaivers = r => tiers.possible(r) || r.waivable === true;
     const sum = (list, key) => list.reduce((s, r) => s + (finite(r[key]) ? r[key] : 0), 0);
     const out = { buildings: rows.length, byVerdict: {}, unmeasured: {}, tiers: {} };
     for (const r of rows) out.byVerdict[r.verdict] = (out.byVerdict[r.verdict] || 0) + 1;
