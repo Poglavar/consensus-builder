@@ -8,6 +8,8 @@ import { createRequire } from 'node:module';
 import vm from 'node:vm';
 import { parse } from '@babel/parser';
 import UrbanRuleVariation from '../../frontend/js/urban-rule-variation.js';
+import RaisedExistingBuildings from '../../frontend/js/raised-existing-buildings.js';
+import { buildTypedDesign } from '../agents/mcp-constructors.js';
 
 const require = createRequire(import.meta.url);
 const turf = require('@turf/turf');
@@ -80,8 +82,8 @@ function blockBindings({ mode = 'manual', feature, generatedFeatures = [], piece
         blockifySurroundings: null,
         blockifyPlacementTransform: { translationMeters: [0, 0], rotationDegrees: 0 },
         blockifyGenerationSite: site, blockifyDesignBoundary: () => site,
-        existingRule: {}, currentProposedHeightFloors: 1, currentAdditionalFloors: 0,
-        currentFloorHeightM: 3, turf
+        existingRule: 'exact', currentProposedHeightFloors: 1, currentAdditionalFloors: 0,
+        currentFloorHeightM: 3, existingRoof: 'flat', turf
     };
 }
 
@@ -89,12 +91,14 @@ function blockAutosave({ mode = 'manual', feature, generatedFeatures = [], piece
     const saved = [];
     const document = { getElementById: id => id === 'algorithm-select' ? { value: 'test' } : null };
     const window = {
-        UrbanRuleVariation,
+        UrbanRuleVariation, RaisedExistingBuildings,
         getActiveProposalDesignDraft: () => ({ adapterKey: 'buildings' }),
         syncActiveProposalDraftFromEditor: (...args) => saved.push(clone(args))
     };
     const bindings = blockBindings({ mode, feature, generatedFeatures, pieces }, window, document);
-    const source = functionSources('../../frontend/js/building-blocks.js').get('autosaveBlockifyDraft');
+    const functions = functionSources('../../frontend/js/building-blocks.js');
+    // Existing-buildings mode reads its sliders through currentExistingSettings.
+    const source = `${functions.get('currentExistingSettings')}\n${functions.get('autosaveBlockifyDraft')}`;
     runFunction(source, 'autosaveBlockifyDraft', bindings);
     return saved[0]?.[1] || null;
 }
@@ -104,7 +108,7 @@ async function blockDone({ mode = 'manual', feature, generatedFeatures = [], pie
     const contexts = [];
     const infos = [];
     const document = { getElementById: id => id === 'algorithm-select' ? { value: 'test' } : null };
-    const window = { UrbanRuleVariation };
+    const window = { UrbanRuleVariation, RaisedExistingBuildings };
     const bindings = {
         ...blockBindings({ mode, feature, generatedFeatures, pieces }, window, document),
         confirmBlockSizeIfOversized: async () => true,
@@ -112,7 +116,9 @@ async function blockDone({ mode = 'manual', feature, generatedFeatures = [], pie
         setPendingBuildingProposalContext: context => contexts.push(clone(context)),
         closeBlockifyModal: () => {}, updateStatus: () => {}, translateBuildingText: (_key, fallback) => fallback
     };
-    const source = functionSources('../../frontend/js/building-blocks.js').get('saveBlockifyDesignForProposal');
+    const functions = functionSources('../../frontend/js/building-blocks.js');
+    // Existing-buildings mode reads its sliders through currentExistingSettings.
+    const source = `${functions.get('currentExistingSettings')}\n${functions.get('saveBlockifyDesignForProposal')}`;
     const context = vm.createContext(bindings);
     vm.runInContext(`${source}\nthis.__run = saveBlockifyDesignForProposal;`, context);
     await context.__run();
@@ -281,5 +287,34 @@ describe('block and row massing persistence', () => {
         expect(done.context.buildings).toEqual([first]);
         expect(done.context).not.toHaveProperty('ruleMassing');
         expect(done.context.parameters).toMatchObject({ mode: 'existing', typology: 'block' });
+    });
+
+    it('draws the same raised buildings and parameters in the Block editor as an agent drafts through MCP', async () => {
+        const square = (west, properties) => ({ type: 'Feature', properties, geometry: { type: 'Polygon',
+            coordinates: [[[west, 45.0002], [west + 0.0002, 45.0002], [west + 0.0002, 45.0004], [west, 45.0004], [west, 45.0002]]] } });
+        const site = rect(15.9995, 44.9995, 16.0015, 45.0015).geometry;
+        const solid = { type: 'Polygon', coordinates: [site.coordinates[0]] };
+        const stock = [square(16, { id: 1, source: 'osm', height_m: 9 }), square(16.0004, { id: 2, source: 'osm', floors: 2 })];
+        const sliders = { existingRule: 'additional', currentProposedHeightFloors: 6, currentAdditionalFloors: 1, currentFloorHeightM: 3.2, existingRoof: 'pitched' };
+        const window = { UrbanRuleVariation, RaisedExistingBuildings };
+        const editor = {
+            ...blockBindings({ mode: 'existing' }, window, { getElementById: () => null }), ...sliders,
+            existingFootprints: RaisedExistingBuildings.footprintsOnSite(stock, solid, turf), generatedBuildingFeatures: null,
+            getBlockifyDisplayName: () => 'Garden row', displayBuildingsInModal() {}, setBlockifyInfo() {},
+            CbFormat: { formatNumber: String }, setPendingBuildingProposalContext: context => { editor.saved = clone(context); },
+            confirmBlockSizeIfOversized: async () => true, closeBlockifyModal() {}, updateStatus() {}, translateBuildingText: (_key, fallback) => fallback
+        };
+        const functions = functionSources('../../frontend/js/building-blocks.js');
+        const context = vm.createContext(editor);
+        vm.runInContext(['currentExistingSettings', 'generateExistingBuildingsInModal', 'saveBlockifyDesignForProposal'].map(name => functions.get(name)).join('\n'), context);
+        vm.runInContext('generateExistingBuildingsInModal()', context);
+        await vm.runInContext('saveBlockifyDesignForProposal()', context);
+
+        const agent = buildTypedDesign({ kind: 'building', typology: 'block', site: solid, city: 'london', title: 'Garden row', authoredAt: '2026-11-27T00:00:00.000Z',
+            floorHeightM: 3.2, roof: 'pitched', existing: { rule: 'additional', additionalFloors: 1 } }, { existingBuildings: stock });
+        const { cleanFeature } = require('../../frontend/js/proposals/authored-record.js');
+        expect(agent.geometry.buildings).toEqual(editor.saved.buildings.map(cleanFeature));
+        expect(agent.buildingProposal.parameters).toEqual(editor.saved.parameters);
+        expect(agent.geometry.buildings.map(building => building.properties.height)).toEqual([12.2, 9.6]);
     });
 });
