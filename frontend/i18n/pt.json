@@ -6797,7 +6797,6 @@
                 "one": "{{count}} parcela cadastral carregada.",
                 "other": "{{count}} parcelas cadastrais carregadas."
             },
-            "cadastral_ground_already_loaded": "A base cadastral já está carregada.",
             "no_cadastral_parcels_returned": "A fonte de parcelas não devolveu parcelas para esta área.",
             "parcels_read_from_dgu": "O servidor deste sítio não está a responder: as parcelas são lidas diretamente do cadastro estatal (DGU), sem dados de propriedade.",
             "loaded_parcels_from_source": "{{count}} parcelas carregadas de {{source}}.",

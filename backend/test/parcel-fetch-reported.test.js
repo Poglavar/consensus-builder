@@ -97,10 +97,21 @@ describe('fetchParcelDataReported', () => {
         expect(statuses.at(-1)).toBe('The parcel source returned no parcels for this area.');
     });
 
-    it('reports already loaded only when cached parcels exist', async () => {
+    it('says nothing about a view whose ground is already loaded', async () => {
+        const ensureBounds = vi.fn(async () => ({ cached: true, features: [1] }));
+        const { window, statuses } = boot(ensureBounds);
+        window.CadastralParcelRepository.holdsBounds = vi.fn(() => true);
+        await expect(window.fetchParcelDataReported(undefined, 'cached view')).resolves.toMatchObject({ features: [1] });
+        expect(window.CadastralParcelRepository.holdsBounds).toHaveBeenCalledWith('padded-bounds');
+        expect(ensureBounds).toHaveBeenCalledTimes(1);
+        expect(statuses).toEqual([]);
+    });
+
+    it('closes a view that had to load with the parcel count, even when it joined cells already loading', async () => {
         const { window, statuses } = boot(async () => ({ cached: true, features: [1] }));
-        await window.fetchParcelDataReported(undefined, 'cached view');
-        expect(statuses.at(-1)).toBe('Cadastral ground already loaded.');
+        window.CadastralParcelRepository.holdsBounds = () => false;
+        await window.fetchParcelDataReported(undefined, 'joined view');
+        expect(statuses).toEqual(['Checking cadastral ground…', 'Loaded 1 cadastral parcels.']);
     });
 
     it('uses clone-free fabric counts when reporting a failed fetch', async () => {

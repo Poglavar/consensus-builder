@@ -216,6 +216,23 @@ test.describe('World navigation and open ground @features', () => {
     });
   }
 
+  test('cadastral ground already on the map adds no status line when the view is read again', async ({ mockApi: page }) => {
+    await openCity(page);
+    await expect(page.locator('#status')).toHaveText('Loaded 5 cadastral parcels.');
+    const read = () => page.evaluate(async () => {
+      const result = await (window as any).fetchParcelData(undefined, { viewport: true });
+      return { cached: result?.cached, status: (document.getElementById('status') as HTMLElement).textContent,
+        log: (window as any).statusLogEntries().map((entry: any) => entry.message) };
+    });
+    // The view's first read is announced and closed; the same view read again says nothing.
+    const first = await read();
+    expect(first.status).toMatch(/^Loaded \d+ cadastral parcels\.$/);
+    const again = await read();
+    expect(again.cached).toBe(true);
+    expect(again.log).toEqual(first.log);
+    expect(again.status).toBe(first.status);
+  });
+
   test('globe activity scrolls without buttons, pauses on hover and uses event colors and location labels', async ({ mockApi: page }) => {
     // Agreements proposed and decided, and bets on them; a bet opens the bet, the rest the agreement.
     const cid = cidOfObject({ schema: 'agreement/v1', title: 'Community park agreement' });

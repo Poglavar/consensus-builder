@@ -717,6 +717,21 @@ describe('CadastralParcelRepository.ensureBounds per-cell provisioning', () => {
         expect(f.onFeatures.mock.calls.at(-1)[0][0]).toBe(again.features[0]);
     });
 
+    it('holds a view only once every one of its cells has loaded', async () => {
+        const f = boundsFixture();
+        expect(f.service.holdsBounds(boundsFor(['0,0']))).toBe(false);
+        const call = f.service.ensureBounds(boundsFor(['0,0', '0,1']));
+        await f.settle();
+        f.resolveCell('0,0', ['A1']);
+        await f.settle();
+        expect(f.service.holdsBounds(boundsFor(['0,0']))).toBe(true);
+        expect(f.service.holdsBounds(boundsFor(['0,0', '0,1']))).toBe(false);
+        f.resolveCell('0,1', ['B1']);
+        await call;
+        expect(f.service.holdsBounds(boundsFor(['0,0', '0,1']))).toBe(true);
+        expect(f.service.holdsBounds(boundsFor(['0,1', '1,1']))).toBe(false);
+    });
+
     it('keeps at most six cells in flight', async () => {
         const f = boundsFixture();
         const keys = Array.from({ length: 10 }, (_, i) => `${i},0`);

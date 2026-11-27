@@ -755,10 +755,7 @@
         // request synchronously, before the first await. A caller that passes `signal` (a viewport
         // the next one supersedes) stops waiting when it aborts; the cell request itself, and the
         // archive work behind it, is cancelled only once no caller still wants that cell.
-        async function ensureBounds(bounds, options = {}) {
-            const signal = options.signal || null;
-            if (signal && signal.aborted) throw signal.reason;
-            const city = normalizeId(options.city) || cityKey();
+        function boundsKeys(bounds) {
             const rawKeys = typeof dependencies.boundsKeysOf === 'function'
                 ? dependencies.boundsKeysOf(bounds)
                 : [];
@@ -768,7 +765,21 @@
                 const ne = bounds.getNorthEast();
                 return [sw.lng, sw.lat, ne.lng, ne.lat].map(value => Number(value).toFixed(6)).join(',');
             })();
-            const keys = Array.from(new Set((rawKeys && rawKeys.length ? rawKeys : [fallbackKey]).map(normalizeId).filter(Boolean)));
+            return Array.from(new Set((rawKeys && rawKeys.length ? rawKeys : [fallbackKey]).map(normalizeId).filter(Boolean)));
+        }
+
+        // True when ensureBounds would answer from cells already loaded, without a request, so a
+        // caller can stay silent about a view whose ground is already on the map.
+        function holdsBounds(bounds, options = {}) {
+            const loaded = loadedBounds.get(normalizeId(options.city) || cityKey());
+            return !!loaded && boundsKeys(bounds).every(key => loaded.has(key));
+        }
+
+        async function ensureBounds(bounds, options = {}) {
+            const signal = options.signal || null;
+            if (signal && signal.aborted) throw signal.reason;
+            const city = normalizeId(options.city) || cityKey();
+            const keys = boundsKeys(bounds);
             const loaded = loadedBounds.get(city) || new Map();
             loadedBounds.set(city, loaded);
             const pendingKeys = keys.filter(key => !loaded.has(key));
@@ -1080,6 +1091,7 @@
             ensureProposalGround,
             ensureFootprint,
             ensureBounds,
+            holdsBounds,
             get,
             getMany,
             peekMany,

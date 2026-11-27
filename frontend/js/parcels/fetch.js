@@ -724,7 +724,10 @@
         currentViewFetch = view;
         global._fetchParcelDataInProgress = true;
         global.ParcelsState?.setIsFetchingParcels?.(true);
-        global.updateStatus?.(statusText('checking_cadastral_ground', 'Checking cadastral ground…'));
+        // Ground already on the map for this view gets no status at all: no "Checking", no result.
+        // A load this view cuts off still gets its line closed, so its "Loading…" does not linger.
+        const quiet = !superseded && repository.holdsBounds?.(requestedBounds) === true;
+        if (!quiet) global.updateStatus?.(statusText('checking_cadastral_ground', 'Checking cadastral ground…'));
         let lastProgressText;
         try {
             // ensureBounds joins in-flight cells before its first await, so the older view is
@@ -771,10 +774,8 @@
             // since it replaces the notice serverOrDgu showed.
             const inView = global.ParcelSourceInView?.latest?.();
             const viaDgu = !source && inView?.cityId === currentCity() && !!inView?.detail?.liveHost;
-            global.updateStatus?.(!count
+            if (!quiet) global.updateStatus?.(!count
                 ? statusText('no_cadastral_parcels_returned', 'The parcel source returned no parcels for this area.')
-                : result.cached
-                ? statusText('cadastral_ground_already_loaded', 'Cadastral ground already loaded.')
                 : (source
                     ? statusText('loaded_parcels_from_source', `Loaded ${count} parcels from ${source.label || source.kind}.`, { count, source: source.label || source.kind })
                     : statusText('loaded_cadastral_parcels', `Loaded ${count} cadastral parcels.`, { count })

@@ -6797,7 +6797,6 @@
                 "one": "{{count}} parcelle cadastrale chargée.",
                 "other": "{{count}} parcelles cadastrales chargées."
             },
-            "cadastral_ground_already_loaded": "Le fond cadastral est déjà chargé.",
             "no_cadastral_parcels_returned": "La source de données parcellaires n’a renvoyé aucune parcelle pour cette zone.",
             "parcels_read_from_dgu": "Le serveur de ce site ne répond pas : les parcelles sont lues directement depuis le cadastre national (DGU), sans les informations de propriété.",
             "loaded_parcels_from_source": "{{count}} parcelles chargées depuis {{source}}.",
