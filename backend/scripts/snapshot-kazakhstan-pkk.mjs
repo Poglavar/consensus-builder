@@ -16,18 +16,20 @@ import { kazakhstanPkkLayerEndpoint } from '../parcels/kazakhstan-pkk-source.js'
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const CA = path.join(HERE, '..', 'parcels', 'certificates', 'sectigo-public-server-authentication-ca-dv-r36.pem');
 const PAGE = 1000;
-const USAGE = `Usage: node scripts/snapshot-kazakhstan-pkk.mjs --out-dir <dir> --district <id> [--district <id> …] [--gap-ms 3000]
+const USAGE = `Usage: node scripts/snapshot-kazakhstan-pkk.mjs --out-dir <dir> --district <id> [--district <id> …] [--gap-ms 3000] [--refresh]
 
-Saves each district's complete parcel view as <dir>/${snapshotFileName('<id>')}.
+Saves each district's complete parcel view as <dir>/${snapshotFileName('<id>')}. A district whose copy
+exists is skipped unless --refresh is given.
 District ids are features of egkn:districts (Alatau 364, Astana Esil 254, Almaty Almaly 244).`;
 
 function parseArgs(argv) {
-    const opts = { districts: [], gapMs: 3000, outDir: null };
+    const opts = { districts: [], gapMs: 3000, outDir: null, refresh: false };
     for (let i = 0; i < argv.length; i++) {
         const arg = argv[i];
         if (arg === '--out-dir') opts.outDir = argv[++i];
         else if (arg === '--district') opts.districts.push(Number(argv[++i]));
         else if (arg === '--gap-ms') opts.gapMs = Number(argv[++i]);
+        else if (arg === '--refresh') opts.refresh = true;
         else if (arg === '--help' || arg === '-h') return null;
         else throw new Error(`Unknown argument: ${arg}`);
     }
@@ -108,6 +110,10 @@ async function main() {
     const fetchJson = createHttpsJsonFetch(fs.readFileSync(CA, 'utf8'), { maxBytes: 64 * 1024 * 1024 });
     const failed = [];
     for (const districtId of opts.districts) {
+        if (!opts.refresh && fs.existsSync(path.join(opts.outDir, snapshotFileName(districtId)))) {
+            log(`district ${districtId}: copy already saved, skipped (--refresh to save it again)`);
+            continue;
+        }
         try { await snapshotDistrict(fetchJson, districtId, opts); }
         catch (error) { failed.push(districtId); log(`district ${districtId} FAILED: ${error.message}`); }
     }
