@@ -176,7 +176,7 @@
     const cache = new Map();
     const FRESH_MS = 60 * 1000;
     async function clients() {
-        if (!root.solanaWeb3?.PublicKey && typeof root.ensureWalletVendors === 'function') await root.ensureWalletVendors();
+        await root.ensureWalletVendors?.('solana');
         if (!root.SolanaPledgeClient && typeof root.ensureOptionalTool === 'function') await root.ensureOptionalTool('fundingProgress');
         if (!root.solanaWeb3?.PublicKey || !root.SolanaPledgeClient || !root.AgreementClient || !root.SolanaChainDataLoader) {
             throw new Error('The Solana library could not be loaded.');

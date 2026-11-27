@@ -28,9 +28,10 @@ test('with an EVM wallet, the anchor status links the minted parcel token and an
   await connectWalletByConnectorId(page, 'metamask');
   await openParcel(page, 'tools');
   const status = page.locator('#parcelMintStatus');
-  const link = status.getByRole('link', { name: /Anchored on/ });
+  const link = status.getByRole('link', { name: 'Anchor minted on base-sepolia' });
   await expect(link).toHaveAttribute('href', new RegExp(`^https://sepolia\\.basescan\\.org/nft/${CONTRACT}/7$`, 'i'), { timeout: 15000 });
   await expect(page.locator('#mintAndClaimButton')).toBeDisabled();
+  expect(await page.evaluate(() => typeof (window as any).solanaWeb3)).toBe('undefined');
   await expect(page.locator('#tools-tab').getByRole('button', { name: /claim/i })).toHaveCount(0);
 });
 
@@ -42,10 +43,10 @@ test('with a Solana wallet, the anchor status links the parcel anchor account an
   await connectWalletByConnectorId(page, 'solana-phantom');
   await waitForBlockchainRuntime(page, ['SolanaChainDataLoader', 'SolanaParcelClient', 'solanaWeb3']);
   await stubSolanaParcelMint(page, { alreadyMinted: true, tokenId: ANCHOR });
-  await page.evaluate(() => { (window as any).ethers = undefined; });
   await openParcel(page, 'tools');
   const status = page.locator('#parcelMintStatus');
   await expect(status.getByRole('link', { name: 'Anchor minted on Solana' })).toHaveAttribute('href', `https://explorer.solana.com/address/${ANCHOR}?cluster=devnet`);
+  expect(await page.evaluate(() => typeof (window as any).ethers)).toBe('undefined');
   await expect(page.locator('#mintAndClaimButton')).toBeDisabled();
   await expect(page.locator('#tools-tab').getByRole('button', { name: /claim/i })).toHaveCount(0);
 });

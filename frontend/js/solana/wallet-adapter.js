@@ -131,9 +131,8 @@
     }
 
     function finalizeConnection(entry, accounts, options = {}) {
-        // solanaWeb3 loads on demand; a live connection means chain consumers
-        // are about to need it (see index.html's ensureWalletVendors).
-        if (typeof globalScope.ensureWalletVendors === 'function') globalScope.ensureWalletVendors();
+        // Start web3 for post-connect reads without delaying the wallet approval.
+        if (typeof globalScope.ensureWalletVendors === 'function') globalScope.ensureWalletVendors('solana');
         activeProvider = entry.provider;
         activeConnectorId = entry.id;
         const cluster = state.cluster || DEFAULT_CLUSTER;

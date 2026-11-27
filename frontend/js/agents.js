@@ -1503,6 +1503,10 @@ async function loadAgentChainData(agent, isUserAgent) {
     const useSolana = walletScope.chainId.startsWith('solana-');
     const solanaCluster = useSolana ? walletScope.chainId.slice(7) : null;
 
+    if (window.ensureWalletVendors) {
+        await window.ensureWalletVendors(useSolana ? 'solana' : 'evm');
+        if (!targetModal.isConnected || !window.AgentWalletScope.matches(walletScope, getCurrentAgentWalletScope())) return;
+    }
     if (useSolana) {
         if (!window.SolanaChainDataLoader || !window.solanaWeb3) {
             console.warn('Solana chain data loader not ready');

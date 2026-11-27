@@ -12,7 +12,7 @@
     const MAX_POSITION = 0n;
 
     async function dependencies() {
-        if (!root.solanaWeb3?.Transaction && typeof root.ensureWalletVendors === 'function') await root.ensureWalletVendors();
+        await root.ensureWalletVendors?.('solana');
         if (!root.solanaWeb3?.Transaction) throw new Error('Solana web3.js is unavailable');
         if (!root.SolanaLmsrClient) throw new Error('Solana LMSR client is unavailable');
         if (!root.SolanaChainDataLoader?.getVerifiedConnection) throw new Error('Verified Solana connection is unavailable');

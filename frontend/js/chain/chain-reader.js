@@ -149,7 +149,7 @@
         const cluster = () => CLUSTER;
 
         async function connection() {
-            if (!win.solanaWeb3?.Connection && typeof win.ensureWalletVendors === 'function') await win.ensureWalletVendors();
+            await win.ensureWalletVendors?.('solana');
             if (!win.solanaWeb3?.Connection || !win.SolanaChainDataLoader?.getVerifiedConnection) {
                 throw failure('web3-unavailable', 'The Solana library could not be loaded.');
             }

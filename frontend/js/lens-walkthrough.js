@@ -106,7 +106,7 @@
         if (!response.ok) throw new Error('HTTP ' + response.status);
         return response.json();
     }
-    // Load the large web3 and signature verification libraries only when a record needs them.
+    // Load signature verification only when a record needs it.
     function library(src) {
         if (!scripts.has(src)) scripts.set(src, new Promise((resolve, reject) => {
             const tag = element('script');
@@ -307,7 +307,7 @@
     }
     async function readChain(s) {
         try {
-            await library('vendor/solana-web3-1.98.4/index.iife.min.js');
+            if (!await win.ensureWalletVendors('solana')) throw new Error('The Solana library could not be loaded.');
             const connection = await win.SolanaChainDataLoader.getVerifiedConnection(s.record.onchain?.cluster || 'devnet');
             s.chain = await win.LensAgreementEvidence.readChain({ record: s.record, connection, client: win.AgreementClient });
         } catch { s.chainError = true; }

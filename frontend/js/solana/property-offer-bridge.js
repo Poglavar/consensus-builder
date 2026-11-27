@@ -19,7 +19,7 @@
         return provider?.publicKey?.toBase58?.() || null;
     }
     async function network(signing = false, cluster = win.solanaWalletManager?.getCluster() || 'devnet') {
-        if (!win.solanaWeb3) await win.ensureWalletVendors();
+        if (win.ensureWalletVendors && !await win.ensureWalletVendors('solana')) throw new Error('The Solana library could not be loaded.');
         api().configure({ web3: win.solanaWeb3, sha256Hex: win.__consentSha256.sha256Hex, sha256Bytes: win.__consentSha256.sha256Bytes });
         statements().configure({ web3: win.solanaWeb3 });
         if (!['devnet', 'localnet'].includes(cluster)) throw fail('devnetRequired', 'Property offers work on Solana devnet for now.', 'devnet-required');

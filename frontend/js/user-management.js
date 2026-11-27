@@ -1223,7 +1223,7 @@ function formatCityTokenAmount(raw, decimals) {
 
 async function resolveCityTokenContract(options = {}) {
     const requireSigner = options.requireSigner === true;
-    if (typeof window.ensureWalletVendors === 'function') await window.ensureWalletVendors();
+    if (typeof window.ensureWalletVendors === 'function') await window.ensureWalletVendors('evm');
     if (!window.walletManager) {
         throw new Error('Wallet not ready');
     }
@@ -2140,7 +2140,7 @@ async function refreshUserEthBalanceDisplay() {
     try {
         // Vendors are injected on demand; the connect path fires the loader but
         // this event may race it, so wait here before touching window.ethers.
-        if (typeof window.ensureWalletVendors === 'function') await window.ensureWalletVendors();
+        if (typeof window.ensureWalletVendors === 'function') await window.ensureWalletVendors('evm');
         const balanceEth = await readConnectedWalletEthBalance(state);
         if (requestId !== userWalletBalanceRequestId) {
             return;

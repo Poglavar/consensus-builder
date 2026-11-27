@@ -87,6 +87,7 @@
      * (newly anchored and already anchored), transactions: [{ parcelIds, txHash }], alreadyAnchored, skipped }.
      */
     async function anchorParcels(parcelIds, { programId, cluster, onProgress = null } = {}) {
+        await g.ensureWalletVendors?.('solana');
         if (!g.solanaWeb3 || !g.solanaWalletManager) throw new Error('Solana not available');
         const provider = g.solanaWalletManager.getProvider();
         const wallet = provider?.publicKey;

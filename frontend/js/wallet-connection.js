@@ -324,10 +324,8 @@
     }
 
     function finalizeConnection(entry, accounts, chainId, options = {}) {
-        // Wallet vendors load on demand; a live connection means chain readers
-        // (balance display, contracts, sync) are about to need ethers. Fire and
-        // forget — racing consumers await ensureWalletVendors() themselves.
-        if (typeof globalScope.ensureWalletVendors === 'function') globalScope.ensureWalletVendors();
+        // Start ethers for post-connect reads without delaying the wallet approval.
+        if (typeof globalScope.ensureWalletVendors === 'function') globalScope.ensureWalletVendors('evm');
         detachProviderListeners();
 
         const normalizedAccounts = normalizeAccounts(accounts);

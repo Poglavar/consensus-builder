@@ -2092,6 +2092,7 @@
             // bundle:end foundation
             'js/versions.js',
             // bundle:start environment-before-city
+            'js/wallet-vendors.js',
             'js/i18n-loader.js',
             'js/version-history.js',
             'js/environment.js',
@@ -2136,47 +2137,6 @@
             'js/ens/ens-name.js'
             // bundle:end environment-after-city
         ]);
-    </script>
-    <!-- ethers was pinned only to `@6`, so a CDN minor bump could change wallet-signing behaviour
-         with no commit to bisect. Now frozen at the 6.17.0 that `@6` resolved to.
-
-         Both wallet vendors (~1 MB) load ON DEMAND: wallet auto-connect is raw
-         EIP-1193 and needs neither library, and every chain reader is either
-         wallet-connection-gated, gesture-gated, or awaits this loader itself.
-         The connect path (wallet-connection.js / solana wallet-adapter.js)
-         fires the loader so post-connect consumers find the globals; the few
-         walletless readers (JsonRpcProvider paths, minted layer, chain deep
-         links) await it directly. The Solana IIFE build does not self-assign
-         to window, so the promotion below must follow injection. -->
-    <script>
-        window.ensureWalletVendors = (() => {
-            let promise = null;
-            return function ensureWalletVendors() {
-                if (!promise) {
-                    promise = new Promise((resolve) => {
-                        var remaining = 2;
-                        var done = function () {
-                            remaining -= 1;
-                            if (remaining > 0) return;
-                            if (typeof solanaWeb3 !== 'undefined') { window.solanaWeb3 = solanaWeb3; }
-                            resolve(typeof window.ethers !== 'undefined');
-                        };
-                        [
-                            'vendor/ethers-6.17.0/ethers.umd.min.js',
-                            'vendor/solana-web3-1.98.4/index.iife.min.js'
-                        ].forEach(function (src) {
-                            var tag = document.createElement('script');
-                            tag.src = src;
-                            tag.async = false;
-                            tag.onload = done;
-                            tag.onerror = done;
-                            document.head.appendChild(tag);
-                        });
-                    });
-                }
-                return promise;
-            };
-        })();
     </script>
     <script>
         window.writeVersionedLocalScripts([

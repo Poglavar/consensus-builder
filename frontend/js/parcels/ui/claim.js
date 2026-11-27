@@ -1443,6 +1443,7 @@
             if (!walletProvider) {
                 throw new Error(tParcel('panel.parcel.anchorDialog.connectWallet', {}, 'Connect a wallet to anchor parcels.'));
             }
+            await global.ensureWalletVendors?.('evm');
             const ethersLib = global.ethers;
             if (!ethersLib) {
                 throw new Error('Blockchain library is not available.');

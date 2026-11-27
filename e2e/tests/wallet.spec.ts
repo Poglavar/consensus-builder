@@ -1,31 +1,36 @@
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { getWalletStates, injectMockEvmWallet, injectMockSolanaWallet, openWalletModal, waitForBlockchainRuntime } from '../helpers/blockchain';
+import { getWalletStates, injectMockEvmWallet, injectMockSolanaWallet, openWalletModal } from '../helpers/blockchain';
 import { selectors } from '../helpers/selectors';
 
 test.describe('Wallet connection @features', () => {
-  // This asserts the CDN chain (ethers + solanaWeb3) actually loaded — a real browser concern, and
-  // the canary for every wallet test below. It used to also probe connectWallet / walletConnect /
-  // disconnectWallet / getWalletAddress / getConnectedAddress: none of those exist anywhere in the
-  // app, and their results were computed and then never asserted on. Removed rather than left to
-  // imply coverage that was never there — the real wallet API is `walletManager`, exercised below.
-  test('the wallet CDN libraries (ethers + solanaWeb3) are loaded', async ({ mockApi: page }) => {
+  test('a failed Solana SDK request can be retried while Ethereum stays ready', async ({ mockApi: page }) => {
+    let solanaRequests = 0;
+    let evmRequests = 0;
+    await page.route('**/vendor/solana-web3-*/index.iife.min.js', route =>
+      ++solanaRequests === 1 ? route.abort() : route.continue());
+    await page.route('**/vendor/ethers-*/ethers.umd.min.js', route => {
+      evmRequests++;
+      return route.continue();
+    });
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await waitForMapReady(page);
-    await waitForBlockchainRuntime(page, ['ethers', 'solanaWeb3', 'walletManager']);
+    expect([evmRequests, solanaRequests]).toEqual([0, 0]);
 
-    const walletModule = await page.evaluate(() => {
+    const readiness = await page.evaluate(async () => {
       const w = window as any;
+      const both = await w.ensureWalletVendors();
+      const evm = await w.ensureWalletVendors('evm');
+      const solanaAfterFailure = typeof w.solanaWeb3;
+      const retried = await Promise.all([w.ensureWalletVendors('solana'), w.ensureWalletVendors()]);
       return {
-        hasEthers: typeof w.ethers !== 'undefined',
-        hasSolanaWeb3: typeof w.solanaWeb3 !== 'undefined',
-        hasWalletManager: typeof w.walletManager === 'object' && w.walletManager !== null,
+        both, evm, solanaAfterFailure, retried,
+        ethersProvider: typeof w.ethers?.BrowserProvider, solanaConnection: typeof w.solanaWeb3?.Connection,
       };
     });
-
-    expect(walletModule.hasEthers).toBe(true);
-    expect(walletModule.hasSolanaWeb3).toBe(true);
-    expect(walletModule.hasWalletManager).toBe(true);
+    expect(readiness).toEqual({ both: false, evm: true, solanaAfterFailure: 'undefined',
+      retried: [true, true], ethersProvider: 'function', solanaConnection: 'function' });
+    expect([evmRequests, solanaRequests]).toEqual([1, 2]);
   });
 
   test('EVM wallet connects through the connector modal and can disconnect', async ({ mockApi: page }) => {
@@ -50,6 +55,8 @@ test.describe('Wallet connection @features', () => {
     expect(statesAfterConnect.evm?.accounts?.[0]).toBe('0x1234567890abcdef1234567890abcdef12345678');
     expect(statesAfterConnect.evm?.chainId).toBe('0xaa36a7');
     expect(statesAfterConnect.evm?.connectorName).toBe('MetaMask');
+    await page.waitForFunction(() => typeof (window as any).ethers?.BrowserProvider === 'function');
+    expect(await page.evaluate(() => typeof (window as any).solanaWeb3)).toBe('undefined');
 
     const renderedLabel = await page.evaluate(() => {
       const renderer = (window as typeof window & { renderWalletButtonLabel?: () => string }).renderWalletButtonLabel;
@@ -99,6 +106,7 @@ test.describe('Wallet connection @features', () => {
   });
 
   test('Solana wallet connects through the connector modal and can disconnect', async ({ mockApi: page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
     await injectMockSolanaWallet(page, {
       publicKey: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT',
       providerName: 'phantom',
@@ -110,7 +118,7 @@ test.describe('Wallet connection @features', () => {
 
     const connectorButton = page.locator(`${selectors.walletConnectorButton}[data-wallet-connector="solana-phantom"]`);
     await expect(connectorButton).toBeVisible();
-    await connectorButton.click();
+    await connectorButton.press('Enter');
 
     await expect(page.locator(selectors.walletModalOverlay)).toHaveCount(0);
 
@@ -119,6 +127,8 @@ test.describe('Wallet connection @features', () => {
     expect(statesAfterConnect.solana?.accounts?.[0]).toBe('7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT');
     expect(statesAfterConnect.solana?.cluster).toBe('devnet');
     expect(statesAfterConnect.solana?.connectorName).toBe('Phantom');
+    await page.waitForFunction(() => typeof (window as any).solanaWeb3?.Connection === 'function');
+    expect(await page.evaluate(() => typeof (window as any).ethers)).toBe('undefined');
 
     const renderedLabel = await page.evaluate(() => {
       const renderer = (window as typeof window & { renderWalletButtonLabel?: () => string }).renderWalletButtonLabel;

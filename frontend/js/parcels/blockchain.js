@@ -359,14 +359,13 @@
         if (!globalScope) {
             throw new Error('Global scope not available.');
         }
-        if (typeof globalScope.ensureWalletVendors === 'function') await globalScope.ensureWalletVendors();
-
         // Check Solana wallet first
         const solanaWalletManager = globalScope.solanaWalletManager;
         const solanaState = solanaWalletManager && typeof solanaWalletManager.getState === 'function' ? solanaWalletManager.getState() : null;
         if (solanaState && solanaState.status === 'connected' && Array.isArray(solanaState.accounts) && solanaState.accounts.length > 0) {
             const parcelProgramId = await resolveParcelNftAddressSolana(solanaState.cluster || 'devnet');
             if (parcelProgramId && globalScope.SolanaChainDataLoader) {
+                if (typeof globalScope.ensureWalletVendors === 'function') await globalScope.ensureWalletVendors('solana');
                 const connection = globalScope.SolanaChainDataLoader.getConnection(solanaState.cluster || 'devnet');
                 return {
                     chainId: 'solana',
@@ -378,6 +377,7 @@
             }
         }
 
+        if (typeof globalScope.ensureWalletVendors === 'function') await globalScope.ensureWalletVendors('evm');
         if (!globalScope.ethers) {
             throw new Error('Blockchain library is not available.');
         }

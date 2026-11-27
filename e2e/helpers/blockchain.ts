@@ -45,12 +45,11 @@ type MockEvmLoaderOptions = {
 
 /** Wait for the app's versioned local scripts and on-demand wallet vendors to finish loading. */
 export async function waitForBlockchainRuntime(page: Page, globals: string[] = []): Promise<void> {
-  await page.evaluate(async () => {
-    const ensureWalletVendors = (window as typeof window & {
-      ensureWalletVendors?: () => Promise<boolean>;
-    }).ensureWalletVendors;
-    if (ensureWalletVendors) await ensureWalletVendors();
-  });
+  const evm = globals.includes('ethers');
+  const solana = globals.includes('solanaWeb3');
+  let chain: 'evm' | 'solana' | undefined;
+  if (evm !== solana) chain = evm ? 'evm' : 'solana';
+  await walletVendorsLoaded(page, chain);
 
   if (globals.length) {
     await page.waitForFunction((requiredGlobals) => {
@@ -208,15 +207,14 @@ export async function connectWalletByConnectorId(page: Page, connectorId: string
   await openWalletModal(page);
   await page.locator(`${selectors.walletConnectorButton}[data-wallet-connector="${connectorId}"]`).click();
   await expect(page.locator(selectors.walletModalOverlay)).toHaveCount(0);
-  await walletVendorsLoaded(page);
+  await walletVendorsLoaded(page, connectorId.startsWith('solana-') ? 'solana' : 'evm');
 }
 
-// ethers and solanaWeb3 load on demand (index.html ensureWalletVendors); a wallet connect only starts
-// the load, so the connect helper and any stub that patches window.ethers wait for it rather than race it.
-async function walletVendorsLoaded(page: Page): Promise<void> {
+// A wallet connection starts its own SDK request. Wait for it before installing chain stubs.
+async function walletVendorsLoaded(page: Page, chain?: 'evm' | 'solana'): Promise<void> {
   await page.waitForFunction(() => typeof (window as any).ensureWalletVendors === 'function');
-  const loaded = await page.evaluate(() => (window as any).ensureWalletVendors());
-  if (!loaded) throw new Error('the wallet vendors (ethers) failed to load');
+  const loaded = await page.evaluate(chain => (window as any).ensureWalletVendors(chain), chain);
+  if (!loaded) throw new Error(`Failed to load wallet SDKs for ${chain || 'both chains'}`);
 }
 
 /**
@@ -288,7 +286,7 @@ export async function stubSolanaParcelMint(page: Page, options: MockSolanaParcel
 
 /** The EVM ParcelNFT reads (ChainDataLoader.getParcelsFromChain): token 1 reads whole, token 2 only by its parcel id. */
 export async function stubEvmChainDataReads(page: Page, options: MockEvmLoaderOptions = {}): Promise<void> {
-  await walletVendorsLoaded(page);
+  await walletVendorsLoaded(page, 'evm');
   await page.evaluate((stubOptions: MockEvmLoaderOptions) => {
     const globalWindow = window as typeof window & {
       ethers?: {

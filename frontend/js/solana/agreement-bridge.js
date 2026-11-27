@@ -153,7 +153,7 @@
         const programId = () => client().constants.AGREEMENT_PROGRAM_ID;
 
         async function dependencies() {
-            if (!win.solanaWeb3?.Transaction && typeof win.ensureWalletVendors === 'function') await win.ensureWalletVendors();
+            await win.ensureWalletVendors?.('solana');
             if (!win.solanaWeb3?.Transaction) throw codedError(t('agreement.chain.errors.web3Unavailable', 'The Solana library could not be loaded.'), 'web3-unavailable');
             if (!win.SolanaChainDataLoader?.getConnection) throw codedError(t('agreement.chain.errors.web3Unavailable', 'The Solana library could not be loaded.'), 'web3-unavailable');
             return client();
