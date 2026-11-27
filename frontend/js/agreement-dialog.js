@@ -1169,6 +1169,22 @@
             } finally { eligibility.busy = false; if (!state.closed) { renderEligibility(); issues(); } }
         }
         // Literal keys, so the locale coverage test sees each one.
+        // Each failing or unknown test of a covered house, in the building card's words and links
+        // (BuildingEligibility.explain): the fact's value, the register's reason and entry link, or
+        // the OpenStreetMap key to add.
+        const cardText = (key, params = {}) => (key.startsWith('buildingFact.')
+            ? t(`planningViews.buildingFact.${key.slice('buildingFact.'.length)}`, key, params)
+            : t(`planningViews.eligibility.${key.slice('eligibility.'.length)}`, key, params));
+        function eligibilityTests(set, house, name) {
+            const items = root.BuildingEligibility.explain(set, house.result, house.building, cardText).map(test => `<li data-status="${esc(test.status)}">`
+                + `<span>${esc(`${test.cite} ${test.label}: ${test.statusText}`)}</span>`
+                + (test.text ? ` <span>${esc(test.text)}</span>` : '')
+                + (test.reason ? ` <span class="agreement-hint">${esc(test.reason)}</span>` : '')
+                + (test.link ? ` <a class="cb-link cb-link--external" href="${esc(test.link.url)}" target="_blank" rel="noopener">${esc(test.link.text)}</a>` : '')
+                + (test.add ? ` <span class="agreement-hint">${esc(t('voting.eligibility.addKey', 'Add {{key}} in {{source}}', { key: test.add.key, source: test.add.source }))}</span>` : '')
+                + '</li>').join('');
+            return items ? `<ul class="voting-eligibility__tests" aria-label="${esc(t('voting.eligibility.testsOf', 'Tests not passed by {{house}}', { house: name }))}">${items}</ul>` : '';
+        }
         const VERDICT_TEXT = { eligible: () => t('voting.eligibility.verdict.eligible', 'Eligible'),
             ineligible: () => t('voting.eligibility.verdict.ineligible', 'Not eligible'), unknown: () => t('voting.eligibility.verdict.unknown', 'Unknown') };
         function renderEligibility() {
@@ -1190,9 +1206,11 @@
                     const detail = [failing.length ? t('voting.eligibility.fails', 'fails {{tests}}', { tests: failing.join(', ') }) : '',
                         unknown.length ? t('voting.eligibility.missingFacts', 'unknown {{tests}}', { tests: unknown.join(', ') }) : ''].filter(Boolean).join(' · ');
                     const edit = house.building?.edit?.url;
-                    return `<li data-verdict="${esc(verdict)}"><span>${esc(house.id ? t('voting.eligibility.house', 'Building {{id}}', { id: house.id.replace(/^osm:/, '') }) : t('voting.eligibility.unanswered', 'A building with no facts source ({{id}})', { id: house.sourceBuildingId ?? '?' }))}</span>`
+                    const name = house.id ? t('voting.eligibility.house', 'Building {{id}}', { id: house.id.replace(/^osm:/, '') }) : t('voting.eligibility.unanswered', 'A building with no facts source ({{id}})', { id: house.sourceBuildingId ?? '?' });
+                    return `<li data-verdict="${esc(verdict)}"><span>${esc(name)}</span>`
                         + ` <strong>${esc(VERDICT_TEXT[verdict]())}</strong>${detail ? ` <span class="agreement-hint">${esc(detail)}</span>` : ''}`
-                        + (edit && verdict !== 'eligible' ? ` <a class="cb-link cb-link--external" href="${esc(edit)}" target="_blank" rel="noopener">${esc(t('voting.eligibility.edit', 'Edit in {{source}}', { source: house.building.edit.source }))}</a>` : '') + '</li>';
+                        + (edit && verdict !== 'eligible' ? ` <a class="cb-link cb-link--external" href="${esc(edit)}" target="_blank" rel="noopener">${esc(t('voting.eligibility.edit', 'Edit in {{source}}', { source: house.building.edit.source }))}</a>` : '')
+                        + (house.id && verdict !== 'eligible' ? eligibilityTests(set, house, name) : '') + '</li>';
                 }).join('')}</ul>` : '')
                 + `<button type="button" class="btn btn-secondary" data-voting-eligibility-check${eligibility.busy ? ' disabled' : ''}>${esc(eligibility.judged ? t('voting.eligibility.again', 'Check again') : t('voting.eligibility.check', 'Check eligibility'))}</button>`;
             eligibilityNode.querySelector('[data-voting-eligibility-check]').addEventListener('click', event => checkEligibility(event.currentTarget));

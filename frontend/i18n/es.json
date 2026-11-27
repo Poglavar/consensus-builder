@@ -9432,7 +9432,9 @@
                 "built": "Construido",
                 "roof_shape": "Forma de la cubierta",
                 "parapet": "Pretil",
-                "heritage": "Protección patrimonial"
+                "heritage": "Protección patrimonial",
+                "footprint_m2": "Huella",
+                "row_size": "Hilera"
             },
             "builtBefore": "antes de {{year}}",
             "builtAfter": "{{year}} o después",
@@ -10263,6 +10265,8 @@
             "house": "Edificio {{id}}",
             "unanswered": "Un edificio sin fuente de datos ({{id}})",
             "edit": "Editar en {{source}}",
+            "addKey": "Añada {{key}} en {{source}}",
+            "testsOf": "Condiciones que no cumple {{house}}",
             "again": "Volver a comprobar",
             "check": "Comprobar condiciones",
             "verdict": {

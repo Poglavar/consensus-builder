@@ -88,6 +88,27 @@
         return { set: { id: set.id, version: set.version }, verdict: has('fail') ? 'ineligible' : has('unknown') ? 'unknown' : 'eligible', tests };
     }
 
+    // The fact a test reads (the date test reads `built`).
+    const factOf = test => test.fact || (test.check === 'builtBetween' ? 'built' : null);
+    // Why a house is not eligible, test by test, in the words and links the building card uses
+    // (buildings/building-facts.js factRow): each failing or unknown test with its label and status,
+    // the fact's value in words, the source's key to add a missing fact under, the reason a register
+    // gives for an unknown one, and the register entry link. `t` translates the card's keys
+    // (`buildingFact.*`, `eligibility.*`); `building` is the contract's answer, or null.
+    function explain(set, result, building, t) {
+        return result.tests.filter(test => test.status === 'fail' || test.status === 'unknown').map(test => {
+            const definition = set.tests.find(entry => entry.id === test.id) || {};
+            const field = factOf(definition);
+            const row = field && building?.facts ? factsApi().factRow(building, field, (key, params) => t(`buildingFact.${key}`, params)) : null;
+            const status = t(`eligibility.status.${test.status}`);
+            return { cite: test.cite, id: test.id, status: test.status, label: t(`eligibility.test.${test.id}`),
+                statusText: test.grade ? t('eligibility.withGrade', { status, grade: test.grade }) : status,
+                text: row?.text ?? null, raw: row?.raw ?? null, key: row?.key ?? null, reason: row?.reason ?? null, link: row?.link ?? null,
+                // Where to add a missing fact: the source's key, on the building's edit page.
+                add: test.status === 'unknown' && row && !row.text && row.key && building?.edit?.url ? { key: row.key, source: building.edit.source, url: building.edit.url } : null };
+        });
+    }
+
     // The houses a plan covers under a set: each existing building its designs raise with the set's
     // roof, by the building-facts id of its source building. A raised building the facts contract
     // does not answer is listed with a null id, so it can never pass.
@@ -158,5 +179,5 @@
         return blocked.length ? [{ code: 'eligibility-failed', houses: blocked }] : [];
     }
 
-    return { RULE_SETS, get, latest, forCity, evaluate, coveredHouses, check, evidence, normalizeEvidence, evidenceIssues };
+    return { RULE_SETS, get, latest, forCity, evaluate, explain, coveredHouses, check, evidence, normalizeEvidence, evidenceIssues };
 });
