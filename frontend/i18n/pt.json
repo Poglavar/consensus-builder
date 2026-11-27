@@ -9445,6 +9445,7 @@
                 "built": "Edificado hoje",
                 "permitted": "Volumetria permitida",
                 "proposed": "Proposto (todos os projetos aplicados)",
+                "builtOnMap": "Edifícios atuais · estradas e parques partilhados",
                 "design": "Projeto: {{title}}",
                 "plan": "Plano: {{title}}",
                 "agreement": "Acordo: {{title}}",

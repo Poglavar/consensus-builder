@@ -9314,6 +9314,7 @@
             "mapNote": "Na karti svaka strana crta svoje zgrade i dopuštenu građevnu masu kao tlocrte; dizajn ili plan koji nije primijenjen crta kao tlocrte i svoje ceste i prostore. Čestice te primijenjene ceste i parkovi vide se na obje strane.",
             "options": {
                 "built": "Izgrađeno danas",
+                "builtOnMap": "Današnje zgrade · ceste i parkovi zajednički",
                 "permitted": "Dopuštena građevna masa",
                 "proposed": "Predloženo (svi primijenjeni dizajni)",
                 "design": "Dizajn: {{title}}",

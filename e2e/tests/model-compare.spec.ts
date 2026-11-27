@@ -455,7 +455,8 @@ test('Copy link copies a comparison of what is on the server, publishes a design
   const receiver = await openOnAnotherDevice(browser, `${link.pathname}${link.search}`, index, baseURL);
   try {
     await expect(receiver.page.locator('#map .map-compare__label--after')).toHaveText(`Design: ${title}`, { timeout: 45_000 });
-    await expect(receiver.page.locator('#map .map-compare__label--before')).toHaveText('Built today');
+    // On the 2D map applied roads and parks are shared, so the today side names only its buildings.
+    await expect(receiver.page.locator('#map .map-compare__label--before')).toHaveText('Buildings today · roads and parks shared');
     // A link naming a plan that was never published says so instead of opening half a comparison.
     await receiver.page.goto(`/?city=zg&reduceMotion=1&compare=built%2Cbafkrei${'c'.repeat(52)}`, { waitUntil: 'domcontentloaded' });
     await waitForMapReady(receiver.page);
@@ -484,7 +485,7 @@ test('a comparison in the address opens with its two sides, and the address foll
   await expect(page.locator('#planning-compare-left')).toHaveValue('built');
   await expect(page.locator('#planning-compare-right')).toHaveValue(`plan:${cid}`);
   await expect(page.locator('#planning-compare-enable')).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('#map .map-compare__label--before')).toHaveText('Built today');
+  await expect(page.locator('#map .map-compare__label--before')).toHaveText('Buildings today · roads and parks shared');
   await expect(page.locator('#map .map-compare__label--after')).toHaveText('Plan: Shared plan', { timeout: 45_000 });
   const compareParam = () => page.evaluate(() => new URL(location.href).searchParams.get('compare'));
   expect(await compareParam()).toBe(`built,${cid}`);

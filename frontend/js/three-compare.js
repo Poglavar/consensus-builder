@@ -264,6 +264,13 @@
         }
     }
 
+    // A side's name at the divider. On the 2D map applied roads, tracks and parks are not split
+    // (compare-on-map.js), so the today side says it holds today's buildings, not the city as built.
+    function dividerLabel(option) {
+        if (option.kind === 'built' && !state.model) return t('planningViews.compare.options.builtOnMap', 'Buildings today · roads and parks shared');
+        return optionLabel(option);
+    }
+
     // An option in the picker: inside its group the kind goes without saying, and the time tells two
     // plans or designs of the same title apart.
     const GROUP_LABELS = { today: 'Today', plan: 'Plans', agreement: 'Agreements', design: 'Designs' };
@@ -611,7 +618,7 @@
         const current = sides();
         // The scene draws what the sides' unapplied plan members add (the model view builds meshes).
         scene().compareChanged?.();
-        const labels = { before: optionLabel(current.left), after: optionLabel(current.right) };
+        const labels = { before: dividerLabel(current.left), after: dividerLabel(current.right) };
         if (state.divider) {
             state.divider.labelEls[0].textContent = labels.before;
             state.divider.labelEls[1].textContent = labels.after;

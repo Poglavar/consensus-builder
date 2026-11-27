@@ -9445,6 +9445,7 @@
                 "built": "Bâti existant",
                 "permitted": "Volumétrie autorisée",
                 "proposed": "Proposé (tous les projets appliqués)",
+                "builtOnMap": "Bâtiments actuels · routes et parcs communs",
                 "design": "Projet : {{title}}",
                 "plan": "Plan : {{title}}",
                 "agreement": "Accord : {{title}}",

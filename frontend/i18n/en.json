@@ -9263,6 +9263,7 @@
             "mapNote": "On the map, each side draws its own buildings and permitted massing as footprints; a design or plan that is not applied also draws its roads and spaces as footprints. Parcels and applied roads and parks show on both sides.",
             "options": {
                 "built": "Built today",
+                "builtOnMap": "Buildings today · roads and parks shared",
                 "permitted": "Permitted massing",
                 "proposed": "Proposed (all applied designs)",
                 "design": "Design: {{title}}",
