@@ -88,6 +88,23 @@ describe('Strong Suburbs street code', () => {
         const fresh = await run({ designations: ['green-belt'], house: house({ basedOnExisting: false }) });
         expect(statuses(fresh.buildings[0].result)).toMatchObject({ ssGreenBelt: 'fail', ssListed: 'notApplicable' });
     });
+    it('screens designations with one box around the buildings, then reads each building only when the box finds any', async () => {
+        // A street's worth of outlines in one request was too long for the source (HTTP 414).
+        const reads = [];
+        const houses = Array.from({ length: 80 }, (_, i) => ({ ...house(), geometry: box(i * 10, 5, i * 10 + 6, 15) }));
+        const check = found => StreetCode.check(set, { designs: [{ geometry: { buildings: houses } }], street,
+            read: { density: async () => ({ areas, sources: [] }), facts: async () => contract({}), buildingsNear: async () => [],
+                designations: async (geometry, datasets) => { reads.push(geometry); return reads.length === 1 ? found : []; } } });
+        const clear = await check([]);
+        expect(reads).toHaveLength(1);
+        expect(reads[0].type).toBe('Polygon');
+        expect(reads[0].coordinates[0]).toHaveLength(5);
+        expect(statuses(clear.buildings[79].result).ssNature).toBe('pass');
+        reads.length = 0;
+        const near = await check(['site-of-special-scientific-interest']);
+        expect(reads).toHaveLength(81);
+        expect(statuses(near.buildings[0].result).ssNature).toBe('pass');
+    });
     it('restricts to 3+1 with ten pre-1918 buildings within 100 m, and stays unknown while dates could decide it (para 37)', () => {
         const near = (n, built, storeys = 2, northM = 20) => Array.from({ length: n }, (_, i) => ({ id: `w${i}`, geometry: box(i * 8, northM, i * 8 + 6, northM + 8), built, storeys }));
         const old = { from: null, to: 1900 }, modern = { from: 1960, to: 1960 };

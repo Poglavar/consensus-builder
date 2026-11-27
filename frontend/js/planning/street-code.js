@@ -272,11 +272,15 @@
         const historic = historicLimit(set, { street, near });
         const ids = [...new Set(buildings.map(b => b.factId).filter(Boolean))];
         const contracts = ids.length && read.facts ? await attempt('facts', () => read.facts(ids)) : null;
-        // Designations: one read over all the plan's buildings, then one per building only where it found any.
+        // Designations: one read over the box around all the plan's buildings, then one per building
+        // only where it found any. The box, not the buildings' outlines: a street's worth of outlines
+        // is too long for the source's request (HTTP 414), and nothing in the box is nothing under them.
         const datasets = datasetsOf(set);
         let designationsOf = () => null;
         if (read.designations && geometries.length) {
-            const all = { type: 'MultiPolygon', coordinates: geometries.flatMap(ringsOf) };
+            const points = geometries.flatMap(geometry => ringsOf(geometry).flatMap(polygon => polygon[0] || []));
+            const [w, s, e, n] = [Math.min(...points.map(p => p[0])), Math.min(...points.map(p => p[1])), Math.max(...points.map(p => p[0])), Math.max(...points.map(p => p[1]))];
+            const all = { type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] };
             const found = await attempt('designations', () => read.designations(all, datasets));
             if (Array.isArray(found) && !found.length) designationsOf = () => [];
             else if (Array.isArray(found)) {
