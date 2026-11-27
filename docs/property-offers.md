@@ -124,3 +124,34 @@ or relays supplied signatures with `confirm=true`. These tools never generate wa
 or send funds. The person completes those steps with their wallet in the browser. The hosted
 server therefore offers all seven: publication and consent relays are annotated as
 non-destructive public writes, like `ugt_publish_design`, and share its per-minute publish budget.
+
+## Open: double sale and multi-parcel offers
+
+Unresolved as of 2026-11-27. The single-plot and single-apartment case is being built first; this
+section holds the thinking reached so far.
+
+**Observed.** Nothing prevents one seller selling the same asset several times: on devnet the
+homebuyer bots sold one Alatau flat three times through the same lens member, and all three
+settled. Apartment sellers are never checked as holders.
+
+**Settled principles.**
+- The `property_offer` program does not learn that a sale happened, under which rules, by whom or to
+  whom, and enforces nothing about sales. A per-seller sale record in the program was rejected.
+- It must be impossible to sell the same holding to several people through the same lens. Across
+  lenses a conflict is the readers' call: a reader whose lens includes both lens members sees it.
+- Proposed mechanism: a lens member's sale confirmation for one asset is a statement whose SAS
+  address derives from the lens member, the asset and the statement by which the seller holds it.
+  A second confirmation of the same holding lands on the same address and fails, unless the first
+  is withdrawn (publicly). A seller who buys the asset back holds it through a new statement, so
+  selling it again is possible.
+
+**Multi-parcel offers (bundles).** A bundle is one thing at the level above cadastral parcels; on
+chain the offer already stores only its terms hash, whatever the parcel count. Open questions:
+- Per-parcel ownership changes must happen only if the whole sale settles. One idea: before
+  payment, each confirming lens member writes one statement per parcel ("P passes from S to B when
+  offer O settles"), each at its per-holding address, then one confirmation for the bundle; the
+  program pays out at once, and readers treat each parcel statement as effective if O settled and
+  void if it expired or was cancelled. Not decided.
+- Very large bundles (a bid for 1000 parcels): hundreds of lens-member transactions; the 16-recipient
+  payout limit with many co-owners; one consent per owner for the whole bundle.
+- Whether a bundle is the offer's own parcel list or an existing record such as a design.
