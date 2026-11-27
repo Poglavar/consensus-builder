@@ -6,6 +6,7 @@ import express from 'express';
 import request from 'supertest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { PublicKey } from '@solana/web3.js';
+import { createHash } from 'node:crypto';
 import { setupParcelHistoryRoute } from '../routes/parcel-history.js';
 import { setupLandEventsRoute } from '../routes/land-events.js';
 import {
@@ -143,12 +144,14 @@ describe('GET /parcels/:parcelUid/history', () => {
         warn.mockRestore();
     });
 
-    it('preserves unknown when no account reader exists and skips unseedable IDs', async () => {
+    it('preserves unknown when no account reader exists, and anchors ids longer than a raw seed', async () => {
         const pool = stubPool();
         expect((await loadParcelHistory(pool, PARCEL)).anchor).toEqual({ account: deriveParcelAnchor(PARCEL), exists: null, source: 'unavailable' });
         const reader = vi.fn();
-        expect((await loadParcelHistory(pool, 'x'.repeat(33), { readAnchorAccount: reader })).anchor).toEqual({ account: null, exists: false, source: 'unseedable' });
-        expect(reader).not.toHaveBeenCalled();
+        reader.mockResolvedValue(false);
+        const long = 'x'.repeat(100);
+        expect((await loadParcelHistory(pool, long, { readAnchorAccount: reader })).anchor).toEqual({ account: deriveParcelAnchor(long), exists: false, source: 'chain' });
+        expect(reader).toHaveBeenCalledWith(deriveParcelAnchor(long), long);
     });
 
     it.each([null, undefined, 'true', 1])('does not coerce an invalid account observation into existence: %j', async value => {
@@ -182,10 +185,12 @@ describe('GET /parcels/:parcelUid/history', () => {
         expect(agreementEvent(agreementRow({ title: null }))).toEqual({ type: AGREEMENT_PUBLISHED_EVENT_TYPE, at: '2026-09-16T10:00:00.000Z', agreementCid: CID, link: `/agreements/${CID}` });
     });
 
-    it('derives the anchor exactly like parcel_nft, and none for ids longer than a seed', () => {
-        const expected = PublicKey.findProgramAddressSync([Buffer.from('parcel'), Buffer.from(PARCEL)], new PublicKey(PARCEL_PROGRAM_ID))[0].toBase58();
+    it('derives the anchor exactly like parcel_nft (seeded by the id\'s sha256), and none for ids that do not fit the account', () => {
+        const seed = id => createHash('sha256').update(id).digest();
+        const expected = PublicKey.findProgramAddressSync([Buffer.from('parcel'), seed(PARCEL)], new PublicKey(PARCEL_PROGRAM_ID))[0].toBase58();
         expect(deriveParcelAnchor(PARCEL)).toBe(expected);
-        expect(deriveParcelAnchor('x'.repeat(33))).toBeNull();
+        expect(deriveParcelAnchor('x'.repeat(40))).toBe(PublicKey.findProgramAddressSync([Buffer.from('parcel'), seed('x'.repeat(40))], new PublicKey(PARCEL_PROGRAM_ID))[0].toBase58());
+        expect(deriveParcelAnchor('x'.repeat(257))).toBeNull();
     });
 
     it('orders by time, then publication before ownership before execution, then a stable key', () => {

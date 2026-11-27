@@ -2224,7 +2224,6 @@
                 "owner": "Иесі {{key}}",
                 "ownerCount": "Куәландырылған иелер: {{count}}",
                 "lens": "Линза: {{keys}}",
-                "noAnchor": "Бұл учаске идентификаторы Solana зәкірі үшін тым ұзын.",
                 "anchorExists": "Учаске зәкірі Solana devnet желісінде табылды",
                 "anchorMissing": "Solana devnet желісінде учаске зәкірі табылмады",
                 "anchorUnknown": "Учаске зәкірінің мәртебесі белгісіз",

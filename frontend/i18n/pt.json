@@ -3767,7 +3767,6 @@
                 "owner": "Proprietário {{key}}",
                 "ownerCount": "{{count}} proprietário(s) atestado(s)",
                 "lens": "Lens: {{keys}}",
-                "noAnchor": "O ID desta parcela é demasiado longo para esta âncora Solana.",
                 "anchorExists": "Âncora da parcela observada na devnet da Solana",
                 "anchorMissing": "Nenhuma âncora da parcela encontrada na devnet da Solana",
                 "anchorUnknown": "Estado da âncora da parcela indisponível",

@@ -173,9 +173,10 @@ describe('local MCP chain actions', () => {
         const anchorParcels = vi.fn(async ({ parcels }) => ({ parcels: parcels.map(row => ({ anchorId: row.anchorId, anchor: 'A', uri: row.metadataUri })), transactions: 1 }));
         const result = await tools({ anchorParcels }, { UGT_APP_ORIGIN: 'https://app.test/' }, fetchImpl)
             .anchorParcels({ city: 'zagreb', parcelSourceId: 'oss-wfs', parcelIds: ['123', 'GB-HMLR-LONDON-0123456789-ABCDEFGH'], confirm: true });
-        expect(result.parcels).toEqual([{ anchorId: 'HR-335754-1234/2', anchor: 'A', uri: 'https://app.test/parcel/HR-335754-1234/2' }]);
-        // An id over 32 bytes cannot seed the anchor PDA: reported, not fatal.
-        expect(result.skipped).toEqual([{ parcelId: 'GB-HMLR-LONDON-0123456789-ABCDEFGH', reason: 'id-too-long' }]);
+        // An id over 32 bytes is anchored too: the PDA is seeded by its sha256.
+        expect(result.parcels).toEqual([{ anchorId: 'HR-335754-1234/2', anchor: 'A', uri: 'https://app.test/parcel/HR-335754-1234/2' },
+            { anchorId: 'GB-HMLR-LONDON-0123456789-ABCDEFGH', anchor: 'A', uri: 'https://app.test/parcel/GB-HMLR-LONDON-0123456789-ABCDEFGH' }]);
+        expect(result.skipped).toEqual([]);
         expect(fetchImpl.mock.calls.map(([url]) => new URL(url).pathname)).toEqual(['/parcels']);
         await expect(tools({ anchorParcels }, {}, fetchImpl).anchorParcels({ city: 'zagreb', parcelSourceId: 'oss-wfs', parcelIds: ['123'] })).rejects.toThrow(/confirm/);
     });

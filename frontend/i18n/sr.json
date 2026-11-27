@@ -2238,7 +2238,6 @@
                 "owner": "Vlasnik {{key}}",
                 "ownerCount": "Potvrđenih vlasnika: {{count}}",
                 "lens": "Sočivo: {{keys}}",
-                "noAnchor": "ID ove parcele je predugačak za ovo Solana sidro.",
                 "anchorExists": "Sidro parcele opaženo na Solana devnetu",
                 "anchorMissing": "Sidro parcele nije pronađeno na Solana devnetu",
                 "anchorUnknown": "Status sidra parcele nije dostupan",

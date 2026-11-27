@@ -3767,7 +3767,6 @@
                 "owner": "Propriétaire {{key}}",
                 "ownerCount": "{{count}} propriétaire(s) attesté(s)",
                 "lens": "Prisme : {{keys}}",
-                "noAnchor": "Cet identifiant de parcelle est trop long pour cet ancrage Solana.",
                 "anchorExists": "Ancrage de parcelle observé sur Solana devnet",
                 "anchorMissing": "Aucun ancrage de parcelle trouvé sur Solana devnet",
                 "anchorUnknown": "Statut de l’ancrage de parcelle indisponible",

@@ -544,7 +544,7 @@ describe('loadIdls: legacy interfaces', () => {
     it('lists each current IDL first, then the legacy interfaces of the same program', () => {
         const versions = (name) => idls.byName.get(name).versions.map((version) => version.idlVersion);
         expect(versions('proposal_market')).toEqual(['v2', 'v1']);
-        expect(versions('parcel_nft')).toEqual(['v2', 'v1']);
+        expect(versions('parcel_nft')).toEqual(['v3', 'v2', 'v1']);
         expect(versions('agreement')).toEqual(['v1']);
         expect(versions('proposal_pledge')).toEqual(['v1']);
     });

@@ -6,23 +6,36 @@
 //! whatever they had; nothing reads it). Real ownership reaches the chain only as a lens member's
 //! ParcelOwnership-v1 attestation, checked by proposal_nft. The metadata URI is deterministic, so
 //! there is no update instruction.
+//!
+//! v3: the anchor PDA is ["parcel", sha256(parcel_id)] (was ["parcel", parcel_id], which capped ids
+//! at 32 bytes), so any id up to 256 bytes has one. Anchors at v2 addresses are left on chain unread.
 
 use anchor_lang::prelude::*;
 
 declare_id!("4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1");
 
+/// parcel_id and metadata_uri each have 256 bytes reserved in the account. The PDA is seeded by the
+/// id's sha256 (a raw seed is capped at 32 bytes), so every id that fits has an anchor.
+pub const MAX_TEXT_BYTES: usize = 256;
+
 #[program]
 pub mod parcel_nft {
     use super::*;
 
-    /// Create the anchor for one parcel. Anyone may pay for it; nobody owns it.
+    /// Create the anchor for one parcel. Anyone may pay for it; nobody owns it. `parcel_hash` is
+    /// sha256(parcel_id), the PDA's seed; it is checked here.
     pub fn mint_parcel(
         ctx: Context<MintParcel>,
         parcel_id: String,
         metadata_uri: String,
+        parcel_hash: [u8; 32],
     ) -> Result<()> {
-        require!(!parcel_id.is_empty(), ParcelError::InvalidParcelId);
-        require!(!metadata_uri.is_empty(), ParcelError::InvalidMetadataUri);
+        require!(!parcel_id.is_empty() && parcel_id.len() <= MAX_TEXT_BYTES, ParcelError::InvalidParcelId);
+        require!(
+            anchor_lang::solana_program::hash::hash(parcel_id.as_bytes()).to_bytes() == parcel_hash,
+            ParcelError::ParcelHashMismatch
+        );
+        require!(!metadata_uri.is_empty() && metadata_uri.len() <= MAX_TEXT_BYTES, ParcelError::InvalidMetadataUri);
 
         let parcel = &mut ctx.accounts.parcel;
         parcel.parcel_id = parcel_id;
@@ -46,13 +59,13 @@ pub mod parcel_nft {
 }
 
 #[derive(Accounts)]
-#[instruction(parcel_id: String)]
+#[instruction(parcel_id: String, metadata_uri: String, parcel_hash: [u8; 32])]
 pub struct MintParcel<'info> {
     #[account(
         init,
         payer = payer,
         space = 8 + 4 + 256 + 4 + 256 + 32 + 1,
-        seeds = [b"parcel", parcel_id.as_bytes()],
+        seeds = [b"parcel", parcel_hash.as_ref()],
         bump
     )]
     pub parcel: Account<'info, Parcel>,
@@ -107,4 +120,6 @@ pub enum ParcelError {
     ParcelAlreadyMinted,
     #[msg("Parcel does not exist")]
     ParcelDoesNotExist,
+    #[msg("parcel_hash is not the sha256 of parcel_id")]
+    ParcelHashMismatch,
 }

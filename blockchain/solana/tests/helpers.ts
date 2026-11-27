@@ -28,7 +28,7 @@ export function findProposalPDA(programId: PublicKey, count: number): [PublicKey
 
 export function findParcelPDA(programId: PublicKey, parcelId: string): [PublicKey, number] {
     return PublicKey.findProgramAddressSync(
-        [Buffer.from("parcel"), Buffer.from(parcelId)],
+        [Buffer.from("parcel"), createHash("sha256").update(parcelId).digest()],
         programId
     );
 }

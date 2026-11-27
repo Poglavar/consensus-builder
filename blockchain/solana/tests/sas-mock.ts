@@ -229,7 +229,7 @@ export async function attestDecision(
 }
 
 export function findParcelAnchor(parcelId: string): PublicKey {
-    return PublicKey.findProgramAddressSync([Buffer.from("parcel"), Buffer.from(parcelId)], PARCEL_NFT_PROGRAM_ID)[0];
+    return PublicKey.findProgramAddressSync([Buffer.from("parcel"), createHash("sha256").update(parcelId).digest()], PARCEL_NFT_PROGRAM_ID)[0];
 }
 
 export function findTally(programId: PublicKey, proposal: PublicKey, parcelId: string): PublicKey {
@@ -313,7 +313,7 @@ export async function ensureParcelAnchor(parcelProgram: anchor.Program, parcelId
     const anchorAddress = findParcelAnchor(parcelId);
     if (await provider.connection.getAccountInfo(anchorAddress)) return anchorAddress;
     await parcelProgram.methods
-        .mintParcel(parcelId, `https://api.urbangametheory.xyz/parcels/parcelIds?ids=${parcelId}`)
+        .mintParcel(parcelId, `https://api.urbangametheory.xyz/parcels/parcelIds?ids=${parcelId}`, [...createHash("sha256").update(parcelId).digest()])
         .accountsStrict({ parcel: anchorAddress, payer: provider.wallet.publicKey, systemProgram: SystemProgram.programId })
         .rpc();
     return anchorAddress;

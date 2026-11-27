@@ -100,7 +100,7 @@ Requires status Expired and `sol_balance > 0`; moves the whole balance to the ow
 | `ConsentTally` | `["consent", proposal, parcel_id]` (proposal_nft) | `proposal, parcel_id (≤32), member, required u8, accepted u8, bump` — 111 bytes |
 | `AcceptanceRecord` | `["acceptance", proposal, parcel_id, owner]` (proposal_nft) | `proposal, parcel_id (≤32), owner, member, ownership_attestation, ownership_hash [u8;32] (sha256 of the whole SAS account), payout (default key = none), accepted_at i64, bump` — 245 bytes |
 | `VerdictRecord` | `["verdict", proposal, verdict_attestation]` (proposal_nft) | `proposal, member, verdict_attestation, verdict_hash [u8;32] (sha256 of the whole SAS account), verdict u8 (status set: 1 Executed, 3 Expired), settled_at i64, bump` — 146 bytes |
-| `Parcel` | `["parcel", parcel_id]` (parcel_nft) | unchanged |
+| `Parcel` | `["parcel", sha256(parcel_id)]` (parcel_nft v3; was `["parcel", parcel_id]`) | unchanged |
 | `Proposal` | `["proposal", counter u64 LE]` (proposal_nft) | unchanged prefix; `verdict_may_execute: bool` appended after `bump`; v3 appends `site_hash [u8;32], open_ground, open_ground_cleared, layout_version u8` |
 
 `verdict_may_execute` lives in the fixed 4096-byte Proposal account after `bump`. proposal_market,

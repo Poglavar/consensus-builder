@@ -2250,7 +2250,6 @@
                 "owner": "Владелец {{key}}",
                 "ownerCount": "Удостоверенных владельцев: {{count}}",
                 "lens": "Линза: {{keys}}",
-                "noAnchor": "Идентификатор этого участка слишком длинный для якоря Solana.",
                 "anchorExists": "Якорь участка найден в Solana devnet",
                 "anchorMissing": "Якорь участка не найден в Solana devnet",
                 "anchorUnknown": "Статус якоря участка недоступен",

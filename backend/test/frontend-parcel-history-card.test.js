@@ -96,7 +96,6 @@ describe('parcel history card builders', () => {
             expect(card.buildAnchorHtml(anchor)).not.toContain('No parcel anchor found');
         }
         expect(card.buildAnchorHtml({ ...history.anchor, mintedAt: '2026-09-16T10:04:00Z' })).not.toContain('since');
-        expect(card.buildAnchorHtml({ account: null, exists: false, source: 'unseedable' })).toContain('too long');
         expect(card.normalizeHistory({}).anchor.exists).toBeNull();
     });
 

@@ -78,8 +78,7 @@
 
     function buildAnchorHtml(anchor, t = plainT) {
         const unknown = () => t('panel.proposal.parcelHistory.anchorUnknown', 'Parcel anchor status unavailable');
-        if (!anchor || !anchor.account) return `<p class="parcel-history-anchor">${escapeText(anchor?.source === 'unseedable'
-            ? t('panel.proposal.parcelHistory.noAnchor', 'This parcel ID is too long for this Solana anchor.') : unknown())}</p>`;
+        if (!anchor || !anchor.account) return `<p class="parcel-history-anchor">${escapeText(unknown())}</p>`;
         const link = `<a class="cb-link cb-link--external" href="https://explorer.solana.com/address/${encodeURIComponent(anchor.account)}?cluster=devnet" target="_blank" rel="noopener noreferrer">${escapeText(shortKey(anchor.account))}</a>`;
         const state = anchor.source !== 'chain' ? unknown() : anchor.exists === true
             ? t('panel.proposal.parcelHistory.anchorExists', 'Parcel anchor observed on Solana devnet')

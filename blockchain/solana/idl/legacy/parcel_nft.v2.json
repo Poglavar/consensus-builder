@@ -1,0 +1,238 @@
+{
+  "address": "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1",
+  "metadata": {
+    "name": "parcel_nft",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Urban Game Theory Parcel NFT - Solana"
+  },
+  "instructions": [
+    {
+      "name": "mint_apartment",
+      "docs": [
+        "Create an ownerless, idempotent anchor for an apartment identity hash."
+      ],
+      "discriminator": [
+        11,
+        183,
+        37,
+        113,
+        111,
+        99,
+        242,
+        222
+      ],
+      "accounts": [
+        {
+          "name": "apartment",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  112,
+                  97,
+                  114,
+                  116,
+                  109,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "identity_hash"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payer",
+          "docs": [
+            "Pays rent only; the anchor has no owner or transfer authority."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "identity_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "mint_parcel",
+      "docs": [
+        "Create the anchor for one parcel. Anyone may pay for it; nobody owns it."
+      ],
+      "discriminator": [
+        158,
+        42,
+        246,
+        137,
+        217,
+        57,
+        167,
+        210
+      ],
+      "accounts": [
+        {
+          "name": "parcel",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  97,
+                  114,
+                  99,
+                  101,
+                  108
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "parcel_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payer",
+          "docs": [
+            "Pays rent only; same account position as v1's `owner`, so raw-built instructions still work."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "parcel_id",
+          "type": "string"
+        },
+        {
+          "name": "metadata_uri",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "ApartmentAnchor",
+      "discriminator": [
+        228,
+        251,
+        95,
+        117,
+        86,
+        31,
+        42,
+        43
+      ]
+    },
+    {
+      "name": "Parcel",
+      "discriminator": [
+        149,
+        167,
+        245,
+        67,
+        209,
+        244,
+        214,
+        75
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidParcelId",
+      "msg": "Invalid parcel ID"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidMetadataUri",
+      "msg": "Invalid metadata URI"
+    },
+    {
+      "code": 6002,
+      "name": "ParcelAlreadyMinted",
+      "msg": "Parcel already minted"
+    },
+    {
+      "code": 6003,
+      "name": "ParcelDoesNotExist",
+      "msg": "Parcel does not exist"
+    }
+  ],
+  "types": [
+    {
+      "name": "ApartmentAnchor",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "identity_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Parcel",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "parcel_id",
+            "type": "string"
+          },
+          {
+            "name": "metadata_uri",
+            "type": "string"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ]
+}
