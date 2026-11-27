@@ -193,8 +193,9 @@ Once contributions reach the target, anyone records it on chain: `ugt_confirm_fu
 `requiredFunding` and `fundingMet` of the minted account.
 
 For a round with apartment reservations, supply `apartments.projectId` and an entry in
-`apartments.units` for each apartment. Each entry carries its permanent unit ID, label, X-ray
-building and unit locators, map position, full price, fixed deposit and PDF drawing. The contract
+`apartments.units` for each apartment. Each entry carries the developer's permanent `unitId`, label,
+X-ray building and `unit` address, map position, full price, fixed deposit and PDF drawing.
+For example, `unit: "6::1"` selects the first flat on level 6. The contract
 and drawings are part of the agreement CID. Use `ugt_edit_agreement` to revise the schedule.
 `ugt_inspect_agreement` with `includeAvailability: true` reads the listing and buyer from Solana
 for a minted agreement. A private draft returns `unverified`.

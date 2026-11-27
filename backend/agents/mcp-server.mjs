@@ -15,6 +15,7 @@ import { createMcpDiscoveryTools } from './mcp-discovery.js';
 import { createMcpObserver } from '../operations/planning-diagnostics.js';
 import { createSharedPlanMcpTools } from './mcp-shared-plan-tools.js';
 import { registerPropertyOfferTools } from './mcp-property-offers.js';
+import { apartmentUnitLocator } from './mcp-flat-address.js';
 import { createAgreementEvidenceTool } from './mcp-agreement-evidence.js';
 
 const BASE58_KEY = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
@@ -404,7 +405,7 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
     server.registerTool('ugt_state_holding', {
         title: 'State who first holds a plot or a flat',
         description: 'As a lens member (this agent\'s wallet), state on Solana who first holds one plot or one flat (PropertyHolding-v1, one statement per lens member and asset): as the developer\'s lens for a new build, or confirming a person\'s holding request (ugt_list_holding_requests). basis is developer, declared or registry. A statement naming the same holder is a replay; one naming another holder is refused.',
-        inputSchema: z.object({ asset: z.object({ kind: z.enum(['parcel', 'flat']) }).passthrough().describe('One plot { kind: "parcel", sourceId, id, at } or one flat { kind: "flat", xrayBuilding, unit: "storey::flat", at }'),
+        inputSchema: z.object({ asset: z.object({ kind: z.enum(['parcel', 'flat']), unit: apartmentUnitLocator.optional() }).passthrough().describe('One plot { kind: "parcel", sourceId, id, at } or one flat { kind: "flat", xrayBuilding, unit: "6::1", at }.'),
             city: z.string().optional().describe('Required for a plot; a flat\'s building address names its city'),
             holder: z.string().min(32).max(44), basis: z.enum(['developer', 'declared', 'registry']), evidence: z.string().max(500).optional(), confirm: confirmation }),
         annotations: PAID_IDEMPOTENT

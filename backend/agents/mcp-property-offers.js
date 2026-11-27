@@ -4,6 +4,7 @@
 // wallets sign in the browser or through the local signer (property-offer-signer.js).
 import { createRequire } from 'node:module';
 import * as z from 'zod/v4';
+import { apartmentUnitLocator } from './mcp-flat-address.js';
 const require = createRequire(import.meta.url);
 const Offer = require('../../frontend/js/property-offer-record.js');
 const HoldingRequest = require('../../frontend/js/holding-request.js');
@@ -61,8 +62,8 @@ export function createPropertyOfferTools({ apiBase, appOrigin, fetchImpl = fetch
 export function registerPropertyOfferTools(server, { handler, env, fetchImpl }) {
     const actions = createPropertyOfferTools({ apiBase: (env.UGT_API_BASE || env.AGENT_API_BASE || 'https://api.urbangametheory.xyz').replace(/\/$/, ''), appOrigin: env.UGT_APP_ORIGIN || 'https://urbangametheory.xyz', fetchImpl });
     const asset = z.object({ kind: z.enum(['parcel', 'flat']), sourceId: z.string().optional(), id: z.string().optional(), xrayBuilding: z.string().optional(),
-        unit: z.string().optional().describe('storey::flat'), at: z.string().describe('lat,lng,zoom'), access: z.enum(['point', 'corridor']).optional() })
-        .describe('One plot { kind: "parcel", sourceId, id, at } or one flat { kind: "flat", xrayBuilding, unit: "storey::flat", at }');
+        unit: apartmentUnitLocator.optional(), at: z.string().describe('lat,lng,zoom'), access: z.enum(['point', 'corridor']).optional() })
+        .describe('One plot { kind: "parcel", sourceId, id, at } or one flat { kind: "flat", xrayBuilding, unit: "6::1", at }.');
     const lens = z.object({ members: z.array(z.string()).max(8), threshold: z.number().int().min(0).max(8) });
     const payouts = z.array(z.object({ recipient: z.string(), amount: z.string() })).max(16);
     const offer = z.object({ schema: z.literal('property-offer/v2'), asset }).passthrough();

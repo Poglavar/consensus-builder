@@ -56,10 +56,10 @@ describe('finalized investor funding chain adapter', () => {
     it('reads every offered apartment alongside its round and escrow at the same finalized slot', async () => {
         const row = fixture();
         const pdf = { name: 'floor.pdf', mediaType: 'application/pdf', data: Buffer.from('%PDF-1.7').toString('base64') };
-        const unit = (id, deposit) => ({ unitId: id, label: id, xrayBuilding: 'zagreb::gdi-3d::148972', unit: '6::' + id,
+        const unit = (id, deposit, flat) => ({ unitId: id, label: id, xrayBuilding: 'zagreb::gdi-3d::148972', unit: `6::${flat}`,
             at: '45.7665,15.9722,19', priceUsdcAtomic: '5000000', depositUsdcAtomic: deposit, drawing: pdf });
         const funding = { targetUsdcAtomic: '1000000', contract: pdf, apartments: { projectId: 'courtyard',
-            units: [unit('a', '600000'), unit('b', '400000')] } };
+            units: [unit('a', '600000', 1), unit('b', '400000', 2)] } };
         const offers = pledgeClient.apartmentOffers(funding, row.sponsor, require('../../frontend/js/agreement-record.js'));
         const first = offers[0];
         const buyer = Keypair.generate().publicKey;

@@ -22,14 +22,14 @@ test.describe('developer apartment funding authoring', () => {
     await add.click();
     const rows = editor.locator('[data-apartment-unit]');
     await expect(rows).toHaveCount(2);
-    const link = 'http://localhost:5680/?xray=1&xrayBuilding=new_york%3A%3Abuildings%3A%3Atower-1&unit=7%3A%3Acore-2-whole-7%3A%3A7984e5b4a4760b077382e106&suggested=1&access=point&at=40.7143%2C-74.0085%2C19';
+    const link = 'http://localhost:5680/?xray=1&xrayBuilding=new_york%3A%3Abuildings%3A%3Atower-1&unit=7%3A%3A1&suggested=1&access=point&at=40.7143%2C-74.0085%2C19';
     const first = rows.nth(0);
     await first.locator('[data-apartment="xrayBuilding"]').evaluate((node, url) => {
       const data = new DataTransfer();
       data.setData('text/plain', url);
       node.dispatchEvent(new ClipboardEvent('paste', { bubbles: true, cancelable: true, clipboardData: data }));
     }, link);
-    await expect(first.locator('[data-apartment="unit"]')).toHaveValue('7::core-2-whole-7::7984e5b4a4760b077382e106');
+    await expect(first.locator('[data-apartment="unit"]')).toHaveValue('7::1');
     await expect(first.locator('[data-apartment="at"]')).toHaveValue('40.7143,-74.0085,19');
     await first.locator('[data-apartment="unitId"]').fill('initial-id');
     await first.locator('[data-apartment="label"]').fill('Home A');
@@ -39,7 +39,7 @@ test.describe('developer apartment funding authoring', () => {
     await rows.nth(1).locator('[data-apartment="unitId"]').fill('unit-b');
     await rows.nth(1).locator('[data-apartment="label"]').fill('Home B');
     await rows.nth(1).locator('[data-apartment="xrayBuilding"]').fill('zagreb::gdi-3d::building-2');
-    await rows.nth(1).locator('[data-apartment="unit"]').fill('8::core-1::000000000000000000000001');
+    await rows.nth(1).locator('[data-apartment="unit"]').fill('8::1');
     await rows.nth(1).locator('[data-apartment="at"]').fill('45.81,15.97,19');
     await rows.nth(1).locator('[data-apartment="priceInput"]').fill('1');
     await rows.nth(1).locator('[data-apartment="depositInput"]').fill('1');
@@ -61,11 +61,12 @@ test.describe('developer apartment funding authoring', () => {
     const [saved] = await storedAgreements(page);
     expect(saved.funding.apartments.units).toHaveLength(2);
     expect(saved.rule.lens).toEqual([E2E_LENS_MEMBER_KEY]);
-    expect(saved.funding.apartments.units[0]).toMatchObject({ unitId: 'unit-a', drawing: { name: 'a.pdf' }, priceUsdcAtomic: '10500000' });
+    expect(saved.funding.apartments.units[0]).toMatchObject({ unitId: 'unit-a', unit: '7::1', drawing: { name: 'a.pdf' }, priceUsdcAtomic: '10500000' });
     const panel = await openStackAgreement(page);
     await openAgreementActions(page);
     await panel.locator('[data-agreement-action="edit"]').press('Enter');
     await expect(rows).toHaveCount(2);
+    await expect(first.locator('[data-apartment="unit"]')).toHaveValue('7::1');
     await expect(first.locator('[data-apartment-drawing-name]')).toHaveText('a.pdf');
     await expect(rows.nth(1).locator('[data-apartment-drawing-name]')).toHaveText('b.pdf');
   });

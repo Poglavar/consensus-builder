@@ -13,8 +13,8 @@ describe('MCP public source reads', () => {
         const cid = 'bafkrei' + 'a'.repeat(52);
         const fetchImpl = vi.fn(async () => json({ offers: [{ cid, title: 'Round', city: 'zagreb', unitId: 'a4-c-23', label: 'Apartment A4-C-23' }] }));
         const reads = createMcpReadTools({ apiBase: 'https://api.example', appOrigin: 'https://app.example', fetchImpl });
-        const found = await reads.apartmentOffers({ city: 'zagreb', xrayBuilding: 'zagreb::gdi-3d::148972', unit: '6::A4-C-23' });
-        expect(fetchImpl.mock.calls[0][0]).toBe('https://api.example/agreements/apartment-offers?city=zagreb&xrayBuilding=zagreb%3A%3Agdi-3d%3A%3A148972&unit=6%3A%3AA4-C-23');
+        const found = await reads.apartmentOffers({ city: 'zagreb', xrayBuilding: 'zagreb::gdi-3d::148972', unit: '6::23' });
+        expect(fetchImpl.mock.calls[0][0]).toBe('https://api.example/agreements/apartment-offers?city=zagreb&xrayBuilding=zagreb%3A%3Agdi-3d%3A%3A148972&unit=6%3A%3A23');
         expect(found.offers).toEqual([{ cid, city: 'zagreb', unitId: 'a4-c-23', untrusted: { title: 'Round', label: 'Apartment A4-C-23' } }]);
         // Without a unit: every offered unit of the building (the route answers active and executed rounds).
         await reads.apartmentOffers({ city: 'zagreb', xrayBuilding: 'zagreb::gdi-3d::148972' });

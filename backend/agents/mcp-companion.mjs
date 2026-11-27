@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { editOperations } from './mcp-edit-schema.js';
 import { createNamedPlanViewSchema } from './mcp-plan-view-schema.js';
 import { MAX_SOURCE_BINDING_PARCELS } from '../parcels/source-binding.js';
+import { apartmentUnitLocator } from './mcp-flat-address.js';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const PlanRecord = require('../../frontend/js/plan-record.js');
@@ -88,7 +89,7 @@ const consultation = z.object({ organiser: z.string().max(2048).nullable(), part
     const apartmentUnit = z.object({
         unitId: permanentId, label: z.string().min(1).max(160),
         xrayBuilding: z.string().min(1).max(1024).describe('Exact xrayBuilding from Copy apartment link.'),
-        unit: z.string().min(1).max(1024).describe('Storey and source unit ID, including the fingerprint for a generated unit.'),
+        unit: apartmentUnitLocator,
         at: z.string().max(100).describe('Latitude, longitude and zoom from the reviewed X-ray link.'),
         priceUsdcAtomic: atomicUsdc, depositUsdcAtomic: atomicUsdc,
         drawing: investorContract.refine(file => file.mediaType === 'application/pdf' && /\.pdf$/i.test(file.name)),
@@ -139,8 +140,8 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
             q: z.string().max(200).optional(), order: z.enum(['newest', 'oldest']).optional(), offset: z.number().int().min(0).max(1000000).optional(),
             limit: z.number().int().min(1).max(100).default(20) }, 'listDesigns');
     add('ugt_get_design', 'Read a design by CID and return its map link.', { designCid: cid }, 'getDesign');
-    add('ugt_apartment_offers', 'Read minted apartment offers of an exact X-ray building. With unit: the active rounds offering that unit. Without unit: every unit of the building offered by an active or executed round (executed rounds keep their reservations). Read states and counts with ugt_inspect_agreement includeAvailability.',
-        { city, xrayBuilding: z.string().min(1).max(1024), unit: z.string().min(1).max(1024).optional() }, 'apartmentOffers');
+    add('ugt_apartment_offers', 'Read minted apartment offers for an X-ray building. Supply unit to find active rounds offering that flat. Omit unit to include every flat offered by an active or executed round. Executed rounds keep their reservations. Read states and counts with ugt_inspect_agreement includeAvailability.',
+        { city, xrayBuilding: z.string().min(1).max(1024), unit: apartmentUnitLocator.optional() }, 'apartmentOffers');
     add('ugt_markets', 'List each agreement’s funded devnet USDC markets and their addresses, question deadlines, creators and liquidity b. Use the selected address for shares and settlement.', { city }, 'markets');
     add('ugt_explain', 'Look up a term in the maintained domain vocabulary.', { term: z.string().min(1).max(100) }, 'explain');
 

@@ -272,7 +272,7 @@ describe('minting', () => {
     });
 
     it('opens escrow with the developer listing, then asks the buyer to sign one deposit and unit claim', async () => {
-        const unit = { unitId: 'a4-c-23', label: 'Apartment A4-C-23', xrayBuilding: 'zagreb::gdi-3d::148972', unit: '6::A4-C-23',
+        const unit = { unitId: 'a4-c-23', label: 'Apartment A4-C-23', xrayBuilding: 'zagreb::gdi-3d::148972', unit: '6::23',
             at: '45.7665,15.9722,19', priceUsdcAtomic: '200000000', depositUsdcAtomic: '20000000',
             drawing: { name: 'floor.pdf', mediaType: 'application/pdf', data: Buffer.from('%PDF-1.7').toString('base64') } };
         const { agreement, address, cid, deadline } = crowdfunding(undefined, { projectId: 'courtyard', units: [unit] });
@@ -315,7 +315,7 @@ describe('minting', () => {
     });
 
     it('reads a published apartment round at the account its CID and developer derive, not the one the index names', async () => {
-        const unit = { unitId: 'a4-c-23', label: 'Apartment A4-C-23', xrayBuilding: 'zagreb::gdi-3d::148972', unit: '6::A4-C-23',
+        const unit = { unitId: 'a4-c-23', label: 'Apartment A4-C-23', xrayBuilding: 'zagreb::gdi-3d::148972', unit: '6::23',
             at: '45.7665,15.9722,19', priceUsdcAtomic: '200000000', depositUsdcAtomic: '20000000',
             drawing: { name: 'floor.pdf', mediaType: 'application/pdf', data: Buffer.from('%PDF-1.7').toString('base64') } };
         const { agreement, address, cid, deadline } = crowdfunding(undefined, { projectId: 'courtyard', units: [unit] });

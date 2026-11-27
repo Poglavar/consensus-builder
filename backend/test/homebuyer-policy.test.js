@@ -11,8 +11,9 @@ const DEV = 'Dev111111111111111111111111111111111111111';
 const OTHER = 'Other11111111111111111111111111111111111111';
 const LENS = 'Lens111111111111111111111111111111111111111';
 const NOW = Date.parse('2026-11-26T12:00:00Z');
+const BUILDING = 'alatau::buildings::tower-1';
 const persona = (policy = {}) => ({ name: 'homebuyer-t', policy: { cities: ['alatau'], ...policy } });
-const unit = (id, { status = 'available', buyer = null, deposit = '2000000' } = {}) => ({ unitId: id, label: `Flat ${id}`, xrayBuilding: 'design::bafy::0', unit: `1::${id}::aaaaaaaaaaaaaaaaaaaaaaaa`,
+const unit = (number, { status = 'available', buyer = null, deposit = '2000000' } = {}) => ({ unitId: `u${number}`, label: `Flat ${number}`, xrayBuilding: BUILDING, unit: `1::${number}`,
     at: '43.8,77.09,19', priceUsdcAtomic: '7000000', depositUsdcAtomic: deposit, status, buyer });
 const round = (cid, units, extra = {}) => ({ cid, account: `acct-${cid}`, sponsor: DEV, title: `Round ${cid}`, city: 'alatau', deadline: '2026-11-29T12:00:00Z',
     chainStatus: 'active', plain: false, targetUsdcAtomic: '5000000', units, ...extra });
@@ -20,7 +21,7 @@ const run = (homes, policy, budget = { actionsLeft: 3, usdcLeft: 4 }) => decide(
 
 describe('obligations', () => {
     it('takes back a deposit first', () => {
-        const homes = { rounds: [round('r1', [unit('u1'), unit('u2')])],
+        const homes = { rounds: [round('r1', [unit(1), unit(2)])],
             refunds: [{ cid: 'r0', account: 'acct-r0', title: 'Round r0', chainStatus: 'expired', amount: '2000000' }] };
         expect(run(homes).action).toMatchObject({ type: 'refundMyDonations', agreementCid: 'r0' });
     });
@@ -29,21 +30,21 @@ describe('obligations', () => {
 describe('choices', () => {
     const only = kind => ({ weights: { reserve: 0, donate: 0, [kind]: 1 } });
     it('reserves an available apartment within its deposit limit, one per round and up to maxReservations', () => {
-        const homes = { rounds: [round('r1', [unit('u1', { deposit: '5000000' }), unit('u2')])], refunds: [] };
+        const homes = { rounds: [round('r1', [unit(1, { deposit: '5000000' }), unit(2)])], refunds: [] };
         expect(run(homes, only('reserve')).action).toMatchObject({ type: 'reserve-apartment', unitId: 'u2', usdc: 2, amount: '2' });
-        const holding = { rounds: [round('r1', [unit('u1', { status: 'reserved', buyer: ME }), unit('u2')]), round('r2', [unit('u3')])], refunds: [] };
+        const holding = { rounds: [round('r1', [unit(1, { status: 'reserved', buyer: ME }), unit(2)]), round('r2', [unit(3)])], refunds: [] };
         expect(run(holding, only('reserve')).action).toMatchObject({ agreementCid: 'r2', unitId: 'u3' });
         expect(run(holding, { ...only('reserve'), maxReservations: 1 }).action).toBeNull();
         // A round closing within the hour or its own developer's round is not offered.
-        expect(run({ rounds: [round('r3', [unit('u1')], { deadline: '2026-11-26T12:30:00Z' }), round('r4', [unit('u1')], { sponsor: ME })], refunds: [] }, only('reserve')).action).toBeNull();
+        expect(run({ rounds: [round('r3', [unit(1)], { deadline: '2026-11-26T12:30:00Z' }), round('r4', [unit(1)], { sponsor: ME })], refunds: [] }, only('reserve')).action).toBeNull();
     });
     it('contributes once to a plain round', () => {
-        const homes = { rounds: [round('r1', [unit('u1', { status: 'reserved', buyer: ME })]), round('p1', [], { plain: true })], refunds: [] };
+        const homes = { rounds: [round('r1', [unit(1, { status: 'reserved', buyer: ME })]), round('p1', [], { plain: true })], refunds: [] };
         expect(run(homes, only('donate')).action).toMatchObject({ type: 'donate', agreementCid: 'p1', amount: '0.5' });
         expect(run({ ...homes, rounds: [round('p1', [], { plain: true, donatedByMe: true })] }, only('donate')).action).toBeNull();
     });
     it('stays within the invocation budget and reports the cap', () => {
-        const homes = { rounds: [round('r1', [unit('u1')])], refunds: [] };
+        const homes = { rounds: [round('r1', [unit(1)])], refunds: [] };
         expect(run(homes, { weights: { reserve: 1, donate: 0 } }, { actionsLeft: 3, usdcLeft: 1 })).toMatchObject({ action: null, capped: true });
     });
 });
@@ -52,7 +53,7 @@ describe('flat offers (USDC)', () => {
     const none = { weights: { reserve: 0, donate: 0, offerSell: 0, offerBuy: 0 } };
     const only = kind => ({ weights: { ...none.weights, [kind]: 1 } });
     const flat = (id, holder, extra = {}) => ({ roundCid: 'r9', roundTitle: 'Round r9', title: `Flat ${id} · Towers`, city: 'alatau', label: `Flat ${id}`,
-        asset: { kind: 'flat', xrayBuilding: 'design::bafy::0', unit: `1::${id}`, at: '43.8,77.09,19' }, assetHash: `hash-${id}`, lens: LENS, holder, holding: holder ? `first-${id}` : null,
+        asset: { kind: 'flat', xrayBuilding: BUILDING, unit: `1::${id}`, at: '43.8,77.09,19' }, assetHash: `hash-${id}`, lens: LENS, holder, holding: holder ? `first-${id}` : null,
         pending: null, stale: false, ...extra });
     const offer = (cid, { id = '1', direction = 'sell', proposer = OTHER, price = '2000000', lens = direction === 'buy' ? { members: [LENS], threshold: 1 } : { members: [], threshold: 0 },
         status = 'Open', buyer = direction === 'buy' ? proposer : null, escrow = direction === 'buy' ? price : '0', expiresAt = '2026-11-28T12:00:00.000Z', chain = true } = {}) => ({

@@ -2,10 +2,10 @@
 // round (docs/developer-crowdfunding.md "Apartment reservations"): the building is laid out in node by
 // the shared planner behind X-ray's Suggested layouts (vendor/interior-viewer/interior-planner.js) and
 // each apartment gets the address X-ray's Copy apartment link gives (building-unit-links.js:
-// design::<cid>::<building index>, <level>::<unit id>::<layout fingerprint>), its map location and its
+// design::<cid>::<building index>, <level>::<flat>), its map location and its
 // layout region for the drawing. The browser lays a building out with more context (live parcel
 // pieces, nearby streets for the entrance, neighbouring buildings, the facade's bay width), so its
-// fingerprint can differ from this one; the unit ID, level and area are what a round's terms bind.
+// walls can differ while the numbered flat on the same storey keeps its address.
 import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
 

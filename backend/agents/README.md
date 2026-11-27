@@ -240,12 +240,12 @@ tower and courtyard plans). A round offers `apartmentsPerRound` whole apartments
 building of the plan, never a unit an earlier round offered. Every `plainRoundEvery`th round is a
 plain contribution round without apartments and without a lens. The building is laid out in node by
 the planner behind X-ray's Suggested layouts (`apartment-units.js`). Each unit gets its X-ray address
-(`design::<cid>::<building index>`, `<level>::<unit>::<fingerprint>`), a price of floor area ×
+(`design::<cid>::<building index>`, `<level>::<flat>`), a price of floor area ×
 `priceUsdcPerM2`, a deposit of `depositShare` of the price and a one-page PDF drawing
 (`apartment-drawing.js`). The target is `targetShare` of the offered deposits, so a round reaches it
-only when most of its units are reserved. The browser lays a building out with more context (live
-parcel pieces, nearby streets, neighbouring buildings, facade bays), so its fingerprint can differ:
-"View apartment in X-ray" may then open the building without selecting the unit.
+only when most of its units are reserved. “View apartment in X-ray” selects that numbered flat on
+that storey. The browser can redraw its walls using live parcel pieces, nearby streets,
+neighbouring buildings and facade bays. The round's PDF preserves the reviewed drawing.
 
 | stage | what happens | checkpoint |
 |---|---|---|

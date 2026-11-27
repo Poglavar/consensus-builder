@@ -113,11 +113,11 @@ opens the same building and unit in X-ray. Shared space retains the usual map se
 
 `xrayBuilding` names the building by city, building source and source ID, or by published design CID
 and building feature ID (the immutable revision's building index when no feature ID is available).
-`unit` names the storey level and unit ID, using `::` between escaped components. Suggested units
-also carry a SHA-256 fingerprint prefix of their registration, elevation and apartment region. If
-regeneration changes a unit's boundary or elevation, the old link cannot silently select the new
-unit occupying the same slot. Estimated layouts and links are read-only, with no authored record,
-editing operation or MCP editing schema changes.
+`unit` selects the numbered apartment on that storey. For example, `6::1` opens the first
+apartment on level 6. Apartments are numbered from 1 in storey order, skipping other uses such as
+shops. Redrawing the walls of a suggested layout preserves the address of each numbered flat.
+The floor model keeps its internal unit IDs. Crowdfunding rounds also assign a permanent `unitId`
+to each apartment in their inventory. Estimated layouts and links are read-only.
 
 ## Read paths
 

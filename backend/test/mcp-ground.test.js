@@ -7,6 +7,7 @@ import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
 import { cidOfObject } from '../cid.js';
 import { restatementFixture } from './fixtures/mcp-restatements.mjs';
 import { registerMcpCompanion } from '../agents/mcp-companion.mjs';
+import * as z from 'zod/v4';
 const require = createRequire(import.meta.url);
 const builder = require('../../frontend/js/intent-design.js');
 const site = { type: 'Polygon', coordinates: [[[-0.1, 51.5], [-0.099, 51.5], [-0.099, 51.501], [-0.1, 51.501], [-0.1, 51.5]]] };
@@ -158,9 +159,9 @@ describe('headless app formation host', () => {
         const design = make('space', { spaceKind: 'park', city: 'zagreb' });
         const plan = await tools.draftPlan({ title: 'Podbrežje courtyard', designs: [design.content] });
         const drawing = { name: 'floor-six.pdf', mediaType: 'application/pdf', data: Buffer.from('%PDF-1.7').toString('base64') };
-        const apartment = id => ({ unitId: id, label: id.toUpperCase(), xrayBuilding: 'zagreb::gdi-3d::148972', unit: '6::' + id.toUpperCase(),
+        const apartment = (id, flat) => ({ unitId: id, label: id.toUpperCase(), xrayBuilding: 'zagreb::gdi-3d::148972', unit: `6::${flat}`,
             at: '45.7665,15.9722,19', priceUsdcAtomic: '100000000', depositUsdcAtomic: '10000000', drawing });
-        const apartments = { projectId: 'podbrezje', units: [apartment('a4-c-23'), apartment('a4-c-21')] };
+        const apartments = { projectId: 'podbrezje', units: [apartment('a4-c-23', 23), apartment('a4-c-21', 21)] };
         const draft = await tools.draftAgreement({ rulePreset: 'crowdfunding', plan: plan.draftArtifact,
             sponsor: 'So11111111111111111111111111111111111111112', lenses: ['9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt'],
             deadline: '2099-01-01T00:00:00.000Z', targetUsdcAtomic: '20000000',
@@ -182,12 +183,12 @@ describe('headless app formation host', () => {
         const authoring = createUrbanGameTheoryTools({ mode: 'hosted', env: {} });
         const plan = await authoring.draftPlan({ title: 'Round plan', designs: [make('space', { spaceKind: 'park', city: 'zagreb' }).content] });
         const drawing = { name: 'floor-six.pdf', mediaType: 'application/pdf', data: Buffer.from('%PDF-1.7').toString('base64') };
-        const apartment = id => ({ unitId: id, label: id.toUpperCase(), xrayBuilding: 'zagreb::gdi-3d::148972', unit: '6::' + id.toUpperCase(),
+        const apartment = (id, flat) => ({ unitId: id, label: id.toUpperCase(), xrayBuilding: 'zagreb::gdi-3d::148972', unit: `6::${flat}`,
             at: '45.7665,15.9722,19', priceUsdcAtomic: '100000000', depositUsdcAtomic: '10000000', drawing });
         const sponsor = 'So11111111111111111111111111111111111111112';
         const draft = await authoring.draftAgreement({ rulePreset: 'crowdfunding', plan: plan.draftArtifact, sponsor, lenses: ['9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt'],
             deadline: '2099-01-01T00:00:00.000Z', targetUsdcAtomic: '20000000', contract: { name: 'terms.txt', mediaType: 'text/plain', data: 'dGVybXM=' },
-            apartments: { projectId: 'round', units: [apartment('a1'), apartment('a2'), apartment('a3')] } });
+            apartments: { projectId: 'round', units: [apartment('a1', 1), apartment('a2', 2), apartment('a3', 3)] } });
         const { agreement: content, plan: planContent, designs } = draft.draftArtifact;
         const cid = cidOfObject(content);
         const buyer = '9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt';
@@ -262,5 +263,28 @@ describe('headless app formation host', () => {
         expect(draft.safeParse({ plan: {}, rulePreset: 'crowdfunding', targetUsdcAtomic: '0', contract }).success).toBe(false);
         const edit = tools.get('ugt_edit_agreement');
         expect(edit.parse({ plan: {}, expectedCid: cidOfObject({ schema: 'agreement/v1', title: 'terms' }), terms: { targetUsdcAtomic: '2000000', contract } }).terms.contract).toEqual(contract);
+    });
+
+    it('drafts and inspects a round using the flat address advertised by MCP discovery', async () => {
+        const schemas = new Map();
+        registerMcpCompanion({ registerTool: (name, options) => schemas.set(name, options.inputSchema), registerResource() {}, registerPrompt() {} }, { actions: {}, handler: fn => fn, readOnly: {} });
+        const draft = schemas.get('ugt_draft_agreement');
+        const unitSchema = z.toJSONSchema(draft).properties.apartments.properties.units.items.properties.unit;
+        const example = unitSchema.examples[0];
+        expect(example).toBe('6::1');
+        const authoring = createUrbanGameTheoryTools({ mode: 'hosted', env: {} });
+        const plan = await authoring.draftPlan({ designs: [make('space', { spaceKind: 'park' }).content], title: 'Round plan' });
+        const flat = { unitId: 'a1', label: 'A1', xrayBuilding: 'london::buildings::tower-7', unit: example, at: '51.5,-0.1,19',
+            priceUsdcAtomic: '1000000', depositUsdcAtomic: '100000',
+            drawing: { name: 'a1.pdf', mediaType: 'application/pdf', data: 'JVBERi0xLjQ=' } };
+        const args = { plan: plan.draftArtifact, rulePreset: 'crowdfunding', lenses: ['9xQeWvG816bUx9EPf9HmaT23yvVMZ4vQ1B9cY6p2gYt'],
+            deadline: '2099-01-01T00:00:00.000Z', targetUsdcAtomic: '100000', contract: { name: 'terms.txt', mediaType: 'text/plain', data: 'dGVybXM=' },
+            apartments: { projectId: 'round', units: [flat] } };
+        const actual = await authoring.draftAgreement(draft.parse(args));
+        const inspected = await authoring.inspectAgreement({ plan: actual.draftArtifact });
+        expect(inspected.funding.apartments.units[0]).toMatchObject({ unitId: 'a1', unit: example });
+        for (const invalid of ['6::A1', '6::a1::deadbeef']) {
+            expect(draft.safeParse({ ...args, apartments: { projectId: 'round', units: [{ ...flat, unit: invalid }] } }).success).toBe(false);
+        }
     });
 });

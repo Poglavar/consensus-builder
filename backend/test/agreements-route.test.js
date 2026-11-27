@@ -508,7 +508,7 @@ describe('GET /agreements/:cid', () => {
 describe('GET /agreements', () => {
     it('projects offers for the exact X-ray selection from active minted agreements', async () => {
         const pool = createMockPool();
-        const query = { city: 'zagreb', xrayBuilding: 'zagreb::gdi-3d::148972', unit: '6::A4-C-23' };
+        const query = { city: 'zagreb', xrayBuilding: 'zagreb::gdi-3d::148972', unit: '6::23' };
         const row = { cid: cidOf(park), title: 'Fair homes', city: query.city, unitId: 'a4-c-23', label: 'A4-C-23' };
         pool.answer(/CROSS JOIN LATERAL jsonb_array_elements/, { rows: [row] });
         const { app } = appFor(pool);
