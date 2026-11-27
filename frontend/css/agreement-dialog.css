@@ -512,3 +512,54 @@
 .agreement-rule-form {
     min-width: 0;
 }
+
+/* Neighbours tab: the affected parcels (neighbours who give a right and no land), one card each,
+   the plots of the last Effects on neighbours measurement to tick, and the add-by-id field. */
+.agreement-affected-list,
+.agreement-neighbour-candidates__list,
+.agreement-affected__readings {
+    display: grid;
+    gap: var(--cb-space-2);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.agreement-affected {
+    min-width: 0;
+    padding: var(--cb-space-3);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+}
+.agreement-affected__rights {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: var(--cb-space-1) var(--cb-space-3);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+.agreement-affected__rights legend {
+    padding: 0;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+.agreement-affected__readings {
+    gap: var(--cb-space-1);
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+.agreement-affected input[readonly] {
+    color: var(--cb-text-muted);
+}
+.agreement-neighbour-candidates {
+    margin-block: var(--cb-space-3);
+}
+.agreement-neighbour-add {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: var(--cb-space-2);
+    margin-top: var(--cb-space-3);
+}

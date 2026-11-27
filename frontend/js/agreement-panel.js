@@ -725,6 +725,13 @@
         return `<div class="agreement-panel-ledger-scroll"><table class="agreement-panel-ledger"${hook}><thead><tr>${head.map(label => `<th scope="col">${esc(label)}</th>`).join('')}</tr></thead>`
             + `<tbody>${rows.map(cells => `<tr><th scope="row">${esc(cells[0])}</th>${cells.slice(1).map(cell => `<td>${esc(cell)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
     }
+    // The agreement's affected neighbours and their terms (AgreementDialog.affectedRows); '' without any.
+    function affectedTable(agreement, tr = t) {
+        const rows = dialogApi().affectedRows(agreement, agreement?.money?.currency || '');
+        return plainTable([tr('agreement.neighbours.party', 'Neighbour'), tr('agreement.neighbours.effectLabel', 'Case'), tr('agreement.neighbours.rights', 'Rights given'),
+            tr('agreement.neighbours.lossColumn', 'Stated loss'), tr('agreement.neighbours.paymentColumn', 'Neighbour’s payment')],
+        rows.map(row => [row.party, row.effect, row.rights, row.loss, row.payment]), ' data-agreement-affected-table');
+    }
     function ledgerTable(ledger, tr, { only = null } = {}) {
         const rows = (ledger.rows || []).filter(row => !only || only(row));
         return plainTable([tr('agreement.money.party', 'Party'), tr('agreement.panel.ledger.contributes', 'Contributes'), tr('agreement.panel.ledger.receives', 'Receives'),
@@ -741,8 +748,10 @@
         const table = ledger.error
             ? `<p class="agreement-panel-note agreement-panel-note--danger" role="alert">${esc(ledger.error)}</p>`
             : ledgerTable(ledger, tr, { only: own });
+        const neighbours = affectedTable(agreement, tr);
         return `<div class="agreement-record agreement-record--summary" data-agreement-signing-summary>${factsDl(identityRows({ agreement, rule, deadline, lens, threshold }, tr))}`
             + (table ? `<h4 class="agreement-record__subheading">${esc(ownerKeys ? tr('agreement.record.yourTerms', 'What this party contributes, receives and is paid') : tr('agreement.record.allTerms', 'What every party contributes, receives and is paid'))}</h4>${table}` : '')
+            + (neighbours ? `<h4 class="agreement-record__subheading">${esc(tr('agreement.neighbours.heading', 'Affected neighbours'))}</h4>${neighbours}` : '')
             + (ledger.sponsor ? `<p class="agreement-panel-meta">${esc(ledger.sponsor)}</p>` : '')
             + `<p class="agreement-panel-meta">${esc(tr('agreement.record.cashNote', 'Cash in this table is the agreement’s settlement schedule; executing the agreement on chain releases only its escrow. Legal registration and construction are separate.'))}</p></div>`;
     }
@@ -783,6 +792,7 @@
                 [tr('agreement.land.outputsHeading', 'Resulting pieces'), format().formatInteger(land.pieces)]
             ]) + inputs)
             + section(tr('agreement.sections.allocation', 'Allocation'), allocations)
+            + section(tr('agreement.neighbours.heading', 'Affected neighbours'), affectedTable(agreement, tr))
             + section(tr('agreement.panel.ledger.byParty', 'By parcel party'), ledger.error ? `<p class="agreement-panel-note agreement-panel-note--danger">${esc(ledger.error)}</p>`
                 : ledgerTable(ledger, tr) + (ledger.sponsor ? `<p class="agreement-panel-meta">${esc(ledger.sponsor)}</p>` : ''))
             + (persons && persons.rows.length ? section(tr('agreement.panel.ledger.byPerson', 'By person'), plainTable([tr('agreement.workflow.person', 'Person'),
@@ -1113,6 +1123,7 @@
             const panels = { overview, decision, ...(agreement.rule?.electorate === 'investors' ? {} : { inputs: landHtml(land, t) + inputsHtml(agreement) }),
                 ...(hasOutputs ? { outputs: byHashOnly + piecesHtml(land, t) + allocationHtml(allocationLines(agreement)) } : {}),
                 ...(hasPeople ? { persons: outcomesHtml(ownerOutcomes(agreement), t)
+                    + ((agreement.affected || []).length ? sectionHtml(t('agreement.neighbours.heading', 'Affected neighbours'), affectedTable(agreement, t)) : '')
                     + ledgerHtml(ledger, t, { title: t('agreement.panel.ledger.byParty', 'By parcel party'), collapsible: true, open: true })
                     + personsHtml(persons, t, { title: t('agreement.panel.ledger.byPerson', 'By person'), collapsible: true }) } : {}),
                 rules: ruleHtml(rule, deadline, t, { owners: agreement.rule?.electorate === 'owners', scheme: !!win.AgreementRecord.schemeOf(agreement.rule) }) };

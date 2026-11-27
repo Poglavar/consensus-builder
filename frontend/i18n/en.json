@@ -299,6 +299,11 @@
         "warning": "This city is already open in another tab, so changes here aren't saved to the plan. They're kept in a recovery copy, offered back when you reopen this city with its other tabs closed. Other cities can stay open."
     },
     "proposalApproval": {
+        "neighbourLabel": "Neighbour {{label}}",
+        "waiver": {
+            "approved": "Owners of neighbouring parcel {{parcelId}}: waiver approved",
+            "pending": "Owners of neighbouring parcel {{parcelId}}: waiver pending"
+        },
         "ownerLabel": "Owner {{label}}",
         "meterDistinctOwners": "Distinct approving owners",
         "leaseholderLabel": "Leaseholder {{label}}",
@@ -8241,6 +8246,68 @@
         }
     },
     "agreement": {
+        "neighbours": {
+            "tab": "Neighbours",
+            "heading": "Affected neighbours",
+            "hint": "A neighbour who gives up a right the plan affects, such as daylight or a garden limit, can be a party without giving land. A waiver needs their owners’ approval; compensation is paid without it. The sponsor pays each neighbour.",
+            "measure": "Find affected neighbours",
+            "noGuides": "This place states no neighbour guides, so nothing is measured: add a neighbouring parcel by its id.",
+            "candidates": "Add affected plots to this agreement",
+            "candidatesHint": "Plots beyond a guide are ticked. Each is added as a waiver with its readings; set its terms below.",
+            "candidate": "Parcel {{parcelId}}, {{grade}}",
+            "added": "already in this agreement",
+            "isInput": "an input parcel",
+            "addTicked": "Add ticked plots ({{count}})",
+            "addedCount": "Added {{count}} neighbouring parcel(s): set each one’s terms below.",
+            "byId": "Add a neighbouring parcel by its id",
+            "add": "Add neighbour",
+            "none": "No affected neighbours yet.",
+            "ownersOnly": "Affected neighbours are parties to an owners’ agreement only.",
+            "party": "Neighbour",
+            "effectLabel": "Case",
+            "effect": {
+                "waiver": "Waiver: they give the right and must approve",
+                "compensation": "Compensation: owed without their consent"
+            },
+            "rights": "Rights given",
+            "right": {
+                "daylight": "Daylight",
+                "sunlight": "Sunlight",
+                "outlook": "Outlook and sky",
+                "garden": "Garden limit",
+                "privacy": "Privacy and overlooking",
+                "other": "Another right (say which in the note)"
+            },
+            "note": "Note (which right, if another)",
+            "readings": "Readings when added",
+            "noReadings": "No readings: added by its parcel id.",
+            "reading": "{{kind}}: {{before}} → {{after}} (guide {{guide}}), {{grade}}",
+            "grade": {
+                "fail": "beyond a guide",
+                "below": "under a guide’s level, within its allowance",
+                "minor": "a minor loss",
+                "screen": "a first check crossed"
+            },
+            "loss": "Stated loss in market value ({{currency}})",
+            "statedBy": "Loss stated by",
+            "stater": {
+                "sponsor": "Sponsor’s estimate",
+                "valuer": "Valuer"
+            },
+            "valuerRef": "Valuer reference (optional)",
+            "payment": "Payment to them ({{currency}})",
+            "derived": "{{multiple}} the stated loss, as Rules set it.",
+            "remove": "Remove {{parcelId}} from the agreement",
+            "lossColumn": "Stated loss",
+            "paymentColumn": "Neighbour’s payment",
+            "multiple": {
+                "label": "Compensation to neighbours",
+                "none": "1× the stated loss (none set)",
+                "strongSuburbs": "Strong Suburbs: 150% of the stated loss (figure not yet verified)",
+                "custom": "Another multiple",
+                "value": "Multiple of the stated loss"
+            }
+        },
         "funding": {
             "apartments": {
                 "inventory": "Apartments",
@@ -8476,6 +8543,16 @@
             "deadline": "Deadline (optional)"
         },
         "errors": {
+            "affectedInput": "An input parcel’s owners are already parties: remove it from Neighbours.",
+            "affectedEffect": "Choose waiver or compensation for every neighbour.",
+            "affectedRights": "Tick at least one right each neighbour gives.",
+            "affectedNote": "Say in the note which other right a neighbour gives.",
+            "affectedReading": "A neighbour’s readings name a kind or grade the app does not measure.",
+            "affectedAmount": "A neighbour’s payment and stated loss must be amounts of at least 0, with who stated the loss.",
+            "affectedLossRequired": "Compensation is a multiple of a stated loss: state each compensated neighbour’s loss.",
+            "affectedConsideration": "A compensated neighbour’s payment must be the set multiple of their stated loss.",
+            "affectedElectorate": "Only an owners’ agreement can carry affected neighbours.",
+            "neighbourMultiple": "Set a positive multiple of the stated loss for compensating neighbours.",
             "consultationOrganiser": "Enter an organiser website or a valid did:web identifier.",
             "consultationParticipationUrl": "Enter an HTTPS participation URL without credentials.",
             "eligibilityNoHouses": "The plan raises no existing building with a mansard, so this street vote has nothing to cover.",

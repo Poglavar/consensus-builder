@@ -321,3 +321,19 @@ describe('the no-sky line', () => {
         expect(run([{ id: 'same', geometry: OLD_HOUSE.geometry, heightM: 7 }]).before).toBe(1);
     });
 });
+
+describe('snapshot of an affected plot for an agreement', () => {
+    const guides = { garden: { share: 0.5 }, sky: { percent: 27 }, angle: { degrees: 25, then: 'sky' }, distance: { metres: 21 } };
+    it('keeps each changed reading with its guide and grade, and names the rights its graded readings are evidence of', () => {
+        const lot = { id: 42, status: 'fail', distanceM: 12, direction: 'n',
+            garden: { status: 'below', before: 0.71234567, after: 0.4 }, sky: { status: 'fail', before: 31.2, after: 22.4 },
+            angle: { status: 'screen', before: 18, after: 31 }, distance: { status: 'same', before: 30, after: 30 } };
+        expect(effects.snapshot(lot, guides)).toEqual({ parcelId: '42', rights: ['daylight', 'garden'], readings: [
+            { kind: 'garden', before: 0.7123, after: 0.4, guide: 0.5, grade: 'below' },
+            { kind: 'sky', before: 31.2, after: 22.4, guide: 27, grade: 'fail' },
+            { kind: 'angle', before: 18, after: 31, guide: 25, grade: 'screen' }] });
+        // A facing wall's distance is evidence of privacy; a new wall has no reading before.
+        expect(effects.snapshot({ id: 'p', distance: { status: 'fail', before: null, after: 14.2 } }, guides))
+            .toEqual({ parcelId: 'p', rights: ['privacy'], readings: [{ kind: 'distance', before: null, after: 14.2, guide: 21, grade: 'fail' }] });
+    });
+});

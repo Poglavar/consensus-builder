@@ -85,6 +85,7 @@
     function partyLabel(id, state) {
         const party = approval().partyOf(id, state);
         if (!party) return String(id || '');
+        if (party.kind === 'neighbour') return t('proposalApproval.neighbourLabel', 'Neighbour {{label}}', { label: party.letter });
         const key = party.kind === 'leaseholder' ? 'proposalApproval.leaseholderLabel' : 'proposalApproval.ownerLabel';
         return t(key, party.kind === 'leaseholder' ? 'Leaseholder {{label}}' : 'Owner {{label}}', { label: party.letter });
     }

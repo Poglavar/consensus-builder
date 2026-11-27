@@ -206,6 +206,53 @@ describe('HTTP publication check', () => {
     });
 });
 
+describe('the agreement editor\'s Neighbours tab (pure parts)', () => {
+    const Dialog = require('../../frontend/js/agreement-dialog.js');
+    const lot = (id, status) => ({ id, status, sky: { status, before: 31.2, after: 22.4 } });
+
+    it('builds the record with the affected parcels and the multiple, deriving each payment', () => {
+        const settled = agreement({ neighbourCompensation: STRONG_SUBURBS });
+        const state = { id: 'ag-terrace', plan: settled.plan, designs: [{ proposalId: 'design-1', title: 'Raise the terrace', goal: 'building' }],
+            fingerprints: new Map([['design-1', LAYOUT_CID]]), land: { inputs: settled.inputs, outputs: settled.outputs },
+            approvalConfig: settled.rule.approvalConfig, lens: [MEMBER], currency: 'GBP', city: 'london' };
+        const values = { electorate: 'owners', binding: true, allocations: { [settled.outputs[0].hash]: `party:${HOME}` }, settlement: settled.rule.settlement,
+            affected: [{ parcelId: 't3', effect: 'compensation', rights: ['garden'], note: null, readings: [], loss: { amountCents: 200000, statedBy: 'sponsor', valuerRef: null }, considerationCents: 0 }],
+            neighbourCompensation: STRONG_SUBURBS };
+        const built = Dialog.recordFromForm(state, values);
+        expect(built.affected[0].considerationCents).toBe(300000);
+        expect(built.money.lines).toEqual([{ ownerKey: BEHIND, amountCents: 300000 }]);
+        expect(built.rule.neighbourCompensation).toEqual(STRONG_SUBURBS);
+        expect(record.validate(built).valid).toBe(true);
+        // A community agreement carries none, whatever the form still holds.
+        expect(Dialog.recordFromForm(state, { ...values, electorate: 'community' }).affected).toEqual([]);
+    });
+
+    it('ticks the plots beyond a guide, disables those already added or among the inputs, and adds snapshots as waivers', () => {
+        const html = Dialog.candidatesHtml({ lots: [lot('t2', 'fail'), lot('t4', 'below'), lot('t1', 'fail')] },
+            { ticked: new Set(['t2', 't1']), addedIds: new Set(), inputIds: new Set(['t1']) });
+        expect(html).toMatch(/data-agreement-neighbour-candidate="t2" checked/);
+        expect(html).not.toMatch(/data-agreement-neighbour-candidate="t4" checked/);
+        expect(html).toMatch(/data-agreement-neighbour-candidate="t1" disabled/);
+        expect(html).toMatch(/Add ticked plots \(1\)/);
+        expect(Dialog.affectedEntry({ parcelId: 't2', rights: ['daylight'], readings: [reading] }))
+            .toEqual({ parcelId: 't2', effect: 'waiver', rights: ['daylight'], note: null, readings: [reading], loss: null, considerationCents: 0 });
+    });
+
+    it('shows a compensation\'s payment as read-only when it follows a stated loss, and its readings in words', () => {
+        const derived = Dialog.affectedRowHtml({ parcelId: 't3', effect: 'compensation', rights: ['garden'], readings: [reading], loss: { amountCents: 100000, statedBy: 'valuer', valuerRef: 'R1' }, considerationCents: 150000 },
+            { currency: 'GBP', multiple: 15000 });
+        expect(derived).toMatch(/data-affected-field="consideration" value="1500" readonly/);
+        expect(derived).toMatch(/1\.5× the stated loss/);
+        expect(derived).toMatch(/data-affected-right="garden" checked/);
+        expect(Dialog.readingText(reading)).toBe('Sky: 31.2% → 22.4% (guide 27%), beyond a guide');
+        const waiver = Dialog.affectedRowHtml({ parcelId: 't2', effect: 'waiver', rights: [], readings: [], loss: null, considerationCents: 500000 }, { currency: 'GBP' });
+        expect(waiver).not.toMatch(/readonly/);
+        expect(Dialog.neighboursHtml({ electorate: 'community' })).toMatch(/owners’ agreement only/);
+        expect(Dialog.neighbourCompensationHtml(STRONG_SUBURBS)).toMatch(/value="gb-strong-suburbs@2026-11-27" selected/);
+        expect(Dialog.neighbourCompensationHtml(null)).toMatch(/<option value="" selected>/);
+    });
+});
+
 describe('a lens member and a waiver', () => {
     beforeEach(() => { vi.spyOn(console, 'log').mockImplementation(() => {}); });
     afterEach(() => { vi.restoreAllMocks(); });

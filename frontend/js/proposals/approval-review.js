@@ -34,8 +34,8 @@
         }));
         return {
             ready: true, reason: null, policy, regime,
-            tests: tally.tests, participants: tally.participants, authorities: tally.authorities,
-            supportMet: tally.supportMet, authorityMet: tally.authorityMet, passed: tally.passed,
+            tests: tally.tests, participants: tally.participants, authorities: tally.authorities, waivers: tally.waivers,
+            supportMet: tally.supportMet, authorityMet: tally.authorityMet, waiverMet: tally.waiverMet, passed: tally.passed,
             totalOwners: tally.totalOwners, acceptedOwners: tally.acceptedOwners,
             totalAreaM2: tally.totalAreaM2, acceptedAreaM2: tally.acceptedAreaM2,
             acceptedParcelIds: tally.acceptedParcelIds,
@@ -104,6 +104,8 @@
             ownerIds: state.ownerIds,
             contributes,
             leases,
+            // The neighbouring parcels (affected parcels) on which this party waives a right.
+            waives: (state.waiverParcels || []).filter(parcel => parcel.owners.some(owner => owner.ownerId === ownerId)).map(parcel => parcel.parcelId),
             contributedAreaM2: knownAreas ? contributes.reduce((sum, row) => sum + row.shareAreaM2, 0) : null,
             conditions: conditions(proposal),
             alreadyAccepted: acceptedOwnerIds.includes(ownerId),

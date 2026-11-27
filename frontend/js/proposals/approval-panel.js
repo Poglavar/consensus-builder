@@ -190,6 +190,15 @@
                 : t('proposalApproval.authority.pending', 'pending: {{role}}', { role }))}</li>`).join('')}</ul>`;
     }
 
+    // Neighbours who waive a right (an agreement's affected parcels): each parcel's owners must all
+    // approve, whatever the owners' tests count.
+    function waiversHtml(progress) {
+        if (!progress.waivers?.length) return '';
+        return `<ul class="approval-card__authorities" data-approval-waivers>${progress.waivers.map(row => `<li data-approval-waiver="${esc(row.parcelId)}" data-approval-waiver-state="${row.approved ? 'approved' : 'pending'}">${esc(row.approved
+            ? t('proposalApproval.waiver.approved', 'Owners of neighbouring parcel {{parcelId}}: waiver approved', { parcelId: row.parcelId })
+            : t('proposalApproval.waiver.pending', 'Owners of neighbouring parcel {{parcelId}}: waiver pending', { parcelId: row.parcelId }))}</li>`).join('')}</ul>`;
+    }
+
     function progressHtml(progress, label) {
         const authorityLed = !progress.tests.length;
         const outstanding = authorityLed
@@ -202,7 +211,7 @@
                 parcel: parcelName(parcel.parcelId), owners: list(parcel.owners.map(owner => label(owner.ownerId))),
                 accepted: parcel.owners.filter(owner => owner.accepted).length, total: parcel.owners.length
             }))}</li>`).join('');
-        return `${metersHtml(progress)}${authoritiesHtml(progress, label)}
+        return `${metersHtml(progress)}${authoritiesHtml(progress, label)}${waiversHtml(progress)}
             <p class="approval-card__outstanding" data-approval-outstanding>${esc(outstanding)}</p>
             ${coOwned ? `<ul class="approval-card__co-owned">${coOwned}</ul>` : ''}`;
     }
@@ -618,7 +627,8 @@
         let signing = '';
         if (agreement && root.AgreementPanel?.recordTerms) {
             const terms = await root.AgreementPanel.recordTerms(agreement);
-            const ownerKeys = review.kind === 'authority' ? null : review.contributes.map(row => root.AgreementRecord.partyKey(row.parcelId));
+            const ownerKeys = review.kind === 'authority' ? null
+                : [...review.contributes.map(row => row.parcelId), ...(review.waives || [])].map(parcelId => root.AgreementRecord.partyKey(parcelId));
             signing = section(t('agreement.record.whatYouSign', 'What you sign'), root.AgreementPanel.signingSummaryHtml({ agreement, ...terms, ownerKeys }, t)
                 + `<p><button type="button" class="btn btn-sm" data-approval-open-record>${esc(t('agreement.record.open', 'Agreement record'))}</button></p>`);
         }

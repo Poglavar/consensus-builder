@@ -299,6 +299,11 @@
         "warning": "Ovaj grad već je otvoren u drugoj kartici, pa se promjene ovdje ne spremaju u plan. Čuvaju se u kopiji za oporavak, koja će vam biti ponuđena kad ponovno otvorite ovaj grad sa zatvorenim ostalim karticama. Drugi gradovi mogu ostati otvoreni."
     },
     "proposalApproval": {
+        "neighbourLabel": "Susjed {{label}}",
+        "waiver": {
+            "approved": "Vlasnici susjedne čestice {{parcelId}}: odricanje odobreno",
+            "pending": "Vlasnici susjedne čestice {{parcelId}}: odricanje na čekanju"
+        },
         "ownerLabel": "Vlasnik {{label}}",
         "meterDistinctOwners": "Različiti vlasnici koji su odobrili",
         "leaseholderLabel": "Zakupnik {{label}}",
@@ -8286,6 +8291,68 @@
         }
     },
     "agreement": {
+        "neighbours": {
+            "tab": "Susjedi",
+            "heading": "Pogođeni susjedi",
+            "hint": "Susjed koji se odriče prava na koje plan utječe, poput dnevnog svjetla ili ograničenja vrta, može biti strana bez davanja zemljišta. Odricanje treba odobrenje njegovih vlasnika; naknada se plaća i bez njega. Pokrovitelj plaća svakom susjedu.",
+            "measure": "Pronađi pogođene susjede",
+            "noGuides": "Ovo mjesto ne propisuje smjernice za susjede pa se ništa ne mjeri: dodajte susjednu česticu po njezinoj oznaci.",
+            "candidates": "Dodaj pogođene čestice ovom sporazumu",
+            "candidatesHint": "Čestice izvan smjernice su označene. Svaka se dodaje kao odricanje s očitanjima; uvjete postavite niže.",
+            "candidate": "Čestica {{parcelId}}, {{grade}}",
+            "added": "već je u ovom sporazumu",
+            "isInput": "ulazna čestica",
+            "addTicked": "Dodaj označene čestice ({{count}})",
+            "addedCount": "Dodano susjednih čestica: {{count}}. Niže postavite uvjete za svaku.",
+            "byId": "Dodaj susjednu česticu po oznaci",
+            "add": "Dodaj susjeda",
+            "none": "Još nema pogođenih susjeda.",
+            "ownersOnly": "Pogođeni susjedi strane su samo vlasničkog sporazuma.",
+            "party": "Susjed",
+            "effectLabel": "Slučaj",
+            "effect": {
+                "waiver": "Odricanje: daju pravo i moraju odobriti",
+                "compensation": "Naknada: duguje se bez njihova pristanka"
+            },
+            "rights": "Dana prava",
+            "right": {
+                "daylight": "Dnevno svjetlo",
+                "sunlight": "Sunčevo svjetlo",
+                "outlook": "Pogled i nebo",
+                "garden": "Ograničenje vrta",
+                "privacy": "Privatnost i pogled na česticu",
+                "other": "Drugo pravo (navedite koje u bilješci)"
+            },
+            "note": "Bilješka (koje pravo, ako je drugo)",
+            "readings": "Očitanja pri dodavanju",
+            "noReadings": "Nema očitanja: dodana po oznaci čestice.",
+            "reading": "{{kind}}: {{before}} → {{after}} (smjernica {{guide}}), {{grade}}",
+            "grade": {
+                "fail": "izvan smjernice",
+                "below": "ispod razine smjernice, unutar njezina dopuštenja",
+                "minor": "manji gubitak",
+                "screen": "prekoračena prva provjera"
+            },
+            "loss": "Navedeni gubitak tržišne vrijednosti ({{currency}})",
+            "statedBy": "Gubitak naveo",
+            "stater": {
+                "sponsor": "Procjena pokrovitelja",
+                "valuer": "Procjenitelj"
+            },
+            "valuerRef": "Oznaka procjene (neobavezno)",
+            "payment": "Isplata susjedu ({{currency}})",
+            "derived": "{{multiple}} navedenog gubitka, kako je postavljeno u Pravilima.",
+            "remove": "Ukloni {{parcelId}} iz sporazuma",
+            "lossColumn": "Navedeni gubitak",
+            "paymentColumn": "Isplata susjedu",
+            "multiple": {
+                "label": "Naknada susjedima",
+                "none": "1× navedeni gubitak (nije postavljeno)",
+                "strongSuburbs": "Strong Suburbs: 150 % navedenog gubitka (iznos još nije provjeren)",
+                "custom": "Drugi višekratnik",
+                "value": "Višekratnik navedenog gubitka"
+            }
+        },
         "funding": {
             "apartments": {
                 "inventory": "Stanovi",
@@ -8521,6 +8588,16 @@
             "deadline": "Rok (neobavezno)"
         },
         "errors": {
+            "affectedInput": "Vlasnici ulazne čestice već su strane: uklonite je iz Susjeda.",
+            "affectedEffect": "Za svakog susjeda odaberite odricanje ili naknadu.",
+            "affectedRights": "Označite barem jedno pravo koje svaki susjed daje.",
+            "affectedNote": "U bilješci navedite koje drugo pravo susjed daje.",
+            "affectedReading": "Očitanja susjeda navode vrstu ili ocjenu koju aplikacija ne mjeri.",
+            "affectedAmount": "Isplata i navedeni gubitak susjeda moraju biti iznosi od najmanje 0, uz to tko je naveo gubitak.",
+            "affectedLossRequired": "Naknada je višekratnik navedenog gubitka: navedite gubitak svakog susjeda kojem se plaća naknada.",
+            "affectedConsideration": "Isplata susjedu s naknadom mora biti postavljeni višekratnik njegova navedenog gubitka.",
+            "affectedElectorate": "Samo vlasnički sporazum može imati pogođene susjede.",
+            "neighbourMultiple": "Postavite pozitivan višekratnik navedenog gubitka za naknadu susjedima.",
             "consultationOrganiser": "Unesite mrežnu stranicu organizatora ili valjan did:web identifikator.",
             "consultationParticipationUrl": "Unesite HTTPS URL za sudjelovanje bez vjerodajnica.",
             "eligibilityNoHouses": "Plan ne nadograđuje mansardom nijednu postojeću zgradu, pa ovo glasanje nema što obuhvatiti.",

@@ -1823,6 +1823,68 @@
         }
     },
     "agreement": {
+        "neighbours": {
+            "tab": "Vizinhos",
+            "heading": "Vizinhos afetados",
+            "hint": "Um vizinho que abdica de um direito que o plano afeta, como a luz natural ou um limite do jardim, pode ser parte sem dar terreno. Uma renúncia precisa da aprovação dos seus proprietários; a compensação é paga sem ela. O patrocinador paga a cada vizinho.",
+            "measure": "Encontrar vizinhos afetados",
+            "noGuides": "Este local não define referências para vizinhos, por isso nada é medido: adicione uma parcela vizinha pelo seu id.",
+            "candidates": "Adicionar parcelas afetadas a este acordo",
+            "candidatesHint": "As parcelas além de uma referência estão assinaladas. Cada uma é adicionada como renúncia com as suas medições; defina as condições abaixo.",
+            "candidate": "Parcela {{parcelId}}, {{grade}}",
+            "added": "já está neste acordo",
+            "isInput": "uma parcela de entrada",
+            "addTicked": "Adicionar as parcelas assinaladas ({{count}})",
+            "addedCount": "Adicionada(s) {{count}} parcela(s) vizinha(s): defina abaixo as condições de cada uma.",
+            "byId": "Adicionar uma parcela vizinha pelo seu id",
+            "add": "Adicionar vizinho",
+            "none": "Ainda não há vizinhos afetados.",
+            "ownersOnly": "Os vizinhos afetados só são partes de um acordo de proprietários.",
+            "party": "Vizinho",
+            "effectLabel": "Caso",
+            "effect": {
+                "waiver": "Renúncia: cedem o direito e têm de aprovar",
+                "compensation": "Compensação: devida sem o seu consentimento"
+            },
+            "rights": "Direitos cedidos",
+            "right": {
+                "daylight": "Luz natural",
+                "sunlight": "Sol direto",
+                "outlook": "Vista e céu",
+                "garden": "Limite do jardim",
+                "privacy": "Privacidade e devassamento",
+                "other": "Outro direito (indique qual na nota)"
+            },
+            "note": "Nota (que direito, se for outro)",
+            "readings": "Medições ao adicionar",
+            "noReadings": "Sem medições: adicionada pelo id da parcela.",
+            "reading": "{{kind}}: {{before}} → {{after}} (referência {{guide}}), {{grade}}",
+            "grade": {
+                "fail": "além de uma referência",
+                "below": "abaixo do nível de uma referência, dentro da sua margem",
+                "minor": "uma perda menor",
+                "screen": "um primeiro controlo ultrapassado"
+            },
+            "loss": "Perda declarada de valor de mercado ({{currency}})",
+            "statedBy": "Perda declarada por",
+            "stater": {
+                "sponsor": "Estimativa do patrocinador",
+                "valuer": "Avaliador"
+            },
+            "valuerRef": "Referência do avaliador (opcional)",
+            "payment": "Pagamento ao vizinho ({{currency}})",
+            "derived": "{{multiple}} a perda declarada, conforme as Regras.",
+            "remove": "Retirar {{parcelId}} do acordo",
+            "lossColumn": "Perda declarada",
+            "paymentColumn": "Pagamento ao vizinho",
+            "multiple": {
+                "label": "Compensação aos vizinhos",
+                "none": "1× a perda declarada (nenhum definido)",
+                "strongSuburbs": "Strong Suburbs: 150% da perda declarada (valor ainda não verificado)",
+                "custom": "Outro múltiplo",
+                "value": "Múltiplo da perda declarada"
+            }
+        },
         "funding": {
             "apartments": {
                 "inventory": "Apartamentos",
@@ -2364,6 +2426,16 @@
             "deadline": "Prazo (opcional)"
         },
         "errors": {
+            "affectedInput": "Os proprietários de uma parcela de entrada já são partes: retire-a de Vizinhos.",
+            "affectedEffect": "Escolha renúncia ou compensação para cada vizinho.",
+            "affectedRights": "Assinale pelo menos um direito que cada vizinho cede.",
+            "affectedNote": "Indique na nota que outro direito um vizinho cede.",
+            "affectedReading": "As medições de um vizinho indicam um tipo ou grau que a aplicação não mede.",
+            "affectedAmount": "O pagamento e a perda declarada de um vizinho têm de ser montantes de pelo menos 0, com quem declarou a perda.",
+            "affectedLossRequired": "A compensação é um múltiplo de uma perda declarada: declare a perda de cada vizinho compensado.",
+            "affectedConsideration": "O pagamento a um vizinho compensado tem de ser o múltiplo definido da sua perda declarada.",
+            "affectedElectorate": "Só um acordo de proprietários pode incluir vizinhos afetados.",
+            "neighbourMultiple": "Defina um múltiplo positivo da perda declarada para compensar os vizinhos.",
             "consultationOrganiser": "Introduza um site do organizador ou um identificador did:web válido.",
             "consultationParticipationUrl": "Introduza um URL de participação HTTPS sem credenciais.",
             "eligibilityNoHouses": "O plano não eleva nenhum edifício existente com uma mansarda, pelo que esta votação nada tem a abranger.",
@@ -4083,6 +4155,11 @@
         "warning": "Esta cidade já está aberta noutro separador, pelo que as alterações feitas aqui não são guardadas no plano. São mantidas numa cópia de recuperação, que será disponibilizada quando voltar a abrir esta cidade com os outros separadores da mesma fechados. As outras cidades podem continuar abertas."
     },
     "proposalApproval": {
+        "neighbourLabel": "Vizinho {{label}}",
+        "waiver": {
+            "approved": "Proprietários da parcela vizinha {{parcelId}}: renúncia aprovada",
+            "pending": "Proprietários da parcela vizinha {{parcelId}}: renúncia pendente"
+        },
         "ownerLabel": "Proprietário {{label}}",
         "meterDistinctOwners": "Proprietários distintos que aprovaram",
         "leaseholderLabel": "Arrendatário {{label}}",
