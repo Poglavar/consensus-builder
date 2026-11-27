@@ -15,6 +15,7 @@ function panel(initialEditor = editorSummary) {
     const window = {
         __chatTranscript: require('../../frontend/js/chat/chat-transcript.js'),
         __chatContext: require('../../frontend/js/chat/chat-context.js'),
+        __chatPersona: require('../../frontend/js/chat/chat-persona.js'), __reducedMotion: true,
         currentCityId: 'london', location: new URL('https://app.test/'),
         addEventListener: vi.fn(), getParcelLayoutEditorContext: () => editor,
         OnMapEditor: { getOwner: () => editor?.kind || null },
@@ -97,5 +98,28 @@ describe('chat beside an active editor', () => {
         await window.ChatPanel.send('Pan north');
         expect(window.ChatNavigation.apply).toHaveBeenCalledWith(event);
         expect(window.ChatPanel.state().error).toBeNull();
+    });
+});
+
+describe('Hippodamus in the panel', () => {
+    it('offers to explain the open tool, then asks his general question once it closes', () => {
+        const { root, setEditor } = panel();
+        expect(root.querySelector('.chat-greeting__question').textContent).toBe('chat.greetingToolUnnamed');
+        setEditor(null);
+        expect(root.querySelector('.chat-greeting__question').textContent).toBe('chat.greeting');
+    });
+
+    it('sketches and thinks while a turn runs, then frowns when it fails', async () => {
+        const { window, root } = panel(null);
+        window.ChatClient.sync = null;
+        let during = null;
+        window.ChatClient.turn.mockImplementation(async () => {
+            during = { mood: root.dataset.hippodamusMood, sketch: !!root.querySelector('.chat-working__sketch') };
+            throw Object.assign(new Error('interrupted'), { code: 'stream_error' });
+        });
+        await window.ChatPanel.send('Add a park');
+        expect(during).toEqual({ mood: 'thinking', sketch: true });
+        expect(root.dataset.hippodamusMood).toBe('frown');
+        expect(root.querySelector('.chat-working__sketch')).toBeNull();
     });
 });

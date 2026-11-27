@@ -10593,6 +10593,13 @@
   "chat": {
     "title": "Pitajte Hipodama",
     "greeting": "Kako vam danas mogu pomoći osmisliti dobar grad?",
+    "greetingParcels": {
+      "one": "Hoćemo li nešto napraviti s ovom česticom?",
+      "few": "Hoćemo li nešto napraviti s ove {{count}} čestice?",
+      "other": "Hoćemo li nešto napraviti s ovih {{count}} čestica?"
+    },
+    "greetingTool": "Imate otvoren alat „{{tool}}”. Da vam objasnim kako radi?",
+    "greetingToolUnnamed": "Imate otvoren alat. Da vam objasnim kako radi?",
     "tips": {
       "title": "Pokušajte pitati",
       "design": "Osmisli park na odabranim česticama ili pomakni zgradu 50 m prema sjeveru.",

@@ -10493,6 +10493,12 @@
   "chat": {
     "title": "Ask Hippodamus",
     "greeting": "How can I help you design a good city today?",
+    "greetingParcels": {
+      "one": "Shall we do something with this parcel?",
+      "other": "Shall we do something with these {{count}} parcels?"
+    },
+    "greetingTool": "You have “{{tool}}” open. Shall I explain how it works?",
+    "greetingToolUnnamed": "You have a tool open. Shall I explain how it works?",
     "tips": {
       "title": "Try asking",
       "design": "Design a park on the selected parcels or move a building 50 m north.",

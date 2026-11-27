@@ -10544,6 +10544,12 @@
   "chat": {
     "title": "Demander à Hippodamos",
     "greeting": "Comment puis-je vous aider à concevoir une bonne ville aujourd’hui ?",
+    "greetingParcels": {
+      "one": "Voulez-vous que nous fassions quelque chose de cette parcelle ?",
+      "other": "Voulez-vous que nous fassions quelque chose de ces {{count}} parcelles ?"
+    },
+    "greetingTool": "L’outil « {{tool}} » est ouvert. Voulez-vous que je vous explique son fonctionnement ?",
+    "greetingToolUnnamed": "Un outil est ouvert. Voulez-vous que je vous explique son fonctionnement ?",
     "tips": {
       "title": "Essayez de demander",
       "design": "Concevez un parc sur les parcelles sélectionnées ou déplacez un bâtiment de 50 m vers le nord.",

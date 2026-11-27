@@ -10565,6 +10565,12 @@
   "chat": {
     "title": "Pregúntale a Hipódamo",
     "greeting": "¿Cómo puedo ayudarte hoy a diseñar una buena ciudad?",
+    "greetingParcels": {
+      "one": "¿Hacemos algo con esta parcela?",
+      "other": "¿Hacemos algo con estas {{count}} parcelas?"
+    },
+    "greetingTool": "Tienes abierta la herramienta «{{tool}}». ¿Te explico cómo funciona?",
+    "greetingToolUnnamed": "Tienes una herramienta abierta. ¿Te explico cómo funciona?",
     "tips": {
       "title": "Prueba a pedir",
       "design": "Diseña un parque en las parcelas seleccionadas o mueve un edificio 50 m al norte.",

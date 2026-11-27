@@ -35,8 +35,9 @@
     height: 72px;
     box-shadow: 0 0 0 2px var(--cb-surface), 0 0 0 3px var(--cb-line);
 }
-.chat-greeting__portrait.is-animated { background: none; }
-.chat-greeting__face { display: block; width: 100%; height: 100%; }
+/* A live portrait is the artwork inlined (chat-panel.js livenPortrait) in place of the still image. */
+.cb-avatar-hippodamus.is-animated { background: none; }
+.hippodamus-live { display: block; width: 100%; height: 100%; }
 .chat-greeting__bubble,
 .chat-message {
     min-width: 0;
@@ -105,15 +106,38 @@
     .chat-greeting__portrait.cb-avatar-hippodamus { width: 56px; height: 56px; }
 }
 
-/* Now and then the greeting's Hippodamus smiles, raises his brows or frowns, and he blinks; the
-   two cycles have different lengths so they do not fall into step. */
-.chat-greeting__face :is(.hippodamus-eye, .hippodamus-brow) { transform-box: fill-box; transform-origin: center; }
-.chat-greeting__face .hippodamus-eye { animation: hippodamus-blink 5.3s infinite; }
-.chat-greeting__face .hippodamus-brow--left { animation: hippodamus-brow-left 19s ease-in-out infinite; }
-.chat-greeting__face .hippodamus-brow--right { animation: hippodamus-brow-right 19s ease-in-out infinite; }
-.chat-greeting__face .hippodamus-mouth--rest { animation: hippodamus-mouth-rest 19s infinite; }
-.chat-greeting__face .hippodamus-mouth--smile { animation: hippodamus-mouth-smile 19s infinite; }
-.chat-greeting__face .hippodamus-mouth--frown { animation: hippodamus-mouth-frown 19s infinite; }
+/* Hippodamus's face. chat-panel.js sets the sheet's data-hippodamus-mood (js/chat/chat-persona.js):
+   idle    the greeting's portrait now and then smiles, raises his brows or frowns; the cycles of
+           blinking and expressions have different lengths so they do not fall into step;
+   thinking one brow up, eyes up, while a turn runs;
+   smile / frown  once, after a plan reached the map / an error; the end of hippodamus-react-show
+           returns him to idle.
+   Every live face blinks, and its pupils turn toward the pointer (--hippodamus-look-x/-y, in the
+   portrait's units). */
+.hippodamus-live :is(.hippodamus-eye, .hippodamus-brow) { transform-box: fill-box; transform-origin: center; }
+.hippodamus-live .hippodamus-eye {
+    animation: hippodamus-blink 5.3s infinite;
+    translate: calc(var(--hippodamus-look-x, 0) * 1px) calc(var(--hippodamus-look-y, 0) * 1px);
+    transition: translate 120ms ease-out;
+}
+[data-hippodamus-mood="idle"] .chat-greeting__face .hippodamus-brow--left { animation: hippodamus-brow-left 19s ease-in-out infinite; }
+[data-hippodamus-mood="idle"] .chat-greeting__face .hippodamus-brow--right { animation: hippodamus-brow-right 19s ease-in-out infinite; }
+[data-hippodamus-mood="idle"] .chat-greeting__face .hippodamus-mouth--rest { animation: hippodamus-mouth-rest 19s infinite; }
+[data-hippodamus-mood="idle"] .chat-greeting__face .hippodamus-mouth--smile { animation: hippodamus-mouth-smile 19s infinite; }
+[data-hippodamus-mood="idle"] .chat-greeting__face .hippodamus-mouth--frown { animation: hippodamus-mouth-frown 19s infinite; }
+
+[data-hippodamus-mood="thinking"] .hippodamus-live .hippodamus-eye { translate: -0.6px -0.8px; }
+[data-hippodamus-mood="thinking"] .hippodamus-live .hippodamus-brow--left { animation: hippodamus-ponder-low 2.6s ease-in-out infinite; }
+[data-hippodamus-mood="thinking"] .hippodamus-live .hippodamus-brow--right { animation: hippodamus-ponder-high 2.6s ease-in-out infinite; }
+
+[data-hippodamus-mood="smile"] .hippodamus-live .hippodamus-mouth--smile,
+[data-hippodamus-mood="frown"] .hippodamus-live .hippodamus-mouth--frown { animation: hippodamus-react-show 2.8s ease-in-out; }
+[data-hippodamus-mood="smile"] .hippodamus-live .hippodamus-mouth--rest,
+[data-hippodamus-mood="frown"] .hippodamus-live .hippodamus-mouth--rest { animation: hippodamus-react-hide 2.8s ease-in-out; }
+[data-hippodamus-mood="smile"] .hippodamus-live .hippodamus-brow { animation: hippodamus-react-lift 2.8s ease-in-out; }
+[data-hippodamus-mood="frown"] .hippodamus-live .hippodamus-brow--left { animation: hippodamus-react-knit-left 2.8s ease-in-out; }
+[data-hippodamus-mood="frown"] .hippodamus-live .hippodamus-brow--right { animation: hippodamus-react-knit-right 2.8s ease-in-out; }
+
 @keyframes hippodamus-blink {
     0%, 93%, 100% { transform: scaleY(1); }
     95%, 96% { transform: scaleY(0.1); }
@@ -142,6 +166,74 @@
     0%, 74%, 85%, 100% { opacity: 0; }
     76%, 83% { opacity: 1; }
 }
+@keyframes hippodamus-ponder-low {
+    0%, 100% { transform: translateY(0.4px); }
+    50% { transform: translateY(-0.4px); }
+}
+@keyframes hippodamus-ponder-high {
+    0%, 100% { transform: translateY(-2.8px) rotate(-8deg); }
+    50% { transform: translateY(-3.6px) rotate(-8deg); }
+}
+@keyframes hippodamus-react-show {
+    0%, 100% { opacity: 0; }
+    10%, 85% { opacity: 1; }
+}
+@keyframes hippodamus-react-hide {
+    0%, 100% { opacity: 1; }
+    10%, 85% { opacity: 0; }
+}
+@keyframes hippodamus-react-lift {
+    0%, 100% { transform: none; }
+    10%, 85% { transform: translateY(-1.4px); }
+}
+@keyframes hippodamus-react-knit-left {
+    0%, 100% { transform: none; }
+    10%, 85% { transform: translateY(1.2px) rotate(20deg); }
+}
+@keyframes hippodamus-react-knit-right {
+    0%, 100% { transform: none; }
+    10%, 85% { transform: translateY(1.2px) rotate(-20deg); }
+}
+
+/* The pending reply: he sketches a street grid, street by street, and fills one block. */
+.chat-working { margin: var(--cb-space-1) 0 0; }
+.chat-working__sketch { display: block; width: 72px; height: 48px; overflow: visible; }
+.chat-working__street {
+    fill: none;
+    stroke: var(--cb-text-muted);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: chat-sketch-street 3.2s ease-in-out infinite;
+}
+.chat-working__street:nth-of-type(2) { animation-delay: 0.2s; }
+.chat-working__street:nth-of-type(3) { animation-delay: 0.4s; }
+.chat-working__street:nth-of-type(4) { animation-delay: 0.6s; }
+.chat-working__street:nth-of-type(5) { animation-delay: 0.8s; }
+.chat-working__block { fill: var(--cb-primary); fill-opacity: 0.35; opacity: 0; animation: chat-sketch-block 3.2s ease-in-out infinite; }
+/* The words stay for assistive technology; the sketch shows them. */
+.chat-working__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+@keyframes chat-sketch-street {
+    0% { stroke-dashoffset: 1; opacity: 1; }
+    40%, 85% { stroke-dashoffset: 0; opacity: 1; }
+    100% { stroke-dashoffset: 0; opacity: 0; }
+}
+@keyframes chat-sketch-block {
+    0%, 45% { opacity: 0; }
+    60%, 85% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .chat-greeting__face :is(.hippodamus-eye, .hippodamus-brow, .hippodamus-mouth) { animation: none; }
+    .hippodamus-live :is(.hippodamus-eye, .hippodamus-brow, .hippodamus-mouth) { animation: none; transition: none; }
+    .chat-working__street,
+    .chat-working__block { animation: none; stroke-dashoffset: 0; opacity: 1; }
 }

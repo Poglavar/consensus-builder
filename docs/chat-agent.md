@@ -76,11 +76,15 @@ from browser selection and current service health. Chat currently connects to th
 fixed MCP worker; a source catalogue is not an external MCP connection manager. Public parcel,
 building and imagery URL sources remain editable through the existing source settings.
 
-Hippodamus opens the panel with a greeting: his animated portrait (he blinks, and now and then smiles,
-raises his brows or frowns; still under reduced motion), the question "How can I help you design a
-good city today?" and, under **Try asking**, localized suggestions that fill the composer with a
+Hippodamus opens the panel with a greeting: his animated portrait and a question that fits the moment
+(with a tool open he offers to explain it by name, with parcels selected he asks what to do with them,
+otherwise "How can I help you design a good city today?"), and, under **Try asking**, localized suggestions that fill the composer with a
 prompt for design work, agreements, feedback, available sources, parcels near transit or the open
-tool. The greeting scrolls with the transcript above the messages. Choosing a suggestion does not send it. The transit
+tool. The greeting scrolls with the transcript above the messages. Choosing a suggestion does not send it.
+His face (the greeting's and the header's portraits) follows the conversation (js/chat/chat-persona.js):
+he idles (blinks, now and then smiles, raises his brows or frowns), thinks while a turn runs, smiles once
+when a plan reaches the map and frowns once on an error; his eyes follow the pointer. A pending reply
+shows him sketching a street grid instead of a "Working…" line. Under reduced motion all of it is still. The transit
 suggestion does not claim land is cheap or available: those conclusions require dated price and
 availability evidence as well as source-qualified parcels and transit access data.
 
