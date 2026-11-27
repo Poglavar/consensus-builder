@@ -46,12 +46,13 @@
     // production index and immutable, so they keep validating; new voting lists are written as v2.
     const SCHEMA = 'community-voting/v2';
     const rules = () => root.CommunityBallotRules || (typeof require === 'function' ? require('./ballot-rules.js') : null);
+    const eligibility = () => root.BuildingEligibility || (typeof require === 'function' ? require('../planning/eligibility.js') : null);
     function configuration(raw) {
         if (raw == null) return null;
         const v1 = raw?.schema === 'community-voting/v1';
         const keys = raw && typeof raw === 'object' ? Object.keys(raw) : [];
         if (!(v1 ? exact(raw, ['schema', 'id', 'codeHashes']) : raw?.schema === SCHEMA
-            && ['schema', 'id', 'codeHashes'].every(key => keys.includes(key)) && keys.every(key => ['schema', 'id', 'codeHashes', 'households', 'rule'].includes(key)))
+            && ['schema', 'id', 'codeHashes'].every(key => keys.includes(key)) && keys.every(key => ['schema', 'id', 'codeHashes', 'households', 'rule', 'eligibility'].includes(key)))
             || !UUID.test(raw.id)
             || !Array.isArray(raw.codeHashes) || !raw.codeHashes.length || raw.codeHashes.length > MAX_ENTRIES
             || raw.codeHashes.some(hash => typeof hash !== 'string' || !HASH.test(hash))
@@ -73,6 +74,15 @@
         if (raw.rule != null) {
             if (!exact(raw.rule, ['id', 'version']) || !rules().get(raw.rule.id, raw.rule.version)) fail('Choose a ballot rule from the list.');
             result.rule = { id: raw.rule.id, version: raw.rule.version };
+        }
+        // A rule that covers only eligible buildings keeps the check it was created with
+        // (planning/eligibility.js): which houses, each one's verdict and the source versions read.
+        const required = result.rule ? rules().get(result.rule.id, result.rule.version)?.requires?.eligibility : null;
+        if (raw.eligibility != null) {
+            if (!required) fail('Only a ballot rule that covers eligible buildings records an eligibility check.');
+            const recorded = eligibility().normalizeEvidence(raw.eligibility);
+            if (recorded.set.id !== required.id || recorded.set.version !== required.version) fail('The eligibility check is for another rule set.');
+            result.eligibility = recorded;
         }
         return result;
     }

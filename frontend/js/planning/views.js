@@ -321,13 +321,9 @@
         return read;
     }
     // A rule set's conditions on what the building is (planning/eligibility.js), test by test, from
-    // its facts, its footprint and the buildings loaded around it.
-    function renderEligibility(set, item, facts) {
-        const pool = root.buildingFeaturePool;
-        const result = root.BuildingEligibility.evaluate(set, {
-            facts, footprint: item.site ? { type: 'Feature', properties: {}, geometry: item.site } : null,
-            neighbours: Array.isArray(pool) && pool.length ? pool : null,
-        }, root.BuildingEligibility.turfOps(root.turf));
+    // its building facts.
+    function renderEligibility(set, facts) {
+        const result = root.BuildingEligibility.evaluate(set, facts);
         const block = element('div', 'planning-eligibility');
         block.setAttribute('data-eligibility', result.verdict);
         block.append(element('strong', '', t(`eligibility.set.${set.id}`)),
@@ -373,7 +369,7 @@
             }
             if (!state.building.found) section.append(element('p', 'planning-inspector__description', t('buildingFactsNotFound', { source: edit?.source || '' })));
             for (const set of root.BuildingEligibility?.forCity(root.CityConfigManager?.getCityConfig(item.source.city)?.planning?.ruleSetIds || []) || []) {
-                section.append(renderEligibility(set, item, state.building.facts));
+                section.append(renderEligibility(set, state.building.facts));
             }
         }
         const again = element('button', 'btn planning-building-facts__again', t('buildingFactsAgain'));

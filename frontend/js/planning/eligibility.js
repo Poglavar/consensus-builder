@@ -1,26 +1,25 @@
 // Building eligibility: whether an existing building meets a rule set's conditions on what it is —
-// its age, form and stated facts — test by test. Rules are data; each test reads building facts (the
-// shared API's building-facts contract, buildings/building-facts.js) or the footprint and its
-// neighbours. A test is unknown while its fact is, and a condition no source states yet is listed
-// as unchecked, never assumed. Pure: geometry operations are passed in. Used by the building card,
-// and by the street vote whose ballot rule requires the set (community/ballot-rules.js).
+// its age, form and stated facts — test by test. Rules are data; each test reads one building fact
+// from the shared API's building-facts contract (buildings/building-facts.js), so the browser and
+// the agents' server judge a building alike. A test is unknown while its fact is, and a condition no
+// source states yet is listed as unchecked, never assumed. A plan's covered houses and the evidence
+// a street vote records are derived here too (community/ballot-rules.js `requires`).
 (function (root, factory) {
-    const api = factory();
+    const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (root) root.BuildingEligibility = api;
-})(typeof window !== 'undefined' ? window : globalThis, function () {
+})(typeof window !== 'undefined' ? window : globalThis, function (root) {
     'use strict';
-    // Two footprints are one terrace when their outlines share at least this much wall.
-    const PARTY_WALL_M = 1.5;
-    // Neighbours further than this from the building are not looked at.
-    const NEIGHBOUR_REACH_M = 60;
     const finite = value => typeof value === 'number' && Number.isFinite(value);
+    const factsApi = () => (root && root.BuildingFacts) || require('../buildings/building-facts.js');
 
     // A rule set is dated like a ballot rule: a published vote pins id@version, so a shipped version
     // is never edited; a re-check adds a new entry. English text is the fallback for the
-    // `eligibility.<id>.*` i18n keys.
+    // `planningViews.eligibility.*` i18n keys.
     const RULE_SETS = [{
         id: 'gb-living-tradition-mansards', version: '2026-11-27', planningRuleSet: 'gb-eng-planning',
+        // The houses a plan covers: existing buildings it raises with this roof.
+        covers: { roof: 'mansard' },
         source: { label: 'Samuel Hughes, Living Tradition (Create Streets, August 2021), para. 17', url: 'https://www.createstreets.com/wp-content/uploads/2025/07/Living-Tradition.pdf' },
         text: { name: 'Mansard eligibility' },
         tests: [
@@ -31,8 +30,9 @@
             { id: 'frontGable', cite: '17.3', check: 'unchecked' },
             { id: 'noMansard', cite: '17.4', check: 'factIsNot', fact: 'roof_shape', value: 'mansard' },
             { id: 'storeys', cite: '17.5', check: 'factAtLeast', fact: 'storeys', min: 2 },
-            { id: 'attached', cite: '17.6', check: 'attached', minRow: 3 },
-            { id: 'footprint', cite: '17.7', check: 'footprintAtMost', maxM2: 100 },
+            // A terrace of at least three, or a semi-detached pair (17.6: a pair adds mansards together).
+            { id: 'attached', cite: '17.6', check: 'row', fact: 'row_size', minRow: 3, pairPasses: true },
+            { id: 'footprint', cite: '17.7', check: 'factAtMost', fact: 'footprint_m2', max: 100 },
             { id: 'originalUse', cite: '17.8', check: 'unchecked' },
             { id: 'listing', cite: '17.9', check: 'unchecked' },
             { id: 'topWindows', cite: '17.10', check: 'unchecked' },
@@ -48,104 +48,107 @@
 
     const valueOf = (facts, name) => (facts && facts[name] ? facts[name].value : null);
 
-    // The terrace a building stands in: itself and every footprint joined to it through party walls.
-    // Null while the neighbours are not known.
-    function rowSize(footprint, neighbours, ops) {
-        if (!Array.isArray(neighbours)) return null;
-        // The building itself may be among its neighbours as another copy of the same outline.
-        const near = neighbours.filter(other => ops.distanceM(footprint, other) <= NEIGHBOUR_REACH_M && !ops.sameOutline(footprint, other));
-        const row = [footprint], seen = new Set([footprint]);
-        for (let i = 0; i < row.length; i++) {
-            for (const other of near) {
-                if (seen.has(other) || row.some(member => ops.sameOutline(member, other))) continue;
-                // Only touching outlines can share a wall; the overlap is measured for those alone.
-                if (ops.distanceM(row[i], other) <= 1 && ops.sharedWallM(row[i], other) >= PARTY_WALL_M) { seen.add(other); row.push(other); }
-            }
-        }
-        return row.length;
-    }
-
     // One test → { id, cite, status: pass | fail | unknown | unchecked, value }.
-    function runTest(test, building, ops) {
-        const { facts, footprint, neighbours } = building;
-        const result = status => ({ id: test.id, cite: test.cite, status });
+    function runTest(test, facts) {
+        const result = (status, value) => ({ id: test.id, cite: test.cite, status, ...(value === undefined ? {} : { value }) });
+        const value = test.fact ? valueOf(facts, test.fact) : null;
         switch (test.check) {
             case 'builtBetween': {
                 const span = valueOf(facts, 'built');
                 if (!span) return result('unknown');
                 const { from, to } = span;
-                if ((finite(from) && from >= test.before) || (finite(to) && to <= test.after)) return { ...result('fail'), value: span };
+                if ((finite(from) && from >= test.before) || (finite(to) && to <= test.after)) return result('fail', span);
                 // An open start ("before 1913") passes the lower bound only where the set says so.
                 const afterKept = finite(from) ? from > test.after : test.openStartPasses === true;
-                return { ...result(finite(to) && to < test.before && afterKept ? 'pass' : 'unknown'), value: span };
+                return result(finite(to) && to < test.before && afterKept ? 'pass' : 'unknown', span);
             }
-            case 'factIs': {
-                const value = valueOf(facts, test.fact);
-                return value === null ? result('unknown') : { ...result(value === test.value ? 'pass' : 'fail'), value };
-            }
-            case 'factIsNot': {
-                const value = valueOf(facts, test.fact);
-                return value === null ? result('unknown') : { ...result(value === test.value ? 'fail' : 'pass'), value };
-            }
-            case 'factAtLeast': {
-                const value = valueOf(facts, test.fact);
-                return !finite(value) ? result('unknown') : { ...result(value >= test.min ? 'pass' : 'fail'), value };
-            }
-            case 'attached': {
-                // A terrace of at least minRow, or a semi-detached pair (Living Tradition 17.6: a pair
-                // may only add mansards together).
-                const size = footprint ? rowSize(footprint, neighbours, ops) : null;
-                if (size === null) return result('unknown');
-                return { ...result(size >= test.minRow || size === 2 ? 'pass' : 'fail'), value: size };
-            }
-            case 'footprintAtMost': {
-                const area = footprint ? ops.areaM2(footprint) : null;
-                return !finite(area) ? result('unknown') : { ...result(area <= test.maxM2 ? 'pass' : 'fail'), value: Math.round(area) };
-            }
+            case 'factIs': return value === null ? result('unknown') : result(value === test.value ? 'pass' : 'fail', value);
+            case 'factIsNot': return value === null ? result('unknown') : result(value === test.value ? 'fail' : 'pass', value);
+            case 'factAtLeast': return !finite(value) ? result('unknown') : result(value >= test.min ? 'pass' : 'fail', value);
+            case 'factAtMost': return !finite(value) ? result('unknown') : result(value <= test.max ? 'pass' : 'fail', value);
+            case 'row': return !finite(value) ? result('unknown')
+                : result(value >= test.minRow || (test.pairPasses && value === 2) ? 'pass' : 'fail', value);
             default: return result('unchecked');
         }
     }
 
-    // A building ({ facts, footprint, neighbours }) under a rule set → each test's result and the
-    // verdict: ineligible when a test fails, unknown while one is unknown, else eligible (with the
-    // unchecked conditions listed beside it).
-    function evaluate(set, building, ops) {
-        const tests = set.tests.map(test => runTest(test, building, ops));
+    // A building's facts under a rule set → each test's result and the verdict: ineligible when a
+    // test fails, unknown while one is unknown, else eligible (with the unchecked ones beside it).
+    function evaluate(set, facts) {
+        const tests = set.tests.map(test => runTest(test, facts));
         const has = status => tests.some(test => test.status === status);
         return { set: { id: set.id, version: set.version }, verdict: has('fail') ? 'ineligible' : has('unknown') ? 'unknown' : 'eligible', tests };
     }
 
-    // Geometry operations from turf (6 or 7): area, nearest distance and the length of shared outline.
-    function turfOps(turf) {
-        const lines = feature => {
-            const line = turf.polygonToLine(feature);
-            return line.type === 'FeatureCollection' ? line.features : [line];
-        };
-        return {
-            areaM2: feature => turf.area(feature),
-            // Two copies of one building: centres within a metre and areas within a tenth.
-            sameOutline: (a, b) => {
-                if (a === b) return true;
-                const [ax, ay] = turf.centroid(a).geometry.coordinates, [bx, by] = turf.centroid(b).geometry.coordinates;
-                const apart = Math.hypot((ax - bx) * 111320 * Math.cos(ay * Math.PI / 180), (ay - by) * 110540);
-                const areaA = turf.area(a), areaB = turf.area(b);
-                return apart < 1 && Math.abs(areaA - areaB) <= 0.1 * Math.max(areaA, areaB);
-            },
-            distanceM: (a, b) => {
-                const [aw, as, ae, an] = turf.bbox(a), [bw, bs, be, bn] = turf.bbox(b);
-                const dx = Math.max(0, bw - ae, aw - be), dy = Math.max(0, bs - an, as - bn);
-                // Degrees to metres at the building's latitude; a bbox gap is a lower bound.
-                return Math.hypot(dx * 111320 * Math.cos(((as + an) / 2) * Math.PI / 180), dy * 110540);
-            },
-            sharedWallM: (a, b) => {
-                let metres = 0;
-                for (const la of lines(a)) for (const lb of lines(b)) {
-                    for (const part of turf.lineOverlap(la, lb, { tolerance: 0.0003 }).features) metres += turf.length(part) * 1000;
-                }
-                return metres;
-            },
-        };
+    // The houses a plan covers under a set: each existing building its designs raise with the set's
+    // roof, by the building-facts id of its source building. A raised building the facts contract
+    // does not answer is listed with a null id, so it can never pass.
+    function coveredHouses(set, designs) {
+        const houses = new Map();
+        for (const design of designs || []) {
+            for (const building of design?.geometry?.buildings || []) {
+                const p = building?.properties || {};
+                if (p.basedOnExisting !== true || p.roof !== set.covers.roof) continue;
+                const id = factsApi().factIdOf({ properties: { id: p.sourceBuildingId } }, p.sourceBuildingId);
+                const key = id || `unknown:${p.sourceBuildingId ?? houses.size}`;
+                if (!houses.has(key)) houses.set(key, { id, sourceBuildingId: p.sourceBuildingId ?? null });
+            }
+        }
+        return [...houses.values()];
     }
 
-    return { RULE_SETS, get, latest, forCity, evaluate, turfOps, PARTY_WALL_M };
+    // Read the covered houses' facts (read: ids → Map id → contract building) and judge each one.
+    async function check(set, houses, read) {
+        const ids = houses.map(house => house.id).filter(Boolean);
+        const answers = ids.length ? await read(ids) : new Map();
+        return houses.map(house => {
+            const building = house.id ? answers.get(house.id) || null : null;
+            const result = evaluate(set, building?.found ? building.facts : null);
+            return { ...house, building, result, sourceVersion: building?.source_version || null };
+        });
+    }
+
+    // What a street vote records of its check: the set, when, and each house's verdict with the tests
+    // it failed or could not decide and the source version read, so the record shows what it rested on.
+    function evidence(set, judged, checkedAt) {
+        return { set: { id: set.id, version: set.version }, checkedAt,
+            houses: judged.map(({ id, result, sourceVersion = null }) => ({ id: id || null, verdict: id ? result.verdict : 'unknown',
+                failing: result.tests.filter(test => test.status === 'fail').map(test => test.cite),
+                unknown: result.tests.filter(test => test.status === 'unknown').map(test => test.cite),
+                ...(sourceVersion ? { sourceVersion: { version: sourceVersion.version ?? null, changed: sourceVersion.changed ?? null } } : {}) })) };
+    }
+
+    const CITE = /^\d{1,2}(\.\d{1,2})?$/;
+    const HOUSE_ID = /^osm:(way|relation)\/[1-9][0-9]{0,15}$/;
+    // A recorded check, checked for shape (community/voting.js keeps it in the voting record).
+    function normalizeEvidence(raw) {
+        const fail = message => { throw new Error(message); };
+        if (!raw || typeof raw !== 'object' || !raw.set || !get(raw.set.id, raw.set.version)) fail('The eligibility check names an unknown rule set.');
+        if (typeof raw.checkedAt !== 'string' || !Number.isFinite(Date.parse(raw.checkedAt))) fail('The eligibility check needs its time.');
+        if (!Array.isArray(raw.houses) || !raw.houses.length || raw.houses.length > 500) fail('The eligibility check needs 1–500 houses.');
+        const houses = raw.houses.map(house => {
+            if (!house || (house.id !== null && !HOUSE_ID.test(String(house.id))) || !['eligible', 'ineligible', 'unknown'].includes(house.verdict)
+                || ![house.failing, house.unknown].every(list => Array.isArray(list) && list.length <= 20 && list.every(cite => CITE.test(cite)))) {
+                fail('An eligibility house entry is malformed.');
+            }
+            const version = house.sourceVersion;
+            return { id: house.id, verdict: house.verdict, failing: [...house.failing], unknown: [...house.unknown],
+                ...(version && typeof version === 'object' ? { sourceVersion: { version: Number.isInteger(version.version) ? version.version : null,
+                    changed: typeof version.changed === 'string' ? version.changed : null } } : {}) };
+        });
+        return { set: { id: raw.set.id, version: raw.set.version }, checkedAt: new Date(Date.parse(raw.checkedAt)).toISOString(), houses };
+    }
+
+    // Why a recorded check does not let the vote start: [] when it covers exactly the plan's houses
+    // and found each one eligible.
+    function evidenceIssues(set, recorded, houses) {
+        if (!houses.length) return [{ code: 'eligibility-no-houses' }];
+        if (!recorded || recorded.set.id !== set.id || recorded.set.version !== set.version) return [{ code: 'eligibility-missing' }];
+        const wanted = houses.map(house => String(house.id)).sort(), got = recorded.houses.map(house => String(house.id)).sort();
+        if (wanted.length !== got.length || wanted.some((id, i) => id !== got[i])) return [{ code: 'eligibility-stale' }];
+        const blocked = recorded.houses.filter(house => house.verdict !== 'eligible');
+        return blocked.length ? [{ code: 'eligibility-failed', houses: blocked }] : [];
+    }
+
+    return { RULE_SETS, get, latest, forCity, evaluate, coveredHouses, check, evidence, normalizeEvidence, evidenceIssues };
 });

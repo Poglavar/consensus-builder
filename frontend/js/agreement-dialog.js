@@ -426,6 +426,10 @@
         'community-money': () => t('agreement.errors.communityMoney', 'A nonbinding agreement cannot include cash payments.'),
         'consultation-organiser': () => t('agreement.errors.consultationOrganiser', 'Enter an organiser website or a valid did:web identifier.'),
         'consultation-participation-url': () => t('agreement.errors.consultationParticipationUrl', 'Enter an HTTPS participation URL without credentials.'),
+        'voting-eligibility-no-houses': () => t('agreement.errors.eligibilityNoHouses', 'The plan raises no existing building with a mansard, so this street vote has nothing to cover.'),
+        'voting-eligibility-missing': () => t('agreement.errors.eligibilityMissing', 'Check the covered houses’ eligibility before creating this street vote.'),
+        'voting-eligibility-stale': () => t('agreement.errors.eligibilityStale', 'The plan covers other houses than the last eligibility check: check again.'),
+        'voting-eligibility-failed': () => t('agreement.errors.eligibilityFailed', 'Not every covered house is known to be eligible yet: see Covered houses.'),
         'rule-invalid': reason => t('agreement.errors.ruleInvalid', 'The decision rule is incomplete: {{reason}}', { reason }),
         'rule-community-binding': () => t('agreement.errors.ruleCommunityBinding', 'A community vote cannot be binding.'),
         'deadline-invalid': () => t('agreement.errors.deadlineInvalid', 'The deadline must be a date in the future.'),
@@ -933,10 +937,80 @@
         session = current;
         const draft = () => { syncApartmentInputs(state, body); return recordFromForm(state, state.values); };
         let rosterPending = false;
+        // A ballot rule that covers only eligible buildings (planning/eligibility.js): the covered
+        // houses' check runs when the rule is chosen and on Check again, and its result is kept in
+        // the voting record, which the roster rebuilds on each change.
+        const eligibilityNode = doc.createElement('section');
+        eligibilityNode.className = 'voting-eligibility';
+        eligibilityNode.hidden = true;
+        part('[data-voting-roster]')?.after(eligibilityNode);
+        const eligibility = { key: null, evidence: null, judged: null, busy: false, error: null };
+        const requiredSet = value => {
+            const rule = value?.rule ? root.CommunityBallotRules?.get(value.rule.id, value.rule.version) : null;
+            const required = rule?.requires?.eligibility;
+            return required ? root.BuildingEligibility.get(required.id, required.version) : null;
+        };
+        const withEligibility = value => (value && requiredSet(value) && eligibility.evidence ? { ...value, eligibility: eligibility.evidence } : value);
         const roster = root.CommunityVotingRoster?.mount(part('[data-voting-roster]'), {
             value: state.values.voting,
-            changed: (value, pending) => { state.values.voting = value; rosterPending = pending; issues(); }
+            changed: (value, pending) => {
+                state.values.voting = withEligibility(value); rosterPending = pending;
+                const set = requiredSet(value), key = set ? `${set.id}@${set.version}` : null;
+                if (key !== eligibility.key) { eligibility.key = key; eligibility.evidence = null; eligibility.judged = null; if (set) checkEligibility(); }
+                renderEligibility(); issues();
+            }
         });
+        if (state.values.voting?.eligibility) { eligibility.evidence = state.values.voting.eligibility; const set = requiredSet(state.values.voting); eligibility.key = set ? `${set.id}@${set.version}` : null; }
+        async function checkEligibility(control = null) {
+            const set = requiredSet(state.values.voting);
+            if (!set || eligibility.busy) return;
+            eligibility.busy = true; eligibility.error = null; renderEligibility();
+            const work = async () => {
+                const designs = draft().designs.map(design => root.proposalStorage.getProposal(design.proposalId)).filter(Boolean);
+                const houses = root.BuildingEligibility.coveredHouses(set, designs);
+                eligibility.judged = await root.BuildingEligibility.check(set, houses, ids => root.BuildingFacts.readMany(ids));
+                eligibility.evidence = houses.length ? root.BuildingEligibility.evidence(set, eligibility.judged, new Date().toISOString()) : null;
+                state.values.voting = { ...state.values.voting };
+                delete state.values.voting.eligibility;
+                state.values.voting = withEligibility(state.values.voting);
+            };
+            try { await (control ? root.BusyControl.track(control, work) : work()); } catch (error) {
+                eligibility.error = error.message;
+                console.error(`[${new Date().toISOString()}] [AgreementEditor] eligibility check failed`, error);
+            } finally { eligibility.busy = false; if (!state.closed) { renderEligibility(); issues(); } }
+        }
+        // Literal keys, so the locale coverage test sees each one.
+        const VERDICT_TEXT = { eligible: () => t('voting.eligibility.verdict.eligible', 'Eligible'),
+            ineligible: () => t('voting.eligibility.verdict.ineligible', 'Not eligible'), unknown: () => t('voting.eligibility.verdict.unknown', 'Unknown') };
+        function renderEligibility() {
+            const set = requiredSet(state.values.voting);
+            eligibilityNode.hidden = !set;
+            if (!set) { eligibilityNode.replaceChildren(); return; }
+            const judged = eligibility.judged || [];
+            const eligibleCount = judged.filter(house => house.id && house.result.verdict === 'eligible').length;
+            eligibilityNode.innerHTML = `<h4>${esc(t('voting.eligibility.title', 'Covered houses'))}</h4>`
+                + `<p class="agreement-hint">${esc(t('voting.eligibility.hint', 'This street vote may cover only houses that meet the rule’s eligibility conditions. Their facts are read from OpenStreetMap: add missing ones there, then check again.'))}</p>`
+                + (eligibility.busy ? `<p role="status">${esc(t('voting.eligibility.checking', 'Checking the covered houses…'))}</p>`
+                    : eligibility.error ? `<p role="alert">${esc(t('voting.eligibility.failed', 'The check could not be completed: {{error}}', { error: eligibility.error }))}</p>`
+                        : judged.length ? `<p role="status">${esc(t('voting.eligibility.summary', '{{eligible}} of {{total}} covered houses eligible', { eligible: eligibleCount, total: judged.length }))}</p>`
+                            : eligibility.judged ? `<p role="status">${esc(t('voting.eligibility.none', 'The plan raises no existing building with a mansard.'))}</p>` : '')
+                + (judged.length ? `<ul class="voting-eligibility__houses">${judged.map(house => {
+                    const verdict = house.id ? house.result.verdict : 'unknown';
+                    const failing = house.result.tests.filter(test => test.status === 'fail').map(test => test.cite);
+                    const unknown = house.result.tests.filter(test => test.status === 'unknown').map(test => test.cite);
+                    const detail = [failing.length ? t('voting.eligibility.fails', 'fails {{tests}}', { tests: failing.join(', ') }) : '',
+                        unknown.length ? t('voting.eligibility.missingFacts', 'unknown {{tests}}', { tests: unknown.join(', ') }) : ''].filter(Boolean).join(' · ');
+                    const edit = house.building?.edit?.url;
+                    return `<li data-verdict="${esc(verdict)}"><span>${esc(house.id ? t('voting.eligibility.house', 'Building {{id}}', { id: house.id.replace(/^osm:/, '') }) : t('voting.eligibility.unanswered', 'A building with no facts source ({{id}})', { id: house.sourceBuildingId ?? '?' }))}</span>`
+                        + ` <strong>${esc(VERDICT_TEXT[verdict]())}</strong>${detail ? ` <span class="agreement-hint">${esc(detail)}</span>` : ''}`
+                        + (edit && verdict !== 'eligible' ? ` <a class="cb-link cb-link--external" href="${esc(edit)}" target="_blank" rel="noopener">${esc(t('voting.eligibility.edit', 'Edit in {{source}}', { source: house.building.edit.source }))}</a>` : '') + '</li>';
+                }).join('')}</ul>` : '')
+                + `<button type="button" class="btn btn-secondary" data-voting-eligibility-check${eligibility.busy ? ' disabled' : ''}>${esc(eligibility.judged ? t('voting.eligibility.again', 'Check again') : t('voting.eligibility.check', 'Check eligibility'))}</button>`;
+            eligibilityNode.querySelector('[data-voting-eligibility-check]').addEventListener('click', event => checkEligibility(event.currentTarget));
+        }
+        renderEligibility();
+        // A reopened draft under such a rule is checked again: its houses' facts may have changed.
+        if (requiredSet(state.values.voting)) { eligibility.key = `${requiredSet(state.values.voting).id}@${requiredSet(state.values.voting).version}`; checkEligibility(); }
         function finish(result) {
             if (state.closed) return;
             state.closed = true; roster?.destroy(); clearInspection(); listeners.abort(); auxiliary?.close(); unregisterEscape?.();

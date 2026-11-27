@@ -484,14 +484,13 @@ describe('building facts on the card', () => {
         expect(text(card.renderFacts(first))).toContain('buildingFact.field.parapet()buildingFact.parapetYes()');
     });
     // London plans under English rules, so the card adds Living Tradition's tests for the house:
-    // a parapet now stated, its terrace from the buildings loaded around it, its roof shape unknown.
-    it('shows the city\'s eligibility tests for the house, from its facts and the loaded neighbours', async () => {
-        const turf = require('@turf/turf');
-        const box = x => turf.polygon([[[x, 51.539], [x + 0.0001, 51.539], [x + 0.0001, 51.5391], [x, 51.5391], [x, 51.539]]]);
-        const row = [box(-0.1062), box(-0.1061), box(-0.1060)];
-        const house = { ...record(), site: row[1].geometry, source: { recordId: 'w1', city: 'london' } }, shown = { current: house };
-        const card = setup([{ ...building(true), facts: { ...building(true).facts, built: { value: { from: 1828, to: 1830 }, source: 'osm', key: 'start_date', raw: '1828..1830' } } }], shown, {
-            BuildingEligibility: require('../../frontend/js/planning/eligibility.js'), turf, buildingFeaturePool: row,
+    // a parapet now stated, its row and footprint from the source's geometry, its roof shape unknown.
+    it('shows the city\'s eligibility tests for the house, from its facts', async () => {
+        const house = { ...record(), source: { recordId: 'w1', city: 'london' } }, shown = { current: house };
+        const geometry = (value, raw) => ({ value, source: 'osm', key: 'geometry', raw });
+        const card = setup([{ ...building(true), facts: { ...building(true).facts, built: { value: { from: 1828, to: 1830 }, source: 'osm', key: 'start_date', raw: '1828..1830' },
+            footprint_m2: geometry(45.6, '45.6 m² outline'), row_size: geometry(20, '20 buildings joined by party walls') } }], shown, {
+            BuildingEligibility: require('../../frontend/js/planning/eligibility.js'),
             CityConfigManager: { getCityConfig: city => (city === 'london' ? { planning: { ruleSetIds: ['gb-eng-planning'] } } : null) } });
         await card.readFacts(house, { id: 'w1', properties: {} });
         const block = card.renderFacts(house).querySelector('.planning-eligibility');

@@ -2366,6 +2366,10 @@
         "errors": {
             "consultationOrganiser": "Introduza um site do organizador ou um identificador did:web válido.",
             "consultationParticipationUrl": "Introduza um URL de participação HTTPS sem credenciais.",
+            "eligibilityNoHouses": "O plano não eleva nenhum edifício existente com uma mansarda, pelo que esta votação nada tem a abranger.",
+            "eligibilityMissing": "Verifique a elegibilidade das casas abrangidas antes de criar esta votação de rua.",
+            "eligibilityStale": "O plano abrange outras casas que a última verificação: verifique de novo.",
+            "eligibilityFailed": "Ainda não se sabe se todas as casas abrangidas são elegíveis: veja Casas abrangidas.",
             "communityAllocations": "Um acordo comunitário não vinculativo não pode atribuir terrenos.",
             "communityMoney": "Um acordo comunitário não vinculativo não pode incluir pagamentos em dinheiro.",
             "noDesigns": "Escolha pelo menos um projeto.",
@@ -10128,6 +10132,30 @@
             "gb-street-vote-consultation-2023": {
                 "name": "Votação de rua — consulta do governo de 2023",
                 "source": "Proposta na consulta do governo britânico de dezembro de 2023 sobre ordens de desenvolvimento por votação de rua: pelo menos 60% dos eleitores habilitados a favor, e pelo menos um eleitor a favor em pelo menos metade dos agregados votantes."
+            },
+            "gb-street-vote-living-tradition": {
+                "name": "Votação de rua — mansardas segundo Living Tradition",
+                "source": "Proposto em Living Tradition de Samuel Hughes (Create Streets, 2021): pelo menos 50% dos votos expressos a favor, residentes de pelo menos metade das habitações a votar, e um sim de um residente em pelo menos metade das habitações votantes. Só podem ser abrangidas casas que cumpram as suas condições (par. 17)."
+            }
+        },
+        "eligibility": {
+            "title": "Casas abrangidas",
+            "hint": "Esta votação de rua só pode abranger casas que cumpram as condições da regra. Os dados são lidos do OpenStreetMap: acrescente lá os que faltam e verifique de novo.",
+            "checking": "A verificar as casas abrangidas…",
+            "failed": "Não foi possível concluir a verificação: {{error}}",
+            "summary": "{{eligible}} de {{total}} casas abrangidas elegíveis",
+            "none": "O plano não eleva nenhum edifício existente com uma mansarda.",
+            "fails": "falha {{tests}}",
+            "missingFacts": "desconhecido {{tests}}",
+            "house": "Edifício {{id}}",
+            "unanswered": "Um edifício sem fonte de dados ({{id}})",
+            "edit": "Editar no {{source}}",
+            "again": "Verificar de novo",
+            "check": "Verificar elegibilidade",
+            "verdict": {
+                "eligible": "Elegível",
+                "ineligible": "Não elegível",
+                "unknown": "Desconhecido"
             }
         }
     },

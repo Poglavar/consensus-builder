@@ -32,15 +32,26 @@
         return local && /^http:\/\/(localhost|127\.0\.0\.1):\d+\/api$/.test(local) ? local : API_ROOT;
     }
 
-    // One building's facts, read live (the contract reads its source on every request).
-    async function read(id, { fetchFn = fetch, base = apiRoot() } = {}) {
-        const url = `${base}/building-facts?ids=${encodeURIComponent(id)}`;
-        const response = await fetchFn(url, { cache: 'no-store' });
-        if (!response.ok) throw new Error(`Building facts HTTP ${response.status}`);
-        const answer = await response.json();
-        const building = (answer.buildings || []).find(item => item.id === id);
-        if (!building || typeof building.facts !== 'object') throw new Error('Invalid building facts response');
-        return { ...building, sources: answer.sources || [] };
+    // Several buildings' facts, read live (the contract reads its source on every request), as a Map
+    // id → building; at most 200 per request, as the contract allows.
+    async function readMany(ids, { fetchFn = fetch, base = apiRoot() } = {}) {
+        const found = new Map();
+        for (let i = 0; i < ids.length; i += 200) {
+            const batch = ids.slice(i, i + 200);
+            const response = await fetchFn(`${base}/building-facts?ids=${batch.map(encodeURIComponent).join(',')}`, { cache: 'no-store' });
+            if (!response.ok) throw new Error(`Building facts HTTP ${response.status}`);
+            const answer = await response.json();
+            for (const id of batch) {
+                const building = (answer.buildings || []).find(item => item.id === id);
+                if (!building || typeof building.facts !== 'object') throw new Error('Invalid building facts response');
+                found.set(id, { ...building, sources: answer.sources || [] });
+            }
+        }
+        return found;
+    }
+    // One building's facts.
+    async function read(id, options = {}) {
+        return (await readMany([id], options)).get(id);
     }
 
     // { from, to } (whole years, either open) → the words for it.
@@ -70,5 +81,5 @@
         });
     }
 
-    return { API_ROOT, CARD_FIELDS, factIdOf, apiRoot, read, builtWords, cardRows };
+    return { API_ROOT, CARD_FIELDS, factIdOf, apiRoot, read, readMany, builtWords, cardRows };
 });

@@ -8523,6 +8523,10 @@
         "errors": {
             "consultationOrganiser": "Unesite mrežnu stranicu organizatora ili valjan did:web identifikator.",
             "consultationParticipationUrl": "Unesite HTTPS URL za sudjelovanje bez vjerodajnica.",
+            "eligibilityNoHouses": "Plan ne nadograđuje mansardom nijednu postojeću zgradu, pa ovo glasanje nema što obuhvatiti.",
+            "eligibilityMissing": "Provjerite uvjete za obuhvaćene kuće prije stvaranja ovog glasanja.",
+            "eligibilityStale": "Plan obuhvaća druge kuće nego zadnja provjera: provjerite ponovno.",
+            "eligibilityFailed": "Još se ne zna ispunjava li svaka obuhvaćena kuća uvjete: vidi Obuhvaćene kuće.",
             "communityAllocations": "Neobvezujući sporazum sa zajednicom ne može dodjeljivati zemljište.",
             "communityMoney": "Neobvezujući sporazum sa zajednicom ne može uključivati novčane isplate.",
             "noDesigns": "Odaberite barem jedan dizajn.",
@@ -10177,6 +10181,30 @@
             "gb-street-vote-consultation-2023": {
                 "name": "Glasanje ulice — savjetovanje vlade 2023.",
                 "source": "Predloženo u savjetovanju britanske vlade o naredbama za razvoj glasanjem ulice iz prosinca 2023.: najmanje 60% birača s pravom glasa za, i barem jedan birač za u najmanje polovini kućanstava koja su glasala."
+            },
+            "gb-street-vote-living-tradition": {
+                "name": "Glasanje ulice — mansarde po Living Tradition",
+                "source": "Predloženo u Living Tradition Samuela Hughesa (Create Streets, 2021.): najmanje 50% danih glasova za, stanari barem polovine kućanstava glasaju, i barem jedan stanar za u najmanje polovini kućanstava koja su glasala. Obuhvatiti se smiju samo kuće koje ispunjavaju uvjete (t. 17)."
+            }
+        },
+        "eligibility": {
+            "title": "Obuhvaćene kuće",
+            "hint": "Ovo glasanje ulice smije obuhvatiti samo kuće koje ispunjavaju uvjete pravila. Podaci se čitaju iz OpenStreetMapa: dodajte one koji nedostaju ondje, pa provjerite ponovno.",
+            "checking": "Provjeravam obuhvaćene kuće…",
+            "failed": "Provjera nije dovršena: {{error}}",
+            "summary": "{{eligible}} od {{total}} obuhvaćenih kuća ispunjava uvjete",
+            "none": "Plan ne nadograđuje mansardom nijednu postojeću zgradu.",
+            "fails": "ne ispunjava {{tests}}",
+            "missingFacts": "nepoznato {{tests}}",
+            "house": "Zgrada {{id}}",
+            "unanswered": "Zgrada bez izvora podataka ({{id}})",
+            "edit": "Uredi u {{source}}",
+            "again": "Provjeri ponovno",
+            "check": "Provjeri uvjete",
+            "verdict": {
+                "eligible": "Ispunjava",
+                "ineligible": "Ne ispunjava",
+                "unknown": "Nepoznato"
             }
         }
     },

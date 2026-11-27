@@ -11,7 +11,7 @@
     const approval = () => root.ProposalApproval
         || (typeof require === 'function' ? require('../proposals/approval.js') : null);
 
-    // A rule's version is the date its thresholds were checked against the sources. A published
+    // A rule's version is the date its thresholds were checked against the sources (each entry's own). A published
     // agreement pins id@version, so a shipped version is never edited or removed: a re-check that
     // changes a rule adds a new entry beside it (backend/test/community-ballot-rules.test.js lists them).
     const CHECKED = '2026-11-25';
@@ -43,6 +43,19 @@
             text: {
                 name: 'Street vote — 2023 government consultation',
                 source: 'Proposed in the government’s December 2023 street vote development orders consultation: at least 60% of those eligible to vote in favour, and at least one voter in at least half of the voting households in favour.'
+            }
+        },
+        {
+            // A vote for mansards may cover only houses that meet the paper's eligibility conditions
+            // (para. 17, planning/eligibility.js): the agreement records that check and cannot be
+            // created until every covered house passes it.
+            id: 'gb-street-vote-living-tradition', version: '2026-11-27', country: 'GB',
+            tests: [test('cast-support', atLeast(1, 2)), test('household-turnout', atLeast(1, 2)), test('household-support', atLeast(1, 2))],
+            requires: { eligibility: { id: 'gb-living-tradition-mansards', version: '2026-11-27' } },
+            sources: [{ label: 'Samuel Hughes, Living Tradition (Create Streets, 2021), paras 8–17', url: 'https://www.createstreets.com/wp-content/uploads/2025/07/Living-Tradition.pdf' }],
+            text: {
+                name: 'Street vote — Living Tradition mansards',
+                source: 'Proposed in Samuel Hughes’s Living Tradition (Create Streets, 2021): at least 50% of votes cast in favour, residents of at least half the households voting, and a yes from a resident in at least half of the voting households. Only houses that meet its eligibility conditions (para. 17) may be covered.'
             }
         }
     ];

@@ -23,7 +23,7 @@ const voting = z.union([
         households: z.array(z.array(codeHash).min(1)).min(1).max(10000).optional()
             .describe('Partition of codeHashes by household: each code exactly once; codes of one household together. Omit when every household has one code.'),
         rule: z.object({ id: z.enum([...new Set(BallotRules.RULES.map(rule => rule.id))]), version: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) }).strict().optional()
-            .describe('Ballot rule pinned by id and version; the shipped versions are listed by ugt_capabilities under community-code-voting.') }).strict()
+            .describe('Ballot rule pinned by id and version; the shipped versions are listed by ugt_capabilities under community-code-voting. A rule that requires eligibility (gb-street-vote-living-tradition) drafts only when every existing building the plan raises with a mansard passes its rule set (Living Tradition para. 17), judged from the shared building facts; the server records that check, and a refusal names each house with the tests it fails or cannot decide.') }).strict()
 ]);
 const consultation = z.object({ organiser: z.string().max(2048).nullable(), participationUrl: z.string().max(2048).nullable(), voting: voting.optional() }).strict().nullable().optional();
     const allocation = z.object({ output: z.string().min(1), to: z.discriminatedUnion('kind', [

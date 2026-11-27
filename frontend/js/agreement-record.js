@@ -861,6 +861,27 @@
                     add(errors, 'consultation', 'consultation-participation-url', 'Enter an HTTPS participation URL without credentials.');
                 }
             }
+            // A ballot rule that covers only eligible buildings (Living Tradition's mansards): the
+            // recorded check must cover exactly the houses the plan raises, and find each eligible.
+            const voting = consultation.voting;
+            const rules = root.CommunityBallotRules || (typeof require === 'function' ? require('./community/ballot-rules.js') : null);
+            const required = voting?.rule ? rules.get(voting.rule.id, voting.rule.version)?.requires?.eligibility : null;
+            if (required) {
+                const E = root.BuildingEligibility || (typeof require === 'function' ? require('./planning/eligibility.js') : null);
+                const set = E.get(required.id, required.version);
+                const designs = typeof designOf === 'function' ? agreement.designs.map(design => designOf(design.proposalId)).filter(Boolean) : null;
+                const houses = designs ? E.coveredHouses(set, designs) : (voting.eligibility?.houses || []);
+                for (const issue of E.evidenceIssues(set, voting.eligibility || null, houses)) {
+                    const blocked = (issue.houses || []).map(house => house.id || '?').join(', ');
+                    const message = {
+                        'eligibility-no-houses': 'The plan raises no existing building with a mansard, so this street vote has nothing to cover.',
+                        'eligibility-missing': 'Check the covered houses\' eligibility before creating this street vote.',
+                        'eligibility-stale': 'The plan covers other houses than the last eligibility check: check again.',
+                        'eligibility-failed': `Not every covered house is known to be eligible: ${blocked}.`,
+                    }[issue.code];
+                    add(errors, 'consultation', `voting-${issue.code}`, message, issue.houses ? { houses: issue.houses.map(house => house.id) } : undefined);
+                }
+            }
         }
 
         const { deadline } = agreement;

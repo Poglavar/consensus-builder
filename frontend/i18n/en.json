@@ -8478,6 +8478,10 @@
         "errors": {
             "consultationOrganiser": "Enter an organiser website or a valid did:web identifier.",
             "consultationParticipationUrl": "Enter an HTTPS participation URL without credentials.",
+            "eligibilityNoHouses": "The plan raises no existing building with a mansard, so this street vote has nothing to cover.",
+            "eligibilityMissing": "Check the covered houses’ eligibility before creating this street vote.",
+            "eligibilityStale": "The plan covers other houses than the last eligibility check: check again.",
+            "eligibilityFailed": "Not every covered house is known to be eligible yet: see Covered houses.",
             "communityAllocations": "A nonbinding community agreement cannot allocate land.",
             "communityMoney": "A nonbinding community agreement cannot include cash payments.",
             "noDesigns": "Choose at least one design.",
@@ -10077,6 +10081,30 @@
             "gb-street-vote-consultation-2023": {
                 "name": "Street vote — 2023 government consultation",
                 "source": "Proposed in the government’s December 2023 street vote development orders consultation: at least 60% of those eligible to vote in favour, and at least one voter in at least half of the voting households in favour."
+            },
+            "gb-street-vote-living-tradition": {
+                "name": "Street vote — Living Tradition mansards",
+                "source": "Proposed in Samuel Hughes’s Living Tradition (Create Streets, 2021): at least 50% of votes cast in favour, residents of at least half the households voting, and a yes from a resident in at least half of the voting households. Only houses that meet its eligibility conditions (para. 17) may be covered."
+            }
+        },
+        "eligibility": {
+            "title": "Covered houses",
+            "hint": "This street vote may cover only houses that meet the rule’s eligibility conditions. Their facts are read from OpenStreetMap: add missing ones there, then check again.",
+            "checking": "Checking the covered houses…",
+            "failed": "The check could not be completed: {{error}}",
+            "summary": "{{eligible}} of {{total}} covered houses eligible",
+            "none": "The plan raises no existing building with a mansard.",
+            "fails": "fails {{tests}}",
+            "missingFacts": "unknown {{tests}}",
+            "house": "Building {{id}}",
+            "unanswered": "A building with no facts source ({{id}})",
+            "edit": "Edit in {{source}}",
+            "again": "Check again",
+            "check": "Check eligibility",
+            "verdict": {
+                "eligible": "Eligible",
+                "ineligible": "Not eligible",
+                "unknown": "Unknown"
             }
         }
     },

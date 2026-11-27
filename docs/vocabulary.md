@@ -142,7 +142,7 @@ A dated threshold set a code electorate can pin as `consultation.voting.rule = {
 
 ### Street vote
 
-A community code vote of the residents of one street on a plan for it, decided by a street-vote ballot rule. Two rules ship, both proposals for England that are not in force: Policy Exchange's Strong Suburbs (2021) and the government's December 2023 street vote development orders consultation. Owner sign-off is not part of the street vote: owners decide in a separate owners' agreement on the same plan, and the community agreement's voting panel lists those agreements beside the resident result without reading or changing their records.
+A community code vote of the residents of one street on a plan for it, decided by a street-vote ballot rule. Three rules ship, all proposals for England that are not in force: Policy Exchange's Strong Suburbs (2021), the government's December 2023 street vote development orders consultation, and Samuel Hughes's Living Tradition (Create Streets, 2021) for mansards. A rule can require [building eligibility](#building-eligibility): Living Tradition's covers only the houses the plan raises with a mansard, and its agreement cannot be created until each one is eligible; the voting record keeps that check (each house, its verdict, the failing or unknown tests and the source version read). Owner sign-off is not part of the street vote: owners decide in a separate owners' agreement on the same plan, and the community agreement's voting panel lists those agreements beside the resident result without reading or changing their records.
 
 ### Agreement input
 
@@ -653,10 +653,21 @@ What is known about a source building beside its shape: storeys, when it was bui
 and parapet (and height). The shared API's building-facts contract answers them for any city;
 this app reads only that contract, never a source's own format. Each fact names its source, the
 source's key and raw value; an unknown fact is unknown, never a default. "Built" is a span of
-years, so a date known only as "before 1913" still decides a rule about 1918. OpenStreetMap
+years, so a date known only as "before 1913" still decides a rule about 1918. Footprint area and
+row size (how many buildings are joined to it by shared walls of at least 1.5 m) come from the
+source's geometry. OpenStreetMap
 buildings are answered live from OpenStreetMap, and a missing fact is added there by whoever
 needs it (`building:parapet=yes|no` for a parapet along the whole street front). Croatian
 cadastre buildings are to join the same contract.
+
+### Building eligibility
+
+Whether a source building meets a rule set's conditions on what it is, test by test, judged only
+from its building facts, so the app and the agents' server judge it alike. A test passes, fails, is
+unknown while its fact is, or is unchecked when no source states it (listed, not assumed). The
+verdict is ineligible when a test fails, unknown while one is unknown, else eligible. A rule set is
+dated like a ballot rule and applies where a city plans under its planning rule set. The first is
+Living Tradition's paragraph 17 for mansards under English planning (`gb-eng-planning`).
 
 ### Proposed building
 

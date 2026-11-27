@@ -42,3 +42,7 @@
 [data-community-voting] .voting-owner-list li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--cb-space-2); }
 [data-voting-roster] .voting-table input { width: 100%; min-width: 8rem; box-sizing: border-box; }
 [data-voting-roster] select { width: 100%; }
+/* Covered houses of a street vote whose rule covers only eligible buildings (agreement-dialog.js). */
+.voting-eligibility { display: grid; gap: var(--cb-space-2); justify-items: start; }
+.voting-eligibility__houses { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--cb-space-1); font-size: var(--cb-text-sm); }
+.voting-eligibility__houses [data-verdict="ineligible"] strong { color: var(--cb-danger-soft-ink); }

@@ -2366,6 +2366,10 @@
         "errors": {
             "consultationOrganiser": "Saisissez le site de l’organisateur ou un identifiant did:web valide.",
             "consultationParticipationUrl": "Saisissez une URL de participation HTTPS sans identifiants de connexion.",
+            "eligibilityNoHouses": "Le plan ne surélève aucun bâtiment existant d’une mansarde ; ce vote de rue n’a donc rien à couvrir.",
+            "eligibilityMissing": "Vérifiez l’admissibilité des maisons couvertes avant de créer ce vote de rue.",
+            "eligibilityStale": "Le plan couvre d’autres maisons que la dernière vérification : vérifiez à nouveau.",
+            "eligibilityFailed": "On ne sait pas encore si chaque maison couverte est admissible : voir Maisons couvertes.",
             "communityAllocations": "Un accord communautaire non contraignant ne peut pas attribuer de terrains.",
             "communityMoney": "Un accord communautaire non contraignant ne peut pas inclure de paiements monétaires.",
             "noDesigns": "Choisissez au moins un projet.",
@@ -10128,6 +10132,30 @@
             "gb-street-vote-consultation-2023": {
                 "name": "Vote de rue — consultation du gouvernement de 2023",
                 "source": "Proposé dans la consultation du gouvernement britannique de décembre 2023 sur les ordonnances d’aménagement par vote de rue : au moins 60 % des électeurs inscrits pour, et au moins un électeur pour dans au moins la moitié des foyers votants."
+            },
+            "gb-street-vote-living-tradition": {
+                "name": "Vote de rue — mansardes selon Living Tradition",
+                "source": "Proposé dans Living Tradition de Samuel Hughes (Create Streets, 2021) : au moins 50 % des suffrages exprimés pour, des résidents d’au moins la moitié des foyers votant, et un oui d’un résident dans au moins la moitié des foyers votants. Seules les maisons remplissant ses conditions (par. 17) peuvent être couvertes."
+            }
+        },
+        "eligibility": {
+            "title": "Maisons couvertes",
+            "hint": "Ce vote de rue ne peut couvrir que des maisons remplissant les conditions de la règle. Leurs données sont lues dans OpenStreetMap : ajoutez-y celles qui manquent, puis vérifiez à nouveau.",
+            "checking": "Vérification des maisons couvertes…",
+            "failed": "La vérification n’a pas pu aboutir : {{error}}",
+            "summary": "{{eligible}} maisons couvertes sur {{total}} admissibles",
+            "none": "Le plan ne surélève aucun bâtiment existant d’une mansarde.",
+            "fails": "échoue {{tests}}",
+            "missingFacts": "inconnu {{tests}}",
+            "house": "Bâtiment {{id}}",
+            "unanswered": "Un bâtiment sans source de données ({{id}})",
+            "edit": "Modifier dans {{source}}",
+            "again": "Vérifier à nouveau",
+            "check": "Vérifier l’admissibilité",
+            "verdict": {
+                "eligible": "Admissible",
+                "ineligible": "Non admissible",
+                "unknown": "Inconnu"
             }
         }
     },

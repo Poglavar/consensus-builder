@@ -202,3 +202,59 @@ test('a voter checks, changes and reviews one ballot without a wallet', async ({
   await panel.locator('.voting-owners').getByRole('button',{name:'Open'}).click();
   await expect(page.locator('#agreement-panel-title')).toHaveText('Owners sign off',{timeout:45_000});
 });
+
+// Living Tradition's street vote covers only eligible houses: the editor reads the plan's raised
+// houses from the shared API's building facts, lists them, and holds the agreement until each one
+// passes; the stored record keeps that check.
+test('a Living Tradition street vote waits until every covered house is eligible and records the check', async ({ mockApi: page }) => {
+  test.setTimeout(180_000);
+  await stubBasemapTiles(page);
+  const fact = (value: unknown) => ({ value, source: 'osm', key: 'k', raw: String(value) });
+  const georgian = { storeys: fact(3), built: fact({ from: 1828, to: 1830 }), roof_shape: fact('flat'), parapet: fact(true), height_m: null, footprint_m2: fact(45.6), row_size: fact(20) };
+  const parapetTagged = new Set(['osm:way/101']);
+  const reads: string[] = [];
+  await page.route('https://zagreb.lol/api/building-facts*', route => {
+    const ids = new URL(route.request().url()).searchParams.get('ids')!.split(',');
+    reads.push(ids.join(','));
+    route.fulfill({ json: { fields: [], sources: [], buildings: ids.map(id => ({ id, found: true,
+      facts: { ...georgian, parapet: parapetTagged.has(id) ? fact(true) : null },
+      edit: { url: `https://www.openstreetmap.org/edit?editor=id&way=${id.split('/')[1]}`, source: 'OpenStreetMap', keys: { parapet: 'building:parapet' } },
+      source_version: { version: 2, changed: '2026-11-27T15:00:00Z' } })) } });
+  });
+  const { layoutId } = await applyLayout(page);
+  await page.evaluate(id => {
+    const w = window as any;
+    // The plan raises two existing houses with a mansard (Based on existing buildings).
+    const design = w.proposalStorage.getProposal(id);
+    const raised = (source: string) => ({ type: 'Feature', geometry: null, properties: { type: 'proposedBuilding', basedOnExisting: true, sourceBuildingId: source, roof: 'mansard' } });
+    design.geometry = { ...(design.geometry || {}), buildings: [raised('w101'), raised('w102')] };
+    const plan = w.PlanComposition.create('Mansard street', [design], w.MapShare.capture(w));
+    w.PlanWorkspace.save(plan); w.PlanDialog.details(plan);
+  }, layoutId);
+  await page.getByRole('button', { name: 'Create agreement', exact: true }).click();
+  const editor = agreementEditor(page), roster = editor.locator('[data-voting-roster]'), covered = editor.locator('.voting-eligibility');
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  await editor.locator('[data-agreement-electorate][value="community"]').check();
+  await roster.locator('[data-roster-count]').fill('2');
+  await roster.locator('[data-roster-action="generate"]').click();
+  await roster.getByLabel('Ballot rule').selectOption({ label: 'Street vote — Living Tradition mansards' });
+  await expect(covered).toContainText('1 of 2 covered houses eligible');
+  await expect(covered.locator('li[data-verdict="unknown"]')).toContainText('unknown 17.2');
+  await expect(covered.locator('li[data-verdict="unknown"] a')).toHaveAttribute('href', 'https://www.openstreetmap.org/edit?editor=id&way=102');
+  const downloaded = page.waitForEvent('download');
+  await roster.locator('[data-roster-action="save"]').click();
+  await downloaded;
+  await expect(editorSave(editor)).toBeDisabled();
+  await expect(editor.locator('[data-agreement-waiting]')).toContainText('Not every covered house is known to be eligible yet');
+  // The author tags No. 102's parapet in OpenStreetMap and checks again.
+  parapetTagged.add('osm:way/102');
+  await covered.getByRole('button', { name: 'Check again' }).click();
+  await expect(covered).toContainText('2 of 2 covered houses eligible');
+  await expect(editorSave(editor)).toBeEnabled();
+  await editorSave(editor).click();
+  await editorClosed(page);
+  const [saved] = await storedAgreements(page);
+  expect(saved.consultation.voting.rule).toEqual({ id: 'gb-street-vote-living-tradition', version: '2026-11-27' });
+  expect(saved.consultation.voting.eligibility.houses.map((house: any) => [house.id, house.verdict])).toEqual([['osm:way/101', 'eligible'], ['osm:way/102', 'eligible']]);
+  expect(reads.at(-1)).toBe('osm:way/101,osm:way/102');
+});

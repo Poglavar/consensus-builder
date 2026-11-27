@@ -6,10 +6,40 @@ import { deriveWithApp } from './mcp-ground-runtime.js';
 import { parcelSourceIdOf } from './mcp-read-tools.js';
 import { describeRoadCuts, roadCutWarning } from './mcp-ground-effects.js';
 import { cityMoney } from '../scripts/lib/frontend-city-money.mjs';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const BallotRules = require('../../frontend/js/community/ballot-rules.js');
+const Eligibility = require('../../frontend/js/planning/eligibility.js');
+const BuildingFacts = require('../../frontend/js/buildings/building-facts.js');
 const fail = (code, message) => Object.assign(new Error(message), { code, next: { action: 'Review these designs and their ground in the app before proposing an agreement.' } });
 export const deriveAgreementGround = deriveWithApp;
 
-export function createMcpAgreementTools({ read, drafts, appOrigin }) {
+// A street vote whose ballot rule covers only eligible buildings (Living Tradition's mansards) is
+// drafted only when every house the plan raises passes the rule set, judged from the shared API's
+// building facts exactly as the app's agreement editor judges it; the check goes into the record.
+export async function votingWithEligibility(consultation, designContents, { readFacts }) {
+    const voting = consultation?.voting;
+    const rule = voting?.rule ? BallotRules.get(voting.rule.id, voting.rule.version) : null;
+    const required = rule?.requires?.eligibility;
+    if (!required) return consultation;
+    const set = Eligibility.get(required.id, required.version);
+    const houses = Eligibility.coveredHouses(set, designContents);
+    if (!houses.length) throw Object.assign(new Error('The plan raises no existing building with a mansard, so this street vote has nothing to cover.'), { code: 'eligibility-no-houses' });
+    const judged = await Eligibility.check(set, houses, readFacts);
+    const blocked = judged.filter(house => !house.id || house.result.verdict !== 'eligible');
+    if (blocked.length) {
+        const why = house => {
+            const cites = status => house.result.tests.filter(test => test.status === status).map(test => test.cite).join(', ');
+            return `${house.id || `building ${house.sourceBuildingId} (no facts source)`}: ${house.id ? house.result.verdict : 'unknown'}`
+                + (cites('fail') ? `, fails ${cites('fail')}` : '') + (cites('unknown') ? `, unknown ${cites('unknown')}` : '');
+        };
+        throw Object.assign(new Error(`Not every covered house is eligible yet (${blocked.map(why).join('; ')}). Add the missing facts in OpenStreetMap and draft again.`),
+            { code: 'eligibility-failed', next: { action: 'Read each house with the building facts (edit links per building) and fill the missing ones in OpenStreetMap.' } });
+    }
+    return { ...consultation, voting: { ...voting, eligibility: Eligibility.evidence(set, judged, new Date().toISOString()) } };
+}
+
+export function createMcpAgreementTools({ read, drafts, appOrigin, readFacts = ids => BuildingFacts.readMany(ids, { base: process.env.BUILDING_FACTS_API || BuildingFacts.API_ROOT }) }) {
     let resolvePlan;
     const setPlanResolver = resolver => { resolvePlan = resolver; };
     async function resolveDesigns(values, parcelSourceId) {
@@ -90,6 +120,7 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
             if (rule.electorate !== 'community' && !rule.settlement) rule.settlement = { method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 0 };
             if (settlement) rule.settlement = settlement;
             if (rule.electorate === 'community') rule.settlement = null;
+            if (rule.electorate === 'community') consultation = await votingWithEligibility(consultation, designs.map(d => d.content), { readFacts });
             const { land, source, ids } = await groundFor({ ...resolved, designs });
             const plan = { cid: selected.cid, content: selected.plan };
             // Each input parcel is its owners' abstract party; the rights snapshot stays in the rule.

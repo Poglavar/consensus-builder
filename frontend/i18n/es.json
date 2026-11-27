@@ -8505,6 +8505,10 @@
         "errors": {
             "consultationOrganiser": "Introduce el sitio web de la organización o un identificador did:web válido.",
             "consultationParticipationUrl": "Introduce una URL de participación HTTPS sin credenciales.",
+            "eligibilityNoHouses": "El plan no eleva ningún edificio existente con una mansarda, así que esta votación no tiene nada que incluir.",
+            "eligibilityMissing": "Compruebe las condiciones de las casas incluidas antes de crear esta votación.",
+            "eligibilityStale": "El plan incluye otras casas que la última comprobación: vuelva a comprobar.",
+            "eligibilityFailed": "Aún no se sabe si todas las casas incluidas cumplen: vea Casas incluidas.",
             "communityAllocations": "Un acuerdo comunitario no vinculante no puede asignar terrenos.",
             "communityMoney": "Un acuerdo comunitario no vinculante no puede incluir pagos en efectivo.",
             "noDesigns": "Elige al menos un diseño.",
@@ -10149,6 +10153,30 @@
             "gb-street-vote-consultation-2023": {
                 "name": "Votación de calle — consulta del gobierno de 2023",
                 "source": "Propuesta en la consulta del gobierno británico de diciembre de 2023 sobre órdenes de desarrollo por votación de calle: al menos el 60% de los habilitados para votar a favor, y al menos un votante a favor en al menos la mitad de los hogares votantes."
+            },
+            "gb-street-vote-living-tradition": {
+                "name": "Votación de calle — mansardas según Living Tradition",
+                "source": "Propuesta en Living Tradition de Samuel Hughes (Create Streets, 2021): al menos el 50% de los votos emitidos a favor, residentes de al menos la mitad de los hogares votando, y un sí de un residente en al menos la mitad de los hogares votantes. Solo pueden incluirse casas que cumplan sus condiciones (párr. 17)."
+            }
+        },
+        "eligibility": {
+            "title": "Casas incluidas",
+            "hint": "Esta votación de calle solo puede incluir casas que cumplan las condiciones de la regla. Sus datos se leen de OpenStreetMap: añada allí los que falten y vuelva a comprobar.",
+            "checking": "Comprobando las casas incluidas…",
+            "failed": "No se pudo completar la comprobación: {{error}}",
+            "summary": "{{eligible}} de {{total}} casas incluidas cumplen",
+            "none": "El plan no eleva ningún edificio existente con una mansarda.",
+            "fails": "no cumple {{tests}}",
+            "missingFacts": "desconocido {{tests}}",
+            "house": "Edificio {{id}}",
+            "unanswered": "Un edificio sin fuente de datos ({{id}})",
+            "edit": "Editar en {{source}}",
+            "again": "Volver a comprobar",
+            "check": "Comprobar condiciones",
+            "verdict": {
+                "eligible": "Cumple",
+                "ineligible": "No cumple",
+                "unknown": "Desconocido"
             }
         }
     },
