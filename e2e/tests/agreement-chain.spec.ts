@@ -272,7 +272,7 @@ test.describe('Agreements on chain @core', () => {
       author: null, city, site: PARCEL_GEOMETRY, toleranceM: null, geometry: null, origin: null, authoredAt: null,
       structureProposal: { kind: 'park', blockName: null, geometry: PARCEL_GEOMETRY } });
     const planCid = filePlan(index, require('../../frontend/js/plan-record.js').create('Courtyard homes', [design], view));
-    const unit = { unitId: 'a-101', label: 'Apartment A-101', xrayBuilding: 'new_york::buildings::tower-1', unit: '1::A-101', at: view.at,
+    const unit = { unitId: 'a-101', label: 'Apartment A-101', xrayBuilding: 'new_york::buildings::tower-1', unit: '1::1', at: view.at,
       priceUsdcAtomic: '250000000', depositUsdcAtomic: '12500000', drawing: { name: 'tower-floor.pdf', mediaType: 'application/pdf', data: Buffer.from('%PDF-1.7\nDrawing').toString('base64') } };
     const funding = { targetUsdcAtomic: '12500000', apartments: { projectId: 'garden-court', units: [unit] },
       contract: { name: 'terms.txt', mediaType: 'text/plain', data: Buffer.from('Reservation deposits are credited to the purchase price.').toString('base64') } };
@@ -311,7 +311,7 @@ test.describe('Agreements on chain @core', () => {
     await expect(review).toContainText('Apartment A-101');
     await expect(review).toContainText('250 USDC');
     await expect(review).toContainText('12.5 USDC');
-    await expect(review.getByRole('link', { name: 'View apartment in X-ray' })).toHaveAttribute('href', /unit=1%3A%3AA-101/);
+    await expect(review.getByRole('link', { name: 'View apartment in X-ray' })).toHaveAttribute('href', /unit=1%3A%3A1/);
     await expect(review.getByRole('button', { name: /Download drawing/ })).toBeVisible();
     await review.getByRole('button', { name: 'Connect wallet', exact: true }).press('Enter');
     await page.locator('[data-wallet-connector="solana-phantom"]').click();
