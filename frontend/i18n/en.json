@@ -7328,6 +7328,7 @@
             "navigation": "Navigation"
         },
         "viewFailed": "This view could not start. You are back on the 2D map.",
+        "noWebGL": "The 3D views need WebGL, which this browser cannot use (hardware acceleration may be off). You are back on the 2D map; plans, comparisons and downloads work here.",
         "modeLocked": "Not available while you are editing — finish or cancel first",
         "zoomLevel": "Zoom {zoom}",
         "zoomLevelTitle": "Map zoom level. In 3D, the 2D zoom that shows the same ground.",

@@ -7368,6 +7368,7 @@
             "navigation": "Navigacija"
         },
         "viewFailed": "Ovaj prikaz se nije mogao pokrenuti. Vraćeni ste na 2D kartu.",
+        "noWebGL": "3D prikazi trebaju WebGL, koji ovaj preglednik ne može koristiti (možda je isključeno hardversko ubrzanje). Vraćeni ste na 2D kartu; planovi, usporedbe i preuzimanja ovdje rade.",
         "modeLocked": "Nedostupno dok uređujete — prvo završite ili odustanite",
         "zoomLevel": "Zum {zoom}",
         "zoomLevelTitle": "Razina zumiranja karte. U 3D prikazu, 2D zum koji prikazuje isto tlo.",

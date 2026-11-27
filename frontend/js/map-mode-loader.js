@@ -143,10 +143,30 @@
     if (typeof MutationObserver === 'function' && document.body) {
         new MutationObserver(paintModeLocks).observe(document.body, { attributes: true, attributeFilter: ['class'] });
     }
+    // Whether this browser can draw WebGL at all (hardware acceleration off, a blocked GPU, a cloud
+    // browser): asked once, its test context released at once. Without it the model and photo views
+    // cannot start, and the notice says why instead of only that the view failed.
+    let webglAnswer = null;
+    function webglAvailable() {
+        if (webglAnswer !== null) return webglAnswer;
+        try {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('webgl2') || canvas.getContext('webgl');
+            webglAnswer = !!context;
+            context?.getExtension?.('WEBGL_lose_context')?.loseContext();
+        } catch (_) { webglAnswer = false; }
+        return webglAnswer;
+    }
+    const webglFailure = error => error?.code === 'webgl-unavailable' || /WebGL context/i.test(String(error?.message || ''));
     const addressSync = root.MapShare.createAddressSync(root);
     root.addEventListener('threecamerachange', addressSync.schedule);
     const controller = root.__mapModeTransition.createController({
-        loadModel: root.__ensure3DModeStack,
+        loadModel: async () => {
+            if (!webglAvailable()) throw Object.assign(new Error('This browser cannot create a WebGL context.'), { code: 'webgl-unavailable' });
+            // whenThreeReady answers false when three.js could not load: a failure to report, not a quiet 2D.
+            if (!await root.__ensure3DModeStack()) throw new Error('The 3D library could not load.');
+            return true;
+        },
         loadPhoto: root.__ensurePhotorealMode,
         enterModel: options => root.__threeModeDriver.enter(options),
         leaveModel: () => root.__threeModeDriver?.exit(),
@@ -158,9 +178,11 @@
         },
         onError: (error, mode) => {
             console.error(`[${new Date().toISOString()}] [map-mode] Mode transition failed`, { mode, error });
-            const key = 'mapShell.viewFailed';
+            const [key, fallback] = webglFailure(error)
+                ? ['mapShell.noWebGL', 'The 3D views need WebGL, which this browser cannot use (hardware acceleration may be off). You are back on the 2D map; plans, comparisons and downloads work here.']
+                : ['mapShell.viewFailed', 'This view could not start. You are back on the 2D map.'];
             const translated = root.i18n?.t?.(key);
-            const message = translated && translated !== key ? translated : 'This view could not start. You are back on the 2D map.';
+            const message = translated && translated !== key ? translated : fallback;
             root.showEphemeralMessage?.(message, 8000, 'warning');
         }
     });

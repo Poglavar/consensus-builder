@@ -221,3 +221,18 @@ test('an explicit World view failure explains recovery and leaves the map usable
   await page.locator('#settings-button').click();
   await expect(page.locator('#settings-sheet')).toBeVisible();
 });
+
+test('a browser without WebGL is told why the 3D views cannot start, and stays on a usable 2D map', async ({ mockApi: page }) => {
+  // Hardware acceleration off: every WebGL context request comes back empty, as in a cloud browser.
+  await page.addInitScript(() => {
+    const original = HTMLCanvasElement.prototype.getContext;
+    (HTMLCanvasElement.prototype as any).getContext = function (type: string, ...rest: unknown[]) {
+      return /webgl/i.test(type) ? null : (original as any).call(this, type, ...rest);
+    };
+  });
+  await openCity(page);
+  await page.locator('#mode-3d-toggle').click();
+  await expect(page.locator('#ephemeral-message-container')).toContainText('The 3D views need WebGL, which this browser cannot use', { timeout: 30_000 });
+  await expect.poll(() => page.evaluate(() => (window as any).__mapModeState)).toEqual({ desired: '2d', pending: false });
+  await expect(page.locator('#map')).toBeVisible();
+});

@@ -6455,6 +6455,7 @@
             "navigation": "Navegação"
         },
         "viewFailed": "Não foi possível iniciar esta vista. Regressou ao mapa 2D.",
+        "noWebGL": "As vistas 3D precisam de WebGL, que este navegador não consegue usar (a aceleração por hardware pode estar desativada). Voltou ao mapa 2D; planos, comparações e transferências funcionam aqui.",
         "modeLocked": "Indisponível durante a edição — conclua ou cancele primeiro",
         "zoomLevel": "Zoom {zoom}",
         "zoomLevelTitle": "Nível de zoom do mapa. Em 3D, o zoom 2D que mostra o mesmo terreno.",
