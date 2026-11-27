@@ -154,11 +154,11 @@ async function main() {
         if (fs.existsSync(file)) { skipped++; continue; }
         const pad = 0.0006;
         // One cell's failed read never stops the run: the cell is left without a file, counted as missing, and a rerun reads it.
-        let fc, mine, contracts;
+        let fc, buildings, mine, contracts;
         try {
             fc = await fetchCell([cell.bbox[0] - pad, cell.bbox[1] - pad, cell.bbox[2] + pad, cell.bbox[3] + pad]);
             if (fc.partial || fc.truncated) { log(`cell ${cell.key}: the read was ${fc.partial ? 'partial' : 'truncated'}; left for a rerun`); continue; }
-            const buildings = fc.features.filter(f => f.properties.kind === 'building');
+            buildings = fc.features.filter(f => f.properties.kind === 'building');
             mine = buildings.filter(f => { const c = centreOf(f.geometry); return c && c[0] >= cell.bbox[0] && c[0] < cell.bbox[2] && c[1] >= cell.bbox[1] && c[1] < cell.bbox[3] && inArea(c); });
             contracts = await readFacts(mine.map(factIdOf).filter(Boolean));
         } catch (err) { log(`cell ${cell.key}: the read failed (${err.message}); left for a rerun`); continue; }
