@@ -242,6 +242,8 @@ describe('the agreement editor\'s Neighbours tab (pure parts)', () => {
         const over = { kind: 'boundary', before: 19.3, after: 48.4, guide: 30, grade: 'fail' };
         expect(Dialog.affectedEntry({ parcelId: 't5', rights: ['outlook'], readings: [over] }, { compensated: true }).effect).toBe('compensation');
         expect(Dialog.affectedEntry({ parcelId: 't5', rights: ['outlook'], readings: [over] }, { compensated: true, onStreet: true }).effect).toBe('waiver');
+        // A corner plot of the street is compensated like a house not on it (Strong Suburbs para 80.3).
+        expect(Dialog.affectedEntry({ parcelId: 't5', rights: ['outlook'], readings: [over] }, { compensated: true, onStreet: true, corner: true }).effect).toBe('compensation');
         expect(Dialog.affectedEntry({ parcelId: 't5', rights: ['outlook'], readings: [over] }).effect).toBe('waiver');
         expect(Dialog.readingText(over)).toBe('Angle from the plot boundary: 19° → 48° (guide 30°), beyond a guide');
     });

@@ -197,3 +197,52 @@ describe('lines of a recorded street', () => {
         expect(S.linesFor(segmentRef, { street: { name: 'Cross Road' }, segments: result.segments })).toBeNull();
     });
 });
+
+describe('corner plots', () => {
+    // A suburban T-junction drawn like an English one (no road parcels: HM Land Registry titles stop
+    // at the highway): Hughes Road runs west→east, Cross Road leaves it north at x = 150. The two
+    // corner plots are chamfered at the junction (Strong Suburbs para 80.5); behind the west corner
+    // plot, c1 fronts Cross Road only.
+    const poly = (points, id) => ({ id, geometry: { type: 'Polygon', coordinates: [[...points, points[0]].map(ll)] } });
+    const parcels = [
+        poly([[60, 5], [95, 5], [95, 45], [60, 45]], 'h1'),
+        poly([[95, 5], [125, 5], [125, 45], [95, 45]], 'h2'),
+        poly([[125, 5], [140, 5], [145, 10], [145, 45], [125, 45]], 'corner-west'),
+        poly([[105, 45], [145, 45], [145, 80], [105, 80]], 'c1'),
+        poly([[155, 10], [160, 5], [190, 5], [190, 45], [155, 45]], 'corner-east'),
+        poly([[155, 45], [190, 45], [190, 80], [155, 80]], 'c2')
+    ];
+    const features = () => [way('Hughes Road', line(0, 300)), way('Cross Road', [[150, 0], [150, 60], [150, 120]])];
+    const along = (result, index, side) => S.plotsAlong({ coordinates: result.segments[index].coordinates, parcels, side, arms: S.armsOf(result.segments[index]) });
+
+    it('a corner plot is along each street its boundary runs along, and is marked with the other street', () => {
+        const hughes = cut(features());
+        expect(hughes.segments[0].to).toMatchObject({ kind: 'branch', names: ['Cross Road'] });
+        expect(hughes.segments[0].to.arms.map(arm => arm.name)).toEqual(['Cross Road']);
+        const west = along(hughes, 0, 'left');
+        expect(west.map(plot => plot.id)).toEqual(['h1', 'h2', 'corner-west']);
+        expect(west.find(plot => plot.id === 'corner-west').corner).toEqual({ streets: ['Cross Road'] });
+        // Plots beside it and behind it are not corners: the corner plot stands between them and Cross Road.
+        expect(west.filter(plot => plot.corner).map(plot => plot.id)).toEqual(['corner-west']);
+        expect(along(hughes, 1, 'left').filter(plot => plot.corner).map(plot => [plot.id, plot.corner.streets])).toEqual([['corner-east', ['Cross Road']]]);
+
+        const cross = cut(features(), { name: 'Cross Road' });
+        const both = along(cross, 0, 'both');
+        expect(both.map(plot => plot.id).sort()).toEqual(['c1', 'c2', 'corner-east', 'corner-west']);
+        expect(both.filter(plot => plot.corner).map(plot => [plot.id, plot.corner.streets]).sort())
+            .toEqual([['corner-east', ['Hughes Road']], ['corner-west', ['Hughes Road']]]);
+        // Without the ends' other roads nothing is marked, as before.
+        expect(S.plotsAlong({ coordinates: cross.segments[0].coordinates, parcels, side: 'both' }).some(plot => plot.corner)).toBe(false);
+    });
+
+    it('the street reference records the corner plots with their other streets, and rejects malformed ones', () => {
+        const hughes = cut(features());
+        const corners = along(hughes, 0, 'left').filter(plot => plot.corner).map(plot => ({ parcelId: plot.id, streets: plot.corner.streets }));
+        const ref = S.reference(hughes, hughes.segments[0], 'left', null, corners);
+        expect(ref.corners).toEqual([{ parcelId: 'corner-west', streets: ['Cross Road'] }]);
+        expect(S.normaliseReference(JSON.parse(JSON.stringify(ref)))).toEqual(ref);
+        expect(S.reference(hughes, hughes.segments[0], 'left')).not.toHaveProperty('corners');
+        expect(() => S.normaliseReference({ ...ref, corners: [{ parcelId: 'x' }] })).toThrow(/corner plot/);
+        expect(() => S.normaliseReference({ ...ref, corners: [...ref.corners, ...ref.corners] })).toThrow(/once/);
+    });
+});

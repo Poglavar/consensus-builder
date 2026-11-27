@@ -180,14 +180,19 @@ export function createMcpNavigation({ read, random = Math.random }) {
         if (ground.complete !== true || ground.truncated || !Array.isArray(ground.features)) throw fail('parcel-coverage-incomplete', 'The plots along the street need complete parcel coverage.', 'Retry when the parcel source returns complete coverage.');
         const roads = sourceId === 'oss-wfs' ? await read.request('/road-parcels', { bbox: turf.bbox(area).join(',') }) : { ids: [] };
         const pieces = sourcePieces(ground.features).map(feature => ({ id: parcelIdOf(feature), geometry: feature.geometry })).filter(row => row.id);
-        const ids = [];
-        for (const part of parts) for (const plot of StreetSegments.plotsAlong({ coordinates: part.coordinates, parcels: pieces, side, transparent: roads.ids || [] })) if (!ids.includes(plot.id)) ids.push(plot.id);
+        // Corner plots (also along another road at a part's end) are marked in the street reference.
+        const ids = [], corners = new Map();
+        for (const part of parts) for (const plot of StreetSegments.plotsAlong({ coordinates: part.coordinates, parcels: pieces, side, transparent: roads.ids || [], arms: StreetSegments.armsOf(part) })) {
+            if (!ids.includes(plot.id)) ids.push(plot.id);
+            if (plot.corner) corners.set(plot.id, [...new Set([...(corners.get(plot.id) || []), ...plot.corner.streets])]);
+        }
         if (!ids.length) throw fail('street-plots-not-found', 'No plot boundary runs along that part of the street on that side.', 'Try the other side, both sides or the whole street.');
         if (ids.length > MAX_SELECTION_PARCELS) throw fail('parcel-selection-limit', `The street has more than ${MAX_SELECTION_PARCELS} plots along it.`, 'Choose a segment or one side.');
         const whole = segment === 'whole';
         const chosen = whole ? null : parts[0];
         const official = (chosen && chosen.official) || found.street.official || null;
-        const streetReference = StreetSegments.reference({ name: found.street.name, wayIds: found.street.wayIds }, chosen, side, official);
+        const streetReference = StreetSegments.reference({ name: found.street.name, wayIds: found.street.wayIds }, chosen, side, official,
+            [...corners].map(([parcelId, streets]) => ({ parcelId, streets })));
         return { selection: { parcelSourceId: sourceId, focusParcelId: ids[0], parcelIds: ids, active: false }, street, streetReference };
     }
 
