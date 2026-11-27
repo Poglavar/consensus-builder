@@ -48,20 +48,39 @@
         return Math.min(pointSegment(a, c, d), pointSegment(b, c, d), pointSegment(c, a, b), pointSegment(d, a, b));
     }
     // Distance in metres from an area (polygons) to a set of lines (each a list of points); 0 where
-    // a line runs inside it.
-    function areaToLines(polygons, lines) {
+    // a line runs inside it. `within`: the caller only asks whether the distance is at most this; a
+    // farther answer is any number above it (a box gap), so boxes skip the far areas and segments
+    // instead of measuring every edge pair (a street of houses against district outlines took
+    // ~50 ms of main thread in one piece).
+    const boxOf = points => points.reduce((b, [x, y]) => [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)], [Infinity, Infinity, -Infinity, -Infinity]);
+    const boxGap = (a, b) => Math.hypot(Math.max(0, a[0] - b[2], b[0] - a[2]), Math.max(0, a[1] - b[3], b[1] - a[3]));
+    function areaToLines(polygons, lines, within = Infinity) {
+        const areaBox = boxOf(polygons.flatMap(polygon => polygon[0] || []));
+        const linesGap = boxGap(areaBox, boxOf(lines.flat()));
+        if (linesGap > within) return linesGap;
         let best = Infinity;
         for (const line of lines) {
+            if (boxGap(areaBox, boxOf(line)) > Math.min(best, within)) continue;
             if (line.some(point => polygons.some(polygon => inPolygon(polygon, point)))) return 0;
-            for (const polygon of polygons) for (const ring of polygon) {
-                for (let i = 0; i < ring.length - 1; i++) for (let j = 0; j < line.length - 1 || (line.length === 1 && j === 0); j++) {
-                    const a = line[j], b = line[Math.min(j + 1, line.length - 1)];
-                    best = Math.min(best, segmentsApart(ring[i], ring[i + 1], a, b));
-                    if (!best) return 0;
+            for (let j = 0; j < line.length - 1 || (line.length === 1 && j === 0); j++) {
+                const a = line[j], b = line[Math.min(j + 1, line.length - 1)];
+                const segmentBox = boxOf([a, b]);
+                if (boxGap(areaBox, segmentBox) > Math.min(best, within)) continue;
+                for (const polygon of polygons) for (const ring of polygon) {
+                    for (let i = 0; i < ring.length - 1; i++) {
+                        const p = ring[i], q = ring[i + 1];
+                        // An edge farther than the best so far (or the cutoff) cannot change the answer.
+                        // Inline box tests: this loop runs over every edge of a district outline.
+                        const limit = Math.min(best, within);
+                        if (Math.min(p[0], q[0]) - segmentBox[2] > limit || segmentBox[0] - Math.max(p[0], q[0]) > limit
+                            || Math.min(p[1], q[1]) - segmentBox[3] > limit || segmentBox[1] - Math.max(p[1], q[1]) > limit) continue;
+                        best = Math.min(best, segmentsApart(p, q, a, b));
+                        if (!best) return 0;
+                    }
                 }
             }
         }
-        return best;
+        return Number.isFinite(best) ? best : Math.max(linesGap, within + 1);
     }
     const closed = ring => (ring.length && (ring[0][0] !== ring[ring.length - 1][0] || ring[0][1] !== ring[ring.length - 1][1]) ? [...ring, ring[0]] : ring);
     // A footprint's outline rings as lines (a building counts as near when its outline is).
@@ -131,7 +150,7 @@
         const footprints = geometries.flatMap(geometry => outlineLines(geometry, project));
         const judged = areas.map(area => {
             const polygons = ringsOf(area.geometry).map(polygon => polygon.map(ring => ring.map(project)));
-            return { area, under: areaToLines(polygons, footprints) === 0, near: lines.length ? areaToLines(polygons, lines) <= set.density.reachM : false };
+            return { area, under: areaToLines(polygons, footprints, 0) === 0, near: lines.length ? areaToLines(polygons, lines, set.density.reachM) <= set.density.reachM : false };
         });
         const pick = rows => rows.map(({ area }) => ({ code: area.code, name: area.name, scheme: area.scheme, densityPerHa: area.densityPerHa ?? null,
             populationYear: area.populationYear ?? null, cap: capOf(set.density.bands, area.densityPerHa) }));
@@ -161,7 +180,7 @@
         if (!Array.isArray(near)) return { value: null, before1918: null, unknownDates: null, reason: 'buildingsUnread' };
         const origin = street[0][0], project = projector(origin[0], origin[1]);
         const lines = street.map(line => line.map(project));
-        const apart = building => areaToLines(ringsOf(building.geometry).map(polygon => polygon.map(ring => ring.map(project))), lines);
+        const apart = building => areaToLines(ringsOf(building.geometry).map(polygon => polygon.map(ring => ring.map(project))), lines, h.reachM);
         let before = 0, unknown = 0;
         const along = [];
         for (const building of near) {

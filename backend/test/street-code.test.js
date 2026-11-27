@@ -88,6 +88,35 @@ describe('Strong Suburbs street code', () => {
         const fresh = await run({ designations: ['green-belt'], house: house({ basedOnExisting: false }) });
         expect(statuses(fresh.buildings[0].result)).toMatchObject({ ssGreenBelt: 'fail', ssListed: 'notApplicable' });
     });
+    it('measures area-to-line distances exactly up to the asked cutoff, and only says "farther" beyond it', () => {
+        // Brute force over every edge pair, against the box-pruned measure, on random squares and lines.
+        let seed = 7;
+        const rand = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+        const square = (x, y, s) => [[[x, y], [x + s, y], [x + s, y + s], [x, y + s], [x, y]]];
+        const brute = (polygons, lines) => {
+            let best = Infinity;
+            for (const line of lines) for (let j = 0; j < line.length - 1; j++) for (const polygon of polygons) for (const ring of polygon)
+                for (let i = 0; i < ring.length - 1; i++) {
+                    const [a, b, p, q] = [line[j], line[j + 1], ring[i], ring[i + 1]];
+                    const d = (pt, s0, s1) => { const dx = s1[0] - s0[0], dy = s1[1] - s0[1], l = dx * dx + dy * dy, t = l ? Math.max(0, Math.min(1, ((pt[0] - s0[0]) * dx + (pt[1] - s0[1]) * dy) / l)) : 0; return Math.hypot(pt[0] - s0[0] - t * dx, pt[1] - s0[1] - t * dy); };
+                    const side = (o, u, v) => (u[0] - o[0]) * (v[1] - o[1]) - (u[1] - o[1]) * (v[0] - o[0]);
+                    const cross = side(a, b, p) * side(a, b, q) < 0 && side(p, q, a) * side(p, q, b) < 0;
+                    best = Math.min(best, cross ? 0 : Math.min(d(a, p, q), d(b, p, q), d(p, a, b), d(q, a, b)));
+                }
+            return best;
+        };
+        for (let n = 0; n < 200; n++) {
+            const polygons = [square(rand() * 400, rand() * 400, 20 + rand() * 80)];
+            const lines = Array.from({ length: 3 }, () => [[rand() * 600, rand() * 600], [rand() * 600, rand() * 600], [rand() * 600, rand() * 600]]);
+            const inside = lines.some(line => line.some(([x, y]) => x > polygons[0][0][0][0] && x < polygons[0][0][1][0] && y > polygons[0][0][0][1] && y < polygons[0][0][2][1]));
+            const exact = inside ? 0 : brute(polygons, lines);
+            expect(StreetCode.areaToLines(polygons, lines)).toBeCloseTo(exact, 6);
+            for (const within of [0, 40, 200]) {
+                const got = StreetCode.areaToLines(polygons, lines, within);
+                if (exact <= within) expect(got).toBeCloseTo(exact, 6); else expect(got).toBeGreaterThan(within);
+            }
+        }
+    });
     it('screens designations with one box around the buildings, then reads each building only when the box finds any', async () => {
         // A street's worth of outlines in one request was too long for the source (HTTP 414).
         const reads = [];
