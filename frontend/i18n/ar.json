@@ -5238,7 +5238,8 @@
                 "sourceSimulation": "المحاكاة",
                 "entity": {
                     "agreement": "الاتفاق {{id}}",
-                    "design": "التصميم {{id}}"
+                    "design": "التصميم {{id}}",
+                    "property-offer": "العرض {{id}}"
                 },
                 "transaction": "المعاملة {{id}}",
                 "transactionFull": "المعاملة: {{id}}",
@@ -5277,6 +5278,7 @@
                 "batch": "الدفعة",
                 "openAgreement": "فتح الاتفاق",
                 "openDesign": "فتح التصميم",
+                "openOffer": "فتح العرض",
                 "scopeAgreement": "جميع الأنشطة المتعلقة بهذا الاتفاق"
             },
             "kindHuman": "السكان",
@@ -11420,6 +11422,7 @@
       "plots": "قطع الأراضي",
       "requests": "طلبات العدسة",
       "side": "الجانب",
+      "sold": "مُباع",
       "yourLens": "من تثق بهم"
     },
     "memberViewNone": "لم تذكر من يحوز هذا؛ اذكر الحائز الأول قبل التأكيد.",

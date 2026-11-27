@@ -5049,7 +5049,8 @@
                 "sourceSimulation": "Simulation",
                 "entity": {
                     "agreement": "Accord {{id}}",
-                    "design": "Projet {{id}}"
+                    "design": "Projet {{id}}",
+                    "property-offer": "Offre {{id}}"
                 },
                 "transaction": "Transaction {{id}}",
                 "transactionFull": "Transaction : {{id}}",
@@ -5088,6 +5089,7 @@
                 "batch": "Lot",
                 "openAgreement": "Ouvrir l’accord",
                 "openDesign": "Ouvrir le projet",
+                "openOffer": "Ouvrir l’offre",
                 "scopeAgreement": "Toute l’activité liée à cet accord"
             },
             "kindHuman": "Personnes",
@@ -11117,6 +11119,7 @@
       "plots": "Parcelles",
       "requests": "Demandes au prisme",
       "side": "Côté",
+      "sold": "Vendu",
       "yourLens": "À qui vous faites confiance"
     },
     "memberViewNone": "Vous n’avez pas déclaré qui le détient ; déclarez le premier détenteur avant de confirmer.",

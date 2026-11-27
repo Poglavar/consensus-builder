@@ -290,10 +290,13 @@ export function homeActivityMessage(persona, action) {
     }
 }
 
-/** The entity an action's activity names: the property offer, the round (also for a new flat offer) or the plot. */
-export function homeActivityEntity(action) {
-    if (['mint-offer', 'take-offer', 'expire-offer'].includes(action.type)) return { type: 'property-offer', id: action.offerCid };
-    // A new offer on a plot has no round: it names the plot.
-    if (action.type === 'make-offer' && action.asset?.kind === 'parcel') return { type: 'parcel', id: action.asset.id };
-    return { type: 'agreement', id: action.agreementCid };
+/**
+ * What an action's activity names: its entity, the property offer (a new one by the CID its execution
+ * published) or else the round; the plot or flat it trades (asset); and, for an offer, its city.
+ */
+export function homeActivity(action, result = {}) {
+    const entity = ['mint-offer', 'take-offer', 'expire-offer'].includes(action.type) ? { type: 'property-offer', id: action.offerCid }
+        : action.type === 'make-offer' ? { type: 'property-offer', id: result.offerCid }
+            : { type: 'agreement', id: action.agreementCid };
+    return { entity, ...(action.asset ? { asset: action.asset } : {}), ...(action.city ? { cityId: action.city } : {}) };
 }

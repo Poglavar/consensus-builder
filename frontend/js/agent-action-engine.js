@@ -85,6 +85,9 @@
             actor: normalizedActor,
             action: normalizedAction,
             entity: result.entity || entityFromAction(normalizedAction),
+            // The plot or flat a property action trades (the property-offer asset form) and its city.
+            ...(result.asset ? { asset: result.asset } : {}),
+            ...(result.cityId ? { cityId: String(result.cityId) } : {}),
             ok: result.ok !== false && !httpFailed,
             message: result.message || (result.messageHtml ? null : defaultMessage(normalizedActor, normalizedAction)),
             messageHtml: result.messageHtml || null,

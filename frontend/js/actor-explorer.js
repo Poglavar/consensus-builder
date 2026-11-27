@@ -25,7 +25,9 @@
         run_status: 'Run status'
     });
     // What an event can be about, by its entity type, and the words its link and scope use.
-    const ENTITY_LABELS = Object.freeze({ agreement: 'Agreement', design: 'Design' });
+    const ENTITY_LABELS = Object.freeze({ agreement: 'Agreement', design: 'Design', 'property-offer': 'Offer' });
+    // The plot or flat a property action trades links to it, through the host's `assetHref(asset, cityId)`.
+    const ASSET_LINK = Object.freeze({ flat: ['propertyOffer.viewFlat', 'View the flat in X-ray'], parcel: ['propertyOffer.viewPlot', 'Show the plot on the map'] });
     const shortCid = value => {
         const text = string(value);
         return text.length > 20 ? `${text.slice(0, 12)}…${text.slice(-6)}` : text;
@@ -74,6 +76,7 @@
             location: input.location ?? null,
             action: { ...action, type: string(action.type || 'activity') },
             entity: input.entity || null,
+            asset: input.asset && typeof input.asset === 'object' ? input.asset : null,
             source: string(input.source || 'local'),
             ok: input.ok !== false,
             occurredAt,
@@ -164,7 +167,7 @@
     // what acted is provenance and only appears once Details is opened. Simulation `messageHtml` is
     // app-authored markup (agent/local design/parcel links); every other field is escaped.
     // `translate(key, fallback, params)` lets the map localize labels; the standalone page has no i18n.
-    function activityRowHtml(event = {}, { translate = (_key, fallback, params = {}) => fallback.replace(/\{\{(\w+)\}\}/g, (_m, name) => string(params[name])) } = {}) {
+    function activityRowHtml(event = {}, { translate = (_key, fallback, params = {}) => fallback.replace(/\{\{(\w+)\}\}/g, (_m, name) => string(params[name])), assetHref = null } = {}) {
         const tr = (key, fallback, params) => translate(`gameDialogs.log.row.${key}`, fallback, params);
         const body = event.source === 'simulation' && event.messageHtml
             ? event.messageHtml
@@ -175,9 +178,12 @@
         // Opening an agreement or a design runs script (the host handles .activity-entity-link), so it
         // is a button that looks like a link; the transaction leaves the app and carries the external mark.
         const entityType = event.entity?.type;
+        const openLabel = { agreement: () => tr('openAgreement', 'Open agreement'), design: () => tr('openDesign', 'Open design'), 'property-offer': () => tr('openOffer', 'Open offer') }[entityType];
         const entityLink = ENTITY_LABELS[entityType] && event.entity.id
-            ? `<button type="button" class="cb-link activity-entity-link" data-entity-type="${escapeHtml(entityType)}" data-entity-id="${escapeHtml(event.entity.id)}">${escapeHtml(entityType === 'agreement' ? tr('openAgreement', 'Open agreement') : tr('openDesign', 'Open design'))}</button>`
+            ? `<button type="button" class="cb-link activity-entity-link" data-entity-type="${escapeHtml(entityType)}" data-entity-id="${escapeHtml(event.entity.id)}">${escapeHtml(openLabel())}</button>`
             : '';
+        const assetUrl = ASSET_LINK[event.asset?.kind] && typeof assetHref === 'function' ? assetHref(event.asset, event.cityId || null) : null;
+        const assetLink = assetUrl ? `<a class="cb-link activity-asset-link" href="${escapeHtml(assetUrl)}">${escapeHtml(translate(...ASSET_LINK[event.asset.kind]))}</a>` : '';
         const transactionLink = event.transaction
             ? `<a class="cb-link cb-link--external" href="https://explorer.solana.com/tx/${encodeURIComponent(event.transaction)}?cluster=devnet" target="_blank" rel="noopener noreferrer">${escapeHtml(tr('transaction', 'Transaction'))}</a>`
             : '';
@@ -206,7 +212,7 @@
             : '';
         return `<article class="log-entry activity-entry${event.ok === false ? ' is-failed' : ''}" data-source="${escapeHtml(event.source)}">
         <div class="activity-entry-main">${body}</div>
-        <div class="activity-entry-links">${timestamp}${sourceBadge}${entityLink}${transactionLink}</div>
+        <div class="activity-entry-links">${timestamp}${sourceBadge}${entityLink}${assetLink}${transactionLink}</div>
         <details class="activity-entry-meta"><summary>${escapeHtml(tr('details', 'Details'))}</summary><span>${details}</span><span>${escapeHtml(tr('actor', 'Actor:'))} ${actorScope}${actorDetails ? ` · ${actorDetails}` : ''}</span>${entityDetails}${agreementScope}${modelDetails}${event.runId ? `<span>${escapeHtml(tr('run', 'Run'))} ${scope('runId', event.runId, event.runId)}</span>` : ''}${event.batchId ? `<span>${escapeHtml(tr('batch', 'Batch'))} ${escapeHtml(event.batchId)}</span>` : ''}</details>
     </article>`;
     }
@@ -280,10 +286,10 @@
         return 'https://api.urbangametheory.xyz';
     }
 
-    // openEntity({ type, id }): when the host can open an agreement or a design in place (the map), an
-    // event's entity is a button that calls it; the standalone page has no opener, so there it is a
-    // plain label.
-    function mount(element, { events = [], loadRun = null, openEntity = null, showFilters = true, onVisibleCount = null, translate = null, onSelectActor = null, showActivityWithoutActor = false } = {}) {
+    // openEntity({ type, id }): when the host can open an agreement, a design or a property offer in place
+    // (the map), an event's entity is a button that calls it; the standalone page has no opener, so there
+    // it is a plain label. assetHref(asset, cityId) links the plot or flat a property action trades.
+    function mount(element, { events = [], loadRun = null, openEntity = null, assetHref = null, showFilters = true, onVisibleCount = null, translate = null, onSelectActor = null, showActivityWithoutActor = false } = {}) {
         if (!element || !root?.document) throw new Error('ActorExplorer.mount needs an element and a document');
         const doc = root.document;
         const t = translatorOf(translate);
@@ -436,6 +442,8 @@
                         meta.append(text(doc, 'span', label));
                     }
                 }
+                const assetUrl = ASSET_LINK[event.asset?.kind] && typeof assetHref === 'function' ? assetHref(event.asset, event.cityId) : null;
+                if (assetUrl) { const link = text(doc, 'a', t(...ASSET_LINK[event.asset.kind]), 'cb-link'); link.href = assetUrl; meta.append(link); }
                 if (event.transaction) {
                     const transaction = text(doc, 'a', t('gameDialogs.log.actors.transaction', 'Transaction {{id}}', { id: short(event.transaction) }), 'cb-link cb-link--external ae-wallet');
                     transaction.href = `https://explorer.solana.com/tx/${encodeURIComponent(event.transaction)}?cluster=devnet`;

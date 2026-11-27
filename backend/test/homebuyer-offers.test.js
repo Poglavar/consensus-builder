@@ -6,7 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { Keypair, PublicKey } from '@solana/web3.js';
-import { executeHomeAction, homeActivityEntity, homeOffer, readFlatOffers, readFlats } from '../agents/homebuyer-chain.js';
+import { executeHomeAction, homeActivity, homeOffer, readFlatOffers, readFlats } from '../agents/homebuyer-chain.js';
 import { client, termsHashOf } from '../property-offers/onchain.js';
 import { plotAssets } from '../agents/plot-market.js';
 
@@ -131,7 +131,8 @@ describe('signing an offer action', () => {
         expect(offerTools.publish).toHaveBeenCalledWith({ offer: expected.content, expectedCid: expected.cid, confirm: true });
         expect(signer.createOfferOnChain.mock.calls[0][0]).toMatchObject({ keypair: meKp, cluster: 'devnet', row: { cid: expected.cid, content: expected.content } });
         expect(result.offerCid).toBe(expected.cid);
-        expect(homeActivityEntity(action)).toEqual({ type: 'agreement', id: 'bafround' });
+        // Its activity names the offer it published, not the round the flat came from.
+        expect(homeActivity(action, result)).toEqual({ entity: { type: 'property-offer', id: expected.cid }, asset: flatAsset(1), cityId: 'alatau' });
     });
     it('take-offer commits as the buyer naming the round\'s lens member, or as the seller with the default payout; expire-offer ends it', async () => {
         const { offerTools, signer, run } = base();
@@ -148,6 +149,8 @@ describe('signing an offer action', () => {
         const expire = { type: 'expire-offer', offerCid: bid.cid, usdc: 0, signedActions: 1 };
         await run(expire);
         expect(signer.expireOffer.mock.calls[0][0]).toMatchObject({ row: { cid: bid.cid } });
-        expect(homeActivityEntity(expire)).toEqual({ type: 'property-offer', id: bid.cid });
+        expect(homeActivity(expire).entity).toEqual({ type: 'property-offer', id: bid.cid });
+        // A reservation names its round and the flat it reserves.
+        expect(homeActivity({ type: 'reserve-apartment', agreementCid: 'bafround', asset: flatAsset(2) })).toEqual({ entity: { type: 'agreement', id: 'bafround' }, asset: flatAsset(2) });
     });
 });

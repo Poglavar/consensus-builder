@@ -34,9 +34,12 @@ from the same sheet.
 
 ## Where offers are listed
 
-The Market sheet lists offers for sale or wanted, flats or plots, in the map area or the whole city
-(`GET /property-offers`). A plot's or a flat's sheet lists the offers on that asset and who holds it
-according to the reader's lens. Lens requests lists the committed offers and the self-declaration
+The Market sheet lists offers for sale, wanted or sold (settled, with buyer and seller), flats or
+plots, in the map area or the whole city (`GET /property-offers`); each row links the flat in X-ray
+or the plot on the map. The Activity sheet shows each offer step and flat reservation as it happens:
+the row opens the offer and links the plot or flat it trades (the activity's `asset`, in the offer's
+asset form). A plot's or a flat's sheet lists the offers on that asset and who holds it according
+to the reader's lens. Lens requests lists the committed offers and the self-declaration
 requests that wait for the connected wallet (`GET /property-offers/awaiting`, `GET /holding-requests`).
 
 ## Identity and index
