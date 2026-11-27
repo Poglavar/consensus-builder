@@ -101,7 +101,6 @@
         const localLists = new Map();
         const cardCaches = new WeakMap();
         const t = (key, params) => win.i18n.t(key, params || {});
-        const offerDirection = direction => (direction === 'buy' ? t('propertyOffer.directions.buy') : t('propertyOffer.directions.sell'));
         const node = (tag, cls, text) => {
             const el = doc.createElement(tag); if (cls) el.className = cls;
             if (text !== undefined) el.textContent = text; return el;
@@ -168,11 +167,7 @@
                 localLists.set(key, plans);
                 return plans;
             }
-            const offers = (win.PropertyOfferStore?.list() || []).map(record => ({ key: record.id, propertyOffer: true,
-                title: record.content.title || offerDirection(record.content.direction), author: record.content.proposer, createdAt: record.content.createdAt,
-                publishedAt: record.published?.publishedAt, published: !!record.published, cid: record.published?.cid || null,
-                onChain: !!record.onchain, record, local: record }));
-            const agreements = [...offers, ...win.AgreementStore.list().map(record => ({ key: record.id, title: record.title || t('agreement.panel.untitled'),
+            const agreements = [...win.AgreementStore.list().map(record => ({ key: record.id, title: record.title || t('agreement.panel.untitled'),
                 author: record.author, createdAt: record.createdAt, publishedAt: record.published?.publishedAt,
                 published: !!record.published, cid: record.published?.cid || null,
                 onChain: !!record.onchain, record, local: record }))];
@@ -186,8 +181,8 @@
             const untitled = record => record.readFrom === 'chain'
                 ? copies.get(record.cid)?.title || t('lists.chainAgreement', { cid: win.AgreementSync.shortCid(record.cid) })
                 : t(kind === 'designs' ? 'planDialog.untitledDesign' : 'agreement.panel.untitled');
-            return rows.map(record => ({ key: record.cid, propertyOffer: record.content?.schema === 'property-offer/v1', cid: record.cid || null, title: record.title || record.content?.title || untitled(record),
-                // The design, agreement and offer indexes call their first publication time createdAt.
+            return rows.map(record => ({ key: record.cid, cid: record.cid || null, title: record.title || record.content?.title || untitled(record),
+                // The design and agreement indexes call their first publication time createdAt.
                 author: record.author ?? record.content?.author, publishedAt: record.publishedAt ?? record.createdAt,
                 createdAt: record.content?.createdAt ?? record.content?.authoredAt, published: true, onChain: !!record.onchain, record,
                 local: copies.get(record.cid) }));
@@ -200,7 +195,7 @@
             const base = win.DesignSync.apiBase(), scope = areaKey();
             // One feed per source read (chain/read-source.js): each row is marked with the source that listed it.
             const feeds = [
-                ...(!reads('server') ? [] : kind === 'agreements' ? [['agreements', 'agreements'], ['property-offers', 'propertyOffers']] : [[kind, kind]])
+                ...(!reads('server') ? [] : [[kind, kind]])
                     .map(([path, field]) => [path, field, 'server']),
                 ...(reads('chain') ? [['chain', kind, 'chain']] : [])
             ];
@@ -276,7 +271,6 @@
         // An agreement's plan: its stored copy's, or the published one's fetched by CID. Null when a
         // stored agreement has no plan yet.
         async function agreementPlanOf(row) {
-            if (row.propertyOffer) return null;
             if (row.local) return row.local.plan;
             // A row listed from the chain has only its CID: the agreement is read for its plan.
             return row.record.content ? win.NamedPlans.fetchPlan(row.record.content.planCid) : (await win.AgreementSync.fetchAgreement(row.key)).plan;
@@ -332,7 +326,6 @@
             else win.clearProposalPreview();
         }
         async function focus(row, kind, item) {
-            if (row.propertyOffer) return inspect(row, kind);
             const sequence = ++previewSequence, key = `${kind}:${row.key}`, scope = areaKey();
             state.active = key; state.previewing = { row, kind };
             loadingPreview = { sequence, title: row.title };
@@ -368,7 +361,6 @@
                 return win.ClickStack.showPlan(plan, { designs: win.PlanComposition.localRecords(plan, { apiBase: win.DesignSync.apiBase() }), draft: !row.published });
             }
             win.MapShell.closeSheets();
-            if (row.propertyOffer) return row.local ? win.PropertyOfferPanel.open(row.local.id) : win.PropertyOfferSync.openDetails(row.key);
             return row.local ? win.AgreementPanel.open(row.local.id) : win.AgreementSync.openDetails(row.key);
         }
         async function share(row, kind) {
@@ -379,8 +371,7 @@
                 await inspect(row, kind); return;
             }
             const cid = row.local?.published?.cid || row.record.cid;
-            const link = row.propertyOffer ? win.PropertyOfferSync.link(cid, { city: row.local?.content.city || row.record.content?.city })
-                : win.AgreementSync.agreementLink(cid, { city: row.record.city });
+            const link = win.AgreementSync.agreementLink(cid, { city: row.record.city });
             return win.ShareDialog.open({ kind: 'agreement', title: row.title, link });
         }
         async function remove(row, kind) {
@@ -390,7 +381,6 @@
                 okText: t(keys.label), cancelText: t('common.cancel'), destructive: true })) return;
             if (kind === 'designs') await win.deleteProposal(row.local.proposalId);
             else if (kind === 'plans') win.NamedPlans.remove(row.key);
-            else if (row.propertyOffer) win.PropertyOfferStore.remove(row.local.id);
             else win.AgreementStore.remove(row.local.id);
             state.selected.delete(row.key);
             if (state.active === `${kind}:${row.key}`) {
@@ -501,13 +491,6 @@
             input.addEventListener('change', () => {
                 const file = input.files?.[0]; input.value = '';
                 if (file) win.BusyControl.track(choose, async () => {
-                    if (kind === 'agreements') {
-                        const content = JSON.parse(await file.text());
-                        if (content.schema === 'property-offer/v1') {
-                            const record = win.PropertyOfferSync.create(content);
-                            return win.PropertyOfferPanel.open(record.id);
-                        }
-                    }
                     return win.PlanFileUI.importFile(kind, file);
                 }).then(refresh).catch(error => win.showStyledAlert(error.message));
             });
@@ -589,7 +572,7 @@
                         'ownership-transfer': ['people-arrows', 'agreement'], 'as-is': ['location-dot', 'place'] }[goal] || ['cb-icon-design', 'place']);
                 item.dataset.listTone = appearance[1];
                 const heading = node('div', 'lists-item__heading');
-                if (state.selecting === kind && !row.propertyOffer) {
+                if (state.selecting === kind) {
                     const label = node('label', 'lists-item__selection');
                     const check = node('input'); check.type = 'checkbox'; check.checked = state.selected.has(row.key);
                     check.setAttribute('aria-label', t('lists.select', { title: recordLabel }));
@@ -651,9 +634,8 @@
                 }
                 item.append(badges);
                 if (kind === 'plans') item.append(node('p', 'sheet-note', t('agreement.list.designs', { count: row.record.content?.designCids.length ?? row.record.designCount })));
-                if (row.propertyOffer) item.append(node('p', 'sheet-note', offerDirection((row.local?.content || row.record.content).direction)));
-                else if (kind === 'agreements' && row.local) item.append(node('p', 'sheet-note', win.AgreementPanel.ruleShort(row.local.rule)));
-                if (kind === 'agreements' && !row.propertyOffer && fundingRoundOf(row)) {
+                if (kind === 'agreements' && row.local) item.append(node('p', 'sheet-note', win.AgreementPanel.ruleShort(row.local.rule)));
+                if (kind === 'agreements' && fundingRoundOf(row)) {
                     const funding = node('p', 'sheet-note lists-item__funding', t('planCompare.backing.chainReading'));
                     funding.dataset.fundingProgress = '';
                     item.append(funding);
@@ -670,7 +652,6 @@
                 if (kind === 'designs') actions.append(button(t('common.download'), async () => win.PlanFileUI.design(await designRecord(row)), '', 'download'));
                 if (kind === 'plans') actions.append(button(t('common.download'), async () => win.PlanFileUI.plan(await planOf(row)), '', 'download'));
                 if (kind === 'agreements') actions.append(button(t('common.download'), async () => {
-                    if (row.propertyOffer) return win.PropertyOfferSync.download(row.local || await win.PropertyOfferSync.importOffer(row.key));
                     const resolved = row.local ? { agreement: row.local, designs: [] } : await win.AgreementSync.resolveDetails(row.key);
                     return win.PlanFileUI.downloadAgreement(resolved.agreement, resolved.designs);
                 }, '', 'download'));
@@ -843,7 +824,6 @@
                 if (pending && event.detail.byHand) inspect(pending.row, pending.kind).catch(error => win.showStyledAlert(error.message));
             });
             win.AgreementStore.subscribe(refresh);
-            win.PropertyOfferStore?.subscribe(refresh);
             win.addEventListener('planschange', refresh);
             // What is on the map changes outside the sheet too (a notice's Undo, a card's Unapply):
             // the Applied badges, the On the map count and Unapply all follow every map commit.

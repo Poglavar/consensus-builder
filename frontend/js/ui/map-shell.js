@@ -66,7 +66,7 @@
     // hidden: the dock keeps its shape and the tooltip says how to get them back. The views the
     // editor cannot run in are locked the same way by map-mode-loader.js (paintModeLocks). Layers,
     // Buildings and massing and Measure stay: they help with the drawing.
-    const EDIT_LOCKED_CONTROLS = Object.freeze(['proposals-button', 'bets-button', 'activity-button', 'shareAppliedProposalsButton', 'settings-button', 'username-display']);
+    const EDIT_LOCKED_CONTROLS = Object.freeze(['proposals-button', 'bets-button', 'market-button', 'activity-button', 'shareAppliedProposalsButton', 'settings-button', 'username-display']);
     const EDIT_LOCKED_SELECTORS = '.map-search__chip, .map-search__icon-button, .map-search__input';
     const EDIT_LOCKED_SHEETS = Object.freeze(['proposals-sheet', 'bets-sheet', 'activity-sheet', 'settings-sheet']);
 

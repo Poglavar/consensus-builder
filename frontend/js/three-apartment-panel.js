@@ -23,87 +23,48 @@
         close.setAttribute('aria-label', t('common.close', 'Close'));
         const status = doc.createElement('div');
         status.setAttribute('role', 'status');
+        // The selected flat as offers and lens statements name it.
+        function flatAsset() {
+            const href = selected && linkFor(selected);
+            if (!href) return null;
+            const source = new URL(href).searchParams;
+            return { kind: 'flat', xrayBuilding: source.get('xrayBuilding'), unit: source.get('unit'), at: source.get('at'),
+                ...(source.has('access') ? { access: source.get('access') } : {}) };
+        }
         const offers = doc.createElement('button');
         offers.type = 'button';
         offers.className = 'btn';
-        offers.textContent = t('threeMode.controls.findApartmentOffers', 'Find apartment offers');
+        offers.textContent = t('threeMode.controls.flatHolderAndOffers', 'Who holds it, offers');
         function offerButton(direction) {
             const button = doc.createElement('button');
             button.type = 'button';
             button.className = 'btn';
-            button.textContent = direction === 'buy' ? t('threeMode.controls.offerToBuyApartment', 'Offer to buy apartment')
-                : t('threeMode.controls.offerToSellApartment', 'Offer to sell apartment');
+            button.textContent = direction === 'buy' ? t('threeMode.controls.offerToBuyApartment', 'Offer to buy')
+                : t('threeMode.controls.offerToSellApartment', 'Put up for sale');
             button.addEventListener('click', () => {
-                const href = selected && linkFor(selected);
-                if (!href) return;
-                const source = new URL(href).searchParams;
-                win.PropertyOfferDialog.open({ direction, apartment: { xrayBuilding: source.get('xrayBuilding'),
-                    unit: source.get('unit'), at: source.get('at'), ...(source.has('access') ? { access: source.get('access') } : {}) } });
+                const asset = flatAsset();
+                if (asset) win.PropertyOfferDialog.open({ direction, asset });
             });
             return button;
         }
         const buy = offerButton('buy'), sell = offerButton('sell');
-        const results = doc.createElement('div');
-        results.className = 'cb-link-row';
         // The reservation states of the building's apartments in crowdfunding rounds (ApartmentRound).
         const rounds = doc.createElement('div');
         rounds.className = 'three-apartment-rounds';
-        panel.append(label, close, select, rounds, copy, buy, sell, offers, status, results);
+        panel.append(label, close, select, rounds, copy, sell, buy, offers, status);
         doc.body.appendChild(panel);
 
         let shown = null, selected = null, message = '', addressable = false, roundsShown = '';
         const openRounds = new Set();
-        let request = null;
         function resetOffers() {
-            request?.abort();
-            request = null;
-            results.replaceChildren();
             status.textContent = '';
         }
         select.addEventListener('change', () => onChoose(select.value || null));
         close.addEventListener('click', onClose);
-        offers.addEventListener('click', () => win.BusyControl.track(offers, async () => {
-            const href = selected && linkFor(selected);
-            if (!href) return;
-            resetOffers();
-            const controller = new AbortController();
-            request = controller;
-            const source = new URL(href).searchParams;
-            const params = new URLSearchParams(['city', 'xrayBuilding', 'unit'].map(name => [name, source.get(name)]));
-            status.textContent = t('threeMode.controls.apartmentOffersLoading', 'Finding published apartment offers…');
-            async function lookup(path) {
-                const response = await win.fetch(`${win.getBackendBase()}/${path}?${params}`, {
-                    signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)])
-                });
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                return response.json();
-            }
-            function appendLink(target, label) {
-                const url = new URL(target, win.location.origin);
-                for (const key of ['city', 'at', 'lang', 'backend']) if (source.has(key) && !url.searchParams.has(key)) url.searchParams.set(key, source.get(key));
-                const link = doc.createElement('a');
-                link.className = 'cb-link';
-                link.href = url.href;
-                link.textContent = label;
-                results.append(link);
-            }
-            const [funding, standalone] = await Promise.allSettled([lookup('agreements/apartment-offers'), lookup('property-offers')]);
-            if (controller.signal.aborted) return;
-            for (const row of funding.value?.offers || []) {
-                const url = win.ApprovalLink.build({ origin: win.location.origin, action: 'reserve', target: row.cid,
-                    params: { city: row.city, unitId: row.unitId } });
-                const title = row.title || row.label, amount = win.AgreementRecord.formatUsdc(row.depositUsdcAtomic);
-                appendLink(url, t('threeMode.controls.apartmentFundingDeposit', `Reserve in ${title} · ${amount} USDC deposit`, { title, amount }));
-            }
-            for (const row of standalone.value?.propertyOffers || []) {
-                const label = row.content.direction === 'buy' ? buy.textContent : sell.textContent;
-                const price = win.PropertyOfferDialog.sol(row.content.priceLamports);
-                appendLink(`/property-offers/${encodeURIComponent(row.cid)}`, [label, price, row.content.title].filter(Boolean).join(' · '));
-            }
-            status.textContent = funding.status === 'rejected' || standalone.status === 'rejected'
-                ? t('threeMode.controls.apartmentOffersFailed', 'Apartment offers could not be loaded.')
-                : results.childElementCount ? '' : t('threeMode.controls.apartmentOffersEmpty', 'No published apartment offers found.');
-        }));
+        offers.addEventListener('click', () => {
+            const asset = flatAsset();
+            if (asset) win.PropertyAssetDialog.open({ asset, city: new URL(linkFor(selected)).searchParams.get('city') });
+        });
         copy.addEventListener('click', async () => {
             const unit = selected;
             const href = unit && linkFor(unit);
@@ -244,7 +205,8 @@
                 const known = roundData?.states?.get(item.key);
                 // The option keeps the unit key; its floor is numbered by the locale's convention.
                 const figure = win.StoreyNumbering.storeyFigure(item.level);
-                const name = t('threeMode.controls.apartmentOption', `Floor ${figure} · Apartment ${item.ordinal}`, { level: figure, number: item.ordinal });
+                const area = Number.isFinite(item.areaM2) ? ` · ${Math.round(item.areaM2)} m²` : '';
+                const name = t('threeMode.controls.apartmentOption', `Floor ${figure} · Apartment ${item.ordinal}`, { level: figure, number: item.ordinal }) + area;
                 return [item.key, known ? [name, known.unit.label, win.ApartmentRound.stateLabel(known.unit, t)].join(' · ') : name];
             });
             const signature = JSON.stringify(choices);
@@ -258,7 +220,8 @@
             copy.disabled = buy.disabled = sell.disabled = offers.disabled = !addressable;
             const next = requested && !unit ? t('threeMode.controls.apartmentUnavailable', 'The linked apartment is not in the current layout.')
                 : !choices.length ? t('threeMode.controls.apartmentsLoading', 'Waiting for the floor plans…')
-                : unit && !addressable ? t('threeMode.controls.apartmentPublishHint', 'Publish this design to share the apartment or make an offer.') : '';
+                : unit && !addressable ? t('threeMode.controls.apartmentPublishHint', 'Publish this design to share the apartment or make an offer.')
+                : units.some(item => item.heightEstimated) ? t('threeMode.controls.storeysEstimated', 'Storeys estimated from satellite data; the flats are an estimate.') : '';
             if (next !== message || changedUnit) status.textContent = message = next;
             drawRounds(roundData, unit, units);
         }

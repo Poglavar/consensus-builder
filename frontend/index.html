@@ -781,6 +781,12 @@
                 <i class="fas fa-coins" aria-hidden="true"></i>
                 <span class="map-shell-button-label" data-i18n-key="mapShell.bets">Bets</span>
             </button>
+            <button type="button" id="market-button" class="map-shell-button map-shell-button--labelled"
+                data-sheet-target="market-sheet" aria-controls="market-sheet" aria-expanded="false"
+                title="Market" data-i18n-key="mapShell.market" data-i18n-attr="title">
+                <i class="fas fa-tag" aria-hidden="true"></i>
+                <span class="map-shell-button-label" data-i18n-key="mapShell.market">Market</span>
+            </button>
         </div>
 
         <!-- Chat sheet -->
@@ -1345,6 +1351,18 @@
                 <div id="designs-agreements" class="lists-rows" role="tabpanel" aria-labelledby="designs-agreements-tab" hidden>
                     <div id="agreement-list-host" class="lists-rows"></div>
                 </div>
+            </div>
+        </section>
+
+        <!-- Market sheet: plots and flats for sale or wanted (js/property-market.js renders the body) -->
+        <section id="market-sheet" class="map-sheet map-sheet--dock" role="dialog" aria-labelledby="market-sheet-title" hidden>
+            <div class="map-sheet-header">
+                <h2 id="market-sheet-title" class="map-sheet-title" data-i18n-key="mapShell.market">Market</h2>
+                <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
+                    aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
+            </div>
+            <div class="map-sheet-body">
+                <div id="market-sheet-content" class="property-market" aria-live="polite"></div>
             </div>
         </section>
 
@@ -2185,6 +2203,7 @@
             'js/solana/agreement-client.js?v=20261127-sol-merge',
             'js/solana/agreement-bridge.js?v=20261127-sol-merge',
             'js/solana/property-offer-client.js',
+            'js/solana/property-statements.js',
             'js/solana/property-offer-bridge.js',
             'js/proposals/site-hash.js',
             'js/solana/market-client.js?v=20261126-plan-cid',
@@ -2532,11 +2551,15 @@
             'js/agreement-list.js?v=20261027-agreement-tabs',
             'js/agreement-sync.js?v=20261127-read-source',
             'js/property-offer-record.js',
-            'js/property-offer-consent.js',
+            'js/holding-request.js',
+            'js/key-label.js',
+            'js/property-holders.js',
             'js/property-offer-store.js',
             'js/property-offer-sync.js',
             'js/property-offer-dialog.js',
             'js/property-offer-panel.js',
+            'js/property-asset-dialog.js',
+            'js/property-market.js',
             'js/suggested-layouts-2d.js?v=20261124-estimated-layouts',
             'js/proposals/replay-status.js',
             // bundle:end plans-agreements

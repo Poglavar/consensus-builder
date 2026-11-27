@@ -59,11 +59,12 @@
         }
     ];
 
-    // Ownership offers retain the exact selected parcel bundle. Unlike build tools, they never
-    // expand a one-parcel selection to a block: a signed offer must mean precisely these parcels.
+    // Offers are for exactly one plot, as its parcel source gives it. Unlike build tools, they never
+    // expand a one-parcel selection to a block.
     const PARCEL_OWNERSHIP_TOOLS = [
-        { key: 'offerBuy', icon: 'fa-cart-shopping', labelKey: 'panel.parcel.build.offerBuy', fallback: 'Offer to buy' },
-        { key: 'offerSell', icon: 'fa-tag', labelKey: 'panel.parcel.build.offerSell', fallback: 'Offer to sell' }
+        { key: 'offerSell', action: 'sell', icon: 'fa-tag', labelKey: 'panel.parcel.build.offerSell', fallback: 'Put up for sale' },
+        { key: 'offerBuy', action: 'buy', icon: 'fa-cart-shopping', labelKey: 'panel.parcel.build.offerBuy', fallback: 'Offer to buy' },
+        { key: 'holder', action: 'asset', icon: 'fa-key', labelKey: 'panel.parcel.build.holderAndOffers', fallback: 'Who holds it, offers' }
     ];
 
     function roadToolsEnabled() {
@@ -90,17 +91,24 @@
         if (stationType) return global.startTransitStationPlacement?.(stationType);
     }
 
-    function startPropertyOffer(direction) {
+    // 'sell' or 'buy' opens the offer form; 'asset' the plot's holder-and-offers sheet.
+    function startPropertyOffer(action) {
         const parcelIds = parcelBuildSelectionIds();
         if (!parcelIds.length) {
             global.updateStatus?.(tParcel('panel.parcel.build.selectParcelFirst', {}, 'Select a parcel first.'));
             return;
         }
-        if (!global.PropertyOfferDialog?.open) {
+        if (parcelIds.length > 1) {
+            global.showStyledAlert?.(tParcel('propertyOffer.errors.onePlot', {}, 'Offers are for one plot at a time. Select a single plot.'));
+            return;
+        }
+        if (!global.PropertyOfferDialog?.open || !global.PropertyAssetDialog?.open) {
             global.showStyledAlert?.(tParcel('propertyOffer.errors.unavailable', {}, 'Property offers are not available yet.'));
             return;
         }
-        return global.PropertyOfferDialog.open({ direction, parcelIds });
+        const asset = global.PropertyOfferDialog.plotAsset(parcelIds[0]);
+        if (action === 'asset') return global.PropertyAssetDialog.open({ asset, city: global.resolveCurrentCityCode?.() });
+        return global.PropertyOfferDialog.open({ direction: action, asset });
     }
 
     let parcelBuildContextId = null;
@@ -275,7 +283,7 @@
             const label = tParcel(tool.labelKey, {}, tool.fallback);
             return `
                 <button type="button" class="cb-tile parcel-build-btn parcel-ownership-btn parcel-ownership-btn--${tool.key}"
-                    onclick="BusyControl.track(this, () => startPropertyOffer('${tool.key === 'offerBuy' ? 'buy' : 'sell'}'))" title="${escapeAttr(label)}">
+                    onclick="BusyControl.track(this, () => startPropertyOffer('${tool.action}'))" title="${escapeAttr(label)}">
                     <i class="cb-tile__icon fas ${tool.icon}" aria-hidden="true"></i>
                     <span class="cb-tile__label">${label}</span>
                 </button>`;

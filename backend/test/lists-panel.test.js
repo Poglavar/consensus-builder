@@ -151,7 +151,7 @@ function listsSheet({ designs = [], serverDesigns = [], plans = [], serverPlans 
     };
     const item = id => doc.querySelector(`[data-list-id="${id}"]`);
     const shown = host => doc.getElementById(host).querySelectorAll('.lists-item').map(el => el.dataset.listId);
-    return { doc, win, calls, item, shown, panel: browser(win) };
+    return { doc, win, calls, item, shown, panel: browser(win), fetchedUrls: () => win.fetch.mock.calls.map(([url]) => String(url)) };
 }
 
 describe('the Lists sheet', () => {
@@ -288,26 +288,20 @@ describe('the Lists sheet', () => {
         expect(calls.confirm[0].options.destructive).toBe(true);
     });
 
-    it('retains remote plan publication dates alongside local and remote property offers', async () => {
+    it('retains remote plan publication dates and keeps property offers out of Agreements (they are in the Market sheet)', async () => {
         const publishedAt = '2026-11-17T09:10:11.000Z';
-        const content = { schema: 'property-offer/v1', direction: 'buy', title: 'Purchase', proposer: 'buyer', createdAt: publishedAt };
+        const content = { schema: 'property-offer/v2', direction: 'buy', title: 'Purchase', proposer: 'buyer', createdAt: publishedAt };
         const f = listsSheet({
             serverPlans: [{ cid: 'remote-plan', publishedAt, content: { title: 'Published plan', view: {}, designCids: ['a'] } }],
+            serverAgreements: [{ cid: 'remote-agreement', title: 'Agreement', createdAt: publishedAt }],
             offers: [{ id: 'draft-offer', content }],
             serverOffers: [{ cid: 'remote-offer', content }]
         });
         await f.panel.select('plans');
         await vi.waitFor(() => expect(f.item('remote-plan')?.querySelector('time.lists-item__timestamp')?.dateTime).toBe(publishedAt));
         await f.panel.select('agreements');
-        await vi.waitFor(() => expect(f.shown('agreement-list-host').sort()).toEqual(['draft-offer', 'remote-offer']));
-        expect(f.item('draft-offer').textContent).toContain('Offer to buy');
-        expect(f.item('remote-offer').textContent).toContain('Offer to buy');
-        expect(f.item('draft-offer').querySelector('time')?.dateTime).toBe(publishedAt);
-        expect(f.item('remote-offer').querySelector('time')?.dateTime).toBe(publishedAt);
-        f.item('draft-offer').querySelector('.lists-item__open').click();
-        f.item('remote-offer').querySelector('.lists-item__open').click();
-        await vi.waitFor(() => expect(f.calls.offersOpened).toEqual(['draft-offer', 'remote-offer']));
-        expect(f.panel.drafts().find(group => group.kind === 'agreements').rows.map(row => row.key)).toEqual(['draft-offer']);
+        await vi.waitFor(() => expect(f.shown('agreement-list-host')).toEqual(['remote-agreement']));
+        expect(f.fetchedUrls().some(url => url.includes('/property-offers'))).toBe(false);
     });
 
     it('shows first publication times and draft creation times on design and agreement rows', async () => {

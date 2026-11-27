@@ -31,3 +31,38 @@
     .property-offer-panel__actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); }
 }
 @media (max-width: 34rem) { .property-offer-form__lens, .property-offer-form__payout { flex-wrap: wrap; } .property-offer-form__lens input, .property-offer-form__payout input { flex-basis: 100%; } }
+
+/* A key as people see it: portrait with a ring in the key's colour, name, short key (js/key-label.js). */
+.key-label { display: inline-flex; align-items: center; gap: var(--cb-space-1); min-width: 0; max-width: 100%; }
+.key-label__portrait { width: 1.25rem; height: 1.25rem; border-radius: 50%; box-shadow: 0 0 0 2px var(--key-ring, var(--cb-line)); flex: none; }
+.key-label__text { overflow-wrap: anywhere; }
+/* A lens: one segment per lens member, filled once that member has confirmed. */
+.lens-badge { display: flex; gap: 2px; height: 0.4rem; max-width: 12rem; }
+.lens-badge__segment { flex: 1 1 0; border-radius: var(--cb-radius-sm); background: var(--cb-line); }
+.lens-badge__segment.is-confirmed { background: var(--cb-accent); }
+.property-offer-panel__head { display: grid; gap: var(--cb-space-1); }
+.property-offer-panel__head h3 { margin: 0; overflow-wrap: anywhere; }
+.property-offer-panel__members { display: grid; gap: var(--cb-space-1); list-style: none; margin: 0; padding: 0; }
+.property-offer-panel__members li { display: flex; justify-content: space-between; align-items: center; gap: var(--cb-space-2); min-width: 0; }
+.property-offer-panel__mark, .property-offer-panel__none { color: var(--cb-text-muted); }
+.property-offer-panel__holder { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cb-space-1); margin: 0; }
+.property-offer-panel__status:empty { display: none; }
+.property-offer-form__what { margin: 0; font-weight: var(--cb-weight-semibold); }
+.property-offer-form__wallet { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--cb-space-2); }
+.property-offer-form__walletLabel { color: var(--cb-text-muted); }
+.property-offer-form__currency, .property-offer-form__lens { display: grid; gap: var(--cb-space-2); margin: 0; padding: var(--cb-space-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-sm); }
+.property-offer-form__choice { display: inline-flex; align-items: center; gap: var(--cb-space-1); margin-inline-end: var(--cb-space-3); }
+.property-offer-form__lensMembers { display: flex; flex-wrap: wrap; gap: var(--cb-space-2); }
+.property-offer-form__empty { color: var(--cb-text-muted); }
+.property-offer-form__threshold { display: inline-flex; align-items: center; gap: var(--cb-space-2); }
+/* The Market sheet (js/property-market.js). */
+.property-market { display: grid; gap: var(--cb-space-3); }
+.property-market__tools, .property-market__toggles { display: flex; flex-wrap: wrap; gap: var(--cb-space-2); }
+.property-market__list { display: grid; gap: var(--cb-space-2); list-style: none; margin: 0; padding: 0; }
+.property-market__row { display: grid; grid-template-columns: 1fr auto; gap: var(--cb-space-1) var(--cb-space-2); align-items: center; padding: var(--cb-space-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-sm); }
+.property-market__what { font-weight: var(--cb-weight-semibold); overflow-wrap: anywhere; }
+.property-market__price { justify-self: end; }
+.property-market__title { grid-column: 1 / -1; }
+.property-market__status { margin: 0; color: var(--cb-text-muted); }
+.property-market__status:empty { display: none; }
+@media (max-width: 34rem) { .property-market__row { grid-template-columns: 1fr; } .property-market__price { justify-self: start; } }
