@@ -2058,16 +2058,7 @@ function autosaveBlockifyDraft(featuresOverride = null) {
     });
     const algorithmSelect = document.getElementById('algorithm-select');
     const parameters = blockifyMode === 'existing'
-        ? {
-            mode: 'existing',
-            typology: 'block',
-            rule: existingRule,
-            proposedHeightFloors: currentProposedHeightFloors,
-            additionalFloors: currentAdditionalFloors,
-            floorHeightM: currentFloorHeightM,
-            roof: existingRoof,
-            algorithm: null
-        }
+        ? window.RaisedExistingBuildings.parameters(currentExistingSettings())
         : {
             mode: blockifyMode,
             typology: 'block',
@@ -2499,17 +2490,8 @@ function ensureExistingFootprints() {
     if (existingFootprintsPromise) return existingFootprintsPromise;
     const geometry = getBlockQueryGeometry();
     if (!geometry) return Promise.resolve(null);
-    const block = { type: 'Feature', properties: {}, geometry };
-    const mostlyInside = feature => {
-        try {
-            const inside = turf.intersect(feature, block);
-            return !!inside && turf.area(inside) >= 0.5 * turf.area(feature);
-        } catch (_) { return false; }
-    };
     existingFootprintsPromise = window.DemolitionIndex.stockUnder([geometry]).then(features => {
-        existingFootprints = features.filter(feature => feature.geometry && mostlyInside(feature)).map(feature => ({
-            ...feature.properties, id: `${feature.properties.source}:${feature.properties.id}`, geometry: feature.geometry
-        }));
+        existingFootprints = window.RaisedExistingBuildings.footprintsOnSite(features, geometry, turf);
         return existingFootprints;
     }).catch(err => {
         existingFootprintsPromise = null; // let the next toggle retry
@@ -2551,8 +2533,7 @@ function updateAdditionalFloorsAvailability() {
     const slider = document.getElementById('additional-floors-slider');
     const radio = document.getElementById('blockify-rule-additional');
     if (!slider) return;
-    const known = Array.isArray(existingFootprints) && existingFootprints.some(f =>
-        f && (Number(f.height_m) > 0 || Number(f.floors) > 0));
+    const known = window.RaisedExistingBuildings.heightsKnown(existingFootprints);
     const available = blockifyMode === 'existing' && known;
     slider.disabled = !available;
     if (radio) radio.disabled = !available;
@@ -2647,57 +2628,23 @@ function renderExistingFootprintsLayer() {
     }).addTo(blockifyMap);
 }
 
-// The building's current height as far as the data knows it: measured height wins, floor count
-// times the floor-height slider as fallback, null when neither is known.
-function existingHeightForFootprint(fp) {
-    const measured = Number(fp && fp.height_m);
-    if (Number.isFinite(measured) && measured > 0) return measured;
-    const floors = Number(fp && fp.floors);
-    if (Number.isFinite(floors) && floors > 0) return floors * currentFloorHeightM;
-    return null;
-}
-
-// Per-building proposed height under the active rule, or null to leave the building out.
-// 'exact': every footprint is drawn at exactly the proposed height (even below its current one —
-// the proposal states the intended height, it doesn't demolish anything).
-// 'additional': current height + N floors, uncapped; buildings with unknown height are skipped
-// because there is nothing to add to.
-function proposedHeightForFootprint(fp) {
-    const existingH = existingHeightForFootprint(fp);
-    if (existingRule === 'additional') {
-        if (existingH === null) return { existingH, proposedH: null };
-        return { existingH, proposedH: existingH + currentAdditionalFloors * currentFloorHeightM };
-    }
-    return { existingH, proposedH: currentProposedHeightFloors * currentFloorHeightM };
+// The sliders of Based on existing buildings, as the shared builder (raised-existing-buildings.js)
+// reads them: the rule, the storeys, the added storeys, the storey height and the roof.
+function currentExistingSettings() {
+    return {
+        rule: existingRule,
+        proposedHeightFloors: currentProposedHeightFloors,
+        additionalFloors: currentAdditionalFloors,
+        floorHeightM: currentFloorHeightM,
+        roof: existingRoof
+    };
 }
 
 function generateExistingBuildingsInModal() {
     if (blockifyMode !== 'existing') return;
     const list = Array.isArray(existingFootprints) ? existingFootprints : [];
-    const blockName = getBlockifyDisplayName();
-
-    const features = [];
-    list.forEach(fp => {
-        const { existingH, proposedH } = proposedHeightForFootprint(fp);
-        if (proposedH === null) return;
-        let geometry;
-        try { geometry = JSON.parse(JSON.stringify(fp.geometry)); } catch (_) { return; }
-        features.push({
-            type: 'Feature',
-            properties: {
-                type: 'proposedBuilding',
-                block: blockName,
-                basedOnExisting: true,
-                sourceBuildingId: fp.id != null ? fp.id : null,
-                existingHeight: existingH,
-                height: Math.round(proposedH * 100) / 100,
-                // The roof set on the raised building (rule-building-details.js reads it from here).
-                ...(existingRoof !== 'flat' ? { roof: existingRoof } : {}),
-                buildingIndex: features.length
-            },
-            geometry
-        });
-    });
+    // Each footprint redrawn by the shared builder the MCP Block constructor uses too.
+    const features = window.RaisedExistingBuildings.raise(list, currentExistingSettings(), { blockName: getBlockifyDisplayName() });
 
     generatedBuildingFeatures = features;
     generatedBuildingFeature = null;
@@ -3061,16 +3008,7 @@ async function saveBlockifyDesignForProposal() {
     // Keyed on the MODE, not on whether buildings came out as an array: every mode saves an array
     // now, and writing mode:'existing' for a parametric design would lose its whole shape on re-edit.
     const parameters = blockifyMode === 'existing'
-        ? {
-            mode: 'existing',
-            typology: 'block',
-            rule: existingRule,
-            proposedHeightFloors: currentProposedHeightFloors,
-            additionalFloors: currentAdditionalFloors,
-            floorHeightM: currentFloorHeightM,
-            roof: existingRoof,
-            algorithm: null
-        }
+        ? window.RaisedExistingBuildings.parameters(currentExistingSettings())
         : {
             mode: blockifyMode,
             typology: 'block',

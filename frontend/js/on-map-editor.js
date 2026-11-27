@@ -310,6 +310,7 @@
                 cancel: () => options.onCancel?.(),
                 resume: () => syncMode(false),
                 owner: options.owner,
+                title: options.title || '',
                 get collapsed() { return collapsed; },
                 setCollapsed,
                 announce(value) { if (!closed && value) status.textContent = String(value); },
@@ -406,6 +407,8 @@
             open,
             isActive: () => !!active,
             getOwner: () => active?.owner || null,
+            // The open editor's visible title, e.g. for the chat to name the tool it offers to explain.
+            getTitle: () => active?.title || null,
             getControlsContainer: () => active?.body || null,
             getPreview: () => active?.preview || null,
             modelHandles: () => active?.modelHandles() || null,

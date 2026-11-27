@@ -1,9 +1,13 @@
 (function (win, doc) {
     'use strict';
     // Loaded on the chat sheet's first open; the transcript outlives other sheets closing it.
-    const transcript = win.__chatTranscript, context = win.__chatContext;
+    const transcript = win.__chatTranscript, context = win.__chatContext, persona = win.__chatPersona;
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+    // Hippodamus's face: the mood shown on the sheet (data-hippodamus-mood), the last turn's reaction
+    // until its animation ends, and the pointer his eyes follow.
+    let moodHost = null, reaction = null, portraitSource = null, faceCount = 0, gazePoint = null, gazeFrame = 0;
     const t = (key, values) => win.i18n?.t?.(key, values) || key;
-    let host, introNode, tips, tipButtons = [], messages, status, agreementStatus, agreementLink, total, input, sendButton, undoButton, newButton, conversationCopyButton, state = transcript.initial(), lastSynced = null, turnBaseRow = null, turnBaseCaptured = false, resetAfterTurn = false, operation = false;
+    let host, scroller, greetingText, tipsTitle, tipButtons = [], messages, status, agreementStatus, agreementLink, total, input, sendButton, undoButton, newButton, conversationCopyButton, state = transcript.initial(), lastSynced = null, turnBaseRow = null, turnBaseCaptured = false, resetAfterTurn = false, operation = false;
     const TIPS = [
         { key: 'chat.tips.design' }, { key: 'chat.tips.agreement' }, { key: 'chat.tips.feedback' },
         { key: 'chat.tips.sources' }, { key: 'chat.tips.affordableHousing' }, { key: 'chat.tips.tools' }
@@ -98,12 +102,21 @@
         if (!root) return;
         if (host === root) { render(); return; }
         host = root; root.replaceChildren();
-        introNode = node('p', 'chat-intro', t('chat.intro')); root.append(introNode);
-        tips = node('details', 'chat-tips');
-        const tipsTitle = node('summary', 'chat-tips__summary', t('chat.tips.title')); tips.append(tipsTitle);
-        const tipList = node('div', 'chat-tips__list');
+        moodHost = root.closest('.chat-sheet') || root;
+        moodHost.addEventListener('animationend', event => {
+            if (event.animationName !== 'hippodamus-react-show' || !reaction) return;
+            reaction = null; showMood();
+        });
+        // Hippodamus opens the conversation: his portrait, his question and what to ask him, at the
+        // top of the scrolling transcript so it stays reachable above the messages.
+        const greeting = node('section', 'chat-greeting');
+        const portrait = node('span', 'chat-greeting__portrait cb-avatar-hippodamus'); portrait.setAttribute('aria-hidden', 'true');
+        const bubble = node('div', 'chat-greeting__bubble');
+        greetingText = node('p', 'chat-greeting__question', t('chat.greeting'));
+        tipsTitle = node('p', 'chat-greeting__kicker', t('chat.tips.title')); tipsTitle.id = 'chat-tips-title';
+        const tipList = node('div', 'chat-tips'); tipList.setAttribute('role', 'group'); tipList.setAttribute('aria-labelledby', tipsTitle.id);
         tipButtons = TIPS.map(tip => {
-            const button = node('button', 'btn btn-quiet btn-sm chat-tip', t(tip.key)); button.type = 'button';
+            const button = node('button', 'btn btn-quiet chat-tip', t(tip.key)); button.type = 'button';
             button.addEventListener('click', () => {
                 input.value = t(tip.key);
                 input.focus();
@@ -111,8 +124,13 @@
             });
             tipList.append(button); return button;
         });
-        tips.append(tipList); root.append(tips);
-        messages = node('div', 'chat-transcript'); messages.setAttribute('role', 'log'); messages.setAttribute('aria-live', 'polite'); messages.setAttribute('aria-label', t('chat.title'));
+        bubble.append(greetingText, tipsTitle, tipList); greeting.append(portrait, bubble);
+        const headerPortrait = moodHost.querySelector('.map-sheet-title .cb-avatar-hippodamus');
+        [[portrait, 'chat-greeting__face'], [headerPortrait, 'chat-header-face']].forEach(([target, cls]) => {
+            if (target) livenPortrait(target, cls).catch(error => win.console?.warn(`[${new Date().toISOString()}] [chat] Hippodamus stays a still portrait:`, error));
+        });
+        scroller = node('div', 'chat-transcript');
+        messages = node('div', 'chat-log'); messages.setAttribute('role', 'log'); messages.setAttribute('aria-live', 'polite'); messages.setAttribute('aria-label', t('chat.title'));
         status = node('div', 'chat-status'); status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
         agreementStatus = node('p', 'chat-agreement-status'); agreementStatus.setAttribute('role', 'status'); agreementStatus.setAttribute('aria-live', 'polite');
         agreementLink = node('a', 'btn btn-quiet btn-sm chat-agreement-link', t('chat.reviewAgreement')); agreementLink.target = '_blank'; agreementLink.rel = 'noopener noreferrer'; agreementLink.hidden = true;
@@ -124,14 +142,64 @@
         const composer = node('div', 'chat-composer'); input = node('textarea', 'chat-input'); input.rows = 2; input.enterKeyHint = 'send'; input.placeholder = t('chat.placeholder'); input.setAttribute('aria-label', t('chat.placeholder'));
         sendButton = actionButton('chat.send', 'btn btn-primary btn-sm', () => send(input.value));
         input.addEventListener('keydown', event => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); win.BusyControl.track(sendButton, () => send(input.value)).catch(showError); } });
-        composer.append(input, sendButton); root.append(messages, status, agreementStatus, agreementLink, total, controls, composer);
+        composer.append(input, sendButton); scroller.append(greeting, messages);
+        root.append(scroller, status, agreementStatus, agreementLink, total, composer, controls);
         const saved = win.ChatClient.conversation(); if (saved) dispatch({ type: 'conversation', conversation: saved }); else render();
     }
-    function showError(error) { dispatch({ type: 'turn:failed', code: error?.code || 'stream_error', status: error?.status }); }
+    // The greeting's and the header's portraits are the same artwork inlined, so chat-panel.css can move
+    // his eyes, brows and mouth; with reduced motion they stay the still image. Each copy gets its own
+    // clip id, as ids must be unique in the page.
+    async function livenPortrait(target, cls) {
+        if (win.__reducedMotion) return;
+        portraitSource ||= win.fetch(new URL('assets/avatars/hippodamus.svg', doc.baseURI)).then(response => {
+            if (!response.ok) throw new Error(`HTTP ${response.status} for the portrait`);
+            return response.text();
+        });
+        const text = (await portraitSource).replaceAll('hippodamus-disc', `hippodamus-disc-${++faceCount}`);
+        const svg = new DOMParser().parseFromString(text, 'image/svg+xml').documentElement;
+        if (svg.localName !== 'svg') throw new Error('The portrait is not an SVG document.');
+        svg.setAttribute('focusable', 'false'); svg.classList.add('hippodamus-live', cls);
+        target.replaceChildren(doc.importNode(svg, true)); target.classList.add('is-animated');
+        if (faceCount === 1) doc.addEventListener('pointermove', followPointer, { passive: true });
+    }
+    function followPointer(event) {
+        gazePoint = { x: event.clientX, y: event.clientY };
+        if (!gazeFrame) gazeFrame = win.requestAnimationFrame(lookAtPointer);
+    }
+    // Once a frame at most, and only while the sheet is open: turn each live face's pupils toward the pointer.
+    function lookAtPointer() {
+        gazeFrame = 0;
+        if (!moodHost || moodHost.hidden) return;
+        moodHost.querySelectorAll('.hippodamus-live').forEach(face => {
+            const box = face.getBoundingClientRect(); if (!box.width) return;
+            const look = persona.gaze({ x: box.left + box.width / 2, y: box.top + box.height * 0.42 }, gazePoint);
+            face.style.setProperty('--hippodamus-look-x', look.x.toFixed(2));
+            face.style.setProperty('--hippodamus-look-y', look.y.toFixed(2));
+        });
+    }
+    function showMood() {
+        if (moodHost) moodHost.dataset.hippodamusMood = persona.mood({ pending: !!state.pending || operation, reaction });
+    }
+    // While a turn runs, the pending reply shows him sketching a street grid instead of a "Working…" line.
+    function workingSketch() {
+        const sketch = node('p', 'chat-working');
+        const svg = doc.createElementNS(SVG_NS, 'svg'); svg.setAttribute('class', 'chat-working__sketch');
+        svg.setAttribute('viewBox', '0 0 48 32'); svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('focusable', 'false');
+        const block = doc.createElementNS(SVG_NS, 'rect'); block.setAttribute('class', 'chat-working__block');
+        [['x', 13], ['y', 10], ['width', 10], ['height', 12]].forEach(([name, value]) => block.setAttribute(name, value));
+        svg.append(block);
+        ['M2 9H46', 'M2 23H46', 'M12 2V30', 'M24 2V30', 'M36 2V30'].forEach(d => {
+            const street = doc.createElementNS(SVG_NS, 'path'); street.setAttribute('class', 'chat-working__street');
+            street.setAttribute('d', d); street.setAttribute('pathLength', '1'); svg.append(street);
+        });
+        sketch.append(svg, node('span', 'chat-working__label', t('chat.working')));
+        return sketch;
+    }
+    function showError(error) { reaction = 'frown'; dispatch({ type: 'turn:failed', code: error?.code || 'stream_error', status: error?.status }); }
     async function send(text) {
         const value = String(text || '').trim(); if (!value || operation) return;
         turnHasEditor = !!activeEditor();
-        operation = true; render();
+        reaction = null; operation = true; render();
         input.value = ''; input.disabled = true;
         try {
             if (state.conversation && state.conversation.city !== currentCity()) clearConversationState();
@@ -141,7 +209,7 @@
                 dispatch({ type: 'conversation', conversation: conv });
             };
             if (!conv) await startConversation();
-            dispatch({ type: 'turn:start', text: value }); status.textContent = t('chat.working'); let planEvent = null, navigation = Promise.resolve(), navigationError = null;
+            dispatch({ type: 'turn:start', text: value }); let planEvent = null, navigation = Promise.resolve(), navigationError = null;
             const turnKey = win.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
             const sendTurn = includeArtifact => win.ChatClient.turn(conv.id, { text: value,
                 language: win.i18n?.getLanguage?.() || 'en', turnKey, context: buildContext(includeArtifact) },
@@ -199,6 +267,7 @@
             if (!event.draftRef) {
                 if (event.cid) throw Object.assign(new Error('A plan revision is missing its private reference.'), { code: 'invalid-plan-reference' });
                 await clearAppliedPlan(previous);
+                reaction = 'smile';
                 dispatch({ type: kind === 'undo' ? 'undo:done' : 'plan:applied', kind, plan: { ...event, cid: null } });
                 win.showEphemeralMessage?.(t('chat.planApplied'), 5000, 'success');
                 return;
@@ -212,6 +281,7 @@
             const lastChange = context.lastChangeOf(previous, next, event.changes, kind);
             await win.PlanDialog.syncSharedPlanOnMap(next, previous || { designs: [], memberIds: [] }, { lastChange, present: false, notice: null });
             lastSynced = next;
+            reaction = 'smile';
             dispatch({ type: kind === 'undo' ? 'undo:done' : 'plan:applied', kind, plan: { ...event, cid: next.cid } });
             win.showEphemeralMessage?.(t('chat.planApplied'), 5000, 'success');
         } catch (error) { dispatch({ type: 'plan:failed', kind, plan: event, error: error?.code || 'plan_failed' }); throw error; }
@@ -270,7 +340,7 @@
             author.append(t(message.role === 'user' ? 'chat.roles.you' : 'chat.roles.agent'));
             article.append(author);
             if (message.text) article.append(node('p', '', message.text));
-            if (message.pending) article.append(node('p', '', t('chat.working')));
+            if (message.pending) article.append(workingSketch());
             if (state.conversation?.debugCosts === true && message.steps?.length) {
                 const details = node('details', 'chat-steps'), key = String(message.id), summary = node('summary', '', t('chat.steps.other', { count: message.steps.length })), list = node('ol');
                 details.dataset.chatMessageId = key; details.open = expandedSteps.has(key);
@@ -281,9 +351,15 @@
             if (message.role === 'agent' && message.text?.trim()) article.append(copyButton('chat.copyReply', () => message.text));
             messages.append(article);
         });
-        messages.scrollTop = messages.scrollHeight;
+        // An empty conversation shows the greeting from its question down; otherwise the latest message.
+        scroller.scrollTop = state.messages.length ? scroller.scrollHeight : 0;
+        const opening = persona.greeting({ toolOpen: !!activeEditor(), toolTitle: win.OnMapEditor?.getTitle?.(),
+            parcelCount: win.ChatNavigation?.capture?.()?.parcelIds?.length || 0 });
+        greetingText.textContent = t(opening.key, opening.params);
+        showMood();
         if (focused) [...messages.querySelectorAll('.chat-option')].find(button => button.dataset.chatOptionKey === focused)?.focus({ preventScroll: true });
-        status.textContent = state.pending ? t('chat.working') : state.error ? t(state.error.key || transcript.errorKey(state.error.code, state.error.status)) : '';
+        // While a turn runs, the pending reply's sketch says so (its label is read out from the log).
+        status.textContent = state.pending ? '' : state.error ? t(state.error.key || transcript.errorKey(state.error.code, state.error.status)) : '';
         total.hidden = state.conversation?.debugCosts !== true || !state.totals.turns;
         total.textContent = !total.hidden ? t('chat.sessionTotal', { cost: formatCost(state.totals.spentUsd) }) : '';
         conversationCopyButton.disabled = !serializeConversation();
@@ -318,6 +394,7 @@
     }
     win.addEventListener('cityChanged', () => { if (operation) resetAfterTurn = true; else reset().catch(showError); });
     win.addEventListener('planschange', render);
+    doc.addEventListener('multi-parcel-selection-change', render);
     doc.addEventListener('on-map-editor-preview-change', () => {
         if (operation && activeEditor()) turnHasEditor = true;
         render();
@@ -325,8 +402,7 @@
     doc.addEventListener('proposalCreated', render);
     win.addEventListener('i18n:translationsLoaded', () => {
         if (!host) return;
-        introNode.textContent = t('chat.intro');
-        tips.querySelector('.chat-tips__summary').textContent = t('chat.tips.title');
+        tipsTitle.textContent = t('chat.tips.title');
         tipButtons.forEach((button, index) => { button.textContent = t(TIPS[index].key); });
         input.placeholder = t('chat.placeholder'); input.setAttribute('aria-label', t('chat.placeholder'));
         sendButton.textContent = t('chat.send'); undoButton.textContent = t('chat.undo'); newButton.textContent = t('chat.newConversation'); agreementLink.textContent = t('chat.reviewAgreement');

@@ -104,14 +104,15 @@ export function existingFloorArea(geometry, building) {
 
 // What an alternative's new floor area is worth and costs in its city's currency
 // (CityMoney.newBuildMoney, the rule of Plan stats and the 3D panel): value, the all-in cost
-// (construction, the development charge, land, the sale tax inside the value less the tax reclaimed on a tax-inclusive
-// construction cost, the floor area it removes), profit and rent, at the city's rates where its land is
+// (construction, the development charge, the acquisition of its plots, the sale tax inside the value less the tax
+// reclaimed on a tax-inclusive construction cost), profit and rent, at the city's rates where its land is
 // (`at`, [lng, lat], EconomicSources.locationOf of its designs' sites, as the 3D panel and Plan stats
 // locate theirs) or at the prices the caller gives, which are scenario assumptions. Each price keeps its source under `prices`; a given
 // construction price keeps the tax basis (taxIncluded) of the city's rate, as the slider does.
 // keptFloorAreaM2: the floor area extended buildings already had, which is not built, sold or replaced
-// (builtFloorAreaM2 is the rest); the land is then the land of the designs that extend none.
-export function moneyOf({ city, floorAreaM2, keptFloorAreaM2 = 0, replacedFloorAreaM2, landAreaM2, at = null, prices = {} }) {
+// (builtFloorAreaM2 is the rest). plots (plotsOf): [{ landAreaM2, replacedFloorAreaM2 }], each bought
+// once at the higher of its land value and the value of the floor area removed there; null: unknown.
+export function moneyOf({ city, floorAreaM2, keptFloorAreaM2 = 0, plots, at = null, prices = {} }) {
     const { currency, rates, unavailable, reason } = cityEconomics(city, at);
     if (unavailable) throw fail('city-money-unavailable', reason);
     const price = (metric, given) => (finite(given) && given >= 0
@@ -122,17 +123,27 @@ export function moneyOf({ city, floorAreaM2, keptFloorAreaM2 = 0, replacedFloorA
         land: price('land', prices.landPerM2), saleTax: price('saleTax', prices.saleTaxShare), rent: price('rent', prices.rentPerM2Month),
         devCharge: price('devCharge', prices.devChargePerM2) };
     const amountOf = metric => (used[metric] ? used[metric].amount : null);
-    return { currency, unit: 'm2-floor', prices: used, floorAreaM2, keptFloorAreaM2, replacedFloorAreaM2, landAreaM2,
-        ...cityMoney(city).newBuildMoney({ floorAreaM2, keptFloorAreaM2, replacedFloorAreaM2, landAreaM2, salePerM2: amountOf('sale'),
+    return { currency, unit: 'm2-floor', prices: used, floorAreaM2, keptFloorAreaM2, plots: plots ?? null,
+        ...cityMoney(city).newBuildMoney({ floorAreaM2, keptFloorAreaM2, plots: plots ?? null, salePerM2: amountOf('sale'),
             constructionPerM2: amountOf('construction'), landPerM2: amountOf('land'), saleTaxShare: amountOf('saleTax'),
             constructionTaxIncluded: used.construction?.taxIncluded === true, rentPerM2Month: amountOf('rent'),
             devChargePerM2: amountOf('devCharge') }) };
 }
 
-// The land an alternative takes, as Plan stats prices it: the ground its designs' sites cover.
-export function landAreaOf(designs, siteOf) {
+// The plots an alternative buys, as Plan stats does (plan-decision.js acquisitionPlots): each parcel
+// it takes, with its part of the land the designs that extend no building cover (their sites), and
+// that land on no parcel; each with the floor area the alternative removes there. removed: the
+// removed parts [{ footprint, floorAreaM2 }] (floorAreaM2 null without a height), null while unknown.
+export function plotsOf({ designs, siteOf, parcels = [], removed }) {
+    if (!Array.isArray(removed)) return null;
     const sites = designs.map(design => siteOf(design)).filter(Boolean).map(site => turf.feature(site));
-    return sites.length ? turf.area(union(sites)) : 0;
+    const land = sites.length ? union(sites) : null;
+    const ops = { intersect: (a, b) => turf.intersect(a, b), areaOf: feature => turf.area(feature) };
+    const onLand = feature => { const piece = land ? ops.intersect(feature, land) : null; return piece ? ops.areaOf(piece) : 0; };
+    return planDecision.acquisitionPlots({ parcels: parcels.map(feature => ({ feature, landM2: onLand(feature) })),
+        landM2: land ? ops.areaOf(land) : 0, rows: removed, ops })
+        .map(plot => ({ landAreaM2: plot.landM2, replacedFloorAreaM2: plot.rows.some(row => !finite(row.floorAreaM2)) ? null
+            : plot.rows.reduce((sum, row) => sum + row.floorAreaM2, 0) }));
 }
 
 export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDraftReference, plans, readFunding = null }) {
@@ -241,7 +252,7 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
                 measurementErrors.push({ code: error.code || 'ground-unavailable', message: error.message,
                     next: trustedMetadata(error.next || { action: 'Retry when complete parcel ground is available.' }) });
             }
-            let buildingsRemoved = null, buildingsCut = null, removedFootprintM2 = null, removedFloorAreaM2 = null;
+            let buildingsRemoved = null, buildingsCut = null, removedFootprintM2 = null, removedFloorAreaM2 = null, removedParts = null;
             if (ground) {
                 try {
                     // The land each design takes, its road tunnels taking nothing (demolition-derive.js, the
@@ -255,7 +266,7 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
                         const extending = !design.roadProposal && demolition.extendsExisting(design);
                         return region ? { proposalId: row.cid, region, tunnels, ...(extending ? { extending: true } : {}) } : null;
                     }).filter(Boolean);
-                    if (!takers.length) { buildingsRemoved = 0; buildingsCut = 0; removedFootprintM2 = 0; removedFloorAreaM2 = 0; }
+                    if (!takers.length) { buildingsRemoved = 0; buildingsCut = 0; removedFootprintM2 = 0; removedFloorAreaM2 = 0; removedParts = []; }
                     else {
                         // The sources in order: the first that answers the whole land completely is the stock.
                         const sources = Array.isArray(buildingSources) ? buildingSources.filter(Boolean) : [];
@@ -279,11 +290,12 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
                         const { records } = DemolitionDerive.derive({ takers, buildings: [...byKey.values()] }, turf);
                         // Totalled by Compare plans' rule (plan-decision.js demolitionTotals): a removed
                         // building the source gives no height leaves the removed floor area unknown.
-                        const totals = planDecision.demolitionTotals([...records].filter(([, record]) => !record.extended).map(([key, record]) => {
+                        const rows = [...records].filter(([, record]) => !record.extended).map(([key, record]) => {
                             const part = record.remainder ? record.demolishedPart : record.geometry;
-                            return { whole: !record.remainder, footprintM2: turf.area(turf.feature(part)), floorAreaM2: existingFloorArea(part, stated.get(key)) };
-                        }));
-                        ({ buildingsRemoved, buildingsCut, removedFootprintM2, removedFloorAreaM2 } = totals);
+                            return { whole: !record.remainder, footprint: turf.feature(part), footprintM2: turf.area(turf.feature(part)), floorAreaM2: existingFloorArea(part, stated.get(key)) };
+                        });
+                        ({ buildingsRemoved, buildingsCut, removedFootprintM2, removedFloorAreaM2 } = planDecision.demolitionTotals(rows));
+                        removedParts = rows;
                     }
                 } catch (error) {
                     measurementErrors.push({ code: error.code || 'buildings-unavailable', message: error.message,
@@ -299,8 +311,9 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
             try {
                 const city = designs.find(design => typeof design?.city === 'string' && design.city)?.city;
                 if (!city) throw fail('city-unknown', 'No design names its city, so its money is unknown.');
-                money = moneyOf({ city, floorAreaM2: areas.floorAreaM2, keptFloorAreaM2: areas.keptFloorAreaM2, replacedFloorAreaM2: removedFloorAreaM2,
-                    landAreaM2: landAreaOf(designs.filter(design => !demolition.extendsExisting(design)), design => read.siteOfDesign(design)),
+                money = moneyOf({ city, floorAreaM2: areas.floorAreaM2, keptFloorAreaM2: areas.keptFloorAreaM2,
+                    plots: plotsOf({ designs: designs.filter(design => !demolition.extendsExisting(design)), siteOf: design => read.siteOfDesign(design),
+                        parcels: [...parcels.values()], removed: removedParts }),
                     at: locationOf(designs.map(design => read.siteOfDesign(design)).filter(Boolean)), prices: prices || {} });
             } catch (error) {
                 measurementErrors.push({ code: error.code || 'money-unavailable', message: error.message,
@@ -327,7 +340,7 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
         }
         warnings.push('Areas describe authored geometry; they are not a prediction of construction. The party ledger is the app’s modeled allocation, not proof of ownership or compensation.');
         warnings.push('Permitted checks each new building against the zones of the city\'s Permitted source where it stands (or planningSource); planning designations of rule sets are not applied here and limits relative to the existing context read unknown. Crowdfunding progress under backing is read from Solana when this server has a connection, never from the index.');
-        warnings.push('Money is a model at prices each with its source: value of the new floor area, its all-in cost (construction, the development charge on new floor area, land at the land price, the sale tax inside the value, the value of the floor area it removes), profit, annual rent and its yield on the cost without the sale tax. It is not an appraisal; fees and finance are not in it.');
+        warnings.push('Money is a model at prices each with its source: value of the new floor area, its all-in cost (construction, the development charge on new floor area, the acquisition of each plot, a parcel or open ground, at the higher of its land value and the value of the floor area removed there, the sale tax inside the value), profit, annual rent and its yield on the cost without the sale tax. It is not an appraisal; fees and finance are not in it.');
         return { alternatives, warnings };
     };
 }

@@ -368,9 +368,9 @@ describe('errors and warnings in words', () => {
 });
 
 describe('the sections as HTML (the hooks the browser spec targets)', () => {
-    it('shows four tabs and a plan selector without design membership checkboxes', () => {
+    it('shows five tabs (Neighbours last) and a plan selector without design membership checkboxes', () => {
         const html = Dialog.bodyHtml({ plans: [], values: {} });
-        expect([...html.matchAll(/data-agreement-tab="([a-z]+)"/g)].map(match => match[1])).toEqual(['rules', 'inputs', 'outputs', 'persons']);
+        expect([...html.matchAll(/data-agreement-tab="([a-z]+)"/g)].map(match => match[1])).toEqual(['rules', 'inputs', 'outputs', 'persons', 'neighbours']);
         expect(html).toContain('data-agreement-plan'); expect(html).toContain('Create a plan first');
         expect(html).not.toContain('data-agreement-design='); expect(html).not.toContain('data-agreement-cash=');
     });
@@ -443,7 +443,7 @@ describe('the sections as HTML (the hooks the browser spec targets)', () => {
 
     it('puts the decision and consultation sections before the design and settlement sections, errors and warnings above them', () => {
         const html = Dialog.bodyHtml({ designs: [], selected: new Set(), missing: [], land: null, values: { electorate: 'owners', binding: true, title: 'T', deadline: '' }, today: '2026-10-21' });
-        expect([...html.matchAll(/data-agreement-tabpanel="([a-z]+)"/g)].map(m => m[1])).toEqual(['rules', 'inputs', 'outputs', 'persons']);
+        expect([...html.matchAll(/data-agreement-tabpanel="([a-z]+)"/g)].map(m => m[1])).toEqual(['rules', 'inputs', 'outputs', 'persons', 'neighbours']);
         expect(html.indexOf('data-agreement-errors')).toBeLessThan(html.indexOf('data-agreement-plan'));
         expect(html).toContain('<input type="text" data-agreement-title value="T" autocomplete="off">');
         expect(html).toContain('<input type="date" data-agreement-deadline value="" min="2026-10-21">');

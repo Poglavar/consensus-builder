@@ -1,4 +1,52 @@
 {
+    "streets": {
+        "end": {
+            "fork": "a bifurcação",
+            "sideRoad": "uma rua lateral",
+            "loop": "o anel",
+            "end": "o seu fim",
+            "bend": "a curva",
+            "bridge": "a ponte",
+            "railwayBridge": "a ponte ferroviária",
+            "overpass": "o viaduto",
+            "gap": "o intervalo entre edifícios",
+            "number": "n.º {{number}}"
+        },
+        "picker": {
+            "between": "Entre {{from}} e {{to}}",
+            "notFound": "Nenhuma rua com nome passa aqui. Clique na própria rua.",
+            "failed": "Não foi possível ler a rua.",
+            "official": "Identificador oficial {{id}}",
+            "osmOnly": "Do OpenStreetMap",
+            "partial": "Só foi lida a parte próxima",
+            "part": "Parte da rua",
+            "whole": "A rua inteira",
+            "side": "Lado",
+            "select": "Selecionar parcelas",
+            "selecting": "A procurar as parcelas ao longo dela…",
+            "none": "Nenhum limite de parcela acompanha esta parte desse lado.",
+            "selected": {
+                "one": "Selecionada {{count}} parcela ao longo de {{street}}: {{where}}, {{side}}.",
+                "other": "Selecionadas {{count}} parcelas ao longo de {{street}}: {{where}}, {{side}}."
+            },
+            "incomplete": "Algumas parcelas aqui ainda não carregaram; verifique o mapa.",
+            "selectFailed": "Não foi possível selecionar as parcelas: {{error}}",
+            "cityChanged": "A cidade mudou."
+        },
+        "side": {
+            "north": "Lado norte",
+            "northeast": "Lado nordeste",
+            "east": "Lado este",
+            "southeast": "Lado sudeste",
+            "south": "Lado sul",
+            "southwest": "Lado sudoeste",
+            "west": "Lado oeste",
+            "northwest": "Lado noroeste",
+            "both": "Ambos os lados",
+            "left": "Lado esquerdo",
+            "right": "Lado direito"
+        }
+    },
     "deviceModels": {
         "publishTitle": "Modelos só neste dispositivo",
         "publishMessage": "Os modelos 3D importados no que está a publicar estão guardados só neste dispositivo. Carregue-os para que os outros os vejam, ou publique sem eles e os outros veem um bloco simples. Um modelo carregado é público: qualquer pessoa com uma ligação para o projeto pode descarregá-lo.",
@@ -376,14 +424,13 @@
                 "saleTaxSuffix": "% de imposto no preço",
                 "costDetails": "Detalhe do custo",
                 "costConstruction": "Construção",
-                "costLand": "Terreno (terreno do plano × preço do terreno)",
+                "costAcquisition": "Aquisição (cada lote ao valor do terreno ou ao valor dos edifícios demolidos nele, o maior)",
                 "costTax": "Imposto incluído no valor de venda da nova área",
                 "costReclaimed": "Menos o imposto recuperado na construção",
-                "costReplaced": "Edifícios existentes demolidos, ao preço de venda",
                 "noteNoLandPrice": "Não há preço do terreno para este local: indique um para ver o custo total e o lucro.",
                 "rentSuffix": "{{currency}} por m² de renda por mês",
                 "annualRent": "Renda anual da nova área",
-                "rentYield": "Rendimento da renda sobre o custo (renda anual ÷ construção, taxa de construção, terreno e valor demolido)",
+                "rentYield": "Rendimento da renda sobre o custo (renda anual ÷ construção, taxa de construção e aquisição)",
                 "assumptionsLabel": "Pressupostos",
                 "efficiencySuffix": "% de área útil face à área bruta",
                 "apartmentSizeSuffix": "m² por apartamento",
@@ -1823,6 +1870,68 @@
         }
     },
     "agreement": {
+        "neighbours": {
+            "tab": "Vizinhos",
+            "heading": "Vizinhos afetados",
+            "hint": "Um vizinho que abdica de um direito que o plano afeta, como a luz natural ou um limite do jardim, pode ser parte sem dar terreno. Uma renúncia precisa da aprovação dos seus proprietários; a compensação é paga sem ela. O patrocinador paga a cada vizinho.",
+            "measure": "Encontrar vizinhos afetados",
+            "noGuides": "Este local não define referências para vizinhos, por isso nada é medido: adicione uma parcela vizinha pelo seu id.",
+            "candidates": "Adicionar parcelas afetadas a este acordo",
+            "candidatesHint": "As parcelas além de uma referência estão assinaladas. Cada uma é adicionada como renúncia com as suas medições; defina as condições abaixo.",
+            "candidate": "Parcela {{parcelId}}, {{grade}}",
+            "added": "já está neste acordo",
+            "isInput": "uma parcela de entrada",
+            "addTicked": "Adicionar as parcelas assinaladas ({{count}})",
+            "addedCount": "Adicionada(s) {{count}} parcela(s) vizinha(s): defina abaixo as condições de cada uma.",
+            "byId": "Adicionar uma parcela vizinha pelo seu id",
+            "add": "Adicionar vizinho",
+            "none": "Ainda não há vizinhos afetados.",
+            "ownersOnly": "Os vizinhos afetados só são partes de um acordo de proprietários.",
+            "party": "Vizinho",
+            "effectLabel": "Caso",
+            "effect": {
+                "waiver": "Renúncia: cedem o direito e têm de aprovar",
+                "compensation": "Compensação: devida sem o seu consentimento"
+            },
+            "rights": "Direitos cedidos",
+            "right": {
+                "daylight": "Luz natural",
+                "sunlight": "Sol direto",
+                "outlook": "Vista e céu",
+                "garden": "Limite do jardim",
+                "privacy": "Privacidade e devassamento",
+                "other": "Outro direito (indique qual na nota)"
+            },
+            "note": "Nota (que direito, se for outro)",
+            "readings": "Medições ao adicionar",
+            "noReadings": "Sem medições: adicionada pelo id da parcela.",
+            "reading": "{{kind}}: {{before}} → {{after}} (referência {{guide}}), {{grade}}",
+            "grade": {
+                "fail": "além de uma referência",
+                "below": "abaixo do nível de uma referência, dentro da sua margem",
+                "minor": "uma perda menor",
+                "screen": "um primeiro controlo ultrapassado"
+            },
+            "loss": "Perda declarada de valor de mercado ({{currency}})",
+            "statedBy": "Perda declarada por",
+            "stater": {
+                "sponsor": "Estimativa do patrocinador",
+                "valuer": "Avaliador"
+            },
+            "valuerRef": "Referência do avaliador (opcional)",
+            "payment": "Pagamento ao vizinho ({{currency}})",
+            "derived": "{{multiple}} a perda declarada, conforme as Regras.",
+            "remove": "Retirar {{parcelId}} do acordo",
+            "lossColumn": "Perda declarada",
+            "paymentColumn": "Pagamento ao vizinho",
+            "multiple": {
+                "label": "Compensação aos vizinhos",
+                "none": "1× a perda declarada (nenhum definido)",
+                "strongSuburbs": "Strong Suburbs: 150% da perda declarada (valor ainda não verificado)",
+                "custom": "Outro múltiplo",
+                "value": "Múltiplo da perda declarada"
+            }
+        },
         "funding": {
             "apartments": {
                 "inventory": "Apartamentos",
@@ -2364,8 +2473,22 @@
             "deadline": "Prazo (opcional)"
         },
         "errors": {
+            "affectedInput": "Os proprietários de uma parcela de entrada já são partes: retire-a de Vizinhos.",
+            "affectedEffect": "Escolha renúncia ou compensação para cada vizinho.",
+            "affectedRights": "Assinale pelo menos um direito que cada vizinho cede.",
+            "affectedNote": "Indique na nota que outro direito um vizinho cede.",
+            "affectedReading": "As medições de um vizinho indicam um tipo ou grau que a aplicação não mede.",
+            "affectedAmount": "O pagamento e a perda declarada de um vizinho têm de ser montantes de pelo menos 0, com quem declarou a perda.",
+            "affectedLossRequired": "A compensação é um múltiplo de uma perda declarada: declare a perda de cada vizinho compensado.",
+            "affectedConsideration": "O pagamento a um vizinho compensado tem de ser o múltiplo definido da sua perda declarada.",
+            "affectedElectorate": "Só um acordo de proprietários pode incluir vizinhos afetados.",
+            "neighbourMultiple": "Defina um múltiplo positivo da perda declarada para compensar os vizinhos.",
             "consultationOrganiser": "Introduza um site do organizador ou um identificador did:web válido.",
             "consultationParticipationUrl": "Introduza um URL de participação HTTPS sem credenciais.",
+            "eligibilityNoHouses": "O plano não eleva nenhum edifício existente com uma mansarda, pelo que esta votação nada tem a abranger.",
+            "eligibilityMissing": "Verifique a elegibilidade das casas abrangidas antes de criar esta votação de rua.",
+            "eligibilityStale": "O plano abrange outras casas que a última verificação: verifique de novo.",
+            "eligibilityFailed": "Ainda não se sabe se todas as casas abrangidas são elegíveis: veja Casas abrangidas.",
             "communityAllocations": "Um acordo comunitário não vinculativo não pode atribuir terrenos.",
             "communityMoney": "Um acordo comunitário não vinculativo não pode incluir pagamentos em dinheiro.",
             "noDesigns": "Escolha pelo menos um projeto.",
@@ -4081,6 +4204,11 @@
         "warning": "Esta cidade já está aberta noutro separador, pelo que as alterações feitas aqui não são guardadas no plano. São mantidas numa cópia de recuperação, que será disponibilizada quando voltar a abrir esta cidade com os outros separadores da mesma fechados. As outras cidades podem continuar abertas."
     },
     "proposalApproval": {
+        "neighbourLabel": "Vizinho {{label}}",
+        "waiver": {
+            "approved": "Proprietários da parcela vizinha {{parcelId}}: renúncia aprovada",
+            "pending": "Proprietários da parcela vizinha {{parcelId}}: renúncia pendente"
+        },
         "ownerLabel": "Proprietário {{label}}",
         "meterDistinctOwners": "Proprietários distintos que aprovaram",
         "leaseholderLabel": "Arrendatário {{label}}",
@@ -5084,13 +5212,12 @@
             "value": "Valor",
             "constructionCost": "Custo de construção",
             "profit": "Lucro",
-            "profitNote": "Lucro = valor − custo total: construção, taxa de construção, terreno, imposto de venda menos o recuperado na construção, e valor construído substituído",
+            "profitNote": "Lucro = valor − custo total: construção, taxa de construção, aquisição (cada lote ao valor do terreno ou ao do que nele existe, o maior) e imposto de venda menos o recuperado na construção",
             "allInCost": "Custo total",
             "costDetails": "Detalhe do custo",
-            "landCost": "Terreno",
+            "acquisitionCost": "Aquisição (terreno ou edifícios, o maior)",
             "saleTaxCost": "Imposto de venda",
             "taxReclaimed": "Imposto recuperado na construção",
-            "replacedValue": "Valor construído substituído",
             "landPriceUnset": "Preço do terreno não definido: mova o controlo",
             "landPrice": "Terreno {{price}}/m² de terreno",
             "saleTax": "Imposto de venda {{share}} do preço",
@@ -5707,6 +5834,7 @@
     },
     "parcelMenu": {
         "actions": {
+            "street": "Rua aqui",
             "details": "Detalhes",
             "tools": "Ferramentas",
             "history": "Histórico",
@@ -9507,18 +9635,52 @@
         "buildingFactsEdit": "Adicionar ou corrigir no {{source}}",
         "buildingFactsNotFound": "O {{source}} já não tem este edifício.",
         "buildingFactsAgain": "Verificar de novo",
+        "buildingFactsWaiting": "O OpenStreetMap mostra uma edição um ou dois minutos depois de guardada: a verificar a cada 30 segundos…",
+        "buildingFactsUnchanged": "O {{source}} ainda não mostra alterações. Se guardou uma edição, verifique de novo daqui a um minuto.",
+        "factEdit": {
+            "title": "Acrescente os dados em falta",
+            "hint": "Acrescente só o que sabe por ver o edifício, no local ou em fotos que possa usar no OpenStreetMap. Fica guardado no OpenStreetMap como uma edição pública sua.",
+            "choose": "Escolha…",
+            "save": "Guardar no {{source}}",
+            "as": "A guardar como {{name}} no OpenStreetMap.",
+            "signInNote": "Primeiro inicia sessão com a sua conta do OpenStreetMap.",
+            "signOut": "Terminar sessão no OpenStreetMap",
+            "saved": "Guardado no {{source}}.",
+            "changeset": "Conjunto de alterações {{changeset}}",
+            "failed": "Não guardado: {{error}}",
+            "all": "Todas as casas:",
+            "allOf": "{{fact}}, todas as casas"
+        },
         "buildingFact": {
             "field": {
                 "storeys": "Pisos",
                 "built": "Construído",
                 "roof_shape": "Forma da cobertura",
-                "parapet": "Platibanda"
+                "parapet": "Platibanda",
+                "heritage": "Proteção patrimonial",
+                "footprint_m2": "Implantação",
+                "row_size": "Banda"
             },
             "builtBefore": "antes de {{year}}",
             "builtAfter": "{{year}} ou depois",
             "builtBetween": "{{from}}–{{to}}",
             "parapetYes": "Sim",
-            "parapetNo": "Não"
+            "parapetNo": "Não",
+            "heritageListed": "Classificado, grau {{grade}}",
+            "heritageListedNoGrade": "Classificado; o registo não indica o grau",
+            "heritageNotListed": "Não classificado",
+            "heritageEntry": "Registo {{reference}}",
+            "heritageRegister": "Registo do património",
+            "heritageUnknown": {
+                "noRegister": "Nenhum registo do património é lido para este lugar",
+                "noRegion": "Não foi possível ler onde fica o edifício",
+                "noOutline": "O contorno do edifício não é lido, por isso o registo não lhe pode ser associado",
+                "rowUncertain": "Um registo classificado nesta banda pode abranger esta casa",
+                "numberAmbiguous": "Os números de um registo classificado podem ou não incluir esta casa",
+                "outlineUncertain": "Cobre-o um contorno classificado muito maior do que o edifício",
+                "registerIncomplete": "Há registos a mais à volta destes edifícios para uma só leitura",
+                "registerUnavailable": "O registo do património não respondeu; verifique mais tarde"
+            }
         },
         "eligibility": {
             "set": {
@@ -9535,6 +9697,7 @@
                 "unknown": "Desconhecido",
                 "unchecked": "Não verificado pela aplicação"
             },
+            "withGrade": "{{status}}, grau {{grade}}",
             "test": {
                 "built": "Construído depois de 1700 e antes de 1918",
                 "parapet": "Platibanda ao longo de toda a fachada para a rua",
@@ -9831,6 +9994,7 @@
         },
         "notLoaded": "As parcelas ainda não foram carregadas aqui — amplie o mapa ou aguarde pelo carregamento.",
         "actions": {
+            "street": "Rua aqui",
             "drawSite": "Desenhar uma parcela"
         }
     },
@@ -10042,6 +10206,14 @@
         }
     },
     "voting": {
+        "streetCovered": "Rua: {{street}}",
+        "street": {
+            "title": "Rua",
+            "include": "Indicar a rua abrangida por esta votação: {{street}}",
+            "hint": "Escolhida com Rua aqui no mapa. O registo guarda o nome, as vias do OpenStreetMap, os extremos e o lado.",
+            "named": "A votação indica {{street}}.",
+            "unnamed": "A votação não indica nenhuma rua."
+        },
         "support": "A favor",
         "oppose": "Contra",
         "abstain": "Abstenção",
@@ -10134,6 +10306,34 @@
             "gb-street-vote-consultation-2023": {
                 "name": "Votação de rua — consulta do governo de 2023",
                 "source": "Proposta na consulta do governo britânico de dezembro de 2023 sobre ordens de desenvolvimento por votação de rua: pelo menos 60% dos eleitores habilitados a favor, e pelo menos um eleitor a favor em pelo menos metade dos agregados votantes."
+            },
+            "gb-street-vote-living-tradition": {
+                "name": "Votação de rua — mansardas segundo Living Tradition",
+                "source": "Proposto em Living Tradition de Samuel Hughes (Create Streets, 2021): pelo menos 50% dos votos expressos a favor, residentes de pelo menos metade das habitações a votar, e um sim de um residente em pelo menos metade das habitações votantes. Só podem ser abrangidas casas que cumpram as suas condições (par. 17)."
+            }
+        },
+        "eligibility": {
+            "title": "Casas abrangidas",
+            "hint": "Esta votação de rua só pode abranger casas que cumpram as condições da regra. Os dados são lidos do OpenStreetMap e a classificação do registo do património: acrescente no OpenStreetMap os que faltam e verifique de novo.",
+            "checking": "A verificar as casas abrangidas…",
+            "waiting": "À espera do OpenStreetMap: uma edição aparece aqui um ou dois minutos depois de guardada. A verificar a cada 30 segundos…",
+            "unchanged": "O OpenStreetMap ainda não mostra alterações. Se guardou uma edição, verifique de novo daqui a um minuto.",
+            "failed": "Não foi possível concluir a verificação: {{error}}",
+            "summary": "{{eligible}} de {{total}} casas abrangidas elegíveis",
+            "none": "O plano não eleva nenhum edifício existente com uma mansarda.",
+            "fails": "falha {{tests}}",
+            "missingFacts": "desconhecido {{tests}}",
+            "house": "Edifício {{id}}",
+            "unanswered": "Um edifício sem fonte de dados ({{id}})",
+            "edit": "Editar no {{source}}",
+            "addKey": "Acrescente {{key}} no {{source}}",
+            "testsOf": "Condições não cumpridas por {{house}}",
+            "again": "Verificar de novo",
+            "check": "Verificar elegibilidade",
+            "verdict": {
+                "eligible": "Elegível",
+                "ineligible": "Não elegível",
+                "unknown": "Desconhecido"
             }
         }
     },
@@ -10521,7 +10721,13 @@
 ,
   "chat": {
     "title": "Pergunte a Hipódamo",
-    "intro": "Descreva uma alteração para o seu plano de trabalho.",
+    "greeting": "Como posso ajudar a projetar uma boa cidade hoje?",
+    "greetingParcels": {
+      "one": "Vamos fazer algo com este lote?",
+      "other": "Vamos fazer algo com estes {{count}} lotes?"
+    },
+    "greetingTool": "A ferramenta «{{tool}}» está aberta. Quer que explique como funciona?",
+    "greetingToolUnnamed": "Tem uma ferramenta aberta. Quer que explique como funciona?",
     "tips": {
       "title": "Experimente perguntar",
       "design": "Desenhe um parque nos lotes selecionados ou mova um edifício 50 m para norte.",
@@ -10810,11 +11016,9 @@
     "makerOnly": "Só quem a propôs pode criar esta oferta na Solana.",
     "market": {
       "all": "Tudo",
-      "committed": "Venda em curso",
       "count": "{{count}} mostrados",
       "empty": "Ainda não há nada aqui. Mova o mapa, altere os filtros ou ponha algo à venda a partir de uma parcela ou de um apartamento.",
       "flats": "Apartamentos",
-      "forSale": "À venda",
       "inArea": "Só na área do mapa",
       "kind": "O quê",
       "mine": "Só as minhas",
@@ -10822,7 +11026,6 @@
       "plots": "Parcelas",
       "requests": "Pedidos à lente",
       "side": "Lado",
-      "wanted": "Procura-se",
       "yourLens": "Em quem confia"
     },
     "memberViewNone": "Não declarou quem é o titular; declare o primeiro titular antes de confirmar.",
@@ -10895,7 +11098,6 @@
     "viewFlat": "Ver o apartamento em raio X",
     "viewPlot": "Mostrar a parcela no mapa",
     "waiting": "Pendente",
-    "walletRequired": "Ligue primeiro uma carteira Solana.",
     "wanted": "Procura-se",
     "withdraw": "Retirar a minha declaração",
     "wrongNetwork": "Mude a carteira para Solana {{cluster}}.",

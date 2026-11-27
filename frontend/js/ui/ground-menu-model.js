@@ -10,7 +10,7 @@
     'use strict';
 
     // Menu order. Each id is also the suffix of its UiCommands command (`ground.<id>`).
-    const ACTIONS = Object.freeze(['drawSite', 'road', 'track', 'roadStation', 'trackStation']);
+    const ACTIONS = Object.freeze(['drawSite', 'street', 'road', 'track', 'roadStation', 'trackStation']);
     const STATION_ACTIONS = Object.freeze({ roadStation: 'bus', trackStation: 'track' });
 
     // What a click with no parcel under it hit. Never treats "not loaded yet" as bare ground
@@ -34,11 +34,13 @@
         return kind === 'bare' || kind === 'no-cadastre';
     }
 
-    // facts: { kind, roadToolsEnabled, stationsEnabled }. Missing facts count as "not available".
+    // facts: { kind, roadToolsEnabled, stationsEnabled, streetsEnabled }. Missing facts count as "not available".
     function isActionAvailable(action, facts) {
         const f = facts || {};
         if (!opensMenu(f.kind)) return false;
         if (action === 'drawSite') return true;
+        // The street at the click (streets/street-picker.js): open ground is where a street usually is.
+        if (action === 'street') return f.streetsEnabled === true;
         if (action === 'road' || action === 'track') return f.roadToolsEnabled === true;
         if (Object.prototype.hasOwnProperty.call(STATION_ACTIONS, action)) return f.stationsEnabled === true;
         return false;

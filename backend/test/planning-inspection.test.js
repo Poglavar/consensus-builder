@@ -451,8 +451,8 @@ describe('building facts on the card', () => {
     const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');
     const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
     const slice = node => source.slice(node.start, node.end);
-    const pieces = body.filter(node => (node.type === 'FunctionDeclaration' && ['readFacts', 'readFactsOf', 'renderFacts', 'renderEligibility', 'element'].includes(node.id.name))
-        || (node.type === 'VariableDeclaration' && node.declarations[0].id.name === 'factReads')).map(slice).join('\n');
+    const pieces = body.filter(node => (node.type === 'FunctionDeclaration' && ['readFacts', 'showFacts', 'readFactsOf', 'renderFacts', 'renderFactForm', 'renderEligibility', 'element'].includes(node.id.name))
+        || (node.type === 'VariableDeclaration' && ['factReads', 'factDrafts'].includes(node.declarations[0].id.name))).map(slice).join('\n');
     const client = require('../../frontend/js/buildings/building-facts.js');
     const t = (key, params = {}) => `${key}(${Object.values(params).join('|')})`;
     const KEYS = { storeys: 'building:levels', built: 'start_date', roof_shape: 'roof:shape', parapet: 'building:parapet' };
@@ -463,19 +463,26 @@ describe('building facts on the card', () => {
     const setup = (reads, shown, extra = {}) => {
         const renderInspector = vi.fn(), read = vi.fn(async () => reads.shift());
         const document = makeDocument();
-        const context = vm.createContext({ root: { BuildingFacts: { ...client, read }, BusyControl: { track: (_button, work) => work() }, ...extra },
+        const context = vm.createContext({ root: { BuildingFacts: { ...client, read }, BusyControl: { track: (_button, work) => Promise.resolve(typeof work === 'function' ? work() : work) }, ...extra },
             document, selected: () => shown.current, renderInspector, t, console, Map, Date });
-        vm.runInContext(`${pieces}\nthis.api = { readFacts, renderFacts };`, context);
-        return { ...context.api, read, renderInspector };
+        vm.runInContext(`${pieces}\nthis.api = { readFacts, readFactsOf, renderFacts };`, context);
+        // Check again with the wait between reads stubbed (the real one sleeps 30 s).
+        const again = (record, wait) => {
+            const realWait = client.readUntilChanged;
+            context.root.BuildingFacts.readUntilChanged = (ids, shownMap, readIds, options) => realWait(ids, shownMap, readIds, { ...options, wait });
+            return context.api.readFactsOf(record, record.buildingFacts.id, { fresh: true });
+        };
+        return { ...context.api, read, renderInspector, again };
     };
     const text = node => node.textContent;
     it('reads the facts, lists them with the missing ones to add at the source, and reads again on Check again', async () => {
         const first = record(), shown = { current: first };
-        const card = setup([building(false), building(true)], shown);
+        // Tagging the parapet is an OpenStreetMap edit, so it raises the building's version.
+        const card = setup([{ ...building(false), source_version: { version: 1 } }, { ...building(true), source_version: { version: 2 } }], shown);
         const reading = card.readFacts(first, { id: 'w1', properties: {} });
         expect(first.buildingFacts).toMatchObject({ status: 'reading', id: 'osm:way/1' });
         await reading;
-        expect(card.read).toHaveBeenCalledWith('osm:way/1');
+        expect(card.read).toHaveBeenCalledWith('osm:way/1', {});
         const section = card.renderFacts(first);
         expect(text(section)).toContain('buildingFact.field.storeys()3');
         expect(text(section)).toContain('buildingFact.field.parapet()buildingFactUnknown()');
@@ -485,23 +492,84 @@ describe('building facts on the card', () => {
         section.querySelector('button').listeners.get('click').forEach(fn => fn());
         await new Promise(resolve => setImmediate(resolve));
         expect(card.read).toHaveBeenCalledTimes(2);
+        expect(card.read).toHaveBeenLastCalledWith('osm:way/1', { fresh: true });
         expect(text(card.renderFacts(first))).toContain('buildingFact.field.parapet()buildingFact.parapetYes()');
     });
+    it('waits on Check again until the source shows the edit, saying so, and says when nothing changed', async () => {
+        const first = record(), shown = { current: first };
+        const at = (parapet, version) => ({ ...building(parapet), source_version: { version } });
+        const card = setup([at(false, 4), at(false, 4), at(true, 5)], shown);
+        await card.readFacts(first, { id: 'w1', properties: {} });
+        let release;
+        card.BuildingFactsWait = new Promise(resolve => { release = resolve; });
+        const checking = card.again(first, () => card.BuildingFactsWait);
+        await new Promise(resolve => setImmediate(resolve));
+        // The first fresh read still shows version 4: the card waits and says why.
+        expect(first.buildingFacts.waiting).toBeTruthy();
+        const waitingCard = card.renderFacts(first);
+        expect(text(waitingCard)).toContain('buildingFactsWaiting(OpenStreetMap)');
+        expect(waitingCard.querySelector('button').disabled).toBe(true);
+        release();
+        await checking;
+        expect(card.read).toHaveBeenCalledTimes(3);
+        expect(first.buildingFacts.waiting).toBeUndefined();
+        expect(text(card.renderFacts(first))).toContain('buildingFact.field.parapet()buildingFact.parapetYes()');
+        // Checked again with nothing new: after its last read the card says nothing changed yet.
+        const same = setup([at(true, 5), ...Array(7).fill(at(true, 5))], shown);
+        await same.readFacts(first, { id: 'w1', properties: {} });
+        await same.again(first, async () => {});
+        expect(same.read).toHaveBeenCalledTimes(8);
+        expect(text(same.renderFacts(first))).toContain('buildingFactsUnchanged(OpenStreetMap)');
+    });
+    // Adding the missing facts on the card: a choice per missing fact, saved to OpenStreetMap as the
+    // person's edit (osm/osm-fact-edits.js), then the saved facts and the changeset.
+    it('offers the missing facts, saves the chosen ones to OpenStreetMap and shows them with the changeset', async () => {
+        const first = record(), shown = { current: first };
+        const factEdits = require('../../frontend/js/osm/osm-fact-edits.js');
+        const save = vi.fn(async entries => ({ changeset: 555, buildings: new Map([['osm:way/1', factEdits.withSaved(entries[0].building, entries[0].values, 3, 'now')]]) }));
+        const card = setup([{ ...building(false), source_version: { version: 2 } }], shown, {
+            OsmFactEdits: { ...factEdits, save },
+            OsmAccount: { SITE: 'https://www.openstreetmap.org', redirectUri: () => 'http://127.0.0.1:5611/osm-callback.html', user: () => null, signOut: vi.fn() } });
+        await card.readFacts(first, { id: 'w1', properties: {} });
+        const form = card.renderFacts(first).querySelector('.planning-fact-form');
+        // Storeys are known (3); parapet and roof shape are not.
+        expect(form.querySelectorAll('label').map(text)).toEqual(['buildingFact.field.parapet()', 'buildingFact.field.roof_shape()']);
+        expect(text(form)).toContain('factEdit.signInNote()');
+        const parapet = form.querySelectorAll('select').find(select => select.id === 'planning-fact-parapet');
+        parapet.value = 'yes';
+        parapet.listeners.get('change').forEach(fn => fn());
+        form.querySelector('button').listeners.get('click').forEach(fn => fn());
+        await new Promise(resolve => setImmediate(resolve));
+        expect(save.mock.calls[0][0][0].values).toEqual({ parapet: 'yes' });
+        expect(save.mock.calls[0][1].comment).toBe('Add building:parapet to 1 building');
+        const after = card.renderFacts(first);
+        expect(text(after)).toContain('buildingFact.field.parapet()buildingFact.parapetYes()');
+        expect(text(after)).toContain('factEdit.saved(OpenStreetMap) factEdit.changeset(555)');
+        expect(after.querySelectorAll('a').map(a => a.href)).toContain('https://www.openstreetmap.org/changeset/555');
+    });
     // London plans under English rules, so the card adds Living Tradition's tests for the house:
-    // a parapet now stated, its terrace from the buildings loaded around it, its roof shape unknown.
-    it('shows the city\'s eligibility tests for the house, from its facts and the loaded neighbours', async () => {
-        const turf = require('@turf/turf');
-        const box = x => turf.polygon([[[x, 51.539], [x + 0.0001, 51.539], [x + 0.0001, 51.5391], [x, 51.5391], [x, 51.539]]]);
-        const row = [box(-0.1062), box(-0.1061), box(-0.1060)];
-        const house = { ...record(), site: row[1].geometry, source: { recordId: 'w1', city: 'london' } }, shown = { current: house };
-        const card = setup([{ ...building(true), facts: { ...building(true).facts, built: { value: { from: 1828, to: 1830 }, source: 'osm', key: 'start_date', raw: '1828..1830' } } }], shown, {
-            BuildingEligibility: require('../../frontend/js/planning/eligibility.js'), turf, buildingFeaturePool: row,
+    // a parapet now stated, its row and footprint from the source's geometry, its roof shape unknown.
+    it('shows the city\'s eligibility tests for the house, from its facts', async () => {
+        const house = { ...record(), source: { recordId: 'w1', city: 'london' } }, shown = { current: house };
+        const geometry = (value, raw) => ({ value, source: 'osm', key: 'geometry', raw });
+        const card = setup([{ ...building(true), facts: { ...building(true).facts, built: { value: { from: 1828, to: 1830 }, source: 'osm', key: 'start_date', raw: '1828..1830' },
+            footprint_m2: geometry(45.6, '45.6 m² outline'), row_size: geometry(20, '20 buildings joined by party walls'),
+            heritage: { value: { listed: true, grade: 'II*', register: 'National Heritage List for England', reference: '1195683', name: 'NUMBERS 26 TO 50', url: 'https://historicengland.org.uk/listing/the-list/list-entry/1195683', basis: 'house-number' },
+                source: 'gb-eng-nhle', key: 'listed-building', raw: 'NUMBERS 26 TO 50, Grade II* (matched by house number)' } } }], shown, {
+            BuildingEligibility: require('../../frontend/js/planning/eligibility.js'),
             CityConfigManager: { getCityConfig: city => (city === 'london' ? { planning: { ruleSetIds: ['gb-eng-planning'] } } : null) } });
         await card.readFacts(house, { id: 'w1', properties: {} });
         const block = card.renderFacts(house).querySelector('.planning-eligibility');
-        expect(block.getAttribute('data-eligibility')).toBe('unknown');
-        const status = cite => block.querySelectorAll('li').find(row => text(row).startsWith(`${cite} `)).getAttribute('data-status');
-        expect(['17.1', '17.2', '17.4', '17.5', '17.6', '17.7', '17.9'].map(status)).toEqual(['pass', 'pass', 'unknown', 'pass', 'pass', 'pass', 'unchecked']);
+        // A Grade II* listing fails 17.9, and the test names the grade it was judged on.
+        expect(block.getAttribute('data-eligibility')).toBe('ineligible');
+        const row = cite => block.querySelectorAll('li').find(item => text(item).startsWith(`${cite} `));
+        const status = cite => row(cite).getAttribute('data-status');
+        expect(['17.1', '17.2', '17.4', '17.5', '17.6', '17.7', '17.9', '17.10'].map(status)).toEqual(['pass', 'pass', 'unknown', 'pass', 'pass', 'pass', 'fail', 'unchecked']);
+        expect(text(row('17.9'))).toContain('eligibility.withGrade(eligibility.status.fail()|II*)');
+        // The facts list shows the listing with a link to its register entry.
+        const section = card.renderFacts(house);
+        expect(text(section)).toContain('buildingFact.field.heritage()buildingFact.heritageListed(II*) · buildingFact.heritageEntry(1195683)');
+        expect(section.querySelectorAll('a').map(a => a.href)).toContain('https://historicengland.org.uk/listing/the-list/list-entry/1195683');
     });
     it('reads nothing for a building the contract does not answer, and says so when the read fails', async () => {
         const gdi = { id: 'built:zagreb:4711', source: { recordId: '4711' } }, shown = { current: gdi };

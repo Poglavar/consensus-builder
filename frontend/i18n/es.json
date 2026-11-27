@@ -1,4 +1,52 @@
 {
+    "streets": {
+        "end": {
+            "fork": "la bifurcación",
+            "sideRoad": "una calle lateral",
+            "loop": "el bucle",
+            "end": "su final",
+            "bend": "la curva",
+            "bridge": "el puente",
+            "railwayBridge": "el puente ferroviario",
+            "overpass": "el paso elevado",
+            "gap": "el hueco entre edificios",
+            "number": "n.º {{number}}"
+        },
+        "picker": {
+            "between": "Entre {{from}} y {{to}}",
+            "notFound": "Aquí no pasa ninguna calle con nombre. Haz clic sobre la propia calle.",
+            "failed": "No se pudo leer la calle.",
+            "official": "Identificador oficial {{id}}",
+            "osmOnly": "De OpenStreetMap",
+            "partial": "Solo se leyó la parte cercana",
+            "part": "Parte de la calle",
+            "whole": "Toda la calle",
+            "side": "Lado",
+            "select": "Seleccionar parcelas",
+            "selecting": "Buscando las parcelas a lo largo…",
+            "none": "Ningún límite de parcela recorre esta parte por ese lado.",
+            "selected": {
+                "one": "Seleccionada {{count}} parcela a lo largo de {{street}}: {{where}}, {{side}}.",
+                "other": "Seleccionadas {{count}} parcelas a lo largo de {{street}}: {{where}}, {{side}}."
+            },
+            "incomplete": "Algunas parcelas de aquí no se han cargado; revisa el mapa.",
+            "selectFailed": "No se pudieron seleccionar las parcelas: {{error}}",
+            "cityChanged": "La ciudad ha cambiado."
+        },
+        "side": {
+            "north": "Lado norte",
+            "northeast": "Lado noreste",
+            "east": "Lado este",
+            "southeast": "Lado sureste",
+            "south": "Lado sur",
+            "southwest": "Lado suroeste",
+            "west": "Lado oeste",
+            "northwest": "Lado noroeste",
+            "both": "Ambos lados",
+            "left": "Lado izquierdo",
+            "right": "Lado derecho"
+        }
+    },
     "deviceModels": {
         "publishTitle": "Modelos solo en este dispositivo",
         "publishMessage": "Los modelos 3D importados en lo que publicas se guardan solo en este dispositivo. Súbelos para que los demás los vean, o publica sin ellos y los demás verán un bloque simple. Un modelo subido es público: cualquiera con un enlace al diseño puede descargarlo.",
@@ -299,6 +347,11 @@
         "warning": "Esta ciudad ya está abierta en otra pestaña, así que los cambios aquí no se guardan en el plan. Se conservan en una copia de recuperación que se te ofrecerá al volver a abrir esta ciudad con sus otras pestañas cerradas. Otras ciudades pueden quedar abiertas."
     },
     "proposalApproval": {
+        "neighbourLabel": "Vecino {{label}}",
+        "waiver": {
+            "approved": "Propietarios de la parcela vecina {{parcelId}}: renuncia aprobada",
+            "pending": "Propietarios de la parcela vecina {{parcelId}}: renuncia pendiente"
+        },
         "ownerLabel": "Propietario {{label}}",
         "meterDistinctOwners": "Propietarios distintos que aprueban",
         "leaseholderLabel": "Arrendatario {{label}}",
@@ -1614,14 +1667,13 @@
                 "saleTaxSuffix": "% de impuesto en el precio",
                 "costDetails": "Detalle del coste",
                 "costConstruction": "Construcción",
-                "costLand": "Suelo (suelo del plan × precio del suelo)",
+                "costAcquisition": "Adquisición (cada parcela a su valor de suelo o al valor de los edificios que derriba en ella, el mayor)",
                 "costTax": "Impuesto incluido en el valor de venta de la nueva superficie",
                 "costReclaimed": "Menos el impuesto recuperado de la construcción",
-                "costReplaced": "Edificios existentes derribados, a precio de venta",
                 "noteNoLandPrice": "No hay precio del suelo para este lugar: indique uno para ver el coste total y el beneficio.",
                 "rentSuffix": "{{currency}} por m² de alquiler al mes",
                 "annualRent": "Alquiler anual de la nueva superficie",
-                "rentYield": "Rentabilidad del alquiler sobre el coste (alquiler anual ÷ construcción, cargo por edificación, suelo y valor derribado)",
+                "rentYield": "Rentabilidad del alquiler sobre el coste (alquiler anual ÷ construcción, cargo por edificación y adquisición)",
                 "assumptionsLabel": "Supuestos",
                 "efficiencySuffix": "% neto sobre bruto",
                 "apartmentSizeSuffix": "m² por vivienda",
@@ -6770,13 +6822,12 @@
             "value": "Valor",
             "constructionCost": "Coste de construcción",
             "profit": "Beneficio",
-            "profitNote": "Beneficio = valor − coste total: construcción, cargo por edificación, suelo, impuesto de venta menos el recuperado de la construcción, y valor construido sustituido",
+            "profitNote": "Beneficio = valor − coste total: construcción, cargo por edificación, adquisición (cada parcela a su valor de suelo o al de lo que hay en ella, el mayor) e impuesto de venta menos el recuperado de la construcción",
             "allInCost": "Coste total",
             "costDetails": "Detalle del coste",
-            "landCost": "Suelo",
+            "acquisitionCost": "Adquisición (suelo o edificios, el mayor)",
             "saleTaxCost": "Impuesto de venta",
             "taxReclaimed": "Impuesto recuperado de la construcción",
-            "replacedValue": "Valor construido sustituido",
             "landPriceUnset": "Precio del suelo sin fijar: mueva el control",
             "landPrice": "Suelo {{price}}/m² de suelo",
             "saleTax": "Impuesto de venta {{share}} del precio",
@@ -7378,6 +7429,7 @@
             "other": "{{count}} propietarios"
         },
         "actions": {
+            "street": "Calle aquí",
             "propose": "Proponer aquí",
             "selectMore": "Seleccionar más",
             "details": "Detalles",
@@ -7499,6 +7551,7 @@
         },
         "notLoaded": "Las parcelas aún no se han cargado aquí: acerca el mapa o espera a que carguen.",
         "actions": {
+            "street": "Calle aquí",
             "drawSite": "Dibujar una parcela"
         }
     },
@@ -8273,6 +8326,68 @@
         }
     },
     "agreement": {
+        "neighbours": {
+            "tab": "Vecinos",
+            "heading": "Vecinos afectados",
+            "hint": "Un vecino que renuncia a un derecho que el plan afecta, como la luz natural o un límite del jardín, puede ser parte sin aportar suelo. Una renuncia necesita la aprobación de sus propietarios; la compensación se paga sin ella. El patrocinador paga a cada vecino.",
+            "measure": "Buscar vecinos afectados",
+            "noGuides": "Este lugar no establece guías para vecinos, así que no se mide nada: añade una parcela vecina por su id.",
+            "candidates": "Añadir parcelas afectadas a este acuerdo",
+            "candidatesHint": "Las parcelas fuera de una guía están marcadas. Cada una se añade como renuncia con sus mediciones; fija sus condiciones abajo.",
+            "candidate": "Parcela {{parcelId}}, {{grade}}",
+            "added": "ya está en este acuerdo",
+            "isInput": "una parcela de entrada",
+            "addTicked": "Añadir las parcelas marcadas ({{count}})",
+            "addedCount": "Se añadieron {{count}} parcela(s) vecina(s): fija abajo las condiciones de cada una.",
+            "byId": "Añadir una parcela vecina por su id",
+            "add": "Añadir vecino",
+            "none": "Aún no hay vecinos afectados.",
+            "ownersOnly": "Los vecinos afectados solo son partes de un acuerdo de propietarios.",
+            "party": "Vecino",
+            "effectLabel": "Caso",
+            "effect": {
+                "waiver": "Renuncia: ceden el derecho y deben aprobar",
+                "compensation": "Compensación: se les debe sin su consentimiento"
+            },
+            "rights": "Derechos cedidos",
+            "right": {
+                "daylight": "Luz natural",
+                "sunlight": "Sol directo",
+                "outlook": "Vistas y cielo",
+                "garden": "Límite del jardín",
+                "privacy": "Privacidad y vistas sobre la parcela",
+                "other": "Otro derecho (indica cuál en la nota)"
+            },
+            "note": "Nota (qué derecho, si es otro)",
+            "readings": "Mediciones al añadirla",
+            "noReadings": "Sin mediciones: añadida por su id de parcela.",
+            "reading": "{{kind}}: {{before}} → {{after}} (guía {{guide}}), {{grade}}",
+            "grade": {
+                "fail": "fuera de una guía",
+                "below": "bajo el nivel de una guía, dentro de su margen",
+                "minor": "una pérdida menor",
+                "screen": "una primera comprobación superada"
+            },
+            "loss": "Pérdida declarada de valor de mercado ({{currency}})",
+            "statedBy": "Pérdida declarada por",
+            "stater": {
+                "sponsor": "Estimación del patrocinador",
+                "valuer": "Tasador"
+            },
+            "valuerRef": "Referencia del tasador (opcional)",
+            "payment": "Pago al vecino ({{currency}})",
+            "derived": "{{multiple}} la pérdida declarada, según las Reglas.",
+            "remove": "Quitar {{parcelId}} del acuerdo",
+            "lossColumn": "Pérdida declarada",
+            "paymentColumn": "Pago al vecino",
+            "multiple": {
+                "label": "Compensación a vecinos",
+                "none": "1× la pérdida declarada (sin fijar)",
+                "strongSuburbs": "Strong Suburbs: 150% de la pérdida declarada (cifra aún sin verificar)",
+                "custom": "Otro múltiplo",
+                "value": "Múltiplo de la pérdida declarada"
+            }
+        },
         "funding": {
             "apartments": {
                 "inventory": "Apartamentos",
@@ -8508,8 +8623,22 @@
             "deadline": "Plazo (opcional)"
         },
         "errors": {
+            "affectedInput": "Los propietarios de una parcela de entrada ya son partes: quítala de Vecinos.",
+            "affectedEffect": "Elige renuncia o compensación para cada vecino.",
+            "affectedRights": "Marca al menos un derecho que cede cada vecino.",
+            "affectedNote": "Indica en la nota qué otro derecho cede un vecino.",
+            "affectedReading": "Las mediciones de un vecino nombran un tipo o un grado que la aplicación no mide.",
+            "affectedAmount": "El pago y la pérdida declarada de un vecino deben ser importes de al menos 0, con quién declaró la pérdida.",
+            "affectedLossRequired": "La compensación es un múltiplo de una pérdida declarada: declara la pérdida de cada vecino compensado.",
+            "affectedConsideration": "El pago a un vecino compensado debe ser el múltiplo fijado de su pérdida declarada.",
+            "affectedElectorate": "Solo un acuerdo de propietarios puede incluir vecinos afectados.",
+            "neighbourMultiple": "Fija un múltiplo positivo de la pérdida declarada para compensar a los vecinos.",
             "consultationOrganiser": "Introduce el sitio web de la organización o un identificador did:web válido.",
             "consultationParticipationUrl": "Introduce una URL de participación HTTPS sin credenciales.",
+            "eligibilityNoHouses": "El plan no eleva ningún edificio existente con una mansarda, así que esta votación no tiene nada que incluir.",
+            "eligibilityMissing": "Compruebe las condiciones de las casas incluidas antes de crear esta votación.",
+            "eligibilityStale": "El plan incluye otras casas que la última comprobación: vuelva a comprobar.",
+            "eligibilityFailed": "Aún no se sabe si todas las casas incluidas cumplen: vea Casas incluidas.",
             "communityAllocations": "Un acuerdo comunitario no vinculante no puede asignar terrenos.",
             "communityMoney": "Un acuerdo comunitario no vinculante no puede incluir pagos en efectivo.",
             "noDesigns": "Elige al menos un diseño.",
@@ -9353,18 +9482,52 @@
         "buildingFactsEdit": "Añadir o corregir en {{source}}",
         "buildingFactsNotFound": "{{source}} ya no tiene este edificio.",
         "buildingFactsAgain": "Volver a comprobar",
+        "buildingFactsWaiting": "OpenStreetMap muestra una edición uno o dos minutos después de guardarla: comprobando cada 30 segundos…",
+        "buildingFactsUnchanged": "{{source}} aún no muestra cambios. Si guardó una edición, vuelva a comprobar en un minuto.",
+        "factEdit": {
+            "title": "Añada los datos que faltan",
+            "hint": "Añada solo lo que sepa por haber visto el edificio, en persona o en fotos que pueda usar para OpenStreetMap. Se guarda en OpenStreetMap como su propia edición pública.",
+            "choose": "Elija…",
+            "save": "Guardar en {{source}}",
+            "as": "Guardando como {{name}} en OpenStreetMap.",
+            "signInNote": "Primero inicia sesión con su cuenta de OpenStreetMap.",
+            "signOut": "Cerrar sesión en OpenStreetMap",
+            "saved": "Guardado en {{source}}.",
+            "changeset": "Conjunto de cambios {{changeset}}",
+            "failed": "No guardado: {{error}}",
+            "all": "Todas las casas:",
+            "allOf": "{{fact}}, todas las casas"
+        },
         "buildingFact": {
             "field": {
                 "storeys": "Plantas",
                 "built": "Construido",
                 "roof_shape": "Forma de la cubierta",
-                "parapet": "Pretil"
+                "parapet": "Pretil",
+                "heritage": "Protección patrimonial",
+                "footprint_m2": "Huella",
+                "row_size": "Hilera"
             },
             "builtBefore": "antes de {{year}}",
             "builtAfter": "{{year}} o después",
             "builtBetween": "{{from}}–{{to}}",
             "parapetYes": "Sí",
-            "parapetNo": "No"
+            "parapetNo": "No",
+            "heritageListed": "Catalogado, grado {{grade}}",
+            "heritageListedNoGrade": "Catalogado; el registro no indica el grado",
+            "heritageNotListed": "No catalogado",
+            "heritageEntry": "Ficha {{reference}}",
+            "heritageRegister": "Registro de patrimonio",
+            "heritageUnknown": {
+                "noRegister": "No se consulta ningún registro de patrimonio para este lugar",
+                "noRegion": "No se pudo leer dónde está el edificio",
+                "noOutline": "No se lee el contorno del edificio, así que el registro no se puede asociar a él",
+                "rowUncertain": "Una ficha catalogada de esta hilera puede incluir esta casa",
+                "numberAmbiguous": "Los números de una ficha catalogada pueden incluir o no esta casa",
+                "outlineUncertain": "Lo cubre un contorno catalogado mucho mayor que el edificio",
+                "registerIncomplete": "Hay demasiadas fichas alrededor de estos edificios para leerlas de una vez",
+                "registerUnavailable": "El registro de patrimonio no respondió; vuelva a comprobar más tarde"
+            }
         },
         "eligibility": {
             "set": {
@@ -9381,6 +9544,7 @@
                 "unknown": "Desconocido",
                 "unchecked": "La aplicación no lo comprueba"
             },
+            "withGrade": "{{status}}, grado {{grade}}",
             "test": {
                 "built": "Construido después de 1700 y antes de 1918",
                 "parapet": "Pretil a lo largo de toda la fachada a la calle",
@@ -10063,6 +10227,14 @@
         }
     },
     "voting": {
+        "streetCovered": "Calle: {{street}}",
+        "street": {
+            "title": "Calle",
+            "include": "Nombrar la calle que abarca esta votación: {{street}}",
+            "hint": "Elegida con Calle aquí en el mapa. El registro guarda su nombre, las vías de OpenStreetMap, sus extremos y el lado.",
+            "named": "La votación nombra {{street}}.",
+            "unnamed": "La votación no nombra ninguna calle."
+        },
         "support": "A favor",
         "oppose": "En contra",
         "abstain": "Abstención",
@@ -10155,6 +10327,34 @@
             "gb-street-vote-consultation-2023": {
                 "name": "Votación de calle — consulta del gobierno de 2023",
                 "source": "Propuesta en la consulta del gobierno británico de diciembre de 2023 sobre órdenes de desarrollo por votación de calle: al menos el 60% de los habilitados para votar a favor, y al menos un votante a favor en al menos la mitad de los hogares votantes."
+            },
+            "gb-street-vote-living-tradition": {
+                "name": "Votación de calle — mansardas según Living Tradition",
+                "source": "Propuesta en Living Tradition de Samuel Hughes (Create Streets, 2021): al menos el 50% de los votos emitidos a favor, residentes de al menos la mitad de los hogares votando, y un sí de un residente en al menos la mitad de los hogares votantes. Solo pueden incluirse casas que cumplan sus condiciones (párr. 17)."
+            }
+        },
+        "eligibility": {
+            "title": "Casas incluidas",
+            "hint": "Esta votación de calle solo puede incluir casas que cumplan las condiciones de la regla. Sus datos se leen de OpenStreetMap y su catalogación del registro de patrimonio: añada en OpenStreetMap los que falten y vuelva a comprobar.",
+            "checking": "Comprobando las casas incluidas…",
+            "waiting": "Esperando a OpenStreetMap: una edición aparece aquí uno o dos minutos después de guardarla. Comprobando cada 30 segundos…",
+            "unchanged": "OpenStreetMap aún no muestra cambios. Si guardó una edición, vuelva a comprobar en un minuto.",
+            "failed": "No se pudo completar la comprobación: {{error}}",
+            "summary": "{{eligible}} de {{total}} casas incluidas cumplen",
+            "none": "El plan no eleva ningún edificio existente con una mansarda.",
+            "fails": "no cumple {{tests}}",
+            "missingFacts": "desconocido {{tests}}",
+            "house": "Edificio {{id}}",
+            "unanswered": "Un edificio sin fuente de datos ({{id}})",
+            "edit": "Editar en {{source}}",
+            "addKey": "Añada {{key}} en {{source}}",
+            "testsOf": "Condiciones que no cumple {{house}}",
+            "again": "Volver a comprobar",
+            "check": "Comprobar condiciones",
+            "verdict": {
+                "eligible": "Cumple",
+                "ineligible": "No cumple",
+                "unknown": "Desconocido"
             }
         }
     },
@@ -10542,7 +10742,13 @@
 ,
   "chat": {
     "title": "Pregúntale a Hipódamo",
-    "intro": "Describe un cambio para tu plan de trabajo.",
+    "greeting": "¿Cómo puedo ayudarte hoy a diseñar una buena ciudad?",
+    "greetingParcels": {
+      "one": "¿Hacemos algo con esta parcela?",
+      "other": "¿Hacemos algo con estas {{count}} parcelas?"
+    },
+    "greetingTool": "Tienes abierta la herramienta «{{tool}}». ¿Te explico cómo funciona?",
+    "greetingToolUnnamed": "Tienes una herramienta abierta. ¿Te explico cómo funciona?",
     "tips": {
       "title": "Prueba a pedir",
       "design": "Diseña un parque en las parcelas seleccionadas o mueve un edificio 50 m al norte.",
@@ -10831,11 +11037,9 @@
     "makerOnly": "Solo quien la propone puede crear esta oferta en Solana.",
     "market": {
       "all": "Todo",
-      "committed": "Venta en curso",
       "count": "{{count}} mostrados",
       "empty": "Aún no hay nada. Mueve el mapa, cambia los filtros o pon algo a la venta desde una parcela o un apartamento.",
       "flats": "Apartamentos",
-      "forSale": "En venta",
       "inArea": "Solo en la zona del mapa",
       "kind": "Qué",
       "mine": "Solo las mías",
@@ -10843,7 +11047,6 @@
       "plots": "Parcelas",
       "requests": "Solicitudes a la lente",
       "side": "Lado",
-      "wanted": "Se busca",
       "yourLens": "En quién confías"
     },
     "memberViewNone": "No has declarado quién es el titular; declara el primer titular antes de confirmar.",
@@ -10916,7 +11119,6 @@
     "viewFlat": "Ver el apartamento en rayos X",
     "viewPlot": "Mostrar la parcela en el mapa",
     "waiting": "Pendiente",
-    "walletRequired": "Conecta primero una cartera de Solana.",
     "wanted": "Se busca",
     "withdraw": "Retirar mi declaración",
     "wrongNetwork": "Cambia la cartera a Solana {{cluster}}.",

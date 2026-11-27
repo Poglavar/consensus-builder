@@ -3,7 +3,8 @@
 //
 // Every scheme decides with the same parts (land-readjustmend.md §23):
 // - parties: abstract holders of ownership or leasehold interests in the declared parcels, plus
-//   any authority whose decision the rules require. All of them decide through the same signed,
+//   any authority whose decision the rules require, and the owners of each waiver parcel (a neighbour
+//   who waives a right: no test counts them, all must approve). All of them decide through the same signed,
 //   lens-backed receipts; `ownerId` in rights, facts and receipts names such a party.
 // - tests: owner-support conditions, each counting heads or area, of owners, leaseholders or both,
 //   over all holders or private ones only (public bodies excluded), with an exact fraction;
@@ -230,9 +231,16 @@
     function contextContent(proposal) {
         const config = proposal?.approvalConfig == null
             ? { rights: null, policy: { type: 'unanimous' } } : normalizeConfig(proposal.approvalConfig);
+        const cadastreParcelIds = [...new Set((proposal?.cadastreParcelIds || []).map(id => text(String(id), 'parcelId')))].sort(compare);
+        // Neighbours who waive a right (an agreement's affected parcels): stated only when there are
+        // any, so a context without them keeps its hash.
+        const waiverParcelIds = [...new Set((proposal?.waiverParcelIds || []).map(id => text(String(id), 'parcelId')))].sort(compare);
+        const overlap = waiverParcelIds.find(id => cadastreParcelIds.includes(id));
+        if (overlap) fail(`Parcel ${overlap} is an input parcel; its owners cannot also waive a right as a neighbour.`);
         return {
             schema: CONTEXT_SCHEMA,
-            cadastreParcelIds: [...new Set((proposal?.cadastreParcelIds || []).map(id => text(String(id), 'parcelId')))].sort(compare),
+            cadastreParcelIds,
+            ...(waiverParcelIds.length ? { waiverParcelIds } : {}),
             rights: config.rights, policy: config.policy, ...(config.regime ? { regime: config.regime } : {}), lens: lensKeys(proposal)
         };
     }
@@ -250,26 +258,34 @@
         const byParcel = new Map((context.rights?.parcels || []).map(parcel => [parcel.parcelId, parcel]));
         const parcels = context.cadastreParcelIds.map(id => byParcel.get(id)).filter(Boolean);
         // Parcel-owner keys are unresolved allocation groups, never identities for a headcount.
-        const missingParcelIds = context.cadastreParcelIds.filter(id => {
+        const unresolved = id => {
             const parcel = byParcel.get(id);
             return !parcel?.complete || [...parcel.owners, ...(parcel.leases || []).flatMap(lease => lease.holders)]
                 .some(holder => holder.ownerId.startsWith('parcel-owner:'));
-        });
+        };
+        // Waiving neighbours are counted by no test: each waiver parcel's owners must all approve.
+        const waiverParcelIdsList = context.waiverParcelIds || [];
+        const waiverParcels = waiverParcelIdsList.map(id => byParcel.get(id)).filter(Boolean);
+        const missingWaiverIds = waiverParcelIdsList.filter(unresolved);
+        const countsHolders = rules.tests.length > 0;
+        const missingInputIds = context.cadastreParcelIds.filter(unresolved);
+        const missingParcelIds = [...missingInputIds, ...missingWaiverIds];
         const ownerIds = unique(parcels.flatMap(parcel => parcel.owners.map(owner => owner.ownerId)));
         const leaseholderIds = unique(parcels.flatMap(parcel => (parcel.leases || []).flatMap(lease => lease.holders.map(holder => holder.ownerId))));
-        const holderIds = new Set([...ownerIds, ...leaseholderIds]);
+        const waiverIds = unique(waiverParcels.flatMap(parcel => parcel.owners.map(owner => owner.ownerId)));
+        const holderIds = new Set([...ownerIds, ...leaseholderIds, ...waiverIds]);
         const authorityIds = rules.authorities.map(row => row.authorityId);
         const publicIds = (context.rights?.publicBodies || []).filter(id => holderIds.has(id));
         // Rules with no owner test (the authority decides alone) need no rights snapshot and no parcels:
-        // nobody's land is counted, so none is required.
-        const countsHolders = rules.tests.length > 0;
-        const reason = !countsHolders ? (authorityIds.some(id => holderIds.has(id)) ? 'authority-is-holder' : null)
-            : !context.rights ? 'missing-rights' : !context.cadastreParcelIds.length ? 'missing-parcels'
-                : missingParcelIds.length ? 'incomplete-rights' : !ownerIds.length ? 'missing-owners'
+        // nobody's land is counted, so none is required. Waivers always need their owners' rights.
+        const needsRights = countsHolders || waiverParcelIdsList.length > 0;
+        const reason = needsRights && !context.rights ? 'missing-rights'
+            : countsHolders && !context.cadastreParcelIds.length ? 'missing-parcels'
+                : (countsHolders && missingInputIds.length) || missingWaiverIds.length ? 'incomplete-rights' : countsHolders && !ownerIds.length ? 'missing-owners'
                     : authorityIds.some(id => holderIds.has(id)) ? 'authority-is-holder' : null;
         return {
-            ready: !reason, reason, ownerIds, leaseholderIds, authorityIds, publicIds,
-            partyIds: unique([...holderIds, ...authorityIds]), parcels, missingParcelIds, context, rules
+            ready: !reason, reason, ownerIds, leaseholderIds, waiverIds, authorityIds, publicIds,
+            partyIds: unique([...holderIds, ...authorityIds]), parcels, waiverParcels, missingParcelIds, context, rules
         };
     }
     // "A", "B", … "Z", "AA" for a 1-based position.
@@ -290,13 +306,16 @@
         }
         if (state.ownerIds.includes(id)) return { kind: 'owner', letter: letters(state.ownerIds.indexOf(id) + 1) };
         const leaseOnly = state.leaseholderIds.filter(holder => !state.ownerIds.includes(holder));
-        return leaseOnly.includes(id) ? { kind: 'leaseholder', letter: letters(leaseOnly.indexOf(id) + 1) } : null;
+        if (leaseOnly.includes(id)) return { kind: 'leaseholder', letter: letters(leaseOnly.indexOf(id) + 1) };
+        // A waiving neighbour who holds nothing among the inputs: "Neighbour A".
+        const neighbours = (state.waiverIds || []).filter(holder => !state.ownerIds.includes(holder) && !state.leaseholderIds.includes(holder));
+        return neighbours.includes(id) ? { kind: 'neighbour', letter: letters(neighbours.indexOf(id) + 1) } : null;
     }
     function partyLabel(id, state) {
         const party = partyOf(id, state);
         if (!party) return 'Owner';
         return party.kind === 'authority' ? `Authority${party.letter ? ` ${party.letter}` : ''}`
-            : `${party.kind === 'owner' ? 'Owner' : 'Leaseholder'} ${party.letter}`;
+            : `${{ owner: 'Owner', leaseholder: 'Leaseholder', neighbour: 'Neighbour' }[party.kind]} ${party.letter}`;
     }
     function createTemplate(parcelIds = [], { leases = false, publicBodies = false } = {}) {
         const v2 = leases || publicBodies;
@@ -393,8 +412,12 @@
         const participants = minimumParticipants(state, pin ? regimes().get(pin.id, pin.version) : null, yes);
         const supportMet = ready && tests.every(test => test.met) && (!participants || participants.met);
         const authorityMet = ready && authorities.every(row => row.approved);
+        // A waiver binds its neighbour only once all of the waiver parcel's owners approved, whatever
+        // the owners' tests count.
+        const waivers = state.waiverParcels.map(parcel => ({ parcelId: parcel.parcelId, approved: ready && parcel.owners.every(owner => yes.has(owner.ownerId)) }));
+        const waiverMet = ready && waivers.every(row => row.approved);
         return {
-            ready, reason: state.reason, tests, participants, authorities, supportMet, authorityMet, passed: supportMet && authorityMet,
+            ready, reason: state.reason, tests, participants, authorities, waivers, supportMet, authorityMet, waiverMet, passed: supportMet && authorityMet && waiverMet,
             totalOwners: ready ? state.ownerIds.length : null, acceptedOwners: ready ? state.ownerIds.filter(id => yes.has(id)).length : 0,
             acceptedParcelIds,
             totalAreaM2: ownership?.known ? ownership.total : null,

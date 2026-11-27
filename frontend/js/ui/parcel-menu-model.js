@@ -10,7 +10,7 @@
     'use strict';
 
     // Menu order. Each id is also the suffix of its UiCommands command (`parcel.<id>`).
-    const ACTIONS = Object.freeze(['propose', 'selectMore', 'details', 'proposals', 'history', 'compare', 'tools', 'detectBlock', 'useAsSite']);
+    const ACTIONS = Object.freeze(['propose', 'selectMore', 'details', 'proposals', 'history', 'compare', 'tools', 'detectBlock', 'useAsSite', 'street']);
     // What stays available on a piece of open ground (no cadastral parcel under it).
     const GROUND_ACTIONS = new Set(['details', 'useAsSite']);
 
@@ -73,6 +73,9 @@
             case 'useAsSite':
                 // The parcel (or the selection) as an editable site; needs the site tool.
                 return f.siteToolAvailable === true;
+            case 'street':
+                // A road parcel is where its street is (streets/street-picker.js).
+                return f.isRoad === true && f.streetsEnabled === true;
             case 'detectBlock':
                 // A block is grown over non-corridor parcels; a road parcel cannot seed one.
                 return f.blocksEnabled === true && f.isRoad !== true;

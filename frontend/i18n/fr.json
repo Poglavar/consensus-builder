@@ -1,4 +1,52 @@
 {
+    "streets": {
+        "end": {
+            "fork": "la fourche",
+            "sideRoad": "une rue latérale",
+            "loop": "la boucle",
+            "end": "son extrémité",
+            "bend": "le virage",
+            "bridge": "le pont",
+            "railwayBridge": "le pont ferroviaire",
+            "overpass": "le pont au-dessus",
+            "gap": "l’espace entre les bâtiments",
+            "number": "n° {{number}}"
+        },
+        "picker": {
+            "between": "Entre {{from}} et {{to}}",
+            "notFound": "Aucune rue nommée ne passe ici. Cliquez sur la rue elle-même.",
+            "failed": "La rue n’a pas pu être lue.",
+            "official": "Identifiant officiel {{id}}",
+            "osmOnly": "D’OpenStreetMap",
+            "partial": "Seule la partie proche a été lue",
+            "part": "Partie de la rue",
+            "whole": "Toute la rue",
+            "side": "Côté",
+            "select": "Sélectionner les parcelles",
+            "selecting": "Recherche des parcelles le long de la rue…",
+            "none": "Aucune limite de parcelle ne longe cette partie de ce côté.",
+            "selected": {
+                "one": "{{count}} parcelle sélectionnée le long de {{street}} : {{where}}, {{side}}.",
+                "other": "{{count}} parcelles sélectionnées le long de {{street}} : {{where}}, {{side}}."
+            },
+            "incomplete": "Certaines parcelles ne sont pas encore chargées ; vérifiez la carte.",
+            "selectFailed": "Les parcelles n’ont pas pu être sélectionnées : {{error}}",
+            "cityChanged": "La ville a changé."
+        },
+        "side": {
+            "north": "Côté nord",
+            "northeast": "Côté nord-est",
+            "east": "Côté est",
+            "southeast": "Côté sud-est",
+            "south": "Côté sud",
+            "southwest": "Côté sud-ouest",
+            "west": "Côté ouest",
+            "northwest": "Côté nord-ouest",
+            "both": "Les deux côtés",
+            "left": "Côté gauche",
+            "right": "Côté droit"
+        }
+    },
     "deviceModels": {
         "publishTitle": "Modèles sur cet appareil uniquement",
         "publishMessage": "Les modèles 3D importés dans ce que vous publiez ne sont conservés que sur cet appareil. Téléversez-les pour que les autres les voient, ou publiez sans eux : les autres verront un volume simple. Un modèle téléversé est public : toute personne ayant un lien vers le projet peut le télécharger.",
@@ -376,14 +424,13 @@
                 "saleTaxSuffix": "% de taxe dans le prix",
                 "costDetails": "Détail du coût",
                 "costConstruction": "Construction",
-                "costLand": "Terrain (terrain du plan × prix du terrain)",
+                "costAcquisition": "Acquisition (chaque parcelle à la valeur de son terrain ou à celle des bâtiments démolis dessus, la plus élevée)",
                 "costTax": "Taxe incluse dans la valeur de vente de la nouvelle surface",
                 "costReclaimed": "Moins la taxe récupérée sur la construction",
-                "costReplaced": "Bâtiments existants démolis, au prix de vente",
                 "noteNoLandPrice": "Pas de prix du terrain pour ce lieu : indiquez-en un pour voir le coût complet et le bénéfice.",
                 "rentSuffix": "{{currency}} par m² de loyer par mois",
                 "annualRent": "Loyer annuel de la nouvelle surface",
-                "rentYield": "Rendement locatif sur le coût (loyer annuel ÷ construction, taxe de construction, terrain et valeur démolie)",
+                "rentYield": "Rendement locatif sur le coût (loyer annuel ÷ construction, taxe de construction et acquisition)",
                 "assumptionsLabel": "Hypothèses",
                 "efficiencySuffix": "% de surface nette par rapport à la surface brute",
                 "apartmentSizeSuffix": "m² par logement",
@@ -1823,6 +1870,68 @@
         }
     },
     "agreement": {
+        "neighbours": {
+            "tab": "Voisins",
+            "heading": "Voisins concernés",
+            "hint": "Un voisin qui renonce à un droit que le plan affecte, comme la lumière du jour ou une limite de jardin, peut être partie sans apporter de terrain. Une renonciation exige l’approbation de ses propriétaires ; l’indemnisation est versée sans elle. Le sponsor paie chaque voisin.",
+            "measure": "Trouver les voisins concernés",
+            "noGuides": "Ce lieu ne fixe aucun repère pour les voisins, rien n’est donc mesuré : ajoutez une parcelle voisine par son identifiant.",
+            "candidates": "Ajouter les parcelles concernées à cet accord",
+            "candidatesHint": "Les parcelles au-delà d’un repère sont cochées. Chacune est ajoutée comme renonciation avec ses mesures ; fixez ses conditions ci-dessous.",
+            "candidate": "Parcelle {{parcelId}}, {{grade}}",
+            "added": "déjà dans cet accord",
+            "isInput": "une parcelle d’entrée",
+            "addTicked": "Ajouter les parcelles cochées ({{count}})",
+            "addedCount": "{{count}} parcelle(s) voisine(s) ajoutée(s) : fixez ci-dessous les conditions de chacune.",
+            "byId": "Ajouter une parcelle voisine par son identifiant",
+            "add": "Ajouter le voisin",
+            "none": "Aucun voisin concerné pour l’instant.",
+            "ownersOnly": "Les voisins concernés ne sont parties qu’à un accord de propriétaires.",
+            "party": "Voisin",
+            "effectLabel": "Cas",
+            "effect": {
+                "waiver": "Renonciation : ils cèdent le droit et doivent approuver",
+                "compensation": "Indemnisation : due sans leur consentement"
+            },
+            "rights": "Droits cédés",
+            "right": {
+                "daylight": "Lumière du jour",
+                "sunlight": "Ensoleillement",
+                "outlook": "Vue et ciel",
+                "garden": "Limite du jardin",
+                "privacy": "Intimité et vis-à-vis",
+                "other": "Autre droit (précisez lequel dans la note)"
+            },
+            "note": "Note (quel droit, s’il s’agit d’un autre)",
+            "readings": "Mesures lors de l’ajout",
+            "noReadings": "Aucune mesure : ajoutée par son identifiant de parcelle.",
+            "reading": "{{kind}} : {{before}} → {{after}} (repère {{guide}}), {{grade}}",
+            "grade": {
+                "fail": "au-delà d’un repère",
+                "below": "sous le niveau d’un repère, dans sa marge",
+                "minor": "une perte mineure",
+                "screen": "un premier contrôle franchi"
+            },
+            "loss": "Perte déclarée de valeur vénale ({{currency}})",
+            "statedBy": "Perte déclarée par",
+            "stater": {
+                "sponsor": "Estimation du sponsor",
+                "valuer": "Expert évaluateur"
+            },
+            "valuerRef": "Référence de l’expert (facultatif)",
+            "payment": "Paiement au voisin ({{currency}})",
+            "derived": "{{multiple}} la perte déclarée, comme le fixent les Règles.",
+            "remove": "Retirer {{parcelId}} de l’accord",
+            "lossColumn": "Perte déclarée",
+            "paymentColumn": "Paiement au voisin",
+            "multiple": {
+                "label": "Indemnisation des voisins",
+                "none": "1× la perte déclarée (aucun multiple fixé)",
+                "strongSuburbs": "Strong Suburbs : 150 % de la perte déclarée (chiffre pas encore vérifié)",
+                "custom": "Autre multiple",
+                "value": "Multiple de la perte déclarée"
+            }
+        },
         "funding": {
             "apartments": {
                 "inventory": "Appartements",
@@ -2364,8 +2473,22 @@
             "deadline": "Date limite (facultatif)"
         },
         "errors": {
+            "affectedInput": "Les propriétaires d’une parcelle d’entrée sont déjà parties : retirez-la de Voisins.",
+            "affectedEffect": "Choisissez renonciation ou indemnisation pour chaque voisin.",
+            "affectedRights": "Cochez au moins un droit cédé par chaque voisin.",
+            "affectedNote": "Précisez dans la note quel autre droit un voisin cède.",
+            "affectedReading": "Les mesures d’un voisin nomment un type ou un niveau que l’application ne mesure pas.",
+            "affectedAmount": "Le paiement et la perte déclarée d’un voisin doivent être des montants d’au moins 0, avec l’auteur de la déclaration.",
+            "affectedLossRequired": "L’indemnisation est un multiple d’une perte déclarée : déclarez la perte de chaque voisin indemnisé.",
+            "affectedConsideration": "Le paiement d’un voisin indemnisé doit être le multiple fixé de sa perte déclarée.",
+            "affectedElectorate": "Seul un accord de propriétaires peut comporter des voisins concernés.",
+            "neighbourMultiple": "Fixez un multiple positif de la perte déclarée pour indemniser les voisins.",
             "consultationOrganiser": "Saisissez le site de l’organisateur ou un identifiant did:web valide.",
             "consultationParticipationUrl": "Saisissez une URL de participation HTTPS sans identifiants de connexion.",
+            "eligibilityNoHouses": "Le plan ne surélève aucun bâtiment existant d’une mansarde ; ce vote de rue n’a donc rien à couvrir.",
+            "eligibilityMissing": "Vérifiez l’admissibilité des maisons couvertes avant de créer ce vote de rue.",
+            "eligibilityStale": "Le plan couvre d’autres maisons que la dernière vérification : vérifiez à nouveau.",
+            "eligibilityFailed": "On ne sait pas encore si chaque maison couverte est admissible : voir Maisons couvertes.",
             "communityAllocations": "Un accord communautaire non contraignant ne peut pas attribuer de terrains.",
             "communityMoney": "Un accord communautaire non contraignant ne peut pas inclure de paiements monétaires.",
             "noDesigns": "Choisissez au moins un projet.",
@@ -4081,6 +4204,11 @@
         "warning": "Cette ville est déjà ouverte dans un autre onglet ; les modifications effectuées ici ne sont donc pas enregistrées dans le plan. Elles sont conservées dans une copie de récupération qui vous sera proposée lorsque vous rouvrirez cette ville après avoir fermé ses autres onglets. Les autres villes peuvent rester ouvertes."
     },
     "proposalApproval": {
+        "neighbourLabel": "Voisin {{label}}",
+        "waiver": {
+            "approved": "Propriétaires de la parcelle voisine {{parcelId}} : renonciation approuvée",
+            "pending": "Propriétaires de la parcelle voisine {{parcelId}} : renonciation en attente"
+        },
         "ownerLabel": "Propriétaire {{label}}",
         "meterDistinctOwners": "Propriétaires distincts ayant approuvé",
         "leaseholderLabel": "Titulaire de bail {{label}}",
@@ -5084,13 +5212,12 @@
             "value": "Valeur",
             "constructionCost": "Coût de construction",
             "profit": "Bénéfice",
-            "profitNote": "Bénéfice = valeur − coût complet : construction, taxe de construction, terrain, taxe de vente moins celle récupérée sur la construction, et valeur bâtie remplacée",
+            "profitNote": "Bénéfice = valeur − coût complet : construction, taxe de construction, acquisition (chaque parcelle à la valeur de son terrain ou de ce qui s'y trouve, la plus élevée) et taxe de vente moins celle récupérée sur la construction",
             "allInCost": "Coût complet",
             "costDetails": "Détail du coût",
-            "landCost": "Terrain",
+            "acquisitionCost": "Acquisition (terrain ou bâtiments, le plus élevé)",
             "saleTaxCost": "Taxe de vente",
             "taxReclaimed": "Taxe récupérée sur la construction",
-            "replacedValue": "Valeur bâtie remplacée",
             "landPriceUnset": "Prix du terrain non défini : déplacez le curseur",
             "landPrice": "Terrain {{price}}/m² de terrain",
             "saleTax": "Taxe de vente {{share}} du prix",
@@ -5707,6 +5834,7 @@
     },
     "parcelMenu": {
         "actions": {
+            "street": "Rue ici",
             "details": "Détails",
             "tools": "Outils",
             "history": "Historique",
@@ -9507,18 +9635,52 @@
         "buildingFactsEdit": "Ajouter ou corriger dans {{source}}",
         "buildingFactsNotFound": "{{source}} n’a plus ce bâtiment.",
         "buildingFactsAgain": "Vérifier à nouveau",
+        "buildingFactsWaiting": "OpenStreetMap affiche une modification une ou deux minutes après son enregistrement : vérification toutes les 30 secondes…",
+        "buildingFactsUnchanged": "{{source}} n’affiche encore aucun changement. Si vous avez enregistré une modification, vérifiez à nouveau dans une minute.",
+        "factEdit": {
+            "title": "Ajoutez les données manquantes",
+            "hint": "N’ajoutez que ce que vous savez en voyant le bâtiment, sur place ou sur des photos utilisables pour OpenStreetMap. C’est enregistré dans OpenStreetMap comme votre propre modification publique.",
+            "choose": "Choisir…",
+            "save": "Enregistrer dans {{source}}",
+            "as": "Enregistrement en tant que {{name}} sur OpenStreetMap.",
+            "signInNote": "Vous vous connectez d’abord avec votre compte OpenStreetMap.",
+            "signOut": "Se déconnecter d’OpenStreetMap",
+            "saved": "Enregistré dans {{source}}.",
+            "changeset": "Groupe de modifications {{changeset}}",
+            "failed": "Non enregistré : {{error}}",
+            "all": "Toutes les maisons :",
+            "allOf": "{{fact}}, toutes les maisons"
+        },
         "buildingFact": {
             "field": {
                 "storeys": "Niveaux",
                 "built": "Construit",
                 "roof_shape": "Forme du toit",
-                "parapet": "Acrotère"
+                "parapet": "Acrotère",
+                "heritage": "Protection patrimoniale",
+                "footprint_m2": "Emprise",
+                "row_size": "Rangée"
             },
             "builtBefore": "avant {{year}}",
             "builtAfter": "{{year}} ou après",
             "builtBetween": "{{from}}–{{to}}",
             "parapetYes": "Oui",
-            "parapetNo": "Non"
+            "parapetNo": "Non",
+            "heritageListed": "Classé, grade {{grade}}",
+            "heritageListedNoGrade": "Classé ; le registre n’indique pas le grade",
+            "heritageNotListed": "Non classé",
+            "heritageEntry": "Notice {{reference}}",
+            "heritageRegister": "Registre du patrimoine",
+            "heritageUnknown": {
+                "noRegister": "Aucun registre du patrimoine n’est lu pour ce lieu",
+                "noRegion": "L’emplacement du bâtiment n’a pas pu être lu",
+                "noOutline": "Le contour du bâtiment n’est pas lu : le registre ne peut pas lui être rapporté",
+                "rowUncertain": "Une notice classée de cette rangée peut couvrir cette maison",
+                "numberAmbiguous": "Les numéros d’une notice classée incluent peut-être cette maison, peut-être pas",
+                "outlineUncertain": "Un contour classé bien plus grand que le bâtiment le couvre",
+                "registerIncomplete": "Trop de notices autour de ces bâtiments pour une seule lecture",
+                "registerUnavailable": "Le registre du patrimoine n’a pas répondu ; vérifiez plus tard"
+            }
         },
         "eligibility": {
             "set": {
@@ -9535,6 +9697,7 @@
                 "unknown": "Inconnu",
                 "unchecked": "Non vérifié par l’application"
             },
+            "withGrade": "{{status}}, grade {{grade}}",
             "test": {
                 "built": "Construit après 1700 et avant 1918",
                 "parapet": "Acrotère sur toute la façade sur rue",
@@ -9831,6 +9994,7 @@
         },
         "notLoaded": "Les parcelles ne sont pas encore chargées ici — zoomez ou attendez leur chargement.",
         "actions": {
+            "street": "Rue ici",
             "drawSite": "Dessiner une parcelle"
         }
     },
@@ -10042,6 +10206,14 @@
         }
     },
     "voting": {
+        "streetCovered": "Rue : {{street}}",
+        "street": {
+            "title": "Rue",
+            "include": "Nommer la rue concernée par ce vote : {{street}}",
+            "hint": "Choisie avec Rue ici sur la carte. L’enregistrement garde son nom, les voies OpenStreetMap, ses extrémités et le côté.",
+            "named": "Le vote nomme {{street}}.",
+            "unnamed": "Le vote ne nomme aucune rue."
+        },
         "support": "Pour",
         "oppose": "Contre",
         "abstain": "Abstention",
@@ -10134,6 +10306,34 @@
             "gb-street-vote-consultation-2023": {
                 "name": "Vote de rue — consultation du gouvernement de 2023",
                 "source": "Proposé dans la consultation du gouvernement britannique de décembre 2023 sur les ordonnances d’aménagement par vote de rue : au moins 60 % des électeurs inscrits pour, et au moins un électeur pour dans au moins la moitié des foyers votants."
+            },
+            "gb-street-vote-living-tradition": {
+                "name": "Vote de rue — mansardes selon Living Tradition",
+                "source": "Proposé dans Living Tradition de Samuel Hughes (Create Streets, 2021) : au moins 50 % des suffrages exprimés pour, des résidents d’au moins la moitié des foyers votant, et un oui d’un résident dans au moins la moitié des foyers votants. Seules les maisons remplissant ses conditions (par. 17) peuvent être couvertes."
+            }
+        },
+        "eligibility": {
+            "title": "Maisons couvertes",
+            "hint": "Ce vote de rue ne peut couvrir que des maisons remplissant les conditions de la règle. Leurs données sont lues dans OpenStreetMap et leur classement dans le registre du patrimoine : ajoutez dans OpenStreetMap celles qui manquent, puis vérifiez à nouveau.",
+            "checking": "Vérification des maisons couvertes…",
+            "waiting": "En attente d’OpenStreetMap : une modification apparaît ici une ou deux minutes après son enregistrement. Vérification toutes les 30 secondes…",
+            "unchanged": "OpenStreetMap n’affiche encore aucun changement. Si vous avez enregistré une modification, vérifiez à nouveau dans une minute.",
+            "failed": "La vérification n’a pas pu aboutir : {{error}}",
+            "summary": "{{eligible}} maisons couvertes sur {{total}} admissibles",
+            "none": "Le plan ne surélève aucun bâtiment existant d’une mansarde.",
+            "fails": "échoue {{tests}}",
+            "missingFacts": "inconnu {{tests}}",
+            "house": "Bâtiment {{id}}",
+            "unanswered": "Un bâtiment sans source de données ({{id}})",
+            "edit": "Modifier dans {{source}}",
+            "addKey": "Ajoutez {{key}} dans {{source}}",
+            "testsOf": "Conditions non remplies par {{house}}",
+            "again": "Vérifier à nouveau",
+            "check": "Vérifier l’admissibilité",
+            "verdict": {
+                "eligible": "Admissible",
+                "ineligible": "Non admissible",
+                "unknown": "Inconnu"
             }
         }
     },
@@ -10521,7 +10721,13 @@
 ,
   "chat": {
     "title": "Demander à Hippodamos",
-    "intro": "Décrivez une modification de votre plan de travail.",
+    "greeting": "Comment puis-je vous aider à concevoir une bonne ville aujourd’hui ?",
+    "greetingParcels": {
+      "one": "Voulez-vous que nous fassions quelque chose de cette parcelle ?",
+      "other": "Voulez-vous que nous fassions quelque chose de ces {{count}} parcelles ?"
+    },
+    "greetingTool": "L’outil « {{tool}} » est ouvert. Voulez-vous que je vous explique son fonctionnement ?",
+    "greetingToolUnnamed": "Un outil est ouvert. Voulez-vous que je vous explique son fonctionnement ?",
     "tips": {
       "title": "Essayez de demander",
       "design": "Concevez un parc sur les parcelles sélectionnées ou déplacez un bâtiment de 50 m vers le nord.",
@@ -10810,11 +11016,9 @@
     "makerOnly": "Seul l’auteur de l’offre peut la créer sur Solana.",
     "market": {
       "all": "Tout",
-      "committed": "Vente en cours",
       "count": "{{count}} affichés",
       "empty": "Rien pour l’instant. Déplacez la carte, modifiez les filtres ou mettez en vente une parcelle ou un appartement.",
       "flats": "Appartements",
-      "forSale": "À vendre",
       "inArea": "Seulement dans la zone de la carte",
       "kind": "Quoi",
       "mine": "Seulement les miennes",
@@ -10822,7 +11026,6 @@
       "plots": "Parcelles",
       "requests": "Demandes au prisme",
       "side": "Côté",
-      "wanted": "Recherché",
       "yourLens": "À qui vous faites confiance"
     },
     "memberViewNone": "Vous n’avez pas déclaré qui le détient ; déclarez le premier détenteur avant de confirmer.",
@@ -10895,7 +11098,6 @@
     "viewFlat": "Voir l’appartement en rayon X",
     "viewPlot": "Afficher la parcelle sur la carte",
     "waiting": "En attente",
-    "walletRequired": "Connectez d’abord un portefeuille Solana.",
     "wanted": "Recherché",
     "withdraw": "Retirer ma déclaration",
     "wrongNetwork": "Basculez le portefeuille sur Solana {{cluster}}.",

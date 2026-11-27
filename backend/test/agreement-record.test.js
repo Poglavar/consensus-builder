@@ -723,3 +723,34 @@ describe('consultation metadata', () => {
         expect(record.fundingError({ ...funding, apartments: { projectId: 'project-a', units: [{ ...unit, at: '46,16,18' }, { ...unit, unitId: 'unit-b' }] } })).toMatch(/unique physical/);
     });
 });
+
+// A street vote under Living Tradition's rule covers only eligible houses: the record keeps the check
+// (planning/eligibility.js) and validation holds the agreement until every covered house passes it.
+describe('street vote eligibility', () => {
+    const E = require('../../frontend/js/planning/eligibility.js');
+    const set = E.latest('gb-living-tradition-mansards');
+    const codes = [1, 2, 3].map(n => n.toString(16).padStart(64, '0'));
+    const raised = id => ({ type: 'Feature', geometry: null, properties: { basedOnExisting: true, sourceBuildingId: id, roof: 'mansard' } });
+    const designOf = id => (id === 'layout-1' ? { geometry: { buildings: [raised('w36'), raised('w37')] } } : { geometry: { buildings: [] } });
+    const house = (id, verdict, unknown = []) => ({ id, verdict, failing: [], unknown });
+    const check = houses => ({ set: { id: set.id, version: set.version }, checkedAt: '2026-11-27T15:00:00.000Z', houses });
+    const vote = eligibility => ({ ...fixture(), allocations: [], money: { currency: 'EUR', lines: [] },
+        rule: { electorate: 'community', binding: false, approvalConfig: null, lens: [] },
+        consultation: { organiser: null, participationUrl: null, voting: { schema: 'community-voting/v2', id: '6f1c2a3b-4d5e-4f60-8a71-92b3c4d5e6f7', codeHashes: codes,
+            rule: { id: 'gb-street-vote-living-tradition', version: '2026-11-27' }, ...(eligibility ? { eligibility } : {}) } } });
+    const issues = raw => record.validate(raw, { designOf }).errors.filter(error => error.code.startsWith('voting-eligibility')).map(error => error.code);
+
+    it('needs a recorded check that covers exactly the raised houses and finds each eligible', () => {
+        expect(issues(vote(null))).toEqual(['voting-eligibility-missing']);
+        expect(issues(vote(check([house('osm:way/36', 'eligible'), house('osm:way/37', 'unknown', ['17.4'])])))).toEqual(['voting-eligibility-failed']);
+        expect(issues(vote(check([house('osm:way/36', 'eligible')])))).toEqual(['voting-eligibility-stale']);
+        expect(issues(vote(check([house('osm:way/36', 'eligible'), house('osm:way/37', 'eligible')])))).toEqual([]);
+    });
+    it('keeps the check in the published record, and refuses it on a rule that does not cover eligibility', () => {
+        const passed = check([house('osm:way/36', 'eligible'), house('osm:way/37', 'eligible')]);
+        expect(record.published(vote(passed)).consultation.voting.eligibility).toEqual(passed);
+        const other = vote(passed);
+        other.consultation.voting.rule = { id: 'gb-street-vote-strong-suburbs', version: '2026-11-25' };
+        expect(() => record.normalize(other)).toThrow('Only a ballot rule that covers eligible buildings');
+    });
+});

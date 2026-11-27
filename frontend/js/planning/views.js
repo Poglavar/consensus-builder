@@ -307,27 +307,34 @@
         record.buildingFacts = factReads.get(record.id) || { status: 'reading', id };
         return readFactsOf(record, id);
     }
-    function readFactsOf(record, id) {
-        const read = root.BuildingFacts.read(id).then(building => ({ status: 'read', id, building }), error => {
+    // Check again (fresh) keeps reading until the source shows a change, since an OpenStreetMap
+    // edit reaches Overpass a minute or two after it is saved (BuildingFacts.readUntilChanged); the
+    // card says it is waiting meanwhile, and says so when nothing changed.
+    function showFacts(record, state) {
+        factReads.set(record.id, state);
+        record.buildingFacts = state;
+        const shown = selected();
+        if (shown?.id === record.id) { shown.buildingFacts = state; renderInspector(); }
+    }
+    function readFactsOf(record, id, options = {}) {
+        const showState = state => showFacts(record, state);
+        const before = factReads.get(record.id);
+        const waitFor = options.fresh && before?.status === 'read'
+            ? root.BuildingFacts.readUntilChanged([id], new Map([[id, before.building]]), async ids => new Map([[id, await root.BuildingFacts.read(ids[0], options)]]), {
+                onWaiting: () => showState({ ...before, waiting: pending }), stillWanted: () => selected()?.id === record.id })
+                .then(({ answer, changed }) => ({ status: 'read', id, building: answer.get(id), unchanged: !changed }))
+            : root.BuildingFacts.read(id, options).then(building => ({ status: 'read', id, building }));
+        const pending = waitFor.catch(error => {
             console.error(`[${new Date().toISOString()}] [planning] Building facts could not be read for ${id}`, error);
             return { status: 'failed', id };
-        }).then(state => {
-            factReads.set(record.id, state);
-            record.buildingFacts = state;
-            const shown = selected();
-            if (shown?.id === record.id) { shown.buildingFacts = state; renderInspector(); }
-        });
+        }).then(showState);
         if (selected()?.id === record.id) renderInspector();
-        return read;
+        return pending;
     }
     // A rule set's conditions on what the building is (planning/eligibility.js), test by test, from
-    // its facts, its footprint and the buildings loaded around it.
-    function renderEligibility(set, item, facts) {
-        const pool = root.buildingFeaturePool;
-        const result = root.BuildingEligibility.evaluate(set, {
-            facts, footprint: item.site ? { type: 'Feature', properties: {}, geometry: item.site } : null,
-            neighbours: Array.isArray(pool) && pool.length ? pool : null,
-        }, root.BuildingEligibility.turfOps(root.turf));
+    // its building facts.
+    function renderEligibility(set, facts) {
+        const result = root.BuildingEligibility.evaluate(set, facts);
         const block = element('div', 'planning-eligibility');
         block.setAttribute('data-eligibility', result.verdict);
         block.append(element('strong', '', t(`eligibility.set.${set.id}`)),
@@ -336,7 +343,10 @@
         for (const test of result.tests) {
             const row = element('li', 'planning-eligibility__test');
             row.setAttribute('data-status', test.status);
-            row.append(element('span', '', `${test.cite} ${t(`eligibility.test.${test.id}`)}`), element('span', 'planning-eligibility__status', t(`eligibility.status.${test.status}`)));
+            // A listing test names the grade it was judged on ("No, Grade II*").
+            const status = t(`eligibility.status.${test.status}`);
+            row.append(element('span', '', `${test.cite} ${t(`eligibility.test.${test.id}`)}`),
+                element('span', 'planning-eligibility__status', test.grade ? t('eligibility.withGrade', { status, grade: test.grade }) : status));
             list.append(row);
         }
         const source = element('a', 'cb-link cb-link--external', set.source.label);
@@ -358,6 +368,13 @@
             for (const row of rows) {
                 const entry = element('div'), value = element('dd', '', row.text ?? t('buildingFactUnknown'));
                 if (row.text !== null && row.key) value.title = `${row.key}=${row.raw}`;
+                // A register fact (heritage): why it is unknown, and the register entry it rests on.
+                if (row.reason) value.append(element('span', 'planning-building-facts__reason', ` · ${row.reason}`));
+                if (row.link) {
+                    const link = element('a', 'cb-link cb-link--external planning-building-facts__source', row.link.text);
+                    link.href = row.link.url; link.target = '_blank'; link.rel = 'noopener';
+                    value.append(' · ', link);
+                }
                 entry.append(element('dt', '', row.label), value);
                 list.append(entry);
             }
@@ -367,24 +384,117 @@
             if (edit?.url) {
                 if (missing.length && state.building.found) section.append(element('p', 'planning-inspector__description',
                     t('buildingFactsMissing', { source: edit.source, tags: missing.map(row => row.key).join(', ') })));
+                const form = renderFactForm(item, state);
+                if (form) section.append(form);
                 const link = element('a', 'cb-link cb-link--external', t('buildingFactsEdit', { source: edit.source }));
                 link.href = edit.url; link.target = '_blank'; link.rel = 'noopener';
                 section.append(link);
             }
             if (!state.building.found) section.append(element('p', 'planning-inspector__description', t('buildingFactsNotFound', { source: edit?.source || '' })));
             for (const set of root.BuildingEligibility?.forCity(root.CityConfigManager?.getCityConfig(item.source.city)?.planning?.ruleSetIds || []) || []) {
-                section.append(renderEligibility(set, item, state.building.facts));
+                section.append(renderEligibility(set, state.building.facts));
             }
+        }
+        // Beside the button that started it: waiting for the source to show an edit, or no change.
+        if (state.status === 'read' && (state.waiting || state.unchanged)) {
+            const line = element('p', 'planning-inspector__description', t(state.waiting ? 'buildingFactsWaiting' : 'buildingFactsUnchanged', { source: state.building.edit?.source || '' }));
+            line.setAttribute('role', 'status');
+            section.append(line);
         }
         const again = element('button', 'btn planning-building-facts__again', t('buildingFactsAgain'));
         again.type = 'button';
-        again.disabled = state.status === 'reading';
+        again.disabled = state.status === 'reading' || Boolean(state.waiting);
+        // The card redraws while Check again waits; the new button keeps the spinner until it ends.
+        if (state.waiting) root.BusyControl.track(again, state.waiting);
         again.addEventListener('click', () => {
             const record = selected();
-            if (record?.buildingFacts) root.BusyControl.track(again, () => readFactsOf(record, record.buildingFacts.id));
+            if (record?.buildingFacts) root.BusyControl.track(again, () => readFactsOf(record, record.buildingFacts.id, { fresh: true }));
         });
         section.append(again);
         return section;
+    }
+    // Adding the missing facts here (osm/osm-fact-edits.js): a choice per fact the person can state,
+    // saved to OpenStreetMap as their own edit after signing in with their OSM account. The choices
+    // are kept per building while the card redraws; after a save the card shows the saved facts and
+    // the changeset.
+    const factDrafts = new Map();
+    function renderFactForm(item, state) {
+        const edits = root.OsmFactEdits, account = root.OsmAccount;
+        const fields = edits && account ? edits.missingEditable(state.building) : [];
+        let savedLine = null;
+        if (state.saved) {
+            const line = savedLine = element('p', 'planning-inspector__description', t('factEdit.saved', { source: state.building.edit.source }));
+            line.setAttribute('role', 'status');
+            if (state.saved.changeset) {
+                const link = element('a', 'cb-link cb-link--external', t('factEdit.changeset', { changeset: state.saved.changeset }));
+                link.href = `${account.SITE}/changeset/${state.saved.changeset}`; link.target = '_blank'; link.rel = 'noopener';
+                line.append(' ', link);
+            }
+            if (!fields.length) return line;
+        }
+        if (!fields.length || !account.redirectUri()) return savedLine;
+        const draft = factDrafts.get(item.id) || {};
+        const form = element('div', 'planning-fact-form');
+        if (savedLine) form.append(savedLine);
+        form.append(element('strong', '', t('factEdit.title')), element('p', 'planning-inspector__description', t('factEdit.hint')));
+        for (const field of fields) {
+            const id = `planning-fact-${field}`, label = element('label', '', t(`buildingFact.field.${field}`));
+            label.htmlFor = id;
+            const def = edits.EDITABLE[field];
+            let control;
+            if (def.integer) {
+                control = element('input', 'planning-fact-form__control');
+                control.type = 'number'; control.min = def.integer.min; control.max = def.integer.max; control.step = 1;
+            } else {
+                control = element('select', 'planning-fact-form__control');
+                const choose = element('option', '', t('factEdit.choose'));
+                choose.value = '';
+                control.append(choose, ...def.choices.map(choice => {
+                    const option = element('option', '', field === 'parapet' ? t(choice.value ? 'buildingFact.parapetYes' : 'buildingFact.parapetNo') : choice.tag);
+                    option.value = choice.tag;
+                    return option;
+                }));
+            }
+            control.id = id;
+            control.value = draft[field] ?? '';
+            control.addEventListener('change', () => factDrafts.set(item.id, { ...(factDrafts.get(item.id) || {}), [field]: control.value }));
+            const row = element('div', 'planning-fact-form__row');
+            row.append(label, control);
+            form.append(row);
+        }
+        const who = account.user();
+        form.append(element('p', 'planning-inspector__description', who ? t('factEdit.as', { name: who.name }) : t('factEdit.signInNote')));
+        if (state.saveError) {
+            const error = element('p', 'planning-fact-form__error', t('factEdit.failed', { error: state.saveError }));
+            error.setAttribute('role', 'alert');
+            form.append(error);
+        }
+        const save = element('button', 'btn btn-primary planning-fact-form__save', t('factEdit.save', { source: state.building.edit.source }));
+        save.type = 'button';
+        save.disabled = Boolean(state.waiting);
+        save.addEventListener('click', () => {
+            const record = selected(), current = record && factReads.get(record.id);
+            if (!current || current.status !== 'read') return;
+            const entries = [{ building: current.building, values: factDrafts.get(record.id) || {} }];
+            root.BusyControl.track(save, async () => {
+                try {
+                    const result = await edits.save(entries, { comment: edits.commentFor(entries) });
+                    factDrafts.delete(record.id);
+                    showFacts(record, { status: 'read', id: current.id, building: result.buildings.get(current.id) || current.building, saved: { changeset: result.changeset } });
+                } catch (error) {
+                    console.error(`[${new Date().toISOString()}] [planning] Building facts could not be saved for ${current.id}`, error);
+                    showFacts(record, { ...current, saveError: error.message });
+                }
+            });
+        });
+        form.append(save);
+        if (who) {
+            const out = element('button', 'btn btn-quiet btn-sm planning-fact-form__sign-out', t('factEdit.signOut'));
+            out.type = 'button';
+            out.addEventListener('click', () => { account.signOut(); renderInspector(); });
+            form.append(out);
+        }
+        return form;
     }
     // A built record whose source has no known height (rule-terms buildingHeight) is measured from
     // the height survey covering it (buildings/height-survey-client.js): the card says so meanwhile,

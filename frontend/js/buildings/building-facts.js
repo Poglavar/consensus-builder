@@ -1,6 +1,6 @@
 // Building facts for the building card: what the shared API's building-facts contract
 // (GET /api/building-facts) knows about a building — storeys, when it was built, roof shape,
-// parapet — each with its source, and where to add a missing one. The app knows only the contract;
+// parapet, heritage listing — each with its source, and where to add a missing one. The app knows only the contract;
 // which source answers (OpenStreetMap today) is the shared API's business.
 (function (root, factory) {
     const api = factory();
@@ -11,7 +11,9 @@
     const API_ROOT = 'https://zagreb.lol/api';
     // The facts the card lists, in order (the contract also answers height_m, which the card's
     // height line already covers).
-    const CARD_FIELDS = Object.freeze(['storeys', 'built', 'roof_shape', 'parapet']);
+    const CARD_FIELDS = Object.freeze(['storeys', 'built', 'roof_shape', 'parapet', 'heritage']);
+    // Facts that come from a register rather than the editable map: no key to add them under.
+    const REGISTER_FIELDS = Object.freeze(['heritage']);
     const OSM_ID = /^(?:osm:)?([wr])([1-9][0-9]{0,15})$/;
 
     // The contract's id for a building the map drew: OSM buildings carry their element id
@@ -32,15 +34,63 @@
         return local && /^http:\/\/(localhost|127\.0\.0\.1):\d+\/api$/.test(local) ? local : API_ROOT;
     }
 
-    // One building's facts, read live (the contract reads its source on every request).
-    async function read(id, { fetchFn = fetch, base = apiRoot() } = {}) {
-        const url = `${base}/building-facts?ids=${encodeURIComponent(id)}`;
-        const response = await fetchFn(url, { cache: 'no-store' });
-        if (!response.ok) throw new Error(`Building facts HTTP ${response.status}`);
-        const answer = await response.json();
-        const building = (answer.buildings || []).find(item => item.id === id);
-        if (!building || typeof building.facts !== 'object') throw new Error('Invalid building facts response');
-        return { ...building, sources: answer.sources || [] };
+    // Buildings this page saved to the source (osm/osm-fact-edits.js), as the saved tags state them:
+    // Overpass and the API's cache show the new version a few minutes later, and until a read
+    // reaches that version the saved one answers instead. Kept for this page's life.
+    const saved = new Map();
+    function remember(building) {
+        saved.set(building.id, building);
+    }
+    const versionNumber = building => (Number.isInteger(building?.source_version?.version) ? building.source_version.version : -1);
+    function newest(building) {
+        const mine = saved.get(building.id);
+        if (!mine) return building;
+        if (versionNumber(building) >= versionNumber(mine)) { saved.delete(building.id); return building; }
+        return mine;
+    }
+
+    // Several buildings' facts as a Map id → building; at most 200 per request, as the contract
+    // allows. The API keeps a read 5 minutes; fresh asks the source again ("Check again" after an edit).
+    async function readMany(ids, { fetchFn = fetch, base = apiRoot(), fresh = false } = {}) {
+        const found = new Map();
+        for (let i = 0; i < ids.length; i += 200) {
+            const batch = ids.slice(i, i + 200);
+            const response = await fetchFn(`${base}/building-facts?ids=${batch.map(encodeURIComponent).join(',')}${fresh ? '&fresh=1' : ''}`, { cache: 'no-store' });
+            if (!response.ok) throw new Error(`Building facts HTTP ${response.status}`);
+            const answer = await response.json();
+            for (const id of batch) {
+                const building = (answer.buildings || []).find(item => item.id === id);
+                if (!building || typeof building.facts !== 'object') throw new Error('Invalid building facts response');
+                found.set(id, newest({ ...building, sources: answer.sources || [] }));
+            }
+        }
+        return found;
+    }
+    // One building's facts.
+    async function read(id, options = {}) {
+        return (await readMany([id], options)).get(id);
+    }
+
+    // "Check again" after an edit: OpenStreetMap publishes edits once a minute, so Overpass shows one
+    // a minute or two after it is saved. Read fresh at once, then every intervalMs while no building's
+    // source version differs from the one shown (shown: Map id → building), at most `attempts` reads
+    // (7 reads ≈ 3 minutes). onWaiting(attempt) runs before each wait; stillWanted() false stops it
+    // (the card or dialog closed). Resolves { answer: Map id → building, changed }.
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+    async function readUntilChanged(ids, shown, read, { attempts = 7, intervalMs = 30_000, wait = sleep, onWaiting = () => {}, stillWanted = () => true } = {}) {
+        const versionOf = building => (building?.found ? String(building.source_version?.version ?? '') : 'none');
+        const before = new Map(ids.map(id => [id, versionOf(shown?.get(id))]));
+        let answer = null;
+        for (let attempt = 0; attempt < attempts; attempt++) {
+            if (attempt) {
+                onWaiting(attempt);
+                await wait(intervalMs);
+                if (!stillWanted()) break;
+            }
+            answer = await read(ids);
+            if (ids.some(id => versionOf(answer.get(id)) !== before.get(id))) return { answer, changed: true };
+        }
+        return { answer, changed: false };
     }
 
     // { from, to } (whole years, either open) → the words for it.
@@ -53,22 +103,44 @@
         return null;
     }
 
+    // A heritage listing in words: listed with the grade the register states, or not listed.
+    function heritageWords(value, t) {
+        if (!value.listed) return t('heritageNotListed');
+        return value.grade ? t('heritageListed', { grade: value.grade }) : t('heritageListedNoGrade');
+    }
     // A roof shape is shown in the source's own word (OSM's roof:shape values).
     function valueWords(field, value, t) {
         if (field === 'built') return builtWords(value, t);
         if (field === 'parapet') return value ? t('parapetYes') : t('parapetNo');
+        if (field === 'heritage') return heritageWords(value, t);
         return String(value);
     }
-
-    // The card's rows: each field's label, its value in words (null when unknown), and the source's
-    // key (where it was read, or where to add it when missing) with the raw text behind it.
-    function cardRows(building, t) {
-        return CARD_FIELDS.map(field => {
-            const fact = building.facts[field];
-            return { field, label: t(`field.${field}`), text: fact ? valueWords(field, fact.value, t) : null,
-                key: fact?.key || building.edit?.keys?.[field] || null, raw: fact?.raw ?? null };
-        });
+    const UNKNOWN_REASONS = Object.freeze(['no-register', 'no-region', 'no-outline', 'row-uncertain', 'number-ambiguous', 'outline-uncertain', 'register-incomplete', 'register-unavailable']);
+    // Where a register fact was read: the register entry that lists the building, the register
+    // itself for "not listed", or the entry that may cover it while it is unknown.
+    function registerLink(field, building, t) {
+        const fact = building.facts[field];
+        if (fact?.value?.url) return { url: fact.value.url, text: fact.value.reference ? t('heritageEntry', { reference: fact.value.reference }) : t('heritageRegister') };
+        const entry = building.unknown_reasons?.[field]?.entries?.[0];
+        return entry?.url ? { url: entry.url, text: entry.reference ? t('heritageEntry', { reference: entry.reference }) : t('heritageRegister') } : null;
     }
 
-    return { API_ROOT, CARD_FIELDS, factIdOf, apiRoot, read, builtWords, cardRows };
+    // One fact as the card and the street-vote check show it: its label, its value in words (null
+    // when unknown), and the source's key (where it was read, or where to add it when missing) with
+    // the raw text behind it. A register fact has no key to add it under; it carries a link to its
+    // register entry instead, and when unknown, the reason the source gives (in words, by its code).
+    function factRow(building, field, t) {
+        const fact = building.facts[field];
+        const row = { field, label: t(`field.${field}`), text: fact ? valueWords(field, fact.value, t) : null,
+            key: fact?.key || (REGISTER_FIELDS.includes(field) ? null : building.edit?.keys?.[field] || null), raw: fact?.raw ?? null };
+        if (!REGISTER_FIELDS.includes(field)) return row;
+        const code = building.unknown_reasons?.[field]?.code;
+        return { ...row, link: registerLink(field, building, t), reason: !fact && UNKNOWN_REASONS.includes(code) ? t(`heritageUnknown.${code.replace(/-(\w)/g, (_, c) => c.toUpperCase())}`) : null };
+    }
+    // The card's rows, one per card field.
+    function cardRows(building, t) {
+        return CARD_FIELDS.map(field => factRow(building, field, t));
+    }
+
+    return { API_ROOT, CARD_FIELDS, factIdOf, apiRoot, read, readMany, remember, readUntilChanged, builtWords, heritageWords, factRow, cardRows };
 });

@@ -1,0 +1,9 @@
+/* OpenStreetMap sign-in callback page (osm-callback.html): one centred status line. */
+.osm-callback {
+    font-family: system-ui, sans-serif;
+    max-width: 28rem;
+    margin: 20vh auto 0;
+    padding: 0 1rem;
+    text-align: center;
+    color: #1f2933;
+}

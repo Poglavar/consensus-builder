@@ -66,13 +66,70 @@ function station(intent, parcels) {
         attachment: placed.alignment, blockName: null }, {}, turf, parcels.map(p => p.feature));
     return publish(intent, { goal: 'station', site: structureProposal.geometry, geometry: null, structureProposal });
 }
-export function buildTypedDesign(intent, { parcels = [] } = {}) {
+// The Block editor's Based on existing buildings (raised-existing-buildings.js, the builder the
+// editor uses): the existing buildings at least half inside the site, each redrawn on its own
+// footprint at `existing.floors` storeys ('exact') or its existing height plus
+// `existing.additionalFloors` ('additional'), with the roof. `buildings` are the caller's building
+// source footprints under the site (properties.id, .source, .height_m, .floors); it takes no land
+// and carries no urban rule.
+function raisedExisting(intent, site, buildings) {
+    const raised = runtime.raisedExisting, existing = intent.existing;
+    if (!existing || typeof existing !== 'object' || Array.isArray(existing)) fail('invalid-existing', 'Describe how the existing buildings are redrawn.', 'existing', { required: ['rule'] });
+    const rule = existing.rule ?? raised.DEFAULTS.rule;
+    if (!raised.RULES.includes(rule)) fail('invalid-existing-rule', 'Choose exact (a stated number of storeys) or additional (storeys added to each building).', 'existing.rule', { enum: raised.RULES });
+    const limit = key => raised.LIMITS[key];
+    const settings = {
+        rule,
+        proposedHeightFloors: number(existing.floors, raised.DEFAULTS.proposedHeightFloors, 'existing.floors', ...limit('proposedHeightFloors'), true),
+        additionalFloors: number(existing.additionalFloors, raised.DEFAULTS.additionalFloors, 'existing.additionalFloors', ...limit('additionalFloors'), true),
+        floorHeightM: number(intent.floorHeightM, raised.DEFAULTS.floorHeightM, 'floorHeightM', ...limit('floorHeightM')),
+        roof: intent.roof ?? raised.DEFAULTS.roof
+    };
+    if (!raised.ROOFS.includes(settings.roof)) fail('invalid-roof', 'Choose a flat, pitched or mansard roof.', 'roof', { enum: raised.ROOFS });
+    const footprints = raised.footprintsOnSite(buildings, site, turf);
+    if (!footprints.length) fail('no-existing-buildings', 'The building sources show no existing building at least half inside this site.', 'existing.buildingSources', { minimumShareInsideSite: 0.5 });
+    if (rule === 'additional' && !raised.heightsKnown(footprints)) fail('existing-heights-unknown', 'The building sources state no height or storeys for these buildings, so there is nothing to add storeys to; use the exact rule.', 'existing.rule', { enum: ['exact'] });
+    const features = raised.raise(footprints, settings, { blockName: intent.title ?? null });
+    return publish(intent, { goal: 'buildings', site, buildingProposal: { typologyType: 'block', parameters: raised.parameters(settings) }, geometry: { buildings: features } });
+}
+
+// A typed change to a Based on existing buildings design, kept in step with its saved parameters
+// (the editor rebuilds from them on reopen). Its one control that maps cleanly is the storeys of an
+// exact rule: set_floors for the whole design redraws every building through the shared builder,
+// from the building each extends. Anything else would part the buildings from their parameters or
+// from the existing footprints they stand on, so it is refused with the way to redraft.
+const EXISTING_BUILDING_CHANGES = ['set_floors', 'set_height', 'set_use', 'set_access', 'rotate', 'move', 'remove_building', 'fit_to_permitted'];
+export function modifyRaisedExisting(design, change) {
+    const raised = runtime.raisedExisting, parameters = design?.buildingProposal?.parameters;
+    if (parameters?.mode !== 'existing' || !EXISTING_BUILDING_CHANGES.includes(change?.type)) return null;
+    const redraft = (message, field) => { throw Object.assign(new Error(`${message} Draft it again with ugt_draft_building existing and replaceDesignCid.`), {
+        code: 'existing-buildings-redraft', field, next: { tool: 'ugt_draft_building', action: 'Redraft with typology block, existing { rule, floors | additionalFloors, buildingSources }, floorHeightM and roof, and replaceDesignCid set to this design.' } }); };
+    if (change.type !== 'set_floors') redraft('A design based on existing buildings redraws them on their own footprints by its rule; only set_floors for the whole design (exact rule) edits it in place.', 'changes');
+    if (change.buildingIndex != null) redraft('A design based on existing buildings sets one storey count for all its buildings, as the editor does.', 'buildingIndex');
+    if (parameters.rule !== 'exact') redraft('This design adds storeys to each building (additional rule); a storey count belongs to the exact rule, which may redraw buildings this one leaves out.', 'buildingProposal.parameters.rule');
+    const settings = { rule: 'exact', proposedHeightFloors: number(change.value, null, 'value', ...raised.LIMITS.proposedHeightFloors, true),
+        additionalFloors: parameters.additionalFloors, floorHeightM: number(change.floorHeightM, parameters.floorHeightM, 'floorHeightM', ...raised.LIMITS.floorHeightM),
+        roof: parameters.roof };
+    const buildings = design.geometry?.buildings || [];
+    const footprints = buildings.map(building => ({ id: building.properties?.sourceBuildingId ?? null, height_m: building.properties?.existingHeight ?? null, geometry: building.geometry }));
+    const next = structuredClone(design);
+    next.buildingProposal.parameters = { ...parameters, ...raised.parameters(settings) };
+    next.geometry.buildings = raised.raise(footprints, settings, { blockName: buildings[0]?.properties?.block ?? null }).map(ProposalAuthoredRecord.cleanFeature);
+    return next;
+}
+
+export function buildTypedDesign(intent, { parcels = [], existingBuildings = null } = {}) {
     const entries = sourceParcels(parcels);
     if (intent.kind === 'station') return station(intent, entries);
     if (intent.kind === 'track') return publish(intent, intentDesign.build(intent, { turf }));
     const typology = intent.typology || 'freeform';
     if (!['freeform', 'block', 'row', 'detached'].includes(typology)) fail('invalid-typology', 'Choose a supported building typology.', 'typology', { enum: ['freeform', 'block', 'row', 'detached'] });
     const site = siteOf(intent, entries);
+    if (intent.existing != null) {
+        if (typology !== 'block') fail('existing-needs-block', 'Based on existing buildings is a Block design.', 'typology', { enum: ['block'] });
+        if (!Array.isArray(existingBuildings)) fail('building-source-required', 'Redrawing existing buildings needs the buildings a building source shows under the site.', 'existing.buildingSources', { required: true });
+        return raisedExisting(intent, site, existingBuildings);
+    }
     // Without an explicit seed each site gets its own stable variation, as the editor rolls a fresh one;
     // a constant default would give every agent-drafted rule the same example heights.
     const seed = number(intent.seed, runtime.rules.hashSeed(JSON.stringify(site)), 'seed', 0, 0xffffffff, true);

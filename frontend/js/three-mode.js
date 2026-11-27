@@ -582,13 +582,10 @@
     // Floor areas over the bound parcels only, when the panel's totals also cover open ground
     // (a partly bound site), so the per-parcel average does not credit open ground to owners.
     let lastParcelFloorAreas = null;
-    // The land under the panel's figures (the parcel, or the design's parcels or site), m²: a new
-    // building's all-in cost pays for it at the land price.
-    let lastLandM2 = null;
-    // The built floor area the proposed buildings keep where they extend existing ones (null:
-    // unknown), and the land they pay for (the land less the ground of pure extensions).
-    let lastKeptFloorAreaM2 = 0;
-    let lastAcquiredLandM2 = null;
+    // The plots under the panel's figures (gain.js plotOf: the parcel, or the design's parcels or
+    // site): a new building's all-in cost buys each at the higher of its land value and the value of
+    // what stands on it; extensions keep their floor area and pay for no land.
+    let lastPlots = null;
     // Where that land is ([lng, lat], EconomicSources.locationOf): rates published per area (an English
     // authority's land value, a London value band) are that place's.
     let lastLocation = null;
@@ -1042,9 +1039,7 @@
         const prices = currentPanelPrices();
         const comparison = window.ProposalGain.computeValueComparison({
             floorAreas: lastFloorAreas || {},
-            landAreaM2: lastLandM2,
-            keptFloorAreaM2: lastKeptFloorAreaM2,
-            acquiredLandAreaM2: lastAcquiredLandM2 ?? undefined,
+            plots: lastPlots,
             salePerM2: prices.sale.perSqm,
             constructionPerM2: prices.construction.perSqm,
             landPerM2: prices.land.perSqm,
@@ -1060,7 +1055,7 @@
         const signedClass = value => (value > 0 ? 'gain-positive' : (value < 0 ? 'gain-negative' : ''));
         ['built', 'planned', 'proposed'].forEach(column => {
             const figures = comparison.columns[column];
-            ['value', 'totalCost', 'profit', 'constructionCost', 'devCharge', 'landCost', 'saleTax', 'taxReclaimed', 'replacedValue'].forEach(row => {
+            ['value', 'totalCost', 'profit', 'constructionCost', 'devCharge', 'acquisitionCost', 'saleTax', 'taxReclaimed'].forEach(row => {
                 const cell = panel.querySelector(`[data-cell="${row}:${column}"]`);
                 if (!cell) return;
                 const amount = figures[row];
@@ -1163,10 +1158,9 @@
                     <tbody>
                         ${moneyRow(L.constructionCost, 'constructionCost')}
                         ${moneyRow(L.devCharge, 'devCharge')}
-                        ${moneyRow(L.landCost, 'landCost')}
+                        ${moneyRow(L.acquisitionCost, 'acquisitionCost')}
                         ${moneyRow(L.saleTax, 'saleTax')}
                         ${prices.construction.taxIncluded ? moneyRow(L.taxReclaimed, 'taxReclaimed') : ''}
-                        ${moneyRow(L.replacedValue, 'replacedValue')}
                     </tbody>
                 </table>
             </details>
@@ -1224,12 +1218,11 @@
             devCharge: threeI18n('economicSources.devCharge', 'Development charge'),
             allInCost: threeI18n('threeMode.parcelPanel.allInCost', 'All-in cost'),
             costDetails: threeI18n('threeMode.parcelPanel.costDetails', 'Cost details'),
-            landCost: threeI18n('threeMode.parcelPanel.landCost', 'Land'),
+            acquisitionCost: threeI18n('threeMode.parcelPanel.acquisitionCost', 'Acquisition (land or buildings, the higher)'),
             saleTax: threeI18n('threeMode.parcelPanel.saleTaxCost', 'Sale tax'),
             taxReclaimed: threeI18n('threeMode.parcelPanel.taxReclaimed', 'Tax reclaimed on construction'),
-            replacedValue: threeI18n('threeMode.parcelPanel.replacedValue', 'Built value replaced'),
             profit: threeI18n('threeMode.parcelPanel.profit', 'Profit'),
-            profitNote: threeI18n('threeMode.parcelPanel.profitNote', 'Profit = value − all-in cost: construction, development charge, land, sale tax less any reclaimed on construction, and the built value replaced'),
+            profitNote: threeI18n('threeMode.parcelPanel.profitNote', 'Profit = value − all-in cost: construction, development charge, acquisition (each plot at its land value or the value of what stands on it, whichever is higher), and sale tax less any reclaimed on construction'),
             floorArea: threeI18n('threeMode.parcelPanel.floorArea', 'Floor area'),
             floorNote: threeI18n('threeMode.parcelPanel.floorNote', '@ {{h}} m/storey', { h: FLOOR_HEIGHT_M }),
             parcelsLabel: threeI18n('threeMode.proposalPanel.parcelsLabel', 'Parcels')
@@ -1246,9 +1239,7 @@
         lastFloorAreas = { built: m.builtFloorArea, planned: planned ? planned.floorArea : null, proposed: hasProposed ? m.proposedFloorArea : null };
         lastParcelCount = null; // single parcel — no per-parcel average
         lastParcelFloorAreas = null;
-        lastLandM2 = m.landM2;
-        lastKeptFloorAreaM2 = m.keptUnknown ? null : m.keptFloorArea;
-        lastAcquiredLandM2 = m.acquiredLandM2;
+        lastPlots = [window.ProposalGain.plotOf(m)];
         lastLocation = window.EconomicSources.locationOf(getParcelFeatureById(parcelId));
 
         const L = panelLabels();
@@ -1315,9 +1306,7 @@
         lastFloorAreas = { built: summary.builtFloorArea, planned: planned ? planned.floorArea : null, proposed: hasProposed ? summary.proposedFloorArea : null };
         lastParcelCount = summary.parcelCount;
         lastParcelFloorAreas = summary.parcelFloorAreas;
-        lastLandM2 = summary.landM2;
-        lastKeptFloorAreaM2 = summary.keptUnknown ? null : summary.keptFloorArea;
-        lastAcquiredLandM2 = summary.acquiredLandM2;
+        lastPlots = summary.plots;
         // The design's site, as ugt_compare locates it; else the parcels it stands on.
         lastLocation = window.EconomicSources.locationOf(proposalSiteFeature(proposal) || [...idSet].map(getParcelFeatureById).filter(Boolean));
 

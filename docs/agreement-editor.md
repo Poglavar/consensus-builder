@@ -3,7 +3,7 @@
 
 Agreement creation selects an independently saved immutable plan. Its designs are read-only in the Input parcels tab. Rules contains the decision scheme, compensation controls and buttons for the separate ownership-rights and lens dialogs. Output parcels assigns each piece to one input parcel's party, Proposer or Public. Persons shows each party's land and cash contributed/received, including the balancing sponsor, with no person-level cash edits.
 
-Every input parcel is exactly one abstract party, `parcel-owner:<parcelId>`, shown as “Owner(s) of parcel X”. Allocations and cash lines never name people; the rule can carry a rights snapshot naming them. Ownership rights (the Parcel ownership rights dialog, or the default snapshot from local owner records) live only in the rule and do not change the parties or allocations. When they name people, Input parcels lists each parcel's owners and shares and Persons adds **Persons by ownership rights**: per person, land put in and received and cash, derived by `AgreementPersons.personPositions` (person k co-owns every output allocated to parcel i's party at share s[k][i] and receives that share of the party's cash, split per parcel into whole cents by largest remainder). Parcels without complete rights stay one allocation party in the ledger; their placeholder identities never count as resolved owners for approval.
+Every input parcel is exactly one abstract party, `parcel-owner:<parcelId>`, shown as “Owner(s) of parcel X”; an affected neighbour (see [Affected neighbours](#affected-neighbours)) is a party of the same kind that gives a right and no land. Allocations and cash lines never name people; the rule can carry a rights snapshot naming them. Ownership rights (the Parcel ownership rights dialog, or the default snapshot from local owner records) live only in the rule and do not change the parties or allocations. When they name people, Input parcels lists each parcel's owners and shares and Persons adds **Persons by ownership rights**: per person, land put in and received and cash, derived by `AgreementPersons.personPositions` (person k co-owns every output allocated to parcel i's party at share s[k][i] and receives that share of the party's cash, split per parcel into whole cents by largest remainder). Parcels without complete rights stay one allocation party in the ledger; their placeholder identities never count as resolved owners for approval.
 
 Area compensation is `(contributed area × (1 − contribution ratio) − allocated area) × rate`, rounded to integer cents per party. The selected scheme caps the allowed contribution ratio. The sponsor supplies or receives the cash difference. No-cash rules generate no cash lines. Saving and HTTP publication reject unbalanced land, unknown input areas, named input holders, missing or multiple output recipients, recipients that are not an input parcel's party and cash inconsistent with the rules.
 
@@ -293,6 +293,50 @@ No full suites were run and no runs were stopped. The original browser tab was i
 its saved records; a later browser connection timeout prevented final verification on that exact
 tab. The automated check uses the real application with mocked source responses. Temporary
 diagnostic logging was removed. Mixed stack-panel and entry-point changes remain uncommitted.
+
+## Affected neighbours
+
+User decision (2026-11-27): an owners' agreement may carry neighbours who give a right the plan
+affects (daylight, sunlight, outlook and sky, a garden limit, privacy and overlooking, or another
+right with a note) and no land, as Strong Suburbs' waivers and compensation require. The record's
+`affected` list holds, per neighbouring parcel: `parcelId` (never an input parcel), `effect`
+(`waiver` or `compensation`), `rights`, `note`, `readings` (the Effects on neighbours snapshot:
+kind, before, after, guide, grade), `loss` (`{ amountCents, statedBy: sponsor | valuer, valuerRef }`
+or null) and `considerationCents`. Its party is `parcel-owner:<parcelId>`; the sponsor pays it a
+money line of its consideration under every land settlement (by area, by value or none). A
+waiver's consideration is stated freely; compensation is `rule.neighbourCompensation.multipleBasisPoints`
+(10000 = 1×, the default) × the stated loss, rounded to whole cents. The Strong Suburbs preset
+(`gb-strong-suburbs@2026-11-27`, 150 %) is marked unverified until its citation is checked. The
+app never derives a loss from its readings.
+
+A waiver's owners are parties to the decision: the approval subject lists its parcel in
+`waiverParcelIds`, every owner of it must approve whatever the owners' tests count (`tally.waivers`,
+`waiverMet`), and a lens member checks those parcels' rights against its registry as it does the
+inputs. Compensated neighbours approve nothing. Land balance, scheme caps and party counts ignore
+affected parcels. `affected` and `neighbourCompensation` are left out of the published object when
+absent, so agreements without neighbours keep their CIDs and context hashes.
+
+`AgreementRecord.affectedIssues` (inside `settlementIssues`) refuses an input parcel listed as
+affected, an unknown effect or right, another right without a note, a malformed reading, amounts
+that are not whole cents of at least 0, a loss without its stater, compensation without a stated
+loss under a multiple other than 1×, a compensation whose consideration is not the multiple of its
+loss, a preset whose multiple differs, and affected parcels outside an owners' agreement. The
+dialog, `validateAgreementContent` and MCP give the same message.
+
+The editor's **Neighbours** tab (last of five) has **Find affected neighbours**, which measures the
+plan as the plan panel's Effects on neighbours does and lists its plots with tick boxes (those
+beyond a guide ticked; input parcels and parcels already added disabled), **Add ticked plots**, and
+**Add a neighbouring parcel by its id** for places without neighbour guides. Each neighbour is a card
+with Case, Rights given, a note, its readings, Stated loss, Loss stated by, Valuer reference and
+Payment (read-only while it follows a stated loss). Rules has **Compensation to neighbours** (1×,
+the Strong Suburbs preset with its source, or another multiple). Persons marks neighbour parties;
+the agreement panel's Persons tab, the agreement record and What you sign list the neighbours and
+their terms; the approval card lists each waiver as approved or pending.
+
+MCP parity: `ugt_draft_agreement` and `ugt_edit_agreement` take `affected` (the whole list; an edit
+replaces it, null removes all) and `neighbourCompensation` (null returns to 1×);
+`ugt_inspect_agreement` returns `affected`, `neighbourCompensation` and the parties with neighbours
+marked `affected`. MCP has no effects tool, so an agent states readings itself when it has them.
 
 ## Value-basis settlement and scheme distribution rules (2026-10-28)
 

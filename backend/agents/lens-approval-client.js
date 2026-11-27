@@ -70,7 +70,8 @@ export async function signOwnerApproval({ serviceUrl, lensKey, cid, content, key
     const base = cleanServiceUrl(serviceUrl);
     const subject = decisionSubject(cid, content);
     if (!subject.lens.includes(lensKey)) throw new Error(`agreement ${cid} does not name lens ${lensKey}`);
-    const context = { cadastreParcelIds: subject.cadastreParcelIds, approvalConfig: subject.approvalConfig, lens: subject.lens };
+    const context = { cadastreParcelIds: subject.cadastreParcelIds, ...(subject.waiverParcelIds ? { waiverParcelIds: subject.waiverParcelIds } : {}),
+        approvalConfig: subject.approvalConfig, lens: subject.lens };
     const contextHash = approval.contextHash(subject);
     const wallet = keypair.publicKey.toBase58();
     const signText = message => LensCore.base58Encode(new Uint8Array(signMessageBytes({ secretKey: keypair.secretKey, message })));

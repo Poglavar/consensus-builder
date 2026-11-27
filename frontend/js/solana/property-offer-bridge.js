@@ -26,7 +26,7 @@
         if (cluster === 'localnet' && !win.SOLANA_RPC_URLS?.localnet) throw new Error('A localnet RPC endpoint must be configured explicitly.');
         if (signing && win.solanaWalletManager?.getCluster() !== cluster) throw fail('wrongNetwork', 'Switch the wallet to Solana {{cluster}}.', 'wrong-network', { cluster });
         const provider = win.solanaWalletManager?.getProvider(), wallet = connectedWallet();
-        if (signing && (!wallet || typeof provider?.signTransaction !== 'function')) throw fail('walletRequired', 'Connect a Solana wallet first.', 'wallet-required');
+        if (signing && (!wallet || typeof provider?.signTransaction !== 'function')) throw fail('errors.wallet', 'Connect a Solana wallet first.', 'wallet-required');
         const connection = win.SolanaChainDataLoader.getConnection(cluster);
         if (cluster === 'devnet' && await connection.getGenesisHash() !== DEVNET_GENESIS) throw new Error('The RPC network does not match Solana devnet.');
         return { connection, provider, wallet, cluster };
@@ -157,7 +157,7 @@
      * cannot confirm a second sale of it. When this completes both lenses the payout follows in the
      * same approval.
      */
-    async function confirm(record, { role, ...options } = {}) {
+    async function confirmOffer(record, { role, ...options } = {}) {
         const ctx = await context(record, true);
         const chain = await readWith(record, ctx);
         if (!chain || chain.status !== 'Committed') throw fail('notCommitted', 'Both sides must commit before lens members confirm.', 'not-committed');
@@ -221,5 +221,5 @@
         if (!(signature instanceof Uint8Array) || signature.length !== 64) throw new Error('The wallet did not return a valid message signature.');
         return win.LensCore.base58Encode(signature);
     }
-    return Object.freeze({ connectedWallet, mint, commit, confirm, execute, cancel, expire, read, refresh, memberActions, lensView, stateHolding, withdraw, signMessage });
+    return Object.freeze({ connectedWallet, mint, commit, confirm: confirmOffer, execute, cancel, expire, read, refresh, memberActions, lensView, stateHolding, withdraw, signMessage });
 });

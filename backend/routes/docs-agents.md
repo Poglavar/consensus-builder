@@ -369,6 +369,14 @@ lens member verifies that decision and attests it:
   under a German Umlegung, half under a Gujarat scheme, none otherwise). Zero lines are omitted.
 - `valuation`: `null`, or `{ "inputs": [{ "parcelId", "unitValueCents" }], "outputs": [{ "output", "unitValueCents" }] }`
   for settlement by value only.
+- `affected` (owners' agreements, absent when none): neighbours outside the input land who give a right and
+  no land, each `{ "parcelId", "effect": "waiver" | "compensation", "rights": [...], "note", "readings":
+  [{ "kind", "before", "after", "guide", "grade" }], "loss": { "amountCents", "statedBy": "sponsor" |
+  "valuer", "valuerRef" } | null, "considerationCents" }`. Its party is `parcel-owner:<parcelId>` and gets
+  a money line of its consideration, paid by the sponsor. A waiver's owners must all approve (the approval
+  context lists them as `waiverParcelIds`); compensation needs no approval and is
+  `rule.neighbourCompensation.multipleBasisPoints` (10000 = 1×, the default) × the stated loss. With
+  `ugt_edit_agreement`, `terms.affected` replaces the whole list.
 - A scheme pinned in `rule.approvalConfig.regime` (`{ "id", "version" }`, see `GET $(base)/agents/mcp` resource
   `ugt://schemes`) also rules the distribution: a per-owner or pool cap on land given up, the area or value
   basis, the fewest parties, and no proposer acquisition under an authority-led scheme. The index refuses an

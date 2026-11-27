@@ -142,10 +142,12 @@ export function createApprovalAttester({ keypair, registry, clock, validitySecon
     const challenges = new Map();
 
     // The agreement's own approval context, recomputed here, and the member's verdict on its rights
-    // against the registry as it reads now. Only in-scope parcels (the agreement's input parcels)
-    // count; others in the snapshot do not. Returns the registry it compared with.
+    // against the registry as it reads now. Only in-scope parcels (the agreement's input parcels and
+    // the parcels of neighbours who waive a right) count; others in the snapshot do not. Returns the
+    // registry it compared with.
     async function checkContext(body) {
-        const input = { cadastreParcelIds: body?.cadastreParcelIds, approvalConfig: body?.approvalConfig, lens: body?.lens };
+        const input = { cadastreParcelIds: body?.cadastreParcelIds, ...(body?.waiverParcelIds != null ? { waiverParcelIds: body.waiverParcelIds } : {}),
+            approvalConfig: body?.approvalConfig, lens: body?.lens };
         let content, contextHash, state;
         try {
             content = approval.contextContent(input);
@@ -158,8 +160,9 @@ export function createApprovalAttester({ keypair, registry, clock, validitySecon
             throw new LensError(409, 'not_in_lens', 'this lens member is not in the agreement\'s lens, so its attestations would not count');
         }
         if (!state.ready) throw new LensError(422, 'rights_incomplete', `the approval context cannot be attested: ${state.reason}`);
-        const registry = await registrySource.load(content.cadastreParcelIds);
-        for (const parcel of state.parcels) {
+        // A waiving neighbour's parcel is checked like an input: its owners are parties here.
+        const registry = await registrySource.load([...content.cadastreParcelIds, ...(content.waiverParcelIds || [])]);
+        for (const parcel of [...state.parcels, ...state.waiverParcels]) {
             const known = registry.parcels.get(parcel.parcelId);
             if (!known) throw new LensError(404, 'unknown_parcel', `parcel ${parcel.parcelId} is not in this member's registry`);
             if (approval.stableStringify(known.owners) !== approval.stableStringify(parcel.owners)) {
@@ -200,7 +203,8 @@ export function createApprovalAttester({ keypair, registry, clock, validitySecon
         return signFact({
             schema: proof.RIGHTS_SCHEMA, member, contextHash: context.contextHash,
             parcelIds: context.content.cadastreParcelIds,
-            evidenceRef: sha256({ kind: 'lens-rights', member, contextHash: context.contextHash, parcels: context.state.parcels }),
+            evidenceRef: sha256({ kind: 'lens-rights', member, contextHash: context.contextHash, parcels: context.state.parcels,
+                ...(context.state.waiverParcels.length ? { waiverParcels: context.state.waiverParcels } : {}) }),
             ...validity()
         });
     }

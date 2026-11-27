@@ -192,11 +192,13 @@ export function parcelOutputs(parcels) {
  *   title, author, sponsor (base58 wallet that mints and funds it, or null), city, createdAt (ISO | null),
  *   deadline (ISO | null), openGroundM2 (default 0), allocations (default: a piece on one input parcel goes to that parcel's party), money (settlement-derived),
  *   valuation ({ inputs: [{ parcelId, unitValueCents }], outputs: [{ output, unitValueCents }] } for settlement by value, else null)
+ *   affected  [{ parcelId, effect, rights, note?, readings, loss?, considerationCents? }] neighbours who give a right and
+ *             no land (owners' agreements); their cash lines and a compensation's consideration are derived
  * @returns {{ content: object, cid: string }}
  */
 export function agreementObject({
     title = null, author = null, sponsor = null, city = null, createdAt = null,
-    designs, plan, parcels, openGroundM2 = 0, outputs, allocations, money, valuation = null, rule, deadline = null, consultation = null, funding = null, requireSponsor = true
+    designs, plan, parcels, openGroundM2 = 0, outputs, allocations, money, valuation = null, affected = null, rule, deadline = null, consultation = null, funding = null, requireSponsor = true
 } = {}) {
     if (!Array.isArray(designs) || !designs.length) throw fail('invalid-agreement', 'an agreement links at least one design');
     const designCids = new Set();
@@ -244,6 +246,7 @@ export function agreementObject({
         allocations: allocations ?? (rule?.electorate === 'owners' ? agreementRecord.defaultAllocations({ parcels: parcels || [] }, outputs || []) : []),
         money,
         valuation,
+        affected,
         rule,
         consultation,
         deadline,

@@ -752,5 +752,27 @@
         return GRADES.map(each => order(shown.filter(lot => gradeOf(lot) === each)));
     }
 
-    return { MEASURE, KINDS, GRADES, sunPath, sunYear, sunlightGrade, skyComponent, assess, noSky, statusOf: lot => worst(KINDS.map(kind => lot[kind]?.status)), projector, harm, changes, arrange };
+    // ---- An affected plot as an agreement's affected parcel ----
+    // The right each reading is evidence of (agreement-record.js AFFECTED_RIGHTS) and the guide value
+    // it is read against, from the place's guides.
+    const RIGHT_OF = { garden: 'garden', sunlight: 'sunlight', sky: 'daylight', noSky: 'daylight', angle: 'daylight', splay: 'daylight', distance: 'privacy' };
+    const GUIDE_OF = { garden: g => g.garden?.share, sunlight: g => g.sunlight?.percent, sky: g => g.sky?.percent, noSky: g => g.noSky?.ratio,
+        angle: g => g.angle?.degrees, splay: g => g.splay?.degrees, distance: g => g.distance?.metres };
+    const rounded = value => (finite(value) ? Math.round(value * 10000) / 10000 : null);
+    /**
+     * A listed plot as the snapshot an agreement keeps of it: its parcel id, the rights its graded
+     * readings are evidence of, and each changed reading (kind, before, after, guide, grade), rounded.
+     * A crossed first check (grade 'screen') is kept but names no right of its own.
+     * @returns {{ parcelId: string, rights: string[], readings: { kind, before, after, guide, grade }[] }}
+     */
+    function snapshot(lot, guides = {}) {
+        const changed = changes(lot);
+        const readings = changed.map(({ kind, status }) => ({ kind, before: rounded(lot[kind].before), after: rounded(lot[kind].after),
+            guide: rounded(GUIDE_OF[kind](guides)), grade: status }));
+        const graded = changed.filter(change => change.status !== 'screen');
+        const rights = [...new Set((graded.length ? graded : changed).map(change => RIGHT_OF[change.kind]))].sort();
+        return { parcelId: String(lot.id), rights, readings };
+    }
+
+    return { MEASURE, KINDS, GRADES, sunPath, sunYear, sunlightGrade, skyComponent, assess, noSky, statusOf: lot => worst(KINDS.map(kind => lot[kind]?.status)), projector, harm, changes, arrange, snapshot };
 });

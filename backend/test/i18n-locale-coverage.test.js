@@ -59,6 +59,8 @@ const DYNAMIC_KEY_PREFIXES = [
     'planningViews.zoneReason.',   // coded zone reasons, checked there too
     'planningViews.condition.',    // coded conditions, checked there too
     'planningViews.compare.groups.', // three-compare.js optionGroups: today, plan, agreement, design
+    'planningViews.buildingFact.', // agreement-dialog.js: a covered house's facts in the building card's words (building-facts.js factRow)
+    'planningViews.eligibility.',  // agreement-dialog.js: the card's test labels and statuses (eligibility.js explain)
     'modal.corridor.compass.',
     'modal.corridor.laneTypes.',
     'modal.corridor.presetWidths.',

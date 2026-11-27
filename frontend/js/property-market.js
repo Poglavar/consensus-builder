@@ -46,7 +46,7 @@
         const item = el('li', 'property-market__row');
         const what = el('span', 'property-market__what', D.assetLabel(c.asset));
         const price = el('strong', 'property-market__price', D.money(c.price, c.currency));
-        const stateBadge = el('span', `cb-badge property-market__state property-market__state--${offer.status}`, offer.status === 'committed' ? t('market.committed', 'Sale in progress') : c.direction === 'sell' ? t('market.forSale', 'For sale') : t('market.wanted', 'Wanted'));
+        const stateBadge = el('span', `cb-badge property-market__state property-market__state--${offer.status}`, offer.status === 'committed' ? t('status.committed', 'Sale in progress') : c.direction === 'sell' ? t('forSale', 'For sale') : t('wanted', 'Wanted'));
         const open = el('button', 'btn btn-quiet', t('open', 'Open')); open.type = 'button';
         open.setAttribute('aria-label', `${t('open', 'Open')}: ${D.assetLabel(c.asset)}, ${D.money(c.price, c.currency)}`);
         open.addEventListener('click', () => root.BusyControl.track(open, async () => root.PropertyOfferPanel.open((await root.PropertyOfferSync.importOffer(offer.cid)).id)));
@@ -66,7 +66,7 @@
         requests.addEventListener('click', () => root.PropertyAssetDialog.openRequests());
         tools.append(lens, requests);
         body.append(tools);
-        body.append(segmented(t('market.side', 'Side'), [['sell', t('market.forSale', 'For sale')], ['buy', t('market.wanted', 'Wanted')]], state.side, v => { state.side = v; void load(); }));
+        body.append(segmented(t('market.side', 'Side'), [['sell', t('forSale', 'For sale')], ['buy', t('wanted', 'Wanted')]], state.side, v => { state.side = v; void load(); }));
         body.append(segmented(t('market.kind', 'What'), [['', t('market.all', 'All')], ['flat', t('market.flats', 'Flats')], ['parcel', t('market.plots', 'Plots')]], state.kind, v => { state.kind = v; void load(); }));
         const toggles = el('div', 'property-market__toggles');
         for (const [key, label] of [['area', t('market.inArea', 'Only in the map area')], ['mine', t('market.mine', 'Only mine')]]) {

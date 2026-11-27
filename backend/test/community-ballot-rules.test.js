@@ -29,7 +29,12 @@ describe('shipped ballot rules', () => {
             { key: 'gb-street-vote-consultation-2023@2026-11-25', tests: [
                 { measure: 'eligible-support', numerator: 3, denominator: 5, strict: false },
                 { measure: 'household-support', numerator: 1, denominator: 2, strict: false }],
-            sources: ['https://www.gov.uk/government/consultations/street-vote-development-orders-consultation/street-vote-development-orders'] }
+            sources: ['https://www.gov.uk/government/consultations/street-vote-development-orders-consultation/street-vote-development-orders'] },
+            { key: 'gb-street-vote-living-tradition@2026-11-27', tests: [
+                { measure: 'cast-support', numerator: 1, denominator: 2, strict: false },
+                { measure: 'household-turnout', numerator: 1, denominator: 2, strict: false },
+                { measure: 'household-support', numerator: 1, denominator: 2, strict: false }],
+            sources: ['https://www.createstreets.com/wp-content/uploads/2025/07/Living-Tradition.pdf'] }
         ]);
         expect(Rules.list()).toEqual(Rules.RULES);
         for (const rule of Rules.RULES) rule.tests.forEach(test => expect(Rules.MEASURES).toContain(test.measure));

@@ -105,9 +105,9 @@ export async function loadAgreement(db, cid) {
 
 /**
  * The agreement/v1 checks that need no database, section by section as the agreement dialog groups
- * them (designs | land | allocation | money | rule | details). Parties are abstract, one per input
- * parcel (`parcel-owner:<parcelId>`); the content names no people, and owner decisions are judged
- * against the rule's rights snapshot.
+ * them (designs | land | allocation | money | neighbours | rule | details). Parties are abstract, one
+ * per input parcel or affected parcel (`parcel-owner:<parcelId>`); the content names no people, and
+ * owner decisions are judged against the rule's rights snapshot.
  * @param {{ now?: number }} options  the deadline must lie after `now`
  * @returns {{ ok: true, designCids, inputParcelIds, parcelSourceId, deadline }
  *   | { ok: false, status, code, section, error }}
@@ -246,6 +246,7 @@ export function validateAgreementContent(content, { now = Date.now(), designCids
         if (rule.approvalConfig != null) return invalid('rule', 'A community vote has no owner approval rule.');
         if (content.allocations.length) return invalid('allocation', 'A community consultation has no land allocations.');
         if (money.lines.length) return invalid('money', 'A community consultation has no financial transfers.');
+        if (content.affected != null || rule.neighbourCompensation != null) return invalid('neighbours', 'Only an owners’ agreement can carry affected neighbours.');
     } else if (rule.approvalConfig != null) {
         // The rights snapshot and the policy are counted by this engine; one it cannot read is refused here.
         try {
@@ -287,17 +288,23 @@ export function validateAgreementContent(content, { now = Date.now(), designCids
         if (allocated.size !== outputs.size) return invalid('allocation', 'Choose one recipient for every output parcel.');
         const parties = new Set(inputs.parcels.map(parcel => agreementRecord.partyKey(parcel.parcelId)));
         if (content.allocations.some(line => line.to.kind === 'party' && !parties.has(line.to.ownerKey))) return invalid('allocation', 'A recipient party must be the owners of an input parcel.');
-        if (money.lines.some(line => !parties.has(line.ownerKey))) return invalid('money', 'A cash party must be the owners of an input parcel.');
+        // Affected neighbours give a right and no land; the record's normalization refuses an unusable
+        // list (section 'neighbours') and settlementIssues judges their terms.
+        if (content.affected != null && (!Array.isArray(content.affected) || !content.affected.length)) {
+            return invalid('neighbours', 'Affected parcels are a non-empty list, or absent.');
+        }
+        const payees = new Set([...parties, ...(content.affected || []).map(entry => agreementRecord.partyKey(isPlainObject(entry) ? entry.parcelId : ''))]);
+        if (money.lines.some(line => !payees.has(line.ownerKey))) return invalid('money', 'A cash party must be the owners of an input parcel or of an affected parcel.');
         try {
             // The record's own judgement of the terms, the land values, the named scheme's distribution
-            // rules and the derived cash (AgreementRecord.settlementIssues), so the index, the dialog
-            // and MCP refuse the same agreements for the same reasons.
+            // rules, the affected neighbours and the derived cash (AgreementRecord.settlementIssues), so
+            // the index, the dialog and MCP refuse the same agreements for the same reasons.
             const local = { ...content, id: 'publication-check', plan: null, designs: [],
                 outputs: content.outputs.map(output => ({ ...output, pieceId: output.hash, geometry: null })) };
             if (!agreementRecord.landBalance(agreementRecord.settle(local)).balanced) return invalid('land', 'Input and output land areas must balance.');
             const [issue] = agreementRecord.settlementIssues(local);
             if (issue) return invalid(issue.section, issue.message);
-        } catch (error) { return invalid('money', error.message); }
+        } catch (error) { return invalid(error.section || 'money', error.message); }
     } else if (!agreementRecord.landBalance({ inputs, outputs: content.outputs }).balanced) return invalid('land', 'Input and output land areas must balance.');
 
     if (content.deadline != null) {

@@ -1,4 +1,53 @@
 {
+    "streets": {
+        "end": {
+            "fork": "račvanje",
+            "sideRoad": "sporedni put",
+            "loop": "petlja",
+            "end": "kraj ulice",
+            "bend": "krivina",
+            "bridge": "most",
+            "railwayBridge": "železnički most",
+            "overpass": "nadvožnjak",
+            "gap": "praznina između zgrada",
+            "number": "br. {{number}}"
+        },
+        "picker": {
+            "between": "{{from}} – {{to}}",
+            "notFound": "Ovde ne prolazi imenovana ulica. Kliknite na samu ulicu.",
+            "failed": "Ulicu nije bilo moguće učitati.",
+            "official": "Zvanična oznaka {{id}}",
+            "osmOnly": "Iz OpenStreetMapa",
+            "partial": "Učitan je samo deo u blizini",
+            "part": "Deo ulice",
+            "whole": "Cela ulica",
+            "side": "Strana",
+            "select": "Izaberi parcele",
+            "selecting": "Tražim parcele duž nje…",
+            "none": "Duž tog dela sa te strane ne prolazi granica nijedne parcele.",
+            "selected": {
+                "one": "Izabrana je {{count}} parcela duž ulice {{street}}: {{where}}, {{side}}.",
+                "few": "Izabrane su {{count}} parcele duž ulice {{street}}: {{where}}, {{side}}.",
+                "other": "Izabrano je {{count}} parcela duž ulice {{street}}: {{where}}, {{side}}."
+            },
+            "incomplete": "Neke parcele ovde još nisu učitane; proverite mapu.",
+            "selectFailed": "Parcele nije bilo moguće izabrati: {{error}}",
+            "cityChanged": "Grad se promenio."
+        },
+        "side": {
+            "north": "Severna strana",
+            "northeast": "Severoistočna strana",
+            "east": "Istočna strana",
+            "southeast": "Jugoistočna strana",
+            "south": "Južna strana",
+            "southwest": "Jugozapadna strana",
+            "west": "Zapadna strana",
+            "northwest": "Severozapadna strana",
+            "both": "Obe strane",
+            "left": "Leva strana",
+            "right": "Desna strana"
+        }
+    },
     "deviceModels": {
         "publishTitle": "Modeli samo na ovom uređaju",
         "publishMessage": "Uvezeni 3D modeli u onome što objavljujete čuvaju se samo na ovom uređaju. Otpremite ih da ih drugi vide ili objavite bez njih, pa drugi vide jednostavan blok. Otpremljeni model je javan: svako sa vezom ka projektu može da ga preuzme.",
@@ -299,6 +348,11 @@
         "warning": "Ovaj grad je već otvoren u drugoj kartici, pa se promene ovde ne čuvaju u planu. Čuvaju se u kopiji za oporavak, koja će vam biti ponuđena kada ponovo otvorite ovaj grad sa zatvorenim ostalim karticama. Drugi gradovi mogu ostati otvoreni."
     },
     "proposalApproval": {
+        "neighbourLabel": "Sused {{label}}",
+        "waiver": {
+            "approved": "Vlasnici susedne parcele {{parcelId}}: odricanje odobreno",
+            "pending": "Vlasnici susedne parcele {{parcelId}}: odricanje na čekanju"
+        },
         "ownerLabel": "Vlasnik {{label}}",
         "meterDistinctOwners": "Različiti vlasnici koji su odobrili",
         "leaseholderLabel": "Zakupac {{label}}",
@@ -1401,14 +1455,13 @@
                 "saleTaxSuffix": "% poreza u ceni",
                 "costDetails": "Detalji troška",
                 "costConstruction": "Gradnja",
-                "costLand": "Zemljište (zemljište plana × cena zemljišta)",
+                "costAcquisition": "Otkup (svaka parcela po vrednosti zemljišta ili vrednosti zgrada koje se na njoj uklanjaju, šta je više)",
                 "costTax": "Porez sadržan u prodajnoj vrednosti nove površine",
                 "costReclaimed": "Umanjeno za prethodni porez sadržan u gradnji",
-                "costReplaced": "Uklonjene postojeće zgrade, po prodajnoj ceni",
                 "noteNoLandPrice": "Za ovo mesto nema cene zemljišta: postavite je da biste videli ukupni trošak i dobit.",
                 "rentSuffix": "{{currency}} po m² zakupnina mesečno",
                 "annualRent": "Godišnja zakupnina nove površine",
-                "rentYield": "Prinos od zakupa na trošak (godišnja zakupnina ÷ gradnja, doprinos za gradnju, zemljište i vrednost uklonjenog)",
+                "rentYield": "Prinos od zakupa na trošak (godišnja zakupnina ÷ gradnja, doprinos za gradnju i otkup)",
                 "assumptionsLabel": "Pretpostavke",
                 "efficiencySuffix": "% neto od bruto",
                 "apartmentSizeSuffix": "m² po stanu",
@@ -6781,13 +6834,12 @@
             "value": "Vrednost",
             "constructionCost": "Trošak gradnje",
             "profit": "Dobit",
-            "profitNote": "Dobit = vrednost − ukupni trošak: gradnja, doprinos za gradnju, zemljište, porez na prodaju umanjen za prethodni porez na gradnju i zamenjena izgrađena vrednost",
+            "profitNote": "Dobit = vrednost − ukupni trošak: gradnja, doprinos za gradnju, otkup (svaka parcela po vrednosti zemljišta ili onoga što na njoj stoji, šta je više) i porez na prodaju umanjen za prethodni porez na gradnju",
             "allInCost": "Ukupni trošak",
             "costDetails": "Detalji troška",
-            "landCost": "Zemljište",
+            "acquisitionCost": "Otkup (zemljište ili zgrade, šta je više)",
             "saleTaxCost": "Porez na prodaju",
             "taxReclaimed": "Prethodni porez na gradnju, odbijen",
-            "replacedValue": "Zamenjena izgrađena vrednost",
             "landPriceUnset": "Cena zemljišta nije postavljena: pomerite klizač",
             "landPrice": "Zemljište {{price}}/m² zemljišta",
             "saleTax": "Porez na prodaju {{share}} cene",
@@ -7391,6 +7443,7 @@
             "other": "{{count}} vlasnika"
         },
         "actions": {
+            "street": "Ulica ovde",
             "propose": "Predloži ovde",
             "selectMore": "Izaberi više",
             "details": "Detalji",
@@ -7512,6 +7565,7 @@
         },
         "notLoaded": "Parcele ovde još nisu učitane — približite mapu ili sačekajte da se učitaju.",
         "actions": {
+            "street": "Ulica ovde",
             "drawSite": "Nacrtaj parcelu"
         }
     },
@@ -8291,6 +8345,68 @@
         }
     },
     "agreement": {
+        "neighbours": {
+            "tab": "Susedi",
+            "heading": "Pogođeni susedi",
+            "hint": "Sused koji se odriče prava na koje plan utiče, poput dnevne svetlosti ili ograničenja bašte, može biti strana bez davanja zemljišta. Odricanje traži odobrenje njegovih vlasnika; naknada se plaća i bez njega. Pokrovitelj plaća svakom susedu.",
+            "measure": "Pronađi pogođene susede",
+            "noGuides": "Ovo mesto ne propisuje smernice za susede pa se ništa ne meri: dodajte susednu parcelu po njenoj oznaci.",
+            "candidates": "Dodaj pogođene parcele ovom sporazumu",
+            "candidatesHint": "Parcele van smernice su označene. Svaka se dodaje kao odricanje sa očitavanjima; uslove postavite niže.",
+            "candidate": "Parcela {{parcelId}}, {{grade}}",
+            "added": "već je u ovom sporazumu",
+            "isInput": "ulazna parcela",
+            "addTicked": "Dodaj označene parcele ({{count}})",
+            "addedCount": "Dodato susednih parcela: {{count}}. Niže postavite uslove za svaku.",
+            "byId": "Dodaj susednu parcelu po oznaci",
+            "add": "Dodaj suseda",
+            "none": "Još nema pogođenih suseda.",
+            "ownersOnly": "Pogođeni susedi su strane samo vlasničkog sporazuma.",
+            "party": "Sused",
+            "effectLabel": "Slučaj",
+            "effect": {
+                "waiver": "Odricanje: daju pravo i moraju da odobre",
+                "compensation": "Naknada: duguje se bez njihovog pristanka"
+            },
+            "rights": "Data prava",
+            "right": {
+                "daylight": "Dnevna svetlost",
+                "sunlight": "Sunčeva svetlost",
+                "outlook": "Pogled i nebo",
+                "garden": "Ograničenje bašte",
+                "privacy": "Privatnost i pogled na parcelu",
+                "other": "Drugo pravo (navedite koje u belešci)"
+            },
+            "note": "Beleška (koje pravo, ako je drugo)",
+            "readings": "Očitavanja pri dodavanju",
+            "noReadings": "Nema očitavanja: dodata po oznaci parcele.",
+            "reading": "{{kind}}: {{before}} → {{after}} (smernica {{guide}}), {{grade}}",
+            "grade": {
+                "fail": "van smernice",
+                "below": "ispod nivoa smernice, unutar njenog dopuštenja",
+                "minor": "manji gubitak",
+                "screen": "prekoračena prva provera"
+            },
+            "loss": "Navedeni gubitak tržišne vrednosti ({{currency}})",
+            "statedBy": "Gubitak naveo",
+            "stater": {
+                "sponsor": "Procena pokrovitelja",
+                "valuer": "Procenitelj"
+            },
+            "valuerRef": "Oznaka procene (neobavezno)",
+            "payment": "Isplata susedu ({{currency}})",
+            "derived": "{{multiple}} navedenog gubitka, kako je postavljeno u Pravilima.",
+            "remove": "Ukloni {{parcelId}} iz sporazuma",
+            "lossColumn": "Navedeni gubitak",
+            "paymentColumn": "Isplata susedu",
+            "multiple": {
+                "label": "Naknada susedima",
+                "none": "1× navedeni gubitak (nije postavljeno)",
+                "strongSuburbs": "Strong Suburbs: 150 % navedenog gubitka (iznos još nije proveren)",
+                "custom": "Drugi umnožak",
+                "value": "Umnožak navedenog gubitka"
+            }
+        },
         "funding": {
             "apartments": {
                 "inventory": "Станови",
@@ -8526,8 +8642,22 @@
             "deadline": "Rok (neobavezno)"
         },
         "errors": {
+            "affectedInput": "Vlasnici ulazne parcele već su strane: uklonite je iz Suseda.",
+            "affectedEffect": "Za svakog suseda izaberite odricanje ili naknadu.",
+            "affectedRights": "Označite bar jedno pravo koje svaki sused daje.",
+            "affectedNote": "U belešci navedite koje drugo pravo sused daje.",
+            "affectedReading": "Očitavanja suseda navode vrstu ili ocenu koju aplikacija ne meri.",
+            "affectedAmount": "Isplata i navedeni gubitak suseda moraju biti iznosi od najmanje 0, uz to ko je naveo gubitak.",
+            "affectedLossRequired": "Naknada je umnožak navedenog gubitka: navedite gubitak svakog suseda kome se plaća naknada.",
+            "affectedConsideration": "Isplata susedu sa naknadom mora biti postavljeni umnožak njegovog navedenog gubitka.",
+            "affectedElectorate": "Samo vlasnički sporazum može imati pogođene susede.",
+            "neighbourMultiple": "Postavite pozitivan umnožak navedenog gubitka za naknadu susedima.",
             "consultationOrganiser": "Unesite veb-sajt organizatora ili važeći did:web identifikator.",
             "consultationParticipationUrl": "Unesite HTTPS URL za učešće bez akreditiva.",
+            "eligibilityNoHouses": "Plan ne nadograđuje mansardom nijednu postojeću zgradu, pa ovo glasanje nema šta da obuhvati.",
+            "eligibilityMissing": "Proverite uslove za obuhvaćene kuće pre stvaranja ovog glasanja.",
+            "eligibilityStale": "Plan obuhvata druge kuće nego poslednja provera: proverite ponovo.",
+            "eligibilityFailed": "Još se ne zna da li svaka obuhvaćena kuća ispunjava uslove: vidi Obuhvaćene kuće.",
             "communityAllocations": "Neobavezujući sporazum sa zajednicom ne može da dodeljuje zemljište.",
             "communityMoney": "Neobavezujući sporazum sa zajednicom ne može da uključuje novčane isplate.",
             "noDesigns": "Izaberite bar jedan dizajn.",
@@ -9380,18 +9510,52 @@
         "buildingFactsEdit": "Dodaj ili ispravi u {{source}}",
         "buildingFactsNotFound": "{{source}} više nema ovu zgradu.",
         "buildingFactsAgain": "Proveri ponovo",
+        "buildingFactsWaiting": "OpenStreetMap prikazuje izmenu minut-dva posle čuvanja: proveravam svakih 30 sekundi…",
+        "buildingFactsUnchanged": "{{source}} još ne prikazuje promenu. Ako ste sačuvali izmenu, proverite ponovo za minut.",
+        "factEdit": {
+            "title": "Dodajte podatke koji nedostaju",
+            "hint": "Dodajte samo ono što znate gledajući zgradu, na licu mesta ili na fotografijama koje smete da koristite za OpenStreetMap. Čuva se u OpenStreetMap kao vaša javna izmena.",
+            "choose": "Izaberite…",
+            "save": "Sačuvaj u {{source}}",
+            "as": "Čuvate kao {{name}} na OpenStreetMapu.",
+            "signInNote": "Prvo se prijavljujete svojim nalogom na OpenStreetMapu.",
+            "signOut": "Odjava sa OpenStreetMapa",
+            "saved": "Sačuvano u {{source}}.",
+            "changeset": "Skup izmena {{changeset}}",
+            "failed": "Nije sačuvano: {{error}}",
+            "all": "Sve kuće:",
+            "allOf": "{{fact}}, sve kuće"
+        },
         "buildingFact": {
             "field": {
                 "storeys": "Broj spratova",
                 "built": "Izgrađena",
                 "roof_shape": "Oblik krova",
-                "parapet": "Atika"
+                "parapet": "Atika",
+                "heritage": "Zaštićeno nasleđe",
+                "footprint_m2": "Osnova",
+                "row_size": "Niz"
             },
             "builtBefore": "pre {{year}}.",
             "builtAfter": "{{year}}. ili kasnije",
             "builtBetween": "{{from}}.–{{to}}.",
             "parapetYes": "Da",
-            "parapetNo": "Ne"
+            "parapetNo": "Ne",
+            "heritageListed": "Zaštićena, stepen {{grade}}",
+            "heritageListedNoGrade": "Zaštićena; registar ne navodi stepen",
+            "heritageNotListed": "Nije zaštićena",
+            "heritageEntry": "Upis {{reference}}",
+            "heritageRegister": "Registar nasleđa",
+            "heritageUnknown": {
+                "noRegister": "Za ovo mesto se ne čita registar nasleđa",
+                "noRegion": "Nije pročitano gde se zgrada nalazi",
+                "noOutline": "Obris zgrade nije pročitan pa se registar ne može povezati s njom",
+                "rowUncertain": "Zaštićeni upis u ovom nizu možda obuhvata i ovu kuću",
+                "numberAmbiguous": "Kućni brojevi zaštićenog upisa možda obuhvataju ovu kuću, a možda ne",
+                "outlineUncertain": "Zgradu pokriva zaštićeni obris mnogo veći od nje",
+                "registerIncomplete": "Oko ovih zgrada ima previše upisa u registru za jedno čitanje",
+                "registerUnavailable": "Registar nasleđa nije odgovorio; proverite kasnije"
+            }
         },
         "eligibility": {
             "set": {
@@ -9408,6 +9572,7 @@
                 "unknown": "Nepoznato",
                 "unchecked": "Aplikacija ne proverava"
             },
+            "withGrade": "{{status}}, stepen {{grade}}",
             "test": {
                 "built": "Izgrađena posle 1700. i pre 1918.",
                 "parapet": "Atika duž celog uličnog pročelja",
@@ -10091,6 +10256,14 @@
         }
     },
     "voting": {
+        "streetCovered": "Ulica: {{street}}",
+        "street": {
+            "title": "Ulica",
+            "include": "Navedi ulicu koju glasanje obuhvata: {{street}}",
+            "hint": "Izabrano komandom Ulica ovde na mapi. Zapis čuva naziv, puteve iz OpenStreetMapa, krajeve i stranu.",
+            "named": "Glasanje navodi ulicu {{street}}.",
+            "unnamed": "Glasanje ne navodi ulicu."
+        },
         "support": "Podržavam",
         "oppose": "Protivim se",
         "abstain": "Uzdržan/a",
@@ -10183,6 +10356,34 @@
             "gb-street-vote-consultation-2023": {
                 "name": "Glasanje ulice — konsultacije vlade 2023.",
                 "source": "Predloženo u konsultacijama britanske vlade o naredbama za razvoj glasanjem ulice iz decembra 2023: najmanje 60% birača sa pravom glasa za, i bar jedan birač za u najmanje polovini domaćinstava koja su glasala."
+            },
+            "gb-street-vote-living-tradition": {
+                "name": "Glasanje ulice — mansarde po Living Tradition",
+                "source": "Predloženo u Living Tradition Samjuela Hjuza (Create Streets, 2021): najmanje 50% datih glasova za, stanari bar polovine domaćinstava glasaju, i bar jedan stanar za u najmanje polovini domaćinstava koja su glasala. Obuhvatiti se smeju samo kuće koje ispunjavaju uslove (t. 17)."
+            }
+        },
+        "eligibility": {
+            "title": "Obuhvaćene kuće",
+            "hint": "Ovo glasanje ulice sme da obuhvati samo kuće koje ispunjavaju uslove pravila. Podaci se čitaju iz OpenStreetMapa, a zaštita iz registra nasleđa: dodajte podatke koji nedostaju u OpenStreetMap, pa proverite ponovo.",
+            "checking": "Proveravam obuhvaćene kuće…",
+            "waiting": "Čekam OpenStreetMap: izmena se ovde vidi minut-dva posle čuvanja. Proveravam svakih 30 sekundi…",
+            "unchanged": "OpenStreetMap još ne prikazuje promenu. Ako ste sačuvali izmenu, proverite ponovo za minut.",
+            "failed": "Provera nije završena: {{error}}",
+            "summary": "{{eligible}} od {{total}} obuhvaćenih kuća ispunjava uslove",
+            "none": "Plan ne nadograđuje mansardom nijednu postojeću zgradu.",
+            "fails": "ne ispunjava {{tests}}",
+            "missingFacts": "nepoznato {{tests}}",
+            "house": "Zgrada {{id}}",
+            "unanswered": "Zgrada bez izvora podataka ({{id}})",
+            "edit": "Uredi u {{source}}",
+            "addKey": "Dodajte {{key}} u {{source}}",
+            "testsOf": "Uslovi koje {{house}} ne ispunjava",
+            "again": "Proveri ponovo",
+            "check": "Proveri uslove",
+            "verdict": {
+                "eligible": "Ispunjava",
+                "ineligible": "Ne ispunjava",
+                "unknown": "Nepoznato"
             }
         }
     },
@@ -10570,7 +10771,14 @@
 ,
   "chat": {
     "title": "Питајте Хиподама",
-    "intro": "Опишите измену плана на којем радите.",
+    "greeting": "Како вам данас могу помоћи да осмислите добар град?",
+    "greetingParcels": {
+      "one": "Хоћемо ли нешто да урадимо са овом парцелом?",
+      "few": "Хоћемо ли нешто да урадимо са ове {{count}} парцеле?",
+      "other": "Хоћемо ли нешто да урадимо са ових {{count}} парцела?"
+    },
+    "greetingTool": "Имате отворен алат „{{tool}}”. Да вам објасним како ради?",
+    "greetingToolUnnamed": "Имате отворен алат. Да вам објасним како ради?",
     "tips": {
       "title": "Покушајте да питате",
       "design": "Осмислите парк на изабраним парцелама или померите зграду 50 м на север.",
@@ -10861,11 +11069,9 @@
     "makerOnly": "Samo predlagač može da kreira ovu ponudu na Solani.",
     "market": {
       "all": "Sve",
-      "committed": "Prodaja u toku",
       "count": "Prikazano: {{count}}",
       "empty": "Ovde još nema ničega. Pomerite mapu, promenite filtere ili stavite nešto na prodaju sa parcele ili stana.",
       "flats": "Stanovi",
-      "forSale": "Na prodaju",
       "inArea": "Samo u oblasti mape",
       "kind": "Šta",
       "mine": "Samo moje",
@@ -10873,7 +11079,6 @@
       "plots": "Parcele",
       "requests": "Zahtevi sočivu",
       "side": "Strana",
-      "wanted": "Traži se",
       "yourLens": "Kome verujete"
     },
     "memberViewNone": "Niste izjavili ko je imalac; izjavite prvog imaoca pre potvrde.",
@@ -10946,7 +11151,6 @@
     "viewFlat": "Prikaži stan u rendgenskom prikazu",
     "viewPlot": "Prikaži parcelu na mapi",
     "waiting": "Čeka se",
-    "walletRequired": "Najpre povežite Solana novčanik.",
     "wanted": "Traži se",
     "withdraw": "Povuci moju izjavu",
     "wrongNetwork": "Prebacite novčanik na Solana {{cluster}}.",

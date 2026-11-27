@@ -171,7 +171,7 @@
     "party": {
       "type": "string",
       "pattern": "^parcel-owner:.+$",
-      "description": "An abstract party: the owner(s) of one input parcel, parcel-owner:<parcelId>. Agreements name no people; with ownership rights in rule.approvalConfig.rights, each person's position is derived from the parties linearly by their shares."
+      "description": "An abstract party: the owner(s) of one input parcel or affected parcel, parcel-owner:<parcelId>. Agreements name no people; with ownership rights in rule.approvalConfig.rights, each person's position is derived from the parties linearly by their shares."
     },
     "agreement": {
       "type": "object",
@@ -305,6 +305,16 @@
                   "contributionBasisPoints": { "type": "integer", "minimum": 0, "maximum": 10000 }
                 }, "additionalProperties": false }
               ], "description": "Controlled compensation by area (EUR/m² and allowed land contribution) or by value (valuation); cash lines are derived automatically. A pinned scheme (approvalConfig.regime) caps the contribution and rules the distribution."
+            },
+            "neighbourCompensation": {
+              "type": "object",
+              "required": ["multipleBasisPoints"],
+              "properties": {
+                "multipleBasisPoints": { "type": "integer", "minimum": 1, "description": "Compensation to an affected parcel as a multiple of its stated loss, in basis points (10000 = 1×). Absent means 1×." },
+                "preset": { "type": "object", "required": ["id", "version"], "properties": { "id": { "const": "gb-strong-suburbs" }, "version": { "const": "2026-11-27" } }, "additionalProperties": false,
+                  "description": "gb-strong-suburbs@2026-11-27 fixes 15000 (150%, Policy Exchange's Strong Suburbs first offer; figure unverified)." }
+              },
+              "additionalProperties": false
             }
           },
           "allOf": [
@@ -323,6 +333,30 @@
             }, "additionalProperties": false }
           ],
           "description": "Settlement by value only: a whole-cent value per m² for every input parcel (before) and every output hash (after). null otherwise."
+        },
+        "affected": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Owners' agreements only; absent when none. Affected parcels: neighbours outside the input land who give a right and no land. Each is the party parcel-owner:<parcelId> (never also an input parcel). A waiver's owners must all approve (whatever the owners' tests count); compensation is paid without consent. The sponsor pays each its consideration as a money line under any settlement.",
+          "items": {
+            "type": "object",
+            "required": ["parcelId", "effect", "rights", "readings", "loss", "considerationCents"],
+            "properties": {
+              "parcelId": { "$ref": "#/$defs/text" },
+              "effect": { "enum": ["waiver", "compensation"] },
+              "rights": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["daylight", "sunlight", "outlook", "garden", "privacy", "other"] }, "description": "Sorted; other needs a note." },
+              "note": { "type": ["string", "null"] },
+              "readings": { "type": "array", "description": "Snapshot of the Effects on neighbours readings the entry rests on.", "items": { "type": "object", "required": ["kind", "before", "after", "guide", "grade"], "properties": {
+                "kind": { "enum": ["garden", "sunlight", "sky", "noSky", "angle", "splay", "distance"] },
+                "before": { "type": ["number", "null"] }, "after": { "type": ["number", "null"] }, "guide": { "type": ["number", "null"] },
+                "grade": { "enum": ["fail", "below", "minor", "screen"] } }, "additionalProperties": false } },
+              "loss": { "oneOf": [{ "type": "null" }, { "type": "object", "required": ["amountCents", "statedBy", "valuerRef"], "properties": {
+                "amountCents": { "type": "integer", "minimum": 0 }, "statedBy": { "enum": ["sponsor", "valuer"] }, "valuerRef": { "type": ["string", "null"] } }, "additionalProperties": false }],
+                "description": "A stated loss in market value; never derived from the readings. Required for compensation when the rule's multiple is not 1×." },
+              "considerationCents": { "type": "integer", "minimum": 0, "description": "Whole cents paid to the party: free for a waiver; for compensation with a stated loss, round(loss × rule.neighbourCompensation multiple)." }
+            },
+            "additionalProperties": false
+          }
         },
         "consultation": {
           "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/consultation" }],

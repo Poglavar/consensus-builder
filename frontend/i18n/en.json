@@ -1,4 +1,52 @@
 {
+    "streets": {
+        "end": {
+            "fork": "the fork",
+            "sideRoad": "a side road",
+            "loop": "the loop",
+            "end": "its end",
+            "bend": "the bend",
+            "bridge": "the bridge",
+            "railwayBridge": "the railway bridge",
+            "overpass": "the bridge over it",
+            "gap": "the gap in the buildings",
+            "number": "No. {{number}}"
+        },
+        "picker": {
+            "between": "Between {{from}} and {{to}}",
+            "notFound": "No named street runs here. Click on the street itself.",
+            "failed": "The street could not be read.",
+            "official": "Official id {{id}}",
+            "osmOnly": "Source: OpenStreetMap",
+            "partial": "Only the part near here was read",
+            "part": "Part of the street",
+            "whole": "The whole street",
+            "side": "Side",
+            "select": "Select parcels",
+            "selecting": "Finding the parcels along it…",
+            "none": "No parcel boundary runs along this part on that side.",
+            "selected": {
+                "one": "Selected {{count}} parcel along {{street}}: {{where}}, {{side}}.",
+                "other": "Selected {{count}} parcels along {{street}}: {{where}}, {{side}}."
+            },
+            "incomplete": "Some parcels here have not loaded; check the map.",
+            "selectFailed": "The parcels could not be selected: {{error}}",
+            "cityChanged": "The city changed."
+        },
+        "side": {
+            "north": "North side",
+            "northeast": "Northeast side",
+            "east": "East side",
+            "southeast": "Southeast side",
+            "south": "South side",
+            "southwest": "Southwest side",
+            "west": "West side",
+            "northwest": "Northwest side",
+            "both": "Both sides",
+            "left": "Left side",
+            "right": "Right side"
+        }
+    },
     "deviceModels": {
         "publishTitle": "Models on this device only",
         "publishMessage": "Imported 3D models in what you are publishing are kept only on this device. Upload them so others see them, or publish without them and others see a plain block. An uploaded model is public: anyone with a link to the design can download it.",
@@ -299,6 +347,11 @@
         "warning": "This city is already open in another tab, so changes here aren't saved to the plan. They're kept in a recovery copy, offered back when you reopen this city with its other tabs closed. Other cities can stay open."
     },
     "proposalApproval": {
+        "neighbourLabel": "Neighbour {{label}}",
+        "waiver": {
+            "approved": "Owners of neighbouring parcel {{parcelId}}: waiver approved",
+            "pending": "Owners of neighbouring parcel {{parcelId}}: waiver pending"
+        },
         "ownerLabel": "Owner {{label}}",
         "meterDistinctOwners": "Distinct approving owners",
         "leaseholderLabel": "Leaseholder {{label}}",
@@ -1414,14 +1467,13 @@
                 "saleTaxSuffix": "% sale tax in the price",
                 "costDetails": "Cost details",
                 "costConstruction": "Construction",
-                "costLand": "Land (the plan's land × the land price)",
+                "costAcquisition": "Acquisition (each plot at its land value or the value of the buildings it clears there, whichever is higher)",
                 "costTax": "Sale tax inside the sales value of the new floor area",
                 "costReclaimed": "Less the tax reclaimed on construction",
-                "costReplaced": "Existing buildings cleared, at the sale price",
                 "noteNoLandPrice": "No land price for this place: set one to see the all-in cost and the profit.",
                 "rentSuffix": "{{currency}} per m² rent a month",
                 "annualRent": "Annual rent of the new floor area",
-                "rentYield": "Rent yield on cost (annual rent ÷ construction, development charge, land and cleared value)",
+                "rentYield": "Rent yield on cost (annual rent ÷ construction, development charge and acquisition)",
                 "assumptionsLabel": "Assumptions",
                 "efficiencySuffix": "% net of gross",
                 "apartmentSizeSuffix": "m² per apartment",
@@ -6743,13 +6795,12 @@
             "value": "Value",
             "constructionCost": "Construction cost",
             "profit": "Profit",
-            "profitNote": "Profit = value − all-in cost: construction, development charge, land, sale tax less any reclaimed on construction, and the built value replaced",
+            "profitNote": "Profit = value − all-in cost: construction, development charge, acquisition (each plot at its land value or the value of what stands on it, whichever is higher), and sale tax less any reclaimed on construction",
             "allInCost": "All-in cost",
             "costDetails": "Cost details",
-            "landCost": "Land",
+            "acquisitionCost": "Acquisition (land or buildings, the higher)",
             "saleTaxCost": "Sale tax",
             "taxReclaimed": "Tax reclaimed on construction",
-            "replacedValue": "Built value replaced",
             "landPriceUnset": "Land price not set: move to set it",
             "landPrice": "Land {{price}}/m² of land",
             "saleTax": "Sale tax {{share}} of the price",
@@ -7351,6 +7402,7 @@
             "other": "{{count}} owners"
         },
         "actions": {
+            "street": "Street here",
             "propose": "Propose here",
             "selectMore": "Select more",
             "details": "Details",
@@ -7472,6 +7524,7 @@
         },
         "notLoaded": "Parcels are not loaded here yet — zoom in or wait for them to load.",
         "actions": {
+            "street": "Street here",
             "drawSite": "Draw a parcel"
         }
     },
@@ -8246,6 +8299,68 @@
         }
     },
     "agreement": {
+        "neighbours": {
+            "tab": "Neighbours",
+            "heading": "Affected neighbours",
+            "hint": "A neighbour who gives up a right the plan affects, such as daylight or a garden limit, can be a party without giving land. A waiver needs their owners’ approval; compensation is paid without it. The sponsor pays each neighbour.",
+            "measure": "Find affected neighbours",
+            "noGuides": "This place states no neighbour guides, so nothing is measured: add a neighbouring parcel by its id.",
+            "candidates": "Add affected plots to this agreement",
+            "candidatesHint": "Plots beyond a guide are ticked. Each is added as a waiver with its readings; set its terms below.",
+            "candidate": "Parcel {{parcelId}}, {{grade}}",
+            "added": "already in this agreement",
+            "isInput": "an input parcel",
+            "addTicked": "Add ticked plots ({{count}})",
+            "addedCount": "Added {{count}} neighbouring parcel(s): set each one’s terms below.",
+            "byId": "Add a neighbouring parcel by its id",
+            "add": "Add neighbour",
+            "none": "No affected neighbours yet.",
+            "ownersOnly": "Affected neighbours are parties to an owners’ agreement only.",
+            "party": "Neighbour",
+            "effectLabel": "Case",
+            "effect": {
+                "waiver": "Waiver: they give the right and must approve",
+                "compensation": "Compensation: owed without their consent"
+            },
+            "rights": "Rights given",
+            "right": {
+                "daylight": "Daylight",
+                "sunlight": "Sunlight",
+                "outlook": "Outlook and sky",
+                "garden": "Garden limit",
+                "privacy": "Privacy and overlooking",
+                "other": "Another right (say which in the note)"
+            },
+            "note": "Note (which right, if another)",
+            "readings": "Readings when added",
+            "noReadings": "No readings: added by its parcel id.",
+            "reading": "{{kind}}: {{before}} → {{after}} (guide {{guide}}), {{grade}}",
+            "grade": {
+                "fail": "beyond a guide",
+                "below": "under a guide’s level, within its allowance",
+                "minor": "a minor loss",
+                "screen": "a first check crossed"
+            },
+            "loss": "Stated loss in market value ({{currency}})",
+            "statedBy": "Loss stated by",
+            "stater": {
+                "sponsor": "Sponsor’s estimate",
+                "valuer": "Valuer"
+            },
+            "valuerRef": "Valuer reference (optional)",
+            "payment": "Payment to them ({{currency}})",
+            "derived": "{{multiple}} the stated loss, as Rules set it.",
+            "remove": "Remove {{parcelId}} from the agreement",
+            "lossColumn": "Stated loss",
+            "paymentColumn": "Neighbour’s payment",
+            "multiple": {
+                "label": "Compensation to neighbours",
+                "none": "1× the stated loss (none set)",
+                "strongSuburbs": "Strong Suburbs: 150% of the stated loss (figure not yet verified)",
+                "custom": "Another multiple",
+                "value": "Multiple of the stated loss"
+            }
+        },
         "funding": {
             "apartments": {
                 "inventory": "Apartments",
@@ -8481,8 +8596,22 @@
             "deadline": "Deadline (optional)"
         },
         "errors": {
+            "affectedInput": "An input parcel’s owners are already parties: remove it from Neighbours.",
+            "affectedEffect": "Choose waiver or compensation for every neighbour.",
+            "affectedRights": "Tick at least one right each neighbour gives.",
+            "affectedNote": "Say in the note which other right a neighbour gives.",
+            "affectedReading": "A neighbour’s readings name a kind or grade the app does not measure.",
+            "affectedAmount": "A neighbour’s payment and stated loss must be amounts of at least 0, with who stated the loss.",
+            "affectedLossRequired": "Compensation is a multiple of a stated loss: state each compensated neighbour’s loss.",
+            "affectedConsideration": "A compensated neighbour’s payment must be the set multiple of their stated loss.",
+            "affectedElectorate": "Only an owners’ agreement can carry affected neighbours.",
+            "neighbourMultiple": "Set a positive multiple of the stated loss for compensating neighbours.",
             "consultationOrganiser": "Enter an organiser website or a valid did:web identifier.",
             "consultationParticipationUrl": "Enter an HTTPS participation URL without credentials.",
+            "eligibilityNoHouses": "The plan raises no existing building with a mansard, so this street vote has nothing to cover.",
+            "eligibilityMissing": "Check the covered houses’ eligibility before creating this street vote.",
+            "eligibilityStale": "The plan covers other houses than the last eligibility check: check again.",
+            "eligibilityFailed": "Not every covered house is known to be eligible yet: see Covered houses.",
             "communityAllocations": "A nonbinding community agreement cannot allocate land.",
             "communityMoney": "A nonbinding community agreement cannot include cash payments.",
             "noDesigns": "Choose at least one design.",
@@ -9281,18 +9410,52 @@
         "buildingFactsEdit": "Add or correct in {{source}}",
         "buildingFactsNotFound": "{{source}} no longer has this building.",
         "buildingFactsAgain": "Check again",
+        "buildingFactsWaiting": "OpenStreetMap shows an edit a minute or two after it is saved: checking every 30 seconds…",
+        "buildingFactsUnchanged": "{{source}} shows no change yet. If you saved an edit, check again in a minute.",
+        "factEdit": {
+            "title": "Add the missing facts",
+            "hint": "Add only what you know from looking at the building, on site or in photos you may use for OpenStreetMap. It is saved to OpenStreetMap as your own public edit.",
+            "choose": "Choose…",
+            "save": "Save to {{source}}",
+            "as": "Saving as {{name}} on OpenStreetMap.",
+            "signInNote": "You sign in with your OpenStreetMap account first.",
+            "signOut": "Sign out of OpenStreetMap",
+            "saved": "Saved to {{source}}.",
+            "changeset": "Changeset {{changeset}}",
+            "failed": "Not saved: {{error}}",
+            "all": "All houses:",
+            "allOf": "{{fact}}, all houses"
+        },
         "buildingFact": {
             "field": {
                 "storeys": "Storeys",
                 "built": "Built",
                 "roof_shape": "Roof shape",
-                "parapet": "Parapet"
+                "parapet": "Parapet",
+                "heritage": "Heritage listing",
+                "footprint_m2": "Footprint",
+                "row_size": "Row"
             },
             "builtBefore": "before {{year}}",
             "builtAfter": "{{year}} or later",
             "builtBetween": "{{from}}–{{to}}",
             "parapetYes": "Yes",
-            "parapetNo": "No"
+            "parapetNo": "No",
+            "heritageListed": "Listed, grade {{grade}}",
+            "heritageListedNoGrade": "Listed; the register states no grade",
+            "heritageNotListed": "Not listed",
+            "heritageEntry": "List entry {{reference}}",
+            "heritageRegister": "Heritage register",
+            "heritageUnknown": {
+                "noRegister": "No heritage register is read for this place",
+                "noRegion": "Where the building lies could not be read",
+                "noOutline": "The building’s outline is not read, so the register cannot be matched to it",
+                "rowUncertain": "A listed entry on this row may cover this house",
+                "numberAmbiguous": "A listed entry’s house numbers may or may not include this house",
+                "outlineUncertain": "A listed outline much larger than the building covers it",
+                "registerIncomplete": "Too many register entries around these buildings to read at once",
+                "registerUnavailable": "The heritage register did not answer; check again later"
+            }
         },
         "eligibility": {
             "set": {
@@ -9309,6 +9472,7 @@
                 "unknown": "Unknown",
                 "unchecked": "Not checked by the app"
             },
+            "withGrade": "{{status}}, grade {{grade}}",
             "test": {
                 "built": "Built after 1700 and before 1918",
                 "parapet": "Parapet along the whole street front",
@@ -9991,6 +10155,14 @@
         }
     },
     "voting": {
+        "streetCovered": "Street: {{street}}",
+        "street": {
+            "title": "Street",
+            "include": "Name the street this vote covers: {{street}}",
+            "hint": "Picked with Street here on the map. The record keeps its name, OpenStreetMap ways, ends and side.",
+            "named": "The vote names {{street}}.",
+            "unnamed": "The vote names no street."
+        },
         "support": "Support",
         "oppose": "Oppose",
         "abstain": "Abstain",
@@ -10083,6 +10255,34 @@
             "gb-street-vote-consultation-2023": {
                 "name": "Street vote — 2023 government consultation",
                 "source": "Proposed in the government’s December 2023 street vote development orders consultation: at least 60% of those eligible to vote in favour, and at least one voter in at least half of the voting households in favour."
+            },
+            "gb-street-vote-living-tradition": {
+                "name": "Street vote — Living Tradition mansards",
+                "source": "Proposed in Samuel Hughes’s Living Tradition (Create Streets, 2021): at least 50% of votes cast in favour, residents of at least half the households voting, and a yes from a resident in at least half of the voting households. Only houses that meet its eligibility conditions (para. 17) may be covered."
+            }
+        },
+        "eligibility": {
+            "title": "Covered houses",
+            "hint": "This street vote may cover only houses that meet the rule’s eligibility conditions. Their facts are read from OpenStreetMap and their listing from the heritage register: add missing facts in OpenStreetMap, then check again.",
+            "checking": "Checking the covered houses…",
+            "waiting": "Waiting for OpenStreetMap: an edit shows here a minute or two after it is saved. Checking every 30 seconds…",
+            "unchanged": "OpenStreetMap shows no change yet. If you saved an edit, check again in a minute.",
+            "failed": "The check could not be completed: {{error}}",
+            "summary": "{{eligible}} of {{total}} covered houses eligible",
+            "none": "The plan raises no existing building with a mansard.",
+            "fails": "fails {{tests}}",
+            "missingFacts": "unknown {{tests}}",
+            "house": "Building {{id}}",
+            "unanswered": "A building with no facts source ({{id}})",
+            "edit": "Edit in {{source}}",
+            "addKey": "Add {{key}} in {{source}}",
+            "testsOf": "Tests not passed by {{house}}",
+            "again": "Check again",
+            "check": "Check eligibility",
+            "verdict": {
+                "eligible": "Eligible",
+                "ineligible": "Not eligible",
+                "unknown": "Unknown"
             }
         }
     },
@@ -10470,7 +10670,13 @@
 ,
   "chat": {
     "title": "Ask Hippodamus",
-    "intro": "Tell Hippodamus what you want to change.",
+    "greeting": "How can I help you design a good city today?",
+    "greetingParcels": {
+      "one": "Shall we do something with this parcel?",
+      "other": "Shall we do something with these {{count}} parcels?"
+    },
+    "greetingTool": "You have “{{tool}}” open. Shall I explain how it works?",
+    "greetingToolUnnamed": "You have a tool open. Shall I explain how it works?",
     "tips": {
       "title": "Try asking",
       "design": "Design a park on the selected parcels or move a building 50 m north.",
@@ -10759,11 +10965,9 @@
     "makerOnly": "Only the proposer can create this offer on Solana.",
     "market": {
       "all": "All",
-      "committed": "Sale in progress",
       "count": "{{count}} shown",
       "empty": "Nothing here yet. Move the map, change the filters, or put something up for sale from a plot or a flat.",
       "flats": "Flats",
-      "forSale": "For sale",
       "inArea": "Only in the map area",
       "kind": "What",
       "mine": "Only mine",
@@ -10771,7 +10975,6 @@
       "plots": "Plots",
       "requests": "Lens requests",
       "side": "Side",
-      "wanted": "Wanted",
       "yourLens": "Whom you trust"
     },
     "memberViewNone": "You have not stated who holds this; state the first holder before confirming.",
@@ -10844,7 +11047,6 @@
     "viewFlat": "View the flat in X-ray",
     "viewPlot": "Show the plot on the map",
     "waiting": "Waiting",
-    "walletRequired": "Connect a Solana wallet first.",
     "wanted": "Wanted",
     "withdraw": "Withdraw my statement",
     "wrongNetwork": "Switch the wallet to Solana {{cluster}}.",

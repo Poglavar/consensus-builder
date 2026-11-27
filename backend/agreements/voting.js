@@ -23,7 +23,9 @@ export function createVotingService({store,loadAgreement,now=()=>Date.now()}) {
         for(const row of await tx.counts()) counts[row.choice]=row.count;
         const isClosed=closed(agreement,now());
         const base={agreementCid:agreement.cid,enabled:Boolean(config),eligible:config?.codeHashes.length || 0,
-            votes:Object.values(counts).reduce((a,b)=>a+b,0),counts,deadline:agreement.content.deadline,closed:isClosed};
+            votes:Object.values(counts).reduce((a,b)=>a+b,0),counts,deadline:agreement.content.deadline,closed:isClosed,
+            // The street whose residents vote, as the record names it (public, like the rest of the agreement).
+            ...(config?.street?{street:config.street}:{})};
         if(!config?.households && !config?.rule)return base;
         // Household and rule results need each code's latest choice; only these aggregates leave the server.
         const rule=config.rule?Rules.get(config.rule.id,config.rule.version):null;

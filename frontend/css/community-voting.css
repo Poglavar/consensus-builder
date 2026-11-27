@@ -42,3 +42,23 @@
 [data-community-voting] .voting-owner-list li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--cb-space-2); }
 [data-voting-roster] .voting-table input { width: 100%; min-width: 8rem; box-sizing: border-box; }
 [data-voting-roster] select { width: 100%; }
+/* Covered houses of a street vote whose rule covers only eligible buildings (agreement-dialog.js). */
+.voting-eligibility { display: grid; gap: var(--cb-space-2); justify-items: start; }
+.voting-eligibility__houses { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--cb-space-1); font-size: var(--cb-text-sm); }
+.voting-eligibility__houses [data-verdict="ineligible"] strong { color: var(--cb-danger-soft-ink); }
+/* A covered house's failing or unknown tests, with the building card's reasons and links. */
+/* Adding the covered houses' missing facts (agreement-dialog.js renderFactEdits): an "all houses" choice per fact, a row per house, Save to OpenStreetMap. */
+.voting-eligibility__facts { display: grid; gap: var(--cb-space-2); justify-items: start; justify-self: stretch; padding-top: var(--cb-space-2); border-top: 1px solid var(--cb-line); }
+.voting-eligibility__facts h5, .voting-eligibility__facts p { margin: 0; }
+.voting-eligibility__fact-all, .voting-eligibility__fact-houses li { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cb-space-2); font-size: var(--cb-text-sm); }
+.voting-eligibility__fact-houses { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--cb-space-1); }
+.voting-eligibility__fact { display: inline-flex; align-items: center; gap: var(--cb-space-1); }
+.voting-eligibility__fact-control { height: var(--cb-control-height); max-width: 10rem; padding: 0 var(--cb-space-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-md); background: var(--cb-surface); color: var(--cb-text); font: inherit; font-size: var(--cb-text-sm); }
+.voting-eligibility__tests { list-style: none; margin: var(--cb-space-1) 0 0; padding-inline-start: var(--cb-space-3); display: grid; gap: var(--cb-space-1); }
+.voting-eligibility__tests [data-status="fail"] > span:first-child { color: var(--cb-danger-soft-ink); }
+/* The street a street vote names (agreement-dialog.js renderStreet). */
+.voting-street { display: grid; gap: var(--cb-space-2); }
+.voting-street h4 { margin: 0; }
+.voting-street__choice { display: flex; align-items: flex-start; gap: var(--cb-space-2); min-height: 44px; cursor: pointer; }
+.voting-street__choice input { margin-top: var(--cb-space-1); }
+.voting-street [data-voting-street-status]:empty { display: none; }

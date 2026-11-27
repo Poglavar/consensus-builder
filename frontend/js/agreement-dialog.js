@@ -285,6 +285,169 @@
         return { ...config, rights: rightsFromInputs(inputs) };
     }
 
+    // ---- affected neighbours ---------------------------------------------------------------------
+
+    // Literal keys, so the locale coverage test sees each one. The closed lists are the record's
+    // (AgreementRecord.AFFECTED_RIGHTS, AFFECTED_EFFECTS, LOSS_STATERS).
+    const RIGHT_TEXT = {
+        daylight: () => t('agreement.neighbours.right.daylight', 'Daylight'),
+        sunlight: () => t('agreement.neighbours.right.sunlight', 'Sunlight'),
+        outlook: () => t('agreement.neighbours.right.outlook', 'Outlook and sky'),
+        garden: () => t('agreement.neighbours.right.garden', 'Garden limit'),
+        privacy: () => t('agreement.neighbours.right.privacy', 'Privacy and overlooking'),
+        other: () => t('agreement.neighbours.right.other', 'Another right (say which in the note)')
+    };
+    const EFFECT_TEXT = {
+        waiver: () => t('agreement.neighbours.effect.waiver', 'Waiver: they give the right and must approve'),
+        compensation: () => t('agreement.neighbours.effect.compensation', 'Compensation: owed without their consent')
+    };
+    const STATER_TEXT = {
+        sponsor: () => t('agreement.neighbours.stater.sponsor', 'Sponsor’s estimate'),
+        valuer: () => t('agreement.neighbours.stater.valuer', 'Valuer')
+    };
+    const GRADE_TEXT = {
+        fail: () => t('agreement.neighbours.grade.fail', 'beyond a guide'),
+        below: () => t('agreement.neighbours.grade.below', 'under a guide’s level, within its allowance'),
+        minor: () => t('agreement.neighbours.grade.minor', 'a minor loss'),
+        screen: () => t('agreement.neighbours.grade.screen', 'a first check crossed')
+    };
+    // The Effects on neighbours reading names, as that section words them.
+    const KIND_TEXT = {
+        garden: () => t('neighbourEffects.kind.garden', 'Garden sunlight'), sunlight: () => t('neighbourEffects.kind.sunlight', 'Sunlight to windows'),
+        sky: () => t('neighbourEffects.kind.sky', 'Sky'), noSky: () => t('neighbourEffects.kind.noSky', 'Room daylight'),
+        angle: () => t('neighbourEffects.kind.angle', 'Angle'), splay: () => t('neighbourEffects.kind.splay', 'Splay'),
+        distance: () => t('neighbourEffects.kind.distance', 'Facing distance')
+    };
+    const PRESET_TEXT = {
+        'gb-strong-suburbs': () => t('agreement.neighbours.multiple.strongSuburbs', 'Strong Suburbs: 150% of the stated loss (figure not yet verified)')
+    };
+
+    const numberText = (value, digits = 1) => {
+        const format = root.CbFormat;
+        return format && typeof format.formatNumber === 'function' ? format.formatNumber(value, { maxFractionDigits: digits }) : String(Math.round(value * 10 ** digits) / 10 ** digits);
+    };
+    // A multiple in basis points as "1.5×".
+    const multipleText = basisPoints => `${numberText(basisPoints / 10000, 2)}×`;
+
+    // A snapshot reading in words, in its kind's unit: shares as percentages, the sky and sunlight in
+    // percent, angles in degrees, depths and distances in metres. Its guide is the place's.
+    function readingText(reading) {
+        const kind = reading && reading.kind;
+        const value = number => {
+            if (!isNumber(number)) return '—';
+            if (kind === 'garden' || kind === 'noSky') return shareText(number);
+            if (kind === 'sky' || kind === 'sunlight') return `${numberText(number)}%`;
+            if (kind === 'angle') return `${numberText(number, 0)}°`;
+            return `${numberText(number)} m`;
+        };
+        const guide = !isNumber(reading.guide) ? '—' : kind === 'noSky' ? `${numberText(reading.guide, 2)}×`
+            : kind === 'splay' ? `${numberText(reading.guide, 0)}°` : value(reading.guide);
+        return t('agreement.neighbours.reading', '{{kind}}: {{before}} → {{after}} (guide {{guide}}), {{grade}}', {
+            kind: KIND_TEXT[kind] ? KIND_TEXT[kind]() : String(kind), before: value(reading.before), after: value(reading.after), guide,
+            grade: GRADE_TEXT[reading.grade] ? GRADE_TEXT[reading.grade]() : String(reading.grade)
+        });
+    }
+
+    // A plot of the Effects on neighbours result (NeighbourEffects.snapshot) as a new affected parcel:
+    // a waiver with no payment yet, to be set by the sponsor.
+    function affectedEntry(snapshot) {
+        return { parcelId: idOf(snapshot.parcelId), effect: 'waiver', rights: Array.isArray(snapshot.rights) ? snapshot.rights.slice() : [],
+            note: null, readings: Array.isArray(snapshot.readings) ? snapshot.readings.slice() : [], loss: null, considerationCents: 0 };
+    }
+
+    // After measuring: a tick box per affected plot (those beyond a guide ticked), the plots already
+    // added or among the inputs disabled, and the action that adds the ticked ones.
+    function candidatesHtml(result, { ticked = new Set(), addedIds = new Set(), inputIds = new Set() } = {}) {
+        const lots = result && Array.isArray(result.lots) ? result.lots : [];
+        if (!lots.length) return '';
+        const rows = lots.map(lot => {
+            const id = idOf(lot.id);
+            const taken = addedIds.has(id) || inputIds.has(id);
+            const grade = GRADE_TEXT[lot.status] ? GRADE_TEXT[lot.status]() : '';
+            const label = t('agreement.neighbours.candidate', 'Parcel {{parcelId}}, {{grade}}', { parcelId: id, grade })
+                + (addedIds.has(id) ? ` · ${t('agreement.neighbours.added', 'already in this agreement')}` : inputIds.has(id) ? ` · ${t('agreement.neighbours.isInput', 'an input parcel')}` : '');
+            return `<li><label class="proposal-editor-check"><input type="checkbox" data-agreement-neighbour-candidate="${esc(id)}"${ticked.has(id) && !taken ? ' checked' : ''}${taken ? ' disabled' : ''}> ${esc(label)}</label></li>`;
+        }).join('');
+        const count = lots.filter(lot => ticked.has(idOf(lot.id)) && !addedIds.has(idOf(lot.id)) && !inputIds.has(idOf(lot.id))).length;
+        return `<fieldset class="agreement-fieldset agreement-neighbour-candidates" data-agreement-neighbour-candidates-list><legend>${esc(t('agreement.neighbours.candidates', 'Add affected plots to this agreement'))}</legend>`
+            + `<p class="agreement-hint">${esc(t('agreement.neighbours.candidatesHint', 'Plots beyond a guide are ticked. Each is added as a waiver with its readings; set its terms below.'))}</p>`
+            + `<ul class="agreement-neighbour-candidates__list">${rows}</ul>`
+            + `<button type="button" class="btn btn-primary" data-agreement-action="neighbours-add-ticked"${count ? '' : ' disabled'}>${esc(t('agreement.neighbours.addTicked', 'Add ticked plots ({{count}})', { count }))}</button></fieldset>`;
+    }
+
+    // One affected parcel's terms: its case, the rights it gives, a note, its readings, a stated loss
+    // and who stated it, and the payment (derived from the loss for compensation with a stated loss).
+    function affectedRowHtml(entry, { currency = '', multiple = 10000, rights = null, names = new Map() } = {}) {
+        const id = idOf(entry.parcelId);
+        const key = `affected-${id.replace(/[^A-Za-z0-9_-]/g, '_')}`;
+        const field = (name, label, control) => `<label class="proposal-editor-field"><span>${esc(label)}</span>${control}</label>`;
+        const select = (name, value, options) => `<select data-affected-field="${name}">${options.map(([option, text]) => `<option value="${esc(option)}"${option === value ? ' selected' : ''}>${esc(text)}</option>`).join('')}</select>`;
+        const given = new Set(Array.isArray(entry.rights) ? entry.rights : []);
+        const loss = entry.loss || null;
+        const derived = entry.effect === 'compensation' && loss && Number.isSafeInteger(loss.amountCents);
+        const readings = Array.isArray(entry.readings) && entry.readings.length
+            ? `<ul class="agreement-affected__readings" aria-label="${esc(t('agreement.neighbours.readings', 'Readings when added'))}">${entry.readings.map(reading => `<li>${esc(readingText(reading))}</li>`).join('')}</ul>`
+            : `<p class="agreement-hint">${esc(t('agreement.neighbours.noReadings', 'No readings: added by its parcel id.'))}</p>`;
+        return `<li class="agreement-affected" data-agreement-affected="${esc(id)}"><fieldset class="agreement-fieldset" aria-labelledby="${key}-legend">`
+            + `<legend id="${key}-legend">${esc(ownersText(id, rights, names) === partyLabel(id) ? partyLabel(id) : `${partyLabel(id)}: ${ownersText(id, rights, names)}`)}</legend>`
+            + field('effect', t('agreement.neighbours.effectLabel', 'Case'), select('effect', entry.effect, [['waiver', EFFECT_TEXT.waiver()], ['compensation', EFFECT_TEXT.compensation()]]))
+            + `<fieldset class="agreement-affected__rights"><legend>${esc(t('agreement.neighbours.rights', 'Rights given'))}</legend>`
+            + recordApi().AFFECTED_RIGHTS.map(right => `<label class="proposal-editor-check"><input type="checkbox" data-affected-right="${right}"${given.has(right) ? ' checked' : ''}> ${esc(RIGHT_TEXT[right]())}</label>`).join('')
+            + '</fieldset>'
+            + field('note', t('agreement.neighbours.note', 'Note (which right, if another)'), `<input type="text" data-affected-field="note" value="${esc(entry.note || '')}" autocomplete="off">`)
+            + readings
+            + field('loss', t('agreement.neighbours.loss', 'Stated loss in market value ({{currency}})', { currency }),
+                `<input type="number" min="0" step="0.01" data-affected-field="loss" value="${esc(loss ? centsText(loss.amountCents) : '')}">`)
+            + field('statedBy', t('agreement.neighbours.statedBy', 'Loss stated by'), select('statedBy', loss ? loss.statedBy : 'sponsor', [['sponsor', STATER_TEXT.sponsor()], ['valuer', STATER_TEXT.valuer()]]))
+            + field('valuerRef', t('agreement.neighbours.valuerRef', 'Valuer reference (optional)'), `<input type="text" data-affected-field="valuerRef" value="${esc(loss && loss.valuerRef || '')}" autocomplete="off">`)
+            + field('consideration', t('agreement.neighbours.payment', 'Payment to them ({{currency}})', { currency }),
+                `<input type="number" min="0" step="0.01" data-affected-field="consideration" value="${esc(centsText(entry.considerationCents))}"${derived ? ' readonly aria-readonly="true"' : ''}>`)
+            + (derived ? `<p class="agreement-hint" data-affected-derived>${esc(t('agreement.neighbours.derived', '{{multiple}} the stated loss, as Rules set it.', { multiple: multipleText(multiple) }))}</p>` : '')
+            + `<button type="button" class="btn btn-sm" data-affected-remove="${esc(id)}">${esc(t('agreement.neighbours.remove', 'Remove {{parcelId}} from the agreement', { parcelId: id }))}</button>`
+            + '</fieldset></li>';
+    }
+
+    // The Neighbours tab's list and its add-by-id control; owners' agreements only.
+    function neighboursHtml({ entries = [], electorate = 'owners', currency = '', multiple = 10000, rights = null, names = new Map() } = {}) {
+        if (electorate !== 'owners') return `<p class="agreement-notice">${esc(t('agreement.neighbours.ownersOnly', 'Affected neighbours are parties to an owners’ agreement only.'))}</p>`;
+        const list = entries.length
+            ? `<ul class="agreement-affected-list" data-agreement-affected-list>${entries.map(entry => affectedRowHtml(entry, { currency, multiple, rights, names })).join('')}</ul>`
+            : `<p class="agreement-hint" data-agreement-affected-empty>${esc(t('agreement.neighbours.none', 'No affected neighbours yet.'))}</p>`;
+        return list + `<div class="agreement-neighbour-add"><label class="proposal-editor-field"><span>${esc(t('agreement.neighbours.byId', 'Add a neighbouring parcel by its id'))}</span>`
+            + '<input type="text" data-agreement-neighbour-id autocomplete="off"></label>'
+            + `<button type="button" class="btn" data-agreement-action="neighbour-add">${esc(t('agreement.neighbours.add', 'Add neighbour'))}</button></div>`;
+    }
+
+    // Rules: the multiple of a neighbour's stated loss that compensation pays, a preset or another.
+    function neighbourCompensationHtml(terms) {
+        const api = recordApi();
+        const preset = terms && terms.preset ? `${terms.preset.id}@${terms.preset.version}` : '';
+        const value = !terms ? '' : preset || 'custom';
+        const options = [['', t('agreement.neighbours.multiple.none', '1× the stated loss (none set)')],
+            ...api.NEIGHBOUR_PRESETS.map(row => [`${row.id}@${row.version}`, PRESET_TEXT[row.id] ? PRESET_TEXT[row.id]() : row.id]),
+            ['custom', t('agreement.neighbours.multiple.custom', 'Another multiple')]];
+        const chosen = preset ? api.neighbourPreset(terms.preset.id, terms.preset.version) : null;
+        return `<label class="proposal-editor-field"><span>${esc(t('agreement.neighbours.multiple.label', 'Compensation to neighbours'))}</span><select data-agreement-neighbour-preset>`
+            + options.map(([option, text]) => `<option value="${esc(option)}"${option === value ? ' selected' : ''}>${esc(text)}</option>`).join('') + '</select></label>'
+            + `<label class="proposal-editor-field"${value === 'custom' ? '' : ' hidden'}><span>${esc(t('agreement.neighbours.multiple.value', 'Multiple of the stated loss'))}</span>`
+            + `<input type="number" min="0.01" step="0.01" data-agreement-neighbour-multiple value="${esc(terms ? String(terms.multipleBasisPoints / 10000) : '')}"></label>`
+            + (chosen ? `<p class="agreement-hint" data-agreement-neighbour-source><a class="cb-link cb-link--external" href="${esc(chosen.source.url)}" target="_blank" rel="noopener">${esc(chosen.source.name)}</a></p>` : '');
+    }
+
+    // An agreement's affected parcels in words, for read-only views (agreement panel, record, signing).
+    function affectedRows(agreement, currency) {
+        const rule = (agreement && agreement.rule) || {};
+        return (agreement && Array.isArray(agreement.affected) ? agreement.affected : []).map(entry => ({
+            parcelId: idOf(entry.parcelId),
+            party: ownersText(entry.parcelId, rule.approvalConfig && rule.approvalConfig.rights),
+            effect: EFFECT_TEXT[entry.effect] ? EFFECT_TEXT[entry.effect]() : String(entry.effect),
+            rights: (entry.rights || []).map(right => (RIGHT_TEXT[right] ? RIGHT_TEXT[right]() : String(right))).join(', ') + (entry.note ? ` (${entry.note})` : ''),
+            loss: entry.loss && isNumber(entry.loss.amountCents) ? `${moneyText(entry.loss.amountCents, currency)} · ${STATER_TEXT[entry.loss.statedBy] ? STATER_TEXT[entry.loss.statedBy]() : entry.loss.statedBy}${entry.loss.valuerRef ? ` (${entry.loss.valuerRef})` : ''}` : '—',
+            payment: isNumber(entry.considerationCents) ? moneyText(entry.considerationCents, currency) : '—',
+            readings: (entry.readings || []).map(readingText)
+        }));
+    }
+
     // ---- details ---------------------------------------------------------------------------------
 
     // A date field's day → the end of that day in local time, as ISO; a day that is not one stays as
@@ -319,6 +482,7 @@
      *   currency (the agreement's city's money) }
      * values: { allocations ({ outputHash: select value }), cash ({ ownerKey: typed amounts }),
      *   valuation ({ inputs: { parcelId: cents per m² }, outputs: { outputHash: cents per m² } }),
+     *   affected (the record's affected parcels), neighbourCompensation (the rule's multiple, or null),
      *   settlement, electorate ('owners' | 'community'), binding, title, deadline (the date field's day),
      *   organiser (website or did:web), participationUrl (HTTPS) }
      */
@@ -383,8 +547,11 @@
             allocations: owners ? outputs.map(output => ({ output: output.hash, to: allocationTo(chosen[output.hash]) })).filter(line => line.to) : [],
             money: { currency: state.currency || null, lines: [] },
             valuation: owners && settlement.method === 'value' ? valuationRows(values.valuation, inputs.parcels || [], outputs) : null,
+            // Neighbours who give a right and no land; their cash lines are derived by settle.
+            affected: owners && Array.isArray(values.affected) ? values.affected : [],
             rule: owners
-                ? { electorate: 'owners', binding: values.binding === true, approvalConfig: state.approvalConfig || null, ...lensRule(state), settlement }
+                ? { electorate: 'owners', binding: values.binding === true, approvalConfig: state.approvalConfig || null, ...lensRule(state), settlement,
+                    ...(values.neighbourCompensation ? { neighbourCompensation: values.neighbourCompensation } : {}) }
                 : { electorate: 'community', binding: false, approvalConfig: null, lens: [] },
             consultation: owners ? null : { organiser: values.organiser || null, participationUrl: values.participationUrl || null,
                 ...(values.voting ? { voting: values.voting } : {}) },
@@ -413,6 +580,16 @@
         'scheme-parties': reason => t('agreement.errors.schemeRule', '{{reason}}', { reason }),
         'scheme-proposer': reason => t('agreement.errors.schemeRule', '{{reason}}', { reason }),
         'money-unbalanced': () => t('agreement.errors.moneyUnbalanced', 'Cash must match the compensation calculated from the rules.'),
+        'affected-input': () => t('agreement.errors.affectedInput', 'An input parcel’s owners are already parties: remove it from Neighbours.'),
+        'affected-effect': () => t('agreement.errors.affectedEffect', 'Choose waiver or compensation for every neighbour.'),
+        'affected-rights': () => t('agreement.errors.affectedRights', 'Tick at least one right each neighbour gives.'),
+        'affected-note': () => t('agreement.errors.affectedNote', 'Say in the note which other right a neighbour gives.'),
+        'affected-reading': () => t('agreement.errors.affectedReading', 'A neighbour’s readings name a kind or grade the app does not measure.'),
+        'affected-amount': () => t('agreement.errors.affectedAmount', 'A neighbour’s payment and stated loss must be amounts of at least 0, with who stated the loss.'),
+        'affected-loss-required': () => t('agreement.errors.affectedLossRequired', 'Compensation is a multiple of a stated loss: state each compensated neighbour’s loss.'),
+        'affected-consideration': () => t('agreement.errors.affectedConsideration', 'A compensated neighbour’s payment must be the set multiple of their stated loss.'),
+        'affected-electorate': () => t('agreement.errors.affectedElectorate', 'Only an owners’ agreement can carry affected neighbours.'),
+        'neighbour-multiple': () => t('agreement.errors.neighbourMultiple', 'Set a positive multiple of the stated loss for compensating neighbours.'),
         'no-designs': () => t('agreement.errors.noDesigns', 'Choose at least one design.'),
         'design-not-applied': () => t('agreement.errors.designNotApplied', 'Every design must be applied to the map.'),
         'no-inputs': () => t('agreement.errors.noInputs', 'The designs take no cadastral land.'),
@@ -426,6 +603,10 @@
         'community-money': () => t('agreement.errors.communityMoney', 'A nonbinding agreement cannot include cash payments.'),
         'consultation-organiser': () => t('agreement.errors.consultationOrganiser', 'Enter an organiser website or a valid did:web identifier.'),
         'consultation-participation-url': () => t('agreement.errors.consultationParticipationUrl', 'Enter an HTTPS participation URL without credentials.'),
+        'voting-eligibility-no-houses': () => t('agreement.errors.eligibilityNoHouses', 'The plan raises no existing building with a mansard, so this street vote has nothing to cover.'),
+        'voting-eligibility-missing': () => t('agreement.errors.eligibilityMissing', 'Check the covered houses’ eligibility before creating this street vote.'),
+        'voting-eligibility-stale': () => t('agreement.errors.eligibilityStale', 'The plan covers other houses than the last eligibility check: check again.'),
+        'voting-eligibility-failed': () => t('agreement.errors.eligibilityFailed', 'Not every covered house is known to be eligible yet: see Covered houses.'),
         'rule-invalid': reason => t('agreement.errors.ruleInvalid', 'The decision rule is incomplete: {{reason}}', { reason }),
         'rule-community-binding': () => t('agreement.errors.ruleCommunityBinding', 'A community vote cannot be binding.'),
         'deadline-invalid': () => t('agreement.errors.deadlineInvalid', 'The deadline must be a date in the future.'),
@@ -619,15 +800,17 @@
     }
 
     // The whole body. `view`: { designs, selected, missing, land, loading, landError, values, today }.
-    const TABS = ['rules', 'inputs', 'outputs', 'persons'];
-    // counts: { inputs, outputs, persons } shown in brackets, since inputs and outputs differ in number.
+    const TABS = ['rules', 'inputs', 'outputs', 'persons', 'neighbours'];
+    // counts: { inputs, outputs, persons, neighbours } shown in brackets, since inputs and outputs differ in number.
     function tabLabel(tab, counts = {}) {
-        const labels = { rules: ['proposalDrafts.approval.policyType', 'Rules'], inputs: ['agreement.workflow.inputs', 'Input parcels'], outputs: ['agreement.workflow.outputs', 'Output parcels'], persons: ['agreement.workflow.persons', 'Persons'] };
+        const labels = { rules: ['proposalDrafts.approval.policyType', 'Rules'], inputs: ['agreement.workflow.inputs', 'Input parcels'], outputs: ['agreement.workflow.outputs', 'Output parcels'], persons: ['agreement.workflow.persons', 'Persons'],
+            neighbours: ['agreement.neighbours.tab', 'Neighbours'] };
         return t(...labels[tab]) + (Number.isInteger(counts[tab]) ? ` (${counts[tab]})` : '');
     }
-    function tabCounts(land) {
+    function tabCounts(land, affected = []) {
         const inputs = land && land.inputs ? land.inputs : { parcels: [] };
-        return { inputs: (inputs.parcels || []).length, outputs: (land && Array.isArray(land.outputs) ? land.outputs : []).length, persons: partiesOf(inputs).length };
+        return { inputs: (inputs.parcels || []).length, outputs: (land && Array.isArray(land.outputs) ? land.outputs : []).length, persons: partiesOf(inputs).length,
+            neighbours: Array.isArray(affected) ? affected.length : 0 };
     }
     function planSelectorHtml(plans, selected) {
         const planIds = plans.map(plan => idOf(plan.cid));
@@ -647,7 +830,8 @@
             + (byValue && isNumber(value) ? `<br><span class="agreement-persons-value">${esc(money(value))}</span>` : '')
             + (byValue && isNumber(entitled) ? `<br><span class="agreement-persons-entitled">${esc(t('agreement.workflow.entitled', 'entitled to {{value}}', { value: money(entitled) }))}</span>` : '')
             + (cash > 0 ? `<br><span class="agreement-persons-cash">${esc(money(cash))}</span>` : '');
-        const rows = ledger.parties.map(party => `<tr><th scope="row">${esc(party.parcelId === null ? party.displayName : partyLabel(party.parcelId))}</th><td>${cell(party.areaUnknown ? null : party.contributedM2, Math.max(0, -party.cashCents), party.contributedValueCents)}</td><td>${cell(party.assignedM2, Math.max(0, party.cashCents), party.assignedValueCents, party.entitlementValueCents)}</td></tr>`).join('');
+        const rows = ledger.parties.map(party => `<tr><th scope="row">${esc(party.parcelId === null ? party.displayName : partyLabel(party.parcelId))}`
+            + `${party.affected ? ` <span class="cb-badge" data-agreement-neighbour-party>${esc(t('agreement.neighbours.party', 'Neighbour'))}</span>` : ''}</th><td>${cell(party.areaUnknown ? null : party.contributedM2, Math.max(0, -party.cashCents), party.contributedValueCents)}</td><td>${cell(party.assignedM2, Math.max(0, party.cashCents), party.assignedValueCents, party.entitlementValueCents)}</td></tr>`).join('');
         const publicRow = ledger.publicM2 > 0 ? `<tr><th scope="row">${esc(t('agreement.allocation.public', 'Public'))}</th><td>${cell(0, 0)}</td><td>${cell(ledger.publicM2, 0, ledger.publicValueCents)}</td></tr>` : '';
         const sponsor = ledger.money.sponsorCents;
         const sponsorRow = sponsor || ledger.proposerM2 > 0 ? `<tr><th scope="row">${esc(ledger.proposerM2 > 0 ? t('agreement.allocation.proposer', 'Proposer') : t('agreement.workflow.sponsor', 'Sponsor'))}</th><td>${cell(0, Math.max(0, -sponsor))}</td><td>${cell(ledger.proposerM2, Math.max(0, sponsor), ledger.proposerValueCents)}</td></tr>` : '';
@@ -743,7 +927,12 @@
                 + detailsHtml({ title: values.title, deadline: values.deadline, today: view.today }),
             inputs: planSelectorHtml(view.plans || [], view.plan) + '<div class="cb-actions"><button type="button" class="btn" data-agreement-action="rights">' + esc(t('agreement.workflow.rights', 'Parcel ownership rights')) + '</button></div><div data-agreement-land></div><div data-agreement-plan-designs></div>',
             outputs: '<div data-agreement-allocations></div>',
-            persons: '<div data-agreement-persons></div>'
+            persons: '<div data-agreement-persons></div>',
+            // Affected neighbours: measured from the plan (Effects on neighbours) or added by parcel id.
+            neighbours: `<p class="agreement-hint">${esc(t('agreement.neighbours.hint', 'A neighbour who gives up a right the plan affects, such as daylight or a garden limit, can be a party without giving land. A waiver needs their owners’ approval; compensation is paid without it. The sponsor pays each neighbour.'))}</p>`
+                + `<div class="cb-actions"><button type="button" class="btn" data-agreement-action="neighbours-measure">${esc(t('agreement.neighbours.measure', 'Find affected neighbours'))}</button></div>`
+                + '<section class="neighbour-effects" data-agreement-neighbour-effects role="status" aria-live="polite" hidden></section>'
+                + '<div data-agreement-neighbour-candidates aria-live="polite"></div><div data-agreement-neighbours></div>'
         };
         return '<ul class="agreement-issues agreement-issues--error" data-agreement-errors aria-live="assertive"></ul><ul class="agreement-issues agreement-issues--warning" data-agreement-warnings aria-live="polite"></ul>'
             + `<div class="cb-tabs agreement-editor__tabs" role="tablist" aria-label="${esc(t('agreement.panel.title', 'Agreement'))}">${TABS.map(tab => `<button type="button" class="cb-tab" role="tab" id="agreement-tab-${tab}" aria-controls="agreement-tabpanel-${tab}" aria-selected="${tab === 'inputs'}" tabindex="${tab === 'inputs' ? 0 : -1}" data-agreement-tab="${tab}">${esc(tabLabel(tab, view.counts))}</button>`).join('')}</div>`
@@ -886,11 +1075,15 @@
                 binding: base?.rule.binding === true,
                 title: existing?.title || (source ? t('agreement.dialog.counterTitle', 'Counter to {{title}}', { title: source.title || t('agreement.panel.title', 'Agreement') }) : ''),
                 settlement: { ...(base?.rule.settlement || api.DEFAULT_SETTLEMENT) },
+                affected: JSON.parse(JSON.stringify(base?.affected || [])),
+                neighbourCompensation: base?.rule.neighbourCompensation ? { ...base.rule.neighbourCompensation } : null,
                 deadline: dateFromDeadline(base?.deadline), organiser: base?.consultation?.organiser || '',
                 participationUrl: base?.consultation?.participationUrl || '', voting: base?.consultation?.voting || null,
                 fundingDeadline: base?.rule?.electorate === 'investors' ? base.deadline || null : null,
                 fundingDeadlineDirty: false },
-            loading: false, closed: false, sequence: 0, attempted: false, landError: null
+            loading: false, closed: false, sequence: 0, attempted: false, landError: null,
+            // The last Effects on neighbours measurement of the plan and the plots ticked in it.
+            neighbours: { result: null, ticked: new Set() }
         };
         state.values.funding = base?.funding ? { ...base.funding, targetInput: api.formatUsdc(base.funding.targetUsdcAtomic) } : { targetInput: '', targetUsdcAtomic: '', contract: null };
         state.contractSequence = 0;
@@ -933,13 +1126,227 @@
         session = current;
         const draft = () => { syncApartmentInputs(state, body); return recordFromForm(state, state.values); };
         let rosterPending = false;
+        // A ballot rule that covers only eligible buildings (planning/eligibility.js): the covered
+        // houses' check runs when the rule is chosen and on Check again, and its result is kept in
+        // the voting record, which the roster rebuilds on each change.
+        const eligibilityNode = doc.createElement('section');
+        eligibilityNode.className = 'voting-eligibility';
+        eligibilityNode.hidden = true;
+        part('[data-voting-roster]')?.after(eligibilityNode);
+        const eligibility = { key: null, evidence: null, judged: null, busy: false, error: null, factDrafts: new Map(), saved: null, saveError: null };
+        const requiredSet = value => {
+            const rule = value?.rule ? root.CommunityBallotRules?.get(value.rule.id, value.rule.version) : null;
+            const required = rule?.requires?.eligibility;
+            return required ? root.BuildingEligibility.get(required.id, required.version) : null;
+        };
+        // The street a street vote covers (streets/street-picker.js): the record's own, else the last
+        // street picked with Street here in this tab, kept only while its box stays ticked. Ticked at
+        // first when the picked parcels are among the agreement's land (or that land is not read yet).
+        const streetNode = doc.createElement('section');
+        streetNode.className = 'voting-street';
+        streetNode.hidden = true;
+        eligibilityNode.after(streetNode);
+        const picked = state.values.voting?.street ? null : root.StreetPicker?.lastPick?.() || null;
+        const landIds = () => new Set((state.land?.inputs?.parcels || []).map(parcel => String(parcel.parcelId).replace(/#.*$/, '')));
+        // `included` stays undecided (null) for a pick until the plan's land has been read.
+        const overlaps = () => (picked.cadastreIds || picked.parcelIds).some(id => landIds().has(String(id).replace(/#.*$/, '')));
+        const street = { reference: state.values.voting?.street || picked?.reference || null,
+            included: state.values.voting?.street ? true : picked ? null : false };
+        const decideStreet = () => {
+            if (street.included !== null || state.loading || !state.land?.inputs?.parcels?.length) return;
+            street.included = overlaps();
+            state.values.voting = withStreet(state.values.voting);
+            renderStreet(); issues();
+        };
+        state.afterLand = decideStreet;
+        const withStreet = value => {
+            if (!value) return value;
+            const { street: _old, ...rest } = value;
+            return street.included === true && street.reference ? { ...rest, street: street.reference } : rest;
+        };
+        const withEligibility = value => withStreet(value && requiredSet(value) && eligibility.evidence ? { ...value, eligibility: eligibility.evidence } : value);
+        function renderStreet() {
+            streetNode.hidden = !street.reference || !state.values.voting;
+            if (streetNode.hidden) { streetNode.replaceChildren(); return; }
+            const label = root.StreetPicker ? root.StreetPicker.referenceLabel(street.reference) : street.reference.name;
+            streetNode.innerHTML = `<h4>${esc(t('voting.street.title', 'Street'))}</h4>`
+                + `<label class="voting-street__choice"><input type="checkbox" data-voting-street${street.included === true ? ' checked' : ''}>`
+                + `<span>${esc(t('voting.street.include', 'Name the street this vote covers: {{street}}', { street: label }))}</span></label>`
+                + `<p class="agreement-hint">${esc(t('voting.street.hint', 'Picked with Street here on the map. The record keeps its name, OpenStreetMap ways, ends and side.'))}</p>`
+                + '<p class="agreement-hint" role="status" data-voting-street-status></p>';
+            streetNode.querySelector('[data-voting-street]').addEventListener('change', event => {
+                street.included = event.currentTarget.checked;
+                state.values.voting = withStreet(state.values.voting);
+                streetNode.querySelector('[data-voting-street-status]').textContent = street.included
+                    ? t('voting.street.named', 'The vote names {{street}}.', { street: label }) : t('voting.street.unnamed', 'The vote names no street.');
+                issues();
+            });
+        }
         const roster = root.CommunityVotingRoster?.mount(part('[data-voting-roster]'), {
             value: state.values.voting,
-            changed: (value, pending) => { state.values.voting = value; rosterPending = pending; issues(); }
+            changed: (value, pending) => {
+                state.values.voting = withEligibility(value); rosterPending = pending; renderStreet();
+                const set = requiredSet(value), key = set ? `${set.id}@${set.version}` : null;
+                if (key !== eligibility.key) { eligibility.key = key; eligibility.evidence = null; eligibility.judged = null; if (set) checkEligibility(); }
+                renderEligibility(); issues();
+            }
         });
+        if (state.values.voting?.eligibility) { eligibility.evidence = state.values.voting.eligibility; const set = requiredSet(state.values.voting); eligibility.key = set ? `${set.id}@${set.version}` : null; }
+        async function checkEligibility(control = null) {
+            const set = requiredSet(state.values.voting);
+            if (!set || eligibility.busy) return;
+            eligibility.busy = true; eligibility.error = null; eligibility.unchanged = false; renderEligibility();
+            const work = async () => {
+                const designs = draft().designs.map(design => root.proposalStorage.getProposal(design.proposalId)).filter(Boolean);
+                const houses = root.BuildingEligibility.coveredHouses(set, designs);
+                // Check again after an edit keeps reading until OpenStreetMap shows a change (it
+                // publishes edits a minute or two after they are saved), saying it is waiting.
+                const shown = new Map((eligibility.judged || []).filter(house => house.id && house.building).map(house => [house.id, house.building]));
+                const read = !control || !shown.size ? ids => root.BuildingFacts.readMany(ids, { fresh: Boolean(control) })
+                    : async ids => {
+                        const { answer, changed } = await root.BuildingFacts.readUntilChanged(ids, shown, more => root.BuildingFacts.readMany(more, { fresh: true }), {
+                            onWaiting: () => { eligibility.waiting = true; if (!state.closed) renderEligibility(); }, stillWanted: () => !state.closed });
+                        eligibility.unchanged = !changed;
+                        return answer;
+                    };
+                eligibility.judged = await root.BuildingEligibility.check(set, houses, read);
+                eligibility.evidence = houses.length ? root.BuildingEligibility.evidence(set, eligibility.judged, new Date().toISOString()) : null;
+                state.values.voting = { ...state.values.voting };
+                delete state.values.voting.eligibility;
+                state.values.voting = withEligibility(state.values.voting);
+            };
+            try { await (control ? root.BusyControl.track(control, work) : work()); } catch (error) {
+                eligibility.error = error.message;
+                console.error(`[${new Date().toISOString()}] [AgreementEditor] eligibility check failed`, error);
+            } finally { eligibility.busy = false; eligibility.waiting = false; if (!state.closed) { renderEligibility(); issues(); } }
+        }
+        // Literal keys, so the locale coverage test sees each one.
+        // Each failing or unknown test of a covered house, in the building card's words and links
+        // (BuildingEligibility.explain): the fact's value, the register's reason and entry link, or
+        // the OpenStreetMap key to add.
+        const cardText = (key, params = {}) => (key.startsWith('buildingFact.')
+            ? t(`planningViews.buildingFact.${key.slice('buildingFact.'.length)}`, key, params)
+            : t(`planningViews.eligibility.${key.slice('eligibility.'.length)}`, key, params));
+        function eligibilityTests(set, house, name) {
+            const items = root.BuildingEligibility.explain(set, house.result, house.building, cardText).map(test => `<li data-status="${esc(test.status)}">`
+                + `<span>${esc(`${test.cite} ${test.label}: ${test.statusText}`)}</span>`
+                + (test.text ? ` <span>${esc(test.text)}</span>` : '')
+                + (test.reason ? ` <span class="agreement-hint">${esc(test.reason)}</span>` : '')
+                + (test.link ? ` <a class="cb-link cb-link--external" href="${esc(test.link.url)}" target="_blank" rel="noopener">${esc(test.link.text)}</a>` : '')
+                + (test.add ? ` <span class="agreement-hint">${esc(t('voting.eligibility.addKey', 'Add {{key}} in {{source}}', { key: test.add.key, source: test.add.source }))}</span>` : '')
+                + '</li>').join('');
+            return items ? `<ul class="voting-eligibility__tests" aria-label="${esc(t('voting.eligibility.testsOf', 'Tests not passed by {{house}}', { house: name }))}">${items}</ul>` : '';
+        }
+        // Adding the covered houses' missing facts here (osm/osm-fact-edits.js), saved to OpenStreetMap
+        // in one changeset as the author's own edit: a choice per house and fact, and an "all houses"
+        // choice per fact that fills every house's. Only facts behind an unknown test are offered.
+        function editableFacts(set, house) {
+            if (!house.id || !house.building || !root.OsmFactEdits) return [];
+            const unknown = house.result.tests.filter(test => test.status === 'unknown').map(test => set.tests.find(def => def.id === test.id)?.fact).filter(Boolean);
+            return root.OsmFactEdits.missingEditable(house.building, unknown);
+        }
+        function factSelect(field, value, attrs, label) {
+            const def = root.OsmFactEdits.EDITABLE[field];
+            if (def.integer) return `<input type="number" class="voting-eligibility__fact-control" min="${def.integer.min}" max="${def.integer.max}" step="1" value="${esc(value ?? '')}" aria-label="${esc(label)}" ${attrs}>`;
+            const options = def.choices.map(choice => `<option value="${esc(choice.tag)}"${value === choice.tag ? ' selected' : ''}>${esc(field === 'parapet' ? cardText(choice.value ? 'buildingFact.parapetYes' : 'buildingFact.parapetNo') : choice.tag)}</option>`).join('');
+            return `<select class="voting-eligibility__fact-control" aria-label="${esc(label)}" ${attrs}><option value="">${esc(t('planningViews.factEdit.choose', 'Choose…'))}</option>${options}</select>`;
+        }
+        function renderFactEdits(set, judged) {
+            const houses = judged.map(house => ({ house, fields: editableFacts(set, house) })).filter(entry => entry.fields.length);
+            const savedLine = eligibility.saved ? `<p role="status">${esc(t('planningViews.factEdit.saved', 'Saved to {{source}}.', { source: 'OpenStreetMap' }))}`
+                + (eligibility.saved.changeset ? ` <a class="cb-link cb-link--external" href="${esc(`${root.OsmAccount.SITE}/changeset/${eligibility.saved.changeset}`)}" target="_blank" rel="noopener">${esc(t('planningViews.factEdit.changeset', 'Changeset {{changeset}}', { changeset: eligibility.saved.changeset }))}</a>` : '') + '</p>' : '';
+            if (!houses.length || !root.OsmAccount?.redirectUri()) return savedLine ? `<div class="voting-eligibility__facts">${savedLine}</div>` : '';
+            const fields = [...new Set(houses.flatMap(entry => entry.fields))];
+            const fieldLabel = field => cardText(`buildingFact.field.${field}`);
+            const all = fields.map(field => `<label class="voting-eligibility__fact">${esc(fieldLabel(field))} `
+                + factSelect(field, null, `data-fact-all="${esc(field)}"`, t('planningViews.factEdit.allOf', '{{fact}}, all houses', { fact: fieldLabel(field) })) + '</label>').join('');
+            const rows = houses.map(({ house, fields: own }) => {
+                const name = t('voting.eligibility.house', 'Building {{id}}', { id: house.id.replace(/^osm:/, '') });
+                const draft = eligibility.factDrafts.get(house.id) || {};
+                return `<li><span>${esc(name)}</span>` + own.map(field => ` <label class="voting-eligibility__fact">${esc(fieldLabel(field))} `
+                    + factSelect(field, draft[field], `data-fact-house="${esc(house.id)}" data-fact-field="${esc(field)}"`, `${name}: ${fieldLabel(field)}`) + '</label>').join('') + '</li>';
+            }).join('');
+            const who = root.OsmAccount.user();
+            return `<div class="voting-eligibility__facts"><h5>${esc(t('planningViews.factEdit.title', 'Add the missing facts'))}</h5>`
+                + `<p class="agreement-hint">${esc(t('planningViews.factEdit.hint', 'Add only what you know from looking at the building, on site or in photos you may use for OpenStreetMap. It is saved to OpenStreetMap as your own public edit.'))}</p>`
+                + (houses.length > 1 ? `<div class="voting-eligibility__fact-all">${esc(t('planningViews.factEdit.all', 'All houses:'))} ${all}</div>` : '')
+                + `<ul class="voting-eligibility__fact-houses">${rows}</ul>`
+                + `<p class="agreement-hint">${esc(who ? t('planningViews.factEdit.as', 'Saving as {{name}} on OpenStreetMap.', { name: who.name }) : t('planningViews.factEdit.signInNote', 'You sign in with your OpenStreetMap account first.'))}</p>`
+                + (eligibility.saveError ? `<p role="alert">${esc(t('planningViews.factEdit.failed', 'Not saved: {{error}}', { error: eligibility.saveError }))}</p>` : '') + savedLine
+                + `<button type="button" class="btn btn-primary" data-voting-eligibility-save${eligibility.busy ? ' disabled' : ''}>${esc(t('planningViews.factEdit.save', 'Save to {{source}}', { source: 'OpenStreetMap' }))}</button>`
+                + (who ? ` <button type="button" class="btn btn-quiet btn-sm" data-voting-eligibility-sign-out>${esc(t('planningViews.factEdit.signOut', 'Sign out of OpenStreetMap'))}</button>` : '') + '</div>';
+        }
+        function wireFactEdits() {
+            const setDraft = (id, field, value) => eligibility.factDrafts.set(id, { ...(eligibility.factDrafts.get(id) || {}), [field]: value });
+            eligibilityNode.querySelectorAll('[data-fact-house]').forEach(control => control.addEventListener('change', () => setDraft(control.dataset.factHouse, control.dataset.factField, control.value)));
+            eligibilityNode.querySelectorAll('[data-fact-all]').forEach(control => control.addEventListener('change', () => {
+                eligibilityNode.querySelectorAll(`[data-fact-field="${control.dataset.factAll}"]`).forEach(own => { own.value = control.value; setDraft(own.dataset.factHouse, own.dataset.factField, control.value); });
+            }));
+            eligibilityNode.querySelector('[data-voting-eligibility-sign-out]')?.addEventListener('click', () => { root.OsmAccount.signOut(); renderEligibility(); });
+            eligibilityNode.querySelector('[data-voting-eligibility-save]')?.addEventListener('click', event => saveFacts(event.currentTarget));
+        }
+        async function saveFacts(control) {
+            const entries = (eligibility.judged || []).filter(house => house.id && eligibility.factDrafts.has(house.id))
+                .map(house => ({ building: house.building, values: eligibility.factDrafts.get(house.id) }));
+            let saved = false;
+            await root.BusyControl.track(control, async () => {
+                try {
+                    const result = await root.OsmFactEdits.save(entries, { comment: root.OsmFactEdits.commentFor(entries, 'for a Living Tradition mansard street vote') });
+                    eligibility.saved = { changeset: result.changeset }; eligibility.saveError = null; eligibility.factDrafts.clear(); saved = true;
+                } catch (error) {
+                    eligibility.saveError = error.message;
+                    console.error(`[${new Date().toISOString()}] [AgreementEditor] building facts could not be saved`, error);
+                }
+            });
+            if (state.closed) return;
+            renderEligibility();
+            // The saved facts answer the next read (BuildingFacts.remember) until OSM's copy catches up.
+            if (saved) await checkEligibility();
+        }
+        const VERDICT_TEXT = { eligible: () => t('voting.eligibility.verdict.eligible', 'Eligible'),
+            ineligible: () => t('voting.eligibility.verdict.ineligible', 'Not eligible'), unknown: () => t('voting.eligibility.verdict.unknown', 'Unknown') };
+        function renderEligibility() {
+            const set = requiredSet(state.values.voting);
+            eligibilityNode.hidden = !set;
+            if (!set) { eligibilityNode.replaceChildren(); return; }
+            const judged = eligibility.judged || [];
+            const eligibleCount = judged.filter(house => house.id && house.result.verdict === 'eligible').length;
+            eligibilityNode.innerHTML = `<h4>${esc(t('voting.eligibility.title', 'Covered houses'))}</h4>`
+                + `<p class="agreement-hint">${esc(t('voting.eligibility.hint', 'This street vote may cover only houses that meet the rule’s eligibility conditions. Their facts are read from OpenStreetMap and their listing from the heritage register: add missing facts in OpenStreetMap, then check again.'))}</p>`
+                + (eligibility.waiting ? `<p role="status">${esc(t('voting.eligibility.waiting', 'Waiting for OpenStreetMap: an edit shows here a minute or two after it is saved. Checking every 30 seconds…'))}</p>`
+                    : eligibility.busy ? `<p role="status">${esc(t('voting.eligibility.checking', 'Checking the covered houses…'))}</p>`
+                    : eligibility.error ? `<p role="alert">${esc(t('voting.eligibility.failed', 'The check could not be completed: {{error}}', { error: eligibility.error }))}</p>`
+                        : judged.length ? `<p role="status">${esc(t('voting.eligibility.summary', '{{eligible}} of {{total}} covered houses eligible', { eligible: eligibleCount, total: judged.length }))}</p>`
+                            + (eligibility.unchanged ? `<p class="agreement-hint">${esc(t('voting.eligibility.unchanged', 'OpenStreetMap shows no change yet. If you saved an edit, check again in a minute.'))}</p>` : '')
+                            : eligibility.judged ? `<p role="status">${esc(t('voting.eligibility.none', 'The plan raises no existing building with a mansard.'))}</p>` : '')
+                + (judged.length ? `<ul class="voting-eligibility__houses">${judged.map(house => {
+                    const verdict = house.id ? house.result.verdict : 'unknown';
+                    const failing = house.result.tests.filter(test => test.status === 'fail').map(test => test.cite);
+                    const unknown = house.result.tests.filter(test => test.status === 'unknown').map(test => test.cite);
+                    const detail = [failing.length ? t('voting.eligibility.fails', 'fails {{tests}}', { tests: failing.join(', ') }) : '',
+                        unknown.length ? t('voting.eligibility.missingFacts', 'unknown {{tests}}', { tests: unknown.join(', ') }) : ''].filter(Boolean).join(' · ');
+                    const edit = house.building?.edit?.url;
+                    const name = house.id ? t('voting.eligibility.house', 'Building {{id}}', { id: house.id.replace(/^osm:/, '') }) : t('voting.eligibility.unanswered', 'A building with no facts source ({{id}})', { id: house.sourceBuildingId ?? '?' });
+                    return `<li data-verdict="${esc(verdict)}"><span>${esc(name)}</span>`
+                        + ` <strong>${esc(VERDICT_TEXT[verdict]())}</strong>${detail ? ` <span class="agreement-hint">${esc(detail)}</span>` : ''}`
+                        + (edit && verdict !== 'eligible' ? ` <a class="cb-link cb-link--external" href="${esc(edit)}" target="_blank" rel="noopener">${esc(t('voting.eligibility.edit', 'Edit in {{source}}', { source: house.building.edit.source }))}</a>` : '')
+                        + (house.id && verdict !== 'eligible' ? eligibilityTests(set, house, name) : '') + '</li>';
+                }).join('')}</ul>` : '')
+                + renderFactEdits(set, judged)
+                + `<button type="button" class="btn btn-secondary" data-voting-eligibility-check${eligibility.busy ? ' disabled' : ''}>${esc(eligibility.judged ? t('voting.eligibility.again', 'Check again') : t('voting.eligibility.check', 'Check eligibility'))}</button>`;
+            eligibilityNode.querySelector('[data-voting-eligibility-check]').addEventListener('click', event => checkEligibility(event.currentTarget));
+            wireFactEdits();
+        }
+        renderEligibility();
+        renderStreet();
+        decideStreet();
+        // A reopened draft under such a rule is checked again: its houses' facts may have changed.
+        if (requiredSet(state.values.voting)) { eligibility.key = `${requiredSet(state.values.voting).id}@${requiredSet(state.values.voting).version}`; checkEligibility(); }
         function finish(result) {
             if (state.closed) return;
             state.closed = true; roster?.destroy(); clearInspection(); listeners.abort(); auxiliary?.close(); unregisterEscape?.();
+            // The plots this editor's measurement coloured on the map go with it.
+            if (state.neighbours.result) root.NeighbourEffectsAdvisor?.clear?.();
             if (session === current) session = null;
             panel.classList.remove('visible'); body.replaceChildren(); doc.body.classList.remove('agreement-editor-open');
             if (modal.open) modal.close();
@@ -975,7 +1382,7 @@
                 }
                 // A scheme rule the plan breaks or a land value that is missing follows a choice the
                 // person made, so it is shown at once; the rest waits for a save attempt.
-                part('[data-agreement-errors]').innerHTML = issuesHtml(checked.errors.filter(row => state.attempted || /^(scheme|valuation)-/.test(row.code)));
+                part('[data-agreement-errors]').innerHTML = issuesHtml(checked.errors.filter(row => state.attempted || /^(scheme|valuation|affected|neighbour)-/.test(row.code)));
                 // Advanced ownership/lens readiness lives behind its own controls.
                 part('[data-agreement-warnings]').innerHTML = issuesHtml(checked.warnings.filter(row => row.section === 'land'));
                 const pending = state.values.electorate === 'community' && rosterPending;
@@ -993,6 +1400,95 @@
             try { part('[data-agreement-persons]').innerHTML = personsHtml(draft(), ownerNames()); }
             catch (error) { part('[data-agreement-persons]').textContent = error.message; }
         }
+        function renderTabLabels() {
+            const counts = state.loading || state.landError ? { neighbours: state.values.affected.length } : tabCounts(state.land, state.values.affected);
+            body.querySelectorAll('[data-agreement-tab]').forEach(button => { button.textContent = tabLabel(button.dataset.agreementTab, counts); });
+        }
+        // Which control inside `container` has focus, to find it again after a redraw.
+        function focusKey(container) {
+            const active = doc.activeElement;
+            if (!active || !container || !container.contains(active)) return null;
+            return { row: active.closest('[data-agreement-affected]')?.dataset.agreementAffected ?? null,
+                selector: ['data-affected-field', 'data-affected-right', 'data-agreement-neighbour-candidate'].map(name => (active.hasAttribute(name) ? `[${name}="${root.CSS.escape(active.getAttribute(name))}"]` : null)).find(Boolean)
+                    || (active.matches('[data-agreement-neighbour-id]') ? '[data-agreement-neighbour-id]' : active.matches('[data-agreement-action]') ? `[data-agreement-action="${active.dataset.agreementAction}"]` : null) };
+        }
+        function refocus(container, key) {
+            if (!key || !key.selector) return;
+            const scope = key.row !== null ? container.querySelector(`[data-agreement-affected="${root.CSS.escape(key.row)}"]`) : container;
+            (scope?.querySelector(key.selector) || container.querySelector('[data-agreement-neighbour-id]'))?.focus({ preventScroll: true });
+        }
+        // The Neighbours tab: each affected parcel's terms (payments as the record derives them), the
+        // plots of the last measurement and the tab's count.
+        function renderNeighbours() {
+            const target = part('[data-agreement-neighbours]');
+            if (!target) return;
+            const key = focusKey(target);
+            let entries = state.values.affected;
+            try { entries = draft().affected; } catch (_) { /* the validation names the problem */ }
+            target.innerHTML = neighboursHtml({ entries, electorate: state.values.electorate, currency: state.currency,
+                multiple: api.lossMultipleOf({ neighbourCompensation: state.values.neighbourCompensation }), rights: state.approvalConfig?.rights, names: ownerNames() });
+            part('[data-agreement-action="neighbours-measure"]').disabled = state.values.electorate !== 'owners' || !state.plan || state.loading || !!state.landError;
+            refocus(target, key);
+            renderCandidates();
+            renderTabLabels();
+        }
+        function renderCandidates() {
+            const target = part('[data-agreement-neighbour-candidates]');
+            if (!target) return;
+            const key = focusKey(target);
+            const result = state.neighbours.result;
+            target.innerHTML = state.values.electorate !== 'owners' || !result ? ''
+                : result.status === 'notApplicable' ? `<p class="agreement-hint">${esc(t('agreement.neighbours.noGuides', 'This place states no neighbour guides, so nothing is measured: add a neighbouring parcel by its id.'))}</p>`
+                    : candidatesHtml(result, { ticked: state.neighbours.ticked, addedIds: new Set(state.values.affected.map(entry => idOf(entry.parcelId))),
+                        inputIds: new Set(state.land.inputs.parcels.map(parcel => idOf(parcel.parcelId))) });
+            refocus(target, key);
+        }
+        // The default rights snapshot (local owners) follows the neighbours as it follows the land.
+        function neighboursChanged() {
+            readRule();
+            const ownerOf = localOwners();
+            if (state.values.electorate === 'owners') state.approvalConfig = ruleConfigAfterDerive(state.approvalConfig, state.land.inputs, inputs => api.rightsFromInputs(inputs, ownerOf, state.values.affected));
+            renderRule(); renderNeighbours(); renderPersons(); issues();
+        }
+        function addAffected(entries) {
+            const have = new Set(state.values.affected.map(entry => idOf(entry.parcelId)));
+            const added = entries.filter(entry => entry.parcelId && !have.has(entry.parcelId));
+            state.values.affected.push(...added);
+            log(`added ${added.length} affected parcel(s): ${added.map(entry => entry.parcelId).join(', ')}`);
+            neighboursChanged();
+            return added;
+        }
+        // Effects on neighbours of the agreement's plan, as the plan panel measures them; the plots
+        // beyond a guide come back ticked.
+        async function measureNeighbours() {
+            const section = part('[data-agreement-neighbour-effects]');
+            section.hidden = false;
+            const result = await root.PlanAnalysisControls.runEffects(root, async () => state.plan, section);
+            if (state.closed || !result) return;
+            state.neighbours.result = result;
+            state.neighbours.ticked = new Set((result.lots || []).filter(lot => lot.status === 'fail').map(lot => idOf(lot.id)));
+            log(`measured ${(result.lots || []).length} affected plot(s) for plan ${state.plan?.cid}`);
+            renderCandidates();
+        }
+        // A typed change to one affected parcel's terms, read from its row.
+        function updateAffected(target) {
+            const row = target.closest('[data-agreement-affected]');
+            const entry = state.values.affected.find(item => idOf(item.parcelId) === row?.dataset.agreementAffected);
+            if (!entry) return;
+            const value = name => row.querySelector(`[data-affected-field="${name}"]`)?.value ?? '';
+            if (target.matches('[data-affected-right]')) {
+                const rights = new Set(entry.rights);
+                if (target.checked) rights.add(target.dataset.affectedRight); else rights.delete(target.dataset.affectedRight);
+                entry.rights = [...rights].sort();
+            }
+            entry.effect = value('effect');
+            entry.note = value('note').trim() || null;
+            // An amount being typed that is not one yet stays unreadable, so the validation names it.
+            const loss = cashCents(value('loss'));
+            entry.loss = loss === null ? null : { amountCents: loss, statedBy: value('statedBy'), valuerRef: value('valuerRef').trim() || null };
+            const consideration = cashCents(value('consideration'));
+            entry.considerationCents = consideration === null ? 0 : consideration;
+        }
         function settlementHtml() {
             const terms = state.values.settlement, limit = api.contributionLimit({ approvalConfig: state.approvalConfig });
             terms.contributionBasisPoints = Math.min(terms.contributionBasisPoints, limit);
@@ -1004,7 +1500,8 @@
             return `<label class="proposal-editor-field"><span>${esc(t('agreement.workflow.compensation', 'Compensation'))}</span><select data-agreement-compensation>${methods.map(([value, label]) => `<option value="${value}"${terms.method === value ? ' selected' : ''}>${esc(label)}</option>`).join('')}</select></label>`
                 + valueHint
                 + `<label class="proposal-editor-field"${enabled ? '' : ' hidden'}><span>${esc(t('agreement.workflow.rate', 'Compensation per m² ({{currency}})', { currency: state.currency }))}</span><input type="range" min="0" max="${Math.max(100000, terms.rateCentsPerM2)}" step="100" value="${terms.rateCentsPerM2}" data-agreement-rate-slider><input type="number" min="0" max="100000000" step="0.01" value="${terms.rateCentsPerM2 / 100}" data-agreement-rate aria-label="${esc(t('agreement.workflow.rate', 'Compensation per m² ({{currency}})', { currency: state.currency }))}"></label>`
-                + (enabled && limit ? `<label class="proposal-editor-field"><span>${esc(t('agreement.workflow.contribution', 'Land contribution (%)'))}</span><input type="range" min="0" max="${limit}" step="1" value="${terms.contributionBasisPoints}" data-agreement-contribution><output data-agreement-contribution-value>${terms.contributionBasisPoints / 100}%</output></label><p class="agreement-hint">${esc(t('agreement.workflow.contributionHint', 'Compensation covers differences from the remaining land entitlement after this contribution.'))}</p>` : '');
+                + (enabled && limit ? `<label class="proposal-editor-field"><span>${esc(t('agreement.workflow.contribution', 'Land contribution (%)'))}</span><input type="range" min="0" max="${limit}" step="1" value="${terms.contributionBasisPoints}" data-agreement-contribution><output data-agreement-contribution-value>${terms.contributionBasisPoints / 100}%</output></label><p class="agreement-hint">${esc(t('agreement.workflow.contributionHint', 'Compensation covers differences from the remaining land entitlement after this contribution.'))}</p>` : '')
+                + `<div data-agreement-neighbour-compensation>${neighbourCompensationHtml(state.values.neighbourCompensation)}</div>`;
         }
         function readRule() {
             const container = part('[data-agreement-rule-form]');
@@ -1076,11 +1573,9 @@
             else if (state.landError) target.innerHTML = `<p class="agreement-alert">${esc(state.landError)}</p><button type="button" class="btn" data-agreement-action="apply-plan">${esc(t('agreement.workflow.applyPlan', 'Apply plan designs'))}</button>`;
             else target.innerHTML = inputsTableHtml(state.land.inputs.parcels, state.approvalConfig?.rights, ownerNames()) + valuationSection('inputs');
             part('[data-agreement-plan-designs]').innerHTML = inputDesignsHtml(state.designs);
-            const counts = state.loading || state.landError ? {} : tabCounts(state.land);
-            body.querySelectorAll('[data-agreement-tab]').forEach(button => { button.textContent = tabLabel(button.dataset.agreementTab, counts); });
             part('[data-agreement-allocations]').innerHTML = allocationHtml(state.land, state.values.allocations, state.allocationMode) + valuationSection('outputs');
             if (state.values.electorate === 'community') part('[data-agreement-allocations]').querySelectorAll('select').forEach(select => { select.disabled = true; });
-            renderPersons(); issues();
+            renderNeighbours(); renderPersons(); issues();
         }
         function reconcileAllocations() {
             const kept = keptTerms(state.values, state.land);
@@ -1121,13 +1616,13 @@
                         originals: originalsById(loaded.features, root.LiveParcelFabric.featureId) });
                     reconcileAllocations();
                     const ownerOf = localOwners();
-                    state.approvalConfig = ruleConfigAfterDerive(state.approvalConfig, state.land.inputs, inputs => api.rightsFromInputs(inputs, ownerOf));
+                    state.approvalConfig = ruleConfigAfterDerive(state.approvalConfig, state.land.inputs, inputs => api.rightsFromInputs(inputs, ownerOf, state.values.affected));
                 }
             } catch (error) {
                 if (state.closed || sequence !== state.sequence) return;
                 state.landError = error.message; report(error);
             } finally {
-                if (!state.closed && sequence === state.sequence) { state.loading = false; renderRule(); renderLand(); }
+                if (!state.closed && sequence === state.sequence) { state.loading = false; renderRule(); renderLand(); state.afterLand?.(); }
             }
         }
         function openAuxiliary(kind) {
@@ -1212,6 +1707,31 @@
             }
             if (button.dataset.agreementAction === 'cancel') finish(null);
             if (button.dataset.agreementTab) activate(button.dataset.agreementTab);
+            if (button.dataset.agreementAction === 'neighbours-measure' && !root.BusyControl.isBusy(button)) {
+                root.BusyControl.track(button, measureNeighbours).catch(report);
+            }
+            if (button.dataset.agreementAction === 'neighbours-add-ticked' && state.neighbours.result) {
+                const ticked = state.neighbours.result.lots.filter(lot => state.neighbours.ticked.has(idOf(lot.id)));
+                const inputs = new Set(state.land.inputs.parcels.map(parcel => idOf(parcel.parcelId)));
+                const added = addAffected(ticked.filter(lot => !inputs.has(idOf(lot.id)))
+                    .map(lot => affectedEntry(root.NeighbourEffects.snapshot(lot, state.neighbours.result.guides))));
+                // Said in the candidates' live region; focus goes to the first added parcel's terms.
+                part('[data-agreement-neighbour-candidates]').insertAdjacentHTML('afterbegin', `<p class="agreement-hint" role="status" data-agreement-neighbours-added>${esc(t('agreement.neighbours.addedCount', 'Added {{count}} neighbouring parcel(s): set each one’s terms below.', { count: added.length }))}</p>`);
+                (added.length ? part(`[data-agreement-affected="${root.CSS.escape(added[0].parcelId)}"] [data-affected-field="effect"]`) : null)?.focus();
+            }
+            if (button.dataset.agreementAction === 'neighbour-add') {
+                const input = part('[data-agreement-neighbour-id]');
+                const id = idOf(input.value);
+                if (id) { addAffected([affectedEntry({ parcelId: id })]); part('[data-agreement-neighbour-id]')?.focus(); }
+            }
+            if (button.dataset.affectedRemove !== undefined) {
+                const id = button.dataset.affectedRemove;
+                const rows = [...body.querySelectorAll('[data-agreement-affected]')].map(row => row.dataset.agreementAffected);
+                const next = rows[rows.indexOf(id) + 1] ?? rows[rows.indexOf(id) - 1] ?? null;
+                state.values.affected = state.values.affected.filter(entry => idOf(entry.parcelId) !== id);
+                neighboursChanged();
+                (next !== null ? part(`[data-affected-remove="${root.CSS.escape(next)}"]`) : part('[data-agreement-neighbour-id]'))?.focus();
+            }
             if (['rights', 'lens'].includes(button.dataset.agreementAction)) openAuxiliary(button.dataset.agreementAction);
             if (button.dataset.agreementAction === 'apply-plan' && !root.BusyControl.isBusy(button)) {
                 root.BusyControl.track(button, async () => {
@@ -1247,9 +1767,13 @@
             }
         }, { signal });
         body.addEventListener('keydown', event => {
+            // Enter in the parcel id field adds the parcel; it must not save the agreement.
+            if (event.key === 'Enter' && event.target.matches('[data-agreement-neighbour-id]')) {
+                event.preventDefault(); part('[data-agreement-action="neighbour-add"]').click(); return;
+            }
             const tab = event.target.closest('[data-agreement-tab]'); if (!tab) return;
             const index = TABS.indexOf(tab.dataset.agreementTab);
-            const next = { ArrowRight: (index + 1) % 4, ArrowLeft: (index + 3) % 4, Home: 0, End: 3 }[event.key];
+            const next = { ArrowRight: (index + 1) % TABS.length, ArrowLeft: (index + TABS.length - 1) % TABS.length, Home: 0, End: TABS.length - 1 }[event.key];
             if (next !== undefined) { event.preventDefault(); activate(TABS[next], true); }
         }, { signal });
         body.addEventListener('click', event => {
@@ -1273,6 +1797,26 @@
         body.addEventListener('change', async event => {
             const target = event.target;
             try {
+                if (target.matches('[data-agreement-neighbour-candidate]')) {
+                    if (target.checked) state.neighbours.ticked.add(target.dataset.agreementNeighbourCandidate);
+                    else state.neighbours.ticked.delete(target.dataset.agreementNeighbourCandidate);
+                    renderCandidates(); return;
+                }
+                if (target.matches('[data-affected-right], [data-affected-field]')) {
+                    updateAffected(target);
+                    // Selects, tick boxes and a committed loss change what the row shows (the derived
+                    // payment and its note); other typed fields were taken as typed (input below).
+                    if (target.matches('select, [type="checkbox"], [data-affected-field="loss"]')) renderNeighbours();
+                    renderPersons(); issues(); return;
+                }
+                if (target.matches('[data-agreement-neighbour-preset]')) {
+                    const chosen = recordApi().NEIGHBOUR_PRESETS.find(row => `${row.id}@${row.version}` === target.value);
+                    state.values.neighbourCompensation = chosen ? { multipleBasisPoints: chosen.multipleBasisPoints, preset: { id: chosen.id, version: chosen.version } }
+                        : target.value === 'custom' ? { multipleBasisPoints: state.values.neighbourCompensation?.multipleBasisPoints || 10000 } : null;
+                    part('[data-agreement-neighbour-compensation]').innerHTML = neighbourCompensationHtml(state.values.neighbourCompensation);
+                    part('[data-agreement-neighbour-preset]').focus();
+                    renderNeighbours(); renderPersons(); issues(); return;
+                }
                 if (target.matches('[data-apartment-drawing]')) {
                     const file = target.files[0];
                     if (!file) return;
@@ -1380,6 +1924,27 @@
         }, { signal });
         body.addEventListener('input', event => {
             const target = event.target, terms = state.values.settlement;
+            if (target.matches('[data-affected-field]:not(select)')) {
+                updateAffected(target);
+                // A compensation's payment follows its stated loss as it is typed (read-only while it does).
+                const row = target.closest('[data-agreement-affected]');
+                try {
+                    const settled = draft().affected.find(entry => idOf(entry.parcelId) === row.dataset.agreementAffected);
+                    const payment = row.querySelector('[data-affected-field="consideration"]');
+                    const derived = !!settled && settled.effect === 'compensation' && !!settled.loss && Number.isSafeInteger(settled.loss.amountCents);
+                    if (payment !== target) {
+                        payment.readOnly = derived;
+                        if (derived) { payment.setAttribute('aria-readonly', 'true'); payment.value = centsText(settled.considerationCents); }
+                        else payment.removeAttribute('aria-readonly');
+                    }
+                } catch (_) { /* the validation names the problem */ }
+                renderPersons(); issues(); return;
+            }
+            if (target.matches('[data-agreement-neighbour-multiple]')) {
+                const multiple = Number(target.value);
+                state.values.neighbourCompensation = { multipleBasisPoints: target.value.trim() && Number.isFinite(multiple) ? Math.round(multiple * 10000) : NaN };
+                renderNeighbours(); renderPersons(); issues(); return;
+            }
             if (target.matches('[data-agreement-funding-target]')) { state.values.funding.targetInput = target.value; const amount = api.parseUsdc(target.value); state.values.funding.targetUsdcAtomic = amount === null ? '' : String(amount); issues(); return; }
             if (target.matches('[data-agreement-rate-slider]')) {
                 terms.rateCentsPerM2 = Number(target.value); part('[data-agreement-rate]').value = terms.rateCentsPerM2 / 100;
@@ -1446,6 +2011,7 @@
         allocationSummaryHtml, tabLabel, tabCounts, cashCents, cashInputText, termsOf, lensSummaryHtml, lensThresholdOptionsHtml, lensRule,
         keptTerms, sponsorLine, ruleConfigAfterDerive, deadlineFromDate, dateFromDeadline, recordFromForm,
         issueText, waitingText, ownersText, partyLabel, landHtml, allocationHtml, valuationHtml, valuationRows, ruleHtml, detailsHtml,
-        consultationHtml, bodyHtml, personsHtml, planSelectorHtml, inputDesignsHtml
+        consultationHtml, bodyHtml, personsHtml, planSelectorHtml, inputDesignsHtml,
+        readingText, affectedEntry, candidatesHtml, affectedRowHtml, neighboursHtml, neighbourCompensationHtml, affectedRows
     };
 });

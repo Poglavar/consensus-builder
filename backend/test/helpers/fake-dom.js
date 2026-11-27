@@ -320,6 +320,7 @@ export function makeEvent(type, init = {}) {
 export function makeDocument() {
     const doc = {
         createElement: tag => new FakeElement(tag, doc),
+        createElementNS: (_namespace, tag) => new FakeElement(tag, doc),
         createTextNode: text => new FakeText(text),
         listeners: new Map()
     };

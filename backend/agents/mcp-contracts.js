@@ -104,7 +104,7 @@ assign(['ugt_chat_cost'], mcpResultSchema.extend({ provider: z.string(), model: 
         tokenCounts: z.object({ inputTokens: count, outputTokens: count, cachedInputTokens: count, cacheWriteTokens: count }) }).optional() }));
 assign(['ugt_help'], mcpResultSchema.extend({ topic: z.string() }));
 assign(['ugt_map_view'], mcpResultSchema.extend({ view: object, parcelIdsVisible: z.boolean().optional(), roadTracksVisible: z.boolean().optional() }));
-assign(['ugt_select_parcels'], mcpResultSchema.extend({ selection: z.object({ parcelSourceId: z.string(), focusParcelId: z.string().nullable(), parcelIds: z.array(z.string()).max(MAX_SOURCE_BINDING_PARCELS), active: z.boolean() }), point: z.tuple([z.number(), z.number()]).optional(), parcelNumber: z.string().optional(), location: object.optional(), candidates: z.array(object).max(3).optional() }));
+assign(['ugt_select_parcels'], mcpResultSchema.extend({ selection: z.object({ parcelSourceId: z.string(), focusParcelId: z.string().nullable(), parcelIds: z.array(z.string()).max(MAX_SOURCE_BINDING_PARCELS), active: z.boolean() }), point: z.tuple([z.number(), z.number()]).optional(), parcelNumber: z.string().optional(), location: object.optional(), candidates: z.array(object).max(3).optional(), street: object.optional(), streetReference: object.optional() }));
 assign(['ugt_list_sources'], mcpResultSchema.extend({ items: z.array(z.object({ id: z.string(), abstraction: z.string() }).passthrough()), total: count, offset: count, truncated: z.boolean(), abstractions: z.array(object) }));
 assign(['ugt_export_draft'], mcpResultSchema.extend({ cid, artifact: object, publication: z.literal('private') }));
 assign(['ugt_import_design'], mcpResultSchema.extend({ designs: z.array(designDraft).min(1), ...placement, publication: z.literal('private'), import: z.object({ format: z.enum(['geojson', 'osm', 'opendrive']), placement: z.string(), count: count, parser: z.string() }) }));
@@ -124,8 +124,9 @@ assign(['ugt_render_preview'], mcpResultSchema.extend({ ready: z.literal(true), 
 const amount = z.number().finite().nullable();
 const comparedMoney = z.object({ currency: z.string().regex(/^[A-Z]{3}$/), unit: z.literal('m2-floor'),
     prices: z.object({ sale: object.nullable(), construction: object.nullable(), land: object.nullable(), saleTax: object.nullable(), rent: object.nullable() }),
-    floorAreaM2: amount, keptFloorAreaM2: amount.optional(), builtFloorAreaM2: amount.optional(), replacedFloorAreaM2: amount, landAreaM2: amount, value: amount, constructionCost: amount, landCost: amount,
-    saleTax: amount, taxReclaimed: amount, replacedValue: amount, totalCost: amount, profit: amount, annualRent: amount, rentYieldOnCost: amount });
+    floorAreaM2: amount, keptFloorAreaM2: amount.optional(), builtFloorAreaM2: amount.optional(),
+    plots: z.array(z.object({ landAreaM2: amount, replacedFloorAreaM2: amount })).nullable(), value: amount, constructionCost: amount, acquisitionCost: amount,
+    saleTax: amount, taxReclaimed: amount, totalCost: amount, profit: amount, annualRent: amount, rentYieldOnCost: amount });
 assign(['ugt_compare'], mcpResultSchema.extend({ alternatives: z.array(z.object({ cid, areaBasis: z.literal('authored-geometry'), measurementErrors: z.array(object),
     money: comparedMoney.nullable() }).passthrough()).min(2), warnings: z.array(z.union([z.string(), object])) }));
 

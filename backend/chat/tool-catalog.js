@@ -41,9 +41,31 @@ export function toModelTools(mcpTools = [], { activeEditor = false } = {}) {
         }
         return { name: tool.name, description: tool.description || '', input_schema: schema };
     });
+    shareAgreementTermDescriptions(tools);
     tools.push(...structuredClone(activeEditor ? RELAY_TOOLS.filter(tool => permitted.has(tool.name)) : RELAY_TOOLS));
     if (tools.length) tools.at(-1).cache_control = { type: 'ephemeral' };
     return tools;
+}
+
+// The chat sends its whole tool list with every message, so ugt_edit_agreement's terms do not repeat
+// the schemas ugt_draft_agreement already gives (user, 2026-11-27): a term whose schema is identical
+// keeps only its type, and the tool says to shape it as the draft tool's field of the same name (the
+// server validates it either way). Agents on MCP itself still get both tools in full.
+function typeOnly(node) {
+    const types = [...new Set((node?.anyOf || node?.oneOf || [node]).flatMap(part => part?.type ?? []))];
+    return types.length ? { type: types.length === 1 ? types[0] : types } : {};
+}
+
+function shareAgreementTermDescriptions(tools) {
+    const draft = tools.find(tool => tool.name === 'ugt_draft_agreement');
+    const terms = tools.find(tool => tool.name === 'ugt_edit_agreement')?.input_schema.properties.terms;
+    if (!draft || !terms?.properties) return;
+    const shared = Object.keys(terms.properties)
+        .filter(key => JSON.stringify(terms.properties[key]) === JSON.stringify(draft.input_schema.properties[key]));
+    if (!shared.length) return;
+    for (const key of shared) terms.properties[key] = typeOnly(terms.properties[key]);
+    const note = `Terms ${shared.join(', ')} have exactly the shape and meaning of ugt_draft_agreement's fields of the same names; read their schemas there.`;
+    terms.description = terms.description ? `${terms.description} ${note}` : note;
 }
 
 export function injectPlanArgs(name, input = {}, plan = null, agreement = null) {

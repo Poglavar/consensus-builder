@@ -130,7 +130,7 @@ An immutable `community-result/v1` record containing the agreement CID, organise
 
 ### Code electorate
 
-A community agreement's optional `consultation.voting` record commits a random list identifier and a sorted, unique set of voting-code verifiers. New lists are `community-voting/v2`, which can also commit a household partition and a ballot rule; published `community-voting/v1` lists (identifier and verifiers only) stay valid because published agreements are immutable. Eligibility is fixed by that agreement's CID. Changing the list creates a new agreement with separate ballots; votes never transfer automatically. An organiser assigns and distributes the codes and is trusted to determine eligibility. Names, contact details and their code assignments stay in the organiser's browser or local voter-list file.
+A community agreement's optional `consultation.voting` record commits a random list identifier and a sorted, unique set of voting-code verifiers (and, for a [street vote](#street-vote), may name its street). New lists are `community-voting/v2`, which can also commit a household partition and a ballot rule; published `community-voting/v1` lists (identifier and verifiers only) stay valid because published agreements are immutable. Eligibility is fixed by that agreement's CID. Changing the list creates a new agreement with separate ballots; votes never transfer automatically. An organiser assigns and distributes the codes and is trusted to determine eligibility. Names, contact details and their code assignments stay in the organiser's browser or local voter-list file.
 
 ### Voting code
 
@@ -150,7 +150,7 @@ A dated threshold set a code electorate can pin as `consultation.voting.rule = {
 
 ### Street vote
 
-A community code vote of the residents of one street on a plan for it, decided by a street-vote ballot rule. Two rules ship, both proposals for England that are not in force: Policy Exchange's Strong Suburbs (2021) and the government's December 2023 street vote development orders consultation. Owner sign-off is not part of the street vote: owners decide in a separate owners' agreement on the same plan, and the community agreement's voting panel lists those agreements beside the resident result without reading or changing their records.
+A community code vote of the residents of one street on a plan for it, decided by a street-vote ballot rule. Three rules ship, all proposals for England that are not in force: Policy Exchange's Strong Suburbs (2021), the government's December 2023 street vote development orders consultation, and Samuel Hughes's Living Tradition (Create Streets, 2021) for mansards. A rule can require [building eligibility](#building-eligibility): Living Tradition's covers only the houses the plan raises with a mansard, and its agreement cannot be created until each one is eligible; the voting record keeps that check (each house, its verdict, the failing or unknown tests and the source version read). Owner sign-off is not part of the street vote: owners decide in a separate owners' agreement on the same plan, and the community agreement's voting panel lists those agreements beside the resident result without reading or changing their records. The voting record can name the [street](#street) it covers (`consultation.voting.street`): the street's name, its OSM way ids, whole street or one [segment](#segment) with each end (its kind, the roads branching there or the house number, and its point), the [side](#side), and the official id where a source gives one. It comes from the street picked with Street here (or `ugt_select_parcels` action `street`), offered in the agreement editor while its parcels are among the plan's land; the person can leave it out. A plan or design never names a street.
 
 ### Agreement input
 
@@ -400,6 +400,22 @@ A level is a discrete topology label, with omitted levels treated as ground leve
 
 An MCP road draft, import or edit is joined to the roads and tracks of the agent's working plan, by the same junction planning as the map editor; a neighbour whose junctions change is replaced in the plan by a revised design naming it by `origin.cid`. Agreement drafting does not revise designs. Reading, applying or comparing published records does not rewrite their topology.
 
+### Street
+
+User decision, 2026-11-27: "A street is the road, branches included, carrying one official name (only numbers and monikers differ), from the official source where one exists (England: OS Open USRN / OS Open Names)."
+
+Implemented as the connected OSM road ways (any road class; a service way only when named) that carry one name, compared without case, full stops or apostrophe variants, branches included; ways whose ends lie within 20 m join. Its official identity comes from a `street-identity` source: OS USRNs that OSM ways carry as `ref:GB:usrn` (an identity only when every way of the street or segment carries the same one), or a street register in geodata (`public.street`, Zagreb) matched by name inside its coverage. Elsewhere a street has no official id and is named by its OSM ways. `GET /streets/segments` reads one at a point or by name; the shared road vocabulary (`cadastre-data/roads.md`) also defines Street. A street is a selection aid and a reference a street vote records, never a design.
+
+### Segment
+
+User decision, 2026-11-27: "A segment is the part of a street between two referable points: its start, its end, a bend of 30° or more (measured over a baseline of tens of metres, not adjacent vertices), a branching (major or minor road), a bridge wider than 3 m, a gap over 50 m between buildings, or a house number (official numbers where published, OSM as the fallback)." Hughes's street (Strong Suburbs; Living Tradition para. 1) is a segment between two branchings.
+
+Implemented in `frontend/js/streets/street-segments.js`. Referable points are: an end; a branching, where any other road (not a footway, path, cycleway, track or unnamed service way) or a branch of the street itself meets it; a bend whose 20 m chords on both sides of a vertex turn 30° or more, the sharpest within 20 m counting once; both ends of a bridge carrying the street for more than 3 m; a bridge over it (another way tagged `bridge`) wider than 3 m by its `width` tag, else 5 m for a railway, 2–2.5 m for a footway, path or cycleway and 6 m for a road; both edges of a gap over 50 m between the OSM buildings within 40 m of it (none when the buildings could not be read); and a house number within 50 m whose `addr:street` is the street's name (OSM; no open official numbers are read). Points within 5 m are one. The offered segments lie between consecutive referable points other than house numbers; house numbers name ends and bound a selection between any two points on one stretch. A segment is not the road vocabulary's connectivity stretch (`road_stretch`), which breaks at every junction only.
+
+### Side
+
+The left, right or both sides of a segment, relative to its direction: a segment runs west to east, or south to north when it runs more north–south. The UI names a side by compass ("north side"). A parcel is along a side when a perpendicular ray from the centreline, cast every 2 m up to 40 m, reaches that parcel's boundary first for at least 3 m of the segment; parcels containing the centreline and road parcels are looked through. For the whole street, each segment's own sides are used.
+
 ### Map share
 
 A design link shares exactly one published design revision. A plan link shares exactly one saved plan revision; when an applied member has a revision or rebind successor, Share plan prepares a new unpublished plan revision, otherwise its dialog cannot change the plan's name, membership or view. Create plan (Lists → Designs or Plans) ticks the plan's designs in Lists → Designs, where the ticked designs show on the map together, then names the plan and its saved view without publication; the plan dialog lists those designs and changes them only through Change designs, back in the list. Add to plan opens creation or a reviewed revision of a chosen saved plan with that design added, and Edit plan opens a revision with the plan's designs. Each Lists tab offers Create (a plan on Designs and Plans, an agreement on Agreements; a design starts from its place on the map), Compare, Import of its file kind (a design file adds its designs as drafts and keeps no plan) and Imported, the records files brought to this device. Saving any change creates a new immutable snapshot; existing links remain unchanged. Create agreement starts a separate agreement editor from a saved plan, and agreement sharing uses that agreement's own flow. “Lists” names the panel containing Designs, Plans and Agreements. Each tab lists one object per row, drafts and published alike: unpublished and published are stages of saving one object (autosaved in this browser, then also saved on the server when published; an agreement can also be on chain), and fetching a published object is automatic, its browser copy only a cache. Deleting a draft does not remove plan members or change an agreement’s exact plan reference. The Designs tab's **On the map** toggle, with its count, shows only the designs applied in this browser; the filters' Reset turns it off. **Unapply all** beside it, with the same count, takes them all off the map and is absent when none is on it. A Designs row carries no “Status unknown” badge; a known lifecycle modifier (Expired, Withdrawn, Awaiting funding) keeps its badge.
@@ -501,7 +517,7 @@ An existing building a plan's designs neither clear nor extend. A plan's standin
 
 ### Profit on the new floor area
 
-A model at the city's prices where its land is (economic rates for that location, or the prices a person slides or types or an agent passes), in its currency: the value of the new floor area (floor area × sale price, tax included as quoted), its all-in cost, and the profit, value − all-in cost. The all-in cost is the construction (floor area × construction cost), the development charge (floor area × the place's charge per m² of new floor area), the land (land area × land price per m² of land), the sale tax inside the value (value × tax share ÷ (1 + tax share)), less the tax reclaimed on construction, and the value of the existing floor area the new building replaces at the same sale price. The tax reclaimed is construction × tax share ÷ (1 + tax share) when the construction rate includes the tax on its inputs (`taxIncluded`), as a statistics office's cost of what developers paid does, and 0 otherwise. The land is the plan's land in Plan stats, the parcel, or the design's parcels or site, in the 3D panel, and the designs' sites in `ugt_compare`. The replaced floor area is what the 3D panel finds standing on the parcel, and for Plan stats and `ugt_compare` the cleared floor area: what the designs clear of existing buildings, measured by plan-yield's rules, a cut building counting the part it loses. The floor area is what is built: the designs' floor area less what extended buildings already had, and the land is the plan's land less the land of designs that only extend. A missing price or area, a cleared building without a height, or an extended building without a stated existing height leaves what depends on it unknown, never zero. At a monthly rent per m² of floor area, the annual rent is floor area × rent × 12, and the rent yield on cost is the annual rent ÷ the construction, development charge, land and replaced value: a landlord who charges no tax on the rent and reclaims none on construction. A missing land price leaves the all-in cost and profit unknown. Fees and finance are not in it; it is not an appraisal.
+A model at the city's prices where its land is (economic rates for that location, or the prices a person slides or types or an agent passes), in its currency: the value of the new floor area (floor area × sale price, tax included as quoted), its all-in cost, and the profit, value − all-in cost. The all-in cost is the construction (floor area × construction cost), the development charge (floor area × the place's charge per m² of new floor area), the acquisition, and the sale tax inside the value (value × tax share ÷ (1 + tax share)), less the tax reclaimed on construction. The tax reclaimed is construction × tax share ÷ (1 + tax share) when the construction rate includes the tax on its inputs (`taxIncluded`), as a statistics office's cost of what developers paid does, and 0 otherwise. The acquisition buys each plot once, at its benchmark value: the higher of its land value (land area × land price per m² of land) and the value of the existing floor area the new floor area replaces on it at the same sale price (its existing use value). Vacant land is its land value; the land under a replaced building is not paid for again on top of the building. No premium is added. A plot is a parcel the plan stands on, with its part of the plan's land, or the plan's land on no parcel (open ground), in Plan stats and `ugt_compare`; in the 3D panel it is the parcel, each of the design's parcels, or its site. Its land is the plan's land in Plan stats and the designs' sites in `ugt_compare`, the parcel's or site's land in the 3D panel. Its replaced floor area is, for Plan stats and `ugt_compare`, the cleared floor area on it: what the designs clear of existing buildings, measured by plan-yield's rules, a cut building counting the part it loses and belonging whole to the parcel holding most of its footprint; in the 3D panel, the floor area standing on it. The floor area is what is built: the designs' floor area less what extended buildings already had; an extended building's floor area is neither sold nor replaced, and the land of designs that only extend is not bought. A missing price or area, a cleared building without a height, or an extended building without a stated existing height leaves what depends on it unknown, never zero. At a monthly rent per m² of floor area, the annual rent is floor area × rent × 12, and the rent yield on cost is the annual rent ÷ the construction, development charge and acquisition: a landlord who charges no tax on the rent and reclaims none on construction. A missing land price leaves the all-in cost and profit unknown. Fees and finance are not in it; it is not an appraisal.
 
 ### Private draft reference
 
@@ -661,10 +677,41 @@ What is known about a source building beside its shape: storeys, when it was bui
 and parapet (and height). The shared API's building-facts contract answers them for any city;
 this app reads only that contract, never a source's own format. Each fact names its source, the
 source's key and raw value; an unknown fact is unknown, never a default. "Built" is a span of
-years, so a date known only as "before 1913" still decides a rule about 1918. OpenStreetMap
-buildings are answered live from OpenStreetMap, and a missing fact is added there by whoever
+years, so a date known only as "before 1913" still decides a rule about 1918. Footprint area and
+row size (how many buildings are joined to it by shared walls of at least 1.5 m) come from the
+source's geometry. OpenStreetMap
+buildings are answered from OpenStreetMap through Overpass, a few minutes behind edits, and a missing fact is added there by whoever
 needs it (`building:parapet=yes|no` for a parapet along the whole street front). Croatian
 cadastre buildings are to join the same contract.
+
+**Adding a fact** from the app (the building card, an agreement's covered houses) saves it to
+OpenStreetMap as the person's own edit: they sign in with their OSM account ("Sign in with
+OpenStreetMap"), choose a value for each unknown parapet, roof shape or storey count, and the tags
+go up in one changeset. The app then shows the saved facts at the version the edit made until the
+contract reaches that version. Only people add facts; agents read them (OSM treats AI-agent edits
+as automated edits needing community approval).
+
+**Heritage** is the protection the country's heritage register gives the building: listed or not,
+the grade as the register states it (England: I, II*, II), the entry's reference and page, and the
+basis of the match. Each register is a source of the contract that declares the places it covers;
+England's is the National Heritage List, read from planning.data.gov.uk (`listed-building-outline`
+and `listed-building`). A building is matched by an outline over it, by the entry's point inside
+it, or by the entry's house numbers against its `addr:street` and `addr:housenumber` (a terrace is
+often one entry with one point, "Numbers 26 to 50"). Where a register covers the place, a building
+no entry reaches is not listed. Heritage is unknown outside every register, where an entry on the
+building's shared-wall row or just beside it may cover it, where a range may or may not include its
+number, and while the register does not answer; the contract then says why.
+
+### Building eligibility
+
+Whether a source building meets a rule set's conditions on what it is, test by test, judged only
+from its building facts, so the app and the agents' server judge it alike. A test passes, fails, is
+unknown while its fact is, or is unchecked when no source states it (listed, not assumed). Living
+Tradition's "not listed Grade I or II*" reads the heritage fact: not listed or Grade II passes,
+Grade I or II* fails, and a listing whose grade the register does not state is unknown. The
+verdict is ineligible when a test fails, unknown while one is unknown, else eligible. A rule set is
+dated like a ballot rule and applies where a city plans under its planning rule set. The first is
+Living Tradition's paragraph 17 for mansards under English planning (`gb-eng-planning`).
 
 ### Proposed building
 
@@ -712,7 +759,7 @@ A **mansard** is a roof holding a storey: on the street and the garden side it s
 
 ### Raised existing buildings
 
-The Block editor's **Based on existing buildings** mode (`parameters.mode: "existing"`): the design's buildings are the existing buildings on its parcels, each redrawn on its own footprint at a stated number of storeys (`rule: "exact"`) or at its existing height plus added storeys (`rule: "additional"`, which may be none), with a roof of its own (`parameters.roof`, on each building as `properties.roof`). It carries no urban rule and takes no land, and it replaces nothing: each building it redraws is **extended**. Its floor area before (its existing height over the design's storey height, never more than its walls hold after) is kept: Plan stats, Compare plans, the 3D value panel and `ugt_compare` count it among the existing buildings ("of which existing, extended"), build, sell and tax only the floor area it gains, subtract no replaced value for it and charge its land nothing. A building whose existing height is not stated leaves the gain and the money unknown. A stated height below the existing one adds nothing. A mansard on a terrace is this mode with no added storeys and the mansard roof.
+The Block editor's **Based on existing buildings** mode (`parameters.mode: "existing"`): the design's buildings are the existing buildings on its parcels, each redrawn on its own footprint at a stated number of storeys (`rule: "exact"`) or at its existing height plus added storeys (`rule: "additional"`, which may be none), with a roof of its own (`parameters.roof`, on each building as `properties.roof`) and the design's storey height (`parameters.floorHeightM`, on each building as `properties.floorHeightM`). It carries no urban rule and takes no land, and it replaces nothing: each building it redraws is **extended**. Its floor area before (its existing height over the design's storey height, never more than its walls hold after) is kept: Plan stats, Compare plans, the 3D value panel and `ugt_compare` count it among the existing buildings ("of which existing, extended"), build, sell and tax only the floor area it gains, and acquire neither its floor area nor its land. A building whose existing height is not stated leaves the gain and the money unknown. A stated height below the existing one adds nothing. A mansard on a terrace is this mode with no added storeys and the mansard roof.
 
 ### Block rule
 
@@ -796,7 +843,7 @@ The comparison of a design's buildings with the Permitted items under them, rule
 
 ### Effects on neighbours
 
-What a design does to each neighbouring plot, before and after it: the share of the plot's garden with a number of hours of sun on a given day, the sky a wall facing the design sees (vertical sky component), the share of the year's probable sunlight hours a window facing the noon sun gets (sun positions weighted by the place's sunshine records, `frontend/data/sunshine-records.json`; no records, no reading), the share of each room's working plane that sees sky (the no-sky line, measured on demand per plot in the suggested layouts of its buildings), the angle tests from its windows and the distance to the nearest facing wall, each against the place's guide for it. An angle test can be a first check for a detailed reading (its guide's `then`): crossing it then says that reading decides, and grades nothing. The guides (which readings apply, their thresholds, whether they bind) are a rule set's `neighbourGuides`; a place whose rule sets state none has no effects readings. "Before" is the buildings standing now; "after" removes those on the design's parcels and adds the design's. Neighbours' heights are the height survey's where it covers them. A plot is listed only when a reading changes; it is beyond a guide, or loses something within the guides. Advice, like the Permitted check. See [neighbour-effects.md](neighbour-effects.md).
+What a design does to each neighbouring plot, before and after it: the share of the plot's garden with a number of hours of sun on a given day, the sky a wall facing the design sees (vertical sky component), the share of the year's probable sunlight hours a window facing the noon sun gets (sun positions weighted by the place's sunshine records, `frontend/data/sunshine-records.json`; no records, no reading), the share of each room's working plane that sees sky (the no-sky line, measured on demand per plot in the suggested layouts of its buildings), the angle tests from its windows and the distance to the nearest facing wall, each against the place's guide for it. An angle test can be a first check for a detailed reading (its guide's `then`): crossing it then says that reading decides, and grades nothing. The guides (which readings apply, their thresholds, whether they bind) are a rule set's `neighbourGuides`; a place whose rule sets state none has no effects readings. "Before" is the buildings standing now; "after" removes those on the design's parcels and adds the design's. Neighbours' heights are the height survey's where it covers them. A plot is listed only when a reading changes; it is beyond a guide, or loses something within the guides. Advice, like the Permitted check. The agreement editor's Neighbours tab measures the same readings for the agreement's plan and adds ticked plots as [affected parcels](#affected-parcel) with a snapshot of their readings. See [neighbour-effects.md](neighbour-effects.md).
 
 ### Planning designation
 
@@ -971,7 +1018,19 @@ The source-qualified building footprints considered by an operation, with any kn
 
 ### Allocation party
 
-Each input parcel of an agreement is exactly one allocation party, `parcel-owner:<parcelId>`, displayed as “Owner(s) of parcel X”. Allocations name no persons: input parcels carry no holders, and allocations and money lines name a parcel party, the proposer or the public. The parcel party is the owner group of that parcel whoever its members are; it is not verified ownership.
+Each input parcel of an agreement is exactly one allocation party, `parcel-owner:<parcelId>`, displayed as “Owner(s) of parcel X”. Allocations name no persons: input parcels carry no holders, and allocations and money lines name a parcel party, the proposer or the public. The parcel party is the owner group of that parcel whoever its members are; it is not verified ownership. An [affected parcel](#affected-parcel) is a party under the same key: it receives a money line but never an allocation, since it gives no land.
+
+### Affected parcel
+
+A parcel outside an owners' agreement's input land whose owners give a right the plan affects and no land: a neighbour. Its party is `parcel-owner:<parcelId>`, the same party concept as an input parcel's, and a parcel is never both. The agreement's `affected` list records, per affected parcel, the right(s) it gives (daylight, sunlight, outlook, garden, privacy, or other with a note), whether it is a [waiver](#waiver) or [compensation](#compensation), the [Effects on neighbours](#effects-on-neighbours) readings it rests on as a snapshot (kind, before, after, guide, grade), an optional stated loss and its [consideration](#consideration). The list is part of the published object and its CID; an agreement without one carries no `affected` field. Affected parcels count in no land balance, scheme cap or owners' test.
+
+### Waiver
+
+An affected parcel's owners giving up a right, possibly for a consideration. Each waiver parcel's owners are parties to the decision (`waiverParcelIds` in the approval context) whom no owners' test counts: the agreement passes only when all of them approve, whatever the tally of the input owners. A lens member checks a waiver parcel's rights like an input parcel's.
+
+### Compensation
+
+What an owners' agreement pays an affected parcel's owners without their consent, for a loss it causes them. It is a multiple of a stated loss in market value: the rule's `neighbourCompensation.multipleBasisPoints` (10000 is 1×, the default when none is set; a preset such as Strong Suburbs' 150%, marked unverified until its citation is checked, fixes it). The loss is stated by the sponsor or a valuer (with an optional reference), never derived from the readings. Under a multiple other than 1× compensation needs a stated loss; under 1× without one its amount is stated directly. Not the land settlement's area or value compensation.
 
 ### Persons
 
@@ -1143,7 +1202,7 @@ A stated cash amount assigned to a party under an agreement, with its currency a
 
 ### Consideration
 
-The payment or other value proposed in exchange for an agreement's land or rights effects. An offered amount is distinct from a funded escrow balance and an actual payment.
+The payment or other value proposed in exchange for an agreement's land or rights effects. An offered amount is distinct from a funded escrow balance and an actual payment. An affected parcel's consideration (`considerationCents`, whole cents in the agreement's currency) is a money line to its party that the sponsor pays, whatever the land settlement: a waiver's is stated freely (it may be 0); a compensation's is the rule's multiple of its stated loss.
 
 ### Contribution
 
