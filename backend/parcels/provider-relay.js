@@ -63,7 +63,6 @@ import { isGeosaParcelSource, GEOSA_REFERER } from './geosa-transport.js';
 import { arcgisIdentifyEndpoint } from './arcgis-identify-source.js';
 import { isNcaSource, NCA_HRODNA_SCOPE } from './by-nca-source.js';
 import { SALTILLO_SOURCE_ID, SALTILLO_ENDPOINT, SALTILLO_LOCATOR, isSaltilloParcelRequest } from './saltillo-visor-source.js';
-import { withPkkSnapshotFallback } from './kazakhstan-pkk-snapshot.js';
 
 const HMLR = 'https://use-land-property-data.service.gov.uk';
 const HMLR_ROOT = `${HMLR}/datasets/inspire/download`;
@@ -633,12 +632,6 @@ export async function fetchParcelProviderRelay(request, options = {}) {
             ? (mylandRelayFetch ||= createProviderRelayFetch({ keepAlive: true }))
             : createProviderRelayFetch({ keepAlive: ['ugnlis-parcel-search', 'geojson-range', 'shapefile-range', 'flatgeobuf-range', 'santos-lotes', 'geopixel', 'tijuana-implan-wms'].includes(descriptor.adapter) }));
         transport = (url, init) => providerFetch(url, { ...init, ...(userAgent ? { userAgent } : {}) }, { timeoutMs });
-    }
-    if (descriptor.adapter === 'kazakhstan-pkk') {
-        // A failed live read is answered from the saved copy of the district (x-parcel-snapshot).
-        const liveTransport = transport;
-        const withCopy = (options.pkkSnapshotFallback || withPkkSnapshotFallback)((href, init) => liveTransport(new URL(href), init));
-        transport = (url, init) => withCopy(url.href, init);
     }
     if (isMylandWfsSource(descriptor)) {
         // Retain the relay's public-DNS validation and TLS transport on every attempt.

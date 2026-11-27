@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Saves complete copies of Kazakhstan cadastre (EGKN PKK) district parcel views (egkn:u_view), the
-// copies parcels/kazakhstan-pkk-snapshot.js answers from when the live view fails. Pages of 1,000
+// Saves complete copies of Kazakhstan cadastre (EGKN PKK) district parcel views (egkn:u_view): backups
+// that are not served, kept in case the cadastre closes outside access. Pages of 1,000
 // parcels ordered by gid are kept in <out-dir>/work/district-<id>/ until a district is complete, then
 // merged into <out-dir>/u_view-district-<id>.geojson.gz and the pages deleted. Resumable (saved pages
 // are skipped), paced (one request at a time with a gap), and one district's failure never stops the
@@ -10,12 +10,12 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { createHttpsJsonFetch } from '../parcels/https-json-fetch.js';
-import { snapshotFileName } from '../parcels/kazakhstan-pkk-snapshot.js';
 import { kazakhstanPkkLayerEndpoint } from '../parcels/kazakhstan-pkk-source.js';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const CA = path.join(HERE, '..', 'parcels', 'certificates', 'sectigo-public-server-authentication-ca-dv-r36.pem');
 const PAGE = 1000;
+const snapshotFileName = districtId => `u_view-district-${districtId}.geojson.gz`;
 const USAGE = `Usage: node scripts/snapshot-kazakhstan-pkk.mjs --out-dir <dir> --district <id> [--district <id> …] [--gap-ms 3000] [--refresh]
 
 Saves each district's complete parcel view as <dir>/${snapshotFileName('<id>')}. A district whose copy

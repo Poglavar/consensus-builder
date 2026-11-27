@@ -2,7 +2,6 @@
 import { readFileSync } from 'node:fs';
 import { createHttpsJsonFetch } from '../parcels/https-json-fetch.js';
 import { kazakhstanPkkLayerEndpoint } from '../parcels/kazakhstan-pkk-source.js';
-import { copyAnswers } from '../parcels/kazakhstan-pkk-snapshot.js';
 
 const PROBE_CACHE_MS = 10 * 60 * 1000;
 // About 300 m of Alatau (Yntymak), in the district view's native grid: dozens of parcels.
@@ -12,9 +11,9 @@ const PROBE_URL = `${kazakhstanPkkLayerEndpoint('egkn:u_view')}?${new URLSearchP
 const PROBE_HEADERS = { 'User-Agent': 'Mozilla/5.0', Referer: 'https://map.gov4c.kz/egkn/', Accept: 'application/json' };
 
 /**
- * Asks the live cadastre directly, never its saved copy: { status: 'ok', parcels } or
- * { status: 'blocked' | 'error', httpStatus?, error? }. A copy answering reads hides a block from
- * visitors, so this is what tells us.
+ * Asks the live cadastre directly: { status: 'ok', parcels } or { status: 'blocked' | 'error',
+ * httpStatus?, error? }. The hourly alerts-server check reads it, so a new block is reported and the
+ * saved copies (scripts/snapshot-kazakhstan-pkk.mjs) can be put into service by hand.
  */
 export function createKzCadastreProbe({ fetchImpl, now = Date.now } = {}) {
     let fetchJson = fetchImpl;
@@ -34,7 +33,7 @@ export function createKzCadastreProbe({ fetchImpl, now = Date.now } = {}) {
         } catch (error) {
             result = { status: 'error', error: error.name === 'TimeoutError' ? 'timed out' : error.message };
         }
-        result = { ...result, checkedAt: new Date(now()).toISOString(), copyAnswersSinceStart: copyAnswers.count, lastCopyAnswer: copyAnswers.last };
+        result = { ...result, checkedAt: new Date(now()).toISOString() };
         cached = { at: now(), result };
         return result;
     };

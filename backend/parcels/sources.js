@@ -76,7 +76,6 @@ import { createPulsePublicParcelSource } from './pulse-public-source.js';
 import { createBfDgiParcelSource } from './bf-dgi-source.js';
 import { createDivoEcommunesSource } from './divo-ecommunes-source.js';
 import { createHttpsJsonFetch } from './https-json-fetch.js';
-import { withPkkSnapshotFallback } from './kazakhstan-pkk-snapshot.js';
 import { HttpError } from '../utils/helpers.js';
 import { decodeCustomSource } from './custom-source-config.js';
 import { createPublicSourceFetch } from './public-source-fetch.js';
@@ -201,10 +200,6 @@ export function createParcelSource(descriptor, options = {}) {
             certificateFetches.set(descriptor.caCertificate, createHttpsJsonFetch(certificate));
         }
         options = { ...options, fetchImpl: certificateFetches.get(descriptor.caCertificate) };
-    }
-    // The Kazakhstan cadastre answers from a saved copy of the district when the live view fails.
-    if (descriptor.adapter === 'kazakhstan-pkk') {
-        options = { ...options, fetchImpl: withPkkSnapshotFallback(options.fetchImpl || globalThis.fetch) };
     }
     const source = SourceRuntime.source('parcels', descriptor.adapter, descriptor, {
         kind: /^(custom|building)\./.test(descriptor.id) ? 'custom' : 'default'

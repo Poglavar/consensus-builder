@@ -22,7 +22,7 @@ describe('GET /health/kz-cadastre', () => {
         const app = createRouteApp(setupHealthRoute, { kzCadastreProbe: createKzCadastreProbe({ fetchImpl }) });
         const res = await request(app).get('/health/kz-cadastre');
         expect(res.status).toBe(200);
-        expect(res.body).toMatchObject({ status: 'ok', parcels: 12, copyAnswersSinceStart: expect.any(Number) });
+        expect(res.body).toMatchObject({ status: 'ok', parcels: 12 });
         const [url, init] = fetchImpl.mock.calls[0];
         expect(new URL(url).pathname).toBe('/geoserver/egkn/u_view/wfs');
         expect(init.headers['User-Agent']).toBe('Mozilla/5.0');

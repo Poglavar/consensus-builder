@@ -160,24 +160,19 @@ Chrome, so the parcel source, the relay and the copy script send `User-Agent: Mo
 viewer as Referer. The server omits its Sectigo DV R36 intermediate certificate, which
 `backend/parcels/certificates/` supplies.
 
-When the live parcel view fails (refused, unreachable, or no answer within 8 s), the backend source
-and the relay answer the same `u_view` read from a saved copy of the district
-([`kazakhstan-pkk-snapshot.js`](../backend/parcels/kazakhstan-pkk-snapshot.js)). The answer has the
-live page shape and carries `x-parcel-snapshot: <saved time>`, and the relay never lets browsers or
-Cloudflare cache it. Copies are `u_view-district-<id>.geojson.gz` in `KZ_PKK_SNAPSHOT_DIR`
-(`/root/data/kz-pkk-copies` on prod), written by
+Parcels are always read live. Complete copies of the district views are kept as backups and are not
+served: `u_view-district-<id>.geojson.gz` (the provider's own features, gzipped), written by
 [`snapshot-kazakhstan-pkk.mjs`](../backend/scripts/snapshot-kazakhstan-pkk.mjs) (paced, resumable,
 one district's failure never stops the others; districts already saved are skipped). Valhalla's
-`kz-pkk-archive.service` keeps copies of the districts of Alatau, Astana, Almaty, Shymkent and
-nineteen other cities; the district ids are features of `egkn:districts`, and several cities also have
-older ids that hold no parcels. A copy reads area edges strictly, where the live
-server includes parcels up to about half a metre outside the box. A district without a copy fails
-as before.
+`kz-pkk-archive.service` writes them to `/root/data/kz-pkk-copies` for the districts of Alatau,
+Astana, Almaty, Shymkent and nineteen other cities, and they are archived on the Storage Box under
+`source-archive/kz-pkk-copies/<date>/`. The district ids are features of `egkn:districts`; several
+cities also have older ids that hold no parcels. If the cadastre closes outside access, serving a
+copy (loaded into the database, not into the API's memory) is a deliberate manual step.
 
-Because a copy hides a block from visitors, `GET /health/kz-cadastre` asks the live view itself (about
-300 m of Alatau, at most every 10 minutes) and answers 200 with a parcel count, or 503 with the
-reason; it also reports how many reads a copy has answered since the API started. An hourly
-alerts-server check watches it.
+`GET /health/kz-cadastre` asks the live view (about 300 m of Alatau, at most every 10 minutes) and
+answers 200 with a parcel count, or 503 with the reason. An hourly alerts-server check watches it, so
+a new block is reported.
 
 If the layer addresses close too, the map's image service (`/geoserver/egkn/wms`, which the viewer
 itself uses) still answered on 2026-11-27: `GetFeatureInfo` with `INFO_FORMAT=application/json`
