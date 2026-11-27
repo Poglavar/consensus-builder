@@ -88,7 +88,7 @@
             if (cid && window) schedule[cid] = copy(window);
         });
         return runtime.PlanComposition.create(row.content.title, members, row.content.view,
-            Object.keys(schedule).length ? schedule : null);
+            Object.keys(schedule).length ? schedule : null, row.content.codes);
     }
     function endpoint(win) {
         // URL parameters cannot choose a recipient for private content on a hosted page.

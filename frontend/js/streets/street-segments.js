@@ -553,6 +553,42 @@
         return out;
     }
 
+    /**
+     * The lines of a recorded street reference, from a GET /streets/segments answer of that street:
+     * every segment for a whole street; for a segment, the answer's segments between its two ends
+     * (ends within MERGE_M of a referable point, along the chain they bound). Ends that are no
+     * referable point of the answer (a house number) give the straight line between them, marked
+     * `approximate`. Returns { lines: [[lng, lat]...][], approximate } or null when the answer is
+     * another street.
+     */
+    function linesFor(reference, answer) {
+        const segments = Array.isArray(answer?.segments) ? answer.segments : [];
+        if (!segments.length || normaliseName(answer.street?.name) !== normaliseName(reference.name)) return null;
+        if (reference.part === 'street') return { lines: segments.map(segment => segment.coordinates), approximate: false };
+        const f = frame(reference.from.point[0], reference.from.point[1]);
+        const near = (a, b) => { const [ax, ay] = f.toM(a), [bx, by] = f.toM(b); return Math.hypot(ax - bx, ay - by) <= MERGE_M; };
+        const ends = [reference.from.point, reference.to.point];
+        const endOf = segment => [segment.coordinates[0], segment.coordinates[segment.coordinates.length - 1]];
+        // Walk from the segment starting at one end to the other end, through consecutive segments.
+        for (const [start, goal] of [ends, [...ends].reverse()]) {
+            let at = start;
+            const used = new Set(), lines = [];
+            for (let step = 0; step < segments.length; step++) {
+                const next = segments.findIndex((segment, i) => !used.has(i) && near(endOf(segment)[0], at));
+                const back = next < 0 ? segments.findIndex((segment, i) => !used.has(i) && near(endOf(segment)[1], at)) : -1;
+                const index = next >= 0 ? next : back;
+                if (index < 0) break;
+                used.add(index);
+                const coordinates = next >= 0 ? segments[index].coordinates : [...segments[index].coordinates].reverse();
+                lines.push(coordinates);
+                at = coordinates[coordinates.length - 1];
+                if (near(at, goal)) return { lines, approximate: false };
+                if (lines.length > 1 && segments.filter((segment, i) => !used.has(i) && (near(endOf(segment)[0], at) || near(endOf(segment)[1], at))).length > 1) break;
+            }
+        }
+        return { lines: [[reference.from.point, reference.to.point]], approximate: true };
+    }
+
     return Object.freeze({ ROAD_CLASSES, SIDES, KINDS, BEND_DEGREES, BEND_BASELINE_M, BUILDING_GAP_M, BRIDGE_MIN_M,
-        normaliseName, normaliseWays, streetAt, streetWays, segmentStreet, plotsAlong, sideCompass, reference, normaliseReference });
+        normaliseName, normaliseWays, streetAt, streetWays, segmentStreet, plotsAlong, sideCompass, reference, normaliseReference, linesFor });
 });

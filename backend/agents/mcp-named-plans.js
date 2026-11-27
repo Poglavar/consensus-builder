@@ -136,7 +136,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
         preview.draftArtifact.designSources = designSources;
         return { plan, cid, designs, publication: 'private', ...extra, ...preview };
     }
-    async function draftPlan({ designs: inputs, title, view, schedule, when = null, buildout = null }) {
+    async function draftPlan({ designs: inputs, title, view, schedule, codes = null, when = null, buildout = null }) {
         if (!Array.isArray(inputs) || !inputs.length || inputs.length > PlanRecord.MAX_DESIGNS) fail('invalid-plan', 'Choose between 1 and 1000 designs.');
         const designs = [];
         for (const input of inputs) {
@@ -160,7 +160,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
         }
         let plan;
         const cids = designs.map(row => row.cid), windows = scheduleWith({}, schedule, new Map(), cids);
-        try { plan = PlanRecord.create(title, cids, view || defaultView(designs), windows); }
+        try { plan = PlanRecord.create(title, cids, view || defaultView(designs), windows, codes); }
         catch (error) { fail('invalid-plan', error.message); }
         return privateResult(plan, designs, {}, { when, buildout });
     }
@@ -193,7 +193,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
         let plan;
         const cids = members.map(row => row.cid);
         try { plan = PlanRecord.create(original?.plan.title || incoming[0]?.content.title || 'Working plan', cids, original?.plan.view || defaultView(members),
-            carrySchedule(original?.plan.schedule, renames, cids)); }
+            carrySchedule(original?.plan.schedule, renames, cids), original?.plan.codes); }
         catch (error) { fail('invalid-plan', error.message); }
         return { placement: { status: 'placed' }, designs: placed, consequences,
             plan: await privateResult(plan, members, original ? { previousCid: original.cid } : {}) };
@@ -273,7 +273,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
             selectionBasis: 'References belong to this immutable named plan revision. Compass selection requires the whole object bbox beyond the anchor bbox.',
             next: trustedMetadata({ tool: 'ugt_edit_plan', action: 'Use expectedCid and explicit refs. Ask the person when their description matches more than one object.' }) };
     }
-    async function editPlan({ plan: value, expectedCid, operations = [], title, view, schedule, when = null, buildout = null }) {
+    async function editPlan({ plan: value, expectedCid, operations = [], title, view, schedule, codes, when = null, buildout = null }) {
         const original = await resolvePlan(value);
         checkRevision(value, expectedCid, original.cid);
         if (!operations.length && title === undefined && view === undefined && schedule === undefined) fail('empty-edit', 'Supply membership/design operations, a title, a saved view or construction windows.');
@@ -366,7 +366,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
         const renames = new Map([...changes.filter(change => change.beforeCid && change.afterCid).map(change => [change.beforeCid, change.afterCid]),
             ...consequences.junctions.map(change => [change.beforeCid, change.afterCid])]);
         const windows = scheduleWith(original.plan.schedule, schedule, renames, cids);
-        try { plan = PlanRecord.create(title ?? original.plan.title, cids, view ?? original.plan.view, windows); }
+        try { plan = PlanRecord.create(title ?? original.plan.title, cids, view ?? original.plan.view, windows, codes === undefined ? original.plan.codes : codes); }
         catch (error) { fail('invalid-plan', error.message); }
         return privateResult(plan, [...working.values()], { previousCid: original.cid, changes, consequences }, { when, buildout });
     }

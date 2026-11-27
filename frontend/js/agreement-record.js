@@ -35,13 +35,18 @@
     const LOSS_STATERS = ['sponsor', 'valuer'];
     // The Effects on neighbours readings a snapshot may name (planning/neighbour-effects.js KINDS) and
     // their grades (beyond a guide, below its level within its allowance, minor, a crossed first check).
-    const READING_KINDS = ['garden', 'sunlight', 'sky', 'noSky', 'angle', 'splay', 'distance'];
+    const READING_KINDS = ['garden', 'sunlight', 'sky', 'noSky', 'angle', 'splay', 'distance', 'boundary'];
     const READING_GRADES = ['fail', 'below', 'minor', 'screen'];
     // Compensation is a multiple of the stated loss, in basis points of it; 1× when the rule sets none.
     // A preset names a published figure; `verified: false` until its citation has been checked.
+    // Strong Suburbs (checked against the text 2026-11-27): neighbours on other streets are eligible
+    // where building rises over 30° from their plot's boundary (para. 54); the implementer's first
+    // offer is 150% of the loss of market value (para. 55, p. 54); a RICS-nominated surveyor's second
+    // assessment binds both (para. 56); its £2000 fee falls on the neighbour when it is at most the
+    // offer, else on the implementer (para. 57). The figure did not change, so the version stays.
     const NEIGHBOUR_PRESETS = Object.freeze([Object.freeze({
-        id: 'gb-strong-suburbs', version: '2026-11-27', multipleBasisPoints: 15000, verified: false,
-        source: Object.freeze({ name: 'Policy Exchange, Strong Suburbs (2021): a first offer of 150% of the loss in market value (figure not yet verified)',
+        id: 'gb-strong-suburbs', version: '2026-11-27', multipleBasisPoints: 15000, verified: true,
+        source: Object.freeze({ name: 'Policy Exchange, Strong Suburbs (2021), paras 54–57 (p. 54): a first offer of 150% of the loss of market value to neighbours on other streets built over beyond 30° from their boundary; a RICS-nominated surveyor\'s second assessment binds both, its £2000 fee paid by the neighbour when it is at most the offer, else by the implementer',
             url: 'https://policyexchange.org.uk/wp-content/uploads/2022/10/Strong-Suburbs.pdf' })
     })]);
     const neighbourPreset = (id, version) => NEIGHBOUR_PRESETS.find(preset => preset.id === id && preset.version === version) || null;

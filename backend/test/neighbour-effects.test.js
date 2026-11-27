@@ -75,6 +75,22 @@ describe('effects on neighbouring plots', () => {
         expect(north.sky.after).toBeGreaterThan(27);
     });
 
+    it('reads the steepest line from a plot boundary to the design under a street code\'s 30° guide (Strong Suburbs para. 54)', () => {
+        const code = require('../../frontend/js/planning/eligibility.js').get('gb-strong-suburbs-street-code', '2021').neighbourGuides;
+        // The north plot's boundary is 30 m north of the site's south edge; a house 20 m deep from y = 2 stands 8 m from it.
+        const tall = { id: 'slab', geometry: rect(1, 2, 9, 22), heightM: 9 }, low = { id: 'low', geometry: rect(1, 2, 9, 10), heightM: 7 };
+        const lot = id => effects.assess({ site: [SITE], lots: [NORTH], existing: [OLD_HOUSE], proposed: [id], guides: code }).lots.find(entry => entry.id === 'north');
+        const beyond = lot(tall);
+        // atan(9 / 8) ≈ 48.4° after, atan(7 / 20) ≈ 19.3° before.
+        expect(beyond.boundary).toMatchObject({ degrees: 30, effect: 'compensation', status: 'fail' });
+        expect(beyond.boundary.after).toBeCloseTo(48.37, 1);
+        expect(beyond.boundary.before).toBeCloseTo(19.29, 1);
+        expect(effects.snapshot(beyond, code)).toMatchObject({ rights: ['outlook'], readings: [{ kind: 'boundary', guide: 30, grade: 'fail' }] });
+        // The house it replaces, rebuilt as it was: nothing changes, nothing is listed.
+        expect(lot(low)).toBeUndefined();
+        // England's own guides take no boundary reading.
+        expect(assess([tall]).lots.find(entry => entry.id === 'north')?.boundary ?? null).toBeNull();
+    });
     it('takes only the readings a place has guides for, with its thresholds', () => {
         const slab = [{ id: 'slab', geometry: rect(-100, 2, 110, 28), heightM: 30 }];
         // No guides: nothing is measured.

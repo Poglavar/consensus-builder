@@ -56,3 +56,31 @@ describe('agent street votes under Living Tradition', () => {
         expect(readFacts).not.toHaveBeenCalled();
     });
 });
+
+// Agent parity for street codes (mcp-ground.js streetCodeCheck): a Strong Suburbs street vote on a
+// plan claiming the Strong Suburbs street code gets the same per-building check the editor shows.
+describe('agent street votes on a plan claiming a street code', async () => {
+    const { streetCodeCheck } = await import('../agents/mcp-ground.js');
+    const STRONG_SUBURBS = { id: 'gb-street-vote-strong-suburbs', version: '2026-11-25' };
+    const CODE = { id: 'gb-strong-suburbs-street-code', version: '2021' };
+    const M_LNG = 1 / (111320 * Math.cos(51.5 * Math.PI / 180)), M_LAT = 1 / 110540;
+    const at = (e, n) => [-0.2 + e * M_LNG, 51.5 + n * M_LAT];
+    const box = (w, s, e, n) => ({ type: 'Polygon', coordinates: [[at(w, s), at(e, s), at(e, n), at(w, n), at(w, s)]] });
+    const house = { type: 'Feature', geometry: box(30, 5, 36, 15), properties: { type: 'proposedBuilding', basedOnExisting: true, sourceBuildingId: 'w36', height: 9, floorHeightM: 3, roof: 'mansard' } };
+    const plan = { schema: 'plan/v1', title: 'Street', designCids: [], view: { at: '51.5,-0.2,17', mode: '2d', city: 'london' }, codes: [CODE] };
+    const readers = () => ({ density: async () => ({ areas: [{ scheme: 'GB-MSOA-2021', code: 'E02000001', name: 'Low 001', densityPerHa: 15, geometry: box(-100, -10, 300, 150) }], sources: [] }),
+        facts: async ids => new Map(ids.map(id => [id, { found: true, facts: { built: fact({ from: 1931, to: 1931 }), heritage: notListed } }])),
+        designations: async () => [], buildingsNear: async () => [] });
+    it('reports each building against the claimed code, with what it could not read', async () => {
+        const report = await streetCodeCheck(voting(STRONG_SUBURBS), plan, [{ geometry: { buildings: [house] } }], { readers });
+        expect(report).toMatchObject({ code: CODE, summary: { buildings: 1, break: 1 }, storeyCap: { value: null, bound: 2, reason: 'noStreet' } });
+        expect(report.buildings[0]).toMatchObject({ building: 'osm:way/36', verdict: 'ineligible' });
+        expect(report.buildings[0].tests[0]).toMatchObject({ cite: '30', status: 'fail', label: 'Storeys within the density cap' });
+        expect(report.buildings[0].tests[0].text).toContain('3 storeys');
+        expect(report.notChecked.map(row => row.cite)).toContain('35');
+    });
+    it('checks nothing when the plan claims no code or the ballot rule carries none', async () => {
+        expect(await streetCodeCheck(voting(STRONG_SUBURBS), { ...plan, codes: undefined }, [], { readers })).toBeNull();
+        expect(await streetCodeCheck(voting(LIVING_TRADITION), plan, [], { readers })).toBeNull();
+    });
+});

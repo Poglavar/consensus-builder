@@ -1877,7 +1877,7 @@
             "measure": "Trouver les voisins concernés",
             "noGuides": "Ce lieu ne fixe aucun repère pour les voisins, rien n’est donc mesuré : ajoutez une parcelle voisine par son identifiant.",
             "candidates": "Ajouter les parcelles concernées à cet accord",
-            "candidatesHint": "Les parcelles au-delà d’un repère sont cochées. Chacune est ajoutée comme renonciation avec ses mesures ; fixez ses conditions ci-dessous.",
+            "candidatesHint": "Les parcelles au-delà d’un guide sont cochées. Chacune est ajoutée comme renonciation avec ses mesures, ou comme indemnité due quand le code de rue du plan le prévoit ; fixez ses conditions ci-dessous.",
             "candidate": "Parcelle {{parcelId}}, {{grade}}",
             "added": "déjà dans cet accord",
             "isInput": "une parcelle d’entrée",
@@ -1927,7 +1927,7 @@
             "multiple": {
                 "label": "Indemnisation des voisins",
                 "none": "1× la perte déclarée (aucun multiple fixé)",
-                "strongSuburbs": "Strong Suburbs : 150 % de la perte déclarée (chiffre pas encore vérifié)",
+                "strongSuburbs": "Strong Suburbs : 150 % de la perte de valeur marchande (par. 54–57)",
                 "custom": "Autre multiple",
                 "value": "Multiple de la perte déclarée"
             }
@@ -9186,7 +9186,8 @@
             "noSky": "Lumière du jour dans les pièces (ligne de non-ciel)",
             "angle": "Angle au-dessus d'une fenêtre en vis-à-vis",
             "splay": "Éventail à côté d'une fenêtre",
-            "distance": "Distance en vis-à-vis"
+            "distance": "Distance en vis-à-vis",
+            "boundary": "Angle depuis la limite de la parcelle"
         },
         "filterLabel": "Afficher les parcelles par mesure",
         "filterAll": "Toutes",
@@ -9235,7 +9236,8 @@
             "sw": "sud-ouest",
             "w": "ouest",
             "nw": "nord-ouest"
-        }
+        },
+        "boundary": "S’élève de {{after}} au-dessus de la limite de la parcelle, au-delà de la ligne de {{degrees}} (avant : {{before}})"
     },
     "permittedCheck": {
         "heightUnknown": "Hauteur {{measured}} : la limite dépend de la hauteur existante, qui n’est pas connue",
@@ -9678,7 +9680,8 @@
         },
         "eligibility": {
             "set": {
-                "gb-living-tradition-mansards": "Mansardes selon Living Tradition"
+                "gb-living-tradition-mansards": "Mansardes selon Living Tradition",
+                "gb-strong-suburbs-street-code": "Code de rue Strong Suburbs"
             },
             "verdict": {
                 "eligible": "Remplit toutes les conditions que l’application peut vérifier",
@@ -9689,7 +9692,8 @@
                 "pass": "Oui",
                 "fail": "Non",
                 "unknown": "Inconnu",
-                "unchecked": "Non vérifié par l’application"
+                "unchecked": "Non vérifié par l’application",
+                "notApplicable": "Ne s’applique pas"
             },
             "withGrade": "{{status}}, grade {{grade}}",
             "test": {
@@ -9702,7 +9706,62 @@
                 "footprint": "Emprise de 100 m² au plus",
                 "originalUse": "Construit comme maison, ou boutique avec logement au-dessus",
                 "listing": "Non classé grade I ou II*",
-                "topWindows": "Fenêtres du dernier étage d’au moins 80 cm de haut"
+                "topWindows": "Fenêtres du dernier étage d’au moins 80 cm de haut",
+                "ssListed": "Pas un bâtiment classé",
+                "ssPre1918": "Construit en 1918 ou après",
+                "ssGreenBelt": "Aucun bâtiment neuf sur un terrain de ceinture verte",
+                "ssOpenLand": "Pas sur la Metropolitan Open Land",
+                "ssNature": "Pas dans un parc national, une AONB ni un SSSI",
+                "ssStoreys": "Étages dans le plafond fixé par la densité",
+                "ssSetbackPlane": "Étage en retrait sous un plan à 75°",
+                "ssSetbacks": "Pas plus d’étages en retrait que permis",
+                "ssLightPlanes": "Sous les plans de lumière depuis les parcelles d’autres rues",
+                "ssCeilingMax": "Hauteur sous plafond de 3,5 m au plus",
+                "ssCeilingMin": "Hauteur sous plafond d’au moins 2,5 m",
+                "ssSetbackCeiling": "Plafond de l’étage en retrait à 3 m au plus",
+                "ssAddedCeiling": "Étages ajoutés pas plus hauts que l’étage existant le plus haut",
+                "ssHistoric": "Au plus 3+1 étages près de dix bâtiments d’avant 1918",
+                "ssPlotUse": "Construire vers l’arrière sur au plus 25 % de la distance aux parcelles d’autres rues",
+                "ssFrontDoors": "Au plus 15 m entre portes d’entrée",
+                "ssSideWindows": "Fenêtres latérales à au moins 2 m de la limite",
+                "ssSemiDetached": "Les deux maisons d’une paire jumelée consentent",
+                "ssDetached": "Sous un plan à 70° depuis la limite d’un voisin isolé"
+            },
+            "fact": {
+                "proposedStoreys": "{{storeys}} étages proposés",
+                "storeyCap": "plafond {{cap}} : {{density}} habitants/ha dans {{area}}",
+                "storeyCapUnknown": {
+                    "densityUnread": "La densité des petites zones n’a pas pu être lue",
+                    "noBuildings": "Le plan n’a aucun bâtiment à placer",
+                    "noStreet": "Le vote ne nomme aucune rue : le plafond est d’au plus {{cap}}, d’après les zones sous les bâtiments du plan",
+                    "noArea": "Aucune petite zone de la source de densité ne se trouve à moins de 200 m de la rue",
+                    "densityUnknown": "Une petite zone près de la rue n’a pas de densité"
+                },
+                "historicNone": "{{count}} bâtiments d’avant 1918 à moins de 100 m de la rue ({{unknown}} non datés) : pas de limite 3+1",
+                "historicCap": "{{count}} bâtiments d’avant 1918 à moins de 100 m de la rue : au plus {{storeys}}+{{setbacks}} étages",
+                "historicUnknown": {
+                    "noStreet": "Le vote ne nomme aucune rue ; les bâtiments d’avant 1918 voisins ne sont pas comptés",
+                    "buildingsUnread": "Les bâtiments près de la rue n’ont pas pu être lus",
+                    "datesUnknown": "{{count}} bâtiments d’avant 1918 à moins de 100 m et {{unknown}} non datés : on ne sait pas s’il y en a dix",
+                    "existingTotal": "La moitié des bâtiments de la rue dépasse déjà 3+1 : la limite est leur total existant, que l’application ne mesure pas",
+                    "storeysUnknown": "On ne sait pas si la moitié des bâtiments de la rue dépasse déjà 3+1"
+                },
+                "proposedSetbacks": "{{setbacks}} étages en retrait",
+                "setbacksAllowed": "{{setbacks}} permis",
+                "setbackMansard": "une mansarde, entièrement sous {{degrees}}°",
+                "storeyHeight": "étages de {{metres}} m de sol à sol ; un plafond est plus bas de l’épaisseur du plancher, que le projet n’indique pas",
+                "setbackRise": "l’étage en retrait s’élève de {{metres}} m",
+                "designations": "se trouve dans : {{datasets}}",
+                "designationsUnread": "Les zonages protégés n’ont pas pu être lus"
+            },
+            "notChecked": {
+                "noSource": "planning.data.gov.uk ne publie pas encore la Metropolitan Open Land",
+                "otherStreets": "il faut savoir quelles parcelles voisines sont sur d’autres rues",
+                "ceilings": "le projet n’indique aucune hauteur sous plafond",
+                "plotUse": "il faut l’emprise bâtie au premier vote et les parcelles d’autres rues",
+                "doors": "le projet ne place aucune porte",
+                "windows": "le projet ne place aucune fenêtre latérale",
+                "consent": "le consentement d’un voisin se donne par un accord, il ne se mesure pas"
             }
         },
         "survey": "Relevé des hauteurs",
@@ -9920,7 +9979,9 @@
         "membersMissing": "{{count}} des {{total}} projets du plan ne sont ni dans ce navigateur ni sur le serveur.",
         "revisionChanged": "La copie de ce plan sur le serveur ne correspond pas à son lien.",
         "publicationFailed": "« {{title}} » n’a pas pu être publié : {{reason}}",
-        "shareDesignHint": "Partager ce projet"
+        "shareDesignHint": "Partager ce projet",
+        "codes": "Codes de rue",
+        "codesHint": "Les codes que ce plan affirme respecter. Une simple affirmation : un vote de rue sur le plan la vérifie."
     },
     "sharedPlan": {
         "applying": "Application des modifications acceptées…",
@@ -10329,6 +10390,24 @@
                 "ineligible": "Non admissible",
                 "unknown": "Inconnu"
             }
+        },
+        "streetCode": {
+            "title": "Code de rue : {{code}}",
+            "hint": "Le plan affirme respecter ce code. Chacun de ses bâtiments est vérifié ici, règle par règle, d’après le projet, le lieu et les données des bâtiments ; l’affirmation seule ne vaut pas respect.",
+            "checking": "Vérification du plan au regard du code…",
+            "summary": "{{eligible}} bâtiments sur {{total}} respectent le code, {{ineligible}} l’enfreignent, {{unknown}} pas encore connus",
+            "cap": "Plafond d’étages {{cap}} (par. 30) : densité la plus basse {{density}} habitants/ha, dans {{area}}.",
+            "approximate": "(la rue est tracée droite entre ses extrémités)",
+            "unread": "Non lu : {{what}} ({{error}})",
+            "newBuilding": "Nouveau bâtiment {{index}} du projet {{design}}",
+            "verdict": {
+                "eligible": "Respecte le code",
+                "ineligible": "Enfreint le code",
+                "unknown": "Pas encore connu"
+            },
+            "noBuildings": "Le plan n’a aucun bâtiment à vérifier.",
+            "unchecked": "Règles que l’application ne vérifie pas",
+            "check": "Vérifier le code"
         }
     },
     "criticTour": {
