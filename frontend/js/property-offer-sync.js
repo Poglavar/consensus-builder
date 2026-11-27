@@ -1,4 +1,4 @@
-// Publication and browser copies of standalone purchase/sale agreements.
+// Publication, index reads and browser copies of property offers (one plot or one flat).
 (function (root, factory) {
     if (typeof module === 'object' && module.exports) module.exports = { browser: factory };
     if (root?.document) root.PropertyOfferSync = factory(root);
@@ -19,12 +19,12 @@
         return result;
     }
     function create(content) {
-        return store().save({ id: records().newId(), content: records().published(content), published: null, onchain: null, acceptance: null });
+        return store().save({ id: records().newId(), content: records().published(content), published: null, onchain: null });
     }
     function localRecord(row, existing) {
         return { ...existing, id: existing?.id || records().newId(), content: row.content,
             published: { cid: row.cid, publishedAt: row.createdAt, apiBase: base() },
-            onchain: row.onchain || existing?.onchain || null, acceptance: row.acceptance || null };
+            onchain: row.onchain || existing?.onchain || null, status: row.status || existing?.status || null };
     }
     async function fetchOffer(cid) {
         if (!win.Cid.isCid(cid)) throw new Error('Invalid property offer CID.');
@@ -39,31 +39,26 @@
         if (row.cid !== cid || records().cid(row.content) !== cid) throw new Error('Published offer content does not match its CID.');
         return store().save(localRecord(row, current));
     }
-    async function mint(record) {
+    async function mint(record, options = {}) {
         let current = record;
         try {
             if (win.PropertyOfferSolanaBridge.connectedWallet() !== current.content.proposer) throw new Error('Connect the proposer’s Solana wallet first.');
-            await win.PropertyOfferSolanaBridge.preflight(current);
             if (!current.published) current = await publish(current);
-            return await win.PropertyOfferSolanaBridge.mint(current);
+            return await win.PropertyOfferSolanaBridge.mint(current, options);
         } catch (error) {
             error.record ||= current;
             throw error;
         }
     }
     async function importOffer(cid) { return store().save(localRecord(await fetchOffer(cid), localCopyOf(cid))); }
-    async function openDetails(cid) {
-        const record = await importOffer(cid), sharedId = new URL(win.location.href).searchParams.get('acceptance');
-        return sharedId ? win.PropertyOfferDialog.accept(record, { sharedId }) : win.PropertyOfferPanel.open(record.id);
+    async function openDetails(cid) { return win.PropertyOfferPanel.open((await importOffer(cid)).id); }
+    /** Index rows for the market list and the lens requests screen; see GET /property-offers. */
+    async function list(filters = {}) {
+        const params = new URLSearchParams();
+        for (const [name, value] of Object.entries(filters)) if (value != null && value !== '') params.set(name, Array.isArray(value) ? value.join(',') : String(value));
+        return request(`?${params}`);
     }
-    async function fetchAcceptance(record, id) {
-        if (!/^[a-f0-9]{64}$/.test(id)) throw new Error('Invalid acceptance ID.');
-        const shared = await request(`/${record.published.cid}/acceptances/${id}`);
-        const candidate = await win.PropertyOfferSolanaBridge.prepareAcceptance(record, shared.candidate);
-        if (shared.id !== id || win.PropertyOfferSolanaBridge.acceptanceId(candidate) !== id) throw new Error('Shared acceptance terms differ.');
-        return { ...shared, candidate };
-    }
-    function acceptanceLink(record, id) { const url = new URL(link(record.published.cid)); url.searchParams.set('acceptance', id); return url.href; }
+    async function awaiting(member) { return request(`/awaiting?member=${encodeURIComponent(member)}`); }
     function link(cid, { city } = {}) {
         const record = localCopyOf(cid);
         const url = new URL(`/property-offers/${encodeURIComponent(cid)}`, win.resolveFrontendBaseUrl());
@@ -84,5 +79,5 @@
         a.href = url; a.download = `property-offer-${record.published?.cid || record.id}.json`; a.click();
         setTimeout(() => URL.revokeObjectURL(url), 0);
     }
-    return Object.freeze({ create, publish, mint, fetchAcceptance, acceptanceLink, fetchOffer, importOffer, openDetails, link, localCopyOf, recordOnchain, download, request });
+    return Object.freeze({ create, publish, mint, fetchOffer, importOffer, openDetails, list, awaiting, link, localCopyOf, recordOnchain, download, request });
 });

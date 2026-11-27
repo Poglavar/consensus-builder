@@ -41,7 +41,7 @@ import {
 import { anchorParcels, apartmentQualification, cancelAgreement, confirmAsLensMember, refundContributions } from './chain-actions.js';
 import { listApartments, readRoundInventory, reserveApartment, roundAccepting, roundStats } from './apartment-actions.js';
 import {
-    acceptOffer, cancelOffer, createOfferOnChain, createOnchainRecorder, expireOffer, fundOffer, releaseOffer
+    cancelOffer, commitOffer, confirmOffer, createOfferOnChain, createOnchainRecorder, executeOffer, expireOffer, stateHolding
 } from './property-offer-signer.js';
 import {
     claimAgreementMarket, claimExternalMarket, confirmFunding, fulfillPledge, reclaimAgreementMarketSeed, refundDonation, releaseDonations, resolveAgreementMarket,
@@ -283,11 +283,12 @@ export function createUrbanGameTheoryTools({
         apartmentQualification,
         reserveApartment,
         createOfferOnChain,
-        acceptOffer,
-        fundOffer,
-        releaseOffer,
+        commitOffer,
+        confirmOffer,
+        executeOffer,
         cancelOffer,
         expireOffer,
+        stateHolding,
         pinWithPinata: options => require('../../frontend/js/ipfs-own-key.js').pinWithPinata(options),
         ...dependencies
     };
@@ -354,18 +355,12 @@ export function createUrbanGameTheoryTools({
     }
 
     // A published property offer's chain step, as the offer panel takes it with a wallet: the offer as the
-    // index serves it (the signer checks its CID and the chain account against its terms), the service of
-    // the lens member it names, and the index write the panel makes after each confirmed transaction.
+    // index serves it (the signer checks its CID and the chain account against its terms) and the index
+    // write the panel makes after each confirmed transaction.
     async function offerStep(operation, cid, extra = {}) {
         const row = await companion.request(`/property-offers/${encodeURIComponent(cid)}`);
         const { keypair, connection } = signer();
-        let lensServiceUrl;
-        if (operation === 'createOfferOnChain' || operation === 'acceptOffer') {
-            const member = (await impl.fetchLensMembers({ apiBase, fetchImpl })).find(row2 => row2.key === row.content?.lens);
-            if (!member?.serviceUrl) throw new Error(`the lens member ${row.content?.lens ?? '(none)'} this offer names has no registered decision service`);
-            lensServiceUrl = member.serviceUrl;
-        }
-        return impl[operation]({ connection, keypair, row: { cid: row.cid, content: row.content, onchain: row.onchain ?? null }, lensServiceUrl, fetchImpl,
+        return impl[operation]({ connection, keypair, row: { cid: row.cid, content: row.content, onchain: row.onchain ?? null },
             recordOnchain: createOnchainRecorder({ apiBase, appOrigin, fetchImpl }), sendAndConfirm: impl.sendAndConfirmPolling, ...extra });
     }
 
@@ -997,11 +992,17 @@ export function createUrbanGameTheoryTools({
 
         // ---- a published property offer's chain steps (the offer panel's) -------------------------------
         async mintPropertyOffer({ cid, confirm } = {}) { requireLive(confirm); return offerStep('createOfferOnChain', cid); },
-        async acceptPropertyOffer({ cid, candidate, confirm } = {}) { requireLive(confirm); return offerStep('acceptOffer', cid, { candidate }); },
-        async fundPropertyOffer({ cid, confirm } = {}) { requireLive(confirm); return offerStep('fundOffer', cid); },
-        async releasePropertyOffer({ cid, confirm } = {}) { requireLive(confirm); return offerStep('releaseOffer', cid); },
+        async takePropertyOffer({ cid, lens, payouts, confirm } = {}) { requireLive(confirm); return offerStep('commitOffer', cid, { lens, payouts }); },
+        async confirmPropertyOffer({ cid, role, holding, confirm } = {}) { requireLive(confirm); return offerStep('confirmOffer', cid, { role, holding }); },
+        async executePropertyOffer({ cid, confirm } = {}) { requireLive(confirm); return offerStep('executeOffer', cid); },
         async cancelPropertyOffer({ cid, confirm } = {}) { requireLive(confirm); return offerStep('cancelOffer', cid); },
         async expirePropertyOffer({ cid, confirm } = {}) { requireLive(confirm); return offerStep('expireOffer', cid); },
+        // As a lens member: state who first holds a plot or a flat (PropertyHolding-v1).
+        async stateHolding({ asset, city, holder, basis, evidence, confirm } = {}) {
+            requireLive(confirm);
+            const { keypair, connection } = signer();
+            return impl.stateHolding({ connection, keypair, asset, city, holder, basis, evidence, sendAndConfirm: impl.sendAndConfirmPolling });
+        },
 
         // The market's opener takes back what its resolved market's payouts leave of the LMSR seed
         // (reclaim_seed), as the bet dialog's "Take back my stake" does for a wallet.

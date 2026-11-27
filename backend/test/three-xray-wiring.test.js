@@ -149,7 +149,8 @@ describe('three-mode Xray wiring', () => {
             clearGroupChildren: clear, retireGroupAfterFrame: group => clear(group), disposeFloorPlans: vi.fn(),
             buildingDisplayPolicy: { resolveBuiltDisplayPolicy: mode => ({ visible: mode !== 'off', material: mode, showSurviving: true, showDemolished: false }) },
             buildingMaterials: { xray: 'xray-material', solid: 'solid-material', ghost: 'ghost-material' },
-            buildNearbyProposalBuildings3D: vi.fn(async () => {}), buildProposedBuildings3D: vi.fn(async () => {}), appendSuggestedExistingFloorPlans: vi.fn(),
+            buildNearbyProposalBuildings3D: vi.fn(async () => {}), buildProposedBuildings3D: vi.fn(async () => {}),
+            suggestedExisting: { material: null }, updateSuggestedExistingLayouts: vi.fn(),
             applyUseHighlight3D: vi.fn(), reconcileExistingFloorPlans: vi.fn(),
             buildIneligibleParcels3D: vi.fn(), ensureNearbyProposalBuildings: vi.fn(),
             ensureNearbyTrees: vi.fn(), rebuildTreesOnly: vi.fn(), ensureNearbyWater: vi.fn(), rebuildWaterOnly: vi.fn(),
@@ -214,6 +215,9 @@ describe('three-mode Xray wiring', () => {
         expect(c.proposedGroup.children).toEqual([{ id: 'proposal-survives' }]);
         expect(c.disposeFloorPlans).toHaveBeenCalledExactlyOnceWith({ planned: false });
         expect(c.reconcileExistingFloorPlans).toHaveBeenCalledOnce();
+        // Estimated layouts of existing buildings are asked for once the build has committed, in its material.
+        expect(c.updateSuggestedExistingLayouts).toHaveBeenCalledExactlyOnceWith(true);
+        expect(c.suggestedExisting.material).toBe('ghost-material');
     });
 
     it('switches the active family and restores the exterior view on close', () => {
@@ -376,9 +380,11 @@ describe('three-mode Xray wiring', () => {
         const planned = group('planned', 'p'), suggested = group('existing-suggested', 's'), model = group('existing-model', 'm');
         const children = [planned, suggested, model], dispose = vi.fn(), keys = new Set(['p', 's', 'm']);
         const remove = item => children.splice(children.indexOf(item), 1);
-        const [disposePlans] = extracted('disposeFloorPlans', 'let floorPlanGroup={children:this.children,remove:this.remove}; let renderedFloorPlanKeys=this.keys; let floorPlanErrors=3; const existingFloorPlanGroups=new Map([["m",1]]); const suggestedPlanTotals={buildings:2,slices:3,flagged:1,apartments:4,cores:2,pendingStreets:true}; const suggestedPlanByParcel=new Map([["a",1]]); const suggestedPlanByProposal=new Map([["p",1]]); const suggestedSteppedDone=new Map([["p|t",true]]);', { children, remove, keys, floorPlanRenderer: { disposeGroup: dispose } });
+        const [disposePlans, c] = extracted('disposeFloorPlans', 'let floorPlanGroup={children:this.children,remove:this.remove}; let renderedFloorPlanKeys=this.keys; let floorPlanErrors=3; const existingFloorPlanGroups=new Map([["m",1]]); const suggestedPlanTotals={buildings:2,slices:3,flagged:1,apartments:4,cores:2,pendingStreets:true}; const suggestedPlanByParcel=new Map([["a",1]]); const suggestedPlanByProposal=new Map([["p",1]]); const suggestedSteppedDone=new Map([["p|t",true]]);', { children, remove, keys, floorPlanRenderer: { disposeGroup: dispose }, resetSuggestedExisting: vi.fn() });
         disposePlans({ planned: false });
         expect(children).toEqual([planned, model]); expect([...keys]).toEqual(['p', 'm']);
+        // The estimated layouts of existing buildings go with every build, and are asked for again after it.
+        expect(c.resetSuggestedExisting).toHaveBeenCalledOnce();
         disposePlans();
         expect(children).toEqual([model]);
         disposePlans({ planned: true, models: true });
@@ -603,29 +609,81 @@ describe('three-mode Xray wiring', () => {
         groups[0].userData.detailVisible = false;
         expect([...replaced()]).toEqual([]);
     });
-    it('typical layouts of existing buildings ask once for the whole radius and plan the nearest first', async () => {
+    it('estimated layouts of existing buildings follow the camera: none from afar, the nearest as it comes in, dropped as it leaves', async () => {
+        const flush = async () => { for (let i = 0; i < 30; i++) await new Promise(resolve => setImmediate(resolve)); };
         const ensure = vi.fn(() => Promise.resolve());
-        // b10, the second nearest, is an office its source states: it gets no housing layout.
-        const pool = [40, 5, 400, 20].map(d => ({ geometry: {}, properties: { id: `b${d}`, d, floors: 3 } }))
-            .concat([{ geometry: {}, properties: { id: 'b10', d: 10, floors: 3, use: 'office' } }]);
-        const turf = { point: coordinates => ({ coordinates }), circle: () => 'circle', bbox: () => [-74.11, 4.61, -74.10, 4.62],
-            centroid: feature => feature, distance: (_, feature) => feature.properties.d };
-        const planBuilding = vi.fn(feature => ({ slices: [{ footprint: feature, result: { floorPlans: {}, summary: { heightM: 9.9 } } }] }));
-        const [append, c] = extracted('appendSuggestedExistingFloorPlans', `
-            let xrayScope='built', floorPlanGroup={}, buildingsWorkGeneration=0, isActive=true;
-            let nearbyProposalBuildingsKey='near', buildingLoadRadiusM=300, suggestedExistingPoolKey=null, floorPlanErrors=0, suggestedAccess='corridor';
-            const SUGGESTED_EXISTING_CAP=2, suggestedFloorPlans={}, suggestedPlanCache=new Map();
-            const suggestedPlanTotals={existing:0,existingCapped:false}; this.totals=suggestedPlanTotals;`,
-        { turf: { ...turf, bbox: feature => feature === 'circle' ? [-74.11, 4.61, -74.10, 4.62] : [feature.properties?.d || -74.11, 0, feature.properties?.d || -74.10, 0] }, planSuggestedBuilding: (feature, context) => planBuilding(feature, context), suggestedPlanContext: { planBuilding, neighbourPool: () => [] },
-            window: { buildingFeaturePool: pool, proposedBuildings: [], STOREY_HEIGHT_M: 3.3, ensureBuildingFootprintsForBounds: ensure,
-                BuildingUse: require('../../frontend/js/building-use.js') },
-            getGeoCameraView: () => ({ targetLng: -74.105, targetLat: 4.615 }), suggestedRegion: () => 'CO', suggestedRoadsFor: () => null,
-            estimateBuildingHeightMeters: () => null, reportThreeClip: vi.fn(), appendBuildingFloorPlans: vi.fn(() => true), xyToLatLng: () => ({ lng: -74.105, lat: 4.615 }), camera: { updateMatrixWorld() {}, projectionMatrix: {}, matrixWorldInverse: {}, position: { x: 0, y: 0 } }, xrayBox: { min: { set(x) { this.x = x; } }, max: { set() {} }, distanceToPoint() { return Math.abs(this.min.x); } }, xrayViewProjection: { multiplyMatrices() {} }, xrayFrustum: { setFromProjectionMatrix() {}, intersectsBox: () => true }, lifeMercatorK: () => 1, latLngToXY: (lat, lng) => [lng, lat], floorPlanProximity: { DETAIL_DEFAULTS: { radiusM: Infinity } } });
-        await append('material');
-        await append('material');
-        expect(ensure).toHaveBeenCalledExactlyOnceWith([[4.61, -74.11], [4.62, -74.10]]);
-        expect(planBuilding.mock.calls.map(([feature]) => feature.properties.id)).toEqual(['b5', 'b20', 'b5', 'b20']);
-        expect(planBuilding.mock.calls.every(([, context]) => context.accessOverride === 'corridor')).toBe(true);
-        expect(c.totals).toMatchObject({ existing: 4, existingCapped: true });
+        // Buildings along x (metres). b10 is an office its source states; guess30's only height is the
+        // seeded default guess; atlas20's only height is the atlas's satellite estimate.
+        const building = (id, x, props = {}) => ({ x, geometry: {}, properties: { source: 'osm', id, height_m: null, floors: null, ...props } });
+        const pool = [building('b5', 5, { floors: 3 }), building('b10', 10, { floors: 3, use: 'office' }), building('atlas20', 20),
+            building('guess30', 30), building('b40', 40, { floors: 4 }), building('b150', 150, { floors: 2 }), building('b400', 400, { floors: 2 })];
+        const records = [{ source: 'osm', object_id: 'atlas20', height_source: 'estimated', height_estimate_source: 'global-building-atlas', z_min: 0, z_max: 15 },
+            { source: 'osm', object_id: 'guess30', height_source: 'estimated', z_min: 0, z_max: 9 }];
+        // The layout worker refuses a second calculation while one runs: plans must wait their turn.
+        let running = 0;
+        const planBuilding = vi.fn(async feature => {
+            if (running) throw new Error('A layout calculation is already in progress.');
+            running++;
+            await new Promise(resolve => setImmediate(resolve));
+            running--;
+            return { slices: [{ footprint: feature, result: { floorPlans: {}, summary: { heightM: 9 } } }] };
+        });
+        const disposed = [];
+        const parent = { remove: vi.fn() };
+        const camera = { position: { x: 0, y: 0, z: 600 } };
+        const [update, c] = extracted('updateSuggestedExistingLayouts', `
+            let xrayScope='built', isActive=true, realisticLayerActive=false, floorPlanGroup={}, buildingsWorkGeneration=0, buildingBuildPending=false;
+            let nearbyBuildingsRevision=0, nearbyProposalBuildingsKey='near', floorPlanErrors=0, suggestedAccess='corridor';
+            let existingBuildingsGroup={ visible: true }, origin3857={ x: 0, y: 0 }, apartmentAddress=null, nearbyProposalBuildings=this.records;
+            const SUGGESTED_EXISTING_CAP=3, FLOOR_MODEL_RECHECK_M=20, suggestedFloorPlans={}, renderedFloorPlanKeys=new Set();
+            const suggestedPlanTotals={ existing: 0, existingCapped: false }; this.totals=suggestedPlanTotals;
+            const suggestedExisting = { answers: new Map(), pending: new Map(), camera: null, revision: null, enabled: null,
+                material: 'ghost-material', poolKey: null, poolRevision: 0, records: null, recordsRevision: null,
+                candidates: new Map(), candidatesSignature: null, candidatesPool: null, queue: Promise.resolve() };
+            this.state=suggestedExisting;
+            const suggestedExistingCentres = new WeakMap();`, {
+            records, camera, floorPlanProximity: require('../../frontend/js/floor-plan-proximity.js'),
+            window: { buildingFeaturePool: pool, proposedBuildings: [], STOREY_HEIGHT_M: 3, ensureBuildingFootprintsForBounds: ensure,
+                BuildingUse: require('../../frontend/js/building-use.js'), BuildingHeight: require('../../frontend/js/building-height.js') },
+            L: { latLng: (lat, lng) => ({ lat, lng }), CRS: { EPSG3857: { project: ({ lat, lng }) => ({ x: lng, y: lat }) } } },
+            turf: { bbox: feature => feature === 'circle' ? [-1, -1, 1, 1] : [feature.x, 0, feature.x, 0], circle: () => 'circle', point: c => c },
+            lifeMercatorK: () => 1, xyToLatLng: (x, y) => ({ lng: x, lat: y }), building3DHeightMeters: bld => bld.z_max - bld.z_min,
+            planSuggestedBuilding: (feature, context) => planBuilding(feature, context), suggestedPlanContext: { neighbourPool: () => [] },
+            suggestedRegion: () => 'KZ', suggestedRoadsFor: () => [], reportThreeClip: vi.fn(), updateXrayControls: vi.fn(), invalidateThreeView: vi.fn(),
+            floorPlanRenderer: { disposeGroup: group => disposed.push(group.userData.id) },
+            appendBuildingFloorPlans: vi.fn(async feature => ({ isObject3D: true, parent, userData: { id: feature.properties.id, floorPlanKey: feature.properties.id } }))
+        }, ['ensureSuggestedExistingPool', 'suggestedExistingCandidates', 'suggestedExistingRecords', 'planSuggestedExisting',
+            'suggestedExistingInScope', 'removeSuggestedExistingGroups', 'syncSuggestedExistingTotals', 'resetSuggestedExisting']);
+        // X-ray Built switched on from a high overview: nothing is planned, no footprints are asked for.
+        update(true);
+        await flush();
+        expect(planBuilding).not.toHaveBeenCalled();
+        expect(ensure).not.toHaveBeenCalled();
+        // Zoomed in: the nearest eligible buildings, two at a time, up to the cap of three; no rebuild.
+        camera.position.z = 30;
+        update();
+        await flush();
+        expect(ensure).toHaveBeenCalledOnce();
+        expect(planBuilding.mock.calls.map(([feature]) => feature.properties.id)).toEqual(['b5', 'atlas20', 'b40']);
+        const atlas = planBuilding.mock.calls.find(([feature]) => feature.properties.id === 'atlas20')[1];
+        expect(atlas).toMatchObject({ heightM: 15, storeyFallbackM: 3, accessOverride: 'corridor', existing: true });
+        expect(c.state.answers.get('osm:atlas20').groups[0].userData.heightEstimated).toBe('satellite');
+        expect(c.state.answers.get('osm:b5').heightEstimated).toBeNull();
+        expect(c.totals).toEqual({ existing: 3, existingCapped: true });
+        // A small move asks nothing; leaving them more than 300 m behind drops their groups, and only theirs.
+        camera.position.x = 10;
+        update();
+        expect(planBuilding).toHaveBeenCalledTimes(3);
+        camera.position.x = 460;
+        update();
+        await flush();
+        expect(disposed.sort()).toEqual(['atlas20', 'b40', 'b5']);
+        expect(planBuilding.mock.calls.at(-1)[0].properties.id).toBe('b400');
+        expect([...c.state.answers.keys()]).toEqual(['osm:b400']);
+        // X-ray off: everything goes.
+        c.state.material = null;
+        update(true);
+        expect(c.state.answers.size).toBe(0);
+        expect(disposed).toContain('b400');
     });
 });

@@ -86,8 +86,6 @@
     let xrayZoomNote = null;
     // Whether any building shows its storeys in detail (updateXrayDetailVisibility).
     let xrayDetailShown = false;
-    // The radius the footprint pool was last asked to cover for typical layouts (one request each).
-    let suggestedExistingPoolKey = null;
     let floorCutawayControl = null;
     let floorCutawaySelect = null;
     let floorCutawayLevel = null;
@@ -10108,6 +10106,7 @@
             });
         }
         if (models) existingFloorPlanGroups.clear();
+        resetSuggestedExisting();
         Object.assign(suggestedPlanTotals, { existing: 0, existingCapped: false });
         if (!planned) return;
         floorPlanErrors = 0;
@@ -10385,7 +10384,9 @@
             const layouts = new Map(model.layouts.map(layout => [layout.id, layout]));
             const floors = new Map(group.children.filter(child => child.userData.cbFloorPlanFloor).map(floor => [floor.userData.id, floor]));
             apartmentCatalogs.set(group, model.storeys.flatMap(storey => buildingUnitLinks.unitsForStorey(model, storey, layouts.get(storey.layoutId))
-                .filter(unit => unit.key).map(unit => ({ ...unit, floor: floors.get(storey.id), level: storey.level, group }))));
+                .filter(unit => unit.key).map(unit => ({ ...unit, floor: floors.get(storey.id), level: storey.level, group,
+                    // 'satellite' when the building's storeys come from the atlas's satellite height estimate.
+                    heightEstimated: group.userData.heightEstimated || null }))));
         }
         return apartmentCatalogs.get(group);
     }
@@ -10503,109 +10504,210 @@
         return count;
     }
 
-    // Built X-ray uses published interiors first, then estimates from nearby source footprints.
-    async function appendSuggestedExistingFloorPlans(buildingMaterial) {
-        if (xrayScope !== 'built' || !floorPlanGroup || !suggestedFloorPlans || !suggestedPlanContext) return;
-        const view = getGeoCameraView();
-        if (!view) return;
-        const generation = buildingsWorkGeneration;
-        const current = () => isActive && xrayScope === 'built' && generation === buildingsWorkGeneration;
-        const at = xyToLatLng(camera.position.x, camera.position.y);
-        const centre = turf.point([at.lng, at.lat]), radiusM = floorPlanProximity.DETAIL_DEFAULTS.radiusM;
-        // Typical layouts use only the immediate camera neighbourhood, independently of the
-        // wider exterior-building radius. Reuse the footprint source's existing request cache.
-        const radiusKey = `${nearbyProposalBuildingsKey}|${at.lng.toFixed(4)},${at.lat.toFixed(4)}|r${radiusM}`;
-        if (suggestedExistingPoolKey !== radiusKey) {
-            suggestedExistingPoolKey = radiusKey;
-            const [west, south, east, north] = turf.bbox(turf.circle(centre, radiusM / 1000, { units: 'kilometers' }));
-            try {
-                await window.ensureBuildingFootprintsForBounds?.([[south, west], [north, east]]);
-            } catch (error) {
-                if (suggestedExistingPoolKey === radiusKey) suggestedExistingPoolKey = null;
-                console.error(`[${new Date().toISOString()}] [3D] Footprints for typical layouts could not be loaded`, error);
-            }
-            if (!current()) return;
+    // ── Estimated layouts of existing buildings: planned one by one, near the camera, while Built X-ray is on ──
+    // Built X-ray uses published interiors first (the floor models below), then estimates from the
+    // footprint pool. floor-plan-proximity.js decides which buildings to plan (nearest first, two at a
+    // time, at most SUGGESTED_EXISTING_CAP) and which to drop (well beyond the radius), asked again
+    // when the camera has moved FLOOR_MODEL_RECHECK_M, the pool or the 3D buildings changed. A plan
+    // adds, and a drop removes, only that building's groups; no building is rebuilt. A build drops
+    // them all with the scene's other layouts (disposeFloorPlans) and asks again once it has committed.
+    // `answers`: key → { groups, heightEstimated } or null (no layout fits); `pending`: key → token.
+    const suggestedExisting = { answers: new Map(), pending: new Map(), camera: null, revision: null, enabled: null,
+        material: null, poolKey: null, poolRevision: 0, records: null, recordsRevision: null,
+        candidates: new Map(), candidatesSignature: null, candidatesPool: null, queue: Promise.resolve() };    // Each footprint's centre in absolute Web Mercator metres, once: the pool holds up to 12,000.
+    const suggestedExistingCentres = new WeakMap();
+    function resetSuggestedExisting() {
+        suggestedExisting.answers.clear();
+        suggestedExisting.pending.clear();
+        suggestedExisting.camera = null;
+        suggestedExisting.candidatesSignature = null;
+    }
+    // Which footprint pool buildings a proposed building replaces, for the Built scope filter.
+    function suggestedExistingInScope(feature, scope, proposed) {
+        if (scope === 'all') return true;
+        let replaced = false;
+        try {
+            const bbox = turf.bbox(feature);
+            replaced = proposed.some(building => {
+                if (!building?.geometry) return false;
+                const other = turf.bbox(building);
+                if (other[2] < bbox[0] || other[0] > bbox[2] || other[3] < bbox[1] || other[1] > bbox[3]) return false;
+                let overlap = null;
+                try { overlap = turf.intersect(feature, building); } catch (error) {
+                    reportThreeClip('intersect', error, 'three-mode.suggestedExistingInScope', [feature, building]);
+                    return false;
+                }
+                return !!overlap && turf.area(overlap) > 1;
+            });
+        } catch (_) { replaced = false; }
+        return !((scope === 'surviving' && replaced) || (scope === 'removed' && !replaced));
+    }
+    // Footprints around the camera, by ~100 m cell (the cell loader caches what it has answered);
+    // nothing from a high overview, where nothing is planned.
+    function ensureSuggestedExistingPool(position, k) {
+        const radiusM = floorPlanProximity.DEFAULTS.unloadRadiusM;
+        if (!(position[2] <= floorPlanProximity.DEFAULTS.loadRadiusM) || typeof window.ensureBuildingFootprintsForBounds !== 'function') return;
+        const at = xyToLatLng(position[0] * k, position[1] * k);
+        const key = `${nearbyProposalBuildingsKey}|${at.lng.toFixed(3)},${at.lat.toFixed(3)}`;
+        if (suggestedExisting.poolKey === key) return;
+        suggestedExisting.poolKey = key;
+        const [west, south, east, north] = turf.bbox(turf.circle(turf.point([at.lng, at.lat]), radiusM / 1000, { units: 'kilometers' }));
+        Promise.resolve(window.ensureBuildingFootprintsForBounds([[south, west], [north, east]])).then(() => {
+            suggestedExisting.poolRevision++;
+            if (suggestedExisting.poolKey === key) updateSuggestedExistingLayouts(true);
+        }, error => {
+            if (suggestedExisting.poolKey === key) suggestedExisting.poolKey = null;
+            console.error(`[${new Date().toISOString()}] [3D] Footprints for typical layouts could not be loaded`, error);
+        });
+    }
+    // The 3D blocks by key, for the heights the footprint pool lacks (an atlas estimate, a city mesh).
+    function suggestedExistingRecords() {
+        if (suggestedExisting.recordsRevision !== nearbyBuildingsRevision || !suggestedExisting.records) {
+            suggestedExisting.records = new Map((nearbyProposalBuildings || []).map(bld => [threeBuildingKey(bld), bld]));
+            suggestedExisting.recordsRevision = nearbyBuildingsRevision;
         }
+        return suggestedExisting.records;
+    }
+    // Buildings that may get an estimated layout within the drop radius, in the proximity planner's
+    // frame (metres): housing or no stated use, no published interior, a height flatsHeight accepts.
+    function suggestedExistingCandidates(position, k) {
         const pool = Array.isArray(window.buildingFeaturePool) ? window.buildingFeaturePool : [];
-        if (!pool.length) return;
-        const proposed = Array.isArray(window.proposedBuildings) ? window.proposedBuildings : [];
-        const scope = window.PlanningViews?.getState()?.existingScope || 'all';
-        const storeyM = window.STOREY_HEIGHT_M || 3.3;
-        let count = 0;
-        // Nearest first, so the cap keeps the buildings around the view rather than the oldest loaded.
-        const nearby = [];
-        camera.updateMatrixWorld();
-        xrayViewProjection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
-        xrayFrustum.setFromProjectionMatrix(xrayViewProjection);
-        const k = lifeMercatorK();
+        const records = suggestedExistingRecords();
+        const reach = floorPlanProximity.DEFAULTS.unloadRadiusM;
+        const candidates = new Map();
         for (const feature of pool) {
             if (!feature?.geometry) continue;
-            let distanceM = Infinity;
-            try {
-                const bbox = turf.bbox(feature), a = latLngToXY(bbox[1], bbox[0]), b = latLngToXY(bbox[3], bbox[2]);
-                const height = estimateBuildingHeightMeters(feature);
-                xrayBox.min.set(Math.min(a[0],b[0]), Math.min(a[1],b[1]), 0);
-                xrayBox.max.set(Math.max(a[0],b[0]), Math.max(a[1],b[1]), height);
-                distanceM = xrayFrustum.intersectsBox(xrayBox) ? xrayBox.distanceToPoint(camera.position) / k : Infinity;
-            } catch (_) { distanceM = Infinity; }
-            if (distanceM <= floorPlanProximity.DETAIL_DEFAULTS.radiusM) nearby.push({ feature, distanceM });
-        }
-        const requested = apartmentAddress?.building;
-        nearby.sort((a, b) => Number(requested && nativeApartmentBuilding(b.feature) === requested)
-            - Number(requested && nativeApartmentBuilding(a.feature) === requested) || a.distanceM - b.distanceM);
-        for (const { feature } of nearby) {
-            if (!current()) return;
-            if (count >= SUGGESTED_EXISTING_CAP) { suggestedPlanTotals.existingCapped = true; break; }
-            const props = feature.properties || {};
-            const sourceKey = threeBuildingKey({ source: props.source, object_id: props.object_id ?? props.id ?? feature.id });
-            if (props.floorPlansAvailable || existingFloorPlanShells.get(sourceKey)?.building?.floorPlansAvailable) continue;
-            // A building its source states for another use than housing gets no housing layout.
-            const statedUse = window.BuildingUse.normalize(props.use);
-            if (statedUse && !window.BuildingUse.housesPeople(statedUse)) continue;
-            // The pool carries height_m and floors; a footprint with neither stays a plain volume.
-            const height = Number.isFinite(props.height_m) && props.height_m > 0 ? props.height_m
-                : Number.isFinite(props.floors) && props.floors > 0 ? props.floors * storeyM
-                : (props.height || props.levels || props.storeys) ? estimateBuildingHeightMeters(props) : null;
-            if (!height) continue;
-            if (scope !== 'all') {
-                let replaced = false;
+            let centre = suggestedExistingCentres.get(feature);
+            if (centre === undefined) {
                 try {
                     const bbox = turf.bbox(feature);
-                    replaced = proposed.some(building => {
-                        if (!building?.geometry) return false;
-                        const other = turf.bbox(building);
-                        if (other[2] < bbox[0] || other[0] > bbox[2] || other[3] < bbox[1] || other[1] > bbox[3]) return false;
-                        let overlap = null;
-                        try { overlap = turf.intersect(feature, building); } catch (error) {
-                            reportThreeClip('intersect', error, 'three-mode.appendSuggestedExistingFloorPlans', [feature, building]);
-                            return false;
-                        }
-                        return !!overlap && turf.area(overlap) > 1;
-                    });
-                } catch (_) { replaced = false; }
-                if ((scope === 'surviving' && replaced) || (scope === 'removed' && !replaced)) continue;
+                    const p = L.CRS.EPSG3857.project(L.latLng((bbox[1] + bbox[3]) / 2, (bbox[0] + bbox[2]) / 2));
+                    centre = [p.x, p.y];
+                } catch (_) { centre = null; }
+                suggestedExistingCentres.set(feature, centre);
             }
-            let planned;
-            try {
-                planned = await planSuggestedBuilding(feature, {
-                    owner: feature, existing: true, parcels: [], turf, generator: suggestedFloorPlans, region: suggestedRegion(),
-                    roads: suggestedRoadsFor(feature), heightM: height, storeyFallbackM: storeyM,
-                    neighbours: suggestedPlanContext.neighbourPool(feature, proposed, pool, turf),
-                    accessOverride: suggestedAccess
-                });
-            } catch (error) {
-                if (error.name === 'AbortError') return;
-                floorPlanErrors++;
-                console.error(`[${new Date().toISOString()}] [3D] Suggested layout failed for an existing building`, props.id, error);
-                continue;
+            if (!centre) continue;
+            const x = (centre[0] - origin3857.x) / k, y = (centre[1] - origin3857.y) / k;
+            if (Math.hypot(x - position[0], y - position[1], position[2]) > reach) continue;
+            const props = feature.properties || {};
+            const key = threeBuildingKey({ source: props.source, object_id: props.object_id ?? props.id ?? feature.id });
+            const record = records.get(key) || null;
+            if (props.floorPlansAvailable || record?.floorPlansAvailable) continue;
+            // A building its source states for another use than housing gets no housing layout.
+            const statedUse = window.BuildingUse.normalize(props.use ?? record?.use);
+            if (statedUse && !window.BuildingUse.housesPeople(statedUse)) continue;
+            const height = window.BuildingHeight.flatsHeight(props, record, record ? building3DHeightMeters(record) : null);
+            if (!height) continue;
+            candidates.set(key, { key, x, y, feature, heightM: height.heightM, heightEstimated: height.estimated });
+        }
+        return candidates;
+    }
+    function removeSuggestedExistingGroups(groups) {
+        if (!groups?.length) return;
+        apartmentHover?.clear();
+        apartmentHover?.select(null);
+        groups.forEach(group => {
+            floorPlanRenderer.disposeGroup(group);
+            group.parent?.remove(group);
+            renderedFloorPlanKeys.delete(group.userData.floorPlanKey);
+        });
+    }
+    function syncSuggestedExistingTotals() {
+        suggestedPlanTotals.existing = [...suggestedExisting.answers.values()].reduce((sum, answer) => sum + (answer?.groups.length || 0), 0);
+    }
+    function updateSuggestedExistingLayouts(force = false) {
+        if (!floorPlanProximity || !origin3857 || !camera || buildingBuildPending) return;
+        const state = suggestedExisting;
+        const enabled = xrayScope === 'built' && isActive && !realisticLayerActive && !!floorPlanGroup && !!state.material
+            && !!suggestedFloorPlans && !!suggestedPlanContext && existingBuildingsGroup?.visible !== false;
+        if (!enabled && !state.answers.size && !state.pending.size) { state.enabled = false; return; }
+        const k = lifeMercatorK();
+        const position = [camera.position.x / k, camera.position.y / k, camera.position.z / k];
+        const last = state.camera;
+        if (!force && enabled === state.enabled && last && state.revision === nearbyBuildingsRevision
+            && Math.hypot(position[0] - last[0], position[1] - last[1], position[2] - last[2]) < FLOOR_MODEL_RECHECK_M) return;
+        state.camera = position;
+        state.enabled = enabled;
+        state.revision = nearbyBuildingsRevision;
+        if (enabled) ensureSuggestedExistingPool(position, k);
+        // An answer re-asks at the same camera: the candidates stand until the camera, the pool or the
+        // 3D buildings change, so a plan arriving does not scan the pool again.
+        const pool = window.buildingFeaturePool;
+        const signature = enabled ? [state.poolRevision, nearbyBuildingsRevision, pool?.length, ...position].join('|') : null;
+        if (signature === null || signature !== state.candidatesSignature || pool !== state.candidatesPool) {
+            state.candidates = enabled ? suggestedExistingCandidates(position, k) : new Map();
+            state.candidatesSignature = signature;
+            state.candidatesPool = pool;
+        }
+        const candidates = state.candidates;
+        const requested = apartmentAddress?.building;
+        const first = requested ? [...candidates.values()].find(item => nativeApartmentBuilding(item.feature) === requested)?.key : undefined;
+        const plan = floorPlanProximity.planFloorPlanLoads({ enabled, camera: position, candidates: [...candidates.values()],
+            loaded: state.answers, pending: state.pending, maxResident: SUGGESTED_EXISTING_CAP, first });
+        plan.cancel.forEach(key => state.pending.delete(key));
+        plan.unload.forEach(key => { removeSuggestedExistingGroups(state.answers.get(key)?.groups); state.answers.delete(key); });
+        plan.load.forEach(key => planSuggestedExisting(candidates.get(key)));
+        const inReach = [...candidates.values()].filter(item => Math.hypot(item.x - position[0], item.y - position[1], position[2])
+            <= floorPlanProximity.DEFAULTS.loadRadiusM).length;
+        suggestedPlanTotals.existingCapped = inReach > SUGGESTED_EXISTING_CAP;
+        if (plan.unload.length) {
+            syncSuggestedExistingTotals();
+            xrayVisibilityDirty = true;
+            updateXrayControls();
+            refreshApartmentSelection();
+            invalidateThreeView();
+        }
+    }
+    async function planSuggestedExisting({ key, feature, heightM, heightEstimated }) {
+        const state = suggestedExisting, token = {}, generation = buildingsWorkGeneration, material = state.material;
+        state.pending.set(key, token);
+        const current = () => state.pending.get(key) === token && generation === buildingsWorkGeneration && isActive && xrayScope === 'built';
+        const groups = [];
+        const settle = answer => {
+            if (!current()) {
+                if (state.pending.get(key) === token) state.pending.delete(key);
+                removeSuggestedExistingGroups(groups);
+                return;
             }
-            if (!current()) return;
-            count++;
+            state.pending.delete(key);
+            state.answers.set(key, answer);
+            syncSuggestedExistingTotals();
+            if (answer) { updateXrayControls(); refreshApartmentSelection(); invalidateThreeView(); }
+            updateSuggestedExistingLayouts(true);
+        };
+        const props = feature.properties || {};
+        try {
+            const proposed = Array.isArray(window.proposedBuildings) ? window.proposedBuildings : [];
+            if (!suggestedExistingInScope(feature, window.PlanningViews?.getState()?.existingScope || 'all', proposed)) return settle(null);
+            const pool = Array.isArray(window.buildingFeaturePool) ? window.buildingFeaturePool : [];
+            // The layout worker takes one calculation at a time: plans wait their turn, also behind
+            // one a previous build left running, and one no longer wanted is skipped.
+            const run = state.queue.then(() => current() ? planSuggestedBuilding(feature, {
+                owner: feature, existing: true, parcels: [], turf, generator: suggestedFloorPlans, region: suggestedRegion(),
+                roads: suggestedRoadsFor(feature), heightM, storeyFallbackM: window.STOREY_HEIGHT_M,
+                neighbours: suggestedPlanContext.neighbourPool(feature, proposed, pool, turf),
+                accessOverride: suggestedAccess
+            }) : null);
+            state.queue = run.catch(() => {});
+            const planned = await run;
+            if (!planned) return settle(null);
             for (const slice of planned.slices) {
+                if (!current()) return settle(null);
                 if (!slice.result.floorPlans) continue;
                 const modelled = { type: 'Feature', geometry: slice.footprint.geometry, properties: { ...props, floorPlans: slice.result.floorPlans } };
-                if (await appendBuildingFloorPlans(modelled, buildingMaterial, Math.max(0.1, slice.result.summary.heightM - 0.002), feature, 'existing-suggested')) suggestedPlanTotals.existing++;
+                const group = await appendBuildingFloorPlans(modelled, material, Math.max(0.1, slice.result.summary.heightM - 0.002), feature, 'existing-suggested');
+                if (group?.isObject3D) {
+                    // The apartment panel says when the storeys come from the atlas's satellite estimate.
+                    group.userData.heightEstimated = heightEstimated || null;
+                    groups.push(group);
+                }
             }
+            settle(groups.length ? { groups, heightEstimated: heightEstimated || null } : null);
+        } catch (error) {
+            if (error.name === 'AbortError') { if (state.pending.get(key) === token) state.pending.delete(key); removeSuggestedExistingGroups(groups); return; }
+            floorPlanErrors++;
+            console.error(`[${new Date().toISOString()}] [3D] Suggested layout failed for an existing building`, props.id, error);
+            settle(null);
         }
     }
 
@@ -10909,6 +11011,7 @@
         // Tree tiers follow the camera; their shadows come from fixed stand-ins, so no shadow redraw.
         retierTreesIfMoved();
         updateFloorModelLoads();
+        updateSuggestedExistingLayouts();
         updateXrayDetailVisibility();
         sunLayer?.beforeRender({ fullFrame, sceneChanged: renderedSceneVisualRevision !== sceneVisualRevision });
         // A comparison pass shows a different set of objects: its shadows are its own.
@@ -11618,7 +11721,8 @@
                 syncExistingFootprints();
             }
             applyUseHighlight3D();
-            if (showExisting) await appendSuggestedExistingFloorPlans(existingMaterial);
+            // Estimated layouts of existing buildings follow the camera from here (updateSuggestedExistingLayouts).
+            suggestedExisting.material = showExisting ? existingMaterial : null;
             if (showIneligibleParcels && rebuildProposed) buildIneligibleParcels3D(ineligibleBuildingsGroup);
             buildingDisplaySnapshot = {
                 builtPolicy,
@@ -11646,7 +11750,10 @@
             if (generation === buildingsWorkGeneration) {
                 buildingBuildPending = false;
                 // Interiors that arrived or left during the build, and the new shells' visibility.
-                if (committed) reconcileExistingFloorPlans();
+                if (committed) {
+                    reconcileExistingFloorPlans();
+                    updateSuggestedExistingLayouts(true);
+                }
                 refreshSettledSuggestedStreets();
             }
         }

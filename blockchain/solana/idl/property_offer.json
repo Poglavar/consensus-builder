@@ -1,5 +1,5 @@
 {
-  "address": "BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp",
+  "address": "HrK4gvMqpYNvYSidaMLywy9mknQUatMig2fnWcG2UVyH",
   "metadata": {
     "name": "property_offer",
     "version": "0.1.0",
@@ -8,55 +8,9 @@
   },
   "instructions": [
     {
-      "name": "accept",
-      "docs": [
-        "Binds the previously open side. A BUY offer supplies its seller schedule here; a SELL",
-        "offer's schedule was immutable at create and the accepting wallet becomes its buyer."
-      ],
-      "discriminator": [
-        65,
-        150,
-        70,
-        216,
-        133,
-        6,
-        107,
-        4
-      ],
-      "accounts": [
-        {
-          "name": "offer",
-          "writable": true
-        },
-        {
-          "name": "counterparty",
-          "signer": true
-        },
-        {
-          "name": "attestation"
-        },
-        {
-          "name": "credential"
-        }
-      ],
-      "args": [
-        {
-          "name": "payouts",
-          "type": {
-            "vec": {
-              "defined": {
-                "name": "Payout"
-              }
-            }
-          }
-        }
-      ]
-    },
-    {
       "name": "cancel",
       "docs": [
-        "An open offer belongs to its maker. Acceptance is lens-gated and irreversible; expiry is",
-        "the recovery path for an uncompleted funded escrow."
+        "The maker withdraws an offer nobody has committed to; a buyer's escrow returns."
       ],
       "discriminator": [
         232,
@@ -74,15 +28,136 @@
           "writable": true
         },
         {
-          "name": "authority",
+          "name": "maker",
           "writable": true,
           "signer": true
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "refund_tokens",
+          "docs": [
+            "USDC buy offers: the maker's token account the escrow returns to."
+          ],
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "token_program",
+          "optional": true,
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "commit",
+      "docs": [
+        "The counterparty binds the open side and names its own lens. A seller supplies the payout",
+        "schedule of a buy offer; a buyer pays a sell offer's price into escrow."
+      ],
+      "discriminator": [
+        223,
+        140,
+        142,
+        165,
+        229,
+        208,
+        156,
+        74
+      ],
+      "accounts": [
+        {
+          "name": "offer",
+          "writable": true
+        },
+        {
+          "name": "counterparty",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "counterparty_tokens",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "token_program",
+          "optional": true,
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "payouts",
+          "type": {
+            "vec": {
+              "defined": {
+                "name": "Payout"
+              }
+            }
+          }
+        },
+        {
+          "name": "lens",
+          "type": {
+            "vec": "pubkey"
+          }
+        },
+        {
+          "name": "lens_threshold",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "confirm",
+      "docs": [
+        "Record one lens member's PropertyOfferConfirmation-v1 for this committed offer. Anyone may submit",
+        "it; the attestation's signer must be a member of the lens its role belongs to, and each",
+        "member counts once."
+      ],
+      "discriminator": [
+        174,
+        1,
+        15,
+        213,
+        3,
+        190,
+        131,
+        0
+      ],
+      "accounts": [
+        {
+          "name": "offer",
+          "writable": true
+        },
+        {
+          "name": "attestation"
+        },
+        {
+          "name": "credential"
         }
       ],
       "args": []
     },
     {
       "name": "create",
+      "docs": [
+        "The maker states the terms and its own side's lens. A buyer pays the price into escrow now."
+      ],
       "discriminator": [
         24,
         30,
@@ -104,6 +179,34 @@
           "signer": true
         },
         {
+          "name": "mint",
+          "docs": [
+            "USDC only: the mint; absent for SOL."
+          ],
+          "optional": true
+        },
+        {
+          "name": "maker_tokens",
+          "docs": [
+            "USDC buy offers: the maker's token account the price comes from."
+          ],
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "USDC buy offers: the offer's associated token account (created by the client beforehand)."
+          ],
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "token_program",
+          "optional": true,
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
           "name": "system_program",
           "address": "11111111111111111111111111111111"
         }
@@ -112,10 +215,6 @@
         {
           "name": "cid",
           "type": "string"
-        },
-        {
-          "name": "lens",
-          "type": "pubkey"
         },
         {
           "name": "side",
@@ -135,7 +234,7 @@
           }
         },
         {
-          "name": "price_lamports",
+          "name": "price",
           "type": "u64"
         },
         {
@@ -151,14 +250,24 @@
               }
             }
           }
+        },
+        {
+          "name": "lens",
+          "type": {
+            "vec": "pubkey"
+          }
+        },
+        {
+          "name": "lens_threshold",
+          "type": "u8"
         }
       ]
     },
     {
       "name": "execute",
       "docs": [
-        "Atomically settle every recipient in the fixed schedule. The remaining accounts must be",
-        "the writable recipients in schedule order; any mismatch rolls the whole instruction back."
+        "Pay the fixed schedule once both lenses are met. Remaining accounts are the recipients in",
+        "schedule order: their wallets for SOL, their token accounts for USDC."
       ],
       "discriminator": [
         130,
@@ -174,12 +283,25 @@
         {
           "name": "offer",
           "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "token_program",
+          "optional": true,
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         }
       ],
       "args": []
     },
     {
       "name": "expire",
+      "docs": [
+        "After the deadline anyone ends an unsettled offer; any escrow returns to the buyer."
+      ],
       "discriminator": [
         243,
         83,
@@ -196,44 +318,18 @@
           "writable": true
         },
         {
-          "name": "buyer",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "fund",
-      "docs": [
-        "Exactly one fixed-price deposit by the bound buyer. Preventing top-ups makes refunds and",
-        "the price/schedule invariant trivial to audit."
-      ],
-      "discriminator": [
-        218,
-        188,
-        111,
-        221,
-        152,
-        113,
-        174,
-        7
-      ],
-      "accounts": [
-        {
-          "name": "offer",
+          "name": "refund_to",
           "writable": true
         },
         {
-          "name": "buyer",
+          "name": "vault",
           "writable": true,
-          "signer": true,
-          "relations": [
-            "offer"
-          ]
+          "optional": true
         },
         {
-          "name": "system_program",
-          "address": "11111111111111111111111111111111"
+          "name": "token_program",
+          "optional": true,
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         }
       ],
       "args": []
@@ -262,8 +358,8 @@
     },
     {
       "code": 6001,
-      "name": "NotAccepted",
-      "msg": "Offer is not accepted"
+      "name": "NotCommitted",
+      "msg": "Offer is not committed by both sides"
     },
     {
       "code": 6002,
@@ -288,47 +384,47 @@
     {
       "code": 6006,
       "name": "NoLens",
-      "msg": "A lens is required"
+      "msg": "The buyer's lens needs at least one member"
     },
     {
       "code": 6007,
+      "name": "InvalidLens",
+      "msg": "A lens has 0-8 distinct members and a threshold within them"
+    },
+    {
+      "code": 6008,
       "name": "ZeroPrice",
       "msg": "Price must be positive"
     },
     {
-      "code": 6008,
+      "code": 6009,
       "name": "BuyHasPayouts",
-      "msg": "Buy offers have no schedule until acceptance"
+      "msg": "Buy offers get their schedule from the seller"
     },
     {
-      "code": 6009,
+      "code": 6010,
       "name": "InvalidPayoutSchedule",
       "msg": "Payout schedule is invalid"
     },
     {
-      "code": 6010,
+      "code": 6011,
       "name": "DuplicateRecipient",
       "msg": "Payout recipients must be unique"
     },
     {
-      "code": 6011,
+      "code": 6012,
       "name": "PayoutTotalMismatch",
       "msg": "Payout amounts must equal the offer price"
     },
     {
-      "code": 6012,
-      "name": "AlreadyAccepted",
-      "msg": "Offer already has a counterparty"
-    },
-    {
       "code": 6013,
       "name": "SellScheduleImmutable",
-      "msg": "A sell offer's schedule is immutable"
+      "msg": "A sell offer's schedule is fixed"
     },
     {
       "code": 6014,
-      "name": "AlreadyFunded",
-      "msg": "Offer is already funded"
+      "name": "SelfDeal",
+      "msg": "The maker cannot take its own offer"
     },
     {
       "code": 6015,
@@ -342,43 +438,43 @@
     },
     {
       "code": 6017,
-      "name": "NotAttested",
-      "msg": "No lens decision is recorded"
+      "name": "WrongMint",
+      "msg": "Only SOL or devnet USDC"
     },
     {
       "code": 6018,
+      "name": "MissingTokenAccounts",
+      "msg": "Token accounts are missing"
+    },
+    {
+      "code": 6019,
+      "name": "WrongVault",
+      "msg": "Vault is not the offer's token account"
+    },
+    {
+      "code": 6020,
       "name": "InvalidAttestation",
       "msg": "Invalid SAS attestation or credential"
     },
     {
-      "code": 6019,
+      "code": 6021,
       "name": "AttestationExpired",
       "msg": "Attestation expired"
     },
     {
-      "code": 6020,
-      "name": "WrongLens",
-      "msg": "Wrong lens"
-    },
-    {
-      "code": 6021,
+      "code": 6022,
       "name": "WrongSchema",
       "msg": "Wrong decision schema"
     },
     {
-      "code": 6022,
+      "code": 6023,
       "name": "InvalidDecisionPayload",
       "msg": "Malformed property offer decision"
     },
     {
-      "code": 6023,
-      "name": "WrongDecision",
-      "msg": "Decision does not bind this accepted offer"
-    },
-    {
       "code": 6024,
-      "name": "CounterpartyNotQualified",
-      "msg": "Decision did not qualify the counterparty"
+      "name": "WrongDecision",
+      "msg": "Decision does not bind this committed offer"
     },
     {
       "code": 6025,
@@ -387,26 +483,73 @@
     },
     {
       "code": 6026,
+      "name": "NotALensMember",
+      "msg": "The signer is not a member of this lens"
+    },
+    {
+      "code": 6027,
+      "name": "MemberAlreadyConfirmed",
+      "msg": "This lens member has already confirmed"
+    },
+    {
+      "code": 6028,
+      "name": "LensNotMet",
+      "msg": "The lenses have not confirmed yet"
+    },
+    {
+      "code": 6029,
       "name": "WrongRecipient",
       "msg": "Recipient differs from the schedule"
     },
     {
-      "code": 6027,
+      "code": 6030,
       "name": "WrongRecipientList",
       "msg": "Recipient account list differs from the schedule"
     },
     {
-      "code": 6028,
+      "code": 6031,
       "name": "InsufficientEscrow",
       "msg": "Insufficient escrow"
     },
     {
-      "code": 6029,
+      "code": 6032,
       "name": "ArithmeticOverflow",
       "msg": "Arithmetic overflow"
     }
   ],
   "types": [
+    {
+      "name": "Lens",
+      "docs": [
+        "Up to 8 member keys, how many must confirm, and which have (bit i = members[i])."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "members",
+            "type": {
+              "array": [
+                "pubkey",
+                8
+              ]
+            }
+          },
+          {
+            "name": "count",
+            "type": "u8"
+          },
+          {
+            "name": "threshold",
+            "type": "u8"
+          },
+          {
+            "name": "confirmed",
+            "type": "u8"
+          }
+        ]
+      }
+    },
     {
       "name": "OfferSide",
       "type": {
@@ -430,7 +573,7 @@
             "name": "Open"
           },
           {
-            "name": "Accepted"
+            "name": "Committed"
           },
           {
             "name": "Settled"
@@ -454,7 +597,7 @@
             "type": "pubkey"
           },
           {
-            "name": "lamports",
+            "name": "amount",
             "type": "u64"
           }
         ]
@@ -462,6 +605,9 @@
     },
     {
       "name": "PropertyOffer",
+      "docs": [
+        "The fixed header puts maker, buyer, seller and mint at known offsets for memcmp listing filters."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -470,15 +616,18 @@
             "type": "pubkey"
           },
           {
-            "name": "lens",
-            "type": "pubkey"
-          },
-          {
             "name": "buyer",
             "type": "pubkey"
           },
           {
             "name": "seller",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "docs": [
+              "`Pubkey::default()` for SOL, else the token mint (devnet USDC)."
+            ],
             "type": "pubkey"
           },
           {
@@ -498,11 +647,11 @@
             }
           },
           {
-            "name": "price_lamports",
+            "name": "price",
             "type": "u64"
           },
           {
-            "name": "escrow_lamports",
+            "name": "escrow",
             "type": "u64"
           },
           {
@@ -514,11 +663,11 @@
             "type": "i64"
           },
           {
-            "name": "accepted_at",
+            "name": "committed_at",
             "type": "i64"
           },
           {
-            "name": "attested_at",
+            "name": "settled_at",
             "type": "i64"
           },
           {
@@ -540,6 +689,22 @@
             }
           },
           {
+            "name": "buyer_lens",
+            "type": {
+              "defined": {
+                "name": "Lens"
+              }
+            }
+          },
+          {
+            "name": "seller_lens",
+            "type": {
+              "defined": {
+                "name": "Lens"
+              }
+            }
+          },
+          {
             "name": "payouts",
             "type": {
               "vec": {
@@ -547,27 +712,6 @@
                   "name": "Payout"
                 }
               }
-            }
-          },
-          {
-            "name": "payouts_released",
-            "type": "u8"
-          },
-          {
-            "name": "paid_bitmap",
-            "type": "u16"
-          },
-          {
-            "name": "decision_attestation",
-            "type": "pubkey"
-          },
-          {
-            "name": "decision_hash",
-            "type": {
-              "array": [
-                "u8",
-                32
-              ]
             }
           },
           {

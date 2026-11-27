@@ -38,7 +38,7 @@ describe('the apartments of a design building', () => {
         expect(laid.xrayBuilding).toBe(`design::${designs[0].cid}::0`);
         expect(laid.apartments.length).toBeGreaterThan(4);
         for (const apartment of laid.apartments) {
-            expect(apartment.unit).toMatch(/^\d+::[^:]+::[a-f0-9]{24}$/);
+            expect(apartment.unit).toMatch(/^\d+::[1-9]\d*$/);
             expect(apartment.areaM2).toBeGreaterThan(0);
         }
     });

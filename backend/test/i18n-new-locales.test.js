@@ -48,7 +48,10 @@ for (const language of ['ar', 'fr', 'pt', 'ru', 'kk']) {
 
 describe('Arabic plurals', () => {
     const arabic = flatten(dictionary('ar'));
-    const groups = Object.keys(english).filter(key => key.endsWith('.other')).map(key => key.slice(0, -6));
+    // A plural group has a .one form or counts; a key merely named `other` (agreement.neighbours.right.other,
+    // "Another right") is not one. The same rule as the Russian check below.
+    const groups = Object.keys(english).filter(key => key.endsWith('.other')).map(key => key.slice(0, -6))
+        .filter(group => english[`${group}.one`] || placeholders(english[`${group}.other`]).some(param => /\bcount\b/.test(param)));
     it('defines every CLDR category for every English plural group', () => {
         const missing = [];
         for (const group of groups) for (const form of ['zero', 'one', 'two', 'few', 'many', 'other']) {

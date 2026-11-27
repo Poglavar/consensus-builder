@@ -156,15 +156,9 @@
             if (shown.state) place.append(round.stateBadge(shown, t));
             row.append(place, unitDetails(agreement, unit));
             searchable.push({ element: row, text: round.searchText(shown, view, t) });
-            const standalone = el('details');
-            standalone.append(el('summary', 'cb-link', apartmentText('standalone', 'Independent offers in SOL')));
-            const { xrayBuilding, at, access } = unit;
-            for (const direction of ['buy', 'sell']) {
-                const label = direction === 'buy' ? t('threeMode.controls.offerToBuyApartment', 'Offer to buy apartment')
-                    : t('threeMode.controls.offerToSellApartment', 'Offer to sell apartment');
-                standalone.append(actionButton(label, () => root.PropertyOfferDialog.open({ direction, city: agreement.city,
-                    apartment: { xrayBuilding, unit: unit.unit, at, ...(access ? { access } : {}) } })));
-            }
+            // The same flat outside the round: who holds it according to the reader's lens, and its offers.
+            const standalone = actionButton(apartmentText('standalone', 'Who holds it, offers'), () => root.PropertyAssetDialog.open({ city: agreement.city,
+                asset: { kind: 'flat', xrayBuilding: unit.xrayBuilding, unit: unit.unit, at: unit.at, ...(unit.access ? { access: unit.access } : {}) } }));
             const actions = el('div', 'agreement-panel-actions');
             if (offer?.status === 'unlisted' && active && context.isSponsor) {
                 const list = actionButton(apartmentText('list', 'List apartment'), button => run(slot, button, onStatus =>

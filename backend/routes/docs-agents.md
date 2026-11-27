@@ -139,7 +139,8 @@ SOLANA_RPC_URL=https://api.devnet.solana.com
 | `ugt_list_apartments` | signed | As an apartment round's developer: list its apartments on chain while the round is open. |
 | `ugt_reserve_apartment` | signed | As a buyer the round's lens qualified: pay one apartment's deposit and reserve it. |
 | `ugt_anchor_parcels` | signed | Create parcels' ownerless anchors on Solana, as the parcel panel's "Mint anchor" does: the URI is the parcel's page, several anchors go in one transaction, existing ones cost nothing. |
-| `ugt_mint_property_offer`, `ugt_take_property_offer`, `ugt_fund_property_offer`, `ugt_release_property_offer`, `ugt_cancel_property_offer`, `ugt_expire_property_offer` | signed | A published property offer's chain steps, as the offer panel takes them. |
+| `ugt_mint_property_offer`, `ugt_take_property_offer`, `ugt_confirm_property_offer`, `ugt_execute_property_offer`, `ugt_cancel_property_offer`, `ugt_expire_property_offer` | signed | A published property offer's chain steps, as the offer panel takes them: create, commit (naming your lens), confirm as a lens member, pay out, cancel, expire. |
+| `ugt_state_holding` | signed | As a lens member: state who first holds a plot or a flat. |
 | `ugt_resolve_external_market`, `ugt_claim_external_market` | signed | The same for court-evidence markets (below). |
 
 Every local paid or signed tool needs `UGT_MCP_LIVE=1` in the process and `confirm: true` in the call. Unsigned publication needs only `confirm: true`.
@@ -503,7 +504,7 @@ active minted rounds offering a selected apartment. Each result includes the agr
 city, permanent unit ID, label and deposit. Without `unit` it lists every unit of the building offered
 by an active or executed minted round, one result per unit. Agents can use `ugt_apartment_offers` for the same lookup, with or without `unit`. Before a deposit, the developer’s assigned lens must qualify the buyer for that apartment. The lens serves `GET /lens/agreements/:cid/apartments/:unitId/qualification?buyer=<wallet>`.
 
-Standalone SOL bids and listings use `ugt_draft_property_offer` with `apartment: {xrayBuilding, unit, at}` and the maker’s `lens`. `ugt_list_property_offer` accepts city, building and unit for discovery. The named lens qualifies the accepting party.
+Standalone bids and listings for one plot or one flat, in SOL or USDC, use `ugt_draft_property_offer` (`property-offer/v2`) with `asset` and the maker’s `lens` (members and threshold). `ugt_list_property_offer` filters by city, kind, direction, status, bbox, asset hash, maker, lens member and currency, and `awaiting` lists the offers waiting for one lens member. An offer pays out only when its lens members confirm from their wallets. `ugt_request_holding` prepares and relays a person’s signed request that lens members state it holds an asset; `ugt_list_holding_requests` lists them.
 Read current on-chain availability with `GET $(base)/agreements/<cid>?inventory=1` or
 `ugt_inspect_agreement` with `includeAvailability: true`. The MCP answer adds `apartmentStats`, the
 funding section's view from the same model (`frontend/js/apartment-round.js`): each unit's `state`

@@ -1,7 +1,7 @@
 // Shared advertised tool catalogue, checked against actual MCP registration in protocol tests.
 export const MCP_LOCAL_TOOLS = Object.freeze([
     'ugt_capabilities', 'ugt_activity', 'ugt_list_agreements', 'ugt_get_agreement', 'ugt_agreement_evidence',
-    'ugt_draft_property_offer', 'ugt_edit_property_offer', 'ugt_list_property_offer', 'ugt_get_property_offer', 'ugt_prepare_property_offer', 'ugt_consent_property_offer', 'ugt_publish_property_offer',
+    'ugt_draft_property_offer', 'ugt_edit_property_offer', 'ugt_list_property_offer', 'ugt_get_property_offer', 'ugt_publish_property_offer', 'ugt_request_holding', 'ugt_list_holding_requests',
     'ugt_list_attesters',
     'ugt_support_status', 'ugt_oracle_events', 'ugt_inspect_verified_fact', 'ugt_publish_design', 'ugt_propose_agreement',
     'ugt_chain_agreements', 'ugt_chain_agreement', 'ugt_open_agreement_market', 'ugt_buy_agreement_shares_on_account', 'ugt_sell_agreement_shares', 'ugt_mint_agreement', 'ugt_fund_agreement', 'ugt_bet_on_agreement', 'ugt_buy_agreement_shares',
@@ -9,7 +9,7 @@ export const MCP_LOCAL_TOOLS = Object.freeze([
     'ugt_revoke_pledge', 'ugt_confirm_funding', 'ugt_release_donations', 'ugt_fulfill_pledge', 'ugt_resolve_market', 'ugt_claim_market', 'ugt_reclaim_market_seed',
     'ugt_execute_agreement', 'ugt_expire_agreement', 'ugt_cancel_agreement', 'ugt_confirm_as_lens_member', 'ugt_record_lens_decision',
     'ugt_refund_contributions', 'ugt_list_apartments', 'ugt_reserve_apartment', 'ugt_anchor_parcels',
-    'ugt_mint_property_offer', 'ugt_take_property_offer', 'ugt_fund_property_offer', 'ugt_release_property_offer', 'ugt_cancel_property_offer', 'ugt_expire_property_offer',
+    'ugt_mint_property_offer', 'ugt_take_property_offer', 'ugt_confirm_property_offer', 'ugt_execute_property_offer', 'ugt_cancel_property_offer', 'ugt_expire_property_offer', 'ugt_state_holding',
     'ugt_resolve_external_market', 'ugt_claim_external_market',
     'ugt_voting_status', 'ugt_cast_community_vote', 'ugt_approval_link', 'ugt_find_place', 'ugt_map_view', 'ugt_select_parcels', 'ugt_parcel_context', 'ugt_planning_areas', 'ugt_list_designs', 'ugt_get_design', 'ugt_apartment_offers', 'ugt_markets', 'ugt_explain',
     'ugt_draft_road', 'ugt_draft_building', 'ugt_draft_track', 'ugt_draft_station', 'ugt_draft_space', 'ugt_draft_parcel_layout', 'ugt_draft_urban_rule',

@@ -92,7 +92,7 @@ describe('reference lens member', () => {
             approval: null,
             decisions: { operatorToken: true, agreementIndex: false }
         });
-        expect(Object.keys(res.body.schemas)).toEqual(['ownership', 'decision', 'propertyOffer', 'evidence']);
+        expect(Object.keys(res.body.schemas)).toEqual(['ownership', 'decision', 'propertyOffer', 'holding', 'offerConfirmation', 'evidence']);
         expect(res.body.pricing.ownership.reason).toMatch(/dry run/);
         // Same PDA the register script prints for this authority and the default credential name.
         expect(member.credential).toBe('8xXFCwX7ktNopNTi2LxNrNwAUhnpCjzU76V8KetnFAMJ');

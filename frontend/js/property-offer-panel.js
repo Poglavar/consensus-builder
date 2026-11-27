@@ -1,141 +1,168 @@
-// Read/action sheet for a locally held property offer. Chain actions deliberately operate on the
-// immutable published CID; accepting an open offer records the accepting party separately.
+// One property offer as people follow it: what is sold, the price, where it stands in plain words,
+// who holds the asset according to the reader's own lens, both sides' lens members with who has
+// confirmed, and only the next steps the connected wallet can take. Chain state is re-read on open,
+// after every action and on Refresh.
 (function (root) {
     'use strict';
     const t = (key, fallback, params = {}) => {
         const fullKey = `propertyOffer.${key}`, value = root.i18n?.t?.(fullKey, params);
         return value && value !== fullKey ? value : String(fallback).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, name) => params[name] ?? match);
     };
-    const short = value => { const text = String(value || ''); return text.length > 16 ? `${text.slice(0, 8)}…${text.slice(-6)}` : text; };
-    const sol = value => root.PropertyOfferDialog?.sol?.(value) || `${value} lamports`;
+    const tt = (key, fallback, params = {}) => { const value = root.i18n?.t?.(key, params); return value && value !== key ? value : String(fallback).replace(/\{\{\s*(\w+)\s*\}\}/g, (m, n) => params[n] ?? m); };
+    const el = (tag, className, text) => { const e = document.createElement(tag); if (className) e.className = className; if (text !== undefined) e.textContent = text; return e; };
+    const D = () => root.PropertyOfferDialog;
     const wallet = () => root.PropertyOfferSolanaBridge?.connectedWallet?.() || null;
-    const isExpired = record => Date.parse(record.content.expiresAt) <= Date.now();
-    const row = (label, value) => `<div><dt>${label}</dt><dd>${value}</dd></div>`;
-    const escape = value => String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const keyEl = (key, mine) => key ? root.KeyLabel.element(key, { you: key === mine, t: tt }) : el('span', 'property-offer-panel__none', t('notYet', 'Not yet'));
+    const past = record => Date.parse(record.content.expiresAt) <= Date.now();
+
+    /** The offer's state in words, from the chain account (or the record when not minted yet). */
+    function stateText(record, chain) {
+        if (!record.published) return t('states.draft', 'Draft on this device');
+        if (!chain) return t('states.unminted', 'Published, not yet on Solana');
+        const lensesLeft = [chain.buyerLens, chain.sellerLens].filter(lens => !lens.met);
+        switch (chain.status) {
+            case 'Open': return past(record) ? t('states.openExpired', 'Expired without a taker') : record.content.direction === 'sell' ? t('states.openSell', 'For sale: waiting for a buyer') : t('states.openBuy', 'Wanted: waiting for the holder to accept');
+            case 'Committed':
+                if (past(record)) return t('states.committedExpired', 'Deadline passed before the lens confirmed; the buyer can take the money back');
+                if (!lensesLeft.length) return t('states.ready', 'Confirmed: ready to pay out');
+                return t('states.waitingLens', 'Waiting for lens members: {{done}} of {{needed}} confirmed', {
+                    done: chain.buyerLens.confirmed.length + chain.sellerLens.confirmed.length, needed: chain.buyerLens.threshold + chain.sellerLens.threshold });
+            case 'Settled': return t('states.settled', 'Sold: the money was paid out');
+            case 'Cancelled': return t('states.cancelled', 'Withdrawn by its maker');
+            case 'Expired': return t('states.expired', 'Expired; any escrow went back to the buyer');
+            default: return chain.status;
+        }
+    }
+
+    function lensSection(title, lens, mine, emptyText) {
+        const section = el('section', 'property-offer-panel__section');
+        section.append(el('h4', '', title));
+        if (!lens || !lens.members.length) { section.append(el('p', 'sheet-note', emptyText)); return section; }
+        const badge = el('div', 'lens-badge'); badge.setAttribute('role', 'img');
+        badge.setAttribute('aria-label', t('lensBadge', '{{done}} of {{needed}} needed have confirmed', { done: lens.confirmed.length, needed: lens.threshold }));
+        lens.members.forEach(member => badge.append(el('span', `lens-badge__segment${lens.confirmed.includes(member) ? ' is-confirmed' : ''}`)));
+        section.append(badge);
+        const list = el('ul', 'property-offer-panel__members');
+        for (const member of lens.members) {
+            const item = el('li'); item.append(keyEl(member, mine), el('span', 'property-offer-panel__mark', lens.confirmed.includes(member) ? t('confirmed', 'Confirmed') : t('waiting', 'Waiting')));
+            list.append(item);
+        }
+        section.append(list);
+        if (lens.threshold < lens.members.length) section.append(el('p', 'sheet-note', t('threshold', '{{needed}} of these {{count}} lens members must confirm.', { needed: lens.threshold, count: lens.members.length })));
+        return section;
+    }
+
+    /** "According to your lens": what the reader's lens preference says about who holds the asset. */
+    async function holderSection(section, record, mine) {
+        const members = (root.LensPicker?.getEntries?.() || []).map(entry => entry.address).filter(Boolean);
+        section.replaceChildren(el('h4', '', t('yourLens', 'According to your lens')));
+        if (!members.length) { section.append(el('p', 'sheet-note', t('noLens', 'You have not chosen whom you trust yet. Choose lens members to see who holds this.'))); return; }
+        const p = el('p', 'property-offer-panel__holder', t('reading', 'Reading Solana…')); section.append(p);
+        try {
+            const view = await root.PropertyOfferSolanaBridge.lensView(members, record.content.asset);
+            p.replaceChildren();
+            if (view.holder) p.append(el('span', '', t('holderIs', 'Held by ')), keyEl(view.holder, mine), el('span', 'sheet-note', ` (${t('statedBy', '{{count}} of your lens members state it', { count: view.stating })})`));
+            else if (view.conflict) { p.append(el('span', '', t('holderConflict', 'Your lens members disagree: '))); view.conflict.forEach(k => p.append(keyEl(k, mine))); }
+            else p.textContent = t('holderUnknown', 'None of your lens members states who holds this.');
+        } catch (error) { p.textContent = error.message; }
+    }
 
     function open(idOrRecord, { error = null } = {}) {
         let record = typeof idOrRecord === 'string' ? root.PropertyOfferStore?.get?.(idOrRecord) : idOrRecord;
         if (!record) throw new Error(t('errors.missing', 'This property offer is not held on this device.'));
-        const body = document.createElement('div'); body.className = 'property-offer-panel';
-        let chain = null, chainError = error, reading = false;
-        let readPromise = null;
+        const body = el('div', 'property-offer-panel');
+        let chain = null, chainError = error, reading = false, roles = [];
         let dialog;
         const render = () => {
-            const focused = body.contains(document.activeElement) ? document.activeElement.dataset.action : null;
-            const content = record.content;
-            const apartment = content.apartment || null;
-            const published = record.published?.cid;
-            const direction = content.direction === 'buy' ? t('directions.buy', 'Offer to buy') : t('directions.sell', 'Offer to sell');
-            const state = chain?.status || record.onchain?.status || (published ? t('states.published', 'Published') : t('states.draft', 'Draft'));
-            const scheduledPayouts = chain?.payouts?.length ? chain.payouts : (content.payouts || []);
-            const payouts = scheduledPayouts.length ? `<section class="property-offer-panel__section"><h4>${escape(t('fields.payouts', 'Payout schedule'))}</h4><ul class="property-offer-panel__payouts">${scheduledPayouts.map(item => `<li><code title="${escape(item.recipient)}">${escape(item.recipient)}</code><span>${escape(sol(item.lamports))}</span></li>`).join('')}</ul></section>` : '';
-            const currentCity = root.CityConfigManager?.getCurrentCityId?.() || root.resolveCurrentCityCode?.() || '';
-            const currentSource = currentCity ? root.DesignSync?.parcelSourceIdOf?.(currentCity) : '';
-            const parcels = (content.parcels || []).map(parcel => {
-                const canLocate = !parcel.snapshotId && content.city === currentCity && parcel.sourceId === currentSource;
-                const disabled = canLocate ? '' : ' disabled';
-                return `<li><button type="button" class="cb-link property-offer-panel__locate" data-parcel-id="${escape(parcel.id)}"${disabled} aria-label="${escape(t('locateParcel', 'Locate parcel {{id}}', { id: parcel.id }))}">${escape(parcel.id)}</button><span>${escape(t('fields.parcelSource', 'Source'))}: <code>${escape(parcel.sourceId)}</code>${parcel.snapshotId ? ` · ${escape(t('fields.parcelSnapshot', 'Snapshot'))}: <code>${escape(parcel.snapshotId)}</code>` : ''}</span></li>`;
-            }).join('');
-            const unusedKey = root.PropertyOfferClient?.constants?.DEFAULT_PUBKEY || '11111111111111111111111111111111';
-            const buyer = chain?.buyer || content.buyer || (content.direction === 'buy' ? content.proposer : '');
-            const seller = chain?.seller || content.seller || (content.direction === 'sell' ? content.proposer : '');
-            const roleAddress = value => value && String(value) !== unusedKey ? String(value) : '';
-            const roleValue = value => roleAddress(value) ? `<code title="${escape(roleAddress(value))}">${escape(roleAddress(value))}</code>` : escape(t('notSet', 'Not set'));
-            body.innerHTML = `<h3>${escape(content.title || direction)}</h3><dl class="property-offer-panel__facts">`
-                + row(t('fields.direction', 'Direction'), escape(direction)) + row(t('fields.status', 'Status'), escape(state))
-                + row(t('fields.price', 'Total price'), escape(sol(content.priceLamports))) + row(t('fields.deadline', 'Deadline'), escape(new Date(content.expiresAt).toLocaleString()))
-                + (apartment ? row(t('fields.apartment', 'Apartment'), escape(`${apartment.xrayBuilding} · ${apartment.unit}`)) : row(t('fields.bundle', 'Parcel bundle'), escape(t('bundle', '{{count}} parcels — all or nothing', { count: content.parcels.length }))))
-                + row(t('fields.buyer', 'Buyer'), roleValue(buyer)) + row(t('fields.seller', 'Seller'), roleValue(seller))
-                + row(t('fields.proposer', 'Proposer'), `<code title="${escape(content.proposer)}">${escape(short(content.proposer))}</code>`)
-                + row(t('fields.lens', 'Lens'), `<code title="${escape(content.lens)}">${escape(short(content.lens))}</code>`) + `</dl>`
-                + (apartment ? `<p><a class="cb-link" href="${escape(root.BuildingUnitLinks.offerLink(root.location.href, root.MapShare, { city: content.city, language: root.i18n?.getLanguage?.(), backend: new URL(root.location.href).searchParams.get('backend') }, apartment))}">${escape(t('fields.openApartment', 'Open apartment in X-ray'))}</a></p>` : `<section class="property-offer-panel__section"><h4>${escape(t('fields.parcels', 'Parcels'))}</h4><ul class="property-offer-panel__parcels">${parcels}</ul></section>`)+payouts;
-            const cluster = record.onchain?.cluster || root.solanaWalletManager?.getCluster?.() || 'devnet';
-            let account = chain?.address || record.onchain?.account;
-            if (!account && published) {
-                try { account = root.PropertyOfferClient?.getOfferPda?.(published, content.proposer)?.[0]?.toBase58?.() || null; } catch (_) { /* no configured client yet */ }
-            }
-            function showAccount(label, address) {
-                const section = document.createElement('section');
-                section.className = 'property-offer-panel__section';
-                const heading = document.createElement('h4');
-                heading.textContent = label;
-                section.append(heading);
-                const link = document.createElement(cluster === 'devnet' ? 'a' : 'code');
-                if (cluster === 'devnet') {
-                    link.className = 'cb-link cb-link--external';
-                    link.href = `https://explorer.solana.com/address/${encodeURIComponent(address)}?cluster=devnet`;
-                    link.target = '_blank';
-                    link.rel = 'noopener noreferrer';
-                }
-                link.textContent = address;
-                section.append(link);
-                body.append(section);
-            }
-            if (published && account) showAccount(t('fields.solanaAccount', 'Solana account'), account);
-            const anchor = chain?.apartmentAnchor || record.onchain?.apartmentAnchor;
-            if (apartment && anchor) showAccount(t('fields.apartmentAnchor', 'Apartment address on Solana'), anchor);
-            body.querySelectorAll('[data-parcel-id]:not(:disabled)').forEach(button => button.addEventListener('click', () => root.BusyControl.track(button, async () => {
-                const id = button.dataset.parcelId;
-                try {
-                    if (typeof root.locateParcelById !== 'function') throw new Error(t('errors.locateUnavailable', 'Parcel locating is not available.'));
-                    const result = await root.locateParcelById(id);
-                    if (!result?.ok) throw new Error(result?.message || t('errors.locateFailed', 'Could not locate this parcel.'));
-                    status.textContent = t('parcelLocated', 'Located parcel {{id}}.', { id });
-                } catch (locateError) { status.textContent = locateError.message || String(locateError); }
-            })));
-            const status = document.createElement('p'); status.className = 'property-offer-panel__status'; status.setAttribute('role', 'status');
-            status.textContent = reading ? t('reading', 'Reading Solana…') : (chainError || ''); body.append(status);
-            const actions = document.createElement('div'); actions.className = 'cb-actions property-offer-panel__actions';
-            const action = (name, label, primary = false) => {
-                if (typeof root.PropertyOfferSolanaBridge?.[name] !== 'function') return false;
-                const button = document.createElement('button'); button.type = 'button'; button.className = `btn${primary ? ' btn-primary' : ''}`; button.textContent = label;
-                button.addEventListener('click', () => root.BusyControl.track(button, async () => {
-                    status.textContent = t('working', 'Working…');
-                    const api = root.PropertyOfferSolanaBridge;
-                    if (!api?.[name]) throw new Error(t('errors.chainUnavailable', 'Solana property-offer actions are not available yet.'));
-                    record = await (name === 'mint' ? root.PropertyOfferSync.mint(record) : api[name](record));
-                    status.textContent = t('saved', 'Saved.'); await readChain(); render();
-                }).catch(error => { if (error.record) record = error.record; status.textContent = error.message; })); actions.append(button); return true;
+            const c = record.content, mine = wallet();
+            body.replaceChildren();
+            const head = el('div', 'property-offer-panel__head');
+            head.append(el('h3', '', `${c.direction === 'sell' ? t('forSale', 'For sale') : t('wanted', 'Wanted')}: ${D().assetLabel(c.asset)}`));
+            const link = el('a', 'cb-link', c.asset.kind === 'flat' ? t('viewFlat', 'View the flat in X-ray') : t('viewPlot', 'Show the plot on the map'));
+            link.href = D().assetHref(c.asset, c.city); head.append(link);
+            if (c.title) head.append(el('p', 'sheet-note', c.title));
+            body.append(head);
+            const facts = el('dl', 'property-offer-panel__facts');
+            const row = (label, value) => { const r = el('div'); const dd = el('dd'); dd.append(value instanceof Node ? value : document.createTextNode(String(value))); r.append(el('dt', '', label), dd); facts.append(r); };
+            row(t('fields.price', 'Price'), D().money(c.price, c.currency));
+            row(t('fields.status', 'Where it stands'), reading && !chain ? t('reading', 'Reading Solana…') : stateText(record, chain));
+            row(t('fields.deadline', 'Valid until'), new Date(c.expiresAt).toLocaleString(root.i18n?.getLanguage?.() || undefined));
+            row(t('fields.seller', 'Seller'), keyEl(chain?.seller || (c.direction === 'sell' ? c.proposer : null), mine));
+            row(t('fields.buyer', 'Buyer'), keyEl(chain?.buyer || (c.direction === 'buy' ? c.proposer : null), mine));
+            if (chain && chain.escrow > 0n) row(t('fields.escrow', 'In escrow'), D().money(chain.escrow.toString(), c.currency));
+            body.append(facts);
+            const holder = el('section', 'property-offer-panel__section'); body.append(holder); void holderSection(holder, record, mine);
+            const buyerLens = chain ? chain.buyerLens : (c.direction === 'buy' ? { ...c.lens, confirmed: [] } : null);
+            const sellerLens = chain ? chain.sellerLens : (c.direction === 'sell' ? { ...c.lens, confirmed: [] } : null);
+            body.append(lensSection(t('buyerLens', 'Buyer’s lens: confirms the seller holds it'), buyerLens, mine, t('buyerLensOpen', 'The buyer names it when buying.')));
+            body.append(lensSection(t('sellerLens', 'Seller’s conditions: qualify the buyer'), sellerLens, mine, t('sellerLensNone', 'None: any buyer may take it.')));
+            const status = el('p', 'property-offer-panel__status'); status.setAttribute('role', 'status'); status.textContent = chainError || ''; body.append(status);
+            const actions = el('div', 'cb-actions property-offer-panel__actions');
+            const button = (label, run, primary = false) => {
+                const b = el('button', `btn${primary ? ' btn-primary' : ''}`, label); b.type = 'button';
+                b.addEventListener('click', () => root.BusyControl.track(b, async () => {
+                    const result = await run(s => { status.textContent = D().progressText(s.state); });
+                    if (result?.content) record = result;
+                    status.textContent = result?.executed ? t('paidOut', 'Confirmed and paid out.') : t('saved', 'Done.');
+                    await readChain();
+                }).catch(err => { if (err.record) record = err.record; status.textContent = err.message; }));
+                actions.append(b);
             };
-            const mine = wallet(); const proposer = content.proposer === mine;
-            if (!record.onchain && !chain && !reading && proposer) action('mint', t('mint', 'Mint offer'), true);
-            if (published) {
-                const refresh = document.createElement('button'); refresh.type = 'button'; refresh.className = 'btn'; refresh.textContent = t('refresh', 'Refresh Solana status');
-                refresh.dataset.action = 'refresh';
-                if (readPromise) root.BusyControl.track(refresh, readPromise);
-                refresh.addEventListener('click', readChain); actions.append(refresh);
-                if (chain?.status === 'Open' && !isExpired(record)) {
-                    if (typeof root.PropertyOfferSolanaBridge?.accept === 'function') {
-                        const accept = document.createElement('button'); accept.type = 'button'; accept.className = 'btn btn-primary'; accept.textContent = t('accept', 'Accept offer');
-                        accept.addEventListener('click', () => root.PropertyOfferDialog?.accept?.(record)); actions.append(accept);
+            const bridge = root.PropertyOfferSolanaBridge;
+            if (!mine) {
+                const connect = el('button', 'btn', tt('wallet.connect', 'Connect wallet')); connect.type = 'button';
+                connect.addEventListener('click', () => root.BusyControl.track(connect, async () => { await root.walletManager.openConnectorModal({ chain: 'solana' })?.dialog.closed; await readChain(); }));
+                actions.append(connect);
+            } else if (!chain && record.published === null) {
+                button(t('mint', 'Put it on Solana'), onStatus => root.PropertyOfferSync.mint(record, { onStatus }), true);
+            } else if (!chain && c.proposer === mine) {
+                button(t('mint', 'Put it on Solana'), onStatus => bridge.mint(record, { onStatus }), true);
+            } else if (chain) {
+                const open = chain.status === 'Open' && !past(record), committed = chain.status === 'Committed' && !past(record);
+                if (open && mine !== chain.maker) {
+                    const take = el('button', 'btn btn-primary', c.direction === 'sell' ? t('buyThis', 'Buy') : t('acceptBid', 'Accept this offer')); take.type = 'button';
+                    take.addEventListener('click', () => { dialog.close(); D().take(record); }); actions.append(take);
+                }
+                if (open && mine === chain.maker) button(t('cancelOffer', 'Withdraw offer'), onStatus => bridge.cancel(record, { onStatus }));
+                for (const entry of committed ? roles : []) {
+                    if (entry.confirmed) continue;
+                    const label = entry.role === 0 ? t('confirmHolds', 'Confirm the seller holds it') : t('confirmBuyer', 'Confirm the buyer qualifies');
+                    button(label, onStatus => bridge.confirm(record, { role: entry.role, onStatus }), true);
+                    if (entry.role === 0 && entry.view && entry.view.holder !== chain.seller) {
+                        status.textContent = entry.view.holder ? t('memberViewOther', 'Your statements name another holder; you cannot confirm this sale.') : t('memberViewNone', 'You have not stated who holds this; state the first holder before confirming.');
                     }
-                    if (proposer) action('cancel', t('cancelOffer', 'Cancel offer'));
                 }
-                if (chain?.status === 'Accepted' && !isExpired(record)) {
-                    if (mine && mine === chain.buyer && chain.escrowLamports === 0n) action('fund', t('fund', 'Fund'), true);
-                    if (chain.escrowLamports >= chain.priceLamports) action('release', t('execute', 'Execute'));
-                }
-                if (['Open', 'Accepted'].includes(chain?.status) && isExpired(record)) action('expire', t('expire', 'Expire offer'));
+                if (committed && chain.buyerLens.met && chain.sellerLens.met) button(t('execute', 'Pay out'), onStatus => bridge.execute(record, { onStatus }), true);
+                if (['Open', 'Committed'].includes(chain.status) && past(record) && (chain.escrow > 0n || mine === chain.maker)) button(t('expire', 'Return the escrow'), onStatus => bridge.expire(record, { onStatus }));
             }
+            const share = el('button', 'btn btn-quiet', t('share', 'Copy link')); share.type = 'button';
+            share.disabled = !record.published;
+            share.addEventListener('click', () => root.BusyControl.track(share, async () => { await root.navigator.clipboard.writeText(root.PropertyOfferSync.link(record.published.cid, { city: c.city })); status.textContent = t('linkCopied', 'Link copied.'); }));
+            const refresh = el('button', 'btn btn-quiet', t('refresh', 'Refresh')); refresh.type = 'button'; refresh.disabled = !record.published;
+            refresh.addEventListener('click', () => root.BusyControl.track(refresh, readChain));
+            actions.append(share, refresh);
             body.append(actions);
-            if (focused) body.querySelector(`[data-action="${focused}"]`)?.focus();
+            if (chain) {
+                const account = el('a', 'cb-link cb-link--external property-offer-panel__account', t('onSolana', 'See it on Solana explorer'));
+                account.href = `https://explorer.solana.com/address/${encodeURIComponent(chain.address)}?cluster=devnet`; account.target = '_blank'; account.rel = 'noopener noreferrer';
+                body.append(account);
+            }
         };
-        function readChain() {
-            if (reading || !record.published?.cid) return readPromise;
-            reading = true; chainError = null;
-            readPromise = Promise.resolve().then(async () => {
-                chain = await root.PropertyOfferSolanaBridge.read(record);
-                if (chain && !record.onchain && typeof root.PropertyOfferSolanaBridge.refresh === 'function') {
-                    try { record = await root.PropertyOfferSolanaBridge.refresh(record); }
-                    catch (error) { if (error.record) record = error.record; throw error; }
-                }
-            }).catch(error => { chainError = error.message || String(error); })
-                .finally(() => { reading = false; readPromise = null; render(); });
-            render(); return readPromise;
+        async function readChain() {
+            if (!record.published?.cid) { render(); return; }
+            reading = true; chainError = null; render();
+            try {
+                const result = await root.PropertyOfferSolanaBridge.memberActions(record);
+                chain = result.chain; roles = result.roles;
+                if (chain && record.onchain?.status !== chain.status.toLowerCase()) { try { record = await root.PropertyOfferSolanaBridge.refresh(record); } catch (err) { if (err.record) record = err.record; } }
+            } catch (err) { chainError = err.message || String(err); }
+            reading = false; render();
         }
-        const unsubscribe = root.solanaWalletManager?.on?.('stateChanged', () => render());
-        dialog = root.CbDialog.open({ title: t('details', 'Property offer'), size: 'md', className: 'property-offer-dialog', body, actions: [], onClose: () => unsubscribe?.() });
-        render(); if (record.published?.cid) void readChain(); return dialog;
+        root.KeyLabel.loadNames().then(render);
+        const unsubscribe = root.solanaWalletManager?.on?.('stateChanged', () => void readChain());
+        dialog = root.CbDialog.open({ title: t('details', 'Offer'), size: 'md', className: 'property-offer-dialog', body, actions: [], onClose: () => unsubscribe?.() });
+        void readChain();
+        return dialog;
     }
-    root.PropertyOfferPanel = Object.freeze({ open });
+    root.PropertyOfferPanel = Object.freeze({ open, stateText });
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -28,11 +28,11 @@ export function validParcelUid(value) {
     return text;
 }
 
-/** The parcel anchor PDA ["parcel", parcel_id] under parcel_nft, or null when the id cannot seed one (>32 bytes). */
+/** The parcel anchor PDA ["parcel", sha256(parcel_id)] under parcel_nft, or null when the id does not fit the account (>256 bytes). */
 export function deriveParcelAnchor(parcelUid) {
-    if (Buffer.byteLength(String(parcelUid), 'utf8') > 32) return null;
+    if (Buffer.byteLength(String(parcelUid), 'utf8') > 256) return null;
     return PublicKey.findProgramAddressSync(
-        [Buffer.from('parcel'), Buffer.from(String(parcelUid))], new PublicKey(PARCEL_PROGRAM_ID)
+        [Buffer.from('parcel'), createHash('sha256').update(String(parcelUid)).digest()], new PublicKey(PARCEL_PROGRAM_ID)
     )[0].toBase58();
 }
 
@@ -169,7 +169,6 @@ export function sortHistory(events) {
 // an anchor's existence nor its creation time. Unavailable evidence stays unknown, not false.
 async function loadAnchor(parcelUid, readAnchorAccount) {
     const account = deriveParcelAnchor(parcelUid);
-    if (!account) return { account: null, exists: false, source: 'unseedable' };
     if (readAnchorAccount) {
         try {
             const exists = await readAnchorAccount(account, parcelUid);

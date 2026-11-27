@@ -1,73 +1,54 @@
-// Node signer adapter for standalone property offers (programs/property_offer): an MCP agent holding its
-// own Solana keypair creates, accepts, funds, releases, cancels and expires a published offer the way a
-// person does in the browser's offer panel (frontend/js/solana/property-offer-bridge.js), on the same
-// codecs and wallet messages. Every step reads the chain account first and checks it against the
-// published terms with the index's own check (property-offers/onchain.js), refuses before signing what
-// the program or the lens would refuse, signs nothing on a replay, and then records the chain reference
-// in the index through the injected `recordOnchain(ref, cid)` (createOnchainRecorder is the HTTP one).
-import { createHash } from 'node:crypto';
+// Node signer adapter for property offers v2 (programs/property_offer): an MCP agent holding its own
+// Solana keypair takes the steps a person takes in the browser's offer panel
+// (frontend/js/solana/property-offer-bridge.js), on the same codecs: the maker creates the offer, the
+// counterparty commits (naming its lens; a buyer pays into escrow), lens members confirm with a
+// PropertyOfferConfirmation-v1 attestation, anyone executes once both lenses are met, the maker
+// cancels while open, anyone expires after the deadline; and a lens member states a first holder
+// (PropertyHolding-v1). confirmSale is the buyer's-lens confirmation with the browser's holder check
+// (the member's own statements must name the seller). Every step reads the chain account first and
+// checks it against the published terms with the index's own check (property-offers/onchain.js), refuses before signing what the
+// program would refuse, signs nothing on a replay, and then records the chain reference in the index
+// through the injected `recordOnchain(ref, cid)` (createOnchainRecorder is the HTTP one).
 import { createRequire } from 'node:module';
-import { setTimeout as delay } from 'node:timers/promises';
-import { canonicalBytes } from '../cid.js';
-import { client, expectedApartmentAnchor, readOfferAnchor, validateOfferAccount } from '../property-offers/onchain.js';
-import { prepareAcceptance, verifyConsent } from '../property-offers/acceptance.js';
-import { signMessageBytes } from './lens-ownership-client.js';
+import { client, termsHashOf, validateOfferAccount } from '../property-offers/onchain.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
-const anchors = require('../../frontend/js/solana/parcel-client.js').configure({ web3 });
 const Offer = require('../../frontend/js/property-offer-record.js');
-const Consent = require('../../frontend/js/property-offer-consent.js');
-const LensCore = require('../../frontend/js/lens-core.js');
+const Statements = require('../../frontend/js/solana/property-statements.js').configure({ web3 });
+const Holders = require('../../frontend/js/property-holders.js');
 
 const DEVNET_GENESIS = 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG';
-const { DEFAULT_PUBKEY, PROPERTY_OFFER_PROGRAM_ID, SAS_PROGRAM_ID } = client.constants;
-const termsHashOf = content => createHash('sha256').update(canonicalBytes(content)).digest('hex');
+const { PROPERTY_OFFER_PROGRAM_ID } = client.constants;
 const deadlineOf = content => Math.floor(Date.parse(content.expiresAt) / 1000);
-const nowDefault = () => Math.floor(Date.now() / 1000);
 const refuse = message => { throw Object.assign(new Error(`${message}; nothing signed.`), { code: 'refused' }); };
+const chainNow = async connection => connection.getBlockTime(await connection.getSlot('confirmed'));
 
-function serviceBase(lensServiceUrl) {
-    if (!lensServiceUrl) throw new Error('lensServiceUrl (the service of the lens member the offer names) is required');
-    return String(lensServiceUrl).replace(/\/+$/, '');
-}
-
-async function lensPost(fetchImpl, url, body, timeoutMs) {
-    if (typeof fetchImpl !== 'function') throw new Error('a fetch implementation is required');
-    const response = await fetchImpl(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(timeoutMs), body: JSON.stringify(body) });
-    const result = await response.json();
-    if (!response.ok) throw Object.assign(new Error(result.message || result.error || `Lens HTTP ${response.status}`), { status: response.status, code: result.error });
-    return result;
+async function network({ connection, keypair, cluster = 'devnet' }) {
+    if (!connection?.getAccountInfo) throw new Error('a solana connection is required');
+    if (!keypair?.publicKey) throw new Error('keypair is required');
+    if (!['devnet', 'localnet'].includes(cluster)) throw new Error('Property offers currently support Solana devnet and localnet.');
+    if (cluster === 'devnet' && await connection.getGenesisHash() !== DEVNET_GENESIS) throw new Error('The RPC network does not match Solana devnet.');
+    return { connection, keypair, cluster, signer: keypair.publicKey.toBase58() };
 }
 
 /** The bridge's context(): the network, the program, the published CID and the offer address. */
 async function context({ connection, keypair, row, cluster, recordOnchain }) {
-    if (!connection?.getAccountInfo) throw new Error('a solana connection is required');
-    if (!keypair?.publicKey) throw new Error('keypair is required');
     if (typeof recordOnchain !== 'function') throw new Error('recordOnchain (ref, cid) is required to index the confirmed step');
     if (!row?.cid || !row.content || Offer.cid(row.content) !== row.cid) throw new Error('The offer content does not match its published CID.');
-    const network = cluster || row.onchain?.cluster || 'devnet';
-    if (!['devnet', 'localnet'].includes(network)) throw new Error('Property offers currently support Solana devnet and localnet.');
-    if (row.onchain?.cluster && row.onchain.cluster !== network) throw new Error(`The offer is indexed on ${row.onchain.cluster}, not ${network}.`);
-    if (network === 'devnet' && await connection.getGenesisHash() !== DEVNET_GENESIS) throw new Error('The RPC network does not match Solana devnet.');
+    const net = await network({ connection, keypair, cluster: cluster || row.onchain?.cluster || 'devnet' });
+    if (row.onchain?.cluster && row.onchain.cluster !== net.cluster) throw new Error(`The offer is indexed on ${row.onchain.cluster}, not ${net.cluster}.`);
     const program = await connection.getAccountInfo(new web3.PublicKey(PROPERTY_OFFER_PROGRAM_ID));
     if (!program?.executable) throw Object.assign(new Error('The property offer program is not deployed on this Solana network yet.'), { code: 'program-not-deployed' });
     const address = client.getOfferPda(row.cid, row.content.proposer)[0].toBase58();
     if (row.onchain?.account && row.onchain.account !== address) throw new Error('The chain address does not match the published offer.');
-    return { connection, keypair, row, recordOnchain, cluster: network, address, signer: keypair.publicKey.toBase58() };
+    return { ...net, row, recordOnchain, address };
 }
 
-/** The bridge's readWith(): null before create; otherwise the account, proven to carry the published terms. */
-async function readChain(ctx, { allowMissingAnchor = false } = {}) {
-    const { connection, row, address } = ctx;
-    const account = await client.fetchPropertyOffer(connection, { address });
-    if (!account) return null;
-    if (allowMissingAnchor && row.content.apartment && !await anchors.readApartmentAnchor(connection, Offer.apartmentHash(row.content.apartment))) {
-        // The anchor is minted next; every other term must already match the published offer.
-        validateOfferAccount(row, { ...account, apartmentAnchor: expectedApartmentAnchor(row.content) });
-        return { ...account, apartmentAnchor: null };
-    }
-    return validateOfferAccount(row, await readOfferAnchor(connection, row, account));
+/** null before create; otherwise the account, proven to carry the published terms. */
+async function readChain(ctx) {
+    const account = await client.fetchPropertyOffer(ctx.connection, { address: ctx.address });
+    return account ? validateOfferAccount(ctx.row, account) : null;
 }
 
 async function send(ctx, instructions, sendAndConfirm) {
@@ -76,169 +57,200 @@ async function send(ctx, instructions, sendAndConfirm) {
     return sendAndConfirm(ctx.connection, transaction, [ctx.keypair], { commitment: 'confirmed' });
 }
 
-/** The bridge's persist(): read back, then index the reference (also on a replay, which re-syncs the index). */
+/** Read back, then index the reference (also on a replay, which re-syncs the index). */
 async function persist(ctx, signature) {
     const chain = await readChain(ctx);
-    const ref = { chain: 'solana', cluster: ctx.cluster, account: ctx.address, signature: signature ?? ctx.row.onchain?.signature ?? null, status: chain?.status?.toLowerCase() };
-    if (chain?.apartmentAnchor) ref.apartmentAnchor = chain.apartmentAnchor;
+    const ref = { chain: 'solana', cluster: ctx.cluster, account: ctx.address, signature: signature ?? ctx.row.onchain?.signature ?? null };
     let indexed;
     try { indexed = await ctx.recordOnchain(ref, ctx.row.cid); }
     catch (cause) {
         throw Object.assign(new Error('The Solana step is on chain, but the index could not record it. Repeat the same step: it signs nothing again and retries the record.'),
             { cause, signature, ref });
     }
-    return { signature, replayed: signature === null, account: ctx.address, status: ref.status, onchain: indexed?.onchain ?? null };
+    return { signature, replayed: signature === null, account: ctx.address, status: chain?.status?.toLowerCase() ?? null, onchain: indexed?.onchain ?? null };
 }
 
-/** Read, plan (null = replay; throw = refuse), send, index: the bridge's mutate(). */
-async function mutate({ sendAndConfirm = web3.sendAndConfirmTransaction, ...options }, plan) {
+/** Read, plan (null = replay; throw = refuse), send, index. */
+async function mutate({ sendAndConfirm = web3.sendAndConfirmTransaction, nowSeconds, ...options }, plan) {
     const ctx = await context(options);
     const chain = await readChain(ctx);
     if (!chain) refuse('Create this offer on Solana first');
-    const instructions = plan(ctx, chain);
+    const instructions = await plan(ctx, chain, nowSeconds ?? await chainNow(ctx.connection));
     return persist(ctx, instructions ? await send(ctx, instructions, sendAndConfirm) : null);
 }
 
-const open = (chain, nowSeconds, what) => { if (BigInt(nowSeconds) > chain.deadline) refuse(`The offer deadline has passed; it can no longer be ${what}`); };
+const beforeDeadline = (chain, nowSeconds, what) => { if (BigInt(nowSeconds) > chain.deadline) refuse(`The offer deadline has passed; it can no longer be ${what}`); };
+const executeIxs = (ctx, chain) => client.buildExecuteIxs({ offer: ctx.address, currency: chain.currency, recipients: chain.payouts.map(p => p.recipient), payer: ctx.signer });
 
-/** The named lens's credential and PropertyOfferDecision schema exist on this network (the bridge's preflight). */
-async function requireDecisionSchema(ctx, credential, schemaAddress = null) {
-    const schema = client.getDecisionSchemaPda(credential)[0];
-    if (schemaAddress && schema.toBase58() !== schemaAddress) refuse('The lens offer schema address differs from its credential');
-    const [credentialInfo, schemaInfo] = await Promise.all([
-        ctx.connection.getAccountInfo(new web3.PublicKey(credential), 'confirmed'), ctx.connection.getAccountInfo(schema, 'confirmed')
-    ]);
-    client.validateDecisionSchema({ credential, authority: ctx.row.content.lens, credentialInfo, schemaInfo });
-}
-
-/** The program's own decision checks (sas_attestation::property::qualification), run before the accept is signed. */
-async function requireDecision(ctx, prepared, decision, { nowSeconds, attempts, pauseMs }) {
-    if (!decision?.address || !decision?.credential) refuse('The lens answered without a decision attestation');
-    await requireDecisionSchema(ctx, decision.credential);
-    // The lens member's own transaction created the attestation; this RPC may not show it yet.
-    let info = null;
-    for (let attempt = 1; attempt <= attempts; attempt += 1) {
-        info = await ctx.connection.getAccountInfo(new web3.PublicKey(decision.address), 'confirmed');
-        if (info || attempt === attempts) break;
-        await delay(pauseMs * attempt);
-    }
-    if (!info || !new web3.PublicKey(info.owner).equals(new web3.PublicKey(SAS_PROGRAM_ID))) refuse(`The lens decision ${decision.address} is not a SAS attestation on this network`);
-    const attestation = client.readDecisionAttestation(new Uint8Array(info.data), decision.address);
-    if (attestation.credential !== decision.credential || attestation.signer !== ctx.row.content.lens
-        || attestation.schema !== client.getDecisionSchemaPda(decision.credential)[0].toBase58()) refuse('The decision attestation belongs to another lens, credential or schema');
-    const expected = { cid: ctx.row.cid, offer: ctx.address, termsHash: prepared.termsHash, payoutsHash: prepared.payoutsHash, buyer: prepared.buyer, seller: prepared.seller };
-    const differs = Object.keys(expected).filter(name => attestation.fields[name] !== expected[name]);
-    if (differs.length) refuse(`The lens decision attests other terms (${differs.join(', ')})`);
-    if (attestation.fields.counterpartyQualified !== 1) refuse('The lens has not qualified this counterparty');
-    if (attestation.expiry <= BigInt(nowSeconds)) refuse('The lens decision has expired');
-}
-
-/**
- * The proposer creates its published offer on Solana; for an apartment offer the same transaction mints
- * the apartment's ownerless anchor (init_if_needed). The named lens must first answer its pre-mint check
- * and hold its decision schema on this network, as in the browser. An existing account is a replay.
- */
-export async function createOfferOnChain({ lensServiceUrl, fetchImpl = globalThis.fetch, nowSeconds = nowDefault(),
-    sendAndConfirm = web3.sendAndConfirmTransaction, ...options } = {}) {
+/** The maker creates its published offer on Solana (a buyer pays the price into escrow). An existing account is a replay. */
+export async function createOfferOnChain({ nowSeconds, sendAndConfirm = web3.sendAndConfirmTransaction, ...options } = {}) {
     const ctx = await context(options), content = ctx.row.content;
     if (ctx.signer !== content.proposer) refuse('Only the proposer can create this offer on Solana');
-    const prior = await readChain(ctx, { allowMissingAnchor: true });
-    if (prior && (!content.apartment || prior.apartmentAnchor)) return persist(ctx, null);
-    if (!prior) {
-        if (deadlineOf(content) <= nowSeconds) refuse(`The offer expired at ${content.expiresAt}`);
-        const check = await lensPost(fetchImpl, `${serviceBase(lensServiceUrl)}/lens/property-offers/check`, { content }, 30000);
-        if (check.key !== content.lens || !check.credential || !check.schema) refuse('The lens returned another authority or no offer schema');
-        await requireDecisionSchema(ctx, check.credential, check.schema);
-    }
-    const instructions = [];
-    if (content.apartment) instructions.push(anchors.buildMintApartmentIx({ payer: ctx.signer, identityHash: Offer.apartmentHash(content.apartment) }).instruction);
-    if (!prior) instructions.push(client.buildCreateIx({ maker: ctx.signer, cid: ctx.row.cid, lens: content.lens, side: content.direction,
-        termsHash: termsHashOf(content), priceLamports: content.priceLamports, deadline: deadlineOf(content), payouts: content.payouts || [] }).instruction);
+    if (await readChain(ctx)) return persist(ctx, null);
+    if (deadlineOf(content) <= (nowSeconds ?? await chainNow(ctx.connection))) refuse(`The offer expired at ${content.expiresAt}`);
+    const { instructions } = client.buildCreateIxs({ maker: ctx.signer, currency: content.currency, cid: ctx.row.cid, side: content.direction, termsHash: termsHashOf(content),
+        price: content.price, deadline: deadlineOf(content), payouts: content.payouts || [], lens: content.lens.members, lensThreshold: content.lens.threshold });
     return persist(ctx, await send(ctx, instructions, sendAndConfirm));
 }
 
 /**
- * The accepting counterparty (the buyer of a sell offer, the seller of a buy offer) signs the decision
- * request, asks the named lens for its decision and records it on chain. `candidate` is the acceptance
- * the MCP prepare tool returns or a shared acceptance's; it is re-derived from the published offer.
- * A parcel offer needs every payout recipient's seller consent; an apartment offer relies on the lens's
- * qualification of this counterparty. An offer already accepted by these parties is a replay.
+ * The counterparty commits: the seller of a buy offer names the payout schedule (default: all to
+ * itself) and its optional lens; the buyer of a sell offer names its lens (required: who states the
+ * seller holds the asset) and pays the price into escrow. Committed by this wallet already is a replay.
  */
-export async function acceptOffer({ candidate, lensServiceUrl, fetchImpl = globalThis.fetch, nowSeconds = nowDefault(),
-    attestationReadAttempts = 4, attestationPauseMs = 3000, sendAndConfirm = web3.sendAndConfirmTransaction, ...options } = {}) {
-    if (!(options.keypair?.secretKey instanceof Uint8Array)) throw new Error('keypair with its secretKey is required to sign the decision request');
-    const ctx = await context(options), content = ctx.row.content;
-    const { candidate: terms } = prepareAcceptance(ctx.row, candidate || {});
-    const consents = content.apartment ? [] : (candidate?.consents || []).map(row => ({ owner: row?.owner, signature: row?.signature }));
-    const prepared = { ...terms, consents };
-    const requester = content.direction === 'buy' ? prepared.seller : prepared.buyer;
-    if (ctx.signer !== requester) refuse(`Only the accepting counterparty ${requester} can accept this offer, not ${ctx.signer}`);
-    if (!content.apartment) {
-        if (new Set(consents.map(row => row.owner)).size !== consents.length) refuse('A seller consent is listed more than once');
-        if (prepared.payouts.some(row => !consents.some(consent => consent.owner === row.recipient))) refuse('Every seller must sign the exact payment schedule before acceptance');
-        for (const consent of consents) verifyConsent(prepared, consent);
-    }
-    const chain = await readChain(ctx);
-    if (!chain) refuse('Create this offer on Solana first');
-    if (chain.status !== 'Open') {
-        if (['Accepted', 'Settled'].includes(chain.status) && chain.buyer === prepared.buyer && chain.seller === prepared.seller) return persist(ctx, null);
-        refuse(`The offer is ${chain.status}; it can no longer be accepted`);
-    }
-    open(chain, nowSeconds, 'accepted');
-    const signature = LensCore.base58Encode(new Uint8Array(signMessageBytes({ secretKey: ctx.keypair.secretKey, message: Consent.requestMessage(prepared) })));
-    const decision = await lensPost(fetchImpl, `${serviceBase(lensServiceUrl)}/lens/property-offers/${encodeURIComponent(ctx.row.cid)}/decision`,
-        { ...prepared, requester, signature }, 60000);
-    await requireDecision(ctx, prepared, decision, { nowSeconds, attempts: attestationReadAttempts, pauseMs: attestationPauseMs });
-    return persist(ctx, await send(ctx, [client.buildAcceptIx({ offer: ctx.address, counterparty: ctx.signer,
-        payouts: content.direction === 'buy' ? prepared.payouts : [], attestation: decision.address, credential: decision.credential })], sendAndConfirm));
-}
-
-/** The bound buyer deposits exactly the price once; a funded or settled offer is a replay. */
-export function fundOffer({ nowSeconds = nowDefault(), ...options } = {}) {
-    return mutate(options, (ctx, chain) => {
-        if (chain.status === 'Open') refuse('The offer is not accepted yet');
-        if (chain.status === 'Cancelled' || chain.status === 'Expired') refuse(`The offer is ${chain.status}; it can no longer be funded`);
-        if (chain.buyer !== ctx.signer) refuse(`Only the buyer ${chain.buyer} can fund this offer`);
-        if (chain.status === 'Settled' || chain.escrowLamports === chain.priceLamports) return null;
-        open(chain, nowSeconds, 'funded');
-        return [client.buildFundIx({ offer: ctx.address, buyer: ctx.signer })];
-    });
-}
-
-/** Pays the funded price to the scheduled recipients in schedule order (permissionless; the signer pays the fee). */
-export function releaseOffer({ nowSeconds = nowDefault(), ...options } = {}) {
-    return mutate(options, (ctx, chain) => {
-        if (chain.status === 'Settled') return null;
-        if (chain.status !== 'Accepted') refuse(`The offer is ${chain.status}, not Accepted`);
-        if (chain.decisionAttestation === DEFAULT_PUBKEY) refuse('The offer has no recorded lens decision');
-        if (chain.escrowLamports !== chain.priceLamports) refuse(`The escrow holds ${chain.escrowLamports} of ${chain.priceLamports} lamports; the buyer must fund it first`);
-        open(chain, nowSeconds, 'released');
-        return [client.buildExecuteIx({ offer: ctx.address, recipients: chain.payouts.map(payout => payout.recipient) })];
-    });
-}
-
-/** The proposer withdraws its open offer; a cancelled offer is a replay. */
-export function cancelOffer(options = {}) {
-    return mutate(options, (ctx, chain) => {
-        if (ctx.signer !== chain.maker) refuse('Only the proposer can cancel this offer');
-        if (chain.status === 'Cancelled') return null;
-        if (chain.status !== 'Open') refuse(`The offer is ${chain.status}; only an open offer can be cancelled`);
-        return [client.buildCancelIx({ offer: ctx.address, authority: ctx.signer })];
-    });
-}
-
-/** After the deadline, closes an open or accepted offer and refunds any escrow to the buyer (permissionless). */
-export function expireOffer({ nowSeconds = nowDefault(), ...options } = {}) {
-    return mutate(options, (ctx, chain) => {
-        if (chain.status === 'Expired') return null;
-        if (chain.status !== 'Open' && chain.status !== 'Accepted') refuse(`The offer is ${chain.status}; it cannot expire`);
-        if (BigInt(nowSeconds) <= chain.deadline) refuse(`The offer deadline ${new Date(Number(chain.deadline) * 1000).toISOString()} has not passed`);
-        return [client.buildExpireIx({ offer: ctx.address, buyer: chain.buyer === DEFAULT_PUBKEY ? chain.maker : chain.buyer })];
+export function commitOffer({ lens = { members: [], threshold: 0 }, payouts, ...options } = {}) {
+    return mutate(options, (ctx, chain, nowSeconds) => {
+        if (ctx.signer === chain.maker) refuse('The maker cannot take its own offer');
+        const counterparty = chain.side === 'Buy' ? chain.seller : chain.buyer;
+        if (chain.status !== 'Open') {
+            if (counterparty === ctx.signer && ['Committed', 'Settled'].includes(chain.status)) return null;
+            refuse(`The offer is ${chain.status}; it can no longer be taken`);
+        }
+        beforeDeadline(chain, nowSeconds, 'taken');
+        const members = lens?.members || [], threshold = lens?.threshold ?? 0;
+        if (chain.side === 'Sell' && !members.length) refuse('A buyer names its lens: the lens members who must confirm the seller holds the asset');
+        const schedule = chain.side === 'Buy' ? (payouts || [{ recipient: ctx.signer, amount: String(chain.price) }]) : [];
+        if (chain.side === 'Sell' && payouts?.length) refuse('A sale’s payout schedule is fixed by the seller');
+        return client.buildCommitIxs({ offer: ctx.address, counterparty: ctx.signer, currency: chain.currency, side: chain.side.toLowerCase(), payouts: schedule, lens: members, lensThreshold: threshold });
     });
 }
 
 /**
- * The index write the browser's PropertyOfferSync.recordOnchain makes: POST /property-offers/:cid/onchain
+ * A lens member of the offer confirms, with a PropertyOfferConfirmation-v1 attestation and the
+ * program's confirm in one transaction (after any credential/schema setup), and executes when its
+ * confirmation completes both lenses. Role 0 (the buyer's lens: the seller holds the asset) needs
+ * `holding`, the address of the statement through which the seller holds it (the member's
+ * first-holder statement, or the settled offer the seller bought through); the confirmation lands at
+ * an address fixed by asset and holding, so the member cannot confirm a second sale of that holding.
+ * Role 1 (the seller's lens: the buyer qualifies). `role` picks one when the member sits in both.
+ */
+export function confirmOffer({ role, holding, ...options } = {}) {
+    return mutate(options, (ctx, chain, nowSeconds) => planConfirmation(ctx, chain, nowSeconds, role, () => holding));
+}
+
+/**
+ * One lens member's view of an asset, read from chain: its first-holder statement followed through
+ * the sales it confirmed that settled (frontend/js/property-holders.js viewOf). `getAccount` may be a
+ * caching reader shared across several views.
+ */
+export function memberView({ connection, member, asset, getAccount }) {
+    const read = getAccount || (async address => (await connection.getAccountInfo(new web3.PublicKey(address), 'confirmed'))?.data || null);
+    return Holders.viewOf({ member, assetHash: Offer.assetHash(asset), getAccount: read, statements: Statements, offers: client });
+}
+
+/**
+ * The buyer's-lens confirmation as the browser's offer sheet takes it (property-offer-bridge.js
+ * confirm, role 0): the signing lens member confirms only when its own statements name the seller as
+ * holder, through the holding they name, and no other sale of that holding it confirmed is open or
+ * left unwithdrawn. Anything else is refused before signing, so the offer waits and expires.
+ */
+export function confirmSale(options = {}) {
+    return mutate(options, (ctx, chain, nowSeconds) => planConfirmation(ctx, chain, nowSeconds, 0, async () => {
+        const view = await memberView({ connection: ctx.connection, member: ctx.signer, asset: ctx.row.content.asset });
+        if (!view.holder) refuse('Your statements name no holder of this asset; state the first holder before confirming a sale');
+        if (view.holder !== chain.seller) refuse(`Your statements say ${view.holder} holds this, not the seller ${chain.seller}`);
+        if (view.pending && view.pending.offer !== ctx.address) refuse(`You have confirmed another sale of this holding that is still open (offer ${view.pending.offer})`);
+        if (view.stale) refuse(`Withdraw your confirmation of the earlier sale that did not complete (offer ${view.stale.offer}) first`);
+        return view.holding;
+    }));
+}
+
+// The confirm step shared by confirmOffer and confirmSale; `holdingOf()` gives the holding a role-0
+// confirmation names and is asked only when this member still has a confirmation to add.
+async function planConfirmation(ctx, chain, nowSeconds, role, holdingOf) {
+    if (chain.status !== 'Committed') {
+        if (chain.status === 'Settled' && [chain.buyerLens, chain.sellerLens].some(lens => lens.confirmed.includes(ctx.signer))) return null;
+        refuse(`The offer is ${chain.status}; lens members confirm a committed offer`);
+    }
+    beforeDeadline(chain, nowSeconds, 'confirmed');
+    const roles = [[0, chain.buyerLens], [1, chain.sellerLens]].filter(([r, lens]) => lens.members.includes(ctx.signer) && (role === undefined || role === r));
+    if (!roles.length) refuse(`${ctx.signer} is not a lens member of this offer${role === undefined ? '' : ` in role ${role}`}`);
+    const open = roles.find(([, lens]) => !lens.confirmed.includes(ctx.signer));
+    if (!open) return null;
+    const [chosen, lens] = open;
+    const assetHash = Offer.assetHash(ctx.row.content.asset);
+    const holding = chosen === 0 ? await holdingOf() : '';
+    if (chosen === 0 && (typeof holding !== 'string' || !holding)) refuse('Confirming that the seller holds the asset needs holding: the statement address through which the seller holds it');
+    const statementHolding = chosen === 0 ? holding : '';
+    const nonce = client.decisionNonce({ role: chosen, assetHash, holding: statementHolding, offer: ctx.address });
+    const issued = Statements.buildCreateAttestationIx({ payer: ctx.signer, authority: ctx.signer, kind: 'confirmation', nonce,
+        payload: client.encodeDecisionPayload({ cid: chain.cid, offer: ctx.address, termsHash: chain.termsHash, payoutsHash: chain.payoutsHash, buyer: chain.buyer, seller: chain.seller,
+            role: chosen, assetHash, holding: statementHolding, observedAt: nowSeconds }),
+        expiry: nowSeconds + Statements.constants.STATEMENT_EXPIRY_SECONDS });
+    const existing = await ctx.connection.getAccountInfo(new web3.PublicKey(issued.attestation), 'confirmed');
+    if (existing) {
+        const prior = client.readDecisionAttestation(new Uint8Array(existing.data), issued.attestation);
+        if (prior.fields.offer !== ctx.address) refuse(`You have confirmed another sale of this holding (offer ${prior.fields.offer}); withdraw that confirmation first`);
+    }
+    const setup = await Statements.setupIxs(ctx.connection, { payer: ctx.signer, authority: ctx.signer, kinds: ['confirmation'] });
+    const other = chosen === 0 ? chain.sellerLens : chain.buyerLens;
+    const completes = lens.confirmed.length + 1 >= lens.threshold && other.met && chain.escrow === chain.price;
+    return [...setup, ...(existing ? [] : [issued.instruction]), client.buildConfirmIx({ offer: ctx.address, attestation: issued.attestation, credential: issued.credential }),
+        ...(completes ? executeIxs(ctx, chain) : [])];
+}
+
+/** Pays the escrow to the schedule once both lenses are met (permissionless; the signer pays fees and any token accounts). */
+export function executeOffer(options = {}) {
+    return mutate(options, (ctx, chain, nowSeconds) => {
+        if (chain.status === 'Settled') return null;
+        if (chain.status !== 'Committed') refuse(`The offer is ${chain.status}, not Committed`);
+        if (!chain.buyerLens.met || !chain.sellerLens.met) refuse('The offer still waits for its lens members’ confirmations');
+        if (chain.escrow !== chain.price) refuse(`The escrow holds ${chain.escrow} of ${chain.price}`);
+        beforeDeadline(chain, nowSeconds, 'executed');
+        return executeIxs(ctx, chain);
+    });
+}
+
+/** The maker withdraws its open offer (a buyer's escrow returns); a cancelled offer is a replay. */
+export function cancelOffer(options = {}) {
+    return mutate(options, (ctx, chain) => {
+        if (ctx.signer !== chain.maker) refuse('Only the maker can cancel this offer');
+        if (chain.status === 'Cancelled') return null;
+        if (chain.status !== 'Open') refuse(`The offer is ${chain.status}; only an open offer can be cancelled`);
+        return [client.buildCancelIx({ offer: ctx.address, maker: ctx.signer, currency: chain.currency })];
+    });
+}
+
+/** After the deadline, ends an open or committed offer and refunds any escrow to the buyer (permissionless). */
+export function expireOffer(options = {}) {
+    return mutate(options, (ctx, chain, nowSeconds) => {
+        if (chain.status === 'Expired') return null;
+        if (chain.status !== 'Open' && chain.status !== 'Committed') refuse(`The offer is ${chain.status}; it cannot expire`);
+        if (BigInt(nowSeconds) <= chain.deadline) refuse(`The offer deadline ${new Date(Number(chain.deadline) * 1000).toISOString()} has not passed`);
+        return [client.buildExpireIx({ offer: ctx.address, currency: chain.currency, buyer: chain.buyer || chain.maker })];
+    });
+}
+
+/**
+ * This wallet, as a lens member, states who first holds an asset (PropertyHolding-v1, at the one
+ * address its key and the asset fix). An existing statement naming the same holder is a replay;
+ * one naming another holder is refused (withdraw it first).
+ */
+export async function stateHolding({ asset, city, holder, basis, evidence = '', nowSeconds, sendAndConfirm = web3.sendAndConfirmTransaction, ...options } = {}) {
+    const ctx = await network(options);
+    const normalized = Offer.normalizeAsset(asset, city ?? assetCity(asset));
+    const assetHash = Offer.assetHash(normalized);
+    const address = Statements.holdingAddress(ctx.signer, assetHash).toBase58();
+    const existing = await ctx.connection.getAccountInfo(new web3.PublicKey(address), 'confirmed');
+    if (existing) {
+        const stated = Statements.readHolding(new Uint8Array(existing.data));
+        if (stated?.fields.holder === holder) return { signature: null, replayed: true, attestation: address, assetHash };
+        refuse(`You have already stated that ${stated?.fields.holder ?? 'someone else'} first holds this; withdraw that statement first`);
+    }
+    const observedAt = nowSeconds ?? await chainNow(ctx.connection);
+    const issued = Statements.buildHoldingIx({ payer: ctx.signer, authority: ctx.signer, assetHash, asset: Offer.assetKey(normalized), holder, basis, evidence, observedAt });
+    const setup = await Statements.setupIxs(ctx.connection, { payer: ctx.signer, authority: ctx.signer, kinds: ['holding'] });
+    const signature = await send(ctx, [...setup, issued.instruction], sendAndConfirm);
+    return { signature, replayed: false, attestation: issued.attestation, assetHash };
+}
+// A flat's building address names its city; a plot's caller passes `city`.
+function assetCity(asset) {
+    if (asset?.kind === 'flat') return String(asset.xrayBuilding || '').split('::')[0];
+    throw new Error('city is required to state the holder of a plot');
+}
+
+/**
+ * The index write the browser makes after each confirmed step: POST /property-offers/:cid/onchain
  * with the reference. The API takes writes only from its own sites, so the configured app origin is sent.
  */
 export function createOnchainRecorder({ apiBase, appOrigin, fetchImpl = globalThis.fetch } = {}) {

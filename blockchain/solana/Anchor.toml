@@ -5,7 +5,7 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
-property_offer = "BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp"
+property_offer = "HrK4gvMqpYNvYSidaMLywy9mknQUatMig2fnWcG2UVyH"
 # agreement, proposal_market, proposal_pledge: the plan-CID layout (programs/agreement/README.md);
 # every id is also in frontend/js/solana/program-ids.js with the retired ones.
 agreement = "6X5ihiKNpsF39eYzWGaw7swgYa6vouZ8gT1LHB5H86Cb"
@@ -15,7 +15,7 @@ proposal_nft = "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg"
 proposal_pledge = "DY4zKtE1hucUHsQGDhQmBaH3ZdAaeusnmj9HzVtpmYnK"
 
 [programs.localnet]
-property_offer = "BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp"
+property_offer = "HrK4gvMqpYNvYSidaMLywy9mknQUatMig2fnWcG2UVyH"
 agreement = "6X5ihiKNpsF39eYzWGaw7swgYa6vouZ8gT1LHB5H86Cb"
 parcel_nft = "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1"
 proposal_market = "79dH9KGrbffN37Hv1mbyUWdbHAVcCt6o2Z1VZ3c745Bn"

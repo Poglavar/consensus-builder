@@ -29,7 +29,7 @@ describe('property_offer source/IDL registration', () => {
     });
 
     it('registers the generated IDL instruction surface', () => {
-        expect(idl.instructions.map(instruction => instruction.name).sort()).toEqual(['accept', 'cancel', 'create', 'execute', 'expire', 'fund']);
+        expect(idl.instructions.map(instruction => instruction.name).sort()).toEqual(['cancel', 'commit', 'confirm', 'create', 'execute', 'expire']);
         for (const instruction of idl.instructions) expect(instruction.discriminator).toEqual(discriminator('global', instruction.name));
     });
 });

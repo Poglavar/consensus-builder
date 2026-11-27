@@ -14,15 +14,14 @@ describe("parcel_nft", () => {
     anchor.setProvider(provider);
 
     const program = anchor.workspace.ParcelNft as Program;
-    const offerProgram = anchor.workspace.PropertyOffer as Program;
 
     // First suite mocha runs: the genesis-loaded programs only become callable after slot 1.
     before(() => waitForProgramsVisible(provider.connection));
 
-    function mint(parcelId: string, metadataUri: string, payer?: Keypair) {
-        const [parcelPDA] = findParcelPDA(program.programId, parcelId);
+    function mint(parcelId: string, metadataUri: string, payer?: Keypair, parcelHash = [...createHash("sha256").update(parcelId).digest()]) {
+        const [parcelPDA] = PublicKey.findProgramAddressSync([Buffer.from("parcel"), Buffer.from(parcelHash)], program.programId);
         const builder = program.methods
-            .mintParcel(parcelId, metadataUri)
+            .mintParcel(parcelId, metadataUri, parcelHash)
             .accountsStrict({
                 parcel: parcelPDA,
                 payer: payer?.publicKey ?? provider.wallet.publicKey,
@@ -65,6 +64,23 @@ describe("parcel_nft", () => {
         const account = await program.account.parcel.fetch(findParcelPDA(program.programId, parcelId)[0]);
         expect(account.owner.toBase58()).to.equal(PublicKey.default.toBase58());
         expect(await provider.connection.getBalance(payer.publicKey)).to.be.below(anchor.web3.LAMPORTS_PER_SOL);
+    });
+
+    it("anchors an id longer than a raw 32-byte seed at ['parcel', sha256(id)]", async () => {
+        const parcelId = "kz-pkk::20-321-001-234::parcel-0042-" + "x".repeat(40);
+        expect(Buffer.byteLength(parcelId)).to.be.above(32);
+        await mint(parcelId, "https://urbangametheory.xyz/parcel/kz");
+        const account = await program.account.parcel.fetch(findParcelPDA(program.programId, parcelId)[0]);
+        expect(account.parcelId).to.equal(parcelId);
+    });
+
+    it("refuses a parcel_hash that is not the sha256 of parcel_id", async () => {
+        try {
+            await mint("HR-test-wrong-hash", "ipfs://meta", undefined, [...createHash("sha256").update("HR-test-other").digest()]);
+            expect.fail("should have thrown");
+        } catch (err: any) {
+            expect(err.toString()).to.include("ParcelHashMismatch");
+        }
     });
 
     it("prevents duplicate parcel minting", async () => {
@@ -119,27 +135,5 @@ describe("parcel_nft", () => {
         const b = mintApartment(hashB, second); await b.promise;
         expect(b.apartment.toBase58()).not.to.equal(a1.apartment.toBase58());
         expect((await program.account.apartmentAnchor.fetch(b.apartment)).identityHash).to.deep.equal(hashB);
-    });
-
-    it("anchors an apartment and creates a standalone offer atomically", async () => {
-        const identityHash = apartmentHash("offer-asset");
-        const payer = provider.wallet.publicKey;
-        const [apartment] = PublicKey.findProgramAddressSync([Buffer.from("apartment"), Buffer.from(identityHash)], program.programId);
-        const cid = `apartmentoffer${Date.now()}`;
-        const [offer] = PublicKey.findProgramAddressSync([Buffer.from("property-offer"), payer.toBuffer(), createHash("sha256").update(cid).digest()], offerProgram.programId);
-        const lens = Keypair.generate().publicKey;
-        const termsHash = apartmentHash("offer-terms");
-        const clock = await provider.connection.getAccountInfo(anchor.web3.SYSVAR_CLOCK_PUBKEY);
-        const now = Number(clock!.data.readBigInt64LE(32));
-        const anchorIx = await program.methods.mintApartment(identityHash).accountsStrict({ apartment, payer, systemProgram: SystemProgram.programId }).instruction();
-        const offerIx = await offerProgram.methods.create(cid, lens, { buy: {} }, termsHash, new anchor.BN(1000), new anchor.BN(now + 600), [])
-            .accountsStrict({ offer, maker: payer, systemProgram: SystemProgram.programId }).instruction();
-        await provider.sendAndConfirm(new anchor.web3.Transaction().add(offerIx, anchorIx));
-        const apartmentAccount: any = await program.account.apartmentAnchor.fetch(apartment);
-        expect([...apartmentAccount.identityHash]).to.deep.equal(identityHash);
-        expect(apartmentAccount.owner).to.equal(undefined);
-        const offerAccount: any = await offerProgram.account.propertyOffer.fetch(offer);
-        expect(offerAccount.cid).to.equal(cid);
-        expect(offerAccount.maker.toBase58()).to.equal(payer.toBase58());
     });
 });

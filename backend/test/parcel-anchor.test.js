@@ -26,7 +26,7 @@ describe('parcel anchor', () => {
     });
 
     it('turns parcel ids into anchor targets, once each, and reports ids that cannot be anchored', () => {
-        const long = 'X'.repeat(33);
+        const long = 'X'.repeat(257);
         const longUri = 'p'.repeat(32);
         expect(ParcelAnchor.anchorTargets(['HR-1-7', ' HR-1-7 ', long, '', 'gb-42'])).toEqual({
             parcels: [{ anchorId: 'HR-1-7', metadataUri: 'https://urbangametheory.xyz/parcel/HR-1-7' },
@@ -35,8 +35,8 @@ describe('parcel anchor', () => {
         });
         expect(ParcelAnchor.anchorTargets([longUri], { base: `https://${'h'.repeat(240)}.test` }).skipped)
             .toEqual([{ parcelId: longUri, reason: 'uri-too-long' }]);
-        // The longest id that seeds a PDA still fits the program's 256-byte URI on the public site.
-        const uri = ParcelAnchor.anchorUri('Ž'.repeat(16));
+        // A 128-character id, the longest the parcel routes accept, fits the program's 256-byte URI on the public site.
+        const uri = ParcelAnchor.anchorUri('p'.repeat(128));
         expect(new TextEncoder().encode(uri).length).toBeLessThanOrEqual(ParcelAnchor.MAX_URI_BYTES);
     });
 

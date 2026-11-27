@@ -202,8 +202,8 @@ batch costs nothing for the done ones (`SolanaParcelClient.packMintParcelInstruc
 parcel panel's "Mint anchor" in `solana/parcel-mint.js`, the agreement mint in
 `agreement-bridge.js` and the agents' `chain-actions.js`). The agreement mint anchors its input
 parcels before the create; a wallet that signs several transactions at once (`signAllTransactions`)
-approves the anchors and the create together, others approve each. An id over 32 bytes cannot seed an
-anchor and is reported, not fatal. An anchor's URI is the parcel's page
+approves the anchors and the create together, others approve each. The anchor PDA is seeded by the
+id's sha256, so ids longer than one 32-byte seed (Kazakh and other source ids) are anchored too. An anchor's URI is the parcel's page
 (`https://urbangametheory.xyz/parcel/<anchor id>`), so anchoring pins nothing. To build: EVM
 `anchorBatch`, and the checklist's `k/N` display.
 
@@ -231,7 +231,7 @@ Since the programs may be rewritten, the anchors, records and agreements become 
 (working name `ugt`): one deploy and one rent instead of three, one IDL and one client for the
 adapter, and the agreement can check anchors and records it owns without cross-program reads.
 
-- **`ParcelAnchor`** at `PDA(["parcel", parcelId])`: `parcel_nft` v2's account, moved here unchanged
+- **`ParcelAnchor`** at `PDA(["parcel", sha256(parcelId)])`: `parcel_nft` v2's account, moved here unchanged
   in meaning (ownerless, fixed metadata URI, never closed). `anchor_parcels(ids[])` creates several per
   transaction and skips ones that exist, so a resumed batch never fails on its own earlier work.
 - **`Record`** at `PDA([kind, sha256(cid)])` for `kind` design or plan: `kind u8`, `cid string`,

@@ -1,15 +1,17 @@
-// Homebuyer policy (homebuyer-01…): a household agent in a developer's crowdfunding rounds and the
-// standalone apartment-offer market of its cities. Pure: input = `homes` (homebuyer-chain.js
-// gatherHomes: open rounds with their apartment inventory, its own deposits in rounds that ended
-// unexecuted, apartment offers with their chain state), the persona, seed, wallet and invocation
-// budget; output = one action or none. society-run.mjs gathers and signs.
+// Homebuyer policy (homebuyer-01…): a household agent in a developer's crowdfunding rounds and in the
+// USDC property-offer market for the flats of executed rounds. Pure: input = `homes`
+// (homebuyer-chain.js gatherHomes: open rounds with their apartment inventory, its own deposits in
+// rounds that ended unexecuted, the flats of executed rounds with who holds each according to the
+// round's lens member, and the flats' USDC offers with their chain state), the persona, seed, wallet
+// and invocation budget; output = one action or none. society-run.mjs gathers and signs.
 //
 // Obligations first, in this order: take back a deposit from a round that expired or was cancelled;
-// fund and settle an accepted offer it is the buyer of; accept another agent's open offer it can
-// take (buy a listed apartment it does not hold, or sell an apartment it holds to a bid). Then one
-// choice, by a seed-stable draw among what is possible: reserve an available apartment (its lens
-// qualifies it first), list an apartment it holds for resale, bid on an apartment another agent
-// holds, or contribute to a plain contribution round.
+// end an own offer past its deadline (its escrow returns to the buyer); create on chain an own offer
+// published but not yet minted; accept a bid on a flat it holds; take a listing of a flat its seller
+// holds. Then one choice, by a seed-stable draw among what is possible: reserve an available apartment
+// (its lens qualifies it first), put a held flat up for sale, bid for a flat another wallet holds, or
+// contribute to a plain contribution round. "Holds" is always the round's lens member's word
+// (property-holders.js viewOf): the member confirms a sale only then, so nothing else is traded.
 import { agreementName, firstFitting, positiveDecimal, stableNumber } from './common.js';
 
 export const ROLE = 'homebuyer';
@@ -18,48 +20,54 @@ export const NEEDS = { records: false, noPositions: false, yesPositions: false, 
 const usdc = atomic => Number(atomic) / 1e6;
 const HOUR_MS = 3_600_000;
 
+const ATOMIC = 1_000_000n;
+const atomicOf = text => { const [whole, fraction = ''] = text.split('.'); return BigInt(whole) * ATOMIC + BigInt(fraction.padEnd(6, '0')); };
+
 export function policyConfig(persona = {}) {
     const policy = persona.policy || {};
-    const lamports = (value, fallback, label) => {
-        const text = String(value ?? fallback);
-        if (!/^\d+(\.\d{1,9})?$/.test(text) || Number(text) <= 0) throw new Error(`${persona.name} policy.${label} must be a positive SOL decimal`);
-        return BigInt(Math.round(Number(text) * 1e9));
-    };
+    const offerMinAtomic = atomicOf(positiveDecimal(policy.offerMinUsdc, '1', `${persona.name} policy.offerMinUsdc`));
+    const offerMaxAtomic = atomicOf(positiveDecimal(policy.offerMaxUsdc, '3', `${persona.name} policy.offerMaxUsdc`));
+    if (offerMinAtomic > offerMaxAtomic) throw new Error(`${persona.name} policy.offerMinUsdc exceeds policy.offerMaxUsdc`);
     return {
         maxReservations: Math.max(0, Number(policy.maxReservations ?? 2)),
         maxDepositUsdc: Number(positiveDecimal(policy.maxDepositUsdc, '4', `${persona.name} policy.maxDepositUsdc`)),
         donationUsdc: positiveDecimal(policy.donationUsdc, '0.5', `${persona.name} policy.donationUsdc`),
-        offerMinLamports: lamports(policy.offerMinSol, '0.01', 'offerMinSol'),
-        offerMaxLamports: lamports(policy.offerMaxSol, '0.03', 'offerMaxSol'),
-        offerDays: Math.max(1, Number(policy.offerDays ?? 3)),
-        offerLens: policy.offerLens ? String(policy.offerLens) : null,
+        // Flat offers in USDC: the price of a listing or bid it makes, the most it pays for a listing and
+        // the least it takes for a bid; how long its offers run; how many it has open or taken at once;
+        // and how many of the newest executed rounds' flats it reads (gatherHomes).
+        offerMinAtomic, offerMaxAtomic,
+        offerDays: Math.max(1, Number(policy.offerDays ?? 2)),
+        maxOpenOffers: Math.max(0, Number(policy.maxOpenOffers ?? 2)),
+        tradeRounds: Math.max(0, Number(policy.tradeRounds ?? 3)),
         // Relative weights of the free choices (0 turns one off).
         weights: { reserve: 4, offerSell: 2, offerBuy: 2, donate: 2, ...(policy.weights || {}) }
     };
 }
 
-// A price in whole lamports between the configured bounds, stable for one seed, on 0.001 SOL steps.
-export function offerPrice(seed, { offerMinLamports, offerMaxLamports }) {
-    const steps = Number((offerMaxLamports - offerMinLamports) / 1_000_000n);
-    return offerMinLamports + BigInt(steps > 0 ? stableNumber(seed) % (steps + 1) : 0) * 1_000_000n;
+// A price in atomic USDC between the configured bounds, stable for one seed, on 0.01 USDC steps.
+export function offerPrice(seed, { offerMinAtomic, offerMaxAtomic }) {
+    const steps = Number((offerMaxAtomic - offerMinAtomic) / 10_000n);
+    return offerMinAtomic + BigInt(steps > 0 ? stableNumber(seed) % (steps + 1) : 0) * 10_000n;
 }
 
-const apartmentRef = unit => ({ xrayBuilding: unit.xrayBuilding, unit: unit.unit, at: unit.at });
-const sameApartment = (a, b) => a.xrayBuilding === b.xrayBuilding && a.unit === b.unit;
+// The offer content's creation instant, whole seconds, fixed in the action so a resumed turn
+// publishes the same CID.
+const createdAtOf = now => new Date(Math.floor(now / 1000) * 1000).toISOString();
+const usdcText = atomic => String(Number(atomic) / 1e6);
 
 /**
- * @param {{ persona, seed, now?, wallet, homes: { rounds, refunds, offers }, budget? }} input
+ * @param {{ persona, seed, now?, wallet, homes: { rounds, refunds, flats?, offers? }, budget? }} input
+ *   flats: [{ roundCid, roundTitle, title, city, label, asset, assetHash, lens, holder, holding, pending, stale }]
+ *   offers: [{ cid, assetHash, content, chain: null | { status, maker, buyer, seller, price, escrow, deadline } }]
  */
 export function decide({ persona, seed, now = Date.now(), wallet = null, homes = null, budget = null } = {}) {
     if (!persona?.name) throw new Error('persona.name is required');
     if (!seed) throw new Error('seed is required');
     const config = policyConfig(persona);
-    if (!homes || !wallet) return { action: null, options: [], capped: false, reason: 'No rounds or offers were read.' };
+    if (!homes || !wallet) return { action: null, options: [], capped: false, reason: 'No rounds were read.' };
     const rounds = homes.rounds || [];
-    const offers = homes.offers || [];
-    const nowSeconds = Math.floor(now / 1000);
     const mine = rounds.flatMap(round => round.units.filter(unit => unit.status === 'reserved' && unit.buyer === wallet).map(unit => ({ round, unit })));
-    const liveOffer = offer => offer.chain && Date.parse(offer.content.expiresAt) > now + HOUR_MS;
+    const market = offerMarket({ homes, wallet, now });
 
     const obligations = [];
     for (const refund of homes.refunds || []) {
@@ -67,28 +75,11 @@ export function decide({ persona, seed, now = Date.now(), wallet = null, homes =
             amount: String(usdc(refund.amount)), usdc: 0, signedActions: 1,
             rationale: `Take back the ${usdc(refund.amount)} USDC deposit from ${refund.title}: the round ${refund.chainStatus} without executing.` } });
     }
-    for (const offer of offers) {
-        const chain = offer.chain;
-        if (chain?.status !== 'Accepted' || chain.buyer !== wallet || Number(chain.deadline) <= nowSeconds) continue;
-        obligations.push({ agreementCid: offer.cid, action: { type: 'settle-offer', offerCid: offer.cid, agreementCid: offer.cid, agreementName: offer.content.title || offer.cid,
-            funded: BigInt(chain.escrowLamports) >= BigInt(chain.priceLamports), usdc: 0, signedActions: 2,
-            rationale: `Pay ${Number(chain.priceLamports) / 1e9} SOL into the accepted offer for ${offer.content.title || 'the apartment'} and release it to the seller.` } });
-    }
-    for (const offer of offers) {
-        if (offer.chain?.status !== 'Open' || offer.content.proposer === wallet || !liveOffer(offer)) continue;
-        const held = mine.some(({ unit }) => sameApartment(unit, offer.content.apartment));
-        if (offer.content.direction === 'sell' && !held) {
-            obligations.push({ agreementCid: offer.cid, action: { type: 'accept-offer', offerCid: offer.cid, agreementCid: offer.cid, agreementName: offer.content.title || offer.cid,
-                role: 'buyer', usdc: 0, signedActions: 1, rationale: `Buy ${offer.content.title || 'the listed apartment'} at ${Number(offer.content.priceLamports) / 1e9} SOL; the offer's lens qualifies this wallet first.` } });
-        } else if (offer.content.direction === 'buy' && held) {
-            obligations.push({ agreementCid: offer.cid, action: { type: 'accept-offer', offerCid: offer.cid, agreementCid: offer.cid, agreementName: offer.content.title || offer.cid,
-                role: 'seller', usdc: 0, signedActions: 1, rationale: `Sell the reservation of ${offer.content.title || 'the apartment'} to the bid of ${Number(offer.content.priceLamports) / 1e9} SOL.` } });
-        }
-    }
+    obligations.push(...offerObligations({ market, config, wallet, now }));
     if (obligations.length) {
         obligations.sort((a, b) => stableNumber(`${seed}:${persona.name}:${a.agreementCid}`) - stableNumber(`${seed}:${persona.name}:${b.agreementCid}`));
-        const order = ['refundMyDonations', 'settle-offer', 'accept-offer'];
-        obligations.sort((a, b) => order.indexOf(a.action.type) - order.indexOf(b.action.type));
+        const order = ['refundMyDonations', 'expire-offer', 'mint-offer', 'accept-bid', 'take-listing'];
+        obligations.sort((a, b) => order.indexOf(a.action.step || a.action.type) - order.indexOf(b.action.step || b.action.type));
         const { chosen, capped } = firstFitting(obligations, budget);
         if (chosen) return { action: chosen.action, options: obligations, capped: false, reason: chosen.action.rationale };
         if (capped) return { action: null, options: obligations, capped: true, reason: 'Cap reached before an outstanding step.' };
@@ -106,28 +97,7 @@ export function decide({ persona, seed, now = Date.now(), wallet = null, homes =
             }
         }
     }
-    if (config.weights.offerSell > 0 && config.offerLens) {
-        for (const { round, unit } of mine) {
-            if (offers.some(offer => offer.content.proposer === wallet && offer.content.direction === 'sell' && liveOffer(offer) && offer.chain.status === 'Open' && sameApartment(offer.content.apartment, unit))) continue;
-            const price = offerPrice(`${seed}:${persona.name}:${unit.unit}:sell`, config);
-            choices.push({ kind: 'offerSell', agreementCid: round.cid, action: { type: 'make-offer', direction: 'sell', agreementCid: round.cid, agreementName: round.title,
-                apartment: apartmentRef(unit), city: round.city, title: `${unit.label} · ${round.planTitle || round.title}`, priceLamports: String(price), days: config.offerDays,
-                lens: config.offerLens, usdc: 0, signedActions: 1,
-                rationale: `List ${unit.label} (reserved in ${round.title}) for resale at ${Number(price) / 1e9} SOL.` } });
-        }
-    }
-    if (config.weights.offerBuy > 0 && config.offerLens) {
-        for (const round of rounds) {
-            for (const unit of round.units.filter(item => item.status === 'reserved' && item.buyer && item.buyer !== wallet)) {
-                if (offers.some(offer => offer.content.proposer === wallet && offer.content.direction === 'buy' && liveOffer(offer) && offer.chain.status === 'Open' && sameApartment(offer.content.apartment, unit))) continue;
-                const price = offerPrice(`${seed}:${persona.name}:${unit.unit}:buy`, config);
-                choices.push({ kind: 'offerBuy', agreementCid: round.cid, action: { type: 'make-offer', direction: 'buy', agreementCid: round.cid, agreementName: round.title,
-                    apartment: apartmentRef(unit), city: round.city, title: `${unit.label} · ${round.planTitle || round.title}`, priceLamports: String(price), days: config.offerDays,
-                    lens: config.offerLens, usdc: 0, signedActions: 1,
-                    rationale: `Bid ${Number(price) / 1e9} SOL for ${unit.label}, reserved by another wallet in ${round.title}.` } });
-            }
-        }
-    }
+    choices.push(...offerChoices({ market, config, wallet, now, seed: `${seed}:${persona.name}` }));
     if (config.weights.donate > 0) {
         for (const round of openRounds.filter(item => item.plain && !item.donatedByMe)) {
             choices.push({ kind: 'donate', agreementCid: round.cid, action: { type: 'donate', agreementCid: round.cid, account: round.account, agreementName: round.title,
@@ -135,21 +105,104 @@ export function decide({ persona, seed, now = Date.now(), wallet = null, homes =
                 rationale: `Contribute ${config.donationUsdc} USDC to ${round.title} (target ${usdc(round.targetUsdcAtomic)} USDC).` } });
         }
     }
-    if (!choices.length) return { action: null, options: [], capped: false, reason: 'No apartment to reserve, offer to make or round to contribute to.' };
+    if (!choices.length) return { action: null, options: [], capped: false, reason: 'No apartment to reserve, flat offer to make or round to contribute to.' };
     // One kind by weight among the kinds that have options, then one option of it, both seed-stable.
     const kinds = [...new Set(choices.map(choice => choice.kind))];
     const total = kinds.reduce((sum, kind) => sum + config.weights[kind], 0);
     let draw = stableNumber(`${seed}:${persona.name}:kind`) % total;
     const kind = kinds.find(item => (draw -= config.weights[item]) < 0) || kinds[0];
     const ofKind = choices.filter(choice => choice.kind === kind)
-        .sort((a, b) => stableNumber(`${seed}:${persona.name}:${a.agreementCid}:${a.action.unitId || a.action.apartment?.unit || ''}`)
-            - stableNumber(`${seed}:${persona.name}:${b.agreementCid}:${b.action.unitId || b.action.apartment?.unit || ''}`));
+        .sort((a, b) => stableNumber(`${seed}:${persona.name}:${a.agreementCid}:${a.action.unitId || a.action.asset?.unit || ''}`)
+            - stableNumber(`${seed}:${persona.name}:${b.agreementCid}:${b.action.unitId || b.action.asset?.unit || ''}`));
     const ordered = [...ofKind, ...choices.filter(choice => choice.kind !== kind)];
     const { chosen, capped } = firstFitting(ordered, budget);
     return {
         action: chosen?.action || null, options: ordered, capped,
         reason: chosen ? chosen.action.rationale : `Cap reached: ${ordered.length} option(s), none within the invocation budget.`
     };
+}
+
+// ---- flat offers ---------------------------------------------------------------------------------
+
+/**
+ * The flats and their USDC offers as this wallet sees them: offers on a known flat only (the policy
+ * trades nothing its lens member does not state a holder for), which of them are its own and still
+ * running, how many it has open or taken, and which flats have a sale in progress.
+ */
+function offerMarket({ homes, wallet, now }) {
+    const flats = homes.flats || [];
+    const byHash = new Map(flats.map(flat => [flat.assetHash, flat]));
+    const nowSeconds = BigInt(Math.floor(now / 1000));
+    const offers = (homes.offers || []).filter(offer => offer.content?.currency === 'USDC' && byHash.has(offer.assetHash))
+        .map(offer => {
+            const chain = offer.chain;
+            const pastDeadline = Boolean(chain) && BigInt(chain.deadline) < nowSeconds;
+            const running = chain ? ['Open', 'Committed'].includes(chain.status) && !pastDeadline : Date.parse(offer.content.expiresAt) > now;
+            return { ...offer, flat: byHash.get(offer.assetHash), pastDeadline, running, mine: offer.content.proposer === wallet,
+                takeable: chain?.status === 'Open' && Date.parse(offer.content.expiresAt) > now + HOUR_MS };
+        });
+    const open = offers.filter(offer => (offer.mine && offer.running) || (!offer.mine && offer.running && offer.chain?.status === 'Committed' && offer.chain.buyer === wallet)).length;
+    // A committed offer or a confirmed sale not yet settled: the lens member confirms one sale of a holding at a time.
+    const busy = new Set([...offers.filter(offer => offer.running && offer.chain?.status === 'Committed').map(offer => offer.assetHash),
+        ...flats.filter(flat => flat.pending || flat.stale).map(flat => flat.assetHash)]);
+    return { flats, offers, open, busy };
+}
+
+function offerObligations({ market, config, wallet, now }) {
+    const out = [];
+    const name = offer => offer.content.title || offer.flat.title || offer.cid;
+    const base = (offer, step, extra) => ({ agreementCid: offer.cid, action: { type: step, offerCid: offer.cid, agreementCid: offer.cid, agreementName: name(offer), signedActions: 1, ...extra } });
+    for (const offer of market.offers) {
+        const chain = offer.chain, price = BigInt(offer.content.price);
+        // Its own offer, or one whose escrow it paid, past the deadline: anyone may end it; the escrow returns to the buyer.
+        if (chain && offer.pastDeadline && ['Open', 'Committed'].includes(chain.status) && (chain.maker === wallet || (chain.buyer === wallet && BigInt(chain.escrow) > 0n))) {
+            out.push(base(offer, 'expire-offer', { amount: usdcText(chain.escrow), usdc: 0,
+                rationale: `End the offer for ${name(offer)}: its deadline passed with the offer ${chain.status.toLowerCase()}${BigInt(chain.escrow) > 0n ? `; ${usdcText(chain.escrow)} USDC returns to the buyer` : ''}.` }));
+            continue;
+        }
+        // Published but never created on Solana (a turn stopped between the two): create it now.
+        if (offer.mine && !chain && Date.parse(offer.content.expiresAt) > now + HOUR_MS) {
+            const pays = offer.content.direction === 'buy';
+            out.push(base(offer, 'mint-offer', { direction: offer.content.direction, amount: usdcText(price), usdc: pays ? Number(price) / 1e6 : 0,
+                rationale: `Create the published ${offer.content.direction} offer for ${name(offer)} on Solana${pays ? `, paying ${usdcText(price)} USDC into escrow` : ''}.` }));
+            continue;
+        }
+        if (offer.mine || !offer.takeable || market.busy.has(offer.assetHash)) continue;
+        const flat = offer.flat;
+        // A bid on a flat it holds whose buyer's lens is the round's lens member alone suffices.
+        if (offer.content.direction === 'buy' && flat.holder === wallet && offer.content.lens.threshold === 1 && offer.content.lens.members.includes(flat.lens)
+            && price >= config.offerMinAtomic) {
+            out.push(base(offer, 'take-offer', { step: 'accept-bid', role: 'seller', price: String(price), amount: usdcText(price), usdc: 0,
+                rationale: `Accept the ${usdcText(price)} USDC bid for ${name(offer)}, which it holds; the payout comes when the round's lens member confirms.` }));
+        }
+        // A listing whose seller holds the flat according to the round's lens member, with no seller's lens to satisfy.
+        if (offer.content.direction === 'sell' && flat.holder === offer.content.proposer && flat.holder !== wallet && !offer.content.lens.members.length
+            && price <= config.offerMaxAtomic && market.open < config.maxOpenOffers) {
+            out.push(base(offer, 'take-offer', { step: 'take-listing', role: 'buyer', lens: flat.lens, price: String(price), amount: usdcText(price), usdc: Number(price) / 1e6,
+                rationale: `Buy ${name(offer)} at ${usdcText(price)} USDC into escrow; the round's lens member, which states the seller holds it, confirms.` }));
+        }
+    }
+    return out;
+}
+
+function offerChoices({ market, config, wallet, now, seed }) {
+    if (market.open >= config.maxOpenOffers) return [];
+    const out = [];
+    const ownRunning = (flat, direction) => market.offers.some(offer => offer.mine && offer.running && offer.assetHash === flat.assetHash && offer.content.direction === direction);
+    for (const flat of market.flats) {
+        if (!flat.holder || market.busy.has(flat.assetHash)) continue;
+        const direction = flat.holder === wallet ? 'sell' : 'buy';
+        const kind = direction === 'sell' ? 'offerSell' : 'offerBuy';
+        if (!(config.weights[kind] > 0) || ownRunning(flat, direction)) continue;
+        const price = offerPrice(`${seed}:${flat.assetHash}:${direction}`, config);
+        out.push({ kind, agreementCid: flat.roundCid, action: { type: 'make-offer', direction, agreementCid: flat.roundCid, agreementName: flat.roundTitle,
+            offerTitle: flat.title, city: flat.city, asset: flat.asset, price: String(price), amount: usdcText(price), lens: direction === 'buy' ? flat.lens : null,
+            days: config.offerDays, createdAt: createdAtOf(now), usdc: direction === 'buy' ? Number(price) / 1e6 : 0, signedActions: 1,
+            rationale: direction === 'sell'
+                ? `Put ${flat.title}, which it holds, up for sale at ${usdcText(price)} USDC.`
+                : `Bid ${usdcText(price)} USDC for ${flat.title}, which ${flat.holder} holds; the price goes into escrow and the round's lens member confirms the sale.` } });
+    }
+    return out;
 }
 
 export { agreementName };

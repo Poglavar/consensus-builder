@@ -84,6 +84,11 @@ function indexInstructions(raw) {
     return instructions;
 }
 
+// The IDL's own `types` (structs, enums) by name, for args typed `{ defined }`.
+function indexTypes(raw) {
+    return new Map((raw.types || []).map((entry) => [entry.name, entry.type]));
+}
+
 // `legacy/<program>.v<N>.json` beside the current IDL: earlier interfaces of the SAME deployed
 // program. This is not a legacy fallback of the kind the repo rules forbid: a transaction on chain
 // is immutable and was executed by whatever program build was live at its slot, so decoding devnet
@@ -95,10 +100,10 @@ function loadLegacyIdls(dir, baseName) {
     return fs.readdirSync(legacyDir)
         .map((file) => ({ file, match: re.exec(file) }))
         .filter(({ match }) => match)
-        .map(({ file, match }) => ({
-            version: Number(match[1]),
-            instructions: indexInstructions(JSON.parse(fs.readFileSync(path.join(legacyDir, file), 'utf8')))
-        }))
+        .map(({ file, match }) => {
+            const raw = JSON.parse(fs.readFileSync(path.join(legacyDir, file), 'utf8'));
+            return { version: Number(match[1]), instructions: indexInstructions(raw), types: indexTypes(raw) };
+        })
         .sort((a, b) => b.version - a.version);
 }
 
@@ -118,13 +123,14 @@ export function loadIdls(dir) {
         const name = raw.metadata?.name || raw.name || path.basename(file, '.json');
         const address = raw.address || raw.metadata?.address || null;
         const instructions = indexInstructions(raw);
+        const types = indexTypes(raw);
         const legacy = loadLegacyIdls(dir, path.basename(file, '.json'));
         const currentVersion = legacy.length ? legacy[0].version + 1 : 1;
         const versions = [
-            { idlVersion: `v${currentVersion}`, instructions },
-            ...legacy.map((entry) => ({ idlVersion: `v${entry.version}`, instructions: entry.instructions }))
+            { idlVersion: `v${currentVersion}`, instructions, types },
+            ...legacy.map((entry) => ({ idlVersion: `v${entry.version}`, instructions: entry.instructions, types: entry.types }))
         ];
-        const entry = { name, address, instructions, versions };
+        const entry = { name, address, instructions, types, versions };
         list.push(entry);
         byName.set(name, entry);
         if (address) byAddress.set(address, entry);
@@ -136,8 +142,9 @@ export function loadIdls(dir) {
 // --- borsh arg reading -------------------------------------------------------------------------
 
 class BorshReader {
-    constructor(buf) {
+    constructor(buf, types = new Map()) {
         this.buf = buf;
+        this.types = types;
         this.offset = 0;
     }
 
@@ -184,6 +191,20 @@ class BorshReader {
         if (type && typeof type === 'object' && Array.isArray(type.array) && type.array[0] === 'u8') {
             return this.take(type.array[1]).toString('hex');
         }
+        // A named IDL type (`{ defined: { name } }`, or the older `{ defined: 'Name' }`): a struct
+        // reads as an object of its named fields, a unit-variant enum as the variant's name.
+        const definedName = type && typeof type === 'object' ? (type.defined?.name ?? type.defined) : undefined;
+        const defined = typeof definedName === 'string' ? this.types.get(definedName) : undefined;
+        if (defined?.kind === 'struct' && (defined.fields || []).every((field) => field.name)) {
+            const out = {};
+            for (const field of defined.fields) out[field.name] = this.readType(field.type);
+            return out;
+        }
+        if (defined?.kind === 'enum' && defined.variants.every((variant) => !variant.fields)) {
+            const tag = this.take(1).readUInt8(0);
+            if (tag >= defined.variants.length) throw new Error(`invalid ${definedName} variant ${tag}`);
+            return defined.variants[tag].name;
+        }
         throw new Error(`unsupported IDL arg type "${JSON.stringify(type)}"`);
     }
 }
@@ -192,9 +213,9 @@ class BorshReader {
 // bytes too, so only an exact read proves the instruction was built for this interface; the
 // version picker relies on it (a v1 mint_and_fund lacks v2's trailing bool, a v2 one would leave
 // that bool unread under v1).
-function decodeArgs(idlInstruction, payload) {
+function decodeArgs(idlInstruction, payload, types) {
     if (!idlInstruction.args.length) return { args: {}, argsError: null, exact: payload.length === 0 };
-    const reader = new BorshReader(payload);
+    const reader = new BorshReader(payload, types);
     const args = {};
     try {
         for (const arg of idlInstruction.args) args[arg.name] = reader.readType(arg.type);
@@ -213,12 +234,12 @@ function decodeArgs(idlInstruction, payload) {
 // (cancel_and_refund, contribute_funds...) resolve to the current one: their bytes cannot tell the
 // builds apart, and the accounts the program received are listed either way.
 function decodeProgramInstruction(idl, discriminator, payload, accountCount) {
-    const versions = idl.versions || [{ idlVersion: null, instructions: idl.instructions }];
+    const versions = idl.versions || [{ idlVersion: null, instructions: idl.instructions, types: idl.types }];
     const candidates = [];
     for (const version of versions) {
         const idlInstruction = version.instructions.get(discriminator);
         if (!idlInstruction) continue;
-        candidates.push({ idlVersion: version.idlVersion, idlInstruction, ...decodeArgs(idlInstruction, payload) });
+        candidates.push({ idlVersion: version.idlVersion, idlInstruction, ...decodeArgs(idlInstruction, payload, version.types) });
     }
     return candidates.find((c) => c.exact && accountCount >= c.idlInstruction.accounts.length)
         ?? candidates.find((c) => c.exact)

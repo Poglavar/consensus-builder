@@ -229,7 +229,7 @@ Design of record: [`lens-model.md`](lens-model.md). Program detail:
   absent.
 - **Owner.** A wallet that a lens member has attested as an owner of a parcel. Owners say yes by
   signing `accept_with_attestations` themselves; there is no acceptance attestation.
-- **Parcel anchor.** The on-chain identity of a cadastral parcel (PDA `["parcel", parcel_id]`). It
+- **Parcel anchor.** The on-chain identity of a cadastral parcel (PDA `["parcel", sha256(parcel_id)]`). It
   carries **no ownership**: v2 mints it with `owner = Pubkey::default()`, and no v2 instruction reads
   the `owner` field of any anchor, old or new. Real ownership stays in the land registry and reaches
   the chain only as a lens member's attestation.

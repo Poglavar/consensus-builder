@@ -1,5 +1,5 @@
 // A parcel's anchor on the parcel_nft program, as the parcel panel's "Mint anchor", the agreement
-// mint and an agent's ugt_anchor_parcels make it: the id the anchor PDA ["parcel", id] is seeded with
+// mint and an agent's ugt_anchor_parcels make it: the id the anchor PDA ["parcel", sha256(id)] is seeded with
 // and its URI, the parcel's page on the public site (nothing is pinned). Pure, UMD: window.ParcelAnchor
 // in the browser (parcels/blockchain.js, parcels/ui/claim.js, solana/parcel-mint.js), module.exports
 // for node (backend/agents/ugt-agent-tools.js).
@@ -35,10 +35,11 @@
     // once and kept forever, so a localhost or preview origin must never reach the chain. The server
     // passes its PUBLIC_BASE_URL instead (backend/agents/ugt-agent-tools.js).
     const PUBLIC_SITE_URL = 'https://urbangametheory.xyz';
-    // parcel_nft's Parcel account reserves 4 + 256 bytes for metadata_uri, and the parcel id seeds the
-    // PDA, so it is at most 32 bytes (blockchain/solana/programs/parcel_nft/src/lib.rs).
+    // parcel_nft's Parcel account reserves 4 + 256 bytes each for parcel_id and metadata_uri; the PDA
+    // is seeded by the id's sha256, so any id that fits the account has an anchor
+    // (blockchain/solana/programs/parcel_nft/src/lib.rs).
     const MAX_URI_BYTES = 256;
-    const MAX_ID_BYTES = 32;
+    const MAX_ID_BYTES = 256;
     const byteLength = value => new TextEncoder().encode(String(value)).length;
 
     // The anchor's URI: the parcel's page, /parcel/<anchorId> (parcels/route.js opens it, switching to
@@ -51,8 +52,8 @@
     }
 
     // Parcel ids → what an anchor batch takes: [{ anchorId, metadataUri }], first occurrence kept, and
-    // the ids that cannot be anchored with the reason (an id over 32 bytes cannot seed the PDA; a URI
-    // over 256 bytes does not fit the account). A skipped id is reported, never fatal.
+    // the ids that cannot be anchored with the reason (an id or a URI over 256 bytes does not fit the
+    // account). A skipped id is reported, never fatal.
     function anchorTargets(parcelIds, { base = PUBLIC_SITE_URL } = {}) {
         const parcels = [];
         const skipped = [];

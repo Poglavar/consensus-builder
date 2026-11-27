@@ -6,7 +6,7 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { estimateBuildingHeightMeters, STOREY_HEIGHT_M } = require('../../frontend/js/building-height.js');
+const { estimateBuildingHeightMeters, flatsHeight, STOREY_HEIGHT_M } = require('../../frontend/js/building-height.js');
 
 describe('estimateBuildingHeightMeters', () => {
     it('reads a string height (the GeoJSON-import case that read 10 in 3D)', () => {
@@ -41,5 +41,31 @@ describe('estimateBuildingHeightMeters', () => {
     it('accepts a whole GeoJSON feature, not just props', () => {
         expect(estimateBuildingHeightMeters({ properties: { height: '20' } })).toBe(20);
         expect(estimateBuildingHeightMeters({ type: 'Feature', properties: { LEVELS: 4 } })).toBe(4 * STOREY_HEIGHT_M);
+    });
+
+    it('uses the extrusion\'s storey height, so a layout has as many storeys as its drawn block', () => {
+        expect(STOREY_HEIGHT_M).toBe(require('../../frontend/js/building-extrusion.js').STOREY_M);
+    });
+});
+
+describe('flatsHeight: the height estimated flats may use for an existing building', () => {
+    const atlas = { height_source: 'estimated', height_estimate_source: 'global-building-atlas' };
+    it('takes the footprint\'s measured height, then its storeys, before any 3D block', () => {
+        expect(flatsHeight({ height_m: 21, floors: 5 }, atlas, 30)).toEqual({ heightM: 21, estimated: null });
+        expect(flatsHeight({ floors: 5 }, atlas, 30)).toEqual({ heightM: 5 * STOREY_HEIGHT_M, estimated: null });
+    });
+    it('takes a drawn block\'s height when a source gave it: a city mesh, a measured height or storeys', () => {
+        expect(flatsHeight({ height_m: null, floors: null }, {}, 14)).toEqual({ heightM: 14, estimated: null });
+        expect(flatsHeight({}, { height_source: 'measured' }, 12)).toEqual({ heightM: 12, estimated: null });
+        expect(flatsHeight({}, { height_source: 'levels' }, 9)).toEqual({ heightM: 9, estimated: null });
+    });
+    it('takes the atlas\'s satellite estimate last, and says so', () => {
+        expect(flatsHeight({ height_m: null, floors: null }, atlas, 17.4)).toEqual({ heightM: 17.4, estimated: 'satellite' });
+    });
+    it('never takes the seeded default guess, nor a block without a height', () => {
+        expect(flatsHeight({}, { height_source: 'estimated' }, 9)).toBeNull();
+        expect(flatsHeight({}, atlas, null)).toBeNull();
+        expect(flatsHeight({}, null, 12)).toBeNull();
+        expect(flatsHeight(null)).toBeNull();
     });
 });

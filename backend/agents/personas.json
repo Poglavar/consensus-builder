@@ -343,21 +343,21 @@
       "role": "homebuyer",
       "wallet": "3KcgcFoHeSD7ev64Wq6G1CgmBaec6MRwzHmmqNL4s9o5",
       "keypairPath": "~/.config/solana/ugt-homebuyer-01.json",
-      "policy": { "cities": ["alatau"], "maxReservations": 2, "maxDepositUsdc": "4", "donationUsdc": "0.5", "offerMinSol": "0.01", "offerMaxSol": "0.03", "offerDays": 3, "offerLens": "lifecycle-01" }
+      "policy": { "cities": ["alatau"], "maxReservations": 2, "maxDepositUsdc": "4", "donationUsdc": "0.5", "offerMinUsdc": "1", "offerMaxUsdc": "3", "offerDays": 2, "maxOpenOffers": 2, "tradeRounds": 3 }
     },
     {
       "name": "homebuyer-02",
       "role": "homebuyer",
       "wallet": "5LU4Jvke8A7YCBVT8Wwoo4Lwu2WWoUUGjPbYoMNAEbnP",
       "keypairPath": "~/.config/solana/ugt-homebuyer-02.json",
-      "policy": { "cities": ["alatau"], "maxReservations": 2, "maxDepositUsdc": "3", "donationUsdc": "0.5", "offerMinSol": "0.01", "offerMaxSol": "0.03", "offerDays": 3, "offerLens": "lifecycle-01", "weights": { "reserve": 3, "offerSell": 1, "offerBuy": 3, "donate": 2 } }
+      "policy": { "cities": ["alatau"], "maxReservations": 2, "maxDepositUsdc": "3", "donationUsdc": "0.5", "offerMinUsdc": "1", "offerMaxUsdc": "2.5", "offerDays": 2, "maxOpenOffers": 2, "tradeRounds": 3, "weights": { "reserve": 3, "offerSell": 1, "offerBuy": 3, "donate": 2 } }
     },
     {
       "name": "homebuyer-03",
       "role": "homebuyer",
       "wallet": "7HtSAbKTKZ14Fv3JLr1j3VEXiDHag5RFmeTxGKzsfkr4",
       "keypairPath": "~/.config/solana/ugt-homebuyer-03.json",
-      "policy": { "cities": ["alatau"], "maxReservations": 1, "maxDepositUsdc": "2.5", "donationUsdc": "0.5", "offerMinSol": "0.01", "offerMaxSol": "0.02", "offerDays": 2, "offerLens": "lifecycle-01", "weights": { "reserve": 2, "offerSell": 3, "offerBuy": 1, "donate": 3 } }
+      "policy": { "cities": ["alatau"], "maxReservations": 1, "maxDepositUsdc": "2.5", "donationUsdc": "0.5", "offerMinUsdc": "1", "offerMaxUsdc": "2", "offerDays": 1, "maxOpenOffers": 1, "tradeRounds": 3, "weights": { "reserve": 2, "offerSell": 3, "offerBuy": 1, "donate": 3 } }
     }
   ]
 }
