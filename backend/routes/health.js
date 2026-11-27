@@ -13,7 +13,7 @@ const PROBE_HEADERS = { 'User-Agent': 'Mozilla/5.0', Referer: 'https://map.gov4c
 /**
  * Asks the live cadastre directly: { status: 'ok', parcels } or { status: 'blocked' | 'error',
  * httpStatus?, error? }. The hourly alerts-server check reads it, so a new block is reported and the
- * saved copies (scripts/snapshot-kazakhstan-pkk.mjs) can be put into service by hand.
+ * saved copies (scripts/archive-kazakhstan-sources.mjs) can be put into service by hand.
  */
 export function createKzCadastreProbe({ fetchImpl, now = Date.now } = {}) {
     let fetchJson = fetchImpl;
