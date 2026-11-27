@@ -3,7 +3,8 @@
 // (agreement-record.js). With rights giving person k the share s[k][i] of parcel i (shares of a
 // complete parcel sum to 1), person k co-owns every output allocated to P_i at s[k][i] and receives
 // s[k][i] of P_i's cash, rounded to whole cents per parcel by the largest remainder so each parcel's
-// total stays exact. Totals by person therefore equal totals by party. Pure and DOM-free.
+// total stays exact. Totals by person therefore equal totals by party. An affected parcel (a
+// neighbour who gives a right and no land) is a party the same way, with cash and no land. Pure and DOM-free.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -61,7 +62,7 @@
      * @param rights parcel-rights/v1 or v2 (only ownership counts; leases are not land allocations)
      * @returns {{ persons: { personId, parcels: { parcelId, share, contributedM2 }[], contributedM2,
      *     parcelM2, restM2, outputs: { output, pieceId, parcelId, share, areaM2 }[], landM2, cashCents }[],
-     *   unresolved: { ownerKey, parcelId }[], resolved: boolean,
+     *   unresolved: { ownerKey, parcelId, affected? }[], resolved: boolean,
      *   totals: { partyLandM2, personLandM2, partyCashCents, personCashCents, balanced } }}
      *   `share` is the exact fraction; areas are m² (null when the input area is unknown). parcelM2 is
      *   the person's share of their whole parcels (an input without parcelAreaM2 counting as the whole
@@ -97,6 +98,15 @@
                     entry.restM2 += (wholeM2 - takenM2) * Number(n) / Number(d);
                 }
             });
+        });
+        // An affected neighbour's parcel puts in no land; its owners share the party's consideration.
+        listOf(agreement?.affected).forEach(entry => {
+            const parcelId = String(entry.parcelId);
+            if (owned.has(api.partyKey(parcelId))) return;
+            const owners = resolvedOwners(rowOf.get(parcelId), api.PARTY_PREFIX);
+            if (!owners) { unresolved.push({ ownerKey: api.partyKey(parcelId), parcelId, affected: true }); return; }
+            owned.set(api.partyKey(parcelId), { parcelId, owners });
+            owners.forEach(owner => person(owner.ownerId));
         });
         let partyLandM2 = 0, partyCashCents = 0;
         const outputs = new Map(listOf(agreement?.outputs).map(output => [output.hash, output]));

@@ -5,6 +5,8 @@
 // and the subject and default rights snapshot the approval engine counts; and its published
 // agreement/v1 object with that object's CID (M2). Parties are abstract: each input parcel is one
 // party, its owner(s); real people live only in the rule's rights snapshot (agreement-persons.js).
+// An affected parcel (a neighbour who gives a right and no land) is a party of the same kind: it
+// is paid its consideration, and when it waives the right its owners must approve.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -24,6 +26,25 @@
     // of land, after an allowed contribution), 'value' (land values per m², value shares) or 'none'.
     const METHODS = ['area', 'value', 'none'];
     const DEFAULT_SETTLEMENT = Object.freeze({ method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 0 });
+    // Affected parcels: neighbours who give a right and no land (docs/vocabulary.md "Affected parcel").
+    // A waiver is the neighbour giving the right, so their owners must approve; compensation is owed
+    // without their consent. The rights a neighbour gives, a closed list ('other' needs a note).
+    const AFFECTED_EFFECTS = ['waiver', 'compensation'];
+    const AFFECTED_RIGHTS = ['daylight', 'sunlight', 'outlook', 'garden', 'privacy', 'other'];
+    // Who stated a compensation's loss in market value: never a value the app derives from its readings.
+    const LOSS_STATERS = ['sponsor', 'valuer'];
+    // The Effects on neighbours readings a snapshot may name (planning/neighbour-effects.js KINDS) and
+    // their grades (beyond a guide, below its level within its allowance, minor, a crossed first check).
+    const READING_KINDS = ['garden', 'sunlight', 'sky', 'noSky', 'angle', 'splay', 'distance'];
+    const READING_GRADES = ['fail', 'below', 'minor', 'screen'];
+    // Compensation is a multiple of the stated loss, in basis points of it; 1× when the rule sets none.
+    // A preset names a published figure; `verified: false` until its citation has been checked.
+    const NEIGHBOUR_PRESETS = Object.freeze([Object.freeze({
+        id: 'gb-strong-suburbs', version: '2026-11-27', multipleBasisPoints: 15000, verified: false,
+        source: Object.freeze({ name: 'Policy Exchange, Strong Suburbs (2021): a first offer of 150% of the loss in market value (figure not yet verified)',
+            url: 'https://policyexchange.org.uk/wp-content/uploads/2022/10/Strong-Suburbs.pdf' })
+    })]);
+    const neighbourPreset = (id, version) => NEIGHBOUR_PRESETS.find(preset => preset.id === id && preset.version === version) || null;
     const regimes = () => root.ProposalApprovalRegimes
         || (typeof require === 'function' ? require('./proposals/approval-regimes.js') : null);
 
@@ -58,9 +79,10 @@
     // A party key as an allocation or money line names it; '' is kept for validate to report.
     const keyOf = value => typeof value === 'string' || finite(value) ? String(value).trim() : '';
 
-    function fail(message) {
+    function fail(message, section = null) {
         const error = new Error(message);
         error.code = 'invalid-agreement';
+        if (section) error.section = section;
         throw error;
     }
 
@@ -266,6 +288,52 @@
         return { inputs: rows(raw.inputs, 'parcelId', 'input parcel'), outputs: rows(raw.outputs, 'output', 'output') };
     }
 
+    // Affected parcels: [{ parcelId, effect, rights, note, readings, loss, considerationCents }], in
+    // the given order. Only an unusable shape throws (section 'neighbours'); kinds, amounts and the
+    // rest are kept as given for affectedIssues to report. An agreement without any has [].
+    function affectedOf(list) {
+        if (list === undefined || list === null) return [];
+        if (!Array.isArray(list)) fail('Affected parcels must be a list.', 'neighbours');
+        const seen = new Set();
+        return list.map(entry => {
+            if (!isObject(entry)) fail('An affected parcel is invalid.', 'neighbours');
+            const parcelId = keyOf(entry.parcelId);
+            if (!parcelId) fail('An affected parcel needs an id.', 'neighbours');
+            if (seen.has(parcelId)) fail(`Affected parcel ${parcelId} is listed twice.`, 'neighbours');
+            seen.add(parcelId);
+            if (!Array.isArray(entry.rights)) fail(`Affected parcel ${parcelId} needs the list of rights it gives.`, 'neighbours');
+            if (entry.readings != null && !Array.isArray(entry.readings)) fail(`The readings of affected parcel ${parcelId} must be a list.`, 'neighbours');
+            if (entry.loss != null && !isObject(entry.loss)) fail(`The stated loss of affected parcel ${parcelId} must be an object.`, 'neighbours');
+            const rights = [...new Set(entry.rights.map(right => (typeof right === 'string' ? right.trim() : right)))]
+                .sort((a, b) => compare(String(a), String(b)));
+            return {
+                parcelId,
+                effect: entry.effect,
+                rights,
+                note: textOf(entry.note),
+                readings: (entry.readings || []).map(reading => (isObject(reading)
+                    ? { kind: reading.kind, before: reading.before ?? null, after: reading.after ?? null, guide: reading.guide ?? null, grade: reading.grade ?? null }
+                    : fail(`A reading of affected parcel ${parcelId} is invalid.`, 'neighbours'))),
+                loss: entry.loss == null ? null : { amountCents: entry.loss.amountCents, statedBy: entry.loss.statedBy, valuerRef: textOf(entry.loss.valuerRef) },
+                considerationCents: entry.considerationCents ?? 0
+            };
+        });
+    }
+
+    // The multiple of a stated loss that compensation pays, in basis points (10000 = 1×, none set).
+    function lossMultipleOf(rule) {
+        const value = rule?.neighbourCompensation?.multipleBasisPoints;
+        return value === undefined || value === null ? BASIS_POINTS : value;
+    }
+    // What an affected parcel's party is paid: by compensation with a stated loss, the rule's multiple
+    // of that loss in whole cents; otherwise the amount the agreement states.
+    function considerationOf(entry, rule) {
+        if (entry.effect === 'compensation' && entry.loss && Number.isSafeInteger(entry.loss.amountCents)) {
+            return Math.round(entry.loss.amountCents * lossMultipleOf(rule) / BASIS_POINTS);
+        }
+        return entry.considerationCents;
+    }
+
     // A unit value as the ledger counts it: whole cents of at least 0, else null (unknown).
     const unitCents = value => (Number.isSafeInteger(value) && value >= 0 ? value : null);
     // The agreement's unit values by parcel id and by output hash; null without a valuation.
@@ -285,7 +353,9 @@
             approvalConfig: raw.approvalConfig == null ? null : clone(raw.approvalConfig),
             lens: raw.lens == null ? [] : clone(raw.lens),
             ...(raw.lensThreshold == null ? {} : { lensThreshold: raw.lensThreshold }),
-            settlement: raw.electorate === 'owners' ? { ...(raw.settlement || DEFAULT_SETTLEMENT) } : null
+            settlement: raw.electorate === 'owners' ? { ...(raw.settlement || DEFAULT_SETTLEMENT) } : null,
+            // Absent unless stated, so agreements without neighbours keep their published bytes.
+            ...(raw.neighbourCompensation == null ? {} : { neighbourCompensation: clone(raw.neighbourCompensation) })
         };
     }
 
@@ -445,7 +515,9 @@
         if (!Array.isArray(content.inputs?.parcels) || content.inputs.parcels.length || content.inputs.openGroundM2 !== 0
             || !Array.isArray(content.outputs) || content.outputs.length || !Array.isArray(content.allocations) || content.allocations.length
             || !Array.isArray(content.money?.lines) || content.money.lines.length || !cityMoney().isFiat(content.money.currency)
-            || content.valuation != null || content.consultation != null) return 'A crowdfunding agreement funds the selected plan and carries no land settlement.';
+            || content.valuation != null || content.consultation != null
+            || (content.affected != null && !(Array.isArray(content.affected) && !content.affected.length))
+            || content.rule?.neighbourCompensation != null) return 'A crowdfunding agreement funds the selected plan and carries no land settlement.';
         return fundingError(content.funding, translate);
     }
 
@@ -553,6 +625,7 @@
             allocations: allocationsOf(raw.allocations),
             money: moneyOf(raw.money),
             valuation: valuationOf(raw.valuation),
+            affected: affectedOf(raw.affected),
             rule,
             ...(raw.funding == null ? {} : { funding: clone(raw.funding) }),
             consultation: consultationOf(raw.consultation, rule.electorate),
@@ -562,10 +635,18 @@
         };
     }
 
-    // What the approval engine (proposals/approval.js inspect/tally) counts for this agreement.
+    // The affected parcels whose owners waive a right: their approval is required (an owners'
+    // agreement only; validate refuses them anywhere else).
+    const waiverParcelIds = agreement => ((agreement && Array.isArray(agreement.affected)) ? agreement.affected : [])
+        .filter(entry => entry && entry.effect === 'waiver').map(entry => String(entry.parcelId));
+
+    // What the approval engine (proposals/approval.js inspect/tally) counts for this agreement: the
+    // input parcels' owners by the rule's tests, and each waiving neighbour's owners besides.
     function approvalSubject(agreement) {
+        const waivers = agreement?.rule?.electorate === 'owners' ? waiverParcelIds(agreement) : [];
         return {
             cadastreParcelIds: ((agreement && agreement.inputs && agreement.inputs.parcels) || []).map(parcel => String(parcel.parcelId)),
+            ...(waivers.length ? { waiverParcelIds: waivers } : {}),
             approvalConfig: (agreement && agreement.rule && agreement.rule.approvalConfig) || null,
             lens: (agreement && agreement.rule && agreement.rule.lens) || []
         };
@@ -574,9 +655,13 @@
     // The default rights snapshot as parcel-rights/v1: each input parcel's owners from the local owner
     // records (`ownerOf(parcelId)` → [{ ownerKey, share }], AgreementGround.localHolders), shares in
     // basis points with the last holder taking the remainder. A parcel nobody is recorded for keeps
-    // its abstract party as its one owner and is incomplete.
-    function rightsFromInputs(inputs, ownerOf = () => []) {
-        const parcels = ((inputs && inputs.parcels) || []).map(parcel => {
+    // its abstract party as its one owner and is incomplete. Affected parcels (`affected`, the
+    // record's list) follow the inputs the same way, with no area: they give no land.
+    function rightsFromInputs(inputs, ownerOf = () => [], affected = []) {
+        const inputIds = new Set(((inputs && inputs.parcels) || []).map(parcel => String(parcel.parcelId)));
+        const neighbourIds = new Set((Array.isArray(affected) ? affected : []).map(entry => keyOf(entry?.parcelId)).filter(id => id && !inputIds.has(id)));
+        const neighbours = [...neighbourIds].map(parcelId => ({ parcelId, areaM2: null }));
+        const parcels = [...((inputs && inputs.parcels) || []), ...neighbours].map(parcel => {
             const recorded = ownerOf(String(parcel.parcelId));
             const named = Array.isArray(recorded) && recorded.length > 0;
             const holders = named ? recorded : [{ ownerKey: partyKey(parcel.parcelId), share: 1 }];
@@ -673,26 +758,37 @@
     // By value: each party is entitled to the share of the distributed land's value that matches the
     // value it put in; it receives the entitlement minus the value it got, and pays the scheme's
     // share of its value gain (the entitlement minus the value it put in). Lines need every value.
+    // Each affected parcel's party is paid its consideration by the sponsor, whatever the land
+    // settlement; a compensation's consideration follows from its stated loss (considerationOf).
     function settle(raw) {
         const agreement = normalize(raw);
         const terms = agreement.rule.settlement;
         agreement.money.lines = [];
-        if (agreement.rule.electorate !== 'owners' || !['area', 'value'].includes(terms?.method)) return agreement;
+        if (agreement.rule.electorate !== 'owners') return agreement;
+        const lines = landLines(agreement, terms);
+        agreement.affected.forEach(entry => {
+            entry.considerationCents = considerationOf(entry, agreement.rule);
+            if (entry.considerationCents !== 0) lines.push({ ownerKey: partyKey(entry.parcelId), amountCents: entry.considerationCents });
+        });
+        agreement.money.lines = lines;
+        return agreement;
+    }
+    // The land settlement's cash lines of an owners' agreement whose stored lines are cleared.
+    function landLines(agreement, terms) {
+        if (!['area', 'value'].includes(terms?.method)) return [];
         const rows = ledger(agreement);
         if (terms.method === 'area') {
-            agreement.money.lines = rows.parties.filter(row => row.entitlementM2 !== null).map(row => ({
+            return rows.parties.filter(row => row.entitlementM2 !== null).map(row => ({
                 ownerKey: row.ownerKey,
                 amountCents: Math.round((row.entitlementM2 - row.assignedM2) * terms.rateCentsPerM2)
             })).filter(line => line.amountCents !== 0);
-            return agreement;
         }
-        if (!rows.valued || !(rows.contributedValueCents > 0)) return agreement;
+        if (!rows.valued || !(rows.contributedValueCents > 0)) return [];
         const gain = valueGainOf(agreement.rule);
-        agreement.money.lines = rows.parties.map(row => ({
+        return rows.parties.map(row => ({
             ownerKey: row.ownerKey,
             amountCents: Math.round((row.entitlementValueCents - row.assignedValueCents) - gain * (row.entitlementValueCents - row.contributedValueCents))
         })).filter(line => line.amountCents !== 0);
-        return agreement;
     }
 
     const percentText = ratio => `${Math.round(ratio * 1000) / 10}%`;
@@ -717,6 +813,64 @@
             : `${percentText(rule.given)} of the land is not returned to owners; ${name} allows at most ${limit}.`, ...extra };
     }
 
+    const isCents = value => Number.isSafeInteger(value) && value >= 0;
+    const isReadingNumber = value => value === null || finite(value);
+    /**
+     * The terms of the affected parcels (section 'neighbours'): each is no input parcel, names a known
+     * effect and at least one known right ('other' with a note), carries well-formed readings, whole
+     * non-negative cents and a known stater of its loss; compensation under a multiple other than 1×
+     * states a loss, and its consideration is that multiple of it. The rule's multiple is positive
+     * and, when it names a preset, the preset's. Empty for an agreement without neighbours.
+     * @returns {{ code, message, section, parcelId? }[]}
+     */
+    function affectedIssues(raw) {
+        const agreement = normalize(raw);
+        const issues = [];
+        const add = (code, message, parcelId) => { issues.push({ code, message, section: 'neighbours', ...(parcelId ? { parcelId } : {}) }); };
+        const terms = agreement.rule.neighbourCompensation;
+        if (terms != null) {
+            if (agreement.rule.electorate !== 'owners') add('neighbour-multiple', 'Only an owners’ agreement compensates neighbours.');
+            else if (!isObject(terms) || Object.keys(terms).some(key => !['multipleBasisPoints', 'preset'].includes(key))
+                || !(Number.isSafeInteger(terms.multipleBasisPoints) && terms.multipleBasisPoints > 0)) {
+                add('neighbour-multiple', 'The multiple of a neighbour’s stated loss must be a positive number of basis points (10000 is 1×).');
+            } else if (terms.preset != null) {
+                const preset = isObject(terms.preset) ? neighbourPreset(terms.preset.id, terms.preset.version) : null;
+                if (!preset) add('neighbour-multiple', 'The neighbour compensation names an unknown preset.');
+                else if (preset.multipleBasisPoints !== terms.multipleBasisPoints) add('neighbour-multiple', `${preset.id} (${preset.version}) sets a multiple of ${preset.multipleBasisPoints / BASIS_POINTS}×.`);
+            }
+        }
+        if (!agreement.affected.length) return issues;
+        if (agreement.rule.electorate !== 'owners') {
+            add('affected-electorate', 'Only an owners’ agreement can carry affected neighbours.');
+            return issues;
+        }
+        const inputIds = new Set(agreement.inputs.parcels.map(parcel => parcel.parcelId));
+        const multiple = lossMultipleOf(agreement.rule);
+        agreement.affected.forEach(entry => {
+            const id = entry.parcelId;
+            if (inputIds.has(id)) add('affected-input', `Parcel ${id} is an input parcel: its owners are already parties and cannot also be an affected neighbour.`, id);
+            if (!AFFECTED_EFFECTS.includes(entry.effect)) add('affected-effect', `Affected parcel ${id} must be a waiver or compensation.`, id);
+            if (!entry.rights.length || entry.rights.some(right => !AFFECTED_RIGHTS.includes(right))) {
+                add('affected-rights', `Affected parcel ${id} must give at least one right from: ${AFFECTED_RIGHTS.join(', ')}.`, id);
+            } else if (entry.rights.includes('other') && !entry.note) add('affected-note', `Affected parcel ${id} gives another right: say which in its note.`, id);
+            if (entry.readings.some(reading => !READING_KINDS.includes(reading.kind) || !READING_GRADES.includes(reading.grade)
+                || ![reading.before, reading.after, reading.guide].every(isReadingNumber))) {
+                add('affected-reading', `A reading of affected parcel ${id} names an unknown kind or grade, or a value that is not a number.`, id);
+            }
+            if (!isCents(entry.considerationCents)) add('affected-amount', `The consideration of affected parcel ${id} must be whole cents of at least 0.`, id);
+            if (entry.loss && (!isCents(entry.loss.amountCents) || !LOSS_STATERS.includes(entry.loss.statedBy))) {
+                add('affected-amount', `The stated loss of affected parcel ${id} needs whole cents of at least 0 and who stated it (${LOSS_STATERS.join(' or ')}).`, id);
+            }
+            if (entry.effect === 'compensation' && !entry.loss && multiple !== BASIS_POINTS) {
+                add('affected-loss-required', `Compensation to affected parcel ${id} is a multiple of a stated loss: state the loss and who stated it.`, id);
+            }
+            if (entry.effect === 'compensation' && entry.loss && isCents(entry.loss.amountCents) && entry.considerationCents !== considerationOf(entry, agreement.rule)) {
+                add('affected-consideration', `The compensation of affected parcel ${id} must be ${multiple / BASIS_POINTS}× its stated loss.`, id);
+            }
+        });
+        return issues;
+    }
+
     /**
      * The compensation issues of an owners' agreement: its settlement terms, the land values that
      * settlement by value needs, the distribution rules of the scheme its rule names, and the cash
@@ -729,12 +883,14 @@
         const issues = [];
         const add = (section, code, message, extra) => { issues.push({ code, message, section, ...extra }); };
         if (agreement.rule.electorate !== 'owners') return issues;
+        issues.push(...affectedIssues(agreement));
         if (!settlementValid(agreement.rule)) {
             add('rule', 'settlement-invalid', 'Set a valid compensation rate and a land contribution within the selected scheme’s limit.');
             return issues;
         }
         const { valuation } = agreement;
         let valuesReady = true;
+        const before = issues.length;
         if (agreement.rule.settlement.method === 'value') {
             const values = unitValues(agreement);
             const rows = valuation ? [...valuation.inputs, ...valuation.outputs] : [];
@@ -746,7 +902,7 @@
                 || valuation.outputs.some(row => !agreement.outputs.some(output => output.hash === row.output)))) {
                 add('money', 'valuation-unknown', 'A value per m² names a parcel or piece that is not in this agreement.');
             }
-            valuesReady = !issues.length;
+            valuesReady = issues.length === before;
             if (valuesReady && !(ledger(agreement).contributedValueCents > 0)) { add('money', 'valuation-zero', 'The input land needs a value above zero to settle by value.'); valuesReady = false; }
         } else if (valuation) {
             add('money', 'valuation-unused', 'Land values apply to settlement by value only; remove them or choose that compensation.');
@@ -819,8 +975,10 @@
 
         const { currency, lines } = agreement.money;
         if (!cityMoney().isFiat(currency)) add(errors, 'money', 'money-currency', 'Money is counted in the currency of the agreement\'s city (an ISO 4217 code).');
+        // Cash goes to input parties and to affected neighbours, who give a right and no land.
+        const payees = new Set([...parties, ...agreement.affected.map(entry => partyKey(entry.parcelId))]);
         lines.forEach(line => {
-            if (!parties.has(line.ownerKey)) add(errors, 'money', 'money-party-unknown', `${line.ownerKey || 'A cash line'} holds no land in this agreement.`, { ownerKey: line.ownerKey });
+            if (!payees.has(line.ownerKey)) add(errors, 'money', 'money-party-unknown', `${line.ownerKey || 'A cash line'} is neither an input parcel's party nor an affected neighbour in this agreement.`, { ownerKey: line.ownerKey });
             if (!Number.isSafeInteger(line.amountCents)) add(errors, 'money', 'money-amount-invalid', `The cash of ${line.ownerKey || 'a party'} is not a whole number of cents.`, { ownerKey: line.ownerKey });
         });
 
@@ -836,6 +994,7 @@
             if (raw.money && Array.isArray(raw.money.lines) && raw.money.lines.length) add(errors, 'money', 'community-money', 'A nonbinding agreement cannot include cash payments.');
             if (binding) add(errors, 'rule', 'rule-community-binding', 'A community vote cannot bind the owners.');
             if (approvalConfig !== null) add(errors, 'rule', 'rule-invalid', 'A community vote has no owner approval rule.');
+            affectedIssues(agreement).forEach(issue => errors.push(issue));
         } else if (electorate === 'owners') {
             settlementIssues(agreement).forEach(issue => errors.push(issue));
             let state = null;
@@ -945,9 +1104,12 @@
                 if (value === null) entry.valueUnknown = true; else entry.assignedValueCents += value;
             }
         });
+        // An affected neighbour's party puts in no land and receives only its consideration.
+        const affectedKeys = new Set(agreement.affected.map(entry => partyKey(entry.parcelId)));
         agreement.money.lines.forEach(line => {
             if (!Number.isSafeInteger(line.amountCents)) fail(`The cash of ${line.ownerKey} is not a whole number of cents.`);
-            party(line.ownerKey).cashCents += line.amountCents;
+            const parcelId = parcelOfParty(line.ownerKey);
+            party(line.ownerKey, affectedKeys.has(line.ownerKey) && parcelId !== null ? partyName(parcelId) : '').cashCents += line.amountCents;
         });
         const entries = Array.from(parties.values());
         const valued = !outputValueUnknown && entries.every(entry => !entry.valueUnknown);
@@ -964,7 +1126,7 @@
         // deducted from. With whole parcels in, the entitlement is that land less the share.
         const contribution = (agreement.rule.settlement?.contributionBasisPoints || 0) / BASIS_POINTS;
         const list = entries.map(entry => ({
-            ...entry, displayName: entry.displayName || entry.ownerKey, changeM2: entry.assignedM2 - entry.contributedM2,
+            ...entry, displayName: entry.displayName || entry.ownerKey, changeM2: entry.assignedM2 - entry.contributedM2, affected: affectedKeys.has(entry.ownerKey),
             parcelM2: entry.areaUnknown ? null : entry.parcelM2,
             restM2: entry.areaUnknown ? null : Math.max(0, entry.parcelM2 - entry.contributedM2),
             entitlementM2: entry.areaUnknown ? null : entry.contributedM2 - Math.min(contribution * entry.parcelM2, entry.contributedM2),
@@ -1049,6 +1211,8 @@
             allocations: agreement.allocations,
             money: agreement.money,
             valuation: agreement.valuation,
+            // Only when there are any, so an agreement without neighbours keeps its bytes and CID.
+            ...(agreement.affected.length ? { affected: agreement.affected } : {}),
             rule: agreement.rule,
             ...(agreement.funding == null ? {} : { funding: agreement.funding }),
             consultation: agreement.consultation,
@@ -1064,6 +1228,8 @@
         rightsFromInputs, approvalSubject, stableStringify, published, publishedCid, consultationOf, participationUrl,
         planReference, matchesPlan, PARTY_PREFIX, partyKey, parcelOfParty, partyName, landParties, defaultAllocations, settle, landBalance, contributionLimit, settlementValid, DEFAULT_SETTLEMENT,
         METHODS, schemeOf, schemeCheck, settlementIssues, valueGainOf,
+        AFFECTED_EFFECTS, AFFECTED_RIGHTS, LOSS_STATERS, READING_KINDS, READING_GRADES, NEIGHBOUR_PRESETS, neighbourPreset,
+        affectedIssues, lossMultipleOf, considerationOf, waiverParcelIds,
         MAX_LENSES, lensThresholdOf, lensRuleError,
         MAX_CONTRACT_BYTES, parseUsdc, formatUsdc, fundingError, crowdfundingError, apartmentUnitKey, apartmentTermsHash, apartmentLocator, apartmentUnitLocator
     };

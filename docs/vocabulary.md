@@ -799,7 +799,7 @@ The comparison of a design's buildings with the Permitted items under them, rule
 
 ### Effects on neighbours
 
-What a design does to each neighbouring plot, before and after it: the share of the plot's garden with a number of hours of sun on a given day, the sky a wall facing the design sees (vertical sky component), the share of the year's probable sunlight hours a window facing the noon sun gets (sun positions weighted by the place's sunshine records, `frontend/data/sunshine-records.json`; no records, no reading), the share of each room's working plane that sees sky (the no-sky line, measured on demand per plot in the suggested layouts of its buildings), the angle tests from its windows and the distance to the nearest facing wall, each against the place's guide for it. An angle test can be a first check for a detailed reading (its guide's `then`): crossing it then says that reading decides, and grades nothing. The guides (which readings apply, their thresholds, whether they bind) are a rule set's `neighbourGuides`; a place whose rule sets state none has no effects readings. "Before" is the buildings standing now; "after" removes those on the design's parcels and adds the design's. Neighbours' heights are the height survey's where it covers them. A plot is listed only when a reading changes; it is beyond a guide, or loses something within the guides. Advice, like the Permitted check. See [neighbour-effects.md](neighbour-effects.md).
+What a design does to each neighbouring plot, before and after it: the share of the plot's garden with a number of hours of sun on a given day, the sky a wall facing the design sees (vertical sky component), the share of the year's probable sunlight hours a window facing the noon sun gets (sun positions weighted by the place's sunshine records, `frontend/data/sunshine-records.json`; no records, no reading), the share of each room's working plane that sees sky (the no-sky line, measured on demand per plot in the suggested layouts of its buildings), the angle tests from its windows and the distance to the nearest facing wall, each against the place's guide for it. An angle test can be a first check for a detailed reading (its guide's `then`): crossing it then says that reading decides, and grades nothing. The guides (which readings apply, their thresholds, whether they bind) are a rule set's `neighbourGuides`; a place whose rule sets state none has no effects readings. "Before" is the buildings standing now; "after" removes those on the design's parcels and adds the design's. Neighbours' heights are the height survey's where it covers them. A plot is listed only when a reading changes; it is beyond a guide, or loses something within the guides. Advice, like the Permitted check. The agreement editor's Neighbours tab measures the same readings for the agreement's plan and adds ticked plots as [affected parcels](#affected-parcel) with a snapshot of their readings. See [neighbour-effects.md](neighbour-effects.md).
 
 ### Planning designation
 
@@ -974,7 +974,19 @@ The source-qualified building footprints considered by an operation, with any kn
 
 ### Allocation party
 
-Each input parcel of an agreement is exactly one allocation party, `parcel-owner:<parcelId>`, displayed as “Owner(s) of parcel X”. Allocations name no persons: input parcels carry no holders, and allocations and money lines name a parcel party, the proposer or the public. The parcel party is the owner group of that parcel whoever its members are; it is not verified ownership.
+Each input parcel of an agreement is exactly one allocation party, `parcel-owner:<parcelId>`, displayed as “Owner(s) of parcel X”. Allocations name no persons: input parcels carry no holders, and allocations and money lines name a parcel party, the proposer or the public. The parcel party is the owner group of that parcel whoever its members are; it is not verified ownership. An [affected parcel](#affected-parcel) is a party under the same key: it receives a money line but never an allocation, since it gives no land.
+
+### Affected parcel
+
+A parcel outside an owners' agreement's input land whose owners give a right the plan affects and no land: a neighbour. Its party is `parcel-owner:<parcelId>`, the same party concept as an input parcel's, and a parcel is never both. The agreement's `affected` list records, per affected parcel, the right(s) it gives (daylight, sunlight, outlook, garden, privacy, or other with a note), whether it is a [waiver](#waiver) or [compensation](#compensation), the [Effects on neighbours](#effects-on-neighbours) readings it rests on as a snapshot (kind, before, after, guide, grade), an optional stated loss and its [consideration](#consideration). The list is part of the published object and its CID; an agreement without one carries no `affected` field. Affected parcels count in no land balance, scheme cap or owners' test.
+
+### Waiver
+
+An affected parcel's owners giving up a right, possibly for a consideration. Each waiver parcel's owners are parties to the decision (`waiverParcelIds` in the approval context) whom no owners' test counts: the agreement passes only when all of them approve, whatever the tally of the input owners. A lens member checks a waiver parcel's rights like an input parcel's.
+
+### Compensation
+
+What an owners' agreement pays an affected parcel's owners without their consent, for a loss it causes them. It is a multiple of a stated loss in market value: the rule's `neighbourCompensation.multipleBasisPoints` (10000 is 1×, the default when none is set; a preset such as Strong Suburbs' 150%, marked unverified until its citation is checked, fixes it). The loss is stated by the sponsor or a valuer (with an optional reference), never derived from the readings. Under a multiple other than 1× compensation needs a stated loss; under 1× without one its amount is stated directly. Not the land settlement's area or value compensation.
 
 ### Persons
 
@@ -1146,7 +1158,7 @@ A stated cash amount assigned to a party under an agreement, with its currency a
 
 ### Consideration
 
-The payment or other value proposed in exchange for an agreement's land or rights effects. An offered amount is distinct from a funded escrow balance and an actual payment.
+The payment or other value proposed in exchange for an agreement's land or rights effects. An offered amount is distinct from a funded escrow balance and an actual payment. An affected parcel's consideration (`considerationCents`, whole cents in the agreement's currency) is a money line to its party that the sponsor pays, whatever the land settlement: a waiver's is stated freely (it may be 0); a compensation's is the rule's multiple of its stated loss.
 
 ### Contribution
 

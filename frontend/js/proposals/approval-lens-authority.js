@@ -24,6 +24,7 @@
     }
     const contextInput = agreement => ({
         cadastreParcelIds: agreement?.cadastreParcelIds || [],
+        ...(agreement?.waiverParcelIds?.length ? { waiverParcelIds: agreement.waiverParcelIds } : {}),
         approvalConfig: agreement?.approvalConfig ?? null,
         lens: agreement?.lens || []
     });
