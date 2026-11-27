@@ -546,6 +546,33 @@
             { type: 'line', role: 'measured', points: [[...along(come.lateralM), 0.1], [...along(come.lateralM), come.heightM]] }
         ];
     }
+    // The steepest line from a plot's boundary up to a building's top, in degrees (a building on the
+    // boundary reads 90°): the largest over `solids` of atan(height / nearest distance from the
+    // plot's outline). A street code's `boundary` guide (Strong Suburbs para. 54: building over 30°
+    // from the boundary of a plot on another street owes its owner compensation) reads it before and
+    // after; it is beyond the guide when the design rises over the guide's angle and above what stood.
+    function boundaryAngle(solids, shape) {
+        let steepest = 0, mark = null;
+        for (const solid of solids) {
+            let nearest = { distance: Infinity };
+            for (const part of shape.parts) for (const ring of part.rings) for (let i = 0; i < ring.length - 1; i++) {
+                const closest = solidSegmentClosest(solid, ring[i], ring[i + 1]);
+                if (closest.distance < nearest.distance) nearest = closest;
+            }
+            if (!Number.isFinite(nearest.distance)) continue;
+            const angle = nearest.distance < 1e-6 ? 90 : Math.atan2(solid.heightM, nearest.distance) / RAD;
+            if (angle > steepest) { steepest = angle; mark = { from: nearest.from, to: nearest.to, heightM: solid.heightM }; }
+        }
+        return { angle: steepest, mark };
+    }
+    function boundaryReading(shape, { removed, design }, guide) {
+        const before = boundaryAngle(removed, shape), after = boundaryAngle(design, shape);
+        const beyond = after.angle > guide.degrees + 1e-9 && after.angle > before.angle + SAME.angle;
+        const status = beyond ? 'fail' : after.angle > before.angle + SAME.angle ? 'minor' : 'same';
+        // The drawing: the line from the boundary to the top of the design where it is steepest.
+        const marks = after.mark ? [{ type: 'line', role: 'measured', points: [[...after.mark.from, 0.1], [...after.mark.to, after.mark.heightM]] }] : [];
+        return { before: before.angle, after: after.angle, degrees: guide.degrees, effect: guide.effect || null, status, marks };
+    }
     // How a reading against a guide of a level and an allowance (after at least `level`, or at least
     // `ratio` times before) grades: 'fail' beyond the guide; 'below' under the level but within the
     // allowance; 'minor' a loss that still meets the level; 'same' no loss worth listing.
@@ -603,7 +630,8 @@
             const around = { kept: near(kept), removed: near(removed), design: near(design) };
             const garden = guides.garden && sun ? gardenReading(shape, around, sun, guides.garden) : null;
             const walls = guides.sky || guides.distance || guides.angle || guides.splay || guides.sunlight ? wallReadings(lotBuildings, around, reachM, guides, year) : {};
-            const readings = { garden, sky: walls.sky || null, sunlight: walls.sunlight || null, distance: walls.distance || null, angle: walls.angle || null, splay: walls.splay || null };
+            const boundary = guides.boundary ? boundaryReading(shape, around, guides.boundary) : null;
+            const readings = { garden, sky: walls.sky || null, sunlight: walls.sunlight || null, distance: walls.distance || null, angle: walls.angle || null, splay: walls.splay || null, boundary };
             let status = worst(KINDS.map(kind => readings[kind]?.status));
             // Only graded readings list a plot: a crossed first check whose detailed reading shows no
             // change is answered by it, and the plot is left out.
@@ -719,7 +747,7 @@
     }
 
     // ---- Ranking ----
-    const KINDS = ['garden', 'sunlight', 'sky', 'noSky', 'angle', 'splay', 'distance'];
+    const KINDS = ['garden', 'sunlight', 'sky', 'noSky', 'angle', 'splay', 'distance', 'boundary'];
     // How much one reading of a plot takes, 0–1: the share of its sunlit garden or sky lost, or for a
     // facing wall how far it now stands inside its guide. 0 when the reading did not change.
     function harmOf(lot, kind) {
@@ -730,7 +758,7 @@
             return Math.max(0, Math.min(1, (was - value.after) / value.guideM));
         }
         // An angle: how far above the guide's angle (or what stood before) towards the vertical.
-        if (kind === 'angle') return Math.max(0, Math.min(1, (value.after - Math.max(value.before, value.degrees)) / (90 - value.degrees)));
+        if (kind === 'angle' || kind === 'boundary') return Math.max(0, Math.min(1, (value.after - Math.max(value.before, value.degrees)) / (90 - value.degrees)));
         // A splay: how far under the elevation line the window lies, as a share of the building's
         // height above the window.
         if (kind === 'splay') return Math.max(0, Math.min(1, (value.after - value.before) / Math.max(value.heightM - MEASURE.windowHeightM, 1)));
@@ -755,9 +783,9 @@
     // ---- An affected plot as an agreement's affected parcel ----
     // The right each reading is evidence of (agreement-record.js AFFECTED_RIGHTS) and the guide value
     // it is read against, from the place's guides.
-    const RIGHT_OF = { garden: 'garden', sunlight: 'sunlight', sky: 'daylight', noSky: 'daylight', angle: 'daylight', splay: 'daylight', distance: 'privacy' };
+    const RIGHT_OF = { garden: 'garden', sunlight: 'sunlight', sky: 'daylight', noSky: 'daylight', angle: 'daylight', splay: 'daylight', distance: 'privacy', boundary: 'outlook' };
     const GUIDE_OF = { garden: g => g.garden?.share, sunlight: g => g.sunlight?.percent, sky: g => g.sky?.percent, noSky: g => g.noSky?.ratio,
-        angle: g => g.angle?.degrees, splay: g => g.splay?.degrees, distance: g => g.distance?.metres };
+        angle: g => g.angle?.degrees, splay: g => g.splay?.degrees, distance: g => g.distance?.metres, boundary: g => g.boundary?.degrees };
     const rounded = value => (finite(value) ? Math.round(value * 10000) / 10000 : null);
     /**
      * A listed plot as the snapshot an agreement keeps of it: its parcel id, the rights its graded

@@ -39,12 +39,13 @@
     // neighbouring plots (planning/effects-advisor.js), listed there and coloured on the map. Answers
     // the assessment (the agreement editor adds its plots as affected parcels), or undefined when a
     // newer one replaced it.
-    async function runEffects(win, getPlan, section) {
+    // `guides`: readings a street code the plan claims adds to the place's (agreement editor).
+    async function runEffects(win, getPlan, section, { guides = null } = {}) {
         const advisor = win.NeighbourEffectsAdvisor;
         advisor.render(section, null);
         const prepared = await win.PlanAnalysis.prepare(await getPlan(), {});
         const buildings = win.__planDecision.permittedBuildings(prepared.records);
-        const result = await new Promise(resolve => advisor.assess({ buildings }, resolve));
+        const result = await new Promise(resolve => advisor.assess({ buildings, ...(guides ? { guides } : {}) }, resolve));
         if (!result) return undefined;
         advisor.render(section, result);
         advisor.show(win.map, result);

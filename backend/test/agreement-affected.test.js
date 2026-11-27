@@ -87,7 +87,9 @@ describe('affected parcels in the agreement record', () => {
         expect(codes(record.affectedIssues(agreement({ neighbourCompensation: { ...STRONG_SUBURBS, multipleBasisPoints: 20000 } })))).toEqual(['neighbour-multiple']);
         expect(codes(record.affectedIssues(agreement({ neighbourCompensation: { multipleBasisPoints: 15000, preset: { id: 'nowhere', version: '1' } } })))).toEqual(['neighbour-multiple']);
         expect(codes(record.affectedIssues(agreement({ neighbourCompensation: { multipleBasisPoints: 0 } })))).toEqual(['neighbour-multiple']);
-        expect(record.NEIGHBOUR_PRESETS.find(preset => preset.id === 'gb-strong-suburbs')).toMatchObject({ multipleBasisPoints: 15000, verified: false });
+        // Checked against Strong Suburbs paras 54–57 on 2026-11-27 (150% of the loss of market value, para. 55).
+        expect(record.NEIGHBOUR_PRESETS.find(preset => preset.id === 'gb-strong-suburbs')).toMatchObject({ multipleBasisPoints: 15000, verified: true });
+        expect(record.NEIGHBOUR_PRESETS.find(preset => preset.id === 'gb-strong-suburbs').source.name).toMatch(/paras 54–57/);
     });
 
     it('refuses an affected parcel that is an input, unknown rights or effects, other without a note, negative amounts and bad readings', () => {
@@ -236,6 +238,12 @@ describe('the agreement editor\'s Neighbours tab (pure parts)', () => {
         expect(html).toMatch(/Add ticked plots \(1\)/);
         expect(Dialog.affectedEntry({ parcelId: 't2', rights: ['daylight'], readings: [reading] }))
             .toEqual({ parcelId: 't2', effect: 'waiver', rights: ['daylight'], note: null, readings: [reading], loss: null, considerationCents: 0 });
+        // Built over beyond a street code's 30° boundary guide: owed compensation, unless on the plan's own street.
+        const over = { kind: 'boundary', before: 19.3, after: 48.4, guide: 30, grade: 'fail' };
+        expect(Dialog.affectedEntry({ parcelId: 't5', rights: ['outlook'], readings: [over] }, { compensated: true }).effect).toBe('compensation');
+        expect(Dialog.affectedEntry({ parcelId: 't5', rights: ['outlook'], readings: [over] }, { compensated: true, onStreet: true }).effect).toBe('waiver');
+        expect(Dialog.affectedEntry({ parcelId: 't5', rights: ['outlook'], readings: [over] }).effect).toBe('waiver');
+        expect(Dialog.readingText(over)).toBe('Angle from the plot boundary: 19° → 48° (guide 30°), beyond a guide');
     });
 
     it('shows a compensation\'s payment as read-only when it follows a stated loss, and its readings in words', () => {

@@ -356,12 +356,31 @@
       "maxPages": 4
     }
   ],
+  "densitySources": [
+    {
+      "id": "gb-ons-msoa-2021",
+      "adapter": "shared-api-small-areas",
+      "path": "/population/small-areas",
+      "scheme": "GB-MSOA-2021",
+      "label": "ONS small area population estimates by Middle layer Super Output Area (2021 boundaries)",
+      "coverage": {
+        "countries": ["GB-ENG"],
+        "note": "England's MSOAs: residents (ONS mid-year estimate) per hectare of land (the coastline-clipped boundary)."
+      },
+      "licence": {
+        "name": "Open Government Licence v3.0",
+        "url": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+      },
+      "attribution": "Source: Office for National Statistics licensed under the Open Government Licence v3.0. Contains OS data © Crown copyright and database right."
+    }
+  ],
   "ruleSets": [
     {
       "id": "gb-eng-planning",
       "label": "Planning designations (England)",
       "jurisdiction": "GB-ENG",
       "constraintSourceId": "gb-eng-planning-data",
+      "densitySourceId": "gb-ons-msoa-2021",
       "baseRule": null,
       "evidence": {
         "label": "National Planning Policy Framework (2026), chapters 13, 18 and 20",

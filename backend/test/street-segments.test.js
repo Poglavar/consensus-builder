@@ -179,3 +179,21 @@ describe('the street reference a vote records', () => {
         expect(() => S.normaliseReference({ ...ref, from: undefined })).toThrow(/end/);
     });
 });
+
+describe('lines of a recorded street', () => {
+    it('gives a segment its own line, a whole street every segment, and an unreferable end a marked straight line', () => {
+        const result = cut([way('Hughes Road', line(0, 300)), way('Cross Road', [[150, 0], [150, 120]]), way('Side Lane', [[220, 0], [220, -90]])]);
+        const answer = { street: { name: 'Hughes Road' }, segments: result.segments };
+        const [first, second] = result.segments;
+        const segmentRef = S.reference({ name: 'Hughes Road', wayIds: result.wayIds }, first, 'both');
+        expect(S.linesFor(segmentRef, answer)).toEqual({ lines: [first.coordinates], approximate: false });
+        // Two segments between the street's start and the second branching, recorded with those ends.
+        const longer = { ...segmentRef, to: { kind: 'branch', point: second.to.point } };
+        expect(S.linesFor(longer, answer)).toEqual({ lines: [first.coordinates, second.coordinates], approximate: false });
+        const whole = S.reference({ name: 'Hughes Road', wayIds: result.wayIds }, null, 'both');
+        expect(S.linesFor(whole, answer).lines).toHaveLength(result.segments.length);
+        const numbered = { ...segmentRef, to: { kind: 'number', houseNumber: '12', point: ll([60, 0]) } };
+        expect(S.linesFor(numbered, answer)).toEqual({ lines: [[numbered.from.point, numbered.to.point]], approximate: true });
+        expect(S.linesFor(segmentRef, { street: { name: 'Cross Road' }, segments: result.segments })).toBeNull();
+    });
+});

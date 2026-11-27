@@ -51,6 +51,13 @@ a rule set's `neighbourGuides` in `frontend/data/planning-sources.json`, which a
 - A reading left out is not measured or shown. `label` names the source and `note` what the
   standard says its grades mean, both in "What the guides are";
   `binding: true` says a design beyond a guide is not permitted, otherwise the guides are advice.
+- `boundary` (a [street code](vocabulary.md#street-code)'s guide, not a place's): the steepest line from the plot's
+  boundary up to a building's top, atan(height ÷ nearest distance from the plot's outline), before and after;
+  beyond the guide when the design rises over `degrees` and above what stood. A street code the plan
+  claims adds it in the agreement editor's Neighbours tab (Strong Suburbs para. 54: 30°, `effect:
+  "compensation"`): a plot added from it is owed compensation rather than giving a waiver, unless it lies
+  along the street last picked with Street here (neighbours on the same street consent, paras 51–52).
+  Its right is outlook. Heights are the buildings' heights as this section reads them (Heights, below).
 - Only `gb-eng-planning` (England) states guides today.
 
 ## Where it shows

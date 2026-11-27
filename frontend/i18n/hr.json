@@ -8347,7 +8347,7 @@
             "measure": "Pronađi pogođene susjede",
             "noGuides": "Ovo mjesto ne propisuje smjernice za susjede pa se ništa ne mjeri: dodajte susjednu česticu po njezinoj oznaci.",
             "candidates": "Dodaj pogođene čestice ovom sporazumu",
-            "candidatesHint": "Čestice izvan smjernice su označene. Svaka se dodaje kao odricanje s očitanjima; uvjete postavite niže.",
+            "candidatesHint": "Čestice preko smjernice su označene. Svaka se dodaje kao odricanje s očitanjima, ili kao dugovana naknada gdje to traži ulični kod plana; uvjete postavite ispod.",
             "candidate": "Čestica {{parcelId}}, {{grade}}",
             "added": "već je u ovom sporazumu",
             "isInput": "ulazna čestica",
@@ -8397,7 +8397,7 @@
             "multiple": {
                 "label": "Naknada susjedima",
                 "none": "1× navedeni gubitak (nije postavljeno)",
-                "strongSuburbs": "Strong Suburbs: 150 % navedenog gubitka (iznos još nije provjeren)",
+                "strongSuburbs": "Strong Suburbs: 150 % gubitka tržišne vrijednosti (t. 54–57)",
                 "custom": "Drugi višekratnik",
                 "value": "Višekratnik navedenog gubitka"
             }
@@ -9057,7 +9057,8 @@
             "noSky": "Dnevno svjetlo u prostorijama (linija bez neba)",
             "angle": "Kut iznad nasuprotnog prozora",
             "splay": "Lepeza uz prozor",
-            "distance": "Udaljenost nasuprotnog zida"
+            "distance": "Udaljenost nasuprotnog zida",
+            "boundary": "Kut od međe čestice"
         },
         "filterLabel": "Prikaži čestice po mjerenju",
         "filterAll": "Sve",
@@ -9106,7 +9107,8 @@
             "sw": "jugozapadu",
             "w": "zapadu",
             "nw": "sjeverozapadu"
-        }
+        },
+        "boundary": "Diže se {{after}} iznad međe čestice, preko crte od {{degrees}} (prije: {{before}})"
     },
     "permittedCheck": {
         "heightUnknown": "Visina {{measured}}: granica ovisi o postojećoj visini, koja nije zabilježena",
@@ -9553,7 +9555,8 @@
         },
         "eligibility": {
             "set": {
-                "gb-living-tradition-mansards": "Mansarde po Living Tradition"
+                "gb-living-tradition-mansards": "Mansarde po Living Tradition",
+                "gb-strong-suburbs-street-code": "Ulični kod Strong Suburbs"
             },
             "verdict": {
                 "eligible": "Ispunjava svaki uvjet koji aplikacija može provjeriti",
@@ -9564,7 +9567,8 @@
                 "pass": "Da",
                 "fail": "Ne",
                 "unknown": "Nepoznato",
-                "unchecked": "Aplikacija ne provjerava"
+                "unchecked": "Aplikacija ne provjerava",
+                "notApplicable": "Ne primjenjuje se"
             },
             "withGrade": "{{status}}, stupanj {{grade}}",
             "test": {
@@ -9577,7 +9581,62 @@
                 "footprint": "Tlocrt najviše 100 m²",
                 "originalUse": "Izgrađena kao kuća ili trgovina s prostorijama iznad",
                 "listing": "Nije zaštićena stupnja I ni II*",
-                "topWindows": "Prozori najviše etaže visoki barem 80 cm"
+                "topWindows": "Prozori najviše etaže visoki barem 80 cm",
+                "ssListed": "Nije zaštićena zgrada",
+                "ssPre1918": "Izgrađena 1918. ili kasnije",
+                "ssGreenBelt": "Nema nove gradnje na zemljištu zelenog pojasa",
+                "ssOpenLand": "Nije na Metropolitan Open Land",
+                "ssNature": "Nije u nacionalnom parku, AONB-u ni SSSI-ju",
+                "ssStoreys": "Etaže unutar ograničenja po gustoći",
+                "ssSetbackPlane": "Uvučena etaža ispod ravnine od 75°",
+                "ssSetbacks": "Ne više uvučenih etaža nego što je dopušteno",
+                "ssLightPlanes": "Ispod ravnina svjetla od čestica u drugim ulicama",
+                "ssCeilingMax": "Visina stropa najviše 3,5 m",
+                "ssCeilingMin": "Visina stropa najmanje 2,5 m",
+                "ssSetbackCeiling": "Strop uvučene etaže najviše 3 m",
+                "ssAddedCeiling": "Dodane etaže ne više od najviše postojeće",
+                "ssHistoric": "Najviše 3+1 etaža blizu deset zgrada starijih od 1918.",
+                "ssPlotUse": "Gradnja prema stražnjoj strani najviše 25 % puta do čestica u drugim ulicama",
+                "ssFrontDoors": "Najviše 15 m između ulaznih vrata",
+                "ssSideWindows": "Bočni prozori barem 2 m od međe",
+                "ssSemiDetached": "Pristanak obiju kuća dvojne kuće",
+                "ssDetached": "Ispod ravnine od 70° od međe samostojećeg susjeda"
+            },
+            "fact": {
+                "proposedStoreys": "predloženo etaža: {{storeys}}",
+                "storeyCap": "ograničenje {{cap}}: {{density}} stanovnika/ha u {{area}}",
+                "storeyCapUnknown": {
+                    "densityUnread": "Gustoća malih područja nije se mogla pročitati",
+                    "noBuildings": "Plan nema zgrada za smjestiti",
+                    "noStreet": "Glasanje ne navodi ulicu: ograničenje je najviše {{cap}}, prema područjima ispod zgrada plana",
+                    "noArea": "Nijedno malo područje izvora gustoće nije unutar 200 m od ulice",
+                    "densityUnknown": "Jedno malo područje blizu ulice nema gustoću"
+                },
+                "historicNone": "{{count}} zgrada starijih od 1918. unutar 100 m od ulice ({{unknown}} bez datuma): nema ograničenja 3+1",
+                "historicCap": "{{count}} zgrada starijih od 1918. unutar 100 m od ulice: najviše {{storeys}}+{{setbacks}} etaža",
+                "historicUnknown": {
+                    "noStreet": "Glasanje ne navodi ulicu pa se zgrade starije od 1918. uz nju ne broje",
+                    "buildingsUnread": "Zgrade uz ulicu nisu se mogle pročitati",
+                    "datesUnknown": "{{count}} zgrada starijih od 1918. unutar 100 m i {{unknown}} bez datuma: ne zna se ima li ih deset",
+                    "existingTotal": "Polovica zgrada uz ulicu već prelazi 3+1: ograničenje je njihov postojeći broj, koji aplikacija ne mjeri",
+                    "storeysUnknown": "Ne zna se prelazi li polovica zgrada uz ulicu već 3+1"
+                },
+                "proposedSetbacks": "uvučenih etaža: {{setbacks}}",
+                "setbacksAllowed": "dopušteno: {{setbacks}}",
+                "setbackMansard": "mansarda, cijela ispod {{degrees}}°",
+                "storeyHeight": "etaže {{metres}} m od poda do poda; strop je niži za debljinu stropne konstrukcije, koju projekt ne navodi",
+                "setbackRise": "uvučena etaža diže se {{metres}} m",
+                "designations": "nalazi se u: {{datasets}}",
+                "designationsUnread": "Zaštićena područja nisu se mogla pročitati"
+            },
+            "notChecked": {
+                "noSource": "planning.data.gov.uk još ne objavljuje Metropolitan Open Land",
+                "otherStreets": "treba znati koje su susjedne čestice u drugim ulicama",
+                "ceilings": "projekt ne navodi visine stropova",
+                "plotUse": "treba tlocrt izgrađenog pri prvom glasanju i čestice u drugim ulicama",
+                "doors": "projekt ne smješta vrata",
+                "windows": "projekt ne smješta bočne prozore",
+                "consent": "pristanak susjeda daje se ugovorom, ne mjeri se"
             }
         },
         "survey": "Snimka visina",
@@ -10156,7 +10215,9 @@
         "membersMissing": "{{count}} od {{total}} dizajna plana nema ni u ovom pregledniku ni na poslužitelju.",
         "revisionChanged": "Kopija ovog plana na poslužitelju ne odgovara njegovoj poveznici.",
         "publicationFailed": "„{{title}}” nije bilo moguće objaviti: {{reason}}",
-        "shareDesignHint": "Podijeli ovaj dizajn"
+        "shareDesignHint": "Podijeli ovaj dizajn",
+        "codes": "Ulični kodovi",
+        "codesHint": "Kodovi koje ovaj plan tvrdi da poštuje. Samo tvrdnja: ulično glasanje o planu je provjerava."
     },
     "sharedPlan": {
         "applying": "Primjena prihvaćenih promjena…",
@@ -10379,6 +10440,24 @@
                 "ineligible": "Ne ispunjava",
                 "unknown": "Nepoznato"
             }
+        },
+        "streetCode": {
+            "title": "Ulični kod: {{code}}",
+            "hint": "Plan tvrdi da poštuje ovaj kod. Ovdje se provjerava svaka njegova zgrada, pravilo po pravilo, iz projekta, mjesta i podataka o zgradama; sama tvrdnja ne smatra se ispunjenom.",
+            "checking": "Provjera plana prema kodu…",
+            "summary": "{{eligible}} od {{total}} zgrada poštuje kod, {{ineligible}} ga krši, za {{unknown}} se još ne zna",
+            "cap": "Ograničenje etaža {{cap}} (t. 30): najmanja gustoća {{density}} stanovnika/ha, u {{area}}.",
+            "approximate": "(ulica je ucrtana ravno između krajeva)",
+            "unread": "Nije pročitano: {{what}} ({{error}})",
+            "newBuilding": "Nova zgrada {{index}} projekta {{design}}",
+            "verdict": {
+                "eligible": "Poštuje kod",
+                "ineligible": "Krši kod",
+                "unknown": "Još se ne zna"
+            },
+            "noBuildings": "Plan nema zgrada za provjeru.",
+            "unchecked": "Pravila koja aplikacija ne provjerava",
+            "check": "Provjeri kod"
         }
     },
     "criticTour": {

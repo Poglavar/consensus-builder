@@ -142,7 +142,7 @@ A dated threshold set a code electorate can pin as `consultation.voting.rule = {
 
 ### Street vote
 
-A community code vote of the residents of one street on a plan for it, decided by a street-vote ballot rule. Three rules ship, all proposals for England that are not in force: Policy Exchange's Strong Suburbs (2021), the government's December 2023 street vote development orders consultation, and Samuel Hughes's Living Tradition (Create Streets, 2021) for mansards. A rule can require [building eligibility](#building-eligibility): Living Tradition's covers only the houses the plan raises with a mansard, and its agreement cannot be created until each one is eligible; the voting record keeps that check (each house, its verdict, the failing or unknown tests and the source version read). Owner sign-off is not part of the street vote: owners decide in a separate owners' agreement on the same plan, and the community agreement's voting panel lists those agreements beside the resident result without reading or changing their records. The voting record can name the [street](#street) it covers (`consultation.voting.street`): the street's name, its OSM way ids, whole street or one [segment](#segment) with each end (its kind, the roads branching there or the house number, and its point), the [side](#side), and the official id where a source gives one. It comes from the street picked with Street here (or `ugt_select_parcels` action `street`), offered in the agreement editor while its parcels are among the plan's land; the person can leave it out. A plan or design never names a street.
+A community code vote of the residents of one street on a plan for it, decided by a street-vote ballot rule. Three rules ship, all proposals for England that are not in force: Policy Exchange's Strong Suburbs (2021), the government's December 2023 street vote development orders consultation, and Samuel Hughes's Living Tradition (Create Streets, 2021) for mansards. A rule can carry a [street code](#street-code) the plan claims (Strong Suburbs': its code is checked per building of the plan in the agreement editor and by `ugt_draft_agreement`, as advice). A rule can require [building eligibility](#building-eligibility): Living Tradition's covers only the houses the plan raises with a mansard, and its agreement cannot be created until each one is eligible; the voting record keeps that check (each house, its verdict, the failing or unknown tests and the source version read). Owner sign-off is not part of the street vote: owners decide in a separate owners' agreement on the same plan, and the community agreement's voting panel lists those agreements beside the resident result without reading or changing their records. The voting record can name the [street](#street) it covers (`consultation.voting.street`): the street's name, its OSM way ids, whole street or one [segment](#segment) with each end (its kind, the roads branching there or the house number, and its point), the [side](#side), and the official id where a source gives one. It comes from the street picked with Street here (or `ugt_select_parcels` action `street`), offered in the agreement editor while its parcels are among the plan's land; the person can leave it out. A plan or design never names a street.
 
 ### Agreement input
 
@@ -438,7 +438,7 @@ When shared designs conflict with the current map, the person chooses whether to
 
 ### Plan
 
-An immutable `plan/v1` snapshot containing a title, a selected set of design CIDs and a map view. Its canonical content has its own CID; publication gives it a permanent `/plans/<cid>` link. Its publication timestamp is the server’s first indexing time, exposed as `publishedAt` outside canonical content; opening, importing or republishing the same CID does not change it. Lists displays this timestamp in the viewer’s local timezone beside Published. Changing the title, membership or saved view creates a new snapshot and link; existing links keep their original content. It references existing designs without changing their authorship, geometry or publication. Its designs stand together. In Lists each design ticked for a plan is applied, as an Apply click applies it (standing down a rival on its ground), after the ones already ticked in formation order (the order the designs were made in), inside a parcel mutation that is rolled back (`PlanWorkspace.trial`): the design ticked last takes its ground, a ticked one it stands down is unticked with a warning naming both, and one the apply refuses outright is not ticked, with the reason. Saving a plan (Create plan, Add to plan, Edit plan) runs the same trial over the designs held here. `ugt_draft_plan` places each design against the ones before it with the same apply rules as `ugt_edit_plan`. A plan saved before this can still hold such a pair; applying it reports the displaced member. A plan names its designs by content CID, so opening one finds this browser's own records of them, published or not, rather than importing copies. It carries no land allocations, money or decision rules; those belong to an agreement. The backend address used to access a plan is transport configuration, not part of its content.
+An immutable `plan/v1` snapshot containing a title, a selected set of design CIDs and a map view. Its canonical content has its own CID; publication gives it a permanent `/plans/<cid>` link. Its publication timestamp is the server’s first indexing time, exposed as `publishedAt` outside canonical content; opening, importing or republishing the same CID does not change it. Lists displays this timestamp in the viewer’s local timezone beside Published. Changing the title, membership or saved view creates a new snapshot and link; existing links keep their original content. It references existing designs without changing their authorship, geometry or publication. Its designs stand together. In Lists each design ticked for a plan is applied, as an Apply click applies it (standing down a rival on its ground), after the ones already ticked in formation order (the order the designs were made in), inside a parcel mutation that is rolled back (`PlanWorkspace.trial`): the design ticked last takes its ground, a ticked one it stands down is unticked with a warning naming both, and one the apply refuses outright is not ticked, with the reason. Saving a plan (Create plan, Add to plan, Edit plan) runs the same trial over the designs held here. `ugt_draft_plan` places each design against the ones before it with the same apply rules as `ugt_edit_plan`. A plan saved before this can still hold such a pair; applying it reports the displaced member. A plan names its designs by content CID, so opening one finds this browser's own records of them, published or not, rather than importing copies. It carries no land allocations, money or decision rules; those belong to an agreement. It may name the [street codes](#street-code) it claims to respect (`codes`, each `{ id, version }`, left out when none, so a plan without them keeps its CID); a claim is checked wherever it is relied on, never trusted. The backend address used to access a plan is transport configuration, not part of its content.
 
 Plan stats and Compare plans evaluate one exact saved plan revision, including unapplied members. Compare designs (Lists → Designs) evaluates each chosen design the same way, as its one-member plan; a published design not held on this device is fetched for it and not stored. Compare agreements (Lists → Agreements) sets the chosen agreements' terms side by side and marks those they differ in: plan (by CID), status, decision rule, approval, settlement and land contribution, deadline, input land, resulting pieces, land to the owners, the public and the proposer, owners left without a piece, cash paid and received, and the sponsor's part. Below the terms it evaluates each agreement's plan as Compare plans does, under the agreement's title. Compare plans is a decision sheet: per plan, besides Plan stats' figures, the existing parcels it takes and buildings it demolishes, its tallest new building (metres and storeys), its floor-area ratio (gross floor area standing after it ÷ its land) and site coverage (the union of the footprints standing after it ÷ its land), its green (parks) and road area, its build-out from the first to the last period, its Permitted limits (each new building of the whole plan checked against the Permitted items where it stands: within, how many break them with their floor area, none conditional or unknown, or no source) and the agreements backing it: those published on that exact plan revision, with a crowdfunding round's progress (USDC contributed less refunded, contributors, apartments reserved of offered) read from Solana, never from the index. An agreement with no plan yet cannot be chosen; a published one not held on this device is fetched for it and not stored. Parcel figures derive from its members and source cadastral ground in isolation; unrelated map designs and the current map extent do not affect them. Evaluation does not apply the plan. The Compare tab's divider takes a saved plan, or a stored agreement's plan, as a side the same way: a member an applied design stands for is that design; the rest are read as Plan stats reads them and drawn on that side alone, with the standing buildings they clear taken off it. Built today is the present state of that comparison. The divider's stats button opens the same evaluation for its sides that are a design, plan or agreement, with Built today as the present state. The urban rooster scores a plan only when every member is applied, from the live map.
 
@@ -704,6 +704,54 @@ Grade I or II* fails, and a listing whose grade the register does not state is u
 verdict is ineligible when a test fails, unknown while one is unknown, else eligible. A rule set is
 dated like a ballot rule and applies where a city plans under its planning rule set. The first is
 Living Tradition's paragraph 17 for mansards under English planning (`gb-eng-planning`).
+
+### Street code
+
+A rule set of `kind: 'street-code'` in the building-eligibility evaluator (`frontend/js/planning/eligibility.js`):
+the limits a street plan's buildings must keep, any jurisdiction can author as data. Every rule has an
+id, a citation (the source's paragraph), an applicability (`existing`: a raised existing building, `new`,
+`setback`: a building with a setback storey, or every building), a test from the evaluator's closed set of
+operators, and a failure effect (`excluded`: the building is outside what a street vote may change;
+otherwise the plan breaks the code). A test that does not apply is "does not apply"; a rule the app
+cannot measure is listed as not checked, with its reason, never assumed.
+
+A plan names the codes it claims to respect by exact revision (`plan/v1` `codes: [{ id, version }]`,
+chosen in the plan dialog or with `ugt_draft_plan`/`ugt_edit_plan` `codes`). A claim is checked, never
+trusted: where a street vote's ballot rule carries the code (`ballotRules`), the agreement editor checks
+every building of the plan (`frontend/js/planning/street-code.js`) and shows each failing or unknown
+rule with the facts it read; `ugt_draft_agreement` returns the same check as `streetCode`. The check
+advises: it is not kept in the record and does not stop the agreement.
+
+The facts a code is judged on are the plan's (storeys counted only from a stated storey height, the
+setback storey, the storey height), the place's (from source adapters: the density of the small areas
+near the street, the buildings built before 1918 near it, the designations a building lies in) and a
+raised building's [building facts](#building-facts).
+
+The first is `gb-strong-suburbs-street-code@2021`, Strong Suburbs (Hughes and Southwood, Policy Exchange
+2021) for the Strong Suburbs street vote:
+
+- **Exclusions (12–15):** listed buildings and buildings built before 1918 may not be changed; no new
+  building on Green Belt land (a raised existing building stands on developed land); nothing in a
+  National Park, AONB or SSSI (planning.data.gov.uk). Metropolitan Open Land is not checked: the
+  publisher has no such dataset yet.
+- **Storey cap (30):** the lowest cap of every small area within 200 m of the vote's street or under a
+  building of the plan, by its people per hectare: under 20 → 2, up to 60 → 3, up to 120 → 4, more → 5
+  (60 and 120 take the lower cap). Without a named street the cap is known only as an upper bound
+  (the areas under the buildings), so only a plan over it fails. England's density source is ONS
+  mid-year population per MSOA over its land area (`densitySources` in `planning-sources.json`, the
+  shared API's `/api/population/small-areas`).
+- **Setback storeys (31–32):** one setback storey everywhere, a second where the cap is 4 or 5; the
+  app's setback storey is the [mansard](#urban-rule-design), wholly under the 75° plane.
+- **Ceilings (36):** a design states storey heights (floor to floor), an upper bound of the ceiling: a
+  storey up to 3.5 m keeps the maximum, one under 2.5 m breaks the minimum, others are unknown.
+- **Historic streets (37):** ten or more buildings built before 1918 within 100 m of the street limit it
+  to 3+1 storeys; undated buildings that could change the count leave it unknown; where half the
+  buildings along the street (within 40 m) already exceed it, the existing total applies (not measured).
+- **Not checked:** light planes from plots on other streets (35), building back toward them (39), front
+  doors (41), side windows (42), the consent of semi-detached and detached neighbours (51–52), added
+  floors against the highest existing floor (36.2).
+- **Compensation (54–57):** the code's `neighbourGuides.boundary` (30°) adds a reading to Effects on
+  neighbours for an owners' agreement on a plan claiming it; see [Agreement](#agreement) affected parcels.
 
 ### Proposed building
 

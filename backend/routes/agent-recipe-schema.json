@@ -312,7 +312,7 @@
               "properties": {
                 "multipleBasisPoints": { "type": "integer", "minimum": 1, "description": "Compensation to an affected parcel as a multiple of its stated loss, in basis points (10000 = 1×). Absent means 1×." },
                 "preset": { "type": "object", "required": ["id", "version"], "properties": { "id": { "const": "gb-strong-suburbs" }, "version": { "const": "2026-11-27" } }, "additionalProperties": false,
-                  "description": "gb-strong-suburbs@2026-11-27 fixes 15000 (150%, Policy Exchange's Strong Suburbs first offer; figure unverified)." }
+                  "description": "gb-strong-suburbs@2026-11-27 fixes 15000 (150% of the loss of market value: Policy Exchange's Strong Suburbs first offer to neighbours on other streets, paras 54–57)." }
               },
               "additionalProperties": false
             }

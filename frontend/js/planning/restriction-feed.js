@@ -60,5 +60,5 @@
         const ids = ruleSetIds(city);
         return ids.length ? root.PlanningApplicationPreview.targetFor(await config(), ids) : null;
     }
-    root.PlanningRestrictionFeed = { load, membership, resolve, ruleSetIds, ruleSets, submissionTarget };
+    root.PlanningRestrictionFeed = { config, load, membership, resolve, ruleSetIds, ruleSets, submissionTarget };
 })(window);

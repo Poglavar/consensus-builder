@@ -8301,7 +8301,7 @@
             "measure": "Find affected neighbours",
             "noGuides": "This place states no neighbour guides, so nothing is measured: add a neighbouring parcel by its id.",
             "candidates": "Add affected plots to this agreement",
-            "candidatesHint": "Plots beyond a guide are ticked. Each is added as a waiver with its readings; set its terms below.",
+            "candidatesHint": "Plots beyond a guide are ticked. Each is added as a waiver with its readings, or as owed compensation where the plan's street code says so; set its terms below.",
             "candidate": "Parcel {{parcelId}}, {{grade}}",
             "added": "already in this agreement",
             "isInput": "an input parcel",
@@ -8351,7 +8351,7 @@
             "multiple": {
                 "label": "Compensation to neighbours",
                 "none": "1× the stated loss (none set)",
-                "strongSuburbs": "Strong Suburbs: 150% of the stated loss (figure not yet verified)",
+                "strongSuburbs": "Strong Suburbs: 150% of the loss in market value (paras 54–57)",
                 "custom": "Another multiple",
                 "value": "Multiple of the stated loss"
             }
@@ -9006,7 +9006,8 @@
             "noSky": "Room daylight (no-sky line)",
             "angle": "Angle above a facing window",
             "splay": "Splay beside a window",
-            "distance": "Facing distance"
+            "distance": "Facing distance",
+            "boundary": "Angle from the plot boundary"
         },
         "filterLabel": "Show plots by reading",
         "filterAll": "All",
@@ -9055,7 +9056,8 @@
             "sw": "south-west",
             "w": "west",
             "nw": "north-west"
-        }
+        },
+        "boundary": "Rises {{after}} above the plot boundary, over the {{degrees}} line (before: {{before}})"
     },
     "permittedCheck": {
         "heightUnknown": "Height {{measured}}: the limit depends on the existing height, which is not recorded",
@@ -9453,7 +9455,8 @@
         },
         "eligibility": {
             "set": {
-                "gb-living-tradition-mansards": "Mansard eligibility"
+                "gb-living-tradition-mansards": "Mansard eligibility",
+                "gb-strong-suburbs-street-code": "Strong Suburbs street code"
             },
             "verdict": {
                 "eligible": "Eligible on every condition the app can check",
@@ -9464,7 +9467,8 @@
                 "pass": "Yes",
                 "fail": "No",
                 "unknown": "Unknown",
-                "unchecked": "Not checked by the app"
+                "unchecked": "Not checked by the app",
+                "notApplicable": "Does not apply"
             },
             "withGrade": "{{status}}, grade {{grade}}",
             "test": {
@@ -9477,7 +9481,62 @@
                 "footprint": "Footprint of at most 100 m²",
                 "originalUse": "Built as a house, or a shop with rooms above",
                 "listing": "Not Grade I or II* listed",
-                "topWindows": "Top-storey windows at least 80 cm tall"
+                "topWindows": "Top-storey windows at least 80 cm tall",
+                "ssListed": "Not a listed building",
+                "ssPre1918": "Built in 1918 or later",
+                "ssGreenBelt": "No new building on Green Belt land",
+                "ssOpenLand": "Not on Metropolitan Open Land",
+                "ssNature": "Not in a National Park, AONB or SSSI",
+                "ssStoreys": "Storeys within the density cap",
+                "ssSetbackPlane": "Setback storey under a 75° plane",
+                "ssSetbacks": "No more setback storeys than allowed",
+                "ssLightPlanes": "Under the light planes from plots on other streets",
+                "ssCeilingMax": "Ceilings at most 3.5 m",
+                "ssCeilingMin": "Ceilings at least 2.5 m",
+                "ssSetbackCeiling": "Setback storey ceiling at most 3 m",
+                "ssAddedCeiling": "Added floors no higher than the highest existing floor",
+                "ssHistoric": "Within 3+1 storeys near ten buildings from before 1918",
+                "ssPlotUse": "Building back at most 25% of the way to other streets' plots",
+                "ssFrontDoors": "At most 15 m between front doors",
+                "ssSideWindows": "Side windows at least 2 m from the boundary",
+                "ssSemiDetached": "Both houses of a semi-detached pair consent",
+                "ssDetached": "Under a 70° plane from a detached neighbour's boundary"
+            },
+            "fact": {
+                "proposedStoreys": "{{storeys}} storeys proposed",
+                "storeyCap": "cap {{cap}}: {{density}} people/ha in {{area}}",
+                "storeyCapUnknown": {
+                    "densityUnread": "The density of the small areas could not be read",
+                    "noBuildings": "The plan has no buildings to place",
+                    "noStreet": "The vote names no street: the cap is at most {{cap}}, from the areas under the plan's buildings",
+                    "noArea": "No small area of the density source lies within 200 m of the street",
+                    "densityUnknown": "A small area near the street has no density"
+                },
+                "historicNone": "{{count}} buildings from before 1918 within 100 m of the street ({{unknown}} undated): no 3+1 limit",
+                "historicCap": "{{count}} buildings from before 1918 within 100 m of the street: at most {{storeys}}+{{setbacks}} storeys",
+                "historicUnknown": {
+                    "noStreet": "The vote names no street, so the buildings from before 1918 near it are not counted",
+                    "buildingsUnread": "The buildings near the street could not be read",
+                    "datesUnknown": "{{count}} buildings from before 1918 within 100 m and {{unknown}} undated: whether there are ten is not known",
+                    "existingTotal": "Half the buildings along the street already exceed 3+1: the limit is their existing total, which the app does not measure",
+                    "storeysUnknown": "Whether half the buildings along the street already exceed 3+1 is not known"
+                },
+                "proposedSetbacks": "{{setbacks}} setback storeys",
+                "setbacksAllowed": "{{setbacks}} allowed",
+                "setbackMansard": "a mansard, wholly under {{degrees}}°",
+                "storeyHeight": "storeys {{metres}} m floor to floor; a ceiling is lower by the floor's thickness, which the design does not state",
+                "setbackRise": "the setback storey rises {{metres}} m",
+                "designations": "lies in: {{datasets}}",
+                "designationsUnread": "The designations could not be read"
+            },
+            "notChecked": {
+                "noSource": "planning.data.gov.uk publishes no Metropolitan Open Land yet",
+                "otherStreets": "needs which neighbouring plots are on other streets",
+                "ceilings": "the design states no ceiling heights",
+                "plotUse": "needs the built footprint at the first vote and the plots on other streets",
+                "doors": "the design places no doors",
+                "windows": "the design places no side windows",
+                "consent": "a neighbour's consent is given in an agreement, not measured"
             }
         },
         "survey": "Height survey",
@@ -10055,7 +10114,9 @@
         "membersMissing": "{{count}} of the plan’s {{total}} designs are neither in this browser nor on the server.",
         "revisionChanged": "The server’s copy of this plan does not match its link.",
         "publicationFailed": "“{{title}}” could not be published: {{reason}}",
-        "shareDesignHint": "Share this design"
+        "shareDesignHint": "Share this design",
+        "codes": "Street codes",
+        "codesHint": "The codes this plan claims to respect. A claim only: a street vote on the plan checks it."
     },
     "sharedPlan": {
         "applying": "Applying the accepted changes…",
@@ -10278,6 +10339,24 @@
                 "ineligible": "Not eligible",
                 "unknown": "Unknown"
             }
+        },
+        "streetCode": {
+            "title": "Street code: {{code}}",
+            "hint": "The plan claims to respect this code. Each of its buildings is checked here, rule by rule, from the design, the place and the building facts; a claim alone is not taken as met.",
+            "checking": "Checking the plan against the code…",
+            "summary": "{{eligible}} of {{total}} buildings meet the code, {{ineligible}} break it, {{unknown}} not known yet",
+            "cap": "Storey cap {{cap}} (para 30): lowest density {{density}} people/ha, in {{area}}.",
+            "approximate": "(the street is drawn straight between its ends)",
+            "unread": "Not read: {{what}} ({{error}})",
+            "newBuilding": "New building {{index}} of design {{design}}",
+            "verdict": {
+                "eligible": "Meets the code",
+                "ineligible": "Breaks the code",
+                "unknown": "Not known yet"
+            },
+            "noBuildings": "The plan has no buildings to check.",
+            "unchecked": "Rules the app does not check",
+            "check": "Check the code"
         }
     },
     "criticTour": {

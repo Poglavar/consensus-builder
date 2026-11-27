@@ -5,12 +5,14 @@ import { previewArtifact } from './mcp-preview.js';
 import { deriveWithApp } from './mcp-ground-runtime.js';
 import { parcelSourceIdOf } from './mcp-read-tools.js';
 import { describeRoadCuts, roadCutWarning } from './mcp-ground-effects.js';
-import { cityMoney } from '../scripts/lib/frontend-city-money.mjs';
+import { cityMoney, cityPlanningRuleSetIds } from '../scripts/lib/frontend-city-money.mjs';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const BallotRules = require('../../frontend/js/community/ballot-rules.js');
 const Eligibility = require('../../frontend/js/planning/eligibility.js');
 const BuildingFacts = require('../../frontend/js/buildings/building-facts.js');
+const StreetCode = require('../../frontend/js/planning/street-code.js');
+const PLANNING_SOURCES = require('../../frontend/data/planning-sources.json');
 const EN = require('../../frontend/i18n/en.json');
 // The building card's English words (planningViews.*), so a refusal gives an agent the reasons and
 // links a person sees in the app.
@@ -49,6 +51,40 @@ export async function votingWithEligibility(consultation, designContents, { read
                 next: { action: 'For each house in constraints.eligibility, add the missing facts under the named OpenStreetMap keys on its edit page, or read the heritage register entry linked; adding addr:street and addr:housenumber can let a terrace entry match by house number. Then draft again.' } });
     }
     return { ...consultation, voting: { ...voting, eligibility: Eligibility.evidence(set, judged, new Date().toISOString()) } };
+}
+
+// A street vote whose ballot rule carries a street code the plan claims (plan-record.js `codes`;
+// Strong Suburbs): every building of the plan is checked against the code as the app's agreement
+// editor checks it (planning/street-code.js), and the outcome is returned beside the draft, advice
+// that is not kept in the record. `read` gives the place's readers (StreetCode.readers).
+export async function streetCodeCheck(consultation, plan, designContents, { readers }) {
+    const voting = consultation?.voting;
+    const rule = voting?.rule ? BallotRules.get(voting.rule.id, voting.rule.version) : null;
+    const carried = Eligibility.codesForBallot(rule);
+    const set = StreetCode.claimedCodes(plan).find(code => carried.includes(code));
+    if (!set) return null;
+    const outcome = await StreetCode.checkPlan(set, { designs: designContents, reference: voting.street || null, read: readers(plan) });
+    const words = (key, params) => cardText(key, params);
+    const count = verdict => outcome.buildings.filter(building => building.result.verdict === verdict).length;
+    return { code: { id: set.id, version: set.version, source: set.source }, claimed: true,
+        summary: { buildings: outcome.buildings.length, meet: count('eligible'), break: count('ineligible'), unknown: count('unknown') },
+        storeyCap: { value: outcome.cap.value, bound: outcome.cap.bound, reason: outcome.cap.reason, areas: outcome.cap.areas, streetApproximate: outcome.streetApproximate },
+        historic: outcome.historic, buildings: StreetCode.describe(set, outcome, words),
+        notChecked: StreetCode.unchecked(set).map(test => ({ cite: test.cite, rule: words(`eligibility.test.${test.id}`), why: words(`eligibility.notChecked.${test.reason}`) })),
+        unread: outcome.errors };
+}
+
+// The place's readers on the agents' server: the app's own routes through the MCP read client, the
+// shared API's density and building facts, and the publisher's designations, as the browser reads them.
+function serverReaders(read, readFacts) {
+    const appFetch = async (url, init) => {
+        if (!url.startsWith('/')) return fetch(url, init);
+        const parsed = new URL(url, 'http://app.invalid');
+        const data = await read.request(parsed.pathname, Object.fromEntries(parsed.searchParams));
+        return { ok: true, status: 200, json: async () => data };
+    };
+    return plan => StreetCode.readers({ fetch: appFetch, backendBase: '', sharedApi: process.env.BUILDING_FACTS_API || BuildingFacts.API_ROOT,
+        config: PLANNING_SOURCES, ruleSetIds: cityPlanningRuleSetIds(plan?.view?.city), readFacts });
 }
 
 export function createMcpAgreementTools({ read, drafts, appOrigin, readFacts = ids => BuildingFacts.readMany(ids, { base: process.env.BUILDING_FACTS_API || BuildingFacts.API_ROOT, fresh: true }) }) {
@@ -136,6 +172,7 @@ export function createMcpAgreementTools({ read, drafts, appOrigin, readFacts = i
             else if (neighbourCompensation) rule.neighbourCompensation = neighbourCompensation;
             if (rule.electorate === 'community') rule.settlement = null;
             if (rule.electorate === 'community') consultation = await votingWithEligibility(consultation, designs.map(d => d.content), { readFacts });
+            const streetCode = rule.electorate === 'community' ? await streetCodeCheck(consultation, selected.plan, designs.map(d => d.content), { readers: serverReaders(read, readFacts) }) : null;
             const { land, source, ids } = await groundFor({ ...resolved, designs });
             const plan = { cid: selected.cid, content: selected.plan };
             // Each input parcel is its owners' abstract party; the rights snapshot stays in the rule.
@@ -149,7 +186,9 @@ export function createMcpAgreementTools({ read, drafts, appOrigin, readFacts = i
             return { agreement: published.content, cid: published.cid, parcelSourceId: source.parcelSourceId, takes: [...ids], groundEffects,
                 persons: ruleRights ? personPositions(published.content, ruleRights) : null, ...(includeGround ? { ground: land } : {}), warnings: ['This agreement references the existing named plan. Review its derived ground and terms before publishing.',
                 ...(roadCutWarning(groundEffects) ? [roadCutWarning(groundEffects)] : []),
-                ...(!effectiveRights && rule.electorate !== 'community' ? ['No rights snapshot was supplied, so no owner decision can be counted and no person positions can be derived from the parcel parties.'] : [])],
+                ...(!effectiveRights && rule.electorate !== 'community' ? ['No rights snapshot was supplied, so no owner decision can be counted and no person positions can be derived from the parcel parties.'] : []),
+                ...(streetCode && (streetCode.summary.break || streetCode.summary.unknown) ? [`The plan claims ${streetCode.code.id}@${streetCode.code.version}, but ${streetCode.summary.break} of its ${streetCode.summary.buildings} buildings break it and ${streetCode.summary.unknown} are not known yet: see streetCode.`] : [])],
+                ...(streetCode ? { streetCode } : {}),
                 ...await previewArtifact({ origin: appOrigin, agreement: published.content, plan, designs: designs.map(d => d.content), parcelSourceId: source.parcelSourceId }),
                 plan, designs: designs.map(d => ({ cid: d.cid, content: d.content })) };
         }
